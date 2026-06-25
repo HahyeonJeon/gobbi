@@ -11,7 +11,7 @@ tags: [process, refactor, verification, links]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/file-move-needs-link-resolution-check.md
+layer2-source: .gobbi/projects/gobbi/mistakes/refactor/file-move-needs-link-resolution-check.md
 layer2-rationale: Generalizable across all projects — any refactor that moves or renames files is vulnerable to silent link breakage that a token grep cannot catch. The verification discipline (link-resolution check in addition to token grep) must propagate to every project.
 supersedes: null
 superseded_by: null
@@ -21,7 +21,7 @@ superseded_by: null
 
 ## Layer-2 note
 
-This is a Layer-2 copy of `mistakes/file-move-needs-link-resolution-check.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
+This is a Layer-2 copy of `mistakes/refactor/file-move-needs-link-resolution-check.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
 
 ---
 
@@ -49,4 +49,4 @@ Correct verify: a link-resolution script run over the affected tree, confirming 
 
 ## Related
 
-- `mistakes/file-move-needs-link-resolution-check.md` — canonical project-level record
+- `mistakes/refactor/file-move-needs-link-resolution-check.md` — canonical project-level record

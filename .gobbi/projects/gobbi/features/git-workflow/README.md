@@ -1,5 +1,5 @@
 ---
-name: git-workflow
+name: README
 description: Worktree-isolated sessions plus the dual-runtime branch / PR / issue git lifecycle across Claude Code and Codex
 type: features
 scope: feature
@@ -7,7 +7,9 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [git, dual-runtime, codex, claude-code, worktree, pr-lifecycle]
+tags: []
+keywords: [git, dual-runtime, codex, claude-code, worktree, pr-lifecycle]
+author: claude
 value_proposition: Every gobbi session runs git/GitHub operations safely across both agent runtimes, with each runtime's sandbox and approval model handled correctly by default.
 subsystems: [skills/git, skills/git/scripts/git-posture-probe.sh, skills/codex/SKILL.md, .codex/config.toml, .codex/agents]
 ---
@@ -61,9 +63,9 @@ and a "Worktree CWD discipline" section. Deferred: DD-6 git-lifecycle hook telem
 
 ## Open items
 
-- DD-6 git-lifecycle telemetry in hooks — deferred at Planning, user-confirmation gated. See `backlogs/git-lifecycle-telemetry-in-hooks.md`.
+- DD-6 git-lifecycle telemetry in hooks — deferred at Planning, user-confirmation gated. See `backlogs/git/git-lifecycle-telemetry-in-hooks.md`.
 - OQ-5 read-only Codex policy + the F5 plan-nit are noted in the session journal `notes/2026-06-14-dual-runtime-git-skill.md`.
-- Layer-2 (workspace) promotion of the 2 process write-safety mistakes (`mistakes/absolute-path-typo-on-write-evades-cwd-guard.md`, `mistakes/edit-write-tool-success-without-disk-persistence.md`) — deferred this session per user decision.
+- Layer-2 (workspace) promotion of the 2 process write-safety mistakes (`mistakes/tooling/absolute-path-typo-on-write-evades-cwd-guard.md`, `mistakes/verification/edit-write-tool-success-without-disk-persistence.md`) — deferred this session per user decision.
 
 ## Related
 

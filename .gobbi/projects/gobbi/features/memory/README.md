@@ -7,8 +7,8 @@ feature: memory
 status: active
 created: 2026-06-21
 session: c3ac1c53-6741-49cf-8856-cdb3fcd6bec0
-tags: [memory, schema, validation]
-keywords: [area-namespace, frontmatter, rules, templates, validator]
+tags: []
+keywords: [area-namespace, frontmatter, rules, templates, validator, memory, schema, validation]
 author: claude
 value_proposition: A stable, scannable, refactorable memory store every session reads and writes without grep guesswork.
 subsystems: [skills/memory, skills/memory/templates, skills/memory/scripts/validate-frontmatter.sh]
@@ -24,14 +24,17 @@ The memory subsystem is gobbi's cross-session durable store under `.gobbi/projec
 
 The memory AREA + TAG vocabulary was REDESIGNED to a FLAT per-type model on 2026-06-24 (session 84e9570c; both Execution evaluators PASS): `memory-vocabulary.json` now carries `types.{type}.{areas, tags}` at the top level — one independent area list + one tag pool per by-area type (15 active type keys) — replacing the layered universal/project/`effective` model with its shared `spine`/`mistakes` axes. `_shared` is dropped from every area list; area no-match now surfaces a user-decision (`NEEDS_CONTEXT`), never a silent catch-all. `review_kind`/`report_type` are now REQUIRED and the area resolves from the kind value (no `tagAreaMap` entry for reviews/reports). Merge-ordering A: the SCHEMA ships now; the 114-file MIGRATION is DEFERRED to a next session, so the live tree intentionally FAILS whole-tree validation until then (expected debt, not a defect). This refines the prior config-as-data ship (2026-06-23, commits 4557c78c / ed435550 / 9c171908): the validator still reads closed allowlists via `jq`, project-general by design.
 
-The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21bf5): the `{type}/{area}/{slug}.md` convention, per-type area allowlists, the TOTAL deterministic area-selection rule, the validator's required-area + off-allowlist-area checks, the Wrap-up routing area-resolution, the active-mistake-move carve-out, and the consumer read-glob recursion. File MIGRATION of the existing flat stacks is DEFERRED — tracked by the `memory-namespace-migration` backlog. Until the migration runs, the validator is red on the pre-existing flat files (expected debt).
+The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21bf5): the `{type}/{area}/{slug}.md` convention, per-type area allowlists, the TOTAL deterministic area-selection rule, the validator's required-area + off-allowlist-area checks, the Wrap-up routing area-resolution, the active-mistake-move carve-out, and the consumer read-glob recursion.
+
+The deferred file MIGRATION was EXECUTED 2026-06-24 (session 1cd48095) as a single-session 8-task campaign: the residual-vocab guard was segmented into two vocab-family triples, the 114 flat by-area files were frontmatter-normalized + area-recomputed + `git mv`-relocated, all reference classes were repointed, spent journals were archived (not deleted), and the whole-tree validator was driven from 689 violations to 0 with both guard families exiting 0. The interim RED debt is now closed.
 
 ## Subdirectories
 
-- `design/` — feature-scope design topics (the area-namespace schema; the project-defined vocab config-as-data; the universal base layer; the combined tag→area config; the mistakes trap-class axis)
+- `design/` — feature-scope design topics (the area-namespace schema; the project-defined vocab config-as-data; the universal base layer; the combined tag→area config; the mistakes trap-class axis; the single-session migration+curation campaign)
 - `decisions/` — feature-scope decisions (the `area:` keep-or-strip question; the JSON+jq config format; row-level-manifest-as-Execution-deliverable; the universal-tag-baseline split)
 - `discussions/` — user-decision narratives (the vocab source + universal layer + migration split)
-- `plans/` — the de-hardcoding plan + the 114-file migration manifest
+- `plans/` — the de-hardcoding plan + the 114-file migration manifest + the 8-task migration execution plan
+- `checklists/` — implementation checklists (the Family-A guard allowlist completeness check)
 - `changelogs/` — what shipped (de-hardcode area+tag vocab into config)
 - `references/` — external prior-art references (DDD, git branches, Johnny.Decimal, PARA, tags-vs-folders, commitlint scopes, GitHub label-sync, Nx multi-dim tags, controlled-vocab hybrid)
 
@@ -42,6 +45,7 @@ The area-namespace schema shipped 2026-06-21 (9 commits on top of develop@7ef21b
 | 2026-06-21 | c3ac1c53-6741-49cf-8856-cdb3fcd6bec0 | Area-namespace schema designed + shipped; migration deferred |
 | 2026-06-23 | d0185dba-cd9b-45ad-93f6-7814c4f0ef4a | Area+tag vocab de-hardcoded into project config (config-as-data, JSON+jq); 114-file migration manifest produced; bulk move deferred |
 | 2026-06-24 | 84e9570c-bf2b-42b0-af5c-1c181d182e1b | Vocab REDESIGNED to flat per-type model; `_shared` dropped + no-match→user-decision; `review_kind`/`report_type` REQUIRED (kind=area); migration manifest re-derived (zero `_shared`); 114-file move still deferred (merge-ordering A) |
+| 2026-06-24 | 1cd48095-d745-4868-a5ac-f48326eb447f | 114-file area+tag MIGRATION EXECUTED (single-session 8-task campaign): two-family residual-vocab guard, frontmatter/tag/status normalization, per-file area recompute, `git mv` relocation, reference repoint, archive-only curation; validator 689→0; both guards exit 0 |
 
 ## Open items
 

@@ -1,5 +1,5 @@
 ---
-name: workflow
+name: README
 description: The gobbi workflow engine — the 6-step state machine that governs every session, its per-session working-memory tree, and the orchestration skills that drive it.
 type: features
 scope: feature
@@ -7,7 +7,9 @@ feature: workflow
 status: active
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
-tags: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
+tags: []
+keywords: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
+author: claude
 value_proposition: Deterministic, auditable session execution — every session runs the same 6-step machine against a spec-defined, script-materialized working-memory tree, with a vocabulary that unambiguously names per-loop capture (RECORD) separately from durable promotion (memorization in the 5-stage Wrap-up pipeline).
 subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation, skills/preparation, skills/planning, skills/execution, skills/wrap-up]
 ---
@@ -24,7 +26,7 @@ The `workflow` feature is the gobbi session engine. It defines the 6-step state 
 
 **Session `1abeb43f` (2026-06-08):** session-memory tree redesign shipped. Spec-defined and script-materialized tree: `orchestration/templates/session-tree.md` + `orchestration/scripts/scaffold-session-dir.sh`. Full 45-file doc sweep. All 5 loops dual-system PASS.
 
-Deferred: post-cleanup session-memory retention (backlog `backlogs/persist-session-memory-past-cleanup.md`), `[FLAG-1]` project-skills-is-memory classification, `[FLAG-2]` claude doc-authoring skill.
+Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/persist-session-memory-past-cleanup.md`), `[FLAG-1]` project-skills-is-memory classification, `[FLAG-2]` claude doc-authoring skill.
 
 ## Subdirectories
 
@@ -46,8 +48,8 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/persist-sessi
 
 ## Open items
 
-- `backlogs/task-record-template-and-dangling-ref.md`: author task-record template + fix 17 dangling refs in chat-mode.md.
-- `backlogs/persist-session-memory-past-cleanup.md` (project-level): retain session working memory after worktree cleanup for post-session debugging.
+- `backlogs/process/task-record-template-and-dangling-ref.md`: author task-record template + fix 17 dangling refs in chat-mode.md.
+- `backlogs/workflow/persist-session-memory-past-cleanup.md` (project-level): retain session working memory after worktree cleanup for post-session debugging.
 - `[FLAG-1]`: clarify whether project `skills/` is memory (out of scope for this session).
 - `[FLAG-2]`: author the `claude` doc-authoring skill (out of scope for this session).
 

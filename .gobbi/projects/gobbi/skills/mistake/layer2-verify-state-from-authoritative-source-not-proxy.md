@@ -11,7 +11,6 @@ tags: [process, verification, citation-fidelity, git, anchor-fidelity]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/asserted-git-drift-direction-without-running-git.md + .gobbi/projects/gobbi/mistakes/carried-stale-anchor-despite-upstream-correction.md
 layer2-rationale: Generalizable across all projects — any agent that asserts a fact about a codebase artifact (git position, line number, file type, anchor) from a proxy (system-reminder, prior artifact, assumption) instead of the authoritative source will propagate an incorrect claim downstream.
 supersedes: null
 superseded_by: null

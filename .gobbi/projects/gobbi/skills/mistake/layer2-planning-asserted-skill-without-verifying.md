@@ -11,7 +11,7 @@ tags: [process, planning, required-skills, verification]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/planning-asserted-skill-without-verifying.md
+layer2-source: .gobbi/projects/gobbi/mistakes/verification/planning-asserted-skill-without-verifying.md
 layer2-rationale: Generalizable across all projects — whenever any agent makes an existence claim about a path (skill, file, directory) during planning or agent-assignment work, it must verify the path exists before asserting it. Not gobbi-specific.
 supersedes: null
 superseded_by: null
@@ -21,7 +21,7 @@ superseded_by: null
 
 ## Layer-2 note
 
-This is a Layer-2 copy of `mistakes/planning-asserted-skill-without-verifying.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
+This is a Layer-2 copy of `mistakes/verification/planning-asserted-skill-without-verifying.md`. It lives in `skills/mistake/` so it persists and loads across all projects and future sessions. The canonical record is at the project mistakes path above; this copy exists only for cross-project recall.
 
 ---
 
@@ -53,5 +53,5 @@ This principle extends beyond skills: any existence claim about a file, director
 
 ## Related
 
-- `mistakes/planning-asserted-skill-without-verifying.md` — canonical project-level record
+- `mistakes/verification/planning-asserted-skill-without-verifying.md` — canonical project-level record
 - `layer2-planning-leader-asserted-file-type-without-verifying.md` — adjacent mistake (asserting file TYPE without verifying)

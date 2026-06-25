@@ -11,7 +11,6 @@ tags: [process, planning, citation-fidelity, symlinks, verification]
 priority: high
 domain: process
 layer: 2
-layer2-source: .gobbi/projects/gobbi/mistakes/planning-leader-asserted-file-type-without-verifying.md
 layer2-rationale: Generalizable across all projects — any planner/leader that asserts file type/existence in a brief without checking propagates a potential executor failure.
 supersedes: null
 superseded_by: null
