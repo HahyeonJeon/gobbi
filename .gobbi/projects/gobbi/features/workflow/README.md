@@ -30,12 +30,12 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 
 ## Subdirectories
 
-- `design/` — 7 files: session-memory-tree design + 6 Wrap-up/vocabulary-split design docs (D-a through D-f)
-- `decisions/` — 19 files: 8 from session `1abeb43f` + 11 from session `7e00f98e`
-- `references/` — 8 files: 3 from session `1abeb43f` + 5 from session `7e00f98e`
-- `discussions/` — 8 files: 1 from session `1abeb43f` + 7 from session `7e00f98e` (D5-D16 vocabulary/pipeline decisions)
+- `design/` — 8 files: session-memory-tree design + 6 Wrap-up/vocabulary-split design docs (D-a through D-f) + the Codex-proposer D1–D9 design (session `6cf13813`)
+- `decisions/` — 21 files: 8 from session `1abeb43f` + 11 from session `7e00f98e` + 2 resolved carry-forwards from session `6cf13813`
+- `references/` — 12 files: 3 from session `1abeb43f` + 5 from session `7e00f98e` + 4 dual-system-production evidence papers from session `6cf13813`
+- `discussions/` — 9 files: 1 from session `1abeb43f` + 7 from session `7e00f98e` + 1 Codex-proposer user-decisions (session `6cf13813`)
 - `plans/` — 2 files: the locked 10-task session-memory plan + the locked 11-task vocabulary-rename plan
-- `backlogs/` — 1 file: task-record template + 17 dangling-ref fix (deferred from this session)
+- `backlogs/` — 2 files: task-record template + 17 dangling-ref fix; proposer/evaluator model-tier guard (session `6cf13813`)
 - `checklists/` — 5 files: executor verification checklists for sweep, gates, and evaluation steps
 - `scenarios/` — 1 file: workflow/memorization.md doc-filename rename edge case
 
@@ -43,6 +43,7 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 
 | Date | Session | What |
 |---|---|---|
+| 2026-06-25 | 6cf13813-a002-4e55-96b9-a5d65f619ef8 | Dual-system PRODUCTION (Codex independent proposer) designed + shipped across all 5 productive WORK sub-phases: D1–D9 locked design; producer selective-integration + Integration Log; per-step `propose.mode` (all-5-default-ON, master switch dropped); degraded-mode label; D9 freeze boundary. 11 commits, 32 files, dual-system PASS (iter1 REVISE → iter2 PASS). 3 process mistakes promoted |
 | 2026-06-13 | 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4 | Vocabulary rename + Wrap-up pipeline redesign: RECORD/memory/memorization vocabulary lock; 2-skill split (record + memory); 5-stage Wrap-up pipeline; CLAUDE.md/AGENTS.md reconcile; 2 guard scripts; 13 commits; 4 mistakes promoted (2 layer-2) |
 | 2026-06-08 | 1abeb43f-6389-4abf-b098-b2b3e68d79b2 | Session-memory tree redesign: spec doc + scaffold script + 45-file doc sweep shipped; 6 decisions + design + plan + 3 references promoted |
 
