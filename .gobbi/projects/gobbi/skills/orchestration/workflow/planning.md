@@ -72,6 +72,8 @@ Manager-side responsibilities:
 
 WORK is short by design — the substantive thinking happened in DISCUSSION.
 
+**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the leader; the leader selectively integrates the frozen proposal and Codex never writes the canonical artifact.
+
 ---
 
 ## EVALUATION Phase (delegated to evaluators)
@@ -147,6 +149,7 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Plan
 - Leader's planning procedure → [`planning/SKILL.md`](../../planning/SKILL.md)
 - Ideation output that becomes Planning's input → [`workflow/ideation.md`](ideation.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)

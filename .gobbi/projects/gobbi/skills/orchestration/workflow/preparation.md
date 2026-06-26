@@ -71,6 +71,8 @@ Manager-side responsibilities:
 
 WORK execution is more than documentation here, because Preparation's purpose is to **make the gaps go away**. New skills are staged at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` — the staging step closes the gap for downstream planning. On EVALUATION PASS, the manager copies `2-preparation/staging/skills/{slug}/SKILL.md` → `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` BEFORE Planning starts (per `preparation/SKILL.md` narrow sole-writer exception — in-session consumers need the skill available during Planning and Execution). All other Preparation staging follows the standard Wrap-up promotion path.
 
+**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the leader; the leader selectively integrates the frozen proposal and Codex never writes the canonical artifact.
+
 ---
 
 ## EVALUATION Phase (delegated to evaluators)
@@ -148,6 +150,7 @@ Plus session-staged outputs by the leader during WORK — routed to memory by Wr
 - Ideation output that becomes Preparation's input → [`workflow/ideation.md`](ideation.md)
 - Planning that follows Preparation → [`workflow/planning.md`](planning.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)

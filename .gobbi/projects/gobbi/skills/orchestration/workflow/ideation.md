@@ -84,6 +84,8 @@ Manager-side responsibilities:
 
 WORK is short by design. The substantive thinking happened in DISCUSSION; WORK formalizes and stages it. **No writes to memory** — every output lives under `sessions/{date}-{session-id}/1-ideation/`.
 
+**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the leader; the leader selectively integrates the frozen proposal and Codex never writes the canonical artifact.
+
 ---
 
 ## EVALUATION Phase (delegated to evaluators)
@@ -174,6 +176,7 @@ Plus updates to `sessions/{date}-{session-id}/session.json` — `workflow.ideati
 - Leader's discussion + documentation procedure → [`ideation/SKILL.md`](../../ideation/SKILL.md)
 - Internal + external research procedure → [`research/SKILL.md`](../../research/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Proposer orchestration → [`workflow/production.md`](production.md)
 - Assistant's RECORD procedure (templates + routing) → [`record/SKILL.md`](../../record/SKILL.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Wrap-up's memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
