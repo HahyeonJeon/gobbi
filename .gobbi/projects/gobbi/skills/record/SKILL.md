@@ -60,6 +60,10 @@ Cross-cutting principles for any agent that loads this skill while in the assist
 
 Loop RECORD never writes to memory (`features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`). It writes to session record's `staging/` subdirectories. Wrap-up reads accumulated staging across all loops and promotes deterministically per the routing table in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md). This boundary is non-negotiable — a loop's RECORD touching memory is a constraint violation.
 
+> **RECORD never compacts.**
+
+Memory compaction — folding an over-cap `{type}/{area}/` directory into one consolidated Map-of-Content file — is a durable-memory operation owned by **Wrap-up's Stage-2c**, not the per-loop RECORD. RECORD stages findings; it never merges, caps, or archives memory records. The standard is [`memory/rules.md` § 5](../memory/rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out); the procedure is [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
+
 > **Run after every EVALUATION verdict — PASS, REVISE, or FAIL.**
 
 Every iteration preserves a transcript + iter entry in `session.json` regardless of outcome, so each iteration leaves a durable audit trail before the loop either restarts, escalates, or completes. Only `PASS` additionally writes the `outputs/` files and stages typed-finding artifacts. `REVISE` and `FAIL` stop after the transcript + session.json upsert; the FAIL path is the same as REVISE for persistence purposes — the manager escalates after RECORD runs.
