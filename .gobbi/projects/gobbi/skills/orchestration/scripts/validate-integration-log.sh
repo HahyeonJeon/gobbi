@@ -26,6 +26,14 @@
 #   so $2=# , $3=delta , $4=decision , $5=why , $6=codex_origin. The `decision`
 #   column is field $4 (bash array index 3).
 #
+# Escaped pipes (the SAME false-fail class, one level deeper):
+#   A cell may legitimately contain an ESCAPED pipe `\|` — a LITERAL pipe in
+#   markdown, not a column boundary (e.g. a delta cell quoting a shell pipeline
+#   `cmd \| grep …`). A naive `IFS='|'` split treats `\|` as a boundary and
+#   shifts the columns, so the wrong field is read as `decision` (a false fail
+#   on a legitimately-authored log — F-C4-1). The split below first protects
+#   `\|` as SOH (\x01), splits, then restores it in each extracted cell.
+#
 # Table location:
 #   A file may hold OTHER pipe tables (e.g. a "Decision counts" summary whose
 #   cells look like enum values). The validator only validates rows under the
@@ -36,8 +44,8 @@
 # "Names both sides" heuristic (documented, defensible):
 #   For a `merged-selective` row, the combined `delta` + `why` text MUST mention
 #   BOTH the producer's own side AND the Codex side (case-insensitive whole-word):
-#     - own side  : kept | keep | mine | my | own | claude
-#     - codex side : codex | took
+#     - own side  : kept | keep | mine | my | own | claude | producer
+#     - codex side : codex | took | proposer | proposal
 #   A merged-selective row that names only one side (e.g. "changed text / chose
 #   better wording") fails — it cannot be audited as a genuine two-sided selection.
 #   This is a heuristic, not a proof: it catches the un-auditable single-side log
@@ -57,9 +65,10 @@
 set -uo pipefail
 
 SELF="validate-integration-log.sh"
+SOH=$'\x01'   # placeholder for an escaped pipe `\|` while splitting columns
 ENUM_RE='^(took-codex|kept-own|merged-selective|escalated)$'
-OWN_RE='\b(kept|keep|mine|my|own|claude)\b'
-CODEX_RE='\b(codex|took)\b'
+OWN_RE='\b(kept|keep|mine|my|own|claude|producer)\b'
+CODEX_RE='\b(codex|took|proposer|proposal)\b'
 
 log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 
@@ -90,6 +99,11 @@ trim() {
     s="${s#"${s%%[![:space:]]*}"}"
     s="${s%"${s##*[![:space:]]}"}"
     printf '%s' "$s"
+}
+
+# Restore escaped-pipe placeholders (\x01) back to the literal `\|` after split.
+restore() {
+    printf '%s' "${1//$SOH/\\|}"
 }
 
 # A markdown table separator row: only pipes / dashes / colons / spaces, with a dash.
@@ -129,12 +143,17 @@ while IFS= read -r line || [ -n "$line" ]; do
         continue
     fi
 
-    # Split into columns by the pipe delimiter.
-    IFS='|' read -ra cols <<< "$line"
+    # Split into columns by the pipe delimiter. First protect any escaped pipe
+    # `\|` (a LITERAL pipe in a markdown cell, not a column boundary) as SOH, so
+    # the split does NOT treat it as a boundary; restore it in each extracted
+    # cell. Without this, an escaped pipe shifts the columns and the wrong field
+    # is read as `decision` (the F-C4-1 false-fail on a legitimate log).
+    protected="${line//\\|/$SOH}"
+    IFS='|' read -ra cols <<< "$protected"
     # cols[0] empty (before leading pipe); cols[2]=delta, cols[3]=decision, cols[4]=why
-    delta="$(trim "${cols[2]:-}")"
-    decision="$(trim "${cols[3]:-}")"
-    why="$(trim "${cols[4]:-}")"
+    delta="$(restore "$(trim "${cols[2]:-}")")"
+    decision="$(restore "$(trim "${cols[3]:-}")")"
+    why="$(restore "$(trim "${cols[4]:-}")")"
 
     # Integration Log header row → enter the table region.
     if [ "$delta" = "delta" ] && [ "$decision" = "decision" ]; then
