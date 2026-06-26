@@ -18,7 +18,7 @@ shipped_in: null
 # Tune per-type compaction caps after first runs
 
 ## Context
-The compaction mechanism ships with conservative seed thresholds: softCap 12 / hardCap 15 per `{type}/{area}/`, set from today's hot-spot counts (`mistakes/verification`=14, `backlogs/memory`=13). These are first-guess values, not measured optima.
+The compaction mechanism ships with conservative seed thresholds: softCap 12 / hardCap 15 per `{type}/{area}/`, set from the session's hot-spot areas — `mistakes/verification` and `backlogs/memory` were the largest by-area directories at the time. These are first-guess values, not measured optima. (Exact per-area counts are deliberately not pinned here: they drift every session, so a hardcoded snapshot would go stale immediately — read the live counts when picking this up.)
 
 ## Why deferred
 Real thresholds can only be judged after the mechanism runs across several sessions and we see which areas trip the cap, how often merges fire, and whether any type is over- or under-merged. Tuning before any real run would be guessing twice.

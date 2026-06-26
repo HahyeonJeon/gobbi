@@ -36,7 +36,7 @@ The deferred file MIGRATION was EXECUTED 2026-06-24 (session 1cd48095) as a sing
 - `plans/` — the de-hardcoding plan + the 114-file migration manifest + the 8-task migration execution plan
 - `checklists/` — implementation checklists (the Family-A guard allowlist completeness check)
 - `changelogs/` — what shipped (de-hardcode area+tag vocab into config)
-- `references/` — external prior-art references (DDD, git branches, Johnny.Decimal, PARA, tags-vs-folders, commitlint scopes, GitHub label-sync, Nx multi-dim tags, controlled-vocab hybrid)
+- `references/` — external prior-art references (DDD, git branches, Johnny.Decimal, PARA, tags-vs-folders, commitlint scopes, GitHub label-sync, Nx multi-dim tags, controlled-vocab hybrid, agent-memory consolidation, LSM threshold-merge compaction, sleep-consolidation push/pull, Zettelkasten Map-of-Content)
 
 ## Recent activity
 
@@ -46,6 +46,7 @@ The deferred file MIGRATION was EXECUTED 2026-06-24 (session 1cd48095) as a sing
 | 2026-06-23 | d0185dba-cd9b-45ad-93f6-7814c4f0ef4a | Area+tag vocab de-hardcoded into project config (config-as-data, JSON+jq); 114-file migration manifest produced; bulk move deferred |
 | 2026-06-24 | 84e9570c-bf2b-42b0-af5c-1c181d182e1b | Vocab REDESIGNED to flat per-type model; `_shared` dropped + no-match→user-decision; `review_kind`/`report_type` REQUIRED (kind=area); migration manifest re-derived (zero `_shared`); 114-file move still deferred (merge-ordering A) |
 | 2026-06-24 | 1cd48095-d745-4868-a5ac-f48326eb447f | 114-file area+tag MIGRATION EXECUTED (single-session 8-task campaign): two-family residual-vocab guard, frontmatter/tag/status normalization, per-file area recompute, `git mv` relocation, reference repoint, archive-only curation; validator 689→0; both guards exit 0 |
+| 2026-06-25 | 463a1c96-f75c-4a14-80b4-f4d6815679cd | Memory-COMPACTION mechanism added (Wrap-up Stage-2c, ships DORMANT `enabled: false`): per-`{type}/{area}/` cap (softCap 12 / hardCap 15), uniform lossless merge→Map-of-Content + `git mv` to `archive/` (`archive_reason: merged`), new `check-merge-ref-integrity.sh` two-family gate, `validate-frontmatter` accepts `supersedes` list form; runs inside the non-skippable Stage-3 gate. Added 4 compaction prior-art references. Cap-tuning deferred (`backlogs/memory/compaction-cap-tuning.md`) |
 
 ## Open items
 
