@@ -235,6 +235,7 @@ Every iteration:
 `PASS` iteration additionally:
 - [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per [Artifact frontmatter schema](#artifact-frontmatter-schema)
 - [ ] At least one artifact has `artifact_type: memory-reads` (the cumulative-staging audit surface)
+- [ ] **Degraded-mode label gate** — when the loop ran `propose.mode: dual` but `working/proposals/codex/draft-iter{n}.md` is **absent or empty** (the Codex proposal failed), EVERY `outputs/*.md` MUST carry `production_mode: claude-only`. A degraded loop that ships an `outputs/*.md` WITHOUT the label is unlabeled degraded mode — a strip/preserve miss, not a valid PASS. AND `codex_proposal_absent_reason: <timeout|empty|error>` is valid ONLY alongside `production_mode: claude-only` — it MUST NOT appear on a `propose.mode: single` run (a configured single run is not degraded; see [`orchestration/workflow/production.md` § Degraded-mode policy](../orchestration/workflow/production.md)). Mechanically checkable: with an absent/empty proposal, `grep -L 'production_mode: claude-only' outputs/*.md` MUST list no files, and no `outputs/*.md` may carry `codex_proposal_absent_reason` without `production_mode: claude-only`
 - [ ] Every evaluator finding across iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
 - [ ] Design / discussions derivables staged under `staging/`
 - [ ] `session.json.workflow.{loop}.finishedAt` and final `verdict: PASS` set
