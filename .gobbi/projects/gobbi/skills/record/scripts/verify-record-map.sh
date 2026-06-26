@@ -77,6 +77,8 @@ done
 # Loop-specific subdirs the doc declares.
 grep -qF "skills (2-preparation only)" "$spec_doc" || doc_missing+=("skills(prep)")
 grep -qF "plans (3-planning only)" "$spec_doc" || doc_missing+=("plans(planning)")
+# working/ slot addition the doc must still declare (drift-gated with the scaffold).
+grep -qF "proposals/codex" "$spec_doc" || doc_missing+=("proposals/codex")
 if [ "${#doc_missing[@]}" -gt 0 ]; then
     log "spec doc no longer declares: ${doc_missing[*]}"
     log "record-map.md drifted from the scaffold manifest"
@@ -91,7 +93,7 @@ expected_subtree() {
     case "$step" in
         4-execution/task-*) loop="4-execution" ;;
     esac
-    local dirs=( "$step" "$step/working" "$step/working/research" "$step/evaluation" "$step/staging" )
+    local dirs=( "$step" "$step/working" "$step/working/research" "$step/working/proposals" "$step/working/proposals/codex" "$step/evaluation" "$step/staging" )
     # backlogs/{feature,project} implies the intermediate backlogs/ parent dir
     # that `find -type d` enumerates; include it in the baseline.
     dirs+=( "$step/staging/backlogs" )
