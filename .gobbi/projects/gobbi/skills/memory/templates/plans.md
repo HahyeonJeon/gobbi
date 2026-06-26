@@ -37,7 +37,7 @@ tags: [planning, execution]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 task: {task name from Scope Contract}
-supersedes: {prior-plan-slug} | null         # plain slug, not a path
+supersedes: {prior-plan-slug} | list[slug] | null         # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
 superseded_by: {new-plan-slug} | null          # plain slug, not a path
 task_count: {number of sub-tasks in this plan}
 ---

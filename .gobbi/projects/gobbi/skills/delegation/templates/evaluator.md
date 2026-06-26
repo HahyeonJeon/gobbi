@@ -50,19 +50,23 @@ producer says it became.>>
 - Any prior evaluations in this loop (the same perspective from earlier rounds)
 - What the parallel system's evaluator is covering (so you understand the anti-groupthink intent; both systems cover all 7 perspectives)>>
 
-## Load Directives (in order — load top to bottom before any other action)
+## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+
+You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
+tool. Read these EXACT paths, in order, as your FIRST actions — before the Task
+Description or any other work. Skipping any required file is a process failure.
 
 1. Principles:
-   - `principles` skill (mandatory) and `evaluation/SKILL.md` — producer/evaluator separation governs your independence
+   - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory)
+   - `.gobbi/projects/<<project-name>>/skills/evaluation/SKILL.md` (mandatory — producer/evaluator separation governs your independence; perspective definitions, severity rubric, finding metadata)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/`
+   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
 3. Skills:
-   - `mistake` skill (mandatory)
-   - `evaluation` skill (mandatory — perspective definitions, severity rubric, finding metadata)
-   - `memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
-   - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `skills/ideation/evaluation.md`, `skills/preparation/evaluation.md`, `skills/planning/evaluation.md`, `skills/execution/evaluation.md`, `skills/wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
+   - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
+   - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
+   - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/evaluation.md`, `.../preparation/evaluation.md`, `.../planning/evaluation.md`, `.../execution/evaluation.md`, `.../wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
 4. Mistakes:
-   - <<list of mistake files relevant to this work's domain>>
+   - <<list of mistake files relevant to this work's domain — full paths>>
 
 ## Inputs (the constructed context bundle)
 
@@ -124,7 +128,12 @@ Begin your final response with the wire format header, then prose details:
 STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
 VERDICT: <PASS|REVISE|FAIL>
 ARTIFACT: <path-to-evaluation-directory — e.g., sessions/.../evaluation/iter1/claude/>
+SKILLS LOADED:
+  - <exact path of each Load-Directives file you Read, in order>
 ```
+
+`SKILLS LOADED:` is mandatory — list the exact path of every Load-Directives file
+you Read (tiers 1–4), so the manager can verify nothing was skipped.
 
 Then in the body:
 - **DONE** — all 7 perspectives + Overall complete; per-perspective files written;

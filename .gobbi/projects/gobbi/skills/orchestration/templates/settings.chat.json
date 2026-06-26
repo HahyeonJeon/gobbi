@@ -56,5 +56,9 @@
     "issue":    { "create": false },
     "worktree": { "autoRemove": true },
     "branch":   { "autoRemove": true }
+  },
+  "compaction": {
+    "enabled": false,
+    "maxAutoActions": 3
   }
 }

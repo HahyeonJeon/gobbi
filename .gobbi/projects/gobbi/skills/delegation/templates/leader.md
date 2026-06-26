@@ -22,22 +22,26 @@ specific question(s) to answer, the artifact you will produce.>>
 - What prior sessions decided (cite memory or git history)
 - What is NOT yet decided and remains in your scope to investigate>>
 
-## Load Directives (in order — load top to bottom before any other action)
+## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+
+You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
+tool. Read these EXACT paths, in order, as your FIRST actions — before the Task
+Description or any other work. Skipping any required file is a process failure.
 
 1. Principles:
-   - `principles` skill (mandatory; fresh subagents do not inherit)
+   - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory; fresh subagents do not inherit)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/`
-   - <<any additional rule files specific to this task>>
+   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
+   - <<any additional rule files specific to this task — full paths>>
 3. Skills:
-   - `mistake` skill (mandatory before any decision in this domain)
-   - `record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
-   - `memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
-   - Phase doc: <<orchestration/workflow/{phase}.md path>>
-   - Domain skills: <<list with full paths — e.g., `ideation`, `planning`, `research`>>
-   - <<project skill if relevant>>
+   - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory before any decision in this domain)
+   - `.gobbi/projects/<<project-name>>/skills/record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
+   - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
+   - Phase doc: `.gobbi/projects/<<project-name>>/skills/orchestration/workflow/<<phase>>.md`
+   - Domain skills (full paths): <<list — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/SKILL.md`, `.../planning/SKILL.md`, `.../research/SKILL.md`>>
+   - <<project skill if relevant — full path>>
 4. Mistakes:
-   - <<list of mistake files specifically relevant to this task — feature mistakes, project mistakes>>
+   - <<list of mistake files specifically relevant to this task — full paths to feature/project mistakes>>
 
 ## Inputs
 
@@ -77,7 +81,12 @@ Begin your final response with the wire format header, then prose details:
 ```
 STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
 ARTIFACT: <path-to-artifact>   ← omit if no artifact produced
+SKILLS LOADED:
+  - <exact path of each Load-Directives file you Read, in order>
 ```
+
+`SKILLS LOADED:` is mandatory — list the exact path of every Load-Directives file
+you Read (tiers 1–4), so the manager can verify nothing was skipped.
 
 Then in the body:
 - **DONE** — artifact written; verification passed; ready for the next phase.

@@ -22,7 +22,7 @@ Every session runs this 6-step state machine — Configuration plus five product
 
 **Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
 
-**Wrap-up** — Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The [Glossary](skills/gobbi/SKILL.md) holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
+**Wrap-up** — Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Promotion ends with a dormant memory-compaction sub-step (Stage-2c) that consolidates over-cap memory areas before the validation gate. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The [Glossary](skills/gobbi/SKILL.md) holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
 
 > **Evaluation is a mandatory sub-phase in the gobbi workflow.**
 

@@ -109,6 +109,10 @@ Every memory file holds exactly one concept — one decision, one mistake, one d
 
 A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Core Principles](../wrap-up/SKILL.md#core-principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix).
 
+> **Compaction is a Wrap-up operation — RECORD never compacts.**
+
+Folding an over-cap `{type}/{area}/` directory into one consolidated Map-of-Content file is **compaction** — a durable-memory write owned by Wrap-up's promotion stage. The standard is [`rules.md` § 5](rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out); a working loop's RECORD stages only and **never compacts**. See [`record/SKILL.md` § Core Principles](../record/SKILL.md#core-principles) for the capture-side boundary.
+
 > **A memorized file must survive its session.**
 
 A memory doc must be understandable by a zero-context reader — a future agent opening it cold, with no access to the originating session. The bar is [`rules.md` § 4](rules.md#4-dev-document-quality-standard). A correction not recorded is a correction repeated — see [`mistake/SKILL.md`](../mistake/SKILL.md) for the mistake type's loop.

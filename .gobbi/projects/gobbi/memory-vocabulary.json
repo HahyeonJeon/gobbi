@@ -1,5 +1,10 @@
 {
   "$schema-note": "Per-type AREA + TAG vocabulary for gobbi memory (rules.md §1.5 areas + §2.5 tags). FLAT model: top-level types.{type}.{areas,tags} — one independent area list + one independent tag pool per by-area type (15 active type keys; archive has no key — it mirrors its source type's area). NO universal/project/effective layers. NO `_shared` catch-all area: on area no-match, resolution surfaces a user-decision (pick or create an area; adding an area is an Always-Ask edit) instead of defaulting to a catch-all. The validator reads .types.{type}.areas + .types.{type}.tags via jq and stays fail-closed (a resolved area must be a real listed area). wrap-up reads .tagAreaMap.{type} for area resolution; on no-match it returns NEEDS_CONTEXT for the user-decision. Mechanism (jq, fail-closed, priority first-match) unchanged from #309 EXCEPT the no-match terminal (was `_shared`, now user-decision). reviews/reports use a kind axis: review_kind/report_type are REQUIRED extensions and the area resolves directly from the kind value (no tagAreaMap entry for these two types); `other` is the kind catch-all. archive has no entry (mirrors source type's area; enforced by find-prune exclusion). A non-gobbi project ships its own copy.",
+  "compaction": {
+    "softCap": 12,
+    "hardCap": 15,
+    "note": "Uniform memory-compaction caps. No `mode` field anywhere — compaction uses ONE uniform strategy (per-type mode was explicitly removed). An optional per-type override `types.{type}.compaction: {softCap, hardCap}` is supported; when present it takes precedence over these top-level defaults for that type (still no `mode`). The validator ignores this key."
+  },
   "types": {
     "decisions": {
       "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],

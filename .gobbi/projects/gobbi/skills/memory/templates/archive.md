@@ -57,7 +57,7 @@ archive/
 
 When an artifact reaches a terminal state, Wrap-up runs these steps:
 
-1. **Stamp archival frontmatter** — add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|closed|addressed|superseded|retired|dropped|abandoned`, and ensure the terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim.
+1. **Stamp archival frontmatter** — add `archived_at: {YYYY-MM-DD}` and `archive_reason: shipped|closed|addressed|superseded|merged|retired|dropped|abandoned`, and ensure the terminal `status:` + (`superseded_by:` | `shipped_in:`) are present. The body is preserved verbatim.
 2. **Move** — `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`. `git mv` preserves history; `{area}` is the file's resolved area (preserved from its active path); `{YYYY-MM-DD}` is the archive date.
 3. **Repoint inbound PATH references** — any `required-mistakes:` path or prose path pointing at the old active path is updated to the archive path. `supersedes:`/`superseded_by:` slug-links and `[[slug]]` body links are **plain slugs** (§2.4) — rename-robust, so they do NOT need repointing on a move. For mistakes: since only superseded ones move, active `required-mistakes:` citations are unaffected.
 4. **Never delete** — the move preserves the file in `archive/`; it is never removed.
@@ -68,7 +68,7 @@ The moved file keeps its original body and frontmatter — crucially its **ORIGI
 
 ```yaml
 archived_at: YYYY-MM-DD
-archive_reason: shipped | closed | addressed | superseded | retired | dropped | abandoned
+archive_reason: shipped | closed | addressed | superseded | merged | retired | dropped | abandoned
 # The terminal status and cross-reference fields below should already be present
 # on the original file; Wrap-up adds them here if they are missing.
 # `status` keeps the type's own terminal enum value — there is NO `status: archived`:
@@ -78,6 +78,12 @@ shipped_in: {changelog path} | null
 ```
 
 `type:` is **not** in the block above on purpose — it is never rewritten on a move. `original_path` is not a required field — `git log --follow` recovers the move history; Wrap-up MAY add an `original_path:` comment for readability. The file retains its complete original body — the archive holds the full artifact, not a summary or stub.
+
+## Consolidation-merge archival (`archive_reason: merged`)
+
+Memory compaction (the consolidated / Map-of-Content carve-out — [`rules.md` § 5](../rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out)) archives its sources with the distinct reason **`merged`**. A **consolidation-merge is a documented subtype of supersession**: each merged source is moved here with `status: superseded` + `superseded_by: {consolidated-slug}` + `archive_reason: merged`. The `merged` value records *why* the source was superseded — folded losslessly into a consolidated file as one of its sections — as opposed to plain `archive_reason: superseded` (overridden by a newer understanding). The source's full body is frozen here verbatim, exactly as for any other archived artifact.
+
+**Section-aware split-reconcile — one archive file per slug, never two.** A consolidated file holds several merged sources, each of which may reach its OWN terminal state later (a merged `backlogs` item ships; a merged `mistakes` source is itself superseded). When that happens, split-on-retire (`rules.md` §5.3) does **NOT** write a second archive file for the item. It **reconciles THIS existing merge-time entry** to the new terminal state: flip `status` (`superseded` → `closed` / `superseded` / …), set `shipped_in` if it shipped, and change `archive_reason` from `merged` to the terminal reason (`shipped` / `closed` / …). The single entry carries the item's final history; the stable section anchor (= the source slug, `rules.md` §5.2) keeps its identity across the reconcile.
 
 ## What NOT to move
 

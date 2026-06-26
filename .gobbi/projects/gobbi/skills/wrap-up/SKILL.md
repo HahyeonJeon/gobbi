@@ -153,6 +153,8 @@ Wrap-up is a **five-stage gated pipeline**. The five stages run in fixed order, 
 
 > **"Memorization" names stage 2, not the per-loop RECORD sub-phase (D7).** Stage 2 is literally the **Memorization** stage — the promotion of session record → memory. The word "memorization" in gobbi now names THIS wrap-up stage. The per-loop capture sub-phase is **RECORD** (see [`record/SKILL.md`](../record/SKILL.md)); it stages findings only and never writes memory. Per-loop sub-phase = RECORD; wrap-up promotion stage = memorization. Do not conflate the two.
 
+> **Stage-2c — compaction is stage 2's final sub-step.** Within stage 2 (memorization), Wrap-up first writes its promotions — the routing + write + move-on-terminal + journal of WORK Steps 3–6 — then runs **Stage-2c memory compaction** as its last sub-step, consolidating any over-cap `{type}/{area}/` area before the Stage-3 gate. Because Stage-2c writes land inside stage 2, the non-skippable Stage-3 dual-system gate (D13) validates them. Stage-2c runs ONLY when `settings.compaction.enabled` is `true` (ships dormant). Full procedure: § Stage 2c — Memory compaction (below).
+
 **Inputs**
 - All prior loops' staging trees: `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/staging/`, plus `interview/staging/` when an interview ran this session
 - All prior loops' canonical outputs (for handoff content)
@@ -207,6 +209,7 @@ Memory writes (the substantive work). Every by-area destination carries the `{ar
 - [ ] Every routing decision applied mechanically per the table; no improvised destinations
 - [ ] User-confirm requested via `NEEDS_CONTEXT` (manager used the active runtime's user-decision primitive on your behalf) for: rules promotion, project-wide design, mistake scope, unrouted staging files
 - [ ] Step 2.5 prior-loop compliance scan recorded in `working/promotion-manifest.md`
+- [ ] Stage-2c memory compaction run when `settings.compaction.enabled` (else skipped): every over-`softCap` `{type}/{area}/` consolidated to `live_count ≤ softCap`; merge manifest built; all inbound ref classes repointed; `check-merge-ref-integrity.sh` + `check-markdown-links.sh` + `validate-frontmatter.sh` all exit 0
 
 ### WORK discipline
 
@@ -354,6 +357,50 @@ Wrap-up enforces the canonical session tree shape going forward (see [`orchestra
 - **Remove `tmp/`.** No `tmp/` scratch tier exists in the canonical tree — `{N}-{loop}/working/` is the only scratch surface. A session `tmp/` dir is removed (after confirming it holds only scratch, never durable memory).
 
 This cleanup is **going-forward + opportunistic only** — Wrap-up normalizes the shape of the session it is closing and fixes a closed session opportunistically if it is reopened. It does NOT mount a retro-sweep across all closed sessions (legacy `state.json` / root `HANDOFF.md` in closed session dirs are left untouched).
+
+---
+
+## Stage 2c — Memory compaction (consolidate over-cap areas)
+
+**Stage-2c is the final sub-step of stage 2 (memorization).** It runs AFTER stage 2's promotion writes have all landed — the routing + write + move-on-terminal + journal of WORK Steps 3–6 — and BEFORE the Stage-3 memory-validation gate. Its job: hold every `{type}/{area}/` area (the §1.5 scannable unit) under its cap by folding related records, losslessly, into ONE consolidated Map-of-Content (MoC) file and `git mv`-ing the originals to `archive/{type}/{area}/`. It never hard-deletes. The standard it implements is [`memory/rules.md` § 5](../memory/rules.md); this section is the procedure, and [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) is its runnable gate.
+
+> **Eval-emphasis — Stage-2c writes are validated by Stage-3.** Stage-2c's writes (the consolidated MoC file, the repointed inbound references, the `git mv`'d archives) land inside stage 2, so the non-skippable Stage-3 dual-system memory-validation gate (D13) validates them. Stage-2c runs before the handoff is shown and before git finalization — never after the gate.
+
+> **Settings gate — ships dormant.** Compaction runs ONLY when `settings.compaction.enabled` is `true`. It ships `false` (dormant): a session with the flag off skips Stage-2c entirely. The per-area caps live in [`memory-vocabulary.json`](../../memory-vocabulary.json) as `compaction.softCap` / `compaction.hardCap` (gobbi: softCap 12 / hardCap 15, with optional per-type overrides — [`memory/rules.md` § 5.4](../memory/rules.md)). Auto-merges are bounded by `maxAutoActions` (under `settings.compaction`).
+
+### Stage-2c order — (a) … (g)
+
+Run these in order, for each capped `{type}/{area}/` area:
+
+- **(a) Count.** Count the live records in each capped `{type}/{area}/`; flag every area whose `live_count` exceeds `softCap`.
+- **(b) Terminal-archival + staleness pre-step (uniform).** Before any merge, sweep the flagged area for records already terminal (`shipped` / `superseded` / `retired` / `dropped`) and move them (`git mv`) to `archive/{type}/{area}/` per the move-on-terminal model ([`memory/templates/archive.md`](../memory/templates/archive.md)); then run an **Always-Ask staleness review** of the remaining live records (stale-but-live candidates surface through the manager's user-decision primitive). **Re-count** the area — the archival pre-step alone may bring `live_count` back to `≤ softCap`, in which case no merge is needed.
+- **(c) Cluster.** Within the one over-cap area, group the related records that share a subject into a cluster — never across areas, never unrelated records lumped together.
+- **(d) Merge to cap.** Merge each related cluster into one consolidated MoC file until `live_count(area) ≤ softCap`. Merging is **AUTO within the `maxAutoActions` budget for non-high-value types**, but **`mistakes` and `rules` merges are Always-Ask** — they surface through the manager's user-decision primitive before they run. If the area is over cap but holds **no related cluster**, that is **Always-Ask** too (merge a cluster / leave over-cap / raise the cap / archive an oldest-terminal item) — never force a junk merge.
+- **(e) Build the merge manifest.** Record one TSV row per merged-away source (fields below) — the input to the gate.
+- **(f) Repoint every inbound reference class.** Repoint ALL inbound refs that named a merged-away source onto the consolidated file. Enumerate every reference class per the [`memory/rules.md` § 1.5](../memory/rules.md) refactor procedure (path refs, prose refs, `required-mistakes:` PATH refs, inventory / table refs, wrapper-description refs, pipeline-label refs, in-fence example paths, cross-doc mentions, and body `[[slug]]` wikilinks): a **slug-ref** repoints to `consolidated_slug`; a **path-ref** repoints to the consolidated file's path; a reference that must address one source's content repoints to the split form `moc-slug#source-anchor` (the anchor == the source's own slug, [`memory/rules.md` § 5.2](../memory/rules.md)).
+- **(g) Run all three guards to zero.** Run `check-merge-ref-integrity.sh <manifest> <scan-root>` ([the merge ref-integrity gate](../orchestration/scripts/check-merge-ref-integrity.sh)) PLUS [`check-markdown-links.sh`](../orchestration/scripts/check-markdown-links.sh) PLUS [`validate-frontmatter.sh`](../memory/scripts/validate-frontmatter.sh) over the post-compaction tree — ALL THREE must exit 0 before Stage-2c is done. (`<scan-root>` is the project dir `.gobbi/projects/{project-name}/`; the gate prunes `archive/`.) A green frontmatter validator alone is NOT enough — the standing content-guards must re-run over the post-compaction tree, the same discipline a promotion's green-check owes.
+
+### Merged-file write mechanics (Checklist 11)
+
+When Stage-2c writes the consolidated MoC file:
+
+1. **Stamp the type template** from [`memory/templates/`](../memory/templates/) — the consolidated file keeps the merged sources' `type`.
+2. **`name` = a new subject slug** — a fresh, descriptive subject slug for the consolidation (§1.3 naming), never a source's slug and never a positional index.
+3. **`tags` = the union of the sources' tags**, each tag still within that type's controlled pool (§2.5); any overflow goes to `keywords`.
+4. **`supersedes: [all source slugs]`** — the list form (many→one consolidation-merge, §2.4); it MUST equal the merge's source set (the gate's Family 2 checks this both ways).
+5. **One `## ` section per source, anchored by the source's own slug.** Copy each source's full type-required structure **verbatim** (a merged `mistakes` source keeps all four elements — What happened / Why it happens / Correct approach / How to detect). The heading slugifies to the source slug, so the stable anchor == the manifest's `source_anchor` ([`memory/rules.md` § 5.2](../memory/rules.md)).
+6. **A `## Sources` section** listing each archived original as a `[[slug]]` wikilink plus its `archived_path` — one bullet per merged source.
+
+Each merged source is also set `status: superseded` + `superseded_by: <consolidated-slug>` and `git mv`'d to `archive/{type}/{area}/` with `archive_reason: merged` ([`memory/rules.md` § 5.5](../memory/rules.md)).
+
+### Merge manifest field names (must match the gate exactly)
+
+The manifest is TSV; the field names match [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) exactly:
+
+- **MERGE row** — one per merged-away source, the `merge` kind plus six fields: `merged_away_slug` · `merged_away_active_path` · `archived_path` · `source_anchor` · `consolidated_slug` · `consolidated_path`.
+- **SPLIT row** — one per split-out section (optional), the `split` kind plus three fields: `split_out_anchor` · `consolidated_slug` · `new_home_path`.
+
+A later split-on-retire ([`memory/rules.md` § 5.3](../memory/rules.md)) — when one merged item terminates — records a SPLIT row, so a live `moc-slug#source-anchor` reference that must follow the section to its `new_home_path` is caught by the gate's Family 1b (`STALE-ANCHOR`).
 
 ---
 

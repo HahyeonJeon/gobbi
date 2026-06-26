@@ -38,7 +38,7 @@ keywords: []                         # freeform escape-hatch tags (required; may
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 domain: {e.g. process, hooks, docs-sync}
-supersedes: {prior mistake slug} | null      # plain slug, not a path
+supersedes: {prior mistake slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
 superseded_by: {newer mistake slug} | null    # plain slug, not a path
 ---
 

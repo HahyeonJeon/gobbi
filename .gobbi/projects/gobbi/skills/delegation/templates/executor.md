@@ -23,22 +23,26 @@ deliverable, acceptance criteria.>>
 - Architectural context: which subsystem, which files, what patterns to follow
 - Any user-clarified intent that shapes the implementation choice>>
 
-## Load Directives (in order — load top to bottom before any other action)
+## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+
+You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
+tool. Read these EXACT paths, in order, as your FIRST actions — before the Task
+Description or any other work. Skipping any required file is a process failure.
 
 1. Principles:
-   - `principles` skill (mandatory)
+   - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/`
-   - <<any additional rule files specific to this task>>
+   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
+   - <<any additional rule files specific to this task — full paths>>
 3. Skills:
-   - `mistake` skill (mandatory)
-   - `record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
-   - `memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
-   - `orchestration/workflow/execution.md` (mandatory phase doc)
-   - Domain skills: <<list with full paths — e.g., `claude`, `bun`, `typescript`>>
-   - <<project skill if relevant>>
+   - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
+   - `.gobbi/projects/<<project-name>>/skills/record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
+   - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
+   - `.gobbi/projects/<<project-name>>/skills/orchestration/workflow/execution.md` (mandatory phase doc)
+   - Domain skills (full paths): <<list — e.g., `.gobbi/projects/<<project-name>>/skills/claude/SKILL.md`, `.../bun/SKILL.md`, `.../typescript/SKILL.md`>>
+   - <<project skill if relevant — full path>>
 4. Mistakes:
-   - <<list of mistake files specifically relevant to this task's domain>>
+   - <<list of mistake files specifically relevant to this task's domain — full paths>>
 
 ## Inputs
 
@@ -120,7 +124,12 @@ Begin your final response with the wire format header, then prose details:
 ```
 STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
 ARTIFACT: <path-or-summary>   ← omit if nothing produced
+SKILLS LOADED:
+  - <exact path of each Load-Directives file you Read, in order>
 ```
+
+`SKILLS LOADED:` is mandatory — list the exact path of every Load-Directives file
+you Read (tiers 1–4), so the manager can verify nothing was skipped.
 
 Then in the body include:
 - What was implemented (or attempted, if blocked)
