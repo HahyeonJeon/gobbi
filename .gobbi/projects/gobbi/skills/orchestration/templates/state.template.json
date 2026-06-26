@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 3,
   "mode": null,
   "workflow": {
     "configuration": { "state": "Active",  "verdict": null, "iter": null, "maxIterations": null, "phase": null },
