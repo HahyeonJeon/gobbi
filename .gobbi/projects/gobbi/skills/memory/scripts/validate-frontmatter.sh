@@ -25,9 +25,10 @@
 #       reviews -> review_kind; reports -> report_type (kind axis REQUIRED, L16)
 #     - tags is an inline flow list [a, b] (§2.5); a block-style list (key: then '  - item')
 #       is REJECTED with a clear message (gobbi convention is inline flow lists)
-#     - slug-link value-shape (§2.1/§2.4): supersedes / superseded_by (scalar, null ok)
-#       and each item of related[] must be a PLAIN SLUG (kebab-case), never a path
-#       (no '/', no '.md', no spaces, no [[ ]])
+#     - slug-link value-shape (§2.1/§2.4): superseded_by (scalar, null ok) and
+#       supersedes (scalar slug OR list[slug] for consolidation-merge, null ok),
+#       and each item of related[] / supersedes[] must be a PLAIN SLUG (kebab-case),
+#       never a path (no '/', no '.md', no spaces, no [[ ]])
 #     - no-stray-keys: every frontmatter key ∈ base (the 11 required, incl. keywords +
 #       author) + the global-optional slug-link fields (supersedes / superseded_by /
 #       related, §2.1/§2.4 — global, NOT per-type extensions, so never double-counted)
@@ -516,16 +517,35 @@ for f in "${files[@]}"; do
 
     # --- slug-link value-shape (§2.1/§2.4) -----------------------------------
     # supersedes / superseded_by / related carry PLAIN SLUGS — the target file's
-    # name (= filename stem), never a path and never `[[ ]]`. A scalar slug-link
-    # may be null/empty; otherwise it must be a plain slug. `related` is a flow
+    # name (= filename stem), never a path and never `[[ ]]`. `superseded_by` is a
+    # scalar slug-link (null/empty ok). `supersedes` accepts EITHER a scalar slug
+    # (a single supersession) OR a flow list of plain slugs (a consolidation-merge
+    # that supersedes several files at once); null/empty ok. `related` is a flow
     # list whose every item must be a plain slug. Reject any path / `.md` / spaced
     # value with a clear message.
-    for sl in supersedes superseded_by; do
-        v="$(fm_value "$f" "$sl")"
-        if [ -n "$v" ] && [ "$v" != "null" ] && ! is_plain_slug "$v"; then
-            report "$f" "$sl" "'$v' must be a plain slug, not a path (§2.1/§2.4)"
-        fi
-    done
+    v="$(fm_value "$f" superseded_by)"
+    if [ -n "$v" ] && [ "$v" != "null" ] && ! is_plain_slug "$v"; then
+        report "$f" "superseded_by" "'$v' must be a plain slug, not a path (§2.1/§2.4)"
+    fi
+    # supersedes — scalar slug OR list[slug] (consolidation-merge); null/empty ok.
+    # The list branch reuses the `related` slug-list path below (flow-list parse +
+    # per-item is_plain_slug); the scalar branch keeps the original single-slug check.
+    sup_raw="$(fm_value "$f" supersedes)"
+    if printf '%s' "$sup_raw" | grep -qE '^\[.*\]$'; then
+        sup_body="$(printf '%s' "$sup_raw" | sed -E 's/^\[//; s/\]$//')"
+        IFS=',' read -r -a sup_arr <<< "$sup_body"
+        for s in "${sup_arr[@]}"; do
+            s="$(printf '%s' "$s" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
+            [ -z "$s" ] && continue
+            if ! is_plain_slug "$s"; then
+                report "$f" "supersedes" "'$s' must be a plain slug, not a path (§2.1/§2.4)"
+            fi
+        done
+    elif [ -z "$sup_raw" ] && fm_is_block_list "$f" supersedes; then
+        report "$f" "supersedes" "must be an inline [..] flow list of plain slugs (§2.1/§2.4)"
+    elif [ -n "$sup_raw" ] && [ "$sup_raw" != "null" ] && ! is_plain_slug "$sup_raw"; then
+        report "$f" "supersedes" "'$sup_raw' must be a plain slug, not a path (§2.1/§2.4)"
+    fi
     rel_raw="$(fm_value "$f" related)"
     if printf '%s' "$rel_raw" | grep -qE '^\[.*\]$'; then
         rel_body="$(printf '%s' "$rel_raw" | sed -E 's/^\[//; s/\]$//')"
