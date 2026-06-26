@@ -21,7 +21,7 @@ The naming convention keeps every memory file at a **stable, atomic, controlled-
 ### 1.1 Naming rules
 
 1. **Directory = category.** The type directory IS the first controlled-vocabulary facet, and a second one nests under it: every by-area type adds an **area sub-dir** (`{type}/{area}/` — see §1.5). So "directory = category" is two levels, not one: type, then area. Never repeat either facet in the filename (e.g., a file in `decisions/` is not named `decision-...`).
-2. **Filename = atomic concept slug.** kebab-case, lowercase, hyphens only, **≤6 words, ≤~35 chars**. ONE record = ONE concept — no bundle files.
+2. **Filename = atomic concept slug.** kebab-case, lowercase, hyphens only, **≤6 words, ≤~35 chars**. ONE record = ONE concept — no bundle files. The ONE sanctioned exception is a compaction-produced consolidated (Map-of-Content) file — see the carve-out in §5.1.
 3. **Length proportional to sibling count, inverse to path specificity** — a narrow directory tolerates a shorter slug.
 4. **Status / lifecycle never in the filename** — it lives in frontmatter, so a transition never forces a rename.
 5. **Stable address ≠ mutable description** — once created, a slug is not renamed for wording polish; supersede via frontmatter + a new file instead.
@@ -52,7 +52,7 @@ A slug is a **stable address that names the concept**. The test: *could a reader
 | Restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | the directory already carries the facet (§1.1 rule 1) | drop the prefix |
 | Status / version words | `final-`, `locked-`, `approved-`, `v2-`, `schema-v5-` | lifecycle / version belong in frontmatter; a transition would force a rename (§1.1 rules 4–5) | status/version → frontmatter |
 | Wording excerpt of a finding | `concern-3-coverage-ownership-cell-text` | quotes the finding instead of naming its subject | name the concept |
-| Bundled scope (many topics, one file) | `iter1-user-redirects.md` | violates one-record-one-concept (§3) | split per topic |
+| Bundled scope (many topics, one file) | `iter1-user-redirects.md` | violates one-record-one-concept (§3) | split per topic — the sole exception is a compaction-produced consolidated/MoC file (§5.1) |
 | Person / author names · opaque auto-IDs | — | not a subject; not human-readable | omit / add a human component |
 
 **Good vs bad — real before/after (from this project's history):**
@@ -318,7 +318,7 @@ The structure rules thread through the 16 per-type specs in [`memory-map.md`](me
 
 - **Directory-as-category.** The type directory is the first controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
 - **Area sub-namespace.** Every by-area type nests one area level under the type dir (`{type}/{area}/`); the area is resolved by the §1.5 selection rule (explicit `area:` > priority-ordered tag→area map > user-decision on no-match), eager and symmetric on both tiers. `features/{f}/README.md` is the sole structural exception — the feature dir is itself the area axis, so the README is not by-area.
-- **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
+- **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept. **The one sanctioned exception is a compaction-produced consolidated (Map-of-Content) file (§5.1)** — it is permitted precisely because it preserves per-item granularity (per-section lifecycle + stable section anchors + split-on-retire, §5.2–§5.3), the property this rule protects.
 - **Declared scope + promote-up.** Each type declares its scope:
   - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
   - **Project-only** types: `notes` (and `archive` as a destination). These live only at the project root; there is no `features/{f}/` tier for them.
@@ -471,6 +471,59 @@ A clean validator run reports no violations; any reported file is a doc to norma
 ### 4.6 Scope edge — `archive/` is excluded
 
 Frozen `archive/` docs are excluded from this standard, from any retrofit pass, and from the gate. An archived file is terminal history; it is not normalized or re-prosed. Every command and predicate in §4 carries the `archive/` exclusion (`-not -path '*/archive/*'` / "NOT under `archive/`") so a sweep never touches frozen history.
+
+---
+
+## 5. Memory compaction (the consolidated / Map-of-Content carve-out)
+
+Active memory has no size bound of its own: a `{type}/{area}/` directory (§1.5 — the scannable unit) keeps accreting records until it is no longer scannable. **Compaction** is the bounded-memory mechanism that holds each area under a cap. At Wrap-up, when an area is over cap, related records are folded — losslessly — into ONE consolidated **Map-of-Content (MoC)** file, and the originals are `git mv`'d to `archive/`. Compaction never hard-deletes.
+
+This section is the **standard** — what a consolidated file is, what it must preserve, and how it lifecycle-manages each merged item. The **procedure** (the Stage-2c order, the merge manifest, the repoint sweep) lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md); the **runnable verification** is the [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) gate. Those are referenced here, not restated.
+
+### 5.1 The consolidated / MoC carve-out (the sanctioned exception to atomicity)
+
+The one-record-one-concept rule forbids bundle files in three places — §1.1 rule 2, the §1.3 "bundled scope" anti-pattern, and the §3 atomicity rule. A **compaction-produced consolidated (MoC) file is the ONE sanctioned exception** to that prohibition.
+
+It is allowed because it does NOT carry the defect the prohibition guards against. §3 states the reason bundles are forbidden: they make "supersede / archive / promotion operate at the wrong granularity." A consolidated file keeps that granularity per-item:
+
+- **Atomic-section preservation + stable anchor (§5.2)** — each source survives as its own `## ` section, full structure verbatim, addressable by a stable anchor.
+- **Per-section lifecycle (§5.2)** — each section carries its own status marker, so an individual item keeps its own lifecycle.
+- **Split-on-retire (§5.3)** — when one item terminates, its section is split back out (or its archive entry reconciled), so supersede / archive still act per item.
+
+The carve-out is therefore narrow. A consolidated file is permitted ONLY when compaction produced it AND it preserves §5.2 + §5.3. A hand-authored file that merely lumps several topics together is still a forbidden bundle (§1.1 / §1.3 / §3).
+
+### 5.2 Atomic-section preservation, per-section lifecycle, and the stable section anchor  `[LOAD-BEARING]`
+
+A consolidated file is a Map *of* its sources, not a summary *of* them. It MUST preserve every source as a first-class, individually addressable section:
+
+- **One `## ` section per source.** Each merged source becomes exactly one `## ` section. Never blend two sources into one section, and never summarize a source down — copy its full type-required structure **verbatim** (a merged `mistakes` source keeps all four elements: What happened / Why it happens / Correct approach / How to detect).
+- **Stable section anchor == the source's own slug.** Each section is anchored by the source record's original slug, so an inbound reference resolves to `moc-slug#source-slug`. The anchor is **stable** — identical to the slug the source carried as a standalone file, and unchanged when the consolidated file grows or another section is split out — so a later split-on-retire (§5.3) carries the same identity back out.
+- **Per-section lifecycle marker.** Each section carries its own lifecycle status, so items that retire at different times coexist (a still-open backlog item and a shipped one are two sections with different markers).
+
+This stable-anchor rule is **load-bearing for verification**: it is the documented basis for the merge manifest's `source_anchor` field and for the Stage-2c repoint target `moc-slug#source-anchor`. The [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) gate's Family 1b resolves every `moc-slug#anchor` reference against the sections actually present, so the anchor MUST stay equal to the source slug for the repoint to verify.
+
+### 5.3 Split-on-retire (per-item terminal lifecycle inside a consolidated file)
+
+A consolidated file holds items that reach a terminal state at different times. When ONE merged item terminates (a consolidated `backlogs` item ships; a merged `mistakes` source is superseded), it is handled by **split-on-retire** — NOT by archiving the whole file:
+
+1. **Extract the section to an atomic file.** Remove the item's `## ` section from the consolidated body, and drop its slug from the consolidated `supersedes:` list and the `## Sources` list. The extracted section keeps the **same stable anchor (= source slug)** — its identity carries out unchanged (§5.2).
+2. **Set the item's terminal status.**
+3. **Reconcile the SINGLE merge-time archive entry — write NO second archive file.** Each source was already moved to `archive/` at merge time, its full body frozen there with `archive_reason: merged` (§5.5). Split-on-retire reconciles **that existing entry** to the new terminal state: flip `status` (e.g. `superseded` → `closed`), set `shipped_in`, and change `archive_reason` from `merged` to the terminal reason. The result is exactly **one archive file per slug** — no duplicate, no contradictory second entry.
+4. **Re-run the gate.** The split is recorded in the gate's split-manifest (`{split_out_anchor, consolidated_slug, new_home_path}`). A live reference still pointing at the now-removed `moc-slug#anchor` is the **dead-anchor edge**, caught by the gate's Family 1b as `STALE-ANCHOR`; the reference must follow the section to its new home.
+
+When **every** section in a consolidated file has reached a terminal state, archive the whole consolidated file (move-on-terminal, [`templates/archive.md`](templates/archive.md)). Bringing a split-out item back live uses the `archive.md` Recovery path.
+
+### 5.4 Caps and the Always-Ask safety tier
+
+- **Where the caps live.** The per-`{type}/{area}/` cap is project config, not prose: [`memory-vocabulary.json`](../../memory-vocabulary.json) holds `compaction.softCap` and `compaction.hardCap` (gobbi's instance: **softCap 12 / hardCap 15**), with an optional per-type `types.{type}.compaction.{softCap,hardCap}` cap-number override. Compaction runs ONE uniform strategy for every type — there is **no `mode` field** and no archive-only exemption. The merge loop stops when the area is back to `live_count ≤ softCap`.
+- **The Always-Ask safety tier — a hard rule, not a config knob.** **`mistakes` and `rules` merges are Always-Ask**: the merge surfaces through the manager's user-decision primitive before it runs. Every other type's merge is **auto within the session's `maxAutoActions` budget**. This split is a hard rule of this standard; it is deliberately NOT a per-type config knob, so it cannot be silently disabled.
+- **Never force a junk merge.** Compaction never merges unrelated records to hit a number. When an area is over hardCap but holds no related cluster, that is Always-Ask too (option set: merge a cluster / leave over-cap / raise the cap / archive an oldest-terminal item) — never an invented merge.
+
+### 5.5 Consolidation is a documented subtype of supersession
+
+A consolidation-merge is a **subtype of supersession**, not a separate lifecycle. Each merged source is set `status: superseded` + `superseded_by: <consolidated-slug>`, and is archived with **`archive_reason: merged`** — the distinct enum value (defined in [`templates/archive.md`](templates/archive.md)) that records *why* the source was superseded: folded into a consolidation, not overridden by a newer understanding. The consolidated file points back with the list form `supersedes: [<all source slugs>]` (§2.4).
+
+Consolidation therefore stays inside the existing supersede-and-move-on-terminal model: a reader meets a normal `superseded` source whose `archive_reason: merged` says it lives on as a section of the consolidated file. The supersession linkage — the consolidated `supersedes:` set equals its source set, and each source's `superseded_by:` names the consolidated file — is what the gate's Family 2 confirms.
 
 ---
 
