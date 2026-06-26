@@ -302,6 +302,15 @@ Execution):
   user-typed task that exhausts the budget without `PASS` is a signal to reframe or split, not
   iterate further.
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
+- **Production integration (when `propose.mode == dual`).** Every WORK sub-phase runs a parallel Codex
+  proposer alongside the Claude producer; the Claude producer **selectively integrates** the frozen
+  proposal (SELECT, never blend) and records the **Integration Log**. A **large gap** — an Always-Ask
+  category / a mutually-exclusive fork / principle-equipoise the producer cannot resolve, per
+  [`workflow/production.md § Gap classification`](workflow/production.md#gap-classification) — is a **user
+  decision**, surfaced as a stop-the-line at the per-loop gate exactly as a major evaluation divergence
+  is. A **small gap** is producer-local: the producer integrates it and the manager discusses the
+  Integration Log with the user at the existing after-EVALUATION finding-discussion gate. Full
+  orchestration: [`workflow/production.md`](workflow/production.md).
 - **RECORD runs every loop with the §4 narrowed PASS path.**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
   context inline. Claude Code may continue an executor per
@@ -576,6 +585,9 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
   shared loop mechanics (it points here for the Chat gates); `§ Workflow Metadata` for
   the `workflow.chat.tasks[]` array-of-slices schema (R2/R3 lock).
 - [`orchestration/auto-mode.md`](auto-mode.md) — the symmetric Auto-Mode specification.
+- [`workflow/production.md`](workflow/production.md) — dual-system production orchestration; the §5
+  large-gap → user decision / small-gap → producer-local split mirrors this doc's evaluation-finding
+  handling.
 - [`record/SKILL.md`](../record/SKILL.md) — the unmodified base RECORD
   procedure that §4 locally overrides (R5 lock). A reader of that SKILL sees the full base; a
   reader of this doc sees the base plus the Chat override.

@@ -208,6 +208,7 @@ The following defaults are locked for Auto Mode. They apply to every session tha
 | `workflow.execution.maxIterations` | `5` | Full execution budget. |
 | `workflow.wrap-up.maxIterations` | `5` | Wrap-up runs once per session; up to 5 remediation iterations on `REVISE` before abort. |
 | `evaluate.mode` (all loops) | `"always"` | Evaluation runs every loop, no mode-driven skip. The manager never asks whether/how to evaluate — see §7. `"skip"` is a power-user per-session override; the redesign does not change this, but documenting it preempts future drift. **Note:** `evaluate.mode: skip` skips only the EVALUATION phase; the step-level `skip: true` boolean (new) skips the WHOLE step. Distinct signals. |
+| `propose.mode` (all loops) | `"dual"` | The mirror of `evaluate.mode` on the creation side: the Codex proposer runs alongside the Claude producer every WORK sub-phase (dual-system production) — see §7.5. `"single"` is the Claude-only override. A missing or timed-out proposer degrades to Claude-only and is NOT a safety gate. Orchestration: [`workflow/production.md`](workflow/production.md). |
 | `workflow.ideation.discuss.mode` | `"user"` | Ideation DISCUSSION is user-driven — user confirms approach before leader works. |
 | `workflow.preparation.discuss.mode` | `"user"` | Preparation DISCUSSION is user-driven — user confirms readiness gaps before prep work. |
 | `workflow.planning.discuss.mode` | `"agent"` | Planning DISCUSSION is agent-driven — manager proceeds without a gate per loop entry. Always-Ask categories still fire (§3). |
@@ -276,7 +277,8 @@ This section's no-mid-loop-interrupt contract feeds §7.3 — see [§7 — Evalu
 
 The Auto manager's single home for how EVALUATION runs in Auto Mode. Evaluation rules are otherwise
 scattered across the §2 per-loop tables (row 3) and the §4 defaults `evaluate.mode` row; this section
-states the contract so the manager cannot rationalize past it.
+states the contract so the manager cannot rationalize past it. §7.5 extends the same discipline to the
+creation-time counterpart — the dual-system **production**-integration gate (`propose.mode`, §4).
 
 ### §7.1 — Evaluation is mandatory and never a question.
 
@@ -338,6 +340,39 @@ Scan this at any EVALUATION boundary:
 | idles after EVALUATION | proceeds: PASS → next step; REVISE → re-enter DISCUSSION |
 | **silences a dual-system safety gate** (major divergence, degraded-mode/single-system fallback, both-systems-fail) | **interrupts** — these are §1 "cannot resolve" gates, not routine triage |
 
+### §7.5 — Production integration discipline (Auto Mode)
+
+The creation-time counterpart to §7.3. When `propose.mode == dual` (§4), every WORK sub-phase runs a
+**parallel Codex proposer** alongside the Claude producer; the Claude producer is the **default
+integrator** and **selectively integrates** the frozen proposal (SELECT, never naive-blend), recording
+each delta in the **Integration Log** (`working/reconciliation-iter{n}.md`). The full orchestration —
+spawn, two-phase freeze, gap classification — is in [`workflow/production.md`](workflow/production.md);
+this section states only the Auto-mode interrupt contract for an unresolved integration gap.
+
+**A small gap is producer-local — no interrupt.** A **small gap** (additive / refinement / stylistic /
+clearly principle-decided) is integrated by the producer and logged to the Integration Log. In Auto Mode
+it is recorded and surfaced in the **Wrap-up finding set** (§6), never mid-loop — the same auto-proceed
+contract a minor divergence gets in §7.3.
+
+**A large-gap production escalation is a safety-gate — it interrupts in Auto (do NOT silence it).** A
+**large gap** — ANY of an Always-Ask category (Design / Scope / Destructive, §3), a mutually-exclusive
+fork at the artifact's core, or principle-equipoise the producer cannot resolve (per
+[`workflow/production.md § Gap classification`](workflow/production.md#gap-classification)) — is surfaced
+by the producer, adjudicated by the manager, and escalated to the user. It interrupts in BOTH Auto and
+Chat, exactly like the §7.3 dual-system safety gates (major divergence, degraded-mode/single-system
+fallback). A missing or timed-out Codex **proposer** is NOT a safety gate — it degrades to Claude-only
+with a durable label (per [`workflow/production.md § Degraded-mode policy`](workflow/production.md#degraded-mode-policy-claude-only-fallback)),
+in contrast to a missing Codex evaluator, which is.
+
+Scan this at any production-integration boundary:
+
+| The manager NEVER… | Instead… |
+|---|---|
+| lets the producer synthesize / naive-blend the two drafts | the producer SELECTS per principle and records the Integration Log |
+| silences a **large-gap** production escalation (Always-Ask / fork / equipoise) | **interrupts** — a large-gap is a production **safety-gate** in Auto, like §7.3's dual-system gates |
+| interrupts mid-loop on a **small gap** | producer integrates locally + logs it; surfaced at Wrap-up (§6) |
+| treats a missing Codex proposer as a safety gate | proceeds Claude-only with the degraded-mode label (production.md) |
+
 ---
 
 ## Cross-references
@@ -365,6 +400,9 @@ Scan this at any EVALUATION boundary:
 - [`workflow/evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback) —
   the only home of the "claude-only" single-system fallback (a safety gate; interrupts in Auto too).
   Cited by §7.1 and §7.3.
+- [`workflow/production.md`](workflow/production.md) — dual-system production orchestration (spawn,
+  two-phase freeze, selective integration, gap classification, degraded-mode). §4's `propose.mode` row
+  and §7.5's production-integration safety gate cite it; a large-gap escalation interrupts in Auto.
 - [`workflow/evaluation.md § Iteration Caps`](workflow/evaluation.md#iteration-caps),
   [`§ Stuck detection`](workflow/evaluation.md#stuck-detection-manager-side-post-reconciliation),
   [`§ Regression marking`](workflow/evaluation.md#regression-marking-manager-side-post-reconciliation) —
