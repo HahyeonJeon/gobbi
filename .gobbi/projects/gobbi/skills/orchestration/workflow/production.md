@@ -68,6 +68,8 @@ Location: `working/reconciliation-iter{n}.md` (Execution: `task-{NN}-{slug}/work
 
 The per-delta `why` citation is the auditable record of selection quality; the `codex_origin` flags mark which canonical sections carry Codex-origin content (the input the downstream evaluators implicitly check).
 
+**Structural validation.** Before spawning the EVALUATION evaluators, the manager validates the Integration Log structurally with [`validate-integration-log.sh`](../scripts/validate-integration-log.sh) `<path>`. It confirms every data row's `decision` is in the `{took-codex, kept-own, merged-selective, escalated}` enum and that every `merged-selective` row names both sides (a genuine two-sided selection, not a disguised third draft). It reads the `decision` **column** (field `$4`), never a body-wide substring grep — so anti-synthesis prose like "SELECT, never blend" cannot false-fail a correct log (the COD-STRUCT-1 lesson). Exit 0 = structurally valid; nonzero prints the offending row and reason to fix before evaluation.
+
 ---
 
 ## Gap classification
