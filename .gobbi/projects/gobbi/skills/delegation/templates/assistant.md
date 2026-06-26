@@ -57,9 +57,14 @@ explore beyond the asked scope, opine on what should be done with the answer.
 ## Dual-system production (Wrap-up Claude-producer assistant only — `propose.mode == dual`; delete for narrow read-only lookups)
 
 Use this section ONLY when you are the Wrap-up Claude producer (not a read-only
-lookup). In that role you DO write the canonical draft + Integration Log, so the
-read-only constraint above is lifted for those two files. A Codex proposer ran in
-parallel and wrote a proposal; you are the default integrator. Orchestration lives in
+lookup). In that role the read-only default above does NOT apply to you: your FULL
+Wrap-up write surface is in force — session-record `working/` + `outputs/` (PASS) +
+`staging/`, the `session.json` upsert, AND the stage-2 memory-promotion writes —
+exactly as bounded by `wrap-up/SKILL.md` § Memory Access Matrix +
+`record/SKILL.md` § Memory Access Matrix. The canonical draft + Integration Log are
+two of those writes, not the whole set — do not read this as a 2-file lift, and do
+not write outside what those matrices grant. A Codex proposer ran in parallel and
+wrote a proposal; you are the default integrator. Orchestration lives in
 `orchestration/workflow/production.md` + `codex/SKILL.md` § Dual-System Production —
 do not re-derive it here.
 

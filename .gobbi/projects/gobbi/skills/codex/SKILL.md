@@ -154,6 +154,28 @@ The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It wri
 5. To clean up a hung proposer run, kill by explicit **PID** (`ps` / captured `$!`), never `pkill -f '<pattern>'` — a `-f` pattern that is a substring of the cleanup command kills the issuing shell.
 6. Validate the proposal **structurally** before reporting `DONE`: the file exists, is > 0 bytes, and carries a `PROPOSAL:` header. Do NOT gate on a content-vocabulary grep — a valid proposal can lawfully omit any given token, so a vocab grep false-blocks a clean proposal.
 
+**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox used by § Dual-System Evaluation / § Use cases (a). A manager who copies the evaluator's `read-only` invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Preparation / Planning / Wrap-up):
+
+```bash
+timeout 1200 codex exec \
+  --sandbox workspace-write \
+  --cd <main-tree> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex \
+  "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md"
+```
+
+**Execution per-task variant.** The Execution quartet lives under the task dir, so swap the `--add-dir` writable set and the prompt path to the task's `working/proposals/codex` (draft → `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`):
+
+```bash
+timeout 1200 codex exec \
+  --sandbox workspace-write \
+  --cd <main-tree> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex \
+  "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
+```
+
+Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` (≥ 1200s per step 4, not the `600` evaluation-bridge default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — keep the run **foreground-blocking** (steps 2–3) with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
+
 **Degraded mode (CRITICAL).** If the Codex proposal is empty, times out, or errors:
 
 - The Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure. It **never self-authors a proposal** to cover for the absent Codex output — a wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for.

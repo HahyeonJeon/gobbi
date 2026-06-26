@@ -29,7 +29,7 @@ Per enabled WORK sub-phase, the manager spawns two producers in **parallel-indep
 
 The Codex proposer follows the `codex exec` discipline owned by [`codex/SKILL.md`](../../codex/SKILL.md): write+verify the prompt file foreground before invoking, run `codex exec` foreground-blocking, cap with `timeout ≥ 1200s`, kill by explicit PID (never `pkill -f`), and validate the proposal **structurally** (file exists / > 0 bytes / a `PROPOSAL:` header) — never by a content-vocabulary grep. The manager does not re-implement that discipline here; it spawns the wrapper and reads the frozen proposal file.
 
-When `propose.mode: single`, the manager spawns only the Claude producer and stamps the degraded-mode label (see § Degraded-mode policy).
+When `propose.mode: single`, the manager spawns only the Claude producer. This is a **deliberate, configured Claude-only run** — it is NOT degraded mode, so it does **NOT** stamp the degraded-mode label. The degraded-mode label (`production_mode: claude-only` + `codex_proposal_absent_reason`) is stamped ONLY when `propose.mode: dual` but the Codex proposal is empty / times out / errors (see § Degraded-mode policy).
 
 ---
 
@@ -57,7 +57,7 @@ This is evaluation's "never average" rule applied to creation: SELECTION wins; s
 
 ### Integration Log
 
-Location: `working/reconciliation-iter{n}.md` (Execution: `task-{NN}-{slug}/working/reconciliation-iter{n}.md`), also staged to `staging/decisions/{slug}.md` for Wrap-up promotion. One row per delta:
+Location: `working/reconciliation-iter{n}.md` (Execution: `task-{NN}-{slug}/working/reconciliation-iter{n}.md`). The Integration Log lives in `working/` as the loop's selection-quality audit trail — read in-loop by the EVALUATION evaluators and, in Chat, the finding-discussion gate — and is removed with the worktree at cleanup. It is not promoted as a file. Any substantive selection decision that warrants durable memory reaches memory through the **normal RECORD finding-staging path** — staged as a decision / design finding like any other and promoted at Wrap-up — not via a dedicated copy of the log. One row per delta:
 
 | Field | Meaning |
 |---|---|
@@ -85,7 +85,9 @@ The **large-gap escalation is a safety gate — it interrupts in BOTH Auto and C
 
 ## Degraded-mode policy (Claude-only fallback)
 
-A missing Codex **proposer** is NOT a safety gate — contrast a missing Codex **evaluator**, which IS (see [`workflow/evaluation.md` § Degraded-mode policy](evaluation.md)). If the Codex proposal is empty, times out, or errors:
+**Degraded mode applies ONLY under `propose.mode: dual`.** A `propose.mode: single` loop is a deliberate, configured Claude-only run — it is NOT degraded mode and carries NO degraded-mode label. Degraded mode is the distinct case where `dual` was configured but the Codex proposal failed.
+
+A missing Codex **proposer** is NOT a safety gate — contrast a missing Codex **evaluator**, which IS (see [`workflow/evaluation.md` § Degraded-mode policy](evaluation.md)). When `propose.mode: dual` is set but the Codex proposal is empty, times out, or errors:
 
 1. The Codex-side wrapper reports **BLOCKED** — it never self-authors a proposal to cover for the absent Codex output.
 2. The producer proceeds **Claude-only** — it never fabricates a proposal to stand in for Codex.
