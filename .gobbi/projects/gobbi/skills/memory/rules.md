@@ -182,7 +182,7 @@ session: {session-id that created this}
 tags: [{...}]         # each tag ∈ the controlled vocabulary (§2.5); may be empty []
 keywords: [{...}]      # REQUIRED — freeform, uncontrolled escape-hatch tags; may be empty []
 author: claude | codex | user   # REQUIRED — coarse provider tag (the runtime that authored the file)
-supersedes: {slug | null}      # OPTIONAL (global) — the slug this file supersedes; §2.4
+supersedes: {slug | list[slug] | null}      # OPTIONAL (global) — slug(s) this file supersedes; list = consolidation-merge (many→one), one→one stays scalar; §2.4
 superseded_by: {slug | null}   # OPTIONAL (global) — the slug that supersedes this file; §2.4
 related: [{slug}]              # OPTIONAL (global) — related slugs; absent or [] is fine; §2.4
 ---
@@ -201,7 +201,7 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 | `tags` | list[string] | yes | each tag ∈ the controlled vocabulary (§2.5); may be empty `[]` |
 | `keywords` | list[string] | yes | freeform, uncontrolled escape-hatch tags; may be empty `[]` |
 | `author` | enum | yes | `claude` \| `codex` \| `user` — the runtime/system that authored the file |
-| `supersedes` | string \| null | **no (optional, global)** | plain slug this file supersedes; `null` / absent when none (§2.4) |
+| `supersedes` | string \| list[slug] \| null | **no (optional, global)** | plain slug(s) this file supersedes; list = consolidation-merge (many→one), one→one stays scalar; `null` / absent when none (§2.4) |
 | `superseded_by` | string \| null | **no (optional, global)** | plain slug that supersedes this file; `null` / absent when none (§2.4) |
 | `related` | list[slug] | **no (optional, global)** | plain slugs of related files; absent or `[]` is fine (§2.4) |
 
@@ -211,7 +211,7 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 
 **`feature` is conditionally required by `scope`.** `scope: feature` ⇒ `feature` is a non-null slug. `scope: project` ⇒ `feature: null`. The validator (§2.6) enforces this conditional.
 
-**Slug-link fields are global-optional.** `supersedes`, `superseded_by`, and `related` are **global optional base fields** — any type may carry them, because supersession and relation are universal lifecycle concepts (a mistake supersedes a mistake, a design supersedes a design, a note may relate to a decision). They are documented once here, NOT repeated as per-type extensions in §2.2. Their value form (plain slugs, never paths or `[[ ]]`) is defined in §2.4.
+**Slug-link fields are global-optional.** `supersedes`, `superseded_by`, and `related` are **global optional base fields** — any type may carry them, because supersession and relation are universal lifecycle concepts (a mistake supersedes a mistake, a design supersedes a design, a note may relate to a decision). `supersedes` accepts either a single slug or a `list[slug]`: the list form is for a consolidation-merge (many→one), while a one→one supersession stays a scalar slug; `superseded_by` stays scalar and `related` is always a `list[slug]`. They are documented once here, NOT repeated as per-type extensions in §2.2. Their value form (plain slugs, never paths or `[[ ]]`) is defined in §2.4.
 
 ### 2.2 Per-type extension fields + the status model
 
@@ -275,7 +275,7 @@ The enum says only WHAT a file is; `scope` and the directory say WHERE it lives.
 
 Memory files link to each other in two distinct ways. Keep them separate.
 
-**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: planning-asserted-skill-without-verifying`, `superseded_by: null`. A `related:` field is a `list[slug]`.
+**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: planning-asserted-skill-without-verifying`, `superseded_by: null`. A `related:` field is a `list[slug]`. `supersedes` may itself be a `list[slug]` — each element a plain slug — when one file consolidates several (the consolidation-merge form, many→one); a one→one supersession stays a single scalar slug.
 
 **Navigable graph links in the body = `[[slug]]`.** Human- and graph-navigable links live in the BODY, in a `## Related` section near the doc's end — one bullet per link in `[[slug]]` identifier-link form. Foam / Obsidian derive the graph and backlinks from these. Format:
 
