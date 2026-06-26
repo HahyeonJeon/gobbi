@@ -91,23 +91,29 @@ Role-specific tails:
 
 ## The Load Directives Block
 
-Mandatory in every delegation prompt, ordered top-to-bottom:
+Mandatory in every delegation prompt, ordered top-to-bottom. **Spawned subagents have no Skill tool** — they cannot "load" a skill by name. "Load" here means READ the skill's `SKILL.md` (or the named file) with the Read tool. So the block is a list of EXACT file paths the subagent reads as its FIRST actions, before the Task Description or any other work. A bare skill *name* with no path maps to no action for a tool-less subagent; every entry the manager fills must be a concrete file path. Skipping any required file is a process failure.
 
 ```text
-## Load Directives (in order — load top to bottom before any other action)
+## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+
+You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
+tool. Read these EXACT paths, in order, as your FIRST actions. Skipping any
+required file is a process failure.
 
 1. Principles:
-   - `principles` skill (mandatory; fresh subagents do not inherit)
+   - `.gobbi/projects/{project-name}/skills/principles/SKILL.md` (mandatory; fresh subagents do not inherit)
 2. Rules:
    - All files under `.gobbi/projects/{project-name}/rules/`
-   - {any additional rule files specific to this task}
+   - {any additional rule files specific to this task — full paths}
 3. Skills:
-   - `mistake` skill (mandatory)
-   - {phase doc path — e.g., orchestration/workflow/execution.md}
+   - `.gobbi/projects/{project-name}/skills/mistake/SKILL.md` (mandatory)
+   - {phase doc — e.g., `.gobbi/projects/{project-name}/skills/orchestration/workflow/execution.md`}
    - {domain skills with full paths}
 4. Mistakes:
-   - {specific mistake files relevant to this task's domain}
+   - {specific mistake files relevant to this task's domain — full paths}
 ```
+
+After the block, the subagent's response carries a `SKILLS LOADED:` checklist enumerating the exact path of each Load-Directives file it Read — the self-report half of the verification pair (see [§ The Status Contract](#the-status-contract) for the wire format and [§ Manager verification](#manager-verification--the-ground-truth-backstop) for the transcript-grep backstop).
 
 **Why this order.** Principles set the discipline floor (what every agent must never do). Rules narrow that to the project's conventions. Skills give the role-and-domain procedure. Mistakes inject the specific past pitfalls the subagent must avoid in this domain. Loading in this order ensures the most-general discipline is established before the most-specific guidance, so the subagent cannot rationalize a domain skill into violating a principle.
 
@@ -118,6 +124,18 @@ Mandatory in every delegation prompt, ordered top-to-bottom:
 **Memory standard gate.** Any delegation that **writes or evaluates memory** MUST load `memory/rules.md` in tier 3 (Skills) alongside `record/SKILL.md`. `memory/rules.md` is the naming / frontmatter / structure standard — the rules a memory file's name, frontmatter, and scope must obey; without it the standard is advisory-only and structural drift recurs. The `leader`, `executor`, and `assistant` templates carry the `memory/rules.md` line right after their `record/SKILL.md` line; the `evaluator` template carries it in tier 3 for delegations that judge memory artifacts against the standard (the evaluator has no `record/SKILL.md` line).
 
 **Session-write path discipline.** When a subagent's task involves session writes (notes, staging files, memory drafts), the delegation prompt must remind the subagent to follow the qualified write-path rule: use `session.json.git.worktreePath` as the absolute root. `worktreePath` is always set in normal operation; a `null` value indicates a malformed/partial `session.json` and must be surfaced as an error, not used as a main-tree write signal. See [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix) for the full qualified rule.
+
+### Manager verification — the ground-truth backstop
+
+The `SKILLS LOADED:` checklist a subagent returns is its **self-report** — it is not proof. The ground truth is the subagent's transcript. After a subagent returns, the manager greps the transcript for a `Read` of each required Load-Directives file:
+
+```sh
+grep -oE '"file_path":"[^"]*"' <transcript> | grep <required-path>
+```
+
+Run it once per required tier-1/tier-3 file (at minimum `principles/SKILL.md`, `mistake/SKILL.md`, and the phase doc). If any required file has **no** matching `Read`, the subagent ran skill-blind — the manager **re-dispatches** the same task with the Load Directives restated, rather than trusting the result. The checklist is the self-report; the transcript grep is the verification — they are two halves of one gate, and the grep is the authoritative half.
+
+This backstop exists because a tool-less subagent can silently skip a "load the X skill" line: the audit that motivated this gate found 2 of 4 executors had each skipped a required skill (one `principles`, one `execution`) despite the prompt naming it. The self-report alone would have reported them as loaded.
 
 ---
 
@@ -173,14 +191,20 @@ Every subagent's final response MUST begin with these structured lines — the *
 STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
 VERDICT: <PASS|REVISE|FAIL>   ← evaluators only; omit for non-evaluator roles
 ARTIFACT: <path>              ← if any artifact was produced; omit if none
+SKILLS LOADED:                ← mandatory; one path per required Load-Directives file Read
+  - <exact path of each Load-Directives file you Read, in order>
 ```
 
-Followed immediately by prose details (summary, findings, verification output, concerns, etc.).
+Followed immediately by prose details (summary, findings, verification output, concerns, etc.). The `SKILLS LOADED:` checklist comes right after the STATUS/VERDICT/ARTIFACT lines and lists the exact path of every Load-Directives file the subagent Read (principles, rules, skills, mistakes). It is the subagent's self-report; the manager verifies it against the transcript (see [§ Manager verification](#manager-verification--the-ground-truth-backstop)).
 
 **Example — executor reporting DONE:**
 ```
 STATUS: DONE
 ARTIFACT: sessions/2026-05-20-abc123/4-execution/working/draft-iter1.md
+SKILLS LOADED:
+  - .gobbi/projects/gobbi/skills/principles/SKILL.md
+  - .gobbi/projects/gobbi/skills/mistake/SKILL.md
+  - .gobbi/projects/gobbi/skills/orchestration/workflow/execution.md
 
 Implementation complete. Tests pass (2197/0). Scope boundary respected — 3 files modified.
 ...
@@ -292,6 +316,7 @@ The manager must NOT produce delegation prompts that look like these. Each is a 
 - ❌ **Vague output** — "Make it better." You cannot verify completion because there is no acceptance criterion.
 - ❌ **Spec by `@path`** — "See the plan in `plans/foo.md` and implement it." Adds inference between spec and work; subagents may read it partially or interpret it differently than the manager intended. Paste the spec inline.
 - ❌ **Lazy load directives** — "Load any skills you need." The subagent guesses. Specify the exact list, in order.
+- ❌ **Skill named without a path** — "Load the `principles` skill" with no file path and no note that a spawned subagent has no Skill tool. A tool-less subagent cannot act on a bare skill name; give the exact `SKILL.md` path, state that "load" means Read it, and require the `SKILLS LOADED:` checklist so the manager can verify the Read happened.
 - ❌ **No status contract** — Prompt ends mid-instruction with no `## Report Format` section. The subagent produces a prose summary the manager has to interpret.
 - ❌ **Author transcript leaked to evaluator** — Evaluator receives the producer's chain of thought, breaking producer/evaluator separation (`evaluation/SKILL.md`). Evaluators get a constructed context bundle only.
 - ❌ **Continued / shared / teammate evaluator** — Reusing an evaluator across iterations, sharing one evaluator between systems, or adding an evaluator to the Agent Team. A continued evaluator carries its own prior verdict (confirmation bias); a teammate-evaluator is reachable in the team mailbox (contamination). Evaluators are always fresh subagents, kept OUT of the team — see [§ Continue vs Fresh](#continue-vs-fresh).

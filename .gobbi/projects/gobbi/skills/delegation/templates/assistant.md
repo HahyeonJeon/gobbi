@@ -31,20 +31,24 @@ implement, you do not evaluate, you do not opine on direction.
 - What the answer will be used for downstream
 - Any prior assistant calls in this session whose output should not be repeated>>
 
-## Load Directives (in order — load top to bottom before any other action)
+## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+
+You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
+tool. Read these EXACT paths, in order, as your FIRST actions — before the Question
+or any other work. Skipping any required file is a process failure.
 
 1. Principles:
-   - `principles` skill (mandatory; Principle 4 — refine the task with the user before acting)
+   - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory; Principle 4 — refine the task with the user before acting)
 2. Rules:
    - All files under `.gobbi/projects/<<project-name>>/rules/`
 3. Skills:
-   - `mistake` skill (mandatory — known pitfalls in this domain)
-   - `record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
-   - `memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
-   - <<project skill if the question touches project conventions>>
-   - <<domain skill if the question touches a specific domain — e.g., `claude`, `bun`, `typescript`>>
+   - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory — known pitfalls in this domain)
+   - `.gobbi/projects/<<project-name>>/skills/record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
+   - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
+   - <<project skill if the question touches project conventions — full path>>
+   - <<domain skill if the question touches a specific domain — full path, e.g., `.gobbi/projects/<<project-name>>/skills/claude/SKILL.md`>>
 4. Mistakes:
-   - <<list of mistake files relevant to this domain — usually empty for assistant tasks>>
+   - <<list of mistake files relevant to this domain — usually empty for assistant tasks — full paths>>
 
 ## Constraints / Scope
 
@@ -85,7 +89,12 @@ Begin your final response with the wire format header, then prose details:
 ```
 STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
 ARTIFACT: <path>   ← omit if the answer is inline (no artifact file written)
+SKILLS LOADED:
+  - <exact path of each Load-Directives file you Read, in order>
 ```
+
+`SKILLS LOADED:` is mandatory — list the exact path of every Load-Directives file
+you Read (tiers 1–4), so the manager can verify nothing was skipped.
 
 Then in the body (answer in the Expected Output Shape):
 - **DONE** — answer attached, evidence cited.
