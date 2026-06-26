@@ -465,6 +465,19 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
 | 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. As pipeline stage 3, this verdict gates the irreversible git stage 5: after RECORD, `PASS` unblocks stage 5 (manager runs git finalization, then emits `workflow.finish`); `REVISE` re-enters DISCUSSION (rare — Wrap-up's iteration cap is typically 1) and re-runs the stage-2 promotion — stage 5 does NOT run; `FAIL` escalates through the active runtime's user-decision primitive — stage 5 does NOT run | Workflow-state verdict |
 
+**Post-promotion standing-guard green-check (always-run — independent of `settings.compaction.enabled`)**
+
+Stage 3 is non-skippable (D13), so this green-check runs on **EVERY** wrap-up — whether or not the dormant Stage-2c compaction ran. Before the verdict can advance to `PASS`, the manager re-runs **EVERY** standing project guard over the **post-promotion** tree, not only the frontmatter validator. A promoted mistake / journal / plan frequently DOCUMENTS the very vocabulary or pattern a guard scans for, so a promotion can add a legitimate carrier that an allowlist derived before the promotion will not recognize. Derived from [`mistakes/verification/wrap-up-green-check-must-rerun-standing-guards-post-promotion.md`](../../mistakes/verification/wrap-up-green-check-must-rerun-standing-guards-post-promotion.md).
+
+Run ALL of these over the post-promotion project tree (`<scan-root>` = `.gobbi/projects/{project-name}/`; each prunes `archive/`) — ALL must exit 0:
+- [`validate-frontmatter.sh`](../memory/scripts/validate-frontmatter.sh) `<scan-root>` — frontmatter well-formedness
+- [`check-markdown-links.sh`](../orchestration/scripts/check-markdown-links.sh) `<scan-root>` — relative-link resolution
+- [`check-residual-vocab.sh`](../orchestration/scripts/check-residual-vocab.sh) `<scan-root>` — residual stale-vocabulary content gate
+- [`check-layer2-source.sh`](../orchestration/scripts/check-layer2-source.sh) `<scan-root>` — `layer2-source:` reference resolution
+- [`check-workflow-mirror-consistency.sh`](../orchestration/scripts/check-workflow-mirror-consistency.sh) — runtime-doc `.claude/` mirror gate (self-locating, zero-arg; checks the worktree `.claude/` runtime surface, NOT the memory tree, so it takes no `<scan-root>`)
+
+[`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) `<manifest> <scan-root>` is the ONE additional guard that runs only when Stage-2c produced a compaction merge manifest — it is enumerated in § Stage 2c step (g), not here, because it has no manifest to check on a non-compacting wrap-up. When a guard flags a legitimately-promoted carrier, extend THAT guard's allowlist using its own derive-from-a-fresh-run discipline in the SAME promotion commit (a stage-2 re-run / `REVISE`), so the guard invariant the session established stays green on the branch that ships. A green frontmatter validator alone is NOT enough — the content/vocab guards, the link checker, the layer-2 resolver, AND the runtime-doc mirror guard must all re-run over the post-promotion tree.
+
 **Outputs**
 - `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
 - Aggregated verdict recorded in workflow state
@@ -478,6 +491,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Exit checklist**
 - [ ] Both systems produced per-perspective files for every perspective
+- [ ] Post-promotion standing-guard green-check run on EVERY wrap-up (independent of `settings.compaction.enabled`): `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` + `check-layer2-source.sh` + `check-workflow-mirror-consistency.sh` all exit 0 over the post-promotion tree; any guard flagging a legitimately-promoted carrier had its allowlist extended in the same promotion commit
 - [ ] Verdict aggregated and recorded; `REVISE` increments the iteration counter, `PASS` and `FAIL` advance to RECORD
 
 ---
