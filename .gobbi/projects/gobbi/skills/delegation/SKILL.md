@@ -103,7 +103,7 @@ required file is a process failure.
 1. Principles:
    - `.gobbi/projects/{project-name}/skills/principles/SKILL.md` (mandatory; fresh subagents do not inherit)
 2. Rules:
-   - All files under `.gobbi/projects/{project-name}/rules/`
+   - All files under `.gobbi/projects/{project-name}/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/{project-name}/skills/memory/rules.md` is the de-facto rules source — read it instead.
    - {any additional rule files specific to this task — full paths}
 3. Skills:
    - `.gobbi/projects/{project-name}/skills/mistake/SKILL.md` (mandatory)

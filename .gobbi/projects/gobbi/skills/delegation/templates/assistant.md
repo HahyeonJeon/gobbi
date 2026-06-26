@@ -40,7 +40,7 @@ or any other work. Skipping any required file is a process failure.
 1. Principles:
    - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory; Principle 4 — refine the task with the user before acting)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/`
+   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
 3. Skills:
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory — known pitfalls in this domain)
    - `.gobbi/projects/<<project-name>>/skills/record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)

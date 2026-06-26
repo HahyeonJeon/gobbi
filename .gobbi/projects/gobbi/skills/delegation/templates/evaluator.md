@@ -58,12 +58,11 @@ Description or any other work. Skipping any required file is a process failure.
 
 1. Principles:
    - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory)
-   - `.gobbi/projects/<<project-name>>/skills/evaluation/SKILL.md` (producer/evaluator separation governs your independence)
+   - `.gobbi/projects/<<project-name>>/skills/evaluation/SKILL.md` (mandatory — producer/evaluator separation governs your independence; perspective definitions, severity rubric, finding metadata)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/`
+   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
 3. Skills:
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
-   - `.gobbi/projects/<<project-name>>/skills/evaluation/SKILL.md` (mandatory — perspective definitions, severity rubric, finding metadata)
    - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
    - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/evaluation.md`, `.../preparation/evaluation.md`, `.../planning/evaluation.md`, `.../execution/evaluation.md`, `.../wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
 4. Mistakes:
