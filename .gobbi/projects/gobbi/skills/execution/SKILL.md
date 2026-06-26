@@ -27,7 +27,7 @@ The agent in the executor role MUST observe these tier boundaries. The only writ
 |---|---|---|
 | **Workspace codebase (in-scope files)** | Files explicitly listed in the task's `files:` scope | **READ + WRITE** — the executor's primary work surface; constrained to the task's declared scope |
 | **Workspace codebase (out-of-scope files)** | All other files under the repository | **READ-ONLY** — reading is required for context; writing is a scope violation |
-| **Session record — own task working** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/` | **READ + WRITE** — executor notes (`draft-iter{n}.md`), discussion-log, research (transcripts live in the session-root `transcripts/`, not here) |
+| **Session record — own task working** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/` | **READ + WRITE** — executor notes (`draft-iter{n}.md`), discussion-log, research (transcripts live in the session-root `transcripts/`, not here); during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the executor writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
 | **Session record — own task staging** | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,discussions,changelogs,learnings,notes,backlogs/{feature,project}}/` | **READ + WRITE** — surfacing mid-task discoveries that need promotion (e.g., a mistake learned mid-implementation, a backlog candidate noticed in passing). Wrap-up promotes |
 | **Session record — prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning}/{outputs,staging}/` | **READ-ONLY** — required inputs: Ideation design, Preparation readiness, Planning task spec |
 | **Session record — prior tasks** | `sessions/{date}-{session-id}/4-execution/task-{MM}-{slug}/outputs/` | **READ-ONLY** — context for tasks that depend on prior task outputs |
@@ -148,6 +148,15 @@ After the five-phase lifecycle, the executor produces a final response — captu
 - [ ] Out-of-scope observations recorded (or "none")
 - [ ] Mid-task staging (if any) written under `4-execution/task-{NN}-{slug}/staging/`
 
+### Dual-system production (Codex proposer)
+
+When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; default `dual`), a Codex proposer runs in parallel with the executor during WORK — the creation-time analogue of the dual-system EVALUATION. The proposer is the `codex exec` assistant-wrapper owned by [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md); the manager orchestrates the spawn, selective integration, and gap classification per [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). This section states only the per-loop boundary and does not re-derive that orchestration.
+
+- **Codex proposal artifact.** The Codex proposer writes an independent alternative implementation **approach** (not competing code) to `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` — never the canonical `task-{NN}-{slug}/working/draft-iter{n}.md`. Every proposal is task-scoped under `task-{NN}-{slug}/` — the Execution per-task path exception. Codex proposes; the executor writes.
+- **Two-phase freeze boundary.** The Codex proposal is **frozen** before the executor integrates it; the canonical `task-{NN}-{slug}/working/draft-iter{n}.md` is **frozen** before EVALUATION spawns. The executor integrates against the frozen proposal — it never races a still-writing Codex run — and the canonical artifact does not change under the evaluator. Derived from [`mistakes/verification/freeze-producer-artifact-before-evaluating.md`](../../mistakes/verification/freeze-producer-artifact-before-evaluating.md).
+- **Producer selective integration.** The executor is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` (the Integration Log). The executor integrates the approach at or before its Plan phase, per task; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
+- **Degraded mode.** If the Codex proposal is empty, times out, or errors, the executor proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is not a safety gate.
+
 ---
 
 ## EVALUATION Phase
@@ -260,6 +269,8 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 |---|---|---|
 | Workspace files in task `files:` scope | executor (WORK) | committed per task (when git is active) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/draft-iter{n}.md` | executor (WORK) / manager-captured | every iteration |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration (per-task path) |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` | executor (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (RECORD) | per mid-task discovery (executor) or per evaluator finding (assistant) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
