@@ -22,14 +22,21 @@
 #   merge MANIFEST and RESOLVES reference targets. Different mechanism -> different
 #   script (conflating the two is the guard-scope-model-wrong trap).
 #
-# Two families (see design.md "NEW ref-integrity gate"):
-#   Family 1  (dangling-inbound)        -> DANGLING:      <file>:<line>: ...
-#   Family 1b (dead-anchor)             -> STALE-ANCHOR:  <file>:<line>: ...
-#   Family 2  (supersession-integrity)  -> SUPERSEDE-*:   ...
+# Families (see design.md "NEW ref-integrity gate"):
+#   Family 1  (dangling-inbound)        -> DANGLING:        <file>:<line>: ...
+#   Family 1b (dead-anchor)             -> STALE-ANCHOR:    <file>:<line>: ...
+#   Family 1c (source-section preserve) -> MISSING-SECTION: <consolidated>:<anchor> ...
+#   Family 2  (supersession-integrity)  -> SUPERSEDE-*:     ...
 #   `supersedes:` / `superseded_by:` are EXCLUDED from Family 1 (they EXIST to
 #   point at the merged-away/archived originals — that linkage IS supersession,
 #   by design). Family 2 checks them POSITIVELY instead. Flagging them in
 #   Family 1 would make the gate unsatisfiable on every legitimate merge.
+#
+#   Family 1c enforces rules.md §5.2 atomic-section preservation: each MERGE
+#   record's source MUST survive as its own `## <source_anchor>` section in the
+#   consolidated file (the anchor == the source's own slug, §5.2). Parsing the
+#   manifest's source_anchor without checking the section exists is a missing-
+#   section false-PASS (a consolidated file that dropped a source still passes).
 #
 # ---------------------------------------------------------------------------
 # The dangling-class set is DERIVED from rules.md, not hand-picked (so it cannot
@@ -59,14 +66,26 @@
 #   per-type slug-link extension, ADD it to SLUG_FIELDS below — the set is
 #   "every §2.2/§2.4 record-reference field + §1.5 prose/path/inventory + body
 #   [[slug]]", never a frozen subset.
+#
+#   SELF-TEST (anti-drift, root-fix): the static SLUG_FIELDS string is NOT trusted
+#   on a comment alone. `--self-test` (and a startup assertion on every scan)
+#   PARSES the §2.2 extension-field universe straight from rules.md and asserts
+#   the gate's classified set — SLUG_FIELDS (minus the §2.4 global `related`)
+#   ∪ NONREF_FIELDS — EQUALS that universe. A new §2.2 extension lands in neither
+#   set and FAILS the self-test, so the dangling-class set can no longer silently
+#   drift narrower than the standard (the guard-revises-twice / guard-cited-as-
+#   runtozero trap, fixed at the root rather than patched per facet).
 # ---------------------------------------------------------------------------
 #
 # Scan root (DISTINCT from validate-frontmatter.sh's P_live — it ADDS skills/+agents/):
 #   the project dir (arg 2), walked, with archive/ sessions/ tmp/ worktrees/
-#   PRUNED. Everything else under it is scanned — that is exactly
+#   PRUNED. Every `*.md` AND `*.toml` file under it is scanned — that is exactly
 #   P_live ∪ the skills/+agents/ inbound-ref surface (Layer-2 mistakes under
 #   skills/mistake/layer2-*.md, required-mistakes:/layer2-source: refs, prose/
-#   inventory mentions). archive/ is PRUNED (frozen history), NOT allowlisted.
+#   inventory mentions) ∪ the §1.5 wrapper class (agents/*.toml / .codex/*.toml
+#   runtime wrappers — a stale merged-away ref inside a non-Markdown wrapper is a
+#   real dangling ref and MUST be caught). archive/ is PRUNED (frozen history),
+#   NOT allowlisted.
 #
 # Allowlist (precise (file, source-set) predicate — never a whole-section pass):
 #   a dead-slug S occurrence in file F is legitimate ONLY when F IS the
@@ -87,18 +106,24 @@
 #   markdown link targets resolve relative to their own linking file's directory.
 #
 # Args:
+#   --self-test [<rules.md>]  assert the dangling-class field set still equals the
+#                     rules.md §2.2 extension universe, then exit (no manifest /
+#                     scan). <rules.md> defaults to the script-relative
+#                     ../../memory/rules.md. Exit 0 = parity, 1 = drift, 2 = bad.
 #   $1 <manifest>     the merge manifest (TSV above). Required.
 #   $2 <scan-root>    project dir to walk for inbound refs (archive/ sessions/
-#                     tmp/ worktrees/ pruned; skills/ + agents/ INCLUDED). Required.
+#                     tmp/ worktrees/ pruned; skills/ + agents/ INCLUDED;
+#                     *.md AND *.toml scanned). Required.
 #   $3 <resolve-base> base for manifest paths + required-mistakes:/layer2-source:
 #                     path refs. Optional; defaults to <scan-root>.
 #
 # Output:
-#   stdout — one `DANGLING:` / `STALE-ANCHOR:` / `SUPERSEDE-*:` line per
-#            violation (sorted, de-duplicated), then a one-line summary.
+#   stdout — one `DANGLING:` / `STALE-ANCHOR:` / `MISSING-SECTION:` / `SUPERSEDE-*:`
+#            line per violation (sorted, de-duplicated), then a one-line summary.
 #            On a clean run prints "REF-INTEGRITY OK".
-# Exit: 0 = Families 1, 1b, 2 all clean; 1 = at least one violation;
-#       2 = bad args (missing/unreadable manifest, scan-root not a dir).
+# Exit: 0 = Families 1, 1b, 1c, 2 all clean; 1 = at least one violation;
+#       2 = bad args (missing/unreadable manifest, scan-root not a dir) OR the
+#           startup class-set self-test detected drift from rules.md §2.2.
 
 set -uo pipefail
 
@@ -109,15 +134,113 @@ log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 usage() {
     cat >&2 <<'EOF'
 usage: check-merge-ref-integrity.sh <manifest> <scan-root> [<resolve-base>]
+       check-merge-ref-integrity.sh --self-test [<rules.md>]
   Verifies a memory-compaction MERGE left no dangling inbound reference
-  (Family 1), no dead post-split anchor (Family 1b), and a complete + exact
+  (Family 1), no dead post-split anchor (Family 1b), every merged source's
+  `## <anchor>` section preserved (Family 1c), and a complete + exact
   supersession linkage (Family 2). <manifest> is the TSV merge manifest;
   <scan-root> is the project dir to walk (archive/ sessions/ tmp/ worktrees/
-  pruned, skills/ + agents/ included); <resolve-base> (default <scan-root>)
-  resolves manifest + required-mistakes:/layer2-source: paths.
-  Exit 0 = clean, 1 = violation(s), 2 = bad args.
+  pruned, skills/ + agents/ included, *.md + *.toml scanned); <resolve-base>
+  (default <scan-root>) resolves manifest + required-mistakes:/layer2-source:
+  paths. --self-test asserts the dangling-class field set still equals the
+  rules.md §2.2 extension universe (no manifest / scan needed).
+  Exit 0 = clean, 1 = violation(s)/drift, 2 = bad args.
 EOF
 }
+
+# ---------------------------------------------------------------------------
+# Reference-field sets (DERIVED from rules.md §2.2/§2.4 — see header).
+#   SLUG_FIELDS   = A ∪ B  (the record-reference-by-slug fields; `supersedes` /
+#                   `superseded_by` EXCLUDED — Family 2 checks them positively).
+#   NONREF_FIELDS = the §2.2 extension fields that are NOT record-references
+#                   (scalars / enums / labels / externals / free-text / enum-value
+#                   noise such as `novel`). Enumerated so the self-test can prove
+#                   EVERY §2.2 extension field is classified — a NEW §2.2 field
+#                   lands in neither set and FAILS the self-test, closing the
+#                   silent-drift hole at the root.
+#   PATH_FIELDS   = C3 frontmatter path refs.
+#   GLOBAL_SLUG_LINKS = the §2.4 GLOBAL inbound slug-link(s) — in SLUG_FIELDS but
+#                   NOT a §2.2 extension, so excluded from the §2.2-universe parity.
+# ---------------------------------------------------------------------------
+SLUG_FIELDS="related shipped_in related_reports related_reviews related_decisions scenario anchor implemented_in"
+NONREF_FIELDS="value_proposition subsystems features_touched loops_completed shipped priority domain established project-scope title source accessed ref_type task task_count review_kind subject verdict report_type generated_by outcome item_status novel"
+PATH_FIELDS="required-mistakes layer2-source"
+GLOBAL_SLUG_LINKS="related"
+
+# Locate the §2.2 standard relative to THIS script (the field sets track it).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd)"
+RULES_MD_DEFAULT="$SCRIPT_DIR/../../memory/rules.md"
+
+# parse_ext_universe <rules.md> — emit each §2.2 extension FIELD NAME, one per
+# line (sorted, unique). Robust to the `\|` escaped-pipe status-enum separator
+# (replaced before column-splitting) and to enum-value noise inside parens
+# (over-inclusion is harmless — noise is classified into NONREF_FIELDS). No
+# hardcoded line numbers: the §2.2 table is located by its header structure.
+parse_ext_universe() {
+    local rules="$1"
+    awk '
+        /^### 2\.2 /            { in22=1; next }
+        in22 && /^### /          { exit }
+        in22 && /^\|[[:space:]]*Type[[:space:]]*\|/ { intbl=1; next }
+        intbl && /^\|[[:space:]:-]+\|/ { next }
+        intbl && /^\|/           { print; next }
+        intbl && !/^\|/          { intbl=0 }
+    ' "$rules" \
+        | sed 's/\\|/ /g' \
+        | awk -F'|' '{ print $4 }' \
+        | grep -oE '`[a-z][a-z0-9_-]*`' \
+        | tr -d '`' \
+        | sort -u
+}
+
+# self_test [<rules.md>] — assert the gate's classified §2.2 field set
+# (SLUG_FIELDS minus the §2.4 globals, ∪ NONREF_FIELDS) EQUALS the §2.2 extension
+# universe parsed from rules.md. Returns 0 = parity, 1 = drift, 2 = cannot run
+# (rules.md absent / empty parse). Logs the divergent field names on drift.
+self_test() {
+    local rules="${1:-$RULES_MD_DEFAULT}"
+    if [ ! -f "$rules" ]; then
+        log "self-test: rules.md not found: $rules"
+        return 2
+    fi
+    local universe classified slug22 only_std only_gate
+    local exclude_args=()
+    local g
+    for g in $GLOBAL_SLUG_LINKS; do exclude_args+=( -e "$g" ); done
+    universe="$(parse_ext_universe "$rules")"
+    if [ -z "$universe" ]; then
+        log "self-test: parsed an EMPTY §2.2 extension universe from $rules (parser or table changed)"
+        return 2
+    fi
+    slug22="$(printf '%s\n' $SLUG_FIELDS | grep -vxF "${exclude_args[@]}")"
+    classified="$(printf '%s\n' $slug22 $NONREF_FIELDS | sort -u)"
+    only_std="$(comm -23 <(printf '%s\n' "$universe") <(printf '%s\n' "$classified"))"
+    only_gate="$(comm -13 <(printf '%s\n' "$universe") <(printf '%s\n' "$classified"))"
+    if [ -n "$only_std" ] || [ -n "$only_gate" ]; then
+        log "self-test FAIL: gate field-set != rules.md §2.2 extension universe"
+        [ -n "$only_std" ]  && log "  §2.2 fields NOT classified by the gate (drift-narrower): $(printf '%s' "$only_std" | tr '\n' ' ')"
+        [ -n "$only_gate" ] && log "  gate fields absent from rules.md §2.2 (stale): $(printf '%s' "$only_gate" | tr '\n' ' ')"
+        return 1
+    fi
+    return 0
+}
+
+# ---------------------------------------------------------------------------
+# --self-test mode: verify the dangling-class field set still equals the
+# rules.md §2.2 extension universe, then exit (no manifest / scan needed).
+# ---------------------------------------------------------------------------
+if [ "${1:-}" = "--self-test" ]; then
+    self_test "${2:-}"; st=$?
+    if [ "$st" -eq 0 ]; then
+        printf 'SELF-TEST OK: dangling-class field set == rules.md §2.2 extension universe\n'
+        exit 0
+    elif [ "$st" -eq 1 ]; then
+        printf 'SELF-TEST FAIL: dangling-class field set has DRIFTED from rules.md §2.2 (see stderr)\n' >&2
+        exit 1
+    else
+        exit 2
+    fi
+fi
 
 # ---------------------------------------------------------------------------
 # Args.
@@ -146,6 +269,27 @@ if [ ! -d "$RESOLVE_BASE" ]; then
 fi
 SCAN_ROOT="$(cd "$SCAN_ROOT" && pwd)"
 RESOLVE_BASE="$(cd "$RESOLVE_BASE" && pwd)"
+
+# ---------------------------------------------------------------------------
+# Startup class-set assertion (root-fix for the silent-drift trap). The gate's
+# dangling-class field set MUST still equal the rules.md §2.2 extension universe;
+# a §2.2 extension added without updating the gate would silently narrow coverage
+# and false-PASS a dangling ref through the new field. Divergence -> exit 2 (the
+# gate refuses to give a false-confidence PASS until reconciled). rules.md
+# unlocatable or unparsable -> warn + proceed (do not break a scan in a context
+# where the standard is not on disk).
+# ---------------------------------------------------------------------------
+if [ -f "$RULES_MD_DEFAULT" ]; then
+    self_test "$RULES_MD_DEFAULT"; st=$?
+    if [ "$st" -eq 1 ]; then
+        log "ABORT: dangling-class field set has DRIFTED from rules.md §2.2 — reconcile SLUG_FIELDS / NONREF_FIELDS before trusting this gate."
+        exit 2
+    elif [ "$st" -eq 2 ]; then
+        log "WARN: class-set self-test could not run (rules.md parse issue); proceeding with the scan."
+    fi
+else
+    log "WARN: rules.md not found at $RULES_MD_DEFAULT; skipping the class-set self-test."
+fi
 
 # ---------------------------------------------------------------------------
 # Helpers.
@@ -216,15 +360,9 @@ clean_val() {
 }
 
 # ---------------------------------------------------------------------------
-# Reference-field sets (DERIVED — see header).
-#   SLUG_FIELDS = A ∪ B  (supersedes / superseded_by EXCLUDED — Family 2).
-#   PATH_FIELDS = C3 frontmatter path refs.
-# ---------------------------------------------------------------------------
-SLUG_FIELDS="related shipped_in related_reports related_reviews related_decisions scenario anchor implemented_in"
-PATH_FIELDS="required-mistakes layer2-source"
-
-# ---------------------------------------------------------------------------
 # Parse the manifest.
+#   (SLUG_FIELDS / NONREF_FIELDS / PATH_FIELDS / GLOBAL_SLUG_LINKS are defined
+#    near the top, before arg parsing, so --self-test can use them.)
 # ---------------------------------------------------------------------------
 declare -A DEAD_SLUGS=()          # merged_away_slug -> 1
 declare -A DEAD_PATHS=()          # canon(merged_away_active_path) -> 1
@@ -237,6 +375,7 @@ declare -A CONS_SOURCES_BY_SLUG=()    # consolidated_slug -> " s1 s2 s3 "
 declare -A SRC_ARCHIVE=()         # source_slug -> archived_path (raw)
 declare -A CANON_TO_CONSSLUG=()   # canon(consolidated_path) -> consolidated_slug
 declare -A SPLIT_NEWHOME=()       # consolidated_slug \x1f anchor -> new_home_path
+declare -A SRC_ANCHOR_BY_CC=()    # canon(consolidated_path) \x1f source_slug -> source_anchor (Family 1c)
 
 manifest_rows=0
 while IFS=$'\t' read -r kind f2 f3 f4 f5 f6 f7 || [ -n "${kind:-}" ]; do
@@ -263,6 +402,10 @@ while IFS=$'\t' read -r kind f2 f3 f4 f5 f6 f7 || [ -n "${kind:-}" ]; do
             CANON_TO_CONSSLUG["$cc"]="$local_cons"
             CONS_SOURCES_BY_CANON["$cc"]="${CONS_SOURCES_BY_CANON[$cc]:- } $local_src "
             CONS_SOURCES_BY_SLUG["$local_cons"]="${CONS_SOURCES_BY_SLUG[$local_cons]:- } $local_src "
+            # Family 1c: the source's `## <anchor>` section MUST exist in the
+            # consolidated file. Anchor defaults to the source slug (§5.2: the
+            # stable section anchor == the source's own slug) when f5 is empty.
+            SRC_ANCHOR_BY_CC["$cc"$'\x1f'"$local_src"]="${local_anchor:-$local_src}"
             if [ -n "$local_arch" ]; then
                 OK_PATHS["$(canon "$local_arch" "$RESOLVE_BASE")"]=1
                 SRC_ARCHIVE["$local_src"]="$local_arch"
@@ -302,12 +445,15 @@ for cc in "${!CANON_TO_CONSSLUG[@]}"; do
 done
 
 # ---------------------------------------------------------------------------
-# Collect markdown files to scan (prune archive/ sessions/ tmp/ worktrees/).
+# Collect files to scan (prune archive/ sessions/ tmp/ worktrees/). Both `*.md`
+# AND `*.toml` are walked: the §1.5 wrapper class lives in agents/*.toml /
+# .codex/*.toml runtime wrappers, so a stale merged-away ref inside a non-
+# Markdown wrapper must be caught too (globbing only *.md was a wrapper false-pass).
 # ---------------------------------------------------------------------------
 mapfile -t FILES < <(
     find "$SCAN_ROOT" \
         \( -type d \( -name archive -o -name sessions -o -name tmp -o -name worktrees \) -prune \) \
-        -o \( -type f -name '*.md' -print \) | sort
+        -o \( -type f \( -name '*.md' -o -name '*.toml' \) -print \) | sort
 )
 
 # ---------------------------------------------------------------------------
@@ -458,6 +604,25 @@ for file in "${FILES[@]}"; do
 done
 
 # ---------------------------------------------------------------------------
+# Family 1c: source-section preservation (rules.md §5.2 atomic-section rule).
+# Every MERGE record's source MUST survive as its own `## <source_anchor>`
+# section in the consolidated file. The anchor (== the source's own slug, §5.2)
+# is matched against LIVE_ANCHORS (the slugified headings actually present). A
+# missing section is the missing-section false-PASS this gate now closes.
+# ---------------------------------------------------------------------------
+for cc in "${!CONS_SOURCES_BY_CANON[@]}"; do
+    for src in ${CONS_SOURCES_BY_CANON[$cc]}; do
+        anchor="${SRC_ANCHOR_BY_CC[$cc$'\x1f'$src]:-$src}"
+        anchor_slug="$(slugify "$anchor")"
+        if [ -z "${LIVE_ANCHORS[$cc$'\x1f'$anchor_slug]:-}" ]; then
+            cslug="${CANON_TO_CONSSLUG[$cc]:-}"
+            conspath="${CONS_PATH[$cslug]:-$cc}"
+            add "MISSING-SECTION: $conspath:$anchor -> source '$src' has no '## $anchor' section in the consolidated file"
+        fi
+    done
+done
+
+# ---------------------------------------------------------------------------
 # Family 2: supersession-linkage integrity.
 # ---------------------------------------------------------------------------
 for cslug in "${!CONS_SOURCES_BY_SLUG[@]}"; do
@@ -529,6 +694,6 @@ if [ "${#violations[@]}" -gt 0 ]; then
     exit 1
 fi
 
-printf 'REF-INTEGRITY OK (%d merge record(s), %d scanned file(s); Families 1, 1b, 2 clean)\n' \
+printf 'REF-INTEGRITY OK (%d merge record(s), %d scanned file(s); Families 1, 1b, 1c, 2 clean)\n' \
     "$manifest_rows" "${#FILES[@]}"
 exit 0
