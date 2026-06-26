@@ -61,6 +61,8 @@ The executor follows a five-phase lifecycle inside its WORK phase. Each phase de
 
 The final response the executor returns is captured as the work artifact: what was done, what changed, what was learned, any open items. Self-contained — the manager and downstream agents read it as the permanent record of this task.
 
+**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the executor; the executor selectively integrates the frozen proposal and Codex never writes the canonical artifact. Execution spawns the proposer **per task** (`task-{NN}-{slug}/working/proposals/codex/`).
+
 ---
 
 ## EVALUATION Phase (delegated to evaluators)
@@ -131,6 +133,7 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Exec
 - Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
 - Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)

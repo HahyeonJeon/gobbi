@@ -34,8 +34,10 @@ sessions/{date}-{session-id}/                  ← session root
                                     4-execution  5-wrap-up
     ├── working/                  raw working capture (the only scratch surface):
     │   ├── draft-iter{n}.md            mutable working draft (WORK)
+    │   ├── reconciliation-iter{n}.md   dual-system Integration Log (Claude producer; WRITTEN, not scaffolded)
     │   ├── discussion-log.md           append-only AskUserQuestion journal (manager)
-    │   └── research/{slug}.md          pre-staging external refs (leader, research skill)
+    │   ├── research/{slug}.md          pre-staging external refs (leader, research skill)
+    │   └── proposals/codex/draft-iter{n}.md  Codex proposer's frozen draft (codex exec; scaffolded dir)
     ├── evaluation/               per-iter dual-system eval:
     │   └── iter{n}/{claude,codex}/{perspective}.md + overall.md
     ├── staging/                  typed-finding stagings (Wrap-up promotion source):
@@ -50,7 +52,8 @@ sessions/{date}-{session-id}/                  ← session root
 ├── staging/{...}/                loop-level (cross-task) staging
 └── task-{NN}-{slug}/             e.g. task-01-scaffold-script/
     ├── working/
-    │   └── research/
+    │   ├── research/
+    │   └── proposals/codex/
     ├── evaluation/
     ├── staging/
     └── outputs/
@@ -111,12 +114,14 @@ slots.
 
 | Slot | Holds | Writer | Created | Lifecycle |
 |---|---|---|---|---|
-| `working/` | Mutable scratch: `draft-iter{n}.md` (WORK draft), `discussion-log.md` (append-only AskUserQuestion journal), `research/{slug}.md` (pre-staging external refs) | executor / leader (drafts, research); manager (discussion-log) | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
+| `working/` | Mutable scratch: `draft-iter{n}.md` (WORK draft), `reconciliation-iter{n}.md` (dual-system Integration Log — Claude producer; written, not scaffolded), `discussion-log.md` (append-only AskUserQuestion journal), `research/{slug}.md` (pre-staging external refs), `proposals/codex/draft-iter{n}.md` (Codex proposer's frozen draft — scaffolded dir) | executor / leader (drafts, research, reconciliation); manager (discussion-log); Codex proposer (proposals/codex) | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
 | `evaluation/` | `iter{n}/{claude,codex}/{perspective}.md` + `overall.md` — per-iter dual-system evaluation output | evaluator | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
 | `staging/` | Typed-finding stagings — the **only** Wrap-up promotion source | executor / leader / assistant | At loop/task entry | Session-scoped, gitignored; **promoted** by Wrap-up into tracked project/feature memory |
 | `outputs/` | PASS-only loop output; `{free-filename}.md` carrying the Artifact frontmatter schema | assistant (RECORD, PASS only) | On PASS (`--pass`) | Session-scoped, gitignored, never promoted, removed at cleanup |
 
-`working/research/` is created together with `working/` at every loop/task entry.
+`working/research/` and `working/proposals/codex/` are created together with
+`working/` at every loop/task entry. `working/reconciliation-iter{n}.md` is a
+producer-written file (the dual-system Integration Log), not a scaffolded dir.
 `outputs/` is created only on a PASS iteration (the scaffold script's `--pass`
 flag).
 

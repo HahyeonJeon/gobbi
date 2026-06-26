@@ -22,7 +22,7 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 
 | Memory tier | Path root | Access from leader role |
 |---|---|---|
-| **Session record — own loop working** | `sessions/{date}-{session-id}/2-preparation/working/` | **READ + WRITE** — leader drafts, scan outputs, transcripts |
+| **Session record — own loop working** | `sessions/{date}-{session-id}/2-preparation/working/` | **READ + WRITE** — leader drafts, scan outputs, transcripts; during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the leader writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
 | **Session record — own loop staging** | `sessions/{date}-{session-id}/2-preparation/staging/{scenarios,checklists,decisions,references,design,discussions,skills,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — approved gap fixes stage here per the routing table; Wrap-up promotes to memory |
 | **Session record — prior loop (Ideation)** | `sessions/{date}-{session-id}/1-ideation/{outputs,staging}/` | **READ-ONLY** — required input for readiness scanning; the artifacts are the locked design and Scope Contract |
 | **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the leader never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
@@ -295,6 +295,15 @@ Required-sections template for the working draft:
 - **Stamp full templates.** When generating a project-specific skill, stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) — never leave skeleton files.
 - **Cite the discussion.** Each section's content must be traceable to a DISCUSSION exchange in the parent transcript. The Decisions Log makes this explicit.
 
+### Dual-system production (Codex proposer)
+
+When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; default `dual`), a Codex proposer runs in parallel with the leader during WORK — the creation-time analogue of the dual-system EVALUATION. The proposer is the `codex exec` assistant-wrapper owned by [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md); the manager orchestrates the spawn, selective integration, and gap classification per [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). This section states only the per-loop boundary and does not re-derive that orchestration.
+
+- **Codex proposal artifact.** The Codex proposer writes an independent readiness / gap assessment to `sessions/{date}-{session-id}/2-preparation/working/proposals/codex/draft-iter{n}.md` — never the canonical `working/draft-iter{n}.md`. Codex proposes; the leader writes.
+- **Two-phase freeze boundary.** The Codex proposal is **frozen** before the leader integrates it; the canonical `working/draft-iter{n}.md` is **frozen** before EVALUATION spawns. The leader integrates against the frozen proposal — it never races a still-writing Codex run — and the canonical artifact does not change under the evaluator. Derived from [`mistakes/verification/freeze-producer-artifact-before-evaluating.md`](../../mistakes/verification/freeze-producer-artifact-before-evaluating.md).
+- **Producer selective integration.** The leader is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/2-preparation/working/reconciliation-iter{n}.md` (the Integration Log). The leader adopts the superset of genuine gaps (additive integration) and surfaces conflicts; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
+- **Degraded mode.** If the Codex proposal is empty, times out, or errors, the leader proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is not a safety gate.
+
 ---
 
 ## EVALUATION Phase
@@ -402,6 +411,8 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 | Path | Written by | Written |
 |---|---|---|
 | `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` | leader (WORK) | every iteration |
+| `sessions/{date}-{session-id}/2-preparation/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration |
+| `sessions/{date}-{session-id}/2-preparation/working/reconciliation-iter{n}.md` | leader (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
 | `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` | leader (WORK) | per `generate-now` skill decision |
 | `sessions/{date}-{session-id}/2-preparation/staging/scenarios/{slug}.md` | leader (WORK) or assistant (RECORD) | leader: per `generate-now` missed-promotion / assistant: per `scenario_gap` finding |
 | `sessions/{date}-{session-id}/2-preparation/staging/checklists/{slug}.md` | leader (WORK) or assistant (RECORD) | leader: per `generate-now` missed-promotion / assistant: per `checklist_gap` finding |

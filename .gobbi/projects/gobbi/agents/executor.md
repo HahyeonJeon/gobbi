@@ -70,6 +70,11 @@ Implement focused, minimal changes.
 - If you encounter blocking ambiguity, stop and emit `NEEDS_CONTEXT`. Do not invent.
 - If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
+**Dual-system production (when the loop runs `propose.mode == dual`):** a Codex proposer wrote a parallel proposal for THIS task at `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**.
+- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
+- Log every delta to the **Integration Log** at `task-{NN}-{slug}/working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
+- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/production.md`](../skills/orchestration/workflow/production.md).
+
 ### Verify
 
 Before declaring done, produce **fresh** evidence (Execution Verify phase — `execution/SKILL.md`).

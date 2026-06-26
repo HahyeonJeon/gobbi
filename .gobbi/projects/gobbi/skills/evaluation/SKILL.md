@@ -52,6 +52,10 @@ Cross-cutting principles for any agent that loads this skill while in the evalua
 
 Self-evaluation is structurally biased. The agent that produced the artifact cannot see it as a fresh reader would. Evaluators are always separate agents with fresh context.
 
+> **The Codex proposer and the Codex evaluator are independent — they never share state.**
+
+The Codex proposer (a production-time `codex exec` run) and the Codex evaluator (this review-time run) are distinct, stateless processes with no shared context. The artifact under review is the Claude-authored canonical draft — never the Codex proposal file — and the proposal transcript never enters the evaluator's prompt. This structural independence preserves the anti-groupthink signal: the proposer's framing cannot leak into the evaluation. See `orchestration/workflow/production.md` § Proposer ↔ evaluator independence.
+
 > **An evaluable artifact has clear What / Why / How. If any is missing, flag the gap before measuring.**
 
 Per `principles` Principle 4, no task starts without clear What / Why / How — and an artifact whose own What / Why / How is unclear is unevaluable in the same sense. Measuring an artifact that does not say what it is, why it exists, or how it intends to be implemented produces verdicts that look precise but are about the agent's guesses, not the artifact. At Stage 0 the agent extracts the artifact's W / W / H per the phase child doc; if any is missing or ambiguous, that gap is itself a Critical `general` finding recorded **before** Stage 1 begins, and Stages 1–3 proceed best-effort with the gap noted in every per-perspective file.

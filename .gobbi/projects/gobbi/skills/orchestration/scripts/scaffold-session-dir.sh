@@ -130,6 +130,7 @@ target="$session_root/$step_dir"
 
 mkdir -p \
     "$target/working/research" \
+    "$target/working/proposals/codex" \
     "$target/evaluation"
 for sub in "${staging_subdirs[@]}"; do
     mkdir -p "$target/staging/$sub"

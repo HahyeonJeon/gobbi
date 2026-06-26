@@ -22,6 +22,8 @@ The manager:
 
 **Manager's job**: spawn the `assistant` agent with the wrap-up delegation prompt. The assistant consolidates artifacts, writes the handoff summary, and cleans scratch state per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
 
+**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the assistant; the assistant selectively integrates the frozen proposal and Codex never writes the canonical artifact. The proposer does not collide with the **non-skippable stage-3 evaluation** independence — the Codex proposal transcript never enters the Codex evaluator prompt.
+
 ---
 
 ## EVALUATION Phase (delegated to evaluators)
@@ -77,5 +79,6 @@ Plus any new mistake entries and memory updates under `.gobbi/projects/{project-
 
 - Assistant's wrap-up procedure → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
+- Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Memory promotion → [`record/SKILL.md`](../../record/SKILL.md)

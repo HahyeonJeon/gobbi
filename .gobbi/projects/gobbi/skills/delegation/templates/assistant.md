@@ -58,6 +58,36 @@ quote evidence, cite paths and URLs.
 explore beyond the asked scope, opine on what should be done with the answer.
 **Read-only tool surface — no `Write`, no `Edit`.**
 
+## Dual-system production (Wrap-up Claude-producer assistant only — `propose.mode == dual`; delete for narrow read-only lookups)
+
+Use this section ONLY when you are the Wrap-up Claude producer (not a read-only
+lookup). In that role the read-only default above does NOT apply to you: your FULL
+Wrap-up write surface is in force — session-record `working/` + `outputs/` (PASS) +
+`staging/`, the `session.json` upsert, AND the stage-2 memory-promotion writes —
+exactly as bounded by `wrap-up/SKILL.md` § Memory Access Matrix +
+`record/SKILL.md` § Memory Access Matrix. The canonical draft + Integration Log are
+two of those writes, not the whole set — do not read this as a 2-file lift, and do
+not write outside what those matrices grant. A Codex proposer ran in parallel and
+wrote a proposal; you are the default integrator. Orchestration lives in
+`orchestration/workflow/production.md` + `codex/SKILL.md` § Dual-System Production —
+do not re-derive it here.
+
+- **Proposal input (read during Study, after the pre-integration freeze):** the
+  frozen Codex proposal at `working/proposals/codex/draft-iter{n}.md`.
+- **Selective-integration duty:** read the FROZEN Codex proposal; fold in each
+  element that better satisfies the 10 principles + the Scope Contract +
+  memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is
+  a SELECTION, not an average and not a third synthesized draft.
+- **Integration Log:** record one row per delta
+  (`delta` / `decision` / `why` / `codex_origin`) to `working/reconciliation-iter{n}.md`.
+- **Large-gap escalation:** surface any unresolvable delta (a `large-gap` — Always-Ask
+  / mutually-exclusive fork / principle equipoise) to the manager; do NOT resolve it
+  yourself. It is a safety gate (interrupts in both Auto and Chat).
+- **Degraded mode:** if no proposal exists (Codex reported BLOCKED / empty / timeout),
+  proceed Claude-only and stamp `production_mode: claude-only` +
+  `codex_proposal_absent_reason: <timeout|empty|error>` in your artifact frontmatter.
+  NEVER fabricate a proposal to stand in for Codex.
+
 ## Your Job
 
 1. Run the Study → Plan → Execute → Verify → Memorize lifecycle from `assistant.md`.

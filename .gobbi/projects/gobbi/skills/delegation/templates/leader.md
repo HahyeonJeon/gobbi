@@ -55,6 +55,28 @@ the primary brief is always inline above).>>
 **Out of scope:** <<what you must NOT touch or expand into>>
 **Pre-resolved decisions (do not re-open):** <<list of user-locked decisions>>
 
+## Dual-system production (fill ONLY when `propose.mode == dual`; delete this whole section when `single`)
+
+A Codex proposer ran in parallel and wrote a proposal. You are the Claude producer
+and the default integrator. Orchestration lives in `orchestration/workflow/production.md`
++ `codex/SKILL.md` § Dual-System Production — do not re-derive it here.
+
+- **Proposal input (read during Study, after the pre-integration freeze):** the
+  frozen Codex proposal at `working/proposals/codex/draft-iter{n}.md`.
+- **Selective-integration duty:** read the FROZEN Codex proposal; fold in each
+  element that better satisfies the 10 principles + the Scope Contract +
+  memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is
+  a SELECTION, not an average and not a third synthesized draft.
+- **Integration Log:** record one row per delta
+  (`delta` / `decision` / `why` / `codex_origin`) to `working/reconciliation-iter{n}.md`.
+- **Large-gap escalation:** surface any unresolvable delta (a `large-gap` — Always-Ask
+  / mutually-exclusive fork / principle equipoise) to the manager; do NOT resolve it
+  yourself. It is a safety gate (interrupts in both Auto and Chat).
+- **Degraded mode:** if no proposal exists (Codex reported BLOCKED / empty / timeout),
+  proceed Claude-only and stamp `production_mode: claude-only` +
+  `codex_proposal_absent_reason: <timeout|empty|error>` in your artifact frontmatter.
+  NEVER fabricate a proposal to stand in for Codex.
+
 ## Your Job
 
 1. Run the Study → Plan → Execute → Verify → Memorize lifecycle from `leader.md`.

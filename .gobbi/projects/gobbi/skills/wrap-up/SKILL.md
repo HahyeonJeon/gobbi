@@ -25,7 +25,7 @@ The agent in the assistant role MUST observe these tier boundaries. Wrap-up's WO
 
 | Memory tier | Path root | Access from assistant role (Wrap-up) |
 |---|---|---|
-| **Session record — own loop working** | `sessions/{date}-{session-id}/5-wrap-up/working/` | **READ + WRITE** — promotion-manifest, staging-inventory, pre-Wrap-up snapshot, discussion-log |
+| **Session record — own loop working** | `sessions/{date}-{session-id}/5-wrap-up/working/` | **READ + WRITE** — promotion-manifest, staging-inventory, pre-Wrap-up snapshot, discussion-log; during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the assistant writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
 | **Session record — own loop artifacts** | `sessions/{date}-{session-id}/5-wrap-up/outputs/` | **WRITE (PASS only via RECORD)** — canonical handoff summary; same `Artifact frontmatter schema` as other loops |
 | **Session record — all prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation,3-planning,4-execution}/{outputs,staging,evaluation,working}/` | **READ-ONLY** — required inputs: every prior loop's artifacts (what shipped), staging (what to promote), evaluation outputs (cross-loop closure audit), discussion logs |
 | **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **READ-ONLY for triplet (`project`, `feature`, `task`); UPSERT for Wrap-up's own `workflow.wrap-up.iterations[]`** — same upsert semantics as other loops' RECORD |
@@ -275,6 +275,15 @@ Before writing any auto-backfill file:
 - Every judgment-required finding has a recorded NEEDS_CONTEXT escalation with a manager response.
 - Every `zero-staging` and `directory-absent` gap has a recorded NEEDS_CONTEXT escalation with a manager response.
 - All Step 2.5 gap report entries are written to `working/promotion-manifest.md`.
+
+### Dual-system production (Codex proposer)
+
+When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; default `dual`), a Codex proposer runs in parallel with the assistant during WORK — the creation-time analogue of the dual-system EVALUATION. The proposer is the `codex exec` assistant-wrapper owned by [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md); the manager orchestrates the spawn, selective integration, and gap classification per [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). This section states only the per-loop boundary and does not re-derive that orchestration.
+
+- **Codex proposal artifact.** The Codex proposer writes an independent alternative promotion / routing / supersession / Layer-2 routing + handoff emphasis to `sessions/{date}-{session-id}/5-wrap-up/working/proposals/codex/draft-iter{n}.md` — never the canonical promotion manifest + handoff. Codex proposes; the assistant writes.
+- **Two-phase freeze boundary.** The Codex proposal is **frozen** before the assistant integrates it; the canonical promotion outputs (the promotion manifest + handoff) are **frozen** before EVALUATION (stage-3 memory validation) spawns. The assistant integrates against the frozen proposal — it never races a still-writing Codex run — and the canonical outputs do not change under the evaluator. Derived from [`mistakes/verification/freeze-producer-artifact-before-evaluating.md`](../../mistakes/verification/freeze-producer-artifact-before-evaluating.md).
+- **Producer selective integration.** The assistant is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/5-wrap-up/working/reconciliation-iter{n}.md` (the Integration Log). The assistant integrates the routing decisions before finalizing the promotion manifest, and surfaces scope / Layer-2 forks; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
+- **Degraded mode.** If the Codex proposal is empty, times out, or errors, the assistant proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical handoff artifact's frontmatter. A missing Codex proposer is not a safety gate.
 
 ---
 
@@ -544,6 +553,8 @@ All session-record writes during the Wrap-up Loop are scoped to `sessions/{date}
 | `sessions/{date}-{session-id}/5-wrap-up/working/pre-wrap-up-snapshot.txt` | assistant (WORK Step 1) | per iteration |
 | `sessions/{date}-{session-id}/5-wrap-up/working/staging-inventory.md` | assistant (WORK Step 2) | per iteration |
 | `sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md` | assistant (WORK Step 4) | per iteration — append-only routing-decision log |
+| `sessions/{date}-{session-id}/5-wrap-up/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration |
+| `sessions/{date}-{session-id}/5-wrap-up/working/reconciliation-iter{n}.md` | assistant (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
 | `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md` | manager (DISCUSSION) | appended per user-decision exchange |
 | `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |

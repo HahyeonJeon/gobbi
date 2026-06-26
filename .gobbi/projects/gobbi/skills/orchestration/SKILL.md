@@ -179,7 +179,7 @@ Every session writes its working memory under one root: `.gobbi/projects/{projec
 | **Every state transition** | `state.json` updated in place | manager | The live state-machine file used to recover position after `/clear` / `/compact` / resume — see [§ State persistence](#state-persistence). |
 | **Wrap-up (Step 6)** | `staging/` trees promoted to memory; non-canonical session subdirs normalized going-forward | `assistant` (Wrap-up) | The only step that writes memory. Deviations from the canonical shape below are normalized here — see [`wrap-up/SKILL.md` § Non-standard session-subdir cleanup](../wrap-up/SKILL.md#non-standard-session-subdir-cleanup-going-forward). |
 
-**On-disk inventory.** The canonical shape the lifecycle above writes into is defined once, in [`record/record-map.md`](../record/record-map.md) — the single source of truth for the per-session working tree. That doc carries the complete ASCII tree (session root + `{N}-{loop}/` ordinal map + the 4-slot loop interior `working/ evaluation/ staging/ outputs/` + the `4-execution/task-{NN}-{slug}/` nesting), the SEAM-3 rule (on-disk dirs carry the `{N}-` prefix; `workflow.{loop}` JSON keys stay bare), the transcript rules, and the path-validation contract. The prose in this skill points there rather than re-declaring the shape — a second copy is exactly the drift the spec doc exists to remove.
+**On-disk inventory.** The canonical shape the lifecycle above writes into is defined once, in [`record/record-map.md`](../record/record-map.md) — the single source of truth for the per-session working tree. That doc carries the complete ASCII tree (session root + `{N}-{loop}/` ordinal map + the 4-slot loop interior `working/ evaluation/ staging/ outputs/` — `working/` itself carries the `research/` and `proposals/codex/` sub-slots (the latter holds the dual-system Codex proposer's frozen proposal, NOT a 5th top-level slot) — + the `4-execution/task-{NN}-{slug}/` nesting), the SEAM-3 rule (on-disk dirs carry the `{N}-` prefix; `workflow.{loop}` JSON keys stay bare), the transcript rules, and the path-validation contract. The prose in this skill points there rather than re-declaring the shape — a second copy is exactly the drift the spec doc exists to remove.
 
 **Session-root files.** `session.json` (telemetry), `settings.json` (resolved config), `state.json` (the workflow state-machine file — see [§ State persistence](#state-persistence)), and `session.json.lock` (advisory write-lock the manager creates / releases around each `session.json` write; not memory content — safe to ignore on read). The single session-root `transcripts/` dir is created by the manager in Configuration (see § Loop-entry scaffold).
 
@@ -197,7 +197,7 @@ scaffold-session-dir.sh <session-root> <step-dir> [--pass]
 - `<step-dir>` — one of `1-ideation` `2-preparation` `3-planning` `4-execution` `5-wrap-up`, or a single execution task dir `4-execution/task-{NN}-{slug}` (`{NN}` is `[0-9]{2}`, `{slug}` matches `[a-z0-9-]{1,40}`).
 - `--pass` — passed at RECORD on a PASS iteration to also create the `outputs/` dir.
 
-The script creates the 4-slot interior (`working/`, `working/research/`, `evaluation/`, `staging/` with the loop's typed staging subdirs) idempotently, and is fail-closed: a non-absolute `<session-root>`, a `<step-dir>` with `..` / a leading `/` / stray slashes, or any `<step-dir>` outside the fixed set (including `interview`) exits non-zero and creates nothing.
+The script creates the 4-slot interior (`working/`, `working/research/`, `working/proposals/codex/`, `evaluation/`, `staging/` with the loop's typed staging subdirs) idempotently, and is fail-closed: a non-absolute `<session-root>`, a `<step-dir>` with `..` / a leading `/` / stray slashes, or any `<step-dir>` outside the fixed set (including `interview`) exits non-zero and creates nothing.
 
 **The session-root `transcripts/` dir is the manager's, not the script's.** The manager creates the single session-root `transcripts/` in Configuration alongside the root JSON files; the scaffold script **never** creates a `transcripts/` dir (there is no per-loop or per-task `transcripts/`).
 
@@ -211,7 +211,7 @@ The Execution loop is per-task. Each task lives under `4-execution/task-{NN}-{sl
 4-execution/
 ├── staging/{...}/            ← loop-level (cross-task) staging
 └── task-{NN}-{slug}/
-    ├── working/draft-iter{n}.md, working/research/{slug}.md
+    ├── working/draft-iter{n}.md, working/research/{slug}.md, working/proposals/codex/draft-iter{n}.md
     ├── staging/{...}/
     ├── evaluation/iter{n}/{claude,codex}/{perspective}.md + overall.md
     └── outputs/{free-filename}.md
@@ -251,7 +251,7 @@ The manager maintains state in a per-session `state.json` file.
 | State | Precondition | Owner | Action | Postcondition (artifact) |
 |---|---|---|---|---|
 | `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist through the active runtime's subagent primitive (Claude Code captures the prompt in the parent transcript's tool_use entry; Codex custom agents use `.codex/agents/{role}.toml`) | Specialist spawned; prompt persisted in the available runtime audit trail |
-| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt | Loop's work artifact |
+| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt. When `propose.mode == dual` (per-loop default), a **parallel Codex proposer** generates an independent proposal alongside the Claude producer (neither sees the other); the producer then **selectively integrates** the frozen proposal into the canonical draft after the pre-integration freeze, before the loop finalizes — orchestration in [`workflow/production.md`](workflow/production.md) | Loop's work artifact |
 | `EVALUATION` | Work artifact exists; `workflow.{step}.evaluate.mode != 'skip'` | evaluator subagents (independent of the work owner) | Multi-perspective review per the evaluation policy | Aggregated verdict: `PASS` / `REVISE` / `FAIL` |
 | `RECORD` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; memory promotion only in Wrap-up | Memory writes complete |
 | `ITER / EXIT` | `RECORD` complete | manager | Decide on verdict + budget: continue (transition to `DISCUSSION`, `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |

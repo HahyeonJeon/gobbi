@@ -322,6 +322,8 @@ The manager must NOT produce delegation prompts that look like these. Each is a 
 - ❌ **Continued / shared / teammate evaluator** — Reusing an evaluator across iterations, sharing one evaluator between systems, or adding an evaluator to the Agent Team. A continued evaluator carries its own prior verdict (confirmation bias); a teammate-evaluator is reachable in the team mailbox (contamination). Evaluators are always fresh subagents, kept OUT of the team — see [§ Continue vs Fresh](#continue-vs-fresh).
 - ❌ **Parallel implementation** — Spawning two executors against the same scope or against overlapping files. Implementation is sequential; only research, investigation, and evaluation parallelize.
 - ❌ **Per-perspective evaluator spawning** — Spawning one evaluator agent per perspective (8 agents for 7 perspectives + Overall). The canonical topology is 2 agents in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially per the 4-stage procedure in `evaluation/SKILL.md`. Perspective isolation is maintained within the agent's own context discipline, not by spawning separate agents per perspective.
+- ❌ **Proposer self-authoring on empty Codex output** — The Codex-side proposer wrapper fabricates a proposal when `codex exec` produced nothing (timeout / empty / error) instead of reporting BLOCKED. A wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the proposer exists for. The rule is **BLOCKED-on-empty, never self-author**; the producer then degrades to the Claude-only labeled fallback. See [§ Producer Dispatch](#producer-dispatch-dual-system-production).
+- ❌ **Codex proposal transcript leaked to the Codex evaluator** — Feeding the Codex proposal (or its transcript) into the Codex evaluator prompt re-introduces the self-preference bias the dual-system mandate removes. This is the proposer-side parallel of "Author transcript leaked to evaluator": proposer↔evaluator independence is non-negotiable. The Codex evaluator reviews the Claude-authored canonical draft, never the proposal file.
 
 ---
 
@@ -349,6 +351,25 @@ Every evaluator delegation prompt opens with a `CRITICAL: Do Not Trust the Repor
 > **DO NOT:** trust "tests pass" without running them; trust "scope respected" without diffing; trust "research says so" without verifying the citation; cover multiple perspectives; propose fixes.
 
 Boilerplate lives in [`templates/evaluator.md`](templates/evaluator.md). The block is mandatory; do not paraphrase it.
+
+---
+
+## Producer Dispatch (Dual-System Production)
+
+The creation-time analogue of the evaluator Anti-trust Block. When a loop's WORK sub-phase runs under `propose.mode: dual`, the manager spawns **two producers in parallel-independent generation**: the **Claude producer** (leader for Ideation / Preparation / Planning, executor for Execution, assistant for Wrap-up) writes the canonical `working/draft-iter{n}.md`, and the **Codex proposer** (the `codex exec` assistant-wrapper from [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md)) writes only its proposal at `working/proposals/codex/draft-iter{n}.md`. Neither sees the other while generating. The manager runs the spawn → freeze → integrate sequence through [`workflow/production.md`](../orchestration/workflow/production.md); this section owns only the **delegation brief shape**, not the orchestration — do not duplicate it.
+
+**Producer-integration brief shape.** Under `propose.mode: dual`, the producer's delegation prompt carries three elements beyond the base template (the per-role templates ship them as a dedicated dual-system block, filled only when the mode is `dual`):
+
+1. **Proposal-path input** — the frozen Codex proposal at `working/proposals/codex/draft-iter{n}.md` (Execution per-task: `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`). The producer reads it during Study, after the pre-integration freeze — never racing a still-writing Codex run.
+2. **Selective-integration duty** — fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep its own where stronger. **Never naive-blend** — integration is a SELECTION, not an average and not a third synthesized draft.
+3. **Integration Log** — one row per delta (`delta` / `decision` / `why` / `codex_origin`) to `working/reconciliation-iter{n}.md`; surface any unresolvable `large-gap` to the manager (a safety gate that interrupts in both Auto and Chat).
+
+The producer templates ([`templates/leader.md`](templates/leader.md), [`templates/executor.md`](templates/executor.md), [`templates/assistant.md`](templates/assistant.md)) carry this block. [`templates/evaluator.md`](templates/evaluator.md) does NOT — the evaluator reviews, it never proposes.
+
+**Independence rules (mirror the evaluator independence anti-patterns).** Two structural guards keep the cross-family signal intact:
+
+- **BLOCKED-on-empty, never self-author.** If the Codex proposal is empty, times out, or errors, the Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure — it never self-authors a proposal to cover for absent Codex output. A wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for. The producer then proceeds **Claude-only** and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is NOT a safety gate — production degrades silently with that durable label; contrast a missing Codex evaluator, which IS a gate.
+- **The Codex proposal transcript is NEVER fed into the Codex evaluator prompt.** The proposer and the evaluator are distinct, stateless `codex exec` runs with no shared state. Feeding the proposal transcript into the evaluator prompt re-introduces the self-preference bias the dual-system mandate removes — the proposer-side parallel of "Author transcript leaked to evaluator." The Codex evaluator reviews the Claude-authored canonical draft (re-expressed during integration), never the Codex proposal file.
 
 ---
 

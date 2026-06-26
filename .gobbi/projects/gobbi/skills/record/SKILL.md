@@ -107,6 +107,8 @@ created_at: YYYY-MM-DD
 status: draft | final | superseded
 supersedes: [{paths to prior-iter artifacts this replaces}]   # optional, empty when not applicable
 related: [{related artifact paths inside or outside this dir}] # optional
+production_mode: dual | claude-only                           # optional — claude-only marks a DEGRADED dual loop (propose.mode: dual but the Codex proposer failed); omit for a configured propose.mode: single run
+codex_proposal_absent_reason: timeout | empty | error         # optional — present only with production_mode: claude-only (never for a propose.mode: single run)
 ---
 ```
 
@@ -121,6 +123,8 @@ Field semantics:
 | `status` | Yes | `draft` (in-progress), `final` (PASS-iter output), `superseded` (later-iter file replaced this) |
 | `supersedes` | No | Path list of prior-iter artifacts this file replaces. The superseded files are NOT deleted — their own frontmatter `status` flips to `superseded` |
 | `related` | No | Cross-references inside `outputs/` or to other session paths (staging entries, evaluation files) |
+| `production_mode` | No | `dual` (a Codex proposer ran under `propose.mode: dual` and the producer integrated its proposal) or `claude-only` (`propose.mode: dual` was set but the Codex proposal was absent / failed, so the loop ran in **degraded mode**). Set by the producer during dual-system production (see [`orchestration/workflow/production.md`](../orchestration/workflow/production.md)); RECORD preserves it into `outputs/` so a degraded artifact cannot look dual-system-produced. **Omit when the loop ran `propose.mode: single`** — a deliberate, configured Claude-only run is NOT degraded mode and does NOT stamp the degraded-mode label |
+| `codex_proposal_absent_reason` | No | Why the Codex proposal was absent — `timeout` / `empty` / `error`. Present ONLY with `production_mode: claude-only` (the degraded dual case); RECORD preserves it alongside `production_mode`. Never present for a `propose.mode: single` run |
 
 **Reserved artifact_type values** (assistant uses these when applicable; otherwise picks free labels):
 

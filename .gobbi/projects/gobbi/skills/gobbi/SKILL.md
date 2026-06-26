@@ -119,6 +119,9 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 | **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
 | **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory. |
 | **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
+| **Proposer** | The Codex generator in dual-system production — a stateless `codex exec` run that drafts an independent proposal (`working/proposals/codex/draft-iter{n}.md`) during the WORK sub-phase. It never writes the canonical artifact; the Claude producer integrates it. See `orchestration/workflow/production.md`. |
+| **Dual-system production** | The WORK-sub-phase creation model: two independent generators — a Claude producer and a Codex proposer — draft in parallel without seeing each other, then the Claude producer selectively integrates the frozen proposal. The creation-time analogue of dual-system evaluation. |
+| **Selective-integration** | The producer's integration rule — SELECT the stronger element from the Codex proposal, never synthesize a blend; logged per-delta in `working/reconciliation-iter{n}.md`. |
 
 ---
 
@@ -201,10 +204,10 @@ gobbi's durable capabilities — the things a README "Features" section would li
 
 | Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
 |---|---|---|
-| `workflow` | The 6-step state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 5 loop bodies + research + discussion |
+| `workflow` | The 6-step state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; the WORK sub-phase runs dual-system production — a Claude producer + a Codex proposer with selective-integration; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 5 loop bodies + `workflow/production.md` + research + discussion |
 | `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
 | `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
-| `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives | evaluation + the per-loop `evaluation.md` child docs + codex |
+| `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives — the review-time analogue of dual-system production | evaluation + the per-loop `evaluation.md` child docs + codex |
 | `guardrails` | The 10 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
 | `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
 | `install-runtime` | One-command install + bootstrap interview + the per-session runtime contract | interview + gobbi-hook-authoring (+ install/runtime knowledge documented here and in the install dir) |
