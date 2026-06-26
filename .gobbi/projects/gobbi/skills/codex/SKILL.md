@@ -141,6 +141,25 @@ For Claude Code dual-system evaluation, use the assistant-wrapper pattern:
 
 Do not use `codex:codex-rescue` for required evaluator output. It has a documented fire-and-forget failure mode.
 
+### Dual-System Production
+
+The proposer analogue of § Dual-System Evaluation. A Codex co-worker independently produces a **proposal** in parallel with the Claude producer (leader / executor / assistant), so the canonical artifact is shaped by a second model family at creation time, not only at review. The manager orchestrates this through [`orchestration/workflow/production.md`](../orchestration/workflow/production.md); this section owns the `codex exec` wrapper discipline.
+
+The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It writes only its proposal at `working/proposals/codex/draft-iter{n}.md` (Execution, per task: `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`). The Claude producer reads the frozen proposal and selectively integrates it; Codex proposes, Claude writes.
+
+1. Manager spawns the Claude producer and a Codex-side proposer assistant in parallel (parallel-independent — neither sees the other while generating).
+2. The Codex-side assistant writes the proposer prompt to a file in a **foreground** step and verifies it on disk (`test -s`) BEFORE invoking codex — never a stdin heredoc inside a backgrounded command.
+3. The Codex-side assistant runs `codex exec` **foreground-blocking** (the whole turn blocks until codex exits), writing the proposal to the proposal path above.
+4. Use `timeout ≥ 1200s` on the proposer `codex exec`. The `timeout 600` cap documented for the evaluation bridge proved too short for a full proposer workload (large skill reads + a complete draft); 600s is the bridge default, not the proposer cap.
+5. To clean up a hung proposer run, kill by explicit **PID** (`ps` / captured `$!`), never `pkill -f '<pattern>'` — a `-f` pattern that is a substring of the cleanup command kills the issuing shell.
+6. Validate the proposal **structurally** before reporting `DONE`: the file exists, is > 0 bytes, and carries a `PROPOSAL:` header. Do NOT gate on a content-vocabulary grep — a valid proposal can lawfully omit any given token, so a vocab grep false-blocks a clean proposal.
+
+**Degraded mode (CRITICAL).** If the Codex proposal is empty, times out, or errors:
+
+- The Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure. It **never self-authors a proposal** to cover for the absent Codex output — a wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for.
+- The producer proceeds **Claude-only** and stamps a durable label in the canonical artifact's frontmatter: `production_mode: claude-only` plus `codex_proposal_absent_reason: <timeout|empty|error>`. RECORD preserves these fields into the loop `outputs/` (see [`record/SKILL.md` § Artifact frontmatter schema](../record/SKILL.md)), so a degraded artifact can never look dual-system-produced.
+- A missing Codex **proposer** is NOT a safety gate (production degrades silently to Claude-only with the label); contrast a missing Codex **evaluator**, which IS a safety gate.
+
 ### User-Only Slash Commands
 
 If deep Codex adversarial review requires `/codex:adversarial-review`, ask the user to type it. Do not try to invoke user-only slash commands programmatically.
