@@ -5,30 +5,35 @@
     "ideation": {
       "discuss":  { "mode": "user" },
       "evaluate": { "mode": "always" },
+      "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
     },
     "preparation": {
       "discuss":  { "mode": "user" },
       "evaluate": { "mode": "always" },
+      "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
     },
     "planning": {
       "discuss":  { "mode": "agent" },
       "evaluate": { "mode": "always" },
+      "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
     },
     "execution": {
       "discuss":  { "mode": "agent" },
       "evaluate": { "mode": "always" },
+      "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
     },
     "wrap-up": {
       "discuss":  { "mode": "agent" },
       "evaluate": { "mode": "always" },
+      "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
     }
