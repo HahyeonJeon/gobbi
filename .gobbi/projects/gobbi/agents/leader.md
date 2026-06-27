@@ -27,6 +27,7 @@ Mandatory load — every fresh subagent:
 1. **`principles` skill** — Iron Laws and rationale. Not inherited; load explicitly.
 2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
 3. **`mistake` skill** — past pitfalls in this domain.
+4. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory whenever your task writes to the worktree (you write session artifacts there).
 
 Load per phase:
 
@@ -35,7 +36,7 @@ Load per phase:
 - **Research** → `research` skill (loaded by ideation Sub-step C, or whenever the brief calls for it).
 - **Planning** → `orchestration/workflow/planning.md`, `planning` skill.
 
-Load when relevant: `git` (when the work involves branching, PRs, or worktrees), `interview` (when ideation or preparation needs structured user-elicitation or project-skill stamping). When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
+Load when relevant: `interview` (when ideation or preparation needs structured user-elicitation or project-skill stamping). When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
 
 ---
 
