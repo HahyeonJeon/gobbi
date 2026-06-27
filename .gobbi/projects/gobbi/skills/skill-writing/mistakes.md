@@ -39,3 +39,15 @@ updated: 2026-06-27
 **How to detect** — You are authoring a general, reusable, or cross-project doc by mirroring a project-internal one. The source legitimately names a specific language, tool, or framework, or describes the system as it is wired today. Any of those tokens copied across is a leak.
 **Correct approach** — When a shape reference is a project-internal doc and the target is general: take the STRUCTURE only, and scrub every carried sentence for (a) language, tool, or framework-specific idioms such as `test.skip`, naming conventions, or named libraries — restate as the language-agnostic property; (b) present-tense wiring or role claims the target's scope defers — restate as intent ("intended to complement…", "wiring deferred"). Grep the finished general doc for the source's stack tokens before declaring done.
 **User feedback** — The dual-system evaluators surfaced the contamination. The manager recognized the root as shape-reference overreach — the executor used an internal doc for structure AND for phrasing.
+
+## Planning Leader Asserted File Type Without Verifying
+
+`priority: high` · `domain: process` · `added: 2026-06-07` · `status: active` · `tags: [process, planning, verification]`
+
+**What happened** — A planning leader stated in cross-cutting plan notes that target files are "real files (NOT symlinks)" without running `test -L` or `ls -l` to verify. The assertion was wrong — the files ARE symlinks, and an executor using the stated paths would fail (the Edit tool refuses symlink paths). The manager caught the error during plan verification and patched every executor brief before dispatch.
+**Why it happens** — The same citation/verification-fidelity failure as the sibling verify-before-assert trap: a file-property claim stated from assumption, not from a live check. The leader reasoned from prior knowledge rather than verifying against the actual file system.
+**How to detect** — Any "X is/isn't a symlink / real file / exists" claim in a plan or brief with no cited verification command. If the claim says "NOT symlinks" or "real file" without a supporting `ls -l` / `find`, treat it as unverified.
+**Correct approach** — Before asserting a target file's type, existence, or path in a plan or brief: run `test -L <path>` or `ls -l <path>` to check symlink status; run `find . -name <filename>` repo-wide to confirm the canonical location; cite the verification command in the plan note. The planning brief's assertion is the executor's spec — an unverified file-type claim becomes the executor's incorrect starting assumption.
+
+### Related
+- [[planning-asserted-skill-without-verifying]] — intra-file sibling: the same verify-before-assert family
