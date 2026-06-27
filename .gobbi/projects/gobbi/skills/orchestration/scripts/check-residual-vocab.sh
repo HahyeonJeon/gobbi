@@ -24,7 +24,7 @@
 #   1. The 21 historical EXCLUDE files — frozen records whose old vocabulary is a
 #      true historical fact at write time (features/workflow/**, the 2026-06-08
 #      redesign note, the persist-session backlog, the sweep-grep-literal mistake,
-#      the two layer2 sweep/verify mistakes, CHANGELOG.md). Same principle as
+#      CHANGELOG.md). Same principle as
 #      memory/rules.md sec.4.6: frozen history is not re-prosed.
 #   2. The D7-LEGIT retentions — live files whose "memorization" / "Memorize" use
 #      is a CORRECT, intentional reference (the Wrap-up promotion STAGE, a
@@ -374,9 +374,6 @@ is_excluded_path() {
         */notes/2026-06-08-*)                         return 0 ;;  # session-memory-redesign note (frozen)
         */backlogs/persist-session-*)                 return 0 ;;  # persist-session-memory backlog (frozen)
         */mistakes/sweep-grep-literal-*)              return 0 ;;  # the originating sweep mistake (quotes old vocab)
-        */skills/mistake/layer2-sweep-grep-form-specific-*) return 0 ;;  # layer2 copy (quotes old vocab)
-        */skills/mistake/layer2-verify-state-from-authoritative-*) return 0 ;;  # layer2 copy (quotes old vocab)
-        */skills/mistake/layer2-file-move-needs-link-resolution-*) return 0 ;;  # layer2 copy (quotes old vocab)
         */CHANGELOG.md)                               return 0 ;;  # changelog records the rename as history
         */skills/orchestration/scripts/check-residual-vocab.sh) return 0 ;;  # this gate's own source quotes the vocab it hunts
     esac

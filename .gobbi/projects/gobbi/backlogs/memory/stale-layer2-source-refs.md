@@ -4,7 +4,7 @@ description: Three of six layer2-source frontmatter refs in skills/mistake/layer
 type: backlogs
 scope: project
 feature: null
-status: deferred
+status: closed
 created: 2026-06-21
 session: c3ac1c53-6741-49cf-8856-cdb3fcd6bec0
 tags: [memory, links, docs-sync]
@@ -16,6 +16,15 @@ shipped_in: null
 ---
 
 # Stale layer2-source refs — three point at nonexistent files
+
+## Resolution (closed)
+
+Closed: the Layer-2 model was removed. The mistakes redesign deletes the 9
+`skills/mistake/layer2-*.md` copies and drops the `layer2-source:` frontmatter
+field wholesale (the guard `PATH_FIELDS` no longer carries it). With no
+`layer2-source:` refs left in the tree, the dangling-ref subject this backlog
+tracked no longer exists. The 3 ghost lessons were re-homed first (route-before-
+delete, R1), so no lesson was lost.
 
 ## Context
 
