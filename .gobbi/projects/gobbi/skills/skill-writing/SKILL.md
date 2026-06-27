@@ -47,7 +47,7 @@ A skill that documents a wiring mechanism (a symlink, a sync script, a permissio
 each claim on the owner read directly — the script's source, the live symlink, the settings
 file — not on an assumption or an end-state guess. Assert "the script creates the Codex
 mirror" only after reading the loop in `scripts/sync-plugin-package.sh` that creates it.
-This is the highest-value discipline here: see [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+This is the highest-value discipline here: see [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
 — a load-path was asserted without `test -f`, and the dead reference reached the briefing.
 
 > **A new skill is not done until it is loadable, verified empirically.**
@@ -285,7 +285,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 - **Asserting a wiring surface without verifying it.** Writing "the skill is mirrored to
   Codex" without running `--check`, or "the load path exists" without `test -f`. The recorded
-  trap [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+  trap [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
   is exactly this: a path was asserted, never `test`-ed, and the dead reference shipped into a
   briefing. Verify a MECHANISM by reading its owner (script / settings / symlink), not by
   reading the end-state.
@@ -314,5 +314,5 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - A standalone authoring-skill exemplar → [`gobbi-hook-authoring/SKILL.md`](../gobbi-hook-authoring/SKILL.md)
 - Skill Map placement + Product value-features convention → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Memory-FILE frontmatter standard (contrast — NOT skill frontmatter) → [`memory/rules.md`](../memory/rules.md)
-- The verify-before-asserting trap → [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+- The verify-before-asserting trap → [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
 - Authoring a new agent (sibling skill, shared mirror + verify discipline) → [`agent-writing/SKILL.md`](../agent-writing/SKILL.md)

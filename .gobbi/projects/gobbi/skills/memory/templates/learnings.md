@@ -65,7 +65,7 @@ related: [{related learning slugs}]            # list[slug] — plain slugs, not
 ## Related
 {Navigable `[[slug]]` links to mistakes / references / decisions that share context with this learning ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
-- [[file-move-needs-link-resolution-check]] — the trap this insight avoids
+- [[grep-absence-claim-needs-exact-pattern]] — the trap this insight avoids
 ```
 
 ## Notes

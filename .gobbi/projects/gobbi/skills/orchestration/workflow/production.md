@@ -35,7 +35,7 @@ When `propose.mode: single`, the manager spawns only the Claude producer. This i
 
 ## The two-phase freeze boundary
 
-The parallel-generate-then-integrate model widens the window in which an evaluation target can change under the evaluator. Production pins it with an explicit two-phase freeze, derived from `mistakes/verification/freeze-producer-artifact-before-evaluating.md`:
+The parallel-generate-then-integrate model widens the window in which an evaluation target can change under the evaluator. Production pins it with an explicit two-phase freeze, derived from [`evaluation/mistakes.md#freeze-producer-artifact-before-evaluating`](../../evaluation/mistakes.md#freeze-producer-artifact-before-evaluating):
 
 1. **PRE-INTEGRATION freeze.** Both independent outputs — the producer's first draft and the Codex proposal at `working/proposals/codex/draft-iter{n}.md` — are pinned before the producer begins integrating. The producer integrates against the **frozen** proposal; it never races a still-writing Codex run.
 2. **Integration.** The producer selectively integrates into the canonical `working/draft-iter{n}.md` (next section).

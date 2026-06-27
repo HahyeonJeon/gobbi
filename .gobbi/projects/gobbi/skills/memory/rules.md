@@ -87,7 +87,7 @@ This carve-out is a direct consequence of the **Scope boundary** at the top of t
 - **Bare-slug types** (§1.2): `{type}/{area}/{slug}.md`
 - **Date-prefixed types** (§1.2): `{type}/{area}/{YYYY-MM-DD}-{slug}.md` — the date stays inside the area, after it.
 
-Examples: `mistakes/verification/executor-git-stash-in-worktree-during-verify.md`, `decisions/memory/2026-06-21-{slug}.md`, `notes/workflow/2026-06-21-{slug}.md`.
+Examples: `mistakes/verification/grep-absence-claim-needs-exact-pattern.md`, `decisions/memory/2026-06-21-{slug}.md`, `notes/workflow/2026-06-21-{slug}.md`.
 
 **Eager + both-tiers-symmetric.** Every by-area record is namespaced from file 1 — there is no "flat until N files, then split" threshold. The feature tier uses the identical shape: `features/{f}/{type}/{area}/{slug}.md`. One rule, two tiers.
 
@@ -144,7 +144,7 @@ The write-time agent AND Wrap-up routing both apply this rule. It is **determini
 
 #### Refactor procedure — split / merge / rename an area
 
-An area is split / merged / renamed by `git mv`-ing the files and running this procedure. A move changes a file's PATH, so every inbound PATH reference must be repointed. Enumerate ALL reference classes up front — the same discipline as [`../../mistakes/refactor/plan-rename-must-enumerate-all-ref-classes.md`](../../mistakes/refactor/plan-rename-must-enumerate-all-ref-classes.md) and [`../../mistakes/refactor/label-rename-missed-in-fence-and-cross-doc.md`](../../mistakes/refactor/label-rename-missed-in-fence-and-cross-doc.md):
+An area is split / merged / renamed by `git mv`-ing the files and running this procedure. A move changes a file's PATH, so every inbound PATH reference must be repointed. Enumerate ALL reference classes up front — the same discipline as [`mistakes.md#plan-rename-must-enumerate-all-ref-classes`](mistakes.md#plan-rename-must-enumerate-all-ref-classes) and [`mistakes.md#label-rename-missed-in-fence-and-cross-doc`](mistakes.md#label-rename-missed-in-fence-and-cross-doc):
 
 1. **Path refs** — the old path inside a markdown link target and relative-import forms.
 2. **Prose refs** — the area / path named in running text.
@@ -277,7 +277,7 @@ The enum says only WHAT a file is; `scope` and the directory say WHERE it lives.
 
 Memory files link to each other in two distinct ways. Keep them separate.
 
-**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: planning-asserted-skill-without-verifying`, `superseded_by: null`. A `related:` field is a `list[slug]`. `supersedes` may itself be a `list[slug]` — each element a plain slug — when one file consolidates several (the consolidation-merge form, many→one); a one→one supersession stays a single scalar slug.
+**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: grep-absence-claim-needs-exact-pattern`, `superseded_by: null`. A `related:` field is a `list[slug]`. `supersedes` may itself be a `list[slug]` — each element a plain slug — when one file consolidates several (the consolidation-merge form, many→one); a one→one supersession stays a single scalar slug.
 
 **Navigable graph links in the body = `[[slug]]`.** Human- and graph-navigable links live in the BODY, in a `## Related` section near the doc's end — one bullet per link in `[[slug]]` identifier-link form. Foam / Obsidian derive the graph and backlinks from these. Format:
 
@@ -285,7 +285,7 @@ Memory files link to each other in two distinct ways. Keep them separate.
 ## Related
 
 - [[some-other-slug]] — why it relates (one line)
-- [[file-move-needs-link-resolution-check]] — why it relates
+- [[grep-absence-claim-needs-exact-pattern]] — why it relates
 ```
 
 **Identity = the slug.** A file's identity is its slug (= `name` = filename stem). There is NO `id` / UUID field — the slug is the only identifier, in frontmatter and in `[[slug]]` body links alike.

@@ -64,7 +64,7 @@ superseded_by: {newer mistake slug} | null    # plain slug, not a path
 ## Related
 {Navigable `[[slug]]` links to learnings, decisions, or other mistakes with shared context ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
 
-- [[file-move-needs-link-resolution-check]] — a related verification trap
+- [[grep-absence-claim-needs-exact-pattern]] — a related verification trap
 ```
 
 ## Notes
