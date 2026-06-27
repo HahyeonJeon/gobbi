@@ -52,6 +52,22 @@ Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
 - Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model and reasoning effort.
 
+### Pre-spawn independence classification — Codex evaluator (D6.2)
+
+Before spawning the **Codex evaluator**, the manager classifies its prompt for proposer↔evaluator independence: the Codex proposal must NOT leak into the Codex evaluator prompt, or the self-preference bias the dual-system mandate removes is re-introduced (see [`production.md` § Proposer ↔ evaluator independence](production.md)).
+
+**This is a manual/semantic classification, NOT a grep gate.** The manager READS the prompt and judges it against the property's meaning. A literal path-grep (e.g. `grep -rl 'working/proposals/' <prompt>`) is allowed ONLY as **non-gating advisory evidence** — it never decides the outcome. A correct prompt may name `working/proposals/` inside an off-limits warning ("do NOT read `working/proposals/`"), which is a PASS but which a literal grep would false-fail. Gate on the meaning, not the substring.
+
+The manager answers each question by reading the prompt; **ALL must PASS before spawn**:
+
+1. Does the prompt contain any **proposal body text** — sentences or blocks copied from `working/proposals/codex/draft-iter{n}.md`? → must be **NO**.
+2. Does it carry **proposal framing** — "the proposer suggested…", "the alternative approach was…", "Codex proposed…"? → must be **NO**.
+3. Is the artifact under review the **Claude-authored canonical** `working/draft-iter{n}.md` (re-expressed during integration), NOT the Codex proposal file? → must be **YES**.
+4. If a `working/proposals/` path appears at all, is it ONLY inside an **off-limits warning**? A bare off-limits path is a **PASS** — it does NOT fail the gate. → must be **YES** (or the path is absent).
+5. Did the classification come from **reading** the prompt (semantic judgment), with any path-grep used as advisory evidence only, never as the gate? → must be **YES**.
+
+A failing answer means proposal content leaked into the evaluator prompt — the manager fixes the prompt before spawn, never spawns and hopes. The classification outcome is recorded in the manager's pre-spawn log. This is the manual, semantic counterpart to the brittle literal path-grep that false-fails a correct off-limits warning.
+
 ---
 
 ## Collecting Outputs

@@ -39,6 +39,7 @@ Every RECORD delegation prompt MUST declare the following — a one-liner or mis
 | **READ-ONLY paths to consult** | Prior loops' canonical outputs (for cross-loop synthesis); the discussion log; **all** prior-iter per-perspective evaluation files for `m ∈ 1..n` (cumulative staging requirement) |
 | **FORBIDDEN write surfaces** | `.gobbi/projects/{project-name}/features/**`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,decisions,plans,references,reviews,reports,learnings,archive}/**`, other loops' session directories, other systems' evaluation directories. Wrap-up owns memory; loop RECORD never touches it |
 | **Discussion-log handling** | Read-only — assistant reads `working/discussion-log.md` at Step 1 (input load) and Step 7 (discussions staging). The **manager** owns appends during DISCUSSION; the assistant never writes to it |
+| **Integration-log path** | `working/reconciliation-iter{n}.md` (Execution: the per-task `4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`) — the dual-system integration log the assistant parses for the value-telemetry counts written to `workflow.{loop}.integration`. Absent for a `single`-mode loop, in which case the counts stay seeded `0` |
 
 ### Pre-spawn checks
 
@@ -62,7 +63,32 @@ sessions/{date}-{session-id}/
 ├── transcripts/{role}-{agentId}.jsonl  ← each agent's transcript copied into the single
 │                                          session-root transcripts/ (accumulating across loops)
 └── session.json (updated)              ← workflow.{loop}.iterations[] upserted entry
+                                          + workflow.{loop}.integration value-telemetry counts
 ```
+
+### Value-telemetry integration counts
+
+Every iter, the assistant also writes per-step **value telemetry** into `session.json.workflow.{loop}.integration`. It
+parses the loop's dual-system integration log `working/reconciliation-iter{n}.md` (Execution: the per-task
+`4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`) and counts its decision column:
+
+| Count | Rule |
+|---|---|
+| `total_rows` | Every data row in the integration delta table. |
+| `changing_rows` | Rows whose decision is `took-codex` **or** `merged-selective`. |
+| `kept_own_rows` | Rows whose decision is `kept-own`. |
+| `escalated_rows` | Rows whose decision is `escalated`. |
+
+For the Execution loop the assistant additionally appends a per-task element
+`{ taskNo, slug, iter, ...counts }` to `workflow.execution.integration.tasks[]` (idempotent — keyed by `taskNo`).
+**Execution roll-up invariant:** the loop-level `workflow.execution.integration.{changing_rows, kept_own_rows,
+total_rows, escalated_rows}` is the SUM over `tasks[]` of each count — `loop.changing_rows == Σ tasks[].changing_rows`,
+and likewise for the other three. The assistant recomputes the four loop-level counts from `tasks[]` after each
+per-task append, so the write is idempotent (a re-run yields the same loop-level values, never an increment). A
+`single`-mode loop or task has no integration log, so its counts stay seeded `0` and add nothing to the sums. The
+assistant's procedure for this write is in
+[`record/SKILL.md` § Value-telemetry integration counts](../../record/SKILL.md#value-telemetry-integration-counts); the
+manager validates the write at gate 2 below.
 
 ### Additionally on PASS
 
@@ -129,6 +155,7 @@ Every iter:
 - [ ] `workflow.{loop}.iterations[]` contains an entry whose `iter` equals the current iter number
 - [ ] No duplicate `iter` keys in `iterations[]` (UPSERT idempotency)
 - [ ] Each entry has the full schema: `{iter, verdict, finishedAt, evaluation_dir}` — no field missing, `evaluation_dir` matches `evaluation/iter{n}/`
+- [ ] `workflow.{loop}.integration` carries the four counts (`changing_rows` / `kept_own_rows` / `total_rows` / `escalated_rows`); when a `reconciliation-iter{n}.md` exists, they match the count rule (`changing_rows + kept_own_rows + escalated_rows == total_rows`); a `single`-mode loop leaves them `0`. Execution additionally has this task's `{taskNo, slug, iter, ...counts}` element in `workflow.execution.integration.tasks[]`, and the loop-level four counts equal the sum over `tasks[]` (the roll-up invariant: `loop.changing_rows == Σ tasks[].changing_rows`, etc.)
 - [ ] `project`, `feature`, `task` fields preserved verbatim (not overwritten by RECORD)
 - [ ] All other top-level fields preserved verbatim
 
