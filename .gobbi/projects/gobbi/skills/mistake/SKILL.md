@@ -14,13 +14,14 @@ The model is **staging → promotion**. During the working loops, agents write m
 
 ## Memory Access Matrix
 
-The agent MUST observe these tier boundaries. For working-loop agents, the only write surface is session staging. The Wrap-up assistant is the sole exception: it writes promoted candidates to project or feature `mistakes/` during the Wrap-up phase.
+The agent MUST observe these tier boundaries. For working-loop agents, the only write surface is session staging. The Wrap-up assistant is the sole exception: it writes promoted candidates to project or feature `mistakes/` — OR to a skill-owned `skills/{skill}/mistakes.md` home (the hybrid model; see the P4 routing modifier) — during the Wrap-up phase.
 
 | Memory tier | Path root | Access |
 |---|---|---|
 | **Project mistakes — project-level** | `.gobbi/projects/{project-name}/mistakes/` | **READ-ONLY** — load at the start of any work; never written by working-loop agents (Wrap-up assistant is the sole exception) |
 | **Feature mistakes** | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` | **READ-ONLY** — load when the task is feature-scoped; never written by working-loop agents (Wrap-up assistant is the sole exception) |
-| **Session staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during RECORD)** — the only surface agents write to; Wrap-up promotes to project or feature `mistakes/` based on scope confirmed with user |
+| **Skill-surface mistakes — skill-owned home** | `.gobbi/projects/{project-name}/skills/{skill}/mistakes.md` (one `## ` section per trap; a skill-surface doc OUT of the memory frontmatter standard — [`memory/rules.md` § Scope boundary](../memory/rules.md)) | **READ when a task loads that skill** — via the delegation Load-Directives **companion path** (the brief lists `skills/{skill}/mistakes.md` next to `skills/{skill}/SKILL.md`); **WRITTEN only by Wrap-up promotion** (the skill-owned fork of the P4 routing modifier). Never written by working-loop agents |
+| **Session staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` with frontmatter `mistake-candidate: true` | **WRITE (PASS only, during RECORD)** — the only surface agents write to; Wrap-up promotes to a skill-owned `skills/{skill}/mistakes.md` home OR project / feature `mistakes/` based on the routing + scope confirmed with the user (P4) |
 
 **Delete semantics**: agents NEVER delete mistake files in any tier. When a mistake is superseded, the new file carries `supersedes: <old-path>` frontmatter; the old file has its `status:` flipped to `superseded` + `superseded_by: <new-path>` added. Physical deletion is forbidden. **Active mistakes never move** under normal operation — the trap stays live in `mistakes/` where agents load it and where `required-mistakes:` paths point. Only a **superseded** mistake is moved (`git mv`) by Wrap-up to `archive/mistakes/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model in [`memory/templates/archive.md`](../memory/templates/archive.md). **Two sanctioned operations are the exceptions** — a namespace refactor (carve-out below) and a compaction-merge (the THIRD move — full treatment under § Core Principles + [`memory/rules.md` § 5](../memory/rules.md)).
 
@@ -73,8 +74,9 @@ At the start of any task:
 
 1. Read `.gobbi/projects/{project-name}/mistakes/**/*.md` — all project-level mistake files. The glob MUST be recursive (`**/*.md`, or `find .../mistakes -name '*.md'`): mistakes nest one area level under the type dir (`mistakes/{area}/{slug}.md`), so a single-level `mistakes/*.md` glob silently misses every by-area file and the agent loads mistake-blind.
 2. If the task is feature-scoped: read `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/**/*.md` — recursively, for the same reason (feature mistakes also nest under `{area}/`).
-3. Filter by domain relevance — load mistakes whose domain tag matches the task's domain (e.g., `docs-sync`, `process`, `security`, `hooks`).
-4. Note any applicable mistakes explicitly in the Study phase before making any decision in that domain.
+3. Read each `skills/{skill}/mistakes.md` skill-companion that the task's loaded skills bring in — the skill-owned mistakes home (the hybrid model). A spawned subagent has no Skill tool, so this load is wired as a delegation Load-Directives **companion path**: every brief that lists `skills/{skill}/SKILL.md` ALSO lists `skills/{skill}/mistakes.md`, and the subagent READs it. The project tier (steps 1-2) loads session-start-wide; the skill companions load per the skills the task actually uses, so a skill-relevant trap arrives in the skill's own context.
+4. Filter by domain relevance — load mistakes whose domain tag matches the task's domain (e.g., `docs-sync`, `process`, `security`, `hooks`).
+5. Note any applicable mistakes explicitly in the Study phase before making any decision in that domain.
 
 **Do not skim.** A mistake that is not read is a mistake that repeats.
 
@@ -104,9 +106,18 @@ During RECORD on PASS:
 
 The slug is kebab-case derived from the primary symptom — not from "mistake" or the domain tag.
 
+**Routing is deferred to P4.** Staging records the candidate; the home — a skill-owned `skills/{skill}/mistakes.md` section vs the cross-cutting project `mistakes/{area}/` tier — is chosen at Wrap-up promotion (P4), Always-Ask. Do NOT decide it at staging time. The `domain:` tag seeds the advisory `domain → skill` hint that the P4 routing uses.
+
 ### P4 — Wrap-up-phase promotion
 
-During the Wrap-up phase, the Wrap-up assistant promotes staged mistake-candidates from session staging into `mistakes/`. The next session's P1 load will pick them up. Working-loop agents never perform promotion themselves — staging is their sole write surface during the working loops.
+During the Wrap-up phase, the Wrap-up assistant promotes staged mistake-candidates from session staging into a mistake home. The next session's load will pick them up — the project tier via P1, a skill-owned home via the Load-Directives companion path. Working-loop agents never perform promotion themselves — staging is their sole write surface during the working loops.
+
+**Skill-vs-project routing modifier (Always-Ask).** At promotion, each staged mistake-candidate routes to ONE of two homes (the hybrid model):
+
+- **Skill-owned trap** → a `## ` section appended to `skills/{skill}/mistakes.md` (the owning skill's surface doc), loaded in that skill's context via the Load-Directives companion path.
+- **Cross-cutting / no-owner trap** → stays in the project memory tier at `mistakes/{area}/{slug}.md`, loaded at session start by P1.
+
+The choice is **Always-Ask** — the Wrap-up assistant surfaces "skill-owned (which skill?) vs cross-cutting" through the manager's user-decision primitive; a `domain → skill` hint map seeds it but is advisory. A trap that spans two skills goes to ONE section in the PRIMARY owner; the secondary skill gets a `### Related` cross-link only — never a duplicate. One record per trap, in exactly one home. The full routing procedure (and the skill-surface frontmatter allowlist) lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
 
 **`mistake-candidate` is a staging-only flag, stripped on promotion.** The `mistake-candidate: true` frontmatter is a **staging-only** routing flag — its sole job is to tell Wrap-up to route a `staging/decisions/{slug}.md` file to `mistakes/` rather than `decisions/`. Once it has routed the file, its job is done: Wrap-up **strips** it when writing the promoted mistake, so a promoted mistake file in `mistakes/` does NOT carry `mistake-candidate`. The promoted file carries only the base + mistakes-type extension frontmatter ([`memory/rules.md` § 2`](../memory/rules.md)). This is the reciprocal of the Wrap-up frontmatter-allowlist step (see [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md)). A promoted mistake file that still carries `mistake-candidate: true` is a frontmatter-strip miss, not a valid state.
 
@@ -131,12 +142,13 @@ Staging-phase writes during RECORD follow the routing defined in `evaluation/SKI
 |---|---|---|
 | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true`) | assistant (RECORD) | PASS only — one file per mistake-candidate, stamped with `decisions.md` template |
 
-Wrap-up reads these staging files and promotes to the destination based on user-confirmed scope:
+Wrap-up reads these staging files and promotes to the destination based on the user-confirmed routing (skill-owned vs cross-cutting, P4) and scope:
 
-| Scope (user-confirmed) | Destination |
+| Routing / scope (user-confirmed) | Destination |
 |---|---|
-| Feature-scoped mistake | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/{area}/{slug}.md` |
-| Project-scoped mistake | `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` |
+| Skill-owned mistake (the owning skill is confirmed) | `.gobbi/projects/{project-name}/skills/{skill}/mistakes.md` — appended as a `## ` section (the skill-surface home; the hybrid model). Loaded via the Load-Directives companion path, NOT by P1 |
+| Cross-cutting, feature-scoped mistake | `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/{area}/{slug}.md` |
+| Cross-cutting, project-scoped mistake | `.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md` |
 
 **Path conventions**
 
