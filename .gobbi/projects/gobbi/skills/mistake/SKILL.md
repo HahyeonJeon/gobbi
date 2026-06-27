@@ -115,7 +115,7 @@ During the Wrap-up phase, the Wrap-up assistant promotes staged mistake-candidat
 **Skill-vs-project routing modifier (Always-Ask).** At promotion, each staged mistake-candidate routes to ONE of two homes (the hybrid model):
 
 - **Skill-owned trap** → a `## ` section appended to `skills/{skill}/mistakes.md` (the owning skill's surface doc), loaded in that skill's context via the Load-Directives companion path.
-- **Cross-cutting / no-owner trap** → stays in the project memory tier at `mistakes/{area}/{slug}.md`, loaded at session start by P1.
+- **Cross-cutting / no-owner trap** → stays in the project `mistakes/` tier at `mistakes/{area}/{slug}.md`, loaded at session start by P1.
 
 The choice is **Always-Ask** — the Wrap-up assistant surfaces "skill-owned (which skill?) vs cross-cutting" through the manager's user-decision primitive; a `domain → skill` hint map seeds it but is advisory. A trap that spans two skills goes to ONE section in the PRIMARY owner; the secondary skill gets a `### Related` cross-link only — never a duplicate. One record per trap, in exactly one home. The full routing procedure (and the skill-surface frontmatter allowlist) lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
 
