@@ -24,7 +24,7 @@ The `agents` feature provides reference skills that teach gobbi agents how to au
 
 ## Status
 
-Two skills shipped in commit `4e7c68a` (2026-06-24): `skill-writing/SKILL.md` and `agent-writing/SKILL.md`. Both are mirrored on the Codex side. The `claude-plugin` skill and the `gobbi-hook-authoring` skill serve as prior-art meta-skill precedents. Feature-dir bootstrap (this README) was deferred to Wrap-up per DD-5.
+Two skills shipped in commit `4e7c68a` (2026-06-24): `skill-writing/SKILL.md` and `agent-writing/SKILL.md`. Both are mirrored on the Codex side. The `claude-plugin` skill remains the live prior-art meta-skill precedent for authoring-skill shape. Feature-dir bootstrap (this README) was deferred to Wrap-up per DD-5.
 
 ## Subdirectories
 

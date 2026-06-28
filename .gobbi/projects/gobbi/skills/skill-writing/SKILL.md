@@ -18,8 +18,8 @@ each owner instead of restating it, so a single change in the owner does not sil
 a copy here. The discipline that governs this skill governs the skills you write with it.
 
 The best reference is the existing skills. Before authoring, read two or three that match
-the shape you need — `research/SKILL.md` for a short standalone skill, `claude-plugin/SKILL.md`
-and `gobbi-hook-authoring/SKILL.md` for standalone meta/authoring skills. The codebase is
+the shape you need — `research/SKILL.md` for a short standalone skill and
+`claude-plugin/SKILL.md` for a standalone meta/authoring skill. The codebase is
 the style guide.
 
 ---
@@ -153,9 +153,9 @@ appear ONLY when the skill's work writes. A pure reference/authoring skill (read
 ### P4 — Length norm + standalone-vs-child-doc
 
 **Length norm.** Gobbi skills run ~140-600 lines (median ~340). Meta/authoring skills are
-short — `claude-plugin` is 264, `gobbi-hook-authoring` is 280. Aim for ~150-280 lines for a
-meta/reference skill. Length is bounded by the point-don't-restate discipline: a skill that
-copies its owners' content bloats; a skill that points stays tight.
+short — `claude-plugin` is 264 lines. Aim for ~150-280 lines for a meta/reference skill.
+Length is bounded by the point-don't-restate discipline: a skill that copies its owners'
+content bloats; a skill that points stays tight.
 
 **Standalone vs child-doc.** Default to a single standalone `SKILL.md`. Split into child
 docs ONLY when the skill owns one of:
@@ -213,8 +213,8 @@ Wire a new skill in this order, each step with its verify command:
    dedicated prose mention in the Product value-features section (mirror the existing
    "Install / runtime is documented, not a skill." paragraph), NOT a Loop / Cross-cutting /
    Supporting Skill-Map table row. Skill-Map placement is not uniform: some skills have a
-   table row, some are named only in value-feature prose (`gobbi-hook-authoring` is named in
-   the `install-runtime` prose), and some are not in `gobbi/SKILL.md` at all — `claude-plugin`
+   table row, some are named only in value-feature prose (`skill-writing` and `agent-writing`
+   are named in the authoring-skills paragraph), and some are not in `gobbi/SKILL.md` at all — `claude-plugin`
    appears NOWHERE in it (verify: `grep -c claude-plugin .gobbi/projects/gobbi/skills/gobbi/SKILL.md`
    → 0). So a new meta skill does not need a row; this DD-5 step is the deliberate choice to
    give it a dedicated prose paragraph. Verify your mention landed:
@@ -291,9 +291,8 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 ## Cross-references
 
-- Plugin package layout, manifest auto-load, symlink dereference rules → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
+- Plugin package layout, manifest auto-load, symlink dereference rules, and standalone meta/authoring-skill exemplar → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
 - A short standalone skill exemplar → [`research/SKILL.md`](../research/SKILL.md)
-- A standalone authoring-skill exemplar → [`gobbi-hook-authoring/SKILL.md`](../gobbi-hook-authoring/SKILL.md)
 - Skill Map placement + Product value-features convention → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Memory-FILE frontmatter standard (contrast — NOT skill frontmatter) → [`memory/rules.md`](../memory/rules.md)
 - The verify-before-asserting trap → [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)

@@ -4,7 +4,7 @@ description: Decide whether the .claude/skills/ missing gobbi-hook-authoring mir
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-24
 session: 2026-06-24-bb4eb896-bed0-42d6-9a3c-f74547df2611
 tags: [process]
@@ -16,6 +16,15 @@ shipped_in: null
 ---
 
 # `.claude/skills/` missing `gobbi-hook-authoring` mirror
+
+## Resolution
+
+Closed by the R1 doc-sweep (session `2026-06-27-b5601d38`). The standalone hook-authoring
+skill was removed — its content folded into the `hook-authoring.md` child-doc under
+`gobbi/SKILL.md`. With no standalone hook-authoring skill dir left to mirror, the
+`.claude/skills/` vs `.agents/skills/` asymmetry described below no longer exists: there is
+nothing left to mirror, so the mirror-parity question is moot. The historical context below
+is retained per the no-delete rule for backlogs.
 
 ## Context
 
