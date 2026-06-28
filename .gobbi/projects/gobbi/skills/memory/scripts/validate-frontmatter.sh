@@ -111,13 +111,14 @@ script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
 [ -d "$project_root" ] || { log "project root not found: $project_root"; exit 2; }
 
-# --- Resolve the project AREA + TAG vocabulary config (relative to project_root) -
-# The AREA + TAG vocabularies are de-hardcoded into memory-vocabulary.json at the
-# project root, so this validator is project-general (a non-gobbi project ships its
-# own copy). Read via jq (GAP-1: jq is an accepted repo dependency). The config
-# path is derived from the script location, NOT from CWD, so the validator finds it
-# regardless of where it is invoked from.
-vocab_config="$project_root/memory-vocabulary.json"
+# --- Resolve the memory skill AREA + TAG vocabulary config (relative to script_dir) -
+# The AREA + TAG vocabularies are de-hardcoded into memory-vocabulary.json in the
+# memory skill directory (one level above this script's dir: skills/memory/), so the
+# config travels with the memory skill while the validator stays project-general (a
+# non-gobbi project ships its own copy). Read via jq (GAP-1: jq is an accepted repo
+# dependency). The config path is derived from the script location, NOT from CWD, so
+# the validator finds it regardless of where it is invoked from.
+vocab_config="$script_dir/../memory-vocabulary.json"
 [ -f "$vocab_config" ] || { log "vocabulary config not found: $vocab_config"; exit 2; }
 command -v jq >/dev/null 2>&1 || { log "jq not found — required to read $vocab_config"; exit 2; }
 jq -e . "$vocab_config" >/dev/null 2>&1 || { log "invalid JSON in $vocab_config"; exit 2; }
