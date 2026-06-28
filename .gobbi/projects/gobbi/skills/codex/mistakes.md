@@ -76,3 +76,15 @@ updated: 2026-06-27
 
 ### Related
 - [[codex-exec-prompt-via-background-heredoc-hangs]] — the hung-codex trap whose cleanup attempt triggered this self-kill
+
+## Codex Exec Large Diff Eval Times Out
+
+`priority: medium` · `domain: codex` · `added: 2026-06-27` · `status: active` · `tags: [codex, evaluation]`
+
+**What happened** — A dual-system Execution evaluation tasked the Codex evaluator (`codex exec`, 600s timeout) with reviewing a 91-file diff across all 7 perspectives, one output file per perspective. Codex ran the full 600s, was SIGTERM-killed at the cap, and wrote ZERO output files — the whole dual-system pass produced nothing.
+**Why it happens** — A broad N-perspective review over a large diff needs many tool calls plus deep reasoning, and that workload exceeds the 600s `codex exec` cap. Per-perspective file proliferation (7 separate output files, each re-reading the diff) compounds it. The run dies at the timeout boundary before any file is flushed, so all partial progress is lost.
+**How to detect** — A `codex exec` review whose scope is "all 7 perspectives on a 30+ file diff, one file per perspective." Estimate the review breadth (perspectives × diff size) BEFORE dispatching; a large product is the early-warning signal.
+**Correct approach** — For a large review give Codex a TIGHT, focused prompt: the 2-3 highest-value checks (re-run the standing guards + a data-loss fidelity SAMPLE + ONE consolidated verdict file), not 7 perspective files; or split the review into smaller dispatches. Keep the inner `timeout` value BELOW the Bash-tool cap so Codex exits cleanly and any partial output survives instead of being SIGTERM-killed with nothing flushed.
+
+### Related
+- [[codex-side-assistant-faked-eval-on-codex-timeout]] — the no-output state to report BLOCKED on; never self-author the eval when a codex timeout produced nothing

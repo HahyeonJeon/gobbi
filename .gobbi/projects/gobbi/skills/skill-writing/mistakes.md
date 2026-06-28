@@ -51,3 +51,15 @@ updated: 2026-06-27
 
 ### Related
 - [[planning-asserted-skill-without-verifying]] — intra-file sibling: the same verify-before-assert family
+
+## Doc Rewrite Reintroduces Retired Vocab
+
+`priority: medium` · `domain: docs-sync` · `added: 2026-06-27` · `status: active` · `tags: [docs-sync, vocabulary]`
+
+**What happened** — Rewriting docs to the new hybrid mistakes model, the fresh prose used the phrase "project / memory tier" — but `project / memory` is a RETIRED-vocab bigram (the `check-residual-vocab.sh` VOCAB list covers `memorize*` — the old pipeline label — `session / memory`, and `project / memory`). The guard plus the dual-system evaluation caught it after the fact, forcing a reword pass over already-written prose.
+**Why it happens** — When authoring NEW prose, the writer reaches for natural phrasing without checking the project's retired-vocab list. New text feels exempt from a guard whose name ("residual") implies it only scans leftover OLD content — so the writer never runs the guard against prose they just wrote.
+**How to detect** — Any doc rewrite or fresh authoring can introduce a retired bigram in the NEW prose; "residual-vocab" applies to new prose too, not only to leftover old content. The trigger: you just wrote or reworded a doc that names a renamed concept.
+**Correct approach** — Run `check-residual-vocab.sh` on the changed files AFTER a doc rewrite, not only against old content. Treat the guard's VOCAB list as forbidden in new prose; on a hit, reword it (e.g. "project / memory tier" → "the project `mistakes/` tier"). Make the guard part of the rewrite's own verification, not a separate later cleanup.
+
+### Related
+- [[scrub-stack-idioms-when-adapting-to-general-doc]] — sibling docs-sync authoring-contamination trap (source tokens leak into new prose)
