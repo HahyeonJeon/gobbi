@@ -473,9 +473,10 @@ Run ALL of these over the post-promotion project tree (`<scan-root>` = `.gobbi/p
 - [`validate-frontmatter.sh`](../memory/scripts/validate-frontmatter.sh) `<scan-root>` — frontmatter well-formedness
 - [`check-markdown-links.sh`](../orchestration/scripts/check-markdown-links.sh) `<scan-root>` — relative-link resolution
 - [`check-residual-vocab.sh`](../orchestration/scripts/check-residual-vocab.sh) `<scan-root>` — residual stale-vocabulary content gate
+- [`check-skill-mistakes.sh`](../orchestration/scripts/check-skill-mistakes.sh) `--all` — skill-surface `mistakes.md` conformance gate (section structure + bare-path/`[[slug]]` ref resolution); validates the skill-owned-mistake sections a promotion writes into `skills/{skill}/mistakes.md` — a surface `validate-frontmatter.sh` never sees
 - [`check-workflow-mirror-consistency.sh`](../orchestration/scripts/check-workflow-mirror-consistency.sh) — runtime-doc `.claude/` mirror gate (self-locating, zero-arg; checks the worktree `.claude/` runtime surface, NOT the memory tree, so it takes no `<scan-root>`)
 
-[`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) `<manifest> <scan-root>` is the ONE additional guard that runs only when Stage-2c produced a compaction merge manifest — it is enumerated in § Stage 2c step (g), not here, because it has no manifest to check on a non-compacting wrap-up. When a guard flags a legitimately-promoted carrier, extend THAT guard's allowlist using its own derive-from-a-fresh-run discipline in the SAME promotion commit (a stage-2 re-run / `REVISE`), so the guard invariant the session established stays green on the branch that ships. A green frontmatter validator alone is NOT enough — the content/vocab guards, the link checker, AND the runtime-doc mirror guard must all re-run over the post-promotion tree.
+[`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) `<manifest> <scan-root>` is the ONE additional guard that runs only when Stage-2c produced a compaction merge manifest — it is enumerated in § Stage 2c step (g), not here, because it has no manifest to check on a non-compacting wrap-up. When a guard flags a legitimately-promoted carrier, extend THAT guard's allowlist using its own derive-from-a-fresh-run discipline in the SAME promotion commit (a stage-2 re-run / `REVISE`), so the guard invariant the session established stays green on the branch that ships. A green frontmatter validator alone is NOT enough — the content/vocab guards, the link checker, the skill-surface mistakes guard, AND the runtime-doc mirror guard must all re-run over the post-promotion tree.
 
 **Outputs**
 - `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
@@ -490,7 +491,7 @@ Run ALL of these over the post-promotion project tree (`<scan-root>` = `.gobbi/p
 
 **Exit checklist**
 - [ ] Both systems produced per-perspective files for every perspective
-- [ ] Post-promotion standing-guard green-check run on EVERY wrap-up (independent of `settings.compaction.enabled`): `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` + `check-workflow-mirror-consistency.sh` all exit 0 over the post-promotion tree; any guard flagging a legitimately-promoted carrier had its allowlist extended in the same promotion commit
+- [ ] Post-promotion standing-guard green-check run on EVERY wrap-up (independent of `settings.compaction.enabled`): `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` + `check-skill-mistakes.sh` + `check-workflow-mirror-consistency.sh` all exit 0 over the post-promotion tree; any guard flagging a legitimately-promoted carrier had its allowlist extended in the same promotion commit
 - [ ] Verdict aggregated and recorded; `REVISE` increments the iteration counter, `PASS` and `FAIL` advance to RECORD
 
 ---

@@ -377,7 +377,7 @@ is_excluded_path() {
         */notes/2026-06-08-*)                         return 0 ;;  # session-memory-redesign note (frozen)
         */backlogs/persist-session-*)                 return 0 ;;  # persist-session-memory backlog (frozen)
         */mistakes/sweep-grep-literal-*)              return 0 ;;  # the originating sweep mistake (quotes old vocab)
-        */skills/memory/mistakes.md)                  return 0 ;;  # migrated home of the sweep-grep-literal + file-move traps; whole-file EXCLUDE matching the mistakes/sweep-grep-literal-* precedent (its content moved here). The memory-skill traps quote the memorization->memory/record rename as their historical subject
+        */skills/memory/mistakes.md)                  return 0 ;;  # migrated home of the file-move-needs-link-resolution-check / plan-rename-must-enumerate-all-ref-classes / label-rename-missed-in-fence-and-cross-doc traps, which quote the "memorization -> {memory, record}" rename as their historical subject; whole-file EXCLUDE. (sweep-grep-literal did NOT migrate here — it stays at mistakes/refactor/ and is excluded by the line above.)
         */CHANGELOG.md)                               return 0 ;;  # changelog records the rename as history
         */skills/orchestration/scripts/check-residual-vocab.sh) return 0 ;;  # this gate's own source quotes the vocab it hunts
     esac
