@@ -51,6 +51,8 @@ Thirteen review points, broadest first. Each point uses one shape:
 
 Points 3 and 6 each carry two first-class sub-checks, both at full depth.
 
+**Craft findings and the Domain rule.** Some points below — naming, imports, file and directory placement, and other style craft — have no dedicated Domain in `evaluation/SKILL.md`'s canonical set. Map such a finding this way, and never any other: when it actively misleads a reader or caller, record it as `design_flaw` (or `assumption_risk`) with Domain `general` — for a non-`general` Type the Domain is a frontmatter tag, which is valid. A finding whose Type and Domain are **both** `general` violates the `evaluation/SKILL.md` metadata contract — never emit one. When a craft issue is only cosmetic preference or something the linter already catches, do not manufacture a `general`/`general` finding: drop it under the Style-preference or Linter-catchable false-positive category, or escalate the taxonomy gap.
+
 ### 1. Scope & requirement fit
 
 **Check** — the change implements the stated requirement and only that requirement; every in-scope path is finished, with no stub standing in for promised behavior, and no feature the requirement did not ask for.
@@ -112,7 +114,7 @@ Two first-class sub-checks: naming **consistency** (3a) and naming **quality** (
 | One concept, several names | `user_id` here, `uid` there, `account` elsewhere | `customerId` vs `clientId` vs `id` for one entity |
 | One name, two meanings | `count` is a number in one method, a callable in another | `handler` means a callback in one place, a class in another |
 
-**Finding mapping** — Type `general` (or `design_flaw` when the name actively misleads); Domain `general`. Usually REVISE or a recorded nit.
+**Finding mapping** — Type `design_flaw` when an inconsistent name hides a distinction a caller needs; Domain `general` (a frontmatter tag — see the craft-findings rule above). A cosmetic-only inconsistency is a non-blocking nit, not a `general`/`general` finding. REVISE when the inconsistency hides a behavior or interface distinction.
 
 **False positive to avoid** — two genuinely different concepts that share an English word are not an inconsistency.
 
@@ -129,7 +131,7 @@ Two first-class sub-checks: naming **consistency** (3a) and naming **quality** (
 | A placeholder or vague name | `data`, `tmp`, `do_it()` | `obj`, `handleThing`, `value2` |
 | A coined term where a standard one exists | `fetch_and_parse` for what the domain calls `deserialize` | `makeReady` for what the framework calls `initialize` |
 
-**Finding mapping** — Type `general`; Domain `general`. Nit to REVISE.
+**Finding mapping** — Type `design_flaw` when a vague or non-standard name misleads about the unit's job; Domain `general` (a frontmatter tag — see the craft-findings rule above). A purely cosmetic naming nit is non-blocking, not a `general`/`general` finding. Nit to REVISE.
 
 **False positive to avoid** — a domain term the reviewer simply does not know is not a bad name. Check the ecosystem's vocabulary before flagging it.
 
@@ -188,7 +190,7 @@ Two first-class sub-checks: import structure (6a) and file/directory structure (
 | A new import direction creating a cycle | a domain module importing a CLI adapter that already imports it | a UI component importing a server-only module through a convenience barrel |
 | A mid-file import with no stated reason | an `import` inside a function body | a `require()` buried in a method |
 
-**Finding mapping** — Type `general`; Domain `general`. Usually a nit, and often linter-catchable — confirm the project's linter does not already cover it before flagging by hand.
+**Finding mapping** — Type `design_flaw` when an import hides the surface or creates a cycle; Domain `dependency` for a cycle or a dependency-direction problem, else `general` (a frontmatter tag — see the craft-findings rule above). A pure ordering nit is linter-catchable — drop it under that false-positive category rather than emit a `general`/`general` finding.
 
 **False positive to avoid** — a deliberate lazy import to break a cycle or defer a heavy load is justified. Check for the reason before flagging.
 
@@ -205,7 +207,7 @@ Two first-class sub-checks: import structure (6a) and file/directory structure (
 | A file in a surprising place | a domain model dropped under `utils/` | a React hook outside the `hooks/` directory |
 | A non-conventional entry point | logic hidden in `__init__.py` a reader will not expect | named exports bypassing the package's barrel `index.ts` |
 
-**Finding mapping** — Type `general`; Domain `general`. Nit to REVISE.
+**Finding mapping** — Type `design_flaw` when placement hides ownership or leaves an export stale; Domain `docs-sync` for a stale export or reference, else `general` (a frontmatter tag — see the craft-findings rule above). A subjective placement preference is a non-blocking nit, not a `general`/`general` finding. Nit to REVISE.
 
 **False positive to avoid** — an existing project layout the reviewer dislikes, but which is the established convention, is not a defect.
 
@@ -336,7 +338,7 @@ Two first-class sub-checks: import structure (6a) and file/directory structure (
 | Preference marked, not mandated | "don't write it this way" | "nit (non-blocking): a comprehension reads clearer here; optional" |
 | The why is stated | "rename this" | "rename `d` to `delay_ms`: the unit is load-bearing at the three call sites" |
 
-**Finding mapping** — this is not a finding about the code under review; it governs how every other finding is phrased. A review that produces vague, unlocatable, or hostile comments is low-quality regardless of its verdict.
+**Finding mapping** — none, by design. Point #13 is a meta point: it governs how every *other* finding is phrased, so it is not itself a code-finding and carries no Type or Domain. A review that produces vague, unlocatable, or hostile comments is low-quality regardless of its verdict — fix the comment, do not file a finding against the code.
 
 **False positive to avoid** — a terse comment on an obvious issue is fine. Do not pad every nit into a paragraph.
 
