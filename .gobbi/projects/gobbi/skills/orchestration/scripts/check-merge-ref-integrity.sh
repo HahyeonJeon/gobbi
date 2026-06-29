@@ -53,7 +53,7 @@
 #   C — rules.md §1.5 reference classes (refactor procedure, lines 147-154):
 #         C1 path refs    — dead active path inside `](path)` / `[label]: path`
 #         C2 prose refs   — the dead slug NAME in running text (bare-slug)
-#         C3 required-mistakes: / layer2-source: PATH refs (skill/agent + memory
+#         C3 required-mistakes: PATH refs (skill/agent + memory
 #                           frontmatter + prose; the skill-name-ref analog)
 #         C4 inventory/list/table refs — a row/cell naming the dead slug (bare-slug)
 #         C5 wrapper-description refs   — agent prompt blocks naming the slug (bare-slug)
@@ -80,9 +80,8 @@
 # Scan root (DISTINCT from validate-frontmatter.sh's P_live — it ADDS skills/+agents/):
 #   the project dir (arg 2), walked, with archive/ sessions/ tmp/ worktrees/
 #   PRUNED. Every `*.md` AND `*.toml` file under it is scanned — that is exactly
-#   P_live ∪ the skills/+agents/ inbound-ref surface (Layer-2 mistakes under
-#   skills/mistake/layer2-*.md, required-mistakes:/layer2-source: refs, prose/
-#   inventory mentions) ∪ the §1.5 wrapper class (agents/*.toml / .codex/*.toml
+#   P_live ∪ the skills/+agents/ inbound-ref surface (required-mistakes: refs,
+#   prose/inventory mentions) ∪ the §1.5 wrapper class (agents/*.toml / .codex/*.toml
 #   runtime wrappers — a stale merged-away ref inside a non-Markdown wrapper is a
 #   real dangling ref and MUST be caught). archive/ is PRUNED (frozen history),
 #   NOT allowlisted.
@@ -114,7 +113,7 @@
 #   $2 <scan-root>    project dir to walk for inbound refs (archive/ sessions/
 #                     tmp/ worktrees/ pruned; skills/ + agents/ INCLUDED;
 #                     *.md AND *.toml scanned). Required.
-#   $3 <resolve-base> base for manifest paths + required-mistakes:/layer2-source:
+#   $3 <resolve-base> base for manifest paths + required-mistakes:
 #                     path refs. Optional; defaults to <scan-root>.
 #
 # Output:
@@ -141,7 +140,7 @@ usage: check-merge-ref-integrity.sh <manifest> <scan-root> [<resolve-base>]
   supersession linkage (Family 2). <manifest> is the TSV merge manifest;
   <scan-root> is the project dir to walk (archive/ sessions/ tmp/ worktrees/
   pruned, skills/ + agents/ included, *.md + *.toml scanned); <resolve-base>
-  (default <scan-root>) resolves manifest + required-mistakes:/layer2-source:
+  (default <scan-root>) resolves manifest + required-mistakes:
   paths. --self-test asserts the dangling-class field set still equals the
   rules.md §2.2 extension universe (no manifest / scan needed).
   Exit 0 = clean, 1 = violation(s)/drift, 2 = bad args.
@@ -164,7 +163,7 @@ EOF
 # ---------------------------------------------------------------------------
 SLUG_FIELDS="related shipped_in related_reports related_reviews related_decisions scenario anchor implemented_in"
 NONREF_FIELDS="value_proposition subsystems features_touched loops_completed shipped priority domain established project-scope title source accessed ref_type task task_count review_kind subject verdict report_type generated_by outcome item_status novel"
-PATH_FIELDS="required-mistakes layer2-source"
+PATH_FIELDS="required-mistakes"
 GLOBAL_SLUG_LINKS="related"
 
 # Locate the §2.2 standard relative to THIS script (the field sets track it).
@@ -509,7 +508,7 @@ for file in "${FILES[@]}"; do
         esac
         case " $PATH_FIELDS " in
             *" $key "*)
-                # values may be ` + `-joined (layer2-source multi-target). Split
+                # values may be ` + `-joined (multi-target). Split
                 # into a bash array (no pipe-into-while) so `add` stays in-shell.
                 _split="$(printf '%s' "$val" | sed 's/ + /\n/g')"
                 while IFS= read -r tgt; do

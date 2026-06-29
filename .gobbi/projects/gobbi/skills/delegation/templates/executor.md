@@ -38,8 +38,9 @@ Description or any other work. Skipping any required file is a process failure.
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
    - `.gobbi/projects/<<project-name>>/skills/record/SKILL.md` (mandatory when this delegation includes a RECORD sub-phase; omit otherwise)
    - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (mandatory when the delegation writes or evaluates memory — the naming/frontmatter/structure standard)
+   - `.gobbi/projects/<<project-name>>/skills/git/SKILL.md` + `.gobbi/projects/<<project-name>>/skills/git/mistakes.md` (MANDATORY — the executor commits to the worktree; the absolute-worktree-path write discipline + git traps)
    - `.gobbi/projects/<<project-name>>/skills/orchestration/workflow/execution.md` (mandatory phase doc)
-   - Domain skills (full paths): <<list — e.g., `.gobbi/projects/<<project-name>>/skills/claude/SKILL.md`, `.../bun/SKILL.md`, `.../typescript/SKILL.md`>>
+   - Domain skills — list each `skills/{x}/SKILL.md` WITH its `skills/{x}/mistakes.md` companion on the next line (the per-skill mistakes companion path; subagents have no Skill tool, so an unlisted companion never loads): <<list — e.g., `.gobbi/projects/<<project-name>>/skills/claude/SKILL.md`, `.../bun/SKILL.md`, `.../typescript/SKILL.md`>>
    - <<project skill if relevant — full path>>
 4. Mistakes:
    - <<list of mistake files specifically relevant to this task's domain — full paths>>

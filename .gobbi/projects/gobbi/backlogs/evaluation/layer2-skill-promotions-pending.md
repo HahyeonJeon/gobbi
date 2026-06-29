@@ -4,7 +4,7 @@ description: Two generalizable mistakes from session 8129f657 that should be fol
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-18
 session: 8129f657-4591-48b3-b83c-3aa9bc759ca6
 tags: [process, codex, evaluation]
@@ -16,6 +16,17 @@ shipped_in: null
 ---
 
 # Layer-2 skill promotions pending
+
+## Resolution (closed)
+
+Closed: subsumed by the mistakes-redesign feature. That feature replaces the
+Layer-2 model with the hybrid skill-vs-project routing, and its migration folds
+generalizable project-mistakes into skill-owned `skills/{skill}/mistakes.md`
+homes — exactly the "fold generalizable mistakes into skill prose" work this
+backlog tracked. Both source mistakes named below were migrated to skill homes
+(`codex-side-assistant-faked-eval-on-codex-timeout` → `skills/codex/mistakes.md`;
+`executor-wrote-to-main-tree-not-worktree` → `skills/git/mistakes.md`), so the
+pending promotions are no longer outstanding.
 
 ## Context
 

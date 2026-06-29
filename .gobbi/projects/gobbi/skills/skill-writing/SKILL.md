@@ -47,7 +47,7 @@ A skill that documents a wiring mechanism (a symlink, a sync script, a permissio
 each claim on the owner read directly — the script's source, the live symlink, the settings
 file — not on an assumption or an end-state guess. Assert "the script creates the Codex
 mirror" only after reading the loop in `scripts/sync-plugin-package.sh` that creates it.
-This is the highest-value discipline here: see [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+This is the highest-value discipline here: see [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
 — a load-path was asserted without `test -f`, and the dead reference reached the briefing.
 
 > **A new skill is not done until it is loadable, verified empirically.**
@@ -170,13 +170,23 @@ docs ONLY when the skill owns one of:
 A single coherent procedure stays ONE file. When in doubt, standalone — a child doc is
 justified by ownership of a set or a too-long reference, not by length alone.
 
+**The `mistakes.md` companion.** Separately from length-driven child docs, a skill MAY carry
+a `mistakes.md` companion in its dir — the **skill-owned mistakes home** (the hybrid model). It
+holds the traps that belong to this skill's domain, one `## ` section per trap. It is a
+skill-surface doc (OUT of the memory frontmatter standard — [`memory/rules.md` § Scope boundary](../memory/rules.md)),
+governed by its own `check-skill-mistakes.sh` guard, not by `validate-frontmatter.sh`. Wrap-up
+promotion writes it (Always-Ask routing — see [`mistake/SKILL.md`](../mistake/SKILL.md)); a brief
+that lists `skills/{name}/SKILL.md` in its Load Directives ALSO lists `skills/{name}/mistakes.md`
+as a companion path, so the trap loads in the skill's context. Wire it with the same per-file
+`.claude` symlink as `SKILL.md` (P5 step 1).
+
 ### P5 — Wiring a new skill (SCRIPT-OWNED vs HAND-OWNED)
 
 A skill has three mirror surfaces, at different granularity (verified by `readlink`):
 
 | Surface | Shape | Owner |
 |---|---|---|
-| `.claude/skills/{name}/` | a REAL directory holding one symlink PER FILE (`SKILL.md -> ../../../.gobbi/projects/gobbi/skills/{name}/SKILL.md`) | **HAND-CREATED** |
+| `.claude/skills/{name}/` | a REAL directory holding one symlink PER FILE (`SKILL.md -> ../../../.gobbi/projects/gobbi/skills/{name}/SKILL.md`, plus one per companion the skill exposes — e.g. `mistakes.md`) | **HAND-CREATED** |
 | `.agents/skills/{name}` | ONE whole-dir symlink (`-> ../../.gobbi/projects/gobbi/skills/{name}`) | **SCRIPT-OWNED** |
 | `plugins/gobbi/skills` | ONE whole-dir symlink for ALL skills (`-> ../../.gobbi/projects/gobbi/skills`) | **SCRIPT-OWNED** |
 
@@ -196,6 +206,14 @@ Wire a new skill in this order, each step with its verify command:
    ```
    Verify: `readlink -e .claude/skills/{name}/SKILL.md` resolves to the canonical file.
    If the skill ships child docs, create one per-file symlink for each file the skill exposes.
+   A skill carrying a `mistakes.md` companion (the skill-owned mistakes home, hybrid model)
+   needs the SAME per-file symlink:
+   ```bash
+   ln -s ../../../.gobbi/projects/gobbi/skills/{name}/mistakes.md .claude/skills/{name}/mistakes.md
+   ```
+   Only `.claude` needs this per-file action: the `.agents/skills/{name}` and `plugins/gobbi/skills`
+   whole-dir symlinks (step 2) point at the WHOLE skill dir, so they auto-expose `mistakes.md`
+   with no extra step.
 2. **Run the sync script.** It auto-creates `.agents/skills/{name}` and refreshes the plugin
    whole-dir symlinks:
    ```bash
@@ -267,7 +285,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 - **Asserting a wiring surface without verifying it.** Writing "the skill is mirrored to
   Codex" without running `--check`, or "the load path exists" without `test -f`. The recorded
-  trap [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+  trap [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
   is exactly this: a path was asserted, never `test`-ed, and the dead reference shipped into a
   briefing. Verify a MECHANISM by reading its owner (script / settings / symlink), not by
   reading the end-state.
@@ -296,5 +314,5 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - A standalone authoring-skill exemplar → [`gobbi-hook-authoring/SKILL.md`](../gobbi-hook-authoring/SKILL.md)
 - Skill Map placement + Product value-features convention → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Memory-FILE frontmatter standard (contrast — NOT skill frontmatter) → [`memory/rules.md`](../memory/rules.md)
-- The verify-before-asserting trap → [`mistakes/planning-asserted-skill-without-verifying.md`](../../mistakes/planning-asserted-skill-without-verifying.md)
+- The verify-before-asserting trap → [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
 - Authoring a new agent (sibling skill, shared mirror + verify discipline) → [`agent-writing/SKILL.md`](../agent-writing/SKILL.md)

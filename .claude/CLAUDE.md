@@ -49,7 +49,7 @@ The 10 principles below are the enforceable behavioral discipline for every agen
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
-Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes staged candidates to project mistakes (`.gobbi/projects/{name}/mistakes/`) — Layer 1. The Wrap-up assistant also performs Layer-2 promotion: moving generalizable project-mistakes to workspace-level skill storage so they persist across all projects and future sessions. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
+Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes each staged candidate to one of two homes (Always-Ask routing): a **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the delegation Load-Directives companion path; a **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{name}/mistakes/`), loaded at session start. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
 
 ---
 

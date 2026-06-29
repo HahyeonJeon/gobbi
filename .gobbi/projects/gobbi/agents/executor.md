@@ -30,10 +30,11 @@ Mandatory load:
 2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
 3. **`mistake` skill** — past pitfalls.
 4. **`orchestration/workflow/execution.md`** + **`execution` skill** — implementation and verification principles.
+5. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
 
-- **Code:** the `execution` skill is already mandatory above. For branch operations, load the `git` skill. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. No additional language-specific skills exist in this tree.
+- **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. No additional language-specific skills exist in this tree.
 - **Runtime docs:** authoring for runtime docs is out of v0.5.0 scope — see issue #258 for the planned authoring-skill set. Until then, follow the conventions visible in the existing docs: backtick paths, no emojis, no new files unless the contract requires.
 - **Research materials:** the task's `research/` directory if present — read every research artifact the leader produced. Research is direction, not prescription.
 

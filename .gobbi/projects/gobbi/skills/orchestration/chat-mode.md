@@ -122,7 +122,7 @@ Step 6 — Wrap-up Loop  (maxIter=5)
    FULL RECORD consolidation:
    - mine the session transcript
    - read every per-task task-record.md
-   - promote staged mistakes (Layer 1 + Layer 2)
+   - promote staged mistakes (skill-owned + cross-cutting homes)
    - archive shipped backlogs (move-on-terminal)
    - write the session handoff
 ```

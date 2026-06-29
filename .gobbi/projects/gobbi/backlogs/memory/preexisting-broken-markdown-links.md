@@ -1,6 +1,6 @@
 ---
 name: preexisting-broken-markdown-links
-description: Pre-existing broken markdown links across the project tree surfaced by check-markdown-links.sh; not defects introduced by any one session. Now also folds in the rules.md + chat-mode.md broken links found in session 8129f657.
+description: Pre-existing broken markdown links across the project tree surfaced by check-markdown-links.sh; not defects introduced by any one session. Folds in the rules.md + chat-mode.md links from session 8129f657 and the refreshed durable set (19) verified in session 659a1b3f.
 type: backlogs
 scope: project
 feature: null
@@ -41,6 +41,47 @@ in a near-duplicate backlog:
    `mistakes/prose-reclassification-target-is-project-level-notes.md`; the target does
    not exist. Fix: create the missing mistake doc, or repoint the 3 references to the
    correct slug, or remove the prose pointers.
+
+### Refreshed 2026-06-27 (session 659a1b3f) — current verified durable set (19)
+
+Re-ran `check-markdown-links.sh` over the project tree during the mistakes-redesign
+final pass. That feature (delete the 9 `skills/mistake/layer2-*.md` copies + the
+`check-layer2-source.sh` guard, reword the retired `project memory` bigram, allowlist
+the migrated memory-skill mistakes home) introduced **zero new** durable broken links
+— verified by diffing the broken set against the task's parent commit `8e553f79`. The
+deletes also REMOVED one pre-existing broken link (a placeholder whose literal target
+text was the word `path`, inside the deleted
+`skills/mistake/layer2-file-move-needs-link-resolution-check.md`). The durable
+pre-existing set is now 19, grouped below. The raw guard count over the project dir is
+higher only because it also walks the gitignored `sessions/` runtime tree, whose
+placeholder link text is transient, not durable.
+
+- **Bare `diataxis.fr` URL (2)** — `skills/memory/rules.md` and this backlog reference
+  `diataxis.fr` without an `https://` scheme. Fix: prepend `https://`.
+- **Dangling `design-literal-retire-instruction-without-replacement` (2)** —
+  `skills/memory/rules.md` and this backlog point at
+  `../../mistakes/design-literal-retire-instruction-without-replacement.md`, whose
+  area-namespaced path no longer matches. Fix: repoint to the live `mistakes/{area}/`
+  path.
+- **Dangling `delegation/SKILL.md#what-every-delegation-prompt-contains` anchor (3)**
+  — `backlogs/process/wrapup-workflow-doc-broken-delegation-link.md`,
+  `skills/orchestration/workflow/execution.md`, and `skills/orchestration/workflow/wrap-up.md`
+  link to a heading anchor that no longer exists in `delegation/SKILL.md`. Fix:
+  repoint to the renamed heading.
+- **Frozen migration-manifest relative paths (4)** —
+  `features/memory/plans/memory/2026-06-23-area-tag-migration-manifest.md` links four
+  targets (`legacy-frontmatter-migration.md`, `memory-namespace-migration.md`,
+  `memory-namespace-schema.md`, `memory-vocabulary.json`) at a wrong relative depth.
+  Frozen plan — fix the depth or leave as frozen history.
+- **`.claude/hooks` / `.claude/scripts` paths (6)** — `skills/delegation/SKILL.md` (2)
+  and `skills/orchestration/SKILL.md` (4) reference `post-tool-use-agents.sh`,
+  `reconstruct-agents.sh`, and `session-end.sh` under `.claude/hooks/` /
+  `.claude/scripts/` at relative paths that do not resolve from the linking file.
+- **Other dangling `skills/delegation/SKILL.md` targets (2)** —
+  `post-tool-use-hook-cannot-resolve-worktree-session-json.md` and
+  `rules/docs-cleanup-parallelism.md`.
+
+None of the 19 references a slug or script removed by this feature.
 
 ## Why deferred
 

@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/skill-writing/mistakes.md
