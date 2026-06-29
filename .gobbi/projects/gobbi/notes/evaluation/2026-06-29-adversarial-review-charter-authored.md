@@ -47,9 +47,9 @@ deliverable needed no readiness gaps and no decomposition. Execution ran single-
 final adversarial gate was consolidated into this Wrap-up's memory-validation (Codex).
 
 ## What shipped
-- `features/review/plans/workflow/2026-06-29-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
-- 4 references → `features/review/references/memory/` (the harness baselines above).
-- 2 feature backlogs → `features/review/backlogs/` (`run-deep-adversarial-review`, `fix-confirmed-seed-findings`).
+- `plans/workflow/2026-06-29-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
+- 4 references → `references/memory/` (the harness baselines above).
+- 2 feature backlogs → `backlogs/` (`run-deep-adversarial-review`, `fix-confirmed-seed-findings`).
 - 1 project backlog → `backlogs/process/automated-cross-layer-drift-validator.md` (issue #258 class).
 - 3 project mistakes → `mistakes/` (`codex/codex-exec-timeout-exceeds-bash-cap`, `docs-sync/research-ideation-reference-staging-conflict`, `verification/find-misses-symlinked-mirror-dirs`).
 
@@ -67,7 +67,7 @@ The mirror finding shifted from "incomplete" to a precise parity statement once 
 dereferenced.
 
 ## Decisions to respect
-- **DECISION-1** — charter durable home is `features/review/plans/`; the next session's FINDINGS go to a separate `reviews/adversarial-review/{date}-gobbi-adversarial-review.md`.
+- **DECISION-1** — charter durable home is `plans/`; the next session's FINDINGS go to a separate `reviews/adversarial-review/{date}-gobbi-adversarial-review.md`.
 - **DECISION-2** — reuse gobbi's existing enums exactly (severity Critical/High/Medium/Low; confidence 0/25/50/75/100; priority critical/high/medium/low; disposition open/addressed/disputed/deferred/superseded). No new S0–S3 / P0–P3 vocabulary.
 - **DECISION-3** — partition the review BY DIMENSION (one dual-system pass per dimension), with a shared pass-0 inventory so each pass targets specific files, not a full re-read (user override of the recommended by-segment hybrid).
 - **DECISION-4** — include live-session UX as the 7th cross-cutting dimension (D7), home of the todo-list seed finding.
@@ -76,7 +76,7 @@ dereferenced.
 - Base branch is `develop`.
 
 ## Next session
-Run the deep adversarial review: pick up `features/review/backlogs/evaluation/run-deep-adversarial-review.md`, execute the charter's by-dimension methodology, stage findings as `reviews/adversarial-review/`. Then `fix-confirmed-seed-findings`.
+Run the deep adversarial review: pick up `backlogs/evaluation/run-deep-adversarial-review.md`, execute the charter's by-dimension methodology, stage findings as `reviews/adversarial-review/`. Then `fix-confirmed-seed-findings`.
 
 ## Related
 
