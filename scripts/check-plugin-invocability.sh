@@ -6,19 +6,18 @@
 # skills and agents in its package are invocable without explicit allow-list
 # entries in .claude/settings.json.
 #
-# The two skills NOT listed in the dev .claude/settings.json allow-list are:
+# The skill NOT listed in the dev .claude/settings.json allow-list is:
 #   gobbi:codex              (skill)
-#   gobbi:gobbi-hook-authoring  (skill)
 # Plus one agent (also validated):
 #   gobbi:leader             (agent — also in allow-list, but tested for symmetry)
 #
 # DD-9 says installed plugins auto-grant their full skill/agent set.
-# If TRUE: both omitted skills load without permission refusal.
+# If TRUE: the omitted skill loads without permission refusal.
 # If FALSE: Claude shows a permission refusal for at least one.
 #
 # This script records the operator-observed TRUE/FALSE result and, given an
 # explicit operator-supplied FALSE verdict, shows the conditional-edit command
-# that would add the two missing Skill() entries to .claude/settings.json.
+# that would add the missing Skill() entry to .claude/settings.json.
 #
 # !! THE CONDITIONAL EDIT DOES NOT RUN AUTOMATICALLY !!
 # It fires ONLY when the operator explicitly passes --apply-false to this script
@@ -54,14 +53,13 @@
 #   is active.  Do NOT have the dev .claude/settings.json in scope — the test
 #   is specifically for the installed-plugin auto-grant path (DD-8 split).
 #
-# STEP 2 — Invoke the two omitted skills
+# STEP 2 — Invoke the omitted skill
 # ----------------------------------------
-#   In the Claude session, type each slash command and observe the result:
+#   In the Claude session, type the slash command and observe the result:
 #
 #     /gobbi:codex
-#     /gobbi:gobbi-hook-authoring
 #
-#   Observe for EACH:
+#   Observe:
 #     SUCCESS indicator: The skill loads — Claude reads the SKILL.md and responds
 #       with its content or begins executing the skill. No warning about permissions.
 #     REFUSAL indicator: Claude shows a message like "Permission denied",
@@ -80,7 +78,7 @@
 #
 # STEP 4 — Determine overall result
 # -----------------------------------
-#   TRUE  = ALL of {gobbi:codex, gobbi:gobbi-hook-authoring, gobbi:leader} load
+#   TRUE  = ALL of {gobbi:codex, gobbi:leader} load
 #           without refusal.  DD-9 auto-grant is confirmed.
 #   FALSE = ANY of the above shows a refusal.  DD-9 auto-grant is NOT active or
 #           is incomplete.  The conditional-edit section of this script shows the
@@ -163,9 +161,8 @@ fi
 # ---------------------------------------------------------------------------
 printf '\n=== check-plugin-invocability.sh ===\n'
 printf 'DD-9 premise: installed plugins auto-grant their full skill/agent set.\n'
-printf '\nSkills under test (omitted from dev .claude/settings.json allow-list):\n'
+printf '\nSkill under test (omitted from dev .claude/settings.json allow-list):\n'
 printf '  gobbi:codex\n'
-printf '  gobbi:gobbi-hook-authoring\n'
 printf '\nAgent under test (present in allow-list; validated for symmetry):\n'
 printf '  gobbi:leader\n'
 printf '\nObserved result: %s\n\n' "${AUTOGRANT_RESULT}"
@@ -173,34 +170,32 @@ printf '\nObserved result: %s\n\n' "${AUTOGRANT_RESULT}"
 # ---------------------------------------------------------------------------
 # Section 1: Record the result
 # ---------------------------------------------------------------------------
-printf '--- Section 1: DD-9 auto-grant result ---\n'
+printf '%s\n' '--- Section 1: DD-9 auto-grant result ---'
 
 if [[ "$AUTOGRANT_RESULT" == "TRUE" ]]; then
     pass "gobbi:codex loaded without refusal (operator-observed)"
-    pass "gobbi:gobbi-hook-authoring loaded without refusal (operator-observed)"
     pass "gobbi:leader loaded without refusal (operator-observed)"
     pass "DD-9 auto-grant: TRUE — all tested skills/agents load when installed"
     printf '\n'
     info "No .claude/settings.json edit required."
-    info "The two omitted skills (codex, gobbi-hook-authoring) are auto-granted"
+    info "The omitted skill (codex) is auto-granted"
     info "by the installed plugin; no explicit Skill() entry is needed."
     printf '\n'
-    printf '--- Summary ---\n'
+    printf '%s\n' '--- Summary ---'
     printf "${GREEN}AUTOGRANT = TRUE: DD-9 confirmed. No settings.json edit needed.${RESET}\n"
     exit 0
 fi
 
 # AUTOGRANT_RESULT == FALSE
 warn "DD-9 auto-grant: FALSE — at least one skill/agent showed a refusal"
-warn "The following may require explicit allow-list entries:"
+warn "The following may require an explicit allow-list entry:"
 warn "  Skill(codex)                  [maps to gobbi:codex]"
-warn "  Skill(gobbi-hook-authoring)   [maps to gobbi:gobbi-hook-authoring]"
 printf '\n'
 
 # ---------------------------------------------------------------------------
 # Section 2: Conditional-edit helper (fires ONLY if --apply-false is passed)
 # ---------------------------------------------------------------------------
-printf '--- Section 2: conditional settings.json edit ---\n'
+printf '%s\n' '--- Section 2: conditional settings.json edit ---'
 
 # Locate the settings.json in the active project (dev registration file)
 # This is the worktree-local .claude/settings.json (DD-8 dev-side file).
@@ -218,11 +213,10 @@ if [[ "$APPLY_FALSE" == "false" ]]; then
     info "If you have confirmed AUTOGRANT=FALSE and want to apply the fix, run:"
     printf '\n'
     printf '  AUTOGRANT_RESULT=FALSE bash scripts/check-plugin-invocability.sh --apply-false\n\n'
-    info "The fix adds these two entries to .claude/settings.json permissions.allow:"
+    info "The fix adds this entry to .claude/settings.json permissions.allow:"
     printf '  "Skill(codex)"\n'
-    printf '  "Skill(gobbi-hook-authoring)"\n'
     printf '\n'
-    printf '--- Summary ---\n'
+    printf '%s\n' '--- Summary ---'
     printf "${YELLOW}AUTOGRANT = FALSE: settings.json edit needed but not applied.${RESET}\n"
     printf 'Re-run with --apply-false after manual confirmation to apply.\n'
     exit 0
@@ -250,20 +244,15 @@ CURRENT_ALLOW=$(jq -r '.permissions.allow // [] | .[]' "$SETTINGS_JSON")
 
 # Check if already present (idempotent)
 CODEX_PRESENT=false
-HOOKAUTH_PRESENT=false
 
 if printf '%s\n' "$CURRENT_ALLOW" | grep -qxF 'Skill(codex)'; then
     CODEX_PRESENT=true
 fi
-if printf '%s\n' "$CURRENT_ALLOW" | grep -qxF 'Skill(gobbi-hook-authoring)'; then
-    HOOKAUTH_PRESENT=true
-fi
 
-if [[ "$CODEX_PRESENT" == "true" && "$HOOKAUTH_PRESENT" == "true" ]]; then
+if [[ "$CODEX_PRESENT" == "true" ]]; then
     pass "Skill(codex) already present in allow-list — no edit needed"
-    pass "Skill(gobbi-hook-authoring) already present in allow-list — no edit needed"
-    printf '\n--- Summary ---\n'
-    printf 'AUTOGRANT = FALSE but both entries already in allow-list. No change made.\n'
+    printf '\n%s\n' '--- Summary ---'
+    printf 'AUTOGRANT = FALSE but the entry is already in the allow-list. No change made.\n'
     exit 0
 fi
 
@@ -279,9 +268,6 @@ UPDATED=$(jq '
         | (if (index("Skill(codex)") == null)
            then . + ["Skill(codex)"]
            else . end)
-        | (if (index("Skill(gobbi-hook-authoring)") == null)
-           then . + ["Skill(gobbi-hook-authoring)"]
-           else . end)
     )
 ' "$SETTINGS_JSON")
 
@@ -296,14 +282,11 @@ printf '%s\n' "$UPDATED" > "$SETTINGS_JSON"
 if [[ "$CODEX_PRESENT" == "false" ]]; then
     pass "Added 'Skill(codex)' to .claude/settings.json permissions.allow"
 fi
-if [[ "$HOOKAUTH_PRESENT" == "false" ]]; then
-    pass "Added 'Skill(gobbi-hook-authoring)' to .claude/settings.json permissions.allow"
-fi
 
 printf '\nVerify the updated allow-list:\n'
 jq '.permissions.allow' "$SETTINGS_JSON"
 
-printf '\n--- Summary ---\n'
+printf '\n%s\n' '--- Summary ---'
 printf "${GREEN}AUTOGRANT = FALSE: settings.json patched. Backup at: %s${RESET}\n" "$BACKUP"
 printf 'Restart Claude Code or run /clear for the new permissions to take effect.\n'
 exit 0

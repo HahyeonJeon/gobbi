@@ -20,7 +20,7 @@ task_count: 8
 
 ## Idea anchor
 
-Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../../../../features/memory/design/memory/memory-namespace-schema.md) (the #307 area-namespace schema, Option A — schema + conventions; this manifest is the deferred migration's execution spec). The area allowlists + the tag→area map are now project-owned data in [`memory-vocabulary.json`](../../../../../memory-vocabulary.json) (shipped this session, commits `4557c78c` + `ed435550`).
+Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../../../../features/memory/design/memory/memory-namespace-schema.md) (the #307 area-namespace schema, Option A — schema + conventions; this manifest is the deferred migration's execution spec). The area allowlists + the tag→area map are now project-owned data in [`memory-vocabulary.json`](../../../../skills/memory/memory-vocabulary.json) (shipped this session, commits `4557c78c` + `ed435550`).
 
 > **RE-DERIVED 2026-06-24 (per-type vocab redesign, session `84e9570c`).** The resolution MODEL below
 > was re-derived against the FLAT per-type `memory-vocabulary.json` (L1–L18 of

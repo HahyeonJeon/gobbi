@@ -35,7 +35,7 @@ gobbi's memory standard (`rules.md` §1.1 rule 1) defines "directory = category"
 
 ### Per-type AREA ALLOWLIST (exact, finite — codeable by the validator)
 
-**The project declares the allowlist values in [`memory-vocabulary.json`](../../../../memory-vocabulary.json)** — `.effective.areas.spine` and `.effective.areas.mistakes`, the SAME arrays the validator reads via jq (a non-gobbi project ships its own copy). This doc fixes the schema; the config holds the values. gobbi's spine instance is `memory · git · workflow · wrap-up · evaluation · codex · process · _shared · docs · tooling · tests`.
+**The project declares the allowlist values in [`memory-vocabulary.json`](../../../../skills/memory/memory-vocabulary.json)** — `.effective.areas.spine` and `.effective.areas.mistakes`, the SAME arrays the validator reads via jq (a non-gobbi project ships its own copy). This doc fixes the schema; the config holds the values. gobbi's spine instance is `memory · git · workflow · wrap-up · evaluation · codex · process · _shared · docs · tooling · tests`.
 
 | Type | Exact area allowlist |
 |---|---|
@@ -59,7 +59,7 @@ Used by the write-time agent AND Wrap-up routing. Returns exactly one area per r
 
 **Step 1 — explicit `area:` frontmatter wins.** If the staged file carries `area: {x}` in the type's allowlist, use `{x}`.
 
-**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../memory-vocabulary.json) `.tagAreaMap` (the Wrap-up agent reads it for area resolution following the prose spec; the validator does not read `.tagAreaMap` — it enforces the resolved area against `.effective.areas.*`); the values below are gobbi's declared instance of the design.
+**Step 2 — scan a fixed PRIORITY-ORDERED tag→area map; FIRST match wins.** The project now declares this map in [`memory-vocabulary.json`](../../../../skills/memory/memory-vocabulary.json) `.tagAreaMap` (the Wrap-up agent reads it for area resolution following the prose spec; the validator does not read `.tagAreaMap` — it enforces the resolved area against `.effective.areas.*`); the values below are gobbi's declared instance of the design.
 
 - **mistakes** priority order (first match wins):
   1. `refactor` ← tags {`refactor`, `rename-sweep`, `rename`, `vocabulary-sweep`}

@@ -1,12 +1,6 @@
----
-name: gobbi-hook-authoring
-description: "Load when authoring or reviewing Gobbi hooks. Covers bash, jq, flock, strict mode, env files, and agents[] upserts."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
----
-
 # Gobbi Hook Authoring
 
-Project skill for every agent writing or reviewing a Claude Code hook in the gobbi codebase. Loaded at Study phase when a task touches `.claude/hooks/` or asks for guidance on hook design.
+Guidance for every agent writing or reviewing a Claude Code hook in the gobbi codebase. The `gobbi` skill links to this child-doc; read it at Study phase when a task touches `.claude/hooks/` or asks for guidance on hook design.
 
 Two in-tree witnesses ground every rule below. Read them fully before any hook work:
 
@@ -15,7 +9,7 @@ Two in-tree witnesses ground every rule below. Read them fully before any hook w
 
 ---
 
-## When to load
+## When to read
 
 - When editing any file under `.claude/hooks/`
 - When constructing a delegation prompt for an executor whose task creates or modifies a hook
