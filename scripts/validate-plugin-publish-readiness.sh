@@ -54,9 +54,11 @@ info() { printf "${YELLOW}INFO${RESET}  %s\n" "$*"; }
 
 FAILURES=0
 
-# Semver core (MAJOR.MINOR.PATCH) — the form gobbi versions use. Deliberately no
+# Semver core (MAJOR.MINOR.PATCH) — the form gobbi versions use. Each numeric
+# identifier is `0` OR a non-zero-leading run, so a leading-zero version like
+# `01.0.0` is rejected as invalid (per the semver grammar). Deliberately no
 # version literal here, so the no-hardcoded-baseline guard stays satisfied.
-semver_re='^[0-9]+\.[0-9]+\.[0-9]+$'
+semver_re='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
 
 # version_gt <a> <b> — exit 0 (true) iff a > b numerically by MAJOR.MINOR.PATCH.
 # Both args must already be valid semver (callers guard with semver_re). 10# forces

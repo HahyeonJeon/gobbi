@@ -258,8 +258,15 @@ if [[ -f "$HOOKS_JSON" ]] && jq -e . "$HOOKS_JSON" >/dev/null 2>&1; then
     readarray -t REGISTERED_EVENTS < <(jq -r '.hooks | keys[]' "$HOOKS_JSON")
     printf 'Registered events (from hooks.json keys): %s\n\n' "${REGISTERED_EVENTS[*]}"
 else
-    info "installed hooks.json not found or invalid at ${HOOKS_JSON}; cannot derive registered events"
-    printf '\n'
+    # FAIL-CLOSED: REGISTERED_EVENTS is DERIVED from the installed hooks.json. If
+    # that file is missing or invalid JSON, the validator cannot read the very
+    # hook registration it exists to validate — so it must NOT continue with an
+    # empty registered set and reach "ALL ASSERTIONS PASSED" against a broken
+    # install. Treat an unreadable hooks.json as fatal and exit non-zero.
+    fail "installed hooks.json not found or invalid at ${HOOKS_JSON} — cannot read the plugin's own hook registration; refusing to validate a broken install"
+    printf '\n--- Summary ---\n'
+    printf 'Failures: %d\n' "$FAILURES"
+    exit $(( FAILURES > 0 ? 1 : 0 ))
 fi
 
 # Events the OPERATOR PROCEDURE (PHASE 4) triggers exactly once and that this
