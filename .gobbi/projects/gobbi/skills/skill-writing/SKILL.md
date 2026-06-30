@@ -1,6 +1,6 @@
 ---
 name: skill-writing
-description: "Use when authoring a new gobbi skill — frontmatter schema, section skeleton, length norm, and the script-owned vs hand-owned wiring procedure."
+description: "Use when authoring a new gobbi skill — frontmatter schema, section skeleton, length norm, and the script-owned mirror wiring procedure."
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -54,8 +54,8 @@ This is the highest-value discipline here: see [`mistakes.md#planning-asserted-s
 
 Authoring the `SKILL.md` body is half the job. The skill is done only when it is wired into
 both runtimes AND the wiring is verified by running the check — `sync-plugin-package.sh --check`
-exits 0, and each hand-created `.claude/skills/{name}/SKILL.md` symlink resolves under
-`readlink`. A skill on disk that no runtime loads is an unfinished skill.
+exits 0, and each `.claude/skills/{name}/SKILL.md` symlink (script-created from the canonical
+tree) resolves under `readlink`. A skill on disk that no runtime loads is an unfinished skill.
 
 ---
 
@@ -106,7 +106,7 @@ fourth is a tool-permission gate, NOT a discoverability gate.
 | **Mirror availability** | which runtimes the skill is wired into (P5) | both runtimes | a skill is intentionally one-runtime-only |
 | **`/`-visibility** | `user-invocable` frontmatter (Claude Code skill) | `true` (`/`-visible) | the skill is internal machinery the user should never invoke by slash — set `user-invocable: false` |
 | **Model auto-invocation** | `disable-model-invocation` frontmatter | `false` (model may auto-load) | the model must NEVER auto-load it (it is destructive or strictly user-triggered) — set `disable-model-invocation: true` |
-| **Tool-permission preapproval** | a `Skill()` entry in `.claude/settings.json` + `allowed-tools` | NO `Skill()` entry | zero-prompt preapproval is wanted (P5 step 6) |
+| **Tool-permission preapproval** | a `Skill()` entry in `.claude/settings.json` + `allowed-tools` | NO `Skill()` entry | zero-prompt preapproval is wanted (P5 step 5) |
 
 The defaults (`user-invocable: true`, `disable-model-invocation: false`) need no frontmatter
 key — omit both and the skill is `/`-visible and model-auto-loadable. A reference/authoring
@@ -177,57 +177,54 @@ skill-surface doc (OUT of the memory frontmatter standard — [`memory/rules.md`
 governed by its own `check-skill-mistakes.sh` guard, not by `validate-frontmatter.sh`. Wrap-up
 promotion writes it (Always-Ask routing — see [`mistake/SKILL.md`](../mistake/SKILL.md)); a brief
 that lists `skills/{name}/SKILL.md` in its Load Directives ALSO lists `skills/{name}/mistakes.md`
-as a companion path, so the trap loads in the skill's context. Wire it with the same per-file
-`.claude` symlink as `SKILL.md` (P5 step 1).
+as a companion path, so the trap loads in the skill's context. It is mirrored into
+`.claude/skills/{name}/` by the same DERIVED per-file sync as `SKILL.md` — the sync script
+enumerates every agent-exposed child, so the companion needs no separate wiring step (P5).
 
-### P5 — Wiring a new skill (SCRIPT-OWNED vs HAND-OWNED)
+### P5 — Wiring a new skill (the sync script owns every mirror)
 
-A skill has three mirror surfaces, at different granularity (verified by `readlink`):
+A skill has three mirror surfaces, at different granularity (verified by `readlink`). All
+three are SCRIPT-OWNED — `scripts/sync-plugin-package.sh` builds and validates every one:
 
 | Surface | Shape | Owner |
 |---|---|---|
-| `.claude/skills/{name}/` | a REAL directory holding one symlink PER FILE (`SKILL.md -> ../../../.gobbi/projects/gobbi/skills/{name}/SKILL.md`, plus one per companion the skill exposes — e.g. `mistakes.md`) | **HAND-CREATED** |
+| `.claude/skills/{name}/` | a REAL directory holding one symlink PER FILE — every agent-exposed child of the canonical skill, DERIVED (`SKILL.md`, any companion such as `mistakes.md`, and support subdirs `scripts/`/`templates/`/`workflow/` mirrored as real dirs of per-file symlinks) | **SCRIPT-OWNED** |
 | `.agents/skills/{name}` | ONE whole-dir symlink (`-> ../../.gobbi/projects/gobbi/skills/{name}`) | **SCRIPT-OWNED** |
 | `plugins/gobbi/skills` | ONE whole-dir symlink for ALL skills (`-> ../../.gobbi/projects/gobbi/skills`) | **SCRIPT-OWNED** |
 
 `scripts/sync-plugin-package.sh` iterates every canonical skill dir and creates/refreshes
-the `.agents/skills/{name}` per-skill symlink (its loop) plus the three plugin whole-dir
-symlinks. It does NOT touch `.claude/skills/` — that surface manages only `.claude/hooks/`.
-So the Codex mirror and the plugin mirror are produced for you by the script; only the
-Claude per-file symlink is yours to hand-create. Read the script's loop and `--check`
-mode before relying on this split.
+ALL three mirrors: the `.agents/skills/{name}` whole-dir symlink (its loop), the plugin
+whole-dir symlinks, AND the `.claude/skills/{name}` per-file mirror. The `.claude/skills`
+mirror is built from a DERIVED per-skill enumeration of agent-exposed children (no hardcoded
+file list) — per-file symlinks inside real directories, for top-level files AND support
+subdirs, at the `../` depth that matches each leaf's nesting. `--check` validates it as
+per-skill BIDIRECTIONAL parity (the mirror child set equals the canonical child set, with
+`readlink -e` per leaf), exiting non-zero on any drift. Read the script's build loop and
+`--check` mode before relying on this. No mirror surface is wired by hand.
 
 Wire a new skill in this order, each step with its verify command:
 
-1. **Hand-create the Claude per-file symlink(s).** From the worktree root:
-   ```bash
-   mkdir -p .claude/skills/{name}
-   ln -s ../../../.gobbi/projects/gobbi/skills/{name}/SKILL.md .claude/skills/{name}/SKILL.md
-   ```
-   Verify: `readlink -e .claude/skills/{name}/SKILL.md` resolves to the canonical file.
-   If the skill ships child docs, create one per-file symlink for each file the skill exposes.
-   A skill carrying a `mistakes.md` companion (the skill-owned mistakes home, hybrid model)
-   needs the SAME per-file symlink:
-   ```bash
-   ln -s ../../../.gobbi/projects/gobbi/skills/{name}/mistakes.md .claude/skills/{name}/mistakes.md
-   ```
-   Only `.claude` needs this per-file action: the `.agents/skills/{name}` and `plugins/gobbi/skills`
-   whole-dir symlinks (step 2) point at the WHOLE skill dir, so they auto-expose `mistakes.md`
-   with no extra step.
-2. **Run the sync script.** It auto-creates `.agents/skills/{name}` and refreshes the plugin
-   whole-dir symlinks:
+1. **Run the sync script — it builds every mirror.** From the worktree root:
    ```bash
    bash scripts/sync-plugin-package.sh
    ```
-3. **Confirm the mirror is intact.** The check must exit 0:
+   This creates/refreshes `.agents/skills/{name}`, the plugin whole-dir symlinks, AND the
+   `.claude/skills/{name}` per-file mirror. The `.claude/skills` mirror is DERIVED from the
+   canonical skill's agent-exposed children, so a new `SKILL.md`, a `mistakes.md` companion,
+   any child doc, and any support subdir (`scripts/`/`templates/`/`workflow/`) are mirrored
+   automatically — you name none of them and wire nothing by hand.
+2. **Confirm every mirror is intact.** The check must exit 0:
    ```bash
    bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
    ```
-4. **plugin.json — NO edit.** Both `plugin.json` manifests are metadata-only; conventional
+   `--check` validates all three mirrors, including `.claude/skills/{name}` per-skill
+   bidirectional parity (a missing child OR a stale extra both fail). Spot-check a leaf:
+   `readlink -e .claude/skills/{name}/SKILL.md` resolves to the canonical file.
+3. **plugin.json — NO edit.** Both `plugin.json` manifests are metadata-only; conventional
    `skills/` directories auto-load without a manifest key (see
    [`claude-plugin/SKILL.md` § Component auto-loading](../claude-plugin/SKILL.md)). Adding a
    `skills` key has caused load failures. Do not edit `plugin.json` for a new skill.
-5. **Add a value-features prose mention in `gobbi/SKILL.md`.** A meta/authoring skill gets a
+4. **Add a value-features prose mention in `gobbi/SKILL.md`.** A meta/authoring skill gets a
    dedicated prose mention in the Product value-features section (mirror the existing
    "Install / runtime is documented, not a skill." paragraph), NOT a Loop / Cross-cutting /
    Supporting Skill-Map table row. Skill-Map placement is not uniform: some skills have a
@@ -237,7 +234,7 @@ Wire a new skill in this order, each step with its verify command:
    → 0). So a new meta skill does not need a row; this DD-5 step is the deliberate choice to
    give it a dedicated prose paragraph. Verify your mention landed:
    `grep -n '{name}' .gobbi/projects/gobbi/skills/gobbi/SKILL.md`.
-6. **`Skill()` permission — ONLY if zero-prompt preapproval is wanted.** Add a `Skill({name})`
+5. **`Skill()` permission — ONLY if zero-prompt preapproval is wanted.** Add a `Skill({name})`
    entry to `.claude/settings.json` ONLY when you want the runtime to never prompt on the
    skill's tool use. It is NOT required for the skill to load (P2). If you skip it,
    `.claude/settings.json` is UNCHANGED.
@@ -268,14 +265,15 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - **MUST verify every wiring claim by reading the owner** — read the script source, `readlink`
   the symlink, read `.claude/settings.json` — never assert a wiring surface exists.
 - **MUST verify loadability empirically** before declaring the skill done —
-  `sync-plugin-package.sh --check` exits 0 AND each hand-created `.claude/skills/{name}` symlink
-  resolves under `readlink`.
+  `sync-plugin-package.sh --check` exits 0 (it now validates `.claude/skills/{name}` per-skill
+  parity too) AND each `.claude/skills/{name}` per-file symlink resolves under `readlink`.
 - **NEVER edit `plugin.json`** for a new skill — conventional `skills/` auto-load; a manifest
   key has caused load failures.
 - **NEVER add a `Skill()` permission unless zero-prompt preapproval is wanted** — it is a
   permission gate, not a discoverability gate; the skill loads without it.
-- **NEVER create the `.agents/skills/{name}` or plugin symlinks by hand** — they are
-  script-owned; run `sync-plugin-package.sh` and let it create them.
+- **NEVER create the `.agents/skills/{name}`, plugin, OR `.claude/skills/{name}` symlinks by
+  hand** — all three mirrors are script-owned; run `sync-plugin-package.sh` and let it create
+  them.
 
 ## Anti-patterns
 
@@ -290,9 +288,10 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   briefing. Verify a MECHANISM by reading its owner (script / settings / symlink), not by
   reading the end-state.
 
-- **Hand-creating the script-owned symlinks.** Manually `ln -s`-ing `.agents/skills/{name}`
-  or the plugin dir. They are produced by `sync-plugin-package.sh`; a hand-made one drifts
-  from what `--check` expects. Hand-create ONLY the `.claude/skills/{name}` per-file symlink.
+- **Hand-creating the script-owned symlinks.** Manually `ln -s`-ing `.agents/skills/{name}`,
+  the plugin dir, OR a `.claude/skills/{name}` per-file symlink. All three mirrors are produced
+  by `sync-plugin-package.sh`; a hand-made one drifts from what `--check` expects. Run the
+  script and let it build every mirror.
 
 - **Adding a Skill-Map table row for a meta skill.** Putting an authoring/reference skill in
   the Loop / Cross-cutting / Supporting table. Meta/entry skills live in value-feature prose,
