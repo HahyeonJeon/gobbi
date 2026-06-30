@@ -9,7 +9,7 @@
     {
       "name": "gobbi",
       "description": "Structured orchestration, planning, execution, evaluation, memory, record, and handoff for Claude Code.",
-      "version": "0.5.0",
+      "version": "0.5.1",
       "source": "./plugins/gobbi"
     }
   ]
