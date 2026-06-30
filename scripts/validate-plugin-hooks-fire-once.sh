@@ -3,11 +3,17 @@
 #
 # AUTONOMOUS DELIVERABLE — operator-assisted validation script.
 # This script validates, for an INSTALLED gobbi plugin, that:
-#   (i)   Each of the 3 hook registrations fires EXACTLY ONCE per event trigger.
-#         Events covered: SessionStart, PostToolUse, PostToolUseFailure.
+#   (i)   Each registered hook fires EXACTLY ONCE per event trigger.
+#         The expected event set is DERIVED from the installed hooks.json keys
+#         (currently SessionStart, PostToolUse, PostToolUseFailure, SessionEnd) —
+#         a future event added to hooks.json is auto-covered with no edit here.
+#         Operator-triggered events (SessionStart, PostToolUse, PostToolUseFailure,
+#         per PHASE 4) are asserted to fire exactly once. SessionEnd is allow-listed
+#         and asserted-if-present — it is awkward to trigger deterministically once,
+#         so its absence is informational, never a failure.
 #   (ii)  The installed-cache top level holds only the allow-set:
-#         {.claude-plugin, skills, agents, hooks}
-#         with no leaked repo/project-memory dirs.
+#         {.claude-plugin, skills, agents, hooks} (+ optional .codex-plugin when
+#         the package was installed via Codex) with no leaked repo/project-memory dirs.
 #
 # !! DO NOT RUN THIS SCRIPT BEFORE COMPLETING THE OPERATOR PROCEDURE BELOW !!
 # The marker-dir must be populated by live hook fires before the assertions run.
@@ -240,18 +246,62 @@ printf 'Cache root : %s\n' "$CACHE_ROOT"
 printf '\n'
 
 # ---------------------------------------------------------------------------
+# Derive the registered hook-event set from the installed plugin's own
+# hooks.json. The events this plugin registers ARE the top-level keys of
+# hooks/hooks.json, so deriving them (instead of hardcoding a 3-event list)
+# means a future event added to hooks.json — e.g. SessionEnd — is covered here
+# automatically, with no edit to this script.
+# ---------------------------------------------------------------------------
+HOOKS_JSON="${CACHE_ROOT}/hooks/hooks.json"
+declare -a REGISTERED_EVENTS=()
+if [[ -f "$HOOKS_JSON" ]] && jq -e . "$HOOKS_JSON" >/dev/null 2>&1; then
+    readarray -t REGISTERED_EVENTS < <(jq -r '.hooks | keys[]' "$HOOKS_JSON")
+    printf 'Registered events (from hooks.json keys): %s\n\n' "${REGISTERED_EVENTS[*]}"
+else
+    info "installed hooks.json not found or invalid at ${HOOKS_JSON}; cannot derive registered events"
+    printf '\n'
+fi
+
+# Events the OPERATOR PROCEDURE (PHASE 4) triggers exactly once and that this
+# script asserts fire-once on (a missing marker means a skipped trigger -> FAIL).
+# This is the operator-exercised subset, bound to PHASE 4 — NOT the registered
+# set. Registered events outside this subset (SessionEnd, future events) are
+# allow-listed and asserted-if-present (lenient), never required to be triggered.
+OPERATOR_TRIGGERED_EVENTS=( "SessionStart" "PostToolUse" "PostToolUseFailure" )
+
+# Membership test, robust to an empty argument list.
+in_list() {
+    local needle="$1"; shift
+    local item
+    for item in "$@"; do
+        [[ "$item" == "$needle" ]] && return 0
+    done
+    return 1
+}
+
+# ---------------------------------------------------------------------------
 # Section 1: Per-event one-marker assertion
 # Events: SessionStart, PostToolUse, PostToolUseFailure
 # ---------------------------------------------------------------------------
-printf '--- Section 1: hook fire-once markers ---\n'
+printf '%s\n' '--- Section 1: hook fire-once markers ---'
 
+# check_marker <event> [strict|lenient]
+#   strict  (default): a missing marker is a FAIL (operator-triggered event).
+#   lenient          : a missing marker is INFO, not FAIL (registered but awkward
+#                      to trigger, e.g. SessionEnd) — but a present marker is still
+#                      asserted to be exactly-once.
 check_marker() {
     local event="$1"
+    local mode="${2:-strict}"
     local marker_file="${MARKER_DIR}/${event}"
 
     if [[ ! -f "$marker_file" ]]; then
-        fail "marker file absent for event '${event}': ${marker_file}"
-        info "  Trigger missing? See PHASE 4 in the operator procedure."
+        if [[ "$mode" == "lenient" ]]; then
+            info "event '${event}' registered but not exercised this run; fires-once not asserted"
+        else
+            fail "marker file absent for event '${event}': ${marker_file}"
+            info "  Trigger missing? See PHASE 4 in the operator procedure."
+        fi
         return
     fi
 
@@ -268,9 +318,17 @@ check_marker() {
     fi
 }
 
-check_marker "SessionStart"
-check_marker "PostToolUse"
-check_marker "PostToolUseFailure"
+# 1a. Operator-triggered events: strict fire-once (a missing marker is a FAIL).
+for event in "${OPERATOR_TRIGGERED_EVENTS[@]}"; do
+    check_marker "$event" strict
+done
+
+# 1b. Registered events NOT in the operator-triggered subset (SessionEnd, and any
+#     future hooks.json event): allow-listed + asserted-if-present (lenient).
+for event in ${REGISTERED_EVENTS[@]+"${REGISTERED_EVENTS[@]}"}; do
+    in_list "$event" "${OPERATOR_TRIGGERED_EVENTS[@]}" && continue
+    check_marker "$event" lenient
+done
 
 # Also assert no unexpected marker files (extra hook events or double-fires
 # from dev .claude/settings.json registrations polluting the marker dir)
@@ -282,17 +340,19 @@ for f in "${MARKER_DIR}"/*; do
     printf '  %s: %d line(s)\n' "$basename_f" "$lines"
 done
 
+# A marker is allowed iff it names a REGISTERED event (derived from hooks.json
+# keys) or an operator-triggered event. A SessionEnd marker is therefore allowed
+# — SessionEnd is a hooks.json key — and never flagged a dev-registration leak.
 UNEXPECTED_MARKERS=0
 for f in "${MARKER_DIR}"/*; do
     [[ -f "$f" ]] || continue
     basename_f=$(basename "$f")
-    case "$basename_f" in
-        SessionStart|PostToolUse|PostToolUseFailure) ;;
-        *)
-            fail "unexpected marker file: ${basename_f} — dev registration leak?"
-            UNEXPECTED_MARKERS=$(( UNEXPECTED_MARKERS + 1 ))
-            ;;
-    esac
+    if in_list "$basename_f" "${OPERATOR_TRIGGERED_EVENTS[@]}" ${REGISTERED_EVENTS[@]+"${REGISTERED_EVENTS[@]}"}; then
+        :
+    else
+        fail "unexpected marker file: ${basename_f} — not a registered hooks.json event (dev registration leak?)"
+        UNEXPECTED_MARKERS=$(( UNEXPECTED_MARKERS + 1 ))
+    fi
 done
 if [[ "$UNEXPECTED_MARKERS" -eq 0 ]]; then
     pass "no unexpected marker files in marker dir"
@@ -308,7 +368,7 @@ printf '\n'
 #   *.md files at the top level (repo docs, README, CHANGELOG etc.)
 #   node_modules/  dist/  src/  scripts/
 # ---------------------------------------------------------------------------
-printf '--- Section 2: installed-cache allow-set ---\n'
+printf '%s\n' '--- Section 2: installed-cache allow-set ---'
 
 if [[ ! -d "$CACHE_ROOT" ]]; then
     fail "installed-cache dir not found: ${CACHE_ROOT}"
@@ -320,6 +380,11 @@ fi
 
 ALLOW_SET=( ".claude-plugin" "skills" "agents" "hooks" )
 ALLOW_SET_JOINED=$(printf '%s\n' "${ALLOW_SET[@]}")
+
+# .codex-plugin ships only when the package was installed via Codex; on a Claude
+# install it is absent. It is allow-listed (presence must NOT fail) but NOT
+# required (absence is informational, not a failure).
+OPTIONAL_ALLOW_SET=( ".codex-plugin" )
 
 # Enumerate actual top-level entries
 declare -a ACTUAL_ENTRIES=()
@@ -349,18 +414,29 @@ ALLOW_VIOLATIONS=0
 for e in "${ACTUAL_ENTRIES[@]}"; do
     if printf '%s\n' "${ALLOW_SET[@]}" | grep -qx "$e"; then
         pass "allow-set member present: ${e}"
+    elif printf '%s\n' "${OPTIONAL_ALLOW_SET[@]}" | grep -qx "$e"; then
+        pass "optional allow-set member present: ${e}"
     else
         fail "UNEXPECTED entry in installed-cache: '${e}' — not in allow-set"
         ALLOW_VIOLATIONS=$(( ALLOW_VIOLATIONS + 1 ))
     fi
 done
 
-# Check every allow-set member is actually present
+# Check every REQUIRED allow-set member is actually present
 for expected in "${ALLOW_SET[@]}"; do
     if printf '%s\n' "${ACTUAL_ENTRIES[@]}" | grep -qx "$expected"; then
         pass "required allow-set entry present: ${expected}"
     else
         fail "required allow-set entry MISSING: ${expected}"
+    fi
+done
+
+# Optional members: present -> info, absent -> info. Never a failure.
+for opt in "${OPTIONAL_ALLOW_SET[@]}"; do
+    if printf '%s\n' "${ACTUAL_ENTRIES[@]}" | grep -qx "$opt"; then
+        info "optional allow-set entry present: ${opt} (Codex-installed cache)"
+    else
+        info "optional allow-set entry absent: ${opt} (not a failure; Claude-only install)"
     fi
 done
 
@@ -388,7 +464,7 @@ printf '\n'
 # ---------------------------------------------------------------------------
 # Summary
 # ---------------------------------------------------------------------------
-printf '--- Summary ---\n'
+printf '%s\n' '--- Summary ---'
 if [[ "$FAILURES" -eq 0 ]]; then
     printf "${GREEN}ALL ASSERTIONS PASSED${RESET}\n"
     printf 'Hooks fire exactly once per event; installed-cache allow-set is clean.\n'
