@@ -88,9 +88,9 @@ Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask through the active runtime's user-decision primitive: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 2 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask through the active runtime's user-decision primitive: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 3 to walk through each section. If no, apply defaults as-is.
 
-See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 3) and before `session.json` stamping (row 4, where `git.worktreePath` is recorded).
+See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 4) and before `session.json` stamping (row 5, where `git.worktreePath` is recorded).
 
 ### 5. Memory check
 
@@ -104,7 +104,7 @@ Check `.gobbi/projects/{project-name}/` for the memory baseline:
 Hand off to the `orchestration` skill's state machine. Which productive step the session enters depends on whether this is a **fresh** session or a **resume** — the fresh-vs-resume signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):
 
 - **Fresh session** — the first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → RECORD procedure.
-- **Resume / post-`/clear` / post-`/compact`** — do NOT re-enter Ideation. The manager reads and validates the persisted `state.json`, then continues the step it records as `Active`/`Revising` (Preparation / Planning / Execution / Wrap-up), loading that step's skill.
+- **Resume / post-`/clear` / post-`/compact`** — do NOT re-STAMP Ideation `Active` or restart Ideation fresh. The manager reads and validates the persisted `state.json`, then CONTINUES whichever of the five productive steps it records as `Active`/`Revising` — Ideation / Preparation / Planning / Execution / Wrap-up, INCLUDING an in-progress Ideation (a mid-Ideation `/compact` or resume continues that Ideation, it does not restart it) — loading that step's skill.
 
 The orchestration skill steers transitions between the six steps.
 

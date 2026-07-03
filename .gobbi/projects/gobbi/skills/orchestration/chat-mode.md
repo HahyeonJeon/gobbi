@@ -163,7 +163,7 @@ slice's worth of work.
 
 **Loop iteration.** None. Chat preparation is `{skip: true, maxIterations: 0}`; either signal resolves to `state: Skipped` at loop entry (loop-entry Skipped resolution, two independent signals) — no DISCUSSION / WORK / EVALUATION / RECORD rows execute; no FAIL or Aborted verdict is emitted.
 
-**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 2) — both signals must be cleared. The standard loop contract then runs.
+**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 3) — both signals must be cleared. The standard loop contract then runs.
 
 ### Step 4 — Slice Mini Planning Loop
 
