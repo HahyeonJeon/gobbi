@@ -231,6 +231,11 @@ values.
   writes to its `staging/`, not directly to memory, and Wrap-up must
   enumerate it. Do NOT over-narrow the rule to "workflow-loop `staging/` only" in a
   way that drops `interview/staging/`.
+- **Chat-mode parity**: in a Chat-mode session the per-slice
+  `chat/tasks/*/{N}-{loop}/staging/` (and `chat/tasks/*/4-execution/task-*/staging/`)
+  is likewise a **valid** non-loop promotion source alongside `interview/staging/`, so
+  Chat typed findings reach memory (see [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
+  and [`orchestration/chat-mode.md` §4](../orchestration/chat-mode.md)); absent in non-Chat sessions.
 
 ---
 

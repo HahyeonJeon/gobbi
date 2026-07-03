@@ -221,7 +221,7 @@ ITER/EXIT). This is the structural contrast with Chat Mode, where preparation ca
 `skip: true` + `maxIterations: 0` → `state: Skipped` (either signal alone suffices).
 
 **Full per-loop RECORD.** Auto Mode uses the **unmodified** `record/SKILL.md` PASS
-path, including Steps 6–7 (typed-finding staging). There is no "narrowed" PASS path in Auto Mode.
+path, including Steps 6–7 (typed-finding staging). Chat Mode now runs the same unmodified base RECORD (see [`chat-mode.md` §4](chat-mode.md)), so neither mode narrows the PASS path.
 Every loop's RECORD runs the full base procedure, including mistake-candidate staging at
 moment-of-capture per `mistake/SKILL.md § P2`.
 
@@ -382,8 +382,9 @@ Scan this at any production-integration boundary:
   for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table).
   The maxIterations-exhaustion silence contract lives in this doc's §6.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
-  `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
-  RECORD PASS path are Chat-only; they do not apply in Auto Mode.
+  `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) is Chat-only and
+  does not apply in Auto Mode. Both modes run the unmodified base RECORD — the Chat-vs-Auto
+  difference is preparation-skip, not RECORD narrowing.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — authoritative
   Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
   why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`
