@@ -246,6 +246,12 @@ values.
   is likewise a **valid** non-loop promotion source alongside `interview/staging/`, so
   Chat typed findings reach memory (see [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
   and [`orchestration/chat-mode.md` §4](../orchestration/chat-mode.md)); absent in non-Chat sessions.
+  The `chat/tasks` subtree is **manager-materialized** at slice entry — it lies OUTSIDE the fixed
+  scaffold set (`1-ideation` … `5-wrap-up`) that
+  [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh) creates and
+  [`verify-record-map.sh`](scripts/verify-record-map.sh) validates — so the drift-gate's exclusion of
+  `chat/tasks` from its fixed set is INTENTIONAL, pending the GEN-D7-004 follow-up that extends both
+  the scaffold script and the gate to cover it.
 
 ---
 

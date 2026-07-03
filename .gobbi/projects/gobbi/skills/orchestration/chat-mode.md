@@ -248,7 +248,8 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 > procedure.** Chat does not narrow or defer any base RECORD step. Every step runs per slice,
 > including Step 6 / Step 7 typed-finding staging. Each slice writes its typed findings to real,
 > on-disk staging under
-> `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports}/`
+> `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/{type}/` — where `{type}` is the full base staging
+> vocabulary defined in [`record/record-map.md`](../record/record-map.md), not a narrowed subset —
 > (and `chat/tasks/{NN}-{slug}/4-execution/task-*/staging/` for execution sub-tasks). There is no
 > deferral to Wrap-up, no transcript-mining, and no typed-finding reconstruction.
 >
@@ -372,6 +373,15 @@ canonical shape. Preparation is not present in the directory tree for tasks wher
 `state: Skipped` (the default — chat preparation is `{skip: true, maxIterations: 0}`).
 If a user opts into Preparation for a specific task, a `2-preparation/` subdirectory
 appears with the same 4-slot interior.
+
+**Materialization (manager-created).** The manager materializes this Chat slice tree —
+`chat/tasks/{NN}-{slug}/{N}-{loop}/{working,staging,evaluation,outputs}/` — DIRECTLY at slice
+entry, NOT via [`scaffold-session-dir.sh`](scripts/scaffold-session-dir.sh): that script is
+fail-closed to the fixed loop set (`1-ideation` … `5-wrap-up`) and does NOT cover `chat/tasks`.
+The per-slice `staging/` subdirs are also covered by RECORD's create-if-absent when it stages a
+typed finding. Extending `scaffold-session-dir.sh` +
+[`verify-record-map.sh`](../record/scripts/verify-record-map.sh) to materialize and validate the
+`chat/tasks` subtree — so the drift-gate models it — is the deferred **GEN-D7-004** follow-up.
 
 ### 6.2 Frontmatter type — deferred to Planning
 
