@@ -1,6 +1,6 @@
 # Workflow — Production (Orchestration)
 
-How the **manager** orchestrates the PRODUCTION (WORK) sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager. The Codex proposer runs as the `codex exec` assistant-wrapper documented in [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md); the Claude producer — leader for Ideation/Preparation/Planning, executor for Execution, assistant for Wrap-up — does the integration. Production is the creation-time analogue of [`workflow/evaluation.md`](evaluation.md): evaluation runs two reviewers on a finished artifact; production runs two generators before the artifact is finished.
+How the **manager** orchestrates the PRODUCTION (WORK) sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager. The Codex proposer runs as the `codex exec` assistant-wrapper documented in [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md), with its prompt-file contract owned by [`codex/delegation.md`](../../codex/delegation.md); the Claude producer — leader for Ideation/Preparation/Planning, executor for Execution, assistant for Wrap-up — does the integration. Production is the creation-time analogue of [`workflow/evaluation.md`](evaluation.md): evaluation runs two reviewers on a finished artifact; production runs two generators before the artifact is finished.
 
 **The manager spawns exactly two producers — the Claude producer and the Codex proposer — and does NOT integrate.** The Claude producer is the default integrator; the manager adjudicates ONLY large gaps and escalates them to the user. Codex NEVER writes the canonical artifact — it only proposes. Authoring the canonical artifact from the Codex proposal, or having the manager blend the two outputs, is a workflow breach.
 
@@ -25,9 +25,9 @@ Per enabled WORK sub-phase, the manager spawns two producers in **parallel-indep
 | Producer | Who | Output (independent) | Sees the other? |
 |---|---|---|---|
 | **Claude producer** | leader (Ideation / Preparation / Planning) · executor (Execution) · assistant (Wrap-up) | canonical `working/draft-iter{n}.md` | no |
-| **Codex proposer** | `codex exec` assistant-wrapper ([`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)) | `working/proposals/codex/draft-iter{n}.md` | no |
+| **Codex proposer** | `codex exec` assistant-wrapper ([`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md), prompt contract in [`codex/delegation.md`](../../codex/delegation.md)) | `working/proposals/codex/draft-iter{n}.md` | no |
 
-The Codex proposer follows the `codex exec` discipline owned by [`codex/SKILL.md`](../../codex/SKILL.md): write+verify the prompt file before invoking, launch `codex exec` per the [§ `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix), kill by explicit PID (never `pkill -f`), and validate the proposal **structurally** (file exists / > 0 bytes / a `PROPOSAL:` header) — never by a content-vocabulary grep. The manager does not re-implement that discipline here; it spawns the wrapper and reads the frozen proposal file.
+The Codex proposer follows the `codex exec` discipline owned by [`codex/SKILL.md`](../../codex/SKILL.md) and the prompt-file lifecycle owned by [`codex/delegation.md`](../../codex/delegation.md): write+verify the prompt file before invoking, launch `codex exec` per the [§ `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix) with prompt-file stdin (`- < "$prompt_file"`), kill by explicit PID (never `pkill -f`), and validate the proposal **structurally** (file exists / > 0 bytes / a `PROPOSAL:` header) — never by a content-vocabulary grep. The manager does not re-implement that discipline here; it spawns the wrapper and reads the frozen proposal file.
 
 When `propose.mode: single`, the manager spawns only the Claude producer. This is a **deliberate, configured Claude-only run** — it is NOT degraded mode, so it does **NOT** stamp the degraded-mode label. The degraded-mode label (`production_mode: claude-only` + `codex_proposal_absent_reason`) is stamped ONLY when `propose.mode: dual` but the Codex proposal is empty / times out / errors (see § Degraded-mode policy).
 
@@ -133,7 +133,8 @@ All proposer + integration writes are **session-scoped**. The proposer never tou
 
 ## Cross-references
 
-- Codex proposer wrapper pattern + launch-mode (per the § `codex exec` launch runtime matrix) / timeout / PID-kill / structural-validation discipline + degraded-mode label → [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)
+- Codex proposer wrapper pattern + launch mode (per the § `codex exec` launch runtime matrix) / timeout / PID-kill / structural-validation discipline + degraded-mode label → [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)
+- Codex proposer prompt-file lifecycle, required prompt sections, wrapper verification gates, and failure behavior → [`codex/delegation.md`](../../codex/delegation.md)
 - Degraded-mode label preservation into `outputs/` → [`record/SKILL.md` § Artifact frontmatter schema](../../record/SKILL.md)
 - The dual EVALUATION that reviews the integrated artifact → [`workflow/evaluation.md`](evaluation.md), [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
 - Per-loop WORK orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
