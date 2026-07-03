@@ -158,8 +158,18 @@ verified against.
 - Each agent's transcript **accumulates across all loops** by its distinct
   `agentId`; it is never overwritten.
 - The assistant **copies** transcripts into `transcripts/` at RECORD.
+- **Runtime-aware absent-transcript case (RECORD, on `session.json.system`).** When
+  `session.json.transcriptPath` is absent, a `claude-code` session records a **Critical**
+  `general`/`unevaluable` finding (Claude Code guarantees a transcript, so absence is
+  unexpected), while a `codex` session with a permitted null `transcriptPath` (rollout lookup
+  failed) **skips the raw copy** and records a **lower-severity** `general`/`process`
+  audit-coverage-degraded note — a degraded-pass, not a Critical. See
+  [`record/SKILL.md`](SKILL.md) Step 2 / Step 9.
 - Transcripts are **gitignored, session-scoped, never promoted, and removed at
   worktree cleanup**. Promoting a transcript is a constraint violation.
+- A Codex-null transcript path is an audit-coverage degradation, not a licence to promote any
+  raw audit surface. The durable signal remains `session.json` plus the RECORD
+  `audit-coverage-degraded` note.
 - The scaffold script **never** creates `transcripts/`. [`init-record-map.sh`](scripts/init-record-map.sh)
   creates it (with the root metadata stubs) at Configuration; the manager then stamps the stubs.
 
