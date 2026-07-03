@@ -258,7 +258,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 ## Risk
 
-**Lens**: **What breaks if Preparation is wrong?** Wrap-up sole-writer contract, staging path correctness, RE-IDEATE triggers not caught, deferred items lost.
+**Lens**: **What breaks if Preparation is wrong?** Wrap-up sole-writer contract, staging path correctness, re-Ideate triggers not caught, deferred items lost.
 
 ### Seed scenarios with attached checklists
 
@@ -267,10 +267,10 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 - The Decisions log does not reference a direct memory write
 - `2-preparation/staging/` exists; `features/...` was not touched during Preparation
 
-**Every RE-IDEATE trigger was either caught and escalated or explicitly ruled out**
-- Each gap in the artifact was assessed for whether it reveals an unworkable design (RE-IDEATE) vs a missing artifact (generate-now)
+**Every re-Ideate trigger was either caught and escalated or explicitly ruled out**
+- Each gap in the artifact was assessed for whether it reveals an unworkable design (re-Ideate) vs a missing artifact (generate-now)
 - If any gap was classified `generate-now` when its root cause is an Ideation design flaw, the misclassification is a High-risk finding
-- The artifact explicitly states "no RE-IDEATE escalation required" or names the escalation that was made
+- The artifact explicitly states "no re-Ideate escalation required" or names the escalation that was made
 
 **Deferred items in "Out of scope gaps" are not silently lost**
 - Each deferred item has a pointer to where it was backlogged (staging path or downstream note)
@@ -294,14 +294,14 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 |---|---|
 | `find .gobbi/projects/{project-name}/skills/ -name "*.md"` | Check for any direct memory writes that bypassed staging |
 | Check `2-preparation/staging/skills/` slugs against existing skills | Detect slug collisions before Wrap-up promotion |
-| Grep "RE-IDEATE" in preparation working draft | Confirm RE-IDEATE assessment is explicitly recorded, not silently skipped |
+| Grep `re-ideate` (case-insensitive) in preparation working draft | Confirm the re-Ideate assessment is explicitly recorded, not silently skipped |
 
 ### Perspective-specific anti-patterns
 
 | Anti-pattern | Correction |
 |---|---|
 | **Wrap-up sole-writer contract assumed without checking** | The sole-writer contract is a hard constraint. A `generate-now` decision that wrote directly to memory is a constraint violation — flag `design_flaw` (Critical) |
-| **"No RE-IDEATE needed" without checking the Ideation design for unworkable premises** | RE-IDEATE classification requires comparing each gap's root cause against the Ideation design. A blanket "no RE-IDEATE" without that check is overconfident |
+| **"No re-Ideate needed" without checking the Ideation design for unworkable premises** | re-Ideate classification requires comparing each gap's root cause against the Ideation design. A blanket "no re-Ideate" without that check is overconfident |
 
 ---
 
@@ -316,7 +316,7 @@ When the evaluator runs Stage 3 on a Preparation artifact, the Karpathy-4 check 
 | **Orthogonal edits** | The Preparation artifact resolves gaps unrelated to the current task (scope absorption) — bundling out-of-scope work dilutes focus and risks Wrap-up promotion pollution |
 | **Imperative-over-declarative** | A staged skill that describes what the executor should do step-by-step rather than what the domain conventions *are* — skills teach, they do not script |
 
-**Preserve-list anchors specific to Preparation**: gap-resolution decisions that correctly classify RE-IDEATE triggers; staged skills that are genuinely complete and standalone; Decisions log entries that capture the user's explicit reasoning per gap.
+**Preserve-list anchors specific to Preparation**: gap-resolution decisions that correctly classify re-Ideate triggers; staged skills that are genuinely complete and standalone; Decisions log entries that capture the user's explicit reasoning per gap.
 
 ---
 
