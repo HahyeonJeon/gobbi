@@ -101,7 +101,12 @@ Check `.gobbi/projects/{project-name}/` for the memory baseline:
 
 ### 6. Enter the workflow
 
-Hand off to the `orchestration` skill's state machine. The first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → RECORD procedure. The orchestration skill steers transitions between the six steps.
+Hand off to the `orchestration` skill's state machine. Which productive step the session enters depends on whether this is a **fresh** session or a **resume** — the fresh-vs-resume signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):
+
+- **Fresh session** — the first productive step is **Ideation** — load the [`ideation` skill](../ideation/SKILL.md) and follow its DISCUSSION → WORK → EVALUATION → RECORD procedure.
+- **Resume / post-`/clear` / post-`/compact`** — do NOT re-enter Ideation. The manager reads and validates the persisted `state.json`, then continues the step it records as `Active`/`Revising` (Preparation / Planning / Execution / Wrap-up), loading that step's skill.
+
+The orchestration skill steers transitions between the six steps.
 
 ---
 

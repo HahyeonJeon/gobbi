@@ -61,7 +61,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 **Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json` covering all session policies.
 
-**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-4: Create Worktree → Resolve Settings → Init state.json → Init session.json). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
+**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table, including the fresh-vs-resume branch (a fresh session stamps Ideation `Active` and enters Ideation; a resume rehydrates `state.json` and continues the persisted active step). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
 
 ### Step 2 — Ideation Loop
 
