@@ -1,5 +1,5 @@
 ---
-name: 2026-07-03-workflow-state-record-coherence-fixes
+name: workflow-state-record-coherence-fixes
 description: Cluster-1 review-fix session — 4 High findings from the 2026-07-01 adversarial review fixed (resume split, RE-IDEATE verdict drop, Chat RECORD staging, Codex transcript degrade)
 type: notes
 scope: project
