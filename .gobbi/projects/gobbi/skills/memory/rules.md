@@ -29,7 +29,7 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 > - **`NO_PROJECT_RULES`** — `rules/` is absent or holds zero `.md` files: record
 >   `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read
 >   THIS `§ Empty-state contract` subsection as the de-facto rules **landing page** for the
->   read-contract — this subsection, not the whole ~480-line file.
+>   read-contract — this subsection, not the whole file.
 >
 > **Landing page, NOT a substitute for behavioral rules.** This memory standard documents
 > *how the memory system works* (naming / frontmatter / structure); it is NOT itself the
