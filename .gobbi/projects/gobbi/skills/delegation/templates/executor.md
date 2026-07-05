@@ -32,7 +32,7 @@ Description or any other work. Skipping any required file is a process failure.
 1. Principles:
    - `.gobbi/projects/<<project-name>>/skills/principles/SKILL.md` (mandatory)
 2. Rules:
-   - All files under `.gobbi/projects/<<project-name>>/rules/` IF that dir exists; when there is no `rules/` dir, the project's memory standard `.gobbi/projects/<<project-name>>/skills/memory/rules.md` is the de-facto rules source — read it instead.
+   - Project rules read contract: read every file under `.gobbi/projects/<<project-name>>/rules/` when present and non-empty and list each in `SKILLS LOADED:` / `Memory reads`; if absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/<<project-name>>/skills/memory/rules.md` **§ Empty-state contract** instead. Full definition: `skills/memory/rules.md` § Empty-state contract.
    - <<any additional rule files specific to this task — full paths>>
 3. Skills:
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
