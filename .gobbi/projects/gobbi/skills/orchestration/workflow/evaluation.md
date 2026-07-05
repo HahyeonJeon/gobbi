@@ -164,16 +164,14 @@ Overall (Stage 3) is given equal weight in aggregation — a `REVISE` from Overa
 
 ## Routing Findings to RECORD
 
-The manager passes all evaluator findings to the `assistant` agent in the next `RECORD` phase. Per the [Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) defined in the evaluator skill, the assistant routes on `PASS` to session staging:
+The manager passes all evaluator findings to the `assistant` agent in the next `RECORD` phase. The routing authority is the canonical **Type + Domain** table in [`evaluation/SKILL.md § Finding Metadata`](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity); the assistant applies it on `PASS` at RECORD per [`record/SKILL.md § RECORD Phase`](../../record/SKILL.md#record-phase). This document does NOT restate the per-Type / per-Domain destinations — read them at the authority so the two never drift.
 
-| Finding type | Session staging destination (`PASS` only) |
-|---|---|
-| `scenario_gap` | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
-| `checklist_gap` | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
-| `design_flaw`, `assumption_risk` | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
-| `general` with citable external pattern | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
+Two constraints bind every routing decision:
 
-On `REVISE`, RECORD preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's RECORD run. On `FAIL`, the loop halts before staging.
+- **Type = `general` routes by Domain.** A `general` finding takes the destination its Domain selects in the canonical table (e.g. Domain `process` → `staging/decisions/{slug}.md` with `mistake-candidate: true`; Domain `dependency` → `staging/references/{slug}.md`) — never a single catch-all bucket. A finding with Type = `general` AND Domain = `general` is invalid: `general/general` violates the metadata contract — re-derive the Domain or escalate.
+- **No shortcut routing — RECORD applies the canonical table.** Every Type + Domain pair resolves through the canonical table; RECORD never improvises a destination or collapses a specialized finding to `general`.
+
+Staging happens on `PASS` only. On `REVISE`, RECORD preserves the transcript + iter entry in `session.json` but does **not** stage findings — those wait for the eventual `PASS` iteration's RECORD run. On `FAIL`, the loop halts before staging.
 
 Wrap-up later promotes the `staging/` directory to memory at `features/{feature-name}/...`. The manager never writes directly to memory.
 
