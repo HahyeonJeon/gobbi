@@ -55,7 +55,7 @@ If any gap's resolution is **Re-Ideate**, Preparation halts:
 2. Manager re-enters the Ideation Loop with the gap as new input.
 3. After Ideation re-completes, Preparation re-runs from Sub-step A.
 
-This is **not** a Preparation `REVISE` — it's an upstream loop re-entry. Preparation's own iteration counter does not increment.
+This is **not** a Preparation `REVISE` and **not** an evaluation verdict — it's a DISCUSSION-phase user decision (Sub-step D) that halts Preparation *before* WORK, EVALUATION, and RECORD run, so it never reaches EVALUATION verdict aggregation. The reconciled Preparation verdict is only ever `PASS` / `REVISE` / `FAIL` — re-Ideate is never one of them. It's an upstream loop re-entry; Preparation's own iteration counter does not increment.
 
 ---
 
@@ -114,8 +114,9 @@ After `RECORD`, the manager decides based on the reconciled verdict:
 | `PASS` | Exit the loop; advance to Planning Loop |
 | `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
 | `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / re-enter Ideation / abort |
-| `RE-IDEATE` | Special verdict — at least one gap is unworkable without re-Ideation. Manager re-enters the Ideation Loop, then re-runs Preparation. |
 | `SKIPPED` | Exit the loop (Preparation was skipped per settings — only valid when memory is mature and the manager is confident no gaps exist) |
+
+(A `re-Ideate` decision is **not** in this table: it is resolved in DISCUSSION (Sub-step D) and halts Preparation before EVALUATION — see [Re-Ideate routing](#re-ideate-routing) — so it never produces a verdict here.)
 
 Iteration cap: `workflow.preparation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
 

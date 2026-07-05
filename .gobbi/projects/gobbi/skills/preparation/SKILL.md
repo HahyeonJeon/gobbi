@@ -12,7 +12,7 @@ The Preparation Loop runs **between Ideation and Planning**. Its job is to verif
 
 The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation. The assistant owns RECORD (loaded via [`record/SKILL.md`](../record/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
 
-The manager's orchestration of the Preparation Loop (when to spawn each specialist, perspective selection for EVALUATION, RECORD delegation, ITER/EXIT decision including the `RE-IDEATE` upstream re-entry) is in [`orchestration/workflow/preparation.md`](../orchestration/workflow/preparation.md).
+The manager's orchestration of the Preparation Loop (when to spawn each specialist, perspective selection for EVALUATION, RECORD delegation, ITER/EXIT decision, and the DISCUSSION-phase `re-ideate` upstream re-entry — a user decision, not a verdict) is in [`orchestration/workflow/preparation.md`](../orchestration/workflow/preparation.md).
 
 ---
 
@@ -219,7 +219,7 @@ Consolidate every gap from Sub-steps B and C into a single user-approved table, 
 | 2b | Manager | Table | Run the active runtime's user-decision primitive per row | User decisions |
 | 2c | User | Per-row question | Pick one of `generate-now` / `defer` / `re-ideate` / `skip` per gap | Locked decisions |
 | 3 | Leader | Locked decisions | Record the resolution map as a binding constraint for WORK | Gap-resolution plan |
-| 4 | Manager | Resolution plan | If any decision is `re-ideate`: halt Preparation, record the trigger in the discussion log, re-enter the Ideation Loop per the orchestration doc's RE-IDEATE routing | (Preparation halt if applicable) |
+| 4 | Manager | Resolution plan | If any decision is `re-ideate`: halt Preparation, record the trigger in the discussion log, re-enter the Ideation Loop per the orchestration doc's re-Ideate routing | (Preparation halt if applicable) |
 
 **Outputs**
 - Locked gap-resolution plan — every gap with a user-approved resolution; consumed by WORK
@@ -277,7 +277,7 @@ Required-sections template for the working draft:
 {Each gap deferred: name, severity, pointer to where it lives — backlog, known issues, follow-up note.}
 
 ## Decisions log
-{Summary of user choices made through the active runtime's user-decision primitive during DISCUSSION, plus the gap-resolution map and any RE-IDEATE escalation.}
+{Summary of user choices made through the active runtime's user-decision primitive during DISCUSSION, plus the gap-resolution map and any re-Ideate decision or trigger.}
 ```
 
 **Exit checklist**
@@ -365,7 +365,7 @@ See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure,
 
 **Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Preparation-specific notes:
 
-- On PASS, the artifact in `sessions/{date}-{session-id}/2-preparation/outputs/` should include at least one file with `artifact_type: handoff` summarizing readiness status (gaps closed, gaps deferred, skills generated, RE-IDEATE escalations if any).
+- On PASS, the artifact in `sessions/{date}-{session-id}/2-preparation/outputs/` should include at least one file with `artifact_type: handoff` summarizing readiness status (gaps closed, gaps deferred, skills generated, re-Ideate decisions or triggers if any).
 - The `memory-reads` artifact enumerates every prior-iter evaluation file consumed (Step 6 of the RECORD procedure).
 - WORK-staged `skills/`, `scenarios/`, `checklists/`, `decisions/`, etc. are NOT re-staged by RECORD — they already exist from WORK. RECORD supplements with evaluator-finding-driven staging (e.g., a `scenario_gap` from Stage 1 evaluation gets a new staging file under `staging/scenarios/`).
 

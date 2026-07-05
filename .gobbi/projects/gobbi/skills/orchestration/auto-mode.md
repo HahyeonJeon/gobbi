@@ -61,7 +61,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 **Output.** A populated `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json` covering all session policies.
 
-**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table (rows 1-4: Create Worktree → Resolve Settings → Init state.json → Init session.json). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
+**Procedure.** See [`orchestration/SKILL.md § Step 1 — Workflow Configuration`](SKILL.md#step-1--workflow-configuration) for the full procedure table, including the fresh-vs-resume branch (a fresh session stamps Ideation `Active` and enters Ideation; a resume rehydrates `state.json` and continues the persisted active step). The procedure is identical in Auto and Chat modes; SKILL.md holds the canonical table.
 
 ### Step 2 — Ideation Loop
 
@@ -89,7 +89,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 **Output.** A `preparation.md` documenting the readiness assessment, the user's per-gap decisions, and the artifacts generated this loop.
 
-**Loop iteration.** 5-row loop; cap from `workflow.preparation.maxIterations` (Auto default = 5). A `RE-IDEATE` verdict in row 5 re-enters Ideation.
+**Loop iteration.** 5-row loop; cap from `workflow.preparation.maxIterations` (Auto default = 5). A user-confirmed `re-ideate` decision during `DISCUSSION` (row 1) halts Preparation and re-enters Ideation — it is a DISCUSSION exit, not a row-5 verdict.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
@@ -97,7 +97,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WORK` | Spawn the `leader` subagent. Leader writes preparation draft AND executes approved gap fixes. | [preparation.md](workflow/preparation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.preparation.evaluate.mode`. | [evaluation.md](workflow/evaluation.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | [record.md](workflow/record.md) | assistant |
-| 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `RE-IDEATE` → re-enter Step 2. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. | — | manager |
+| 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. (A `re-ideate` decision is handled in row 1 `DISCUSSION`, not here — it is not a row-5 verdict.) | — | manager |
 
 ### Step 4 — Planning Loop
 
@@ -221,7 +221,7 @@ ITER/EXIT). This is the structural contrast with Chat Mode, where preparation ca
 `skip: true` + `maxIterations: 0` → `state: Skipped` (either signal alone suffices).
 
 **Full per-loop RECORD.** Auto Mode uses the **unmodified** `record/SKILL.md` PASS
-path, including Steps 6–7 (typed-finding staging). There is no "narrowed" PASS path in Auto Mode.
+path, including Steps 6–7 (typed-finding staging). Chat Mode now runs the same unmodified base RECORD (see [`chat-mode.md` §4](chat-mode.md)), so neither mode narrows the PASS path.
 Every loop's RECORD runs the full base procedure, including mistake-candidate staging at
 moment-of-capture per `mistake/SKILL.md § P2`.
 
@@ -382,8 +382,9 @@ Scan this at any production-integration boundary:
   for the Auto gate behavior); `§ Workflow Status Display` for the Auto rendering (6-row table).
   The maxIterations-exhaustion silence contract lives in this doc's §6.
 - [`orchestration/chat-mode.md`](chat-mode.md) — the symmetric Chat-Mode specification; R1 lock +
-  `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) and the narrowed
-  RECORD PASS path are Chat-only; they do not apply in Auto Mode.
+  `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) is Chat-only and
+  does not apply in Auto Mode. Both modes run the unmodified base RECORD — the Chat-vs-Auto
+  difference is preparation-skip, not RECORD narrowing.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — authoritative
   Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
   why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`

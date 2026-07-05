@@ -1,14 +1,14 @@
 # Chat Mode
 
 Sub-document of the `orchestration` skill. Owns the **full** Chat-Mode specification: mode posture,
-the per-task slice workflow shape, per-loop discipline, the locally-overridden Chat RECORD
-procedure (R5 lock — see §4 for the canonical statement), the per-task `task-record.md` artifact
+the per-task slice workflow shape, per-loop discipline, the Chat RECORD procedure (R5 lock —
+see §4 for the canonical statement; it runs the unmodified base), the per-task `task-record.md` artifact
 contract, the explicit end-of-session Wrap-up trigger, the Workflow Status Display rendering spec,
 and the per-task state-transition table.
 
 For the workflow governor and the global 6-step state machine, see
-[`orchestration/SKILL.md`](SKILL.md). For the unmodified base RECORD procedure that §4
-locally overrides, see [`record/SKILL.md`](../record/SKILL.md).
+[`orchestration/SKILL.md`](SKILL.md). For the base RECORD procedure that §4 runs unchanged,
+see [`record/SKILL.md`](../record/SKILL.md).
 
 ---
 
@@ -80,7 +80,7 @@ Step 1 — Configuration (once per session)
 │           ↓                                                        │
 │      EVALUATION (always)                                           │
 │           ↓                                                        │
-│      RECORD  — Chat narrowed PASS path (see §4 canonical)    │
+│      RECORD  — unmodified base record/SKILL.md (§4)                │
 │           ↓                                                        │
 │      ITER / EXIT (PASS → next; REVISE → back to DISCUSSION)        │
 │   │                                                                │
@@ -99,13 +99,13 @@ Step 1 — Configuration (once per session)
 │  Step 4 — mini Planning Loop  (maxIter=5)                          │
 │      Same 5-row loop, scope = this one task's worth of plan        │
 │      (one or a few sub-steps, ordered).                            │
-│      RECORD = Chat narrowed PASS path (§4).                  │
+│      RECORD = unmodified base record/SKILL.md (§4).                │
 │   │                                                                │
 │   ▼                                                                │
 │  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=5)       │
 │      Same 5-row loop per sub-step (fresh executor by default);     │
 │      sub-steps sequence as the mini-Plan ordered them.             │
-│      RECORD = Chat narrowed PASS path (§4).                  │
+│      RECORD = unmodified base record/SKILL.md (§4).                │
 │   │                                                                │
 │   ▼                                                                │
 │  Task boundary: per-task task-record.md (5–10 lines)               │
@@ -119,10 +119,10 @@ Step 1 — Configuration (once per session)
    │ (user signals "wrap up")
    ▼
 Step 6 — Wrap-up Loop  (maxIter=5)
-   FULL RECORD consolidation:
-   - mine the session transcript
-   - read every per-task task-record.md
-   - promote staged mistakes (skill-owned + cross-cutting homes)
+   Wrap-up consolidation:
+   - inventory staging/ only, including Chat slice staging paths
+   - read every per-task task-record.md for review/navigation context only
+   - promote staged findings + mistake-candidates (skill-owned + cross-cutting homes)
    - archive shipped backlogs (move-on-terminal)
    - write the session handoff
 ```
@@ -150,7 +150,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§9) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | [ideation.md](workflow/ideation.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `RECORD` | Narrowed PASS path per §4: preserve transcript + session.json upsert + PASS-iter `outputs/`; skip typed-finding staging. Mistake stage moment-of-capture always live. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4 (transcript + session.json upsert + PASS-iter `outputs/` + typed-finding staging). Mistake stage moment-of-capture always live. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user through the active runtime's user-decision primitive. | — | manager |
 
 ### Step 3 — Slice Preparation Loop (Skipped at loop entry)
@@ -163,7 +163,7 @@ slice's worth of work.
 
 **Loop iteration.** None. Chat preparation is `{skip: true, maxIterations: 0}`; either signal resolves to `state: Skipped` at loop entry (loop-entry Skipped resolution, two independent signals) — no DISCUSSION / WORK / EVALUATION / RECORD rows execute; no FAIL or Aborted verdict is emitted.
 
-**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 2) — both signals must be cleared. The standard loop contract then runs.
+**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 3) — both signals must be cleared. The standard loop contract then runs.
 
 ### Step 4 — Slice Mini Planning Loop
 
@@ -180,7 +180,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user agree on decomposition shape. | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | [planning.md](workflow/planning.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `RECORD` | Narrowed PASS path per §4. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | — | manager |
 
 ### Step 5 — Slice Mini Execution Loop (per sub-step)
@@ -198,7 +198,7 @@ slice's worth of work.
 | 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | [discussion](../discussion/SKILL.md) | manager |
 | 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline. In Claude Code only, the executor may be continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap. Native Codex uses fresh executor spawns. Collect work artifact + verification evidence. | [execution.md](workflow/execution.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `RECORD` | Narrowed PASS path per §4. | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | — | manager |
 
 ### Slice Boundary — task-record + user review gate
@@ -222,7 +222,7 @@ slice's worth of work.
 
 **Definition.** Consolidate the session's artifacts; archive closed backlogs; promote staged mistakes to memory; write the handoff; open PR.
 
-**Inputs.** All per-slice `task-record.md` files + session transcript + Configuration-time settings + cumulative session-staging (mistakes only, under the Chat narrowed contract).
+**Inputs.** The per-slice typed-finding staging subtree (`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/4-execution/task-*/staging/`) + Configuration-time settings + cumulative session-staging (full typed-finding staging, written per the base RECORD each slice). The per-task `task-record.md` files are a user-facing review/navigation aid only, never a source Wrap-up promotes from.
 
 **Output.** Session handoff doc; memory updates (mistakes promoted); archived backlogs (move-on-terminal); opened PR.
 
@@ -231,9 +231,9 @@ slice's worth of work.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user confirm consolidation scope. | [discussion](../discussion/SKILL.md) | manager |
-| 2 | `WORK` | Spawn `assistant` subagent. Consolidate: archive backlogs, mine task-records + transcript, promote staged mistakes, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
+| 2 | `WORK` | Spawn `assistant` subagent. Consolidate: inventory the Chat per-slice `staging/` sources, promote staged findings + mistake-candidates, read task-records for navigation only, archive shipped backlogs, write handoff. | [wrap-up.md](workflow/wrap-up.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | [evaluation.md](workflow/evaluation.md) | evaluator |
-| 4 | `RECORD` | Full PASS path — `Wrap-up RECORD runs the unmodified base procedure` per the §4 base-unmodified clause. This is where typed-finding staging from prior slices is promoted (none under the Chat narrowed contract since per-slice staging was skipped — Wrap-up mines transcripts + task-records instead). | [record.md](workflow/record.md) | assistant |
+| 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure for the Wrap-up loop. Prior-slice typed findings are inventoried and promoted during Wrap-up WORK (Step 2) from the Chat `staging/` subtree; `task-record.md` and transcripts are context only, never memory sources. | [record.md](workflow/record.md) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → close session. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | — | manager |
 
 ---
@@ -244,42 +244,42 @@ slice's worth of work.
 all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 
 > **In Chat Mode, every loop's RECORD sub-phase runs after every EVALUATION verdict (PASS /
-> REVISE / FAIL) — it is never skipped.** Locally in this `chat-mode.md`, the PASS path is
-> **narrowed** relative to the base `record/SKILL.md` procedure:
+> REVISE / FAIL) — it is never skipped, and it runs the UNMODIFIED base `record/SKILL.md`
+> procedure.** Chat does not narrow or defer any base RECORD step. Every step runs per slice,
+> including Step 6 / Step 7 typed-finding staging. Each slice writes its typed findings to real,
+> on-disk staging under
+> `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/{type}/` — where `{type}` is the full base staging
+> vocabulary defined in [`record/record-map.md`](../record/record-map.md), not a narrowed subset —
+> (and `chat/tasks/{NN}-{slug}/4-execution/task-*/staging/` for execution sub-tasks). There is no
+> deferral to Wrap-up, no transcript-mining, and no typed-finding reconstruction.
 >
-> - **Steps preserved:** Step 5 (CREATE `outputs/{free-filename}.md`) and Step 8 (UPDATE
->   `session.json.workflow.{loop}.finishedAt` + `verdict: PASS`). Plus every-iter Step 2 (CREATE
->   the session-root `transcripts/{role}-{agentId}.jsonl` copy) and Step 3 (UPSERT
->   `session.json.workflow.{loop}.iterations[]`) — every-iter steps are not Chat-specific.
-> - **Steps skipped:** Step 6 (CREATE typed-finding stagings under
->   `staging/{scenarios,checklists,decisions,references,…}/`) and Step 7 (CREATE
->   `staging/{design,discussions,reviews,reports}/`). These are deferred — the staging surface is
->   mined from the session transcript and the per-task `task-record.md` files by the Wrap-up
->   Loop's RECORD at session end.
+> - **Every-iter base steps run.** RECORD preserves the session audit for every verdict: the
+>   transcript copy, the `session.json.workflow.{loop}.iterations[]` upsert, and the iteration
+>   verdict record — all per `record/SKILL.md`.
+> - **PASS base steps run.** On PASS, RECORD creates `outputs/{free-filename}.md`, stages typed
+>   findings under `staging/{type}/{slug}.md`, stages substantive design / discussion / review /
+>   report artifacts when present, and sets the loop-level `finishedAt` + `verdict: PASS`.
 > - **Moment-of-capture preserved.** The `mistake/SKILL.md § P2` discipline — stage a
->   mistake-candidate at the moment a correction is detected, not at end-of-loop — is **NOT** part
->   of Steps 6–7's deferred typed-finding staging. Mistake-candidates are written immediately to
+>   mistake-candidate at the moment a correction is detected, not at end-of-loop — runs alongside
+>   the base RECORD's typed-finding staging. Mistake-candidates are written immediately to
 >   `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true` per
->   `mistake/SKILL.md § P2` regardless of Chat's narrowed PASS path. This exception holds because
->   the moment-of-capture discipline is governed by the `mistake` skill, not by
->   `record/SKILL.md`.
-> - **`record/SKILL.md` is unmodified.** The narrowed PASS path is a Chat-Mode local
->   override, declared in this `chat-mode.md` and cross-linked to `record/SKILL.md` for the
->   unmodified base procedure. A reader of `record/SKILL.md` sees the full base; a reader of
->   this `chat-mode.md` sees the base plus the Chat override.
+>   `mistake/SKILL.md § P2`, because the moment-of-capture discipline is governed by the `mistake`
+>   skill, not by `record/SKILL.md`.
+> - **`record/SKILL.md` is unmodified.** Chat runs the base procedure verbatim; this
+>   `chat-mode.md` adds no local override to it. A reader of `record/SKILL.md` and a reader of
+>   this `chat-mode.md` see the same RECORD contract.
 
-**Wrap-up's input under Chat narrowed staging.** Because Steps 6–7 don't run per-loop in Chat,
-Wrap-up RECORD must: (a) mine the session transcript, (b) walk every
-`chat/tasks/{NN}-{slug}/task-record.md`, and (c) reconstruct typed findings from the per-loop
-evaluation files (`{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` — which DO get written
-every iter regardless of Chat's narrowing). Wrap-up's procedure extension is
-`wrap-up/SKILL.md`-side and is separately tracked. The `task-record.md` body shape (§6) is
-designed to make this reconstruction tractable — it surfaces decisions taken, open threads, and
-artifact pointers.
+**Wrap-up's promotion source is the per-slice staging subtree.** Because full base RECORD runs
+per slice, every Chat slice writes its typed findings to
+`chat/tasks/{NN}-{slug}/{N}-{loop}/staging/` (plus the execution sub-task staging) at RECORD time.
+Wrap-up's promotion inventory enumerates that subtree directly (see
+[`wrap-up/SKILL.md`](../wrap-up/SKILL.md)). It does not read the session transcript as a promotion
+input and does not rebuild findings from any per-slice record.
+The `task-record.md` artifact (§6) stays a user-facing review/navigation aid only.
 
-This is the single statement. Any reference to "RECORD runs every loop with a narrowed PASS
-path" or "Chat narrowed staging" anywhere in the `orchestration/` skill or downstream docs is a
-short-form pointer to this section.
+This is the single statement. Any reference to "Chat RECORD" anywhere in the `orchestration/`
+skill or downstream docs is a short-form pointer to this section: Chat RECORD runs the unmodified
+base `record/SKILL.md` procedure.
 
 ---
 
@@ -311,7 +311,7 @@ Execution):
   is. A **small gap** is producer-local: the producer integrates it and the manager discusses the
   Integration Log with the user at the existing after-EVALUATION finding-discussion gate. Full
   orchestration: [`workflow/production.md`](workflow/production.md).
-- **RECORD runs every loop with the §4 narrowed PASS path.**
+- **RECORD runs every loop with the unmodified base `record/SKILL.md` procedure (§4).**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
   context inline. Claude Code may continue an executor per
   `delegation/SKILL.md § Continue vs Fresh` (shared subsystem, under the saturation cap); native Codex uses fresh executor spawns. The
@@ -322,8 +322,8 @@ Execution):
 - **Mistake-stage moment-of-capture.** Every correction the manager or any subagent identifies in
   a Chat per-task slice is staged immediately at
   `sessions/.../{N}-{loop}/staging/decisions/{slug}.md` with `mistake-candidate: true`, per
-  `mistake/SKILL.md § P2`. This is the explicit exception to §4's "Steps 6–7 skipped" narrowing
-  — the moment-of-capture is governed by the `mistake` skill, not by `record/SKILL.md`.
+  `mistake/SKILL.md § P2`. This runs alongside §4's base RECORD typed-finding staging — the
+  moment-of-capture is governed by the `mistake` skill, not by `record/SKILL.md`.
 
 ---
 
@@ -373,6 +373,15 @@ canonical shape. Preparation is not present in the directory tree for tasks wher
 `state: Skipped` (the default — chat preparation is `{skip: true, maxIterations: 0}`).
 If a user opts into Preparation for a specific task, a `2-preparation/` subdirectory
 appears with the same 4-slot interior.
+
+**Materialization (manager-created).** The manager materializes this Chat slice tree —
+`chat/tasks/{NN}-{slug}/{N}-{loop}/{working,staging,evaluation,outputs}/` — DIRECTLY at slice
+entry, NOT via [`scaffold-session-dir.sh`](scripts/scaffold-session-dir.sh): that script is
+fail-closed to the fixed loop set (`1-ideation` … `5-wrap-up`) and does NOT cover `chat/tasks`.
+The per-slice `staging/` subdirs are also covered by RECORD's create-if-absent when it stages a
+typed finding. Extending `scaffold-session-dir.sh` +
+[`verify-record-map.sh`](../record/scripts/verify-record-map.sh) to materialize and validate the
+`chat/tasks` subtree — so the drift-gate models it — is the deferred **GEN-D7-004** follow-up.
 
 ### 6.2 Frontmatter type — deferred to Planning
 
@@ -424,11 +433,12 @@ user review gate before presenting active-runtime user-decision options.
 
 ### 6.5 Wrap-up role
 
-Wrap-up's RECORD reads every `task-record.md` in the session (path pattern:
-`chat/tasks/*/task-record.md`), plus the session transcript, and consolidates into memory
-promotions per `wrap-up/SKILL.md`. Wrap-up may reclassify task-record body narrative into
-project-level `notes/` per `mistakes/prose-reclassification-target-is-project-level-notes.md`
-(project-tier, not feature-tier).
+Wrap-up promotes each slice's typed findings from the per-slice staging subtree
+(`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/4-execution/task-*/staging/`) per
+`wrap-up/SKILL.md`. The base RECORD wrote that staging each slice (§4), so Wrap-up needs no
+transcript-mining and no finding reconstruction. The `task-record.md` stays a user-facing
+review/navigation aid: a reader scans it to see what each slice did. Wrap-up does not consume it
+as a promotion input.
 
 ---
 
@@ -509,17 +519,17 @@ state-transition contract for Chat Mode.
 | From state | Event | To state | Guard / Notes |
 |------------|-------|----------|---------------|
 | `(none)` | user types a task | `ideation.state: InProgress` | manager enters per-task slice; Configuration already `Done` |
-| `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 narrowed PASS path runs; move to Step 3 |
+| `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 base RECORD runs; move to Step 3 |
 | `ideation.state: InProgress` | EVALUATION → REVISE | `ideation.state: InProgress` | re-enter DISCUSSION with evaluator findings; iter++ |
 | `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
 | `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
 | `preparation.state: Skipped` | (auto-advance) | `planning.state: InProgress` | no user gate for the Skipped transition |
 | `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
-| `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 narrowed PASS path runs; move to Step 5 |
+| `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
 | `planning.state: InProgress` | EVALUATION → REVISE | `planning.state: InProgress` | re-enter DISCUSSION; iter++ |
 | `planning.state: InProgress` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
 | `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
-| `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 narrowed PASS path runs; write task-record |
+| `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
 | `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
 | `execution.state: InProgress` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
@@ -588,13 +598,13 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
 - [`workflow/production.md`](workflow/production.md) — dual-system production orchestration; the §5
   large-gap → user decision / small-gap → producer-local split mirrors this doc's evaluation-finding
   handling.
-- [`record/SKILL.md`](../record/SKILL.md) — the unmodified base RECORD
-  procedure that §4 locally overrides (R5 lock). A reader of that SKILL sees the full base; a
-  reader of this doc sees the base plus the Chat override.
+- [`record/SKILL.md`](../record/SKILL.md) — the base RECORD procedure that §4
+  runs unchanged (R5 lock). A reader of that SKILL and a reader of this doc see the same RECORD
+  contract.
 - [`memory/rules.md`](../memory/rules.md) — slug-naming standard for
   `task-record.md` filenames.
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline preserved in
-  Chat regardless of §4's narrowed PASS path.
+  Chat alongside the base RECORD procedure §4 runs.
 - [`delegation/SKILL.md § Inline-Paste Rule`](../delegation/SKILL.md) — governs fresh-subagent
   context per per-task slice; cited alongside Principle 1.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — Always-Ask matrix
@@ -604,5 +614,4 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
   `.gobbi/projects/gobbi/skills/orchestration/chat-mode.md` reflects automatically via the
   `.claude/skills/orchestration/chat-mode.md` mirror symlink; do not double-edit.
 - `mistakes/prose-reclassification-target-is-project-level-notes.md` — task-record is
-  session-scope (D-A); Wrap-up reclassification targets project-level `notes/`, never
-  feature-level.
+  session-scope (D-A), not routed to `notes/`; it is a user-facing review/navigation aid only.
