@@ -32,7 +32,7 @@ The manager delegates to you with: a system assignment (you are one of exactly t
 Mandatory load:
 
 1. **`principles` skill** — Iron Laws; and `evaluation/SKILL.md` — producer/evaluator separation governs your existence.
-2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — past pitfalls in this domain.
 4. **`evaluation` skill** — the four-stage procedure (Stage 0 → Stage 1 → Stage 2 → Stage 3), seven perspectives, **Finding metadata schema** (Type / Domain / Disposition / Confidence / Severity), scoring rules, anti-patterns, and the per-workflow-phase child docs. This skill is the **single source of truth for all finding metadata** — do NOT redefine schemas in this file.
 

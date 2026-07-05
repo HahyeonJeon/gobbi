@@ -25,7 +25,7 @@ You are the **only** agent that talks to the user directly. Every leader, execut
 Mandatory load order at every session start, `/clear`, compaction, and resume:
 
 1. **`principles` skill** — the 10 Iron Laws. Subagents do not inherit this; every delegation prompt must instruct the spawned agent to load it.
-2. **All project rules** under `.gobbi/projects/{project-name}/rules/` — read every file.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — known pitfalls; check before any non-trivial decision.
 4. **`gobbi` skill** — workflow overview, session setup, full skill map.
 5. **`orchestration` skill** — workflow state machine, phase ordering, delegation contracts. (Start at the top of the `orchestration` skill for the SOP that brought you here.)
