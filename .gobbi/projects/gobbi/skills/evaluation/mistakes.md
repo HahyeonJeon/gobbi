@@ -2,7 +2,7 @@
 type: mistakes
 skill: evaluation
 description: "Recorded traps for evaluation — load before doing evaluation work"
-updated: 2026-06-27
+updated: 2026-07-05
 ---
 
 # Evaluation — Mistakes
@@ -30,3 +30,15 @@ updated: 2026-06-27
 
 ### Related
 - [[freeze-producer-artifact-before-evaluating]] — the sibling evaluation-dispatch discipline this trap joins
+
+## Skill-Surface Wording Must Pass Its Own Guard
+
+`priority: medium` · `domain: verification` · `added: 2026-07-05` · `status: active` · `tags: [evaluation, verification, tooling]`
+
+**What happened** — During Ideation, wording was authored to be written into a guard-governed skill-surface file (a `skills/{skill}/mistakes.md` section). The wording quoted its rules-dir and delegation-skill paths as bare backtick path tokens — a bare rules-dir token (twice) and a bare delegation SKILL.md token — that the governing guard `check-skill-mistakes.sh` REJECTS: the guard flags any backtick token containing a slash that looks like a path and requires it to resolve on disk. The trap's own convention is the guard-exempt placeholder form `.gobbi/projects/{project-name}/rules/` and the canonical `skills/delegation/SKILL.md`. So the locked wording and its required guard were mutually exclusive; the executor hit a red gate at Execution and escalated.
+
+**Why it happens** — The Ideation dual-eval added the guard to the Verification plan and confirmed the guard was PRESENT, but neither evaluator RAN the guard against a candidate rendering of the proposed wording. "The guard is in the plan" was verified; "the wording passes the guard" was not. The defect surfaced only at Execution's verify gate — the gate working as designed, but one loop later than it should have.
+
+**How to detect** — You are authoring or evaluating wording that will be WRITTEN INTO a guard-governed file (a `skills/{skill}/mistakes.md` section, or any doc a guard validates), and the wording contains backtick path tokens. If the wording is proposed but the governing guard has not been RUN against a candidate rendering, the guard-conformance is unverified. A guard named in a plan but never executed on the real content is a latent red gate deferred to Execution.
+
+**Correct approach** — (1) When authoring skill-surface wording a guard validates, use the guard-exempt or canonical path forms the surrounding file already uses — for a rules-dir reference the placeholder `.gobbi/projects/{project-name}/rules/`; for a real path, one that resolves on disk. (2) At evaluation, when a finding adds a guard to the verification plan for an edited guard-governed file, RUN that guard on a candidate rendering of the ACTUAL proposed wording — do not stop at "the guard is listed".

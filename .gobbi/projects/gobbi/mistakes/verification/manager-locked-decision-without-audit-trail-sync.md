@@ -50,6 +50,15 @@ answer into an artifact: if there is no `working/discussion-log.md` entry for th
 AND the upstream record that surfaced the gap (the Integration Log row, the eval finding disposition)
 still says "open / escalated", the audit trail is out of sync — that is the trap firing.
 
+- **Recurred 2026-07-05 (GEN-D2-001 / D3-005 fix session, Ideation exit):** the same trap fired
+  through a different surface — the manager recorded a locked scope change by PREPENDING an
+  authoritative "AMENDMENT (supersedes below)" block to the draft instead of reconciling the body.
+  Five+ body sections (the Scope Contract, the escalated-fork section, the Implementation Checklist,
+  the Decisions Log) still read "escalated / deferred / do NOT edit" for a decision the amendment
+  locked in-scope; both dual-system evaluators flagged the self-contradiction. Trigger to catch:
+  adding a top-level "this supersedes the sections below" note in place of editing every restatement
+  is this same audit-trail-desync trap — a superseding header is not a reconciliation.
+
 ## Related
 
 - [[freeze-producer-artifact-before-evaluating]] — sibling verification-discipline trap
