@@ -201,7 +201,7 @@ The `marketplace.json` file is NOT inside the plugin directory. Claude Code read
 
 ### Symlinked package layout
 
-The canonical sources stay under `.gobbi/projects/gobbi/{skills,agents,hooks}`. The shared package under `plugins/gobbi/` links to those canonical directories instead of copying them. The development hook paths under `.claude/hooks/` also remain symlinks to `.gobbi/projects/gobbi/hooks/`.
+The canonical sources stay under `.gobbi/projects/gobbi/{skills,agents,hooks}`. The shared package under `plugins/gobbi/` links to those canonical directories instead of copying them. The development hook paths under `.claude/hooks/` also remain symlinks to `.gobbi/projects/gobbi/hooks/`. The workspace-visible skill mirror `.claude/skills/{name}/` is likewise script-owned: `sync-plugin-package.sh` builds it as a real directory of per-file symlinks DERIVED from each canonical skill's agent-exposed children (top-level files AND support subdirs `scripts/`/`templates/`/`workflow/`), and `--check` validates it as per-skill bidirectional parity. It is per-file (not a whole-dir symlink) because Claude Code skill discovery does not resolve a symlinked directory.
 
 Historical note: verification on 2026-06-02 showed Claude marketplace install dereferenced repo-internal symlinks, while Codex install behavior around symlinked component directories needed separate smoke testing. Gobbi keeps the repo package symlinked; Codex installed-cache behavior is verified with `scripts/check-codex-plugin-smoke.sh`.
 
@@ -215,6 +215,7 @@ Run `scripts/sync-plugin-package.sh --check` before claiming the plugin package 
 | `.claude/hooks/session-start.sh` | `.gobbi/projects/gobbi/hooks/session-start.sh` |
 | `.claude/hooks/post-tool-use-agents.sh` | `.gobbi/projects/gobbi/hooks/post-tool-use-agents.sh` |
 | `.claude/hooks/session-end.sh` | `.gobbi/projects/gobbi/hooks/session-end.sh` |
+| `.claude/skills/{name}/` | real dir of per-file symlinks, DERIVED per skill from `.gobbi/projects/gobbi/skills/{name}/` (top-level files AND support subdirs); built + parity-checked by `sync-plugin-package.sh --check` |
 
 Use `scripts/sync-plugin-package.sh` after topology drift to restore the symlinks.
 

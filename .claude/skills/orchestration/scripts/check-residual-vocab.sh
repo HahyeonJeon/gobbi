@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/orchestration/scripts/check-residual-vocab.sh

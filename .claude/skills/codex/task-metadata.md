@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/codex/task-metadata.md
