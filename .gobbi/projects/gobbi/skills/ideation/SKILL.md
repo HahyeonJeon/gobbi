@@ -107,7 +107,7 @@ Establish the root cause, impact, success criteria, prior attempts, the stronges
 | `.gobbi/projects/{project-name}/features/` (enumerate feature dirs) | Detect overlap with existing feature scopes |
 | `.gobbi/projects/{project-name}/features/{feature-name}/{design,decisions,scenarios,checklists}/` (for each candidate feature) | Reuse prior decisions; avoid contradicting design |
 | `.gobbi/projects/{project-name}/mistakes/` (read recursively — descend into every `{area}/` subdir) | Surface project-wide mistakes relevant to the framed problem |
-| `.gobbi/projects/{project-name}/rules/` (read recursively — descend into every `{area}/` subdir) | Identify any project rules that constrain the framing |
+| `.gobbi/projects/{project-name}/rules/` (read recursively — descend into every `{area}/` subdir) (read recursively when present; if absent/empty, record NO_PROJECT_RULES in the Decisions Log and fall back to memory/rules.md § Empty-state contract) | Identify any project rules that constrain the framing |
 | `.gobbi/projects/{project-name}/design/` | Project-wide design context |
 | `.gobbi/projects/{project-name}/notes/` | Recent handoff / investigation notes for context |
 | `.gobbi/projects/{project-name}/backlogs/` | Confirm the problem is not already deferred |
