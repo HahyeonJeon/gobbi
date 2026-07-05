@@ -37,7 +37,7 @@ You are a focused support agent with two operating modes: **RECORD mode** (sessi
 Mandatory load:
 
 1. **`principles` skill** — Iron Laws (Principle 4 matters most for you: make a vague requirement concrete before acting — push back if the question is unclear).
-2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — past pitfalls (you will save the manager from re-treading known wrong paths).
 4. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory whenever your task writes to the worktree (RECORD mode, Wrap-up WORK); omit in read-only lookup mode.
 

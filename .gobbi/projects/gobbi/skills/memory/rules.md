@@ -14,6 +14,36 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 >
 > Three distinct things, two of them sharing the filename `rules.md` at different paths. `memory/rules.md` (this how-memory-works reference) ≠ `memory/templates/rules.md` (the rules-type template) ≠ `rules/` (the behavioral-invariant memory type).
 
+### Empty-state contract for the `rules/` tier
+
+> **The `rules/` tier is lazily created; an absent or empty `rules/` is the valid "no
+> project rules yet" state.** Like every lazily-created memory tier (`rules/`, `design/`,
+> …), the project `rules/` directory does NOT exist until Wrap-up promotes the first
+> project rule (rules are rare and load-bearing — §3). An absent — or present-but-empty
+> (zero `.md` files) — `rules/` is not an error. Any agent or phase directed to read
+> project rules MUST resolve to exactly ONE explicit audit state:
+>
+> - **`RULES_PRESENT`** — `.gobbi/projects/{project-name}/rules/` exists and holds ≥1
+>   `.md` file: read every file under it recursively (`rules/{area}/{slug}.md`) and record
+>   each consumed path in the load checklist / Memory-reads register.
+> - **`NO_PROJECT_RULES`** — `rules/` is absent or holds zero `.md` files: record
+>   `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read
+>   THIS `§ Empty-state contract` subsection as the de-facto rules **landing page** for the
+>   read-contract — this subsection, not the whole file.
+>
+> **Landing page, NOT a substitute for behavioral rules.** This memory standard documents
+> *how the memory system works* (naming / frontmatter / structure); it is NOT itself the
+> project's behavioral `rules/` content (the CRITICAL disambiguation above). On
+> `NO_PROJECT_RULES` the reader lands here because no behavioral rule has been promoted —
+> the fallback records that fact and points the reader at the read-contract; it does not
+> pretend this standard IS the behavioral rule set.
+>
+> A missing or empty directory produces no output, not a failure — so the reader MUST emit
+> the `NO_PROJECT_RULES` token; it is never a silent read-nothing. Do NOT create a `rules/`
+> skeleton to make a read succeed: empty dirs are not durable in git, and a placeholder
+> file would be a second structural exception to the `rules/{area}/{slug}.md` shape (§1.5).
+> New rule files are written only by Wrap-up after user confirmation.
+
 ---
 
 ## 1. Naming standard

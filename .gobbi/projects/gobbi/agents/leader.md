@@ -25,7 +25,7 @@ The manager delegates to you for Ideation (refining what to do), Preparation (ve
 Mandatory load — every fresh subagent:
 
 1. **`principles` skill** — Iron Laws and rationale. Not inherited; load explicitly.
-2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — past pitfalls in this domain.
 4. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory whenever your task writes to the worktree (you write session artifacts there).
 

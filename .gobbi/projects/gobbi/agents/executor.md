@@ -27,7 +27,7 @@ The manager delegates to you with: a specific deliverable, a scope boundary, the
 Mandatory load:
 
 1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
-2. **All project rules** under `.gobbi/projects/{project-name}/rules/`.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — past pitfalls.
 4. **`orchestration/workflow/execution.md`** + **`execution` skill** — implementation and verification principles.
 5. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
