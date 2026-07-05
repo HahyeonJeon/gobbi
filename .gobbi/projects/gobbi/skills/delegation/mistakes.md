@@ -2,7 +2,7 @@
 type: mistakes
 skill: delegation
 description: "Recorded traps for delegation — load before doing delegation work"
-updated: 2026-06-27
+updated: 2026-07-05
 ---
 
 # Delegation — Mistakes
@@ -16,7 +16,7 @@ updated: 2026-06-27
 **What happened** — The manager's delegation prompts for the Preparation evaluators carried a Load Directives block that said "all files under `.gobbi/projects/{project-name}/rules/`". Both the iter1 and iter2 evaluators (Claude and Codex) flagged that this directory does not exist in this project; the real project rules live in `skills/memory/rules.md` (the memory standard) plus in-skill rule sections. Agents that follow the directive find nothing, load nothing, and proceed without project rules — and the brief surfaces no error, because a missing directory produces no output rather than an explicit failure.
 **Why it happens** — The Load Directives template likely originated from a project that had a populated rules directory, or from a future-state expectation that one would be created, and was carried forward without verifying the path exists for this project. The error is silent: agents get a "no files" result and continue.
 **How to detect** — A Load Directives block references a path with a glob like "all files under `.gobbi/projects/{project-name}/rules/`", AND that directory does not exist on disk (verify with `ls` or `find`). If both are true, the brief is sending agents to read from a nonexistent source and they load nothing without erroring.
-**Correct approach** — Before issuing a brief that references a rules or memory directory, confirm the path exists (`ls .gobbi/projects/{project-name}/rules/` or `find`). If it does not exist, either remove the directive or replace it with the actual rule source — for this project, "Load `skills/memory/rules.md` (frontmatter/structure standard for staged files)". Do not keep a nonexistent-path Load Directive just because the template included it.
+**Correct approach** — Before issuing a brief that references a rules or memory directory, confirm the path exists (`ls .gobbi/projects/{project-name}/rules/` or `find`). If it does not exist, either remove the directive or replace it with the actual rule source — for this project, "Load `skills/memory/rules.md` (frontmatter/structure standard for staged files)". Do not keep a nonexistent-path Load Directive just because the template included it. **Now enforced by the aligned contract (2026-07-05):** the `.gobbi/projects/{project-name}/rules/` empty-state read contract is defined once in [`skills/memory/rules.md` § Empty-state contract](../memory/rules.md) and referenced from all 16 aligned read-sites (the 5 role prompts, the 4 delegation templates + `skills/delegation/SKILL.md`, the 5 phase-doc read/record sites) plus the `memory-map.md` tier row. A brief that references `.gobbi/projects/{project-name}/rules/` now resolves to the `RULES_PRESENT` / `NO_PROJECT_RULES` two-state contract instead of a silent read-nothing — follow that central contract rather than re-deriving a per-brief fallback.
 
 ## Subagents Skip Load Directives No Enforcement
 
