@@ -167,6 +167,24 @@ The display is for the user — it is not state storage. The state machine itsel
 
 ---
 
+## Harness Todo List
+
+The manager keeps a harness-native **workflow todo list** — an always-on progress widget that mirrors the 6 workflow steps — using the runtime's task tracker (Claude Code `TaskCreate` / `TodoWrite`; Codex plan updates; a runtime with no widget falls back to the [Workflow Status Display](#workflow-status-display) table). It is a SECOND read-only projection of `state.json`, beside the Status Display — a COMPLEMENT, never a replacement.
+
+**Authoritative source (A-2).** `state.json` is the single source of truth (see [§ State persistence](#state-persistence)). The todo list is a **one-way projection that never writes back**. The manager writes `state.json` FIRST, then projects the widget. On any disagreement `state.json` wins — re-render the widget from it. On resume / `/clear` / `/compact` the widget is REBUILT from `state.json` at Configuration row 4R; a stale resumed widget is never treated as recovery state.
+
+**Granularity.** Seed 6 items at Configuration (one per step). After Planning PASS, expand the Execution item into the locked per-task list; mark each task `in_progress` / `completed` as tasks land. (List grows 6 → 6 + N − 1 at Planning.)
+
+**Update cadence.** Mark a step `in_progress` when its `state.json` entry → `Active`; `completed` when → `Done`; completed-as-skipped (or removed) on `skip: true` (mirrors `⊘ Skipped`). A `REVISE` keeps the step `in_progress` — the widget does not churn per iteration.
+
+**Rendering.** Render in BOTH Auto and Chat. The widget is the always-on spine; the [Workflow Status Display](#workflow-status-display) table is KEPT as the periodic detailed snapshot. Widget item names/order mirror the table rows.
+
+**Chat specifics.** Steps 2-5 are annotated with the current Task NN/slug; prior completed Chat tasks collapse to a summary item (per [`chat-mode.md` § Status Display](chat-mode.md)).
+
+**Ownership.** The workflow todo list is **manager-owned**; subagents never create or update it.
+
+---
+
 ## Workflow Session Record
 
 Every session writes its working memory under one root: `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`, inside the per-session worktree (the durable write-root is `session.json.git.worktreePath` — see [`git/SKILL.md` § Memory Access Matrix](../git/SKILL.md#memory-access-matrix)). All of it is **session-scoped**: nothing here is memory until Wrap-up promotes the `staging/` trees. This section is the timeline — *when* across the workflow lifecycle each piece is written, and *who* writes it — followed by the on-disk inventory the timeline refers to.

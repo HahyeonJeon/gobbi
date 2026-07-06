@@ -435,6 +435,8 @@ The manager delegates to these agent types. Each has a distinct role — underst
 | `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus |
 | `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet |
 
+> **The workflow todo list is manager-owned.** The 6-step harness spine ([`orchestration/SKILL.md` § Harness Todo List](../orchestration/SKILL.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
+
 ---
 
 ## Subtask Records
