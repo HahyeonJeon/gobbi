@@ -99,6 +99,8 @@ Check `.gobbi/projects/{project-name}/` for the memory baseline:
 - If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the interview skill to populate it before starting work?" If the user accepts, load the [`interview` skill](../interview/SKILL.md) and run the 5-wave bootstrap; the workflow resumes after the interview completes.
 - If memory is populated → proceed directly to the workflow.
 
+For which durable-memory types each role reads at each later phase (not only `mistakes/`), see the [durable-memory read map](../memory/SKILL.md#the-durable-memory-read-map).
+
 ### 6. Enter the workflow
 
 Hand off to the [`orchestration/SKILL.md § Workflow`](../orchestration/SKILL.md#workflow) governor. It runs Configuration (Step 1), then reads `settings.mode` and dispatches Steps 2-6 to the matching mode doc — [`auto-mode.md`](../orchestration/auto-mode.md) (linear 6-step state machine) or [`chat-mode.md`](../orchestration/chat-mode.md) (per-task slice loop). Each step runs the DISCUSSION → WORK → EVALUATION → RECORD loop. Whether the session enters Step 2 fresh or continues a persisted step is the **fresh-vs-resume** branch — the signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):

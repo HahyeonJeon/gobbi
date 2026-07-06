@@ -31,13 +31,40 @@ The **When**. A memorized fact moves through three beats:
 
 1. **Staged** during a loop's RECORD sub-phase — the assistant writes the finding/decision/mistake to session staging at `sessions/.../{N}-{loop}/staging/{type}/`. Loop RECORD never writes durable memory.
 2. **Promoted** to durable memory at Wrap-up — Wrap-up reads the accumulated staging across all loops and writes it to `.gobbi/projects/{project-name}/...`. Wrap-up is the **sole writer** to durable memory.
-3. **Read** at the start of the next session — promoted memory is loaded back in (e.g. mistakes via the load-at-start model). This beat closes the lifecycle; building a read procedure is not this doc's job.
+3. **Read** at the start of the next session — promoted memory is loaded back in. Which role reads which types, and when, is the [durable-memory read map](#the-durable-memory-read-map) below (not only mistakes via the load-at-start model). This beat closes the lifecycle.
 
 **Vocabulary caveat.** "Memorization" names the **Wrap-up promotion stage** (stage 2 of the WORK pipeline), not the per-loop capture sub-phase, which is **RECORD**. The two are distinct — see [`wrap-up/SKILL.md` § RECORD Phase](../wrap-up/SKILL.md#record-phase), which states the distinction; this doc does not re-explain it.
 
 - For the staging mechanics (what RECORD writes, PASS-only, cumulative staging) → [`record/SKILL.md` § RECORD Phase](../record/SKILL.md#record-phase).
 - For the promotion mechanics (the 5-stage pipeline, stage 2 "memorization") → [`wrap-up/SKILL.md` § The 5-stage pipeline](../wrap-up/SKILL.md#the-5-stage-pipeline).
-- For the read-at-start model (the read beat) → [`mistake/SKILL.md` § P1](../mistake/SKILL.md#p1--load-mistakes-before-starting-work).
+- For the read-at-start model (the read beat) → the [durable-memory read map](#the-durable-memory-read-map) below; its `mistakes/` floor is owned by [`mistake/SKILL.md` § P1](../mistake/SKILL.md#p1--load-mistakes-before-starting-work).
+
+---
+
+## The durable-memory read map
+
+The read side of the lifecycle — beat 3 (**Read**) of [§ When memorization happens](#when-memorization-happens). Promotion writes memory; this map says **which memory types each role reads, and when**, so the entry point covers every type — not only `mistakes/`. It is a digest of the per-role READ-ONLY tiers that otherwise live scattered across each role skill's own Memory Access Matrix; each role skill's matrix stays the authority.
+
+**The universal read floor — every spawned agent, at Study.** Every delegation prompt's Load Directives block loads, in order, `principles` → project `rules/` → the task's skills (and each skill's `mistakes.md` companion) → project `mistakes/`. So EVERY role reads the two project-tier memory types below before any per-phase type:
+
+| Floor type | Read rule owner |
+|---|---|
+| project `rules/` | [`rules.md` § Empty-state contract](rules.md#empty-state-contract-for-the-rules-tier) — resolve to `RULES_PRESENT` or `NO_PROJECT_RULES` |
+| project `mistakes/` (+ each loaded skill's `mistakes.md` companion; + feature `mistakes/` when feature-scoped) | [`mistake/SKILL.md` § P1](../mistake/SKILL.md#p1--load-mistakes-before-starting-work) |
+
+**Per-phase reads — on top of the floor.** Each phase's role reads the extra durable types its work needs. Types name the project tier; a feature-scoped session also reads the same type under `features/{feature-name}/`.
+
+| Phase (role) | Durable types read (beyond the floor) | Read for |
+|---|---|---|
+| Configuration (manager) | `README` + `design/` + `features/` baseline | memory-baseline check ([`gobbi/SKILL.md` § 5](../gobbi/SKILL.md)) |
+| Ideation (leader) | `design/`, `decisions/`, `references/`, `backlogs/`, `features/` | prior art + design direction + already-deferred follow-ups |
+| Preparation (leader) | `design/`, `decisions/`, `skills/`, `features/` | readiness vs the locked Ideation output |
+| Planning (leader) | `design/`, `decisions/`, `backlogs/`, `features/` | decomposition + prior decisions + dependencies |
+| Execution (executor) | `design/`, `decisions/`, `references/`, `features/` | domain patterns for the in-scope files |
+| Evaluation (evaluator) | `design/`, `decisions/`, `reviews/` | assess against standards + prior findings |
+| Wrap-up (assistant) | all tiers (read to route / promote / compact) | promotion routing + compaction caps |
+
+For what each type holds and its canonical home → [`memory-map.md`](memory-map.md). For a role's authoritative read/write tiers → that role skill's `## Memory Access Matrix` ([ideation](../ideation/SKILL.md#memory-access-matrix), [preparation](../preparation/SKILL.md#memory-access-matrix), [planning](../planning/SKILL.md#memory-access-matrix), [execution](../execution/SKILL.md#memory-access-matrix), [evaluation](../evaluation/SKILL.md#three-tier-memory-access-matrix), [record](../record/SKILL.md#memory-access-matrix), [wrap-up](../wrap-up/SKILL.md#memory-access-matrix)).
 
 ---
 
@@ -185,7 +212,7 @@ The anti-duplication contract. Each row names the single source of truth for one
 
 | Doc | Owns (single source of truth for) | `memory/SKILL.md` points here for |
 |---|---|---|
-| [`memory/SKILL.md`](SKILL.md) (this doc) | The **memorize procedure** — the What/When/How and the entry point | it points OUT; nothing points to it for detail |
+| [`memory/SKILL.md`](SKILL.md) (this doc) | The **memorize procedure** (the What/When/How + entry point) AND the **durable-memory read map** (which role reads which type, when) | it points OUT; nothing points to it for detail |
 | [`memory/memory-map.md`](memory-map.md) | The **path inventory** — every session-record + memory path, its writer, when, which template; per-type canonical homes; the Templates index | which path holds what / who writes it / when — never restate the path tables |
 | [`memory/rules.md`](rules.md) | The **standard** — naming (§1), frontmatter (§2), structure (§3), dev-doc quality (§4), staging-field stripping (§2.6) | how to name / what frontmatter / what structure / the zero-context bar — never restate the rules |
 | [`memory/templates/{type}.md`](templates/) | The **per-type schema** — required fields, when-to-write, frontmatter + body contract per type | the schema each memorized file stamps — never restate a template's fields |
@@ -197,6 +224,7 @@ The anti-duplication contract. Each row names the single source of truth for one
 
 ## Cross-references
 
+- The durable-memory read map (which role reads which type, when) → [§ The durable-memory read map](#the-durable-memory-read-map)
 - Path inventory (which directory holds what, writer, when, template) → [`memory-map.md`](memory-map.md)
 - The standard (naming + frontmatter + structure + dev-doc quality) → [`rules.md`](rules.md)
 - Per-type schemas (required fields, body section contracts) → [`templates/`](templates/)
