@@ -163,7 +163,7 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 The display is for the user — it is not state storage. The state machine itself is governed by the [Workflow State Machine](#workflow-state-machine) section; the display is a read-only projection.
 
-**Chat-mode rendering.** In Chat Mode the display uses a two-tier structure (session-level + per-task tier) backed by `state.json.workflow.chat.tasks[currentIndex]` (R3 lock, §6.7). The full Chat rendering spec — header form, body form, and a worked example showing a completed prior task plus the active task — lives in [`chat-mode.md § Status Display`](chat-mode.md). Auto-mode rendering is the existing 6-row table above; it is unchanged.
+**Chat-mode rendering.** In Chat Mode the display uses a two-tier structure (session-level + per-task tier) backed by the active slice in `state.json.workflow.chat.tasks[]` — the entry whose `finishedAt` is `null`, **derived** the same way the active step is (the entry whose `state` is `Active`/`Revising`; there is no stored `active` key or `currentIndex` cursor) (R3 lock, §6.7). The full Chat rendering spec — header form, body form, and a worked example showing a completed prior task plus the active task — lives in [`chat-mode.md § Status Display`](chat-mode.md). Auto-mode rendering is the existing 6-row table above; it is unchanged.
 
 ---
 

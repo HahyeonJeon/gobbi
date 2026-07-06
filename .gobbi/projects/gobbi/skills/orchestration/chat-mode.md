@@ -474,9 +474,12 @@ written. A future session can resume per the existing 3-state worktree idempoten
 
 ### 8.1 Rendering shape
 
-Chat's per-task slice structure requires a **two-tier** status display, backed by
-`state.json.workflow.chat.tasks[currentIndex]` (R3 lock from the `workflow.chat.tasks[]`
-array-of-slices schema).
+Chat's per-task slice structure requires a **two-tier** status display, backed by the
+**active slice** in `state.json.workflow.chat.tasks[]` — the entry whose `finishedAt` is
+`null` (the in-progress slice). The active slice is **derived**, exactly as the six-step
+active step is derived (`orchestration/SKILL.md § State persistence`: "the active step is
+derived … there is no `active` key") — there is no stored `currentIndex` cursor. (R3 lock
+from the `workflow.chat.tasks[]` array-of-slices schema.)
 
 **Header form (Chat):**
 
@@ -518,25 +521,33 @@ state-transition contract for Chat Mode.
 
 | From state | Event | To state | Guard / Notes |
 |------------|-------|----------|---------------|
-| `(none)` | user types a task | `ideation.state: InProgress` | manager enters per-task slice; Configuration already `Done` |
-| `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 base RECORD runs; move to Step 3 |
-| `ideation.state: InProgress` | EVALUATION → REVISE | `ideation.state: InProgress` | re-enter DISCUSSION with evaluator findings; iter++ |
-| `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
+| `(none)` | user types a task | `ideation.state: Active` | manager enters per-task slice; Configuration already `Done` |
+| `ideation.state: Active` | EVALUATION → PASS | `ideation.state: Done` | §4 base RECORD runs; move to Step 3 |
+| `ideation.state: Active` | EVALUATION → REVISE | `ideation.state: Active` | re-enter DISCUSSION with evaluator findings; iter++ |
+| `ideation.state: Active` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
 | `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
-| `preparation.state: Skipped` | (auto-advance) | `planning.state: InProgress` | no user gate for the Skipped transition |
-| `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
-| `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
-| `planning.state: InProgress` | EVALUATION → REVISE | `planning.state: InProgress` | re-enter DISCUSSION; iter++ |
-| `planning.state: InProgress` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
-| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
-| `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
-| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
-| `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
-| `execution.state: InProgress` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
-| `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |
-| `taskRecord: written` | user selects "Next task" | `(new per-task slice begins)` | manager re-enters per-task slice loop for task {NN+1} |
-| `taskRecord: written` | user selects "Revise this task" | `ideation.state: InProgress` (same task, new per-task slice) | manager re-enters per-task slice at Step 2 |
-| `taskRecord: written` | user selects "Wrap up the session" | `wrapUp.state: InProgress` | manager exits per-task slice loop; enters Step 6 Wrap-up |
+| `preparation.state: Skipped` | (auto-advance) | `planning.state: Active` | no user gate for the Skipped transition |
+| `preparation.state: Skipped` | user opts in for complex task | `preparation.state: Active` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
+| `planning.state: Active` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
+| `planning.state: Active` | EVALUATION → REVISE | `planning.state: Active` | re-enter DISCUSSION; iter++ |
+| `planning.state: Active` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
+| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: Active` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
+| `execution.state: Active` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
+| `execution.state: Active` | EVALUATION → PASS (not last sub-step) | `execution.state: Active` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
+| `execution.state: Active` | EVALUATION → REVISE | `execution.state: Active` | re-enter DISCUSSION for same sub-step; iter++ |
+| `execution.state: Active` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
+| `execution.state: Done` | `task-record.md` written (§6) | `taskRecord.{path, writtenAt}` populated (metadata set; slice stays `execution.state: Done`) | manager presents user review gate |
+| `execution.state: Done` (taskRecord set — user review gate) | user selects "Next task" | `(new per-task slice begins)` | manager re-enters per-task slice loop for task {NN+1} |
+| `execution.state: Done` (taskRecord set — user review gate) | user selects "Revise this task" | `ideation.state: Active` (same task, new per-task slice) | manager re-enters per-task slice at Step 2 |
+| `execution.state: Done` (taskRecord set — user review gate) | user selects "Wrap up the session" | `workflow["wrap-up"].state: Active` | manager exits per-task slice loop; enters Step 6 Wrap-up |
+
+> **File vs metadata vs state (R3/GEN-D5-006).** `task-record.md` is the per-task artifact
+> FILE (§6). `taskRecord.{path, writtenAt}` is the METADATA object on the slice recording
+> where that file was written and when. Neither is a state-machine value: the per-task `state`
+> values are only the canonical enum `Pending / Active / Revising / Done / Skipped / Aborted`
+> (`orchestration/SKILL.md § State persistence`). The user review gate is a manager action
+> taken while the slice sits at `execution.state: Done` with `taskRecord` populated — not a
+> distinct state.
 
 ### 8.3 Worked example — Status Display (§6.3 spec)
 
@@ -559,7 +570,7 @@ Task 03 — chat-mode-spec-draft
   Step 2  Ideation          ✓ Done          iter 1   PASS
   Step 3  Preparation       ⊘ Skipped       —        —
   Step 4  mini Planning     ✓ Done          iter 1   PASS
-  Step 5  mini Execution    ▸ InProgress    iter 1   …
+  Step 5  mini Execution    ▸ Active         iter 1   …
           task-record       … pending
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
