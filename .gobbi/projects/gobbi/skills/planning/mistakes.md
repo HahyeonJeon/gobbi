@@ -2,7 +2,7 @@
 type: mistakes
 skill: planning
 description: "Recorded traps for planning — load before doing planning work"
-updated: 2026-06-27
+updated: 2026-07-06
 ---
 
 # Planning — Mistakes
@@ -20,6 +20,18 @@ updated: 2026-06-27
 
 ### Related
 - [[verification-gate-must-be-runnable-not-placeholder]] — the complementary trap (a gate that is a placeholder, not runnable)
+
+## Tree-grep each finding's defect string during decomposition, not just the cited file
+
+`priority: medium` · `domain: docs-sync` · `added: 2026-07-06` · `status: active` · `tags: [planning, verification, docs-sync]`
+
+**What happened** — In the 2026-07-01 doc-consistency sweep, Planning decomposed two review findings (R8 producer/proposer naming, R13 per-row eval-doc reference) scoping each task to the ONE file the finding named. Both defects were repeated WORDING that also lived in sibling files: R8's "two producers" wording was also in `skills/delegation/SKILL.md` (+ a cost reference); R13's identical EVALUATION rows were also in `skills/orchestration/chat-mode.md`. The narrow scoping shipped fixes that left the twins live, and the dual-system Execution eval REVISE'd on exactly those unfixed siblings (Codex caught the R8 twin, Claude caught the R13 twin).
+**Why it happens** — A review finding names ONE location — the site the reviewer inspected — not every surface that carries the same defect. Planning that trusts the finding's file list treats the cited file as the whole blast radius. When the defect is a shared string duplicated across delegation templates, role docs, mode docs, and mirror trees, the un-grepped siblings become next-iteration REVISE findings.
+**How to detect** — The task is "fix finding X in file(s) A/B/C" AND the defect is a repeated string / pattern (a naming choice, a row template, a vocabulary term) rather than a one-off logic bug. Red flag: writing a task's `files:` scope straight from the finding's Location field without a tree-wide grep of the literal offending phrase.
+**Correct approach** — Before writing a task's file scope, grep the EXACT defect string tree-wide (all skills, agent docs, templates, and physical mirror trees). Scope the task to ALL occurrences, OR surface the wider set to the user as a scope-contract decision — never silently scope to the cited file alone. This is the Planning-time application of the project mistake below; the dual-eval-time complement is the tree-wide grep run at Execution evaluation.
+
+### Related
+- [[finding-location-understates-blast-radius]] — the project mistake this is the planning-time application of (do not duplicate; that record holds the full blast-radius trap)
 
 ## Verification Gate Must Be Runnable Not Placeholder
 

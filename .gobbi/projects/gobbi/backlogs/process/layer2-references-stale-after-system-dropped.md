@@ -4,7 +4,7 @@ description: wrap-up/SKILL.md, CLAUDE.md, and mistake/SKILL.md still document La
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-28
 session: d45128ad-6a6c-4bb7-9925-343cd3b826c8
 tags: [process]
@@ -16,6 +16,19 @@ shipped_in: null
 ---
 
 # Remove Stale Layer-2 References from wrap-up/SKILL.md, CLAUDE.md, and mistake/SKILL.md
+
+## Resolution (2026-07-06)
+
+**CLOSED — verified resolved 2026-07-06 (session 1faa4e51); the Layer-2 purge already landed.**
+The recon for the 2026-07-01 doc-consistency sweep re-checked this: `grep -niE 'layer[- ]?2'`
+over `skills/wrap-up/SKILL.md`, `skills/mistake/SKILL.md`, and `.claude/CLAUDE.md` returns **0
+hits**. The Layer-2 promotion system was purged from all three named docs by the memory redesign
+(PR#319), so the work this backlog describes is already done — it is moot, not open.
+
+Left in place (not moved to `archive/`): three files reference this backlog by prose path — two
+are append-only `reviews/adversarial-review/2026-06-29-*.md` witnesses that record its `open`
+state at review time and must not be rewritten, and one is `backlogs/evaluation/fix-d7-d1-review-findings.md`.
+Flipping `status` in place keeps those historical witnesses valid.
 
 ## Context
 
