@@ -493,7 +493,7 @@ All writes during the Ideation Loop are **session-scoped**. Wrap-up promotes the
 | `sessions/{date}-{session-id}/1-ideation/staging/decisions/{slug}.md` | assistant (RECORD) | per `design_flaw` / `assumption_risk` finding |
 | `sessions/{date}-{session-id}/1-ideation/staging/design/{slug}.md` | assistant (RECORD) | per design topic |
 | `sessions/{date}-{session-id}/1-ideation/staging/discussions/{slug}.md` | assistant (RECORD) | per substantive user-decision topic |
-| `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` (supplementary) | assistant (RECORD) | per `general` finding with citable external pattern (atop WORK-staged) |
+| `sessions/{date}-{session-id}/1-ideation/staging/references/{slug}.md` (supplementary) | assistant (RECORD) | per `general` finding routed to `references/` by the canonical [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity) Type + Domain table (atop WORK-staged) |
 | `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | loop completion timestamps, iter, verdict |
 
 The session directory tree at `sessions/{date}-{session-id}/1-ideation/{working,staging,evaluation}/` is bootstrapped by the manager at Sub-step B Lock Scope. WORK and RECORD assume the tree exists on entry and surface an error to the manager if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Ideation; Wrap-up creates them as needed during memory promotion.
