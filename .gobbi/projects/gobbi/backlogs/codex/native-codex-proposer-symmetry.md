@@ -30,6 +30,19 @@ The current task's scope is locked to the Claude-primary bridge (one of the four
 ## Suggested approach
 Mirror `orchestration/workflow/production.md` and the `codex/SKILL.md` § Dual-System Production for the native-Codex column of the Runtime Matrix: define the Claude-proposer spawn primitive, the producer-integration duty for the native-Codex producer, and the same degraded-mode (BLOCKED-on-empty → Codex-only labeled fallback). Reuse the producer-default selective-integration + manager large-gap-adjudication model unchanged.
 
+## Follow-up notes
+
+### 2026-07-06 — add a mechanical render-time producer-label gate (RI-1)
+When the native-Codex dual-production path is built, add a MECHANICAL render-time gate that
+FAILS if a native-Codex-rendered producer prompt still contains "You are the Claude
+producer" or `production_mode: claude-only`. Rationale: the GEN-D4-003 fix shipped
+2026-07-06 scopes the dual-system-production block to the Claude producer with
+instruction-based PROSE only — there is no runtime check that a producer prompt actually
+rendered for the correct system. Claude eval finding RI-1 (Low / confidence 50) flagged
+this as acceptable for the current Claude-primary bridge but load-bearing once the
+symmetric native-Codex producer exists. Fold the gate into this feature's render step, not
+into the prose fix.
+
 ## Originating session
 `.gobbi/projects/gobbi/sessions/2026-06-25-6cf13813-a002-4e55-96b9-a5d65f619ef8/`
 
