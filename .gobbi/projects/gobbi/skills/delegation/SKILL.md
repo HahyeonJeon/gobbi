@@ -201,6 +201,8 @@ SKILLS LOADED:                ← mandatory; one path per required Load-Directiv
 
 Followed immediately by prose details (summary, findings, verification output, concerns, etc.). The `SKILLS LOADED:` checklist comes right after the STATUS/VERDICT/ARTIFACT lines and lists the exact path of every Load-Directives file the subagent Read (principles, rules, skills, mistakes). It is the subagent's self-report; the manager verifies it against the transcript (see [§ Manager verification](#manager-verification--the-ground-truth-backstop)).
 
+**The reported `STATUS:` is persisted.** The manager records the parsed `STATUS:` value into the durable `session.json.agents[].status` field, so the 4-status dispatch outcome (`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`) is auditable per spawn — not collapsed to a binary pass/fail. A run that crashed or never returned a `STATUS:` line is recorded as `failed` (the terminal lifecycle fallback; the legacy `ok` maps to `DONE`). See [`orchestration/SKILL.md` § Recording workflow metadata](../orchestration/SKILL.md#recording-workflow-metadata) for the `agents[].status` schema.
+
 **Example — executor reporting DONE:**
 ```
 STATUS: DONE
