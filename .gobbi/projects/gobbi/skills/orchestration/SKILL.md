@@ -169,13 +169,13 @@ The display is for the user — it is not state storage. The state machine itsel
 
 ## Harness Todo List
 
-The manager keeps a harness-native **workflow todo list** — an always-on progress widget that mirrors the 6 workflow steps — using the runtime's task tracker (Claude Code `TaskCreate` / `TodoWrite`; Codex plan updates; a runtime with no widget falls back to the [Workflow Status Display](#workflow-status-display) table). It is a SECOND read-only projection of `state.json`, beside the Status Display — a COMPLEMENT, never a replacement.
+The manager keeps a harness-native **workflow todo list** — an always-on progress widget that mirrors the 6 workflow steps — using the runtime's task tracker (Claude Code `TaskCreate` / `TaskUpdate`; Codex plan updates; a runtime with no widget falls back to the [Workflow Status Display](#workflow-status-display) table). It is a SECOND read-only projection of `state.json`, beside the Status Display — a COMPLEMENT, never a replacement.
 
-**Authoritative source (A-2).** `state.json` is the single source of truth (see [§ State persistence](#state-persistence)). The todo list is a **one-way projection that never writes back**. The manager writes `state.json` FIRST, then projects the widget. On any disagreement `state.json` wins — re-render the widget from it. On resume / `/clear` / `/compact` the widget is REBUILT from `state.json` at Configuration row 4R; a stale resumed widget is never treated as recovery state.
+**Authoritative source.** `state.json` is the single source of truth (see [§ State persistence](#state-persistence)). The todo list is a **one-way projection that never writes back**. The manager writes `state.json` FIRST, then projects the widget. On any disagreement `state.json` wins — re-render the widget from it. On resume / `/clear` / `/compact` the widget is REBUILT from `state.json` at Configuration row 4R; a stale resumed widget is never treated as recovery state.
 
 **Granularity.** Seed 6 items at Configuration (one per step). After Planning PASS, expand the Execution item into the locked per-task list; mark each task `in_progress` / `completed` as tasks land. (List grows 6 → 6 + N − 1 at Planning.)
 
-**Update cadence.** Mark a step `in_progress` when its `state.json` entry → `Active`; `completed` when → `Done`; completed-as-skipped (or removed) on `skip: true` (mirrors `⊘ Skipped`). A `REVISE` keeps the step `in_progress` — the widget does not churn per iteration.
+**Update cadence.** Mark a step `in_progress` when its `state.json` entry → `Active`; `completed` when → `Done`; completed-as-skipped on `skip: true` — the step STAYS in the list marked skipped (mirrors `⊘ Skipped`), never dropped from the six-step spine. A `REVISE` keeps the step `in_progress` — the widget does not churn per iteration.
 
 **Rendering.** Render in BOTH Auto and Chat. The widget is the always-on spine; the [Workflow Status Display](#workflow-status-display) table is KEPT as the periodic detailed snapshot. Widget item names/order mirror the table rows.
 
