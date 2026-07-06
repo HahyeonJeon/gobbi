@@ -125,6 +125,31 @@ The difference is the count of mirrored-but-unpermissioned skills. The `Skill()`
 preapproves the skill's tool use so the runtime does not prompt. Omitting it does not hide the
 skill; it only means the first tool use may prompt.
 
+#### Codex invocation policy (the Codex-runtime parallel)
+
+The `user-invocable` / `disable-model-invocation` axes above are **Claude Code** frontmatter —
+Codex does not read them. Codex sets a packaged skill's invocation policy in its own
+`agents/openai.yaml`, whose `allow_implicit_invocation` field decides whether Codex may auto-load
+the skill from a matching task (implicit) or the skill must be invoked explicitly by name
+(`$skill-name`). `allow_implicit_invocation` **defaults to `true`** — the Codex analogue of
+Claude's `disable-model-invocation: false` default: a packaged skill Codex can see is
+auto-invocable unless the policy opts out.
+
+**Gobbi ships no per-skill `agents/openai.yaml` today**, so every packaged skill inherits the
+`allow_implicit_invocation: true` default — the Codex plugin manifest
+(`plugins/gobbi/.codex-plugin/plugin.json`) exposes package-level `defaultPrompt` entries only,
+not a per-skill policy. Add an `agents/openai.yaml` with `allow_implicit_invocation: false` ONLY
+for a skill that must be Codex-explicit (the counterpart of `disable-model-invocation: true`) —
+same non-default reasons as the Claude axis: internal machinery, destructive, or strictly
+user-triggered.
+
+**Trigger test — required when a `description` becomes an invocation interface.** Codex matches a
+skill's `description` to decide implicit invocation, so a too-broad description over-triggers and
+a too-narrow one never fires. When you set or change a skill that allows implicit Codex
+invocation, test its `description` against representative task prompts: confirm it triggers on the
+prompts it should and stays silent on the ones it should not (the Codex-docs "test prompts against
+descriptions for trigger behavior" guidance). Record the checked prompts with the policy decision.
+
 ### P3 — The canonical SKILL.md section skeleton
 
 Skills follow one section order (stable when a section is present; not every section appears
