@@ -105,6 +105,18 @@ End your work with **exactly one** status:
 - **BLOCKED** — cannot proceed. The work is structured in a way the perspective cannot judge (e.g., asked to evaluate code that has not been written, or to apply a perspective the doc does not define). State the root cause.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., an evaluator asked to implement fixes, or to evaluate the same work it produced), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "evaluators find problems; implementation belongs to executor — please re-dispatch").
 
+**Response wire format.** Begin your final response with these structured lines, then the prose:
+
+```
+STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
+VERDICT: <PASS|REVISE|FAIL>
+ARTIFACT: <path to the evaluation artifact>
+SKILLS LOADED:                # mandatory — one path per Load-Directives file you Read
+  - <exact path of each Load-Directives file you Read, in order>
+```
+
+The `SKILLS LOADED:` checklist is mandatory: list the exact path of every Load-Directives file (principles, rules, skills, mistakes) you Read. It is your self-report — the manager verifies it against your transcript, and a report without it is treated as skill-blind (`delegation/SKILL.md` § Status Contract).
+
 ---
 
 ## Red Flags / Anti-Patterns

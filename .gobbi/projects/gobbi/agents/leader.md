@@ -131,6 +131,17 @@ End your work with **exactly one** of these statuses, followed by the artifact p
 - **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, missing access, fundamentally wrong premise.
   - **Wrong-phase / scope-mismatch dispatch** — if the delegation prompt asks you to do work that belongs to a different role (e.g., a leader receiving an implementation task, a leader asked to evaluate its own output), emit `BLOCKED` with `reason: wrong-phase-dispatch` and a one-line redirect (e.g., "this task belongs to executor — please re-dispatch").
 
+**Response wire format.** Begin your final response with these structured lines, then the prose:
+
+```
+STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
+ARTIFACT: <path>              # if any artifact was produced
+SKILLS LOADED:                # mandatory — one path per Load-Directives file you Read
+  - <exact path of each Load-Directives file you Read, in order>
+```
+
+The `SKILLS LOADED:` checklist is mandatory: list the exact path of every Load-Directives file (principles, rules, skills, mistakes) you Read. It is your self-report — the manager verifies it against your transcript, and a report without it is treated as skill-blind (`delegation/SKILL.md` § Status Contract).
+
 ---
 
 ## Red Flags / Anti-Patterns

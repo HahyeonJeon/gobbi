@@ -123,6 +123,17 @@ End your work with **exactly one** status:
 
 The brief forbids "retry the same approach with the same input." If an attempt fails, diagnose before trying again.
 
+**Response wire format.** Begin your final response with these structured lines, then the prose:
+
+```
+STATUS: <DONE|DONE_WITH_CONCERNS|NEEDS_CONTEXT|BLOCKED>
+ARTIFACT: <commit SHA + files changed, or path>
+SKILLS LOADED:                # mandatory — one path per Load-Directives file you Read
+  - <exact path of each Load-Directives file you Read, in order>
+```
+
+The `SKILLS LOADED:` checklist is mandatory: list the exact path of every Load-Directives file (principles, rules, skills, mistakes) you Read. It is your self-report — the manager verifies it against your transcript, and a report without it is treated as skill-blind (`delegation/SKILL.md` § Status Contract).
+
 ---
 
 ## TypeScript / Codebase Constraints
