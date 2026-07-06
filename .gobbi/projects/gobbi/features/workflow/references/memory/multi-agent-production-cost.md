@@ -22,7 +22,7 @@ ref_type: paper
 Multi-agent systems consume 4–220× more input tokens than single-agent counterparts (2–12× even with perfect context reuse); gains plateau past a small team, and a single agent with a skill library can match multi-agent quality at lower cost on many tasks. The practical default is two agents and a single brief round — additional rounds add redundancy and drift.
 
 ## Reason
-Anchors D6 (configuration / cost control) for the `workflow` Codex-proposer design: exactly two producers (Claude + Codex), single round (no multi-round debate), per-step `propose.mode` toggle. The user chose default-ON for all five steps and owns the Execution per-task cost; this reference is the evidence basis for keeping the toggle, single-round, timeout, and degraded-mode bounds. Invoke when justifying cost-control choices or a future decision to toggle a low-yield step OFF.
+Anchors D6 (configuration / cost control) for the `workflow` Codex-proposer design: exactly two generators (a Claude producer + a Codex proposer), single round (no multi-round debate), per-step `propose.mode` toggle. The user chose default-ON for all five steps and owns the Execution per-task cost; this reference is the evidence basis for keeping the toggle, single-round, timeout, and degraded-mode bounds. Invoke when justifying cost-control choices or a future decision to toggle a low-yield step OFF.
 
 ## Source
 - https://arxiv.org/html/2604.02460v1 — "Single-Agent LLMs Outperform Multi-Agent Systems on Multi-Hop Reasoning Under Equal Thinking Token Budgets"
