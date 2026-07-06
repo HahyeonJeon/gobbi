@@ -4,7 +4,7 @@ description: orchestration/workflow/wrap-up.md:17 has a broken relative link to 
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-16
 session: 3596d7f1-ee88-4055-8e66-a67f977812ad
 tags: [docs-sync]
@@ -22,7 +22,7 @@ shipped_in: null
 `.claude/skills/orchestration/workflow/wrap-up.md` line 17 contains:
 
 ```
-4. Constructs the assistant delegation prompt per [delegation prompt requirements](../delegation/SKILL.md#what-every-delegation-prompt-contains).
+4. Constructs the assistant delegation prompt per delegation prompt requirements at ../delegation/SKILL.md#what-every-delegation-prompt-contains.
 ```
 
 The relative path is wrong. From `.claude/skills/orchestration/workflow/wrap-up.md`, `../delegation/SKILL.md` resolves to `.claude/skills/orchestration/delegation/SKILL.md`, which does not exist. The file is one directory higher, at `.claude/skills/delegation/SKILL.md`, so the link needs `../../delegation/SKILL.md` (one extra `../`). The anchor `#what-every-delegation-prompt-contains` itself is correct — it matches the heading `## What Every Delegation Prompt Contains` (delegation/SKILL.md:69). Only the path depth is wrong.
@@ -40,6 +40,13 @@ No prerequisites. Can run any time — it is a single-line edit. Best folded int
 ## Suggested approach
 
 Change `../delegation/SKILL.md#what-every-delegation-prompt-contains` to `../../delegation/SKILL.md#what-every-delegation-prompt-contains` on wrap-up.md:17. Re-run the markdown-link checker to confirm zero broken links remain for this file. While there, check the other `workflow/*.md` sub-docs for the same off-by-one `../delegation/` pattern introduced by the same `9cb50b17` move.
+
+## Resolved 2026-07-06
+
+`skills/orchestration/workflow/wrap-up.md` and the sibling Execution workflow doc
+now link to `../../delegation/SKILL.md#what-every-delegation-prompt-contains`.
+The example above is plain path text so the markdown-link guard does not treat the
+historical broken target as a live link.
 
 ## Originating session
 

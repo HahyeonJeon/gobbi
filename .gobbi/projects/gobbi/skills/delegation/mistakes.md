@@ -2,7 +2,7 @@
 type: mistakes
 skill: delegation
 description: "Recorded traps for delegation — load before doing delegation work"
-updated: 2026-07-05
+updated: 2026-07-06
 ---
 
 # Delegation — Mistakes
@@ -27,3 +27,16 @@ updated: 2026-07-05
 **How to detect** — Grep the subagent's transcript `file_path` entries for each required skill path; a required path with zero Read hits = the skill was skipped. A report that lacks the `SKILLS LOADED` checklist is the same signal at accept-time.
 **Correct approach** — Reword for subagents: "Read these exact files IN ORDER as your FIRST actions — you have no Skill tool; 'load' = Read the file" instead of "load the X skill". Require a `SKILLS LOADED` checklist in the subagent's report enumerating each path it Read. The manager grep-verifies the transcript against the required set before accepting the task, and re-dispatches on a miss. Optionally embed the principles floor in each agent's system prompt so it never depends on a Read.
 **User feedback** — The user explicitly asked that this be captured as a durable mistake: a subagent that skips its principles floor produces work that looks done but was built without the discipline the floor guarantees, and that gap repeats across every future delegation until the briefing and verification change.
+
+## Use Runtime Skill Surface In Load Directives
+
+`priority: high` · `domain: process` · `added: 2026-07-06` · `status: active` · `tags: [process, codex, verification]`
+
+**What happened** — A native Codex delegation prompt told a subagent to load mandatory skills from canonical source paths under `.gobbi/projects/gobbi/skills/...` instead of the active Codex runtime surface `.agents/skills/...`.
+**Why it happens** — Canonical source paths and runtime symlink paths point at the same files, so it is tempting to treat them as interchangeable. Gobbi audits the exact runtime load surface named in the prompt, not just the file inode.
+**How to detect** — A Codex subagent Load Directives block names `.gobbi/projects/gobbi/skills/<skill>/SKILL.md` for mandatory skill loading. That path can exist, but it is not the repo-local Codex skill surface required by `AGENTS.md`.
+**Correct approach** — Use `.agents/skills/<skill>/SKILL.md` for every mandatory Codex skill load, paired with `.agents/skills/<skill>/mistakes.md` when the companion exists. Keep project mistakes under `.gobbi/projects/gobbi/mistakes/...`; those are durable memory records, not skill load surfaces.
+
+### Related
+- [[delegation-briefs-reference-nonexistent-rules-dir]] — delegation prompts must cite loadable paths for this repo.
+- [[subagents-skip-load-directives-no-enforcement]] — exact load paths are part of the load-compliance audit.

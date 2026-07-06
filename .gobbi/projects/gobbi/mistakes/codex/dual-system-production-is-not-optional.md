@@ -1,13 +1,17 @@
 ---
 name: dual-system-production-is-not-optional
 description: "Manager downgraded dual-system PRODUCTION to single-mode for efficiency; user corrected — keep the Codex co-work at creation, not only evaluation."
-  domain: process
 type: mistakes
-status: active
 scope: project
+feature: null
+status: active
+created: 2026-06-30
+session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
+tags: [codex, process]
+keywords: [dual-system, production, proposer]
+author: claude
 domain: codex
 priority: high
-feature: null
 ---
 
 # Dual-system production is core, not optional ceremony

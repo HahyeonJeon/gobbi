@@ -2,7 +2,7 @@
 type: mistakes
 skill: codex
 description: "Recorded traps for codex — load before doing codex work"
-updated: 2026-06-27
+updated: 2026-07-06
 ---
 
 # Codex — Mistakes
@@ -102,3 +102,16 @@ updated: 2026-06-27
 - [[codex-exec-timeout-exceeds-bash-cap]] — the sibling trap: `timeout 1200` exceeding the Bash ~10-minute cap
 - [[codex-background-exec-exit-code-unreliable]] — a related background-codex trap: once backgrounded, the exit code is not a valid completion signal either
 - [[codex-wrapper-file-persistence-failure]] — the sibling non-blocking-wrapper trap above, same root contract
+
+## Codex Subagent Partial Write No Status
+
+`priority: high` · `domain: codex` · `added: 2026-07-06` · `status: active` · `tags: [codex, process, verification]`
+
+**What happened** — A native Codex subagent completed some session file writes, then timed out or was closed without returning the required `STATUS`, `ARTIFACT`, and `SKILLS LOADED` contract. The manager found usable files on disk but had no trustworthy completion report.
+**Why it happens** — Native Codex file state and subagent terminal status can diverge. A subagent can write before timeout, while the manager still lacks evidence that it loaded required skills, respected scope, or completed verification.
+**How to detect** — New or modified session files exist, but the subagent response is missing the status block, or `wait_agent` / close output shows the subagent was still running. Treat any partial write without the report as untrusted until disk verification completes.
+**Correct approach** — Inspect the exact files written at the authoritative worktree path, rerun the relevant exit checks, record the degraded handoff, and only then decide whether to keep the artifacts. Do not accept file existence as the same thing as subagent completion.
+
+### Related
+- [[codex-background-exec-exit-code-unreliable]] — adjacent native Codex status ambiguity.
+- [[edit-tool-silent-write-failure-on-worktree]] — verify disk state rather than trusting a reported write.

@@ -20,7 +20,7 @@ task_count: 8
 
 ## Idea anchor
 
-Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../../../../features/memory/design/memory/memory-namespace-schema.md) (the #307 area-namespace schema, Option A — schema + conventions; this manifest is the deferred migration's execution spec). The area allowlists + the tag→area map are now project-owned data in [`memory-vocabulary.json`](../../../../skills/memory/memory-vocabulary.json) (shipped this session, commits `4557c78c` + `ed435550`).
+Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../design/memory/memory-namespace-schema.md) (the #307 area-namespace schema, Option A — schema + conventions; this manifest is the deferred migration's execution spec). The area allowlists + the tag→area map are now project-owned data in [`memory-vocabulary.json`](../../../../skills/memory/memory-vocabulary.json) (shipped this session, commits `4557c78c` + `ed435550`).
 
 > **RE-DERIVED 2026-06-24 (per-type vocab redesign, session `84e9570c`).** The resolution MODEL below
 > was re-derived against the FLAT per-type `memory-vocabulary.json` (L1–L18 of
@@ -32,7 +32,7 @@ Implements [`features/memory/design/memory/memory-namespace-schema.md`](../../..
 
 ## Scope Contract reference
 
-This is the **plan-only** output of Execution task T07 (session `d0185dba-cd9b-45ad-93f6-7814c4f0ef4a`), re-derived in session `84e9570c`. It does NOT move any file. The bulk move is the deferred backlog [`backlogs/memory/memory-namespace-migration.md`](../../../../../backlogs/memory/memory-namespace-migration.md); this manifest is its row-level execution spec. The deferred-move session consumes this doc, performs the `git mv`s + ref repoints, and runs the guards.
+This is the **plan-only** output of Execution task T07 (session `d0185dba-cd9b-45ad-93f6-7814c4f0ef4a`), re-derived in session `84e9570c`. It does NOT move any file. The bulk move is the deferred backlog [`backlogs/memory/memory-namespace-migration.md`](../../../../backlogs/memory/memory-namespace-migration.md); this manifest is its row-level execution spec. The deferred-move session consumes this doc, performs the `git mv`s + ref repoints, and runs the guards.
 
 > **PLAN ONLY.** No file is moved by this artifact. No skill/doc/memory edit. The resolution below was
 > scripted against each file's actual frontmatter + `memory-vocabulary.json` — not hand-guessed. The
@@ -68,7 +68,7 @@ The resolution model changed with the per-type vocab redesign. The new model:
    (they live in `keywords`, not `tags`). Many legacy records carry off-vocab tags (e.g. `probe`,
    `scope`, `directory-structure`, `mistake-discipline`). Those off-vocab tags do NOT participate in
    routing under the new model; only a record's controlled pool tags do. The legacy off-vocab `tags`
-   are a SEPARATE data-fix tracked by [`backlogs/memory/legacy-frontmatter-migration.md`](../../../../../backlogs/memory/legacy-frontmatter-migration.md);
+   are a SEPARATE data-fix tracked by [`backlogs/memory/legacy-frontmatter-migration.md`](../../../../backlogs/memory/legacy-frontmatter-migration.md);
    the deferred migration's authoritative per-file recompute (step 1) applies the legacy-tag fix first,
    then resolves the area — so a record flagged-for-user-decision here may home cleanly once its tags
    are corrected.

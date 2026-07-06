@@ -7,7 +7,7 @@ feature: null
 status: open
 created: 2026-06-29
 session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
-tags: [process, docs]
+tags: [process, schema, validation, docs-sync]
 keywords: [integration-log, production, validator, schema-drift, dual-system]
 author: claude
 priority: medium

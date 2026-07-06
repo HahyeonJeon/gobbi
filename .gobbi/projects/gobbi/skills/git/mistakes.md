@@ -2,7 +2,7 @@
 type: mistakes
 skill: git
 description: "Recorded traps for git — load before doing git work"
-updated: 2026-06-27
+updated: 2026-07-06
 ---
 
 # Git — Mistakes
@@ -30,7 +30,7 @@ updated: 2026-06-27
 **How to detect** — Any time you edit a file that exists in BOTH the main tree and a worktree, and your write path does not contain `worktrees/<branch>/`, you are writing to the wrong tree. The tell after the fact: a worktree-scoped content check still shows OLD content (your edits "didn't take"), while `git -C <main-tree> status` shows unexpected modified files.
 **Correct approach** — Construct EVERY Write/Edit path from the session worktree path as the absolute root — the full path must contain `worktrees/<branch>/`. Never rely on a prior `cd` (it resets across tool boundaries). Use `git -C <worktree>` for all git operations. Verify immediately after the FIRST edit with a worktree-scoped `git grep` or `git -C <worktree> status`; if the worktree shows no change, you wrote elsewhere — stop and fix before continuing.
 **User feedback** — The user did not surface this directly; the executor caught the wrong-tree write at its own first verification gate. The discipline above is the corrected approach the session adopted, and the reason every brief in that session pins absolute worktree paths on every write surface.
-**Recurred (2026-06-29, D2 review)** — A leader-reviewer brief gave the write path as `WT/.gobbi/.../C3a.md`, defining `WT` at the top as the absolute worktree root and expecting the subagent to substitute it. 5 of 6 leaders substituted correctly; the 6th resolved the `WT/` prefix against its main-tree Bash CWD and wrote `C3a.md` to the main tree (recovered by `mv` into the worktree + removal of the stray gitignored main-tree session dir). The root cause is BRIEF-AUTHORING + MANAGER side, not only the executor's — two added preventions: (1) **Never leave a placeholder in a write path.** Paste the FULLY-EXPANDED absolute worktree path (no `WT/`, `$WT/`, `<worktree>/`, or CWD-relative `.gobbi/...`) for every write target in every delegation brief — a placeholder prefix IS the trap, because a fresh subagent's Bash CWD defaults to the main repo root. (2) **The manager verifies the artifact at the EXACT worktree path after the subagent returns** — `test -e` / `ls` the literal worktree path before treating the work as captured; do NOT trust the subagent's reported `ARTIFACT:` line, which may be a normalized/shortened form that hides a wrong-tree write.
+**Recurred (2026-06-29, D2 review)** — A leader-reviewer brief gave the write path as `<WT>/.gobbi/.../C3a.md`, defining `WT` at the top as the absolute worktree root and expecting the subagent to substitute it. 5 of 6 leaders substituted correctly; the 6th resolved the `WT` placeholder prefix against its main-tree Bash CWD and wrote `C3a.md` to the main tree (recovered by `mv` into the worktree + removal of the stray gitignored main-tree session dir). The root cause is BRIEF-AUTHORING + MANAGER side, not only the executor's — two added preventions: (1) **Never leave a placeholder in a write path.** Paste the FULLY-EXPANDED absolute worktree path (no `WT` placeholder, `$WT` variable, `<worktree>` marker, or CWD-relative `.gobbi/...`) for every write target in every delegation brief — a placeholder prefix IS the trap, because a fresh subagent's Bash CWD defaults to the main repo root. (2) **The manager verifies the artifact at the EXACT worktree path after the subagent returns** — `test -e` / `ls` the literal worktree path before treating the work as captured; do NOT trust the subagent's reported `ARTIFACT:` line, which may be a normalized/shortened form that hides a wrong-tree write.
 
 ## Executor Git Stash In Worktree During Verify
 
@@ -73,3 +73,38 @@ updated: 2026-06-27
 **Why it happens** — `find <dir> -type d -empty -delete` is not "remove the leftover parent of the worktree I just removed" — it is "remove every empty directory anywhere under <dir>". A just-scaffolded session tree is all-empty dirs, so it matches. The git skill's P5 step 3 and P8 stage 7 BOTH prescribe this exact whole-worktrees form for the nested-branch empty-parent case, so the footgun is in the documented procedure, not just ad-hoc use.
 **How to detect** — Any time a cleanup runs `find .../worktrees/ -type d -empty -delete` (or any recursive empty-dir delete) while another worktree/session is live or just-scaffolded. Red flag: the target path is the shared `worktrees` parent rather than the single removed worktree's own parent directory.
 **Correct approach** — Scope the empty-parent cleanup to ONLY the removed worktree's parent chain. For a flat branch name there is no leftover parent — skip the find entirely. For a nested branch name (`feat/42-x` → leftover `worktrees/feat`), `rmdir` just that specific parent, or run the find rooted at that specific parent, never at the shared `worktrees` root. (The git skill P5 step 3 / P8 stage 7 commands should be fixed to the scoped form — tracked separately as a git-workflow backlog.)
+
+## Codex Subagent Apply Patch Wrong Tree
+
+`priority: high` · `domain: git` · `added: 2026-07-06` · `status: active` · `tags: [git, codex, process, verification]`
+
+**What happened** — A Codex subagent ran shell reads and verification with `workdir` set to the session worktree, but wrote evaluation files through patch paths like `.gobbi/projects/...`. Those patch writes landed in the main checkout, not the worktree session path.
+**Why it happens** — `exec_command.workdir` anchors shell commands only. Other write surfaces can resolve relative patch paths against the subagent's own root, so a shell command can verify the right tree while patch output appears in a different checkout.
+**How to detect** — The transcript shows worktree-scoped shell commands, but patch output uses relative `.gobbi/...` targets. The expected files are missing under `session.json.git.worktreePath` and appear under the main repo root.
+**Correct approach** — Give every writable session-artifact target as a fully expanded absolute path under the worktree root. After the subagent returns, verify the exact worktree path with `test`, `find`, or `rg` before accepting the artifact.
+
+### Related
+- [[executor-wrote-to-main-tree-not-worktree]] — the general wrong-tree write trap.
+- [[edit-tool-silent-write-failure-on-worktree]] — disk state must be verified from the target tree.
+
+## Moving Base Invalidates Diff Stat Gate
+
+`priority: high` · `domain: verification` · `added: 2026-07-06` · `status: active` · `tags: [git, verification, process]`
+
+**What happened** — A task plan encoded a fixed numeric diff-stat gate for `develop..HEAD`. The branch still had the expected commits, but `develop` moved, so the same previous branch produced a different diff stat. After the user approved a pinned base snapshot, `develop` moved again and the symbolic diff changed again.
+**Why it happens** — A branch-name comparison is a moving target. Treating the current `develop..HEAD` stat as a stable property of a previous branch bakes an unstated base commit into the verification contract.
+**How to detect** — A verification command references a mutable branch name such as `develop..HEAD` while expecting a fixed number like `116 files changed`. The gate can change even when the audited branch's own commits do not.
+**Correct approach** — Pin the base commit for numeric diff-stat gates in historic branch audits. If the task intentionally follows a moving branch name, verify the stat at Execution time and do not lock a literal number before the command runs. If the base moved, record the divergence and ask before revising the task contract.
+
+### Related
+- [[verify-state-from-authoritative-source-not-proxy]] — live source evidence overrides proxy assumptions.
+- [[literal-grep-gate-false-fails-legitimate-usage]] — literal gates can fail for reasons outside the intended property.
+
+## Provenance Trailer Syntax Drift
+
+`priority: medium` · `domain: git` · `added: 2026-07-06` · `status: active` · `tags: [git, verification, process]`
+
+**What happened** — A branch audit stopped at the fact that each commit had an `AI-Provenance-Record` trailer. The trailers were traceable, but several did not match the canonical `gobbi://session/{session-id}/task/{task-id}` shape.
+**Why it happens** — Human traceability and syntax conformance are easy to conflate. A review that checks only for trailer presence can miss a missing URI scheme, a wrong task segment, or a non-task terminal segment.
+**How to detect** — Any provenance review says "all commits have the trailer" without comparing each trailer against the documented shape. Red flags include a missing URI scheme, direct task path pieces, or a terminal wrap-up segment where the parser expects a task segment.
+**Correct approach** — Record syntax drift separately from absent provenance when every commit remains traceable. In audit-only work, preserve the git-log evidence and do not rewrite history; leave any trailer standardization to an explicitly scoped follow-up.

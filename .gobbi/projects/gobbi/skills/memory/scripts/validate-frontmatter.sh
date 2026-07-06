@@ -107,7 +107,7 @@ esac
 # --- Resolve the project memory root (relative to this script) ----------------
 # Script lives at .gobbi/projects/gobbi/skills/memory/scripts/ ; the memory root
 # is three levels up (skills/memory/scripts -> skills/memory -> skills -> gobbi).
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
 [ -d "$project_root" ] || { log "project root not found: $project_root"; exit 2; }
 

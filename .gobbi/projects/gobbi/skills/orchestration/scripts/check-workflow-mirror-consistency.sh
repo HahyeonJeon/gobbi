@@ -57,7 +57,7 @@ EOF
 # Self-locate the canonical source of truth (the project's own workflow dir) and
 # the project dir — the same self-location pattern as check-residual-vocab.sh.
 # ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CANON_DIR="$(cd "$SCRIPT_DIR/../workflow" 2>/dev/null && pwd || true)"  # skills/orchestration/workflow
 PROJ_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"                          # .gobbi/projects/<name>
 

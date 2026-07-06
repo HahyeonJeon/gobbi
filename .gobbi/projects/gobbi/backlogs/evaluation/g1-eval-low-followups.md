@@ -3,11 +3,16 @@ name: g1-eval-low-followups
 description: "3 Low-severity doc-tightening follow-ups from the G1 dual-system Execution evaluation (non-blocking; shipped as-is)."
 type: backlogs
 scope: project
-feature: deployment-hygiene
+feature: null
 status: open
 created: 2026-06-30
-tags: [evaluation, deployment, docs]
+session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
+tags: [evaluation, process]
+keywords: [deployment, docs, g1, low-followups]
+author: claude
 priority: low
+project-scope: true
+shipped_in: null
 ---
 
 # G1 Execution-eval — 3 Low follow-ups (non-blocking)

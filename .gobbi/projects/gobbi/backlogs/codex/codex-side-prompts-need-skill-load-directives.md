@@ -7,9 +7,12 @@ feature: null
 status: open
 created: 2026-07-01
 session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
-tags: [codex, dual-system, delegation, evaluation, process]
+tags: [codex, evaluation, process]
+keywords: [dual-system, delegation, skill-load-directives, codex-prompts]
 author: claude
 priority: high
+project-scope: true
+shipped_in: null
 ---
 
 # Codex-side dual-system prompts must load gobbi skills (detailed prompts)
