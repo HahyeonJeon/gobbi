@@ -2,7 +2,7 @@
 
 How the **manager** orchestrates the PRODUCTION (WORK) sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager. The Codex proposer runs as the `codex exec` assistant-wrapper documented in [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md); the Claude producer — leader for Ideation/Preparation/Planning, executor for Execution, assistant for Wrap-up — does the integration. Production is the creation-time analogue of [`workflow/evaluation.md`](evaluation.md): evaluation runs two reviewers on a finished artifact; production runs two generators before the artifact is finished.
 
-**The manager spawns exactly two producers — the Claude producer and the Codex proposer — and does NOT integrate.** The Claude producer is the default integrator; the manager adjudicates ONLY large gaps and escalates them to the user. Codex NEVER writes the canonical artifact — it only proposes. Authoring the canonical artifact from the Codex proposal, or having the manager blend the two outputs, is a workflow breach.
+**The manager spawns exactly two generators — the Claude producer and the Codex proposer — and does NOT integrate.** The Claude producer is the default integrator; the manager adjudicates ONLY large gaps and escalates them to the user. Codex NEVER writes the canonical artifact — it only proposes. Authoring the canonical artifact from the Codex proposal, or having the manager blend the two outputs, is a workflow breach.
 
 The proposer is gated per loop by `workflow.{loop}.propose.mode` (`dual` = run the Codex proposer; `single` = Claude-only), default `dual` for all five steps. All proposer output is **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/`; the proposer never writes to memory and never writes the canonical draft.
 
@@ -18,11 +18,11 @@ The two generators do **not** see each other while generating. Inter-generator v
 
 ---
 
-## Spawning the Producers
+## Spawning the Generators
 
-Per enabled WORK sub-phase, the manager spawns two producers in **parallel-independent** generation:
+Per enabled WORK sub-phase, the manager spawns two generators in **parallel-independent** generation:
 
-| Producer | Who | Output (independent) | Sees the other? |
+| Generator | Who | Output (independent) | Sees the other? |
 |---|---|---|---|
 | **Claude producer** | leader (Ideation / Preparation / Planning) · executor (Execution) · assistant (Wrap-up) | canonical `working/draft-iter{n}.md` | no |
 | **Codex proposer** | `codex exec` assistant-wrapper ([`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)) | `working/proposals/codex/draft-iter{n}.md` | no |
