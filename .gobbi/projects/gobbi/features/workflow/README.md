@@ -30,20 +30,23 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 
 ## Subdirectories
 
-- `design/` — 8 files: session-memory-tree design + 6 Wrap-up/vocabulary-split design docs (D-a through D-f) + the Codex-proposer D1–D9 design (session `6cf13813`)
-- `decisions/` — 21 files: 8 from session `1abeb43f` + 11 from session `7e00f98e` + 2 resolved carry-forwards from session `6cf13813`
+- `design/` — 16 files: session-memory-tree design + 6 Wrap-up/vocabulary-split design docs (D-a through D-f) + the Codex-proposer D1–D9 design (session `6cf13813`) + later sessions' design docs + the 3 doc-routing fix designs D3-001/D3-002/D1-002 (session `1fecddb4`)
+- `decisions/` — 37 files: 8 from session `1abeb43f` + 11 from session `7e00f98e` + 2 resolved carry-forwards from session `6cf13813` + later sessions' decisions + 8 doc-routing-campaign decisions (session `1fecddb4`)
 - `references/` — 12 files: 3 from session `1abeb43f` + 5 from session `7e00f98e` + 4 dual-system-production evidence papers from session `6cf13813`
-- `discussions/` — 9 files: 1 from session `1abeb43f` + 7 from session `7e00f98e` + 1 Codex-proposer user-decisions (session `6cf13813`)
-- `plans/` — 2 files: the locked 10-task session-memory plan + the locked 11-task vocabulary-rename plan
-- `backlogs/` — 2 files: task-record template + 17 dangling-ref fix; proposer/evaluator model-tier guard (session `6cf13813`)
-- `checklists/` — executor verification checklists for sweep, gates, and evaluation steps; + the literal-gate-checks-structure-not-substring item (session `babc6f3b`)
+- `discussions/` — 17 files: 1 from session `1abeb43f` + 7 from session `7e00f98e` + 1 Codex-proposer user-decisions (session `6cf13813`) + later sessions' discussions + 2 scope/design-lock discussions (session `1fecddb4`)
+- `plans/` — 4 files: the locked 10-task session-memory plan + the locked 11-task vocabulary-rename plan + later plans + the 3-task doc-routing-fix plan (session `1fecddb4`)
+- `backlogs/` — 3 files: task-record template + 17 dangling-ref fix; proposer/evaluator model-tier guard (session `6cf13813`); the D5-012 `ideation/SKILL.md:496` stale-copy cross-ref (session `1fecddb4`)
+- `checklists/` — 17 files: executor verification checklists for sweep, gates, and evaluation steps; + the literal-gate-checks-structure-not-substring item (session `babc6f3b`) + later sessions' items + 5 doc-routing-campaign residuals (session `1fecddb4`)
 - `scenarios/` — workflow/memorization.md doc-filename rename edge case; + iter-artifact-snapshot-frozen-not-mutated (session `babc6f3b`)
 - `changelogs/` — 1 file: the verification-frame Phase-B (C1–C6 + F1) ship record (session `babc6f3b`)
+
+**Note (session `1fecddb4`):** the counts above are approximate for `design/` / `decisions/` / `discussions/` / `checklists/` — several sessions between `babc6f3b` (2026-06-26) and `1fecddb4` (2026-07-05) promoted content here without a corresponding Recent-activity row (a pre-existing README-maintenance gap, not introduced this session). See `## Recent activity` below for the rows that do exist; the file counts are read directly from disk as of this session's Wrap-up.
 
 ## Recent activity
 
 | Date | Session | What |
 |---|---|---|
+| 2026-07-05 | 1fecddb4-255e-4829-9912-42deb9c36fc8 | 3-High workflow-doc-routing fix shipped (GEN-D3-001 + GEN-D3-002 + GEN-D1-002 from the 2026-07-01 adversarial review), on top of PR #333 (`6a0d747c`): `gobbi/SKILL.md` Step 6 routed through the mode-doc dispatch; `auto-mode.md`/`chat-mode.md` mode tables split into `Manager refs` + `Specialist phase loads`; `workflow/evaluation.md`'s drifted routing table replaced with a canonical pointer. 3 commits (`cacc54c7`, `5946cfa0`, `a2c23096`), dual-system EVALUATION PASS at both Ideation (iter2) and Execution (iter1), no divergence. 8 decisions, 3 design, 5 checklists, 2 discussions, 1 backlog (D5-012 cross-ref) promoted; 1 project-tier mistake promoted (`mistakes/assumption/evaluator-spawn-without-producer-done-handshake.md`); GEN-D4-003 + FLAG-2 remain deferred |
 | 2026-06-26 | babc6f3b-e845-4ed3-9625-c14ea9237fd8 | Dual-system VERIFICATION frame built + Phase B shipped: the locked verification frame (scenarios + six per-dimension checklists) for the D1–D9 proposer model, plus improvement candidates C1–C6 + the live F1 mirror fix (8 commits). Ideation iter1 FAIL → iter3 PASS; dual eval caught the manager's own audit gap + 2 distinct Execution defects via divergence. 6 mistakes (2 layer-2), 7 learnings, 3 decisions, 1 scenario + 1 checklist, 1 design, 1 changelog promoted |
 | 2026-06-25 | 6cf13813-a002-4e55-96b9-a5d65f619ef8 | Dual-system PRODUCTION (Codex independent proposer) designed + shipped across all 5 productive WORK sub-phases: D1–D9 locked design; producer selective-integration + Integration Log; per-step `propose.mode` (all-5-default-ON, master switch dropped); degraded-mode label; D9 freeze boundary. 11 commits, 32 files, dual-system PASS (iter1 REVISE → iter2 PASS). 3 process mistakes promoted |
 | 2026-06-13 | 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4 | Vocabulary rename + Wrap-up pipeline redesign: RECORD/memory/memorization vocabulary lock; 2-skill split (record + memory); 5-stage Wrap-up pipeline; CLAUDE.md/AGENTS.md reconcile; 2 guard scripts; 13 commits; 4 mistakes promoted (2 layer-2) |
@@ -53,8 +56,10 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 
 - `backlogs/process/task-record-template-and-dangling-ref.md`: author task-record template + fix 17 dangling refs in chat-mode.md.
 - `backlogs/workflow/persist-session-memory-past-cleanup.md` (project-level): retain session working memory after worktree cleanup for post-session debugging.
+- `backlogs/process/d5-012-ideation-skill-md-stale-routing-copy.md` (session `1fecddb4`): `ideation/SKILL.md:496` carries the same stale routing-table wording GEN-D1-002 fixed at `workflow/evaluation.md`; deferred, out of this session's locked scope.
 - `[FLAG-1]`: clarify whether project `skills/` is memory (out of scope for this session).
 - `[FLAG-2]`: author the `claude` doc-authoring skill (out of scope for this session).
+- GEN-D4-003 (2026-07-01 adversarial review, `backlogs/evaluation/fix-d4-review-findings.md:223`): the only remaining High from the original 4; not part of this session's locked scope.
 
 ## Key design decisions (session `7e00f98e`)
 
