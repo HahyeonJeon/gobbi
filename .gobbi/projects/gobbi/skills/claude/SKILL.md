@@ -1,6 +1,6 @@
 ---
 name: claude
-description: "Use when authoring or editing any `.claude/` doc — CLAUDE.md, a skill SKILL.md, an agent .md, or a child doc. The prose, hierarchy, and anti-pattern standard for `.claude/` documentation."
+description: "Use when authoring or editing any `.claude/` doc — `CLAUDE.md`, a skill `SKILL.md`, an agent `.md`, or a child doc. The prose, hierarchy, and anti-pattern standard for `.claude/` documentation."
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -9,7 +9,7 @@ allowed-tools: Read, Grep, Glob, Bash
 The documentation-authoring standard for the `.claude/` runtime tree. Load it when a task
 writes or edits any `.claude/` doc — `CLAUDE.md`, a skill `SKILL.md`, an agent `.md`, or a
 child doc under a skill dir. It teaches the writing principles for `.claude/` prose, the
-CLAUDE.md → SKILL.md → child-doc hierarchy, the navigation conventions, and the anti-patterns
+`CLAUDE.md` → `SKILL.md` → child-doc hierarchy, the navigation conventions, and the anti-patterns
 a `.claude/` doc must avoid.
 
 This standard owns the **prose** contract — how a `.claude/` doc reads. It does NOT own the
@@ -127,7 +127,7 @@ Naming and section structure are owned by the structural skills; this standard s
 cross-cutting conventions and points to the owner for the rest:
 
 - **Skill:** the directory name equals the `name` frontmatter equals the Title-Case `# Title`;
-  the file is `SKILL.md`, placed DIRECTLY in the skill dir (no nested subdir for the SKILL.md
+  the file is `SKILL.md`, placed DIRECTLY in the skill dir (no nested subdir for the `SKILL.md`
   itself). Frontmatter, the section skeleton, and the length norm are owned by
   [`skill-writing/SKILL.md` § P1-P4](../skill-writing/SKILL.md).
 - **Agent:** the canonical `.md`/`.toml` pair, the four `.md` frontmatter keys, and the section

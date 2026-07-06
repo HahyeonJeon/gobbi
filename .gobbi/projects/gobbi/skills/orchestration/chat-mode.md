@@ -523,18 +523,18 @@ state-transition contract for Chat Mode.
 |------------|-------|----------|---------------|
 | `(none)` | user types a task | `ideation.state: Active` | manager enters per-task slice; Configuration already `Done` |
 | `ideation.state: Active` | EVALUATION → PASS | `ideation.state: Done` | §4 base RECORD runs; move to Step 3 |
-| `ideation.state: Active` | EVALUATION → REVISE | `ideation.state: Active` | re-enter DISCUSSION with evaluator findings; iter++ |
+| `ideation.state: Active` | EVALUATION → REVISE | `ideation.state: Revising` | re-enter DISCUSSION with evaluator findings; iter++ |
 | `ideation.state: Active` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
 | `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
 | `preparation.state: Skipped` | (auto-advance) | `planning.state: Active` | no user gate for the Skipped transition |
 | `preparation.state: Skipped` | user opts in for complex task | `preparation.state: Active` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
 | `planning.state: Active` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
-| `planning.state: Active` | EVALUATION → REVISE | `planning.state: Active` | re-enter DISCUSSION; iter++ |
+| `planning.state: Active` | EVALUATION → REVISE | `planning.state: Revising` | re-enter DISCUSSION; iter++ |
 | `planning.state: Active` | iter == maxIter (5) + REVISE | `planning.state: Aborted` | manager escalates to user |
 | `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: Active` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
 | `execution.state: Active` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
 | `execution.state: Active` | EVALUATION → PASS (not last sub-step) | `execution.state: Active` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
-| `execution.state: Active` | EVALUATION → REVISE | `execution.state: Active` | re-enter DISCUSSION for same sub-step; iter++ |
+| `execution.state: Active` | EVALUATION → REVISE | `execution.state: Revising` | re-enter DISCUSSION for same sub-step; iter++ |
 | `execution.state: Active` | iter == maxIter (5) + REVISE | `execution.state: Aborted` | manager escalates to user |
 | `execution.state: Done` | `task-record.md` written (§6) | `taskRecord.{path, writtenAt}` populated (metadata set; slice stays `execution.state: Done`) | manager presents user review gate |
 | `execution.state: Done` (taskRecord set — user review gate) | user selects "Next task" | `(new per-task slice begins)` | manager re-enters per-task slice loop for task {NN+1} |
@@ -570,7 +570,7 @@ Task 03 — chat-mode-spec-draft
   Step 2  Ideation          ✓ Done          iter 1   PASS
   Step 3  Preparation       ⊘ Skipped       —        —
   Step 4  mini Planning     ✓ Done          iter 1   PASS
-  Step 5  mini Execution    ▸ Active         iter 1   …
+  Step 5  mini Execution    ▸ Active        iter 1   …
           task-record       … pending
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
