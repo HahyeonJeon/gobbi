@@ -4,7 +4,7 @@ description: Pre-existing broken markdown links across the project tree surfaced
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
 tags: [docs-sync, links]
@@ -29,11 +29,12 @@ Session 8129f657 (memory frontmatter redesign) surfaced three more broken links,
 out of that session's scope. They are recorded here as concrete line items rather than
 in a near-duplicate backlog:
 
-1. **`skills/memory/rules.md` §4.1.1 — `diataxis.fr` bare URL.** The text reads
-   `Borrowed from [Diátaxis](diataxis.fr)` — a bare domain with no `https://`.
+1. **`skills/memory/rules.md` §4.1.1 — `diataxis.fr` bare URL.** The text used
+   the Diátaxis markdown link with target `diataxis.fr` — a bare domain with no `https://`.
    Fix: change to `[Diátaxis](https://diataxis.fr)`.
 2. **`skills/memory/rules.md` §4.3 — dangling internal link.** The text references
-   `[mistakes/design-literal-retire-instruction-without-replacement.md](../../mistakes/design-literal-retire-instruction-without-replacement.md)`.
+   `mistakes/design-literal-retire-instruction-without-replacement.md` through a
+   relative target under `../../mistakes/`.
    The target does not exist in the live tree. Fix: grep `mistakes/` for a close slug
    match; if it was renamed, update the link; if deleted, replace the prose example.
 3. **`skills/orchestration/chat-mode.md` — dangling `prose-reclassification` ref
@@ -82,6 +83,13 @@ placeholder link text is transient, not durable.
   `rules/docs-cleanup-parallelism.md`.
 
 None of the 19 references a slug or script removed by this feature.
+
+### Resolved 2026-07-06
+
+The durable project-tree markdown-link guard now resolves these links to zero for
+the live tree. The remaining historical examples in this backlog are written as
+plain path text, not markdown links, so the guard no longer treats the backlog's
+own broken-link inventory as live broken links.
 
 ## Why deferred
 

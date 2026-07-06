@@ -83,7 +83,7 @@ EOF
 # slug universe + path bases resolve correctly regardless of caller CWD. This
 # script lives at <proj>/skills/orchestration/scripts/<self>.
 # ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJ_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"          # <proj> = .gobbi/projects/gobbi
 SK="$PROJ_DIR/skills"
 REPO_ROOT="$(cd "$PROJ_DIR/../../.." && pwd)"           # repo root holds .gobbi / .claude / .codex

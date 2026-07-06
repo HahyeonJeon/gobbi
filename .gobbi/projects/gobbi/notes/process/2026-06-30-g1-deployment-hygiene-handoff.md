@@ -3,11 +3,16 @@ name: g1-deployment-hygiene-handoff
 description: "Next-session handoff: G1 fix cluster shipped (PR off develop); G2/G3 remain; dual-system production lessons promoted."
 type: notes
 scope: project
-feature: deployment-hygiene
+feature: null
 status: active
 created: 2026-06-30
 session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
-tags: [handoff, deployment, fix-campaign, dual-system]
+tags: [process, codex]
+keywords: [handoff, deployment, fix-campaign, dual-system]
+author: claude
+features_touched: [deployment-hygiene]
+loops_completed: [ideation, planning, execution, wrap-up]
+shipped: [deployment-hygiene, dual-system-production-is-not-optional]
 ---
 
 # Handoff — G1 deployment hygiene shipped

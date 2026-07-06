@@ -94,7 +94,7 @@ EOF
 # default scan and the allowlist resolve correctly regardless of caller CWD.
 # This script lives at <proj>/skills/orchestration/scripts/<self>.
 # ---------------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJ_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"          # <proj> = .gobbi/projects/gobbi
 SK="$PROJ_DIR/skills"
 # The repo root holds .claude / .codex / plugins; it is <proj>/../../.. .

@@ -1,11 +1,17 @@
 ---
-name: deployment-hygiene
+name: README
 description: "The gobbi fix campaign's deployment-readiness cluster — plugin mirror integrity, manifest/version/install-validation hygiene (G1 done; G2/G3 pending)."
 type: features
-scope: project
+scope: feature
+feature: deployment-hygiene
 status: active
 created: 2026-06-30
-tags: [deployment, plugin, install-runtime, fix-campaign]
+session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
+tags: []
+keywords: [deployment, plugin, install-runtime, fix-campaign]
+author: claude
+value_proposition: Deployment-readiness hygiene for Gobbi's plugin and runtime release surfaces.
+subsystems: [plugins/gobbi, .claude/skills, .agents/skills, hooks]
 ---
 
 # deployment-hygiene

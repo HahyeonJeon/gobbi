@@ -14,7 +14,7 @@ The manager:
 1. Surfaces a summary of what the session shipped (artifacts produced, tasks executed, evaluator verdicts).
 2. Asks through the active runtime's user-decision primitive: is there anything deferred or open that should be added to the wrap-up before the session closes?
 3. If the user adds items, records them as wrap-up inputs.
-4. Constructs the assistant delegation prompt per [delegation prompt requirements](../delegation/SKILL.md#what-every-delegation-prompt-contains).
+4. Constructs the assistant delegation prompt per [delegation prompt requirements](../../delegation/SKILL.md#what-every-delegation-prompt-contains).
 
 ---
 

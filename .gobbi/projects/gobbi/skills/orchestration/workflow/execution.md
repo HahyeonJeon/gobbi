@@ -14,7 +14,7 @@ For each task in the loop's task list (`3-planning/outputs/`), the manager:
 1. Identifies the task's scope boundary (which files to touch, which to avoid).
 2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
 3. Confirms with the user through the active runtime's user-decision primitive any contribution points the task requires.
-4. Constructs the executor delegation prompt per [delegation prompt requirements](../delegation/SKILL.md#what-every-delegation-prompt-contains) with:
+4. Constructs the executor delegation prompt per [delegation prompt requirements](../../delegation/SKILL.md#what-every-delegation-prompt-contains) with:
    - The task description and acceptance criteria
    - Scope boundary (in-scope files, out-of-scope files)
    - Reference materials (skills to load, mistakes to respect)
