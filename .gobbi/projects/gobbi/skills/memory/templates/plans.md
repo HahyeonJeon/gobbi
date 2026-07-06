@@ -35,7 +35,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [planning, execution]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 task: {task name from Scope Contract}
 supersedes: {prior-plan-slug} | list[slug] | null         # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
 superseded_by: {new-plan-slug} | null          # plain slug, not a path

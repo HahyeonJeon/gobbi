@@ -35,7 +35,7 @@ created: YYYY-MM-DD
 session: {session-id that established the rule}
 tags: [process, docs-sync]           # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 priority: critical | high | medium | low
 established: YYYY-MM-DD
 supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | null   # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar

@@ -93,7 +93,7 @@ created: YYYY-MM-DD
 session: {session-id of first promotion to this feature}
 tags: [memory, process]              # tags declared per type (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 value_proposition: {the one-liner — "what gobbi does for me"}
 subsystems: [{skill / path this value-feature owns}]
 ---

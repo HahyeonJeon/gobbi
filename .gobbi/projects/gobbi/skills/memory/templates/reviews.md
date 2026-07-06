@@ -39,7 +39,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [evaluation, security]         # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 review_kind: adversarial-review | ultrareview | code-review | retrospective | security-audit | license-audit | dep-audit | other   # REQUIRED — the kind axis; resolves the area
 subject: {path / branch / PR / system being reviewed}
 verdict: pass | revise | fail | needs-attention | n/a
@@ -57,9 +57,12 @@ verdict: pass | revise | fail | needs-attention | n/a
 {How the review was performed. The procedure followed, the criteria applied, the tools used. This is what makes the review reproducible — a future reader should be able to re-run the review and get comparable output.}
 
 ## Findings
-{The review's output — the substantive findings. Each finding with severity / confidence / evidence / proposed remediation. For evaluator-driven reviews, this section mirrors the structure of evaluation/SKILL.md's finding metadata. For human-authored reviews, the same fields apply but the form is narrative.}
+{The review's output — the substantive findings. Each finding carries the full finding shape — Type / Domain / finding-id / Severity / Confidence / Evidence / Disposition — from [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity). For evaluator-driven reviews, mirror that metadata exactly. For human-authored reviews, the same fields apply but the form is narrative.}
 
 ### {Finding title}
+- **Type**: scenario_gap | checklist_gap | design_flaw | assumption_risk | general
+- **Domain**: {subject-area label — routes memory promotion; see evaluation/SKILL.md § Finding Metadata}
+- **finding-id**: {stable id — set on first creation, preserved across iterations}
 - **Severity**: Critical / High / Medium / Low
 - **Confidence**: 0 / 25 / 50 / 75 / 100
 - **Description**: {finding body}

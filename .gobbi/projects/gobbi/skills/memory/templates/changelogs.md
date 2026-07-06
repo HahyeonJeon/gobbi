@@ -35,7 +35,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, docs-sync]         # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 shipped_in: {PR / commit / plan path}
 ---
 

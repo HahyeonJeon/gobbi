@@ -37,7 +37,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [process, verification]        # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 priority: critical | high | medium | low
 domain: {e.g. process, hooks, docs-sync}
 supersedes: {prior mistake slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar

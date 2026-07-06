@@ -25,7 +25,7 @@ Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--
 
 ## Frontmatter + body
 
-Base frontmatter + references extensions (`title`, `source`, `accessed`, `ref_type`). `ref_type` is the source genre (`docs`|`blog`|`paper`|`rfc`|`code`|`book`|`other`), distinct from base `type: references` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
+Base frontmatter + references extensions (`title`, `source`, `accessed`, `ref_type`). `ref_type` is the source genre (`docs`|`blog`|`paper`|`rfc`|`code`|`book`|`other`), distinct from base `type: references` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). Structured source provenance (`source_authority`, `stable_anchor`, `version_or_commit`, `license`, `retrieved_date`) lives in the body `## Source` section below — NOT frontmatter, which stays the four-field allowlist above.
 
 ```markdown
 ---
@@ -39,7 +39,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [memory, design]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 title: {Short topic title}
 source: {URL or path}
 accessed: YYYY-MM-DD
@@ -55,8 +55,14 @@ ref_type: docs | blog | paper | rfc | code | book | other
 {In one or two sentences, why this insight matters for this project. The condition under which the insight should be invoked.}
 
 ## Source
-- {URL or path}
-- {Optional: author / date / version}
+Structured provenance — pin the source so the insight stays verifiable. Body fields, not frontmatter (the frontmatter allowlist stays `title` / `source` / `accessed` / `ref_type`):
+
+- `source`: {URL or path — mirrors the `source` frontmatter field}
+- `source_authority`: {who publishes it — official docs / vendor / standards body / personal blog}
+- `stable_anchor`: {permalink, DOI, or pinned heading anchor — not a mutable "latest" URL}
+- `version_or_commit`: {doc version, spec revision, or git SHA the insight was read at}
+- `license`: {reuse terms of the source, when they constrain how the insight may be used}
+- `retrieved_date`: {YYYY-MM-DD accessed — mirrors the `accessed` frontmatter field}
 
 ## Excerpt
 {Short verbatim quote if the source's exact wording matters. Keep under a paragraph; full re-read is via the link.}

@@ -52,7 +52,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [process, evaluation]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 report_type: status | post-mortem | analytics | other   # REQUIRED — the kind axis; resolves the area
 related_reports: [{report slugs that this builds on or supersedes}]   # plain slugs
 generated_by: {tool name / agent identity / human author}

@@ -35,7 +35,7 @@ created: YYYY-MM-DD
 session: {session-id where this was decomposed}
 tags: [planning, process]            # this type's controlled pool (§2.5)
 keywords: [search-system]            # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 priority: critical | high | medium | low
 project-scope: true | false
 shipped_in: {changelog / PR / commit on close} | null

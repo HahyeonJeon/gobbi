@@ -39,7 +39,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [design, schema]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 supersedes: {prior-design-slug} | list[slug] | null     # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
 superseded_by: {new-design-slug} | null     # plain slug, not a path
 related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug] — plain slugs, not paths

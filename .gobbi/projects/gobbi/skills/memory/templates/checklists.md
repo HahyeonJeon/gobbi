@@ -37,7 +37,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 scenario: {scenario-slug}
 ---
 
@@ -77,7 +77,7 @@ created: YYYY-MM-DD
 session: {session-id}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
+author: claude | codex | user        # auto-stamped at promotion from session.json.system; user = human hand-edit
 scenario: {scenario-slug}
 item_status: pending | implemented | deferred
 anchor: {reference-slug or `novel`}
