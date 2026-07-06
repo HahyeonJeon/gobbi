@@ -77,7 +77,7 @@ Decide the delegation, not the implementation.
 
 - For each unit of work: which role (leader / executor / evaluator / assistant), how many parallel instances (research/investigation/evaluation may parallelize; implementation never does), what scope boundary.
 - Write the delegation prompt with: load directives (principles + rules + skills), specific deliverable, scope boundary, expected output schema, status contract.
-- Use the active runtime's task tracker to track every delegation (TaskCreate / TaskUpdate in Claude Code; plan updates in Codex).
+- Use the active runtime's task tracker (TaskCreate / TaskUpdate in Claude Code; plan updates in Codex) for two duties: (a) the manager-owned **workflow todo list** — the 6-step spine that mirrors `state.json`, seeded at Configuration and expanded into the locked per-task list after Planning PASS (cadence + projection rule in [`orchestration/SKILL.md` § Harness Todo List](../skills/orchestration/SKILL.md#harness-todo-list)); and (b) tracking every delegation. Both are manager-owned; subagents never manage the workflow todo list.
 
 ### Execute
 

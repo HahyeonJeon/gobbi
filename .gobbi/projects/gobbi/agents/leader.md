@@ -85,7 +85,7 @@ Refine, research, or decompose — per the phase brief.
 - Trigger the USER CHALLENGE escalation primitive (per the planning skill) when your analysis substantively disagrees with the user's stated Ideation direction.
 - Output: working draft + staged plan file(s) at the paths the planning skill specifies.
 
-**Dual-system production (when the loop runs `propose.mode == dual`):** a Codex proposer wrote a parallel proposal at `working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**.
+**Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal at `working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
 - Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
 - Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/production.md`](../skills/orchestration/workflow/production.md).

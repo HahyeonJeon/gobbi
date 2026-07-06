@@ -56,7 +56,9 @@ the primary brief is always inline above).>>
 **Out of scope:** <<what you must NOT touch or expand into>>
 **Pre-resolved decisions (do not re-open):** <<list of user-locked decisions>>
 
-## Dual-system production (fill ONLY when `propose.mode == dual`; delete this whole section when `single`)
+## Dual-system production — Claude Code bridge / Claude producer ONLY (fill when `propose.mode == dual` AND you are the Claude producer; DELETE for a native Codex producer — native-Codex dual is not yet supported — and DELETE when `single`)
+
+This block applies ONLY when the producer runtime is the Claude Code bridge. If you are a native Codex producer, it was included in error — ignore it (native-Codex dual production is deferred: `backlogs/codex/native-codex-proposer-symmetry.md`).
 
 A Codex proposer ran in parallel and wrote a proposal. You are the Claude producer
 and the default integrator. Orchestration lives in `orchestration/workflow/production.md`

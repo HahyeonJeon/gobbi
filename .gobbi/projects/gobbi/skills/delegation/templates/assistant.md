@@ -59,7 +59,9 @@ quote evidence, cite paths and URLs.
 explore beyond the asked scope, opine on what should be done with the answer.
 **Read-only tool surface — no `Write`, no `Edit`.**
 
-## Dual-system production (Wrap-up Claude-producer assistant only — `propose.mode == dual`; delete for narrow read-only lookups)
+## Dual-system production — Claude Code bridge / Wrap-up Claude producer ONLY (fill when `propose.mode == dual` AND you are the Claude Code Wrap-up producer; DELETE for a native Codex producer — native-Codex dual is not yet supported — and delete for narrow read-only lookups)
+
+This block applies ONLY when the producer runtime is the Claude Code bridge. If you are a native Codex producer, it was included in error — ignore it (native-Codex dual production is deferred: `backlogs/codex/native-codex-proposer-symmetry.md`).
 
 Use this section ONLY when you are the Wrap-up Claude producer (not a read-only
 lookup). In that role the read-only default above does NOT apply to you: your FULL

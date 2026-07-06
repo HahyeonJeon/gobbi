@@ -375,6 +375,12 @@ The producer templates ([`templates/leader.md`](templates/leader.md), [`template
 - **BLOCKED-on-empty, never self-author.** If the Codex proposal is empty, times out, or errors, the Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure — it never self-authors a proposal to cover for absent Codex output. A wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for. The producer then proceeds **Claude-only** and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is NOT a safety gate — production degrades silently with that durable label; contrast a missing Codex evaluator, which IS a gate.
 - **The Codex proposal transcript is NEVER fed into the Codex evaluator prompt.** The proposer and the evaluator are distinct, stateless `codex exec` runs with no shared state. Feeding the proposal transcript into the evaluator prompt re-introduces the self-preference bias the dual-system mandate removes — the proposer-side parallel of "Author transcript leaked to evaluator." The Codex evaluator reviews the Claude-authored canonical draft (re-expressed during integration), never the Codex proposal file.
 
+> **Runtime scope of the degraded label.** `production_mode: claude-only` is valid ONLY when
+> the producer is actually the Claude-side (Claude Code bridge) producer AND the Codex proposer
+> failed. A native Codex producer never stamps it — native-Codex dual production is deferred
+> (`backlogs/codex/native-codex-proposer-symmetry.md`), and `production_mode: codex-only` is not a
+> defined value (`record/SKILL.md` § Artifact frontmatter defines only `dual | claude-only`).
+
 ---
 
 ## Model Selection
@@ -428,6 +434,8 @@ The manager delegates to these agent types. Each has a distinct role — underst
 | `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Opus |
 | `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus |
 | `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet |
+
+> **The workflow todo list is manager-owned.** The 6-step harness spine ([`orchestration/SKILL.md` § Harness Todo List](../orchestration/SKILL.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
 
 ---
 
