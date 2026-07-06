@@ -219,7 +219,7 @@ See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure,
 
 **Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Execution-specific notes:
 
-- The `{loop}` token in the RECORD procedure resolves to `4-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../4-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{task-id, iter}` (per-task iter, not loop-wide).
+- The `{loop}` token in the RECORD procedure resolves to `4-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../4-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{taskNo, iter}` (`taskNo` + `slug` identify the task per [`orchestration/SKILL.md` § Workflow Metadata](../orchestration/SKILL.md#workflow-metadata); per-task iter, not loop-wide).
 - On PASS, the artifacts directory should include at least one file with `artifact_type: change-summary` (what was implemented + verification result), one with `artifact_type: verification-report` (commands run + output), and the mandatory `artifact_type: memory-reads` audit file.
 - Cumulative finding staging on PASS: per the routing table in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity). Execution-specific findings frequently land at `staging/changelogs/` (shipped change records) and `staging/learnings/` (durable cross-cutting insights surfaced mid-task).
 - Mid-task `staging/` files written by the executor during WORK are **preserved as-is**; RECORD supplements with evaluator-finding-driven staging on top.
@@ -228,18 +228,18 @@ See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure,
 
 Every iteration produces:
 - `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` — each agent's transcript copied into the single session-root `transcripts/` (no per-task transcripts/)
-- `sessions/{date}-{session-id}/session.json` — upserted `workflow.execution.iterations[]` entry keyed by `{task-id, iter}`
+- `sessions/{date}-{session-id}/session.json` — upserted `workflow.execution.iterations[]` entry keyed by `{taskNo, iter}`
 
 Only the `PASS` iteration also produces:
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/` — canonical artifact files (change-summary + verification-report + memory-reads, plus loop-specific decompositions)
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged mid-task discoveries
-- `sessions/{date}-{session-id}/session.json` — `workflow.execution.tasks[{task-id}].finishedAt` and `verdict: PASS` set; Plan cursor advances
+- `sessions/{date}-{session-id}/session.json` — the task's final `workflow.execution.iterations[]` entry (keyed by `{taskNo, iter}`) carries `verdict: PASS` + `finishedAt`, and this task's value element is appended to `workflow.execution.integration.tasks[]` (keyed by `taskNo`); Plan cursor advances
 
 **Exit checklist**
 
 Every iteration:
 - [ ] Each agent transcript copied to session-root `transcripts/{role}-{agentId}.jsonl` (no per-task transcripts/)
-- [ ] `session.json.workflow.execution.iterations[]` includes this iter's `{task-id, iter, verdict, finishedAt, evaluation_dir: "4-execution/task-{NN}-{slug}/evaluation/iter{n}/"}`
+- [ ] `session.json.workflow.execution.iterations[]` includes this iter's `{taskNo, iter, verdict, finishedAt, evaluation_dir: "4-execution/task-{NN}-{slug}/evaluation/iter{n}/"}`
 - [ ] No writes to feature memory or memory
 
 `PASS` iteration additionally:
@@ -248,7 +248,7 @@ Every iteration:
 - [ ] At least one artifact has `artifact_type: verification-report`
 - [ ] At least one artifact has `artifact_type: memory-reads`
 - [ ] Every evaluator finding across this task's iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
-- [ ] `session.json.workflow.execution.tasks[{task-id}]` marked PASS; Plan cursor advanced
+- [ ] `session.json.workflow.execution.integration.tasks[]` carries this task's element (keyed by `taskNo`) and its final `iterations[]` entry is `verdict: PASS`; Plan cursor advanced
 
 ---
 
@@ -260,7 +260,7 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
 - `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
-- `{task-id}` — the Task ID assigned by Planning (e.g., `01-add-cache-layer`)
+- `{NN}` / `taskNo` — the task number assigned by Planning, zero-padded (e.g., `01`); with `{slug}` it forms the `task-{NN}-{slug}` identity (`taskNo` + `slug`)
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
 - `{n}` — iter number for THIS task, supplied by the manager
