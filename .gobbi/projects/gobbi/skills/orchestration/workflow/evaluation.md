@@ -44,7 +44,7 @@ The manager spawns **exactly two evaluator agents in parallel** — one per syst
 - The artifact under evaluation (the prior phase's `WORK` output, e.g., `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md`)
 - Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
 - The perspective set (always all seven + Overall; no pruning)
-- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which evaluation child doc the evaluator loads at Stage 0
+- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects the phase child doc (`{phase}/evaluation.md`, e.g. `execution/evaluation.md`) the evaluator loads at Stage 0
 
 Each evaluator is **one agent** that handles **all four stages (Target Understanding → Scenario & Checklist Build → Per-Perspective Sequential Evaluation → Overall) sequentially** — the manager does not spawn one evaluator per perspective. Perspectives iterate inside the agent in the documented order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk → Overall). Per-perspective output files come from one agent's sequential pass, not from N parallel spawns.
 
