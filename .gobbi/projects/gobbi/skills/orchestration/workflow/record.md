@@ -313,7 +313,7 @@ Re-running RECORD on the same iter (after a crash, partial write, or explicit re
 
 ## Iteration Caps
 
-RECORD itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`, default 5) is enforced by EVALUATION's ITER / EXIT decision.
+RECORD itself has no separate iteration cap — it runs once per EVALUATION verdict, and the loop's iteration cap (`workflow.{loop}.maxIterations`; mode-specific default — Auto 5 every loop, Chat per-loop) is enforced by EVALUATION's ITER / EXIT decision.
 
 The RECORD-level cap that matters is **retry**: one retry per iter on validation failure. After retry exhaustion the manager stops-the-line — there is no "iter 3 of RECORD" concept.
 

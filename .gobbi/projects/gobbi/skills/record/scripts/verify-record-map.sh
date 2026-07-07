@@ -9,6 +9,13 @@
 #   path-validation negative cases and asserts each exits non-zero and creates
 #   nothing. Mirrors the scripts/sync-plugin-package.sh --check precedent.
 #
+#   Also runs the TEMPLATE cap-parity gate: for each mode (auto, chat), every
+#   productive loop's maxIterations DEFAULT in state.{mode}.json must equal the
+#   same loop's maxIterations in settings.{mode}.json (the authoritative cap
+#   source), so the two mode-template families cannot drift. It checks TEMPLATE
+#   defaults only — a live per-session state.json may legitimately carry
+#   customize-gate overrides, so the gate never reads session state.
+#
 #   COD-STRUCTURE-2 narrowing: the diff covers only the <step-dir> subtree the
 #   scaffold script materializes. It NEVER diffs the manager-created session-root
 #   invariants (transcripts/, session.json, state.json, settings.json,
@@ -19,7 +26,8 @@
 #   --check   Run the drift gate. Exit 0 on pass, non-zero on drift.
 #
 # Output (stderr): drift detail on failure; (stdout) a one-line pass summary.
-# Exit: 0 = pass (no drift); 1 = drift / negative-case regression; 2 = bad args.
+# Exit: 0 = pass (no drift); 1 = drift / negative-case regression / cap-parity
+#       drift; 2 = bad args or jq unavailable.
 
 set -euo pipefail
 
@@ -34,8 +42,9 @@ usage() {
     cat >&2 <<'EOF'
 usage: verify-record-map.sh --check
   Diffs scaffold-session-dir.sh output against record/record-map.md
-  for the script-created step-dir subtree only (COD-STRUCTURE-2 narrowing), and runs
-  the path-validation negative cases. Exit 0 = pass, 1 = drift, 2 = bad args.
+  for the script-created step-dir subtree only (COD-STRUCTURE-2 narrowing), runs
+  the path-validation negative cases, and asserts state.{mode}.json cap-parity
+  with settings.{mode}.json. Exit 0 = pass, 1 = drift, 2 = bad args / no jq.
 EOF
 }
 
@@ -179,10 +188,41 @@ if [ "$rel_root_rc" -eq 0 ]; then
     drift=1
 fi
 
+# --- Template cap-parity gate (state.{mode}.json vs settings.{mode}.json) -----
+# For each mode, every productive loop's maxIterations DEFAULT in state.{mode}.json
+# must equal the same loop's maxIterations in settings.{mode}.json (the
+# authoritative cap source), so the two mode-template families cannot drift.
+# TEMPLATE defaults only — a live per-session state.json may carry customize-gate
+# overrides, so this never reads session state. Fail-closed: no jq ⇒ exit 2.
+templates_dir="$script_dir/../../orchestration/templates"
+command -v jq >/dev/null 2>&1 || { log "jq not found — required for the template cap-parity gate"; exit 2; }
+parity_loops="ideation preparation planning execution wrap-up"
+for mode in auto chat; do
+    state_tmpl="$templates_dir/state.$mode.json"
+    settings_tmpl="$templates_dir/settings.$mode.json"
+    tmpl_ok=1
+    for tmpl in "$state_tmpl" "$settings_tmpl"; do
+        if [ ! -f "$tmpl" ]; then
+            log "PARITY: missing template: $tmpl"; drift=1; tmpl_ok=0
+        elif ! jq -e . "$tmpl" >/dev/null 2>&1; then
+            log "PARITY: invalid JSON: $tmpl"; drift=1; tmpl_ok=0
+        fi
+    done
+    [ "$tmpl_ok" -eq 1 ] || continue
+    for loop in $parity_loops; do
+        state_cap="$(jq -r --arg l "$loop" '.workflow[$l].maxIterations' "$state_tmpl")"
+        settings_cap="$(jq -r --arg l "$loop" '.workflow[$l].maxIterations' "$settings_tmpl")"
+        if [ "$state_cap" != "$settings_cap" ]; then
+            log "PARITY DRIFT ($mode/$loop): state.$mode.json maxIterations=$state_cap != settings.$mode.json maxIterations=$settings_cap"
+            drift=1
+        fi
+    done
+done
+
 if [ "$drift" -ne 0 ]; then
     log "record-map verification FAILED"
     exit 1
 fi
 
-printf 'record-map.md and scaffold-session-dir.sh are in sync\n'
+printf 'record-map.md and scaffold-session-dir.sh are in sync; state/settings cap-parity holds\n'
 exit 0
