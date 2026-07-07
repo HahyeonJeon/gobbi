@@ -132,6 +132,33 @@ Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the pl
 
 ---
 
+## Session-record commit boundary
+
+Every artifact in [Collecting Outputs](#collecting-outputs) is session-scoped under
+`sessions/{date}-{session-id}/`, so the manager commits **none** of it. There is **no**
+per-iteration session-record commit. The whole `sessions/` tree is gitignored
+(`.gitignore:21`), worktree-local, and removed at worktree cleanup — see
+[`record/record-map.md`](../../record/record-map.md) § D7 for the gitignore lifecycle.
+A `git commit` aimed at an iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or
+`outputs/` captures **nothing**: `git add` of a `sessions/` path is refused
+(`paths are ignored ... Use -f`), and a bare `git commit` reports
+`nothing to commit, working tree clean` and exits non-zero. So the manager does **not**
+run a `chore(session): record ...` commit after RECORD — session-record persistence is the
+transcript copy plus the `session.json` upsert, never a git commit. Durable git history
+comes only from Wrap-up promoting `staging/` content into tracked `features/`, `mistakes/`,
+etc.
+
+**Loop-specific commit exceptions stay in their owning loop docs.** This is the *general*
+no-commit rule for the session-record audit trail. A loop that runs a real commit as part
+of its own work — Preparation's `chore(skills)` generate-now promotion
+([`workflow/preparation.md`](preparation.md)); Wrap-up's memory-promotion commits
+([`workflow/wrap-up.md`](wrap-up.md)) — documents that commit in its own loop doc. Those
+real commits target **tracked** files, never the gitignored `sessions/` tree, so they do
+not contradict this rule. record.md owns only the general boundary; it does not restate the
+exceptions.
+
+---
+
 ## Output Validation
 
 Validation is **mechanical** and **comprehensive** — every assistant output passes through these gates before the manager advances to `ITER / EXIT`. A single failed gate triggers the failure-handling policy below.
