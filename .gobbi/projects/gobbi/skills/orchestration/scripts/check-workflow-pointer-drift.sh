@@ -243,6 +243,9 @@ check_compacted_pointers() {
 # fence lacking a `sessions/` root line (e.g. evaluation.md's iter-tree) is still
 # caught; an inline path outside a fence, or a box-char fence with no session
 # segment, passes.
+# KNOWN BOUNDED LIMITATION: this catches box-char (├└│) / fenced trees only; a
+# plain-indent redraw (2-space indent, no box chars) is NOT detected — literal grep
+# is not semantic proof, so a plain-indent tree is an accepted residual gap here.
 check_fenced_session_tree() {
     local path="$1" name="$2"
     awk -v name="$name" '
@@ -269,9 +272,16 @@ check_no_commit_restatement() {
     awk -v name="$name" '
         function has_no_commit_phrase(line,   ll) {
             ll = tolower(line)
+            # First three: the command/output phrasings (lowercased). Last two: the
+            # ORIGINAL removed-block heading + first line, matched CASE-SENSITIVELY
+            # (the uppercase NOT is the distinctive heading token), so a re-paste of
+            # the removed no-commit block by its own wording is caught too — not only
+            # by the command phrasings above.
             return (index(ll, "chore(session): record") \
                     || (index(ll, "git add") && index(ll, "sessions/")) \
-                    || index(ll, "nothing to commit, working tree clean"))
+                    || index(ll, "nothing to commit, working tree clean") \
+                    || index(line, "session record is NOT committed") \
+                    || index(line, "no per-iteration session-record commit"))
         }
         function starts_pointer(line) {
             return line ~ /^[[:space:]]*>[[:space:]]*\*\*(Procedure|Production|Evaluation|Record|Path) owner:/
@@ -609,6 +619,14 @@ DOC
     # production.md marked gate in manifest but its body says loop -> marker mismatch.
     printf '# Workflow — Production\n\n**Doc kind:** loop-orchestration.\n\nprose\n' > "$tmp/L/wf/production.md"
     assert_exit 1 "CATCH: wrong doc-kind marker" "$tmp/L/wf" "$tmp/L/manifest.txt"
+
+    # === M: CATCH — re-pasted removed-block heading/prose in a NON-compacted loop doc (#4) =
+    # The removed no-commit block's OWN heading + first line must trip broad #4 even
+    # when re-added by their original wording (case-sensitive), not just the command
+    # phrasings. Plant into a NON-compacted loop doc (not the nocommit-owner record.md).
+    build_clean_tree "$tmp/M"
+    printf '\n### Per-iteration session record is NOT committed\n\nThere is no per-iteration session-record commit. The whole sessions/ tree is gitignored.\n' >> "$tmp/M/wf/wrap-up.md"
+    assert_exit 1 "CATCH: re-pasted removed-block heading/prose (#4)" "$tmp/M/wf" "$tmp/M/manifest.txt"
 
     printf '\n%s --self-test: %d/%d scenarios passed\n' "$SELF" "$((total - fails))" "$total" >&2
     [ "$fails" -eq 0 ]

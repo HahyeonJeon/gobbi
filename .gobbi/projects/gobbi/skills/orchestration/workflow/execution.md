@@ -91,7 +91,7 @@ Because the Execution Loop is per-task, its value telemetry is per-task too. At 
 > for the assistant procedure. Execution keeps only the executor's own task-implementation
 > commit (below).
 
-This is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-record audit-trail commit is the no-op; the implementation commit always stands.
+The session-record commit boundary (above) is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-record audit-trail commit is the no-op; the implementation commit always stands.
 
 ---
 
