@@ -126,8 +126,23 @@ Rules:
 - Use `workspace-write` only when Codex must write files.
 - Pass `--cd <main-tree>` when a worktree is active and output paths live in the main tree.
 - Pass `--add-dir <session-path>` for cross-tree session writes.
-- Wrap every call with `timeout 600`, unless the user explicitly approves a different cap.
+- Wrap every bridge call with `timeout 600`, unless the user explicitly approves a different cap. Note: `600` sits AT the Claude Code Bash foreground cap (~600s) — foreground is safe only for SHORT bridge calls; background the call per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if it may approach the cap.
 - Do not pass `--model` or `--effort` unless the user explicitly requests it.
+
+### `codex exec` launch runtime matrix
+
+`codex exec` launch mode is not one-size-fits-all — it depends on the host runtime's per-call wall-clock cap and on whether the call may exceed it. This matrix is the single authority for HOW every `codex exec` run is launched; § Dual-System Evaluation, § Dual-System Production, [`orchestration/workflow/production.md`](../orchestration/workflow/production.md), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) all defer here for launch mode and never restate it.
+
+| Runtime / workload | Launch mode | Completion signal |
+|---|---|---|
+| Native Codex shell, under the host cap | foreground `timeout <cap>` | process exit + file validation |
+| Claude Code Bash, fits under ~540s | foreground, `timeout` under ~540s | validate output files before reporting |
+| Claude Code Bash, may exceed ~540s | **background** (`run_in_background`), explicit PID, `< /dev/null` | poll the output file for its closing marker; ignore the detached exit code |
+| Assistant wrapper | ONLY if it blocks/polls until the contracted output files pass validation | files-as-truth, never "started" |
+
+**The binding foreground limit in Claude Code is the Bash tool cap, not the `timeout` flag.** The Claude Code Bash tool caps a single foreground call at ~600s (10 min) — its documented max. Background any `codex exec` that may exceed ~540s (9 min) — a ~60s margin below the ~600s (10-min) Bash cap. A `timeout 1200` only governs a run that is ALREADY backgrounded in Claude Code (once detached, the `timeout` flag — not the Bash cap — is the binding limit), or a native-Codex context where the host grants that budget. A foreground `timeout 1200` in Claude Code is dead past ~600s: the harness kills the call first (recorded mistake `codex-exec-timeout-exceeds-bash-cap.md`).
+
+**Re-verify the cap before relying on the number.** The ~600s foreground cap is a harness value that can change — confirm the current Claude Code Bash foreground cap before trusting the 600s figure.
 
 ### Dual-System Evaluation
 
@@ -135,7 +150,7 @@ For Claude Code dual-system evaluation, use the assistant-wrapper pattern:
 
 1. Manager spawns two assistant subagents in parallel.
 2. Claude-side assistant evaluates directly with read/search tools.
-3. Codex-side assistant runs `codex exec` foreground.
+3. Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) — foreground when the eval fits under the ~600s Claude Code Bash cap, background otherwise.
 4. Codex-side assistant verifies output files and required content before reporting `DONE`.
 5. Manager reads the actual per-perspective files before acting on findings.
 
@@ -149,12 +164,14 @@ The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It wri
 
 1. Manager spawns the Claude producer and a Codex-side proposer assistant in parallel (parallel-independent — neither sees the other while generating).
 2. The Codex-side assistant writes the proposer prompt to a file in a **foreground** step and verifies it on disk (`test -s`) BEFORE invoking codex — never a stdin heredoc inside a backgrounded command.
-3. The Codex-side assistant runs `codex exec` **foreground-blocking** (the whole turn blocks until codex exits), writing the proposal to the proposal path above.
-4. Use `timeout ≥ 1200s` on the proposer `codex exec`. The `timeout 600` cap documented for the evaluation bridge proved too short for a full proposer workload (large skill reads + a complete draft); 600s is the bridge default, not the proposer cap.
+3. The Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). A full proposer workload (large skill reads + a complete draft) routinely exceeds the ~600s Claude Code Bash foreground cap, so in Claude Code it launches as a **background** command (`run_in_background`) with `< /dev/null` — NOT foreground-blocking. Only a native-Codex host that grants the budget runs it foreground `timeout <cap>`.
+4. Cap the backgrounded proposer run with `timeout 1200`. Once the run is detached, the `timeout` flag (not the Bash foreground cap) is the binding limit. `timeout 600` (the evaluation-bridge default) is too short for a full proposer workload; the proposer cap is `1200`. This `1200` governs a BACKGROUNDED run in Claude Code or a native-Codex context — never a Claude Code foreground call (the harness kills a foreground call at ~600s, per the matrix).
 5. To clean up a hung proposer run, kill by explicit **PID** (`ps` / captured `$!`), never `pkill -f '<pattern>'` — a `-f` pattern that is a substring of the cleanup command kills the issuing shell.
 6. Validate the proposal **structurally** before reporting `DONE`: the file exists, is > 0 bytes, and carries a `PROPOSAL:` header. Do NOT gate on a content-vocabulary grep — a valid proposal can lawfully omit any given token, so a vocab grep false-blocks a clean proposal.
 
-**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Preparation / Planning / Wrap-up):
+> **Superseded (runtime-matrix):** the earlier guidance to run the proposer **foreground-blocking with `timeout ≥ 1200s`** is superseded by the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). In Claude Code the proposer runs **background** — its workload exceeds the ~600s foreground cap — and `timeout 1200` is the detached-run cap, not a foreground budget. Foreground `timeout <cap>` applies only in a native-Codex host that grants the budget.
+
+**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Preparation / Planning / Wrap-up), **background-launched in Claude Code** per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix):
 
 ```bash
 timeout 1200 codex exec \
@@ -176,7 +193,7 @@ timeout 1200 codex exec \
   < /dev/null
 ```
 
-Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` (≥ 1200s per step 4, not the `600` evaluation-bridge default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — keep the run **foreground-blocking** (steps 2–3) with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
+Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the DETACHED-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with `< /dev/null`, foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
 
 **Stdin hardening.** A backgrounded proposer `codex exec` MUST redirect stdin from `/dev/null` (the `< /dev/null` shown above) and write+verify the prompt file in a separate foreground step first (step 2) to avoid the stdin-read hang — observed this session stuck at `Reading additional input from stdin...`; kill a hung run by explicit PID (step 5), never `pkill -f`. This generalizes the existing `codex-exec-prompt-via-background-heredoc-hangs` discipline.
 
@@ -262,6 +279,8 @@ timeout 600 codex exec \
   "<prompt>"
 ```
 
+The `timeout 600` here is a foreground bridge cap that sits AT the ~600s Claude Code Bash foreground limit — background per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if the call may approach the cap.
+
 ### Post-eval sanity check
 
 After any Codex evaluator completes, verify output files landed at the correct main-tree absolute path before advancing:
@@ -282,7 +301,9 @@ If the Codex sandbox prevents writing to the main-tree path (e.g., the `--add-di
 
 ### Foreground vs background tradeoff
 
-**Foreground** (default recommendation):
+This section is the **notification-timing** tradeoff, NOT the launch-cap decision — the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) owns WHEN a run must be backgrounded. Foreground below is the default only for runs that fit under the ~600s Claude Code Bash cap; a run that may exceed it must be backgrounded per the matrix.
+
+**Foreground** (default recommendation, for runs under the cap):
 - Bash blocks synchronously until codex exits.
 - No notification timing issue — the calling agent knows immediately when codex finishes.
 - The agent can read stdout and verify output files before reporting done.
@@ -294,7 +315,7 @@ If the Codex sandbox prevents writing to the main-tree path (e.g., the `--add-di
 - Stdout is not directly available; validation requires reading output files.
 - Downside: notification timing class; manager cannot verify output without a separate tool call.
 
-The assistant-wrapper pattern (Section 2(d)) resolves this tradeoff: the manager spawns assistants in background (parallelism at the manager level), but each assistant runs its own codex exec foreground (synchronous from the assistant's perspective). The manager gets verified DONE via the assistant's Agent completion notification.
+The assistant-wrapper pattern (Section 2(d)) resolves this tradeoff: the manager spawns assistants in background (parallelism at the manager level), but each assistant runs its own codex exec foreground (synchronous from the assistant's perspective) — **only for a run that fits under the cap**. An assistant's Bash carries the SAME ~600s foreground cap, so a run that may exceed it must be BACKGROUNDED even inside the assistant (or the assistant polls the output file for its closing marker), per the matrix. The manager gets verified DONE via the assistant's Agent completion notification.
 
 For longer-running codex jobs that span multiple worktree-bound tool calls, see [`git/SKILL.md` § Worktree CWD discipline](../git/SKILL.md#worktree-cwd-discipline) — codex inherits CWD from the calling shell, and worktree-bound CWD applies to both file reads/writes and `--cd` defaults.
 
@@ -307,6 +328,8 @@ For jobs running via the codex companion runtime (not `codex exec` direct):
 These controls do NOT apply to direct `codex exec` invocations. For direct exec, `timeout(1)` and Bash job control (`kill $!`) are the controls.
 
 ### Files-as-truth completion signal
+
+**The DONE invariant.** The entity that reports `DONE` MUST have read + validated the contracted output files in the SAME turn. A missing Codex proposer/evaluator is not itself a failure (the proposer degrades to Claude-only; the evaluator is a safety gate) — but an UNVALIDATED completion reported as `DONE` IS a process failure.
 
 Never treat stdout parsing or broker.json polling as the completion signal. After codex finishes, verify by:
 
@@ -346,7 +369,8 @@ You are the Codex-side assistant for this dual-system evaluation.
 
 Task: Run the Codex evaluator on [target artifact] and write findings to the session staging path.
 
-Step 1. Run codex exec FOREGROUND via your Bash tool:
+Step 1. Run codex exec via your Bash tool:
+  # launch mode per the codex exec launch runtime matrix — BACKGROUND if the run may exceed ~540s; foreground below is safe only under the ~600s cap
   timeout 600 codex exec \
     --sandbox workspace-write \
     --cd <main-tree> \
@@ -374,6 +398,8 @@ Session writes MUST use the absolute main-tree path above.
 Do NOT use relative paths or pwd-derived paths.
 The worktree CWD is NOT the session-write root.
 ```
+
+The sketch's `timeout 600 codex exec` is a foreground evaluator call at the ~600s Claude Code Bash cap; if the evaluation may exceed it, launch background per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix).
 
 After both assistants return DONE, run the post-eval sanity check:
 
