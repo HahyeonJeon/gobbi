@@ -52,6 +52,8 @@ Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
 - Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model and reasoning effort.
 
+**Codex evaluator launch mode.** The Codex evaluator runs as a `codex exec` assistant-wrapper; its launch mode follows the [`codex/SKILL.md` § `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix). This doc points to that matrix and does not restate the launch mechanics.
+
 ### Pre-spawn independence classification — Codex evaluator (D6.2)
 
 Before spawning the **Codex evaluator**, the manager classifies its prompt for proposer↔evaluator independence: the Codex proposal must NOT leak into the Codex evaluator prompt, or the self-preference bias the dual-system mandate removes is re-introduced (see [`production.md` § Proposer ↔ evaluator independence](production.md)).

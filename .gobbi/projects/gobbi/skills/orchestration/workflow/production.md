@@ -27,7 +27,7 @@ Per enabled WORK sub-phase, the manager spawns two producers in **parallel-indep
 | **Claude producer** | leader (Ideation / Preparation / Planning) · executor (Execution) · assistant (Wrap-up) | canonical `working/draft-iter{n}.md` | no |
 | **Codex proposer** | `codex exec` assistant-wrapper ([`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)) | `working/proposals/codex/draft-iter{n}.md` | no |
 
-The Codex proposer follows the `codex exec` discipline owned by [`codex/SKILL.md`](../../codex/SKILL.md): write+verify the prompt file foreground before invoking, run `codex exec` foreground-blocking, cap with `timeout ≥ 1200s`, kill by explicit PID (never `pkill -f`), and validate the proposal **structurally** (file exists / > 0 bytes / a `PROPOSAL:` header) — never by a content-vocabulary grep. The manager does not re-implement that discipline here; it spawns the wrapper and reads the frozen proposal file.
+The Codex proposer follows the `codex exec` discipline owned by [`codex/SKILL.md`](../../codex/SKILL.md): write+verify the prompt file before invoking, launch `codex exec` per the [§ `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix), kill by explicit PID (never `pkill -f`), and validate the proposal **structurally** (file exists / > 0 bytes / a `PROPOSAL:` header) — never by a content-vocabulary grep. The manager does not re-implement that discipline here; it spawns the wrapper and reads the frozen proposal file.
 
 When `propose.mode: single`, the manager spawns only the Claude producer. This is a **deliberate, configured Claude-only run** — it is NOT degraded mode, so it does **NOT** stamp the degraded-mode label. The degraded-mode label (`production_mode: claude-only` + `codex_proposal_absent_reason`) is stamped ONLY when `propose.mode: dual` but the Codex proposal is empty / times out / errors (see § Degraded-mode policy).
 
@@ -42,6 +42,10 @@ The parallel-generate-then-integrate model widens the window in which an evaluat
 3. **POST-INTEGRATION freeze.** The canonical artifact is frozen before the manager spawns the EVALUATION evaluators — no moving target during review.
 
 The manager confirms the proposer's terminal output is the one on disk (read it; it carries the `PROPOSAL:` header) before releasing the producer to integrate, and confirms the canonical draft is terminal before dispatching evaluators.
+
+**Proposer source-read-only gate (C-HIGH-4).** The Codex proposer runs under `--sandbox workspace-write`, so the prompt-only "write only your proposal" instruction is UNENFORCED — a proposer CAN write a source / skill / tracked file it was never meant to touch. The gate's job is to catch exactly that: it checks the SOURCE tree, NOT the proposal dir. Run it **right after the proposer completes and BEFORE the producer integrates** — at that point no legitimate source change exists yet, so a stray write cannot be confused with the producer's (or, in Execution, the executor's) later tracked-source edits. The manager runs `git -C <worktree-abs> status --porcelain` and confirms **no source / skill / tracked-file change appears**. The proposal writes live under the gitignored session tree (`.gitignore` → `.gobbi/projects/*/sessions/`), so `git status` cannot see them by design — an empty (or source-clean) porcelain output is the expected pass, NOT "changes confined to `working/proposals/codex/`" (that can never show). Any tracked-file modification OR untracked non-ignored file that appears is a proposer boundary violation and a **process failure**: the manager reverts the stray write and re-runs the proposer (or degrades to Claude-only per § Degraded-mode policy); it NEVER integrates a proposal from a boundary-violating run. Use `status --porcelain` ONLY — `git diff --stat` is fail-open here, since it misses untracked new files.
+
+> **Residual limitation:** a proposer writing a SIBLING ignored session file (e.g. the canonical `working/draft-iter{n}.md`) is NOT caught — that path is gitignored too. If that confinement must be enforced, a filesystem check is required: `find <session-tree> -newer <pre-proposer-marker> -not -path '*/proposals/codex/*'`. Noted as a known limitation; not built here.
 
 ---
 
@@ -129,7 +133,7 @@ All proposer + integration writes are **session-scoped**. The proposer never tou
 
 ## Cross-references
 
-- Codex proposer wrapper pattern + foreground / timeout / PID-kill / structural-validation discipline + degraded-mode label → [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)
+- Codex proposer wrapper pattern + launch-mode (per the § `codex exec` launch runtime matrix) / timeout / PID-kill / structural-validation discipline + degraded-mode label → [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md)
 - Degraded-mode label preservation into `outputs/` → [`record/SKILL.md` § Artifact frontmatter schema](../../record/SKILL.md)
 - The dual EVALUATION that reviews the integrated artifact → [`workflow/evaluation.md`](evaluation.md), [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
 - Per-loop WORK orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
