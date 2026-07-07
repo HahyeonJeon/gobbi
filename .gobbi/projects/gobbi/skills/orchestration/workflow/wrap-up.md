@@ -1,5 +1,7 @@
 # Workflow — Wrap-up (Orchestration)
 
+**Doc kind:** loop-orchestration.
+
 How the **manager** orchestrates the Wrap-up Loop. The `assistant` specialists that do the actual consolidation load [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) instead.
 
 The Wrap-up Loop runs once at the end of every workflow session. Its purpose is to close the session cleanly: emit `workflow.finish`, write the handoff summary, clean scratch state.
@@ -81,4 +83,4 @@ Plus any new mistake entries and memory updates under `.gobbi/projects/{project-
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
 - Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
-- Memory promotion → [`record/SKILL.md`](../../record/SKILL.md)
+- Memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)

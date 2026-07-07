@@ -1,10 +1,12 @@
 # Workflow — Planning (Orchestration)
 
+**Doc kind:** loop-orchestration.
+
 How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
 
 **Planning focuses on Who / When / Where.** Ideation concentrated on What / Why / How; Planning takes the locked idea and decides who implements what, in what order, where in the codebase.
 
-The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `RECORD` → `ITER / EXIT`.
+The Planning Loop runs the four sub-phases — `DISCUSSION` → `WORK` → `EVALUATION` → `RECORD` — plus the manager `ITER / EXIT` decision.
 
 | Phase | Content semantics for Planning |
 |---|---|

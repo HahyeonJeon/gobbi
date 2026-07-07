@@ -1,5 +1,7 @@
 # Workflow — Preparation (Orchestration)
 
+**Doc kind:** loop-orchestration.
+
 How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
 
 The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that the **memory** and the **workspace skills** are ready for the planning and execution that follow. If something is missing that downstream work would need, Preparation surfaces it and the user decides how to resolve.
@@ -31,7 +33,7 @@ manager → re-engages leader to apply approved fixes during WORK
 
 ### Sub-step orchestration
 
-The manager runs the user through five sub-steps in order. Each is gated by the active runtime's user-decision primitive before advancing.
+The manager runs the user through four sub-steps in order. Each is gated by the active runtime's user-decision primitive before advancing.
 
 | # | Sub-step | Manager's role | Leader's contribution |
 |---|---|---|---|

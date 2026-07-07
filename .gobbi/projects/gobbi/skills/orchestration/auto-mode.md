@@ -97,7 +97,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WORK` | Spawn the `leader` subagent. Leader writes preparation draft AND executes approved gap fixes. | manager orchestration: [preparation.md](workflow/preparation.md); specialist phase load: [../preparation/SKILL.md](../preparation/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.preparation.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. (A `re-ideate` decision is handled in row 1 `DISCUSSION`, not here — it is not a row-5 verdict.) | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → promote generated skills + exit. `Skipped` → exit (no generated skills exist on a skipped loop, so nothing to promote). `REVISE`/`FAIL` with budget → row 1. Budget out → abort. (A `re-ideate` decision is handled in row 1 `DISCUSSION`, not here — it is not a row-5 verdict.) | manager orchestration: —; specialist phase load: — | manager |
 
 ### Step 4 — Planning Loop
 

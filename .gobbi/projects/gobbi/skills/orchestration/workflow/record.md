@@ -1,5 +1,7 @@
 # Workflow — Record (Orchestration)
 
+**Doc kind:** gate-orchestration.
+
 How the **manager** orchestrates the RECORD sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`record/SKILL.md`](../../record/SKILL.md) and [`memory/memory-map.md`](../../memory/memory-map.md) instead.
 
 The manager's job at RECORD is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. RECORD runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
@@ -123,6 +125,7 @@ Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the pl
 | Loop | Session outputs path (PASS only) | working path | staging path |
 |---|---|---|---|
 | Ideation | `1-ideation/outputs/` (typical files: framed-problem, scope-contract, design-options, memory-reads, resolution-log) | `1-ideation/working/` | `1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
+| Preparation | `2-preparation/outputs/` (typical files: readiness-assessment, memory-reads) | `2-preparation/working/` | `2-preparation/staging/{skills,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Planning | `3-planning/outputs/` (typical files: task-list, dependency-graph, agent-assignments, memory-reads) | `3-planning/working/` | `3-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Execution | `4-execution/outputs/` (typical files: change-summary, verification-report, memory-reads) | `4-execution/working/` | `4-execution/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Wrap-up | `5-wrap-up/outputs/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `5-wrap-up/working/` | Wrap-up does not stage — it writes directly to memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
