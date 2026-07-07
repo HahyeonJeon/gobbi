@@ -108,11 +108,11 @@ After `RECORD`, the manager decides based on the reconciled verdict:
 | Verdict | Action |
 |---|---|
 | `PASS` | Exit the loop; advance to Execution Loop |
-| `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input |
+| `REVISE` | Re-enter `DISCUSSION` with evaluator findings as new input **while iterations remain**. In Chat (one-shot, `maxIter=1`) the single REVISE has no remaining budget → it routes to the after-EVALUATION user gate (see the Iteration cap note below / `chat-mode.md §8.2`), not an automatic re-entry. |
 | `FAIL` | Escalate through the active runtime's user-decision primitive; user decides revise / abort / re-enter Ideation |
 | `SKIPPED` | Exit the loop (Planning was skipped per settings — only valid for trivial tasks where the "plan" is a single task) |
 
-Iteration cap: `workflow.planning.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
+Iteration cap: `workflow.planning.maxIterations` (Auto 5; Chat 1 — one-shot). When the cap is reached without `PASS`, the manager forces user escalation; in Chat the single-pass REVISE routes to the after-EVALUATION user gate (`chat-mode.md §5` / §8.2 — accept / revise-once / reframe), not a hard abort.
 
 ---
 

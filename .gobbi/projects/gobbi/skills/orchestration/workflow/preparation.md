@@ -118,7 +118,7 @@ After `RECORD`, the manager decides based on the reconciled verdict:
 
 (A `re-Ideate` decision is **not** in this table: it is resolved in DISCUSSION (Sub-step D) and halts Preparation before EVALUATION — see [Re-Ideate routing](#re-ideate-routing) — so it never produces a verdict here.)
 
-Iteration cap: `workflow.preparation.maxIterations` (default 5). When the cap is reached without `PASS`, the manager forces user escalation.
+Iteration cap: `workflow.preparation.maxIterations` (Auto 5; Chat 0 — Preparation is skipped in Chat via `skip: true` + `maxIterations: 0`). When the cap is reached without `PASS`, the manager forces user escalation.
 
 ---
 

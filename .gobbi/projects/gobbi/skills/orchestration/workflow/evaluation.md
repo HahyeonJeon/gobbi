@@ -275,7 +275,7 @@ This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfac
 ## Iteration Caps
 
 The manager tracks the loop's revision count. Settings define:
-- `workflow.{loop}.maxIterations` (default 5 for Ideation/Planning/Execution, 5 for Wrap-up)
+- `workflow.{loop}.maxIterations` (mode-specific defaults — Auto: 5 every loop; Chat: ideation 5, preparation 0/skipped, planning 1, execution 3, wrap-up 3)
 
 When the cap is reached without `PASS`, the manager's response is mode-specific (routine triage). **In Chat mode** the manager **escalates to the user** rather than continuing to revise — a stop-the-line user-decision primitive with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe (consistent with chat-mode.md's "Budget exhausted → escalate to user"). **In Auto mode** the manager does NOT interrupt the user mid-session: it records the abort, continues to the next step if continuing is safe, and surfaces the failure at Wrap-up — per [`auto-mode.md §6`](../auto-mode.md). The one exception is `auto-mode.md §6`'s "unsound to proceed" case (e.g., Planning aborted with no deliverable plan), where the Auto manager MUST surface through the active runtime's user-decision primitive before proceeding.
 

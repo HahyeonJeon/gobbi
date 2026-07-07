@@ -83,7 +83,7 @@ stub() {
     [ -e "$dest" ] || cp "$src" "$dest"
 }
 stub session.template.json session.json
-stub state.template.json   state.json
+stub "state.$mode.json"    state.json
 stub "settings.$mode.json" settings.json
 
 # advisory write-lock marker (empty); create-if-absent.
