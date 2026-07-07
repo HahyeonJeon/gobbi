@@ -97,11 +97,10 @@ WORK execution is more than documentation here, because Preparation's purpose is
 
 Wrap-up reads these staging directories and routes them to `features/{feature-name}/README.md`, `features/{feature-name}/scenarios/`, and `features/{feature-name}/checklists/` per its promotion routing table.
 
-### Per-iteration session record is NOT committed (gitignored)
-
-There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or the canonical `preparation.md` captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
-
-Iteration boundaries are recorded in `session.json.workflow.preparation.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content into tracked `features/`, `mistakes/`, `rules/`, etc. Only promoted content survives the session.
+> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
+> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
+> for the assistant procedure. Preparation keeps only its own `chore(skills)` generate-now
+> commit exception (below).
 
 The narrow-exception `chore(skills): promote {slug}` generate-now commit documented in [`preparation/SKILL.md`](../../preparation/SKILL.md) is **different**: it commits a generated skill into the **tracked** `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` path (not under gitignored `sessions/`) on EVALUATION PASS, so in-session consumers have the skill available during Planning and Execution. That commit is real because its target is tracked.
 

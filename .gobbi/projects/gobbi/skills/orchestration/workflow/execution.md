@@ -86,11 +86,10 @@ The final response the executor returns is captured as the work artifact: what w
 
 Because the Execution Loop is per-task, its value telemetry is per-task too. At RECORD, the assistant parses the task's dual-system integration log `4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` and appends one element to `session.json.workflow.execution.integration.tasks[]`: `{ taskNo, slug, iter, changing_rows, kept_own_rows, total_rows, escalated_rows }` (`taskNo` + `slug` identify the task, `iter` is the task's final loop count, then the four counts). The counts follow the same rule as every loop — `changing_rows` = `took-codex` + `merged-selective` rows, `kept_own_rows` = `kept-own` rows, `escalated_rows` = `escalated` rows, `total_rows` = all rows (see [`record/SKILL.md` § Value-telemetry integration counts](../../record/SKILL.md#value-telemetry-integration-counts)). The append is idempotent — keyed by `taskNo`, so a re-run overwrites rather than duplicates. The loop-level `workflow.execution.integration` counts roll up the dual-mode tasks; a `single`-mode task contributes no integration log and leaves its per-task counts `0`. This per-task array is what answers D4.3 (per-task value — which task the Codex proposer actually moved).
 
-### Per-iteration session record is NOT committed (gitignored)
-
-There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). A `git commit` aimed at the task's `working/`, `evaluation/iter{n}/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
-
-Per-task iteration boundaries are recorded in `session.json.workflow.execution.iterations[]` (keyed by `{task-id, iter}`), not in git. Durable memory exists **only** via Wrap-up promotion of `staging/` content into tracked `features/`, `mistakes/`, etc.
+> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
+> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
+> for the assistant procedure. Execution keeps only the executor's own task-implementation
+> commit (below).
 
 This is separate from the executor's own task-implementation commit (the "Commit" lifecycle phase above). That commit **is real**: it ships the code/doc change per the task's contract into **tracked** workspace files (not under gitignored `sessions/`), and it is absorbed into the PR at merge. Only the session-record audit-trail commit is the no-op; the implementation commit always stands.
 

@@ -95,11 +95,9 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 - Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/3-planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
 - Does NOT write to memory directly — all promotion is Wrap-up's responsibility
 
-### Per-iteration session record is NOT committed (gitignored)
-
-There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
-
-Iteration boundaries are recorded in `session.json.workflow.planning.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content (the plan, scenarios, checklists) into tracked `features/`, etc. Only promoted content survives the session.
+> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
+> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
+> for the assistant procedure. Planning keeps no loop-specific commit exception.
 
 ---
 
