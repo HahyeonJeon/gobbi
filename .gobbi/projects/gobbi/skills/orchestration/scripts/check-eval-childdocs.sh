@@ -614,23 +614,47 @@ mode_bundle() {
     return 0
 }
 
-# inclusion_present <rel> <lineno> — does the Family-9 surface at <lineno> reference
-# `checklist.md` in its ENCLOSING STRUCTURE? Structure-aware so a correctly-flipped
-# surface is not false-failed when its checklist.md node/row lands more than a few
-# lines from the hit (F-USAGE-1):
-#   - hit inside a fenced code block  → scan the WHOLE enclosing ``` … ``` block
-#     (covers a tree whose checklist.md node is several nodes away);
-#   - hit on a markdown table row     → scan the CONTIGUOUS run of `|`-rows
-#     (covers an Output-paths table whose checklist.md row has intervening rows);
-#   - otherwise (prose)               → scan a ±5-line window (the enclosing bullet
-#     / paragraph of an Output-path / count / DONE declaration).
+# --- inclusion (F2) association helpers ------------------------------------
+# A line whose subject is an eval-output-set COUNT (the count the flip takes 8→9).
+is_count_line() {
+    m "$1" '[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files|same [0-9]+ files|wc -l|must be [0-9]'
+}
+# A count line is FLIPPED iff its OWN count vocabulary now shows the new set size 9
+# (the design's 8→9 contract) OR the line itself names checklist.md. A distant
+# checklist.md elsewhere in the fence does NOT flip a stale "same 8 files" line
+# (F-USAGE-2) — the stale count on the hit's own unit must be updated.
+count_flipped() {
+    local l="$1"
+    [[ $l == *checklist.md* ]] && return 0
+    m "$l" '(^|[^0-9])9( well-formed)? files|same 9 files|must be 9|exactly [a-z ]*9 files' && return 0
+    return 1
+}
+# The system dir a tree node belongs to, from the node's own text (claude|codex|"").
+node_system() {
+    case "$1" in *codex*) printf codex ;; *claude*) printf claude ;; *) printf '' ;; esac
+}
+
+# inclusion_present <rel> <lineno> — is the Family-9 surface at <lineno> flipped, per
+# its OWN structural unit (F-USAGE-2)? Per-unit association, so a partial flip that
+# updates ONE sibling but leaves this surface stale is caught:
+#   - COUNT line (any shape)          → the line's OWN 8→9 count must be updated, or
+#     the line itself must name checklist.md. A distant checklist.md never satisfies
+#     a stale count (that was the whole-fence false-pass).
+#   - tree node naming a SYSTEM (claude/codex) → a `checklist.md` line naming the SAME
+#     system must exist in the fenced block (per-branch: a partial flip of only one
+#     system leaves the other system's node failing).
+#   - other tree node / prose (overall.md, an Output-path / DONE declaration) → a
+#     `checklist.md` must be an ADJACENT sibling (±2 lines) of THIS line.
+#   - markdown table row              → a `checklist.md` row in the CONTIGUOUS table
+#     (a table's output set is flipped as one unit — one added checklist.md row).
 inclusion_present() {
     local rel="$1" lineno="$2" file="$PROJ/$rel"
     local -a L=(); local n=0 line
     while IFS= read -r line || [ -n "$line" ]; do n=$((n + 1)); L[$n]="$line"; done < "$file"
     [ "$lineno" -ge 1 ] && [ "$lineno" -le "$n" ] || return 1
-    local i t
-    # 1) enclosing fenced code block?
+    local i t hit="${L[$lineno]}"
+
+    # 1) enclosing fenced code block? → tree / code-block node.
     local in_fence=0 cur_start=0 fstart=0 fend=0
     for ((i = 1; i <= n; i++)); do
         t="${L[$i]#"${L[$i]%%[![:space:]]*}"}"
@@ -643,19 +667,51 @@ inclusion_present() {
         fi
     done
     if [ "$fstart" -gt 0 ]; then
-        for ((i = fstart; i <= fend; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
+        local sys; sys="$(node_system "$hit")"
+        if is_count_line "$hit"; then
+            # A count node is flipped ONLY by updating its OWN count (8→9, or naming
+            # checklist.md on its own line), or — if it names a system — by a
+            # same-system checklist.md node. NEVER by a distant token in the fence
+            # (that was the F-USAGE-2 false-pass: a stale `same 8 files` sibling
+            # satisfied by another branch's checklist.md).
+            count_flipped "$hit" && return 0
+            if [ -n "$sys" ]; then
+                for ((i = fstart; i <= fend; i++)); do
+                    [[ ${L[$i]} == *checklist.md* ]] && [[ ${L[$i]} == *"$sys"* ]] && return 0
+                done
+            fi
+            return 1
+        fi
+        if [ -n "$sys" ]; then
+            # per-system branch: a partial flip of only one system leaves the other
+            # system's node with no same-system checklist.md → correctly fails.
+            for ((i = fstart; i <= fend; i++)); do
+                [[ ${L[$i]} == *checklist.md* ]] && [[ ${L[$i]} == *"$sys"* ]] && return 0
+            done
+            return 1
+        fi
+        # non-system, non-count node (e.g. `overall.md`) → checklist.md must be an
+        # ADJACENT sibling (±2), not anywhere in the fence.
+        for ((i = lineno - 2; i <= lineno + 2; i++)); do
+            [ "$i" -ge "$fstart" ] && [ "$i" -le "$fend" ] && [[ ${L[$i]} == *checklist.md* ]] && return 0
+        done
         return 1
     fi
-    # 2) contiguous markdown table run?
-    if [[ ${L[$lineno]} == *'|'* ]]; then
+
+    # 2) contiguous markdown table? → one checklist.md row flips the table as a unit.
+    if [[ $hit == *'|'* ]]; then
         local s=$lineno e=$lineno
         while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
         while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
         for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
         return 1
     fi
-    # 3) prose: enclosing ±5-line window.
-    local s=$((lineno - 5)) e=$((lineno + 5))
+
+    # 3) prose: a count declaration is flipped ONLY by its own count update (never a
+    #    distant token); a non-count declaration (Output-path / DONE) needs
+    #    checklist.md on this line or an immediate neighbour (±2 covers a 2-line bullet).
+    if is_count_line "$hit"; then count_flipped "$hit" && return 0; return 1; fi
+    local s=$((lineno - 2)) e=$((lineno + 2))
     [ "$s" -lt 1 ] && s=1; [ "$e" -gt "$n" ] && e=$n
     for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
     return 1
@@ -669,6 +725,13 @@ mode_enforce_inclusion() {
     while IFS= read -r f; do files+=("$f"); done < <(list_scan_files "$PROJ" | sort)
     run_classify quiet "${files[@]}"
     assert_nonempty_scan || return $?
+    # N-RISK-1: a swept tree with ZERO Family-9 surfaces cannot be "all flipped" —
+    # the real tree always carries Family-9 surfaces, so 0 here is a broken/empty
+    # run, never a vacuous inclusion PASS. Keyed on zero (not a hardcoded count).
+    if [ "${#EMIT_F9[@]}" -eq 0 ]; then
+        log "FAIL: 0 Family-9 surfaces found — nothing to enforce (broken/empty run, not a PASS)"
+        return 2
+    fi
 
     local missing=0 hit rel lineno
     for hit in "${EMIT_F9[@]}"; do
