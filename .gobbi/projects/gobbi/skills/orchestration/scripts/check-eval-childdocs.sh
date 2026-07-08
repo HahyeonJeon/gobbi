@@ -686,13 +686,32 @@ count_satisfied() {  # <line> <lineno> <lo> <hi>
 # it is never a genuine table; a genuine table row always is — even when a cell holds
 # a count phrase (its F9 flip is adding a checklist.md ROW, not incrementing a cell).
 # Reads inclusion_present's local L[] / n via bash dynamic scope.
+# table_row_shaped <line> — a markdown table-ROW line: after stripping leading
+# whitespace it starts with `|`. A pipe-bearing PROSE line (`… | …`) or a count
+# bullet (`- \`ls … | wc -l\``) is NOT table-row-shaped (its `|` is mid-line).
+table_row_shaped() {
+    local t="${1#"${1%%[![:space:]]*}"}"   # strip leading whitespace
+    [[ $t == '|'* ]]
+}
+# table_block <lineno> — set TBL_S/TBL_E to the maximal run of CONSECUTIVE
+# table-row-shaped lines around <lineno>. The extend STOPS at the first blank line
+# or any non-table-row line, so an adjacent prose line (even glued with no blank
+# line, even containing a `|` and `checklist.md`) is OUTSIDE the block (N-RISK-5).
+# ONE helper, used by both the separator check and the checklist.md-row scan, so
+# the boundary rule cannot drift between the two sites (N-STRUCT-7).
+TBL_S=0; TBL_E=0
+table_block() {
+    local ln="$1"
+    TBL_S=$ln; TBL_E=$ln
+    while [ "$TBL_S" -gt 1 ] && table_row_shaped "${L[$((TBL_S - 1))]}"; do TBL_S=$((TBL_S - 1)); done
+    while [ "$TBL_E" -lt "$n" ] && table_row_shaped "${L[$((TBL_E + 1))]}"; do TBL_E=$((TBL_E + 1)); done
+}
 is_genuine_table_row() {
     local ln="$1"
-    m "${L[$ln]}" '^[[:space:]]*\|' || return 1
-    local s=$ln e=$ln j t
-    while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
-    while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
-    for ((j = s; j <= e; j++)); do
+    table_row_shaped "${L[$ln]}" || return 1
+    table_block "$ln"
+    local j t
+    for ((j = TBL_S; j <= TBL_E; j++)); do
         t="${L[$j]//|/}"; t="${t//-/}"; t="${t//:/}"; t="${t// /}"; t="${t//$'\t'/}"
         [ -z "$t" ] && [[ ${L[$j]} == *-* ]] && return 0   # a |---| separator row
     done
@@ -776,10 +795,10 @@ inclusion_present() {
     #    files`) — a genuine table's F9 flip is adding a checklist.md row, never
     #    incrementing a cell count (R-USAGE-6 A2/A3).
     if is_genuine_table_row "$lineno"; then
-        local s=$lineno e=$lineno
-        while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
-        while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
-        for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
+        # scan ONLY the bounded genuine-table block (table_block sets TBL_S/TBL_E) —
+        # an adjacent pipe-bearing prose line that mentions checklist.md is outside it.
+        table_block "$lineno"
+        for ((i = TBL_S; i <= TBL_E; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
         return 1
     fi
 
