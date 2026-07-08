@@ -2,7 +2,7 @@
 type: mistakes
 skill: delegation
 description: "Recorded traps for delegation — load before doing delegation work"
-updated: 2026-07-06
+updated: 2026-07-08
 ---
 
 # Delegation — Mistakes
@@ -32,10 +32,12 @@ updated: 2026-07-06
 
 `priority: high` · `domain: process` · `added: 2026-07-06` · `status: active` · `tags: [process, codex, verification]`
 
-**What happened** — A native Codex delegation prompt told a subagent to load mandatory skills from canonical source paths under `.gobbi/projects/gobbi/skills/...` instead of the active Codex runtime surface `.agents/skills/...`.
-**Why it happens** — Canonical source paths and runtime symlink paths point at the same files, so it is tempting to treat them as interchangeable. Gobbi audits the exact runtime load surface named in the prompt, not just the file inode.
-**How to detect** — A Codex subagent Load Directives block names `.gobbi/projects/gobbi/skills/<skill>/SKILL.md` for mandatory skill loading. That path can exist, but it is not the repo-local Codex skill surface required by `AGENTS.md`.
-**Correct approach** — Use `.agents/skills/<skill>/SKILL.md` for every mandatory Codex skill load, paired with `.agents/skills/<skill>/mistakes.md` when the companion exists. Keep project mistakes under `.gobbi/projects/gobbi/mistakes/...`; those are durable memory records, not skill load surfaces.
+**Reversed 2026-07-08** — Prior guidance mandated `.agents/skills` as the load path for native Codex and treated a `.gobbi/…` citation as the mistake. That guidance is superseded by the `.gobbi` SSOT decision in `skills/delegation/SKILL.md` (§ Skill-load path SSOT): the canonical source `.gobbi/projects/gobbi/skills/` is the single skill-load path for BOTH runtimes, and `.agents/skills` stays the Codex *discovery* symlink — never a load-path citation. The trap's SUBJECT is unchanged — naming the WRONG skill-load surface in a delegation prompt is still a trap — only the correct answer flipped: the surface that used to be "required" (`.agents/skills`) is now the WRONG one to cite as a load path.
+
+**What happened** — A delegation prompt told a subagent to load mandatory skills from a per-runtime discovery surface — `.agents/skills/<skill>/SKILL.md` on native Codex, or `.claude/skills/<skill>/SKILL.md` on Claude Code — instead of the canonical source `.gobbi/projects/gobbi/skills/<skill>/SKILL.md`, which is the single skill-load path for BOTH runtimes. Native Codex reads the real canonical files directly, so a `.gobbi/…` citation is always resolvable; naming the runtime symlink surface as the load path is the drift.
+**Why it happens** — The canonical source and the per-runtime symlink surfaces (`.agents/skills`, `.claude/skills`) point at the same files, so it is tempting to cite whichever surface matches the current runtime. But a per-runtime citation forks the load contract by runtime and re-introduces the discovery symlink as a load path; the SSOT is one path for both runtimes, so the load-path citation must not vary by runtime.
+**How to detect** — A delegation prompt's Load Directives block names a per-runtime surface (`.agents/skills/<skill>/SKILL.md` or `.claude/skills/<skill>/SKILL.md`) for mandatory skill loading instead of `.gobbi/projects/gobbi/skills/<skill>/SKILL.md`. Any runtime-specific skill-load path in a brief is the signal.
+**Correct approach** — Cite `.gobbi/projects/gobbi/skills/<skill>/SKILL.md` for every mandatory skill load, for BOTH runtimes, paired with `.gobbi/projects/gobbi/skills/<skill>/mistakes.md` when the companion exists. Do NOT name a per-runtime surface (`.agents/skills` / `.claude/skills`) as the load path — those stay discovery / entry-point surfaces only. Keep project mistakes under `.gobbi/projects/gobbi/mistakes/...`; those are durable memory records, not skill-load surfaces.
 
 ### Related
 - [[delegation-briefs-reference-nonexistent-rules-dir]] — delegation prompts must cite loadable paths for this repo.

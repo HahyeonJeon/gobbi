@@ -10,7 +10,7 @@ Gobbi is an open-source ClaudeX (Claude Experience) tool. In this repository, Go
 - Canonical plugin skill sources: `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`
 - Canonical Gobbi sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
 
-MUST read this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST load Gobbi skills from `.agents/skills`, not user-level skill locations.
+MUST read this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST load Gobbi skills from the repo-local canonical source `.gobbi/projects/gobbi/skills/` (the single source of truth for both runtimes; the Codex discovery symlink points to it, per § Codex Entry Points), not user-level skill locations.
 
 The repo also exposes Gobbi as a local Claude Code and Codex plugin through one bounded package at `plugins/gobbi/`. The package carries both manifests: `plugins/gobbi/.claude-plugin/plugin.json` for Claude Code and `plugins/gobbi/.codex-plugin/plugin.json` for Codex. `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` both point at `./plugins/gobbi`, using their ecosystem-specific marketplace schemas.
 
@@ -50,7 +50,7 @@ When Codex subagents are explicitly authorized by the user, use these custom age
 
 > **The logic of good work: Configuration -> Ideation -> Preparation -> Planning -> Execution -> Wrap-up.**
 
-Every session runs this 6-step state machine — Configuration plus five productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION -> WORK -> EVALUATION -> **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the gobbi skill Glossary at `.agents/skills/gobbi/SKILL.md`. This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
+Every session runs this 6-step state machine — Configuration plus five productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION -> WORK -> EVALUATION -> **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the gobbi skill Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
 
 **Configuration** - Session start: settings, memory check, workflow configuration. Not a loop.
 
@@ -62,13 +62,13 @@ Every session runs this 6-step state machine — Configuration plus five product
 
 **Execution** - Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
 
-**Wrap-up** - Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The Glossary at `.agents/skills/gobbi/SKILL.md` holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
+**Wrap-up** - Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
 
 > **Evaluation is a mandatory sub-phase in the Gobbi workflow.**
 
-Evaluation runs inside Ideation, Planning, and Execution. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.agents/skills/evaluation/SKILL.md`.
+Evaluation runs inside Ideation, Planning, and Execution. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.gobbi/projects/gobbi/skills/evaluation/SKILL.md`.
 
-> **MUST load `.agents/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
+> **MUST load `.gobbi/projects/gobbi/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
 
 The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle.
 
@@ -87,7 +87,7 @@ The 10 principles below are the enforceable behavioral discipline for every agen
 
 > **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
 
-Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes each staged candidate to one of two homes (Always-Ask routing): a **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the delegation Load-Directives companion path; a **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{name}/mistakes/`), loaded at session start. No CLI command. Promotion does not cause context reload.
+Every agent MUST load `.gobbi/projects/gobbi/skills/mistake/SKILL.md` before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes each staged candidate to one of two homes (Always-Ask routing): a **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the delegation Load-Directives companion path; a **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{name}/mistakes/`), loaded at session start. No CLI command. Promotion does not cause context reload.
 
 ---
 
@@ -95,14 +95,14 @@ Every agent MUST load `.agents/skills/mistake/SKILL.md` before starting work. Wh
 
 | Document | Covers |
 |----------|--------|
-| `.agents/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
+| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
 | `plugins/gobbi/.codex-plugin/plugin.json` | Local Gobbi Codex plugin manifest |
 | `plugins/gobbi/.claude-plugin/plugin.json` | Local Gobbi Claude Code plugin manifest |
 | `plugins/gobbi/` | Shared bounded plugin package |
 | `.gobbi/projects/gobbi/skills/` | Canonical Gobbi skills directory |
-| `.agents/skills/principles/SKILL.md` | 10 behavioral principles every agent must follow |
-| `.agents/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
-| `.agents/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
+| `.gobbi/projects/gobbi/skills/principles/SKILL.md` | 10 behavioral principles every agent must follow |
+| `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
+| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
 | `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
 | `.codex/agents/leader.toml` | Ideation, preparation, research, and planning custom-agent wrapper |
 | `.codex/agents/executor.toml` | Scoped implementation custom-agent wrapper |
