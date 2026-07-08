@@ -97,7 +97,7 @@ Verify readiness of memory and workspace skills against the locked Ideation outp
 - `sessions/{date}-{session-id}/1-ideation/staging/` (everything Ideation staged for Wrap-up to promote, but not yet promoted)
 - Memory: `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes,plans,references}/`
 - Memory: `.gobbi/projects/{project-name}/{mistakes,rules,design,skills,notes}/`
-- Workspace skills under the active runtime's skill root (`.claude/skills/` in Claude Code, `.agents/skills/` in Codex), when discoverable
+- Workspace skills under `.gobbi/projects/{project-name}/skills/` — the single canonical skill root for both runtimes (runtime discovery symlinks resolve into it; never a skill-load path), when discoverable
 - On `REVISE` iterations: prior iteration's evaluator findings — the leader reads cited issues before re-engaging the user
 
 **Procedure**
@@ -183,7 +183,7 @@ Identify the project-specific skills an executor would need for the planned work
 **Inputs**
 - Readiness signal list (Sub-step A output) — files / domains the design will touch
 - `.gobbi/projects/{project-name}/skills/` — project-specific skills inventory
-- Active runtime skill root — `.claude/skills/` in Claude Code, `.agents/skills/` in Codex (when accessible)
+- Workspace skill root — `.gobbi/projects/{project-name}/skills/`, the single canonical skill root for both runtimes (accessible via each runtime's discovery symlink)
 
 **Procedure**
 

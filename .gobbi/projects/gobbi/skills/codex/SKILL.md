@@ -40,7 +40,7 @@ Use this section when the current Gobbi session is already running in Codex.
 
 ### Entry Points
 
-- Load Gobbi skills from `.agents/skills/<skill-name>/SKILL.md`.
+- Load Gobbi skills from `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`.
 - Spawn or request custom agents from `.codex/agents/{manager,leader,executor,evaluator,assistant}.toml`.
 - Read canonical role prompts from `.gobbi/projects/gobbi/agents/{role}.md`.
 - Read canonical skill sources from `.gobbi/projects/gobbi/skills/{skill-name}/SKILL.md`.
