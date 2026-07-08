@@ -141,14 +141,15 @@ session_json=$(resolve_session_json "$cwd" "$session_id") \
 #   model           ← tool_input.model
 #   step / phase    ← tool_input.prompt structured headers
 #   iter / sub-step ← tool_input.prompt structured headers
-# Headers convention: `^Your (phase|iteration|sub-step|step): (.+)$`.
+#   system          ← tool_input.prompt structured header (producing system)
+# Headers convention: `^Your (phase|iteration|sub-step|step|system): (.+)$`.
 # ---------------------------------------------------------------------------
 prompt_text=$(jq -r '.tool_input.prompt // ""' <<<"$payload")
 model=$(jq -r       '.tool_input.model  // ""' <<<"$payload")
 subagent_type=$(jq -r '.tool_input.subagent_type // ""' <<<"$payload")
 
 extract_header() {
-    # $1 = key (phase|iteration|step|sub-step). Match case-insensitively.
+    # $1 = key (phase|iteration|step|sub-step|system). Match case-insensitively.
     local _key="$1"
     printf '%s\n' "$prompt_text" \
         | grep -m1 -iE "^Your[[:space:]]+${_key}:[[:space:]]+.+" \
@@ -160,6 +161,7 @@ step=$(extract_header "step")
 phase=$(extract_header "phase")
 iter=$(extract_header "iteration")
 sub_step=$(extract_header "sub-step")
+system=$(extract_header "system")
 
 # ---------------------------------------------------------------------------
 # Resolve the REAL agentId from the main transcript (D-3-6).
@@ -231,6 +233,7 @@ upsert_input=$(jq -n \
     --arg phase    "$phase" \
     --arg iter     "$iter" \
     --arg sub_step "$sub_step" \
+    --arg system   "$system" \
     --arg atype    "$agent_type" \
     --arg status   "$status" \
     --arg event    "$hook_event" \
@@ -247,6 +250,7 @@ upsert_input=$(jq -n \
         phase:     (if $phase    == "" then null else $phase    end),
         iter:      (if $iter     == "" then null else $iter     end),
         sub_step:  (if $sub_step == "" then null else $sub_step end),
+        system:    (if $system   == "" then null else $system   end),
         model:     (if $model    == "" then null else $model    end),
         status:    $status,
         hook_event: $event,
