@@ -163,6 +163,12 @@ has_samefiles(){ m "$1" 'same [0-9]+ (well-formed )?files'; }
 has_wcl()      { m "$1" 'wc -l'; }
 has_mustben()  { m "$1" 'must be [0-9]'; }
 has_nfiles()   { m "$1" '[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files'; }
+# a FINDING-HIT count — a finding-vocab `*.md`-glob piped to wc -l (counts grep hits
+# across the output files, e.g. `… codex/*.md | wc -l  # >= 1 hit per file`). This is
+# a Family-8-class count that STAYS a finding count: the flip EXCLUDES checklist.md
+# from the glob (checklist.md carries no finding vocab), it does NOT go 8→9. Distinct
+# from a dir file-count (`ls …/codex/ | wc -l  # must be 8`), which IS Family-9.
+has_findingcount() { m "$1" '\*\.md.*wc -l|hit per file'; }
 # DONE-contract enumeration phrasings.
 has_done()     { m "$1" 'one( output)? file per perspective|seven per-perspective files? \+ one overall|per perspective \+ overall\.md'; }
 # any eval-output vocabulary at all (the subject signal).
@@ -263,16 +269,24 @@ classify() {
         # genuine exact-N validation of the output set → Family-9. This is the one
         # place a section-scoped subject signal is needed; every NON-count NA hit
         # (and every count outside such a section) stays not-applicable.
-        if [ "$near" = "1" ] && { has_wcl "$l" || has_mustben "$l" || has_nfiles "$l"; }; then
+        if [ "$near" = "1" ] && ! has_findingcount "$l" \
+            && { has_wcl "$l" || has_mustben "$l" || has_nfiles "$l"; }; then
             printf 'FAMILY-9'; return 0
         fi
         printf 'NOT-APPLICABLE'; return 0
     fi
 
-    # STEP B — FAMILY-8. RECORD's finding-file count "Σ systems × 8" stays 8; the
-    # coverage artifact is not a finding file. Pinned to record.md's Σ×N shape so
-    # the F9-count rule below never mis-claims it.
-    if [ "${rel##*/}" = "record.md" ] && m "$l" '(Σ|systems?).*×[[:space:]]*[0-9]'; then
+    # STEP B — FAMILY-8 (a count that STAYS 8, NOT an eval-output-set inclusion
+    # surface). Two shapes:
+    #   - RECORD's finding-file count "Σ systems × 8" (checklist.md is not a finding
+    #     file), pinned to record.md's Σ×N shape; and
+    #   - a finding-HIT `*.md`-glob count (e.g. `codex/SKILL.md:387`
+    #     `… codex/*.md | wc -l  # >= 1 hit per file`). Its task-10 edit is to EXCLUDE
+    #     checklist.md from the finding-vocab glob (checklist.md carries no finding
+    #     vocab), NOT to add a checklist.md reference / go 8→9 — so it must NOT be in
+    #     the enforce inclusion set. Closed under sibling-identity via has_findingcount.
+    if { [ "${rel##*/}" = "record.md" ] && m "$l" '(Σ|systems?).*×[[:space:]]*[0-9]'; } \
+        || has_findingcount "$l"; then
         printf 'FAMILY-8'; return 0
     fi
 
@@ -384,6 +398,9 @@ SWEEP_RE='\{perspective\}\.md|overall\.md|per-perspective files?|one( output)? f
 PROJ=""            # set in main
 VERBOSE="${VERBOSE:-0}"    # VERBOSE=1 prints every hit's family (audit aid)
 declare -a EMIT_F9=()      # relpath:line of Family-9 hits (certified output)
+declare -a EMIT_F8=()      # relpath:line of Family-8 (stays-8) surfaces — surfaced
+                           # for task 10 (record.md count stays 8; a finding-hit
+                           # glob count must EXCLUDE checklist.md). Not enforced.
 EMIT_UNCLASSIFIED=0
 EMIT_MISCLASSIFIED=0
 SCANNED_FILES=0            # files actually scanned this run (0 = broken scan surface)
@@ -523,7 +540,10 @@ sweep_file() {
                         "$rel" "$i" "$(printf '%s' "$line" | cut -c1-70)"
                 fi
                 ;;
-            FAMILY-8|NOT-APPLICABLE) : ;;
+            FAMILY-8)
+                EMIT_F8+=("$rel:$i")
+                ;;
+            NOT-APPLICABLE) : ;;
         esac
     done < <(grep -nE "$SWEEP_RE" "$file" 2>/dev/null)
 }
@@ -534,7 +554,7 @@ sweep_file() {
 run_classify() {
     local mode="$1"; shift
     local -a files=("$@")
-    EMIT_F9=(); EMIT_UNCLASSIFIED=0; EMIT_MISCLASSIFIED=0
+    EMIT_F9=(); EMIT_F8=(); EMIT_UNCLASSIFIED=0; EMIT_MISCLASSIFIED=0
     SCANNED_FILES=0; TOTAL_HITS=0
     local f rel
     for f in "${files[@]}"; do
@@ -577,6 +597,15 @@ mode_classify_only() {
     printf '%s\n' "${EMIT_F9[@]}" | sort | while IFS= read -r loc; do
         [ -n "$loc" ] && printf 'FAMILY9\t%s\n' "$loc"
     done
+    # Family-8 "stays-8" surfaces — surfaced so task 10 does not lose them. They are
+    # NOT in the checklist.md-inclusion set: record.md's Σ×8 stays 8 (no edit), and a
+    # finding-hit `*.md`-glob count must EXCLUDE checklist.md from its glob.
+    if [ "${#EMIT_F8[@]}" -gt 0 ]; then
+        printf '\n--- Family-8 stays-8 surfaces (%d) — NOT enforced; exclude/keep-8 co-touch ---\n' "${#EMIT_F8[@]}"
+        printf '%s\n' "${EMIT_F8[@]}" | sort | while IFS= read -r loc; do
+            [ -n "$loc" ] && printf 'FAMILY8\t%s\n' "$loc"
+        done
+    fi
     printf '\n'
     if [ "$EMIT_UNCLASSIFIED" -gt 0 ] || [ "$EMIT_MISCLASSIFIED" -gt 0 ]; then
         log "FAIL: $EMIT_UNCLASSIFIED unclassified, $EMIT_MISCLASSIFIED mis-classified hit(s) (fail-closed)"
@@ -669,17 +698,13 @@ inclusion_present() {
     if [ "$fstart" -gt 0 ]; then
         local sys; sys="$(node_system "$hit")"
         if is_count_line "$hit"; then
-            # A count node is flipped ONLY by updating its OWN count (8→9, or naming
-            # checklist.md on its own line), or — if it names a system — by a
-            # same-system checklist.md node. NEVER by a distant token in the fence
-            # (that was the F-USAGE-2 false-pass: a stale `same 8 files` sibling
-            # satisfied by another branch's checklist.md).
+            # OWN-COUNT-ONLY: an eval-output COUNT node is flipped ONLY by updating
+            # its OWN count (8→9, or naming checklist.md on its own line). A distant
+            # or same-system checklist.md NEVER satisfies a stale count — that was
+            # the N-USAGE-3 leak (a stale `codex/ … # must be 8` masked once any
+            # codex checklist.md appeared in the fence). Finding-HIT counts (which
+            # would need the same-system exception) are Family-8, not enforced here.
             count_flipped "$hit" && return 0
-            if [ -n "$sys" ]; then
-                for ((i = fstart; i <= fend; i++)); do
-                    [[ ${L[$i]} == *checklist.md* ]] && [[ ${L[$i]} == *"$sys"* ]] && return 0
-                done
-            fi
             return 1
         fi
         if [ -n "$sys" ]; then
@@ -819,12 +844,18 @@ mode_selftest() {
     #   does not break it; the surface still classifies Family-9 post-flip.
     selftest_one "done-status-contract" "$PROJ/skills/delegation/templates/evaluator.md" \
         '\*\*DONE\*\*.*per-perspective files' 'FAMILY-9' || fails=$((fails+1))
+    # Fixture 9 — codex finding-HIT `*.md`-glob count `codex/*.md | wc -l  # >= 1 hit
+    #   per file` → Family-8 (a finding count that STAYS 8; its flip EXCLUDES
+    #   checklist.md from the glob). Regression-locks the :387 reclassification so it
+    #   never re-enters the checklist.md-inclusion enforce set.
+    selftest_one "codex-finding-hit-count" "$PROJ/skills/codex/SKILL.md" \
+        'codex/\*\.md \| wc -l' 'FAMILY-8' || fails=$((fails+1))
 
     if [ "$fails" -gt 0 ]; then
         log "SELF-TEST FAIL: $fails fixture(s) disagreed"
         return 1
     fi
-    printf '%s: SELF-TEST PASS — all 8 fixtures classify as expected\n' "$SELF"
+    printf '%s: SELF-TEST PASS — all 9 fixtures classify as expected\n' "$SELF"
     return 0
 }
 
