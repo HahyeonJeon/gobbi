@@ -125,7 +125,11 @@ resolve_proj() {
     fi
     if [ -z "$proj" ] || [ ! -d "$proj/skills" ] || [ ! -d "$proj/agents" ]; then
         log "cannot resolve the gobbi project dir (skills/ + agents/); pass --root <dir>"
-        exit 2
+        # RETURN, do not exit: resolve_proj runs inside `$(...)`, so an `exit` here
+        # would terminate only the subshell and let main continue with PROJ="" —
+        # a fail-OPEN vacuous PASS on an empty tree (F-RISK-1). The caller checks
+        # the return status and aborts main with exit 2.
+        return 2
     fi
     printf '%s' "$proj"
 }
@@ -364,8 +368,12 @@ list_scan_files() {
 
 # The union sweep pattern — every eval-output-shape family (output-shape, N-file,
 # exact-N dir validation, DONE-contract). Tree nodes are picked up via overall.md
-# / {perspective}.md / "(same N files)".
-SWEEP_RE='\{perspective\}\.md|overall\.md|per-perspective files?|one( output)? file per perspective|per perspective \+ overall|[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files|wc -l|must be [0-9]'
+# / {perspective}.md / "(same N files)". `evaluation/iter` and the per-system
+# output-declaration token are included (F-CONSIST-1) so a line carrying ONLY
+# those tokens — which `has_iterpath` / `has_persystem` consume downstream — still
+# reaches the fail-closed classifier instead of silently escaping the sweep; the
+# classifier then correctly lands them verified-leave / not-applicable.
+SWEEP_RE='\{perspective\}\.md|overall\.md|per-perspective files?|one( output)? file per perspective|per perspective \+ overall|[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files|wc -l|must be [0-9]|evaluation/iter|one( output)?( file)? per system|one per perspective per system|per system . perspective'
 
 # ---------------------------------------------------------------------------
 # Sweep + classify one file. Emits, on stdout, one record per genuine hit:
@@ -378,6 +386,8 @@ VERBOSE="${VERBOSE:-0}"    # VERBOSE=1 prints every hit's family (audit aid)
 declare -a EMIT_F9=()      # relpath:line of Family-9 hits (certified output)
 EMIT_UNCLASSIFIED=0
 EMIT_MISCLASSIFIED=0
+SCANNED_FILES=0            # files actually scanned this run (0 = broken scan surface)
+TOTAL_HITS=0               # sweep hits classified this run (0 = empty inventory)
 
 # Per-file context, loaded once per file and shared by the sweep and the faithful
 # single-line classifier used by --self-test.
@@ -495,6 +505,7 @@ sweep_file() {
         nbr="$(overall_neighbor "$i")"
         near="$(near_evalset "$i")"
         fam="$(classify "$line" "${FTREE[$i]}" "$nbr" "$rel" "$near")"
+        TOTAL_HITS=$((TOTAL_HITS + 1))
         [ "$VERBOSE" = "1" ] && printf '%-14s %s:%d | %s\n' "$fam" "$rel" "$i" "$(printf '%s' "$line" | cut -c1-80)"
         case "$fam" in
             FAMILY-9)
@@ -524,11 +535,31 @@ run_classify() {
     local mode="$1"; shift
     local -a files=("$@")
     EMIT_F9=(); EMIT_UNCLASSIFIED=0; EMIT_MISCLASSIFIED=0
+    SCANNED_FILES=0; TOTAL_HITS=0
     local f rel
     for f in "${files[@]}"; do
+        [ -f "$f" ] || continue
+        SCANNED_FILES=$((SCANNED_FILES + 1))
         rel="${f#"$PROJ"/}"
         sweep_file "$f" "$rel" "$mode"
     done
+}
+
+# Fail-closed empty-inventory guard (F-RISK-1 second layer): a run that scanned no
+# files, or found no eval-output-shape hit at all, is an ERROR — never a vacuous
+# PASS. The real source tree always carries eval-output surfaces; a zero here means
+# a mis-resolved / broken scan surface. Deliberately NOT a hardcoded "expect 59"
+# baseline (that would be the hardcoded-baseline anti-pattern) — it keys on zero.
+assert_nonempty_scan() {
+    if [ "$SCANNED_FILES" -eq 0 ]; then
+        log "FAIL: 0 files scanned — broken or mis-resolved scan surface (not a PASS)"
+        return 2
+    fi
+    if [ "$TOTAL_HITS" -eq 0 ]; then
+        log "FAIL: 0 eval-output-shape hits found — empty inventory (not a PASS)"
+        return 2
+    fi
+    return 0
 }
 
 # ---------------------------------------------------------------------------
@@ -538,6 +569,7 @@ mode_classify_only() {
     local -a files=()
     while IFS= read -r f; do files+=("$f"); done < <(list_scan_files "$PROJ" | sort)
     run_classify print "${files[@]}"
+    assert_nonempty_scan || return $?
 
     # Machine-readable, per-path:line certified Family-9 list — the atomic-flip task
     # consumes it with: `... --classify-only | awk -F'\t' '$1=="FAMILY9"{print $2}'`.
@@ -575,31 +607,73 @@ mode_bundle() {
         log "no bundle surfaces found for loop '$loop'"; exit 2
     fi
     run_classify print "${files[@]}"
+    assert_nonempty_scan || return $?
     printf '\n%s: bundle=%s Family-9=%d unclassified=%d mis-classified=%d\n' \
         "$SELF" "$loop" "${#EMIT_F9[@]}" "$EMIT_UNCLASSIFIED" "$EMIT_MISCLASSIFIED"
     if [ "$EMIT_UNCLASSIFIED" -gt 0 ] || [ "$EMIT_MISCLASSIFIED" -gt 0 ]; then return 1; fi
     return 0
 }
 
-# inclusion-enforcement (F2): every Family-9 surface must reference checklist.md
-# within its enumeration context. Pre-flip this fails on every Family-9 surface.
+# inclusion_present <rel> <lineno> — does the Family-9 surface at <lineno> reference
+# `checklist.md` in its ENCLOSING STRUCTURE? Structure-aware so a correctly-flipped
+# surface is not false-failed when its checklist.md node/row lands more than a few
+# lines from the hit (F-USAGE-1):
+#   - hit inside a fenced code block  → scan the WHOLE enclosing ``` … ``` block
+#     (covers a tree whose checklist.md node is several nodes away);
+#   - hit on a markdown table row     → scan the CONTIGUOUS run of `|`-rows
+#     (covers an Output-paths table whose checklist.md row has intervening rows);
+#   - otherwise (prose)               → scan a ±5-line window (the enclosing bullet
+#     / paragraph of an Output-path / count / DONE declaration).
+inclusion_present() {
+    local rel="$1" lineno="$2" file="$PROJ/$rel"
+    local -a L=(); local n=0 line
+    while IFS= read -r line || [ -n "$line" ]; do n=$((n + 1)); L[$n]="$line"; done < "$file"
+    [ "$lineno" -ge 1 ] && [ "$lineno" -le "$n" ] || return 1
+    local i t
+    # 1) enclosing fenced code block?
+    local in_fence=0 cur_start=0 fstart=0 fend=0
+    for ((i = 1; i <= n; i++)); do
+        t="${L[$i]#"${L[$i]%%[![:space:]]*}"}"
+        if [[ $t == '```'* ]]; then
+            if [ "$in_fence" = "0" ]; then in_fence=1; cur_start=$i
+            else
+                in_fence=0
+                if [ "$lineno" -gt "$cur_start" ] && [ "$lineno" -lt "$i" ]; then fstart=$cur_start; fend=$i; break; fi
+            fi
+        fi
+    done
+    if [ "$fstart" -gt 0 ]; then
+        for ((i = fstart; i <= fend; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
+        return 1
+    fi
+    # 2) contiguous markdown table run?
+    if [[ ${L[$lineno]} == *'|'* ]]; then
+        local s=$lineno e=$lineno
+        while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
+        while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
+        for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
+        return 1
+    fi
+    # 3) prose: enclosing ±5-line window.
+    local s=$((lineno - 5)) e=$((lineno + 5))
+    [ "$s" -lt 1 ] && s=1; [ "$e" -gt "$n" ] && e=$n
+    for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
+    return 1
+}
+
+# inclusion-enforcement (F2): every Family-9 surface must reference checklist.md in
+# its enclosing structure (see inclusion_present). Pre-flip this fails on every
+# Family-9 surface; it passes only after the atomic-last flip.
 mode_enforce_inclusion() {
     local -a files=()
     while IFS= read -r f; do files+=("$f"); done < <(list_scan_files "$PROJ" | sort)
     run_classify quiet "${files[@]}"
+    assert_nonempty_scan || return $?
 
-    local missing=0 hit rel lineno absent
+    local missing=0 hit rel lineno
     for hit in "${EMIT_F9[@]}"; do
         rel="${hit%:*}"; lineno="${hit##*:}"
-        absent=1
-        # checklist.md within ±3 lines of the Family-9 hit, or elsewhere in the
-        # same fenced block, counts as inclusion.
-        local start=$((lineno - 3)) end=$((lineno + 3))
-        [ "$start" -lt 1 ] && start=1
-        if sed -n "${start},${end}p" "$PROJ/$rel" 2>/dev/null | grep -qF 'checklist.md'; then
-            absent=0
-        fi
-        if [ "$absent" = "1" ]; then
+        if ! inclusion_present "$rel" "$lineno"; then
             missing=$((missing + 1))
             printf 'MISSING-CHECKLIST %s:%s\n' "$rel" "$lineno"
         fi
@@ -668,14 +742,20 @@ mode_selftest() {
         'Expected path count' 'FAMILY-8' || fails=$((fails+1))
     # Fixture 7 — bare exact-N count inside an eval-output section → Family-9 via the
     #   count-in-eval-section recovery (the section header names 7 perspectives +
-    #   overall.md). Regression-locks the Codex-integrated ±6 recovery.
+    #   overall.md). Regression-locks the Codex-integrated ±6 recovery. FLIP-ROBUST
+    #   (F-STRUCT-1): the locator drops the pre-flip "Exactly 8" count so task 10's
+    #   8→9 rewrite of this line does not break the fixture; the surface still
+    #   classifies Family-9 post-flip (count + ±6 overall.md+perspective section).
     selftest_one "count-in-eval-section" "$PROJ/skills/orchestration/workflow/evaluation.md" \
-        'Exactly 8 files written at the expected paths' 'FAMILY-9' || fails=$((fails+1))
+        'files written at the expected paths' 'FAMILY-9' || fails=$((fails+1))
     # Fixture 8 — evaluator DONE-status output-completion contract → Family-9 via the
     #   precise `**DONE**` + per-perspective-files rule (regression-locks the
-    #   Codex-flagged :139 case WITHOUT the topology false-positives).
+    #   Codex-flagged :139 case WITHOUT the topology false-positives). FLIP-ROBUST
+    #   (F-STRUCT-1): the locator anchors on `**DONE**` + "per-perspective files" so
+    #   task 10 inserting "+ the filled checklist.md" between "files" and "written"
+    #   does not break it; the surface still classifies Family-9 post-flip.
     selftest_one "done-status-contract" "$PROJ/skills/delegation/templates/evaluator.md" \
-        'per-perspective files written' 'FAMILY-9' || fails=$((fails+1))
+        '\*\*DONE\*\*.*per-perspective files' 'FAMILY-9' || fails=$((fails+1))
 
     if [ "$fails" -gt 0 ]; then
         log "SELF-TEST FAIL: $fails fixture(s) disagreed"
@@ -721,7 +801,9 @@ if [ "$MODE" != "bundle" ] && [ "$PRE_FLIP" = "1" ]; then
     log "--pre-flip is only valid with --bundle"; exit 2
 fi
 
-PROJ="$(resolve_proj)"
+# Abort main (not just the subshell) when resolution fails — closes F-RISK-1.
+PROJ="$(resolve_proj)" || exit 2
+if [ -z "$PROJ" ]; then log "internal: empty project dir after resolution"; exit 2; fi
 
 case "$MODE" in
     selftest) mode_selftest ;;
