@@ -744,7 +744,18 @@ inclusion_present() {
         return 1
     fi
 
-    # 2) contiguous markdown table? → one checklist.md row flips the table as a unit.
+    # 2) NUMERIC COUNT line FIRST — dispatch counts to the count rule BEFORE the table
+    #    branch. A count line such as `- \`ls …/codex/ | wc -l  # must be 8\`` contains
+    #    a shell `|`, so the table-`|` branch would otherwise intercept an inline count
+    #    and wrongly apply the "any checklist.md in the |-block" rule (N-USAGE-5). A
+    #    numeric count is satisfied ONLY by its own count incrementing 8→9 OR an
+    #    adjacent test-f checklist.md — never an on-line token. This is safe: no
+    #    genuine markdown table row is a count line (a real table cell has no
+    #    `wc -l` / `# must be N`; verified across all 58 Family-9 surfaces).
+    if is_count_line "$hit"; then count_satisfied "$hit" "$lineno" 1 "$n" && return 0; return 1; fi
+
+    # 3) contiguous markdown table (a real `| … |` row, NOT a count line) → one
+    #    checklist.md row flips the table as a unit.
     if [[ $hit == *'|'* ]]; then
         local s=$lineno e=$lineno
         while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
@@ -753,11 +764,8 @@ inclusion_present() {
         return 1
     fi
 
-    # 3) prose: a numeric count is satisfied ONLY by its own count incrementing 8→9
-    #    or an adjacent test-f checklist.md (NOT an on-line token). A NON-count
-    #    declaration (Output-path / DONE) is the genuine prose surface where naming
-    #    checklist.md on the line — or an immediate ±2 neighbour — IS the flip signal.
-    if is_count_line "$hit"; then count_satisfied "$hit" "$lineno" 1 "$n" && return 0; return 1; fi
+    # 4) prose declaration (Output-path / DONE, NON-count) → naming checklist.md on
+    #    this line or an immediate ±2 neighbour IS its legitimate flip signal.
     local s=$((lineno - 2)) e=$((lineno + 2))
     [ "$s" -lt 1 ] && s=1; [ "$e" -gt "$n" ] && e=$n
     for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
