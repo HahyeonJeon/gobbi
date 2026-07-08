@@ -120,9 +120,10 @@ Planning's loop dir is `3-planning/`. Loop-specific files: WORK draft
 `outputs/{free-filename}.md`; staging `staging/{plans,scenarios,checklists,decisions,references,discussions,design}/{slug}.md`,
 where `staging/plans/{slug}.md` is the loop's headline artifact. **No memory writes during
 Planning** — all `features/{feature-name}/...` and project-tier writes happen at Wrap-up (see
-[`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)). The full session tree, 4-slot interior, and
-PASS-only `outputs/` lifecycle are owned by the Path owner —
-[`record/record-map.md`](../../record/record-map.md) — never redrawn here.
+[`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
+
+> **Path owner:** [`record/record-map.md`](../../record/record-map.md). The full session tree,
+> 4-slot interior, and PASS-only `outputs/` lifecycle live there — never redrawn here.
 
 ---
 

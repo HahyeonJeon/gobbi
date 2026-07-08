@@ -128,9 +128,10 @@ Preparation's loop dir is `2-preparation/`. Loop-specific files: WORK draft
 `evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
 `outputs/{free-filename}.md`; staging `staging/{type}/{slug}.md` — including staged skills
 `staging/skills/{slug}/SKILL.md` (generate-now skills, promoted before Planning) and
-missed-memory-promotion candidates, all routed to memory by Wrap-up. The full session tree,
-4-slot interior, and PASS-only `outputs/` lifecycle are owned by the Path owner —
-[`record/record-map.md`](../../record/record-map.md) — never redrawn here.
+missed-memory-promotion candidates, all routed to memory by Wrap-up.
+
+> **Path owner:** [`record/record-map.md`](../../record/record-map.md). The full session tree,
+> 4-slot interior, and PASS-only `outputs/` lifecycle live there — never redrawn here.
 
 ---
 

@@ -72,8 +72,9 @@ evaluation `evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS
 `outputs/{free-filename}.md`; staging `staging/{type}/{slug}.md`. Wrap-up's durable output is
 its promotion writes into tracked memory under `.gobbi/projects/{project-name}/` (new mistake
 entries + memory updates) — the commit boundary for those is in [What Wrap-up commits](#what-wrap-up-commits--promotion-writes-not-session-record).
-The full session tree, 4-slot interior, and PASS-only `outputs/` lifecycle are owned by the
-Path owner — [`record/record-map.md`](../../record/record-map.md) — never redrawn here.
+
+> **Path owner:** [`record/record-map.md`](../../record/record-map.md). The full session tree,
+> 4-slot interior, and PASS-only `outputs/` lifecycle live there — never redrawn here.
 
 ---
 

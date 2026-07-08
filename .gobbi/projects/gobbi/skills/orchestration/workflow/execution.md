@@ -121,9 +121,10 @@ proposal `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` + Integrati
 `task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
 `task-{NN}-{slug}/outputs/{free-filename}.md`; per-task staging
 `task-{NN}-{slug}/staging/{type}/{slug}.md`. Every agent's transcript lives in the single
-session-root `transcripts/` — there is no per-task `transcripts/`. The full session tree and
-4-slot interior are owned by the Path owner —
-[`record/record-map.md`](../../record/record-map.md) — never redrawn here.
+session-root `transcripts/` — there is no per-task `transcripts/`.
+
+> **Path owner:** [`record/record-map.md`](../../record/record-map.md). The full session tree
+> and 4-slot interior live there — never redrawn here.
 
 ---
 
