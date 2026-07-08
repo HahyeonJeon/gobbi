@@ -648,14 +648,34 @@ mode_bundle() {
 is_count_line() {
     m "$1" '[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files|same [0-9]+ files|wc -l|must be [0-9]'
 }
-# A count line is FLIPPED iff its OWN count vocabulary now shows the new set size 9
-# (the design's 8→9 contract) OR the line itself names checklist.md. A distant
-# checklist.md elsewhere in the fence does NOT flip a stale "same 8 files" line
-# (F-USAGE-2) — the stale count on the hit's own unit must be updated.
-count_flipped() {
-    local l="$1"
-    [[ $l == *checklist.md* ]] && return 0
-    m "$l" '(^|[^0-9])9( well-formed)? files|same 9 files|must be 9|exactly [a-z ]*9 files' && return 0
+# A numeric count line's OWN count now shows the new set size 9 (the design's 8→9
+# contract). This is the ONLY on-line satisfaction signal for a numeric count — a
+# `checklist.md` TOKEN merely appearing on a still-`must be 8` line is NOT evidence
+# the count flipped (N-USAGE-4).
+count_incremented() {
+    m "$1" '(^|[^0-9])9( well-formed)? files|same 9 files|must be 9|exactly [a-z ]*9 files'
+}
+# option (b): a stays-N count is legitimately flipped by an ADJACENT existence check
+# — `test -f …/checklist.md` / `[ -f …/checklist.md ]` (design D5 §L, "keep the 8
+# finding-bearing count + add an explicit test -f …/checklist.md"). The count line
+# ITSELF is EXCLUDED, and only an existence-CHECK (not a bare checklist.md token)
+# counts, so it cannot be satisfied by a stray token or a distant tree node. Reads
+# the caller's (inclusion_present's) local L[] via bash dynamic scope.
+adjacent_testf_checklist() {  # <lineno> <lo> <hi>
+    local ln="$1" lo="$2" hi="$3" j s e
+    s=$((ln - 4)); e=$((ln + 4))
+    [ "$s" -lt "$lo" ] && s="$lo"; [ "$e" -gt "$hi" ] && e="$hi"
+    for ((j = s; j <= e; j++)); do
+        [ "$j" -eq "$ln" ] && continue
+        [[ ${L[$j]} == *checklist.md* ]] && m "${L[$j]}" 'test -f|test -e|\[ -f|\[ -e' && return 0
+    done
+    return 1
+}
+# A numeric count line is SATISFIED iff (a) its own count incremented 8→9, OR
+# (b) an adjacent existence check asserts checklist.md. NOT by an on-line token.
+count_satisfied() {  # <line> <lineno> <lo> <hi>
+    count_incremented "$1" && return 0
+    adjacent_testf_checklist "$2" "$3" "$4" && return 0
     return 1
 }
 # The system dir a tree node belongs to, from the node's own text (claude|codex|"").
@@ -666,14 +686,16 @@ node_system() {
 # inclusion_present <rel> <lineno> — is the Family-9 surface at <lineno> flipped, per
 # its OWN structural unit (F-USAGE-2)? Per-unit association, so a partial flip that
 # updates ONE sibling but leaves this surface stale is caught:
-#   - COUNT line (any shape)          → the line's OWN 8→9 count must be updated, or
-#     the line itself must name checklist.md. A distant checklist.md never satisfies
-#     a stale count (that was the whole-fence false-pass).
+#   - NUMERIC COUNT line              → satisfied ONLY by (a) its OWN count
+#     incrementing 8→9, OR (b) an adjacent `test -f …/checklist.md` existence check
+#     (design D5 §L stays-8+test-f form). NOT by a checklist.md token on the stale
+#     count line, and never by a distant one (N-USAGE-3 / N-USAGE-4).
 #   - tree node naming a SYSTEM (claude/codex) → a `checklist.md` line naming the SAME
 #     system must exist in the fenced block (per-branch: a partial flip of only one
 #     system leaves the other system's node failing).
-#   - other tree node / prose (overall.md, an Output-path / DONE declaration) → a
-#     `checklist.md` must be an ADJACENT sibling (±2 lines) of THIS line.
+#   - other tree node / NON-count prose (overall.md, an Output-path / DONE
+#     declaration) → a `checklist.md` on THIS line or an ADJACENT sibling (±2 lines);
+#     naming checklist.md on a prose declaration IS its legitimate flip signal.
 #   - markdown table row              → a `checklist.md` row in the CONTIGUOUS table
 #     (a table's output set is flipped as one unit — one added checklist.md row).
 inclusion_present() {
@@ -698,13 +720,12 @@ inclusion_present() {
     if [ "$fstart" -gt 0 ]; then
         local sys; sys="$(node_system "$hit")"
         if is_count_line "$hit"; then
-            # OWN-COUNT-ONLY: an eval-output COUNT node is flipped ONLY by updating
-            # its OWN count (8→9, or naming checklist.md on its own line). A distant
-            # or same-system checklist.md NEVER satisfies a stale count — that was
-            # the N-USAGE-3 leak (a stale `codex/ … # must be 8` masked once any
-            # codex checklist.md appeared in the fence). Finding-HIT counts (which
-            # would need the same-system exception) are Family-8, not enforced here.
-            count_flipped "$hit" && return 0
+            # A numeric count is satisfied ONLY by (a) its own count incrementing
+            # 8→9, or (b) an ADJACENT `test -f …/checklist.md` existence check (the
+            # design's stays-8 + test-f form). NOT by a checklist.md token on the
+            # stale count line, and NOT by a distant/same-system checklist.md
+            # (N-USAGE-3 / N-USAGE-4). Finding-HIT counts are Family-8, not enforced.
+            count_satisfied "$hit" "$lineno" "$fstart" "$fend" && return 0
             return 1
         fi
         if [ -n "$sys" ]; then
@@ -732,10 +753,11 @@ inclusion_present() {
         return 1
     fi
 
-    # 3) prose: a count declaration is flipped ONLY by its own count update (never a
-    #    distant token); a non-count declaration (Output-path / DONE) needs
-    #    checklist.md on this line or an immediate neighbour (±2 covers a 2-line bullet).
-    if is_count_line "$hit"; then count_flipped "$hit" && return 0; return 1; fi
+    # 3) prose: a numeric count is satisfied ONLY by its own count incrementing 8→9
+    #    or an adjacent test-f checklist.md (NOT an on-line token). A NON-count
+    #    declaration (Output-path / DONE) is the genuine prose surface where naming
+    #    checklist.md on the line — or an immediate ±2 neighbour — IS the flip signal.
+    if is_count_line "$hit"; then count_satisfied "$hit" "$lineno" 1 "$n" && return 0; return 1; fi
     local s=$((lineno - 2)) e=$((lineno + 2))
     [ "$s" -lt 1 ] && s=1; [ "$e" -gt "$n" ] && e=$n
     for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
