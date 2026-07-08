@@ -15,10 +15,17 @@
 #                             compaction-invariant checks apply to it:
 #                               #2 all-5 typed owner pointers (loop docs only)
 #                               #3/#7 no fenced session-tree redraw (loop OR gate)
-#                             A NON-compacted doc is pre-migration: it legitimately
-#                             still carries its ASCII tree / long procedure, so these
-#                             checks do NOT run on it. Add `compacted` only in the
-#                             same PR that compacts the doc.
+#                             A doc that is neither `compacted` nor `tree-free` is
+#                             pre-migration: it legitimately still carries its ASCII
+#                             tree / long procedure, so these checks do NOT run on it.
+#                             Add `compacted` only in the same PR that compacts the doc.
+#       tree-free             the doc has had its redrawn session/output tree removed
+#                             (replaced by the Output-Pointers prose form), so #3/#7
+#                             (no fenced session-tree redraw) DOES apply to it — a
+#                             re-added tree FAILS. Unlike `compacted`, a `tree-free`
+#                             doc is NOT required to carry all five typed owner
+#                             pointers (#2 stays compacted-only). Add `tree-free` in
+#                             the same PR that removes the doc's tree.
 #       nocommit-owner        the doc OWNS the no-commit git-mechanics rule, so it is
 #                             EXEMPT from the broad #4 no-commit-restatement check
 #                             (every OTHER doc must point at the owner, never restate).
@@ -27,13 +34,15 @@
 #
 # Fail-closed: a malformed row, a bad kind, an unknown flag, a duplicate doc, a
 # manifest doc missing on disk, OR an on-disk workflow/*.md not listed here all
-# exit 2. Partial compaction: only ideation.md is compacted so far.
+# exit 2. Partial migration: ideation.md is `compacted`; preparation / planning /
+# execution / wrap-up are `tree-free` (redrawn tree removed, not yet fully
+# compacted); the three gate docs (evaluation / production / record) are un-migrated.
 
 doc|ideation.md|loop-orchestration|compacted
-doc|preparation.md|loop-orchestration|-
-doc|planning.md|loop-orchestration|-
-doc|execution.md|loop-orchestration|-
-doc|wrap-up.md|loop-orchestration|-
+doc|preparation.md|loop-orchestration|tree-free
+doc|planning.md|loop-orchestration|tree-free
+doc|execution.md|loop-orchestration|tree-free
+doc|wrap-up.md|loop-orchestration|tree-free
 doc|evaluation.md|gate-orchestration|no-perspective-table
 doc|production.md|gate-orchestration|-
 doc|record.md|gate-orchestration|nocommit-owner

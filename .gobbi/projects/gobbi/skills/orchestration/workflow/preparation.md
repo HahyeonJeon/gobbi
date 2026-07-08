@@ -1,21 +1,15 @@
 # Workflow — Preparation (Orchestration)
 
 **Doc kind:** loop-orchestration.
-
-How the **manager** orchestrates the Preparation Loop. The `leader` and `assistant` specialists that participate load [`preparation/SKILL.md`](../../preparation/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
-
-The Preparation Loop runs **between Ideation and Planning**. Its job is to verify that the **memory** and the **workspace skills** are ready for the planning and execution that follow. If something is missing that downstream work would need, Preparation surfaces it and the user decides how to resolve.
-
-| Phase | Content semantics for Preparation |
-|---|---|
-| `DISCUSSION` | Manager + user + leader (research-backed scan) identify readiness gaps and decide resolution per gap. |
-| `WORK` | Leader documents the readiness assessment AND stages approved gap fixes (new skills, missed memory promotions) at `sessions/{date}-{session-id}/2-preparation/staging/`; Wrap-up promotes to memory. |
-| `EVALUATION` | Dual-system evaluators apply the leader's plan-evaluation criteria + perspective lenses. |
-| `RECORD` | Assistant synthesizes canonical `preparation.md` into session staging only — memory promotion is the sole responsibility of Wrap-up. |
+**Purpose:** the manager orchestrates the Preparation Loop — it runs the four sub-phases
+DISCUSSION → WORK → EVALUATION → RECORD, then the ITER / EXIT decision; it does NOT perform
+the leader / assistant procedures. Preparation runs **between Ideation and Planning**: it
+verifies the **memory** and **workspace skills** are ready for the planning and execution that
+follow, and surfaces any missing item downstream work would need for the user to resolve.
 
 ---
 
-## DISCUSSION Phase (manager + user + leader)
+## DISCUSSION Orchestration
 
 **Manager's job**: orchestrate the readiness review with the user, spawning the `leader` to scan memory + workspace skills, then present found gaps for user resolution. Detailed sub-step content lives in [`preparation/SKILL.md`](../../preparation/SKILL.md); this section covers the **orchestration choreography**.
 
@@ -61,7 +55,7 @@ This is **not** a Preparation `REVISE` and **not** an evaluation verdict — it'
 
 ---
 
-## WORK Phase (leader documents + executes approved gap fixes)
+## WORK Orchestration
 
 **Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` AND stages the approved gap fixes at `sessions/{date}-{session-id}/2-preparation/staging/`. Wrap-up is the sole promoter of staged artifacts to memory — with one narrow exception: generated skills are promoted before Planning starts (see below).
 
@@ -73,11 +67,14 @@ Manager-side responsibilities:
 
 WORK execution is more than documentation here, because Preparation's purpose is to **make the gaps go away**. New skills are staged at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md` — the staging step closes the gap for downstream planning. On EVALUATION PASS, the manager copies `2-preparation/staging/skills/{slug}/SKILL.md` → `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` BEFORE Planning starts (per `preparation/SKILL.md` narrow sole-writer exception — in-session consumers need the skill available during Planning and Execution). All other Preparation staging follows the standard Wrap-up promotion path.
 
-**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the leader; the leader selectively integrates the frozen proposal and Codex never writes the canonical artifact.
+> **Production owner:** [`workflow/production.md`](production.md). This doc names only that
+> Preparation WORK may run dual-system production (`propose.mode: dual`, default). Do not
+> restate proposer spawn, freeze, selective integration, gap classification, or
+> degraded-mode rules.
 
 ---
 
-## EVALUATION Phase (delegated to evaluators)
+## EVALUATION Orchestration
 
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Preparation-specific notes:
 
@@ -88,7 +85,7 @@ WORK execution is more than documentation here, because Preparation's purpose is
 
 ---
 
-## RECORD Phase (delegated to `assistant`)
+## RECORD Orchestration
 
 **Manager's job**: spawn the `assistant` agent. The assistant synthesizes canonical `preparation.md` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Preparation, the assistant also stages Wrap-up routing candidates:
 
@@ -106,7 +103,7 @@ The narrow-exception `chore(skills): promote {slug}` generate-now commit documen
 
 ---
 
-## ITER / EXIT Decision
+## ITER / EXIT
 
 After `RECORD`, the manager decides based on the reconciled verdict:
 
@@ -123,26 +120,17 @@ Iteration cap: `workflow.preparation.maxIterations` (Auto 5; Chat 0 — Preparat
 
 ---
 
-## Output
+## Output Pointers
 
-The canonical tree is [`record/record-map.md`](../../record/record-map.md); Preparation's loop dir is `2-preparation/`.
-
-```
-.gobbi/projects/{project}/sessions/{date}-{session-id}/
-├── transcripts/                       ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
-└── 2-preparation/
-    ├── outputs/                ← canonical synthesized preparation.md (assistant, RECORD, PASS only)
-    ├── working/                ← leader drafts (per iteration), discussion log, research refs
-    ├── evaluation/
-    │   └── iter{n}/
-    │       ├── claude/{perspective}.md
-    │       └── codex/{perspective}.md
-    └── staging/                ← session-staged artifacts (incl. skills/), promoted to memory by Wrap-up
-```
-
-Plus session-staged outputs by the leader during WORK — routed to memory by Wrap-up only:
-- New project-specific skills → `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`
-- Missed memory promotion candidates → `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` (Wrap-up promotes these to memory at session close)
+Preparation's loop dir is `2-preparation/`. Loop-specific files: WORK draft
+`working/draft-iter{n}.md`; optional Codex proposal `working/proposals/codex/draft-iter{n}.md`
++ Integration Log `working/reconciliation-iter{n}.md`; evaluation
+`evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`outputs/{free-filename}.md`; staging `staging/{type}/{slug}.md` — including staged skills
+`staging/skills/{slug}/SKILL.md` (generate-now skills, promoted before Planning) and
+missed-memory-promotion candidates, all routed to memory by Wrap-up. The full session tree,
+4-slot interior, and PASS-only `outputs/` lifecycle are owned by the Path owner —
+[`record/record-map.md`](../../record/record-map.md) — never redrawn here.
 
 ---
 

@@ -20,19 +20,22 @@
 #   baseline instead. The guard hardcodes NO doc name — every doc-specific role is a
 #   manifest flag (compacted / nocommit-owner / no-perspective-table).
 #
-# Check scope (partial-compaction aware, to stay committable mid-migration):
+# Check scope (partial-migration aware, to stay committable mid-migration):
 #   #1 doc-kind marker          — EVERY manifest doc (exact-line match).
 #   #2 all-5 typed pointers     — each COMPACTED loop doc.
-#   #3/#7 no session-tree redraw — each COMPACTED doc (loop OR gate; #7 == #3 on a
-#                                 compacted record.md).
+#   #3/#7 no session-tree redraw — each COMPACTED or TREE-FREE doc (loop OR gate;
+#                                 #7 == #3 on a compacted record.md).
 #   #4 no no-commit restatement — every doc EXCEPT the nocommit-owner (BROAD,
 #                                 line-scoped with a pointer-block allowlist).
 #   #5 no Dual-system heading   — every loop-orchestration doc (BROAD).
 #   #6 no 7-perspective table   — each no-perspective-table doc.
-#   A NON-compacted doc legitimately still carries its ASCII tree / long procedure,
-#   so #2 and #3/#7 do NOT run on it. #4 and #5 are broad because their migrations
-#   are already complete tree-wide (verified 0 restatements / 0 headings), so a
-#   broad check both passes today and catches a future regrowth in any doc.
+#   A doc that is neither compacted nor tree-free legitimately still carries its
+#   ASCII tree / long procedure, so #3/#7 does NOT run on it. #2 (all-5 pointers)
+#   runs only on COMPACTED loop docs — a tree-free doc has had its tree removed but
+#   is NOT required to carry all five pointers. #4 and #5 are broad because their
+#   migrations are already complete tree-wide (verified 0 restatements / 0
+#   headings), so a broad check both passes today and catches a future regrowth in
+#   any doc.
 #
 # Correctness / portability disciplines:
 #   - fail-CLOSED (exit 2): a missing/unreadable manifest or required doc, a
@@ -122,7 +125,7 @@ valid_flags() {
     old_ifs=$IFS; IFS=','; set -- $flags; IFS=$old_ifs
     for flag in "$@"; do
         case "$flag" in
-            compacted|nocommit-owner|no-perspective-table) ;;
+            compacted|tree-free|nocommit-owner|no-perspective-table) ;;
             *) return 1 ;;
         esac
     done
@@ -368,8 +371,9 @@ run_check() {
             check_compacted_pointers "$path" "$name" || violations=1
         fi
 
-        # #3/#7 — tree redraw, any compacted doc (loop or gate).
-        if has_flag "$flags" "compacted"; then
+        # #3/#7 — tree redraw, any compacted OR tree-free doc (loop or gate). A
+        # tree-free doc has had its tree removed, so a re-added tree must FAIL too.
+        if has_flag "$flags" "compacted" || has_flag "$flags" "tree-free"; then
             check_fenced_session_tree "$path" "$name" || violations=1
         fi
 
@@ -627,6 +631,31 @@ DOC
     build_clean_tree "$tmp/M"
     printf '\n### Per-iteration session record is NOT committed\n\nThere is no per-iteration session-record commit. The whole sessions/ tree is gitignored.\n' >> "$tmp/M/wf/wrap-up.md"
     assert_exit 1 "CATCH: re-pasted removed-block heading/prose (#4)" "$tmp/M/wf" "$tmp/M/manifest.txt"
+
+    # === N: FALSE-POSITIVE PROOF — a tree-free doc with NO tree still passes (exit 0) =
+    # Marking a loop doc tree-free must NOT false-positive on its own: the clean stub
+    # has no fenced session-tree, so #3/#7 finds nothing and #2 stays compacted-only
+    # (a tree-free doc is NOT required to carry all five pointers).
+    build_clean_tree "$tmp/N"
+    sed 's/^doc|preparation.md|loop-orchestration|-$/doc|preparation.md|loop-orchestration|tree-free/' \
+        "$tmp/N/manifest.txt" > "$tmp/N/manifest2.txt"
+    assert_exit 0 "FP-PASS: tree-free doc with no tree (no 5-pointer demand)" "$tmp/N/wf" "$tmp/N/manifest2.txt"
+
+    # === O: CATCH — a tree-free doc with a RE-ADDED fenced session-tree (=#3 via tree-free) =
+    # This is the whole point of the tree-free tier: once a doc's tree is removed, a
+    # later edit that re-adds one must FAIL (before this tier it was a non-compacted
+    # doc and #3/#7 did not run — a silently re-grown tree).
+    build_clean_tree "$tmp/O"
+    sed 's/^doc|preparation.md|loop-orchestration|-$/doc|preparation.md|loop-orchestration|tree-free/' \
+        "$tmp/O/manifest.txt" > "$tmp/O/manifest2.txt"
+    {
+        printf '\n%s\n' '```'
+        printf 'sessions/{date}-{session-id}/\n'
+        printf '%s\n' '├── 2-preparation/'
+        printf '%s\n' '└── transcripts/'
+        printf '%s\n' '```'
+    } >> "$tmp/O/wf/preparation.md"
+    assert_exit 1 "CATCH: tree-free doc with a re-added session-tree (#3)" "$tmp/O/wf" "$tmp/O/manifest2.txt"
 
     printf '\n%s --self-test: %d/%d scenarios passed\n' "$SELF" "$((total - fails))" "$total" >&2
     [ "$fails" -eq 0 ]
