@@ -170,6 +170,29 @@ docs ONLY when the skill owns one of:
 A single coherent procedure stays ONE file. When in doubt, standalone — a child doc is
 justified by ownership of a set or a too-long reference, not by length alone.
 
+**The evaluation child-doc bundle.** A workflow-loop skill whose evaluation child doc seeds
+a full per-perspective review — the five loop skills `ideation` / `preparation` / `planning`
+/ `execution` / `wrap-up` — splits that child doc into a **three-file bundle** instead of one
+monolithic `evaluation.md`:
+
+- **`scenario.md`** — the per-perspective GOOD / BAD / adversarial scenario families the
+  evaluator loads as Stage 1 seed scenarios. One `### {ID}` block per family (Category /
+  Situation / Good / Bad / Adversarial / Checklist IDs).
+- **`checklist.md`** — the concrete yes/no checks, one `- [ ]` GFM item per check with a
+  stable CHECK ID; its heading tree is 1:1 with `scenario.md`. This file is the copy-then-tick
+  source: the evaluator copies it into the per-iter output dir and ticks it (see
+  [`evaluation/SKILL.md`](../evaluation/SKILL.md) § Evaluation child-doc bundle).
+- **`evaluation.md`** — the procedure only: each perspective's lens, source pointers to the
+  two sibling files, recommended verifications, perspective anti-patterns, and the Overall
+  (Stage 3) anchors.
+
+**When to use it.** Use the bundle when the skill owns a per-perspective evaluation seed
+corpus reused every iteration — a large, uniform scenario+checklist set the evaluator consumes
+in distinct Stage-1 (seed scenarios / seed checklist) and Stage-2 (copy-then-tick) passes.
+`execution/` is the reference implementation. A skill that ships no evaluation seed corpus does
+not need the bundle; a single coherent `evaluation.md` stays one file (the standalone default
+above).
+
 **The `mistakes.md` companion.** Separately from length-driven child docs, a skill MAY carry
 a `mistakes.md` companion in its dir — the **skill-owned mistakes home** (the hybrid model). It
 holds the traps that belong to this skill's domain, one `## ` section per trap. It is a
@@ -305,6 +328,13 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   multiple files because the body feels long. A child doc is justified by ownership of a SET
   of artifacts, a too-long deterministic reference, or per-step orchestration docs — not by
   length. Default to standalone.
+
+- **Inlining evaluation scenarios into a monolithic `evaluation.md`.** For a workflow-loop
+  skill, packing the per-perspective scenario families, their yes/no checks, and the procedure
+  into one `evaluation.md`. The monolith hides scenario/check drift, makes stable CHECK-ID
+  reuse harder, turns a small checklist edit into a procedure-file rewrite, and ships no
+  copyable checklist artifact for the evaluator's copy-then-tick pass. Split into the
+  evaluation child-doc bundle — `scenario.md` / `checklist.md` / `evaluation.md` (P4).
 
 ## Cross-references
 

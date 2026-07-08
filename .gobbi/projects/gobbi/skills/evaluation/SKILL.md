@@ -555,6 +555,37 @@ Each child doc is structured uniformly: per-perspective seed scenarios → per-p
 
 ---
 
+## Evaluation child-doc bundle and the copy-then-tick checklist
+
+A phase's evaluation child doc is being split, phase by phase, from a single `evaluation.md` into a **three-file bundle** — `evaluation.md` + `scenario.md` + `checklist.md`. `execution/` is the reference implementation. This section documents the bundle and the extra output artifact it produces. It is **additive and conditional**: it applies to a phase whose child doc IS a bundle. During rollout, keep using the current Stage 0 phase-child-doc load line until a phase has actually adopted the bundle — where a phase still ships a single monolithic `evaluation.md` with no `scenario.md` / `checklist.md` sibling, Stage 0 loads that one file as `## Stages` § Stage 0 already describes and the evaluator writes the seven per-perspective files + `overall.md` unchanged. The copy-then-tick artifact below is produced only for a bundle phase.
+
+**The three files.** When a phase's child doc is a bundle, the three siblings divide the work the monolithic `evaluation.md` used to hold:
+
+| File | Role | Consumed at |
+|---|---|---|
+| `evaluation.md` | the **procedure** — each perspective's lens, source pointers to the two sibling files, recommended verifications, perspective anti-patterns, Overall (Stage 3) anchors | Stage 0 (context) + Stage 2/3 (verifications, anti-patterns) |
+| `scenario.md` | the per-perspective GOOD / BAD / adversarial **scenario families** (one `### {ID}` block each: Category / Situation / Good / Bad / Adversarial / Checklist IDs) | Stage 1 seed scenarios |
+| `checklist.md` | the concrete yes/no **checks** — one `- [ ]` GFM item per check with a stable CHECK ID, heading tree 1:1 with `scenario.md` | Stage 1 seed checklist + the copy-then-tick source |
+
+**The copy-then-tick output (bundle phases only).** For a bundle phase, the seed `checklist.md` is a *source* the evaluator fills in, producing one extra output file alongside the per-perspective files and `overall.md`:
+
+1. **Stage 0 — copy.** Copy the phase's seed `checklist.md` to `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` (for Execution, under the per-task subtree: `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/checklist.md`). The source ships every box unchecked; the copy starts unchecked. This filled copy is the extra evaluation output file for a bundle phase — a coverage artifact, not a finding file.
+2. **Stage 1 — `## Stage 1 Additions`.** When Stage 1's CRUD creates or updates a scenario or a check that the seed `checklist.md` did not carry, append it to the copied checklist under a section headed exactly `## Stage 1 Additions` (same heading tree, same stable CHECK-ID style as the seeded checks). This keeps the copied checklist aligned with the per-perspective locked Frames without editing the seed source.
+3. **Stage 2 — tick.** As each seeded or Stage-1-added check is judged, tick its box `[x]` and annotate the outcome inline with exactly one marker: `PASS:` (verified satisfied), `FAIL: {finding-id}` (verified violated — cite the Stage 2 finding), or `n/a: {reason}` (not applicable to this artifact). A ticked box means **VERIFIED** — the check was checked against the artifact with the strongest verification it admits (run a tool / read the diff / `grep` / read the call site) — never that work merely happened.
+4. **Completeness gate.** Every box in the filled copy (seed checks + `## Stage 1 Additions`) resolves to exactly one of `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`. An unresolved `- [ ]` box at Stage 2 exit is an incomplete evaluation.
+
+**Legend + counts.** The filled copy carries the legend `- [ ]` unresolved · `- [x] … PASS:` verified satisfied · `- [x] … FAIL: {finding-id}` verified violated · `- [x] … n/a: {reason}` not applicable, plus per-perspective counts (PASS / FAIL / n/a / total).
+
+**Compact per-perspective CHECK-ID results table.** For a bundle phase, each per-perspective file also records its Stage 2 per-check results as a compact table under a `## Per-scenario per-check results` section — one row per check, so a reader traces a scenario's checks without rereading the whole filled copy:
+
+| Scenario ID | CHECK ID | Result | Evidence |
+|---|---|---|---|
+| `{STEP}-{PERSP}-SCENARIO-01` | `{STEP}-{PERSP}-SCENARIO-01-CHECK-01` | `PASS` / `FAIL: {finding-id}` / `n/a: {reason}` | quote / path / tool output / read-evidence |
+
+This is the tabular rendering of the "per-scenario per-check yes/no results" the Stage 2 Outputs already require; the filled `checklist.md` copy is its cross-perspective companion. Typed findings still live in the per-perspective files and `overall.md` — do not treat checklist rows as finding files.
+
+---
+
 ## Output paths
 
 All evaluator writes are **session-scoped**. Evaluators never touch memory.
