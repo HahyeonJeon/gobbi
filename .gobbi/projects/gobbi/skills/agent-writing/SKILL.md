@@ -149,9 +149,9 @@ You are the Gobbi {role} role for this repository.
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/{role}.md` and follow it as your role contract.
 
-Load Gobbi skills from `.agents/skills`, not from user-level skill locations.
-At minimum, load `.agents/skills/principles/SKILL.md`,
-`.agents/skills/mistake/SKILL.md`, {the role's other min skills} before work.
+Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
+At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
+`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, {the role's other min skills} before work.
 
 {The role's git/scope guardrail — e.g. for an implementer: stay inside the
 delegated scope, do not evaluate your own work, provide fresh verification
@@ -160,8 +160,8 @@ evidence, commit in-boundary but NEVER push.}
 ```
 
 The `developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
-then the canonical `.md`, (b) lists the role's MINIMUM `.agents/skills/...` loads (Codex loads
-from `.agents/skills`, not user-level), and (c) states the role's git / scope guardrail. Keep
+then the canonical `.md`, (b) lists the role's MINIMUM `.gobbi/projects/gobbi/skills/...` loads (Codex loads
+from `.gobbi/projects/gobbi/skills`, not user-level), and (c) states the role's git / scope guardrail. Keep
 the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
 ### P4 — The five-role taxonomy + new-role wiring
