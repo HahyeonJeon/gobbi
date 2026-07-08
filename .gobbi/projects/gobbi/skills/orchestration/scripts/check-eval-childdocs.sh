@@ -678,6 +678,26 @@ count_satisfied() {  # <line> <lineno> <lo> <hi>
     adjacent_testf_checklist "$2" "$3" "$4" && return 0
     return 1
 }
+# is_genuine_table_row <lineno> — is L[lineno] a GENUINE markdown table row? True iff
+# it is table-row-SHAPED (starts with optional whitespace then `|`) AND its contiguous
+# `|`-block contains a `|---|`-style separator row (all-dash/colon cells). This is the
+# STRUCTURAL discriminator between a real table and a count line: a count line has a
+# shell `|` (pipe) but no separator (and a count BULLET starts with `-`, not `|`), so
+# it is never a genuine table; a genuine table row always is — even when a cell holds
+# a count phrase (its F9 flip is adding a checklist.md ROW, not incrementing a cell).
+# Reads inclusion_present's local L[] / n via bash dynamic scope.
+is_genuine_table_row() {
+    local ln="$1"
+    m "${L[$ln]}" '^[[:space:]]*\|' || return 1
+    local s=$ln e=$ln j t
+    while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
+    while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
+    for ((j = s; j <= e; j++)); do
+        t="${L[$j]//|/}"; t="${t//-/}"; t="${t//:/}"; t="${t// /}"; t="${t//$'\t'/}"
+        [ -z "$t" ] && [[ ${L[$j]} == *-* ]] && return 0   # a |---| separator row
+    done
+    return 1
+}
 # The system dir a tree node belongs to, from the node's own text (claude|codex|"").
 node_system() {
     case "$1" in *codex*) printf codex ;; *claude*) printf claude ;; *) printf '' ;; esac
@@ -696,8 +716,11 @@ node_system() {
 #   - other tree node / NON-count prose (overall.md, an Output-path / DONE
 #     declaration) → a `checklist.md` on THIS line or an ADJACENT sibling (±2 lines);
 #     naming checklist.md on a prose declaration IS its legitimate flip signal.
-#   - markdown table row              → a `checklist.md` row in the CONTIGUOUS table
-#     (a table's output set is flipped as one unit — one added checklist.md row).
+#   - GENUINE markdown table row (table-row-shaped AND a `|---|` separator in its
+#     block) → a `checklist.md` ROW in the CONTIGUOUS table (a table's output set is
+#     flipped as one unit). Count-vs-table is a STRUCTURAL, mutually-exclusive
+#     distinction (is_genuine_table_row), so a count cell inside a real table uses
+#     the table rule and a pipe-bearing count line uses the count rule (R-USAGE-6).
 inclusion_present() {
     local rel="$1" lineno="$2" file="$PROJ/$rel"
     local -a L=(); local n=0 line
@@ -744,19 +767,15 @@ inclusion_present() {
         return 1
     fi
 
-    # 2) NUMERIC COUNT line FIRST — dispatch counts to the count rule BEFORE the table
-    #    branch. A count line such as `- \`ls …/codex/ | wc -l  # must be 8\`` contains
-    #    a shell `|`, so the table-`|` branch would otherwise intercept an inline count
-    #    and wrongly apply the "any checklist.md in the |-block" rule (N-USAGE-5). A
-    #    numeric count is satisfied ONLY by its own count incrementing 8→9 OR an
-    #    adjacent test-f checklist.md — never an on-line token. This is safe: no
-    #    genuine markdown table row is a count line (a real table cell has no
-    #    `wc -l` / `# must be N`; verified across all 58 Family-9 surfaces).
-    if is_count_line "$hit"; then count_satisfied "$hit" "$lineno" 1 "$n" && return 0; return 1; fi
-
-    # 3) contiguous markdown table (a real `| … |` row, NOT a count line) → one
-    #    checklist.md row flips the table as a unit.
-    if [[ $hit == *'|'* ]]; then
+    # STRUCTURAL dispatch (mutually exclusive) — a line is EITHER a genuine markdown
+    # table row OR a count line, never both, so order-independence is guaranteed:
+    #
+    # 2) GENUINE markdown table row (table-row-shaped AND a `|---|` separator in its
+    #    contiguous block) → the TABLE rule: a checklist.md ROW anywhere in the table
+    #    satisfies it. This holds EVEN when a cell contains a count phrase (`must be 9
+    #    files`) — a genuine table's F9 flip is adding a checklist.md row, never
+    #    incrementing a cell count (R-USAGE-6 A2/A3).
+    if is_genuine_table_row "$lineno"; then
         local s=$lineno e=$lineno
         while [ "$s" -gt 1 ] && [[ ${L[$((s - 1))]} == *'|'* ]]; do s=$((s - 1)); done
         while [ "$e" -lt "$n" ] && [[ ${L[$((e + 1))]} == *'|'* ]]; do e=$((e + 1)); done
@@ -764,8 +783,14 @@ inclusion_present() {
         return 1
     fi
 
-    # 4) prose declaration (Output-path / DONE, NON-count) → naming checklist.md on
-    #    this line or an immediate ±2 neighbour IS its legitimate flip signal.
+    # 3) NUMERIC COUNT line (a `wc -l` / `# must be N` count that is NOT a genuine
+    #    table — a fenced tree count node or an inline count bullet; it may carry a
+    #    shell `|` but has no `|---|` separator) → satisfied ONLY by its own count
+    #    incrementing 8→9 OR an adjacent test-f checklist.md, never an on-line token.
+    if is_count_line "$hit"; then count_satisfied "$hit" "$lineno" 1 "$n" && return 0; return 1; fi
+
+    # 4) prose declaration (Output-path / DONE, NON-count, NON-table) → naming
+    #    checklist.md on this line or an immediate ±2 neighbour IS its flip signal.
     local s=$((lineno - 2)) e=$((lineno + 2))
     [ "$s" -lt 1 ] && s=1; [ "$e" -gt "$n" ] && e=$n
     for ((i = s; i <= e; i++)); do [[ ${L[$i]} == *checklist.md* ]] && return 0; done
