@@ -4,16 +4,6 @@ Manager fills every `<<slot>>` literally. The assistant gets a narrow, specific 
 
 Section order (D2): identity line → structured headers (incl. `Mode:`) → Load Directives → Question → Expected Output Shape → Context → Constraints/Scope → Write Roots → role tail (Dual-system, Your Job) → Reference Materials → Escape Hatch → Report Format.
 
-## Mode selector — fill/delete guidance (manager, before dispatch)
-
-The assistant serves three modes. Set the `Mode:` header, then fill/delete blocks per this table (this folds the old scattered "fill when… / DELETE when…" conditionals into one checklist):
-
-| Mode | Purpose | Tool surface | Load Directives | Write Roots block | Dual-system block | Constraints/Scope |
-|---|---|---|---|---|---|---|
-| `lookup` | read-only reference / search / verify | Read-only (no `Write`/`Edit`) | omit `record/SKILL.md`, `memory/rules.md`, `git/*` | DELETE (nothing written) | DELETE | keep the read-only "You may NOT write" wording |
-| `record` | RECORD sub-phase — stage session record | Write within the worktree | KEEP `record/SKILL.md`, `git/SKILL.md`+`git/mistakes.md`; add `memory/rules.md` if writing memory-shaped files | FILL (staging + working paths) | DELETE | replace read-only wording with the RECORD write surface |
-| `wrap-up-producer` | Wrap-up Claude producer (dual) | FULL Wrap-up write surface | KEEP `record/SKILL.md`, `memory/rules.md`, `git/SKILL.md`+`git/mistakes.md` | FILL (working/outputs/staging + memory-promotion paths) | FILL per the producer-row gate | replace read-only wording with the Wrap-up write surface |
-
 ```text
 You are an assistant for the gobbi workflow.
 
@@ -160,3 +150,13 @@ Then in the body (answer in the Expected Output Shape):
 `Never silently produce an answer you are unsure about` — use DONE_WITH_CONCERNS
 when sources disagree or when interpretation is required.
 ```
+
+---
+
+**Mode selector — fill/delete guidance (MANAGER-ONLY, before dispatch — NOT part of the dispatched prompt).** This guidance lives AFTER the fenced prompt so it never precedes the identity line: it is a manager-authoring aid, read while filling the fenced prompt above, and never pasted into the dispatched prompt (the mode itself travels in the `Mode:` header inside the fence). The assistant serves three modes. Set the `Mode:` header, then fill/delete blocks per this table (this folds the old scattered "fill when… / DELETE when…" conditionals into one checklist):
+
+| Mode | Purpose | Tool surface | Load Directives | Write Roots block | Dual-system block | Constraints/Scope |
+|---|---|---|---|---|---|---|
+| `lookup` | read-only reference / search / verify | Read-only (no `Write`/`Edit`) | omit `record/SKILL.md`, `memory/rules.md`, `git/*` | DELETE (nothing written) | DELETE | keep the read-only "You may NOT write" wording |
+| `record` | RECORD sub-phase — stage session record | Write within the worktree | KEEP `record/SKILL.md`, `git/SKILL.md`+`git/mistakes.md`; add `memory/rules.md` if writing memory-shaped files | FILL (staging + working paths) | DELETE | replace read-only wording with the RECORD write surface |
+| `wrap-up-producer` | Wrap-up Claude producer (dual) | FULL Wrap-up write surface | KEEP `record/SKILL.md`, `memory/rules.md`, `git/SKILL.md`+`git/mistakes.md` | FILL (working/outputs/staging + memory-promotion paths) | FILL per the producer-row gate | replace read-only wording with the Wrap-up write surface |
