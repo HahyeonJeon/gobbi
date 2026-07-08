@@ -42,3 +42,42 @@ updated: 2026-07-08
 ### Related
 - [[delegation-briefs-reference-nonexistent-rules-dir]] — delegation prompts must cite loadable paths for this repo.
 - [[subagents-skip-load-directives-no-enforcement]] — exact load paths are part of the load-compliance audit.
+
+## Skill Prose Template Drift
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, process]`
+
+**What happened** — During Ideation discovery on the `delegation` skill, dual-system review (Claude + Codex) found six High-severity gaps where `skills/delegation/SKILL.md` stated a normative rule in prose but the four templates the manager actually fills (`leader.md`, `executor.md`, `evaluator.md`, `assistant.md`) did not carry it. Examples: `SKILL.md` says every prompt ships structured headers pre-filled, but `templates/assistant.md` shipped none; `SKILL.md` requires a `Your sub-step:` slot for parallel spawns, but no template had one; `SKILL.md` states a deterministic "principles → rules → skills → mistakes, no re-ordering" load order, but `templates/evaluator.md` placed a domain skill in the principles tier.
+**Why it happens** — A skill with both a policy document (`SKILL.md`) and fill-in templates (`templates/`) has two sources of truth. Nothing forces a template edit when the prose changes; each surface reads as complete and correct in isolation, so the drift is invisible until an agent reads both together and diffs them by hand.
+**How to detect** — `SKILL.md` states "every X carries Y" (a rule about what a produced artifact must contain), and `templates/` has files that produce that artifact. Grep the templates for the token the rule requires; a rule with zero matching template hits is drift.
+**Correct approach** — Treat a skill's policy doc and its fill templates as one coupled artifact: any edit to a normative rule in the prose MUST be checked against every template the rule applies to in the same change, and vice versa. Where practical, add a lint/grep check that verifies each template contains the token a stated rule requires, so the coupling is mechanically checkable, not only reviewer-diligence-dependent.
+
+### Related
+- [[documented-trap-not-gated]] — a specific instance of this drift (a known trap not encoded in the template)
+- [[template-embeds-unnamed-exception]] — a specific instance of this drift (a template silently violating stated policy)
+
+## Documented Trap Not Gated
+
+`priority: high` · `domain: process` · `added: 2026-07-08` · `status: active` · `tags: [process, docs-sync]`
+
+**What happened** — `skills/delegation/mistakes.md` already carried the active High-priority trap "Use Runtime Skill Surface In Load Directives", recording the correct skill-load path. Despite this, Ideation discovery on the same skill found that all four delegation templates still hard-coded the pattern the mistake describes as wrong, with no runtime-aware branch — the exact trap reproduced in the templates the mistake file's own owning skill ships.
+**Why it happens** — Recording a mistake documents the trap for an agent who reads it before acting; it does not, by itself, change the artifact where the trap gets made. A mistake file is read at Study time; a template is filled at author/dispatch time. If the template itself still contains the faulty pattern, every fill reproduces the trap regardless of whether the filling agent read the mistake file.
+**How to detect** — A `mistakes.md` entry's "Correct approach" names a specific file or template that should be different, and that file still matches the pattern the mistake describes as wrong. Grep the named target for the faulty pattern; a hit means the mistake is recorded but not enforced.
+**Correct approach** — When a mistake's correct approach describes a concrete fix to an artifact (a template, a script, a config default), apply that fix to the artifact itself as part of closing out the mistake — do not treat recording the mistake as sufficient. This session added the Pre-Dispatch Fill Checklist to `skills/delegation/SKILL.md` as that gate: before a template ships, check it against every currently-recorded mistake whose correct approach names that template.
+
+### Related
+- [[use-runtime-skill-surface-in-load-directives]] — the exact trap this recurrence reproduced
+- [[delegation-briefs-reference-nonexistent-rules-dir]] — a sibling documented-but-unenforced trap
+- [[skill-prose-template-drift]] — the general drift pattern this is one instance of
+
+## Template Embeds Unnamed Exception
+
+`priority: medium` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, process]`
+
+**What happened** — `skills/delegation/SKILL.md` states a Core Principle: the load order is "principles → rules → skills → mistakes" with "no skipping, no re-ordering." `templates/evaluator.md` listed `skills/evaluation/SKILL.md` — a domain skill — inside the tier-1 "Principles:" load block, ahead of project rules and the mistake floor, with no comment or carve-out marker explaining that the placement is a deliberate, sanctioned exception.
+**Why it happens** — A template author reordering one line for a locally-reasonable-seeming purpose (evaluators need `skills/evaluation/SKILL.md` early because their whole procedure depends on it) can lose sight of the fact that the skill's own prose treats the order as a hard, named invariant with "no re-ordering" spelled out. When the deviation is not labeled, a later reader has no way to distinguish an intentional, reviewed exception from unnoticed drift.
+**How to detect** — A skill states an ordering or sequencing invariant as a Core Principle ("no skipping, no re-ordering", "must always precede X"), and one of its own generated artifacts (a template, a checklist, a generated file) places items in a sequence that contradicts it — mechanically checkable once the invariant and the artifact are read side by side.
+**Correct approach** — When a template or artifact must deviate from a stated Core Principle or invariant for a good reason, name the deviation explicitly at the point of deviation — a short inline note such as "Exception to the no-reorder rule: `skills/evaluation/SKILL.md` loads in tier 1 because ___" — so a reader can evaluate whether the exception still holds. If the exception is not actually justified, fix the ordering instead of leaving it unlabeled.
+
+### Related
+- [[skill-prose-template-drift]] — the general drift pattern this is one instance of
