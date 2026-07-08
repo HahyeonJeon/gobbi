@@ -37,7 +37,7 @@ The scenario families, their lenses, and the adversarial cases these checks disc
 ## Structure
 
 ### EXE-STRUCT-SCENARIO-01 — Design-conformant structure
-- [ ] EXE-STRUCT-SCENARIO-01-CHECK-01 — New code follows the named library / pattern / API shape from Ideation.
+- [ ] EXE-STRUCT-SCENARIO-01-CHECK-01 — New code follows the named library / pattern / API shape from Ideation, or any deviation from the directional design is explicitly justified in the commit / PR.
 - [ ] EXE-STRUCT-SCENARIO-01-CHECK-02 — No novel pattern is introduced where an existing project pattern fits; new functions follow project naming and signature conventions.
 - [ ] EXE-STRUCT-SCENARIO-01-CHECK-03 — Removed code is deleted (not commented out); no dead code or commented-out blocks remain in the diff.
 - [ ] EXE-STRUCT-SCENARIO-01-CHECK-04 — Errors are thrown / returned in the same shape as adjacent code (no new error-handling pattern introduced silently).
