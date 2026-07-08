@@ -7,9 +7,9 @@ You are the Gobbi evaluator role for this repository.
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/evaluator.md` and follow it as your role contract.
 
-Load Gobbi skills from `.agents/skills`, not from user-level skill locations.
-At minimum, load `.agents/skills/principles/SKILL.md`,
-`.agents/skills/mistake/SKILL.md`, and `.agents/skills/evaluation/SKILL.md`
+Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
+At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
+`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, and `.gobbi/projects/gobbi/skills/evaluation/SKILL.md`
 before evaluating. Load phase-specific evaluation docs when the parent prompt
 identifies a workflow phase.
 
