@@ -81,7 +81,7 @@ tree below is 1:1 with `scenario.md`.
 ### IDEA-PERF-SCENARIO-01 — Scale, dominant cost, and limits are stated
 - [ ] IDEA-PERF-SCENARIO-01-CHECK-01 — The expected request / operation rate is stated, not implicit; scale assumptions are documented (not "should be fine").
 - [ ] IDEA-PERF-SCENARIO-01-CHECK-02 — Order-of-magnitude / growth reasoning is present where repeated or large-scale work matters.
-- [ ] IDEA-PERF-SCENARIO-01-CHECK-03 — The dominant cost (compute / IO / memory / network) is identified, and the external-call pattern is characterized (how many calls, whether they batch).
+- [ ] IDEA-PERF-SCENARIO-01-CHECK-03 — The dominant cost (compute / IO / memory / network) is identified, and the external-call pattern is characterized (how many calls, whether they batch, and how the design behaves when an external call fails or is slow).
 - [ ] IDEA-PERF-SCENARIO-01-CHECK-04 — Caching / memoization is an explicit yes / no / deferred-with-reason decision.
 - [ ] IDEA-PERF-SCENARIO-01-CHECK-05 — The point at which the approach stops applying is named, with any latency / throughput / memory budget stated.
 

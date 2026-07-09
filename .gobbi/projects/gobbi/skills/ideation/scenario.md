@@ -95,7 +95,7 @@ _Lens (see `evaluation.md`):_ are there **efficiency, resource, or scalability**
 ### IDEA-PERF-SCENARIO-01 — Scale, dominant cost, and limits are stated
 **Category:** golden-path
 **Situation:** the idea operates over data or requests whose volume affects the approach.
-**Good:** the expected request / operation rate is stated, not implicit, with order-of-magnitude / growth reasoning where scale matters; the dominant cost (compute / IO / memory / network) is identified and the external-call pattern is characterized (how many calls, whether they batch); caching / memoization is an explicit yes / no / deferred-with-reason; the point at which the approach stops applying is named, with any latency / throughput / memory budget stated.
+**Good:** the expected request / operation rate is stated, not implicit, with order-of-magnitude / growth reasoning where scale matters; the dominant cost (compute / IO / memory / network) is identified and the external-call pattern is characterized (how many calls, whether they batch, and how the design behaves when an external call fails or is slow); caching / memoization is an explicit yes / no / deferred-with-reason; the point at which the approach stops applying is named, with any latency / throughput / memory budget stated.
 **Bad / failure:** scale is waved off as "should be fine" with no order-of-magnitude reasoning, so the design commits to an approach whose breaking point is unknown.
 **Adversarial:** a reasonable-looking design names no scale bound at all, so a volume that quietly exceeds the unstated assumption is discovered only after Execution commits to the approach.
 **Checklist IDs:** `IDEA-PERF-SCENARIO-01-CHECK-*`
