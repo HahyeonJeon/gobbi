@@ -1,16 +1,14 @@
 ---
 name: preparation/evaluation
-description: Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides per-perspective seed scenarios with attached checklists + recommended tool verifications + perspective-specific anti-patterns for a Preparation Loop's readiness artifact.
+description: Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides the per-perspective evaluation procedure (lens, recommended verifications, anti-patterns, Overall) for a Preparation Loop's readiness artifact; the scenario families and checks live in the sibling scenario.md and checklist.md.
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
 # Preparation Loop — Evaluation Frame
 
-Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides per-perspective **seed scenarios with attached checklists** + **recommended tool verifications** + **perspective-specific anti-patterns** for a Preparation Loop's working draft.
+Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `preparation`. Provides the per-perspective evaluation **procedure** for a Preparation Loop's working draft: each perspective's **lens**, its **recommended verifications**, and its **perspective-specific anti-patterns**, plus the **Overall (Stage 3)** anchors. The concrete GOOD / BAD / adversarial **scenario families** live in the sibling `scenario.md`, and their yes/no **checks** live in the sibling `checklist.md` (whose heading tree mirrors `scenario.md`); each perspective below points to its section in both.
 
-The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md`. It contains: Scope reference, Readiness summary, Design + memory readiness (Sub-step B output), Execution skills readiness (Sub-step C output), Generated this loop, Out of scope gaps, Decisions log.
-
-For each perspective below, scenarios are listed in bold and each scenario carries its **attached checklist** — the concrete yes/no conditions that, if all satisfied, prove the scenario is handled. Scenarios include adversarial cases so Stage 2 needs no separate adversarial pass. The evaluator CRUDs both scenarios and their attached checklists at Stage 1 against the artifact's own scenario+checklist content.
+The artifact under evaluation is the leader's draft at `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md`. It contains: Scope reference, Readiness summary, Design + memory readiness (Sub-step B output), Execution skills readiness (Sub-step C output), Generated this loop, Out of scope gaps, Decisions log. Preparation is a process loop — the artifact verifies readiness before planning, not code — so the scenario families in `scenario.md` already include adversarial cases (silent skip, scope absorption, skeleton skills, staging-path misroute) so Stage 2 walks each Frame once without a separate adversarial pass.
 
 ---
 
@@ -18,29 +16,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: Does the Preparation artifact cover the **right readiness gaps** for this specific task? Does it stay inside the locked Scope Contract?
 
-### Seed scenarios with attached checklists
-
-**Every gap surfaced during DISCUSSION traces to the locked Ideation Scope Contract**
-- Each gap in the Design + memory readiness section cites the Ideation artifact it references (path or section)
-- No gap was invented outside the Scope Contract boundaries
-- The "Out of scope gaps" section exists and captures any gap that is real but outside this task's scope
-
-**All Ideation-surfaced scenarios are confirmed present in staging or feature memory**
-- Every `scenario_gap` finding from Ideation EVALUATION has a corresponding staged file or a rationale for why it was classified as out-of-scope
-- The Readiness summary's scenario count is consistent with the Design + memory readiness detail
-
-**The "Readiness summary" matches the detail sections**
-- The count of gaps found in the summary matches the actual items enumerated in Sub-step B and C sections
-- The count of gaps resolved matches the items listed in "Generated this loop"
-- Deferred counts match "Out of scope gaps" entries
-
-**A gap classified as `skip` has an explicit user-stated reason (adversarial)**
-- No gap is silently dropped — every `skip` decision appears in the Decisions log with the user's reasoning
-- The stated reason is a business or scope rationale, not "too hard" or "we'll figure it out later"
-
-**The Preparation artifact does not absorb out-of-scope project-wide gaps**
-- "Out of scope gaps" section does not contain items the leader unilaterally decided to fix — only the user can authorize scope expansion
-- If project-wide gaps were found but are unrelated to this task, they are in "Out of scope gaps" with a pointer to a backlog or note, not in "Generated this loop"
+**Scenario source:** `scenario.md` § Project (`PREP-PROJ-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Project (`PREP-PROJ-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -64,25 +41,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: Is the Preparation artifact's **organizing decomposition** sound? Are the staged artifacts shaped correctly? Will downstream loops be able to consume them without confusion?
 
-### Seed scenarios with attached checklists
-
-**Every staged skill file uses the full project-skill template, not a skeleton**
-- Staged skill files at `2-preparation/staging/skills/{slug}/SKILL.md` have all required sections populated (no `TODO`, `TBD`, `<...>` placeholders)
-- The skill follows the project's naming convention (no underscores in the body, hyphen-separated)
-- The YAML frontmatter is present and complete (`name`, `description`, `allowed-tools`)
-
-**The working draft uses all seven required sections from the WORK template**
-- All seven sections are present: Scope reference, Readiness summary, Design + memory readiness, Execution skills readiness, Generated this loop, Out of scope gaps, Decisions log
-- No section is a placeholder — every section has substantive content or an explicit "none" statement
-
-**Staged memory-promotion files follow the correct staging path conventions**
-- Scenarios at `2-preparation/staging/scenarios/`, checklists at `2-preparation/staging/checklists/`, decisions at `2-preparation/staging/decisions/` — not mixed up
-- Slug names are kebab-case, ≤ 60 characters
-- Each staged file has correct frontmatter per its template (e.g., scenario files follow the [`memory/templates/scenarios.md`](../memory/templates/scenarios.md) shape)
-
-**The generated artifacts are structurally compatible with Wrap-up's promotion routing table (adversarial)**
-- Staged skills are at `2-preparation/staging/skills/{slug}/SKILL.md`, not a flat `.md` file that Wrap-up's routing would misplace
-- Staged scenarios / checklists / decisions follow the directory structure Wrap-up expects — not placed in the wrong `staging/` subdirectory
+**Scenario source:** `scenario.md` § Structure (`PREP-STRUCT-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Structure (`PREP-STRUCT-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -105,18 +65,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: Is the Preparation artifact causing **downstream work amplification** — gaps left open that will cost more to fix in Planning or Execution?
 
-### Seed scenarios with attached checklists
-
-**Every High-severity gap has been resolved or explicitly deferred with a stated cost**
-- The Readiness summary surfaces any remaining High-severity gaps
-- Each remaining High-severity gap in "Out of scope gaps" has a stated downstream cost (e.g., "executor will need to infer TypeScript conventions from the codebase directly, adding ~30 min overhead per task")
-- No High-severity gap is silently downgraded to Low to avoid resolution work
-
-**The set of generated artifacts covers the hot paths the executor will walk**
-- The Execution skills readiness section names the top 2-3 most frequently needed skills for this task
-- Those top skills are either confirmed present or resolved as `generate-now`
-
-**not-applicable: standard throughput / scalability concerns** — Preparation artifacts are a small number of markdown files; I/O volume is not a meaningful concern for this phase.
+**Scenario source:** `scenario.md` § Performance (`PREP-PERF-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Performance (`PREP-PERF-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -136,23 +86,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: Is the **working draft itself** readable, consistent, and free of polish gaps?
 
-### Seed scenarios with attached checklists
-
-**A new reader understands what readiness state was found from the draft alone**
-- Readiness summary reads standalone — no need to cross-reference DISCUSSION transcript to understand the overall gap picture
-- Section headings match the seven required sections from the WORK template
-
-**Naming in the artifact is accurate and self-explanatory**
-- Staged artifact slugs match what they contain — a scenario file named `auth-flow-csrf-check.md` contains a CSRF check scenario, not a generic one
-- No slug drift where the same item is referenced by different names in different sections
-
-**The draft follows the project-skill template conventions for staged skills**
-- Skill `name` field in frontmatter matches the directory slug
-- No skill file has a heading that contradicts its frontmatter name
-
-**Every section earns its place — no filler, no redundant boilerplate (adversarial)**
-- No section is "See DISCUSSION" without an actual summary
-- "Decisions log" contains the actual decisions, not a template skeleton
+**Scenario source:** `scenario.md` § Aesthetics (`PREP-AESTH-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Aesthetics (`PREP-AESTH-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -174,29 +109,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: For the **next consumer** of this artifact — the Planning leader, the Execution executor, and the Wrap-up assistant — is the Preparation output usable?
 
-### Seed scenarios with attached checklists
-
-**The Planning leader can start without asking the user clarifying questions about what was prepared**
-- Every `defer` decision has a downstream impact stated — Planning can plan around it
-- Every `generate-now` result is fully formed — Planning does not need to reconstruct what was generated
-
-**The Execution executor can read a staged skill and apply it without seeing the DISCUSSION transcript**
-- Staged skills are standalone documents — no "see DISCUSSION" references inside the skill body
-- Each skill's scope, gotchas, and constraints are stated, not implied
-
-**The Wrap-up assistant can route every staging file without ambiguity**
-- Each staged file's path and frontmatter unambiguously maps to a Wrap-up promotion destination per the routing table in `wrap-up/SKILL.md`
-- No staging file is in an unexpected path that Wrap-up's routing table does not handle
-
-**A consumer reads the Preparation artifact and forms the wrong mental model (adversarial)**
-- The "Generated this loop" section does not claim coverage it did not deliver (e.g., listing a skill as generated when it is only a skeleton)
-- Deferred gaps in "Out of scope gaps" are distinguished from resolved gaps — no ambiguity about which state each gap is in
-
-**Accessibility / I18n awareness** (`not-applicable:` — Preparation artifacts are internal workflow docs with no user-facing strings or UI surfaces)
-
-**Observability / "diagnosable at 3am"** — if a downstream loop fails because a readiness gap was missed, can a maintainer trace it back to the Preparation decision?
-- Each gap entry in the working draft cites the Ideation artifact and Sub-step that surfaced it
-- The Decisions log captures who approved each resolution so blame attribution is explicit
+**Scenario source:** `scenario.md` § Usage (`PREP-USAGE-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Usage (`PREP-USAGE-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -218,26 +132,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: Did everything that should sync inside the Preparation artifact, sync? Are there internal contradictions, mismatches between sections, or drifts from the Ideation output?
 
-### Seed scenarios with attached checklists
-
-**The Scope reference section points to the actual Ideation artifact, not a paraphrase**
-- Scope reference section contains a file path (or section citation) to `1-ideation/outputs/`, not a prose summary of the Scope Contract
-- The Scope Contract's `project` / `feature` / `task` fields in the Ideation artifact match what Preparation's readiness scanning targeted
-
-**Design + memory readiness and Execution skills readiness sections do not overlap**
-- A missing skill is not listed in both "Design + memory readiness" AND "Execution skills readiness"
-- Each gap is categorized in exactly one sub-step section
-
-**"Generated this loop" is consistent with the staging directory**
-- Every file listed in "Generated this loop" actually exists in `2-preparation/staging/`
-- No file in `2-preparation/staging/` was produced but omitted from "Generated this loop"
-
-**The Decisions log reflects every user-decision outcome from DISCUSSION**
-- Each gap in the consolidated gap table has a corresponding entry in the Decisions log
-- No gap has a resolution in the staging artifacts that does not match the Decisions log entry
-
-**Internal vs external gap evidence conflict and the conflict is not resolved (adversarial)**
-- If the Ideation staging shows a scenario that the Sub-step B check claims is present in feature memory — but that scenario does not actually exist in feature memory — the contradiction is flagged, not silently resolved
+**Scenario source:** `scenario.md` § Consistency (`PREP-CONS-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Consistency (`PREP-CONS-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -251,7 +147,7 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 | Anti-pattern | Correction |
 |---|---|
-| **"The Decisions log captures everything"** without checking | The Decisions log is easy to falsify by listing decisions that were not actually made. Cross-verify against the gap table row-by-row |
+| **"The Decisions log captures everything" without checking** | The Decisions log is easy to falsify by listing decisions that were not actually made. Cross-verify against the gap table row-by-row |
 | **Staging directory as source of truth without verification** | Claiming "Generated this loop" is complete based on the staging directory without reading the files is a coverage gap — verify each file is well-formed, not just present |
 
 ---
@@ -260,33 +156,8 @@ For each perspective below, scenarios are listed in bold and each scenario carri
 
 **Lens**: **What breaks if Preparation is wrong?** Wrap-up sole-writer contract, staging path correctness, re-Ideate triggers not caught, deferred items lost.
 
-### Seed scenarios with attached checklists
-
-**No Preparation write went directly to memory (Wrap-up sole-writer contract)**
-- All `generate-now` outputs are staged under `sessions/{date}-{session-id}/2-preparation/staging/`, not written directly to `.gobbi/projects/{project-name}/skills/`, `features/`, or other memory paths
-- The Decisions log does not reference a direct memory write
-- `2-preparation/staging/` exists; `features/...` was not touched during Preparation
-
-**Every re-Ideate trigger was either caught and escalated or explicitly ruled out**
-- Each gap in the artifact was assessed for whether it reveals an unworkable design (re-Ideate) vs a missing artifact (generate-now)
-- If any gap was classified `generate-now` when its root cause is an Ideation design flaw, the misclassification is a High-risk finding
-- The artifact explicitly states "no re-Ideate escalation required" or names the escalation that was made
-
-**Deferred items in "Out of scope gaps" are not silently lost**
-- Each deferred item has a pointer to where it was backlogged (staging path or downstream note)
-- No deferred item is described with only "TBD" or "later" — each has a concrete next-action pointer
-
-**Staged skill slugs will not collide with existing project skills on Wrap-up promotion (adversarial)**
-- Staged skill slugs are checked against existing skills in `.gobbi/projects/{project-name}/skills/` — if a skill with the same slug already exists, the artifact must explain whether this is an update (intended overwrite) or a collision (bug)
-- No staged skill overwrites a project-skill that the Ideation design did not intend to replace
-
-**Privacy / data retention** (`not-applicable:` — Preparation artifacts contain no PII or sensitive data; they are internal gap lists and skill scaffolding)
-
-**License / IP risk** — if `generate-now` skills codify patterns from external libraries or frameworks, the license of those sources applies
-- Each generated skill that codifies external patterns names the source (library, spec, community standard) and its license class
-- No generated skill incorporates verbatim copied content from a source with an incompatible license
-
-**Cost / budget impact** (`not-applicable:` — Preparation produces local markdown files; no API or infra cost is incurred by the Preparation Loop itself)
+**Scenario source:** `scenario.md` § Risk (`PREP-RISK-SCENARIO-*`)
+**Checklist source:** `checklist.md` § Risk (`PREP-RISK-SCENARIO-*-CHECK-*`)
 
 ### Recommended verifications
 
@@ -322,8 +193,10 @@ When the evaluator runs Stage 3 on a Preparation artifact, the Karpathy-4 check 
 
 ## Output reminder
 
-The evaluator writes:
+The evaluator writes **nine** output files per system: the seven per-perspective files + one `overall.md` + the filled `checklist.md` (copied from the sibling `checklist.md` at Stage 0 and ticked through Stage 2), all under `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/`:
+
 - Seven per-perspective files at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
 - One overall file at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/overall.md`
+- One filled `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/checklist.md` — the copy-then-tick coverage artifact (Stage 0 copy → Stage 1 `## Stage 1 Additions` → Stage 2 tick with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`)
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (from Stage 0; includes paths consumed for project/feature overrides + project mistakes + project rules + prior-phase canonical; when no project rule files exist, this section records the NO_PROJECT_RULES fallback note (per memory/rules.md § Empty-state contract) instead of omitting project rules silently) → `## Locked Frame (Stage 1)` (augmented from this child doc's seed content + prior-iter open findings + overrides) → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
