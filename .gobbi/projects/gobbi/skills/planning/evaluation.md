@@ -44,7 +44,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 |---|---|
 | Count files-touched per task | Quantify task size mechanically |
 | Diff task list for file overlap | Detect tasks that conflict on the same file (must be sequenced) |
-| Read project's `_delegation` skill | Confirm agent-type assignment matches delegation conventions |
+| Read project's `delegation` skill | Confirm agent-type assignment matches delegation conventions |
 
 ### Perspective-specific anti-patterns
 
@@ -67,7 +67,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 
 | Tool | Use for |
 |---|---|
-| Grep the project for existing benchmarks the plan must preserve | Confirm benchmark coverage |
+| Grep the project for existing measurement / load checks the plan must preserve | Confirm measurement coverage |
 
 ### Perspective-specific anti-patterns
 

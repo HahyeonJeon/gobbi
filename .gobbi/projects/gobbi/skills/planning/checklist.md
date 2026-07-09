@@ -54,7 +54,7 @@ tree below is 1:1 with `scenario.md`.
 - [ ] PLAN-STRUCT-SCENARIO-01-CHECK-01 — No task spans more than roughly 5-8 files.
 - [ ] PLAN-STRUCT-SCENARIO-01-CHECK-02 — No task introduces more than roughly 2 new modules / components.
 - [ ] PLAN-STRUCT-SCENARIO-01-CHECK-03 — Each task title is imperative-form, short, and specific.
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-04 — Effort per task is inferable from `files:` count plus `verifies:` complexity.
+- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-04 — Effort per task is inferable from `files:` count plus `verifies:` complexity (an evaluator-internal heuristic — `effort` is not a task-schema field and does not appear in the canonical task YAML).
 - [ ] PLAN-STRUCT-SCENARIO-01-CHECK-05 — A task with a multi-step `verifies:` touching more than three files is treated as large regardless of how it is described.
 - [ ] PLAN-STRUCT-SCENARIO-01-CHECK-06 — Total plan effort is sanity-checked against the Ideation Scope Contract size.
 
@@ -126,7 +126,7 @@ tree below is 1:1 with `scenario.md`.
 ## Usage
 
 ### PLAN-USAGE-SCENARIO-01 — A fresh Executor can start task N from the task alone
-- [ ] PLAN-USAGE-SCENARIO-01-CHECK-01 — Every task can be spawned to a fresh subagent (full context = its `inputs:` field) and executed without parent-session context.
+- [ ] PLAN-USAGE-SCENARIO-01-CHECK-01 — Every task can be spawned to a fresh subagent whose task-alone context is its `inputs:`, `outputs:`, and `verifies:` fields (what it consumes, what it must produce, and how to self-check), executed without parent-session context.
 - [ ] PLAN-USAGE-SCENARIO-01-CHECK-02 — Each task specifies file paths and, where relevant, function / section anchors.
 - [ ] PLAN-USAGE-SCENARIO-01-CHECK-03 — Verification and test commands are concrete (not "run the tests"), not placeholders.
 - [ ] PLAN-USAGE-SCENARIO-01-CHECK-04 — Verification commands are runnable as-is, with no `<your test path here>`-style placeholders.

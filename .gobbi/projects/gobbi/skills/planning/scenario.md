@@ -60,7 +60,7 @@ _Lens (see `evaluation.md`):_ is the **task decomposition** sound? Are dependenc
 ### PLAN-STRUCT-SCENARIO-01 — Tasks are narrow and effort is sized honestly
 **Category:** golden-path
 **Situation:** the plan breaks the idea into tasks a fresh Executor must grasp in one read.
-**Good:** no task spans more than roughly 5-8 files or introduces more than roughly 2 new modules / components; each task title is imperative-form, short, and specific; effort is inferable from `files:` count plus `verifies:` complexity, and total plan effort is sanity-checked against the Ideation Scope Contract size.
+**Good:** no task spans more than roughly 5-8 files or introduces more than roughly 2 new modules / components; each task title is imperative-form, short, and specific; effort is inferable from `files:` count plus `verifies:` complexity (an evaluator-internal heuristic — there is no `effort:` field in the canonical task YAML), and total plan effort is sanity-checked against the Ideation Scope Contract size.
 **Bad / failure:** a task is too broad to grasp in one read, or its title is vague.
 **Adversarial:** a mega-task hides behind implicitly small scope — a multi-step `verifies:` over more than three files — while being described as trivial, so its true size never gets flagged.
 **Checklist IDs:** `PLAN-STRUCT-SCENARIO-01-CHECK-*`
@@ -147,7 +147,7 @@ _Lens (see `evaluation.md`):_ can the **Executor** use this plan without coming 
 ### PLAN-USAGE-SCENARIO-01 — A fresh Executor can start task N from the task alone
 **Category:** golden-path
 **Situation:** a fresh Executor is given one task with no other context.
-**Good:** every task can be spawned to a fresh subagent — its full context is its `inputs:` field — and executed without parent-session context; each task specifies file paths and, where relevant, function / section anchors; verification and test commands are concrete and runnable as-is.
+**Good:** every task can be spawned to a fresh subagent — its task-alone context is its `inputs:`, `outputs:`, and `verifies:` fields (what it consumes, what it must produce, and how to self-check) — and executed without parent-session context; each task specifies file paths and, where relevant, function / section anchors; verification and test commands are concrete and runnable as-is.
 **Bad / failure:** a task cannot be executed from its own spec without the parent session.
 **Adversarial:** a verification command carries a placeholder ("run the tests", `<your test path here>`), so a fresh Executor cannot run it as-is.
 **Checklist IDs:** `PLAN-USAGE-SCENARIO-01-CHECK-*`
