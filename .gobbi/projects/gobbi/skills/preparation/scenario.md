@@ -161,7 +161,7 @@ _Lens (see `evaluation.md`):_ did everything that should sync inside the Prepara
 ### PREP-CONS-SCENARIO-01 — Scope reference is an accurate pointer and sections do not overlap
 **Category:** golden-path
 **Situation:** the Scope reference section anchors the loop to the Ideation output.
-**Good:** the Scope reference cites a file path / section to `1-ideation/outputs/`, not a prose paraphrase; the Ideation Scope Contract's project / feature / task fields match what Preparation's readiness scanning targeted; each missing skill is categorized in exactly one sub-step section.
+**Good:** the Scope reference cites a file path / section to `1-ideation/outputs/`, not a prose paraphrase; the Ideation Scope Contract's project / feature / task fields match what Preparation's readiness scanning targeted; each readiness gap (missing skill, memory, or design-reference item) is categorized in exactly one sub-step section.
 **Bad / failure:** the Scope reference paraphrases the contract, or a gap is filed under two sub-step sections.
 **Adversarial:** the Scope reference paraphrases the Scope Contract instead of citing the real path, so drift between the paraphrase and the actual contract goes unnoticed.
 **Checklist IDs:** `PREP-CONS-SCENARIO-01-CHECK-*`

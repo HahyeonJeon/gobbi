@@ -120,7 +120,7 @@ tree below is 1:1 with `scenario.md`.
 ### PREP-CONS-SCENARIO-01 — Scope reference is an accurate pointer and sections do not overlap
 - [ ] PREP-CONS-SCENARIO-01-CHECK-01 — The Scope reference cites a file path / section to `1-ideation/outputs/`, not a prose paraphrase.
 - [ ] PREP-CONS-SCENARIO-01-CHECK-02 — The Ideation Scope Contract's project / feature / task fields match what Preparation's readiness scanning targeted.
-- [ ] PREP-CONS-SCENARIO-01-CHECK-03 — Each missing skill is categorized in exactly one sub-step section (Design + memory readiness vs Execution skills readiness), not both.
+- [ ] PREP-CONS-SCENARIO-01-CHECK-03 — Each readiness gap (missing skill, memory, or design-reference item) is categorized in exactly one sub-step section (Design + memory readiness vs Execution skills readiness), not both.
 
 ### PREP-CONS-SCENARIO-02 — "Generated this loop" matches the staging directory both ways
 - [ ] PREP-CONS-SCENARIO-02-CHECK-01 — Every file listed in "Generated this loop" actually exists in `2-preparation/staging/`.
