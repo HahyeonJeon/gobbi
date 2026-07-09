@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-06-27
+updated: 2026-07-08
 ---
 
 # Skill-Writing — Mistakes
@@ -63,3 +63,24 @@ updated: 2026-06-27
 
 ### Related
 - [[scrub-stack-idioms-when-adapting-to-general-doc]] — sibling docs-sync authoring-contamination trap (source tokens leak into new prose)
+
+## Child-Doc Extraction Breaks Relative Links And Self-Anchors
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, links, refactor]`
+
+**What happened** — Splitting `skills/orchestration/SKILL.md`'s heavy sections into four `skills/orchestration/workflow/*.md` child docs (one directory level deeper) carried each extracted section's relative links and self-anchors across unchanged. A link target such as `../X` in the parent resolves against `skills/orchestration/`'s parent; the SAME link text copied into a child doc under `skills/orchestration/workflow/` resolves one level short instead. Self-anchors inside the extracted text needed repointing per whether their target heading traveled with the extraction or stayed behind in the parent.
+**Why it happens** — Extraction is copy-then-relocate, and every relative reference inside the copied text is anchored to the ORIGINAL file's directory depth, not the new one. Nothing about the copy operation itself signals that the depth changed, so a straight copy silently ships broken links.
+**How to detect** — Any doc-split or section-extraction plan that moves prose into a file at a deeper directory level without an explicit link-depth-adjustment step. Run the markdown-link guard scoped to the new child doc specifically — a broken relative link surfaces immediately; checking only the parent doc misses it.
+**Correct approach** — On any section extraction one directory level deeper: (1) add one `../` segment to every relative link inside the extracted text; (2) repoint any link that now targets a sibling file at the new relative path (a reference like `skills/orchestration/workflow/state-machine.md` becomes bare `state-machine.md` once inside `skills/orchestration/workflow/`); (3) repoint every self-anchor per whether its target heading traveled with the extraction; (4) run the link guard against the new child doc before calling the split done.
+
+## References Repo-Root Links Break Through The Mirror
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, links]`
+
+**What happened** — A `## References` link with a target of the form `../../../../../scripts/…` (a repo-root-anchored relative climb) resolved correctly from the canonical `SKILL.md` path but broke when the same file was read through the `.claude`/`.agents` runtime mirror symlink — the mirror sits at a different directory depth relative to the repo root, so the same fixed number of `../` segments lands somewhere else through it.
+**Why it happens** — The canonical skill file and its mirror symlink are the SAME file by inode, but they are reached via two different directory depths (`.gobbi/projects/{project}/skills/{skill}/SKILL.md` vs the mirror path). A relative link that climbs a fixed `../` count to reach a repo-root path is depth-relative, so it resolves correctly from only ONE of the two access points, never both at once.
+**How to detect** — A References (or similar) section containing a markdown link with three or more `../` segments climbing toward the repo root. Resolve the link from BOTH the canonical path and the `.claude`/`.agents` mirror path — if either fails, the link is depth-unstable.
+**Correct approach** — Keep a skill's References section to two link shapes that stay depth-stable across the mirror: sibling-skill links (`../{other-skill}/SKILL.md` — same nesting depth on both sides) and same-directory links (`mistakes.md`). Reference a repo-root script (e.g. a guard under `scripts/`) as a Procedure code-span load-action — a bash command the reader runs — rather than as a markdown link, since a code span has no relative-path resolution to break.
+
+### Related
+- [[child-doc-extraction-breaks-relative-links-and-self-anchors]] — sibling extraction-time link trap from the same session
