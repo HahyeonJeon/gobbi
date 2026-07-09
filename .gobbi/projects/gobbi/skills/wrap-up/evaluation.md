@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`. Provides the per-perspective evaluation **procedure** for a Wrap-up Loop's session consolidation: each perspective's **lens**, its **recommended verifications**, and its **perspective-specific anti-patterns**, plus the **Overall (Stage 3)** anchors. The concrete GOOD / BAD / adversarial **scenario families** live in the sibling `scenario.md`, and their yes/no **checks** live in the sibling `checklist.md` (whose heading tree mirrors `scenario.md`); each perspective below points to its section in both.
 
-The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, and any decomposed artifact the Wrap-up assistant produced) **plus** the full set of memory promotions Wrap-up made. Wrap-up promotion targets span the entire memory surface (not only `features/` + `mistakes/`):
+The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, shipped-summary, next-session-pointers, and any decomposed artifact the Wrap-up assistant produced) **plus** the full set of memory promotions Wrap-up made. Wrap-up promotion targets span the entire memory surface (not only `features/` + `mistakes/`):
 
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,references,design,discussions,backlogs,plans}/` — feature-scoped promotions
 - `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` — feature-scoped mistakes
@@ -11,7 +11,7 @@ The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id
 - `.gobbi/projects/{project-name}/rules/` — project rules
 - `.gobbi/projects/{project-name}/design/` — project-level design docs
 - `.gobbi/projects/{project-name}/notes/` — handoff / investigation notes
-- `.gobbi/projects/{project-name}/backlogs/` — project-level deferrals
+- `.gobbi/projects/{project-name}/backlogs/` — project-level deferrals beyond features
 
 The promotion is part of the wrap-up artifact — evaluation must verify it across every destination, not assume it.
 
@@ -87,7 +87,8 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 |---|---|
 | `wc -l` on each promoted file | Detect bloat |
 | `grep "session transcript"` or similar in promoted files | Detect raw-dump promotions |
-| When `settings.compaction.enabled`, run `check-merge-ref-integrity.sh` + the standing guards over the post-compaction tree | Verify Stage-2c consolidation is lossless and reference-clean |
+| On EVERY wrap-up (always-run, independent of `settings.compaction.enabled`, per [`wrap-up/SKILL.md` § Post-promotion standing-guard green-check](SKILL.md)) — the post-promotion standing guards `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` over the post-promotion tree, all exit 0 | Verify promoted memory is well-formed, link-clean, and vocab-clean |
+| ONLY when Stage-2c produced a compaction merge manifest — `check-merge-ref-integrity.sh <manifest> <scan-root>` also runs | Verify Stage-2c consolidation is lossless and reference-clean |
 
 ### Perspective-specific anti-patterns
 
@@ -181,7 +182,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 | `git status` after wrap-up — confirm no uncommitted scratch | Detect dangling work |
 | `grep -r "supersedes\|updates"` in newly promoted files | Confirm conflicts with prior memory are explicit |
 | Diff: corrections in session transcript vs new mistakes entries | Detect un-recorded corrections |
-| Read `session.json` `workflow.wrap-up` + the branch `git log` | Confirm no Stage-5 git finalization ran before this Stage-3 validation passed |
+| Read the branch `git log` for any Stage-5 finalization commit | Confirm no git finalization ran before this Stage-3 validation passed |
 
 ### Perspective-specific anti-patterns
 
