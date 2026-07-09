@@ -145,7 +145,7 @@ split-pane (needs tmux or iTerm2). Set via `teammateMode` — see § Setup.
 instance. The token WIN only holds in the **sequential single-teammate** mode (Mode 1). That is why
 fresh stays the default and continuation is bounded (the executor saturation cap, the no-survival
 rule). Teammate token accounting is recorded per
-[`orchestration/SKILL.md` § Teammate-aware metadata](SKILL.md#teammate-aware-metadata-agent-teams).
+[`orchestration/SKILL.md` § Teammate-aware metadata](workflow/metadata.md#teammate-aware-metadata-agent-teams).
 
 ---
 
@@ -180,8 +180,8 @@ rule). Teammate token accounting is recorded per
   continued turn (absolute worktree paths, `git -C <worktree-abs>`, re-anchor).
 - [`orchestration/SKILL.md` § Agent Teams](SKILL.md#agent-teams) — the summary roster + policy that
   links here; this doc is the single source of truth for the detail.
-- [`orchestration/SKILL.md` § Recording workflow metadata](SKILL.md#recording-workflow-metadata) and
-  [§ Teammate-aware metadata](SKILL.md#teammate-aware-metadata-agent-teams) — teammate token
+- [`orchestration/SKILL.md` § Recording workflow metadata](workflow/metadata.md#recording-workflow-metadata) and
+  [§ Teammate-aware metadata](workflow/metadata.md#teammate-aware-metadata-agent-teams) — teammate token
   accounting (a teammate session is read from its OWN transcript, not the parent's `subagents/`
   directory).
 - `mistakes/skills-mirror-symlinks-not-copies.md` — editing the canonical file at

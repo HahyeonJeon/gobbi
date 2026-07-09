@@ -46,7 +46,7 @@ are not sufficient — if the decision is Auto-decide class, proceed.
 Auto Mode runs the linear 6-step state machine: Configuration → Ideation → Preparation
 → Planning → Execution → Wrap-up. Each step runs **once per session in sequence**. Steps
 2-6 are bounded loops; their shared phase mechanics, iteration rule, and gates are
-specified in [`orchestration/SKILL.md § Workflow State Machine`](SKILL.md#workflow-state-machine).
+specified in [`orchestration/SKILL.md § Workflow State Machine`](workflow/state-machine.md#workflow-state-machine).
 
 This section is the canonical home of the Auto-Mode SOP — for each step: Definition,
 Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
@@ -151,7 +151,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | manager orchestration: [wrap-up.md](workflow/wrap-up.md); specialist phase load: [../wrap-up/SKILL.md](../wrap-up/SKILL.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path — write session and memory for this iteration. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](workflow/state-machine.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
 
 ---
 

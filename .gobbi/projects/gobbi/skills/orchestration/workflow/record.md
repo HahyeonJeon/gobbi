@@ -344,4 +344,4 @@ Path conventions, full path inventory across both tiers, and template-to-directo
 - Where staging eventually lands (memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to memory)
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - Staging template inventory → [`memory/templates/`](../../memory/templates/)
-- Verdict aggregation in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)
+- Verdict aggregation in the state machine → [orchestration `SKILL.md` § Verdict aggregation](state-machine.md#verdict-aggregation)

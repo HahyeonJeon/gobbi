@@ -326,5 +326,5 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - RECORD synthesis → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
 - Wrap-up's memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
-- Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)
+- Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](state-machine.md#verdict-aggregation)
 - Auto-Mode evaluation discipline (manager-never-asks / manager-never-evaluates / auto-iterate-no-routine-triage / safety-gate carve-out) → [`auto-mode.md` § Evaluation discipline (§7)](../auto-mode.md)
