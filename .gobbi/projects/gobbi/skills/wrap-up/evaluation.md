@@ -87,7 +87,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 |---|---|
 | `wc -l` on each promoted file | Detect bloat |
 | `grep "session transcript"` or similar in promoted files | Detect raw-dump promotions |
-| On EVERY wrap-up (always-run, independent of `settings.compaction.enabled`, per [`wrap-up/SKILL.md` § Post-promotion standing-guard green-check](SKILL.md)) — the post-promotion standing guards `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` over the post-promotion tree, all exit 0 | Verify promoted memory is well-formed, link-clean, and vocab-clean |
+| On EVERY wrap-up (always-run, independent of `settings.compaction.enabled`, per [`wrap-up/SKILL.md` § Post-promotion standing-guard green-check](SKILL.md)) — the post-promotion standing guards `validate-frontmatter.sh` + `check-markdown-links.sh` + `check-residual-vocab.sh` + `check-skill-mistakes.sh --all` + `check-workflow-mirror-consistency.sh` over the post-promotion tree, all exit 0 | Verify promoted memory is well-formed, link-clean, and vocab-clean, that skill-owned `mistakes.md` sections conform, and that the `.claude/` workflow-doc mirror is intact |
 | ONLY when Stage-2c produced a compaction merge manifest — `check-merge-ref-integrity.sh <manifest> <scan-root>` also runs | Verify Stage-2c consolidation is lossless and reference-clean |
 
 ### Perspective-specific anti-patterns
