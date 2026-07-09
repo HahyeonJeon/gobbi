@@ -73,7 +73,9 @@ Fresh Codex subagents still need explicit load directives. They do not inherit s
 
 ### Models and Sandbox
 
-Do not hard-code model names in Gobbi Codex agent TOML unless the user explicitly asks. Let Codex inherit the parent session model and reasoning effort.
+Do not hard-code model names in Gobbi Codex agent TOML unless the user explicitly asks. Let Codex inherit the parent session model.
+
+Gobbi's repo-local Codex wrappers set role effort through `model_reasoning_effort`: `leader` is `xhigh`; `manager`, `assistant`, `executor`, and `evaluator` are `high`. Do not change those effort defaults unless the user explicitly asks.
 
 Subagents inherit the parent sandbox policy. Use `sandbox_mode = "read-only"` only for agents that must never write, such as `evaluator`.
 
@@ -248,7 +250,7 @@ Treat rollout JSONL like Claude Code transcripts. Do not paste long excerpts int
 - Running `codex exec` without a timeout.
 - Letting Codex write session files from a worktree-relative or `pwd`-derived path.
 - Trusting Codex stdout or broker state instead of verifying contracted output files.
-- Setting Codex model or effort without user direction.
+- Setting Codex model without user direction, or changing Codex effort outside the documented role defaults without user direction.
 - Using `danger-full-access` as a default sandbox.
 
 ---
@@ -458,6 +460,8 @@ Codex and Claude consume tokens at different rates and from different budget poo
 ### Effort level
 
 `codex exec` supports `--effort none|minimal|low|medium|high|xhigh`. Higher effort levels multiply token cost. Leave `--effort` unset unless the user has explicitly requested a specific level. The default effort is set in the user's `~/.codex/config.toml`.
+
+Native Gobbi custom agents use role wrapper defaults instead of CLI flags: `model_reasoning_effort = "xhigh"` for `leader`, and `model_reasoning_effort = "high"` for `manager`, `assistant`, `executor`, and `evaluator`.
 
 ### Model selection
 

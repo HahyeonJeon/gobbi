@@ -111,6 +111,9 @@ Using `allowed-tools` in an agent `.md`, or `tools` in a `SKILL.md`, is a frontm
 - **`model`** — `opus` for manager / leader / executor / evaluator; `sonnet` for the
   lightweight assistant (verified against the Agent Taxonomy table in `gobbi/SKILL.md`).
 
+Effort is NOT an agent `.md` frontmatter key. The `.md` frontmatter stays exactly four keys;
+Codex effort lives in the role's `.toml` wrapper as `model_reasoning_effort`.
+
 **Section contract** (the order in `executor.md`; role-shaped — a role adds or varies a
 section where its work demands, e.g. evaluator's lifecycle is Study/Assess/Report and it omits
 Continuation discipline):
@@ -135,14 +138,16 @@ Continuation discipline):
 ### P3 — The `.toml` Codex wrapper shape
 
 The `.toml` is a thin Codex wrapper — it carries no behavioral substance of its own; it points
-Codex back to the canonical `.md`. Three STANDARD keys (verified — `executor.toml`,
-`manager.toml`); a role MAY add a role-specific runtime field on top, e.g. `evaluator.toml`
-carries `sandbox_mode = "read-only"` to lock the evaluator's Codex sandbox. So the three below
-are the baseline, not a closed set:
+Codex back to the canonical `.md`. Four STANDARD keys are present in every wrapper:
+`name`, `description`, `model_reasoning_effort`, and `developer_instructions`. A role MAY add a
+role-specific runtime field on top, e.g. `evaluator.toml` carries
+`sandbox_mode = "read-only"` to lock the evaluator's Codex sandbox. So the four below are the
+baseline, not a closed set:
 
 ```toml
 name = "{role}"
 description = "{one line — same role summary as the .md}"
+model_reasoning_effort = "high" # "xhigh" for leader
 developer_instructions = '''
 You are the Gobbi {role} role for this repository.
 
@@ -159,7 +164,9 @@ evidence, commit in-boundary but NEVER push.}
 '''
 ```
 
-The `developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
+The `model_reasoning_effort` value follows Gobbi's role policy: `leader` is `xhigh`;
+`manager`, `executor`, `evaluator`, and `assistant` are `high`. The
+`developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
 then the canonical `.md`, (b) lists the role's MINIMUM `.agents/skills/...` loads (Codex loads
 from `.agents/skills`, not user-level), and (c) states the role's git / scope guardrail. Keep
 the `.toml` thin — substance belongs in the `.md`, so the two never drift.
@@ -182,7 +189,7 @@ the user's explicit decision. Its FULL wiring set is:
 2. Both mirror symlinks: `.claude/agents/{role}.md` and `.codex/agents/{role}.toml` (P5).
 3. An `Agent({role})` permission in `.claude/settings.json` (the existing 5 entries are at
    `:25-29`; verify the exact lines at edit time).
-4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Owns / When spawned).
+4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
 5. A `delegation/templates/{role}.md` (authored in the `delegation` skill's `templates/`).
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
@@ -246,6 +253,8 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   demands it; include `## Continuation discipline` only for continuable roles.
 - **MUST keep the `.toml` thin** — it points to the canonical `.md` and lists min skill loads;
   behavioral substance lives in the `.md`, never duplicated in the `.toml`.
+- **MUST set `model_reasoning_effort` from the role default** — `leader` is `xhigh`;
+  `manager`, `executor`, `evaluator`, and `assistant` are `high`.
 - **MUST point to the one canonical owner, not restate it** — the role spec cites the
   delegation template; it does not copy it.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read

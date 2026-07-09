@@ -145,7 +145,8 @@ that can exceed the Bash tool cap must run in the background, with an explicit P
 validation.
 
 Do not pass `--model` or `--effort` unless the user explicitly requested that override. The
-bridge contract inherits the runtime's configured model and effort by default.
+bridge contract inherits the runtime's configured model and effort by default. Native custom-agent
+role effort defaults live in `.codex/agents/*.toml`; they do not imply a bridge CLI override.
 
 Strict source-read-only invocation:
 

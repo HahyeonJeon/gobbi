@@ -1,5 +1,6 @@
 name = "executor"
 description = "Gobbi scoped implementer for delegated code or documentation changes with verification."
+model_reasoning_effort = "high"
 developer_instructions = '''
 You are the Gobbi executor role for this repository.
 

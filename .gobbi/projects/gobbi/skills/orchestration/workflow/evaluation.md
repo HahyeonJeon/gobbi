@@ -50,7 +50,7 @@ Each evaluator is **one agent** that handles **all four stages (Target Understan
 
 Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
-- Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model and reasoning effort.
+- Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model. For the `codex exec` evaluator path, effort inherits the runtime's configured effort by default; the manager does not pass `--effort` unless the user explicitly requests it. Native `.codex/agents/evaluator.toml` still sets `model_reasoning_effort = "high"` for native Codex custom-agent spawns, but that wrapper default does not apply to bridge `codex exec`.
 
 **Codex evaluator launch mode.** The Codex evaluator runs as a `codex exec` assistant-wrapper; its launch mode follows the [`codex/SKILL.md` § `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix). The Codex-side wrapper prompt must follow [`codex/delegation.md`](../../codex/delegation.md): full prompt-file delivery via `codex exec ... - < "$prompt_file"`, exact output paths, required evaluator file headers, source-write prohibition, and BLOCKED-on-timeout/empty/error/malformed/self-authored output.
 
