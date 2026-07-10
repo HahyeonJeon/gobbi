@@ -51,4 +51,3 @@ At Sub-step D (the design gate, after both the Claude leader and the Codex propo
 
 - [[evaluation-childdoc-split]] (design) — the full design these 4 decisions shaped
 - [[evaluation-childdoc-split]] (discussion) — the full discussion-log transcript these decisions are extracted from
-</content>

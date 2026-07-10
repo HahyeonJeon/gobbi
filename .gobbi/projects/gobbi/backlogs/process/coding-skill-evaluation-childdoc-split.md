@@ -40,4 +40,3 @@ Reuse the `evaluation-childdoc-split` design directly: extract `coding/evaluatio
 ## Related
 
 - [[evaluation-childdoc-split]] (design) — the design and gate this migration would reuse
-</content>

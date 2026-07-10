@@ -12,7 +12,7 @@ keywords: [check-eval-childdocs, completeness-gate, fail-closed, class-predicate
 author: claude
 priority: high
 project-scope: false
-shipped_in: task-01-build-check-eval-childdocs-guard
+shipped_in: 48ff11a2
 ---
 
 # Build `check-eval-childdocs.sh` early, before the rollout
@@ -46,4 +46,3 @@ Shipped as task 01 (`build-check-eval-childdocs-guard`) of this session's Execut
 - [[evaluation-childdoc-split]] (design) — the D6 gate specification this backlog item built
 - [[eval-childdoc-cotouch-inventory]] — the illustrative co-touch inventory used to seed the sweep patterns
 - [[guard-run-mode-not-separated]] — the open risk about the guard's two run modes, addressed during the build
-</content>

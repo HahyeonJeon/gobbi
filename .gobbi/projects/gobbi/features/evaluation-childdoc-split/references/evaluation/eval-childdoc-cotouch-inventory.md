@@ -82,4 +82,3 @@ Wording + links + output-SHAPE (`{perspective}\.md`, `overall\.md`, "one (file )
 - [[evaluation-childdoc-split]] (design) — the design section (D5/D6) this reference extracts from
 - [[completeness-model-is-a-build-time-gate]] — the mistake the gate-direction flip generalizes
 - [[atomic-flip-must-propagate-to-cotouch-prose-and-active-mistakes]] — the task-10 finding that this hand-listed inventory (D5) is illustrative, not the guard's own certified output, and additional prose/mistakes.md surfaces still needed a separate sweep
-</content>

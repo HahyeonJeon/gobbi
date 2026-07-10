@@ -12,7 +12,7 @@ keywords: [check-eval-childdocs, guard-run-mode, atomic-last, goal-state]
 author: claude
 priority: medium
 project-scope: false
-shipped_in: task-01-build-check-eval-childdocs-guard
+shipped_in: 48ff11a2
 ---
 
 # State the guard's two run-mode goal-states explicitly at Planning
@@ -51,4 +51,3 @@ Planning's task 01 (`build-check-eval-childdocs-guard`) implemented the two mode
 - [[evaluation-childdoc-split]] (design) — the D6 rollout + atomic-last flip this goal-state split applies to
 - [[guard-check-eval-childdocs-early]] — the sibling backlog item this note refines (the WHEN of the guard build; this note is the WHAT of its two run modes)
 - [[guard-run-mode-not-separated]] — the typed decision this backlog note carried forward as a Planning-input
-</content>

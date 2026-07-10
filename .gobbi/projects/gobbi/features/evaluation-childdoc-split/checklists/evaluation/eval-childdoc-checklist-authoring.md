@@ -50,4 +50,3 @@ scenario: eval-childdoc-scenario-authoring
 - [[eval-childdoc-scenario-authoring]] — the scenario this checklist implements
 - [[evaluation-childdoc-split]] (design) — the D4 checklist design + Point-2 contract this file operationalizes
 - [[four-user-decisions]] — OQ-2 (box semantics) and OQ-3 (ID scheme) locks this checklist enforces
-</content>

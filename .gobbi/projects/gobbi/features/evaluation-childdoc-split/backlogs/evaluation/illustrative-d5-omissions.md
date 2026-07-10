@@ -47,4 +47,3 @@ No design work needed — this is a verification fixture for the guard's first r
 
 - [[guard-check-eval-childdocs-early]] — the (now-shipped) guard-build backlog item this smoke-test set validates
 - [[completeness-model-is-a-build-time-gate]] — the model fix that makes these omissions non-blocking
-</content>

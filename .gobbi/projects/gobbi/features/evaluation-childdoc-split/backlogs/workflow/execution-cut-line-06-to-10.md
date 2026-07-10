@@ -12,7 +12,7 @@ keywords: [wave-2, wave-3, atomic-flip, cut-line, cross-session-hazard]
 author: claude
 priority: high
 project-scope: false
-shipped_in: task-10-atomic-flip
+shipped_in: 503d69a6
 ---
 
 # Ship tasks 06-10 of the evaluation-childdoc-split plan
@@ -48,4 +48,3 @@ Execution continued past the original cut line within this same session: tasks 0
 - [[execution-bundle-source-before-trim]] — the internal ordering invariant each of tasks 06-09 restated
 - [[dual-system-plan-integration]] — the plan this backlog entry originally deferred from
 - [[atomic-flip-must-propagate-to-cotouch-prose-and-active-mistakes]] — the task-10 finding on what the atomic flip's structural guard did not, by itself, prove
-</content>

@@ -38,4 +38,3 @@ A seed bullet has several sub-dimensions and ONE of them shares a keyword with a
 ## Related
 
 - [[merging-two-seed-bullets-narrows-broader-scope]] — sibling consolidation-loss trap: a merge narrowed a broader seed bullet's scope
-</content>

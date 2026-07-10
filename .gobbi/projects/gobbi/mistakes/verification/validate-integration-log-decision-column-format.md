@@ -38,4 +38,3 @@ Any integration log `decision` column cell that is not an exact match to one of 
 ## Related
 
 - [[evaluation-childdoc-split]] (design) — the design this integration log fed
-</content>

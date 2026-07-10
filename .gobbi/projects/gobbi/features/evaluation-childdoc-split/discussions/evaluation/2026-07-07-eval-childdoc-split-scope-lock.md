@@ -59,4 +59,3 @@ Deferred / backlog candidates surfaced but not decided this loop: the `check-eva
 
 - [[four-user-decisions]] (decision) — the formal decision record for the 4 Sub-step D forks
 - [[evaluation-childdoc-split]] (design) — the design these exchanges shaped
-</content>

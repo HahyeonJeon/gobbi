@@ -39,4 +39,3 @@ Two seed bullets under one scenario where one subject is a subset of the other (
 
 - [[over-scrub-drops-idea-level-seed-condition]] — sibling consolidation-loss trap (a scrubbed keyword dropped a sub-dimension); this one narrowed a merged bullet's scope
 - [[usage-context-check-narrowed-to-inputs-only]] — same family, a later witness (three context dimensions narrowed to one)
-</content>

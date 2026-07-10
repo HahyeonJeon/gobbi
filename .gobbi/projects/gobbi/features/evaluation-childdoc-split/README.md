@@ -56,4 +56,3 @@ No deferred work remains in this feature's own scope — the original session-si
 
 - [[completeness-model-is-a-build-time-gate]] — the mistake this feature's core completeness-gate fix generalizes
 - [[guard-revises-twice-means-scope-model-wrong]] — the project-level pattern this feature's Ideation loop independently re-confirmed
-</content>

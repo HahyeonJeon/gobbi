@@ -39,4 +39,3 @@ A guard/validator captures a critical value via `VALUE="$(resolver_that_can_exit
 
 - [[hardcoded-baseline-guard-is-an-edit-target-of-the-structure-it-guards]] — sibling guard-correctness trap
 - [[guard-cited-as-runtozero-without-matching-vocab]] — another guard fail-open family
-</content>

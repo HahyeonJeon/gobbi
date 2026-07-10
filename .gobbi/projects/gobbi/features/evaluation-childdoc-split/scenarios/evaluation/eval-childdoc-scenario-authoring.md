@@ -112,4 +112,3 @@ _Lens (see `evaluation.md`):_ does the idea solve the right problem, inside the 
 - [[evaluation-childdoc-split]] (design) — the D1/D3 split rule and skeleton this scenario file's shape implements
 - [[four-user-decisions]] — the OQ-3 user directive locking the full-word ID scheme
 - [[eval-childdoc-checklist-authoring]] — the sibling checklist this scenario's IDs cross-reference
-</content>

@@ -38,4 +38,3 @@ A completeness/coverage/co-touch gate cited as a "run to zero" or "certifies com
 ## Related
 
 - [[guard-revises-twice-means-scope-model-wrong]] — the first recorded instance of this pattern (memory-migration-curation-campaign); this file is the second, independent confirmation, extended to the class-predicate + correctness-check generalization
-</content>

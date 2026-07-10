@@ -38,4 +38,3 @@ Any point where the manager (or a lead agent coordinating another agent's work) 
 ## Related
 
 - [[teammate-finalize-brief-crosses-with-in-progress-turn]] — the sibling pattern on the manager's WRITE side (sending a brief too early); this file is the READ-side instance of the same underlying race
-</content>

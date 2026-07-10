@@ -128,7 +128,7 @@ Lanes (documentation only — Execution runs the tasks sequentially):
 ## Key hazards
 
 1. **Atomic-last / DO-NOT-MERGE (resolved).** The branch was INTENTIONALLY incoherent between task 04 (execution/evaluation.md trimmed) and task 10 (the flip repoints the Stage-1 seed-load to scenario.md) until task 10 landed. This window is now closed — task 10's `--enforce-inclusion` passed in this session.
-2. **Self-referential-repo write discipline.** gobbi edits its own skill tree, so `.gobbi/projects/gobbi/skills/...` exists as separate inodes in both the main checkout and this session's worktree. Every write path MUST be resolved against the absolute worktree root (`<PM>`) and MUST literally contain `worktrees/claude-2026-07-07-…/` before the first write — see `git/mistakes.md#executor-edited-main-tree-not-worktree-copy` (CRITICAL, required on every task).
+2. **Self-referential-repo write discipline.** gobbi edits its own skill tree, so `.gobbi/projects/gobbi/skills/...` exists as separate inodes in both the main checkout and this session's worktree. Every write path MUST be resolved against the absolute worktree root (`<PM>`) and MUST literally contain `worktrees/claude-2026-07-07-…/` before the first write — see `skills/git/mistakes.md#executor-wrote-to-main-tree-not-worktree` (CRITICAL, required on every task).
 3. **Mechanical gates flip-coupled.** `orchestration/workflow/evaluation.md:309` + `codex/SKILL.md:383` land WITH the parent flip (task 10) — a pre-flip 8-file evaluation would FAIL a gate already changed to 9. These landed together in task 10, per design.
 4. **Guard mode timing.** `--enforce-inclusion` fails BY DESIGN before task 10 (no Family-9 surface updated yet) — it is task 10's acceptance gate only. `--classify-only` / `--bundle --pre-flip` are the standing checks re-run at 04/06-09/10.
 
@@ -147,4 +147,3 @@ Every task's `verifies:` block is self-failing (`|| exit 1`, `if …; then exit 
 - [[execution-bundle-source-before-trim]] — the mistake this plan's Wave-1/Wave-2 ordering invariant corrects
 - [[verifies-must-be-self-failing]] — the mistake every task's `verifies:` block corrects
 - [[execution-cut-line-06-to-10]] — the (now-closed) backlog entry recording the original Wave-2/Wave-3 deferral
-</content>

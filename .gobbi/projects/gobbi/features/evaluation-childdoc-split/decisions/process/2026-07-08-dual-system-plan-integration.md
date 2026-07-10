@@ -27,7 +27,7 @@ The producer resolved 10 substantive deltas between the two plans. It took Codex
 ## Rationale
 
 - **Took Codex (4 of 10):** Point-3 prototype-safe split (shared docs land in Wave 1 without a hard-require, avoiding mid-rollout frame-collapse on un-split loops); the atomic-flip-as-one-unit shape (never split the parent flip from its Family-9 co-touch); the flip file set as the guard `--classify-only` output (not a hand-list, so scope expansion surfaces instead of silently landing); the concrete guard-flag names (`--self-test`/`--classify-only`/`--bundle {loop} --pre-flip`/`--enforce-inclusion`).
-- **Merged-selective (4 of 10):** guard modes (kept the producer's two-mode CONCEPT, adopted Codex's concrete flags); required-skills/mistakes floor (merged Codex's broader default floor with the producer's `executor-edited-main-tree-not-worktree-copy` mistake, which Codex's list omitted and which is CRITICAL for this self-referential-repo feature); per-bundle wire+verify (kept the producer's per-bundle sync discipline, folded into each split task's `verifies` rather than separate tasks); cut-line (reconciled to tasks 01-05, adopting Codex's explicit "stop after task 02 if over budget" fallback).
+- **Merged-selective (4 of 10):** guard modes (kept the producer's two-mode CONCEPT, adopted Codex's concrete flags); required-skills/mistakes floor (merged Codex's broader default floor with the producer's `skills/git/mistakes.md#executor-wrote-to-main-tree-not-worktree` mistake, which Codex's list omitted and which is CRITICAL for this self-referential-repo feature); per-bundle wire+verify (kept the producer's per-bundle sync discipline, folded into each split task's `verifies` rather than separate tasks); cut-line (reconciled to tasks 01-05, adopting Codex's explicit "stop after task 02 if over budget" fallback).
 - **Kept own (2 of 10):** the labor-core granularity (the execution prototype stays a 3-task sequence — scenario/checklist/trim — so the highest-risk authored content, the ~7-14-block no-filler scenario writing, gets its own review-able commit; Codex's 1-task version was leaner but coarser); the DO-NOT-MERGE-mid-way hazard (kept prominent — Codex's plan covered iteration-snapshot discipline but not this specific worktree-incoherence risk).
 
 ## Alternatives considered
@@ -43,4 +43,3 @@ The canonical `draft-iter1.md` (10 tasks) is genuinely stronger than either inpu
 
 - [[execution-bundle-source-before-trim]] — a defect in the iter1 canonical draft that iter2 fixed
 - [[verifies-must-be-self-failing]] — a second defect in the iter1 canonical draft that iter2 fixed
-</content>

@@ -14,7 +14,6 @@ priority: medium
 domain: process
 supersedes: null
 superseded_by: null
-related: [executor-edited-main-tree-not-worktree-copy]
 ---
 
 # A Load-Directive path must be verified to exist in the WORKTREE base, not the main tree
@@ -37,5 +36,4 @@ The worktree base commit is behind `develop` (check `git -C <WT> rev-parse HEAD`
 
 ## Related
 
-- [[executor-edited-main-tree-not-worktree-copy]] — the sibling worktree-vs-main-tree confusion, write-side
-</content>
+- Sibling trap (skill-surface, not a memory-tier `[[slug]]` link): `skills/git/mistakes.md#executor-wrote-to-main-tree-not-worktree` — the write-side worktree-vs-main-tree confusion (an executor writes to the main tree instead of the worktree); this trap is the read-side analog (a Load-Directive path checked only against the main tree)

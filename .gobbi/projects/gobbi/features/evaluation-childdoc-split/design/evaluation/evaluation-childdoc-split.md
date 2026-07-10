@@ -122,4 +122,3 @@ Optimizes for: a completeness proof that cannot silently miss a stale surface (t
 - [[four-user-decisions]] — the 4 locked user-decision gates
 - [[completeness-model-is-a-build-time-gate]] — the mistake this design's core fix generalizes
 - [[eval-childdoc-split-plan]] — the 10-task Planning decomposition of this design
-</content>

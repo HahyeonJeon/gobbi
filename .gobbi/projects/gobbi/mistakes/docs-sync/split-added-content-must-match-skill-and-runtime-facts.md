@@ -47,4 +47,3 @@ You are splitting or rewriting a doc and you write a sentence that is NOT a rest
 - [[merging-two-seed-bullets-narrows-broader-scope]] — sibling split-fidelity trap: consolidation narrows a broader-scope seed condition
 - [[over-scrub-drops-idea-level-seed-condition]] — sibling split-fidelity trap: scrubbing idioms drops a genuine idea-level seed condition
 - [[atomic-flip-must-propagate-to-cotouch-prose-and-active-mistakes]] — sibling trap: a structural guard's green does not prove a semantic repoint fully propagated
-</content>

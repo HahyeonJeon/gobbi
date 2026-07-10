@@ -39,4 +39,3 @@ Any plan where one task both (a) trims or deletes content from a source file, an
 
 - [[verifies-must-be-self-failing]] — the sibling defect from the same Planning iter1 evaluation round
 - [[dual-system-plan-integration]] — the integration log this defect was caught against
-</content>

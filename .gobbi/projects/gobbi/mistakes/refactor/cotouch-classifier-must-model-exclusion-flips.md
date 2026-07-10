@@ -39,4 +39,3 @@ Building a completeness/co-touch classifier for a refactor that adds a file/fiel
 
 - [[hardcoded-baseline-guard-is-an-edit-target-of-the-structure-it-guards]]
 - [[cotouch-enumeration-must-cover-semantic-equivalents]]
-</content>

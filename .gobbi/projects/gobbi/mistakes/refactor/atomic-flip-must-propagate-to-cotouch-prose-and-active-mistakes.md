@@ -43,4 +43,3 @@ An atomic flip whose acceptance gate is a STRUCTURAL guard, where the change has
 - [[cotouch-enumeration-must-cover-semantic-equivalents]] — the sibling trap: a co-touch enumeration by one phrasing misses semantically-identical assertions phrased differently
 - [[enumerate-all-restatements-and-classify-deferral-before-claiming-map-complete]] — enumerate every restatement of a contract before claiming the affected-file map complete
 - [[split-added-content-must-match-skill-and-runtime-facts]] — sibling trap from the same session: content added during a split must be checked against its owner, not assumed correct
-</content>

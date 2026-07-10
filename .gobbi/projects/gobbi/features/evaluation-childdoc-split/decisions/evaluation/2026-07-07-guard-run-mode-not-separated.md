@@ -44,4 +44,3 @@ Planning must, when decomposing `check-eval-childdocs.sh` into a task, explicitl
 ## Related
 
 - [[evaluation-childdoc-split]] (design) — the D6 gate + atomic-last rollout this risk applies to
-</content>

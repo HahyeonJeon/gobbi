@@ -39,4 +39,3 @@ Scan every `verifies:` line for: a bare `| wc -l` with no subsequent numeric com
 
 - [[execution-bundle-source-before-trim]] — the sibling defect from the same Planning iter1 evaluation round
 - [[dual-system-plan-integration]] — the integration log this defect was caught against
-</content>

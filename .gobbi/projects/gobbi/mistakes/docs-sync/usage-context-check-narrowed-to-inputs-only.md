@@ -38,4 +38,3 @@ A seed bullet lists several named fields / dimensions joined by "/" or "and"; th
 ## Related
 
 - [[merging-two-seed-bullets-narrows-broader-scope]] — same consolidation-narrowing family (task-07 witness: "each gap" narrowed to "each missing skill"); this is the task-08 witness (three context dimensions narrowed to one)
-</content>
