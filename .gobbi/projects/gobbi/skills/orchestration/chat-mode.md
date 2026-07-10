@@ -149,9 +149,9 @@ slice's worth of work.
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Forced user-driven per the discuss-first contract (§9) — overrides any per-step `discuss.mode` setting. Manager + user converge on the slice intent. | manager orchestration: [discussion](../discussion/SKILL.md); specialist phase load: — | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Leader runs the full 4-substep procedure (Frame → Lock Scope → Research → Design Recommendation) scoped to this one slice. | manager orchestration: [ideation.md](workflow/ideation.md); specialist phase load: [../ideation/SKILL.md](../ideation/SKILL.md) (+ [../research/SKILL.md](../research/SKILL.md) at Sub-step C) | leader |
-| 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](SKILL.md#verdict-aggregation). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
+| 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). Aggregate verdicts per [Workflow State Machine § Verdict aggregation](workflow/state-machine.md#verdict-aggregation). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4 (transcript + session.json upsert + PASS-iter `outputs/` + typed-finding staging). Mistake stage moment-of-capture always live. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → escalate to user through the active runtime's user-decision primitive. | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE` with budget → return to row 1 with findings appended. Any `FAIL` → escalate to the user (safety gate, never auto-re-entered). Budget exhausted → escalate to user through the active runtime's user-decision primitive. | manager orchestration: —; specialist phase load: — | manager |
 
 ### Step 3 — Slice Preparation Loop (Skipped at loop entry)
 
@@ -234,7 +234,7 @@ slice's worth of work.
 | 2 | `WORK` | Spawn `assistant` subagent. Consolidate: inventory the Chat per-slice `staging/` sources, promote staged findings + mistake-candidates, read task-records for navigation only, archive shipped backlogs, write handoff. | manager orchestration: [wrap-up.md](workflow/wrap-up.md); specialist phase load: [../wrap-up/SKILL.md](../wrap-up/SKILL.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure for the Wrap-up loop. Prior-slice typed findings are inventoried and promoted during Wrap-up WORK (Step 2) from the Chat `staging/` subtree; `task-record.md` and transcripts are context only, never memory sources. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → close session. `REVISE` → re-enter `DISCUSSION` (up to `max=3` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → close session. `REVISE` → re-enter `DISCUSSION` (up to `max=3` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](workflow/state-machine.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
 
 ---
 
@@ -518,7 +518,7 @@ Workflow Status Display` is the canonical Auto view.
 Parallel to `orchestration/SKILL.md § Loop states`. This table covers the per-task slice's
 state-transition contract for Chat Mode.
 
-> **`iter` convention (pinned).** In this table `iter` is the **1-based WORK-pass number** — the same value the [Workflow Status Display](SKILL.md#workflow-status-display) renders as `current / max` and the §8.3 worked example shows as `iter 1`. So `iter == maxIter (N)` reads as "the N-th (final) WORK pass". This is the display projection of the MF-1-pinned rule in [`SKILL.md § Iteration rule`](SKILL.md#iteration-rule) (`maxIterations` = max WORK passes; the internal 0-based counter exits at `iter + 1 == maxIterations`) — the two conventions never disagree.
+> **`iter` convention (pinned).** In this table `iter` is the **1-based WORK-pass number** — the same value the [Workflow Status Display](workflow/status-display.md#workflow-status-display) renders as `current / max` and the §8.3 worked example shows as `iter 1`. So `iter == maxIter (N)` reads as "the N-th (final) WORK pass". This is the display projection of the MF-1-pinned rule in [`SKILL.md § Iteration rule`](workflow/state-machine.md#iteration-rule) (`maxIterations` = max WORK passes; the internal 0-based counter exits at `iter + 1 == maxIterations`) — the two conventions never disagree.
 
 | From state | Event | To state | Guard / Notes |
 |------------|-------|----------|---------------|

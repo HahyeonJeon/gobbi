@@ -1,5 +1,7 @@
 # Workflow — Production (Orchestration)
 
+**Doc kind:** gate-orchestration.
+
 How the **manager** orchestrates the PRODUCTION (WORK) sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager. The Codex proposer runs as the `codex exec` assistant-wrapper documented in [`codex/SKILL.md` § Dual-System Production](../../codex/SKILL.md), with its prompt-file contract owned by [`codex/delegation.md`](../../codex/delegation.md); the Claude producer — leader for Ideation/Preparation/Planning, executor for Execution, assistant for Wrap-up — does the integration. Production is the creation-time analogue of [`workflow/evaluation.md`](evaluation.md): evaluation runs two reviewers on a finished artifact; production runs two generators before the artifact is finished.
 
 **The manager spawns exactly two producers — the Claude producer and the Codex proposer — and does NOT integrate.** The Claude producer is the default integrator; the manager adjudicates ONLY large gaps and escalates them to the user. Codex NEVER writes the canonical artifact — it only proposes. Authoring the canonical artifact from the Codex proposal, or having the manager blend the two outputs, is a workflow breach.

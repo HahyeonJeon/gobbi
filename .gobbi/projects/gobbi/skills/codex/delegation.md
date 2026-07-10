@@ -150,7 +150,8 @@ runs use at least `1200s` unless the user explicitly approves a different cap. A
 per the matrix above, with an explicit PID and file validation.
 
 Do not pass `--model` or `--effort` unless the user explicitly requested that override. The
-bridge contract inherits the runtime's configured model and effort by default.
+bridge contract inherits the runtime's configured model and effort by default. Native custom-agent
+role effort defaults live in `.codex/agents/*.toml`; they do not imply a bridge CLI override.
 
 Strict source-read-only invocation — same launch rule per the [`codex/SKILL.md` § codex exec launch
 runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix): foreground only under the host budget,

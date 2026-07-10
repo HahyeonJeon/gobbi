@@ -278,7 +278,7 @@ The manager translates this into its own user-facing status (`PROCEED` / `PROCEE
 
 ## Hook Integration
 
-Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../../.claude/hooks/post-tool-use-agents.sh) (registered for `Task` / `Agent` on `PostToolUse` + `PostToolUseFailure`). The hook *routes* `step` / `phase` / `iter` / `sub-step` / `system` from the prompt's structured headers and *may seed* an `agents[]` entry's routing fields — but it is NOT the source of truth for **per-agent token usage**: that is recorded by the manager via `jq` over each agent's own transcript (see [`orchestration/SKILL.md` § Recording workflow metadata](../orchestration/SKILL.md#recording-workflow-metadata)). The hook also cannot always resolve the worktree's `session.json` (worktree-path limitation: `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`), so its upsert is best-effort. For the hook's routing extraction to populate `step` / `phase` / `iter` / `sub-step` / `system` correctly when it does fire, every delegation prompt MUST place a small block of **structured headers** near the top of the prompt body — under the identity line, above the inline-pasted Task Description (D2 order).
+Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../../.claude/hooks/post-tool-use-agents.sh) (registered for `Task` / `Agent` on `PostToolUse` + `PostToolUseFailure`). The hook *routes* `step` / `phase` / `iter` / `sub-step` / `system` from the prompt's structured headers and *may seed* an `agents[]` entry's routing fields — but it is NOT the source of truth for **per-agent token usage**: that is recorded by the manager via `jq` over each agent's own transcript (see [`orchestration/workflow/metadata.md` § Recording workflow metadata](../orchestration/workflow/metadata.md#recording-workflow-metadata)). The hook also cannot always resolve the worktree's `session.json` (worktree-path limitation: `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`), so its upsert is best-effort. For the hook's routing extraction to populate `step` / `phase` / `iter` / `sub-step` / `system` correctly when it does fire, every delegation prompt MUST place a small block of **structured headers** at the very top of the prompt body (before any other content).
 
 ### Structured-Header Convention
 
@@ -383,23 +383,23 @@ The producer templates ([`templates/leader.md`](templates/leader.md), [`template
 
 ## Model Selection
 
-> **Claude Code defaults reasoning-heavy work to opus and narrow assistant lookups to sonnet. Codex inherits the parent session model and effort unless the user explicitly overrides them.**
+> **Claude Code defaults reasoning-heavy work to opus and narrow assistant lookups to sonnet. Codex inherits the parent session model and uses role-specific effort from the wrapper unless the user explicitly overrides it.**
 
-In Claude Code, opus covers every role whose quality bar depends on reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed), and executor (implementing within scope still needs reasoning depth for correctness and edge cases). Sonnet is reserved for the narrow read-only assistant — lookups, references, and factual answers that do not require judgment. The manager sets `model:` on the Claude Code `Agent` tool call at dispatch time, which overrides the agent definition's default. In native Codex, do not hard-code model or reasoning effort in Gobbi TOML unless the user explicitly asks; let Codex inherit the parent session settings.
+In Claude Code, opus covers every role whose quality bar depends on reasoning — manager (user-facing decisions), leader (open-ended investigation and decomposition), evaluator (catching non-obvious gaps an author missed), and executor (implementing within scope still needs reasoning depth for correctness and edge cases). Sonnet is reserved for the narrow read-only assistant — lookups, references, and factual answers that do not require judgment. The manager sets `model:` on the Claude Code `Agent` tool call at dispatch time, which overrides the agent definition's default. In native Codex, do not hard-code model names in Gobbi TOML unless the user explicitly asks; let Codex inherit the parent session model. The `.codex/agents/*.toml` wrapper's `model_reasoning_effort` field is the role effort default: `leader` remains `xhigh`; `manager`, `executor`, `evaluator`, and `assistant` use `high`.
 
-| Agent | Stance | Claude Code default | Codex default | Rationale |
-|---|---|---|---|---|
-| `manager` | — | opus | inherit parent | Session main agent; orchestration + user discussion require deep reasoning |
-| `leader` | — | opus | inherit parent | Deep reasoning across investigation, research, and decomposition |
-| `executor` | — | opus | inherit parent | Implementation within scope still needs reasoning depth for correctness and edge cases |
-| `evaluator` | — | opus | inherit parent | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
-| `assistant` | — | sonnet | inherit parent | Narrow, fast support work — lookups, references, factual answers |
+| Agent | Stance | Claude Code model | Codex model | Codex effort | Rationale |
+|---|---|---|---|---|---|
+| `manager` | — | opus | inherit parent | high | Session main agent; orchestration + user discussion require deep reasoning |
+| `leader` | — | opus | inherit parent | xhigh | Deep reasoning across investigation, research, and decomposition |
+| `executor` | — | opus | inherit parent | high | Implementation within scope still needs reasoning depth for correctness and edge cases |
+| `evaluator` | — | opus | inherit parent | high | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
+| `assistant` | — | sonnet | inherit parent | high | Narrow, fast support work — lookups, references, factual answers |
 
 > **The `manager` row is listed for model-tier completeness only** — the manager is the root session agent (Not Task-spawnable, per [§ Agent Roster](#agent-roster)); it is never dispatched via the subagent primitive. Only `leader` / `executor` / `evaluator` / `assistant` are spawned.
 
 > **Dispatch-time overrides are explicit, not inferred.**
 
-If a specific Claude Code task calls for a model different from the role's default — an exceptionally mechanical sub-task that fits sonnet, or a complex assistant lookup that warrants opus — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. For Codex, model changes are a user-level runtime choice, not a Gobbi TOML default. The role's default is the right choice unless the manager can articulate why this task is exceptional.
+If a specific Claude Code task calls for a model different from the role's default — an exceptionally mechanical sub-task that fits sonnet, or a complex assistant lookup that warrants opus — the manager sets `model:` on the `Agent` call explicitly and documents the reason in the delegation prompt's `## Context` block. For Codex, model changes are a user-level runtime choice, not a Gobbi TOML default. Effort changes outside the role defaults require explicit user direction. The role's default is the right choice unless the manager can articulate why this task is exceptional.
 
 > **Model tiers and capabilities evolve — these are current guidelines, not permanent assignments.**
 
@@ -427,15 +427,15 @@ Canonical phase list: **`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` § Glossar
 
 The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime wrappers point back to those canonical prompts: `.claude/agents/{role}.md` for Claude Code, `.codex/agents/{role}.toml` for Codex.
 
-| Agent | Role | When to use | Model |
-|---|---|---|---|
-| `manager` | Session chief — orchestration, user discussion, decision-making | The root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. | Opus |
-| `leader` | PI/PM — research, ideation direction, planning decomposition | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. Writes artifacts; never implements code. | Opus |
-| `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Opus |
-| `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus |
-| `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet |
+| Agent | Role | When to use | Model | Effort |
+|---|---|---|---|---|
+| `manager` | Session chief — orchestration, user discussion, decision-making | The root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. | Opus | high |
+| `leader` | PI/PM — research, ideation direction, planning decomposition | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. Writes artifacts; never implements code. | Opus | xhigh |
+| `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Opus | high |
+| `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus | high |
+| `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet | high |
 
-> **The workflow todo list is manager-owned.** The 6-step harness spine ([`orchestration/SKILL.md` § Harness Todo List](../orchestration/SKILL.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
+> **The workflow todo list is manager-owned.** The 6-step harness spine ([`orchestration/workflow/status-display.md` § Harness Todo List](../orchestration/workflow/status-display.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
 
 ---
 

@@ -1,5 +1,6 @@
 name = "manager"
 description = "Gobbi root-session manager role. Usually represented by AGENTS.md rather than spawned as a subagent."
+model_reasoning_effort = "high"
 developer_instructions = '''
 You are the Gobbi manager role for this repository.
 
