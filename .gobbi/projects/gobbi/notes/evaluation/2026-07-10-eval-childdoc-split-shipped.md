@@ -62,4 +62,3 @@ Open a PR from branch `claude-2026-07-07-39f3dfb0-49df-44d4-a6bd-d2e4743b36e3` o
 - [[eval-childdoc-split-plan]] — the 10-task plan this session executed in full
 - [[completeness-model-is-a-build-time-gate]] — the Ideation-loop mistake this session's core methodology generalizes
 - [[atomic-flip-must-propagate-to-cotouch-prose-and-active-mistakes]] — the task-10 finding that closes out the session's dual-system-caught-defect arc
-</content>
