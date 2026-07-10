@@ -1,21 +1,15 @@
 # Workflow — Planning (Orchestration)
 
-How the **manager** orchestrates the Planning Loop. The `leader` and `assistant` specialists that participate load [`planning/SKILL.md`](../../planning/SKILL.md) (leader's role spans both DISCUSSION and WORK) and [`record/SKILL.md`](../../record/SKILL.md) (assistant's RECORD procedure).
-
-**Planning focuses on Who / When / Where.** Ideation concentrated on What / Why / How; Planning takes the locked idea and decides who implements what, in what order, where in the codebase.
-
-The Planning Loop runs the four-phase iteration shape — `DISCUSSION` → `WORK` → `EVALUATION` → `RECORD` → `ITER / EXIT`.
-
-| Phase | Content semantics for Planning |
-|---|---|
-| `DISCUSSION` | Manager + user + leader (research-backed opinion) discuss Who / When / Where. Tasks, dependencies, and agent assignments are decided here. |
-| `WORK` | Leader documents the DISCUSSION outcome into the canonical plan draft. Documentation, not new content. |
-| `EVALUATION` | Dual-system evaluators run the four-stage procedure across all seven perspectives + Overall. |
-| `RECORD` | Assistant synthesizes loop's `outputs/` into session staging only — memory promotion is the sole responsibility of Wrap-up. |
+**Doc kind:** loop-orchestration.
+**Purpose:** the manager orchestrates the Planning Loop — it runs the four sub-phases
+DISCUSSION → WORK → EVALUATION → RECORD, then the ITER / EXIT decision; it does NOT perform
+the leader / assistant procedures. **Planning focuses on Who / When / Where:** Ideation
+concentrated on What / Why / How; Planning takes the locked idea and decides who implements
+what, in what order, where in the codebase.
 
 ---
 
-## DISCUSSION Phase (manager + user + leader)
+## DISCUSSION Orchestration
 
 **Manager's job**: orchestrate the Who / When / Where discussion with the user, spawning the `leader` for research-backed opinion at each sub-step. Detailed sub-step content (file decomposition, task slicing, dependency graphing, agent assignment) lives in [`planning/SKILL.md`](../../planning/SKILL.md); this section covers the **orchestration choreography**.
 
@@ -61,7 +55,7 @@ The leader brings draft proposals; the user makes final calls. Every decision be
 
 ---
 
-## WORK Phase (leader documents the DISCUSSION outcome)
+## WORK Orchestration
 
 **Manager's job**: spawn the leader for documentation. The leader writes the draft at `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` integrating everything decided in DISCUSSION.
 
@@ -72,11 +66,14 @@ Manager-side responsibilities:
 
 WORK is short by design — the substantive thinking happened in DISCUSSION.
 
-**Dual-system production (proposer spawn).** When `propose.mode: dual` (per-loop; default `dual`), the manager also orchestrates the dual-system **proposer** spawn per [`workflow/production.md`](production.md) during WORK — a Codex proposer runs in parallel with the leader; the leader selectively integrates the frozen proposal and Codex never writes the canonical artifact.
+> **Production owner:** [`workflow/production.md`](production.md). This doc names only that
+> Planning WORK may run dual-system production (`propose.mode: dual`, default). Do not
+> restate proposer spawn, freeze, selective integration, gap classification, or
+> degraded-mode rules.
 
 ---
 
-## EVALUATION Phase (delegated to evaluators)
+## EVALUATION Orchestration
 
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Planning-specific notes:
 
@@ -85,7 +82,7 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 
 ---
 
-## RECORD Phase (delegated to `assistant`)
+## RECORD Orchestration
 
 **Manager's job**: spawn the `assistant` agent. The assistant synthesizes loop's `outputs/` per [`workflow/record.md`](record.md) and [`record/SKILL.md`](../../record/SKILL.md). For Planning, the assistant also:
 
@@ -93,15 +90,13 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 - Stages `scenario_gap` / `checklist_gap` discoveries at `sessions/{date}-{session-id}/3-planning/staging/{scenarios,checklists}/{slug}.md`; Wrap-up promotes to `features/{feature-name}/`
 - Does NOT write to memory directly — all promotion is Wrap-up's responsibility
 
-### Per-iteration session record is NOT committed (gitignored)
-
-There is **no** per-iteration session-record commit. The whole `sessions/` tree is gitignored (`.gitignore:21`), worktree-local, and removed at worktree cleanup (D7 — see [`record/record-map.md`](../../record/record-map.md)). A `git commit` aimed at the iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or `outputs/` content captures **nothing**: `git add` of a `sessions/` path is refused (`paths are ignored ... Use -f`), and a bare `git commit` reports `nothing to commit, working tree clean` and exits non-zero. So the manager does **not** run a `chore(session): record ...` commit after RECORD.
-
-Iteration boundaries are recorded in `session.json.workflow.planning.iterations[]`, not in git. Durable memory exists **only** via Wrap-up promotion: Wrap-up copies promotable `staging/` content (the plan, scenarios, checklists) into tracked `features/`, etc. Only promoted content survives the session.
+> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
+> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
+> for the assistant procedure. Planning keeps no loop-specific commit exception.
 
 ---
 
-## ITER / EXIT Decision
+## ITER / EXIT
 
 After `RECORD`, the manager decides based on the reconciled verdict:
 
@@ -116,31 +111,19 @@ Iteration cap: `workflow.planning.maxIterations` (Auto 5; Chat 1 — one-shot). 
 
 ---
 
-## Output
+## Output Pointers
 
-The canonical tree is [`record/record-map.md`](../../record/record-map.md); Planning's loop dir is `3-planning/`.
+Planning's loop dir is `3-planning/`. Loop-specific files: WORK draft
+`working/draft-iter{n}.md`; optional Codex proposal `working/proposals/codex/draft-iter{n}.md`
++ Integration Log `working/reconciliation-iter{n}.md`; evaluation
+`evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`outputs/{free-filename}.md`; staging `staging/{plans,scenarios,checklists,decisions,references,discussions,design}/{slug}.md`,
+where `staging/plans/{slug}.md` is the loop's headline artifact. **No memory writes during
+Planning** — all `features/{feature-name}/...` and project-tier writes happen at Wrap-up (see
+[`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
 
-```
-.gobbi/projects/{project}/sessions/{date}-{session-id}/
-├── transcripts/                       ← single session-root surface; {role}-{agentId}.jsonl per agent, all loops
-└── 3-planning/
-    ├── outputs/             ← PASS-iter output files (assistant, RECORD, PASS only)
-    ├── working/                ← leader drafts (per iter), discussion-log.md, research refs
-    ├── evaluation/
-    │   └── iter{n}/
-    │       ├── claude/{perspective}.md
-    │       └── codex/{perspective}.md
-    └── staging/                ← session-staged artifacts for Wrap-up to promote (PASS only)
-        ├── plans/{slug}.md
-        ├── scenarios/{slug}.md
-        ├── checklists/{slug}.md
-        ├── decisions/{slug}.md
-        ├── references/{slug}.md
-        ├── discussions/{slug}.md
-        └── design/{slug}.md
-```
-
-**No memory writes during Planning.** All `features/{feature-name}/...` and project-tier writes happen at Wrap-up — see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md).
+> **Path owner:** [`record/record-map.md`](../../record/record-map.md). The full session tree,
+> 4-slot interior, and PASS-only `outputs/` lifecycle live there — never redrawn here.
 
 ---
 

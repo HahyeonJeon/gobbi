@@ -1,5 +1,7 @@
 # Workflow — Session Record (Orchestration)
 
+**Doc kind:** reference-orchestration.
+
 The manager's-eye lifecycle of the per-session working tree: when each piece of session record is written across the workflow, who writes it, and the loop-entry scaffold that materializes it. Loaded by the manager; the canonical on-disk shape is deferred to `record/record-map.md`.
 
 ---

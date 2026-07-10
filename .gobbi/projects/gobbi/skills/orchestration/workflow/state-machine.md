@@ -1,5 +1,7 @@
 # Workflow — State Machine (Orchestration)
 
+**Doc kind:** reference-orchestration.
+
 The loop-internal phase mechanics shared by every productive loop — the DISCUSSION → WORK → EVALUATION → RECORD → ITER/EXIT states, the `state.json` schema shape, verdict aggregation, the iteration rule, mode-specific gates, and the loop-to-agent mapping. Loaded by the manager, which is the sole writer of `state.json`.
 
 ---

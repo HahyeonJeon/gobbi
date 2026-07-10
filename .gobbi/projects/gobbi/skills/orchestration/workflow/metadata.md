@@ -1,5 +1,7 @@
 # Workflow — Metadata (Orchestration)
 
+**Doc kind:** reference-orchestration.
+
 The per-session `session.json` schema and the token-recording model: the session frame, `workflow.{step}` routing, the `agents[]` / `usage` fields, the integration-count value telemetry, and the teammate-aware accounting for Agent Teams. Loaded by the manager, which writes the session frame while the runtime hooks write the token fields.
 
 ---

@@ -1,5 +1,7 @@
 # Workflow — Status Display (Orchestration)
 
+**Doc kind:** reference-orchestration.
+
 The two read-only projections of `state.json` the **manager** renders for the user: the periodic Workflow Status Display snapshot and the always-on Harness Todo List widget. Loaded by the manager when it needs to surface session position; neither is state storage.
 
 ---
