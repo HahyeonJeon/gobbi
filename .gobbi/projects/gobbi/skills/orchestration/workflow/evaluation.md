@@ -87,18 +87,19 @@ sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 │   │   ├── usage.md
 │   │   ├── consistency.md
 │   │   ├── risk.md
-│   │   └── overall.md       ← Stage 3 holistic output (iter 1)
+│   │   ├── overall.md       ← Stage 3 holistic output (iter 1)
+│   │   └── checklist.md     ← filled coverage artifact, copied at Stage 0, completed through Stage 2
 │   └── codex/
-│       └── (same 8 files)
+│       └── (same 9 files)
 ├── iter2/                    ← only exists if iter 1 verdict was REVISE
 │   ├── claude/
-│   │   └── (same 8 files; inherits open findings from iter 1 via Stage 1)
+│   │   └── (same 9 files; inherits open findings and Stage 1 additions from iter 1)
 │   └── codex/
-│       └── (same 8 files)
+│       └── (same 9 files)
 └── ...                       ← additional iter directories as REVISE continues
 ```
 
-Each per-iter directory contains exactly the 8 files (7 perspectives + overall.md) per system. Prior iter directories are **preserved** as the audit trail; iter n reads iter (n-1) directly via Stage 1 inheritance — no separate ledger file exists.
+Each per-iter directory contains exactly the 9 files (7 perspectives + overall.md + the filled checklist.md) per system. Prior iter directories are **preserved** as the audit trail; iter n reads iter (n-1) directly via Stage 1 inheritance — no separate ledger file exists.
 
 Each per-perspective file contains: Artifact Summary + W/W/H (Stage 0) → locked Frame, scenarios-with-attached-checklists (Stage 1) → per-scenario per-check yes/no results → typed findings with `disposition:` field (Stage 2) → Low-confidence appendix section. The `overall.md` file contains Stage 3 cross-cutting findings, Karpathy-mode checks, and Preserve list.
 
@@ -181,13 +182,14 @@ Wrap-up later promotes the `staging/` directory to memory at `features/{feature-
 
 ## Dual-system failure handling
 
-Both evaluators are expected to produce 8 well-formed files (7 perspectives + `overall.md`) within a bounded time and cost budget. Real evaluations face timeouts, malformed outputs, partial outputs, and budget exhaustion. The manager applies the following gates **after** spawning the two evaluators in parallel:
+Both evaluators are expected to produce 9 well-formed files (7 perspectives + `overall.md` + the filled `checklist.md`) within a bounded time and cost budget. Real evaluations face timeouts, malformed outputs, partial outputs, and budget exhaustion. The manager applies the following gates **after** spawning the two evaluators in parallel:
 
 ### Output validation (mechanical)
 
 For each system, the manager verifies:
-- Exactly 8 files written at the expected paths
+- Exactly 9 files written at the expected paths: the seven named perspective files, `overall.md`, and the filled `checklist.md`
 - Each file > 0 bytes
+- `checklist.md` has no unresolved `- [ ]` item; every checked box carries exactly one `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}` marker
 - Each per-perspective file parses for the required sections (Artifact Summary + W/W/H + locked Frame + per-check results + typed findings + low-confidence appendix)
 - Each finding carries Type + Domain + Confidence + Severity + Evidence (no malformed records)
 
@@ -289,6 +291,7 @@ All evaluator writes are **session-scoped**. Evaluators never touch memory.
 |---|---|---|
 | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` | evaluator | One per perspective per system; contains Artifact Summary + W/W/H (Stage 0), locked Frame (Stage 1), per-scenario per-check yes/no results, typed findings (Stage 2), low-confidence appendix |
 | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/overall.md` | evaluator | One per system; contains Stage 3 cross-cutting findings, Karpathy-4 mode checks, Preserve list |
+| `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` | evaluator | One filled coverage artifact per system; copied at Stage 0, extended during Stage 1, fully resolved through Stage 2 |
 
 ```
 sessions/{date}-{session-id}/{N}-{loop}/evaluation/
@@ -301,12 +304,13 @@ sessions/{date}-{session-id}/{N}-{loop}/evaluation/
     │   ├── usage.md
     │   ├── consistency.md
     │   ├── risk.md
-    │   └── overall.md
+    │   ├── overall.md
+    │   └── checklist.md
     └── codex/
-        └── (same shape — 8 files: 7 perspectives + overall.md)
+        └── (same shape — 9 files: 7 perspectives + overall.md + checklist.md)
 ```
 
-**Mechanical completeness check** — before reconciliation, the manager verifies each system produced exactly these 8 files at `iter{n}/{system}/`: `project.md` / `structure.md` / `performance.md` / `aesthetics.md` / `usage.md` / `consistency.md` / `risk.md` / `overall.md`. Any deviation (missing file, extra file, file ≤ 0 bytes) triggers the dual-system failure handling (see § Dual-system failure handling below).
+**Mechanical completeness check** — before reconciliation, the manager verifies each system produced exactly these 9 files at `iter{n}/{system}/`: `project.md` / `structure.md` / `performance.md` / `aesthetics.md` / `usage.md` / `consistency.md` / `risk.md` / `overall.md` / `checklist.md` (each > 0 bytes). The manager also verifies that `checklist.md` has no unresolved `- [ ]` item. Any deviation (missing file, extra file, file ≤ 0 bytes, or unresolved checklist item) triggers the dual-system failure handling (see § Dual-system failure handling below).
 
 **Path conventions**
 

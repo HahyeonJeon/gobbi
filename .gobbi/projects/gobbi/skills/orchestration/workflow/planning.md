@@ -128,8 +128,8 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Plan
     ├── working/                ← leader drafts (per iter), discussion-log.md, research refs
     ├── evaluation/
     │   └── iter{n}/
-    │       ├── claude/{perspective}.md
-    │       └── codex/{perspective}.md
+    │       ├── claude/{perspective}.md + overall.md + checklist.md
+    │       └── codex/{perspective}.md + overall.md + checklist.md
     └── staging/                ← session-staged artifacts for Wrap-up to promote (PASS only)
         ├── plans/{slug}.md
         ├── scenarios/{slug}.md

@@ -163,11 +163,13 @@ has_samefiles(){ m "$1" 'same [0-9]+ (well-formed )?files'; }
 has_wcl()      { m "$1" 'wc -l'; }
 has_mustben()  { m "$1" 'must be [0-9]'; }
 has_nfiles()   { m "$1" '[0-9]+ (well-formed )?files|exactly [a-z ]*[0-9]+ files'; }
-# a FINDING-HIT count — a finding-vocab `*.md`-glob piped to wc -l (counts grep hits
-# across the output files, e.g. `… codex/*.md | wc -l  # >= 1 hit per file`). This is
-# a Family-8-class count that STAYS a finding count: the flip EXCLUDES checklist.md
-# from the glob (checklist.md carries no finding vocab), it does NOT go 8→9. Distinct
-# from a dir file-count (`ls …/codex/ | wc -l  # must be 8`), which IS Family-9.
+# a FINDING-HIT count — a finding-vocab file-glob piped to wc -l (counts grep hits
+# across the finding-bearing files, e.g. `… codex/{project,…,overall}.md | wc -l  # >= 1
+# hit per file`). This is a Family-8-class count that STAYS a finding count: the task-10
+# flip EXCLUDES checklist.md from the glob by naming the 8 finding-bearing files
+# explicitly (checklist.md carries no finding vocab), it does NOT go 8→9. The `hit per
+# file` comment token is the on-line signal `has_findingcount` keys on post-flip.
+# Distinct from a dir file-count (`ls …/codex/ | wc -l  # must be 9`), which IS Family-9.
 has_findingcount() { m "$1" '\*\.md.*wc -l|hit per file'; }
 # DONE-contract enumeration phrasings.
 has_done()     { m "$1" 'one( output)? file per perspective|seven per-perspective files? \+ one overall|per perspective \+ overall\.md'; }
@@ -895,7 +897,7 @@ mode_selftest() {
     # Fixture 4 — wrap-up promoted-file bloat `wc -l` → not-applicable.
     selftest_one "promoted-file-wcl" "$PROJ/skills/wrap-up/evaluation.md" \
         '`wc -l` on each promoted file' 'NOT-APPLICABLE' || fails=$((fails+1))
-    # Fixture 5 — codex eval-dir count `.../codex/ | wc -l  # must be 8` → Family-9.
+    # Fixture 5 — codex eval-dir count `.../codex/ | wc -l  # must be 9` → Family-9.
     selftest_one "codex-dir-count" "$PROJ/skills/codex/SKILL.md" \
         'codex/ \| wc -l' 'FAMILY-9' || fails=$((fails+1))
     # Fixture 6 — RECORD's finding-file "Expected path count = Σ … × 8" → Family-8
@@ -918,12 +920,14 @@ mode_selftest() {
     #   does not break it; the surface still classifies Family-9 post-flip.
     selftest_one "done-status-contract" "$PROJ/skills/delegation/templates/evaluator.md" \
         '\*\*DONE\*\*.*per-perspective files' 'FAMILY-9' || fails=$((fails+1))
-    # Fixture 9 — codex finding-HIT `*.md`-glob count `codex/*.md | wc -l  # >= 1 hit
-    #   per file` → Family-8 (a finding count that STAYS 8; its flip EXCLUDES
-    #   checklist.md from the glob). Regression-locks the :387 reclassification so it
-    #   never re-enters the checklist.md-inclusion enforce set.
+    # Fixture 9 — codex finding-HIT vocab-glob count
+    #   `codex/{project,…,overall}.md | wc -l  # >= 1 hit per file` → Family-8 (a finding
+    #   count that STAYS 8; its task-10 flip EXCLUDES checklist.md from the glob by naming
+    #   the 8 finding-bearing files explicitly). Regression-locks the :387 reclassification
+    #   so it never re-enters the checklist.md-inclusion enforce set. Locator re-derived
+    #   from the flipped brace-set line; `has_findingcount` still fires via `hit per file`.
     selftest_one "codex-finding-hit-count" "$PROJ/skills/codex/SKILL.md" \
-        'codex/\*\.md \| wc -l' 'FAMILY-8' || fails=$((fails+1))
+        'codex/\{project,structure,performance,aesthetics,usage,consistency,risk,overall\}\.md \| wc -l' 'FAMILY-8' || fails=$((fails+1))
 
     if [ "$fails" -gt 0 ]; then
         log "SELF-TEST FAIL: $fails fixture(s) disagreed"

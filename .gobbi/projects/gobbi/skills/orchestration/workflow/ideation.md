@@ -152,8 +152,8 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Idea
     │   └── research/{slug}.md         ← pre-staging external refs (leader)
     ├── evaluation/
     │   └── iter{n}/
-    │       ├── claude/{perspective}.md
-    │       └── codex/{perspective}.md
+    │       ├── claude/{perspective}.md + overall.md + checklist.md
+    │       └── codex/{perspective}.md + overall.md + checklist.md
     └── staging/                ← session-staged artifacts, promoted to memory by Wrap-up
         ├── references/{slug}.md
         ├── backlogs/feature/{slug}.md

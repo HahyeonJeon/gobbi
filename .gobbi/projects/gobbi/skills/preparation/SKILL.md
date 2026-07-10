@@ -325,7 +325,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Manager | WORK outputs; gap-resolution plan; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
-| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md` | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
+| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md`, loading the `preparation/{scenario,checklist,evaluation}.md` bundle at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` + `evaluation/iter{n}/{claude,codex}/checklist.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
@@ -333,6 +333,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Outputs**
 - `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
 - Aggregated verdict recorded in workflow state (cross-system divergence is derived at RECORD by comparing the per-system files; no separate divergence file is written)
 
 **Preparation-specific evaluation emphasis** (the phase child doc directs)
@@ -423,6 +424,7 @@ All writes during the Preparation Loop are **session-scoped**. Wrap-up promotes 
 | `sessions/{date}-{session-id}/2-preparation/staging/backlogs/feature/{slug}.md` | assistant (RECORD) | per `deferred` decision that lands in the feature backlog |
 | `sessions/{date}-{session-id}/2-preparation/staging/backlogs/project/{slug}.md` | assistant (RECORD) | per `deferred` decision that lands in the project backlog |
 | `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
 | `sessions/{date}-{session-id}/2-preparation/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema) |
 | `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | loop completion timestamps, iter, verdict |

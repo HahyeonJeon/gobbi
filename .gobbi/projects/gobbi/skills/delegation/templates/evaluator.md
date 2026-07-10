@@ -91,7 +91,7 @@ divergence between systems is the anti-groupthink signal.
 ## Your Job
 
 1. Run the Study → Assess → Report lifecycle from `evaluator.md`.
-2. Walk through all 7 perspectives in fixed order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk) per the 4-stage procedure in `evaluation/SKILL.md`. Produce one output file per perspective + `overall.md` for Stage 3.
+2. Walk through all 7 perspectives in fixed order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk) per the 4-stage procedure in `evaluation/SKILL.md`. Produce one output file per perspective + `overall.md` for Stage 3 + the filled `checklist.md` (copied from the phase sibling at Stage 0, completed through Stage 2) — nine files per system.
 3. Re-run the verification commands the author claimed. Compare results.
 4. Produce structured findings (schema below). Every finding has evidence.
 5. Issue a verdict: `PASS` / `REVISE` / `FAIL`.
@@ -136,8 +136,9 @@ SKILLS LOADED:
 you Read (tiers 1–4), so the manager can verify nothing was skipped.
 
 Then in the body:
-- **DONE** — all 7 perspectives + Overall complete; per-perspective files written;
-  verdict computed per threshold rules.
+- **DONE** — all 7 perspectives + Overall complete; all seven per-perspective files,
+  `overall.md`, and the filled `checklist.md` written and validated; verdict computed
+  per threshold rules.
 - **DONE_WITH_CONCERNS** — evaluation complete; flag perspective-internal ambiguity,
   scope ambiguity in the brief, or contradictory rules. Still provide a verdict.
 - **NEEDS_CONTEXT** — paused. The context bundle is incomplete. State what is

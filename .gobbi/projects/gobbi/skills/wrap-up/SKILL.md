@@ -460,7 +460,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Manager | WORK outputs; promotion manifest; staging inventory | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
-| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md` with `wrap-up/evaluation.md` loaded at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
+| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md`, loading the `wrap-up/{scenario,checklist,evaluation}.md` bundle at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` + `evaluation/iter{n}/{claude,codex}/checklist.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
@@ -481,6 +481,7 @@ Run ALL of these over the post-promotion project tree (`<scan-root>` = `.gobbi/p
 
 **Outputs**
 - `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
 - Aggregated verdict recorded in workflow state
 
 **Wrap-up-specific evaluation emphasis** (from [`wrap-up/evaluation.md`](evaluation.md))
@@ -573,6 +574,7 @@ All session-record writes during the Wrap-up Loop are scoped to `sessions/{date}
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
 | `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md` | manager (DISCUSSION) | appended per user-decision exchange |
 | `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
 | `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` | assistant (WORK Step 7; sealed at RECORD) | PASS only — `artifact_type: handoff` |
 | `sessions/{date}-{session-id}/5-wrap-up/outputs/memory-reads.md` | assistant (RECORD) | PASS only — `artifact_type: memory-reads` |
 | `sessions/{date}-{session-id}/5-wrap-up/outputs/resolution-log.md` | assistant (RECORD) | PASS only — `artifact_type: resolution-log` |

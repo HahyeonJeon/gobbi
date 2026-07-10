@@ -31,7 +31,7 @@ The manager:
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Wrap-up specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract). Wrap-up evaluation is non-skippable per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-iter scoped under `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus: synthesis coverage, explicit open items, mistake extraction, promotion-routing audit (per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md))
 
 ---
@@ -67,8 +67,8 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Wrap
     ├── staging/
     └── evaluation/
         └── iter{n}/
-            ├── claude/{perspective}.md
-            └── codex/{perspective}.md
+            ├── claude/{perspective}.md + overall.md + checklist.md
+            └── codex/{perspective}.md + overall.md + checklist.md
 ```
 
 Plus any new mistake entries and memory updates under `.gobbi/projects/{project-name}/`.

@@ -70,7 +70,7 @@ The final response the executor returns is captured as the work artifact: what w
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Execution-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-task, per-iter scoped at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-task, per-iter scoped under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus is built from [`execution/evaluation.md`](../../execution/evaluation.md) — implementation match, build/test status (verified via tools), security, mistake compliance, scope discipline, supply-chain, observability, privacy
 - **Tool verification is critical at Execution** — evaluators run tests, type checks, and `grep`/`rg` to anchor confidence ≥ 75 (subject to the verification preflight in [`evaluation/SKILL.md`](../../evaluation/SKILL.md))
 
@@ -125,8 +125,8 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Exec
         ├── staging/
         └── evaluation/
             └── iter{n}/
-                ├── claude/{perspective}.md
-                └── codex/{perspective}.md
+                ├── claude/{perspective}.md + overall.md + checklist.md
+                └── codex/{perspective}.md + overall.md + checklist.md
 ```
 
 ---

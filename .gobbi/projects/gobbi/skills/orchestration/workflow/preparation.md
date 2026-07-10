@@ -80,7 +80,7 @@ WORK execution is more than documentation here, because Preparation's purpose is
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Preparation-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-iter scoped under `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus typically emphasizes gap coverage (was every needed item checked?), generation quality (do new skills meet the project's template bar?), and re-Ideate triggering (is any gap actually unworkable rather than just missing?)
 - The evaluators verify the leader's generated artifacts pass the same quality bar that the `interview` skill enforces for stamped skills
 
@@ -134,8 +134,8 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Prep
     ├── working/                ← leader drafts (per iteration), discussion log, research refs
     ├── evaluation/
     │   └── iter{n}/
-    │       ├── claude/{perspective}.md
-    │       └── codex/{perspective}.md
+    │       ├── claude/{perspective}.md + overall.md + checklist.md
+    │       └── codex/{perspective}.md + overall.md + checklist.md
     └── staging/                ← session-staged artifacts (incl. skills/), promoted to memory by Wrap-up
 ```
 

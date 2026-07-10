@@ -379,12 +379,14 @@ Step 1. Run codex exec via your Bash tool:
 
 Step 2. Verify output files landed at the absolute main-tree path:
 
-  # Must be 8 per-perspective output files (one per evaluation perspective):
-  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 8
+  # Must be 9 evaluator output files (7 per-perspective + overall + the filled checklist):
+  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 9
+  test -s <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MISSING/EMPTY: checklist.md"; exit 1; }
+  if grep -qE '^- \[ \]' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md; then echo "INCOMPLETE: unresolved checklist item"; exit 1; fi
 
-  # 5-Type vocabulary must appear in output (scenario_gap, checklist_gap, design_flaw, assumption_risk, general):
+  # 5-Type vocabulary is checked only in the 8 finding-bearing files; checklist.md is excluded (coverage artifact, carries no finding vocab):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
-    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/*.md | wc -l  # >= 1 hit per file (5 vocab present)
+    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/{project,structure,performance,aesthetics,usage,consistency,risk,overall}.md | wc -l  # >= 1 hit per file (finding files only)
 
   # Verdict line must be present in overall.md:
   grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
