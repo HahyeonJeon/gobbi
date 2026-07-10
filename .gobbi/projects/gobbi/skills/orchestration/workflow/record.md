@@ -1,5 +1,7 @@
 # Workflow — Record (Orchestration)
 
+**Doc kind:** gate-orchestration.
+
 How the **manager** orchestrates the RECORD sub-phase that runs at the end of every loop iteration. This document is loaded by the manager — the `assistant` agent that actually performs the synthesis loads [`record/SKILL.md`](../../record/SKILL.md) and [`memory/memory-map.md`](../../memory/memory-map.md) instead.
 
 The manager's job at RECORD is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. RECORD runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
@@ -123,9 +125,37 @@ Planning loop additionally produces `3-planning/staging/plans/{slug}.md` (the pl
 | Loop | Session outputs path (PASS only) | working path | staging path |
 |---|---|---|---|
 | Ideation | `1-ideation/outputs/` (typical files: framed-problem, scope-contract, design-options, memory-reads, resolution-log) | `1-ideation/working/` | `1-ideation/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
+| Preparation | `2-preparation/outputs/` (typical files: readiness-assessment, memory-reads) | `2-preparation/working/` | `2-preparation/staging/{skills,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Planning | `3-planning/outputs/` (typical files: task-list, dependency-graph, agent-assignments, memory-reads) | `3-planning/working/` | `3-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Execution | `4-execution/outputs/` (typical files: change-summary, verification-report, memory-reads) | `4-execution/working/` | `4-execution/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,backlogs/{feature,project},changelogs,learnings,notes}/` |
 | Wrap-up | `5-wrap-up/outputs/` (typical files: handoff, shipped-summary, next-session-pointers, memory-reads) | `5-wrap-up/working/` | Wrap-up does not stage — it writes directly to memory per [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) |
+
+---
+
+## Session-record commit boundary
+
+Every artifact in [Collecting Outputs](#collecting-outputs) is session-scoped under
+`sessions/{date}-{session-id}/`, so the manager commits **none** of it. There is **no**
+per-iteration session-record commit. The whole `sessions/` tree is gitignored
+(`.gitignore:21`), worktree-local, and removed at worktree cleanup — see
+[`record/record-map.md`](../../record/record-map.md) § D7 for the gitignore lifecycle.
+A `git commit` aimed at an iteration's `working/`, `evaluation/iter{n}/`, `staging/`, or
+`outputs/` captures **nothing**: `git add` of a `sessions/` path is refused
+(`paths are ignored ... Use -f`), and a bare `git commit` reports
+`nothing to commit, working tree clean` and exits non-zero. So the manager does **not**
+run a `chore(session): record ...` commit after RECORD — session-record persistence is the
+transcript copy plus the `session.json` upsert, never a git commit. Durable git history
+comes only from Wrap-up promoting `staging/` content into tracked `features/`, `mistakes/`,
+etc.
+
+**Loop-specific commit exceptions stay in their owning loop docs.** This is the *general*
+no-commit rule for the session-record audit trail. A loop that runs a real commit as part
+of its own work — Preparation's `chore(skills)` generate-now promotion
+([`workflow/preparation.md`](preparation.md)); Wrap-up's memory-promotion commits
+([`workflow/wrap-up.md`](wrap-up.md)) — documents that commit in its own loop doc. Those
+real commits target **tracked** files, never the gitignored `sessions/` tree, so they do
+not contradict this rule. record.md owns only the general boundary; it does not restate the
+exceptions.
 
 ---
 
