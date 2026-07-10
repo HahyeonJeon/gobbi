@@ -1,19 +1,15 @@
-# Codex runtime git posture is configured here: sandbox_mode, approval_policy,
-# and the workspace-write network toggle. Gobbi ships NONE of these by default
-# (D2 safe-by-default) — no network-enable key, no sandbox-loosening key. The
-# runtime's own default posture applies: workspace-write + on-request, network
-# OFF. git commit runs in-boundary; git push / gh escalate or are blocked. To
-# enable a networked push the user opts in via the remediation menu (Always-Ask)
-# — gobbi never sets it here automatically. See the git skill:
-# skills/git/SKILL.md § Runtime git environment and skills/git/conventions.md
-# § Runtime git posture — where it is configured.
-#
-# --- Local machine override (uncommitted): this user has opted into the posture below. ---
+# --- Repository Codex model/effort policy. ---
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
+
+# --- Local checkout sandbox/network posture. ---
+# These tracked values are separate from the shipped model/effort policy.
+# See skills/git/SKILL.md § Runtime git environment and
+# skills/git/conventions.md § Runtime git posture.
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 approvals_reviewer = "auto_review"
-model_reasoning_effort = "xhigh"
-plan_mode_reasoning_effort = "xhigh"
 model_verbosity = "high"
 web_search = "cached"
 
