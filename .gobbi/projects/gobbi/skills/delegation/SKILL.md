@@ -45,7 +45,7 @@ Every spawned agent reports with an explicit status enum at the end of its respo
 
 > **Any delegation prompt for a RECORD sub-phase MUST include `record/SKILL.md` in tier 3 (Skills) of the Load Directives block.**
 
-RECORD is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run RECORD cannot operate correctly without loading `record/SKILL.md`. This is a hard gate: a delegation prompt that omits `record/SKILL.md` from the Skills tier when the sub-phase is RECORD is a malformed prompt — the manager must add it before dispatching.
+RECORD is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run RECORD — normally the `assistant` in `record` mode — cannot operate correctly without loading `record/SKILL.md`. This is a hard gate: a delegation prompt that omits `record/SKILL.md` from the Skills tier when the sub-phase is RECORD is a malformed prompt — the manager must add it before dispatching.
 
 ---
 
@@ -68,24 +68,26 @@ The templates are not paraphrased into prose at dispatch time — they are fille
 
 ## What Every Delegation Prompt Contains
 
-All four per-role templates share this scaffold (per-role tails add the rest):
+All four per-role templates share this scaffold (per-role tails add the rest). The order is fixed (D2): Load Directives sit **before** the Task Description, matching the block's own "read these as your FIRST actions" instruction.
 
 1. **Identity line** — `You are a {role}...` (sets voice + role on the first token).
-2. **Task Description / Question** — the **primary spec, pasted inline**. Never a `@path`. Manager-authored or paste of the user's exact wording.
-3. **Context** — manager-authored scene-setting (where it fits, dependencies, user-clarified intent, pre-resolved decisions).
-4. **Load Directives** — 4-tier numbered block (see below).
-5. **Inputs** — prior-loop outputs (paste short items inline; cite paths for longer reference material).
-6. **Constraints / Scope** — files in-scope, files out-of-scope, pre-resolved decisions, anti-scope-creep rule.
-7. **Your Job** — numbered list of what to do, including lifecycle reference.
-8. **Reference Materials** — paths for ADDITIONAL reading (never the primary spec).
-9. **Escape Hatch** — explicit `NEEDS_CONTEXT` / `BLOCKED` permission.
-10. **Report Format** — the per-role status enum, at the very end.
+2. **Structured headers** — `Your phase:` / `Your iteration:` / `Your sub-step:` (+ `Your system:` on the evaluator, `Mode:` on the assistant). The machine-readable routing block (§ Hook Integration); under the identity line, above the Load Directives.
+3. **Load Directives** — 4-tier numbered block (see below), placed BEFORE the Task Description.
+4. **Task Description / Question** — the **primary spec, pasted inline**. Never a `@path`. Manager-authored or paste of the user's exact wording.
+5. **Context** — manager-authored scene-setting (where it fits, dependencies, user-clarified intent, pre-resolved decisions).
+6. **Inputs** — prior-loop outputs (paste short items inline; cite paths for longer reference material).
+7. **Constraints / Scope** — files in-scope, files out-of-scope, pre-resolved decisions, anti-scope-creep rule.
+8. **Write Roots / Output Contract** — the fully-expanded absolute `session.json.git.worktreePath` write root + allowed/forbidden paths (any role that writes).
+9. **Your Job** — numbered list of what to do, including lifecycle reference.
+10. **Reference Materials** — paths for ADDITIONAL reading (never the primary spec).
+11. **Escape Hatch** — explicit `NEEDS_CONTEXT` / `BLOCKED` permission.
+12. **Report Format** — the per-role status enum, at the very end.
 
 Role-specific tails:
 - `leader` adds **phase** + **artifact path(s)**.
 - `executor` adds **Self-Review checklist** + **Verification Commands**.
-- `evaluator` adds **CRITICAL: Do Not Trust the Report** block + **Finding Schema** + **Verdict**.
-- `assistant` adds **Expected Output Shape**.
+- `evaluator` adds **CRITICAL: Do Not Trust the Report** block + **Finding Schema** + **Evaluation Output Contract** + **Verdict**.
+- `assistant` adds **Mode selector** + **Expected Output Shape**.
 
 ---
 
@@ -93,33 +95,17 @@ Role-specific tails:
 
 Mandatory in every delegation prompt, ordered top-to-bottom. **Spawned subagents have no Skill tool** — they cannot "load" a skill by name. "Load" here means READ the skill's `SKILL.md` (or the named file) with the Read tool. So the block is a list of EXACT file paths the subagent reads as its FIRST actions, before the Task Description or any other work. A bare skill *name* with no path maps to no action for a tool-less subagent; every entry the manager fills must be a concrete file path. Skipping any required file is a process failure.
 
-```text
-## Load Directives (MANDATORY FIRST ACTIONS — Read these files before any other work)
+The concrete 4-tier block each role fills lives in the per-role templates ([`leader.md`](templates/leader.md), [`executor.md`](templates/executor.md), [`evaluator.md`](templates/evaluator.md), [`assistant.md`](templates/assistant.md)) — the manager fills it there, not from a copy here. Tier order is fixed: **1. Principles → 2. Rules → 3. Skills → 4. Mistakes**; the project rules read contract resolves to `RULES_PRESENT` / `NO_PROJECT_RULES` per [`memory/rules.md` § Empty-state contract](../memory/rules.md).
 
-You have no Skill tool. To "load" a skill, READ its `SKILL.md` file with the Read
-tool. Read these EXACT paths, in order, as your FIRST actions. Skipping any
-required file is a process failure.
+**Skill-load path SSOT.** Every delegation prompt cites `.gobbi/projects/{project-name}/skills/<skill>/SKILL.md` as the SINGLE skill-LOAD path — for BOTH Claude Code AND native Codex. Native Codex reads those real files directly, so no load path is ever unresolvable; the `.agents/skills/` symlink dir stays the Codex *discovery* / entry-point surface (owned by `sync-plugin-package.sh`), never a load-path citation. The `.codex/AGENTS.md` load mandates and the Codex `.toml` agent wrappers align to this SSOT; naming `.agents/skills/` as a skill-LOAD path is the recorded [`use-runtime-skill-surface-in-load-directives`](mistakes.md#use-runtime-skill-surface-in-load-directives) pitfall.
 
-1. Principles:
-   - `.gobbi/projects/{project-name}/skills/principles/SKILL.md` (mandatory; fresh subagents do not inherit)
-2. Rules:
-   - Project rules read contract: read every file under `.gobbi/projects/{project-name}/rules/` when present and non-empty and list each in `SKILLS LOADED:` / `Memory reads`; if absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** instead. Full definition: `skills/memory/rules.md` § Empty-state contract.
-   - {any additional rule files specific to this task — full paths}
-3. Skills:
-   - `.gobbi/projects/{project-name}/skills/mistake/SKILL.md` (mandatory)
-   - {phase doc — e.g., `.gobbi/projects/{project-name}/skills/orchestration/workflow/execution.md`}
-   - {domain skills with full paths}
-4. Mistakes:
-   - {specific mistake files relevant to this task's domain — full paths}
-```
-
-After the block, the subagent's response carries a `SKILLS LOADED:` checklist enumerating the exact path of each Load-Directives file it Read — the self-report half of the verification pair (see [§ The Status Contract](#the-status-contract) for the wire format and [§ Manager verification](#manager-verification--the-ground-truth-backstop) for the transcript-grep backstop).
+After the block, the subagent's response carries a `SKILLS LOADED:` checklist enumerating the exact path of each Load-Directives file it Read — the self-report half of the verification pair (see [§ The Status Contract](#the-status-contract) for the wire format and [§ Manager verification](#manager-verification--the-ground-truth-backstop) for the transcript-read backstop).
 
 **Why this order.** Principles set the discipline floor (what every agent must never do). Rules narrow that to the project's conventions. Skills give the role-and-domain procedure. Mistakes inject the specific past pitfalls the subagent must avoid in this domain. Loading in this order ensures the most-general discipline is established before the most-specific guidance, so the subagent cannot rationalize a domain skill into violating a principle.
 
 **No inheritance — on a FRESH spawn.** Even if the manager already loaded `principles` minutes earlier, every fresh subagent must load it again. There is no session inheritance. This holds for every first spawn. A **continuation** is the one exception: a continued teammate already loaded the full stack on its first turn and carries it forward, so a continuation turn sends a delta-brief, not the full Load Directives block again — see [§ Continue vs Fresh](#continue-vs-fresh).
 
-**RECORD hard gate.** When the delegated phase is RECORD (or includes a RECORD sub-phase), `record/SKILL.md` MUST appear in tier 3 (Skills). The record skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. Per-role templates for `assistant`, `leader`, and `executor` include a placeholder for this entry; see the templates in [`templates/`](templates/).
+**RECORD hard gate.** When the delegated phase is RECORD (or includes a RECORD sub-phase), `record/SKILL.md` MUST appear in tier 3 (Skills). The record skill defines the memory-tier access matrix, staging rules, idempotency contract, and exit checklist that the sub-phase agent must follow. Omitting it produces an agent that cannot operate the sub-phase correctly. **The RECORD-owning role is the `assistant`** (in `record` mode) — its template carries `record/SKILL.md` as the mandatory entry; the `leader` and `executor` templates keep it as an omit-unless-RECORD placeholder for the rare loop where they run a RECORD sub-phase. See [`templates/`](templates/).
 
 **Memory standard gate.** Any delegation that **writes or evaluates memory** MUST load `memory/rules.md` in tier 3 (Skills) alongside `record/SKILL.md`. `memory/rules.md` is the naming / frontmatter / structure standard — the rules a memory file's name, frontmatter, and scope must obey; without it the standard is advisory-only and structural drift recurs. The `leader`, `executor`, and `assistant` templates carry the `memory/rules.md` line right after their `record/SKILL.md` line; the `evaluator` template carries it in tier 3 for delegations that judge memory artifacts against the standard (the evaluator has no `record/SKILL.md` line).
 
@@ -131,13 +117,12 @@ After the block, the subagent's response carries a `SKILLS LOADED:` checklist en
 
 ### Manager verification — the ground-truth backstop
 
-The `SKILLS LOADED:` checklist a subagent returns is its **self-report** — it is not proof. The ground truth is the subagent's transcript. After a subagent returns, the manager greps the transcript for a `Read` of each required Load-Directives file:
+The `SKILLS LOADED:` checklist a subagent returns is its **self-report** — it is not proof. The ground truth is the subagent's transcript. After a subagent returns, the manager greps the transcript for a read of each required Load-Directives file. The transcript shape is runtime-specific:
 
-```sh
-grep -oE '"file_path":"[^"]*"' <transcript> | grep <required-path>
-```
+- **Claude Code** (JSONL tool events): `grep -oE '"file_path":"[^"]*"' <transcript> | grep <required-path>`.
+- **Native Codex** (codex events JSONL): grep the file-read events for `<required-path>` — the read-event key differs from Claude's `file_path`, so match the path substring. Where the Codex transcript exposes no machine-readable read event, fall back to spot-verifying the `SKILLS LOADED:` self-report against the required set (a degraded but non-empty check). Do NOT run the Claude `file_path` grep against a Codex transcript — it matches nothing and manufactures a false skip signal.
 
-Run it once per required tier-1/tier-3 file (at minimum `principles/SKILL.md`, `mistake/SKILL.md`, and the phase doc). If any required file has **no** matching `Read`, the subagent ran skill-blind — the manager **re-dispatches** the same task with the Load Directives restated, rather than trusting the result. The checklist is the self-report; the transcript grep is the verification — they are two halves of one gate, and the grep is the authoritative half.
+Run the check once per required tier-1/tier-3 file (at minimum `principles/SKILL.md`, `mistake/SKILL.md`, and the phase doc). If any required file has **no** matching read, the subagent ran skill-blind — the manager **re-dispatches** the same task with the Load Directives restated, rather than trusting the result. The checklist is the self-report; the transcript read-check is the verification — two halves of one gate, the read-check authoritative where the runtime exposes it.
 
 This backstop exists because a tool-less subagent can silently skip a "load the X skill" line: the audit that motivated this gate found 2 of 4 executors had each skipped a required skill (one `principles`, one `execution`) despite the prompt naming it. The self-report alone would have reported them as loaded.
 
@@ -199,7 +184,7 @@ SKILLS LOADED:                ← mandatory; one path per required Load-Directiv
   - <exact path of each Load-Directives file you Read, in order>
 ```
 
-Followed immediately by prose details (summary, findings, verification output, concerns, etc.). The `SKILLS LOADED:` checklist comes right after the STATUS/VERDICT/ARTIFACT lines and lists the exact path of every Load-Directives file the subagent Read (principles, rules, skills, mistakes). It is the subagent's self-report; the manager verifies it against the transcript (see [§ Manager verification](#manager-verification--the-ground-truth-backstop)).
+Followed immediately by prose details (summary, findings, verification output, concerns, etc.). The `SKILLS LOADED:` checklist comes right after the STATUS/VERDICT/ARTIFACT lines and lists the exact path of every Load-Directives file the subagent Read (principles, rules, skills, mistakes), plus the rule read-state (`RULES_PRESENT: <paths>` or `NO_PROJECT_RULES: …`) and the recursive mistake roots read (`mistakes/**` + feature) — so the rule-load and recursive-mistake (M5) contracts are auditable at accept-time. It is the subagent's self-report; the manager verifies it against the transcript (see [§ Manager verification](#manager-verification--the-ground-truth-backstop)).
 
 **Example — executor reporting DONE:**
 ```
@@ -219,6 +204,10 @@ Implementation complete. Tests pass (2197/0). Scope boundary respected — 3 fil
 STATUS: DONE
 VERDICT: REVISE
 ARTIFACT: sessions/2026-05-20-abc123/1-ideation/evaluation/iter1/claude/
+SKILLS LOADED:
+  - .gobbi/projects/gobbi/skills/principles/SKILL.md
+  - .gobbi/projects/gobbi/skills/evaluation/SKILL.md
+  - .gobbi/projects/gobbi/skills/mistake/SKILL.md
 
 7 perspectives + Overall complete. 3 High findings (open). See per-perspective files.
 ...
@@ -289,20 +278,21 @@ The manager translates this into its own user-facing status (`PROCEED` / `PROCEE
 
 ## Hook Integration
 
-Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../../.claude/hooks/post-tool-use-agents.sh) (registered for `Task` / `Agent` on `PostToolUse` + `PostToolUseFailure`). The hook *routes* `step` / `phase` / `iter` / `sub-step` from the prompt's structured headers and *may seed* an `agents[]` entry's routing fields — but it is NOT the source of truth for **per-agent token usage**: that is recorded by the manager via `jq` over each agent's own transcript (see [`orchestration/workflow/metadata.md` § Recording workflow metadata](../orchestration/workflow/metadata.md#recording-workflow-metadata)). The hook also cannot always resolve the worktree's `session.json` (worktree-path limitation: `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`), so its upsert is best-effort. For the hook's routing extraction to populate `step` / `phase` / `iter` / `sub-step` correctly when it does fire, every delegation prompt MUST place a small block of **structured headers** at the very top of the prompt body (before any other content).
+Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../../.claude/hooks/post-tool-use-agents.sh) (registered for `Task` / `Agent` on `PostToolUse` + `PostToolUseFailure`). The hook *routes* `step` / `phase` / `iter` / `sub-step` / `system` from the prompt's structured headers and *may seed* an `agents[]` entry's routing fields — but it is NOT the source of truth for **per-agent token usage**: that is recorded by the manager via `jq` over each agent's own transcript (see [`orchestration/workflow/metadata.md` § Recording workflow metadata](../orchestration/workflow/metadata.md#recording-workflow-metadata)). The hook also cannot always resolve the worktree's `session.json` (worktree-path limitation: `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`), so its upsert is best-effort. For the hook's routing extraction to populate `step` / `phase` / `iter` / `sub-step` / `system` correctly when it does fire, every delegation prompt MUST place a small block of **structured headers** at the very top of the prompt body (before any other content).
 
 ### Structured-Header Convention
 
-The hook reads four headers via case-insensitive line-anchored regex `^Your (phase|iteration|sub-step|step): (.+)$` from `tool_input.prompt`. Place these at the top of the prompt (template-managed — see [`templates/`](templates/)):
+The hook reads five headers via case-insensitive line-anchored regex `^Your (phase|iteration|sub-step|step|system): (.+)$` from `tool_input.prompt`. Place these at the top of the prompt (template-managed — see [`templates/`](templates/)):
 
 | Header | Value shape | Required | Purpose |
 |---|---|---|---|
 | `Your phase:` | `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up` (evaluator suffixes `-eval`; research uses `research`) | yes | Routes the entry into `session.json.agents[].phase` and the matching workflow step. |
 | `Your iteration:` | positive integer (the loop iter inside the step; `1` for first pass) | yes | Stamps `agents[].iter`; powers per-iter session-record commit cadence. |
 | `Your sub-step:` | slug or letter (e.g., `evaluation-claude`, `A`, `B`, `claude-iter1-clean-1of3`) | when more than one spawn shares the same `(step, phase, iter)` | Disambiguates parallel spawns in the same iteration (e.g., dual-system evaluators, batched executors). |
+| `Your system:` | `claude` \| `codex` | on the evaluator (and any spawn whose producing system must reach `agents[].system`) | Routes the producing system into `agents[].system`; the dual evaluators share `(step, phase, iter)`, so `system` is their durable disambiguator. |
 | `Your step:` | step number `1`–`6` matching the canonical state machine | optional | Manager may include for self-documentation; hook prefers `phase` when both are present. |
 
-These four headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. The manager (or the hook, when it can resolve the `session.json`) records `agents[]` entries; omitting the headers does not break the subagent, but it leaves those entries with `phase` / `iter` / `sub-step` set to `null`, which downstream session-record queries treat as missing data.
+These five headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. The manager (or the hook, when it can resolve the `session.json`) records `agents[]` entries; omitting the headers does not break the subagent, but it leaves those entries with `phase` / `iter` / `sub-step` / `system` set to `null`, which downstream session-record queries treat as missing data.
 
 ### Serialization safety — `flock -x` on session.json
 
@@ -318,16 +308,33 @@ The manager must NOT produce delegation prompts that look like these. Each is a 
 - ❌ **No context** — "Fix the race condition." The subagent does not know where, in what subsystem, against what invariant.
 - ❌ **No constraints** — "Refactor this for clarity." Without scope and out-of-scope, the subagent rewrites adjacent code that should not change.
 - ❌ **Vague output** — "Make it better." You cannot verify completion because there is no acceptance criterion.
-- ❌ **Spec by `@path`** — "See the plan in `plans/foo.md` and implement it." Adds inference between spec and work; subagents may read it partially or interpret it differently than the manager intended. Paste the spec inline.
+- ❌ **Spec by `@path`** — citing the primary spec by path instead of pasting it inline. See [§ Inline-Paste Rule](#inline-paste-rule).
 - ❌ **Lazy load directives** — "Load any skills you need." The subagent guesses. Specify the exact list, in order.
 - ❌ **Skill named without a path** — "Load the `principles` skill" with no file path and no note that a spawned subagent has no Skill tool. A tool-less subagent cannot act on a bare skill name; give the exact `SKILL.md` path, state that "load" means Read it, and require the `SKILLS LOADED:` checklist so the manager can verify the Read happened.
 - ❌ **No status contract** — Prompt ends mid-instruction with no `## Report Format` section. The subagent produces a prose summary the manager has to interpret.
 - ❌ **Author transcript leaked to evaluator** — Evaluator receives the producer's chain of thought, breaking producer/evaluator separation (`evaluation/SKILL.md`). Evaluators get a constructed context bundle only.
-- ❌ **Continued / shared / teammate evaluator** — Reusing an evaluator across iterations, sharing one evaluator between systems, or adding an evaluator to the Agent Team. A continued evaluator carries its own prior verdict (confirmation bias); a teammate-evaluator is reachable in the team mailbox (contamination). Evaluators are always fresh subagents, kept OUT of the team — see [§ Continue vs Fresh](#continue-vs-fresh).
+- ❌ **Continued / shared / teammate evaluator** — reusing an evaluator across iterations, sharing one between systems, or adding it to the Agent Team. See [§ Continue vs Fresh](#continue-vs-fresh).
 - ❌ **Parallel implementation** — Spawning two executors against the same scope or against overlapping files. Implementation is sequential; only research, investigation, and evaluation parallelize.
 - ❌ **Per-perspective evaluator spawning** — Spawning one evaluator agent per perspective (8 agents for 7 perspectives + Overall). The canonical topology is 2 agents in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially per the 4-stage procedure in `evaluation/SKILL.md`. Perspective isolation is maintained within the agent's own context discipline, not by spawning separate agents per perspective.
-- ❌ **Proposer self-authoring on empty Codex output** — The Codex-side proposer wrapper fabricates a proposal when `codex exec` produced nothing (timeout / empty / error) instead of reporting BLOCKED. A wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the proposer exists for. The rule is **BLOCKED-on-empty, never self-author**; the producer then degrades to the Claude-only labeled fallback. See [§ Producer Dispatch](#producer-dispatch-dual-system-production).
-- ❌ **Codex proposal transcript leaked to the Codex evaluator** — Feeding the Codex proposal (or its transcript) into the Codex evaluator prompt re-introduces the self-preference bias the dual-system mandate removes. This is the proposer-side parallel of "Author transcript leaked to evaluator": proposer↔evaluator independence is non-negotiable. The Codex evaluator reviews the Claude-authored canonical draft, never the proposal file.
+- ❌ **Proposer self-authoring on empty Codex output** — the Codex wrapper fabricating a proposal instead of reporting BLOCKED-on-empty (which degrades to the Claude-only labeled fallback). See [§ Producer Dispatch](#producer-dispatch-dual-system-production).
+- ❌ **Codex proposal transcript leaked to the Codex evaluator** — feeding the proposal transcript into the Codex evaluator prompt (breaks proposer↔evaluator independence). See [§ Producer Dispatch](#producer-dispatch-dual-system-production).
+
+---
+
+## Pre-Dispatch Fill Checklist (Rendered-Prompt Validation)
+
+Before spawning, the manager validates the RENDERED prompt (not the template) — modeled on the `codex/delegation.md` Gate 1. A prompt failing any check is malformed; fix before dispatch.
+
+- [ ] **No unresolved `<<slot>>`** — every `<<…>>` marker substituted. (This runs on the RENDERED prompt, NOT the template files, which legitimately keep `<<slot>>` markers.)
+- [ ] **No leftover conditional block** — every "fill when… / DELETE when…" block filled or removed (the dual-system block deleted for `single` / Research / native Codex; the assistant `Mode:` fill/delete applied).
+- [ ] **Every Load-Directives path exists on disk** — `ls`/`find` each cited path (prevents the [`mistakes.md#delegation-briefs-reference-nonexistent-rules-dir`](mistakes.md#delegation-briefs-reference-nonexistent-rules-dir) trap).
+- [ ] **Structured headers present** — `Your phase:` / `Your iteration:` / `Your sub-step:` (+ `Your system:` on the evaluator), above the Load Directives.
+- [ ] **Load Directives precede the Task Description** (D2 order).
+- [ ] **Write Roots are fully-expanded absolute paths** — no `$WT` / `<worktree>` / CWD-relative placeholder (the [`git/mistakes.md#executor-wrote-to-main-tree-not-worktree`](../git/mistakes.md#executor-wrote-to-main-tree-not-worktree) trap).
+- [ ] **`SKILLS LOADED:` required** in Report Format, with rule/mistake read-states.
+- [ ] **`## Report Format` is the LAST section.**
+
+Optional author-time lint: grep each `templates/{role}.md` for the required tokens above.
 
 ---
 
@@ -348,13 +355,7 @@ Pasting inline makes the prompt itself the auditable record of what the subagent
 
 ## Anti-trust Block (Evaluators Only)
 
-Every evaluator delegation prompt opens with a `CRITICAL: Do Not Trust the Report` block. The evaluator is told explicitly:
-
-> The agent that produced this work cannot evaluate it. That is your job. You arrive with no exposure to their reasoning or session history.
-> **DO:** run verification commands yourself; read the deliverable in full; compare claimed evidence against actual evidence; cross-check against `mistake`.
-> **DO NOT:** trust "tests pass" without running them; trust "scope respected" without diffing; trust "research says so" without verifying the citation; cover multiple perspectives; propose fixes.
-
-Boilerplate lives in [`templates/evaluator.md`](templates/evaluator.md). The block is mandatory; do not paraphrase it.
+Every evaluator delegation prompt opens with a `CRITICAL: Do Not Trust the Report` block — the full DO / DO-NOT boilerplate lives in [`templates/evaluator.md`](templates/evaluator.md) § CRITICAL, is mandatory, and must not be paraphrased. In one line: the producer cannot evaluate its own work, so the evaluator runs every verification itself, reads the deliverable in full, compares claimed vs actual evidence, and proposes no fixes.
 
 ---
 
@@ -370,11 +371,7 @@ The creation-time analogue of the evaluator Anti-trust Block. When a loop's WORK
 
 The producer templates ([`templates/leader.md`](templates/leader.md), [`templates/executor.md`](templates/executor.md), [`templates/assistant.md`](templates/assistant.md)) carry this block. [`templates/evaluator.md`](templates/evaluator.md) does NOT — the evaluator reviews, it never proposes.
 
-**Independence rules (mirror the evaluator independence anti-patterns).** Two structural guards keep the cross-family signal intact:
-
-- **BLOCKED-on-empty, never self-author.** If the Codex proposal is empty, times out, or errors, the Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure — it never self-authors a proposal to cover for absent Codex output. A wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for. The producer then proceeds **Claude-only** and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is NOT a safety gate — production degrades silently with that durable label; contrast a missing Codex evaluator, which IS a gate.
-- **The Codex proposal transcript is NEVER fed into the Codex evaluator prompt.** The proposer and the evaluator are distinct, stateless `codex exec` runs with no shared state. Feeding the proposal transcript into the evaluator prompt re-introduces the self-preference bias the dual-system mandate removes — the proposer-side parallel of "Author transcript leaked to evaluator." The Codex evaluator reviews the Claude-authored canonical draft (re-expressed during integration), never the Codex proposal file.
-- **The wrapper prompt file is complete.** A Codex-side wrapper prompt must include exact load paths, absolute output paths, output schema, timeout behavior, wrong-root behavior, source-write behavior, and self-authoring prohibition. Codex cannot ask the wrapper for missing details mid-run; an underspecified prompt is a malformed delegation. Use [`codex/delegation.md`](../codex/delegation.md) for the required sections and verification gates.
+**Independence rules (mirror the evaluator independence anti-patterns).** Three structural guards keep the cross-family signal intact — **BLOCKED-on-empty, never self-author** (degrade to the `production_mode: claude-only` labeled fallback, which is NOT a safety gate — contrast a missing Codex *evaluator*, which IS a gate), **the Codex proposal transcript is NEVER fed into the Codex evaluator prompt**, and **the wrapper prompt file is complete** (exact load / output / schema / timeout / wrong-root / source-write / no-self-author paths). Full statements + rationale live in [`workflow/production.md`](../orchestration/workflow/production.md) and [`codex/delegation.md`](../codex/delegation.md); do not restate them here.
 
 > **Runtime scope of the degraded label.** `production_mode: claude-only` is valid ONLY when
 > the producer is actually the Claude-side (Claude Code bridge) producer AND the Codex proposer
@@ -397,6 +394,8 @@ In Claude Code, opus covers every role whose quality bar depends on reasoning �
 | `executor` | — | opus | inherit parent | high | Implementation within scope still needs reasoning depth for correctness and edge cases |
 | `evaluator` | — | opus | inherit parent | high | Adversarial assessment of artifacts + process docs needs deep reasoning to catch non-obvious gaps |
 | `assistant` | — | sonnet | inherit parent | high | Narrow, fast support work — lookups, references, factual answers |
+
+> **The `manager` row is listed for model-tier completeness only** — the manager is the root session agent (Not Task-spawnable, per [§ Agent Roster](#agent-roster)); it is never dispatched via the subagent primitive. Only `leader` / `executor` / `evaluator` / `assistant` are spawned.
 
 > **Dispatch-time overrides are explicit, not inferred.**
 
@@ -424,7 +423,7 @@ If a specific Claude Code task calls for a model different from the role's defau
 
 ## Agent Roster
 
-Canonical phase list: `AGENTS.md` plus `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and RECORD are sub-phases that run inside each loop). Drift from this list is a bug.
+Canonical phase list: **`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` § Glossary is the single source of truth**; `AGENTS.md` mirrors it. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and RECORD are sub-phases that run inside each loop). Drift from this list — or between the mirror and the source — is a bug.
 
 The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime wrappers point back to those canonical prompts: `.claude/agents/{role}.md` for Claude Code, `.codex/agents/{role}.toml` for Codex.
 

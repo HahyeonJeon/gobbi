@@ -148,6 +148,7 @@ if ! jq -s --arg manager_type "manager" '
             phase:       header("phase"),
             iter:        header("iteration"),
             sub_step:    header("sub-step"),
+            system:      header("system"),
             model:       (if $model == "" then null else $model end),
             status:      (if $r == null then "unknown" else "ok" end),
             transcriptPath: null,

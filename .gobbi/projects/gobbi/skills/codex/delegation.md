@@ -121,7 +121,12 @@ for Markdown headings or shell snippets.
 
 ### P3 - Invoke Codex
 
-Standard file-writing invocation for proposer runs and file-writing evaluator runs:
+Standard file-writing invocation for proposer runs and file-writing evaluator runs. Launch it per
+the [`codex/SKILL.md` § codex exec launch runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix):
+in Claude Code a run that may exceed ~540s (proposers and full evaluations routinely do) launches in
+the **background** with a captured PID, and the `timeout 1200` below is the detached cap — not a
+foreground budget. A foreground `timeout 1200` is valid only in a native-Codex host that grants the
+full budget, or for a short run under the ~600s Bash cap.
 
 ```bash
 timeout 1200 codex exec \
@@ -139,16 +144,19 @@ Set `write_dir` to the narrowest contracted output directory:
 - Evaluator: `evaluation/iter{n}/codex/` for the current loop or execution task.
 
 Evaluation-only runs may use a shorter timeout when the prompt is intentionally small. Proposer
-runs use at least `1200s` unless the user explicitly approves a different cap. A foreground run
-is valid only when the host tool allows the full wall-clock budget. In Claude Code, long jobs
-that can exceed the Bash tool cap must run in the background, with an explicit PID and file
-validation.
+runs use at least `1200s` unless the user explicitly approves a different cap. A foreground
+`timeout 1200` in Claude Code is killed at the ~600s Bash cap (recorded mistake
+`codex-exec-timeout-exceeds-bash-cap.md`), so a run that may exceed it launches in the background
+per the matrix above, with an explicit PID and file validation.
 
 Do not pass `--model` or `--effort` unless the user explicitly requested that override. The
 bridge contract inherits the runtime's configured model and effort by default. Native custom-agent
 role effort defaults live in `.codex/agents/*.toml`; they do not imply a bridge CLI override.
 
-Strict source-read-only invocation:
+Strict source-read-only invocation — same launch rule per the [`codex/SKILL.md` § codex exec launch
+runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix): foreground only under the host budget,
+**background** in Claude Code when the review may exceed ~540s (the `timeout 1200` is then the
+detached cap):
 
 ```bash
 timeout 1200 codex exec \
@@ -568,7 +576,11 @@ The Claude wrapper verifies these gates in order.
 
 ## Shell patterns
 
-Use this pattern for bridge runs that write files.
+Use this **foreground** pattern for bridge runs that write files only when the host grants the full
+budget — a native-Codex host under the cap, or a short sub-cap run. Launch mode is governed by the
+[`codex/SKILL.md` § codex exec launch runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix): a
+Claude Code proposer / full-eval run that may exceed ~540s must use the **background** variant below
+instead — a foreground `timeout 1200` in Claude Code is killed at the ~600s Bash cap.
 
 ```bash
 prompt_file="<absolute-prompt-file>"
@@ -593,7 +605,9 @@ set -e
 
 After that, run explicit checks. Do not treat `codex_status=0` as success by itself.
 
-For a background run, keep the same prompt-file transport and capture the exact PID:
+For a Claude Code run that may exceed ~540s, use the **background** form per the [`codex/SKILL.md` §
+codex exec launch runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix) — keep the same
+prompt-file transport and capture the exact PID (the `timeout 1200` is then the detached cap):
 
 ```bash
 set +e

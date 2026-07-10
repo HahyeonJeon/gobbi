@@ -175,6 +175,8 @@ check_contains ".agents/skills/codex/SKILL.md" 'Codex plugin package exposes ski
 check_json_value ".agents/skills/orchestration/templates/settings.auto.json" '.models.codex.evaluator' 'null' "Auto Codex evaluator inherits model"
 check_json_value ".agents/skills/orchestration/templates/settings.chat.json" '.models.codex.evaluator' 'null' "Chat Codex evaluator inherits model"
 check_not_contains ".agents/skills/orchestration/workflow/evaluation.md" 'default `gpt-5' "Evaluation workflow does not hard-code Codex model defaults"
+check_contains ".agents/skills/preparation/SKILL.md" 'single canonical skill root for both runtimes' "Preparation names the .gobbi SSOT workspace skill root"
+check_contains ".agents/skills/planning/SKILL.md" 'single canonical skill root for both runtimes' "Planning names the .gobbi SSOT workspace skill root"
 check_contains ".agents/skills/orchestration/workflow/evaluation.md" 'does not pass `--effort` unless the user explicitly requests it' "Evaluation workflow documents no bridge effort override"
 check_contains ".agents/skills/orchestration/workflow/evaluation.md" 'does not apply to bridge `codex exec`' "Evaluation workflow separates native wrapper effort from bridge effort"
 check_not_contains ".agents/skills/orchestration/workflow/evaluation.md" 'wrapper supplies the default Codex effort' "Evaluation workflow does not apply native wrapper effort to bridge evaluator"
