@@ -164,7 +164,7 @@ When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; 
 **Purpose**
 Find the implementation gaps WORK missed. Two independent systems (Claude Code + Codex) evaluate the change-set across all seven perspectives + Overall; the manager reconciles their findings and produces a single `PASS` / `REVISE` / `FAIL` verdict for THIS task's current iteration.
 
-See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`execution/evaluation.md`](evaluation.md) for the execution-phase seed scenarios and tool-verification expectations, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
+See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`execution/scenario.md`](scenario.md) + [`execution/checklist.md`](checklist.md) for the execution-phase seed scenarios and checks (with [`execution/evaluation.md`](evaluation.md) for the procedure and tool-verification expectations), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
 - The change-set (committed code or staged diff) for this task iteration

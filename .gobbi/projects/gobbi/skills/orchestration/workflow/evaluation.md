@@ -33,7 +33,7 @@ The evaluator runs **seven perspectives** + a final holistic **Overall** stage. 
 
 Every evaluation runs **all seven perspectives + Overall** for every loop. No pruning. A perspective that produces zero findings for a given artifact is still walked — its empty result is itself a recorded outcome, not a license to skip.
 
-The phase child doc loaded at evaluator Stage 0 (`ideation/evaluation.md` / `preparation/evaluation.md` / `planning/evaluation.md` / `execution/evaluation.md` / `wrap-up/evaluation.md`) supplies the per-perspective seed scenarios + seed checklist the evaluator builds Stage 1 from. The manager passes the phase tag in the delegation prompt; the evaluator loads the matching child doc automatically.
+The phase's evaluation child-doc bundle loaded at evaluator Stage 0 (`{phase}/scenario.md` + `{phase}/checklist.md` + `{phase}/evaluation.md`, phase ∈ ideation / preparation / planning / execution / wrap-up) supplies the Stage-1 seeds: `scenario.md` the per-perspective seed scenarios, `checklist.md` the seed checks (copied to the evaluator's output dir at Stage 0), and `evaluation.md` the procedure / verifications / anti-patterns. The manager passes the phase tag in the delegation prompt; the evaluator loads the matching bundle automatically.
 
 ---
 

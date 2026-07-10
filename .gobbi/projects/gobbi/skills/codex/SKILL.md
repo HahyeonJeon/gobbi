@@ -383,6 +383,8 @@ Step 2. Verify output files landed at the absolute main-tree path:
   ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 9
   test -s <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MISSING/EMPTY: checklist.md"; exit 1; }
   if grep -qE '^- \[ \]' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md; then echo "INCOMPLETE: unresolved checklist item"; exit 1; fi
+  # Every ticked box carries EXACTLY ONE outcome marker (PASS: / FAIL:{id} / n/a:{reason}) — 0 or 2+ is malformed:
+  awk '/^- \[x\]/{ n=gsub(/PASS:|FAIL:|n\/a:/,"&"); if (n!=1){ print "MALFORMED("n"): " $0; bad=1 } } END{ exit bad?1:0 }' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MALFORMED: a [x] row lacks exactly one PASS/FAIL:{id}/n-a:{reason} marker"; exit 1; }
 
   # 5-Type vocabulary is checked only in the 8 finding-bearing files; checklist.md is excluded (coverage artifact, carries no finding vocab):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \

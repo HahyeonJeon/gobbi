@@ -81,7 +81,7 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Planning-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning)
-- Planning's evaluator frame is built from [`planning/evaluation.md`](../../planning/evaluation.md) — task narrowness, dependency ordering, scope coverage, verification criteria, file-overlap concerns all live in the per-perspective seed scenarios and attached checklists
+- Planning's evaluator frame is built from the `planning/` evaluation bundle — the per-perspective seed scenarios in [`planning/scenario.md`](../../planning/scenario.md) and their checks in [`planning/checklist.md`](../../planning/checklist.md) (procedure in [`planning/evaluation.md`](../../planning/evaluation.md)); task narrowness, dependency ordering, scope coverage, verification criteria, and file-overlap concerns all live in those seed scenarios and checks
 
 ---
 

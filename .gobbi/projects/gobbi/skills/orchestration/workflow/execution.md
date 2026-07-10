@@ -134,7 +134,7 @@ The canonical tree is [`record/record-map.md`](../../record/record-map.md); Exec
 ## Cross-references
 
 - Execution Loop phase contracts (executor lifecycle, memory access, status enum) → [`execution/SKILL.md`](../../execution/SKILL.md)
-- Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
+- Execution-phase evaluation seed scenarios → [`execution/scenario.md`](../../execution/scenario.md); seed checks → [`execution/checklist.md`](../../execution/checklist.md); procedure / tool-verification → [`execution/evaluation.md`](../../execution/evaluation.md)
 - Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
 - Proposer orchestration → [`workflow/production.md`](production.md)

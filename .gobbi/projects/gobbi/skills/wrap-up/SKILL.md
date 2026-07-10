@@ -445,7 +445,7 @@ Stage 5 is the manager's, and it runs **only after stage-3 memory validation ret
 **Purpose**
 Find the promotion gaps WORK missed. Two independent systems (Claude Code + Codex) evaluate the Wrap-up artifact + promotions across all seven perspectives + Overall; the manager reconciles their findings and produces a single `PASS` / `REVISE` / `FAIL` verdict. Wrap-up evaluation is **non-skippable** — see [`wrap-up/evaluation.md`](evaluation.md).
 
-See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`wrap-up/evaluation.md`](evaluation.md) for the wrap-up-phase seed scenarios, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
+See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`wrap-up/scenario.md`](scenario.md) + [`wrap-up/checklist.md`](checklist.md) for the wrap-up-phase seed scenarios and checks (with [`wrap-up/evaluation.md`](evaluation.md) for the procedure), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
 - `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (and any decomposed artifact files)

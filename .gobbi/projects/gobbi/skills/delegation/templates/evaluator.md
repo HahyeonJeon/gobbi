@@ -64,7 +64,7 @@ Description or any other work. Skipping any required file is a process failure.
 3. Skills:
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
    - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
-   - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/evaluation.md`, `.../preparation/evaluation.md`, `.../planning/evaluation.md`, `.../execution/evaluation.md`, `.../wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
+   - Phase-specific evaluation bundle (if applicable): <<full paths to the phase's 3-file bundle — `{phase}/scenario.md` (Stage 1 seed scenarios) + `{phase}/checklist.md` (Stage 1 seed checks + copy source) + `{phase}/evaluation.md` (procedure / verifications / anti-patterns) — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/{scenario,checklist,evaluation}.md` (or `.../preparation/`, `.../planning/`, `.../execution/`, `.../wrap-up/`) — omit if not evaluating a phase artifact>>
 4. Mistakes:
    - <<list of mistake files relevant to this work's domain — full paths>>
 
