@@ -9,7 +9,8 @@
 # owner) is a flag below.
 #
 # Format (one row per doc):  doc|<filename>|<doc-kind>|<flags>
-#   <doc-kind> is one of: loop-orchestration, gate-orchestration
+#   <doc-kind> is one of: loop-orchestration, gate-orchestration,
+#                         reference-orchestration
 #   <flags>    "-" (none) OR a comma-separated list of:
 #       compacted             the doc HAS been compacted, so the structural
 #                             compaction-invariant checks apply to it:
@@ -36,7 +37,9 @@
 # manifest doc missing on disk, OR an on-disk workflow/*.md not listed here all
 # exit 2. Partial migration: ideation.md is `compacted`; preparation / planning /
 # execution / wrap-up are `tree-free` (redrawn tree removed, not yet fully
-# compacted); the three gate docs (evaluation / production / record) are un-migrated.
+# compacted); the three gate docs (evaluation / production / record) are
+# un-migrated. The four reference docs hold split-out top-level sections and are
+# part of the closed workflow doc set, but they do not run loop/gate-only checks.
 
 doc|ideation.md|loop-orchestration|compacted
 doc|preparation.md|loop-orchestration|tree-free
@@ -46,3 +49,7 @@ doc|wrap-up.md|loop-orchestration|tree-free
 doc|evaluation.md|gate-orchestration|no-perspective-table
 doc|production.md|gate-orchestration|-
 doc|record.md|gate-orchestration|nocommit-owner
+doc|status-display.md|reference-orchestration|-
+doc|session-record.md|reference-orchestration|-
+doc|state-machine.md|reference-orchestration|-
+doc|metadata.md|reference-orchestration|-

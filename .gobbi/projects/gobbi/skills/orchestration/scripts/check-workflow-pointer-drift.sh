@@ -3,7 +3,7 @@
 # orchestration/workflow/*.md docs.
 #
 # Purpose:
-#   The workflow docs are compacted with the two-doc-kind pattern
+#   The workflow docs are compacted with explicit doc-kind markers
 #   (features/workflow/design/workflow/workflow-compaction-two-doc-kind.md). A
 #   compacted doc replaces a duplicated block (a peer procedure, the session-tree
 #   ASCII, the no-commit git mechanics, the dual-production paragraph, the
@@ -167,7 +167,7 @@ load_manifest() {
             log "bad manifest doc name: $name"; return 2
         fi
         case "$kind" in
-            loop-orchestration|gate-orchestration) ;;
+            loop-orchestration|gate-orchestration|reference-orchestration) ;;
             *) log "bad manifest doc kind for $name: $kind"; return 2 ;;
         esac
         if ! valid_flags "$flags"; then
@@ -175,7 +175,7 @@ load_manifest() {
         fi
         if has_flag "$flags" "compacted" && [ "$kind" != "loop-orchestration" ] \
            && [ "$kind" != "gate-orchestration" ]; then
-            log "compacted flag on an unknown kind: $name"; return 2
+            log "compacted flag not allowed on reference doc: $name"; return 2
         fi
         if name_seen "$name"; then
             log "duplicate manifest doc: $name"; return 2
@@ -491,6 +491,16 @@ Gate orchestration prose.
 DOC
     }
 
+    write_reference_stub() {
+        cat > "$1" <<DOC
+# Workflow — $2
+
+**Doc kind:** reference-orchestration.
+
+Reference orchestration prose.
+DOC
+    }
+
     # record.md as the nocommit-owner + a legitimate session tree (non-compacted).
     write_record_owner() {
         cat > "$1" <<'DOC'
@@ -526,7 +536,7 @@ Covers all seven perspectives + Overall.
 DOC
     }
 
-    # Build the full 8-doc clean fixture tree under $1/wf + manifest at $1/manifest.txt.
+    # Build the full 9-doc clean fixture tree under $1/wf + manifest at $1/manifest.txt.
     build_clean_tree() {
         local root="$1"
         mkdir -p "$root/wf"
@@ -538,6 +548,7 @@ DOC
         write_eval_vertical "$root/wf/evaluation.md"
         write_gate_stub "$root/wf/production.md" "Production"
         write_record_owner "$root/wf/record.md"
+        write_reference_stub "$root/wf/metadata.md" "Metadata"
         cat > "$root/manifest.txt" <<'DOC'
 doc|ideation.md|loop-orchestration|compacted
 doc|preparation.md|loop-orchestration|-
@@ -547,12 +558,13 @@ doc|wrap-up.md|loop-orchestration|-
 doc|evaluation.md|gate-orchestration|no-perspective-table
 doc|production.md|gate-orchestration|-
 doc|record.md|gate-orchestration|nocommit-owner
+doc|metadata.md|reference-orchestration|-
 DOC
     }
 
     # === A: clean full partial-compaction tree (exit 0) ====================
     build_clean_tree "$tmp/A"
-    assert_exit 0 "clean 8-doc partial-compaction (all FP cases pass)" "$tmp/A/wf" "$tmp/A/manifest.txt"
+    assert_exit 0 "clean 9-doc partial-compaction (all FP cases pass)" "$tmp/A/wf" "$tmp/A/manifest.txt"
 
     # === B: fail-closed — a manifest doc absent on disk (exit 2) ============
     build_clean_tree "$tmp/B"
