@@ -2,7 +2,7 @@
 type: mistakes
 skill: evaluation
 description: "Recorded traps for evaluation — load before doing evaluation work"
-updated: 2026-07-08
+updated: 2026-07-11
 ---
 
 # Evaluation — Mistakes
@@ -54,3 +54,26 @@ updated: 2026-07-08
 
 ### Related
 - [[freeze-producer-artifact-before-evaluating]] — sibling evaluation-target-integrity trap: know exactly what you are diffing against before calling something a loss
+
+## use-codex-for-shell-dependent-evaluation-proof
+
+`priority: medium` · `domain: process` · `added: 2026-07-11` · `status: active` · `tags: [process, evaluation, verification]`
+
+**What happened** — One evaluation system lacked the shell capability needed to prove exact Git scope, parsed values, inode identity, and file modes.
+**Why it happens** — Close reading can review content but cannot prove live repository state or parser behavior. A producer report is still a proxy for those claims.
+**How to detect** — An evaluator marks a Git, parse, inode, or mode claim as PASS without live command output, or caps the claim because its runtime cannot execute the required command.
+**Correct approach** — Keep the capability limit visible, then obtain fixed-target executable evidence from an independent system that can run the command. Never attribute the executable coverage to the shellless evaluator.
+
+## evaluator-retry-overwrote-canonical-files
+
+`priority: high` · `domain: process` · `added: 2026-07-11` · `status: active` · `tags: [process, evaluation, verification]`
+
+**What happened** — A complete Claude evaluation was retried directly into its populated canonical directory. The retry exhausted its budget after replacing only four perspective files, leaving a mixed canonical set from two attempts.
+**Why it happens** — The retry contract treated each output write as independently publishable and had no all-nine completion gate before replacing the prior complete attempt.
+**How to detect** — An evaluator retry targets an already populated canonical directory and writes multiple files incrementally, so timeout, capacity, or budget failure can publish only a prefix of the result set.
+**Correct approach** — Write every retry to a distinct attempt directory. Validate exactly nine nonempty, structurally complete files (seven perspectives, Overall, and the filled checklist) and a terminal status, then replace the canonical system directory as one coordinated operation. A failed retry leaves the last complete canonical set unchanged.
+
+### Related
+
+- [[iter-artifact-edited-in-place-destroys-snapshot]] — canonical iteration evidence must stay immutable.
+- [[evaluator-spawn-without-producer-done-handshake]] — publication begins only after the producer is complete.
