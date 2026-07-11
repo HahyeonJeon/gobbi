@@ -238,7 +238,7 @@ Assign each task an agent type, model override (if any), required skills, and re
 - Locked task list (Sub-step B output)
 - Dependency + lane tables (Sub-step C output)
 - Memory: `.gobbi/projects/{project-name}/mistakes/`, `features/{feature-name}/mistakes/`
-- Project skills: `.gobbi/projects/{project-name}/skills/`, workspace skills under the active runtime's skill root (`.claude/skills/` in Claude Code, `.agents/skills/` in Codex)
+- Project + workspace skills: `.gobbi/projects/{project-name}/skills/` — the single canonical skill root for both runtimes (runtime discovery symlinks resolve into it; never a skill-load path)
 
 **Procedure**
 

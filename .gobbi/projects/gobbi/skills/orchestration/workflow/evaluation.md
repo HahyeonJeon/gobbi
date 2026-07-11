@@ -1,8 +1,10 @@
 # Workflow — Evaluation (Orchestration)
 
-How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
+**Doc kind:** gate-orchestration.
 
-**The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `RECORD` runs; `RECORD` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § RECORD Phase](ideation.md#record-phase-delegated-to-assistant-runs-every-iter)).
+How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead. When the Codex evaluator is reached through a Claude Code wrapper running `codex exec`, the prompt-file lifecycle and wrapper failure behavior are owned by [`codex/delegation.md`](../../codex/delegation.md).
+
+**The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `RECORD` runs; `RECORD` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § RECORD Phase](ideation.md#record-orchestration)).
 
 All evaluator output is **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/evaluation/`. Evaluators never write to memory.
 
@@ -50,9 +52,9 @@ Each evaluator is **one agent** that handles **all four stages (Target Understan
 
 Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
-- Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model and reasoning effort.
+- Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model. For the `codex exec` evaluator path, effort inherits the runtime's configured effort by default; the manager does not pass `--effort` unless the user explicitly requests it. Native `.codex/agents/evaluator.toml` still sets `model_reasoning_effort = "high"` for native Codex custom-agent spawns, but that wrapper default does not apply to bridge `codex exec`.
 
-**Codex evaluator launch mode.** The Codex evaluator runs as a `codex exec` assistant-wrapper; its launch mode follows the [`codex/SKILL.md` § `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix). This doc points to that matrix and does not restate the launch mechanics.
+**Codex evaluator launch mode.** The Codex evaluator runs as a `codex exec` assistant-wrapper; its launch mode follows the [`codex/SKILL.md` § `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix). The Codex-side wrapper prompt must follow [`codex/delegation.md`](../../codex/delegation.md): full prompt-file delivery via `codex exec ... - < "$prompt_file"`, exact output paths, required evaluator file headers, source-write prohibition, and BLOCKED-on-timeout/empty/error/malformed/self-authored output.
 
 ### Pre-spawn independence classification — Codex evaluator (D6.2)
 
@@ -277,7 +279,7 @@ This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfac
 ## Iteration Caps
 
 The manager tracks the loop's revision count. Settings define:
-- `workflow.{loop}.maxIterations` (default 5 for Ideation/Planning/Execution, 5 for Wrap-up)
+- `workflow.{loop}.maxIterations` (mode-specific defaults — Auto: 5 every loop; Chat: ideation 5, preparation 0/skipped, planning 1, execution 3, wrap-up 3)
 
 When the cap is reached without `PASS`, the manager's response is mode-specific (routine triage). **In Chat mode** the manager **escalates to the user** rather than continuing to revise — a stop-the-line user-decision primitive with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe (consistent with chat-mode.md's "Budget exhausted → escalate to user"). **In Auto mode** the manager does NOT interrupt the user mid-session: it records the abort, continues to the next step if continuing is safe, and surfaces the failure at Wrap-up — per [`auto-mode.md §6`](../auto-mode.md). The one exception is `auto-mode.md §6`'s "unsound to proceed" case (e.g., Planning aborted with no deliverable plan), where the Auto manager MUST surface through the active runtime's user-decision primitive before proceeding.
 
@@ -330,5 +332,5 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - RECORD synthesis → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
 - Wrap-up's memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
-- Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](../SKILL.md#verdict-aggregation)
+- Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](state-machine.md#verdict-aggregation)
 - Auto-Mode evaluation discipline (manager-never-asks / manager-never-evaluates / auto-iterate-no-routine-triage / safety-gate carve-out) → [`auto-mode.md` § Evaluation discipline (§7)](../auto-mode.md)

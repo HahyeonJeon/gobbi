@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-06-27
+updated: 2026-07-08
 ---
 
 # Skill-Writing — Mistakes
@@ -16,7 +16,7 @@ updated: 2026-06-27
 **What happened** — During an iter2 REVISE, the planning leader performed a "full re-audit" of required skills to fix a finding (a task missing a required skill). The audit added `claude` to several tasks on the assumption that a `claude` authoring-standard skill existed. In fact the `skills/claude` skill does not exist — it is a known dangling reference. The leader asserted the skill assignment without running `test -e` / `test -f` on each referenced path. The finding was dual-corroborated: the Codex evaluator independently ran `test -e` on three candidate paths and confirmed all absent.
 **Why it happens** — The planning leader treated the required-skills audit as a cross-reference exercise (does the skill conceptually fit the task?) rather than a verification exercise (does the skill file exist at the declared path?). The sibling verify-before-assert mistake was even a required-mistake input to this very planning loop — yet the same class of error recurred during the fix for a different cluster. The irony: the mistake was loaded and still repeated. Loading the mistake doc is insufficient; the verification discipline must be explicitly invoked at the point of making an existence claim.
 **How to detect** — A planning artifact lists a required skill that is referenced by name but not verified to exist on disk; the planning loop's required-mistakes include the verify-before-assert trap but the leader did not run `test -f` on skill paths during the required-skills section; the Execution manager attempts to inject a Load Directives block with a path that resolves to nothing.
-**Correct approach** — Before finalizing any required-skill list in a planning draft, run `test -f <skill-path>` (or `test -e`) on each skill path from the worktree root. For Claude Code the skill path is `$SK/{skill-name}/SKILL.md`; for Codex it is `$WT/.agents/skills/{skill-name}/SKILL.md`. A required skill that fails the existence test must be removed or substituted with one that exists. "Full re-audit" without file-existence verification is not a re-audit.
+**Correct approach** — Before finalizing any required-skill list in a planning draft, run `test -f <skill-path>` (or `test -e`) on each skill path from the worktree root. The skill path is `.gobbi/projects/gobbi/skills/{skill-name}/SKILL.md` — the single canonical skill root for both Claude Code and Codex. A required skill that fails the existence test must be removed or substituted with one that exists. "Full re-audit" without file-existence verification is not a re-audit.
 
 ## Claude Skills Mirror Is Symlink Not Copy
 
@@ -63,3 +63,24 @@ updated: 2026-06-27
 
 ### Related
 - [[scrub-stack-idioms-when-adapting-to-general-doc]] — sibling docs-sync authoring-contamination trap (source tokens leak into new prose)
+
+## Child-Doc Extraction Breaks Relative Links And Self-Anchors
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, links, refactor]`
+
+**What happened** — Splitting `skills/orchestration/SKILL.md`'s heavy sections into four `skills/orchestration/workflow/*.md` child docs (one directory level deeper) carried each extracted section's relative links and self-anchors across unchanged. A link target such as `../X` in the parent resolves against `skills/orchestration/`'s parent; the SAME link text copied into a child doc under `skills/orchestration/workflow/` resolves one level short instead. Self-anchors inside the extracted text needed repointing per whether their target heading traveled with the extraction or stayed behind in the parent.
+**Why it happens** — Extraction is copy-then-relocate, and every relative reference inside the copied text is anchored to the ORIGINAL file's directory depth, not the new one. Nothing about the copy operation itself signals that the depth changed, so a straight copy silently ships broken links.
+**How to detect** — Any doc-split or section-extraction plan that moves prose into a file at a deeper directory level without an explicit link-depth-adjustment step. Run the markdown-link guard scoped to the new child doc specifically — a broken relative link surfaces immediately; checking only the parent doc misses it.
+**Correct approach** — On any section extraction one directory level deeper: (1) add one `../` segment to every relative link inside the extracted text; (2) repoint any link that now targets a sibling file at the new relative path (a reference like `skills/orchestration/workflow/state-machine.md` becomes bare `state-machine.md` once inside `skills/orchestration/workflow/`); (3) repoint every self-anchor per whether its target heading traveled with the extraction; (4) run the link guard against the new child doc before calling the split done.
+
+## References Repo-Root Links Break Through The Mirror
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-08` · `status: active` · `tags: [docs-sync, links]`
+
+**What happened** — A `## References` link with a target of the form `../../../../../scripts/…` (a repo-root-anchored relative climb) resolved correctly from the canonical `SKILL.md` path but broke when the same file was read through the `.claude`/`.agents` runtime mirror symlink — the mirror sits at a different directory depth relative to the repo root, so the same fixed number of `../` segments lands somewhere else through it.
+**Why it happens** — The canonical skill file and its mirror symlink are the SAME file by inode, but they are reached via two different directory depths (`.gobbi/projects/{project}/skills/{skill}/SKILL.md` vs the mirror path). A relative link that climbs a fixed `../` count to reach a repo-root path is depth-relative, so it resolves correctly from only ONE of the two access points, never both at once.
+**How to detect** — A References (or similar) section containing a markdown link with three or more `../` segments climbing toward the repo root. Resolve the link from BOTH the canonical path and the `.claude`/`.agents` mirror path — if either fails, the link is depth-unstable.
+**Correct approach** — Keep a skill's References section to two link shapes that stay depth-stable across the mirror: sibling-skill links (`../{other-skill}/SKILL.md` — same nesting depth on both sides) and same-directory links (`mistakes.md`). Reference a repo-root script (e.g. a guard under `scripts/`) as a Procedure code-span load-action — a bash command the reader runs — rather than as a markdown link, since a code span has no relative-path resolution to break.
+
+### Related
+- [[child-doc-extraction-breaks-relative-links-and-self-anchors]] — sibling extraction-time link trap from the same session

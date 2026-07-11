@@ -7,6 +7,19 @@
 # — gobbi never sets it here automatically. See the git skill:
 # skills/git/SKILL.md § Runtime git environment and skills/git/conventions.md
 # § Runtime git posture — where it is configured.
+#
+# --- Local machine override (uncommitted): this user has opted into the posture below. ---
+sandbox_mode = "workspace-write"
+approval_policy = "on-request"
+approvals_reviewer = "auto_review"
+model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
+model_verbosity = "high"
+web_search = "cached"
+
+[sandbox_workspace_write]
+network_access = true
+writable_roots = []
 
 [agents]
 max_threads = 6

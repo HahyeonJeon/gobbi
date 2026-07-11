@@ -2,7 +2,7 @@
 type: mistakes
 skill: evaluation
 description: "Recorded traps for evaluation — load before doing evaluation work"
-updated: 2026-07-05
+updated: 2026-07-08
 ---
 
 # Evaluation — Mistakes
@@ -42,3 +42,15 @@ updated: 2026-07-05
 **How to detect** — You are authoring or evaluating wording that will be WRITTEN INTO a guard-governed file (a `skills/{skill}/mistakes.md` section, or any doc a guard validates), and the wording contains backtick path tokens. If the wording is proposed but the governing guard has not been RUN against a candidate rendering, the guard-conformance is unverified. A guard named in a plan but never executed on the real content is a latent red gate deferred to Execution.
 
 **Correct approach** — (1) When authoring skill-surface wording a guard validates, use the guard-exempt or canonical path forms the surrounding file already uses — for a rules-dir reference the placeholder `.gobbi/projects/{project-name}/rules/`; for a real path, one that resolves on disk. (2) At evaluation, when a finding adds a guard to the verification plan for an edited guard-governed file, RUN that guard on a candidate rendering of the ACTUAL proposed wording — do not stop at "the guard is listed".
+
+## Evaluator Flags User-Approved Removal As Normative Loss
+
+`priority: medium` · `domain: verification` · `added: 2026-07-08` · `status: active` · `tags: [verification, process]`
+
+**What happened** — A base→HEAD no-loss evaluator (checking that Execution did not silently drop content) flagged a section as a "normative loss" finding. The section had in fact been REMOVED deliberately, on the user's explicit instruction during this session's DISCUSSION — not dropped by accident. The evaluator's diff sees only content-present-before / content-absent-after; it has no channel for "the user asked for this."
+**Why it happens** — The no-loss check's entire job is to catch SILENT drops, and a base-vs-HEAD diff alone cannot distinguish a silent drop from a deliberate, discussed-and-approved one. Without cross-checking the discussion log, every removal — accidental or requested — looks identical to the evaluator.
+**How to detect** — A no-loss / normative-loss finding names content that is (a) entirely absent from HEAD, and (b) recorded in the session's discussion log as content the user asked to remove. That combination is a won't-fix, not an open defect.
+**Correct approach** — Before treating a no-loss finding as a defect, cross-check the discussion log for a matching user-requested removal. When the log confirms it, disposition the finding `won't-fix` (user-approved removal) rather than restoring the content. Only escalate if there is a genuine reason to reconsider the removal (e.g., a later user message suggests the removal was not meant to be permanent).
+
+### Related
+- [[freeze-producer-artifact-before-evaluating]] — sibling evaluation-target-integrity trap: know exactly what you are diffing against before calling something a loss

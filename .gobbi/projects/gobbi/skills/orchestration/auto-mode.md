@@ -46,7 +46,7 @@ are not sufficient — if the decision is Auto-decide class, proceed.
 Auto Mode runs the linear 6-step state machine: Configuration → Ideation → Preparation
 → Planning → Execution → Wrap-up. Each step runs **once per session in sequence**. Steps
 2-6 are bounded loops; their shared phase mechanics, iteration rule, and gates are
-specified in [`orchestration/SKILL.md § Workflow State Machine`](SKILL.md#workflow-state-machine).
+specified in [`orchestration/SKILL.md § Workflow State Machine`](workflow/state-machine.md#workflow-state-machine).
 
 This section is the canonical home of the Auto-Mode SOP — for each step: Definition,
 Inputs, Output, Loop iteration (for steps 2-6), and the procedure to execute.
@@ -79,7 +79,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WORK` | Spawn the `leader` subagent. Collect the leader's draft Idea. | manager orchestration: [ideation.md](workflow/ideation.md); specialist phase load: [../ideation/SKILL.md](../ideation/SKILL.md) (+ [../research/SKILL.md](../research/SKILL.md) at Sub-step C) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to RECORD](workflow/evaluation.md#routing-findings-to-record). | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` or `Skipped` → exit. `REVISE`/`FAIL` with budget → return to row 1 with findings appended. Budget exhausted → exit with abort. | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` or `Skipped` → exit. `REVISE` with budget → return to row 1 with findings appended. Any `FAIL` → escalate to the user (safety gate, never auto-re-entered). Budget exhausted → exit with abort. | manager orchestration: —; specialist phase load: — | manager |
 
 ### Step 3 — Preparation Loop
 
@@ -97,7 +97,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WORK` | Spawn the `leader` subagent. Leader writes preparation draft AND executes approved gap fixes. | manager orchestration: [preparation.md](workflow/preparation.md); specialist phase load: [../preparation/SKILL.md](../preparation/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.preparation.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` or `Skipped` → promote generated skills + exit. `REVISE`/`FAIL` with budget → row 1. Budget out → abort. (A `re-ideate` decision is handled in row 1 `DISCUSSION`, not here — it is not a row-5 verdict.) | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → promote generated skills + exit. `Skipped` → exit (no generated skills exist on a skipped loop, so nothing to promote). `REVISE` with budget → row 1. Any `FAIL` → escalate to the user (safety gate, never auto-re-entered). Budget out → abort. (A `re-ideate` decision is handled in row 1 `DISCUSSION`, not here — it is not a row-5 verdict.) | manager orchestration: —; specialist phase load: — | manager |
 
 ### Step 4 — Planning Loop
 
@@ -151,7 +151,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | manager orchestration: [wrap-up.md](workflow/wrap-up.md); specialist phase load: [../wrap-up/SKILL.md](../wrap-up/SKILL.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path — write session and memory for this iteration. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
-| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](SKILL.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
+| 5 | `ITER / EXIT` | `PASS` → session closed. `REVISE` → re-enter `DISCUSSION` (up to `max=5` remediation iterations). `FAIL` or cap exhausted → escalate to user per [Workflow State Machine § Iteration Caps](workflow/state-machine.md#iteration-rule). | manager orchestration: —; specialist phase load: — | manager |
 
 ---
 
@@ -323,7 +323,10 @@ the **degraded-mode / single-system fallback** and **both systems failing**
 These fall under [§1](#1--mode-posture)'s "a step fails in a way the manager cannot resolve."
 Always-Ask findings (Design / Scope / Destructive per [§3](#3--always-ask-codification)) and findings
 implying an unresolvable scope change ([§1](#1--mode-posture) interrupt #2) also still interrupt. A
-minor divergence (`PASS`↔`REVISE`) auto-proceeds, as today.
+minor divergence (`PASS`↔`REVISE`) auto-proceeds, as today. Any aggregate `FAIL` verdict always
+escalates per [`SKILL.md § Iteration rule`](SKILL.md#iteration-rule) — a `FAIL` is always either a
+dual-system divergence or a both-systems-fail, so it always hits one of these named gates and is never
+auto-re-entered as a `REVISE`.
 
 This is the Auto-mode counterpart to the Chat-scoped finding-discussion rule in `.claude/CLAUDE.md`
 and to the Chat branches of `evaluation.md`'s routine-triage sections.

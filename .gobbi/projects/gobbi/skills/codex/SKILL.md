@@ -13,6 +13,8 @@ This skill defines how Gobbi works with Codex. It covers two different cases:
 
 Keep those cases separate. A rule about Claude Code spawning Codex is not automatically a rule about native Codex sessions.
 
+Detailed Claude-wrapper-to-Codex prompt-file delegation lives in [`delegation.md`](delegation.md). This `SKILL.md` owns runtime selection, entry points, invocation posture, and high-level use cases; the child doc owns the precise prompt-file lifecycle, wrapper verification gates, and failure behavior.
+
 ---
 
 ## Runtime Matrix
@@ -38,7 +40,7 @@ Use this section when the current Gobbi session is already running in Codex.
 
 ### Entry Points
 
-- Load Gobbi skills from `.agents/skills/<skill-name>/SKILL.md`.
+- Load Gobbi skills from `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`.
 - Spawn or request custom agents from `.codex/agents/{manager,leader,executor,evaluator,assistant}.toml`.
 - Read canonical role prompts from `.gobbi/projects/gobbi/agents/{role}.md`.
 - Read canonical skill sources from `.gobbi/projects/gobbi/skills/{skill-name}/SKILL.md`.
@@ -71,7 +73,9 @@ Fresh Codex subagents still need explicit load directives. They do not inherit s
 
 ### Models and Sandbox
 
-Do not hard-code model names in Gobbi Codex agent TOML unless the user explicitly asks. Let Codex inherit the parent session model and reasoning effort.
+Do not hard-code model names in Gobbi Codex agent TOML unless the user explicitly asks. Let Codex inherit the parent session model.
+
+Gobbi's repo-local Codex wrappers set role effort through `model_reasoning_effort`: `leader` is `xhigh`; `manager`, `assistant`, `executor`, and `evaluator` are `high`. Do not change those effort defaults unless the user explicitly asks.
 
 Subagents inherit the parent sandbox policy. Use `sandbox_mode = "read-only"` only for agents that must never write, such as `evaluator`.
 
@@ -113,11 +117,13 @@ Use this section when Gobbi is running in Claude Code and needs an independent C
 The reliable bridge is foreground `codex exec` through Bash:
 
 ```bash
+prompt_file="<absolute-session-path>/codex-prompt.md"
+
 timeout 600 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id} \
-  "<inline prompt or @prompt-file>"
+  - < "$prompt_file"
 ```
 
 Rules:
@@ -128,6 +134,8 @@ Rules:
 - Pass `--add-dir <session-path>` for cross-tree session writes.
 - Wrap every bridge call with `timeout 600`, unless the user explicitly approves a different cap. Note: `600` sits AT the Claude Code Bash foreground cap (~600s) — foreground is safe only for SHORT bridge calls; background the call per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if it may approach the cap.
 - Do not pass `--model` or `--effort` unless the user explicitly requests it.
+- For full Gobbi prompt files, use official stdin transport: `codex exec ... - < "$prompt_file"`. Do not standardize `@prompt-file` as the bridge contract unless the local Codex version explicitly documents and verifies it.
+- For prompt-file construction, required sections, wrapper checks, and failure behavior, read [`delegation.md`](delegation.md).
 
 ### `codex exec` launch runtime matrix
 
@@ -137,7 +145,7 @@ Rules:
 |---|---|---|
 | Native Codex shell, under the host cap | foreground `timeout <cap>` | process exit + file validation |
 | Claude Code Bash, fits under ~540s | foreground, `timeout` under ~540s | validate output files before reporting |
-| Claude Code Bash, may exceed ~540s | **background** (`run_in_background`), explicit PID, `< /dev/null` | poll the output file for its closing marker; ignore the detached exit code |
+| Claude Code Bash, may exceed ~540s | **background** (`run_in_background`), explicit PID, deterministic stdin EOF (`- < "$prompt_file"` for standard prompt-file runs; `/dev/null` only for verified prompt-argument exceptions) | poll the output file for its closing marker; ignore the detached exit code |
 | Assistant wrapper | ONLY if it blocks/polls until the contracted output files pass validation | files-as-truth, never "started" |
 
 **The binding foreground limit in Claude Code is the Bash tool cap, not the `timeout` flag.** The Claude Code Bash tool caps a single foreground call at ~600s (10 min) — its documented max. Background any `codex exec` that may exceed ~540s (9 min) — a ~60s margin below the ~600s (10-min) Bash cap. A `timeout 1200` only governs a run that is ALREADY backgrounded in Claude Code (once detached, the `timeout` flag — not the Bash cap — is the binding limit), or a native-Codex context where the host grants that budget. A foreground `timeout 1200` in Claude Code is dead past ~600s: the harness kills the call first (recorded mistake `codex-exec-timeout-exceeds-bash-cap.md`).
@@ -163,39 +171,42 @@ The proposer analogue of § Dual-System Evaluation. A Codex co-worker independen
 The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It writes only its proposal at `working/proposals/codex/draft-iter{n}.md` (Execution, per task: `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`). The Claude producer reads the frozen proposal and selectively integrates it; Codex proposes, Claude writes.
 
 1. Manager spawns the Claude producer and a Codex-side proposer assistant in parallel (parallel-independent — neither sees the other while generating).
-2. The Codex-side assistant writes the proposer prompt to a file in a **foreground** step and verifies it on disk (`test -s`) BEFORE invoking codex — never a stdin heredoc inside a backgrounded command.
-3. The Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). A full proposer workload (large skill reads + a complete draft) routinely exceeds the ~600s Claude Code Bash foreground cap, so in Claude Code it launches as a **background** command (`run_in_background`) with `< /dev/null` — NOT foreground-blocking. Only a native-Codex host that grants the budget runs it foreground `timeout <cap>`.
-4. Cap the backgrounded proposer run with `timeout 1200`. Once the run is detached, the `timeout` flag (not the Bash foreground cap) is the binding limit. `timeout 600` (the evaluation-bridge default) is too short for a full proposer workload; the proposer cap is `1200`. This `1200` governs a BACKGROUNDED run in Claude Code or a native-Codex context — never a Claude Code foreground call (the harness kills a foreground call at ~600s, per the matrix).
+2. The Codex-side assistant writes the proposer prompt to a file in a **foreground** step and verifies it on disk (`test -s`) BEFORE invoking codex — never a heredoc embedded in the same backgrounded command that runs Codex.
+3. The Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). A full proposer workload (large skill reads + a complete draft) routinely exceeds the ~600s Claude Code Bash foreground cap, so in Claude Code it launches as a **background** command (`run_in_background`) with deterministic prompt-file stdin (`- < "$prompt_file"`) — NOT foreground-blocking. Only a native-Codex host that grants the budget runs it foreground `timeout <cap>`.
+4. Cap the proposer run with `timeout 1200`. Once a Claude Code run is detached, the `timeout` flag (not the Bash foreground cap) is the binding limit. `timeout 600` (the evaluation-bridge default) is too short for a full proposer workload; the proposer cap is `1200`. This `1200` governs a backgrounded run in Claude Code or a native-Codex context — never a Claude Code foreground call (the harness kills a foreground call at ~600s, per the matrix).
 5. To clean up a hung proposer run, kill by explicit **PID** (`ps` / captured `$!`), never `pkill -f '<pattern>'` — a `-f` pattern that is a substring of the cleanup command kills the issuing shell.
 6. Validate the proposal **structurally** before reporting `DONE`: the file exists, is > 0 bytes, and carries a `PROPOSAL:` header. Do NOT gate on a content-vocabulary grep — a valid proposal can lawfully omit any given token, so a vocab grep false-blocks a clean proposal.
+7. Follow [`delegation.md`](delegation.md) for the full proposer prompt-file contract and failure table.
 
 > **Superseded (runtime-matrix):** the earlier guidance to run the proposer **foreground-blocking with `timeout ≥ 1200s`** is superseded by the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). In Claude Code the proposer runs **background** — its workload exceeds the ~600s foreground cap — and `timeout 1200` is the detached-run cap, not a foreground budget. Foreground `timeout <cap>` applies only in a native-Codex host that grants the budget.
 
 **Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Preparation / Planning / Wrap-up), **background-launched in Claude Code** per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix):
 
 ```bash
+prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md"
+
 timeout 1200 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex \
-  "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md" \
-  < /dev/null
+  - < "$prompt_file"
 ```
 
 **Execution per-task variant.** The Execution quartet lives under the task dir, so swap the `--add-dir` writable set and the prompt path to the task's `working/proposals/codex` (draft → `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`):
 
 ```bash
+prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
+
 timeout 1200 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex \
-  "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md" \
-  < /dev/null
+  - < "$prompt_file"
 ```
 
-Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the DETACHED-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with `< /dev/null`, foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
+Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the detached-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with prompt-file stdin (`- < "$prompt_file"`), foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
 
-**Stdin hardening.** A backgrounded proposer `codex exec` MUST redirect stdin from `/dev/null` (the `< /dev/null` shown above) and write+verify the prompt file in a separate foreground step first (step 2) to avoid the stdin-read hang — observed this session stuck at `Reading additional input from stdin...`; kill a hung run by explicit PID (step 5), never `pkill -f`. This generalizes the existing `codex-exec-prompt-via-background-heredoc-hangs` discipline.
+**Stdin hardening.** The standard bridge uses `- < "$prompt_file"` so stdin is the verified prompt file and reaches EOF. Do not run `codex exec` with no prompt argument and inherited open stdin. Do not combine prompt-file creation and `codex exec` in one backgrounded heredoc command. If an exceptional prompt-argument run is backgrounded, redirect stdin from `/dev/null`; kill a hung run by explicit PID (step 5), never `pkill -f`.
 
 **Degraded mode (CRITICAL).** If the Codex proposal is empty, times out, or errors:
 
@@ -239,7 +250,7 @@ Treat rollout JSONL like Claude Code transcripts. Do not paste long excerpts int
 - Running `codex exec` without a timeout.
 - Letting Codex write session files from a worktree-relative or `pwd`-derived path.
 - Trusting Codex stdout or broker state instead of verifying contracted output files.
-- Setting Codex model or effort without user direction.
+- Setting Codex model without user direction, or changing Codex effort outside the documented role defaults without user direction.
 - Using `danger-full-access` as a default sandbox.
 
 ---
@@ -276,7 +287,7 @@ timeout 600 codex exec \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
-  "<prompt>"
+  - < "$prompt_file"
 ```
 
 The `timeout 600` here is a foreground bridge cap that sits AT the ~600s Claude Code Bash foreground limit — background per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if the call may approach the cap.
@@ -371,11 +382,13 @@ Task: Run the Codex evaluator on [target artifact] and write findings to the ses
 
 Step 1. Run codex exec via your Bash tool:
   # launch mode per the codex exec launch runtime matrix — BACKGROUND if the run may exceed ~540s; foreground below is safe only under the ~600s cap
+  prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
+
   timeout 600 codex exec \
     --sandbox workspace-write \
     --cd <main-tree> \
     --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
-    "@<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
+    - < "$prompt_file"
 
 Step 2. Verify output files landed at the absolute main-tree path:
 
@@ -386,12 +399,17 @@ Step 2. Verify output files landed at the absolute main-tree path:
   # Every ticked box carries EXACTLY ONE outcome marker (PASS: / FAIL:{id} / n/a:{reason}) — 0 or 2+ is malformed:
   awk '/^- \[x\]/{ n=gsub(/PASS:|FAIL:|n\/a:/,"&"); if (n!=1){ print "MALFORMED("n"): " $0; bad=1 } } END{ exit bad?1:0 }' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MALFORMED: a [x] row lacks exactly one PASS/FAIL:{id}/n-a:{reason} marker"; exit 1; }
 
+  # Each output file must be non-empty (9 files: 7 per-perspective + overall + the filled checklist):
+  find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex -type f -size +0c | wc -l  # must be 9
+
   # 5-Type vocabulary is checked only in the 8 finding-bearing files; checklist.md is excluded (coverage artifact, carries no finding vocab):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
     <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/{project,structure,performance,aesthetics,usage,consistency,risk,overall}.md | wc -l  # >= 1 hit per file (finding files only)
 
   # Verdict line must be present in overall.md:
   grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
+
+  # Finding vocabulary checks are advisory only; a clean PASS can validly contain no typed findings.
 
   # If any check fails: STATUS: BLOCKED, do not silent DONE.
 
@@ -450,6 +468,8 @@ Codex and Claude consume tokens at different rates and from different budget poo
 ### Effort level
 
 `codex exec` supports `--effort none|minimal|low|medium|high|xhigh`. Higher effort levels multiply token cost. Leave `--effort` unset unless the user has explicitly requested a specific level. The default effort is set in the user's `~/.codex/config.toml`.
+
+Native Gobbi custom agents use role wrapper defaults instead of CLI flags: `model_reasoning_effort = "xhigh"` for `leader`, and `model_reasoning_effort = "high"` for `manager`, `assistant`, `executor`, and `evaluator`.
 
 ### Model selection
 

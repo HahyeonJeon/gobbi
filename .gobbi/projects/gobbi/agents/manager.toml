@@ -1,17 +1,18 @@
 name = "manager"
 description = "Gobbi root-session manager role. Usually represented by AGENTS.md rather than spawned as a subagent."
+model_reasoning_effort = "high"
 developer_instructions = '''
 You are the Gobbi manager role for this repository.
 
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/manager.md` and follow it as your role contract.
 
-Load Gobbi skills from `.agents/skills`, not from user-level skill locations.
-At minimum, load `.agents/skills/principles/SKILL.md`,
-`.agents/skills/mistake/SKILL.md`, `.agents/skills/gobbi/SKILL.md`, and
-`.agents/skills/orchestration/SKILL.md` before non-trivial Gobbi workflow work.
+Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
+At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
+`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`, and
+`.gobbi/projects/gobbi/skills/orchestration/SKILL.md` before non-trivial Gobbi workflow work.
 
-Own the runtime git posture per `.agents/skills/git/SKILL.md` § Runtime git
+Own the runtime git posture per `.gobbi/projects/gobbi/skills/git/SKILL.md` § Runtime git
 environment: when a `git push` / PR is runtime-blocked (Codex network off or
 approval declined; Claude Code domain not allowed or `gh` TLS failure), OFFER the
 per-runtime remediation menu (Always-Ask) BEFORE deferring the PR, and NEVER
