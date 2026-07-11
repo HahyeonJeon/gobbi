@@ -84,3 +84,12 @@ updated: 2026-07-08
 
 ### Related
 - [[child-doc-extraction-breaks-relative-links-and-self-anchors]] — sibling extraction-time link trap from the same session
+
+## Skill Core Principles Must Be Universal And Self-Standing
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-11` · `status: active` · `tags: [docs-sync, process]`
+
+**What happened** — Redrafting a skill's `## Core Principles`, the author first baked tool/system-specific machinery INTO the principle statements (a checklist name, the load-directive tier order, product names, internal file names); then, on the next draft, ended each principle with a `See § <body-section>` citation. The user rejected both: the principles read as internal-implementation notes, and a principle that ends in "See §" makes its meaning depend on another doc. Separately, removing a NAMED Core Principle left a stale present-tense reference to it in the skill's own `mistakes.md` companion — a Principle-9 blast-radius miss caught only at evaluation.
+**Why it happens** — A skill's body already holds the mechanics, so it is tempting to name them in the principle for precision and to link down "for detail." But the Core Principles are the general/universal layer: they should state the durable idea completely, in tool-agnostic words, and stand on their own. And a skill's `mistakes.md` and other companions reference the principle set, so removing or renaming a principle silently breaks those references.
+**How to detect** — A principle STATEMENT contains a product/file/mechanism noun (a checklist name, a tier label, a runtime name) instead of a universal statement; OR a principle ends in a `See §` / `(§ …)` cross-reference; OR, after removing a named principle, a grep of the skill's `mistakes.md` + companion docs for the removed principle's name/phrase finds a live present-tense reference.
+**Correct approach** — State each Core Principle universally and completely — no tool/system jargon, no dependency on a body section to carry its meaning; let the body independently document the tool-specific application (no link needed). When removing or renaming a named principle, sweep the skill's `mistakes.md` and every doc that cited it (Principle-9 blast radius) in the SAME edit, re-pointing each reference to the surviving home.

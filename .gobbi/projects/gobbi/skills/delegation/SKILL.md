@@ -8,44 +8,29 @@ allowed-tools: Read, Grep, Glob, Bash
 
 How the manager passes work to spawned subagents. The goal is **deterministic delegation** — the manager fills the same template the same way every time, the subagent loads the same things in the same order every time, nothing is left to inference.
 
-Sub-document of the `orchestration` skill. Loaded whenever the manager is about to use the active runtime's subagent primitive.
-
-Runtime mapping:
-
-| Runtime | Subagent primitive | Agent definitions |
-|---|---|---|
-| Claude Code | `Task` / `Agent` | `.claude/agents/{role}.md` symlinked to canonical prompts |
-| Codex | project custom agents | `.codex/agents/{role}.toml`, each pointing at the canonical prompt |
-
-The delegation contract is the same across runtimes: fresh subagents inherit no loaded skills, so every prompt carries explicit Load Directives.
-
 ---
 
 ## Core Principles
 
-> **Tell specialists what to do, not how to do it.**
+> **Make the brief self-contained from the receiver's point of view.**
 
-Detailed "how" instructions suppress a specialist agent's ability. Define the goal, the constraints, and what to avoid — then trust the specialist to find the best approach. Guardrails about "not to do" protect quality; prescriptive "how to do" limits it.
+A delegate cannot act on what it cannot see — a fresh subagent shares none of the manager's context, and even an experienced hand needs the unstated made explicit. Put the goal, the task itself, the relevant context, the constraints, and the inputs in the brief; cite external references only to supplement what the brief already makes clear. A true continuation may get a delta-brief instead — but only when the receiver already holds the earlier context.
 
-> **Construct exactly what a FRESH subagent needs. A fresh spawn inherits nothing.**
+> **Make the required preparation explicit, ordered, and checkable.**
 
-A fresh subagent has no exposure to the manager's session — no transcript, no chain of thought, no skills the manager loaded earlier. The manager builds the context bundle inline. The subagent never reads the manager's mind. **Exception — continuation:** a *continued* teammate (re-addressed via `SendMessage`) already holds its own accumulated context from prior turns, so the manager sends a **delta-brief** instead of a full re-paste. See [§ Continue vs Fresh](#continue-vs-fresh) for when continuation is allowed and how the delta-brief is shaped.
+Name what the receiver must study before acting, in the order that makes the work safe, and make it concrete enough that a reviewer can confirm it happened — a missing prerequisite fails the handoff. Do not leave a fresh receiver to guess the standards, conventions, and known pitfalls it should follow.
 
-> **Inline paste, never `@path` for the primary spec.**
+> **Define the contract: one clear objective, boundaries, the evidence for "done," and the escape hatch.**
 
-The task spec is pasted inline into the prompt. Reference materials (additional reading) may be cited by path. A subagent that has to read the primary spec from a file path adds a layer of inference between the brief and the work.
+State the single outcome and why it matters; what is in scope and what is out; the deliverable and the check that proves it complete; and the defined way to report success, a concern, missing context, or a true block. A parseable contract lets the manager accept or redirect on evidence instead of interpreting prose.
 
-> **Deterministic load order: principles → rules → skills → mistakes.**
+> **Steer the outcome without smothering judgment.**
 
-Every delegation prompt contains a numbered Load Directives block. The subagent loads them top-to-bottom before any other action. No skipping, no re-ordering, no inference about which skills are relevant.
+Lock the goal, the constraints, the settled decisions, and the acceptance criteria — then stop. Over-scripting every local choice produces mechanical compliance where you wanted expertise; under-specifying invites drift. Calibrate detail to risk: more on boundaries and invariants, less on the choices the receiver is qualified to make.
 
-> **Status enum at the end of the prompt.**
+> **Protect independent judgment when the point is to check or compare.**
 
-Every spawned agent reports with an explicit status enum at the end of its response. The enum is the last thing the subagent reads in the prompt before producing output (recency bias). The manager parses the status line first and dispatches deterministically.
-
-> **Any delegation prompt for a RECORD sub-phase MUST include `record/SKILL.md` in tier 3 (Skills) of the Load Directives block.**
-
-RECORD is a specialized sub-phase with its own memory-tier boundaries, staging rules, and idempotency contract. A fresh subagent dispatched to run RECORD — normally the `assistant` in `record` mode — cannot operate correctly without loading `record/SKILL.md`. This is a hard gate: a delegation prompt that omits `record/SKILL.md` from the Skills tier when the sub-phase is RECORD is a malformed prompt — the manager must add it before dispatching.
+An author cannot be the sole judge of their own work, and a reviewer or a parallel proposer must not be primed with the author's reasoning before forming its own view. Keep the second judgment independent through separation, clean inputs, and no reuse where a prior verdict or draft would contaminate it.
 
 ---
 
@@ -71,7 +56,7 @@ The templates are not paraphrased into prose at dispatch time — they are fille
 All four per-role templates share this scaffold (per-role tails add the rest). The order is fixed (D2): Load Directives sit **before** the Task Description, matching the block's own "read these as your FIRST actions" instruction.
 
 1. **Identity line** — `You are a {role}...` (sets voice + role on the first token).
-2. **Structured headers** — `Your phase:` / `Your iteration:` / `Your sub-step:` (+ `Your system:` on the evaluator, `Mode:` on the assistant). The machine-readable routing block (§ Hook Integration); under the identity line, above the Load Directives.
+2. **Structured headers** — `Your phase:` / `Your iteration:` / `Your sub-step:` (+ `Your system:` on the evaluator, `Mode:` on the assistant). The machine-readable routing block; under the identity line, above the Load Directives.
 3. **Load Directives** — 4-tier numbered block (see below), placed BEFORE the Task Description.
 4. **Task Description / Question** — the **primary spec, pasted inline**. Never a `@path`. Manager-authored or paste of the user's exact wording.
 5. **Context** — manager-authored scene-setting (where it fits, dependencies, user-clarified intent, pre-resolved decisions).
@@ -273,30 +258,6 @@ The `## Report Format` section appears at the **end** of every delegation prompt
 | `BLOCKED` with `reason: wrong-phase-dispatch` | **Re-dispatch**, not abort. The subagent identified a role mismatch — re-delegate to the correct role without re-contracting with the user (unless the correct role is ambiguous). |
 
 The manager translates this into its own user-facing status (`PROCEED` / `PROCEED_WITH_CONCERNS` / `NEEDS_DECISION` / `BLOCKED`) in the next user message.
-
----
-
-## Hook Integration
-
-Delegation prompts are not only consumed by the spawned subagent — they are also parsed by the [`PostToolUse` hook `.claude/hooks/post-tool-use-agents.sh`](../../../../../.claude/hooks/post-tool-use-agents.sh) (registered for `Task` / `Agent` on `PostToolUse` + `PostToolUseFailure`). The hook *routes* `step` / `phase` / `iter` / `sub-step` / `system` from the prompt's structured headers and *may seed* an `agents[]` entry's routing fields — but it is NOT the source of truth for **per-agent token usage**: that is recorded by the manager via `jq` over each agent's own transcript (see [`orchestration/workflow/metadata.md` § Recording workflow metadata](../orchestration/workflow/metadata.md#recording-workflow-metadata)). The hook also cannot always resolve the worktree's `session.json` (worktree-path limitation: `features/agents/backlogs/post-tool-use-hook-cannot-resolve-worktree-session-json.md`), so its upsert is best-effort. For the hook's routing extraction to populate `step` / `phase` / `iter` / `sub-step` / `system` correctly when it does fire, every delegation prompt MUST place a small block of **structured headers** at the very top of the prompt body (before any other content).
-
-### Structured-Header Convention
-
-The hook reads five headers via case-insensitive line-anchored regex `^Your (phase|iteration|sub-step|step|system): (.+)$` from `tool_input.prompt`. Place these at the top of the prompt (template-managed — see [`templates/`](templates/)):
-
-| Header | Value shape | Required | Purpose |
-|---|---|---|---|
-| `Your phase:` | `ideation` \| `preparation` \| `planning` \| `execution` \| `wrap-up` (evaluator suffixes `-eval`; research uses `research`) | yes | Routes the entry into `session.json.agents[].phase` and the matching workflow step. |
-| `Your iteration:` | positive integer (the loop iter inside the step; `1` for first pass) | yes | Stamps `agents[].iter`; powers per-iter session-record commit cadence. |
-| `Your sub-step:` | slug or letter (e.g., `evaluation-claude`, `A`, `B`, `claude-iter1-clean-1of3`) | when more than one spawn shares the same `(step, phase, iter)` | Disambiguates parallel spawns in the same iteration (e.g., dual-system evaluators, batched executors). |
-| `Your system:` | `claude` \| `codex` | on the evaluator (and any spawn whose producing system must reach `agents[].system`) | Routes the producing system into `agents[].system`; the dual evaluators share `(step, phase, iter)`, so `system` is their durable disambiguator. |
-| `Your step:` | step number `1`–`6` matching the canonical state machine | optional | Manager may include for self-documentation; hook prefers `phase` when both are present. |
-
-These five headers are the **only** machine-readable contract between the delegation prompt and the hook. Everything else in the prompt (Identity line, Task Description, Context, Load Directives, etc.) is for the subagent. Per-role templates ship the headers pre-filled with `<<slot>>` markers; the manager fills them at dispatch time as part of the same template-filling pass that resolves every other slot. The manager (or the hook, when it can resolve the `session.json`) records `agents[]` entries; omitting the headers does not break the subagent, but it leaves those entries with `phase` / `iter` / `sub-step` / `system` set to `null`, which downstream session-record queries treat as missing data.
-
-### Serialization safety — `flock -x` on session.json
-
-Both the hook (`post-tool-use-agents.sh`) and its verify-and-fix companion ([`.claude/scripts/reconstruct-agents.sh`](../../../../../.claude/scripts/reconstruct-agents.sh)) wrap their `session.json` read-modify-write in a POSIX `flock -x` exclusive lock (held on a sidecar `.lock` file co-located with `session.json`), then commit the new contents via `mv` for atomic replacement. The lock is the design-decision D-3-5 serialization gate: concurrent subagent spawns (e.g., the two parallel evaluators, or a research fan-out) fire PostToolUse events that arrive interleaved, and the lock guarantees the upserts apply in sequence rather than racing each other into a torn write. The manager does not need to throttle spawns or stagger dispatches; the lock makes `agents[]` writes safe under arbitrary spawn concurrency.
 
 ---
 

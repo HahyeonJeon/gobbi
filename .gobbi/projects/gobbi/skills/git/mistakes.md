@@ -108,3 +108,12 @@ updated: 2026-07-06
 **Why it happens** — Human traceability and syntax conformance are easy to conflate. A review that checks only for trailer presence can miss a missing URI scheme, a wrong task segment, or a non-task terminal segment.
 **How to detect** — Any provenance review says "all commits have the trailer" without comparing each trailer against the documented shape. Red flags include a missing URI scheme, direct task path pieces, or a terminal wrap-up segment where the parser expects a task segment.
 **Correct approach** — Record syntax drift separately from absent provenance when every commit remains traceable. In audit-only work, preserve the git-log evidence and do not rewrite history; leave any trailer standardization to an explicitly scoped follow-up.
+
+## Manager Edited Main Checkout Not The Session Worktree
+
+`priority: high` · `domain: verification` · `added: 2026-07-11` · `status: active` · `tags: [verification, process]`
+
+**What happened** — In a multi-worktree session (the feature branch lived in a linked worktree), the manager's first Read/Edit targeted the MAIN checkout's copy of the file — which is on `develop` — instead of the worktree's copy on the feature branch. The edit "succeeded" (the `old_string` matched, because the same text existed on both trees), so nothing errored and the change silently landed on the wrong tree.
+**Why it happens** — The main checkout and the worktree hold the SAME relative path (`.gobbi/projects/{name}/skills/.../SKILL.md`), so an absolute path that omits the worktree prefix resolves to the main tree. The two files often share identical text, so an Edit against the wrong one matches and reports success — the mistake produces no error signal.
+**How to detect** — After an edit, a verification grep against the WORKTREE-absolute path still shows the pre-edit content (the edit landed elsewhere); or `git -C <main> status` shows an unexpected modification on `develop` for a file the session should be changing only in the worktree.
+**Correct approach** — In any worktree session, every Read / Edit / grep uses the WORKTREE-absolute path (`.../worktrees/<branch>/...`), and every git op uses `git -C <worktree-abs>` (never a bare `git` or a main-tree path). Verify each edit against the worktree path. If the wrong tree was touched, `git -C <main> checkout -- <path>` restores it, then re-apply on the worktree.
