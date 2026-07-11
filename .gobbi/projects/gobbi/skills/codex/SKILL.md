@@ -73,9 +73,10 @@ Fresh Codex subagents still need explicit load directives. They do not inherit s
 
 ### Models and Sandbox
 
-Do not hard-code model names in Gobbi Codex agent TOML unless the user explicitly asks. Let Codex inherit the parent session model.
-
-Gobbi's repo-local Codex wrappers set role effort through `model_reasoning_effort`: `leader` is `xhigh`; `manager`, `assistant`, `executor`, and `evaluator` are `high`. Do not change those effort defaults unless the user explicitly asks.
+Gobbi's current Codex policy pins the repository default and every repo-local role wrapper to
+`model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`. Keep those values aligned across
+`.codex/config.toml` and all five `.codex/agents/*.toml` wrappers. A user may explicitly request a
+per-run override without changing Gobbi's current default policy.
 
 Subagents inherit the parent sandbox policy. Use `sandbox_mode = "read-only"` only for agents that must never write, such as `evaluator`.
 
@@ -120,6 +121,8 @@ The reliable bridge is foreground `codex exec` through Bash:
 prompt_file="<absolute-session-path>/codex-prompt.md"
 
 timeout 600 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id} \
@@ -133,7 +136,8 @@ Rules:
 - Pass `--cd <main-tree>` when a worktree is active and output paths live in the main tree.
 - Pass `--add-dir <session-path>` for cross-tree session writes.
 - Wrap every bridge call with `timeout 600`, unless the user explicitly approves a different cap. Note: `600` sits AT the Claude Code Bash foreground cap (~600s) — foreground is safe only for SHORT bridge calls; background the call per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if it may approach the cap.
-- Do not pass `--model` or `--effort` unless the user explicitly requests it.
+- Keep the exact model and reasoning option pair shown above on every bridge call. A user-requested
+  per-run override may replace the relevant value and must be documented with that run.
 - For full Gobbi prompt files, use official stdin transport: `codex exec ... - < "$prompt_file"`. Do not standardize `@prompt-file` as the bridge contract unless the local Codex version explicitly documents and verifies it.
 - For prompt-file construction, required sections, wrapper checks, and failure behavior, read [`delegation.md`](delegation.md).
 
@@ -186,6 +190,8 @@ The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It wri
 prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md"
 
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex \
@@ -198,13 +204,15 @@ timeout 1200 codex exec \
 prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
 
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex \
   - < "$prompt_file"
 ```
 
-Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the detached-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with prompt-file stdin (`- < "$prompt_file"`), foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and do NOT pass `--model` / `--effort` unless the user asked.
+Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the detached-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with prompt-file stdin (`- < "$prompt_file"`), foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and keep the exact model/reasoning option pair unless the user requested a documented per-run override.
 
 **Stdin hardening.** The standard bridge uses `- < "$prompt_file"` so stdin is the verified prompt file and reaches EOF. Do not run `codex exec` with no prompt argument and inherited open stdin. Do not combine prompt-file creation and `codex exec` in one backgrounded heredoc command. If an exceptional prompt-argument run is backgrounded, redirect stdin from `/dev/null`; kill a hung run by explicit PID (step 5), never `pkill -f`.
 
@@ -250,7 +258,7 @@ Treat rollout JSONL like Claude Code transcripts. Do not paste long excerpts int
 - Running `codex exec` without a timeout.
 - Letting Codex write session files from a worktree-relative or `pwd`-derived path.
 - Trusting Codex stdout or broker state instead of verifying contracted output files.
-- Setting Codex model without user direction, or changing Codex effort outside the documented role defaults without user direction.
+- Removing or changing Gobbi's pinned Codex model/effort policy without explicit user direction.
 - Using `danger-full-access` as a default sandbox.
 
 ---
@@ -284,6 +292,8 @@ When the task requires both workspace writes (worktree) and session writes (main
 
 ```bash
 timeout 600 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
   --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
@@ -349,7 +359,7 @@ Never treat stdout parsing or broker.json polling as the completion signal. Afte
 3. Report BLOCKED if either check fails — do not silently report DONE on missing or malformed output.
 
 ```bash
-# After codex exec exits (per-loop, codex system dir):
+# After the Codex process exits (per-loop, codex system dir):
 test -f <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: overall.md"
 grep -q "VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: verdict line"
 ```
@@ -371,25 +381,26 @@ manager
        ↑ manager waits for both completion notifications, then aggregates
 ```
 
-**Worked example — Codex-side assistant delegation prompt sketch:**
+**Worked example — Codex-side assistant delegation prompt sketch.** The prompt first supplies
+the required loads, identity, task, and a Step 1 instruction to run this command. The launch mode
+still follows the runtime matrix: background if the run may exceed ~540s, and foreground only when
+it fits under the ~600s cap.
 
+```bash
+prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
+
+timeout 600 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
+  --sandbox workspace-write \
+  --cd <main-tree> \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
+  - < "$prompt_file"
 ```
-Load directives: principles skill, rules, codex skill, mistake skill.
 
-You are the Codex-side assistant for this dual-system evaluation.
+The prompt then requires Step 2 through Step 4:
 
-Task: Run the Codex evaluator on [target artifact] and write findings to the session staging path.
-
-Step 1. Run codex exec via your Bash tool:
-  # launch mode per the codex exec launch runtime matrix — BACKGROUND if the run may exceed ~540s; foreground below is safe only under the ~600s cap
-  prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
-
-  timeout 600 codex exec \
-    --sandbox workspace-write \
-    --cd <main-tree> \
-    --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
-    - < "$prompt_file"
-
+```text
 Step 2. Verify output files landed at the absolute main-tree path:
 
   # Must be 9 evaluator output files (7 per-perspective + overall + the filled checklist):
@@ -467,13 +478,18 @@ Codex and Claude consume tokens at different rates and from different budget poo
 
 ### Effort level
 
-`codex exec` supports `--effort none|minimal|low|medium|high|xhigh`. Higher effort levels multiply token cost. Leave `--effort` unset unless the user has explicitly requested a specific level. The default effort is set in the user's `~/.codex/config.toml`.
+There is no standalone `--effort` flag. Gobbi bridge calls set reasoning effort with
+`-c 'model_reasoning_effort="xhigh"'`, matching the repository config and every role wrapper.
+Higher effort increases token use, so a user-requested per-run change must be explicit.
 
-Native Gobbi custom agents use role wrapper defaults instead of CLI flags: `model_reasoning_effort = "xhigh"` for `leader`, and `model_reasoning_effort = "high"` for `manager`, `assistant`, `executor`, and `evaluator`.
+Native Gobbi custom agents use the same `model_reasoning_effort = "xhigh"` policy for all five
+role wrappers.
 
 ### Model selection
 
-Do not pass `--model` unless the user has specified a model. The default model comes from `~/.codex/config.toml`. Overriding the model without user direction can inflate cost or change output quality unexpectedly.
+Every current Gobbi bridge command passes `-m gpt-5.6-sol`, matching the repository config and
+all five role wrappers. A user may request a documented per-run `-m` override; otherwise keep the
+current policy exact.
 
 ### First-use precondition
 

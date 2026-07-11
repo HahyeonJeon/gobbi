@@ -130,6 +130,8 @@ full budget, or for a short run under the ~600s Bash cap.
 
 ```bash
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd "$main_tree" \
   --add-dir "$write_dir" \
@@ -149,9 +151,9 @@ runs use at least `1200s` unless the user explicitly approves a different cap. A
 `codex-exec-timeout-exceeds-bash-cap.md`), so a run that may exceed it launches in the background
 per the matrix above, with an explicit PID and file validation.
 
-Do not pass `--model` or `--effort` unless the user explicitly requested that override. The
-bridge contract inherits the runtime's configured model and effort by default. Native custom-agent
-role effort defaults live in `.codex/agents/*.toml`; they do not imply a bridge CLI override.
+Every Gobbi bridge invocation carries the exact `gpt-5.6-sol` model and `xhigh` reasoning pair
+shown above. A user-requested per-run override may replace the relevant value, but the wrapper must
+record that override instead of silently dropping the current policy.
 
 Strict source-read-only invocation — same launch rule per the [`codex/SKILL.md` § codex exec launch
 runtime matrix](SKILL.md#codex-exec-launch-runtime-matrix): foreground only under the host budget,
@@ -160,6 +162,8 @@ detached cap):
 
 ```bash
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox read-only \
   --cd "$main_tree" \
   --json \
@@ -545,7 +549,9 @@ The Claude wrapper verifies these gates in order.
 - `timeout` wrapped the invocation.
 - `--cd` was explicit.
 - `--add-dir` was present for file-writing runs.
-- No `--model` or `--effort` override was passed unless the user requested it.
+- The invocation carries adjacent `-m gpt-5.6-sol` and
+  `-c 'model_reasoning_effort="xhigh"'` options, unless the user requested a documented per-run
+  replacement.
 - Foreground/background choice matches the host budget; background runs use deterministic stdin
   EOF, captured PID, and exact-PID cleanup.
 - The exit code was captured.
@@ -593,6 +599,8 @@ test -s "$prompt_file"
 
 set +e
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd "$main_tree" \
   --add-dir "$write_dir" \
@@ -612,6 +620,8 @@ prompt-file transport and capture the exact PID (the `timeout 1200` is then the 
 ```bash
 set +e
 timeout 1200 codex exec \
+  -m gpt-5.6-sol \
+  -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd "$main_tree" \
   --add-dir "$write_dir" \
@@ -631,9 +641,9 @@ Never clean up with `pkill -f`.
 
 The parent docs route here as follows:
 
-- [`codex/SKILL.md`](SKILL.md) owns Codex runtime overview, `codex exec` basics, metadata lookup,
-  and high-level bridge use cases. It links here for prompt-file lifecycle and wrapper failure
-  behavior.
+- [`codex/SKILL.md`](SKILL.md) owns Codex runtime selection, model and effort policy, launch
+  selection, metadata lookup, and high-level bridge use cases. It links here for the exact
+  prompt-file invocations, lifecycle, verification gates, and wrapper failure behavior.
 - [`delegation/SKILL.md`](../delegation/SKILL.md) owns generic manager-to-subagent prompts. It
   links here only when the delegated subagent is a Claude wrapper that will invoke Codex.
 - [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) owns producer

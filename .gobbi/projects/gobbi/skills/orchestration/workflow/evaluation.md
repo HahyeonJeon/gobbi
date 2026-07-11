@@ -2,7 +2,9 @@
 
 **Doc kind:** gate-orchestration.
 
-How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead. When the Codex evaluator is reached through a Claude Code wrapper running `codex exec`, the prompt-file lifecycle and wrapper failure behavior are owned by [`codex/delegation.md`](../../codex/delegation.md).
+How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
+
+**Codex bridge owners:** [`codex/SKILL.md`](../../codex/SKILL.md) owns runtime selection, model and effort policy, launch selection, and high-level invocation; [`codex/delegation.md`](../../codex/delegation.md) owns exact prompt-file invocation and wrapper gates.
 
 **The manager MUST NOT evaluate. It spawns exactly two evaluator subagents (one per system), collects their per-perspective outputs, reconciles the two systems, and emits a verdict** — it never does the evaluation itself (reinforced at § Spawning the Evaluators: "spawns exactly two evaluator agents in parallel"). Writing findings or stamping a verdict without two evaluator outputs is a workflow breach (see `mistakes/manager-skipped-dual-system-eval.md`). The verdict (`PASS` / `REVISE` / `FAIL`) is the gate after which `RECORD` runs; `RECORD` runs **after every verdict** so each iteration's evidence is preserved regardless of outcome (see [`workflow/ideation.md` § RECORD Phase](ideation.md#record-orchestration)).
 
@@ -52,9 +54,9 @@ Each evaluator is **one agent** that handles **all four stages (Target Understan
 
 Model selection follows `settings.json` `models.{system}.evaluator`:
 - Claude Code evaluator: `models.claude.evaluator` (default `opus`)
-- Codex evaluator: `models.codex.evaluator`; `null` means inherit the parent Codex session model. For the `codex exec` evaluator path, effort inherits the runtime's configured effort by default; the manager does not pass `--effort` unless the user explicitly requests it. Native `.codex/agents/evaluator.toml` still sets `model_reasoning_effort = "high"` for native Codex custom-agent spawns, but that wrapper default does not apply to bridge `codex exec`.
+- Codex evaluator: `models.codex.evaluator`; the current default is supplied by the Codex policy owner above.
 
-**Codex evaluator launch mode.** The Codex evaluator runs as a `codex exec` assistant-wrapper; its launch mode follows the [`codex/SKILL.md` § `codex exec` launch runtime matrix](../../codex/SKILL.md#codex-exec-launch-runtime-matrix). The Codex-side wrapper prompt must follow [`codex/delegation.md`](../../codex/delegation.md): full prompt-file delivery via `codex exec ... - < "$prompt_file"`, exact output paths, required evaluator file headers, source-write prohibition, and BLOCKED-on-timeout/empty/error/malformed/self-authored output.
+The manager resolves the Codex evaluator selection before it spawns the Codex-side evaluator wrapper. Invocation mechanics and process gates remain with the typed owners above.
 
 ### Pre-spawn independence classification — Codex evaluator (D6.2)
 

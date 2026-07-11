@@ -111,8 +111,9 @@ Using `allowed-tools` in an agent `.md`, or `tools` in a `SKILL.md`, is a frontm
 - **`model`** — `opus` for manager / leader / executor / evaluator; `sonnet` for the
   lightweight assistant (verified against the Agent Taxonomy table in `gobbi/SKILL.md`).
 
-Effort is NOT an agent `.md` frontmatter key. The `.md` frontmatter stays exactly four keys;
-Codex effort lives in the role's `.toml` wrapper as `model_reasoning_effort`.
+Codex model and effort are NOT agent `.md` frontmatter keys. The `.md` frontmatter stays
+exactly four keys; the role's `.toml` wrapper carries `model` and
+`model_reasoning_effort`.
 
 **Section contract** (the order in `executor.md`; role-shaped — a role adds or varies a
 section where its work demands, e.g. evaluator's lifecycle is Study/Assess/Report and it omits
@@ -138,16 +139,17 @@ Continuation discipline):
 ### P3 — The `.toml` Codex wrapper shape
 
 The `.toml` is a thin Codex wrapper — it carries no behavioral substance of its own; it points
-Codex back to the canonical `.md`. Four STANDARD keys are present in every wrapper:
-`name`, `description`, `model_reasoning_effort`, and `developer_instructions`. A role MAY add a
+Codex back to the canonical `.md`. Five STANDARD keys are present in every wrapper:
+`name`, `description`, `model`, `model_reasoning_effort`, and `developer_instructions`. A role MAY add a
 role-specific runtime field on top, e.g. `evaluator.toml` carries
-`sandbox_mode = "read-only"` to lock the evaluator's Codex sandbox. So the four below are the
+`sandbox_mode = "read-only"` to lock the evaluator's Codex sandbox. So the five below are the
 baseline, not a closed set:
 
 ```toml
 name = "{role}"
 description = "{one line — same role summary as the .md}"
-model_reasoning_effort = "high" # "xhigh" for leader
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = '''
 You are the Gobbi {role} role for this repository.
 
@@ -164,8 +166,8 @@ evidence, commit in-boundary but NEVER push.}
 '''
 ```
 
-The `model_reasoning_effort` value follows Gobbi's role policy: `leader` is `xhigh`;
-`manager`, `executor`, `evaluator`, and `assistant` are `high`. The
+The `model` and `model_reasoning_effort` values follow Gobbi's current Codex role policy:
+every role uses `gpt-5.6-sol` with `xhigh`. The
 `developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
 then the canonical `.md`, (b) lists the role's MINIMUM `.gobbi/projects/gobbi/skills/...`
 loads (Codex wrappers load from the repo-local canonical skill root, not user-level), and
@@ -254,8 +256,8 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   demands it; include `## Continuation discipline` only for continuable roles.
 - **MUST keep the `.toml` thin** — it points to the canonical `.md` and lists min skill loads;
   behavioral substance lives in the `.md`, never duplicated in the `.toml`.
-- **MUST set `model_reasoning_effort` from the role default** — `leader` is `xhigh`;
-  `manager`, `executor`, `evaluator`, and `assistant` are `high`.
+- **MUST set the Codex wrapper policy exactly** — every role uses
+  `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`.
 - **MUST point to the one canonical owner, not restate it** — the role spec cites the
   delegation template; it does not copy it.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read

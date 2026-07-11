@@ -153,11 +153,11 @@ Five roles. Each has a fixed behavioral spec at `.gobbi/projects/gobbi/agents/{r
 
 | Role | Model | Effort | Owns | When spawned |
 |---|---|---|---|---|
-| **manager** | opus | high | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
+| **manager** | opus | xhigh | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
 | **leader** | opus | xhigh | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
-| **executor** | opus | high | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default. Claude Code may continue an executor teammate across ≤3 shared-subsystem tasks; native Codex uses fresh spawns. Tasks sequence; never parallelize implementation. |
-| **evaluator** | opus | high | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
-| **assistant** | sonnet | high | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
+| **executor** | opus | xhigh | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default. Claude Code may continue an executor teammate across ≤3 shared-subsystem tasks; native Codex uses fresh spawns. Tasks sequence; never parallelize implementation. |
+| **evaluator** | opus | xhigh | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
+| **assistant** | sonnet | xhigh | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
 
 Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`delegation/SKILL.md` § Status Contract](../delegation/SKILL.md#the-status-contract) for the full mapping.
 
@@ -248,8 +248,8 @@ Ideation / Preparation / Planning / Execution loops write only to session record
 **Model selection** (full table in [`delegation/SKILL.md` § Model Selection](../delegation/SKILL.md#model-selection)):
 
 - In Claude Code, reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **opus**; the read-only assistant uses **sonnet**.
-- Role effort defaults are explicit policy: `leader` uses **xhigh**; `manager`, `executor`, `evaluator`, and `assistant` use **high**.
-- In Codex, agents inherit the parent session model. The repo-local `.codex/agents/*.toml` wrappers set `model_reasoning_effort` to the role effort default above. Do not add model names to `.codex/agents/*.toml` by default.
+- Role effort defaults are explicit policy: every role uses **xhigh**.
+- In Codex, every repo-local `.codex/agents/*.toml` wrapper sets `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`. User-requested per-run overrides remain explicit exceptions.
 
 The active runtime's user-decision primitive is mandatory for every decision point (not prose). In Claude Code this is `AskUserQuestion`; in Codex this is the parent-thread question flow or `request_user_input` when available. The Recommended option is the first option, labeled `(Recommended)`, when the primitive supports options. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
 
