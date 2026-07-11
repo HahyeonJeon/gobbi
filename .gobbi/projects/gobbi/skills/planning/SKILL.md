@@ -48,7 +48,7 @@ Cross-cutting principles for every agent participating in this loop.
 
 > **The plan tells specialists what, not how.**
 
-Every task is a YAML schema record: `{id, what, traces-to, requires, files, inputs, outputs, verifies}`. The executor decides "how" based on the locked Ideation design, memory, and codebase patterns. Planning does not embed implementation code, command scripts, or step-by-step recipes — that would suppress the executor's engineering judgment. This is the planning expression of the delegation principle "tell specialists what to do, not how to do it."
+Every task is a YAML schema record: `{id, what, traces-to, requires, files, inputs, outputs, verifies}`. The executor decides "how" based on the locked Ideation design, memory, and codebase patterns. Planning does not embed implementation code, command scripts, or step-by-step recipes — that would suppress the executor's engineering judgment.
 
 > **The artifact is the program.**
 
