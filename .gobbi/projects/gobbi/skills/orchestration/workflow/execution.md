@@ -72,7 +72,7 @@ When either test fails, the manager **fresh-spawns** the next executor with a fu
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Execution-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-task, per-iter scoped at `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-task, per-iter scoped under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus is built from [`execution/evaluation.md`](../../execution/evaluation.md) — implementation match, build/test status (verified via tools), security, mistake compliance, scope discipline, supply-chain, observability, privacy
 - **Tool verification is critical at Execution** — evaluators run tests, type checks, and `grep`/`rg` to anchor confidence ≥ 75 (subject to the verification preflight in [`evaluation/SKILL.md`](../../evaluation/SKILL.md))
 
@@ -118,7 +118,7 @@ recursive 4-slot interior) plus loop-level cross-task `4-execution/staging/`. Pe
 loop-specific files: WORK draft `task-{NN}-{slug}/working/draft-iter{n}.md`; optional Codex
 proposal `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` + Integration Log
 `task-{NN}-{slug}/working/reconciliation-iter{n}.md`; evaluation
-`task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`task-{NN}-{slug}/evaluation/iter{n}/{system}/{perspective}.md` + `overall.md` + `checklist.md`; PASS outputs
 `task-{NN}-{slug}/outputs/{free-filename}.md`; per-task staging
 `task-{NN}-{slug}/staging/{type}/{slug}.md`. Every agent's transcript lives in the single
 session-root `transcripts/` — there is no per-task `transcripts/`.
@@ -131,7 +131,7 @@ session-root `transcripts/` — there is no per-task `transcripts/`.
 ## Cross-references
 
 - Execution Loop phase contracts (executor lifecycle, memory access, status enum) → [`execution/SKILL.md`](../../execution/SKILL.md)
-- Execution-phase evaluation seed scenarios → [`execution/evaluation.md`](../../execution/evaluation.md)
+- Execution-phase evaluation seed scenarios → [`execution/scenario.md`](../../execution/scenario.md); seed checks → [`execution/checklist.md`](../../execution/checklist.md); procedure / tool-verification → [`execution/evaluation.md`](../../execution/evaluation.md)
 - Executor behavioral discipline → [`principles`](../../principles/SKILL.md)
 - Evaluator orchestration → [`workflow/evaluation.md`](evaluation.md)
 - Proposer orchestration → [`workflow/production.md`](production.md)

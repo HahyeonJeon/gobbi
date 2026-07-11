@@ -58,7 +58,7 @@ The Codex proposer (a production-time `codex exec` run) and the Codex evaluator 
 
 > **An evaluable artifact has clear What / Why / How. If any is missing, flag the gap before measuring.**
 
-Per `principles` Principle 4, no task starts without clear What / Why / How — and an artifact whose own What / Why / How is unclear is unevaluable in the same sense. Measuring an artifact that does not say what it is, why it exists, or how it intends to be implemented produces verdicts that look precise but are about the agent's guesses, not the artifact. At Stage 0 the agent extracts the artifact's W / W / H per the phase child doc; if any is missing or ambiguous, that gap is itself a Critical `general` finding recorded **before** Stage 1 begins, and Stages 1–3 proceed best-effort with the gap noted in every per-perspective file.
+Per `principles` Principle 4, no task starts without clear What / Why / How — and an artifact whose own What / Why / How is unclear is unevaluable in the same sense. Measuring an artifact that does not say what it is, why it exists, or how it intends to be implemented produces verdicts that look precise but are about the agent's guesses, not the artifact. At Stage 0 the agent extracts the artifact's W / W / H per the phase child-doc bundle's `evaluation.md`; if any is missing or ambiguous, that gap is itself a Critical `general` finding recorded **before** Stage 1 begins, and Stages 1–3 proceed best-effort with the gap noted in every per-perspective file.
 
 > **Critical, adversarial stance is mandatory.**
 
@@ -103,7 +103,7 @@ Every evaluation runs **all seven perspectives + Overall**. No pruning. Inapplic
 
 ### Coverage Ownership Matrix
 
-Cross-cutting concerns that have no obvious single owner are assigned to specific perspectives **as required seed coverage** to prevent silent omission. Every phase child doc MUST include seed scenarios for the items below under the assigned perspective(s); the agent CRUDs them at Stage 1 like any other seed scenario.
+Cross-cutting concerns that have no obvious single owner are assigned to specific perspectives **as required seed coverage** to prevent silent omission. Every phase's `scenario.md` MUST include seed scenarios for the items below under the assigned perspective(s); the agent CRUDs them at Stage 1 like any other seed scenario.
 
 | Cross-cutting concern | Owning perspective(s) | What's verified |
 |---|---|---|
@@ -138,10 +138,10 @@ Read the artifact end-to-end before judging anything. Identify what it is, what 
 |---|---|---|---|
 | 1 | Artifact | Read in full — do not skim, do not skip sections | (context loaded) |
 | 2 | Artifact + phase tag | Identify artifact type (idea / plan / code / docs / other) and confirm against phase tag | Confirmed phase + artifact type |
-| 3 | Phase tag | Load the matching phase child doc: `ideation/evaluation.md` / `preparation/evaluation.md` / `planning/evaluation.md` / `execution/evaluation.md` / `wrap-up/evaluation.md` | Phase child doc context |
+| 3 | Phase tag | **MUST load all three matching phase child docs**: `{phase}/scenario.md` (Stage 1 seed scenarios), `{phase}/checklist.md` (Stage 1 seed checks + copy source), and `{phase}/evaluation.md` (procedure, recommended verifications, perspective anti-patterns, Overall anchors). Verify all three are present and readable, then **copy** the sibling `checklist.md` to `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` before Stage 1 (per § Evaluation child-doc bundle). If any of `scenario.md`, `checklist.md`, or `evaluation.md` is missing or unreadable, record a Critical `general` finding (Domain: `unevaluable`), **halt Stage 0**, and return `BLOCKED` to the manager — never enter Stage 1 with an empty seed frame or a missing procedure (there is no monolithic fallback). | Loaded 3-file child-doc bundle context + Stage-0 `checklist.md` copy |
 | 4 | Prior-phase artifacts (if applicable) + Scope Contract + project mistakes + project rules | **READ memory**: (a) prior-phase outputs at `sessions/.../{N}-{prior-loop}/outputs/` (Planning evaluator reads the full `1-ideation/outputs/` directory; Execution evaluator reads `3-planning/outputs/`; Wrap-up reads all prior loops' outputs). (b) Scope Contract — extracted from the prior-loop artifact tagged `artifact_type: scope-contract` (or equivalent), or from this artifact if Ideation. (c) Project mistakes at `.gobbi/projects/{project-name}/mistakes/` (filter by perspective + Domain). (d) Project rules at `.gobbi/projects/{project-name}/rules/`. **Read both directories recursively** — `mistakes/` and `rules/` nest one area level under the type dir (`{type}/{area}/{slug}.md`), so descend into every `{area}/` subdirectory; a single-level read misses by-area files. An absent or empty rules/ dir is the valid no-rules state — record NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read in the Memory-reads register and continue; do NOT treat the empty read as an error (see memory/rules.md § Empty-state contract). **All reads recorded in Artifact Summary's "Memory reads" subsection** so the audit trail is explicit | Memory-read register (paths consumed + which extended which Frame) |
 | 5 | Iter number `n` (from manager) | If `n ≥ 2`: **READ prior iter's per-perspective files** at `sessions/.../{N}-{loop}/evaluation/iter{n-1}/{system}/{perspective}.md` (all 8 per system). Additionally, for any `disposition: superseded` reference encountered that points to a finding in iter `m < n-1`, READ `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` on-demand to resolve the reference. Required for Stage 1 inheritance | Prior iter findings + frames available for Stage 1 |
-| 6 | Artifact + child doc's W / W / H mapping | Extract the artifact's **What / Why / How** per the phase child doc. (Ideation: What = the idea / deliverable direction, Why = framed problem + root cause, How = directional design decisions. Preparation: What = the readiness gap list + stamped skills + feature directory, Why = closing the gaps Ideation surfaced before planning starts, How = gap-by-gap resolution steps. Planning: What = the task list, Why = the locked idea this implements, How = task ordering + agent-type assignments. Execution: What = the change-set, Why = the plan task this implements, How = the implementation approach. Wrap-up: What = the handoff summary + promotions, Why = closing the session cleanly, How = the consolidation procedure.) | Extracted W / W / H |
+| 6 | Artifact + the bundle's `evaluation.md` W / W / H mapping | Extract the artifact's **What / Why / How** per the phase child-doc bundle's `evaluation.md`. (Ideation: What = the idea / deliverable direction, Why = framed problem + root cause, How = directional design decisions. Preparation: What = the readiness gap list + stamped skills + feature directory, Why = closing the gaps Ideation surfaced before planning starts, How = gap-by-gap resolution steps. Planning: What = the task list, Why = the locked idea this implements, How = task ordering + agent-type assignments. Execution: What = the change-set, Why = the plan task this implements, How = the implementation approach. Wrap-up: What = the handoff summary + promotions, Why = closing the session cleanly, How = the consolidation procedure.) | Extracted W / W / H |
 | 7 | Extracted W / W / H | For each axis (W, W, H) judge: is this clear, present, and specific? Apply the **W/W/H gate** below — missing What or Why halts and escalates; missing How proceeds best-effort with Critical finding. Findings recorded here are **first-class scored findings** that participate in per-perspective and Overall aggregation, not silent context | W / W / H clarity verdict + any unevaluable findings |
 | 8 | Artifact + extracted W / W / H + memory reads | Write the **Artifact Summary**: one paragraph stating (a) What — the artifact / deliverable, (b) Why — the trigger and success criterion, (c) How — the approach, (d) the Scope Contract it sits under (cite its source path), (e) which downstream consumers will depend on it. Plus a **Memory reads** subsection listing every memory path consumed at step 4 + step 5 | Artifact Summary + Memory reads register |
 
@@ -161,13 +161,13 @@ Stage 0 findings are **scored** (Confidence + Severity) and entered into both pe
 - Extracted W / W / H + clarity verdict + W/W/H gate decision — propagates into every later stage; gate findings are first-class scored findings
 - Artifact Summary (1 paragraph) + Memory reads register — written into the per-perspective file's header section, reused across Stages 1–3
 - Phase confirmation (or phase-mismatch escalation outcome)
-- Loaded child doc context — its seed scenarios with attached checklists and recommended verifications frame Stage 1 and Stage 2
+- Loaded 3-file child-doc bundle context (`scenario.md` seed scenarios + `checklist.md` seed checks + `evaluation.md` procedure) + the Stage-0 `checklist.md` copy — frame Stage 1 and Stage 2
 - Prior iter findings (if `n ≥ 2`) — available for Stage 1 inheritance
 
 **Exit checklist**
 - Artifact read in full
 - Phase tag confirmed; mismatch (if any) escalated and resolved per the phase-mismatch gate above
-- Phase child doc loaded
+- All three phase child docs (`scenario.md` + `checklist.md` + `evaluation.md`) loaded and readable; `checklist.md` copied to the iter output dir; a missing `scenario.md`/`checklist.md` halted Stage 0 (`BLOCKED`)
 - Project mistakes + rules read and filtered by perspective × Domain
 - Prior-phase canonical artifact + Scope Contract read (if applicable for this loop)
 - Prior iter per-perspective files read (if `n ≥ 2`)
@@ -222,7 +222,7 @@ For each perspective, **build the scenario-checklist frame** that Stage 2 will m
 **Inputs**
 - Artifact Summary + extracted W / W / H + Memory reads register (Stage 0)
 - Artifact's scenario list and implementation checklist (whatever the creator wrote, in whatever shape)
-- Phase child doc's per-perspective seed scenarios with attached checklists + recommended verifications + perspective-specific anti-patterns
+- Phase sibling `scenario.md` per-perspective seed scenarios + the Stage-0-copied `checklist.md` stable seed checks; phase sibling `evaluation.md` supplies only recommended verifications + perspective-specific anti-patterns + Overall anchors
 
 - Prior iter `n-1` per-perspective file (if `n ≥ 2`) — for inheritance
 - Perspective lens (Project / Structure / Performance / Aesthetics / Usage / Consistency / Risk)
@@ -232,10 +232,10 @@ For each perspective, **build the scenario-checklist frame** that Stage 2 will m
 | # | Input | Action | Output |
 |---|---|---|---|
 | 1 | Artifact's scenarios + perspective lens | **Read** — filter the creator's scenarios to those relevant to this perspective; absorb any checklist-like items the creator wrote into candidate attached-checklist material under whichever scenario they belong to | Filtered creator scenarios + candidate attached items |
-| 2 | Phase child doc's seed scenarios with attached checklists (this perspective) | **Read** — load the seeds from the child doc, Confirm the seed set includes adversarial scenarios (edge case / failure mode / attack vector); if not, the child doc has a gap | Seed scenarios for this perspective |
+| 2 | Phase sibling `scenario.md` seed scenarios + Stage-0-copied `checklist.md` seed checks (this perspective) | **Read** — load the perspective's seed scenario families from `scenario.md` and attach the matching stable CHECK IDs from the copied `checklist.md`; use `evaluation.md` only for procedure, recommended verifications, and anti-patterns. Confirm the seed set includes adversarial scenarios (edge case / failure mode / attack vector); if not, the child-doc bundle has a gap | Seed scenarios + attached seed checks for this perspective |
 | 3 | If `n ≥ 2`: prior iter per-perspective file at `sessions/.../{N}-{loop}/evaluation/iter{n-1}/{system}/{perspective}.md` | **Read** — enumerate all prior-iter `disposition: open` findings + all `scenario_gap` / `checklist_gap` discoveries. Carry forward as Stage 1 seed input. (Iter 1 skips this step) | Inherited prior-iter content for Frame seeding |
 | 4 | Filtered creator scenarios + seed scenarios + inherited prior-iter content + **applicable project mistakes + rules** (from Stage 0 memory reads, filtered by this perspective × Domain) | **CRUD on scenarios**: Create missing scenarios (especially adversarial ones the creator did not anticipate, prior-iter `open` scenario_gap not yet addressed, AND scenarios derived from applicable mistakes / rules that the artifact must guard against), Update ambiguous creator scenarios, Delete creator scenarios outside this perspective. **Every applicable mistake / rule must become either (a) a Frame scenario citing the mistake/rule path, or (b) an explicit `not-applicable: <rationale>` declaration in the Frame**. Every Create or Update emits a `scenario_gap` finding | Augmented scenario set + `scenario_gap` findings + mistake/rule citations |
-| 5 | Augmented scenario set + seed attached checklists + candidate attached items + prior-iter `checklist_gap` findings | For each scenario in the augmented set, **attach its checklist** — the concrete yes/no conditions whose joint satisfaction would prove the scenario handled. Seed from the child doc's per-scenario checklist; fold in creator-written items + any prior-iter `checklist_gap` items that anchor to this scenario | Per-scenario attached checklists |
+| 5 | Augmented scenario set + seed attached checklists + candidate attached items + prior-iter `checklist_gap` findings | For each scenario in the augmented set, **attach its checklist** — the concrete yes/no conditions whose joint satisfaction would prove the scenario handled. Seed from the phase's `checklist.md` (the Stage-0-copied source); fold in creator-written items + any prior-iter `checklist_gap` items that anchor to this scenario | Per-scenario attached checklists |
 | 6 | Per-scenario attached checklists | **CRUD on attached items**: Create missing checks, Update ambiguous (every check item must be concrete enough that "did the artifact satisfy this" has an unambiguous yes/no answer), Delete OOS. Every Create or Update emits a `checklist_gap` finding | Augmented attached checklists + `checklist_gap` findings |
 | 7 | Augmented scenarios + their attached checklists | Write the perspective's **locked Frame** to the per-perspective file at `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` under the header `## Locked Frame (Stage 1)` — scenarios in order, each with its attached checklist, plus citations for any prior-iter inheritance. Header name is mandatory; iter (n+1) reads this section by exact header match | Per-perspective locked Frame, persisted |
 
@@ -528,7 +528,7 @@ Patterns to avoid during review.
 | **"Looks fine" verdicts** | `PASS` without specific evidence the agent attempted to find problems | A `PASS` must be defensible. Stage 2's per-check evidence + new-finding record together document what was looked for and why nothing was missed |
 | **Sycophantic verdicts** | Agreeing with the creator's framing or echoing the artifact's claims back as findings | User/creator owns intent; evaluator owns technical correctness. Disagree when the artifact is wrong. "That's interesting" is a failure signal |
 | **Severity inflation** | Tagging every finding `Critical` to maximize visibility | "All critical" = "nothing critical". Calibrate against the severity table — most findings are Medium or Low |
-| **Frame collapse** | Measuring the artifact only against the creator's scenarios, skipping Stage 1's Create / Update | Stage 1 is non-skippable. The seed scenarios from the child doc must be reconciled with the creator's set |
+| **Frame collapse** | Measuring the artifact only against the creator's scenarios, skipping Stage 1's Create / Update | Stage 1 is non-skippable. The seed scenarios from the phase's `scenario.md` must be reconciled with the creator's set |
 | **Stage-skipping** | Jumping from Stage 0 to Stage 2 because "the scenarios look complete" | Stage 1 always runs. "Looks complete" is itself a sycophancy signal |
 | **Author-aware evaluation** | Verdict softened because the evaluator knows / infers who wrote the artifact (e.g., "the leader is usually careful, so this gap is probably fine") | The evaluator does not see creator session history. Treat every artifact as if written by an unknown author. Author identity is not evidence |
 | **Evaluator fatigue across perspectives** | Late perspectives (Risk, Consistency) get less rigor than early ones (Project, Structure) because the agent's attention waned | Apply identical depth per perspective. If you find yourself wanting to wrap up faster on perspective 6 or 7, that's the fatigue signal — slow down or escalate to a fresh evaluator |
@@ -541,17 +541,48 @@ Patterns to avoid during review.
 
 ## Phase-specific focus
 
-The procedure is the same across workflow loops; the **focus** shifts by phase via the child doc loaded at Stage 0.
+The procedure is the same across workflow loops; the **focus** shifts by phase via the phase child-doc bundle loaded at Stage 0.
 
-| Phase | Child doc | What the child doc provides |
+| Phase | Child-doc bundle | What the bundle provides |
 |---|---|---|
-| Ideation | [`ideation/evaluation.md`](../ideation/evaluation.md) | Per-perspective seed scenarios + seed checklist for an Ideation Loop's working draft (idea, scope contract, framed problem, research insights, design direction, evaluation criteria) |
-| Preparation | [`preparation/evaluation.md`](../preparation/evaluation.md) | Per-perspective seed scenarios + seed checklist for a Preparation Loop's readiness artifacts (gap closure, skill stamps, feature directory bootstrap, Ideation-surfaced backlog coverage) |
-| Planning | [`planning/evaluation.md`](../planning/evaluation.md) | Per-perspective seed scenarios + seed checklist for a Planning Loop's task decomposition |
-| Execution | [`execution/evaluation.md`](../execution/evaluation.md) | Per-perspective seed scenarios + seed checklist for an Execution Loop's code changes. Detailed coding-domain quality checks live in the `coding` skill's evaluation child when that skill exists |
-| Wrap-up | [`wrap-up/evaluation.md`](../wrap-up/evaluation.md) | Per-perspective seed scenarios + seed checklist for a Wrap-up Loop's handoff summary |
+| Ideation | [`ideation/evaluation.md`](../ideation/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for an Ideation Loop's working draft (idea, scope contract, framed problem, research insights, design direction, evaluation criteria) |
+| Preparation | [`preparation/evaluation.md`](../preparation/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a Preparation Loop's readiness artifacts (gap closure, skill stamps, feature directory bootstrap, Ideation-surfaced backlog coverage) |
+| Planning | [`planning/evaluation.md`](../planning/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a Planning Loop's task decomposition |
+| Execution | [`execution/evaluation.md`](../execution/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for an Execution Loop's code changes. Detailed coding-domain quality checks live in the `coding` skill's evaluation child when that skill exists |
+| Wrap-up | [`wrap-up/evaluation.md`](../wrap-up/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a Wrap-up Loop's handoff summary |
 
-Each child doc is structured uniformly: per-perspective seed scenarios → per-perspective seed checklist → recommended tool verifications → perspective-specific anti-patterns → Overall stage anchors for the phase.
+Each phase ships a **three-file bundle**: `scenario.md` (per-perspective seed scenarios) + `checklist.md` (per-perspective seed checklist — the copy-then-tick source) + `evaluation.md` (recommended tool verifications → perspective-specific anti-patterns → Overall stage anchors for the phase). See § Evaluation child-doc bundle.
+
+---
+
+## Evaluation child-doc bundle and the copy-then-tick checklist
+
+Every workflow phase uses a **required three-file child-doc bundle** — `evaluation.md` (procedure, recommended verifications, perspective anti-patterns, Overall (Stage 3) anchors) + `scenario.md` (Stage 1 seed scenario families) + `checklist.md` (the stable seed checks, copied into the evaluator's output directory at Stage 0). All five loop skills (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) ship the bundle; `execution/` is the reference implementation. **There is no monolithic fallback**: Stage 0 HARD-REQUIRES all three siblings and halts (a Critical `general` / `unevaluable` finding, `BLOCKED`) if `scenario.md` or `checklist.md` is missing or unreadable. Every evaluator writes **nine output files per system**: the seven per-perspective files + `overall.md` + the filled `checklist.md`.
+
+**The three files.** The required three-file bundle divides the work the monolithic `evaluation.md` used to hold:
+
+| File | Role | Consumed at |
+|---|---|---|
+| `evaluation.md` | the **procedure** — each perspective's lens, source pointers to the two sibling files, recommended verifications, perspective anti-patterns, Overall (Stage 3) anchors | Stage 0 (context) + Stage 2/3 (verifications, anti-patterns) |
+| `scenario.md` | the per-perspective GOOD / BAD / adversarial **scenario families** (one `### {ID}` block each: Category / Situation / Good / Bad / Adversarial / Checklist IDs) | Stage 1 seed scenarios |
+| `checklist.md` | the concrete yes/no **checks** — one `- [ ]` GFM item per check with a stable CHECK ID, heading tree 1:1 with `scenario.md` | Stage 1 seed checklist + the copy-then-tick source |
+
+**The copy-then-tick output (all phases).** For every phase, the seed `checklist.md` is a *source* the evaluator fills in, producing one extra output file alongside the per-perspective files and `overall.md`:
+
+1. **Stage 0 — copy.** Copy the phase's seed `checklist.md` to `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` (for Execution, under the per-task subtree: `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/checklist.md`). The source ships every box unchecked; the copy starts unchecked. This filled copy is the extra evaluation output file for every phase — a coverage artifact, not a finding file.
+2. **Stage 1 — `## Stage 1 Additions`.** When Stage 1's CRUD creates or updates a scenario or a check that the seed `checklist.md` did not carry, append it to the copied checklist under a section headed exactly `## Stage 1 Additions` (same heading tree, same stable CHECK-ID style as the seeded checks). This keeps the copied checklist aligned with the per-perspective locked Frames without editing the seed source.
+3. **Stage 2 — tick.** As each seeded or Stage-1-added check is judged, tick its box `[x]` and annotate the outcome inline with exactly one marker: `PASS:` (verified satisfied), `FAIL: {finding-id}` (verified violated — cite the Stage 2 finding), or `n/a: {reason}` (not applicable to this artifact). A ticked box means **VERIFIED** — the check was checked against the artifact with the strongest verification it admits (run a tool / read the diff / `grep` / read the call site) — never that work merely happened.
+4. **Completeness gate.** Every box in the filled copy (seed checks + `## Stage 1 Additions`) resolves to exactly one of `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`. An unresolved `- [ ]` box at Stage 2 exit is an incomplete evaluation.
+
+**Legend + counts.** The filled copy carries the legend `- [ ]` unresolved · `- [x] … PASS:` verified satisfied · `- [x] … FAIL: {finding-id}` verified violated · `- [x] … n/a: {reason}` not applicable, plus per-perspective counts (PASS / FAIL / n/a / total).
+
+**Compact per-perspective CHECK-ID results table.** For every phase, each per-perspective file also records its Stage 2 per-check results as a compact table under a `## Per-scenario per-check results` section — one row per check, so a reader traces a scenario's checks without rereading the whole filled copy:
+
+| Scenario ID | CHECK ID | Result | Evidence |
+|---|---|---|---|
+| `{STEP}-{PERSP}-SCENARIO-01` | `{STEP}-{PERSP}-SCENARIO-01-CHECK-01` | `PASS` / `FAIL: {finding-id}` / `n/a: {reason}` | quote / path / tool output / read-evidence |
+
+This is the tabular rendering of the "per-scenario per-check yes/no results" the Stage 2 Outputs already require; the filled `checklist.md` copy is its cross-perspective companion. Typed findings still live in the per-perspective files and `overall.md` — do not treat checklist rows as finding files.
 
 ---
 
@@ -563,6 +594,7 @@ All evaluator writes are **session-scoped**. Evaluators never touch memory.
 |---|---|---|
 | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` | evaluator | One per perspective per system — contains Artifact Summary + W/W/H (Stage 0) + locked Frame (Stage 1) + per-scenario per-check yes/no results + typed findings + per-perspective verdict (Stage 2) + `## Low-confidence appendix` section |
 | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/overall.md` | evaluator | One per system — contains the Stage 3 overall verdict, cross-cutting findings, Karpathy-mode checks, and Preserve list |
+| `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` | evaluator | One filled copy per system — the copy-then-tick coverage register: seed `checklist.md` copied at Stage 0, extended under `## Stage 1 Additions`, and fully ticked with one `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}` marker per check through Stage 2. Together the three rows are the nine per-system evaluator outputs (7 perspectives + `overall.md` + `checklist.md`) |
 
 **Path conventions**
 
@@ -582,7 +614,7 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 - **MUST be a separate agent from the creator** — the agent that produced the artifact never evaluates it.
 - **MUST execute all four stages in order** — Stage 0 → Stage 1 → Stage 2 → Stage 3. No skipping. Stage 1 in particular is non-negotiable.
 - **MUST iterate the seven perspectives in the documented order** at Stage 1 and Stage 2 — Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk. Order is not aesthetic; downstream perspectives sometimes depend on earlier verdicts (e.g., Risk weighs Consistency sync failures).
-- **MUST load the phase child doc at Stage 0** — measuring against an empty seed is frame collapse.
+- **MUST load all three phase child docs at Stage 0** (`scenario.md` + `checklist.md` + `evaluation.md`) and **halt** (`BLOCKED`, Critical `general` / `unevaluable`) on a missing or unreadable `scenario.md` or `checklist.md` — there is no monolithic fallback, and measuring against an empty seed is frame collapse.
 - **MUST extract and judge the artifact's What / Why / How at Stage 0**, per `principles` Principle 4 — an artifact without clear W / W / H is unevaluable, and the gap is a Critical `general` finding that must be recorded before Stage 1 begins.
 - **MUST tag every finding with a `Type` AND a `Domain`** — untyped or domain-less findings cannot be routed by RECORD. `general` Type + `general` Domain is a code smell; specialize at least one.
 - **MUST escalate on missing What or Why at Stage 0** — Stage 0 halts and triggers the active runtime's user-decision primitive; missing How proceeds best-effort with Critical `general` (domain: `unevaluable`) finding propagated into aggregation.

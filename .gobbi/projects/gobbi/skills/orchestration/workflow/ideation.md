@@ -97,7 +97,7 @@ the manager escalates to the user.
 Ideation's loop dir is `1-ideation/`. Loop-specific files: WORK draft
 `working/draft-iter{n}.md`; optional Codex proposal `working/proposals/codex/draft-iter{n}.md`
 + Integration Log `working/reconciliation-iter{n}.md`; evaluation
-`evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`evaluation/iter{n}/{system}/{perspective}.md` + `overall.md` + `checklist.md`; PASS outputs
 `outputs/{free-filename}.md`; staging `staging/{scenarios,checklists,decisions,references,design,discussions,backlogs/{feature,project}}/{slug}.md`.
 The full session tree, 4-slot interior, and PASS-only `outputs/` lifecycle are owned by the
 Path owner — never redrawn here.

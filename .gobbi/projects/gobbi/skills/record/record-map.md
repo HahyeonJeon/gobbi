@@ -39,7 +39,7 @@ sessions/{date}-{session-id}/                  ← session root
     │   ├── research/{slug}.md          pre-staging external refs (leader, research skill)
     │   └── proposals/codex/draft-iter{n}.md  Codex proposer's frozen draft (codex exec; scaffolded dir)
     ├── evaluation/               per-iter dual-system eval:
-    │   └── iter{n}/{claude,codex}/{perspective}.md + overall.md
+    │   └── iter{n}/{claude,codex}/{perspective}.md + overall.md + checklist.md
     ├── staging/                  typed-finding stagings (Wrap-up promotion source):
     │   └── {scenarios,checklists,decisions,references,design,discussions,
     │        backlogs/{feature,project},reviews,reports,changelogs,learnings,notes,
@@ -115,7 +115,7 @@ slots.
 | Slot | Holds | Writer | Created | Lifecycle |
 |---|---|---|---|---|
 | `working/` | Mutable scratch: `draft-iter{n}.md` (WORK draft), `reconciliation-iter{n}.md` (dual-system Integration Log — Claude producer; written, not scaffolded), `discussion-log.md` (append-only AskUserQuestion journal), `research/{slug}.md` (pre-staging external refs), `proposals/codex/draft-iter{n}.md` (Codex proposer's frozen draft — scaffolded dir) | executor / leader (drafts, research, reconciliation); manager (discussion-log); Codex proposer (proposals/codex) | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
-| `evaluation/` | `iter{n}/{claude,codex}/{perspective}.md` + `overall.md` — per-iter dual-system evaluation output | evaluator | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
+| `evaluation/` | `iter{n}/{claude,codex}/{perspective}.md` + `overall.md` + filled `checklist.md` — nine per-system per-iter dual-system evaluation outputs | evaluator | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
 | `staging/` | Typed-finding stagings — the **only** Wrap-up promotion source | executor / leader / assistant | At loop/task entry | Session-scoped, gitignored; **promoted** by Wrap-up into tracked project/feature memory |
 | `outputs/` | PASS-only loop output; `{free-filename}.md` carrying the Artifact frontmatter schema | assistant (RECORD, PASS only) | On PASS (`--pass`) | Session-scoped, gitignored, never promoted, removed at cleanup |
 

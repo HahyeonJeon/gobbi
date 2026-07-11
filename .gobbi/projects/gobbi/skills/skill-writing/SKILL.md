@@ -110,6 +110,11 @@ that no runtime loads is an unfinished skill.
 - **NEVER split a skill into child docs by length alone** — a child doc is justified by
   ownership of a SET of artifacts, a too-long lookup reference, per-unit orchestration, or an
   independent-audience sub-procedure. Fix: default to standalone; split only on one of those.
+- **NEVER inline a workflow-loop skill's per-perspective evaluation scenarios, checks, and
+  procedure into one monolithic `evaluation.md`** — the monolith hides scenario/check drift,
+  blocks stable CHECK-ID reuse, and ships no copyable checklist for the evaluator's
+  copy-then-tick pass. Fix: split into the three-file `scenario.md` + `checklist.md` +
+  `evaluation.md` bundle (owner in § References).
 
 ---
 
@@ -219,7 +224,10 @@ skill. Every step says what to do, in what order, and how to know it is done.
   lookup; **(c)** per-step / per-loop / per-role orchestration docs, one per unit; **(d)** a self-contained
   sub-procedure a different phase or audience reads independently, or a block whose inline length would
   push the parent well past the norm. Never split by length alone. When the skill has child docs, the
-  Procedure MUST map when to read each one.
+  Procedure MUST map when to read each one. A workflow-loop skill that seeds a per-perspective review is
+  the reference case of (c): its evaluation child doc splits into the three-file `scenario.md` +
+  `checklist.md` + `evaluation.md` bundle — the bundle contract is owned by `evaluation/SKILL.md`
+  (§ References).
 - **The `mistakes.md` companion.** Separately from length-driven child docs, a skill MAY carry a
   `mistakes.md` companion in its dir — the skill-owned mistakes home (the hybrid model), one `## ` section
   per trap. It is a skill-surface doc OUT of the memory frontmatter standard, governed by its own
@@ -349,6 +357,10 @@ audit a fact, find its claim here and follow the one owner link.
   (`SKILL.md`, the `mistakes.md` companion) are OUT of the memory frontmatter standard (P1; P5).
 - [`mistake/SKILL.md`](../mistake/SKILL.md) — validates: Wrap-up promotion writes the skill-owned
   `mistakes.md` companion under Always-Ask routing (P5).
+- [`evaluation/SKILL.md`](../evaluation/SKILL.md) § Evaluation child-doc bundle — validates: a
+  workflow-loop skill splits its evaluation child doc into the three-file `scenario.md` +
+  `checklist.md` + `evaluation.md` bundle (P5 child-doc guidance; the "NEVER inline evaluation
+  scenarios into a monolithic `evaluation.md`" Rule).
 - [`mistakes.md#planning-asserted-skill-without-verifying`](mistakes.md#planning-asserted-skill-without-verifying)
   — validates: the verify-before-asserting trap — a load-path asserted without `test -f` shipped
   a dead reference into a briefing (the "wiring claim" Principle; the "NEVER assert a wiring

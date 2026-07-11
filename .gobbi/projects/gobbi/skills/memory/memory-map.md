@@ -43,6 +43,7 @@ The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`,
 | `{N}-{loop}/working/discussion-log.md` | Manager-captured user-decision exchanges, appended one section per exchange. Preserved across iters | manager (DISCUSSION live) | every user-decision exchange | — |
 | `{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md` | Per-perspective evaluation file — Artifact Summary + W/W/H + Locked Frame + Stage 2 verdicts + typed findings. `{system}` ∈ claude / codex; `{perspective}` ∈ project / structure / performance / aesthetics / usage / consistency / risk | evaluator (EVALUATION) | every iter, after WORK | — |
 | `{N}-{loop}/evaluation/iter{n}/{system}/overall.md` | Stage 3 overall verdict + cross-cutting findings + Karpathy checks + Preserve list | evaluator (EVALUATION) | every iter, after Stage 2 | — |
+| `{N}-{loop}/evaluation/iter{n}/{system}/checklist.md` | Filled evaluation coverage artifact — copied from the phase sibling at Stage 0, extended with `## Stage 1 Additions`, and fully ticked with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}` through Stage 2 (the 9th per-system evaluation output) | evaluator (EVALUATION) | every iter, completed by Stage 2 exit | — |
 
 ### Per-loop staging — `{N}-{loop}/staging/` (PASS-only writes; Wrap-up promotion source)
 

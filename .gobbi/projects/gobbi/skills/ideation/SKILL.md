@@ -385,7 +385,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Manager | WORK outputs (working draft + references + backlogs); Scope Contract; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
-| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md` | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
+| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) per `evaluation/SKILL.md`, loading the `ideation/{scenario,checklist,evaluation}.md` bundle at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` + `evaluation/iter{n}/{claude,codex}/checklist.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
@@ -395,6 +395,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Outputs**
 - `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
 - Aggregated verdict recorded in workflow state (cross-system divergence is derived by comparing the per-system files at RECORD; no separate divergence file is written)
 
 **Exit checklist**
@@ -486,6 +487,7 @@ All writes during the Ideation Loop are **session-scoped**. Wrap-up promotes the
 | `sessions/{date}-{session-id}/1-ideation/staging/backlogs/feature/{slug}.md` | leader (WORK) | per Sub-step B task-backlog decision |
 | `sessions/{date}-{session-id}/1-ideation/staging/backlogs/project/{slug}.md` | leader (WORK) | per Sub-step B feature-backlog decision |
 | `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/1-ideation/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
 | `sessions/{date}-{session-id}/1-ideation/outputs/` | assistant (RECORD) | once per loop, integrating working draft + evaluator findings + cross-system divergence summary |
 | `sessions/{date}-{session-id}/1-ideation/staging/scenarios/{slug}.md` | assistant (RECORD) | per `scenario_gap` finding |

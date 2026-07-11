@@ -78,7 +78,7 @@ WORK is short by design — the substantive thinking happened in DISCUSSION.
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Planning-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning)
-- Planning's evaluator frame is built from [`planning/evaluation.md`](../../planning/evaluation.md) — task narrowness, dependency ordering, scope coverage, verification criteria, file-overlap concerns all live in the per-perspective seed scenarios and attached checklists
+- Planning's evaluator frame is built from the `planning/` evaluation bundle — the per-perspective seed scenarios in [`planning/scenario.md`](../../planning/scenario.md) and their checks in [`planning/checklist.md`](../../planning/checklist.md) (procedure in [`planning/evaluation.md`](../../planning/evaluation.md)); task narrowness, dependency ordering, scope coverage, verification criteria, and file-overlap concerns all live in those seed scenarios and checks
 
 ---
 
@@ -116,7 +116,7 @@ Iteration cap: `workflow.planning.maxIterations` (Auto 5; Chat 1 — one-shot). 
 Planning's loop dir is `3-planning/`. Loop-specific files: WORK draft
 `working/draft-iter{n}.md`; optional Codex proposal `working/proposals/codex/draft-iter{n}.md`
 + Integration Log `working/reconciliation-iter{n}.md`; evaluation
-`evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`evaluation/iter{n}/{system}/{perspective}.md` + `overall.md` + `checklist.md`; PASS outputs
 `outputs/{free-filename}.md`; staging `staging/{plans,scenarios,checklists,decisions,references,discussions,design}/{slug}.md`,
 where `staging/plans/{slug}.md` is the loop's headline artifact. **No memory writes during
 Planning** — all `features/{feature-name}/...` and project-tier writes happen at Wrap-up (see

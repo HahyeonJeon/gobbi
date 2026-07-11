@@ -33,7 +33,7 @@ Description or any other work. Skipping any required file is a process failure.
    - `.gobbi/projects/<<project-name>>/skills/evaluation/SKILL.md` + `.gobbi/projects/<<project-name>>/skills/evaluation/mistakes.md` (mandatory, FIRST Skills entry — producer/evaluator separation governs your independence; perspective definitions, severity rubric, finding metadata. It is a domain skill, so it loads in tier 3, NOT tier 1 — the declared load order is principles → rules → skills → mistakes with no re-ordering.)
    - `.gobbi/projects/<<project-name>>/skills/mistake/SKILL.md` (mandatory)
    - `.gobbi/projects/<<project-name>>/skills/memory/rules.md` (load when evaluating memory artifacts against the standard — the naming/frontmatter/structure standard)
-   - Phase-specific evaluation doc (if applicable): <<full path to the phase-specific evaluation.md — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/evaluation.md`, `.../preparation/evaluation.md`, `.../planning/evaluation.md`, `.../execution/evaluation.md`, `.../wrap-up/evaluation.md` — omit if not evaluating a phase artifact>>
+   - Phase-specific evaluation bundle (if applicable): <<full paths to the phase's 3-file bundle — `{phase}/scenario.md` (Stage 1 seed scenarios) + `{phase}/checklist.md` (Stage 1 seed checks + copy source) + `{phase}/evaluation.md` (procedure / verifications / anti-patterns) — e.g., `.gobbi/projects/<<project-name>>/skills/ideation/{scenario,checklist,evaluation}.md` (or `.../preparation/`, `.../planning/`, `.../execution/`, `.../wrap-up/`) — omit if not evaluating a phase artifact>>
 4. Mistakes:
    - Project mistakes (recursive, mandatory): read EVERY file under `.gobbi/projects/<<project-name>>/mistakes/**/*.md` — they nest under `{area}/` subdirs, so a single-level `mistakes/*.md` glob misses by-area files (`mistake/SKILL.md` § P1).
    - Feature mistakes (when the evaluated work is feature-scoped): read every file under `.gobbi/projects/<<project-name>>/features/<<feature>>/mistakes/**/*.md` recursively.
@@ -112,7 +112,7 @@ CWD-relative `.gobbi/…`), which silently strays to the main tree
 ## Your Job
 
 1. Run the Study → Assess → Report lifecycle from `evaluator.md`.
-2. Walk through all 7 perspectives in fixed order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk) per the 4-stage procedure in `evaluation/SKILL.md`. Produce one output file per perspective + `overall.md` for Stage 3.
+2. Walk through all 7 perspectives in fixed order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk) per the 4-stage procedure in `evaluation/SKILL.md`. Produce one output file per perspective + `overall.md` for Stage 3 + the filled `checklist.md` (copied from the phase sibling at Stage 0, completed through Stage 2) — nine files per system.
 3. Re-run the verification commands the author claimed. Compare results.
 4. Produce structured findings (schema below). Every finding has evidence.
 5. Issue a verdict: `PASS` / `REVISE` / `FAIL`.
@@ -167,8 +167,9 @@ and the recursive mistake roots you read (`.gobbi/…/mistakes/**` (+ feature)),
 contract is auditable at accept-time.
 
 Then in the body:
-- **DONE** — all 7 perspectives + Overall complete; per-perspective files written;
-  verdict computed per threshold rules.
+- **DONE** — all 7 perspectives + Overall complete; all seven per-perspective files,
+  `overall.md`, and the filled `checklist.md` written and validated; verdict computed
+  per threshold rules.
 - **DONE_WITH_CONCERNS** — evaluation complete; flag perspective-internal ambiguity,
   scope ambiguity in the brief, or contradictory rules. Still provide a verdict.
 - **NEEDS_CONTEXT** — paused. The context bundle is incomplete. State what is

@@ -38,7 +38,7 @@ The manager:
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Wrap-up specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract). Wrap-up evaluation is non-skippable per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-iter scoped under `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus: synthesis coverage, explicit open items, mistake extraction, promotion-routing audit (per [`wrap-up/evaluation.md`](../../wrap-up/evaluation.md))
 
 ---
@@ -68,7 +68,7 @@ Iteration cap is `workflow.wrap-up.maxIterations` (Auto 5; Chat 3) — wrap-up r
 Wrap-up's loop dir is `5-wrap-up/`. Loop-specific files: WORK draft `working/draft-iter{n}.md`
 (the handoff / shipped-summary); optional Codex proposal
 `working/proposals/codex/draft-iter{n}.md` + Integration Log `working/reconciliation-iter{n}.md`;
-evaluation `evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+evaluation `evaluation/iter{n}/{system}/{perspective}.md` + `overall.md` + `checklist.md`; PASS outputs
 `outputs/{free-filename}.md`; staging `staging/{type}/{slug}.md`. Wrap-up's durable output is
 its promotion writes into tracked memory under `.gobbi/projects/{project-name}/` (new mistake
 entries + memory updates) — the commit boundary for those is in [What Wrap-up commits](#what-wrap-up-commits--promotion-writes-not-session-record).

@@ -79,7 +79,7 @@ WORK execution is more than documentation here, because Preparation's purpose is
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Preparation-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-iter scoped at `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/{perspective}.md`
+- **Output path**: per-iter scoped under `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus typically emphasizes gap coverage (was every needed item checked?), generation quality (do new skills meet the project's template bar?), and re-Ideate triggering (is any gap actually unworkable rather than just missing?)
 - The evaluators verify the leader's generated artifacts pass the same quality bar that the `interview` skill enforces for stamped skills
 
@@ -125,7 +125,7 @@ Iteration cap: `workflow.preparation.maxIterations` (Auto 5; Chat 0 — Preparat
 Preparation's loop dir is `2-preparation/`. Loop-specific files: WORK draft
 `working/draft-iter{n}.md`; optional Codex proposal `working/proposals/codex/draft-iter{n}.md`
 + Integration Log `working/reconciliation-iter{n}.md`; evaluation
-`evaluation/iter{n}/{system}/{perspective}.md` (+ `overall.md`); PASS outputs
+`evaluation/iter{n}/{system}/{perspective}.md` + `overall.md` + `checklist.md`; PASS outputs
 `outputs/{free-filename}.md`; staging `staging/{type}/{slug}.md` — including staged skills
 `staging/skills/{slug}/SKILL.md` (generate-now skills, promoted before Planning) and
 missed-memory-promotion candidates, all routed to memory by Wrap-up.

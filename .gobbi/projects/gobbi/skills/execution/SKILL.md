@@ -164,7 +164,7 @@ When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; 
 **Purpose**
 Find the implementation gaps WORK missed. Two independent systems (Claude Code + Codex) evaluate the change-set across all seven perspectives + Overall; the manager reconciles their findings and produces a single `PASS` / `REVISE` / `FAIL` verdict for THIS task's current iteration.
 
-See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`execution/evaluation.md`](evaluation.md) for the execution-phase seed scenarios and tool-verification expectations, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
+See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`execution/scenario.md`](scenario.md) + [`execution/checklist.md`](checklist.md) for the execution-phase seed scenarios and checks (with [`execution/evaluation.md`](evaluation.md) for the procedure and tool-verification expectations), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
 - The change-set (committed code or staged diff) for this task iteration
@@ -177,7 +177,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Manager | WORK outputs; task spec; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
-| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md` with `execution/evaluation.md` loaded at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` |
+| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md`, loading the `execution/{scenario,checklist,evaluation}.md` bundle at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` + `evaluation/iter{n}/{claude,codex}/checklist.md` |
 | 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
 | 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
 | 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
@@ -185,6 +185,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Outputs**
 - `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
 - Aggregated per-task verdict recorded in workflow state
 
 **Execution-specific evaluation emphasis** (from [`execution/evaluation.md`](evaluation.md))
@@ -273,6 +274,7 @@ All writes during the Execution Loop are **session-scoped** under per-task subdi
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` | executor (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (RECORD) | per mid-task discovery (executor) or per evaluator finding (assistant) |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
 | `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
 | `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | per-task iter completion timestamps, iter, verdict |
