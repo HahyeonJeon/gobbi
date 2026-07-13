@@ -71,18 +71,48 @@ fi
 broken=0
 checked=0
 
-# Extract every link target of one form from one file.
+# Emit the file with all CODE removed, so link extraction never sees code.
+# WHY: extraction is a plain grep for ](target) and [label]: target. Code can
+# contain the very same bytes — e.g. PEP 695 generics `def first[T](xs: Seq[T])`
+# — so an x[y](z) form inside a fenced block or an inline `code` span is misread
+# as a broken markdown link. Stripping code first makes the guard code-aware.
+# The awk program is SINGLE-quoted: its backticks stay literal and never trigger
+# shell command substitution.
+strip_code() {
+    local file="$1"
+    awk '
+        {
+            line = $0
+            # Fence toggle: a line whose trimmed content opens/closes a code
+            # fence (``` or ~~~, optionally with a language tag like ```python).
+            trimmed = line
+            sub(/^[[:space:]]+/, "", trimmed)
+            if (trimmed ~ /^(```|~~~)/) {
+                in_fence = !in_fence
+                next                       # drop the fence line itself
+            }
+            if (in_fence) next             # drop lines inside the fence
+            # Strip inline code spans from prose. Double-backtick runs first
+            # (they may wrap single backticks), then single-backtick spans.
+            gsub(/``[^`]*``/, "", line)
+            gsub(/`[^`]*`/, "", line)
+            print line
+        }
+    ' "$file" 2>/dev/null
+}
+
+# Extract every link target of one form from one file (code stripped first).
 #   form=inline    -> ](target)
 #   form=reference -> [label]: target   (line-leading)
 extract_targets() {
     local file="$1" form="$2"
     if [ "$form" = "inline" ]; then
         # Match ](...) up to the closing paren; emit the inner target.
-        grep -oE '\]\([^)]*\)' "$file" 2>/dev/null \
+        strip_code "$file" | grep -oE '\]\([^)]*\)' 2>/dev/null \
             | sed -E 's/^\]\(//; s/\)$//'
     else
         # Reference-style definition: line begins with [label]: target
-        grep -oE '^\[[^]]+\]:[[:space:]]*[^[:space:]]+' "$file" 2>/dev/null \
+        strip_code "$file" | grep -oE '^\[[^]]+\]:[[:space:]]*[^[:space:]]+' 2>/dev/null \
             | sed -E 's/^\[[^]]+\]:[[:space:]]*//'
     fi
 }
