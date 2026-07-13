@@ -42,7 +42,8 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 > the `NO_PROJECT_RULES` token; it is never a silent read-nothing. Do NOT create a `rules/`
 > skeleton to make a read succeed: empty dirs are not durable in git, and a placeholder
 > file would be a second structural exception to the `rules/{area}/{slug}.md` shape (§1.5).
-> New rule files are written only by Wrap-up after user confirmation.
+> New rule files are written by Wrap-up, or by the startup skill's startup-close
+> promotion; in both cases only after explicit user confirmation.
 
 ---
 

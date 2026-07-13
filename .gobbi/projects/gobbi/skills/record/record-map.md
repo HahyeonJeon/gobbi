@@ -227,7 +227,10 @@ values.
 - The per-iter "commit session record" cadence commits **no** session content,
   because the tree is gitignored. Iteration boundaries are recorded in
   `session.json.workflow.{loop}.iterations[]`, not in git.
-- Durable memory exists **only** via Wrap-up promotion: Wrap-up
+- Durable memory exists **only** via Wrap-up promotion — or the bounded
+  startup-close exception (the startup skill self-promotes its user-approved
+  baseline at startup-close; Wrap-up EXCLUDES `startup/` from its inventory, so
+  nothing is double-promoted — see § Wrap-up promotion-inventory rule): Wrap-up
   copies promotable `staging/` content into tracked `features/`, `mistakes/`,
   `rules/`, `design/`, `notes/`, `backlogs/`, etc. Only promoted content survives.
 
