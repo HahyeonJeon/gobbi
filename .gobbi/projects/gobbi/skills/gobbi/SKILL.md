@@ -122,7 +122,7 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 | **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
 | **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
 | **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory. |
+| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory among the workflow loops. |
 | **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). `startup`-close promotion is the documented bounded bootstrap exception — a second pre-Wrap-up memory writer. |
 | **Proposer** | The Codex generator in dual-system production — a stateless `codex exec` run that drafts an independent proposal (`working/proposals/codex/draft-iter{n}.md`) during the WORK sub-phase. It never writes the canonical artifact; the Claude producer integrates it. See `orchestration/workflow/production.md`. |
 | **Dual-system production** | The WORK-sub-phase creation model: two independent generators — a Claude producer and a Codex proposer — draft in parallel without seeing each other, then the Claude producer selectively integrates the frozen proposal. The creation-time analogue of dual-system evaluation. |
@@ -143,7 +143,7 @@ The 6-step state machine and who owns each step:
 | **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
 | **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → memory; write the handoff; emit `workflow.finish` |
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Preparation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory.
+**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Preparation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory among the workflow loops.
 
 ---
 
@@ -173,7 +173,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`preparation`](../preparation/SKILL.md) | Preparation Loop — leader's readiness check (Read Ideation / Design+Memory / Execution Skills / Gap Resolution). |
 | [`planning`](../planning/SKILL.md) | Planning Loop — leader's task decomposition with file map, dependency graph, agent assignment, self-review (Sub-steps A-E). |
 | [`execution`](../execution/SKILL.md) | Execution Loop — per-task implementation; executor's 5-phase WORK lifecycle (Study → Plan → Execute → Verify → Commit). |
-| [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory). |
+| [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory among the workflow loops). |
 
 ### Cross-cutting skills (loaded by loop phases, not owning their own loop)
 
@@ -275,4 +275,4 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 - **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
 - **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
 - **MUST never bypass the Load Directives block** in delegation prompts — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
-- **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass; closing without Wrap-up loses all session work.
+- **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass among the workflow loops; closing without Wrap-up loses all session work.

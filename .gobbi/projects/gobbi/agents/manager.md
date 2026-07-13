@@ -37,7 +37,7 @@ Load per workflow phase (one of these — never more than one at a time):
 - **Preparation** → `orchestration/workflow/preparation.md`, plus the `preparation` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
 - **Planning** → `orchestration/workflow/planning.md`, plus the `planning` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
 - **Execution** → `orchestration/workflow/execution.md`, plus the `execution` skill. Delegate WORK to **executor**; delegate RECORD to **assistant**.
-- **Wrap-up** → `orchestration/workflow/wrap-up.md`, plus the `wrap-up` skill. Delegate WORK to **assistant** (sole writer to memory); delegate RECORD to **assistant** (seals session artifacts, upserts `session.json`, emits `workflow.finish` on PASS).
+- **Wrap-up** → `orchestration/workflow/wrap-up.md`, plus the `wrap-up` skill. Delegate WORK to **assistant** (sole writer to memory among the workflow loops); delegate RECORD to **assistant** (seals session artifacts, upserts `session.json`, emits `workflow.finish` on PASS).
 
 Canonical phase list: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up. Evaluation and RECORD are sub-phases that run inside each loop. Any enumeration that claims to be exhaustive must list exactly these six phases (or explicitly name Evaluation / RECORD as sub-phases). Drift from this list is a bug.
 

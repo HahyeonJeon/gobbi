@@ -30,7 +30,7 @@ Each type is project-only, feature-scoped, or both — which type sits in which 
 The **When**. A memorized fact moves through three beats:
 
 1. **Staged** during a loop's RECORD sub-phase — the assistant writes the finding/decision/mistake to session staging at `sessions/.../{N}-{loop}/staging/{type}/`. Loop RECORD never writes durable memory.
-2. **Promoted** to durable memory at Wrap-up — Wrap-up reads the accumulated staging across all loops and writes it to `.gobbi/projects/{project-name}/...`. Wrap-up is the **sole writer** to durable memory.
+2. **Promoted** to durable memory at Wrap-up — Wrap-up reads the accumulated staging across all loops and writes it to `.gobbi/projects/{project-name}/...`. Wrap-up is the **sole writer** to durable memory among the workflow loops.
 3. **Read** at the start of the next session — promoted memory is loaded back in (e.g. mistakes via the load-at-start model). This beat closes the lifecycle; building a read procedure is not this doc's job.
 
 **Vocabulary caveat.** "Memorization" names the **Wrap-up promotion stage** (stage 2 of the WORK pipeline), not the per-loop capture sub-phase, which is **RECORD**. The two are distinct — see [`wrap-up/SKILL.md` § RECORD Phase](../wrap-up/SKILL.md#record-phase), which states the distinction; this doc does not re-explain it.

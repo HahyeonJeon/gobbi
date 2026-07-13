@@ -6,7 +6,7 @@ How the **manager** orchestrates the RECORD sub-phase that runs at the end of ev
 
 The manager's job at RECORD is to **spawn the assistant, deliver the right inputs, validate the assistant's output mechanically, and advance the loop** — not to do the synthesis itself. RECORD runs **after every EVALUATION verdict** (`PASS`, `REVISE`, or `FAIL`) and **before** the `ITER / EXIT` decision: every iteration's evidence must be preserved before the loop either re-enters DISCUSSION or exits.
 
-All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to memory; Wrap-up is the sole writer there. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`record/record-map.md`](../../record/record-map.md), the single source of truth.
+All assistant writes are **session-scoped** under `sessions/{date}-{session-id}/{N}-{loop}/...` plus own-loop fields in `session.json`. The assistant **never** writes to memory; Wrap-up is the sole writer there among the workflow loops. The manager validates this invariant via post-write snapshot diff. For the canonical session-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`record/record-map.md`](../../record/record-map.md), the single source of truth.
 
 ---
 
@@ -371,7 +371,7 @@ Path conventions, full path inventory across both tiers, and template-to-directo
 - Path inventory + tier access matrix + template index → [`memory/memory-map.md`](../../memory/memory-map.md)
 - Type + Domain → staging routing, disposition values, slug + collision policy → [`evaluation/SKILL.md` § Finding Metadata](../../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
 - Stage 1 inheritance / regression marking / stuck detection (read-once-here, applied-at-every-loop) → [`workflow/evaluation.md` § Iteration Inheritance](evaluation.md#iteration-inheritance-no-ledger--read-prior-iter-directly)
-- Where staging eventually lands (memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to memory)
+- Where staging eventually lands (memory) → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) (sole writer to memory among the workflow loops)
 - Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - Staging template inventory → [`memory/templates/`](../../memory/templates/)
 - Verdict aggregation in the state machine → [orchestration `SKILL.md` § Verdict aggregation](state-machine.md#verdict-aggregation)

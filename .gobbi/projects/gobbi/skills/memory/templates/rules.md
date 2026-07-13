@@ -64,5 +64,5 @@ supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | n
 
 ## Notes
 
-- **Promotion contract.** Wrap-up is the only writer to `rules/` — no loop RECORD writes directly. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
+- **Promotion contract.** Wrap-up is the only writer to `rules/` among the workflow loops — no loop RECORD writes directly; the one pre-Wrap-up exception is the startup skill's startup-close promotion, which writes its user-approved baseline to `rules/` before any loop runs. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
 - **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.
