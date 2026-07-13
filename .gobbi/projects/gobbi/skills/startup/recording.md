@@ -23,7 +23,7 @@ that obeys them.
 - [9. Startup-close promotion (the honest "atomic")](#9-startup-close-promotion-the-honest-atomic)
 - [10. Frontmatter & raw-vs-synthesized](#10-frontmatter--raw-vs-synthesized)
 - [11. Re-run classification (5 states)](#11-re-run-classification-5-states)
-- [12. Interruption / resume classifier (4 states)](#12-interruption--resume-classifier-4-states)
+- [12. Interruption / resume classifier (5 states)](#12-interruption--resume-classifier-5-states)
 - [13. Standalone entry / exit](#13-standalone-entry--exit)
 - [14. Privacy / retention](#14-privacy--retention)
 
@@ -33,42 +33,83 @@ that obeys them.
 
 Keep four layers separate. Only the last is durable project reference.
 
+> **Level invariant — path determines authority.** This is the single owner of startup's two write
+> tiers; `SKILL.md` cites it. Two write tiers, one boundary:
+> - **RECORD-LEVEL** — every path under `sessions/{date}-{session-id}/startup/` (`working/` +
+>   `staging/` + `outputs/`). Session-scoped, gitignored, worktree-local, non-authoritative, and
+>   **never durable** — no record-level file is ever promoted wholesale.
+> - **MEMORY-LEVEL** — the durable `.gobbi/projects/{project-name}/...` tree (outside `sessions/`,
+>   `skills/`, and `agents/`). Read-only through P5, written **once** at the P6 startup-close
+>   promotion gate and **only** to the approved-manifest destinations, then read-only again in P7.
+>
+> Nothing crosses record-level → memory-level except P6 promotion of synthesized typed records +
+> living-index edits — and promotion COPIES an approved staged source to its memory destination; it
+> does not promote the source file itself. Repository code, skill sources, memory templates, and
+> guards are read-only **source** inputs on neither write tier — startup never writes them. A staged
+> draft may carry memory-shaped frontmatter, yet it stays record-level until P6 copies it to an
+> approved memory destination.
+
 ```
 raw conversation audit  →  structured answer ledger  →  synthesized staged docs  →  user-approved promoted reference
 ```
 
-| Layer | Purpose | Durable? |
-|---|---|---|
-| **Raw discussion log** | Verbatim or near-verbatim audit of the manager–user conversation. | No. Never promoted. |
-| **Answer ledger** | Structured interpretation with evidence, status, decisions, affected outputs, and follow-ups visible (schema §2). | No. Never promoted. |
-| **Synthesized staged docs** | Atomic typed drafts, each stamped from its matching memory template, in session staging. | No. Session-local until promotion. |
-| **Promoted reference** | The user-approved typed records and living indexes written by startup-close promotion (§9). | Yes. |
+| Layer | Level | Purpose | Durable? |
+|---|---|---|---|
+| **Raw discussion log** | record-level | Verbatim or near-verbatim audit of the manager–user conversation. | No. Never promoted. |
+| **Answer ledger** | record-level | Structured interpretation with evidence, status, decisions, affected outputs, and follow-ups visible (schema §2). | No. Never promoted. |
+| **Synthesized staged docs** | record-level | Atomic typed drafts, each stamped from its matching memory template, in session staging. | No. Session-local until promotion. |
+| **Promoted reference** | memory-level | The user-approved typed records and living indexes written by startup-close promotion (§9). | Yes. |
 
-**Why this makes abandon SAFE:** promotion (§9) is the ONLY durable write. Everything before it is
-session-local under `sessions/` (gitignored). A run abandoned at any point before promotion leaves ZERO
+**Why this makes abandon SAFE:** promotion (§9) is the ONLY memory-level write. Everything before it is
+record-level under `sessions/` (gitignored). A run abandoned at any point before promotion leaves ZERO
 partial durable state — no memory cleanup is needed. Only a mid-promotion failure needs the recovery path
 (§9 step 5).
 
 ## 2. Answer-ledger schema
 
-Write one ledger row per answer. The ledger is startup-owned session evidence; because `sessions/` is
-outside the memory frontmatter standard, it uses this startup-owned schema, not memory frontmatter.
+Write one append-only ledger event per answer. The ledger is startup-owned session evidence; because
+`sessions/` is outside the memory frontmatter standard, it uses this startup-owned schema, not memory
+frontmatter. Four distinct axes are kept SEPARATE — do NOT overload the single `Status` field to carry
+all of them: evidence strength, claim kind, evidence verification, and branch closure are different
+questions.
 
 | Field | Meaning |
 |---|---|
+| **Answer ID** | Stable idempotency key for this answer event (kebab slug or ordinal). Regeneration and resume/rerun key off it, NOT off row position. |
 | **Topic ID** | Stable Level-1/Level-2 node (e.g. `7.4 Data & state`). |
 | **Question** | The exact question asked. |
 | **Answer** | The user's answer, summarized without changing its meaning. |
-| **Status** | `confirmed` / `assumption` / `open` / `contradicted`. |
+| **Status** | `confirmed` / `assumption` / `open` / `contradicted` — the coarse capture tag (drives the MUST-tag rule and the Level-1 checkpoint display). |
+| **Claim kind** | `observed-fact` / `user-intent` / `forecast` / `preference` / `decision` / `open-question`. Separates a verified fact from an intent, a forecast, or a preference. |
+| **Evidence status** | `verified` / `corroborated` / `user-asserted` / `unverified` / `contradicted`. User authority alone confirms only intent/preference; an external fact needs verification or stays `user-asserted`/`unverified`. |
 | **Evidence** | User authority / repo path / observed behavior / named external source. |
+| **Sensitive?** | `y`/`n` + reason. Drives the synthesis strip (§9 step 1, §14): a `y` value stays record-level and never enters a promoted record, index, or summary. |
+| **Branch closure** | `confirmed` / `proven-irrelevant:{reason}` / `recorded-open:{owner}` — the per-Level-2-branch closure state the validity gate audits, distinct from `Status`. |
 | **Decision** | The binding choice made by the answer, if any. |
 | **Affected docs** | Candidate root-index / design / decision / feature / rule / mistake / backlog / reference / scenario / checklist / learning effects. |
 | **Follow-up** | The next probe, evidence, owner, or resolution method needed. |
 
-**Answer status is not branch closure.** An answer's `Status` records evidence strength. A Level-2 branch
-closes only as `confirmed`, `proven-irrelevant` (with a recorded reason), or `recorded-open` (with an
-owner and resolution method). At each confirmed Level-1 close, append a checkpoint marker to the ledger
-holding the topic number and confirmation timestamp.
+For a **design-bearing** answer (the P3 design-decision micro-loop in `SKILL.md` § Procedure), the event
+also carries the M3 decision-trace fields — do not fold them into `Decision`:
+
+| Field | Meaning |
+|---|---|
+| **Decision brief** | Record-level path to the prior-art study (`working/research/{slug}.md`) holding the Source/Insight/Why entries. |
+| **Recommendation** | The manager's recommended option, formed before the user chose. |
+| **Evidence-to-change** | The falsifier — the observable evidence that would flip the recommendation. |
+| **Chosen direction** | The option the user selected. |
+| **Rationale** | Why the user selected it, plus the rejected alternatives. |
+
+**The ledger is append-only and idempotent.** A correction appends a new event that supersedes an
+earlier one (mark the earlier event `contradicted`, link by `Answer ID`); it never edits a row in place.
+Staged-draft regeneration (resume, checkpoint correction, P4 rebuild) reads the CURRENT event set keyed
+by `Answer ID`, not row position — so a resumed or re-run pass never re-asks or duplicates a settled
+answer.
+
+**Answer status is not branch closure.** `Status` records evidence strength; `Branch closure` records
+per-branch coverage. A Level-2 branch closes only as `confirmed`, `proven-irrelevant` (with a recorded
+reason), or `recorded-open` (with an owner and resolution method). At each confirmed Level-1 close, append
+a checkpoint marker to the ledger holding the topic number and confirmation timestamp.
 
 ## 3. Startup session shape
 
@@ -76,31 +117,40 @@ holding the topic number and confirmation timestamp.
 `1-ideation … 5-wrap-up` set. It uses its own unnumbered `startup/` surface:
 
 ```
-sessions/{date}-{session-id}/startup/
+sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL (§1) — never durable
 ├── working/
 │   ├── discussion-log.md         # raw audit
-│   ├── answer-ledger.md          # structured ledger (schema §2) — carries the resumable checkpoint markers
-│   └── promotion-manifest.md     # per-file CRUD + destination + supersede/archive plan (§7)
+│   ├── answer-ledger.md          # append-only ledger (schema §2) — carries the resumable checkpoint markers
+│   ├── research/                 # prior-art study per design-bearing branch: {slug}.md, Source/Insight/Why (M3)
+│   └── promotion-manifest.md     # per-file CRUD + destination + preimage + supersede/archive plan (§7)
 ├── staging/
 │   ├── decisions/                # decision records AND mistake-candidates (frontmatter `mistake-candidate: true`)
 │   ├── design/
 │   ├── references/
 │   ├── learnings/                # project-scoped transferable techniques
 │   ├── rules/                    # binding-rule candidates (explicit user confirmation required to promote)
+│   ├── indexes/
+│   │   └── project-README.md     # root living-index candidate (frontmatter-less) — reviewed at P5, promoted LAST (§8)
 │   ├── backlogs/{feature,project}/
-│   └── features/{feature-name}/{type}/   # feature-scoped drafts, one subtree per ratified feature (multi-feature)
+│   └── features/{feature-name}/
+│       ├── README.md             # feature living-index candidate — reviewed at P5, promoted LAST
+│       └── {type}/               # feature-scoped drafts, one subtree per ratified feature (multi-feature)
 └── outputs/
-    └── startup-summary.md        # manifest + unresolved questions + promoted paths + completion marker + rerun triggers
+    └── startup-summary.md        # promoted paths + open questions + completion marker + rerun triggers — RECORD-LEVEL, live-session-only (§13)
 ```
 
-`working/` and `staging/` are gitignored session surfaces. The raw log, ledger, manifest, staged drafts,
-and startup summary are never promoted as records. A later same-session Wrap-up promotion inventory
-EXCLUDES the entire `startup/` tree, because startup has already promoted its approved set (§9 step 5).
+`working/`, `staging/`, and `outputs/` are all parts of the record-level startup record (§1); none is
+durable memory. They are gitignored session surfaces. The raw log, ledger, manifest, staged drafts, index
+candidates, and startup summary are never promoted as records — promotion COPIES an approved staged source
+to its memory destination (§9). A later same-session Wrap-up promotion inventory EXCLUDES the entire
+`startup/` tree, because startup has already promoted its approved set (§9 step 5).
 
-**Staging tree covers every type the topic map produces.** The `staging/learnings/` path and the full
+**Staging tree covers every type the topic map produces.** The `staging/learnings/` path, the
+`staging/indexes/` + per-feature `README.md` index candidates, and the full
 `staging/features/{feature-name}/{type}/` subtree exist so the staging sources match the topic → durable
-output map in §4 one-for-one — every durable type §4 can produce has a staging source, and the staging
-tree names no source without a durable destination. In particular:
+output map in §4 one-for-one — every durable type §4 can produce (including the root and feature living
+indexes) has a record-level staging source, and the staging tree names no source without a durable
+destination. In particular:
 
 - A **transferable technique** (Topic 11) is a `learnings/` record: project-scoped → `staging/learnings/`;
   feature-scoped → `staging/features/{f}/learnings/`.
@@ -127,7 +177,7 @@ is §5.
 | 8. Tech Stack, Delivery & Operations | `decisions/…` (stack); project/feature `design/…` (delivery/ops); `references/…`; feature `scenarios/…` (failure/rollback) | Stack choice = decision; delivery/ops = design; dependency evidence = one reference per insight |
 | 9. Conventions, Constraints & Quality bar | project/feature `rules/{area}/{slug}.md`; `decisions/…`; project/feature `design/…`; feature `scenarios/`/`checklists/` | One binding invariant per rule, explicit user confirmation; preferences stay in design/decisions |
 | 10. Risks, Unknowns & Roadmap | `README.md` (now/next/later + top risks); `decisions/…`; `backlogs/…`; feature `backlogs/`; project/feature `design/…` | One accepted risk / sequencing choice per decision; one deferred item per backlog. No loop-written project `plans/` — roadmap = README summary + atomic backlogs |
-| 11. Idioms, Rules & Recurring Mistakes | project/feature `rules/{area}/{slug}.md`; project/feature `mistakes/{trap-class}/{slug}.md`; project/feature `learnings/{area}/{slug}.md`; `references/…` | One mandatory invariant per rule; one recurring trap per mistake; one transferable technique per learning; a skill-candidate convention = one decision record. Mistakes stage via `staging/decisions/{slug}.md` + `mistake-candidate: true` (§5), NOT a `staging/mistakes/` dir |
+| 11. Idioms, Rules & Recurring Mistakes | project/feature `rules/{area}/{slug}.md`; project/feature `mistakes/{trap-class}/{slug}.md`; project/feature `learnings/{area}/{slug}.md`; `references/…` | One mandatory invariant per rule; one recurring trap per mistake; one transferable technique per learning; a skill-candidate convention = one decision record. Startup promotes only CROSS-CUTTING project/feature traps to `mistakes/`; a SKILL-OWNED trap is handed off as a decision/backlog record (startup edits no skill), never written to `skills/{skill}/mistakes.md` (§5). Mistakes stage via `staging/decisions/{slug}.md` + `mistake-candidate: true` (§5), NOT a `staging/mistakes/` dir |
 
 **Atomicity:** one record = one concept. The **root README is a living index, not a typed memory doc**
 (§8).
@@ -139,10 +189,14 @@ shared routing rules apply per file. Every durable destination below is relative
 `.gobbi/projects/{project-name}/`. Every by-area destination receives an allowed `{area}` via the
 area-resolution order at the end of this section.
 
+**Level transition (§1).** Every left-column source is record-level; every right-column destination is
+memory-level. Promotion COPIES an approved source to a newly created or changed memory-level destination —
+the record-level source file itself is never promoted, moved, or mutated.
+
 | Staging source | Durable destination | Conditions |
 |---|---|---|
 | `staging/decisions/{slug}.md` | `decisions/{area}/{date}-{slug}.md` | Project-scoped atomic decision (includes a skill-candidate note). |
-| `staging/decisions/{slug}.md` with `mistake-candidate: true` | `skills/{skill}/mistakes.md` as one owned `## ` section, OR `mistakes/{area}/{slug}.md` | Always-Ask ownership route. A skill-owned trap is only PROPOSED for the owning surface; startup creates/edits no skill. Strip the routing flag on promotion. |
+| `staging/decisions/{slug}.md` with `mistake-candidate: true` | project `mistakes/{area}/{slug}.md` (cross-cutting trap), OR — for a SKILL-OWNED trap — an atomic `decisions/{area}/{date}-{slug}.md` or `backlogs/{area}/{slug}.md` handoff record | Always-Ask scope route. Startup promotes ONLY cross-cutting project/feature traps to `mistakes/`. It edits no skill, so a skill-owned trap is NEVER written to `skills/{skill}/mistakes.md`; instead it is handed off as a durable decision/backlog record naming the owning skill + a later-phase trigger for the skill-authoring owner to promote. Strip the routing flag on promotion. |
 | `staging/design/{slug}.md` | `design/{area}/{slug}.md` | Project-scoped design. |
 | `staging/references/{slug}.md` | `references/{area}/{slug}.md` | Project-scoped extracted insight; a bare external link is not enough. |
 | `staging/learnings/{slug}.md` | `learnings/{area}/{slug}.md` | Project-scoped transferable technique. |
@@ -150,15 +204,15 @@ area-resolution order at the end of this section.
 | `staging/backlogs/project/{slug}.md` | `backlogs/{area}/{slug}.md` | Project deferral with actionable work + a pick-up trigger. |
 | `staging/backlogs/feature/{slug}.md` | `features/{f}/backlogs/{area}/{slug}.md` | The staged file carries `feature: {f}`. |
 | `staging/features/{f}/decisions/{slug}.md` | `features/{f}/decisions/{area}/{date}-{slug}.md` | Feature decision; the staged file carries `feature: {f}`. |
-| `staging/features/{f}/decisions/{slug}.md` with `mistake-candidate: true` | `skills/{skill}/mistakes.md` section, OR `features/{f}/mistakes/{area}/{slug}.md`, OR project `mistakes/{area}/{slug}.md` | Always-Ask ownership + scope route. Strip the routing flag. |
+| `staging/features/{f}/decisions/{slug}.md` with `mistake-candidate: true` | `features/{f}/mistakes/{area}/{slug}.md` OR project `mistakes/{area}/{slug}.md` (cross-cutting trap), OR — for a SKILL-OWNED trap — a `decisions/`/`backlogs/` handoff record | Always-Ask scope route; the staged file carries `feature: {f}`. A skill-owned trap is NEVER written to `skills/{skill}/mistakes.md` — it becomes a decision/backlog handoff to the skill owner. Strip the routing flag. |
 | `staging/features/{f}/design/{slug}.md` | `features/{f}/design/{area}/{slug}.md` | Feature design. |
 | `staging/features/{f}/references/{slug}.md` | `features/{f}/references/{area}/{slug}.md` | Feature reference insight. |
 | `staging/features/{f}/scenarios/{slug}.md` | `features/{f}/scenarios/{area}/{slug}.md` | Feature scenario. |
 | `staging/features/{f}/checklists/{slug}.md` | `features/{f}/checklists/{area}/{slug}.md` | Feature checklist. |
 | `staging/features/{f}/rules/{slug}.md` | `features/{f}/rules/{area}/{slug}.md` | Feature rule; explicit user confirmation. |
 | `staging/features/{f}/learnings/{slug}.md` | `features/{f}/learnings/{area}/{slug}.md` | Feature-scoped transferable technique. |
-| Ratified feature identity, synthesized from confirmed answers | `features/{f}/README.md` | A living index, updated LAST. The feature is a durable value-feature, not a task, sprint, epic, subsystem, mechanism, or speculative idea. |
-| Root identity, synthesized from confirmed answers | `README.md` | A frontmatter-less living index (§8), created/updated LAST. |
+| `staging/features/{f}/README.md` | `features/{f}/README.md` | Feature living-index candidate → the durable feature index. Reviewed/diffed at P5, promoted LAST. The feature is a durable value-feature, not a task, sprint, epic, subsystem, mechanism, or speculative idea. |
+| `staging/indexes/project-README.md` | `README.md` | Root living-index candidate → the frontmatter-less root index (§8). Reviewed/diffed at P5, created/updated LAST. |
 
 **Multi-feature routing.** Each feature-scoped staging file carries a per-file `feature: {f}` field.
 Startup uses that per-file field for routing — NOT a session-global `session.json.feature`. On promotion,
@@ -176,17 +230,21 @@ Startup-only routing fields and `area:` ARE stripped.
 
 **During the talk**, for every answer:
 1. Append the raw exchange to `working/discussion-log.md`.
-2. Append one structured row to `working/answer-ledger.md`.
-3. Record candidate output effects — write only to session working/staging, never durable memory.
-4. If the answer corrects an earlier one, mark the earlier ledger row `contradicted` and identify every
-   affected staged draft.
+2. Append one structured event (with its `Answer ID`) to `working/answer-ledger.md` — append-only (§2).
+3. Record candidate output effects — write only to session working/staging, never durable memory. For a
+   **design-bearing** branch, first run the P3 design-decision micro-loop ([`SKILL.md`](SKILL.md)
+   § Procedure): capture the prior-art study to `working/research/{slug}.md` and the decision-trace fields
+   to the ledger (§2) before recording the direction.
+4. If the answer corrects an earlier one, append a superseding event linked by `Answer ID` that marks the
+   earlier event `contradicted` (§2), and identify every affected staged draft — never edit a prior event
+   in place.
 
 **At each Level-1 close:**
 1. Present confirmed facts / assumptions / open questions / contradictions / decisions / proposed doc
    effects (the checkpoint).
 2. Ask the user whether the summary is accurate.
-3. On correction, update the ledger FIRST, then regenerate the affected staged drafts from the ledger
-   rather than patching around stale synthesis.
+3. On correction, update the ledger FIRST (append a superseding event), then regenerate the affected staged
+   drafts from the current ledger events keyed by `Answer ID`, rather than patching around stale synthesis.
 4. On confirmation, update or create the atomic staged drafts and append the Level-1 checkpoint marker.
 
 Do not promote at topic close. All capture and synthesis stays session-local until the startup-close gate.
@@ -207,7 +265,12 @@ After every required Level-2 branch closes:
    | Slug | Stable atomic-concept slug |
    | Source topics | The ledger branches supporting the output |
    | Destination | The exact durable path |
+   | Preimage | The destination's state captured NOW at P5: `absent`, or `present` + a content hash. The P6 TOCTOU recheck (§9 steps 1–2) compares against it immediately before each mutation |
    | Supersession plan | For `supersede`: old path, new record's `supersedes`, old record's status-flip + `superseded_by`, and the exact archive-move path |
+
+   Index candidates (`staging/indexes/project-README.md`, `staging/features/{f}/README.md`) each get a
+   manifest row too — Operation `living-index update`, so P5 whole-set validation can inspect and diff
+   them before P6 writes them LAST.
 
 2. **Cross-topic contradiction pass** — check at least: vision vs scope; users vs critical journeys;
    non-goals vs roadmap; quality vs stack; data promises vs architecture; risk mitigations vs
@@ -223,7 +286,9 @@ After every required Level-2 branch closes:
 ## 8. Root README — the living index
 
 The root `README.md` is a **frontmatter-less living index, NOT a typed memory doc**: no memory frontmatter,
-and no project-README memory template exists — do not fabricate one. Keep these sections:
+and no project-README memory template exists — do not fabricate one. It is synthesized at a record-level
+candidate first — `staging/indexes/project-README.md` (§3) — so P5 whole-set validation can inspect and
+diff its exact text, links, and secret-scan before P6 promotes it LAST. Keep these sections:
 
 1. Project statement.
 2. Problem & first target users.
@@ -264,17 +329,26 @@ Before ANY durable write, over the complete manifest + staging set:
   a supersession) or a supersession (pre-compute the new file's `supersedes:`, the old file's status-flip +
   `superseded_by`, and its `git mv` archive path). Pre-compute ALL supersession/archive moves into the
   manifest.
+- **Record each destination's preimage into the manifest (§7)** — `absent`, or `present` + a content
+  hash — captured NOW. This is the baseline the P6 TOCTOU recheck (step 2) compares against so a concurrent
+  or user edit between P5 and P6 cannot be blind-overwritten.
 - Confirm all binding rules have explicit user approval; all proposed features are user-ratified durable
-  value-features; and no secret, credential, or user-marked sensitive value is present in any draft, index,
-  or the summary.
-- If ANY file fails validation or has an unresolvable collision → **STOP before any durable write**;
-  surface to the user (Always-Ask). Nothing durable written = safe (§1).
+  value-features. **Run a lightweight heuristic secret-scan** over EVERY staged typed draft + the index
+  candidates (`staging/indexes/project-README.md`, `staging/features/{f}/README.md`) + the startup summary,
+  driven by the ledger `Sensitive?` field (§2) — not only user-marked values. No secret, credential, or
+  user-marked sensitive value may be present in any draft, index, or the summary.
+- If ANY file fails validation, has an unresolvable collision, or trips the secret-scan → **STOP before
+  any durable write**; surface to the user (Always-Ask). Nothing durable written = safe (§1).
 
 ### Step 2 — Write in a safe order
 
-Apply only approved manifest entries, in an order that keeps a mid-write halt maximally recoverable:
-- (a) Create/update new typed docs first (idempotent overwrite by deterministic path). Lazily create each
-  ratified `features/{f}/` parent a feature-scoped record needs.
+Apply only approved manifest entries, in an order that keeps a mid-write halt maximally recoverable.
+**TOCTOU recheck — immediately before EACH mutation**, re-read the destination and compare it against the
+manifest preimage recorded at step 1 (§7). If the live state no longer matches the preimage (a concurrent
+or user edit landed after P5) → **HALT to the step-5 Always-Ask recovery; NEVER overwrite**. This replaces
+blind "idempotent overwrite" — a matching preimage is the precondition for every write.
+- (a) Create/update new typed docs first (write by deterministic path only after the preimage recheck).
+  Lazily create each ratified `features/{f}/` parent a feature-scoped record needs.
 - (b) Apply supersession: flip the old file's `status` in place, add `superseded_by`, and `git mv`
   old → `archive/{type}/{area}/`. Never delete.
 - (c) Update living indexes (root README, feature READMEs) in place **LAST** — after the typed docs they
@@ -295,24 +369,43 @@ Run the standing memory guards over the post-promotion tree; ALL must exit 0:
 - `check-residual-vocab.sh` — retired vocabulary.
 - `check-skill-mistakes.sh` — skill-owned mistake sections.
 
-A clean frontmatter check alone is not sufficient. Startup does NOT run Wrap-up's dual-system memory
-validation, Stage-2c compaction, or git finalization — the Always-Ask user gate + these standing guards
-are startup's substitute, because the baseline is user-confirmed answer-by-answer.
+A clean frontmatter check alone is not sufficient. These standing guards judge **form** (frontmatter /
+links / vocab / skill-mistake sections). After they pass, the **P6.5 dual-system evaluation gate** judges
+the baseline's **completeness + quality**: two fresh evaluators (Claude + Codex) run the startup
+`{scenario,checklist,evaluation}.md` bundle over the promoted baseline. Startup does NOT run Stage-2c
+compaction or git finalization, but it DOES run this dual-system gate — the baseline becomes every later
+session's reference, so it is not exempt (this overrides the earlier design in which the Always-Ask gate +
+standing guards were startup's full substitute for dual-system validation). The bundle and its non-loop
+`evaluation/SKILL.md` wiring are authored separately — see [`SKILL.md`](SKILL.md) § Procedure (P6.5).
+`baseline_valid: true` is written (P7) only after P6.5 passes.
 
 ### Step 5 — On any mid-write failure (steps 2–4) → HALT + Always-Ask partial-state recovery
 
 Stop immediately; do not continue to another manifest item and do not mark the baseline valid. Report
 exactly which files were written, which supersessions/archives were applied, and what remains. Offer three
-Always-Ask choices: **complete-forward** from the deterministic manifest / **roll back** — remove the
-step-2(a) created typed docs, revert the applied step-2(b) `git mv`s + status-flips, and restore any
-step-2(c) in-place living-index edits (all recoverable via git), returning the tree to the pre-promotion
-state / **abandon** the partial baseline for manual repair. Never choose a recovery path silently. The startup summary cannot carry `baseline_valid: true` until recovery
-completes, all exact paths verify, and every guard passes.
+Always-Ask choices: **complete-forward** from the deterministic manifest / **roll back** / **abandon** the
+partial baseline for manual repair. Never choose a recovery path silently.
+
+**Roll-back carve-out — the single narrow exception to startup's no-delete rule.** Roll-back operates
+strictly by op, keyed to each entry's manifest preimage (§7). It NEVER deletes a pre-existing memory file;
+delete authority extends ONLY to this promotion's own uncommitted CREATEs.
+
+- A **step-2(a) CREATE** — a file THIS promotion just created, whose manifest preimage is `absent`, whose
+  on-disk content hash still matches the manifest write, and which is **uncommitted** — is rolled back by
+  `rm` of exactly that listed file. These files are untracked, so there is NO `git reset` / `git checkout`
+  target: a CREATE roll-back is a file delete of the listed paths, not a git op.
+- A **step-2(b) supersession** or a **step-2(c) in-place living-index edit** of a PRE-EXISTING file is
+  rolled back by restoring its recorded preimage: reverse the `git mv`, revert the status-flip, and
+  `git checkout` the in-place edit back to the preimage hash.
+
+The startup summary cannot carry `baseline_valid: true` until recovery completes, all exact paths verify,
+every standing guard passes, and the P6.5 dual-system gate passes.
 
 **Prevent double promotion.** After successful promotion, write every promoted path + the completion marker
-into `outputs/startup-summary.md`. Because startup promotes at startup-close, its staging is already durable
-before any same-session Wrap-up runs; Wrap-up's promotion-inventory EXCLUDES `startup/`, so it never
-re-promotes a startup staging surface.
+into `outputs/startup-summary.md`. This marker is record-level and live-session-only (§13) — it guards the
+SAME session against double promotion (Wrap-up's promotion-inventory EXCLUDES `startup/`, so it never
+re-promotes a startup staging surface). A LATER session does not read this gitignored marker; it derives
+rerun-state from durable memory (§12 `completed`, §13).
 
 ## 10. Frontmatter & raw-vs-synthesized
 
@@ -342,21 +435,23 @@ recorded answer + evidence and ask confirm / correct / unknown. Classify every o
 Never blind-append to an old design/decision/rule/mistake. Never delete — supersede + move-on-terminal.
 Living indexes update in place; prior states recover via git + the manifest.
 
-## 12. Interruption / resume classifier (4 states)
+## 12. Interruption / resume classifier (5 states)
 
-At startup entry, a **read-only** classifier inspects `sessions/{date}-{session-id}/startup/` (and any prior
-startup session dir needed to detect completion) and resolves ONE state — it writes nothing:
+At startup entry, a **read-only** classifier inspects `sessions/{date}-{session-id}/startup/` and durable
+memory (to detect completion) and resolves ONE state — it writes nothing:
 
 | State | Signal | Action |
 |---|---|---|
 | `fresh` | No `startup/` dir. | First run — full 11-topic traversal. |
-| `in-progress-resumable` | `working/answer-ledger.md` exists with ≥ 1 confirmed Level-1 checkpoint marker AND no completion marker. | Ask resume vs restart. On resume: reload the ledger + confirmed checkpoints; re-show each confirmed Level-1 summary for a quick re-confirm; regenerate staged drafts from the ledger (idempotent); continue from the first unconfirmed checkpoint. |
+| `restart-safe` | `startup/` dir + `working/answer-ledger.md` present, but **0 confirmed Level-1 checkpoint markers** (interrupted before the first checkpoint). | No trusted resume point and nothing durable was written (§1). Re-confirm scope with the user, then **restart from Topic 1**; the prior gitignored ledger/staging is discarded or ignored. |
+| `in-progress-resumable` | `working/answer-ledger.md` exists with ≥ 1 confirmed Level-1 checkpoint marker AND no completion marker. | Ask resume vs restart. On resume: reload the ledger + confirmed checkpoints; re-show each confirmed Level-1 summary for a quick re-confirm; regenerate staged drafts from the current ledger events keyed by `Answer ID` (idempotent, §2); continue from the first unconfirmed checkpoint. |
 | `abandoned` | A stale in-progress dir the user chooses to discard. | SAFE discard — nothing durable was written (§1), so no memory cleanup; drop or ignore the gitignored session working/staging. |
-| `completed` | `outputs/startup-summary.md` with a completion marker AND promotion verified. | This is a rerun — go to the §11 baseline-review path. |
+| `completed` | **Durable memory present** — the root index (`README.md`) + the required durable typed records + the ratified feature indexes exist under `.gobbi/projects/{project-name}/`. This is read from durable memory, NOT the gitignored session summary a later session cannot read (§13, D2). | This is a rerun — go to the §11 baseline-review path. |
 
 The classifier writes nothing. A `/clear`, `/compact`, or interruption after a confirmed Level-1 marker is
-survivable: on re-entry the classifier reads the ledger READ-ONLY and resumes. An interruption DURING
-promotion is not a normal resume — use the §9 step 5 partial-state recovery.
+survivable: on re-entry the classifier reads the ledger READ-ONLY and resumes (`in-progress-resumable`); an
+interruption before the first checkpoint has no trusted resume point (`restart-safe`). An interruption
+DURING promotion is not a normal resume — use the §9 step 5 partial-state recovery.
 
 ## 13. Standalone entry / exit
 
@@ -382,9 +477,14 @@ promoted_paths: [...]
 open_questions: [...]
 ```
 
-Include the rerun triggers + non-sensitive verification notes. This is the durable evidence a later
-Configuration reads: on the next `/gobbi`, the memory-baseline check finds the promoted memory AND the
-completion marker → treats the baseline as established and skips the auto-recommend.
+Include the rerun triggers + non-sensitive verification notes. **This summary is record-level and
+live-session-only** (§1) — gitignored, worktree-local, and removed by session cleanup; it is NOT durable
+cross-session evidence. Within the live session it records completion and prevents double promotion (§9). A
+LATER Configuration does NOT read this marker: on the next `/gobbi` the memory-baseline check derives
+rerun-state from **durable memory** — the root index (`README.md`) + the required durable typed records +
+the ratified feature indexes under `.gobbi/projects/{project-name}/` (§12 `completed`) — and treats the
+baseline as established when it finds them, skipping the auto-recommend. `baseline_valid: true` is written
+here only after the P6.5 dual-system gate passes (§9 step 4).
 
 **Standalone git:** a standalone run's promotion writes are committed by an explicit standalone commit step
 (manager/user-owned); startup itself never pushes or merges. Inside a `/gobbi` session, the enclosing
@@ -397,8 +497,11 @@ worktree-local) that may hold sensitive detail (business, security, regulatory, 
 
 - Keep the raw discussion and the ledger under the gitignored session tree.
 - Never promote the raw log, the ledger, the promotion manifest, or any secret/credential.
-- Synthesis STRIPS secrets/credentials: a value the user marks sensitive stays in the session tree only —
-  never in a promoted typed record, a feature README, the root README, or the startup summary.
+- Synthesis STRIPS secrets/credentials, driven by the ledger `Sensitive?` field (§2): any answer flagged
+  `Sensitive? y` stays record-level only — never in a promoted typed record, a feature README, the root
+  README, or the startup summary. As a backstop that does not rely on user marking, the P6 pre-write
+  validation runs a lightweight heuristic secret-scan (§9 step 1) over every staged candidate, the index
+  candidates, and the summary; a hit HALTS promotion.
 - Keep only non-sensitive promoted paths + open-question summaries in `startup-summary.md`.
 - Retention = session lifetime. On abandon or standalone-end, the session tree is left in place (gitignored,
   never committed) or removed by the runtime's session cleanup — it is never shipped as project reference.
