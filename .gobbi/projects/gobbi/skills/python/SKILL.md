@@ -12,10 +12,9 @@ Python 3.12 — the naming and formatting conventions, the type-system idioms, t
 control-flow and resource patterns, the concurrency and packaging idioms, and the tooling. It specializes
 those properties for Python; it does not repeat them.
 
-An agent MUST load `coding/SKILL.md` and `principles/SKILL.md` alongside this skill and keep them in context —
-it sits on top of them and assumes them. Its Procedure operationalizes their disciplines for Python —
-study-first, design-with-the-user, bottom-up construction, and blast-radius awareness — citing each at the
-step it governs rather than restating it; loaded standalone, its deferrals have nothing beneath them.
+This skill assumes the `coding` and gobbi behavioral layers are already in context; its Procedure
+operationalizes them for Python — study-first, design-with-the-user, bottom-up construction, and blast-radius
+awareness — rather than restating them.
 
 Load it before writing or reviewing any Python code. The Principles, Rules, and Procedure below carry an
 ordinary typed module from first read to review without opening anything else; a step sends you to a child
@@ -303,10 +302,10 @@ default; the escape from it is a decision backed by a measurement or a real gap.
 
 ## Procedure
 
-This procedure **operationalizes** the meta-disciplines for Python; it does not restate them. `coding/SKILL.md`
-and `principles/SKILL.md` are loaded alongside this skill (Intro), and every step **cites** the meta-principle
-it enforces and adds only the Python-specific act — "`coding` P7" names a `coding/SKILL.md` principle, "gobbi
-P2" a `principles/SKILL.md` principle, whose body you read in its own skill.
+**MUST load `coding/SKILL.md` and `principles/SKILL.md` before running this procedure** and keep them in
+context: it **operationalizes** their disciplines for Python and does not restate them. Every step **cites**
+the meta-principle it enforces and adds only the Python-specific act — "`coding` P7" names a `coding/SKILL.md`
+principle, "gobbi P2" a `principles/SKILL.md` principle, whose body you read in its own skill.
 
 Author or review Python in eight steps: **P1–P4 lock the task and design its surface with the user**; **P5–P8
 build, verify, and review it.** A parent-level Rule marked a *floor* pushes its depth to a child doc, and
@@ -317,27 +316,25 @@ read-only at P7–P8, editing nothing unless the user authorizes a fix.
 
 ### P1 — Study and lock the task
 
-Make the task concrete and study everything the design must fit, before designing anything (`coding` P1 /
-gobbi P1, P4). Lock **What / Why / How**, in-scope and out-of-scope, and the success criteria with the user,
-or cite an already-locked Scope Contract when one exists (gobbi P4, P5). Read the **Python contract**:
-`requires-python` and the CI version matrix; whether the target is a library, an application, a CLI, a
-service, a script, or a notebook; the existing public API and its conventions; and the tool configuration —
-the formatter line length, the linter rule set, the type-checker strictness — so the change matches the
-settings already in force. A new project with no stated floor defaults to Python 3.12+; the artifact type
-decides the entry shape (importable module + `main`, console entry point, service loop) and the packaging
-obligations that surface later. Read the **surrounding code** — its patterns, naming, error-handling, and
-module layout — so new code looks like it belongs, and find the proven **prior art** (in-repo first, then
-adjacent libraries, then the community). Read the project rules and applicable mistakes. **Declare author vs
-review mode.**
-For an **edit**, map the affected set — target plus callers, tests, docs, mirrors or generated code, and
-config — with CRUD + 5W1H over all of it (gobbi P9 / `coding` P15). For a **bug**, reproduce the failure and
-trace it to its root cause before designing a repair (gobbi P8 / `coding` P9).
+Study everything the design must fit before designing (`coding` P1 / gobbi P1). Lock What/Why/How + in/out
+scope + success with the user, or cite a Scope Contract (gobbi P4/P5). Start from the relevant docs — specs,
+design notes, README, public-API and operator docs (gobbi P6) — the project rules, and applicable mistakes.
+Read the **Python contract**: `requires-python` and the CI version matrix; whether the target is a library,
+an application, a CLI, a service, a script, or a notebook; the existing public API and its conventions; and
+the tool configuration — the formatter line length, the linter rule set, the type-checker strictness — so the
+change matches the settings already in force. A new project with no stated floor defaults to Python 3.12+; the
+artifact type decides the entry shape (importable module + `main`, console entry point, service loop) and the
+packaging obligations that surface later. Read the **surrounding code** — its patterns, naming, error-handling,
+and module layout — so new code looks like it belongs, and find the proven **prior art** (in-repo first, then
+adjacent libraries, then the community). **Declare author vs review mode.** For an **edit**, map the affected
+set — callers, tests, docs, mirrors/generated, config — with CRUD + 5W1H (gobbi P9 / `coding` P15). For a
+**bug**, reproduce, then trace to the root before repair (`coding` P9 / gobbi P8).
 
 **P1 is complete when** the task is stated as What/Why/How + in/out scope + success criteria (or a cited
 Scope Contract); the Python contract is known (supported runtimes, artifact type, public surface,
-type-checking strictness, entry boundary, compatibility obligations); the surrounding patterns, prior art,
-rules, and mistakes are read; the mode is declared; and — for an edit — the affected set is mapped, or — for
-a bug — the failure reproduces and its root is named.
+type-checking strictness, entry boundary, compatibility obligations); the relevant docs, surrounding patterns,
+prior art, rules, and mistakes are read; the mode is declared; and — for an edit — the affected set is mapped,
+or — for a bug — the failure reproduces and its root is named.
 
 ### P2 — Load the child docs for the forks in play
 
@@ -345,7 +342,6 @@ Read the specialized guidance **before** the decision it governs, not after (`co
 ordinary typed module fires none of these — the parent floor carries the common path. Detect the active forks
 in the task and read the relevant child first; re-check when the design changes; never make a load-bearing
 P3/P4 decision before its active child is read.
-
 
 | Read | When |
 |---|---|
@@ -368,10 +364,9 @@ Design the surface as ordered design acts, not one flat construct-pick (`coding`
 public boundary, the absolute acyclic import direction, the entry point, and the inert import-time boundary
 are the frame these acts fill. Work the sub-steps in order; `design.md` deepens each.
 
-**P3a — Identity and responsibility** (`coding` P4/P3). State each unit's one responsibility in a single
-sentence; if the sentence needs an "and", split the unit. Run the deep-unit and shallow-wrapper check — each
-unit must hide substantial work behind a simple interface, and a pass-through that forwards a call while
-hiding nothing is not a unit. Pick the container with the *Function vs class* table.
+**P3a — Identity and responsibility** (`coding` P4/P3). Apply `coding` P3/P4 to each proposed Python unit —
+one responsibility, a deep unit, no shallow wrapper — then choose its container with the *Function vs class*
+table.
 
 | Choose | When | Evidence that changes the choice |
 |---|---|---|
@@ -399,13 +394,10 @@ model. Use the two tables.
 | threads | blocking or GIL-releasing calls (a C extension, blocking I/O in a synchronous library) | thread-safe collaborators; explicit shutdown and timeouts |
 | processes | CPU-bound work that must run in parallel past the GIL | a serializable boundary; startup and copy cost justified by measurement |
 
-**P3c — Contracts and verification seams** (`coding` P2/P6). Sketch every public and cross-unit interface
-**before any body**: its name, inputs, outputs, ownership and mutability of the result, errors, side effects,
-sync-vs-async behavior, and invariants. Design the **test seam** into the same sketch — separate the pure
-decision core from I/O, make collaborators injectable, keep time, randomness, and concurrency controllable,
-and name the observable outcome a focused check will assert. Consider a **second shape** before committing to
-the first that compiles, and carry the runner-up into the P4 gate as the alternative. A completed sketch lets
-a caller infer inputs, ownership, blocking-vs-async behavior, and failure categories without reading a body.
+**P3c — Contracts and verification seams** (`coding` P2/P6). Sketch each interface before its body, and keep a
+second shape (`coding` P2/P6). Fix these Python contract fields for every public and cross-unit interface:
+name, inputs, outputs, result ownership and mutability, the exception shape, side effects, sync-vs-async
+behavior, invariants, and the focused test seam. Carry the runner-up shape into the P4 gate.
 
 **P3d — Data and failure model** (`coding` P2/P16). With these tables, choose the data model and its identity,
 mutability, equality, and ownership; EAFP-vs-validation per operation; the exception hierarchy and its
@@ -438,10 +430,9 @@ translation boundary; resource cleanup, cancellation, the logging boundary, and 
 | Time instant | an aware `datetime` | aware UTC or a domain-required zone | serialize the zone or offset explicitly |
 | Duration / deadline | a numeric duration or `timedelta` at the API | monotonic-clock arithmetic | never subtract naive wall-clock instants |
 
-**P3e — Names for intent** (`coding` P5 / gobbi P3). Choose a deliberate, intention-revealing name for every
-module, class, function, method, parameter, and meaningful variable or state field — drawn from the
-references and the surrounding vocabulary. Naming is a design act done here, not a casing chore done while
-typing; `convention.md` owns only the spelling and casing of the name you choose.
+**P3e — Names for intent** (`coding` P5 / gobbi P3). Name each module, class, function, method, parameter, and
+meaningful state field for intent (`coding` P5), from the surrounding vocabulary — a design act done here, not
+a casing chore; `convention.md` owns only the spelling and casing.
 
 **P3 is complete when** every unit has a one-sentence responsibility and a hidden-complexity boundary;
 relationships, ownership, and import direction are fixed; every public and cross-unit contract is sketched
@@ -451,14 +442,12 @@ any body exists. `design.md` deepens these choices.
 
 ### P4 — Confirm the design and names with the user
 
-Confirm the designed surface with the user before building it (gobbi P3/P4). This is a lightweight checkpoint
-that **defers to** gobbi P3/P4 — not a rebuilt negotiation engine. Present a reference-backed **design
-packet**: the module tree, each unit's identity and responsibility, the relationships, the sketched
-interfaces, the classes/functions/methods, the parameters, the names, the data, error, effect, and ownership
-model, and the verification seams — shown as a concrete skeleton of signatures and names, not prose. Offer 2–3
-reference-backed options with trade-offs and a recommendation wherever a genuine fork exists (the P3c
-runner-up is one), and record explicit approval — or cite an already-explicit user decision rather than
-re-asking a settled one. In the gobbi workflow this rides the DISCUSSION sub-phase. **Author mode only:** in
+Run the gobbi P3/P4 design-with-user gate on the Python **design packet**: record explicit approval, or cite
+an already-explicit prior decision (gobbi P3/P4) — this is that gate applied to Python, not a rebuilt
+negotiation engine. The packet shows the concrete Python surface, not prose: the module tree, each unit's
+identity and responsibility, the relationships, the sketched interfaces, the classes/functions/methods, the
+parameters, the names, the data/error/effect/ownership model, and the verification seams (the P3c runner-up is
+the alternative to offer). In the gobbi workflow this rides the DISCUSSION sub-phase. **Author mode only:** in
 review mode this step is a read-only reconstruction of the existing design, graded rather than negotiated.
 
 **P4 is complete when** the user has approved the surface — units, relationships, interfaces, names, and the
@@ -479,18 +468,14 @@ exposes a structural defect, revise the design back through P2–P4 rather than 
 
 ### P6 — Grow in minimal verified steps
 
-Grow the bodies bottom-up, one verified slice at a time (`coding` P7). Start from the smallest reversible
-slice — the unit whose contract the rest depends on — implement it, and **verify that slice** with its
-focused check before starting the next; firm up each signature and stub as you learn what it must carry.
-Apply the § Rules conventions as you write (deepened by `convention.md`): naming and exports, grouped
-absolute imports and an inert import time, 88-column formatting, Google docstrings, typed signatures with
-keyword-only options and sentinel defaults, direct value iteration, narrow EAFP, context-managed resources,
-module-logger diagnostics, and config or CLI input parsed at the boundary. Follow the convention the
-surrounding code already sets where it does not contradict a Rule. Update every affected doc, caller, and
-test in the **same slice** that changes it, never "code now, docs later" (gobbi P6 / `coding` P15). Add no
-error handling, abstraction, configuration, or option beyond what the contract needs, and finish every
-in-scope path with no placeholder behavior; note an adjacent improvement as a follow-up rather than building
-it now (`coding` P8 / gobbi P5, P10).
+Grow the bodies bottom-up, one verified slice at a time (`coding` P7): implement the smallest reversible slice
+— the unit whose contract the rest depends on — **verify that slice** before the next, and firm up each
+signature as you learn. Apply the § Rules floor as you write, loading `convention.md` when its P2 trigger
+fires, and follow the surrounding code where it does not contradict a Rule. Update every affected doc, caller,
+and test in the **same slice** (gobbi P6 / `coding` P15). Add nothing beyond the contract and finish every
+in-scope path with no placeholder (`coding` P8 / gobbi P5, P10); extract a shared abstraction only on real
+recurrence and a shared reason to change, keeping merely-similar code separate (`coding` P12); note an
+adjacent improvement as a follow-up.
 
 **P6 is complete when** every in-scope path is implemented with no placeholder behavior, each slice had fresh
 focused evidence before the next began, and every affected doc, caller, and test changed in lockstep.
