@@ -41,7 +41,7 @@ scaffold-session-dir.sh <session-root> <step-dir> [--pass]
 - `<step-dir>` — one of `1-ideation` `2-preparation` `3-planning` `4-execution` `5-wrap-up`, or a single execution task dir `4-execution/task-{NN}-{slug}` (`{NN}` is `[0-9]{2}`, `{slug}` matches `[a-z0-9-]{1,40}`).
 - `--pass` — passed at RECORD on a PASS iteration to also create the `outputs/` dir.
 
-The script creates the 4-slot interior (`working/`, `working/research/`, `working/proposals/codex/`, `evaluation/`, `staging/` with the loop's typed staging subdirs) idempotently, and is fail-closed: a non-absolute `<session-root>`, a `<step-dir>` with `..` / a leading `/` / stray slashes, or any `<step-dir>` outside the fixed set (including `interview`) exits non-zero and creates nothing.
+The script creates the 4-slot interior (`working/`, `working/research/`, `working/proposals/codex/`, `evaluation/`, `staging/` with the loop's typed staging subdirs) idempotently, and is fail-closed: a non-absolute `<session-root>`, a `<step-dir>` with `..` / a leading `/` / stray slashes, or any `<step-dir>` outside the fixed set (including `startup`) exits non-zero and creates nothing.
 
 **The session-root `transcripts/` dir is the manager's, not the script's.** The manager creates the single session-root `transcripts/` in Configuration alongside the root JSON files; the scaffold script **never** creates a `transcripts/` dir (there is no per-loop or per-task `transcripts/`).
 

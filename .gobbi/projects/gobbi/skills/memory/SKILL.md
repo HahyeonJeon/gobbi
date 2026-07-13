@@ -57,7 +57,7 @@ This doc does **not** contain the routing table — [`wrap-up/SKILL.md`](../wrap
 
 ## How — sole writer and the access boundary
 
-The **How**, part 2: who may write memory, and when. The invariant: a working loop's RECORD writes **only** to session staging; **Wrap-up is the sole writer** to durable memory. Two documented exceptions exist — the Interview bootstrap (empty-memory first run, [`interview/SKILL.md`](../interview/SKILL.md)) and the Preparation `generate-now` skill promotion before Planning ([`preparation/SKILL.md`](../preparation/SKILL.md)).
+The **How**, part 2: who may write memory, and when. The invariant: a working loop's RECORD writes **only** to session staging; **Wrap-up is the sole writer** to durable memory. Two documented pre-Wrap-up exceptions exist — `startup`-close promotion (the startup skill writes its user-approved baseline to memory at startup-close, before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted, [`startup/SKILL.md`](../startup/SKILL.md)) and the Preparation `generate-now` skill promotion before Planning ([`preparation/SKILL.md`](../preparation/SKILL.md)).
 
 | Who | Writes to |
 |---|---|

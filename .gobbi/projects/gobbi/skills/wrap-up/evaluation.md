@@ -33,7 +33,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 | Tool | Use for |
 |---|---|
 | `git log` of the session's branch | Compare against "what was shipped" claims |
-| `ls -la` on `sessions/{date}-{session-id}/{N}-{loop}/staging/` for every loop (plus `interview/staging/` and, in Chat mode, each `chat/tasks/*/{N}-{loop}/staging/`) | Confirm staging artifacts were either promoted or backlogged |
+| `ls -la` on `sessions/{date}-{session-id}/{N}-{loop}/staging/` for every loop (in Chat mode, also each `chat/tasks/*/{N}-{loop}/staging/`; the `startup/` surface is EXCLUDED — startup self-promotes) | Confirm staging artifacts were either promoted or backlogged |
 | `git diff` for new files under `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/` | Verify promotion actually happened across all project-tier destinations |
 | `find .gobbi/projects/{project-name}/` (pre-Wrap-up vs post-Wrap-up) | Identify exactly what was promoted at each destination |
 

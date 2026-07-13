@@ -59,9 +59,11 @@ sessions/{date}-{session-id}/                  ← session root
     └── outputs/
     # No transcripts/ here — every agent's transcript lives in session-root transcripts/.
 
-# interview/ — BOOTSTRAP EXCEPTION:
+# startup/ — OWN SESSION SHAPE (not a loop):
 # NOT a workflow loop, NOT swept to the flat-4-slot + number-prefix shape.
-# Keeps its own bootstrap shape. Explicitly out of scope for this spec.
+# Owns its own unnumbered startup/ surface (working/ + staging/ + outputs/),
+# defined by startup/recording.md § 3. Out of scope for this loop-dir spec.
+# Its staging/ is EXCLUDED from Wrap-up promotion (startup self-promotes).
 ```
 
 The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`,
@@ -209,7 +211,8 @@ values.
   loop interior to [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh),
   the single dir-materializer, so the per-loop dir + staging vocabulary stays defined
   in exactly one place. Execution task dirs (`task-{NN}-{slug}`) stay lazy (names
-  unknown at init); `interview/` is out of scope (bootstrap exception).
+  unknown at init); `startup/` is out of scope (it owns its own session shape, not
+  a loop — see `startup/recording.md` § 3).
 - **Idempotent + create-if-absent**: dirs use `mkdir -p`; metadata + README stubs are
   never overwritten, so re-running on a resumed / cleared / compacted session preserves
   the manager's stamped values. Args: `<session-root>` (absolute) and `<mode>`
@@ -236,14 +239,21 @@ values.
   `transcripts/`, `working/`, `evaluation/`, or `outputs/` as promotable.
   Promoting a transcript (or any non-`staging/` dir) is a constraint violation.
 - **F-P2**: the exclusion targets `transcripts/` (and `working/`, `evaluation/`,
-  `outputs/`) — it does **not** exclude all non-loop dirs. `interview/staging/`
-  remains a **valid** promotion source: in mature-project reruns the interview
-  writes to its `staging/`, not directly to memory, and Wrap-up must
-  enumerate it. Do NOT over-narrow the rule to "workflow-loop `staging/` only" in a
-  way that drops `interview/staging/`.
+  `outputs/`) — it does **not** exclude all non-loop dirs. The Chat-mode per-slice
+  `staging/` (below) remains a **valid** non-loop promotion source. Do NOT
+  over-narrow the rule to "workflow-loop `staging/` only" in a way that drops it.
+- **`startup/` is EXCLUDED — a named exclusion despite carrying a `staging/`.**
+  `startup/staging/` is **NOT** a Wrap-up promotion source. `startup` promotes its
+  own staging at startup-close (before any productive loop), so by the time a
+  same-session Wrap-up runs, `startup/staging/` is already durable memory.
+  Enumerating it would re-promote (a double-promotion), so Wrap-up EXCLUDES the
+  entire `startup/` tree — even though it holds a `staging/`. The startup-owned
+  promotion + completion marker live in [`startup/recording.md` § 9](../startup/recording.md);
+  the parallel [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
+  states the same exclusion.
 - **Chat-mode parity**: in a Chat-mode session the per-slice
   `chat/tasks/*/{N}-{loop}/staging/` (and `chat/tasks/*/4-execution/task-*/staging/`)
-  is likewise a **valid** non-loop promotion source alongside `interview/staging/`, so
+  is a **valid** non-loop promotion source, so
   Chat typed findings reach memory (see [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
   and [`orchestration/chat-mode.md` §4](../orchestration/chat-mode.md)); absent in non-Chat sessions.
   The `chat/tasks` subtree is **manager-materialized** at slice entry — it lies OUTSIDE the fixed
@@ -255,14 +265,18 @@ values.
 
 ---
 
-## interview/ bootstrap exception
+## startup/ session shape
 
-`interview/` is **not** a workflow loop. It is the bootstrap surface used at
-session start. It keeps its own bootstrap shape — it is **not** swept to the
+`startup/` is **not** a workflow loop. It is the bootstrap surface used at
+session start. It owns its own unnumbered session shape — a `startup/` dir with a
+`working/` + `staging/` + `outputs/` interior, defined by
+[`startup/recording.md` § 3](../startup/recording.md); it is **not** swept to the
 flat-4-slot model and does **not** carry a `{N}-` number prefix. The scaffold
-script rejects `interview/` as a `<step-dir>` (it is not in the fixed loop set).
-`interview/staging/` is still a valid Wrap-up promotion source (see the rule
-above), but the interior shape of `interview/` is out of scope for this spec.
+script rejects `startup/` as a `<step-dir>` (it is not in the fixed loop set), so
+the interior shape of `startup/` is out of scope for this loop-dir spec. Unlike a
+workflow loop, `startup/staging/` is **NOT** a Wrap-up promotion source: startup
+self-promotes its approved set at startup-close, so Wrap-up EXCLUDES the whole
+`startup/` tree (see the rule above).
 
 ---
 
@@ -278,7 +292,7 @@ it exits non-zero and creates **nothing**.
   matches `[a-z0-9-]{1,40}`.
 - A `<step-dir>` containing `..`, a leading `/`, or stray/duplicate slashes is
   rejected.
-- Any `<step-dir>` outside the fixed set (including `interview`) is rejected.
+- Any `<step-dir>` outside the fixed set (including `startup`) is rejected.
 
 The same allowed-set is the manifest the script materializes — a single source for
 both validation and creation.

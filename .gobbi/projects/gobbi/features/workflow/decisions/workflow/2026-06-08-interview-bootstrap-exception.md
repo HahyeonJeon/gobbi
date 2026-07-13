@@ -4,14 +4,14 @@ description: interview/ is a bootstrap exception — not a workflow loop — and
 type: decisions
 scope: feature
 feature: workflow
-status: accepted
+status: superseded
 created: 2026-06-08
 session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
 tags: []
 keywords: [session-memory, interview, bootstrap-exception]
 author: claude
 supersedes: null
-superseded_by: null
+superseded_by: startup-session-shape-and-promotion
 ---
 
 # interview/ is a bootstrap exception; its interior is not swept (R2)
