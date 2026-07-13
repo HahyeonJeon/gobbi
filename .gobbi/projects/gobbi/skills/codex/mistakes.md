@@ -2,7 +2,7 @@
 type: mistakes
 skill: codex
 description: "Recorded traps for codex — load before doing codex work"
-updated: 2026-07-06
+updated: 2026-07-13
 ---
 
 # Codex — Mistakes
@@ -88,6 +88,7 @@ updated: 2026-07-06
 
 ### Related
 - [[codex-side-assistant-faked-eval-on-codex-timeout]] — the no-output state to report BLOCKED on; never self-author the eval when a codex timeout produced nothing
+- [[codex-evaluator-underproduces-on-heavy-multiperspective-workload]] — the quieter sibling: a heavy multi-perspective-plus-compile workload exits 0 with partial output instead of SIGTERM-killing with zero output
 
 ## Codex-Side Wrapper Must Foreground-Block And Validate Output, Never Background-And-Return
 
@@ -115,3 +116,16 @@ updated: 2026-07-06
 ### Related
 - [[codex-background-exec-exit-code-unreliable]] — adjacent native Codex status ambiguity.
 - [[edit-tool-silent-write-failure-on-worktree]] — verify disk state rather than trusting a reported write.
+
+## Codex Evaluator Underproduces On Heavy Multiperspective Workload
+
+`priority: high` · `domain: codex` · `added: 2026-07-13` · `status: active` · `tags: [codex, evaluation, verification]`
+
+**What happened** — A Codex evaluator launched via `codex exec` was scoped to 7 perspectives + Overall + a filled checklist, plus compiling 19 code blocks and tracing idioms across the reviewed docs. It produced only 3 of the 9 required output files (`project.md`, `structure.md`, `performance.md`) and no `overall.md` / VERDICT line. The background process exited 0, so a naive check would have treated the run as complete.
+**Why it happens** — The combined workload — 7 doc-eval perspectives, a 19-block compile pass, and idiom tracing — overran what one `codex exec` turn finishes within its budget. Codex ended its turn after 3 perspectives without erroring; exit 0 is not a completion signal. This extends the known "Codex evals sometimes skip `overall.md`" gotcha to "may skip most perspectives on a heavy multi-perspective-plus-compile workload."
+**How to detect** — After any Codex evaluator run, count the output files (expect 9: 7 perspectives + `overall.md` + the filled `checklist.md`) and confirm `overall.md` carries a `VERDICT:` line BEFORE trusting or reconciling the run. Do not infer completeness from the process exit code.
+**Correct approach** — Gate the Codex evaluator on all 9 files + a `VERDICT:` line, and re-run or resume on any shortfall; OR split the heavy evaluation into smaller `codex exec` units (per-doc, or a separate compile-only pass from the perspective pass) so each turn's budget completes. This session's mitigation: the Claude evaluator independently ran the interpreter and covered the code-correctness surface, and Codex still delivered its divergent deepen-not-restate finding, so union coverage held despite the shortfall.
+
+### Related
+- [[codex-exec-large-diff-eval-times-out]] — the sibling large-workload trap: a broad review over a large diff SIGTERM-kills with zero output; this trap is the quieter sibling — the run exits 0 with partial output instead of timing out
+- [[codex-side-wrapper-must-foreground-block-and-validate-output-never-background-and-return]] — the files-as-truth discipline this trap depends on: never trust the process return/exit code as a completion signal
