@@ -39,15 +39,17 @@ Keep four layers separate. Only the last is durable project reference.
 >   `staging/` + `outputs/`). Session-scoped, gitignored, worktree-local, non-authoritative, and
 >   **never durable** — no record-level file is ever promoted wholesale.
 > - **MEMORY-LEVEL** — the durable `.gobbi/projects/{project-name}/...` tree (outside `sessions/`,
->   `skills/`, and `agents/`). Read-only through P5, written **once** at the P6 startup-close
->   promotion gate and **only** to the approved-manifest destinations, then read-only again in P7.
+>   `skills/`, and `agents/`). Read-only through P5, then written to the approved-manifest destinations
+>   across the startup-close gate — the typed records at P6, and the living-index completion predicate
+>   (root + feature README) at P7 **after the P6.5 gate PASSES** — and read-only otherwise.
 >
-> Nothing crosses record-level → memory-level except P6 promotion of synthesized typed records +
-> living-index edits — and promotion COPIES an approved staged source to its memory destination; it
+> Nothing crosses record-level → memory-level except the startup-close promotion of synthesized typed
+> records (P6) + the living-index completion-predicate edits (P7, after P6.5 PASS) — and promotion COPIES
+> an approved staged source to its memory destination; it
 > does not promote the source file itself. Repository code, skill sources, memory templates, and
 > guards are read-only **source** inputs on neither write tier — startup never writes them. A staged
-> draft may carry memory-shaped frontmatter, yet it stays record-level until P6 copies it to an
-> approved memory destination.
+> draft may carry memory-shaped frontmatter, yet it stays record-level until the startup-close gate copies
+> it to an approved memory destination (typed records at P6, living indexes at P7).
 
 ```
 raw conversation audit  →  structured answer ledger  →  synthesized staged docs  →  user-approved promoted reference
@@ -122,7 +124,8 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 │   ├── discussion-log.md         # raw audit
 │   ├── answer-ledger.md          # append-only ledger (schema §2) — carries the resumable checkpoint markers
 │   ├── research/                 # prior-art study per design-bearing branch: {slug}.md, Source/Insight/Why (M3)
-│   ├── promotion-manifest.md     # per-file CRUD + destination + preimage + supersede/archive plan (§7)
+│   ├── promotion-manifest.md     # per-file CRUD + per-touched-path preimage + supersede/archive plan (§7)
+│   ├── preimages/                # restorable original bytes of each pre-existing edited/moved path (§7, §9 step 5)
 │   └── evaluation/iter{n}/{claude,codex}/   # P6.5 dual-system gate evidence: 7 perspective + overall + checklist (§9 step 4) — record-level, never promoted
 ├── staging/
 │   ├── decisions/                # decision records AND mistake-candidates (frontmatter `mistake-candidate: true`)
@@ -131,10 +134,10 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 │   ├── learnings/                # project-scoped transferable techniques
 │   ├── rules/                    # binding-rule candidates (explicit user confirmation required to promote)
 │   ├── indexes/
-│   │   └── project-README.md     # root living-index candidate (frontmatter-less) — reviewed at P5, promoted LAST (§8)
+│   │   └── project-README.md     # root living-index candidate (frontmatter-less) — reviewed at P5, promoted at P7 after the P6.5 gate PASSES (§8)
 │   ├── backlogs/{feature,project}/
 │   └── features/{feature-name}/
-│       ├── README.md             # feature living-index candidate — reviewed at P5, promoted LAST
+│       ├── README.md             # feature living-index candidate — reviewed at P5, promoted at P7 after the P6.5 gate PASSES
 │       └── {type}/               # feature-scoped drafts, one subtree per ratified feature (multi-feature)
 └── outputs/
     └── startup-summary.md        # promoted paths + open questions + completion marker + rerun triggers — RECORD-LEVEL, live-session-only (§13)
@@ -212,8 +215,8 @@ the record-level source file itself is never promoted, moved, or mutated.
 | `staging/features/{f}/checklists/{slug}.md` | `features/{f}/checklists/{area}/{slug}.md` | Feature checklist. |
 | `staging/features/{f}/rules/{slug}.md` | `features/{f}/rules/{area}/{slug}.md` | Feature rule; explicit user confirmation. |
 | `staging/features/{f}/learnings/{slug}.md` | `features/{f}/learnings/{area}/{slug}.md` | Feature-scoped transferable technique. |
-| `staging/features/{f}/README.md` | `features/{f}/README.md` | Feature living-index candidate → the durable feature index. Reviewed/diffed at P5, promoted LAST. The feature is a durable value-feature, not a task, sprint, epic, subsystem, mechanism, or speculative idea. |
-| `staging/indexes/project-README.md` | `README.md` | Root living-index candidate → the frontmatter-less root index (§8). Reviewed/diffed at P5, created/updated LAST. |
+| `staging/features/{f}/README.md` | `features/{f}/README.md` | Feature living-index candidate → the durable feature index. Reviewed/diffed at P5, promoted at P7 after the P6.5 gate PASSES (part of the completion predicate). The feature is a durable value-feature, not a task, sprint, epic, subsystem, mechanism, or speculative idea. |
+| `staging/indexes/project-README.md` | `README.md` | Root living-index candidate → the frontmatter-less root index (§8). Reviewed/diffed at P5, created/updated at P7 after the P6.5 gate PASSES (the durable completion predicate). |
 
 **Multi-feature routing.** Each feature-scoped staging file carries a per-file `feature: {f}` field.
 Startup uses that per-file field for routing — NOT a session-global `session.json.feature`. On promotion,
@@ -266,12 +269,12 @@ After every required Level-2 branch closes:
    | Slug | Stable atomic-concept slug |
    | Source topics | The ledger branches supporting the output |
    | Destination | The exact durable path |
-   | Preimage | The destination's state captured NOW at P5: `absent`, or `present` + a content hash. The P6 TOCTOU recheck (§9 steps 1–2) compares against it immediately before each mutation |
-   | Supersession plan | For `supersede`: old path, new record's `supersedes`, old record's status-flip + `superseded_by`, and the exact archive-move path |
+   | Preimage (per touched path) | The state, captured NOW at P5, of EVERY path this row mutates — not just a singular destination. A `create` touches one path (the new destination). A `supersede` touches THREE: the new destination `[create]`, the old file `[in-place status-flip edit]`, and the old file's archive path `[git mv target]`. A `living-index update` touches one path (the index file `[in-place edit]`). For each touched path record: (i) a change-detection value — `absent`, or `present` + a content hash — for the per-path TOCTOU recheck (§9 step 2); AND (ii) for any PRE-EXISTING path the row edits-in-place or moves, a RESTORABLE representation of its original bytes (a `git hash-object -w` blob ref, or a `working/preimages/{slug}` byte copy) — a bare hash cannot reconstruct an uncommitted edit (§9 step 5). A `create` needs no restorable bytes (its preimage is `absent`; rollback is `rm`) |
+   | Supersession plan | For `supersede`: old path, new record's `supersedes`, old record's status-flip + `superseded_by`, and the exact archive-move path. Each of the three touched paths carries its own preimage row above |
 
    Index candidates (`staging/indexes/project-README.md`, `staging/features/{f}/README.md`) each get a
    manifest row too — Operation `living-index update`, so P5 whole-set validation can inspect and diff
-   them before P6 writes them LAST.
+   them before P7 writes them after the P6.5 gate PASSES (the completion predicate, §9 step 6).
 
 2. **Cross-topic contradiction pass** — check at least: vision vs scope; users vs critical journeys;
    non-goals vs roadmap; quality vs stack; data promises vs architecture; risk mitigations vs
@@ -289,7 +292,8 @@ After every required Level-2 branch closes:
 The root `README.md` is a **frontmatter-less living index, NOT a typed memory doc**: no memory frontmatter,
 and no project-README memory template exists — do not fabricate one. It is synthesized at a record-level
 candidate first — `staging/indexes/project-README.md` (§3) — so P5 whole-set validation can inspect and
-diff its exact text, links, and secret-scan before P6 promotes it LAST. Keep these sections:
+diff its exact text, links, and secret-scan before P7 promotes it after the P6.5 gate PASSES (the durable
+completion predicate). Keep these sections:
 
 1. Project statement.
 2. Problem & first target users.
@@ -325,42 +329,66 @@ Before ANY durable write, over the complete manifest + staging set:
   every manifest entry traces to ledger evidence.
 - Validate every staged file: well-formed frontmatter + `type`/`area` resolve against the memory
   vocabulary + zero-context prose (dry-run `validate-frontmatter.sh` over the staged files).
+- **Create the startup-summary candidate** (`outputs/startup-summary.md`) as a draft — open questions,
+  rerun triggers, provisional promoted-paths, and NO `baseline_valid` (or `baseline_valid: false`) — so the
+  pre-write secret-scan below and the P6.5 gate have a target. Its field-level lifecycle is §13.
 - Resolve every destination path deterministically (routing + area + per-file `feature:`), and detect
   collisions: a pre-existing target is either a create-collision (HALT unless the user re-slugs or approves
   a supersession) or a supersession (pre-compute the new file's `supersedes:`, the old file's status-flip +
   `superseded_by`, and its `git mv` archive path). Pre-compute ALL supersession/archive moves into the
-  manifest.
-- **Record each destination's preimage into the manifest (§7)** — `absent`, or `present` + a content
-  hash — captured NOW. This is the baseline the P6 TOCTOU recheck (step 2) compares against so a concurrent
-  or user edit between P5 and P6 cannot be blind-overwritten.
+  manifest. Each of a supersession's touched paths — new destination, old file, archive path — is collision-
+  and preimage-checked in its own right (the archive path must be `absent`; a pre-existing archive target is
+  a collision).
+- **Record a per-touched-path preimage into the manifest (§7)** — for EVERY path each row mutates (a
+  supersession touches the new destination, the old file, AND the archive path; a `living-index update`
+  touches the index file), capture NOW both a change-detection value (`absent`, or `present` + a content
+  hash) AND, for any pre-existing path the row edits-in-place or moves, a RESTORABLE byte representation (a
+  `git hash-object -w` blob ref or a `working/preimages/{slug}` copy). The change-detection value feeds the
+  per-path TOCTOU recheck (step 2) so a concurrent or user edit between P5 and P6/P7 cannot be
+  blind-overwritten; the restorable representation is what recovery restores from (step 5). A bare content
+  hash is NOT restorable — it cannot reconstruct an uncommitted edit.
 - Confirm all binding rules have explicit user approval; all proposed features are user-ratified durable
-  value-features. **Run a lightweight heuristic secret-scan** over EVERY staged typed draft + the index
-  candidates (`staging/indexes/project-README.md`, `staging/features/{f}/README.md`) + the startup summary,
-  driven by the ledger `Sensitive?` field (§2) — not only user-marked values. No secret, credential, or
+  value-features. **Run the pre-write secret-scan** over EVERY staged typed draft + the index candidates
+  (`staging/indexes/project-README.md`, `staging/features/{f}/README.md`) + the startup-summary candidate,
+  driven by the ledger `Sensitive?` field (§2) — not only user-marked values. The scan is **automated +
+  manual**: run an automated pattern-based scanner over those exact files when one is available, AND run a
+  mandatory manual review of the same surface. **Fail-closed on tool absence** — if no automated scanner is
+  available, the manual review is MANDATORY, not skipped. Record the scan result (files scanned, tool used
+  or `manual-only`, hit/clean) as `working/` evidence. This P5 pass covers the PRE-write surface; the
+  post-write surface — the actual promoted delta + the P6.5 evaluation evidence, which do not exist yet — is
+  re-scanned at P6.5-time by the dual-system Risk perspective (checklist `STARTUP-RISK-SCENARIO-01`),
+  together satisfying the checklist's full-surface automated+manual coverage. No secret, credential, or
   user-marked sensitive value may be present in any draft, index, or the summary.
 - If ANY file fails validation, has an unresolvable collision, or trips the secret-scan → **STOP before
   any durable write**; surface to the user (Always-Ask). Nothing durable written = safe (§1).
 
-### Step 2 — Write in a safe order
+### Step 2 — Write in a safe order (P6 — typed records only)
 
-Apply only approved manifest entries, in an order that keeps a mid-write halt maximally recoverable.
-**TOCTOU recheck — immediately before EACH mutation**, re-read the destination and compare it against the
-manifest preimage recorded at step 1 (§7). If the live state no longer matches the preimage (a concurrent
-or user edit landed after P5) → **HALT to the step-5 Always-Ask recovery; NEVER overwrite**. This replaces
-blind "idempotent overwrite" — a matching preimage is the precondition for every write.
-- (a) Create/update new typed docs first (write by deterministic path only after the preimage recheck).
-  Lazily create each ratified `features/{f}/` parent a feature-scoped record needs.
-- (b) Apply supersession: flip the old file's `status` in place, add `superseded_by`, and `git mv`
-  old → `archive/{type}/{area}/`. Never delete.
-- (c) Update living indexes (root README, feature READMEs) in place **LAST** — after the typed docs they
-  point to exist, so a halt before (c) leaves typed docs present and no index claiming a missing record.
+Apply only approved manifest entries, in an order that keeps a mid-write halt maximally recoverable. P6
+writes the TYPED atomic records + their supersession/archive moves ONLY; the living-index completion
+predicate is deferred to step 6 (P7, after the P6.5 gate PASSES).
+**TOCTOU recheck — immediately before EACH mutation, per touched path**, re-read the exact path being
+mutated and compare it against THAT path's manifest preimage recorded at step 1 (§7). If the live state no
+longer matches its preimage (a concurrent or user edit landed after P5) → **HALT to the step-5 Always-Ask
+recovery; NEVER overwrite**. This replaces blind "idempotent overwrite" — a matching per-path preimage is
+the precondition for every write.
+- (a) Create new typed docs first (write by deterministic path only after that path's preimage recheck
+  confirms it is still `absent`). Lazily create each ratified `features/{f}/` parent a feature-scoped record
+  needs.
+- (b) Apply supersession, rechecking EACH touched path against its own preimage immediately before its
+  mutation: recheck the old file's preimage, then flip its `status` in place and add `superseded_by`;
+  recheck the archive path's preimage (must still be `absent`), then `git mv` old → `archive/{type}/{area}/`.
+  Never delete.
+- The living indexes (root README, feature READMEs) are NOT written here — they are the durable completion
+  predicate and are written at step 6 (P7) only after the P6.5 gate PASSES, so no "complete baseline" signal
+  can exist before evaluation clears it.
 
-### Step 3 — Verify every destination
+### Step 3 — Verify every typed-record destination (P6)
 
-For every manifest entry: check the exact destination exists with the expected post-strip/post-stamp
-content; check every supersession link is paired and every planned archive path exists; check each
-living-index pointer resolves to an existing typed record. Record the verification result beside the
-manifest entry.
+For every typed-record manifest entry: check the exact destination exists with the expected
+post-strip/post-stamp content; check every supersession link is paired and every planned archive path
+exists. Record the verification result beside the manifest entry. (Living-index pointer verification is
+deferred to step 6 — the indexes are not written until P7.)
 
 ### Step 4 — POST-WRITE validation gate (standing guards)
 
@@ -381,35 +409,67 @@ every later session's reference, so it is not exempt (this overrides the earlier
 Always-Ask gate + standing guards were startup's full substitute for dual-system validation). The bundle
 procedure is owned by [`evaluation.md`](evaluation.md); its non-loop recognition by the shared evaluator
 is owned by `evaluation/SKILL.md` § Phase-specific focus — see also [`SKILL.md`](SKILL.md) § Procedure
-(P6.5). `baseline_valid: true` is written (P7) only after P6.5 passes.
+(P6.5). The living-index completion predicate and `baseline_valid: true` are written at P7 (step 6) only
+after P6.5 passes — the promoted set under evaluation here is the typed records, not yet any index.
 
-### Step 5 — On any mid-write failure (steps 2–4) → HALT + Always-Ask partial-state recovery
+### Step 5 — On a mid-write failure, a P6.5 REVISE/FAIL, or a P7 write failure → HALT + Always-Ask partial-state recovery
 
-Stop immediately; do not continue to another manifest item and do not mark the baseline valid. Report
-exactly which files were written, which supersessions/archives were applied, and what remains. Offer three
-Always-Ask choices: **complete-forward** from the deterministic manifest / **roll back** / **abandon** the
+This handler fires on ANY of: a mid-write failure in steps 2–3; a **P6.5 REVISE or FAIL** verdict (step 4);
+or a P7 living-index write failure (step 6). Stop immediately; do not continue to another manifest item and
+do not mark the baseline valid. Report exactly which files were written, which supersessions/archives were
+applied, and what remains. Offer three Always-Ask choices: **complete-forward** from the deterministic
+manifest (after the fix, for a REVISE) / **roll back** the promoted typed-record set / **abandon** the
 partial baseline for manual repair. Never choose a recovery path silently.
 
-**Roll-back carve-out — the single narrow exception to startup's no-delete rule.** Roll-back operates
-strictly by op, keyed to each entry's manifest preimage (§7). It NEVER deletes a pre-existing memory file;
-delete authority extends ONLY to this promotion's own uncommitted CREATEs.
+**A P6.5 REVISE/FAIL routes here.** When P6.5 does not PASS, the P6-promoted typed records already exist in
+durable memory but the living-index completion predicate was never written (step 2 defers it to step 6), so
+NO "complete baseline" signal exists. The manager returns to the earliest owning phase to fix the finding,
+then either complete-forwards (re-promote the corrected set, re-run P6.5) or rolls back the promoted typed
+records. A later session that finds promoted typed records with no root/feature index is NOT `completed`
+(§12) — it correctly re-runs or resumes.
 
-- A **step-2(a) CREATE** — a file THIS promotion just created, whose manifest preimage is `absent`, whose
-  on-disk content hash still matches the manifest write, and which is **uncommitted** — is rolled back by
-  `rm` of exactly that listed file. These files are untracked, so there is NO `git reset` / `git checkout`
-  target: a CREATE roll-back is a file delete of the listed paths, not a git op.
-- A **step-2(b) supersession** or a **step-2(c) in-place living-index edit** of a PRE-EXISTING file is
-  rolled back by restoring its recorded preimage: reverse the `git mv`, revert the status-flip, and
-  `git checkout` the in-place edit back to the preimage hash.
+**Roll-back carve-out — the single narrow exception to startup's no-delete rule.** Roll-back operates
+strictly by op, keyed to each touched path's manifest preimage (§7). It NEVER deletes a pre-existing memory
+file; delete authority extends ONLY to this promotion's own uncommitted CREATEs.
+
+- A **CREATE** — a file THIS promotion just created, whose manifest preimage is `absent`, whose on-disk
+  content hash still matches the manifest write, and which is **uncommitted** — is rolled back by `rm` of
+  exactly that listed file. These files are untracked, so there is NO `git reset` / `git checkout` target: a
+  CREATE roll-back is a file delete of the listed paths, not a git op.
+- A **supersession** or a **P7 in-place living-index edit** of a PRE-EXISTING file is rolled back by
+  restoring its recorded RESTORABLE preimage (§7), NOT a bare hash — a content hash cannot reconstruct an
+  uncommitted edit. Concretely: reverse the `git mv` (move the archived file back to its original path);
+  then overwrite the edited file with its stored original bytes — re-materialize the `git hash-object` blob
+  (`git cat-file -p <blob> > <path>`) or copy `working/preimages/{slug}` back over the path. This works even
+  when the pre-existing file carried uncommitted edits before promotion — the stored bytes ARE the restore
+  source, so recovery is possible on exactly the dirty-worktree case a hash cannot serve.
 
 The startup summary cannot carry `baseline_valid: true` until recovery completes, all exact paths verify,
 every standing guard passes, and the P6.5 dual-system gate passes.
 
-**Prevent double promotion.** After successful promotion, write every promoted path + the completion marker
-into `outputs/startup-summary.md`. This marker is record-level and live-session-only (§13) — it guards the
-SAME session against double promotion (Wrap-up's promotion-inventory EXCLUDES `startup/`, so it never
-re-promotes a startup staging surface). A LATER session does not read this gitignored marker; it derives
-rerun-state from durable memory (§12 `completed`, §13).
+### Step 6 — P7 completion-predicate write (only after P6.5 PASS)
+
+The living-index completion predicate is written here — at P7, AFTER the P6.5 gate PASSES — never at P6.
+This is what makes a later session's `completed` classification (§12) trustworthy: the root/feature index
+exists in durable memory only when P6.5 has cleared the promoted baseline, so a pre-PASS or rejected
+promoted set can never present as a complete baseline.
+
+1. **TOCTOU recheck each index path** against its step-1 preimage (§7), then write/update the living indexes
+   (root README, feature READMEs) in place — after the typed docs they point to exist, so every index
+   pointer resolves to an existing typed record.
+2. **Verify** each index destination exists with the expected content and every living-index pointer
+   resolves to an existing typed record; re-run `check-markdown-links.sh` over the indices (they add the
+   pointers the P6 guard pass could not yet check).
+3. **Stamp the summary** — set `baseline_valid: true` and finalize `promoted_paths` (now including the
+   written indices) in `outputs/startup-summary.md` (§13 lifecycle). A P7 write or verify failure routes to
+   step 5.
+
+**Prevent double promotion.** At P6, record every promoted typed-record path into the startup-summary
+candidate's `promoted_paths` (§13); at P7 (step 6) finalize the paths and stamp `baseline_valid: true`. The
+completion marker is record-level and live-session-only (§13) — it guards the SAME session against double
+promotion (Wrap-up's promotion-inventory EXCLUDES `startup/`, so it never re-promotes a startup staging
+surface). A LATER session does not read this gitignored marker; it derives rerun-state from durable
+memory — specifically the root/feature living index, which exists only post-P6.5-PASS (§12 `completed`, §13).
 
 ## 10. Frontmatter & raw-vs-synthesized
 
@@ -431,7 +491,7 @@ recorded answer + evidence and ask confirm / correct / unknown. Classify every o
 | State | Action |
 |---|---|
 | `unchanged` | No write; record the validation in the startup summary. |
-| `living-index update` | Update the root/feature README in place after approval (safe-order step 2c). |
+| `living-index update` | Update the root/feature README in place at P7 after the P6.5 gate PASSES (§9 step 6). |
 | `new record` | Create one new atomic typed doc. |
 | `superseding record` | New typed doc with `supersedes:`; flip + backlink + archive the old via the terminal-state procedure. |
 | `deferred/open` | A backlog ONLY when there is actionable work + a pick-up trigger; else the open question stays in the startup summary with an owner + resolution method. |
@@ -450,7 +510,7 @@ memory (to detect completion) and resolves ONE state — it writes nothing:
 | `restart-safe` | `startup/` dir + `working/answer-ledger.md` present, but **0 confirmed Level-1 checkpoint markers** (interrupted before the first checkpoint). | No trusted resume point and nothing durable was written (§1). Re-confirm scope with the user, then **restart from Topic 1**; the prior gitignored ledger/staging is discarded or ignored. |
 | `in-progress-resumable` | `working/answer-ledger.md` exists with ≥ 1 confirmed Level-1 checkpoint marker AND no completion marker. | Ask resume vs restart. On resume: reload the ledger + confirmed checkpoints; re-show each confirmed Level-1 summary for a quick re-confirm; regenerate staged drafts from the current ledger events keyed by `Answer ID` (idempotent, §2); continue from the first unconfirmed checkpoint. |
 | `abandoned` | A stale in-progress dir the user chooses to discard. | SAFE discard — nothing durable was written (§1), so no memory cleanup; drop or ignore the gitignored session working/staging. |
-| `completed` | **Durable memory present** — the root index (`README.md`) + the required durable typed records + the ratified feature indexes exist under `.gobbi/projects/{project-name}/`. This is read from durable memory, NOT the gitignored session summary a later session cannot read (§13, D2). | This is a rerun — go to the §11 baseline-review path. |
+| `completed` | **Durable memory present** — the root index (`README.md`) + the ratified feature indexes exist under `.gobbi/projects/{project-name}/` alongside the required durable typed records. The root/feature living index is the **completion predicate**: it is written only at P7 after the P6.5 gate PASSES (§9 step 6), so its presence is trustworthy proof the baseline was evaluated and cleared. Read this from durable memory, NOT the gitignored session summary a later session cannot read (§13, D2). Promoted typed records WITHOUT a root/feature index (a P6.5 REVISE/FAIL then abandoned) are NOT `completed` — that state re-runs or resumes, never presenting as a complete baseline. | This is a rerun — go to the §11 baseline-review path. |
 
 The classifier writes nothing. A `/clear`, `/compact`, or interruption after a confirmed Level-1 marker is
 survivable: on re-entry the classifier reads the ledger READ-ONLY and resumes (`in-progress-resumable`); an
@@ -472,7 +532,17 @@ durable evidence a later Configuration can trust.
 4. Inherit settings from the repo `.claude/settings.json` (or the runtime's settings); do not fabricate a
    separate policy set.
 
-**Exit:** write `outputs/startup-summary.md` with a completion marker:
+**Startup-summary field lifecycle (one contract across phases).** The summary has ONE field-level
+lifecycle — no phase writes a field another phase owns:
+
+| Phase | Summary action |
+|---|---|
+| **P5** | CREATE the candidate (draft): `open_questions`, rerun triggers, provisional `promoted_paths`, and `baseline_valid: false` (or absent). This gives the P5 pre-write secret-scan (§9 step 1) a target. |
+| **P6** | UPDATE `promoted_paths` to the actual written typed-record destinations. Still `baseline_valid: false`. |
+| **P6.5** | CONSUME (read-only): the dual-system evaluators read the candidate as part of the frozen baseline set; they never write it. |
+| **P7** | STAMP final — only after P6.5 PASS: finalize `promoted_paths` (now including the written living indexes) and set `baseline_valid: true` (§9 step 6). |
+
+**Exit:** at P7 the finalized `outputs/startup-summary.md` carries the completion marker:
 
 ```yaml
 startup_complete: true
@@ -485,10 +555,11 @@ Include the rerun triggers + non-sensitive verification notes. **This summary is
 live-session-only** (§1) — gitignored, worktree-local, and removed by session cleanup; it is NOT durable
 cross-session evidence. Within the live session it records completion and prevents double promotion (§9). A
 LATER Configuration does NOT read this marker: on the next `/gobbi` the memory-baseline check derives
-rerun-state from **durable memory** — the root index (`README.md`) + the required durable typed records +
-the ratified feature indexes under `.gobbi/projects/{project-name}/` (§12 `completed`) — and treats the
-baseline as established when it finds them, skipping the auto-recommend. `baseline_valid: true` is written
-here only after the P6.5 dual-system gate passes (§9 step 4).
+rerun-state from **durable memory** — the root index (`README.md`) + the ratified feature indexes (the
+completion predicate, written only post-P6.5-PASS) alongside the required durable typed records under
+`.gobbi/projects/{project-name}/` (§12 `completed`) — and treats the baseline as established when it finds
+them, skipping the auto-recommend. `baseline_valid: true` is written here only after the P6.5 dual-system
+gate passes (§9 step 6).
 
 **Standalone git:** a standalone run's promotion writes are committed by an explicit standalone commit step
 (manager/user-owned); startup itself never pushes or merges. Inside a `/gobbi` session, the enclosing
@@ -503,9 +574,10 @@ worktree-local) that may hold sensitive detail (business, security, regulatory, 
 - Never promote the raw log, the ledger, the promotion manifest, or any secret/credential.
 - Synthesis STRIPS secrets/credentials, driven by the ledger `Sensitive?` field (§2): any answer flagged
   `Sensitive? y` stays record-level only — never in a promoted typed record, a feature README, the root
-  README, or the startup summary. As a backstop that does not rely on user marking, the P6 pre-write
-  validation runs a lightweight heuristic secret-scan (§9 step 1) over every staged candidate, the index
-  candidates, and the summary; a hit HALTS promotion.
+  README, or the startup summary. As a backstop that does not rely on user marking, the P5 pre-write
+  validation runs the automated+manual secret-scan (§9 step 1, fail-closed on scanner absence) over every
+  staged candidate, the index candidates, and the summary candidate; the post-write surface (the promoted
+  delta + the P6.5 evaluation evidence) is re-scanned at P6.5-time. A hit HALTS promotion.
 - Keep only non-sensitive promoted paths + open-question summaries in `startup-summary.md`.
 - Retention = session lifetime. On abandon or standalone-end, the session tree is left in place (gitignored,
   never committed) or removed by the runtime's session cleanup — it is never shipped as project reference.
