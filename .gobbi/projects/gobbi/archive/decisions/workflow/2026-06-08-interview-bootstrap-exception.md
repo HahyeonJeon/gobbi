@@ -12,6 +12,8 @@ keywords: [session-memory, interview, bootstrap-exception]
 author: claude
 supersedes: null
 superseded_by: startup-session-shape-and-promotion
+archived_at: 2026-07-13
+archive_reason: superseded
 ---
 
 # interview/ is a bootstrap exception; its interior is not swept (R2)
