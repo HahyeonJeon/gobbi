@@ -6,13 +6,16 @@ allowed-tools: Read, Grep, Glob, Bash, Write
 
 # Mistake
 
-Skill for every agent in every role. Loaded as the first domain skill in the Load Directives block of every delegation prompt. Its discipline spans two directions: **check before acting** (so known pitfalls are avoided) and **write immediately after correction** (so the correction survives across sessions).
+Skill for every agent in every role. Loaded as the first domain skill in the Load Directives block owned by [`orchestration/delegation.md`](../orchestration/delegation.md). Its discipline spans two directions: **check before acting** (so known pitfalls are avoided) and **write immediately after correction** (so the correction survives across sessions).
 
 The model is **staging → promotion**. During the working loops, agents write mistake-candidates to session staging only. Promotion to memory (`mistakes/` directories) is performed by agents during the Wrap-up phase (no CLI command). Working-loop agents never write directly to memory; the Wrap-up assistant performing promotion during Wrap-up is the documented sole exception.
 
 ---
 
 ## Memory Access Matrix
+
+The moved Gobbi dispatch trap companion is `skills/orchestration/mistakes.md`; the generic
+`skills/delegation/` capability has no compatibility companion copy.
 
 The agent MUST observe these tier boundaries. For working-loop agents, the only write surface is session staging. The Wrap-up assistant is the sole exception: it writes promoted candidates to project or feature `mistakes/` — OR to a skill-owned `skills/{skill}/mistakes.md` home (the hybrid model; see the P4 routing modifier) — during the Wrap-up phase.
 

@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/orchestration/templates/_dual-system-block.md

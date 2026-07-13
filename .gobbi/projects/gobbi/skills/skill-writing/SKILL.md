@@ -220,7 +220,7 @@ skill. Every step says what to do, in what order, and how to know it is done.
   skill that copies its owners' content bloats; one that states the fact and records the owner stays tight.
 - **Standalone vs child-doc.** Default to a single standalone `SKILL.md`. Split into child docs ONLY when
   the skill owns one of: **(a)** a SET of stamped per-instance artifacts (templates, e.g.
-  `delegation/templates/{role}.md`); **(b)** a deterministic rule-reference too long for the body, read by
+  `orchestration/templates/{role}.md`, owned by [`orchestration/delegation.md`](../orchestration/delegation.md)); **(b)** a deterministic rule-reference too long for the body, read by
   lookup; **(c)** per-step / per-loop / per-role orchestration docs, one per unit; **(d)** a self-contained
   sub-procedure a different phase or audience reads independently, or a block whose inline length would
   push the parent well past the norm. Never split by length alone. When the skill has child docs, the

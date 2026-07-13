@@ -196,7 +196,7 @@ slice's worth of work.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Manager constructs the executor delegation prompt; in Chat, forced user-driven per §9 (override discuss.mode). | manager orchestration: [discussion](../discussion/SKILL.md); specialist phase load: — | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline. In Claude Code only, the executor may be continued per `delegation/SKILL.md § Continue vs Fresh` — shared subsystem, under the saturation cap. Native Codex uses fresh executor spawns. Collect work artifact + verification evidence. | manager orchestration: [execution.md](workflow/execution.md); specialist phase load: [../execution/SKILL.md](../execution/SKILL.md) | executor |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent per the slice's inline-paste-per-task discipline. In Claude Code only, the executor may be continued per `orchestration/delegation.md § Continue vs Fresh` — shared subsystem, under the saturation cap. Native Codex uses fresh executor spawns. Collect work artifact + verification evidence. | manager orchestration: [execution.md](workflow/execution.md); specialist phase load: [../execution/SKILL.md](../execution/SKILL.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics. Sub-step complete → next sub-step (or slice boundary if last). | manager orchestration: —; specialist phase load: — | manager |
@@ -316,8 +316,8 @@ Execution):
 - **RECORD runs every loop with the unmodified base `record/SKILL.md` procedure (§4).**
 - **Fresh subagent context per slice.** Every leader / executor / evaluator spawn pastes its
   context inline. Claude Code may continue an executor per
-  `delegation/SKILL.md § Continue vs Fresh` (shared subsystem, under the saturation cap); native Codex uses fresh executor spawns. The
-  manager is the only durable cross-task agent. Governance: `delegation/SKILL.md § Inline-Paste Rule` (the discipline) and Principle 1
+  `orchestration/delegation.md § Continue vs Fresh` (shared subsystem, under the saturation cap); native Codex uses fresh executor spawns. The
+  manager is the only durable cross-task agent. Governance: `orchestration/delegation.md § Inline-Paste Rule` (the discipline) and Principle 1
   (the underlying behavioral law — "no action without thinking and studying it through first"; iter1's Principle
   4 citation was a wrong-number reference, corrected per §8 L-P1/L-C2/L-U1 of the Idea doc for
   this redesign).
@@ -532,9 +532,9 @@ state-transition contract for Chat Mode.
 | `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
 | `planning.state: InProgress` | EVALUATION → REVISE, budget remaining (iter < maxIter) | `planning.state: InProgress` | re-enter DISCUSSION; iter++. For Chat one-shot Planning (maxIter 1) this branch is vacuous — the first REVISE is already at the cap, so the next row governs (routes to the after-EVALUATION user gate, not an auto re-entry). |
 | `planning.state: InProgress` | iter == maxIter (1) + REVISE | after-EVALUATION user gate (§3 Step 4 / §5) | one-shot Planning: the first REVISE routes to Chat's after-EVALUATION user gate — accept-as-is / revise-once (ad-hoc cap raise) / reframe; NOT a hard `Aborted` (locked decision 1) |
-| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `delegation/SKILL.md § Continue vs Fresh` |
+| `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `orchestration/delegation.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
-| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `delegation/SKILL.md § Continue vs Fresh` |
+| `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `orchestration/delegation.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → REVISE | `execution.state: InProgress` | re-enter DISCUSSION for same sub-step; iter++ |
 | `execution.state: InProgress` | iter == maxIter (3) + REVISE | `execution.state: Aborted` | manager escalates to user |
 | `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |
@@ -609,7 +609,7 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
   `task-record.md` filenames.
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline preserved in
   Chat alongside the base RECORD procedure §4 runs.
-- [`delegation/SKILL.md § Inline-Paste Rule`](../delegation/SKILL.md) — governs fresh-subagent
+- [`orchestration/delegation.md § Inline-Paste Rule`](delegation.md) — governs fresh-subagent
   context per per-task slice; cited alongside Principle 1.
 - [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — Always-Ask matrix
   (Design / Scope / Destructive); the Wrap-up trigger in §7 is symmetric to the Destructive

@@ -1,13 +1,13 @@
 ---
 type: mistakes
-skill: delegation
-description: "Recorded traps for delegation — load before doing delegation work"
+skill: orchestration
+description: "Recorded traps for Gobbi delegation dispatch — load before manager dispatch work"
 updated: 2026-07-08
 ---
 
-# Delegation — Mistakes
+# Orchestration Delegation — Mistakes
 
-> Load before any delegation work. Each `## ` section is one active trap; `## Archived` holds superseded ones.
+> Load before any Gobbi manager dispatch work. Each `## ` section is one active trap; `## Archived` holds superseded ones.
 
 ## Delegation Briefs Reference Nonexistent Rules Dir
 
@@ -16,7 +16,7 @@ updated: 2026-07-08
 **What happened** — The manager's delegation prompts for the Preparation evaluators carried a Load Directives block that said "all files under `.gobbi/projects/{project-name}/rules/`". Both the iter1 and iter2 evaluators (Claude and Codex) flagged that this directory does not exist in this project; the real project rules live in `skills/memory/rules.md` (the memory standard) plus in-skill rule sections. Agents that follow the directive find nothing, load nothing, and proceed without project rules — and the brief surfaces no error, because a missing directory produces no output rather than an explicit failure.
 **Why it happens** — The Load Directives template likely originated from a project that had a populated rules directory, or from a future-state expectation that one would be created, and was carried forward without verifying the path exists for this project. The error is silent: agents get a "no files" result and continue.
 **How to detect** — A Load Directives block references a path with a glob like "all files under `.gobbi/projects/{project-name}/rules/`", AND that directory does not exist on disk (verify with `ls` or `find`). If both are true, the brief is sending agents to read from a nonexistent source and they load nothing without erroring.
-**Correct approach** — Before issuing a brief that references a rules or memory directory, confirm the path exists (`ls .gobbi/projects/{project-name}/rules/` or `find`). If it does not exist, either remove the directive or replace it with the actual rule source — for this project, "Load `skills/memory/rules.md` (frontmatter/structure standard for staged files)". Do not keep a nonexistent-path Load Directive just because the template included it. **Now enforced by the aligned contract (2026-07-05):** the `.gobbi/projects/{project-name}/rules/` empty-state read contract is defined once in [`skills/memory/rules.md` § Empty-state contract](../memory/rules.md) and referenced from all 16 aligned read-sites (the 5 role prompts, the 4 delegation templates + `skills/delegation/SKILL.md`, the 5 phase-doc read/record sites) plus the `memory-map.md` tier row. A brief that references `.gobbi/projects/{project-name}/rules/` now resolves to the `RULES_PRESENT` / `NO_PROJECT_RULES` two-state contract instead of a silent read-nothing — follow that central contract rather than re-deriving a per-brief fallback.
+**Correct approach** — Before issuing a brief that references a rules or memory directory, confirm the path exists (`ls .gobbi/projects/{project-name}/rules/` or `find`). If it does not exist, either remove the directive or replace it with the actual rule source — for this project, "Load `skills/memory/rules.md` (frontmatter/structure standard for staged files)". Do not keep a nonexistent-path Load Directive just because the template included it. **Now enforced by the aligned contract (2026-07-05):** the `.gobbi/projects/{project-name}/rules/` empty-state read contract is defined once in [`skills/memory/rules.md` § Empty-state contract](../memory/rules.md) and referenced from all 16 aligned read-sites (the 5 role prompts, the 4 orchestration templates + `skills/orchestration/delegation.md`, the 5 phase-doc read/record sites) plus the `memory-map.md` tier row. A brief that references `.gobbi/projects/{project-name}/rules/` now resolves to the `RULES_PRESENT` / `NO_PROJECT_RULES` two-state contract instead of a silent read-nothing — follow that central contract rather than re-deriving a per-brief fallback.
 
 ## Subagents Skip Load Directives No Enforcement
 
@@ -32,7 +32,7 @@ updated: 2026-07-08
 
 `priority: high` · `domain: process` · `added: 2026-07-06` · `status: active` · `tags: [process, codex, verification]`
 
-**Reversed 2026-07-08** — Prior guidance mandated `.agents/skills` as the load path for native Codex and treated a `.gobbi/…` citation as the mistake. That guidance is superseded by the `.gobbi` SSOT decision in `skills/delegation/SKILL.md` (§ Skill-load path SSOT): the canonical source `.gobbi/projects/gobbi/skills/` is the single skill-load path for BOTH runtimes, and `.agents/skills` stays the Codex *discovery* symlink — never a load-path citation. The trap's SUBJECT is unchanged — naming the WRONG skill-load surface in a delegation prompt is still a trap — only the correct answer flipped: the surface that used to be "required" (`.agents/skills`) is now the WRONG one to cite as a load path.
+**Reversed 2026-07-08** — Prior guidance mandated `.agents/skills` as the load path for native Codex and treated a `.gobbi/…` citation as the mistake. That guidance is superseded by the `.gobbi` SSOT decision in `skills/orchestration/delegation.md` (§ Skill-load path SSOT): the canonical source `.gobbi/projects/gobbi/skills/` is the single skill-load path for BOTH runtimes, and `.agents/skills` stays the Codex *discovery* symlink — never a load-path citation. The trap's SUBJECT is unchanged — naming the WRONG skill-load surface in a delegation prompt is still a trap — only the correct answer flipped: the surface that used to be "required" (`.agents/skills`) is now the WRONG one to cite as a load path.
 
 **What happened** — A delegation prompt told a subagent to load mandatory skills from a per-runtime discovery surface — `.agents/skills/<skill>/SKILL.md` on native Codex, or `.claude/skills/<skill>/SKILL.md` on Claude Code — instead of the canonical source `.gobbi/projects/gobbi/skills/<skill>/SKILL.md`, which is the single skill-load path for BOTH runtimes. Native Codex reads the real canonical files directly, so a `.gobbi/…` citation is always resolvable; naming the runtime symlink surface as the load path is the drift.
 **Why it happens** — The canonical source and the per-runtime symlink surfaces (`.agents/skills`, `.claude/skills`) point at the same files, so it is tempting to cite whichever surface matches the current runtime. But a per-runtime citation forks the load contract by runtime and re-introduces the discovery symlink as a load path; the SSOT is one path for both runtimes, so the load-path citation must not vary by runtime.
@@ -60,10 +60,10 @@ updated: 2026-07-08
 
 `priority: high` · `domain: process` · `added: 2026-07-08` · `status: active` · `tags: [process, docs-sync]`
 
-**What happened** — `skills/delegation/mistakes.md` already carried the active High-priority trap "Use Runtime Skill Surface In Load Directives", recording the correct skill-load path. Despite this, Ideation discovery on the same skill found that all four delegation templates still hard-coded the pattern the mistake describes as wrong, with no runtime-aware branch — the exact trap reproduced in the templates the mistake file's own owning skill ships.
+**What happened** — The former delegation mistake companion (now `skills/orchestration/mistakes.md`) already carried the active High-priority trap "Use Runtime Skill Surface In Load Directives", recording the correct skill-load path. Despite this, Ideation discovery on the same skill found that all four delegation templates still hard-coded the pattern the mistake describes as wrong, with no runtime-aware branch — the exact trap reproduced in the templates the mistake file's own owning skill ships.
 **Why it happens** — Recording a mistake documents the trap for an agent who reads it before acting; it does not, by itself, change the artifact where the trap gets made. A mistake file is read at Study time; a template is filled at author/dispatch time. If the template itself still contains the faulty pattern, every fill reproduces the trap regardless of whether the filling agent read the mistake file.
 **How to detect** — A `mistakes.md` entry's "Correct approach" names a specific file or template that should be different, and that file still matches the pattern the mistake describes as wrong. Grep the named target for the faulty pattern; a hit means the mistake is recorded but not enforced.
-**Correct approach** — When a mistake's correct approach describes a concrete fix to an artifact (a template, a script, a config default), apply that fix to the artifact itself as part of closing out the mistake — do not treat recording the mistake as sufficient. This session added the Pre-Dispatch Fill Checklist to `skills/delegation/SKILL.md` as that gate: before a template ships, check it against every currently-recorded mistake whose correct approach names that template.
+**Correct approach** — When a mistake's correct approach describes a concrete fix to an artifact (a template, a script, a config default), apply that fix to the artifact itself as part of closing out the mistake — do not treat recording the mistake as sufficient. The Pre-Dispatch Fill Checklist now lives in `skills/orchestration/delegation.md` as that gate: before a template ships, check it against every currently-recorded mistake whose correct approach names that template.
 
 ### Related
 - [[use-runtime-skill-surface-in-load-directives]] — the exact trap this recurrence reproduced

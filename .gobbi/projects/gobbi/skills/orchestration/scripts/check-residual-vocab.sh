@@ -398,7 +398,7 @@ is_excluded_path() {
 #   3. agents/{manager,executor,leader,assistant}.md — "### Memorize": the generic
 #      Study->Plan->Execute->Verify->Memorize lifecycle VERB heading shared by every
 #      role doc; not the per-loop RECORD sub-phase (G5: leave).
-#   4. delegation/templates/{leader,executor,assistant}.md — "...Verify -> Memorize
+#   4. orchestration/templates/{leader,executor,assistant}.md — "...Verify -> Memorize
 #      lifecycle": the same generic lifecycle-verb reference in the delegation
 #      template body.
 #   5. wrap-up/SKILL.md — the Wrap-up "Memorization" STAGE 2 name introduced by
@@ -436,7 +436,7 @@ is_allowlisted() {
             [[ "$line" == *'project memory root'* ]] && return 0 ;;
         */agents/manager.md|*/agents/executor.md|*/agents/leader.md|*/agents/assistant.md)
             [[ "$line" == '### Memorize'* ]] && return 0 ;;
-        */skills/delegation/templates/leader.md|*/skills/delegation/templates/executor.md|*/skills/delegation/templates/assistant.md)
+        */skills/orchestration/templates/leader.md|*/skills/orchestration/templates/executor.md|*/skills/orchestration/templates/assistant.md)
             [[ "$line" == *'Memorize lifecycle'* ]] && return 0 ;;
         */skills/wrap-up/SKILL.md)
             [[ "$line" == *'Memorization** (promotion:'*       \

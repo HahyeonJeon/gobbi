@@ -39,7 +39,7 @@ and decision set are user-locked and explicit enough for WORK to document with n
 **Leader continuation (Claude Code Agent Teams).** The manager continues ONE leader
 teammate across A→B→C→D→WORK via delta-briefs — the strongest in-loop token saver.
 Decision rule + evaluator-FORBIDDEN wall:
-[`delegation/SKILL.md § Continue vs Fresh`](../../delegation/SKILL.md#continue-vs-fresh).
+[`orchestration/delegation.md § Continue vs Fresh`](../delegation.md#continue-vs-fresh).
 Fresh-spawn fallback when Agent Teams is off, the runtime is native Codex, or the teammate
 died (`/compact` / `/clear` / resume kill it).
 
@@ -110,4 +110,4 @@ Path owner — never redrawn here.
 - Evaluation orchestration → [`workflow/evaluation.md`](evaluation.md)
 - RECORD orchestration + assistant procedure → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
 - Session path owner → [`record/record-map.md`](../../record/record-map.md)
-- Delegation patterns → [`delegation/SKILL.md`](../../delegation/SKILL.md)
+- Delegation patterns → [`orchestration/delegation.md`](../delegation.md)

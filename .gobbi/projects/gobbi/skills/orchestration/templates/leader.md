@@ -125,7 +125,7 @@ Then in the body:
   Cite the artifact path; list each concern explicitly.
 - **NEEDS_CONTEXT** — paused. List exactly what input is required and from whom.
   Include a `user-question:` block if user input is needed (see
-  `delegation/SKILL.md` § NEEDS_CONTEXT user-question schema).
+  `orchestration/delegation.md` § NEEDS_CONTEXT user-question schema).
 - **BLOCKED** — cannot proceed. State the root cause with evidence.
 
 `Never silently produce work you are unsure about` — use DONE_WITH_CONCERNS

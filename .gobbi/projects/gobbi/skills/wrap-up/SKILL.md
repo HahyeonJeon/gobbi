@@ -113,7 +113,7 @@ Confirm with the user that the session is ready to wrap up, gather any final def
 | 1 | Manager | All prior loops' artifacts + session.json | Read each prior loop's PASS-iter artifacts; build a short session-level outcome summary (what shipped, what was deferred, evaluator verdicts) | Outcome summary |
 | 2 | Manager | Outcome summary | Run the active runtime's user-decision primitive: is anything deferred / open / observed that should be added to Wrap-up before the session closes? Common categories: rules discovered mid-session, mistake candidates, backlog candidates, supersession decisions | User-added items |
 | 3 | Manager | User-added items | Record additions in `sessions/{date}-{session-id}/5-wrap-up/working/discussion-log.md` | Captured additions |
-| 4 | Manager | Outcome summary + additions | Construct the assistant delegation prompt per [`delegation/templates/assistant.md`](../delegation/templates/assistant.md) — wrap-up's WORK is a deterministic routing pass + handoff authoring, not narrow Q&A, but the assistant role still applies | Wrap-up delegation prompt |
+| 4 | Manager | Outcome summary + additions | Construct the assistant delegation prompt per [`orchestration/templates/assistant.md`](../orchestration/templates/assistant.md) — wrap-up's WORK is a deterministic routing pass + handoff authoring, not narrow Q&A, but the assistant role still applies | Wrap-up delegation prompt |
 | 5 | Manager | Prompt | Verify zero `<<slot>>` placeholders; every slot filled | Verified prompt |
 
 **Outputs**

@@ -9,8 +9,9 @@ back-and-forth. Codex receives one initial prompt, then works independently. If 
 thin, ambiguous, missing paths, or missing failure rules, Codex cannot ask the wrapper to fill
 the gap. It will guess, write in the wrong place, or return a plausible but unusable result.
 
-This doc owns only the Codex prompt-file contract. Generic manager-to-subagent delegation stays
-in [`delegation/SKILL.md`](../delegation/SKILL.md). WORK orchestration stays in
+This doc owns only the Codex prompt-file contract. Gobbi manager-to-specialist dispatch stays in
+[`orchestration/delegation.md`](../orchestration/delegation.md); workflow-agnostic brief semantics
+stay in the [`delegation` skill](../delegation/SKILL.md). WORK orchestration stays in
 [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). Evaluation
 orchestration stays in [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md).
 
@@ -519,7 +520,7 @@ Required properties:
 - Codex writes no source files and does not edit the artifact under review.
 - Every file has `SYSTEM_LABEL`, `ACTUAL_RUNTIME`, and `VERDICT`.
 
-The prompt must include the anti-trust block from [`delegation/templates/evaluator.md`](../delegation/templates/evaluator.md)
+The prompt must include the anti-trust block from [`orchestration/templates/evaluator.md`](../orchestration/templates/evaluator.md)
 or a path to the template plus the exact text pasted inline. The evaluator must verify claims
 against files, not trust the producer's summary.
 
@@ -634,8 +635,10 @@ The parent docs route here as follows:
 - [`codex/SKILL.md`](SKILL.md) owns Codex runtime overview, `codex exec` basics, metadata lookup,
   and high-level bridge use cases. It links here for prompt-file lifecycle and wrapper failure
   behavior.
-- [`delegation/SKILL.md`](../delegation/SKILL.md) owns generic manager-to-subagent prompts. It
-  links here only when the delegated subagent is a Claude wrapper that will invoke Codex.
+- [`orchestration/delegation.md`](../orchestration/delegation.md) owns Gobbi manager-to-specialist
+  dispatch, while the [`delegation` skill](../delegation/SKILL.md) owns workflow-agnostic brief
+  semantics. The orchestration protocol links here only when the delegated specialist is a Claude
+  wrapper that will invoke Codex.
 - [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) owns producer
   spawn, freeze, and integration. It links here for the Codex proposer prompt-file contract.
 - [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) owns evaluator

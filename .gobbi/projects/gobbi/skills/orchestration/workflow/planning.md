@@ -26,7 +26,7 @@ manager → spawns leader for next sub-step (dependency graph, agent assignment,
 ...
 ```
 
-Multiple leader spawns are normal. RECORD preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
+Multiple leader spawns are normal. RECORD preserves the leader's record as the audit trail for "what research informed each planning decision". Under **fresh spawns**, that record is the full set of per-spawn leader transcripts. Under **Claude Code leader continuation** (one teammate carried across sub-steps — see [`orchestration/delegation.md` § Continue vs Fresh](../delegation.md#continue-vs-fresh)), it is the single continued-leader transcript that spans those turns; one transcript across turns still preserves the whole research chain, so continuation does not lose audit coverage. Native Codex uses fresh leader spawns with full Load Directives.
 
 ### Sub-step orchestration
 
@@ -135,5 +135,5 @@ Planning** — all `features/{feature-name}/...` and project-tier writes happen 
 - Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
-- Delegation patterns → [`delegation`](../../delegation/SKILL.md)
-- Delegation prompt fields → [`delegation` § What Every Delegation Prompt Contains](../../delegation/SKILL.md#what-every-delegation-prompt-contains)
+- Delegation patterns → [`delegation`](../delegation.md)
+- Delegation prompt fields → [`delegation` § What Every Delegation Prompt Contains](../delegation.md#what-every-delegation-prompt-contains)

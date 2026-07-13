@@ -1,7 +1,7 @@
 # Agent Teams
 
 Sub-document of the `orchestration` skill. The **operator guide** for Claude Code Agent Teams in gobbi:
-setup, delegating to teammates, and managing the team's lifecycle. Native Codex does not use this surface; it fresh-spawns specialists per `delegation/SKILL.md`. Agent Teams is the mechanism
+setup, delegating to teammates, and managing the team's lifecycle. Native Codex does not use this surface; it fresh-spawns specialists per `orchestration/delegation.md`. Agent Teams is the mechanism
 behind subagent CONTINUATION — a teammate is a persistent Claude Code session re-addressed by name
 via `SendMessage`, with its own context preserved across turns. Continuing a teammate is what lets
 the manager send a small delta-brief instead of re-pasting the full brief on every dispatch.
@@ -12,7 +12,7 @@ report-back subagent** — kept OUT of the team (producer/evaluator separation +
 independence; non-negotiable).
 
 The continue-vs-fresh **decision rule** (when to continue a teammate vs spawn fresh) and the
-**delta-brief** contents are owned by [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh).
+**delta-brief** contents are owned by [`orchestration/delegation.md` § Continue vs Fresh](delegation.md#continue-vs-fresh).
 This doc does NOT re-derive that rule — it points to it. This doc covers the operator surface:
 turning Agent Teams on, handing work to a teammate, and running the team.
 
@@ -78,7 +78,7 @@ the **first** spawn carries the full Load Directives stack plus the full brief. 
 turn carries a **delta-brief** (next-step goal + new inputs + re-anchor on changed
 rules/mistakes/scope + re-stated scope + status enum) — never a full re-paste. The decision rule and
 the exact delta-brief fields live in
-[`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh).
+[`orchestration/delegation.md` § Continue vs Fresh](delegation.md#continue-vs-fresh).
 
 **Address a teammate by name via `SendMessage`.** The manager assigns predictable names at spawn so
 each continuation turn re-addresses the right teammate.
@@ -172,7 +172,7 @@ rule). Teammate token accounting is recorded per
 
 ## Cross-references
 
-- [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh) — the
+- [`orchestration/delegation.md` § Continue vs Fresh](delegation.md#continue-vs-fresh) — the
   continue-vs-fresh DECISION RULE (role × transition), the F1 executor predicate, and the delta-brief
   fields. This doc points to it; it does not re-derive the rule.
 - `agents/leader.md § Continuation discipline`, `agents/executor.md § Continuation discipline`,

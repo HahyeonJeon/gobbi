@@ -37,9 +37,9 @@ running the role must act correctly from the spec alone — not from the session
 > **Point to the one canonical owner; never restate it.**
 
 The `.md` is the role's behavioral contract; the delegation TEMPLATE
-([`delegation/templates/{role}.md`](../delegation/templates/)) is how the manager briefs that
+([`orchestration/templates/{role}.md`](../orchestration/templates/)) is how the manager briefs that
 role per task. They are different files with different jobs — the role spec does not duplicate
-the template, and a new role's template is authored in `delegation/templates/`, not inlined
+the template, and a new role's template is authored in `orchestration/templates/`, not inlined
 here. Cite the owner; do not copy it.
 
 > **Verify every wiring claim by reading the owner — never assert it.**
@@ -176,7 +176,7 @@ the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
 The role taxonomy is a **closed set of five**: `manager` / `leader` / `executor` / `evaluator`
 / `assistant` (verified — the Agent Taxonomy table in `gobbi/SKILL.md` and the 5 `.md` files).
-Each role has a `delegation/templates/{role}.md` EXCEPT `manager` (verified — `templates/`
+Each role has a `orchestration/templates/{role}.md` EXCEPT `manager` (verified — `templates/`
 holds leader / executor / evaluator / assistant only; the manager is the root session agent,
 not a Task-spawned specialist, so it needs no delegation template).
 
@@ -191,7 +191,7 @@ the user's explicit decision. Its FULL wiring set is:
 3. An `Agent({role})` permission in `.claude/settings.json` (the existing 5 entries are at
    `:25-29`; verify the exact lines at edit time).
 4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
-5. A `delegation/templates/{role}.md` (authored in the `delegation` skill's `templates/`).
+5. A `orchestration/templates/{role}.md` (authored in the `orchestration` skill's `templates/`).
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
 cannot be spawned in Claude Code; without a delegation template the manager has no brief shape.
@@ -228,9 +228,9 @@ Wire a role in this order, each step with its verify command. From the worktree 
    The `--check` must exit 0.
 5. **For a NEW role only** — add the four taxonomy surfaces from P4 (steps 3-5): the
    `Agent({role})` perm in `.claude/settings.json`, the Agent Taxonomy row in `gobbi/SKILL.md`,
-   and the `delegation/templates/{role}.md`. Verify each:
+   and the `orchestration/templates/{role}.md`. Verify each:
    `grep -n 'Agent({role})' .claude/settings.json` ; `grep -n '{role}' .gobbi/projects/gobbi/skills/gobbi/SKILL.md` ;
-   `test -f .gobbi/projects/gobbi/skills/delegation/templates/{role}.md`.
+   `test -f .gobbi/projects/gobbi/skills/orchestration/templates/{role}.md`.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
@@ -287,7 +287,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 - **Duplicating the delegation template inside the role spec.** Inlining the per-task brief
   shape into `agents/{role}.md`. The `.md` is the behavioral contract; the per-task brief lives
-  in `delegation/templates/{role}.md`. Keep them separate and cross-link.
+  in `orchestration/templates/{role}.md`. Keep them separate and cross-link.
 
 - **Adding a role when an edit would do.** Creating a sixth role for work an existing role
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
@@ -300,7 +300,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 ## Cross-references
 
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
-- Per-role delegation templates + the brief scaffold → [`delegation/SKILL.md`](../delegation/SKILL.md)
+- Per-role delegation templates + the brief scaffold → [`orchestration/delegation.md`](../orchestration/delegation.md)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
 - The verify-before-asserting trap → [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)
