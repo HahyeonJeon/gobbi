@@ -122,7 +122,8 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 │   ├── discussion-log.md         # raw audit
 │   ├── answer-ledger.md          # append-only ledger (schema §2) — carries the resumable checkpoint markers
 │   ├── research/                 # prior-art study per design-bearing branch: {slug}.md, Source/Insight/Why (M3)
-│   └── promotion-manifest.md     # per-file CRUD + destination + preimage + supersede/archive plan (§7)
+│   ├── promotion-manifest.md     # per-file CRUD + destination + preimage + supersede/archive plan (§7)
+│   └── evaluation/iter{n}/{claude,codex}/   # P6.5 dual-system gate evidence: 7 perspective + overall + checklist (§9 step 4) — record-level, never promoted
 ├── staging/
 │   ├── decisions/                # decision records AND mistake-candidates (frontmatter `mistake-candidate: true`)
 │   ├── design/
@@ -372,12 +373,15 @@ Run the standing memory guards over the post-promotion tree; ALL must exit 0:
 A clean frontmatter check alone is not sufficient. These standing guards judge **form** (frontmatter /
 links / vocab / skill-mistake sections). After they pass, the **P6.5 dual-system evaluation gate** judges
 the baseline's **completeness + quality**: two fresh evaluators (Claude + Codex) run the startup
-`{scenario,checklist,evaluation}.md` bundle over the promoted baseline. Startup does NOT run Stage-2c
-compaction or git finalization, but it DOES run this dual-system gate — the baseline becomes every later
-session's reference, so it is not exempt (this overrides the earlier design in which the Always-Ask gate +
-standing guards were startup's full substitute for dual-system validation). The bundle and its non-loop
-`evaluation/SKILL.md` wiring are authored separately — see [`SKILL.md`](SKILL.md) § Procedure (P6.5).
-`baseline_valid: true` is written (P7) only after P6.5 passes.
+[`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle
+over the promoted baseline, each writing nine record-level files under
+`sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/` (§3). Startup does NOT run
+Stage-2c compaction or git finalization, but it DOES run this dual-system gate — the baseline becomes
+every later session's reference, so it is not exempt (this overrides the earlier design in which the
+Always-Ask gate + standing guards were startup's full substitute for dual-system validation). The bundle
+procedure is owned by [`evaluation.md`](evaluation.md); its non-loop recognition by the shared evaluator
+is owned by `evaluation/SKILL.md` § Phase-specific focus — see also [`SKILL.md`](SKILL.md) § Procedure
+(P6.5). `baseline_valid: true` is written (P7) only after P6.5 passes.
 
 ### Step 5 — On any mid-write failure (steps 2–4) → HALT + Always-Ask partial-state recovery
 

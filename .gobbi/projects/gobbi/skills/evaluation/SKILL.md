@@ -550,8 +550,11 @@ The procedure is the same across workflow loops; the **focus** shifts by phase v
 | Planning | [`planning/evaluation.md`](../planning/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a Planning Loop's task decomposition |
 | Execution | [`execution/evaluation.md`](../execution/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for an Execution Loop's code changes. Detailed coding-domain quality checks live in the `coding` skill's evaluation child when that skill exists |
 | Wrap-up | [`wrap-up/evaluation.md`](../wrap-up/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a Wrap-up Loop's handoff summary |
+| Startup (non-loop) | [`startup/evaluation.md`](../startup/evaluation.md) | Seed scenarios (`scenario.md`) + seed checklist (`checklist.md`) + procedure (`evaluation.md`) for a completed startup baseline SET, run at the startup P6.5 gate — see the Startup non-loop target exception below |
 
-Each phase ships a **three-file bundle**: `scenario.md` (per-perspective seed scenarios) + `checklist.md` (per-perspective seed checklist — the copy-then-tick source) + `evaluation.md` (recommended tool verifications → perspective-specific anti-patterns → Overall stage anchors for the phase). See § Evaluation child-doc bundle.
+Each phase ships a **three-file bundle**: `scenario.md` (per-perspective seed scenarios) + `checklist.md` (per-perspective seed checklist — the copy-then-tick source) + `evaluation.md` (recommended tool verifications → perspective-specific anti-patterns → Overall stage anchors for the phase). See § Evaluation child-doc bundle. All five loop phases plus the non-loop startup target ship the bundle.
+
+> **Startup non-loop target exception.** `startup` is an evaluation target only at its P6.5 gate; it is not a workflow loop and has no `{N}-{loop}` directory. When the target tag is `startup`, Stage 0 loads the `startup/{scenario,checklist,evaluation}.md` bundle (same three-file hard requirement), copies the checklist, and writes all nine per-system evaluator outputs to `sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/` — NOT a `{N}-{loop}/evaluation/` path. Each evaluator's sole write grant is its own `{system}/` directory there; the manager reads both for reconciliation; iter `{n}` is supplied by the manager and evaluators still never read or write `session.json`. Startup has no prior-loop canonical artifact and no loop Scope Contract, so Stage 0 instead reads the completed baseline SET and the overlapping prior memory named by [`startup/evaluation.md`](../startup/evaluation.md), and extracts the startup What / Why / How from that child doc. Two fresh systems run all seven perspectives + Overall; the generic finding schema, thresholds, checklist semantics, and nine-file contract otherwise apply unchanged. Where a table or enumeration in this skill names only the five loop phases (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`), read it as "plus the non-loop startup target" for this gate.
 
 ---
 
@@ -606,6 +609,8 @@ All evaluator writes are **session-scoped**. Evaluators never touch memory.
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`)
 
 The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` is bootstrapped by the manager before spawning evaluators. Cross-system divergence is **derived at RECORD** by comparing per-system files; no separate divergence file is written.
+
+**Non-loop startup exception.** The `{N}-{loop}` path above applies to the five workflow loops only. The non-loop `startup` target (§ Phase-specific focus → Startup non-loop target exception) writes its nine per-system files to `sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/` instead — no `{N}-` ordinal, no `{loop}` segment. The manager bootstraps that directory at the startup P6.5 gate.
 
 ---
 

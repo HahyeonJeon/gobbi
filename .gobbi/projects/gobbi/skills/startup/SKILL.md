@@ -136,7 +136,7 @@ promotion procedure.
 | **P4 — Synthesize staged docs** | Follow [`recording.md`](recording.md): convert confirmed answers into atomic typed drafts under the session staging tree using the staging→destination contract; stamp the matching memory template. No durable write. | Surface gaps; never fill them by inference | Complete session-local staging set |
 | **P5 — Reconcile, challenge & pre-write validate** | Run the cross-topic contradiction pass and a jargon-free final challenge per [`recording.md`](recording.md). Build the promotion manifest. Validate the WHOLE approved set and pre-compute every destination, collision, supersession, and archive move — dry-run, no durable write. | Confirm corrections + the final manifest | One approved, whole-set-valid promotion plan |
 | **P6 — Promote baseline (startup-owned)** | Ask the final Always-Ask baseline-write question. Then run startup's promotion procedure in [`recording.md`](recording.md): TOCTOU preimage recheck → safe-order write → verify every path → post-write standing guards. On any failure, HALT and present the recorded partial-state recovery. | **Always-Ask** final baseline write | All destinations written, guard-green, and path-verified — OR a surfaced partial-state recovery |
-| **P6.5 — Evaluate completed baseline (dual-system)** | Run the non-skippable dual-system evaluation gate over the promoted baseline: two fresh evaluators (Claude + Codex) run the startup `scenario.md` + `checklist.md` + `evaluation.md` bundle across the 7 perspectives + Overall. `PASS` clears P7; `REVISE` returns to the earliest owning phase; `FAIL` halts with `baseline_valid` false. This row is the gate slot only — the bundle and its non-loop `evaluation/SKILL.md` wiring are authored in the sibling bundle files, not here. | Manager reconciles the two verdicts; divergence → user-decision | A dual-system verdict; `PASS` is required before P7 |
+| **P6.5 — Evaluate completed baseline (dual-system)** | Run the non-skippable dual-system evaluation gate over the promoted baseline: two fresh evaluators (Claude + Codex) run the startup [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle across the 7 perspectives + Overall, each writing nine record-level files under `sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/`. `PASS` clears P7; `REVISE` returns to the earliest owning phase; `FAIL` halts with `baseline_valid` false. This row is the gate slot only — the bundle procedure and its non-loop `evaluation/SKILL.md` recognition are authored in the sibling bundle files, not here. | Manager reconciles the two verdicts; divergence → user-decision | A dual-system verdict; `PASS` is required before P7 |
 | **P7 — Close** | After the P6.5 gate PASSES, write the startup summary (promoted paths, unresolved questions, rerun triggers) with the completion marker + `baseline_valid: true`. The summary is record-level and live-session-only ([`recording.md`](recording.md) §13). Resume Configuration or apply the standalone exit contract. | User acknowledges the baseline summary | Later phases read the confirmed baseline; later sessions derive rerun-state from durable memory, not the gitignored summary |
 
 **Phase gates:**
@@ -254,10 +254,11 @@ claim here and follow the single owner link.
 - [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research — validates: the
   prior-art study step of the P3 design-decision micro-loop — internal grep + external WebSearch/WebFetch,
   captured in the Source / Insight / Why format.
-- [`evaluation/SKILL.md`](../evaluation/SKILL.md) — validates: the dual-system evaluation procedure the P6.5
-  baseline gate runs (two systems × seven perspectives + Overall, reconciled verdict). The startup-specific
-  non-loop wiring and the `scenario.md` / `checklist.md` / `evaluation.md` bundle are authored in the
-  sibling bundle files.
+- [`evaluation/SKILL.md`](../evaluation/SKILL.md) § Phase-specific focus — validates: the shared
+  dual-system evaluation procedure the P6.5 baseline gate runs (two systems × seven perspectives + Overall,
+  reconciled verdict) and its recognition of `startup` as a non-loop evaluation target. The startup-specific
+  frame it consumes is the sibling [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) +
+  [`evaluation.md`](evaluation.md) bundle authored in this skill directory.
 - [`memory/rules.md`](../memory/rules.md) § 1.5 + § 2 + § 2.6 + § 4.2 — validates: area resolution for every
   by-area destination, the memory-file frontmatter standard, the staging-field strip on promotion, and the
   per-type section contracts that the staged and promoted records follow (Rules; Procedure; the
