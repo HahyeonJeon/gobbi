@@ -2,15 +2,15 @@
 
 Child doc of the `python` skill: the deep reference for shaping a Python unit and its public API at the 3.12
 baseline — the function-vs-class call, the signature shape, the class and dataclass patterns, the composition
-idioms, the data-model tie-breaks, and the exception-surface design. The `SKILL.md` § Procedure P2 (*Design
-the Python surface*) and P3 (*Choose the data and failure model*) name the one-line choice in a table; this
+idioms, the data-model tie-breaks, and the exception-surface design. The `SKILL.md` § Procedure P3 (*Design
+the units, decomposed*) names the one-line choice in a table; this
 doc gives the patterns behind each choice. An ordinary module makes these choices from the parent tables
 alone — read here when a design decision is genuinely on a fork.
 
 This doc **deepens, and does not restate,** these parent surfaces: the principles *"Speak Python's protocols,
 not another language's ceremony"* and *"Prefer values and transformations over shared mutation"*; the
-§ Procedure P2 *Function vs class* and *Protocol vs ABC vs inheritance vs composition* tables; the § Procedure
-P3 *Data model*, *Return shape*, and *Failure model* tables; and the rules *"MUST accept the narrowest useful
+§ Procedure P3a *Function vs class* and § Procedure P3b *Protocol vs ABC vs inheritance vs composition*
+tables; the § Procedure P3d *Data model*, *Return shape*, and *Failure model* tables; and the rules *"MUST accept the narrowest useful
 interface and return an ownership-clear value"*, *"MUST prefer composition and protocols over deep nominal
 inheritance"*, *"MUST use immutable defaults and keyword-only optional behavior"*, and *"MUST scope EAFP to
 the single operation expected to fail"*. Those tables and rules are the floor; the sections below give the
@@ -33,7 +33,7 @@ examples, never a lock.
 
 ## 1. Function-first and callable design
 
-The parent P2 *Function vs class* table gives the one-line trigger; the deciding question is whether state has
+The parent P3a *Function vs class* table gives the one-line trigger; the deciding question is whether state has
 a lifetime that spans calls. Default to a plain function — it is the smallest deep unit, and a class only
 earns its keep once one of the table's class triggers (identity, invariants across calls, state that travels
 with behavior) actually fires.
@@ -259,7 +259,7 @@ class Cache:
 
 ## 5. Data-model selection depth
 
-The parent P3 *Data model* table names the trigger for each shape; here are the tie-breaks between the close
+The parent P3d *Data model* table names the trigger for each shape; here are the tie-breaks between the close
 calls and the migration paths when a shape outgrows its choice.
 
 - **`dataclass` vs `NamedTuple`.** Both are records. Choose a `NamedTuple` only when tuple/positional
@@ -320,7 +320,7 @@ class Mode(Enum):                   # closed symbolic set with identity + iterat
 
 ## 6. Failure-surface design
 
-The parent P3 *Failure model* table picks EAFP vs LBYL per operation; this section designs the failure surface
+The parent P3d *Failure model* table picks EAFP vs LBYL per operation; this section designs the failure surface
 as a whole — the exception hierarchy the package exposes, the data those exceptions carry, and the
 raise-vs-return shape of each function.
 

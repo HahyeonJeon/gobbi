@@ -1,14 +1,14 @@
 # Python — Performance
 
 Child doc of the `python` skill: the deep reference for making Python fast enough, on evidence, at the 3.12
-baseline. The `SKILL.md` § Procedure P5 router sends a reader here when performance, scale, a hot path, large
+baseline. The `SKILL.md` § Procedure P2 router sends a reader here when performance, scale, a hot path, large
 data, memory, caching, or profiling is in scope. An ordinary module needs none of this — the parent floor
 already carries the common path, and the clear form stands until a measurement says otherwise.
 
 This doc **deepens, and does not restate,** three parent surfaces: the principle *"Use the standard
 vocabulary until evidence earns an escape"*, the rule *"MUST base a Python performance change on measurement,
 and prefer a better built-in or data structure to hand-tuned code"*, and the rule *"NEVER optimize a Python
-hot path from intuition alone, or cite a microbenchmark for a system-level claim"*. The parent § Procedure P3
+hot path from intuition alone, or cite a microbenchmark for a system-level claim"*. The parent § Procedure P3d
 *Return shape* table owns the stream-vs-materialize contract; the sections below give the mechanics behind
 it. Every construct here is valid at Python 3.12; tool and library names are examples, never a lock.
 
@@ -130,7 +130,7 @@ Three patterns account for most real Python slowdowns. Each has a clean fix.
 ## 5. Stream instead of materialize
 
 For large or unbounded data, memory is the binding constraint, and streaming keeps it flat. The
-stream-vs-materialize decision is owned by the parent § Procedure P3 *Return shape* table; the mechanics:
+stream-vs-materialize decision is owned by the parent § Procedure P3d *Return shape* table; the mechanics:
 
 - **A generator holds one item at a time.** A generator function (`yield`) or a generator expression processes
   a million rows in constant memory, where a list comprehension allocates all million at once. Prefer the

@@ -15,7 +15,7 @@ Two concrete property-vs-idiom pairs:
   by an explicit check that raises (never a bare `assert`, which `-O` strips), with subprocess arg-lists over
   `shell=True`, `secrets` over `random`, and no `pickle` / `eval` on untrusted data?"
 
-The frame is loaded through the parent skill's P5 router (`evaluation.md` — *when grading the Python idiom of
+The frame is loaded through the parent skill's P2 router (`evaluation.md` — *when grading the Python idiom of
 a change-set*) and applied at P8, where the reviewer reads both this frame and `../coding/evaluation.md`. It
 grades the idiom at the **Python 3.12** floor and is tool-agnostic: any formatter, linter, or type checker
 named below is an example, not a locked command.

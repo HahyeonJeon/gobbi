@@ -1,7 +1,7 @@
 # Python — Testing
 
 Child doc of the `python` skill: the deep reference for testing Python code at the 3.12 baseline. The
-`SKILL.md` § Procedure P5 router sends a reader here when behavior changes, or when tests are written or
+`SKILL.md` § Procedure P2 router sends a reader here when behavior changes, or when tests are written or
 reviewed. An ordinary change that alters no behavior needs none of this — the parent floor already carries
 the common path.
 

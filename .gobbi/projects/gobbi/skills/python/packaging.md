@@ -1,7 +1,7 @@
 # Python — Packaging and Distribution
 
 Child doc of the `python` skill: the deep reference for turning a Python project into an installable,
-distributable artifact at the 3.12 baseline. The `SKILL.md` § Procedure P5 router sends a reader here when a
+distributable artifact at the 3.12 baseline. The `SKILL.md` § Procedure P2 router sends a reader here when a
 project, package, or CLI is created; when metadata, dependencies, entry points, build, or distribution
 change; or when a documented public API is deprecated or evolved. An ordinary edit to an existing package
 needs none of this — the parent floor already carries the common path.

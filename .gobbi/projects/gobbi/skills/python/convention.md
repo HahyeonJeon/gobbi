@@ -2,13 +2,14 @@
 
 Child doc of the `python` skill: the deep reference for how Python source is spelled, laid out, and documented
 at the 3.12 baseline — the full naming matrix, the formatter's line-splitting mechanics, the Google docstring
-grammar, the import layout, and comment discipline. The `SKILL.md` § Procedure P4 (*Apply the conventions*)
-names the convention floor in one paragraph; this doc gives the mechanics behind each convention so two
+grammar, the import layout, and comment discipline. The `SKILL.md` § Procedure P6 (*Grow in minimal
+verified steps*) applies the convention floor as you write, and § Procedure P3e (*Names for intent*) owns
+naming as a design act; this doc gives the mechanics behind each convention so two
 authors produce the same style byte for byte. Read it when a naming, formatting, docstring, import, or comment
 question is genuinely on a fork.
 
-This doc **deepens, and does not restate,** these parent surfaces: § Procedure P4 (*Apply the conventions*)
-and the rules *"MUST use PEP 8 naming with a leading underscore for internal names"*, *"MUST format with one
+This doc **deepens, and does not restate,** these parent surfaces: § Procedure P6 (apply the conventions as you write), § Procedure P3e (*Names
+for intent*), and the rules *"MUST use PEP 8 naming with a leading underscore for internal names"*, *"MUST format with one
 deterministic autoformatter at 88 columns and 4-space indents"*, *"MUST write Google-style docstrings on
 public modules, classes, functions, and methods"*, *"MUST keep imports explicit, grouped, absolute, and
 import-safe"*, and *"NEVER use wildcard imports, invented dunder names, or name-mangling as ordinary

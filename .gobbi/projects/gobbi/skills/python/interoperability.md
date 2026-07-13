@@ -3,7 +3,7 @@
 Child doc of the `python` skill: the deep reference for code that leaves ordinary Python and crosses a
 boundary — into a subprocess, a native/foreign library, the buffer protocol, a serialized or durable
 on-disk format, generated code, reflection, a plugin, or a notebook on its way to production. The `SKILL.md`
-§ Procedure P5 router sends a reader here when a change touches one of those boundaries. An ordinary typed
+§ Procedure P2 router sends a reader here when a change touches one of those boundaries. An ordinary typed
 module needs none of this — the parent floor already carries the common path.
 
 This doc **deepens, and does not restate,** these parent surfaces: the principle *"Make ownership and

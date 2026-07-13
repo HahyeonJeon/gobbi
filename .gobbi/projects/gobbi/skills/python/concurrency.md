@@ -1,7 +1,7 @@
 # Python — Concurrency
 
 Child doc of the `python` skill: the deep reference for choosing and running concurrent work at the 3.12
-baseline. The `SKILL.md` § Procedure P5 router sends a reader here when a change starts tasks or uses async,
+baseline. The `SKILL.md` § Procedure P2 router sends a reader here when a change starts tasks or uses async,
 threads, processes, executors, queues, locks, or timeouts, or shares state across them. An ordinary
 sequential module needs none of this — the parent floor already carries the common path.
 
@@ -10,7 +10,7 @@ lifetime visible in the syntax"* and *"Prefer values and transformations over sh
 *"MUST choose the concurrency model from the workload and give it structured ownership"*, and the rule
 *"NEVER swallow a `CancelledError`, launch an unobserved fire-and-forget task, block the event loop, or
 assume the GIL makes a compound operation atomic; NEVER add concurrency as an optimization without workload
-evidence and a shutdown design"*. The parent § Procedure P2 *Concurrency model* table owns the one-line
+evidence and a shutdown design"*. The parent § Procedure P3b *Concurrency model* table owns the one-line
 model choice; the sections below give the mechanics behind it. Every construct here is valid at Python 3.12;
 tool and library names are examples, never a lock.
 
@@ -33,7 +33,7 @@ tool and library names are examples, never a lock.
 
 ## 1. Choose the model: I/O, blocking, CPU
 
-The model follows the workload, not preference. The parent § Procedure P2 *Concurrency model* table gives the
+The model follows the workload, not preference. The parent § Procedure P3b *Concurrency model* table gives the
 one-line rule; the deciding property is what the work does while it is "busy".
 
 - **`asyncio` — many I/O-bound waits to overlap in one thread.** Correct only when the call path is `async`

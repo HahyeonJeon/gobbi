@@ -1,7 +1,7 @@
 # Python — Static Typing
 
 Child doc of the `python` skill: the deep, version-sensitive reference for Python's static type system at
-the 3.12 baseline. The `SKILL.md` § Procedure P5 router sends a reader here when a change touches
+the 3.12 baseline. The `SKILL.md` § Procedure P2 router sends a reader here when a change touches
 annotations, a public API, generics, decorators, `Protocol`s, stubs, runtime-annotation consumers, or a
 type-checker suppression. An ordinary typed module needs none of this — the parent floor already carries the
 common path.
@@ -135,7 +135,7 @@ type Pair[T] = tuple[T, T]                          # generic type alias
   only**, not signatures or return types — do not treat a passing `isinstance` as proof of full conformance.
 - **`Protocol` vs `ABC`.** Reach for a `Protocol` when you do not own the implementers and want a structural
   match; reach for an `ABC` when you own a base that carries shared concrete behavior and want an explicit
-  subclass / `register` contract. (The wider function-vs-class-vs-protocol choice is the parent P2 table; this
+  subclass / `register` contract. (The wider function-vs-class-vs-protocol choice is split across the parent P3a/P3b tables; this
   is the type-mechanics half.)
 - **`TypedDict` — a typed shape over a mapping.** Types a `dict` used as an interchange record (JSON, config)
   that must stay a `dict`. `total=False` makes every key optional; `Required` / `NotRequired` set it per key.
