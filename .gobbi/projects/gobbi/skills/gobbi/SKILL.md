@@ -96,7 +96,7 @@ See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workf
 
 Check `.gobbi/projects/{project-name}/` for the memory baseline:
 
-- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the interview skill to populate it before starting work?" If the user accepts, load the [`interview` skill](../interview/SKILL.md) and run the 5-wave bootstrap; the workflow resumes after the interview completes.
+- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the startup skill to populate it before starting work?" If the user accepts, load the [`startup` skill](../startup/SKILL.md) and run the structured startup talk; the workflow resumes after startup completes.
 - If memory is populated → proceed directly to the workflow.
 
 ### 6. Enter the workflow
@@ -123,7 +123,7 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 | **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
 | **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
 | **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory. |
-| **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). Interview is the documented bootstrap exception. |
+| **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). `startup`-close promotion is the documented bounded bootstrap exception — a second pre-Wrap-up memory writer. |
 | **Proposer** | The Codex generator in dual-system production — a stateless `codex exec` run that drafts an independent proposal (`working/proposals/codex/draft-iter{n}.md`) during the WORK sub-phase. It never writes the canonical artifact; the Claude producer integrates it. See `orchestration/workflow/production.md`. |
 | **Dual-system production** | The WORK-sub-phase creation model: two independent generators — a Claude producer and a Codex proposer — draft in parallel without seeing each other, then the Claude producer selectively integrates the frozen proposal. The creation-time analogue of dual-system evaluation. |
 | **Selective-integration** | The producer's integration rule — SELECT the stronger element from the Codex proposal, never synthesize a blend; logged per-delta in `working/reconciliation-iter{n}.md`. |
@@ -185,7 +185,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
 | [`record`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's RECORD sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
-| [`interview`](../interview/SKILL.md) | Project-bootstrap discovery. Manager-direct 5-wave Socratic interview. Writes directly to memory (the bootstrap exception). |
+| [`startup`](../startup/SKILL.md) | Project-bootstrap baseline. Manager-run structured startup talk that writes the project baseline to memory via its own startup-close promotion (the bounded bootstrap exception). |
 | [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
 
 ### Supporting skills
@@ -215,9 +215,9 @@ gobbi's durable capabilities — the things a README "Features" section would li
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives — the review-time analogue of dual-system production | evaluation + the per-loop `evaluation.md` child docs + codex |
 | `guardrails` | The 10 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
 | `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
-| `install-runtime` | One-command install + bootstrap interview + the per-session runtime contract | interview + the [hook-authoring](hook-authoring.md) child-doc (+ install/runtime knowledge documented here and in the install dir) |
+| `install-runtime` | One-command install + project startup + the per-session runtime contract | startup + the [hook-authoring](hook-authoring.md) child-doc (+ install/runtime knowledge documented here and in the install dir) |
 
-**Install / runtime is documented, not a skill.** `install-runtime` owns no `gobbi-install` *skill* dir — channel-split install, the `.claude/`↔project mirror-sync, and the session-runtime contract (env-var persistence, the SessionStart hook, `session.json` / `settings.json` lifecycle, subagent-metadata capture) are documented in this `gobbi/SKILL.md`, the [hook-authoring](hook-authoring.md) child-doc, and the install dir, not in a created skill. The only standalone skill dir `install-runtime` owns is `interview`; the former standalone hook-authoring skill is now that child-doc.
+**Install / runtime is documented, not a skill.** `install-runtime` owns no `gobbi-install` *skill* dir — channel-split install, the `.claude/`↔project mirror-sync, and the session-runtime contract (env-var persistence, the SessionStart hook, `session.json` / `settings.json` lifecycle, subagent-metadata capture) are documented in this `gobbi/SKILL.md`, the [hook-authoring](hook-authoring.md) child-doc, and the install dir, not in a created skill. The only standalone skill dir `install-runtime` owns is `startup`; the former standalone hook-authoring skill is now that child-doc.
 
 **Authoring a new skill or agent is a reference skill, not a table row.** `skill-writing` teaches how to author a new gobbi skill (frontmatter schema, the four discoverability axes, the section skeleton, and the script-owned vs hand-owned wiring); `agent-writing` teaches how to author a new gobbi agent (the `.md`/`.toml` canonical pair, agent frontmatter, the five-role taxonomy, and the hand-created runtime mirrors). Both are standalone, self-contained meta/authoring references — they depend on no other doc-authoring standard — and are mirrored to both runtimes (`.claude/skills/` + `.agents/skills/`). Like the other meta skills, they carry NO Loop / Cross-cutting / Supporting Skill-Map row; this paragraph is their home.
 
@@ -239,7 +239,7 @@ Subagents do not speak to the user directly. Spawned-session muting applies — 
 
 > **All writes are session-scoped until Wrap-up.**
 
-Ideation / Preparation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. Interview is the documented exception (bootstrap discovery writes directly to memory).
+Ideation / Preparation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. `startup`-close promotion is the documented bounded exception — the startup baseline writes to memory before any productive loop, via startup's own startup-close promotion.
 
 ---
 
@@ -259,7 +259,7 @@ The active runtime's user-decision primitive is mandatory for every decision poi
 
 ## Output paths (overview)
 
-All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's RECORD (and by Interview during bootstrap).
+All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's RECORD (and by `startup`'s startup-close promotion during project bootstrap).
 
 For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`record/SKILL.md` § Output paths](../record/SKILL.md#output-paths).
 
@@ -270,7 +270,7 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 - **MUST load `principles` + `orchestration` + `discussion` + `delegation` + `git` + `mistake` at session start** — before any other action.
 - **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → memory check → enter workflow.
 - **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
-- **MUST offer the interview skill** when memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
+- **MUST offer the startup skill** when memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
 - **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
 - **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
