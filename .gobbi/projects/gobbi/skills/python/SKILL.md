@@ -1,6 +1,6 @@
 ---
 name: python
-description: "MUST load before writing or reviewing Python code. The concrete Python-idiom layer beneath the language-agnostic coding standard — naming, typing, data models, control flow, resources, concurrency, and packaging."
+description: "MUST load before writing or reviewing Python code. The concrete Python-idiom layer beneath the language-agnostic coding standard — naming, design, conventions, typing, data models, control flow, resources, concurrency, and packaging."
 allowed-tools: Read, Grep, Glob, Bash
 ---
 
@@ -14,8 +14,8 @@ not repeat them.
 
 Load it before writing or reviewing any Python code. The Principles, Rules, and Procedure below carry an
 ordinary typed module from first read to review without opening anything else; a step sends you to a child
-doc only for a specialized case — deep typing, concurrency, testing, packaging, performance,
-interoperability, or the idiom review frame.
+doc when a decision needs more depth — unit and API design, naming and style conventions, deep typing,
+concurrency, testing, packaging, performance, interoperability, or the idiom review frame.
 
 ---
 
@@ -344,6 +344,9 @@ tables.
 **P2 is complete when** a caller can infer the inputs, the returned value's ownership, blocking-vs-async
 behavior, the documented failure categories, and the extension points without reading an implementation body.
 
+`design.md` deepens these design choices — parameter and signature shape, dataclass and class patterns,
+composition and extension, data-model selection, and failure-surface design.
+
 ### P3 — Choose the data and failure model
 
 Choose how data is shaped and how failure is handled: the data model and its identity, mutability, equality,
@@ -386,6 +389,8 @@ logging boundary. Use these tables.
 **P3 is complete when** every data shape and failure path has an owner, a lifetime, a public exception
 category, and an unambiguous mutation or cleanup policy.
 
+`design.md` deepens the data-model selection tie-breaks and the failure-surface design behind these tables.
+
 ### P4 — Apply the conventions
 
 As you write each unit, apply the § Rules floor in order: naming and exports; grouped absolute imports and an
@@ -409,6 +414,9 @@ Choose the boundary representation once:
 **P4 is complete when** formatting, naming, exports, imports, signatures, types, docstrings, control flow,
 diagnostics, and boundary conversions are consistent before any specialized depth is added.
 
+`convention.md` deepens this convention floor — the full naming and casing matrix, formatting and
+line-splitting, docstring grammar, import conventions, and comments.
+
 ### P5 — Load specialized guidance when triggered
 
 An ordinary typed module needs none of these. Read one child doc when its trigger fires — each is one hop
@@ -416,6 +424,8 @@ from this file.
 
 | Read | When |
 |---|---|
+| `design.md` | a unit or API design decision needs depth — function-vs-class, parameter and signature shape, dataclass and class patterns, composition, data-model selection, or failure-surface design (deepens P2–P3) |
+| `convention.md` | applying the naming, formatting, docstring, import, or comment conventions needs their full mechanics (deepens P4) |
 | `typing.md` | a change touches annotations, public API, generics, decorators, Protocols, stubs, runtime-annotation consumers, or type-checker suppressions |
 | `concurrency.md` | a change starts tasks or uses async, threads, processes, executors, queues, locks, or timeouts, or shares state across them |
 | `testing.md` | behavior changes, or tests are written or reviewed |
