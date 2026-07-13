@@ -4,7 +4,7 @@ description: Realign interview/templates/project-skill.md's stamped section orde
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-07-08
 session: 33de02b8-4dff-4768-bafa-c1f53ae81890
 tags: []
@@ -16,6 +16,10 @@ shipped_in: null
 ---
 
 # Realign `interview/templates/project-skill.md` to the 6-section standard
+
+## Resolution
+
+Closed: realigned during relocation — the template was `git mv`'d to `skill-writing/templates/project-skill.md` and its stamped body rewritten to the 6-section standard (Frontmatter → Intro → Principles → Rules → Procedure → References); Preparation's references were re-pointed to the new owner.
 
 ## Context
 
