@@ -13,7 +13,7 @@ In Stage 1 scenarios and checklists are **not separate lists** — each scenario
 Inputs to a review pass:
 - The artifact under evaluation (e.g., the Ideation Loop's working draft)
 - Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
-- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which child doc to load at Stage 0
+- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which child doc to load at Stage 0; the non-loop `startup` P6.5 target is a first-class evaluation target too (§ Phase-specific focus → Startup non-loop target exception)
 - The perspective set (always all seven + Overall; no pruning)
 - Iter number `n` (resolved by the manager from `session.json.workflow.{loop}.iterations.length`)
 - Prior iter's per-perspective files (if `n ≥ 2`) — explicit input for Stage 1 inheritance
@@ -30,7 +30,7 @@ The agent in the evaluator role MUST observe these tier boundaries. The only wri
 
 | Memory tier | Path root | Access from evaluator role |
 |---|---|---|
-| **Session record — own perspective dir** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` | **READ + WRITE** — the agent's only writable surface |
+| **Session record — own perspective dir** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/` | **READ + WRITE** — the agent's only writable surface (for the non-loop `startup` P6.5 target the write surface differs — § Phase-specific focus → Startup non-loop target exception) |
 | **Session record — prior iter** | `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/` (m < n) | **READ-ONLY** — iter (n-1) is the required source for Stage 1 inheritance; iter `m < n-1` is read on-demand when a `disposition: superseded` reference points to a finding in that earlier iter |
 | **Session record — current loop working + staging** | `sessions/{date}-{session-id}/{N}-{loop}/{working,staging}/` | **READ-ONLY** — the artifact + WORK-staged references / backlogs |
 | **Session record — prior loops** | `sessions/{date}-{session-id}/{N}-{prior-loop}/` (e.g., Planning evaluator reading Ideation outputs) | **READ-ONLY** — required for cross-loop trace checks |
@@ -40,7 +40,7 @@ The agent in the evaluator role MUST observe these tier boundaries. The only wri
 
 **Delete semantics**: the evaluator NEVER deletes any file in any tier. Supersession is recorded via the `disposition: superseded` field on findings (citing the superseding finding's ID). Once a memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
 
-**Read-only enforcement**: any write attempted outside `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/` is a constraint violation. Code attempting writes to other tiers must be revoked and the evaluator restarted with a corrected scope.
+**Read-only enforcement**: any write attempted outside `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/` — or, for the non-loop `startup` P6.5 target, outside `sessions/.../startup/working/evaluation/iter{n}/{system}/` (§ Phase-specific focus → Startup non-loop target exception) — is a constraint violation. Code attempting writes to other tiers must be revoked and the evaluator restarted with a corrected scope.
 
 ---
 
@@ -130,7 +130,7 @@ Read the artifact end-to-end before judging anything. Identify what it is, what 
 
 **Inputs**
 - Artifact under evaluation
-- Workflow phase passed by the manager (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- Workflow phase passed by the manager (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`), or the non-loop `startup` target at its P6.5 gate (§ Phase-specific focus → Startup non-loop target exception)
 
 **Procedure**
 
@@ -628,7 +628,7 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 - **MUST apply verification preflight before side-effectful tool runs** — DB writes, live network calls, paid APIs, external notifications require explicit user approval; otherwise lower confidence to ≤ 25.
 - **MUST apply the strongest verification the artifact admits** — for runnable artifacts, tool-verified evidence is required for confidence ≥ 75; for text-only artifacts, close-reading + cross-reference + `grep` / file-existence checks fill the same role. Reasoning-only findings cap at 50 unless the reasoning chain is short and unambiguous.
 - **MUST check every finding against the false-positive categories** before assigning confidence ≥ 50.
-- **MUST be read-only against the artifact AND all memory tiers except own write surface** — never modify the artifact; never write to feature memory, memory, session.json, or other systems' evaluation dirs. The ONLY allowed write surface is `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/*`. See § Three-Tier Memory Access Matrix for the full table.
+- **MUST be read-only against the artifact AND all memory tiers except own write surface** — never modify the artifact; never write to feature memory, memory, session.json, or other systems' evaluation dirs. The ONLY allowed write surface is `sessions/.../{N}-{loop}/evaluation/iter{n}/{system}/*` — or, for the non-loop `startup` P6.5 target, `sessions/.../startup/working/evaluation/iter{n}/{system}/*` instead (§ Phase-specific focus → Startup non-loop target exception). See § Three-Tier Memory Access Matrix for the full table.
 - **MUST never delete** — supersession via `disposition: superseded` field; deletion of any file in any tier is forbidden. Terminal memory artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json`** — the manager owns it. Iter `n` is supplied as a delegation input, not derived by the evaluator.
 - **MUST record memory reads** — every Stage 0 / Stage 1 read of project / feature / prior-iter memory is logged in the per-perspective file's `## Memory reads` register so audit is explicit.

@@ -107,7 +107,7 @@ Every memory file holds exactly one concept — one decision, one mistake, one d
 
 > **Supersede and move-on-terminal, never delete.**
 
-A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Core Principles](../wrap-up/SKILL.md#core-principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix).
+A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Core Principles](../wrap-up/SKILL.md#core-principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix). Physical deletion stays forbidden for ALL pre-existing memory. The ONE narrow exception is startup's startup-close rollback: on a mid-promotion HALT, a P6.5 REVISE/FAIL, or a P7 write failure, rollback may `rm` ONLY a file that same promotion just created (uncommitted, manifest preimage `absent`) — never a pre-existing file. Its exact bounds are owned by [`startup/recording.md`](../startup/recording.md) §9 step 5.
 
 > **Compaction is a Wrap-up operation — RECORD never compacts.**
 
@@ -163,7 +163,7 @@ A template's `## Core principles` section states what the `{type}/` doc must cap
 - **MUST stamp the matching template** — freeform writes are forbidden; see [`templates/`](templates/).
 - **MUST obey the standard** — naming + frontmatter + structure + dev-doc quality per [`rules.md`](rules.md).
 - **MUST NOT write durable memory from a working loop** — staging is the only write surface for Ideation / Preparation / Planning / Execution RECORD; Wrap-up promotes. See [`record/SKILL.md` § Constraints](../record/SKILL.md#constraints).
-- **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. See [`wrap-up/SKILL.md` § Constraints](../wrap-up/SKILL.md#constraints).
+- **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. Physical deletion of pre-existing memory is forbidden; the one narrow exception is startup-close rollback removing a file that same promotion just created (uncommitted, preimage-absent) — see [`startup/recording.md`](../startup/recording.md) §9 step 5. See [`wrap-up/SKILL.md` § Constraints](../wrap-up/SKILL.md#constraints).
 - **MUST NOT improvise a routing destination** — every staging file has a canonical destination in the routing table; an unroutable item returns `NEEDS_CONTEXT`, never an invented home. See [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing).
 
 ---
