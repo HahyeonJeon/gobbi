@@ -12,7 +12,7 @@ keywords: [startup, interview-removal, session-shape, bootstrap]
 author: claude
 features_touched: [workflow]
 loops_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [reuse-target-must-be-invocable-at-needed-granularity, asserted-file-absent-from-a-mislisted-dir-used-proxy, removal-must-reclassify-active-design-docs-and-open-backlogs, workflow-compaction-doc-broken-links, startup-session-shape-and-promotion]
+shipped: [reuse-target-must-be-invocable-at-needed-granularity, asserted-file-absent-from-a-mislisted-dir-used-proxy, removal-must-reclassify-active-design-docs-and-open-backlogs, workflow-compaction-doc-broken-links, startup-session-shape-and-promotion, sweep-must-grep-synonymous-phrasings-not-just-primary, validity-signal-must-be-written-after-its-validation-gate]
 ---
 
 # startup skill shipped, interview removed
@@ -91,6 +91,38 @@ pass.
 - The develop-divergence noted at session start (5 unpushed Codex commits) remains
   unreconciled — out of this session's scope, flagged for the manager.
 
+## Improvement round (2026-07-13)
+
+A same-session improvement round ran after the initial ship above, targeting the shipped
+`startup` skill. 6 build commits + 2 REVISE commits landed:
+
+- **M1 — memory/record split.** `startup/SKILL.md`'s Memory Access Matrix reorganized around
+  a level invariant (record vs memory) with a Tier column, replacing the single bundled-axis
+  matrix the initial ship carried.
+- **M2 — completeness eval bundle + P6.5 gate.** Authored `startup/{scenario,checklist,
+  evaluation}.md` (the same scenario+checklist+evaluation bundle shape as PR #346) and wired a
+  new **P6.5 non-skippable dual-system gate**: two fresh evaluators review the promoted
+  baseline before P7 close, overriding the initial ship's "startup does not run dual-system
+  validation" assumption.
+- **M3 — study-recommend-discuss micro-loop.** `topics.md` design-bearing questions now run a
+  study → recommend → discuss micro-loop (with WebSearch/WebFetch prior-art checks) before
+  locking a design-bearing answer, instead of taking the first plausible answer.
+- **~11 dual-system-evaluation defect fixes**, closed across the 2 REVISE commits: completion
+  soundness reordered so the living-index completion predicate is written ONLY at P7 after
+  P6.5 PASS (see [[validity-signal-must-be-written-after-its-validation-gate]]); per-path
+  TOCTOU recheck added to the supersession loop; rollback made restorable (stored bytes /
+  git blob, not a bare hash); the sole-writer restatement sweep finally driven to zero (see
+  [[sweep-must-grep-synonymous-phrasings-not-just-primary]]); and the no-delete memory owner
+  reconciled with startup's narrow rollback carve-out.
+
+Evaluation ran Claude-PASS + Codex-REVISE (11 findings, F1-F11) at iter1; both REVISE commits
+addressed every finding; iter2 closure-verification found all 11 CLOSED with no regression.
+The Codex closure-verifier was infra-killed twice (bridge flakiness) during iter2, so a fresh
+independent Claude evaluator stood in and gave the closure sign-off instead.
+
+8 commits total for the improvement round (6 build + 2 REVISE), on top of the 7 commits from
+the initial ship above.
+
 ## Related
 
 - [[startup-session-shape-and-promotion]] — the live decision this session shipped
@@ -98,3 +130,5 @@ pass.
 - [[asserted-file-absent-from-a-mislisted-dir-used-proxy]] — Execution verification mistake
 - [[removal-must-reclassify-active-design-docs-and-open-backlogs]] — Execution refactor mistake
 - [[workflow-compaction-doc-broken-links]] — the deferred pre-existing links backlog
+- [[sweep-must-grep-synonymous-phrasings-not-just-primary]] — improvement-round docs-sync mistake
+- [[validity-signal-must-be-written-after-its-validation-gate]] — improvement-round assumption mistake
