@@ -47,11 +47,11 @@ Do NOT verify a rename sweep with form-specific greps. Verify from an EXHAUSTIVE
 
 ```
 grep -rnE "\brawdata\b|\bartifacts/|artifacts,|,artifacts|\{[^}]*artifacts[^}]*\}|sessions/[^/ ]+/(ideation|preparation|planning|execution|wrap-up)/" <dirs> \
-  | grep -vE "working/research|rawdata/research|interview/"
+  | grep -vE "working/research|rawdata/research|startup/"
 ```
 
 3. CLASSIFY every remaining hit by hand — do NOT trust the grep to self-filter. For each hit decide: is it a session-dir/slot PATH reference (FIX), or the generic produced-output CONCEPT word "artifact(s)" (LEAVE)?
-4. After fixing, every remaining hit must be a known intentional retention: the generic "artifact(s)" concept, concrete-past-session historical provenance citations, loop NAMES used as a prose set (`loop ∈ {preparation, ideation, ...}`), or the `interview/` bootstrap exception.
+4. After fixing, every remaining hit must be a known intentional retention: the generic "artifact(s)" concept, concrete-past-session historical provenance citations, loop NAMES used as a prose set (`loop ∈ {preparation, ideation, ...}`), or the `startup/` bootstrap exception.
 
 Generalize: a rename sweep's verification must be keyed to the renamed VOCABULARY (every word, every form) plus manual classification — NEVER to the form of the references the editor happened to touch.
 
