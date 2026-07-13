@@ -159,10 +159,14 @@ minimums.)
   dataclass adapter), the deserialization face of *"MUST narrow `Any` or untyped boundary data to a precise
   type at the boundary immediately"* — see `typing.md` § 6. Bound the input size first; an unbounded decode is
   a memory-exhaustion vector.
-- **Replace a durable file atomically.** Write a temporary file in the **same directory**, flush and `fsync`
-  it, then `os.replace(tmp, target)` — an atomic, overwriting rename on POSIX and Windows (unlike `os.rename`,
-  which is not an atomic overwrite on Windows). This is the mechanics of *"MUST make persistence durable where
-  correctness needs it"*; for crash durability, `fsync` the containing directory after the replace as well.
+- **Replace a durable file atomically.** Write to a **unique** temporary file in the same directory —
+  `tempfile.mkstemp(dir=...)` creates it exclusively (`O_EXCL`); a predictable shared `.tmp` name lets two
+  concurrent writers clobber the same temp and silently reuses any existing file or symlink at that path.
+  Flush and `fsync` the temp, then `os.replace(tmp, target)` — an atomic, overwriting rename on POSIX and
+  Windows (unlike `os.rename`, which is not an atomic overwrite on Windows). This is the mechanics of *"MUST
+  make persistence durable where correctness needs it"*. For crash durability on POSIX, `fsync` the containing
+  directory after the replace so the rename itself survives a crash; Windows has no directory-`fsync`
+  equivalent. Remove the temp on any failure so a crashed write leaves no orphan.
 - **Version the format.** Write a version tag into the payload or header so an old reader detects a newer
   layout and fails loudly instead of misreading it. Keep serialized output deterministic — do not let it
   depend on `dict`/`set` iteration order — so a regeneration or a diff is meaningful.
@@ -170,16 +174,26 @@ minimums.)
 ```python
 import json
 import os
+import tempfile
 from pathlib import Path
 
 def write_atomic(target: Path, body: dict[str, object]) -> None:
-    tmp = target.with_suffix(target.suffix + ".tmp")
     payload = json.dumps({"version": 2, "body": body}, sort_keys=True)
-    with open(tmp, "w", encoding="utf-8") as f:
-        f.write(payload)
-        f.flush()
-        os.fsync(f.fileno())   # durable before the rename
-    os.replace(tmp, target)    # atomic, overwriting, cross-platform
+    fd, tmp = tempfile.mkstemp(dir=target.parent, suffix=".tmp")   # unique, same dir, O_EXCL
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as f:
+            f.write(payload)
+            f.flush()
+            os.fsync(f.fileno())     # the temp's bytes are durable first
+        os.replace(tmp, target)      # atomic, overwriting rename
+    except BaseException:
+        os.unlink(tmp)               # never leave an orphan temp behind
+        raise
+    dir_fd = os.open(target.parent, os.O_RDONLY)   # POSIX: fsync the dir so the rename survives a crash
+    try:
+        os.fsync(dir_fd)
+    finally:
+        os.close(dir_fd)
 ```
 
 ## 5. Reflection, decorators, and callable metadata
@@ -187,19 +201,22 @@ def write_atomic(target: Path, body: dict[str, object]) -> None:
 Reflection reaches into a callable's internals; a decorator rewrites what the reflection sees. Both must
 preserve the contract they wrap, and read metadata through supported APIs rather than private attributes.
 
-- **Preserve identity with `functools.wraps`.** A wrapper without it reports itself as `wrapper` in
-  tracebacks, `help()`, and `inspect` — the real function's `__name__`, `__qualname__`, `__doc__`,
-  `__annotations__`, and `__wrapped__` are lost. `@functools.wraps(fn)` copies them and links `__wrapped__`
-  back to the original.
+- **Preserve identity with `functools.wraps`.** A wrapper without it introspects as `wrapper` everywhere —
+  `help()`, `repr`, `__name__`/`__qualname__`, `__doc__`, `__annotations__` — and carries no `__wrapped__`
+  link. `@functools.wraps(fn)` copies that metadata and sets `__wrapped__` back to the original, so
+  introspection and `inspect.signature` see the real function. It does **not** rewrite the wrapper's code
+  object, so a raw traceback frame still shows `wrapper` — `wraps` fixes the metadata, not the executing
+  frame's name.
 - **Preserve the static signature with `ParamSpec`.** A decorator typed `Callable[..., Any]` erases the
   wrapped function's signature, so callers stop type-checking. Type it with a `ParamSpec` so the caller
   contract survives — the mechanics live in `typing.md` § 4.
 - **Read metadata through the supported helpers, never raw attributes.** Use `inspect.signature(fn)` for
   parameters (it follows `__wrapped__`, so a `wraps`-decorated function reports its real signature) and
   `inspect.get_annotations(obj, eval_str=True)` or `typing.get_type_hints(obj)` for annotations — the reason
-  *"NEVER ... read or mutate raw `__annotations__`"* exists. Raw `__annotations__`/`__defaults__` may be
-  missing, hold unresolved strings, or skip inherited entries. Runtime-annotation depth and the 3.14
-  `annotationlib` path are in `typing.md` § 7.
+  *"NEVER ... read or mutate raw `__annotations__`"* exists. Raw `__annotations__` can hold unresolved
+  strings (under a future-import or a forward ref), does not merge inherited class entries, and is not present
+  on every callable — a plain function carries it (`{}` when unannotated), but an arbitrary callable object
+  need not. Runtime-annotation depth and the 3.14 `annotationlib` path are in `typing.md` § 7.
 - **Give dynamic registration a discoverable, testable contract.** A registry — decorator-based
   `@register("name")` or entry-point-based (§7) — needs a declared name space, a documented `Protocol` each
   registered object must satisfy, a way to enumerate what is registered, and a test that asserts the
@@ -224,25 +241,34 @@ sig = inspect.signature(audited(load))        # follows __wrapped__ to load's re
 
 Generated code is a build product, not source. The generator plus its input is the one authoritative home;
 the output is derived — the reasoning behind *"NEVER hand-edit generated code"*, whose next regeneration
-would silently overwrite any hand edit.
+would silently overwrite any hand edit. Common Python generators: protobuf / gRPC emitting `*_pb2.py`, a
+schema-to-model tool emitting dataclass or attrs models, a stub generator emitting `.pyi`, and Cython
+emitting `.c`.
 
-- **Quarantine it.** Keep generated files physically apart from hand-maintained ones (a `_generated/` package
-  or a clear naming suffix), and open each with a header comment naming the generator and its input, so no
-  reader mistakes it for source to edit.
-- **Regenerate; never patch the output.** When generated code needs to change, change the generator or its
-  input (a schema, a template) and regenerate. If the generator cannot be changed, apply a post-generation
-  transform as an automated build step — never a by-hand edit that the next run erases.
-- **Make regeneration deterministic and checked.** Pin the generator version and emit in a stable order (not
-  `dict`/`set` iteration order) so a "regenerate and assert no diff" guard in CI is meaningful. Type-check and
-  lint generated code like any shipped code — but fix a finding in the generator, not the file.
+- **Quarantine it.** Keep generated modules physically apart from hand-maintained ones (a `_generated/`
+  package, or a recognizable suffix like `*_pb2.py`), and mark each file with a `# @generated by <tool> from
+  <input>` header — the marker Python code-review and lint tooling reads to skip the file. Exclude the
+  generated tree from the formatter and linter in `pyproject.toml` (an `extend-exclude`) rather than
+  reformatting output the next regeneration reverts.
+- **Regenerate; never patch the output.** When generated code must change, change the generator or its input
+  (the `.proto`, the JSON Schema, the template) and regenerate. If the generator cannot be changed, apply the
+  fix as an automated post-generation `ast`/transform step in the build, never a hand edit. For code you would
+  otherwise generate by hand, prefer the stdlib's declarative generators — `dataclass`, `Enum`, `NamedTuple`,
+  `dataclasses.make_dataclass`, `types.new_class` — over an `exec`-of-a-source-string, which reopens the
+  `eval`/`exec` hole.
+- **Make regeneration deterministic and checked.** Pin the generator in the dev dependencies and emit in a
+  stable order (not `dict`/`set` iteration order), then gate it in CI with a regenerate-and-`git diff
+  --exit-code` step, so a stale checked-in file fails the build. Ship the generated package's types — a
+  `py.typed` marker or the generator's own `.pyi` — so downstream type-checking sees the generated API (the
+  marker mechanics live in `packaging.md`). Fix any type or lint finding in the generator, not the file.
 
 ## 7. Plugins and dynamic import
 
 A plugin loaded at runtime is code you did not write executing with your process's privileges. Discover it
 through the packaging system and validate it before you trust it.
 
-- **Discover through entry points.** `importlib.metadata.entry_points(group="myapp.plugins")` (the 3.12
-  selectable API) enumerates plugins that installed distributions declared in their `pyproject.toml`
+- **Discover through entry points.** `importlib.metadata.entry_points(group="myapp.plugins")` (the selectable
+  API, stable since 3.10) enumerates plugins that installed distributions declared in their `pyproject.toml`
   `[project.entry-points]` — named, versioned, installed on purpose, not arbitrary paths. Declaring the entry
   points is `packaging.md`'s job.
 - **Never import an arbitrary untrusted name.** `importlib.import_module(name)` or `__import__` on a name from
@@ -252,22 +278,28 @@ through the packaging system and validate it before you trust it.
   behind an allowlist" clause of *"MUST validate untrusted data before use and choose safe primitives"*.
 - **Validate the loaded object before calling it.** `ep.load()` returns whatever the distribution declared —
   treat it as untrusted until checked. Verify it satisfies the expected contract (a `Protocol` check, required
-  attributes, a version) and fail loudly if it does not. A `@runtime_checkable` `isinstance` check confirms
-  method **presence only**, not signatures (`typing.md` § 5), so pair it with the checks that matter.
+  attributes, a version) and fail loudly if it does not. `isinstance` against a `Protocol` works **only** if
+  that protocol is `@runtime_checkable` (a plain `Protocol` raises `TypeError`), and even then it confirms
+  method **presence only**, not signatures (`typing.md` § 5) — so pair it with a version or attribute check.
 - **Entry points are not a sandbox.** Loading a plugin runs its code at your privileges; entry points assume
   the installed distribution is trusted because it was installed deliberately. Do not use them to run
   genuinely untrusted third-party code.
 
 ```python
 from importlib.metadata import entry_points
+from typing import Protocol, runtime_checkable
+
+@runtime_checkable
+class Reader(Protocol):                            # runtime_checkable: the isinstance below is legal
+    def read(self) -> bytes: ...
 
 ALLOWED_PLUGINS = {"csv_reader", "json_reader"}
 
-for ep in entry_points(group="myapp.readers"):   # 3.12 selectable API
-    if ep.name not in ALLOWED_PLUGINS:            # allowlist BEFORE load
+for ep in entry_points(group="myapp.readers"):     # the selectable API (3.10+)
+    if ep.name not in ALLOWED_PLUGINS:             # allowlist BEFORE load
         continue
-    reader = ep.load()                            # imports and returns the object
-    if not isinstance(reader, Reader):            # validate the contract before trusting it
+    reader = ep.load()                             # imports and returns the object
+    if not isinstance(reader, Reader):             # presence-only check; pair with a version check
         raise TypeError(f"plugin {ep.name!r} is not a Reader")
     register(ep.name, reader)
 ```
