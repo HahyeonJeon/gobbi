@@ -303,9 +303,10 @@ are startup's substitute, because the baseline is user-confirmed answer-by-answe
 
 Stop immediately; do not continue to another manifest item and do not mark the baseline valid. Report
 exactly which files were written, which supersessions/archives were applied, and what remains. Offer three
-Always-Ask choices: **complete-forward** from the deterministic manifest / **roll back** the applied
-`git mv`s + status-flips (recoverable via git) / **abandon** the partial baseline for manual repair. Never
-choose a recovery path silently. The startup summary cannot carry `baseline_valid: true` until recovery
+Always-Ask choices: **complete-forward** from the deterministic manifest / **roll back** — remove the
+step-2(a) created typed docs, revert the applied step-2(b) `git mv`s + status-flips, and restore any
+step-2(c) in-place living-index edits (all recoverable via git), returning the tree to the pre-promotion
+state / **abandon** the partial baseline for manual repair. Never choose a recovery path silently. The startup summary cannot carry `baseline_valid: true` until recovery
 completes, all exact paths verify, and every guard passes.
 
 **Prevent double promotion.** After successful promotion, write every promoted path + the completion marker
