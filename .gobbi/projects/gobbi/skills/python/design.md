@@ -38,13 +38,12 @@ a lifetime that spans calls. Default to a plain function — it is the smallest 
 earns its keep once one of the table's class triggers (identity, invariants across calls, state that travels
 with behavior) actually fires.
 
-- **Design the call, then work inward.** Write the call a consumer should make first, then build the body to
-  serve it: put every fact one result needs in the arguments, return the result instead of storing it for a
-  later getter, and introduce an object only when calls share identity, hold an invariant over time, or expose
-  several operations over the same owned state.
-- **Pure over stateful where you can.** A function that takes what it needs and returns a result has no hidden
-  state a reader must track. Keep the pure computation separate from the I/O that feeds it (the parent's
-  side-effect-boundary discipline), so the core is a value-in / value-out transform.
+- **Design the call, then work inward** — the `coding` contract-first floor, applied to Python: put every
+  fact one result needs in the arguments, return the result rather than storing it for a later getter, and
+  introduce an object only when calls share identity, hold an invariant over time, or expose several
+  operations over the same owned state.
+- **Keep the pure core separate from I/O** — the parent's side-effect-boundary floor: push file, network,
+  and clock work to the edges so the core is a value-in / value-out function.
 - **One configured callable is a closure or `functools.partial`, not a one-method class.** Bind leading
   arguments with `functools.partial` when the configuration is pure argument-binding; reach for a closure when
   setup validates or derives private values before returning the callable. A class whose entire surface is
@@ -151,10 +150,13 @@ properties. The mechanics of building one well:
   from the generated `__init__`/`__repr__`, and `compare=False` drops an operational or sensitive field from
   equality when it is not part of value identity. Set `kw_only=True` (decorator-wide or per field) to force
   keyword construction (§ 2), and `slots=True` to remove the per-instance `__dict__`.
-- **`frozen=True` for a value object.** A frozen dataclass is hashable and immutable, so it is safe to share,
-  cache, and use as a dict/set key — though it does not freeze the objects its fields point at. Derive a
-  computed field in `__post_init__` via `object.__setattr__`, since ordinary attribute assignment is blocked
-  on a frozen instance.
+- **`frozen=True` for a value object.** A frozen dataclass is immutable, and hashable *only when every field
+  is itself hashable* — then it is safe to share, cache, and use as a dict/set key. A `list`/`dict`/`set`
+  field (like `Invoice.lines` below) leaves instances unhashable: the `TypeError` fires when an instance is
+  hashed, not at construction, so switch such a field to a `tuple`/`frozenset` when the value must serve as a
+  key. `frozen=True` does not freeze the objects a field points at either. Derive a computed field in
+  `__post_init__` via `object.__setattr__`, since ordinary attribute assignment is blocked on a frozen
+  instance.
 - **`__slots__` (via `slots=True`) when instances are many.** It cuts memory and forbids accidental attribute
   creation. The caveats: it conflicts with a class-level default value for the same name, and multiple
   inheritance from two slotted classes with overlapping slots fails — reach for it on leaf value types, not on
@@ -208,8 +210,8 @@ The parent rule prefers composition and protocols to deep inheritance. The idiom
   two surfaces independent; inheritance welds them.
 - **Delegate a responsibility, not an API.** Forward only the narrow operation your own API promises, and
   translate the collaborator's results or errors so consumers never depend on the internal object. A wrapper
-  that forwards every method unchanged — leaving callers still coupled to the collaborator's model — is
-  shallow; it adds an interface but hides nothing.
+  that forwards every method unchanged is the shallow case the `coding` deep-unit floor warns against —
+  callers stay coupled to the collaborator's model.
 - **Strategy is a callable; variants are a registry; construction is a factory.** Pass a function to vary one
   behaviour, rather than demanding a subclass. Hold interchangeable variants in a name→callable (or name→class)
   registry, and build that registry explicitly at the assembly boundary — hidden import-time registration
@@ -219,9 +221,9 @@ The parent rule prefers composition and protocols to deep inheritance. The idiom
   not define is hidden coupling. Use one only when it adds an independent capability, needs no private
   initialization order, and cooperates through `super()`. A mixin carrying several fields, sibling
   assumptions, or lifecycle overrides is an implicit framework — use a collaborator instead.
-- **Split a god-object by responsibility.** The tells: a class holding unrelated subsystem collaborators, or
-  methods that each touch a disjoint set of fields. Extract an owner around each cohesive state set, then
-  compose them behind a small orchestration function — rather than growing one wide class.
+- **Split a god-object by responsibility** — the `coding` single-responsibility floor: the Python tells are a
+  class holding unrelated subsystem collaborators, or methods that each touch a disjoint set of fields.
+  Extract an owner around each cohesive state set, then compose them behind a small orchestration function.
 
 ```python
 from collections.abc import Callable, Mapping, Sequence

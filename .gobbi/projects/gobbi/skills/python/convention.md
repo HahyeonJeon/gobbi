@@ -192,7 +192,9 @@ grammar of one:
   update the code and the docstring together.
 
 ```python
-def read_records(path: str, *, encoding: str = "utf-8") -> list[dict]:
+from collections.abc import Iterator
+
+def read_records(path: str, *, encoding: str = "utf-8") -> list[dict[str, object]]:
     """Load newline-delimited JSON records from a file.
 
     Args:
@@ -208,7 +210,7 @@ def read_records(path: str, *, encoding: str = "utf-8") -> list[dict]:
     """
     ...
 
-def stream_lines(path: str):
+def stream_lines(path: str) -> Iterator[str]:
     """Yield each decoded line with its trailing newline stripped.
 
     Yields:
@@ -293,22 +295,17 @@ logger = logging.getLogger(__name__)   # binding a name is inert; safe at import
 
 ## 5. Comments
 
-The parent floor's craftsmanship carries over: a comment explains what the code cannot say for itself.
+The `coding` comment discipline carries over unchanged — comment the *why* not the *what*, delete
+commented-out code rather than parking it, treat a comment that must explain *what* a block does as a signal
+to extract a named function, and update or delete a comment in the same change that invalidates it. What is
+Python- and PEP 8-specific is the layout and marker grammar:
 
-- **Comment the why, not the what.** State the reason, the constraint, or the rejected alternative — never
-  narrate what the line plainly does. A comment restating the code is noise; one that contradicts the code is
-  worse than none. Update or delete a comment in the same change that invalidates its reason.
 - **Block vs inline.** A block comment sits above the code at the same indent, in full sentences. An inline
   comment follows the statement after at least two spaces, then `# ` and a short note — use it sparingly, and
   when a second sentence is needed, move it to a block above.
 - **`TODO` / `FIXME` grammar.** Write `# TODO(owner): actionable thing` with a tracking reference and a
   falsifiable removal condition; use `# FIXME:` for a known-broken spot that must be repaired. Make them
   greppable and owned, so they are found and closed.
-- **No commented-out code.** Delete dead code — version control remembers it. A commented-out block rots and
-  misleads the next reader about what is live.
-- **A comment can be a refactor signal.** When a block needs a comment to explain *what* it does, prefer
-  extracting a well-named function — the name carries the meaning the comment was standing in for, and the
-  comment disappears.
 
 ```python
 # WHY: the upstream API rejects batches over 500, so we chunk here rather than
