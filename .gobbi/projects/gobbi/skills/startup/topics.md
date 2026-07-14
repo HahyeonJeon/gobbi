@@ -8,12 +8,15 @@ end of this file.
 ## Contents
 
 - [How to traverse the tree](#how-to-traverse-the-tree)
+  - [Anti-sycophancy contract](#anti-sycophancy-contract)
+  - [Worked pushback exemplars](#worked-pushback-exemplars)
 - [Phase I — Problem space](#phase-i--problem-space)
   - [Topic 1 — Existing Reality & Intent](#topic-1--existing-reality--intent)
-  - [Topic 2 — Vision, Problem & Success](#topic-2--vision-problem--success)
+  - [Topic 2 — Problem, Vision & Success](#topic-2--problem-vision--success)
   - [Topic 3 — Users, Jobs, Alternatives & Value](#topic-3--users-jobs-alternatives--value)
 - [Phase II — Boundary](#phase-ii--boundary)
   - [Topic 4 — Scope, Boundaries & Non-goals](#topic-4--scope-boundaries--non-goals)
+  - [Problem-before-solution premise gate](#problem-before-solution-premise-gate)
 - [Phase III — Solution space (product shape before system shape)](#phase-iii--solution-space-product-shape-before-system-shape)
   - [Topic 5 — Features & User Journeys](#topic-5--features--user-journeys)
   - [Topic 6 — Experience & Product Design](#topic-6--experience--product-design)
@@ -40,9 +43,12 @@ end of this file.
    what actually happened, not what the user supposes would happen.
 4. **When a branch reaches a design-bearing choice** (marked under the heading below), do not close it
    from the user's initial preference. Run the [`SKILL.md`](SKILL.md) P3 study→recommend→decide
-   micro-loop: frame one axis → study internal + reliable external prior art → present 2–3 credible
-   options with a recommendation + evidence-to-change via the Question Card → user decides → record the
-   direction + rationale. Capture-only branches do not pay this cost unless they expose a choice.
+   micro-loop: frame one axis → study prior art across three layers (Layer 1 tried-and-true, Layer 2
+   new-and-popular scrutinized for maturity / fit / survivorship, Layer 3 first-principles where
+   convention does not apply, with the evidence for deviating) → present at least two genuinely distinct
+   options (one minimal, one ideal, at equal weight) with a recommendation + evidence-to-change via the
+   Question Card → user decides → record the direction + rationale. Capture-only branches do not pay this
+   cost unless they expose a choice.
 5. If an answer is vague, probe with a concrete example, a past-behavior question, or a counterexample.
    If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
    § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
@@ -61,6 +67,33 @@ The core design cluster is **Topics 6–9**, plus the always-design-bearing capa
 **5.1–5.2**; a conditional set (**4.4, 5.3, 5.4, 7.1, 8.4, 9.4, 10.4, 11.1, 11.2**) fires the same
 micro-loop only when the branch selects or changes a direction rather than inventorying current state.
 The markers below are the authoritative set; see [`SKILL.md`](SKILL.md) § Design-decision micro-loop (P3).
+
+### Anti-sycophancy contract
+
+Hold this posture through every turn ([`SKILL.md`](SKILL.md) § Anti-sycophancy traversal contract (P3)
+owns the rule):
+
+- Do NOT use "that is interesting", "that could work", "there are many ways", or "you might consider" as
+  standalone assessments — they read as agreement and teach nothing.
+- Do NOT put the desired answer inside a discovery question.
+- After each answer, state the read explicitly: "My read: [evidence status] because [specific evidence or
+  gap]; this changes if [observable evidence]."
+- When disagreeing, cite the contradiction, the source, or the missing signal — not a feeling.
+- Push a vague or contradicted answer at most twice, then `recorded-open`.
+- A user decision can lock intent, but it cannot convert a contradicted external fact into evidence.
+
+### Worked pushback exemplars
+
+Use these BAD → GOOD rewrites on the design-bearing and problem/user branches:
+
+- **Vague target** — BAD: accept "developers". GOOD: "'Developers' is not a segment. Who experienced
+  this last, what exact task, and what did the failure cost?"
+- **Compliments** — BAD: treat "they love it" as demand. GOOD: "Liking it is free. Which of them changed
+  behavior or gave up time, effort, or money?"
+- **Undefined quality** — BAD: accept "seamless". GOOD: "'Seamless' is not measurable. Which step blocks
+  first value, what is the baseline completion / time, and what threshold would pass?"
+- **No alternative** — BAD: accept "there's nothing like it". GOOD: "The status quo is still what you
+  must beat. What do users do now, and what anxiety or habit keeps them there?"
 
 ---
 
@@ -93,46 +126,66 @@ The markers below are the authoritative set; see [`SKILL.md`](SKILL.md) § Desig
 `license/governance: internal — not applicable` as a one-line **confirmed** answer and move on. Never
 fabricate a license, and never skip the branch silently.
 
-### Topic 2 — Vision, Problem & Success
+### Topic 2 — Problem, Vision & Success
 
-#### 2.1 Vision
-- If the project succeeds, what is materially different for its users or operators?
+#### 2.1 Problem event & consequence
+- What was the last concrete occurrence of the problem — when, and who experienced it?
+- What did that person actually do when it happened, and what did it cost them?
+- What recurring situation triggers the need for this project, and how often does it recur?
+
+#### 2.2 Root cause, why-now & fatal premise
+- Why does the problem persist, and what evidence would show the stated problem is only a symptom of a
+  deeper cause?
+- What recently changed that makes now the time to solve it?
+- Which single claim, if false, would make this project pointless or wrong? (Ask one axis per turn.)
+
+#### 2.3 Vision & durable outcome
+- What have you already seen that makes a better outcome believable? Then, tagged `intent`: if the
+  project succeeds, what is materially different for its users or operators?
 - What stays true in three years even if the implementation changes completely?
 - What one-sentence description should a new contributor be able to repeat accurately?
 
-#### 2.2 Problem & root cause
-- What recurring situation triggers the need for this project?
-- What happened the last time that situation occurred, and who felt the cost?
-- Why does the problem persist, and what evidence would show the stated problem is only a symptom?
-
-#### 2.3 Success & failure
-- What two to four observable outcomes would prove the project works?
-- What would count as a technically successful build but a failed project?
-- What baseline and target can be measured, by whom, and by when?
+#### 2.4 Baseline, target, failure & stop threshold
+- What is the current measured baseline from the most recent real case?
+- Which target improvement — measured by whom, and by when — would prove the project works, and what
+  would count as a technically successful build but a failed project?
+- What threshold or evidence would say stop, pivot, or narrow?
 
 ### Topic 3 — Users, Jobs, Alternatives & Value
 
-#### 3.1 Segments
-- Who uses it, and who operates, approves, supports, pays for, or is affected by it?
-- Which segment is the first target, and what evidence makes it first?
+#### 3.1 First user, persona & roles
+- Who is the one first user or segment, and what evidence makes them first?
+- Where distinct roles exist, who operates, approves, supports, or is affected — each as a separately
+  applicable axis, not a purchasing chain?
 - Who is explicitly **not** a target in the current boundary?
 
-#### 3.2 Jobs & situations
-- In what concrete situation does the user reach for it?
-- What progress (not feature) is the user trying to make?
+#### 3.2 Job & switching forces
+- In what concrete situation does the user reach for it, and what progress (not feature) are they trying
+  to make?
 - Complete the job story: "When [situation], I want [motivation], so I can [outcome]." What happens if
   that job fails?
+- Name the switching forces: what pushes the user off the current way, what pulls them toward a new one,
+  what anxiety the new approach creates, and what habit or allegiance holds them to the old. What event
+  overcame those forces in the last real switch, and which force is strongest?
 
-#### 3.3 Alternatives & demand evidence
-- What do target users do today instead — including manual work or doing nothing?
-- What have they already spent in time, money, risk, or workaround effort?
-- What observed behavior shows demand, and how frequent is the need among the first users?
+#### 3.3 Current alternatives & status quo
+- What do target users do today instead — a workaround, doing nothing, or an adjacent tool? The status
+  quo is the real thing the project must beat.
+- How well does the current alternative actually work, and where does it break down?
+- What anxiety or habit keeps users on the status quo even when it fails them?
 
-#### 3.4 Value proposition
-- What outcome does it deliver better than the current alternative?
+#### 3.4 Behavioral evidence of the problem
+- What dated instances of the problem can the user point to, and how frequent is the need among the first
+  users?
+- What has the first user already spent — effort, time, or money — or what workaround have they built to
+  cope? (Past behavior only — never "what would you pay".)
+- What is the consequence of doing nothing, and what observed behavior shows the problem is real?
+
+#### 3.5 Value proposition
+- What outcome does the project deliver better than the current alternative?
 - What has the first target user already done when the current alternative fell short — switched tools,
   built a workaround, or absorbed the cost?
-- Which value claim would we drop if the supporting evidence never appears?
+- Which value claim would be dropped if the supporting behavior never appears?
 
 ---
 
@@ -153,15 +206,33 @@ fabricate a license, and never skip the branch silently.
 #### 4.3 Non-goals
 - Which tempting feature would broaden the project without strengthening its core value?
 - Which use cases will it refuse or leave manual for now?
-- What should a contributor never infer from the vision statement?
+- Which scope expansion has already been proposed or attempted, and why was it declined or left manual?
+  Given that, what should a contributor never infer from the vision statement?
 
 #### 4.4 Decision tests
 
 *Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What test decides whether a proposed capability belongs in the current scope?
-- What evidence or condition would justify expanding the boundary later?
+- Which past scope decision has already been reversed or expanded, and what evidence drove it? Then,
+  labeled `forecast`: what evidence or condition would justify expanding the boundary later?
 - Which scope choices are reversible, and which create an expensive commitment?
+
+### Problem-before-solution premise gate
+
+After Topic 4 and before Topic 5, run an explicit confirmed checkpoint. Show these premises one by one
+for agree / disagree:
+
+1. the recurring problem + its last-instance evidence;
+2. the first user / segment + the job;
+3. the current alternative + the behavioral evidence the problem is real;
+4. the root cause + why-now;
+5. the fatal assumption + the current disconfirming evidence;
+6. the outcome boundary + explicit non-goals.
+
+A failed premise reopens its earliest owning branch; do not enter features until it is confirmed. No
+commercial premise is graded here. ([`SKILL.md`](SKILL.md) § Problem-before-solution premise gate owns
+the rule.)
 
 ---
 
@@ -385,7 +456,8 @@ they constrain a known project rather than invent one.
 
 - What belongs in now, next, and later, and which dependency explains that order?
 - What milestone proves enough value to justify the next investment?
-- What evidence would pause, pivot, narrow, or retire the project?
+- What signal has paused, pivoted, or narrowed this or a comparable past project before? Then, labeled
+  `forecast`: what evidence would pause, pivot, narrow, or retire this project?
 
 ### Topic 11 — Idioms, Rules & Recurring Mistakes
 
@@ -465,6 +537,21 @@ first, regenerate the affected staged drafts from the ledger, then present the c
   staged drafts from the ledger (idempotent), and continue from the first unconfirmed checkpoint.
 - **Abandon-before-promote is safe.** If the user abandons an in-progress run before promotion, the
   session-local working and staging material can be dropped or ignored with no durable-memory cleanup.
+- **Riskiest-assumption-first depth override.** After the first real problem event, stack the design's
+  riskiest assumptions — (i) the claim whose falsity means there is no real problem or user, (ii) the
+  claim whose falsity makes the project infeasible or unsafe to build, (iii) the claim whose falsity makes
+  the product shape wrong or unusable — and give the top one the first disconfirming probe before normal
+  traversal continues. This changes DEPTH only, never coverage or the macro topic order; re-score the
+  stack when a later answer changes the root problem. ([`SKILL.md`](SKILL.md) § Riskiest-assumption-first
+  depth override owns the rule.)
+- **JTBD switching forces are user / problem understanding.** In 3.2 and 3.3, probe the four forces —
+  push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
+  the last real switch, to close the gap where a real problem still fails to produce a change in behavior.
+  This is user / problem understanding, not competitive positioning.
+- **Synthesis-in-sections before promotion.** Before synthesizing staged drafts, present the design back
+  in small coherent sections (problem / evidence → first user → boundary → product shape → feasibility →
+  guardrails), ask whether each interpretation is accurate, and allow backward movement on a new
+  constraint. (A ~200–300-word-per-section heuristic, not a hard check.)
 
 The full capture model, staging→destination contract, and startup-close promotion procedure that consume
 these answers live in [`recording.md`](recording.md).
