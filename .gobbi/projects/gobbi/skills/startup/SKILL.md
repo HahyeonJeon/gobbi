@@ -20,40 +20,98 @@ reference.
 
 ## Principles
 
-> **Dependency comes before detail.**
+The startup skill runs on ten craft principles in two named groups — five Interview Craft, five Design
+Craft. Ten (not the usual three-to-six) is a deliberate, user-locked exception: each principle is pure
+craft and each maps to a gradable acceptance family (the mapping table closes this section), so none is
+un-failable. Do not reduce the set toward six.
 
-Problem, users, outcomes, and boundary give the product its shape; the product shape then constrains
-the system shape. Walking the talk in that order stops a late technical choice from silently redefining
-an earlier product decision.
+### Group A — Interview Craft
 
-> **Evidence comes before assertion.**
+> **A1 — Start with a real problem event.**
 
-Observed behavior and verified facts separate what is real today from what is only hoped or assumed.
-Marking each answer by its evidence strength keeps a plausible guess from hardening into a false
-foundation the whole baseline rests on.
+Before vision, features, or solution language, establish the last concrete occurrence: who experienced
+it, what happened, what they did, and what it cost. If no real event or current behavior exists, do not
+promote the problem as confirmed.
 
-> **One answer can have many typed effects.**
+> **A2 — Weight behavioral evidence and commitments over praise.**
 
-The conversation follows dependencies, but the durable record follows the kind and scope of each
-concept. A single answer can refine several distinct records — one per concept — without ever bundling
-unrelated ideas into one document.
+Believe what the user already did or gave up to cope with the problem — a workaround they built, effort,
+time, or money they already spent, a tool they switched, a struggle they repeated — over what they say
+they want. A compliment, a survey "yes", or "I'd use that" is not evidence a problem is real. Ask "have
+they built a workaround, or already spent effort, time, or money to solve this?" as a truth-serum for the
+problem's reality, never as a forward pricing question.
 
-> **A transcript is not memory.**
+> **A3 — Ask neutrally, don't pitch or lead, then take a position and name the evidence that would flip it.**
 
-Raw conversation is an audit trail, not a reference. Durable memory is a separate synthesis that stands
-on its own for a reader who never saw the talk. The two are different layers with different lifetimes.
+Ask about the person's life and never put the desired answer inside the question; treat compliments and
+feature-requests as prompts to investigate, not as validation. After the answer, state your evidence read
+and what would change it — never hide behind soft neutrality. Push a vague or contradicted answer at most
+twice, then record it open.
 
-> **The current reference beats historical accumulation.**
+> **A4 — Attack the riskiest assumption first, and seek the evidence that would kill it.**
 
-A baseline review tests the existing claims and classifies each change; it never stacks a new layer of
-prose over an outdated one. Keeping one current, coherent reference is worth more than a growing pile of
-half-true history.
+Name the claim most likely to make the project pointless, infeasible, or wrong, and spend the first
+disconfirming probe there; allocate depth by uncertainty × reversibility × magnitude — fast on two-way
+doors, slow on one-way — while still closing every required branch.
 
-> **The user owns product intent.**
+> **A5 — Name one first user and their switch.**
 
-The manager investigates, challenges, and recommends; the user decides. Product direction, scope, binding
-rules, and which capabilities become durable features are the user's calls, and no durable write happens
-without the user's approval.
+Ground the project in one first user or segment and a concrete job; identify the current alternative,
+what pushes and pulls them toward change, and the anxiety of the new and habit of the old that block it.
+Where a project has distinct roles, separate the person who acts from the one who operates, approves, or
+is affected — as user / problem understanding, not a purchasing chain.
+
+### Group B — Design Craft
+
+> **B1 — Confirm the problem premises before shaping the solution.**
+
+At the problem→solution boundary, show the premises — the problem and its last-instance evidence, the
+first user and job, the current alternative and switching forces, the root cause and why-now, the fatal
+assumption, and the boundary and explicit non-goals — for agree / disagree. Do not let a feature,
+architecture, or stack choice repair an unconfirmed premise after the fact.
+
+> **B2 — Study three layers and present real alternatives, then decide with the user.**
+
+Study tried-and-true, new-and-popular, and first-principles prior art before recommending; present at
+least two genuinely distinct options — one minimal, one ideal, at equal weight — with effort, risk,
+reuse, a recommendation, and the evidence that would flip it. Judge references for applicability, not by
+count.
+
+> **B3 — Shape a rough, solved, bounded direction.**
+
+Connect the main product elements, critical journeys, failure paths, boundary, and system direction at
+the macro level; leave signatures, schemas, algorithms, module internals, and task breakdowns rough for
+later loops. Start with the narrowest useful foundation that delivers real value, not infrastructure.
+
+> **B4 — A good design has to be viable: feasible to build and sustainable to run.**
+
+Check that the shaped direction can actually be built with the available skills, dependencies, and
+constraints, and can be operated and maintained across its intended life — capacity, ownership, failure
+recovery, and upkeep. Viability here is feasibility and sustainability, not profit.
+
+> **B5 — The user owns product intent — the manager recommends; the user locks scope and direction, and it reopens only on evidence.**
+
+The manager investigates, disagrees, recommends, and records rejected options; the user explicitly opts
+into each scope or binding-direction change. A locked decision stays current until new evidence crosses
+its recorded evidence-to-change threshold, at which point the earliest owning branch reopens.
+
+### Principle → acceptance-family mapping
+
+Each principle is graded through a sibling acceptance family in the `scenario.md` + `checklist.md` bundle,
+so "each principle maps to a family" is checkable and no principle is un-failable.
+
+| Principle | Acceptance family / check it is graded through |
+|---|---|
+| A1 Real problem event | Family 1 Problem reality (`STARTUP-PROJ-SCENARIO-05`) |
+| A2 Behavioral evidence over praise | Family 1 Problem reality + Family 5 teeth (`STARTUP-RISK-SCENARIO-06`) |
+| A3 Ask neutrally / take a position | PROJ-01 fluent-paragraph adversarial + Family 5 teeth |
+| A4 Riskiest assumption first | PERF-01 (reversibility × magnitude depth) + Family 5 teeth |
+| A5 One first user + switch | Family 2 User & job clarity (`STARTUP-PROJ-SCENARIO-06`) |
+| B1 Confirm premises before solution | premise gate checkpoint + PROJ-02 (product intent constrains system) |
+| B2 Three layers + real alternatives | PROJ-03 (researched + user-decided) |
+| B3 Rough, solved, bounded | Family 3 Product-shape soundness (`STARTUP-PROJ-SCENARIO-07`) |
+| B4 Viable = feasible + sustainable | Family 4 Feasibility & sustainability (`STARTUP-STRUCT-SCENARIO-05`) + Family 5 teeth |
+| B5 User owns intent | PROJ-03 (user-decided) + the scope Rule |
 
 ---
 
@@ -72,10 +130,16 @@ without the user's approval.
   branch is accounted for.
 - **MUST establish and confirm scope and product shape before architecture** — a system choice must never
   set the product boundary by accident.
+- **MUST confirm the scope boundary and explicit non-goals before entering the solution / features
+  topics** — the problem-before-solution premise gate fixes what the project will NOT do before Topic 5,
+  so a feature can never quietly expand an unconfirmed scope.
 - **MUST run the study → recommend → user-decision micro-loop for every design-bearing branch** — study
   prior art (internal grep + external), present 2–3 reference-backed options with a recommendation and an
   evidence-to-change through the Question Card, then record the user's chosen direction + rejected
   alternatives; never close a design-bearing branch from a bare captured preference.
+- **MUST allocate interview depth by uncertainty × reversibility × magnitude** — probe reversible
+  two-way-door choices fast and irreversible / high-magnitude one-way doors slowly and with a
+  disconfirming test, while still closing every required branch.
 - **MUST keep every durable record atomic** — one record holds one concept, so later supersession and
   archival keep the right granularity.
 - **MUST validate the whole approved promotion set before the first durable write** — any invalid or
@@ -156,6 +220,47 @@ promotion procedure.
 - No completion while any in-scope Level-2 branch is neither answered, proven irrelevant, nor recorded
   open with an owner.
 
+### Anti-sycophancy traversal contract (P3)
+
+During traversal the manager holds an anti-sycophancy posture:
+
+- Do NOT use "that is interesting", "that could work", "there are many ways", or "you might consider" as
+  standalone assessments — they read as agreement and teach nothing.
+- Do NOT put the desired answer inside a discovery question.
+- After each answer, state the read explicitly: "My read: [evidence status] because [specific evidence or
+  gap]; this changes if [observable evidence]."
+- When disagreeing, cite the contradiction, the source, or the missing signal — not a feeling.
+- Push a vague or contradicted answer at most twice, then `recorded-open`.
+- A user decision can lock intent, but it cannot convert a contradicted external fact into evidence.
+
+### Riskiest-assumption-first depth override (P3)
+
+After the first real problem event, the manager stacks the design's riskiest assumptions and probes the
+top one first — the **riskiest-assumption-first depth override**. Stack the claims in this order:
+
+1. the claim whose falsity means there is no real problem or user;
+2. the claim whose falsity makes the project infeasible or unsafe to build;
+3. the claim whose falsity makes the product shape wrong or unusable.
+
+The top claim gets the first disconfirming probe before normal traversal continues. This changes DEPTH
+only — never coverage or the macro topic order — and every required branch still closes. Re-score the
+stack when a later answer changes the root problem.
+
+### Problem-before-solution premise gate (P3, after Topic 4 / before Topic 5)
+
+Before entering the solution / features topics, run an explicit confirmed checkpoint. Show these premises
+one by one for agree / disagree:
+
+1. the recurring problem + its last-instance evidence;
+2. the first user / segment + the job;
+3. the current alternative + the behavioral evidence the problem is real;
+4. the root cause + why-now;
+5. the fatal assumption + the current disconfirming evidence;
+6. the outcome boundary + explicit non-goals.
+
+A failed premise reopens its earliest owning branch; do not enter features until it is confirmed. No
+commercial premise is graded here.
+
 ### Design-decision micro-loop (P3)
 
 For every **design-bearing branch** — every branch [`topics.md`](topics.md) § Design-bearing markers marks
@@ -165,13 +270,17 @@ recording the direction. [`topics.md`](topics.md) is the ONE authoritative class
 its topic numbers here. It restores the manager's "investigate, challenge, recommend" role at DIRECTION
 altitude; it never designs mechanism.
 
-1. **PRIOR-ART STUDY** — before asking the design question, study internal + external prior art per
-   [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research: internal = grep
-   the codebase + existing memory for patterns already in use; external = 2–3 references (via `WebSearch` /
-   `WebFetch`, or a delegated `research` subagent) on how the decision is solved well. Capture each as
-   Source / Insight / Why in `working/research/{slug}.md`. Never fabricate a citation.
-2. **RECOMMENDATION** — present 2–3 reference-backed options with trade-offs, the recommended option
-   first, and the evidence-to-change ("this recommendation flips if X"), through the Question Card
+1. **PRIOR-ART STUDY (three layers)** — before asking the design question, study prior art per
+   [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research across three
+   layers: **Layer 1** tried-and-true, **Layer 2** new-and-popular (scrutinize maturity, fit, and
+   survivorship), **Layer 3** first-principles (where convention does not apply, plus the evidence for
+   deviating). Internal = grep the codebase + existing memory for patterns already in use; external =
+   references (via `WebSearch` / `WebFetch`, or a delegated `research` subagent) on how the decision is
+   solved well. Capture each as Source / Insight / Why in `working/research/{slug}.md`, judging each
+   reference for applicability rather than by count. Never fabricate a citation.
+2. **RECOMMENDATION** — present at least two genuinely distinct reference-backed options — one minimal,
+   one ideal, at equal weight — with effort / risk / reuse trade-offs, the recommended option first, and
+   the evidence-to-change ("this recommendation flips if X"), through the Question Card
    ([`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure). The recommendation is
    opinionated but defeasible — "all options are valid" is a failure.
 3. **DESIGN-DISCUSSION GATE** — the USER decides (an Always-Ask design decision —
@@ -183,6 +292,27 @@ altitude; it never designs mechanism.
 **Boundary.** The micro-loop sets the reference-informed DIRECTION (which architecture style / which stack /
 which convention) and records the user's decision. It does NOT design mechanism — interface signatures,
 module internals, algorithms, schemas, and task breakdown stay in Ideation / Planning / Execution.
+
+### Acceptance invariants + the two-gate check-resolution rule
+
+The sibling [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md)
+bundle is the acceptance surface the P6.5 gate grades. Two of its invariants bind the traversal above:
+
+- **A positive claim may never be stronger than its evidence** — an applicable load-bearing design claim
+  is graded on whether it is evidenced, not on whether it reads complete.
+- **Two gates that must not be collapsed** — a **coverage-closure gate** (a branch is accounted for when it
+  is `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner — the Level-2
+  coverage Rule) and an **acceptance-pass gate** (a load-bearing design claim PASSes only when it is
+  evidenced). `recorded-open` is a valid coverage closure but is NOT an acceptance pass — an applicable
+  load-bearing claim left `recorded-open` still drives REVISE (the `STARTUP-RISK-SCENARIO-06` teeth).
+
+### Rerun & supersession classification
+
+A rerun tests the existing baseline's claims and classifies each change — unchanged, living-index update,
+new record, superseding record, or deferred / open — rather than stacking a new layer of prose over an
+outdated one. The current, coherent reference wins over accumulated history; a supersession writes the new
+record, flips the old record's status in place, and archives the old file (never deletes it). See
+[`recording.md`](recording.md) for the resume / rerun classifier and the supersession procedure.
 
 ### Memory Access Matrix
 
