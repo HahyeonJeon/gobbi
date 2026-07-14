@@ -1,8 +1,8 @@
 # Coding — Code-Quality Review Frame
 
-Child doc for the evaluator reviewing a code change-set against the `coding` skill's sixteen principles. Intended to complement `execution/evaluation.md` (code-quality vs did-the-task); the runtime load-both wiring is deferred. The execution child doc covers the workflow-level question (did the executor implement the right plan task, completely, without scope creep, verifiably); this `coding` child doc covers the **code-quality** question (is the code itself well-designed, well-built, and well-crafted). Provides per-perspective **seed scenarios with attached yes/no checklists** + **recommended verifications** + **perspective-specific anti-patterns**, then **Overall** anchors.
+Child doc for the evaluator reviewing a code change-set against the `coding` skill's seventeen principles. Intended to complement `execution/evaluation.md` (code-quality vs did-the-task); the runtime load-both wiring is deferred. The execution child doc covers the workflow-level question (did the executor implement the right plan task, completely, without scope creep, verifiably); this `coding` child doc covers the **code-quality** question (is the code itself well-designed, well-built, and well-crafted). Provides per-perspective **seed scenarios with attached yes/no checklists** + **recommended verifications** + **perspective-specific anti-patterns**, then **Overall** anchors.
 
-Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P16)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 16. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the future `python` / `typescript` skills, so this frame grades the property, not the idiom.
+Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P17)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 17. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the future `python` / `typescript` skills, so this frame grades the property, not the idiom.
 
 The artifact under evaluation is the **actual code change-set** (modified source, new units, the executor's notes). Scenarios include adversarial cases (premature abstractions, masked symptoms, silently-widened trust boundaries) so Stage 2 walks each Frame once without a separate adversarial pass.
 
@@ -217,6 +217,11 @@ The artifact under evaluation is the **actual code change-set** (modified source
 **Public signatures are self-explanatory (P3)**
 - A fresh caller can use each exported unit from its signature and doc alone, without reading the body.
 - Parameter names communicate intent at the call site.
+
+**The input interface demands only what the unit uses (P17)**
+- The unit takes the specific values it reads, not a whole aggregate or config object passed opaquely so the body can pull a few fields out of it — stamp coupling that makes the caller build more than the call needs.
+- No boundary parameter is a deeply nested or elaborate type the caller must decode before they can construct a valid argument.
+- A fresh caller can tell what to pass, and assemble it, from the unit's signature and doc alone, without opening the body to learn which fields matter.
 
 **Error messages are actionable (P10)**
 - Each error names the failure and a remediation path.
