@@ -22,6 +22,14 @@
 > **Legend.** `- [ ]` unresolved · `- [x] … PASS:` verified satisfied · `- [x] … FAIL: {finding-id}`
 > verified violated · `- [x] … n/a: {reason}` proven irrelevant. Record per-perspective counts
 > (PASS / FAIL / n/a / total) in the filled copy's compact per-scenario results table.
+>
+> **Two gates — do not collapse them.** A branch closure and an acceptance pass are different
+> gates. A branch is *accounted for* (coverage-closure gate) when it is `confirmed`,
+> `proven-irrelevant` with a reason, or `recorded-open` with an owner — here `recorded-open` is a
+> VALID closure. A design-substance check PASSes (acceptance-pass gate) only when the applicable
+> load-bearing claim is *evidenced* — here `recorded-open` is NOT an acceptance pass: an applicable
+> load-bearing design claim left `recorded-open` still drives REVISE (the `STARTUP-RISK-SCENARIO-06`
+> teeth). A branch can be validly closed for coverage and still FAIL the substance check.
 
 The scenario families, their lenses, and the adversarial cases these checks discriminate live in the
 sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The heading tree below is
@@ -33,9 +41,9 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 
 ### STARTUP-PROJ-SCENARIO-01 — Required topic coverage is complete and substantive
 - [ ] STARTUP-PROJ-SCENARIO-01-CHECK-01 — All 11 Level-1 checkpoint markers exist and each is user-confirmed.
-- [ ] STARTUP-PROJ-SCENARIO-01-CHECK-02 — All 44 required Level-2 branches appear exactly once in the branch-closure register.
+- [ ] STARTUP-PROJ-SCENARIO-01-CHECK-02 — All 46 required Level-2 branches appear exactly once in the branch-closure register.
 - [ ] STARTUP-PROJ-SCENARIO-01-CHECK-03 — Every branch closes as `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner and resolution method.
-- [ ] STARTUP-PROJ-SCENARIO-01-CHECK-04 — No branch marked `confirmed` rests only on a one-word, vague, or question-echoing answer without evidence, a concrete example, or a meaningful explanation.
+- [ ] STARTUP-PROJ-SCENARIO-01-CHECK-04 — Every `confirmed` load-bearing answer includes the evidence tuple its branch requires — source / actor, concrete event or observed state, date / time window, behavior, consequence, and claim status; a polished paragraph without the tuple FAILS the same as a one-word answer.
 - [ ] STARTUP-PROJ-SCENARIO-01-CHECK-05 — A vague answer was probed up to twice and then resolved or recorded-open; it was not accepted as confirmed or probed indefinitely.
 
 ### STARTUP-PROJ-SCENARIO-02 — Product intent constrains architecture and stack
@@ -46,7 +54,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 
 ### STARTUP-PROJ-SCENARIO-03 — Design-bearing directions are researched and user-decided
 - [ ] STARTUP-PROJ-SCENARIO-03-CHECK-01 — Every design-bearing branch has a decision brief with internal evidence and 2-3 identifiable external prior-art sources, each captured as Source / Insight / Why.
-- [ ] STARTUP-PROJ-SCENARIO-03-CHECK-02 — Every such branch records 2-3 credible options, an opinionated recommendation, and an evidence-to-change.
+- [ ] STARTUP-PROJ-SCENARIO-03-CHECK-02 — At least one source directly supports each load-bearing rationale (its applicability and constraint stated), contrary evidence is addressed, the alternatives are genuinely distinct, and the recommendation names the recommended option first plus the evidence-to-change; source count alone proves nothing.
 - [ ] STARTUP-PROJ-SCENARIO-03-CHECK-03 — The user's chosen direction, rationale, and rejected alternatives are recorded in the ledger and an atomic decision / design draft.
 - [ ] STARTUP-PROJ-SCENARIO-03-CHECK-04 — Every cited source resolves and supports the claim made from it; no citation or project fact is fabricated.
 - [ ] STARTUP-PROJ-SCENARIO-03-CHECK-05 — The decision stays at direction altitude and does not prescribe interface signatures, module internals, algorithms, schemas, or a task breakdown.
@@ -56,6 +64,15 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] STARTUP-PROJ-SCENARIO-04-CHECK-02 — The license / distribution / governance claim matches actual repository evidence, or is explicitly qualified as user intent / open rather than guessed.
 - [ ] STARTUP-PROJ-SCENARIO-04-CHECK-03 — The recorded decision-maker has authority over the license / governance decision.
 - [ ] STARTUP-PROJ-SCENARIO-04-CHECK-04 — Any unresolved legal, distribution, contribution, or governance constraint has an owner and resolution method.
+
+### STARTUP-PROJ-SCENARIO-05 — The load-bearing problem is grounded in behavioral evidence
+- [ ] STARTUP-PROJ-SCENARIO-05-CHECK-01 — Every load-bearing problem claim cites past behavior (a workaround built, effort / time / money already spent, or a recurring struggle) for a named user at a stated recurrence — not stated interest or a hypothetical; or is proven-irrelevant with a specific reason.
+
+### STARTUP-PROJ-SCENARIO-06 — One first user and their job are clear
+- [ ] STARTUP-PROJ-SCENARIO-06-CHECK-01 — The baseline names one first user / segment with a concrete job (situation, motivation, outcome), the current alternative, and at least one switching force; a bare category label ("developers", "everyone") without a concrete job FAILS; or proven-irrelevant with a specific reason.
+
+### STARTUP-PROJ-SCENARIO-07 — The product shape is solved, bounded, and traceable
+- [ ] STARTUP-PROJ-SCENARIO-07-CHECK-01 — The product shape connects user → job → value → boundary → capabilities → critical journeys with no orphan capability and no boundary / journey contradiction, stays at direction altitude (no interface signatures, schemas, algorithms, or task breakdown), and each direction traces to a confirmed constraint plus a studied reference; or proven-irrelevant with a specific reason.
 
 ---
 
@@ -87,18 +104,21 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] STARTUP-STRUCT-SCENARIO-04-CHECK-04 — Observability direction covers applicable logs, metrics, traces, alerts, and runbooks, or records proven irrelevance with a reason.
 - [ ] STARTUP-STRUCT-SCENARIO-04-CHECK-05 — Operational ownership and support expectations are named for each material subsystem, or recorded-open with an owner and resolution method.
 
+### STARTUP-STRUCT-SCENARIO-05 — The shaped direction is feasible to build and sustainable to run
+- [ ] STARTUP-STRUCT-SCENARIO-05-CHECK-01 — The shaped direction is buildable with the available skills, dependencies, and constraints (essential dependencies name source / version / approval / failure-fallback) AND sustainable to run across its intended life (capacity, ownership, failure-recovery, and upkeep named); an un-buildable or un-maintainable direction FAILS; or proven-irrelevant with a specific reason.
+
 ---
 
 ## Performance
 
 ### STARTUP-PERF-SCENARIO-01 — Interview depth follows uncertainty and risk
 - [ ] STARTUP-PERF-SCENARIO-01-CHECK-01 — Smart-skip is used only for fully evidenced branches after user confirmation; mandatory coverage is never dropped.
-- [ ] STARTUP-PERF-SCENARIO-01-CHECK-02 — Uncertain or hard-to-reverse design-bearing branches received deeper study and discussion than verified routine facts.
+- [ ] STARTUP-PERF-SCENARIO-01-CHECK-02 — Every design-bearing choice is classified by uncertainty × reversibility × magnitude; each irreversible or high-magnitude choice carries a premise, a distinct alternative, a disconfirmation test, and an evidence-to-change, while an evidenced two-way door may smart-skip with a reason.
 - [ ] STARTUP-PERF-SCENARIO-01-CHECK-03 — Vague answers were probed up to twice and then resolved or recorded-open rather than accepted shallowly or discussed indefinitely.
 - [ ] STARTUP-PERF-SCENARIO-01-CHECK-04 — Confirmed Level-1 checkpoints and stable answer IDs keep interruption / resume bounded without replaying settled branches.
 
 ### STARTUP-PERF-SCENARIO-02 — Baseline size matches durable information value
-- [ ] STARTUP-PERF-SCENARIO-02-CHECK-01 — The promoted file count and total word count are proportional to the distinct durable decisions, models, rules, risks, and insights.
+- [ ] STARTUP-PERF-SCENARIO-02-CHECK-01 — Each durable concept maps to exactly one authoritative record and each record to exactly one concept — no duplicate authority and no multi-concept bundle; word count is diagnostic only, never the pass predicate.
 - [ ] STARTUP-PERF-SCENARIO-02-CHECK-02 — No "one memory file per scratch thought" fragmentation and no oversized multi-concept bundle exists.
 - [ ] STARTUP-PERF-SCENARIO-02-CHECK-03 — No raw discussion, ledger, research note, promotion manifest, startup summary, or transcript dump was promoted as durable memory.
 - [ ] STARTUP-PERF-SCENARIO-02-CHECK-04 — Each promoted record is concise enough for future loading while retaining the evidence, rationale, and recovery detail its type requires.
@@ -115,7 +135,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ## Aesthetics
 
 ### STARTUP-AESTH-SCENARIO-01 — A cold reader can understand every promoted record
-- [ ] STARTUP-AESTH-SCENARIO-01-CHECK-01 — Reading only promoted memory, a cold reader can state the project purpose, first users, boundary, durable capabilities, major directions, constraints, risks, and open questions.
+- [ ] STARTUP-AESTH-SCENARIO-01-CHECK-01 — A cold-reader TASK passes: with no startup-record access, the reader can identify the project purpose, first user, problem evidence, scope, decided direction, validation status, risks, and next action; any answer that needs hidden transcript context FAILS.
 - [ ] STARTUP-AESTH-SCENARIO-01-CHECK-02 — Each typed record states its durable concept at the top and follows the established section order for its type.
 - [ ] STARTUP-AESTH-SCENARIO-01-CHECK-03 — Prose is plain, literal, zero-context, and defines non-obvious terms without relying on the interview transcript.
 - [ ] STARTUP-AESTH-SCENARIO-01-CHECK-04 — No promoted record buries its point under session narrative, filler, or duplicated context.
@@ -148,14 +168,14 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] STARTUP-USAGE-SCENARIO-03-CHECK-01 — Accessibility needs for applicable user-facing, operator-facing, and agent-facing surfaces are recorded as directions / scenarios, or proven irrelevant with a reason.
 - [ ] STARTUP-USAGE-SCENARIO-03-CHECK-02 — Internationalization / locale needs are recorded or proven irrelevant; baseline prose avoids unexplained idiom and culture-bound metaphor.
 - [ ] STARTUP-USAGE-SCENARIO-03-CHECK-03 — Applicable failure experiences name a clear recovery or next action rather than only reporting an error.
-- [ ] STARTUP-USAGE-SCENARIO-03-CHECK-04 — Operators have sufficient logs, signals, runbook / pointer direction, and ownership to diagnose material failures without the original author.
+- [ ] STARTUP-USAGE-SCENARIO-03-CHECK-04 — For each material failure scenario, the baseline names at least one observable signal, an owner, a diagnosis pointer, and a recovery / next action, or proves operations irrelevant with a reason.
 
 ---
 
 ## Consistency
 
 ### STARTUP-CONS-SCENARIO-01 — Cross-topic contradictions are resolved
-- [ ] STARTUP-CONS-SCENARIO-01-CHECK-01 — The §7 contradiction pass records results for vision vs scope, users vs journeys, non-goals vs roadmap, quality vs stack, data promises vs architecture, risk mitigations vs schedule / capacity, and rules vs live examples.
+- [ ] STARTUP-CONS-SCENARIO-01-CHECK-01 — For each required pair (vision vs scope, users vs journeys, non-goals vs roadmap, quality vs stack, data promises vs architecture, risk mitigations vs schedule / capacity, and rules vs live examples) the §7 pass cites both claims, tests whether they can be simultaneously true, and points to a ledger resolution / authority or an owned open contradiction; a recorded "all clear" without the pairwise evidence FAILS.
 - [ ] STARTUP-CONS-SCENARIO-01-CHECK-02 — Every detected contradiction re-opened the earliest owning branch and records its selected authority and resolution, or remains `recorded-open` with an owner and resolution method.
 - [ ] STARTUP-CONS-SCENARIO-01-CHECK-03 — No promoted records or README sections make mutually incompatible claims without an explicit unresolved-status marker.
 - [ ] STARTUP-CONS-SCENARIO-01-CHECK-04 — Product scope, privacy / retention promises, quality thresholds, roadmap, and system direction remain mutually feasible.
@@ -210,8 +230,11 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 
 ### STARTUP-RISK-SCENARIO-05 — P6.5 gates validity and records cost / error-risk commitments
 - [ ] STARTUP-RISK-SCENARIO-05-CHECK-01 — Two fresh evaluators, one Claude and one Codex, evaluated the same frozen completed baseline set.
-- [ ] STARTUP-RISK-SCENARIO-05-CHECK-02 — Each system wrote all nine required files under `startup/working/evaluation/iter{n}/{system}/` before reconciliation.
+- [ ] STARTUP-RISK-SCENARIO-05-CHECK-02 — Each system wrote all nine required files under `startup/working/evaluation/iter{n}/{system}/` before reconciliation (completeness gate only — writing the files never proves the content is correct; Overall PASS still depends on the substantive checks).
 - [ ] STARTUP-RISK-SCENARIO-05-CHECK-03 — The manager reconciled both systems pessimistically and routed any material divergence through the user-decision gate.
 - [ ] STARTUP-RISK-SCENARIO-05-CHECK-04 — `baseline_valid: true` appears only after exact-path verification, the standing guards, and the reconciled P6.5 verdict all PASS.
 - [ ] STARTUP-RISK-SCENARIO-05-CHECK-05 — REVISE names the earliest owning startup phase and blocks P7; FAIL halts with `baseline_valid` false rather than silently continuing.
 - [ ] STARTUP-RISK-SCENARIO-05-CHECK-06 — Applicable recurring-cost, error-budget, rollback, and irreversible commitments carry bounds and recovery directions, or a proven-irrelevant reason.
+
+### STARTUP-RISK-SCENARIO-06 — Load-bearing design claims are evidenced or fail
+- [ ] STARTUP-RISK-SCENARIO-06-CHECK-01 — No load-bearing design claim (problem reality, user clarity, product-shape soundness, or feasibility & sustainability) is promoted un-evidenced AND un-owned AND not proven-irrelevant; such a claim drives REVISE. A fabricated citation, a silently-strengthened claim status, or an `n/a` without a genuine claim-specific reason drives FAIL.

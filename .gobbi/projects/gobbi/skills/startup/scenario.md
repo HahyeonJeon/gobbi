@@ -20,7 +20,7 @@ fresh evaluators, one Claude and one Codex, judge the frozen post-promotion set 
 `{N}-{loop}/evaluation/` path.
 
 Startup establishes the reference later loops and later sessions trust. Every family below therefore
-judges **baseline completeness and quality**: did the talk cover all 11 topics and 44 required
+judges **baseline completeness and quality**: did the talk cover all 11 topics and 46 required
 branches with real evidence; did product intent constrain system direction; did design-bearing
 choices use prior art and a user decision; did synthesis preserve claim status; did promotion write
 only the approved, validated, non-sensitive set; and can a cold reader use the baseline without the
@@ -37,16 +37,16 @@ _Lens (see `evaluation.md`):_ is this the **right project baseline**, with compl
 
 ### STARTUP-PROJ-SCENARIO-01 — Required topic coverage is complete and substantive
 **Category:** golden-path
-**Situation:** the ledger claims the first-run traversal closed all 11 Level-1 topics and all 44 required Level-2 branches.
-**Good:** every Level-1 checkpoint is user-confirmed; every required branch appears exactly once in the closure register as `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner and resolution method; a confirmed answer carries evidence, a concrete example, or a meaningful explanation rather than only echoing the prompt.
-**Bad / failure:** a required branch is absent, duplicated, closed without its required reason or owner, or marked confirmed from a shallow one-word answer such as "developers", "fast", or "standard".
-**Adversarial:** the coverage count is 44/44, but the weakest closures reveal depth theatre — several one-word answers were stamped `confirmed` with no probe, evidence, example, or recorded-open disposition.
+**Situation:** the ledger claims the first-run traversal closed all 11 Level-1 topics and all 46 required Level-2 branches.
+**Good:** every Level-1 checkpoint is user-confirmed; every required branch appears exactly once in the closure register as `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner and resolution method; a confirmed load-bearing answer carries the evidence tuple its branch requires — source / actor, concrete event or observed state, date / time window, behavior, consequence, and claim status — rather than only echoing the prompt or restating it fluently.
+**Bad / failure:** a required branch is absent, duplicated, closed without its required reason or owner, or marked confirmed from an answer missing its evidence tuple — whether a one-word answer such as "developers", "fast", or "standard", or a polished paragraph that names no behavior.
+**Adversarial:** the coverage count is 46/46, but a load-bearing answer stamped `confirmed` is a fluent, evidence-free paragraph ("our users are time-pressed developers who deeply value speed and will adopt this because it fits their workflow") — it reads complete and names zero past behavior, so it FAILS the evidence-tuple check the same as a one-word answer.
 **Checklist IDs:** `STARTUP-PROJ-SCENARIO-01-CHECK-*`
 
 ### STARTUP-PROJ-SCENARIO-02 — Product intent constrains architecture and stack
 **Category:** failure-mode
 **Situation:** Topics 7-9 record system and quality directions after Topics 2-5 establish users, outcomes, boundary, capabilities, and journeys.
-**Good:** Topics 2-5 were confirmed before any future architecture or stack direction was locked; each system direction traces to a confirmed product constraint; any later technical answer that conflicts with product intent re-opened the earliest affected branch and recorded the resolution.
+**Good:** Topics 2-5 were confirmed before any future architecture or stack direction was locked; each system direction names the specific confirmed upstream branch — user, outcome, boundary, capability, or journey — it derives from, not a bare "follows from product intent"; any later technical answer that conflicts with product intent re-opened the earliest affected branch and recorded the resolution.
 **Bad / failure:** architecture or stack was chosen before users and outcomes, then used to narrow users, scope, value-features, or journeys after the fact (architecture-before-users).
 **Adversarial:** a plausible architecture decision cites only a technology preference; it silently changes the target user or outcome while every individual topic checkpoint still reads as internally complete.
 **Checklist IDs:** `STARTUP-PROJ-SCENARIO-02-CHECK-*`
@@ -54,7 +54,7 @@ _Lens (see `evaluation.md`):_ is this the **right project baseline**, with compl
 ### STARTUP-PROJ-SCENARIO-03 — Design-bearing directions are researched and user-decided
 **Category:** golden-path
 **Situation:** a design-bearing branch selects or changes a product, architecture, stack, convention, quality, or roadmap direction.
-**Good:** the branch has a decision brief with internal and external prior art, 2-3 credible options, an opinionated recommendation, an evidence-to-change, the user's chosen direction and rationale, and the rejected alternatives; the recorded direction stays at direction altitude rather than inventing mechanism.
+**Good:** the branch has a decision brief with internal and external prior art, at least one source directly supporting each load-bearing rationale (with each source's applicability and constraint stated), genuinely distinct alternatives, a recommendation that names the recommended option first, an evidence-to-change, the user's chosen direction and rationale, and the rejected alternatives; the recorded direction stays at direction altitude rather than inventing mechanism.
 **Bad / failure:** the manager records the user's first preference as settled, fabricates a citation, presents no recommendation, or designs detailed interfaces, algorithms, schemas, or a task breakdown during startup.
 **Adversarial:** a hard-to-reverse choice looks well reasoned but has no rejected alternative and no user-decision record, so a bare preference is dressed as a reference-informed decision.
 **Checklist IDs:** `STARTUP-PROJ-SCENARIO-03-CHECK-*`
@@ -66,6 +66,30 @@ _Lens (see `evaluation.md`):_ is this the **right project baseline**, with compl
 **Bad / failure:** Topic 1.4 is missing, silently skipped, guessed, or decided by someone without the recorded authority (missing-license).
 **Adversarial:** the baseline confidently says "MIT" because that is common, but no license file, user confirmation, or authorized decision supports it.
 **Checklist IDs:** `STARTUP-PROJ-SCENARIO-04-CHECK-*`
+
+### STARTUP-PROJ-SCENARIO-05 — The load-bearing problem is grounded in behavioral evidence
+**Category:** golden-path
+**Situation:** the baseline promotes a problem as `confirmed` and later loops will build design on it.
+**Good:** the load-bearing problem is grounded in a concrete last instance with past behavior — a workaround built, effort / time / money already spent, or a repeated struggle — for a named user at a stated recurrence.
+**Bad / failure:** the problem rests on stated interest, "users would love this", a compliment, or a hypothetical, with no past behavior.
+**Adversarial:** a fluent, evidence-free paragraph ("our users are time-pressed developers who deeply value speed and will adopt this because it fits their workflow") is stamped `confirmed` — it reads complete and names zero past behavior, so it FAILS the same as a one-word answer.
+**Checklist IDs:** `STARTUP-PROJ-SCENARIO-05-CHECK-*`
+
+### STARTUP-PROJ-SCENARIO-06 — One first user and their job are clear
+**Category:** golden-path
+**Situation:** the baseline records who the project serves and the job they hire it for.
+**Good:** one named first user / segment with a concrete job (situation → motivation → outcome), the current alternative, and at least one switching force (anxiety / habit); distinct roles (user / operator / approver / affected) are separated where they exist.
+**Bad / failure:** "everyone", a whole category, or a vague persona; a "job" that is really a feature list; no current alternative recorded.
+**Adversarial:** the user is named, but the job is a feature list and no current alternative or switching force is recorded — so nothing shows the user would actually change behavior.
+**Checklist IDs:** `STARTUP-PROJ-SCENARIO-06-CHECK-*`
+
+### STARTUP-PROJ-SCENARIO-07 — The product shape is solved, bounded, and traceable
+**Category:** failure-mode
+**Situation:** the baseline shapes a product direction the later loops will design against.
+**Good:** the shaped direction is solved at the macro level (elements, critical journeys, failure paths, and boundary connect), rough at the detail level (no mechanism), and bounded (explicit non-goals); each direction traces to a confirmed user / problem constraint and a studied reference.
+**Bad / failure:** the shape is vague (elements don't connect), OR it dives into mechanism (interface signatures, schemas, algorithms, task breakdown), OR a capability has no traceable user / problem reason.
+**Adversarial:** every topic checkpoint reads internally complete, but the shape doesn't hang together — the boundary excludes a capability the primary journey needs, or a "feature" serves no recorded user job.
+**Checklist IDs:** `STARTUP-PROJ-SCENARIO-07-CHECK-*`
 
 ---
 
@@ -104,6 +128,14 @@ _Lens (see `evaluation.md`):_ is the baseline decomposed into atomic records, de
 **Adversarial:** a dependency looks harmless because it is already popular, but its version, license, failure mode, and authority are absent while the architecture assumes it will always be available.
 **Checklist IDs:** `STARTUP-STRUCT-SCENARIO-04-CHECK-*`
 
+### STARTUP-STRUCT-SCENARIO-05 — The shaped direction is feasible to build and sustainable to run
+**Category:** failure-mode
+**Situation:** the baseline commits to a product direction the team must actually build and operate across its life.
+**Good:** the shaped direction is buildable with the available skills, dependencies, and constraints (each essential dependency names source / version / approval / failure-fallback), and is sustainable to run across its intended life — capacity, ownership, failure-recovery, and upkeep are named or proven irrelevant.
+**Bad / failure:** the direction assumes skills or dependencies the team does not have and cannot get; an essential component has no owner, no failure-recovery, and no upkeep plan; a continuously-running capability has no capacity or diagnostic direction.
+**Adversarial:** the product shape is elegant and internally coherent, but it depends on a capability no one on the team can build or maintain, or on a dependency with no fallback — sound on paper, un-buildable / un-sustainable in practice, while every topic checkpoint still reads complete.
+**Checklist IDs:** `STARTUP-STRUCT-SCENARIO-05-CHECK-*`
+
 ---
 
 ## Performance
@@ -111,8 +143,8 @@ _Lens (see `evaluation.md`):_ are interview depth, baseline size, cost, and oper
 
 ### STARTUP-PERF-SCENARIO-01 — Interview depth follows uncertainty and risk
 **Category:** golden-path
-**Situation:** all 44 branches are mandatory, but existing evidence and design risk vary by branch.
-**Good:** verified low-risk facts smart-skip only with cited evidence and user confirmation; vague answers receive up to two concrete probes before becoming recorded-open; uncertain or hard-to-reverse design choices receive deeper study and discussion; checkpoint markers keep pause / resume bounded.
+**Situation:** all 46 branches are mandatory, but existing evidence and design risk vary by branch.
+**Good:** verified low-risk facts smart-skip only with cited evidence and user confirmation; vague answers receive up to two concrete probes before becoming recorded-open; every design-bearing choice is classified by uncertainty × reversibility × magnitude, and irreversible or high-magnitude choices carry a premise, a distinct alternative, a disconfirmation test, and an evidence-to-change; checkpoint markers keep pause / resume bounded.
 **Bad / failure:** the run mechanically asks 2-4 questions for every branch, or rushes every branch into one shallow answer to reduce turn count.
 **Adversarial:** the run is short because required branches were nominally closed, but an irreversible architecture choice received no more scrutiny than a verified repository fact.
 **Checklist IDs:** `STARTUP-PERF-SCENARIO-01-CHECK-*`
@@ -120,7 +152,7 @@ _Lens (see `evaluation.md`):_ are interview depth, baseline size, cost, and oper
 ### STARTUP-PERF-SCENARIO-02 — Baseline size matches durable information value
 **Category:** failure-mode
 **Situation:** the completed run produces a set of atomic records plus root and feature living indexes.
-**Good:** the file count and total words are proportional to the distinct decisions, models, rules, risks, and insights; records are concise and zero-context; no raw audit, transcript, ledger, manifest, research note, or scratch thought is promoted as memory.
+**Good:** each durable concept maps to exactly one authoritative record and each record to one concept — no duplicate authority and no multi-concept bundle, with word count diagnostic only; records are concise and zero-context; no raw audit, transcript, ledger, manifest, research note, or scratch thought is promoted as memory.
 **Bad / failure:** startup produces one memory file per scratch thought, a few oversized transcript-like bundles, or promotes record-level audit material.
 **Adversarial:** every file is individually within a reasonable line bound, but the aggregate baseline far exceeds the information learned because one concept was fragmented across many tiny records.
 **Checklist IDs:** `STARTUP-PERF-SCENARIO-02-CHECK-*`
@@ -256,3 +288,11 @@ _Lens (see `evaluation.md`):_ what breaks if the baseline is wrong — leaked da
 **Bad / failure:** `baseline_valid: true` is set before exact verification and P6.5 PASS, one evaluator is missing, a divergence is ignored, or a cost / error-risk commitment has no bound or recovery direction.
 **Adversarial:** the summary is stamped valid after only one system passes, while the other system is absent or has a Critical finding; a superficially complete baseline enters later loops without the anti-groupthink gate.
 **Checklist IDs:** `STARTUP-RISK-SCENARIO-05-CHECK-*`
+
+### STARTUP-RISK-SCENARIO-06 — Load-bearing design claims are evidenced or fail
+**Category:** failure-mode
+**Situation:** the baseline carries load-bearing claims across problem reality, user clarity, product-shape soundness, and feasibility & sustainability that later loops will trust.
+**Good:** every load-bearing design claim across the four substance dimensions is either evidenced to its standard or `recorded-open` with an owner; none is a bare assertion; no fabricated citation and no laundered `n/a`.
+**Bad / failure:** a load-bearing design claim is un-evidenced, un-owned, and not proven-irrelevant (drives REVISE); a fabricated citation, a silently-strengthened claim status, or an `n/a` with no genuine claim-specific reason (drives FAIL).
+**Adversarial:** the baseline is fully covered, atomic, secret-free, and traceable, yet its core problem / user / product-shape / feasibility claims have no behavioral or verified evidence — process-perfect, substance-hollow.
+**Checklist IDs:** `STARTUP-RISK-SCENARIO-06-CHECK-*`
