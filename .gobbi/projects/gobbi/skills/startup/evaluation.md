@@ -13,7 +13,7 @@ only the startup-specific frame and does not restate them.
 The artifact under evaluation is **the completed startup baseline as a set**, not only promoted memory
 and not only `outputs/startup-summary.md`:
 
-- `startup/working/answer-ledger.md`, including answer IDs, the claim / evidence axes, all 44 branch
+- `startup/working/answer-ledger.md`, including answer IDs, the claim / evidence axes, all 46 branch
   closures, and the 11 confirmed Level-1 checkpoint markers;
 - the evidence register and each ledger-linked `startup/working/research/{slug}.md` decision brief;
 - the full `startup/staging/` draft set, including the project and feature living-index candidates;
@@ -46,7 +46,7 @@ Stage 2 walks each locked Frame once without a separate adversarial pass.
 |---|---|
 | **What** | A current, durable project baseline covering identity, evidence, users, value, boundary, product shape, reference-informed system direction, guardrails, risks, and owned open questions — represented by the completed baseline set above. |
 | **Why** | Later loops and later sessions need one coherent reference that prevents repeated discovery, unsupported assumptions, architecture-driven scope drift, and contradictory memory. |
-| **How** | Evidence-led traversal of 11 topics / 44 branches → the study / recommend / user-decision micro-loop for design-bearing directions → atomic typed synthesis → whole-manifest validation and approval → bounded promotion with preimage checks → exact-path and standing-guard verification → this dual-system completeness / quality gate. |
+| **How** | Evidence-led traversal of 11 topics / 46 branches → the study / recommend / user-decision micro-loop for design-bearing directions → atomic typed synthesis → whole-manifest validation and approval → bounded promotion with preimage checks → exact-path and standing-guard verification → this dual-system completeness / quality gate. |
 
 At Stage 0, extract all three from the artifact set rather than inferring them from this mapping. A
 missing or ambiguous What or Why triggers the canonical W/W/H halt and is also a startup `FAIL` floor.
@@ -54,9 +54,40 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 
 ---
 
+## Check resolution — two gates
+
+Each design-substance check resolves to exactly one of four states, and it spans two gates an
+evaluator must keep separate:
+
+- **PASS** — the applicable load-bearing claim meets the check's observable evidence predicate.
+- **FAIL** — the claim is applicable but missing, contradicted, overstated, fabricated, or laundered
+  to `n/a` without a genuine claim-specific reason.
+- **n/a** — the branch is proven irrelevant with a specific, claim-specific reason.
+- **recorded-open** — a valid *coverage* closure (the branch is accounted for, with an owner), but
+  NOT an *acceptance* pass for an applicable load-bearing design claim.
+
+A branch is **accounted for** (the coverage-closure gate) when it is `confirmed`, `proven-irrelevant`
+with a reason, or `recorded-open` with an owner — the unchanged `SKILL.md` closure Rule, where
+`recorded-open` is valid. A design-substance check **passes** (the acceptance-pass gate) only when the
+applicable load-bearing claim is *evidenced* — here `recorded-open` is NOT a pass: an applicable
+load-bearing design claim left `recorded-open` still drives **REVISE** through the
+`STARTUP-RISK-SCENARIO-06` teeth. A branch can be validly closed for coverage and still FAIL the
+substance check; do not collapse the two gates into one.
+
+The acceptance invariants these checks enforce — a positive claim is never stronger than its
+evidence, each design-substance family carries one adversarial scenario and one canonical check, no
+check depends on word count as a proxy for substance, and an applicable un-evidenced load-bearing
+claim is never laundered to `n/a` — are encoded in the sibling `scenario.md` design-substance
+families (`STARTUP-PROJ-SCENARIO-05` / `-06` / `-07`, `STARTUP-STRUCT-SCENARIO-05`) plus the
+`STARTUP-RISK-SCENARIO-06` teeth, with the matching yes/no checks and the two-gate legend in the
+sibling `checklist.md`.
+
+---
+
 ## Project
 
-**Lens**: Is this the **right project baseline**, with complete, substantive coverage and user-owned intent?
+**Lens**: Is this the **right project baseline** — grounded in a real problem, a clear first user and
+job, and a sound product shape — with complete, substantive coverage and user-owned intent?
 
 **Scenario source:** `scenario.md` § Project (`STARTUP-PROJ-SCENARIO-*`)
 **Checklist source:** `checklist.md` § Project (`STARTUP-PROJ-SCENARIO-*-CHECK-*`)
@@ -65,26 +96,32 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 
 | Tool | Use for |
 |---|---|
-| `grep -n` / `rg -n` over `working/answer-ledger.md` | Enumerate the 11 checkpoint markers and the 44 branch IDs; prove every branch has one valid closure rather than trusting a summary count |
+| `grep -n` / `rg -n` over `working/answer-ledger.md` | Enumerate the 11 checkpoint markers and the 46 branch IDs; prove every branch has one valid closure rather than trusting a summary count |
 | Close-read the weakest closures | Inspect short answers and every `proven-irrelevant` / `recorded-open` entry for a reason, evidence, owner, and resolution method; detect one-word depth theatre |
 | Compare the ledger event order + decision traces | Confirm Topics 2-5 constrained the later architecture / stack choices and that a conflicting later choice re-opened the earliest owning branch |
 | Read Topic 1.4 against the repository's license / governance evidence and the authority record | Detect a missing, guessed, contradictory, or unauthorized license / distribution / governance claim |
 | Resolve every design-decision brief and citation | Confirm each design-bearing branch has internal / external prior art, options, a recommendation, an evidence-to-change, the user's choice, rationale, and rejected alternatives |
+| Read every load-bearing problem claim against the ledger's evidence tuple | Confirm each cites past behavior — a workaround built, effort / time / money already spent, or a recurring struggle — for a named user at a stated recurrence, not stated interest or a hypothetical (`STARTUP-PROJ-SCENARIO-05`) |
+| Read the first-user and job records | Confirm one named user / segment with a concrete job (situation → motivation → outcome), the current alternative, and at least one switching force; reject "everyone" or a feature-list "job" (`STARTUP-PROJ-SCENARIO-06`) |
+| Trace the shaped direction from user → job → value → boundary → capabilities → journeys | Confirm no orphan capability, no boundary / journey contradiction, direction altitude (no signatures, schemas, algorithms, or task breakdown), and each direction traces to a confirmed constraint plus a studied reference (`STARTUP-PROJ-SCENARIO-07`) |
 
 ### Perspective-specific anti-patterns
 
 | Anti-pattern | Correction |
 |---|---|
-| **Coverage count treated as understanding** | Count closures, then inspect the weakest three and every exceptional closure; 44/44 can still be shallow |
+| **Coverage count treated as understanding** | Count closures, then inspect the weakest three and every exceptional closure; 46/46 can still be shallow |
 | **Architecture used to define the user after the fact** | Trace every system direction back to a confirmed product constraint; re-open the earliest product branch on conflict |
 | **The manager records the first preference** | A design-bearing branch closes only after study, a recommendation, and a recorded user decision |
 | **A common license guessed as a project fact** | Verify the repository and the authority evidence; otherwise keep the branch open or use the confirmed internal not-applicable form |
+| **A fluent problem paragraph accepted as evidence** | A complete-reading paragraph that names zero past behavior FAILS the same as a one-word answer; require the evidence tuple (workaround / spend / recurring struggle for a named user), not fluency |
+| **A named user with no switch treated as clear** | A user is clear only with a concrete job, a current alternative, and at least one switching force; a bare category ("developers", "everyone") or a feature-list "job" is not a user |
+| **Internally-complete checkpoints mistaken for a sound shape** | Trace the whole shape end to end; a boundary that excludes a needed capability, an orphan feature, or a dive into mechanism defeats a per-topic "complete" read |
 
 ---
 
 ## Structure
 
-**Lens**: Is the baseline decomposed into correct atomic types, scopes, areas, durable value-features, and sound dependency / operational directions?
+**Lens**: Is the baseline decomposed into correct atomic types, scopes, areas, durable value-features, and sound dependency / operational directions — and is the shaped direction feasible to build and sustainable to run?
 
 **Scenario source:** `scenario.md` § Structure (`STARTUP-STRUCT-SCENARIO-*`)
 **Checklist source:** `checklist.md` § Structure (`STARTUP-STRUCT-SCENARIO-*-CHECK-*`)
@@ -98,6 +135,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 | Close-read titles and bodies against the matching memory template | Detect a multi-concept "startup encyclopedia" hidden under an atomic-looking title |
 | List every new `features/{feature-name}/` directory and trace it to the user-ratified value proposition | Detect a task, sprint, subsystem, mechanism, or speculative idea dressed as a durable feature |
 | Read the Topic 7-9 direction records and the dependency evidence | Check dependency source / version / license / fallback, trust boundaries, graph impact, observability, and operational ownership |
+| Check the shaped direction against the team's available skills, dependencies, and constraints, then against its operational life | Confirm it is buildable (each essential dependency names source / version / approval / failure-fallback) AND sustainable — capacity, ownership, failure-recovery, and upkeep named or proven irrelevant (`STARTUP-STRUCT-SCENARIO-05`) |
 
 ### Perspective-specific anti-patterns
 
@@ -107,6 +145,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 | **A plausible destination accepted because links resolve** | Apply the staging-to-destination contract mechanically; off-table but well-formed is still wrong |
 | **An internal mechanism promoted as a feature** | Ask whether users receive enduring value from the named capability; if not, it has no feature directory |
 | **A popular dependency treated as self-justifying** | Verify the source, constraint, license, failure fallback, and structural / operational implications |
+| **An elegant shape assumed buildable** | Internal coherence is not feasibility; a direction that needs a skill or dependency the team cannot get, or an essential component with no owner / failure-recovery / upkeep, is un-buildable or un-sustainable and FAILS |
 
 ---
 
@@ -162,6 +201,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 | **Polish mistaken for zero-context meaning** | Remove the startup record and read again; prose that needs the interview still fails |
 | **Topic-coordinate names treated as harmless** | Rename by the durable subject; topic IDs are record coordinates, not memory concepts |
 | **Aesthetics reduced to taste** | Placeholder text, broken pointers, template drift, and ambiguous naming are objective defects |
+| **Cold-readability judged by a "sufficient context" feel** | Run the `STARTUP-AESTH-SCENARIO-01` cold-reader TASK: with no startup-record access, identify purpose, first user, problem evidence, scope, decided direction, validation status, risks, and next action; any answer that needs hidden transcript context FAILS — a "sufficient" feel is not the bar |
 
 ---
 
@@ -223,7 +263,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 
 ## Risk
 
-**Lens**: What breaks if the baseline is wrong — leaked sensitive data, unsupported license / authority / binding rule, memory corruption, irrecoverable partial promotion, cost / error-risk, or premature validity?
+**Lens**: What breaks if the baseline is wrong — leaked sensitive data, unsupported license / authority / binding rule, memory corruption, irrecoverable partial promotion, cost / error-risk, premature validity, or a load-bearing design claim promoted with no evidence?
 
 **Scenario source:** `scenario.md` § Risk (`STARTUP-RISK-SCENARIO-*`)
 **Checklist source:** `checklist.md` § Risk (`STARTUP-RISK-SCENARIO-*-CHECK-*`)
@@ -239,6 +279,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 | Inspect the partial-state / recovery evidence | Confirm the state is complete or fully rolled back and the narrow delete carve-out never touched pre-existing memory |
 | Verify both P6.5 output sets and the reconciliation before reading `baseline_valid` | Confirm two fresh systems reviewed the same frozen set and P7 did not outrun the gate |
 | Read the cost / error-budget / rollback / irreversibility records | Confirm bounds, warnings, mitigations, and recovery paths, or a proven-irrelevant reason |
+| Sample the load-bearing design claims across problem reality, user clarity, product-shape soundness, and feasibility & sustainability | Confirm each is evidenced to its standard or `recorded-open` with an owner; an applicable un-evidenced, un-owned claim drives REVISE, and a fabricated citation, a silently-strengthened claim status, or a laundered `n/a` drives FAIL (`STARTUP-RISK-SCENARIO-06`) |
 
 ### Perspective-specific anti-patterns
 
@@ -250,6 +291,7 @@ A missing How stays a Critical `general` / `unevaluable` finding and prevents PA
 | **Green frontmatter treated as safe promotion** | Form guards do not prove content completeness, truth, privacy, authority, or bounded scope; P6.5 does |
 | **One evaluator treated as enough** | Startup's anti-groupthink gate requires both fresh systems and a reconciliation |
 | **Summary completion trusted over memory state** | Verify the exact destinations, guards, and evaluation outputs; the summary cannot make a partial state valid |
+| **Process-perfect read as substance-sound** | A fully covered, atomic, secret-free, traceable baseline can still be substance-hollow; a load-bearing problem / user / product-shape / feasibility claim with no behavioral or verified evidence drives REVISE, not PASS |
 
 ---
 
@@ -327,7 +369,7 @@ gate. No aggregate score or strength elsewhere offsets any verified startup FAIL
 - **`baseline_valid: true` was set before exact verification, the standing guards, and the reconciled P6.5 PASS**.
 
 A missing Topic 1.4 is the required-branch floor, not a minor coverage percentage. A baseline with
-43/44 owned branches, or 99% valid destinations plus one overwritten collision, is not "complete
+45/46 owned branches, or 99% valid destinations plus one overwritten collision, is not "complete
 enough".
 
 ---
