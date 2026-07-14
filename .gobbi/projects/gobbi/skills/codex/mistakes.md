@@ -2,7 +2,7 @@
 type: mistakes
 skill: codex
 description: "Recorded traps for codex — load before doing codex work"
-updated: 2026-07-13
+updated: 2026-07-14
 ---
 
 # Codex — Mistakes
@@ -129,3 +129,34 @@ updated: 2026-07-13
 ### Related
 - [[codex-exec-large-diff-eval-times-out]] — the sibling large-workload trap: a broad review over a large diff SIGTERM-kills with zero output; this trap is the quieter sibling — the run exits 0 with partial output instead of timing out
 - [[codex-side-wrapper-must-foreground-block-and-validate-output-never-background-and-return]] — the files-as-truth discipline this trap depends on: never trust the process return/exit code as a completion signal
+
+## Codex Exec Eval No Write Needs Write First Prompt
+
+`priority: high` · `domain: codex` · `added: 2026-07-14` · `status: active` · `tags: [codex, process]`
+
+**What happened** — A backgrounded `codex exec` evaluator run exited 0 having written 0 of 9
+contracted output files (7 per-perspective + overall + checklist). Codex had read all the inputs and
+produced a complete evaluation, but delivered it as a chat-style reply in stdout instead of writing it
+to the files the prompt's Output section described.
+**Why it happens** — The prompt DESCRIBED the expected output files (paths, one per perspective) but
+never INSTRUCTED Codex to write them as it went, and never framed the files as the deliverable rather
+than the reply. Codex reasonably treated "produce a complete evaluation" as satisfied by one complete
+chat message — the prompt never said the chat reply does not count as the answer.
+**How to detect** — A Codex bg-exec run (evaluator or proposer) that exits 0, whose stdout log
+contains full, structured evaluation content, but whose contracted output directory has 0 (or far
+fewer than expected) files. Exit 0 plus non-empty stdout can look like a normal completion at a
+glance — the tell is the mismatch between "the content clearly exists" and "the files do not."
+**Correct approach** — A Codex bg-exec eval/proposer prompt must, to force file-writing rather than
+chat-replying: (1) state explicitly that the evaluation lives in FILES, not the reply — the chat reply
+is not the deliverable; (2) require writing each file IMMEDIATELY after that section of the evaluation
+is done, not batched at the end of the run, so a mid-run interruption still leaves partial files, not
+nothing; (3) cap how much Codex reads before it starts writing, so reasoning/reading budget does not
+crowd out the writing budget; (4) require a terminal one-line confirmation such as "WROTE N FILES" so
+the wrapper has an explicit completion signal to check against the actual file count. A prompt
+carrying these four fixes produced all 9 files on retry.
+
+### Related
+- [[codex-side-wrapper-must-foreground-block-and-validate-output-never-background-and-return]] — the
+  matching WRAPPER-side trap (validate files exist before reporting); this trap is the matching
+  PROMPT-side root cause (force Codex to write files as it goes, not just describe the expected paths)
+- [[codex-wrapper-file-persistence-failure]] — sibling files-as-truth wrapper trap
