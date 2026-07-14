@@ -75,6 +75,18 @@ most work. An escape — a third-party dependency, added concurrency, native cod
 micro-optimization — is earned only by a demonstrated capability gap or profiling/compatibility evidence,
 never intuition.
 
+> **9. Demand only the Python inputs the unit uses, in a signature the caller can read.**
+
+The parent narrows the input surface (coding Principle 17); this is its Python shape. Principle 4 owns the
+*type mechanism* of a boundary — the `Protocol`, the annotation; this principle owns how *little* the boundary
+demands and how *plainly* the call reads. When a unit reads two fields of a record, do not demand the whole
+`dataclass`, `TypedDict`, or aggregate as one opaque parameter — that is stamp coupling, and it hides the real
+dependency. Pass those fields, a small purpose-built `frozen` value object, or a `Protocol` exposing exactly
+the operations and attributes used. Prefer explicit, well-named parameters, often keyword-only when options
+could be confused. Never force the caller to decode a deeply-nested annotation — container layers or union
+branches — before it can build an argument. The caller reads what to pass from the signature, not by studying
+the aggregate definition. Keep a cohesive aggregate whole only when the unit truly uses it as one concept.
+
 ---
 
 ## Rules
@@ -164,7 +176,11 @@ choose otherwise when the named condition holds.
   expect them so and a slow or throwing dunder breaks debugging, logging, and set/dict use; put expensive or
   failure-prone work in an explicit named method. Choose a positional option, inheritance, a catch-all
   `*args`/`**kwargs`, or a manual accessor only when compatibility, a documented subclass contract, forwarding
-  behavior, or the failure shape justifies it; speculative extensibility is not evidence.
+  behavior, or the failure shape justifies it; speculative extensibility is not evidence. Treat the
+  aggregate-as-parameter and deeply-nested-annotation anti-patterns as input-surface smells: if the unit
+  reads only part of a `dataclass`, `TypedDict`, or config object, expose the actual dependency directly or
+  through a narrow `Protocol`. For example, replace `def fetch(cfg: AppConfig)` (reading only two fields)
+  with `def fetch(*, timeout_s: float, retries: int)`.
 - **Python expression and boundary choices — prefer the clearest native form.** Direct iteration,
   `enumerate`, `zip`, unpacking, a loop past one transform plus one filter, generators for one-pass streams,
   and `pathlib` for high-level paths usually show intent best. Keep a narrow EAFP `try` around only the

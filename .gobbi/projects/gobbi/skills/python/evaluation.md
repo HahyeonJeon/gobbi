@@ -21,7 +21,7 @@ the Python 3.12 floor, and is tool-agnostic.
 
 ## Rule-key legend — the single crosswalk
 
-Every `scenarios.md` case and `checklists.md` item names its source by `H1`–`H18`, `final P1`–`final P8`, or a
+Every `scenarios.md` case and `checklists.md` item names its source by `H1`–`H18`, `final P1`–`final P9`, or a
 softened-default label, and resolves here to the verbatim opening clause of the `SKILL.md` rule or principle it
 names — the **sole crosswalk**, so a rule change propagates through one legend, not three copies. Gate A holds it
 closed: every "Resolves to" clause is a live substring of `SKILL.md`.
@@ -60,6 +60,7 @@ standard-vocabulary → `final P8`. No former key points at an absent clause. (`
 | `final P6` | "Make lifetime visible and keep mutation local." |
 | `final P7` | "Build a typed skeleton, then grow minimal verified slices." |
 | `final P8` | "Use Python's standard vocabulary until evidence earns an escape." |
+| `final P9` | "Demand only the Python inputs the unit uses, in a signature the caller can read." |
 | softened style | "Style and spelling — follow the project's configured dialect" |
 | softened typing | "Typing — default to precise public and cross-unit annotations, local inference, and immediate isolation" |
 | softened data model | "Signatures and data models — prefer clear keyword options, the least-demanding truthful input interface" |
@@ -67,8 +68,12 @@ standard-vocabulary → `final P8`. No former key points at an absent clause. (`
 | softened concurrency/deps | "Concurrency and dependencies — default to synchronous standard-library code." |
 | softened delivery/evidence | "Delivery and evidence — prefer behavior-focused tests and the established layout, with evidence" |
 
-A softened anchor's spelling variants (`style (soft)`, `data model — softened`, `performance idiom (soft)`,
-`final P8 — softened delivery/perf`) each resolve to the matching `softened …` row above.
+Sibling softened-anchor spellings resolve as follows: `softened style`, `style — softened`, and `style (soft)`
+→ `softened style`; `data model — softened` and `data model (soft)` → `softened data model`; `softened
+performance`, `performance idiom — softened`, and `performance idiom (soft)` → `softened performance idiom`;
+and `final P8 — softened delivery/perf` → `final P8`, `softened delivery/evidence`, and `softened performance
+idiom`. The bare `(softened)` tag on the `range(len(...))` candidate also resolves, by that candidate's
+subject, to `softened performance idiom`.
 
 ---
 
