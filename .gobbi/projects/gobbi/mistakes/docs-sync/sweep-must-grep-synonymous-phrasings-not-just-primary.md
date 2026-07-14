@@ -51,6 +51,24 @@ case-insensitively for each, tree-wide (excluding `sessions/` and `archive/`); (
 every hit as fix / qualify / justified-leave; (4) re-run the full synonym set to zero
 unqualified survivors.
 
+## Second witness (2026-07-14, count-sweep variant)
+
+The same pattern recurred one layer down — not in a prose contract's phrasing, but in a **hardcoded
+count's** semantic-equivalent forms. A `startup` skill design (branch count 44→46) stated the change
+in prose and named the files to update (a §6 CRUD map), but the map enumerated FILES, not literal
+occurrences. When the Consistency evaluator grepped the current skill for `\b44\b`, it found NINE
+hardcoded occurrences the CRUD map had not itemized — spread across the authoritative coverage check
+(`checklist.md`), a self-ratio phrasing ("44/44" in `scenario.md`), and several branch/topic-summary
+counts in `evaluation.md`. A fuller re-grep at RECORD time (against the corrected draft) found a
+TENTH occurrence — an illustrative "43/44" example ratio — that even the evaluator's own finding had
+not itemized. The same root cause as the prose-sweep case above: a completeness check that scans for
+FILES-that-mention-the-concept (or the single primary numeral) is structurally blind to a form it did
+not pattern for — a self-ratio, an "all N" phrase, or an adjacent illustrative number. The fix is the
+literal-plus-equivalents version of the correct approach above: grep every co-touched file for the
+literal changed value AND its semantic equivalents (self-ratios, "all N" phrasing, illustrative
+near-number examples), not just the bare number, and cite line numbers in the CRUD map so the
+executor cannot silently miss one.
+
 ## How to detect
 
 Any cross-cutting contract restated in prose recurs in synonyms, not one canonical phrase. If
