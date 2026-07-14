@@ -38,7 +38,7 @@ _Lens (see `evaluation.md`):_ is this the **right project baseline**, with compl
 ### STARTUP-PROJ-SCENARIO-01 — Required topic coverage is complete and substantive
 **Category:** golden-path
 **Situation:** the ledger claims the first-run traversal closed all 11 Level-1 topics and all 46 required Level-2 branches.
-**Good:** every Level-1 checkpoint is user-confirmed; every required branch appears exactly once in the closure register as `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner and resolution method; a confirmed load-bearing answer carries the evidence tuple its branch requires — source / actor, concrete event or observed state, date / time window, behavior, consequence, and claim status — rather than only echoing the prompt or restating it fluently.
+**Good:** every Level-1 checkpoint is user-confirmed; every required branch appears exactly once in the closure register as `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner and resolution method; a confirmed load-bearing answer carries the evidence tuple its branch requires — source / actor, concrete event or observed state, date / time window, behavior, consequence, and claim status — rather than only echoing the prompt or restating it fluently; the problem-before-solution premise gate ran between Topic 4 and Topic 5, showing every premise for agree / disagree and confirming each before any solution / features topic was entered.
 **Bad / failure:** a required branch is absent, duplicated, closed without its required reason or owner, or marked confirmed from an answer missing its evidence tuple — whether a one-word answer such as "developers", "fast", or "standard", or a polished paragraph that names no behavior.
 **Adversarial:** the coverage count is 46/46, but a load-bearing answer stamped `confirmed` is a fluent, evidence-free paragraph ("our users are time-pressed developers who deeply value speed and will adopt this because it fits their workflow") — it reads complete and names zero past behavior, so it FAILS the evidence-tuple check the same as a one-word answer.
 **Checklist IDs:** `STARTUP-PROJ-SCENARIO-01-CHECK-*`
@@ -123,7 +123,7 @@ _Lens (see `evaluation.md`):_ is the baseline decomposed into atomic records, de
 ### STARTUP-STRUCT-SCENARIO-04 — Dependency and operational structure is explicit or proven irrelevant
 **Category:** coverage-matrix
 **Situation:** Topics 7-9 may establish dependency, supply-chain, trust-boundary, runtime, observability, and ownership directions.
-**Good:** dependency choices name the source, version / constraint, license / approval status, failure fallback, and structural impact where applicable; system boundaries and data flow are coherent; logs, metrics, traces, alerts, runbooks, and ownership are recorded or the branch is proven irrelevant with a reason.
+**Good:** dependency choices name the source, version / constraint, license / approval status, failure fallback, and structural impact where applicable; each system boundary and data-flow direction is consistent with the recorded architecture and data promises, contradicting none; logs, metrics, traces, alerts, runbooks, and ownership are recorded or the branch is proven irrelevant with a reason.
 **Bad / failure:** an essential dependency is accepted from an untrusted source, its graph impact is absent, or an operationally important component has no diagnostic or ownership direction.
 **Adversarial:** a dependency looks harmless because it is already popular, but its version, license, failure mode, and authority are absent while the architecture assumes it will always be available.
 **Checklist IDs:** `STARTUP-STRUCT-SCENARIO-04-CHECK-*`
@@ -292,7 +292,7 @@ _Lens (see `evaluation.md`):_ what breaks if the baseline is wrong — leaked da
 ### STARTUP-RISK-SCENARIO-06 — Load-bearing design claims are evidenced or fail
 **Category:** failure-mode
 **Situation:** the baseline carries load-bearing claims across problem reality, user clarity, product-shape soundness, and feasibility & sustainability that later loops will trust.
-**Good:** every load-bearing design claim across the four substance dimensions is either evidenced to its standard or `recorded-open` with an owner; none is a bare assertion; no fabricated citation and no laundered `n/a`.
-**Bad / failure:** a load-bearing design claim is un-evidenced, un-owned, and not proven-irrelevant (drives REVISE); a fabricated citation, a silently-strengthened claim status, or an `n/a` with no genuine claim-specific reason (drives FAIL).
+**Good:** every load-bearing design claim across the four substance dimensions is evidenced to its standard or proven-irrelevant; none is a bare assertion; no fabricated citation and no laundered `n/a`.
+**Bad / failure:** a load-bearing design claim is un-evidenced and not proven-irrelevant — ownership does not excuse it, `recorded-open` is coverage, not acceptance (drives REVISE); a fabricated citation, a silently-strengthened claim status, or an `n/a` with no genuine claim-specific reason (drives FAIL).
 **Adversarial:** the baseline is fully covered, atomic, secret-free, and traceable, yet its core problem / user / product-shape / feasibility claims have no behavioral or verified evidence — process-perfect, substance-hollow.
 **Checklist IDs:** `STARTUP-RISK-SCENARIO-06-CHECK-*`

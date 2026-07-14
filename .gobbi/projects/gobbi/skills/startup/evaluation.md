@@ -279,7 +279,7 @@ job, and a sound product shape — with complete, substantive coverage and user-
 | Inspect the partial-state / recovery evidence | Confirm the state is complete or fully rolled back and the narrow delete carve-out never touched pre-existing memory |
 | Verify both P6.5 output sets and the reconciliation before reading `baseline_valid` | Confirm two fresh systems reviewed the same frozen set and P7 did not outrun the gate |
 | Read the cost / error-budget / rollback / irreversibility records | Confirm bounds, warnings, mitigations, and recovery paths, or a proven-irrelevant reason |
-| Sample the load-bearing design claims across problem reality, user clarity, product-shape soundness, and feasibility & sustainability | Confirm each is evidenced to its standard or `recorded-open` with an owner; an applicable un-evidenced, un-owned claim drives REVISE, and a fabricated citation, a silently-strengthened claim status, or a laundered `n/a` drives FAIL (`STARTUP-RISK-SCENARIO-06`) |
+| Sample the load-bearing design claims across problem reality, user clarity, product-shape soundness, and feasibility & sustainability | Confirm each is evidenced to its standard or proven-irrelevant; an applicable un-evidenced claim drives REVISE regardless of ownership (`recorded-open` is coverage, not acceptance), and a fabricated citation, a silently-strengthened claim status, or a laundered `n/a` drives FAIL (`STARTUP-RISK-SCENARIO-06`) |
 
 ### Perspective-specific anti-patterns
 

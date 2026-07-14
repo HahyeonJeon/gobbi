@@ -412,7 +412,7 @@ they constrain a known project rather than invent one.
 
 - Which qualities dominate trade-offs — correctness, security, latency, availability, usability,
   maintainability, or another?
-- What scenario and measurable threshold define each top quality?
+- What scenario and measurable threshold define each top quality, and what sourced, context-specific basis or measurement method sets that threshold?
 - Which quality may degrade first under pressure, and which cannot?
 
 #### 9.3 Verification & review bar

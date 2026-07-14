@@ -104,10 +104,10 @@ so "each principle maps to a family" is checkable and no principle is un-failabl
 |---|---|
 | A1 Real problem event | Family 1 Problem reality (`STARTUP-PROJ-SCENARIO-05`) |
 | A2 Behavioral evidence over praise | Family 1 Problem reality + Family 5 teeth (`STARTUP-RISK-SCENARIO-06`) |
-| A3 Ask neutrally / take a position | PROJ-01 fluent-paragraph adversarial + Family 5 teeth |
+| A3 Ask neutrally / take a position | evidence-quality proxies — Family 1 Problem reality (`STARTUP-PROJ-SCENARIO-05`) + Family 2 User & job clarity (`STARTUP-PROJ-SCENARIO-06`) grade each claim as the user's behavioral evidence, not the interviewer's framing — plus `STARTUP-PROJ-SCENARIO-03-CHECK-02` (take a position: recommended option first + evidence-to-change). Interview conduct is not baseline-observable, so A3 is graded through these proxies, not a conduct check |
 | A4 Riskiest assumption first | PERF-01 (reversibility × magnitude depth) + Family 5 teeth |
 | A5 One first user + switch | Family 2 User & job clarity (`STARTUP-PROJ-SCENARIO-06`) |
-| B1 Confirm premises before solution | premise gate checkpoint + PROJ-02 (product intent constrains system) |
+| B1 Confirm premises before solution | `STARTUP-PROJ-SCENARIO-01-CHECK-06` (the premise gate ran: every premise shown for agree / disagree and confirmed before the solution topics) + PROJ-02 (product intent constrains system) |
 | B2 Three layers + real alternatives | PROJ-03 (researched + user-decided) |
 | B3 Rough, solved, bounded | Family 3 Product-shape soundness (`STARTUP-PROJ-SCENARIO-07`) |
 | B4 Viable = feasible + sustainable | Family 4 Feasibility & sustainability (`STARTUP-STRUCT-SCENARIO-05`) + Family 5 teeth |
