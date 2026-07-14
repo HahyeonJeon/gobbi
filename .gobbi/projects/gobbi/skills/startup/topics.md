@@ -147,9 +147,9 @@ fabricate a license, and never skip the branch silently.
 
 #### 2.4 Baseline, target, failure & stop threshold
 - What is the current measured baseline from the most recent real case?
-- Which target improvement — measured by whom, and by when — would prove the project works, and what
+- Which target improvement — measured by whom, by when, and set on what sourced, context-specific basis or method (a prior comparable, a benchmark with its source, or a stated method, not an unsourced number) — would prove the project works, and what
   would count as a technically successful build but a failed project?
-- What threshold or evidence would say stop, pivot, or narrow?
+- What threshold or evidence would say stop, pivot, or narrow — and on what sourced basis or method?
 
 ### Topic 3 — Users, Jobs, Alternatives & Value
 
