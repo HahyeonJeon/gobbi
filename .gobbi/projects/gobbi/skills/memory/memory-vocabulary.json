@@ -15,7 +15,7 @@
       "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","rename-sweep","vocabulary-sweep","verification","validation","docs-sync","schema","frontmatter","links","design","hooks","security"]
     },
     "references": {
-      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests"],
+      "areas": ["memory","git","workflow","wrap-up","evaluation","codex","process","docs","tooling","tests","startup-prior-art"],
       "tags": ["process","git","memory","codex","wrap-up","evaluation","refactor","docs-sync","schema","validation","links","design","security"]
     },
     "plans": {

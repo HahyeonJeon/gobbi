@@ -81,7 +81,7 @@ WORK execution is more than documentation here, because Preparation's purpose is
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
 - **Output path**: per-iter scoped under `sessions/{date}-{session-id}/2-preparation/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus typically emphasizes gap coverage (was every needed item checked?), generation quality (do new skills meet the project's template bar?), and re-Ideate triggering (is any gap actually unworkable rather than just missing?)
-- The evaluators verify the leader's generated artifacts pass the same quality bar that the `interview` skill enforces for stamped skills
+- The evaluators verify the leader's generated artifacts pass the same quality bar that the `skill-writing` skill enforces for stamped skills
 
 ---
 
@@ -145,4 +145,4 @@ missed-memory-promotion candidates, all routed to memory by Wrap-up.
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
 - Delegation patterns → [`delegation`](../../delegation/SKILL.md)
-- Project-specific skill template (for "Generate now" decisions) → [`interview/templates/project-skill.md`](../../interview/templates/project-skill.md)
+- Project-specific skill template (for "Generate now" decisions) → [`skill-writing/templates/project-skill.md`](../../skill-writing/templates/project-skill.md)

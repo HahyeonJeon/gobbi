@@ -23,7 +23,7 @@
 #
 # Path-validation contract (fail-closed): <session-root> must be absolute;
 # <step-dir> must match the fixed allowed set; reject .., leading /, stray
-# slashes, and any step-dir outside the set (including interview). On any failure
+# slashes, and any step-dir outside the set (including startup). On any failure
 # exit non-zero and create NOTHING.
 #
 # Idempotency: pure mkdir -p — re-run is a no-op; two scaffolds of the same valid

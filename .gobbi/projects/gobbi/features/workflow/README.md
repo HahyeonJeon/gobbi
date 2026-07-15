@@ -61,7 +61,7 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 - `backlogs/process/task-record-template-and-dangling-ref.md`: author task-record template + fix 17 dangling refs in chat-mode.md.
 - `backlogs/workflow/persist-session-memory-past-cleanup.md` (project-level): retain session working memory after worktree cleanup for post-session debugging.
 - `backlogs/workflow/agent-writing-six-section-migration.md` (project-level, session `33de02b8`): migrate `agent-writing/SKILL.md` to the new 6-section skill standard — lazy follow-up.
-- `backlogs/workflow/project-skill-template-realign.md` (project-level, session `33de02b8`): realign `interview/templates/project-skill.md`'s stamped section order to the 6-section standard, or document it as exempt.
+- `backlogs/workflow/project-skill-template-realign.md` (project-level, session `33de02b8`): RESOLVED — the project-skill template was relocated to `skill-writing/templates/project-skill.md` and realigned to the 6-section standard; backlog closed.
 - `backlogs/process/d5-012-ideation-skill-md-stale-routing-copy.md` (session `1fecddb4`): `ideation/SKILL.md:496` carries the same stale routing-table wording GEN-D1-002 fixed at `workflow/evaluation.md`; deferred, out of this session's locked scope.
 - `[FLAG-1]`: clarify whether project `skills/` is memory (out of scope for this session).
 - `[FLAG-2]`: author the `claude` doc-authoring skill (out of scope for this session).
