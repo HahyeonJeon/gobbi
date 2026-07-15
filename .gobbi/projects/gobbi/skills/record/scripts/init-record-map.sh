@@ -23,7 +23,7 @@
 #
 #   Execution task dirs (4-execution/task-{NN}-{slug}) are NOT created here — their
 #   names are unknown at init; they stay lazy via scaffold-session-dir.sh per task.
-#   interview/ is a bootstrap exception (not a loop) and is out of scope here too.
+#   startup/ owns its own session shape (not a loop) and is out of scope here too.
 #
 # Args:
 #   $1  <session-root>  Absolute path to sessions/{date}-{session-id}/ (created if absent).

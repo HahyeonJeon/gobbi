@@ -191,7 +191,7 @@ Identify the project-specific skills an executor would need for the planned work
 |---|---|---|---|---|
 | 1 | Leader | Readiness signal list | For each file / domain, enumerate the skills an executor would need to load — workspace-level (language / runtime) + project-specific (`{project-name}-typescript-conventions`, `{project-name}-testing`, etc.) | Required skills list |
 | 2 | Leader | Required skills list | Scan `.gobbi/projects/{project-name}/skills/` for project-specific entries; check the active runtime's workspace skill root for workspace-level entries where accessible | Skills coverage report |
-| 3 | Leader | Coverage report | For each missing project-specific skill: propose `generate-now` (trigger the [interview skill](../interview/SKILL.md)'s wave codification flow) / `defer` (Planning notes the gap; Execution consults code patterns directly) / `re-ideate` (the gap reveals the design itself is unworkable without the skill) | Execution skills gap list |
+| 3 | Leader | Coverage report | For each missing project-specific skill: propose `generate-now` (stamp the [`skill-writing`](../skill-writing/SKILL.md)-owned project-skill template into staging) / `defer` (Planning notes the gap; Execution consults code patterns directly) / `re-ideate` (the gap reveals the design itself is unworkable without the skill) | Execution skills gap list |
 | 4a | Leader | Gap list | Surface to the manager | Findings package |
 | 4b | Manager | 4a | Defer per-gap decision to Sub-step D | (no decision yet) |
 
@@ -235,14 +235,14 @@ Persist the DISCUSSION outputs into a session draft and execute every `generate-
 **Inputs**
 - DISCUSSION outputs (approved gap-resolution plan + readiness signal list, all captured in the parent transcript)
 - Existing session directory tree at `sessions/{date}-{session-id}/2-preparation/{working,staging,evaluation}/` (bootstrapped by the manager)
-- Stamping templates: [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) (for `generate-now` on skills), [`memory/templates/`](../memory/templates/) (for scenarios / checklists / decisions / etc.)
+- Stamping templates: [`skill-writing/templates/project-skill.md`](../skill-writing/templates/project-skill.md) (for `generate-now` on skills), [`memory/templates/`](../memory/templates/) (for scenarios / checklists / decisions / etc.)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
 | 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/2-preparation/working/draft-iter{n}.md` |
-| 2 | Leader | `generate-now` decisions where the gap is a missing project-specific skill | For each: stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`. Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | One staged skill directory per approved generation |
+| 2 | Leader | `generate-now` decisions where the gap is a missing project-specific skill | For each: stamp the full [`skill-writing/templates/project-skill.md`](../skill-writing/templates/project-skill.md) at `sessions/{date}-{session-id}/2-preparation/staging/skills/{slug}/SKILL.md`. Wrap-up promotes to `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | One staged skill directory per approved generation |
 | 3 | Leader | `generate-now` decisions where the gap is a missed memory promotion (scenario / checklist / decision / etc.) | For each: stamp the matching template from [`memory/templates/`](../memory/templates/) at `sessions/{date}-{session-id}/2-preparation/staging/{type}/{slug}.md` | One staged file per missed promotion |
 | 4 | Leader | `defer` decisions | Record in the draft's "Out of scope gaps" section with severity + pointer; no staging write | Deferred list captured |
 | 5 | Leader | `skip` decisions | Record in the draft's "Decisions log" section with the user's stated reason; no staging write | Skipped list captured |
@@ -292,7 +292,7 @@ Required-sections template for the working draft:
 ### WORK discipline
 
 - **No new content beyond gap fixes.** WORK does not introduce design decisions, plans, or implementations beyond what the user approved in DISCUSSION. If a gap surfaces during persistence, raise it to the manager — re-entering DISCUSSION is preferred over silent invention.
-- **Stamp full templates.** When generating a project-specific skill, stamp the full [`interview/templates/project-skill.md`](../interview/templates/project-skill.md) — never leave skeleton files.
+- **Stamp full templates.** When generating a project-specific skill, stamp the full [`skill-writing/templates/project-skill.md`](../skill-writing/templates/project-skill.md) — never leave skeleton files.
 - **Cite the discussion.** Each section's content must be traceable to a DISCUSSION exchange in the parent transcript. The Decisions Log makes this explicit.
 
 ### Dual-system production (Codex proposer)
@@ -338,7 +338,7 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 
 **Preparation-specific evaluation emphasis** (the phase child doc directs)
 - Gap coverage — was every needed item actually checked at Sub-steps B and C?
-- Generation quality — do staged skills meet the project-skill template bar that the [interview skill](../interview/SKILL.md) enforces?
+- Generation quality — do staged skills meet the project-skill template bar that the [`skill-writing`](../skill-writing/SKILL.md) skill enforces?
 - `re-ideate` triggering — is any gap actually unworkable (re-ideate) rather than just missing (generate-now)?
 
 **Exit checklist**
@@ -436,7 +436,7 @@ The session directory tree at `sessions/{date}-{session-id}/2-preparation/{worki
 ## Constraints
 
 - **MUST never close a gap without explicit user approval** — the leader proposes, the user decides through the active runtime's user-decision primitive.
-- **MUST stamp full templates** when generating a project-specific skill — never leave skeleton files. Use [`interview/templates/project-skill.md`](../interview/templates/project-skill.md).
+- **MUST stamp full templates** when generating a project-specific skill — never leave skeleton files. Use [`skill-writing/templates/project-skill.md`](../skill-writing/templates/project-skill.md).
 - **MUST never silently ignore a missing item** — every gap goes to the Sub-step D consolidated table for user review.
 - **MUST never expand scope** to address project-wide gaps unrelated to this task — note them as out-of-scope in the working draft.
 - **MUST re-enter Ideation** if any gap reveals an unworkable design (a missing decision, not a missing artifact) — record the trigger, halt Preparation, signal the manager.

@@ -254,7 +254,7 @@ Codex custom agents remain repo-local under `.codex/agents/*.toml`; the plugin p
 
 The package ships all 22 canonical skills:
 
-`agent-writing`, `claude-plugin`, `codex`, `coding`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `ideation`, `interview`, `memory`, `mistake`, `orchestration`, `planning`, `preparation`, `principles`, `record`, `research`, `skill-writing`, `wrap-up`
+`agent-writing`, `claude-plugin`, `codex`, `coding`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `ideation`, `memory`, `mistake`, `orchestration`, `planning`, `preparation`, `principles`, `record`, `research`, `skill-writing`, `startup`, `wrap-up`
 
 The `claude-plugin` skill (this file) is one of the 22. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package path `plugins/gobbi/skills/claude-plugin/SKILL.md` resolves through the package symlink.
 
