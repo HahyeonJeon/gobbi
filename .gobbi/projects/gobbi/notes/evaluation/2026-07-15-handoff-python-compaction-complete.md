@@ -97,3 +97,7 @@ restored). The user approved a band-exception rather than trim union — see
 - [[python-coding-interface-narrowness-principle]] — the coding P17 + python P9 decision shipped this session
 - [[dual-system-caught-broken-teaching-example]] — the session's headline dual-system catch
 - [[codex-lean-density-is-often-union-incomplete-not-a-safe-floor]] — why the leaner Codex counts were not a safe density floor
+
+## Merge-blocker (recorded at push time)
+
+PR #349 pushed to `67e45e12` (23 commits). GitHub now reports the PR **CONFLICTING** (was MERGEABLE at session start) because develop advanced during this session (a concurrent PR #350 / startup-skill merge, plus prior develop moves). The conflict scope is **exactly ONE pre-existing file**: `.gobbi/projects/gobbi/skills/evaluation/mistakes.md` — changed both on this branch (pre-`ab7bef14` content) and on origin/develop. **This session's python/coding work is conflict-free** (merge-base `c23907d7`; origin/develop touched none of the 13 coding/python docs). So NEXT before merge: reconcile that single `evaluation/mistakes.md` conflict (the flagged develop-divergence task, OUT of this session's scope), THEN merge #349. Nothing in the python compaction or the interface-narrowness principle needs re-work.
