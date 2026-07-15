@@ -11,7 +11,7 @@ tags: []
 keywords: [mistakes, hybrid, two-home, skill-surface, check-skill-mistakes, layer2-removal, guards]
 author: claude
 value_proposition: A mistake is recorded once, homed where it loads in context, and protected by a conformance guard — so a correction is never copied, never diverges, and never loads context-blind.
-subsystems: [skills/mistake, skills/memory, skills/orchestration/scripts/check-skill-mistakes.sh, skills/wrap-up, skills/delegation]
+subsystems: [skills/mistake, skills/memory, skills/orchestration/scripts/check-skill-mistakes.sh, skills/wrap-up, skills/orchestration]
 ---
 
 # Guardrails
@@ -19,6 +19,8 @@ subsystems: [skills/mistake, skills/memory, skills/orchestration/scripts/check-s
 ## Overview
 
 The `guardrails` feature owns how gobbi captures, homes, and loads mistakes — the highest-density knowledge in the system — plus the conformance guards that protect the memory store. Its defining decision is the hybrid two-home mistake model: a skill-owned trap lives co-located as a `## ` section in `skills/{skill}/mistakes.md` (loaded in that skill's context); a cross-cutting / no-owner trap stays in the project `mistakes/{area}/` memory tier (loaded at session start).
+
+Reusable delegation semantics remain in `skills/delegation/SKILL.md`; Gobbi-specific mistake-companion dispatch is owned by `skills/orchestration/delegation.md`.
 
 ## Status
 

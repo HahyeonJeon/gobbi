@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-07-08
+updated: 2026-07-15
 ---
 
 # Skill-Writing — Mistakes
@@ -93,3 +93,12 @@ updated: 2026-07-08
 **Why it happens** — A skill's body already holds the mechanics, so it is tempting to name them in the principle for precision and to link down "for detail." But the Core Principles are the general/universal layer: they should state the durable idea completely, in tool-agnostic words, and stand on their own. And a skill's `mistakes.md` and other companions reference the principle set, so removing or renaming a principle silently breaks those references.
 **How to detect** — A principle STATEMENT contains a product/file/mechanism noun (a checklist name, a tier label, a runtime name) instead of a universal statement; OR a principle ends in a `See §` / `(§ …)` cross-reference; OR, after removing a named principle, a grep of the skill's `mistakes.md` + companion docs for the removed principle's name/phrase finds a live present-tense reference.
 **Correct approach** — State each Core Principle universally and completely — no tool/system jargon, no dependency on a body section to carry its meaning; let the body independently document the tool-specific application (no link needed). When removing or renaming a named principle, sweep the skill's `mistakes.md` and every doc that cited it (Principle-9 blast radius) in the SAME edit, re-pointing each reference to the surviving home.
+
+## Quantitative Compaction Before Necessity
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-15` · `status: active` · `tags: [docs-sync, process]`
+
+**What happened** — A documentation-ownership redesign proposed word-count and percentage-reduction targets before classifying claims by necessity and owner. The metric would have governed deletion before the capability contract was known.
+**Why it happens** — “Make it compact” is translated into a numerical proxy because counts are easy to measure. The proxy can reward deletion or relocation without proving that a cold-loading agent retains every necessary capability.
+**How to detect** — A skill or documentation redesign has no complete claim-owner ledger yet, but a word, line, or percentage target already appears as an acceptance gate.
+**Correct approach** — Build the claim-owner and necessity inventory first. Keep required content, remove content with no necessary role, and move owner-specific detail without duplication. Use size measurements only as descriptive evidence after the design is correct unless the user explicitly requests a quantitative limit.

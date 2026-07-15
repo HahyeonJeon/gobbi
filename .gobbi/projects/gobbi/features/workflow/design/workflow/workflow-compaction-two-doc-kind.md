@@ -136,22 +136,22 @@ procedure, each with its role stated** (COD-STRUCT-001); **(2)** state what THIS
 locally; **(3)** ban the restatement. Within `workflow/*.md`, the typed set:
 
 ```markdown
-> **Procedure owner:** [`ideation/SKILL.md`](../../ideation/SKILL.md). Keeps only manager
+> **Procedure owner:** [`ideation/SKILL.md`](../../../../skills/ideation/SKILL.md). Keeps only manager
 > spawn, inputs, user gates, exit checks. Do not copy the peer procedure.               [single]
 
-> **Production owner:** [`workflow/production.md`](production.md). Names only when the manager
+> **Production owner:** [`workflow/production.md`](../../../../skills/orchestration/workflow/production.md). Names only when the manager
 > invokes dual-system production + any loop path exception. Do not restate spawn/freeze/
 > integration/gap/degraded rules.                                                        [single]
 
-> **Evaluation owner:** [`workflow/evaluation.md`](evaluation.md) for spawn/reconciliation/
-> safety gates/failure; [`evaluation/SKILL.md`](../../evaluation/SKILL.md) for the evaluator's
+> **Evaluation owner:** [`workflow/evaluation.md`](../../../../skills/orchestration/workflow/evaluation.md) for spawn/reconciliation/
+> safety gates/failure; [`evaluation/SKILL.md`](../../../../skills/evaluation/SKILL.md) for the evaluator's
 > four-stage procedure. Keeps only loop-specific inputs + outputs.                        [split]
 
-> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + validation gates
-> (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md) for
+> **Record owner:** [`workflow/record.md`](../../../../skills/orchestration/workflow/record.md) for manager spawn + validation gates
+> (incl. the session-record commit boundary); [`record/SKILL.md`](../../../../skills/record/SKILL.md) for
 > the assistant procedure. Keeps only loop-specific inputs, outputs, exceptions.          [split]
 
-> **Path owner:** [`record/record-map.md`](../../record/record-map.md). Do not redraw the
+> **Path owner:** [`record/record-map.md`](../../../../skills/record/record-map.md). Do not redraw the
 > session tree. Name only this loop's dir and loop-specific files.                       [single]
 ```
 
@@ -291,9 +291,9 @@ enough to plan against. It runs the four sub-phases — DISCUSSION → WORK → 
 RECORD — then the ITER / EXIT decision; it does NOT perform the leader / evaluator /
 assistant procedures. Planning owns Who / When / Where.
 
-> **Procedure owner:** [`ideation/SKILL.md`](../../ideation/SKILL.md). This doc keeps only
+> **Procedure owner:** [`ideation/SKILL.md`](../../../../skills/ideation/SKILL.md). This doc keeps only
 > manager spawn, inputs, user gates, and exit checks — do not copy the peer procedure.
-> **Path owner:** [`record/record-map.md`](../../record/record-map.md). Do not redraw the
+> **Path owner:** [`record/record-map.md`](../../../../skills/record/record-map.md). Do not redraw the
 > session tree — name only Ideation's dir and loop-specific files.
 
 ## Manager Entry
@@ -323,8 +323,7 @@ and decision set are user-locked and explicit enough for WORK to document with n
 
 **Leader continuation (Claude Code Agent Teams).** The manager continues ONE leader
 teammate across A→B→C→D→WORK via delta-briefs — the strongest in-loop token saver.
-Decision rule + evaluator-FORBIDDEN wall:
-[`delegation/SKILL.md § Continue vs Fresh`](../../delegation/SKILL.md#continue-vs-fresh).
+Decision rule + evaluator-FORBIDDEN wall: [`orchestration/delegation.md § Continue vs Fresh`](../../../../skills/orchestration/delegation.md#continue-vs-fresh).
 Fresh-spawn fallback when Agent Teams is off, the runtime is native Codex, or the teammate
 died (`/compact` / `/clear` / resume kill it).
 
@@ -337,15 +336,15 @@ Checklist / Design / Decisions Log); one `staging/references/{slug}.md` per conf
 external insight; `staging/backlogs/{feature,project}/` matches the Sub-step B/C lists; the
 Decisions Log cites the user-decision outcomes. No memory writes.
 
-> **Production owner:** [`workflow/production.md`](production.md). This doc names only that
+> **Production owner:** [`workflow/production.md`](../../../../skills/orchestration/workflow/production.md). This doc names only that
 > Ideation WORK may run dual-system production (`propose.mode: dual`, default). Do not
 > restate proposer spawn, freeze, selective integration, gap classification, or
 > degraded-mode rules.
 
 ## EVALUATION Orchestration
 
-> **Evaluation owner:** [`workflow/evaluation.md`](evaluation.md) for manager spawn,
-> reconciliation, safety gates, and failure handling; [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
+> **Evaluation owner:** [`workflow/evaluation.md`](../../../../skills/orchestration/workflow/evaluation.md) for manager spawn,
+> reconciliation, safety gates, and failure handling; [`evaluation/SKILL.md`](../../../../skills/evaluation/SKILL.md)
 > for the evaluator's four-stage procedure.
 
 Pass the working draft, staged references + backlogs, the Scope Contract, and the
@@ -355,8 +354,8 @@ Cross-system divergence is derived at RECORD, not written to a file.
 
 ## RECORD Orchestration
 
-> **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
-> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
+> **Record owner:** [`workflow/record.md`](../../../../skills/orchestration/workflow/record.md) for manager spawn + the validation
+> gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../../../skills/record/SKILL.md)
 > for the assistant procedure.
 
 The manager spawns one `assistant` after every verdict. **Ideation delta:** `outputs/` is
@@ -389,13 +388,13 @@ Path owner — never redrawn here.
 
 ## Cross-references
 
-- Ideation peer procedure → [`ideation/SKILL.md`](../../ideation/SKILL.md)
-- Research procedure → [`research/SKILL.md`](../../research/SKILL.md)
-- Production orchestration → [`workflow/production.md`](production.md)
-- Evaluation orchestration → [`workflow/evaluation.md`](evaluation.md)
-- RECORD orchestration + assistant procedure → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
-- Session path owner → [`record/record-map.md`](../../record/record-map.md)
-- Delegation patterns → [`delegation/SKILL.md`](../../delegation/SKILL.md)
+- Ideation peer procedure → [`ideation/SKILL.md`](../../../../skills/ideation/SKILL.md)
+- Research procedure → [`research/SKILL.md`](../../../../skills/research/SKILL.md)
+- Production orchestration → [`workflow/production.md`](../../../../skills/orchestration/workflow/production.md)
+- Evaluation orchestration → [`workflow/evaluation.md`](../../../../skills/orchestration/workflow/evaluation.md)
+- RECORD orchestration + assistant procedure → [`workflow/record.md`](../../../../skills/orchestration/workflow/record.md), [`record/SKILL.md`](../../../../skills/record/SKILL.md)
+- Session path owner → [`record/record-map.md`](../../../../skills/record/record-map.md)
+- Gobbi delegation dispatch → [`orchestration/delegation.md`](../../../../skills/orchestration/delegation.md)
 ```
 
 ---

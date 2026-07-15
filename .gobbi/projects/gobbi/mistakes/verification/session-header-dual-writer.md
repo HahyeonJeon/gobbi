@@ -57,4 +57,5 @@ a hook clearly seeded (visible mid-session) but that is absent after SessionEnd 
 
 ## Related
 
-- [`skills/delegation/mistakes.md#skill-prose-template-drift`](../../skills/delegation/mistakes.md#skill-prose-template-drift) — the general drift pattern this coupled-writer gap is a variant of
+- [`skills/delegation/SKILL.md`](../../skills/delegation/SKILL.md) — reusable delegation semantics consumed by the Gobbi dispatch owner
+- [`skills/orchestration/mistakes.md#skill-prose-template-drift`](../../skills/orchestration/mistakes.md#skill-prose-template-drift) — the general drift pattern this coupled-writer gap is a variant of

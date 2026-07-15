@@ -43,7 +43,7 @@ authoring layer even after the templates that cause the trap in one place are fi
 
 Before dispatching any delegation prompt, verify every Load-Directives path with `ls` / `find` against
 the worktree the subagent will actually operate in — not against a mental model of "the skill that
-should exist by now." This session's Pre-Dispatch Fill Checklist (added to `skills/delegation/SKILL.md`)
+should exist by now." The Pre-Dispatch Fill Checklist in `skills/orchestration/delegation.md`
 is the gate: it requires this check as a fill-time step, not a post-hoc review step.
 
 ## Counter-cases
@@ -54,4 +54,4 @@ the session's own not-yet-committed writes, not only what is merged to the base 
 
 ## Related
 
-- [`skills/delegation/mistakes.md#delegation-briefs-reference-nonexistent-rules-dir`](../../skills/delegation/mistakes.md#delegation-briefs-reference-nonexistent-rules-dir) — the recorded trap this reproduced at the manager's own authoring level
+- [`skills/orchestration/mistakes.md#delegation-briefs-reference-nonexistent-rules-dir`](../../skills/orchestration/mistakes.md#delegation-briefs-reference-nonexistent-rules-dir) — the recorded trap this reproduced at the manager's own authoring level

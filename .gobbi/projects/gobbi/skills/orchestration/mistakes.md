@@ -2,7 +2,7 @@
 type: mistakes
 skill: orchestration
 description: "Recorded traps for Gobbi delegation dispatch — load before manager dispatch work"
-updated: 2026-07-08
+updated: 2026-07-15
 ---
 
 # Orchestration Delegation — Mistakes
@@ -81,3 +81,12 @@ updated: 2026-07-08
 
 ### Related
 - [[skill-prose-template-drift]] — the general drift pattern this is one instance of
+
+## Root Chat Execution Scaffolds At The Task Slice
+
+`priority: high` · `domain: process` · `added: 2026-07-15` · `status: active` · `tags: [process, execution]`
+
+**What happened** — The manager passed the session root to `scaffold-session-dir.sh` for a nested Chat Execution task. The helper created an empty task quartet beside the Chat root instead of inside the active Chat task slice.
+**Why it happens** — The helper calls its first argument `session-root`, while Chat mode nests the active loop tree below a task slice. Following the argument label without resolving the current mode's loop owner selects the wrong root.
+**How to detect** — In Chat mode, compare the intended absolute Execution path with `<first-argument>/<step-dir>` before scaffolding. If they differ, the root argument is wrong.
+**Correct approach** — Pass the active Chat task-slice directory as the scaffold root and the nested Execution quartet as the step directory. Immediately verify the created absolute path and confirm that no sibling session-level quartet appeared.
