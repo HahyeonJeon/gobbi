@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-07-08
+updated: 2026-07-14
 ---
 
 # Skill-Writing — Mistakes
@@ -93,3 +93,27 @@ updated: 2026-07-08
 **Why it happens** — A skill's body already holds the mechanics, so it is tempting to name them in the principle for precision and to link down "for detail." But the Core Principles are the general/universal layer: they should state the durable idea completely, in tool-agnostic words, and stand on their own. And a skill's `mistakes.md` and other companions reference the principle set, so removing or renaming a principle silently breaks those references.
 **How to detect** — A principle STATEMENT contains a product/file/mechanism noun (a checklist name, a tier label, a runtime name) instead of a universal statement; OR a principle ends in a `See §` / `(§ …)` cross-reference; OR, after removing a named principle, a grep of the skill's `mistakes.md` + companion docs for the removed principle's name/phrase finds a live present-tense reference.
 **Correct approach** — State each Core Principle universally and completely — no tool/system jargon, no dependency on a body section to carry its meaning; let the body independently document the tool-specific application (no link needed). When removing or renaming a named principle, sweep the skill's `mistakes.md` and every doc that cited it (Principle-9 blast radius) in the SAME edit, re-pointing each reference to the surviving home.
+
+## Softening Can Narrow Scope Like A Merge
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-14` · `status: active` · `tags: [docs-sync, verification]`
+
+**What happened** — Compacting a skill doc, a pre-edit hard rule ("NEVER hide expensive or
+failure-prone work behind a `property`, `__repr__`, equality, hashing, or another special method") was
+softened down to a short default that mentioned only "cheap properties / an expensive method" —
+dropping the special-method BREADTH (`__repr__`/`__eq__`/`__hash__`/arithmetic dunders) and the
+caller-expectation hazard the hard rule named.
+**Why it happens** — The union-scope discipline (preserve every source condition when merging or
+consolidating) was applied to MERGES of hard rules but not to hard-to-SOFT conversions. A soften feels
+like "just relaxing strictness," so scope-preservation isn't checked — but softening rewrites the
+sentence and can silently drop a condition exactly like a merge does.
+**How to detect** — Any hard MUST/NEVER to prefer/consider/default-to conversion. Treat every such
+conversion as a union-scope checkpoint: does the softened sentence still name every subject and hazard
+the hard rule named?
+**Correct approach** — When softening a rule, preserve its full union scope (every named subject, the
+hazard, and the fix) — only the STRICTNESS relaxes (NEVER to prefer), never the coverage. Check
+softened items for dropped conditions with the same discipline used for merges.
+
+### Related
+- [[execution-evaluator-union-check-must-cover-softened-items]] (`skills/evaluation/mistakes.md`) — the
+  matching evaluator-side gap: a "no hard hazard dropped" pass must also diff the softened set

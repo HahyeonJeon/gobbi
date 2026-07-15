@@ -2,7 +2,7 @@
 type: mistakes
 skill: codex
 description: "Recorded traps for codex — load before doing codex work"
-updated: 2026-07-06
+updated: 2026-07-14
 ---
 
 # Codex — Mistakes
@@ -88,6 +88,7 @@ updated: 2026-07-06
 
 ### Related
 - [[codex-side-assistant-faked-eval-on-codex-timeout]] — the no-output state to report BLOCKED on; never self-author the eval when a codex timeout produced nothing
+- [[codex-evaluator-underproduces-on-heavy-multiperspective-workload]] — the quieter sibling: a heavy multi-perspective-plus-compile workload exits 0 with partial output instead of SIGTERM-killing with zero output
 
 ## Codex-Side Wrapper Must Foreground-Block And Validate Output, Never Background-And-Return
 
@@ -115,3 +116,47 @@ updated: 2026-07-06
 ### Related
 - [[codex-background-exec-exit-code-unreliable]] — adjacent native Codex status ambiguity.
 - [[edit-tool-silent-write-failure-on-worktree]] — verify disk state rather than trusting a reported write.
+
+## Codex Evaluator Underproduces On Heavy Multiperspective Workload
+
+`priority: high` · `domain: codex` · `added: 2026-07-13` · `status: active` · `tags: [codex, evaluation, verification]`
+
+**What happened** — A Codex evaluator launched via `codex exec` was scoped to 7 perspectives + Overall + a filled checklist, plus compiling 19 code blocks and tracing idioms across the reviewed docs. It produced only 3 of the 9 required output files (`project.md`, `structure.md`, `performance.md`) and no `overall.md` / VERDICT line. The background process exited 0, so a naive check would have treated the run as complete.
+**Why it happens** — The combined workload — 7 doc-eval perspectives, a 19-block compile pass, and idiom tracing — overran what one `codex exec` turn finishes within its budget. Codex ended its turn after 3 perspectives without erroring; exit 0 is not a completion signal. This extends the known "Codex evals sometimes skip `overall.md`" gotcha to "may skip most perspectives on a heavy multi-perspective-plus-compile workload."
+**How to detect** — After any Codex evaluator run, count the output files (expect 9: 7 perspectives + `overall.md` + the filled `checklist.md`) and confirm `overall.md` carries a `VERDICT:` line BEFORE trusting or reconciling the run. Do not infer completeness from the process exit code.
+**Correct approach** — Gate the Codex evaluator on all 9 files + a `VERDICT:` line, and re-run or resume on any shortfall; OR split the heavy evaluation into smaller `codex exec` units (per-doc, or a separate compile-only pass from the perspective pass) so each turn's budget completes. This session's mitigation: the Claude evaluator independently ran the interpreter and covered the code-correctness surface, and Codex still delivered its divergent deepen-not-restate finding, so union coverage held despite the shortfall.
+
+### Related
+- [[codex-exec-large-diff-eval-times-out]] — the sibling large-workload trap: a broad review over a large diff SIGTERM-kills with zero output; this trap is the quieter sibling — the run exits 0 with partial output instead of timing out
+- [[codex-side-wrapper-must-foreground-block-and-validate-output-never-background-and-return]] — the files-as-truth discipline this trap depends on: never trust the process return/exit code as a completion signal
+
+## Codex Exec Eval No Write Needs Write First Prompt
+
+`priority: high` · `domain: codex` · `added: 2026-07-14` · `status: active` · `tags: [codex, process]`
+
+**What happened** — A backgrounded `codex exec` evaluator run exited 0 having written 0 of 9
+contracted output files (7 per-perspective + overall + checklist). Codex had read all the inputs and
+produced a complete evaluation, but delivered it as a chat-style reply in stdout instead of writing it
+to the files the prompt's Output section described.
+**Why it happens** — The prompt DESCRIBED the expected output files (paths, one per perspective) but
+never INSTRUCTED Codex to write them as it went, and never framed the files as the deliverable rather
+than the reply. Codex reasonably treated "produce a complete evaluation" as satisfied by one complete
+chat message — the prompt never said the chat reply does not count as the answer.
+**How to detect** — A Codex bg-exec run (evaluator or proposer) that exits 0, whose stdout log
+contains full, structured evaluation content, but whose contracted output directory has 0 (or far
+fewer than expected) files. Exit 0 plus non-empty stdout can look like a normal completion at a
+glance — the tell is the mismatch between "the content clearly exists" and "the files do not."
+**Correct approach** — A Codex bg-exec eval/proposer prompt must, to force file-writing rather than
+chat-replying: (1) state explicitly that the evaluation lives in FILES, not the reply — the chat reply
+is not the deliverable; (2) require writing each file IMMEDIATELY after that section of the evaluation
+is done, not batched at the end of the run, so a mid-run interruption still leaves partial files, not
+nothing; (3) cap how much Codex reads before it starts writing, so reasoning/reading budget does not
+crowd out the writing budget; (4) require a terminal one-line confirmation such as "WROTE N FILES" so
+the wrapper has an explicit completion signal to check against the actual file count. A prompt
+carrying these four fixes produced all 9 files on retry.
+
+### Related
+- [[codex-side-wrapper-must-foreground-block-and-validate-output-never-background-and-return]] — the
+  matching WRAPPER-side trap (validate files exist before reporting); this trap is the matching
+  PROMPT-side root cause (force Codex to write files as it goes, not just describe the expected paths)
+- [[codex-wrapper-file-persistence-failure]] — sibling files-as-truth wrapper trap

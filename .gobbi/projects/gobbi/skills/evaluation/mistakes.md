@@ -2,7 +2,7 @@
 type: mistakes
 skill: evaluation
 description: "Recorded traps for evaluation — load before doing evaluation work"
-updated: 2026-07-11
+updated: 2026-07-15
 ---
 
 # Evaluation — Mistakes
@@ -54,6 +54,29 @@ updated: 2026-07-11
 
 ### Related
 - [[freeze-producer-artifact-before-evaluating]] — sibling evaluation-target-integrity trap: know exactly what you are diffing against before calling something a loss
+
+## Execution Evaluator Union-Check Must Cover Softened Items
+
+`priority: high` · `domain: process` · `added: 2026-07-14` · `status: active` · `tags: [evaluation, verification]`
+
+**What happened** — In a dual evaluation of a compaction task, one evaluator diffed the full pre-edit
+MUST/NEVER rule set against the post-edit doc, correctly found "no hard hazard dropped," and returned
+PASS. But it did not check the SOFTENED items for scope narrowing, so it missed that a softened rule
+had dropped a special-method breadth condition the hard rule originally named. The independent
+evaluator caught it — the dual-system's non-overlapping catch.
+**Why it happens** — The evaluator's union-scope verification was scoped to the hard-invariant set
+(the obvious risk surface) and treated softened items as lower-risk "just guidance," so it skipped the
+same diff on them.
+**How to detect** — Any compaction or reframe that both keeps some rules hard and softens others. The
+softened set is a scope-loss surface too.
+**Correct approach** — An evaluator reviewing a compaction must diff BOTH the hard set AND the
+softened set against the pre-edit source, confirming every softened item preserves its source union
+scope. Add "every softened item preserves its source union scope" as an explicit compaction-review
+check. Reinforces the dual-system value: run both systems; divergence is the signal.
+
+### Related
+- [[softening-can-narrow-scope-like-a-merge]] — the producer-side sibling: the same union-narrowing
+  failure on the artifact being reviewed
 
 ## use-codex-for-shell-dependent-evaluation-proof
 

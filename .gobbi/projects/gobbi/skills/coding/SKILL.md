@@ -270,6 +270,22 @@ Good code minimizes the complexity the next person must hold in their head to ch
 - Shared mutable state carried by an unstated "only one writer" assumption that nothing structurally guarantees.
 - A tangled core where pure logic and side effects are inseparable, so neither can be reasoned about or tested alone.
 
+## Principle 17 — Narrow the Input Surface: Require Only What the Unit Uses, in a Form the Caller Can Read Without Study.
+
+**Why** — Principle 2 asks whether a caller can use a unit from its signature alone, and Principle 3 keeps the interface simple over a deep implementation — both judged mostly from what the unit returns and hides. The input side carries its own cost, and it is the cost callers pay on every call: to invoke the unit they must first understand, and then assemble, whatever the signature demands. When that demand is wider or more tangled than the work needs — a whole record passed so the body can read two of its fields, a deeply nested type the caller must decode — the caller has to study a complex thing just to make a simple call, and the API reference stops being self-documenting. Narrow the input surface: require only the values the unit actually uses, in the plainest form that still tells the truth, so the caller reads the call from the signature instead of reverse-engineering it.
+
+**Practice**
+- Pass only what the unit uses: when the body needs a few fields of a larger record, take those fields as parameters rather than the whole record — data coupling, not stamp coupling.
+- Keep boundary types shallow enough to read at a glance; name an intermediate concept rather than forcing the caller to decode a nested structure before they can call.
+- Judge the input from the caller's side — can they tell what to pass, and assemble it, from the signature alone? If satisfying the call means reading the body, the surface is too wide or too opaque; narrow it before the implementation is written.
+- Keep a cohesive aggregate intact when the unit genuinely operates on it as one concept: narrowness removes unrelated knowledge, not meaningful structure.
+
+**Anti-pattern**
+- A whole aggregate, record, or config object passed as one opaque parameter when the unit reads only a couple of its fields — stamp coupling that hides the real dependency and makes the caller build more than the call needs.
+- A deeply nested or elaborate boundary type the caller must study and decode before they can construct a valid argument.
+- A generic context, options, or configuration object that hides the unit's real dependencies and quietly grows as more fields are read from it.
+- Exploding one cohesive concept into a long list of loose parameters just to make every input individually explicit, when the unit genuinely uses that concept as one whole.
+
 ---
 
 ## Scope — Language-Agnostic
@@ -287,6 +303,7 @@ The principles are guidelines, not laws; a few pull against each other. Name the
 - **Optimize for the Reader (11) ⇄ brevity:** prefer the clearer form; brevity that costs a reader is not a virtue.
 - **Build Only What's Needed (8) ⇄ Design the Contract First (2):** design the *shape* up front, but do not build speculative *behavior* — a clean contract is not the same as unused features.
 - **Make It Efficient Enough (14) ⇄ Optimize for the Reader (11):** keep the clear form until a measurement justifies the complex one; trade clarity for speed only on evidence.
+- **Narrow the Input Surface (17) ⇄ parameter-object grouping:** group inputs into one object only when they form a cohesive concept the unit uses as a whole; narrowness removes unrelated knowledge, not a genuine structure, so neither pass a wide aggregate to read a few fields nor fragment a real concept just to look narrow.
 
 To review code against these principles, see `coding/evaluation.md`.
 
@@ -314,8 +331,9 @@ Preserved for maintainers: how each coding principle projects gobbi's 10 behavio
 | 14 Make It Efficient Enough | (code-specific) | Ousterhout complexity; algorithm/data-structure fit |
 | 15 Change With Blast-Radius Awareness | P9 (CRUD + 5W1H before editing) | Fowler Shotgun Surgery; Pragmatic decoupling |
 | 16 Control State and Side Effects | — (code-specific; no direct behavioral analogue) | Functional-core/imperative-shell; immutability + minimize shared mutable state |
+| 17 Narrow the Input Surface | P3 (interface-clarity checkpoint; caller POV) | ISP (SOLID); stamp-vs-data coupling (Constantine/Yourdon); Ousterhout narrow interfaces; McConnell Code Complete §7 |
 
-Coverage check: all 10 behavioral principles have a code-craft home — P1→1, P2→2/4/7, P3→1/2/3/5, P4→1, P5→8, P6→13, P7→5/11, P8→9/10, P9→4/15, P10→8.
+Coverage check: all 10 behavioral principles have a code-craft home — P1→1, P2→2/4/7, P3→1/2/3/5/17, P4→1, P5→8, P6→13, P7→5/11, P8→9/10, P9→4/15, P10→8.
 
 ### Sources
 
@@ -326,6 +344,8 @@ External references the principle set fuses:
 - Google engineering practices — https://google.github.io/eng-practices/review/reviewer/looking-for.html , https://google.github.io/eng-practices/review/reviewer/standard.html
 - Clean Code critiques — https://qntm.org/clean , https://gerlacdt.github.io/blog/posts/clean_code/
 - SOLID / DRY / AHA — https://www.baeldung.com/cs/solid-principles-avoid , https://medium.com/@iamprovidence/solid-kiss-dry-and-other-principles-suck-55c6758322a2
+- Constantine & Yourdon, *Structured Design* — stamp coupling (pass a whole record) vs data coupling (pass only the fields used): https://en.wikipedia.org/wiki/Coupling_(computer_programming)
+- McConnell, *Code Complete* (2nd ed.), Ch. 7 — high-quality routines: pass a routine only the parameters it genuinely uses, in a form the caller can read
 - Fowler code smells — https://refactoring.guru/refactoring/catalog , https://luzkan.github.io/smells/ , https://martinfowler.com/bliki/CodeSmell.html
 - Kernighan & Pike (community-canonical readability guidance)
 - Structure references — Zen of Python (https://peps.python.org/pep-0020/), Effective Java item format (https://www.sglavoie.com/posts/2023/06/11/book-summary-effective-java/), Google style guides (https://google.github.io/styleguide/)

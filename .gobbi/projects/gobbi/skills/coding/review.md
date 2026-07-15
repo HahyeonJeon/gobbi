@@ -12,9 +12,9 @@ Three coding docs and one built-in command share the review space. They overlap 
 
 | Doc | Framing | Reader | Organization |
 |---|---|---|---|
-| `coding/SKILL.md` | **Write-side principles** — what good code *is* | the author, while writing | 16 principles, each Why / Practice / Anti-pattern |
+| `coding/SKILL.md` | **Write-side principles** — what good code *is* | the author, while writing | 17 principles, each Why / Practice / Anti-pattern |
 | `coding/review.md` (this doc) | **Review-side playbook** — the points a reviewer *checks* and how a review is *conducted* | the reviewer (human or agent), standalone or as the substance behind `/code-review` | a taxonomy by review theme + a conduct-a-review procedure |
-| `coding/evaluation.md` | **Evaluator's executable frame** — the per-perspective scenario/checklist machinery used to grade a change-set against the 16 principles | the gobbi evaluator agent, at evaluation Stage 0–3 | the 7 evaluation perspectives × seed scenarios + attached checklists, keyed to `(P1)…(P16)` |
+| `coding/evaluation.md` | **Evaluator's executable frame** — the per-perspective scenario/checklist machinery used to grade a change-set against the 17 principles | the gobbi evaluator agent, at evaluation Stage 0–3 | the 7 evaluation perspectives × seed scenarios + attached checklists, keyed to `(P1)…(P17)` |
 | `evaluation/SKILL.md` | **The gobbi evaluation contract** — the 7 perspectives, the finding schema, the scoring thresholds | the evaluator and the manager | stage procedure + finding metadata + scoring |
 
 The `/code-review` built-in command is a generic review trigger with no gobbi-aware substance of its own; this playbook is the substance a reviewer applies when running it.
@@ -496,7 +496,7 @@ A reviewer self-check, run on a completed review before handing off the verdict:
 
 Internal gobbi docs this playbook builds on:
 
-- `coding/SKILL.md` — the 16 language-agnostic principles; the single authoritative source every taxonomy trace resolves to.
+- `coding/SKILL.md` — the 17 language-agnostic principles; the single authoritative source every taxonomy trace resolves to.
 - `coding/evaluation.md` — the evaluator's executable frame; the framing-distinct sibling this doc cites one-way.
 - `evaluation/SKILL.md` — the canonical seven perspectives, finding schema, dispositions, and verdict thresholds the procedure reuses.
 - `principles/SKILL.md` — the 10 behavioral principles; point 13 traces `principles/SKILL.md` P7 (Say/Write Plainly).

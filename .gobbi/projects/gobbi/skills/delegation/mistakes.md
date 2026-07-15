@@ -2,7 +2,7 @@
 type: mistakes
 skill: delegation
 description: "Recorded traps for delegation — load before doing delegation work"
-updated: 2026-07-08
+updated: 2026-07-12
 ---
 
 # Delegation — Mistakes
@@ -81,3 +81,15 @@ updated: 2026-07-08
 
 ### Related
 - [[skill-prose-template-drift]] — the general drift pattern this is one instance of
+
+## Brief Override Silently Competes With Loaded Skill Default
+
+`priority: high` · `domain: process` · `added: 2026-07-12` · `status: active` · `tags: [process, git, verification]`
+
+**What happened** — In the python-skill child-doc Execution loop, the manager's delegation brief told each parallel executor "do NOT commit — T9 owns commit" for the 7-doc wiring wave. 6 of 7 executors held off as instructed; the interoperability executor committed its file per-task anyway (`55eb4677`), following `skills/git/SKILL.md` P3's default "commit only after Verify passes — one focused commit per subtask." The result was a mixed state — 6 uncommitted canonical files plus 1 already-committed file — that the manager had to reconcile at the T9 wiring step instead of a clean batch.
+**Why it happens** — `skills/git/SKILL.md` is a loaded, standing instruction every executor reads and follows by default. A brief's single inline "do NOT commit" line is a DEVIATION from that default, but nothing marks it as authoritative over the loaded skill or explains why it overrides it — so it competes with the skill instead of replacing it, and different executors resolve the conflict differently.
+**How to detect** — A delegation brief tells the executor NOT to do something its loaded skill instructs it TO do by default (here: commit). Any inline override of a skill's stated default deserves a check: is it stated loudly enough, and is the reason given, or does it read as a single easy-to-miss line competing with the skill?
+**Correct approach** — Prefer the skill's own default absent a strong reason to deviate: let each executor commit its own file per-task, and scope any batching step (e.g. T9) to what genuinely needs batching (mirror-generation + mirror-commit), not the per-task commits themselves. When an override IS wanted, state it as a loud, first-line, repeated constraint, and explain WHY it overrides the loaded skill default, so it wins uniformly across every executor reading the same brief.
+
+### Related
+- [[template-embeds-unnamed-exception]] — the general pattern this is one instance of: a deviation from a stated default/invariant needs an explicit, named justification at the point of deviation, or a reader (here, some executors) won't recognize it as authoritative
