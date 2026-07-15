@@ -259,6 +259,34 @@ allowed_lines = {
         ".gobbi/projects/gobbi/features/workflow/backlogs/codex/proposer-evaluator-model-tier-guard.md",
         "Add an optional per-step proposer model/effort override (distinct from the evaluator's), defaulting to inherit (unset). Document it as the option (b) hardening named in Ideation D4. Validate by checking the proposer and evaluator `codex exec` invocations resolve to different tiers when the guard is enabled.",
     ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/decisions/codex/2026-07-10-verify-cli-before-removing-effort-teaching.md",
+        "Current skill text teaches a standalone `--effort` option, while installed CLI evidence exposes `-m` and `-c` but no such flag.",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/decisions/docs/2026-07-11-exact-effort-line-reflow-brittleness.md",
+        "`--effort` statement changes its exact line content and makes the live residual gate fail.",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/decisions/tests/2026-07-11-bare-effort-token-gate-brittleness.md",
+        "dual-use `--effort` token body-wide. The current legitimate negative statement is exact-line",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/decisions/tests/2026-07-11-bare-effort-token-gate-brittleness.md",
+        "Future legitimate `--effort` prose may require classifier maintenance. The open Medium assumption",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/plans/codex/2026-07-10-deterministic-codex-model-policy.md",
+        "  if printf '%s\\n' \"$codex_help\" | rg -q -- '(^|[[:space:],])--effort([[:space:],]|$)'; then",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/plans/codex/2026-07-10-deterministic-codex-model-policy.md",
+        "    printf '%s\\n' 'unexpected standalone --effort option' >&2",
+    ),
+    (
+        ".gobbi/projects/gobbi/features/workflow/reviews/adversarial-review/2026-07-11-policy-docs-and-validator-adversarial-review.md",
+        "- **Description**: A future legitimate `--effort` mention can make the body-wide residual gate fail.",
+    ),
 }
 unexpected = []
 for raw in tracked:
@@ -508,6 +536,8 @@ check_contains ".agents/skills/gobbi/SKILL.md" 'Never run Claude Code gates agai
 check_contains ".agents/skills/codex/SKILL.md" 'Native Codex' "Codex skill documents native runtime"
 check_contains ".agents/skills/codex/SKILL.md" '\.codex/agents' "Codex skill documents Codex custom agents"
 check_contains ".agents/skills/codex/SKILL.md" 'Codex plugin package exposes skills and hooks' "Codex skill documents plugin scope"
+check_contains ".agents/skills/preparation/SKILL.md" 'single canonical skill root for both runtimes' "Preparation names the .gobbi SSOT workspace skill root"
+check_contains ".agents/skills/planning/SKILL.md" 'single canonical skill root for both runtimes' "Planning names the .gobbi SSOT workspace skill root"
 check_not_contains ".agents/skills/preparation/SKILL.md" 'Workspace skills under `\.claude/skills/` \(when discoverable\)|check `\.claude/skills/`' "Preparation uses runtime-aware workspace skill root"
 check_not_contains ".agents/skills/planning/SKILL.md" 'workspace skills under `\.claude/skills/`' "Planning uses runtime-aware workspace skill root"
 check_contains "AGENTS.md" 'symlinks to the canonical Gobbi directories' "Root AGENTS documents symlinked plugin package"
