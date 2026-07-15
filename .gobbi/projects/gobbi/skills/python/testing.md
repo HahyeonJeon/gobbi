@@ -1,21 +1,22 @@
 # Python — Testing
 
-Child doc of the `python` skill: the deep reference for testing Python code at the 3.12 baseline. The
-`SKILL.md` § Procedure P2 router sends a reader here when behavior changes, or when tests are written or
-reviewed. An ordinary change that alters no behavior needs none of this — the parent floor already carries
-the common path.
+Child doc of the `python` skill: the deep reference for testing Python 3.12 code. The `SKILL.md` § Procedure
+P2 router sends a reader here when behavior changes, or tests are written or reviewed. A no-behavior-change
+edit needs none of this — the parent floor carries the common path.
 
-This doc **deepens, and does not restate,** the parent rule *"MUST test behavior across golden, edge,
-failure, and adversarial cases"* and the two anti-patterns *"NEVER mock the unit under test or assert its
-private choreography"* and *"NEVER skip or `xfail` a test without a tracked reason and a falsifiable
-re-enable condition"*. The installed-artifact anti-pattern *"NEVER test only the checkout when shipping a
-package"* is shared with `packaging.md`; §11 owns the test side and `packaging.md` owns the build side. Those
-rules are the floor; the sections below give the mechanics. Every construct here is valid at Python 3.12.
-The sections teach the **pytest-shaped** idiom — pytest is the dominant Python test runner and the named
-example throughout — but pytest is not a lock. Each section separates the **portable testing property**
-(behavior-oriented, isolated resources, deterministic) from the **pytest mechanism** that expresses it, so
-the discipline transfers to `unittest` or another runner even where the concrete API differs. Tool names (a
-test runner, a property engine, a coverage tool) are examples.
+This doc **deepens, and does not restate,** the parent test floor: the *Delivery and evidence* judgment
+default (cover golden, edge, failure, and adversarial cases; assert returns, exception type and message, and
+visible effects; make time, randomness, and concurrency deterministic; substitute at a real boundary, not
+private choreography; give every `skip`/`xfail` a tracked reason and re-enable condition; reproduce a defect
+with a failing test) and H15 (verify a shipped distribution from built artifacts in a clean environment). The
+installed-artifact side is shared with `packaging.md`: §10 owns the test side, `packaging.md` §9 the build
+side.
+
+Each section separates the **portable testing property** (behavior-oriented, isolated, deterministic) from the
+**pytest mechanism** that expresses it — stated once here, not re-prefaced per section — so the discipline
+transfers to `unittest` or another runner where the API differs. pytest is the named example, not a lock. Build
+the suite bottom-up with each vertical slice: the golden/contract case first, then edge, failure, and
+adversarial cases as the slice grows those paths.
 
 ## Contents
 
@@ -24,83 +25,68 @@ test runner, a property engine, a coverage tool) are examples.
 3. [Fixtures and lifecycle](#3-fixtures-and-lifecycle)
 4. [Parametrize a contract](#4-parametrize-a-contract)
 5. [Assert on exceptions and effects](#5-assert-on-exceptions-and-effects)
-6. [Temporary resources and boundary substitution](#6-temporary-resources-and-boundary-substitution)
+6. [Boundary substitution and mocking](#6-boundary-substitution-and-mocking)
 7. [Determinism: time, randomness, concurrency](#7-determinism-time-randomness-concurrency)
 8. [Async tests](#8-async-tests)
-9. [Mocking discipline](#9-mocking-discipline)
-10. [Regression-first, property, and coverage](#10-regression-first-property-and-coverage)
-11. [Test the installed artifact](#11-test-the-installed-artifact)
+9. [Regression-first, property, and coverage](#9-regression-first-property-and-coverage)
+10. [Test the installed artifact](#10-test-the-installed-artifact)
 
 ---
 
 ## 1. Behavior over implementation
 
-The parent floor already states the property — *assert observable behavior ... rather than internal steps*.
-This section deepens it by naming the concrete Python surfaces through which "observable" is read, so a test
-in Python asserts an outcome rather than a private step.
+Assert observable behavior, read through Python's own surfaces:
 
-- **Observe through Python's own surfaces** — the return value; the raised exception's *type and message* via
-  `pytest.raises(..., match=...)` (§5); or a recorded effect read back from where Python put it — a file
-  under the temp-path fixture (§6), captured log records (`caplog`), captured `stdout` / `stderr` (`capsys`),
-  or a fake transport's recorded calls (§9). Never assert a private call order or an internal attribute: a
-  test bound to internal structure breaks on every refactor and proves nothing about behavior.
-- **Cover the four kinds with Python-concrete probes** — **golden** (an expected input and its correct
-  output); **edge** (`""`, `0`, an empty `list` / `dict`, the boundary and one past it, the largest realistic
-  input); **failure** (an input that must raise, pinned by exception type *and* message — §5); and
-  **adversarial** (the Python trust-boundary footguns a boundary must reject — a path-traversal `Path`, a zip
-  bomb, an oversized payload, a malformed encoding, an untrusted pickle — §10).
-- **One assertion of behavior per test,** named for that behavior — `test_parse_rejects_unknown_key`, not
-  `test_parse_2` — with the act a single call so the assertion pins exactly one operation.
+- the return value;
+- the raised exception's *type and message* via `pytest.raises(..., match=...)` (§5);
+- an effect read back from its boundary — a file under the temp-path fixture (§6), `caplog` records,
+  `capsys`-captured `stdout`/`stderr`, or a fake transport's recorded calls (§6).
+
+Never assert a private call order, an internal attribute, or a "logger `.info` was called" — a test bound to
+internal structure breaks on every refactor. Name one behavior per test, one call to the act:
+`test_parse_rejects_unknown_key`, not `test_parse_2`.
+
+Cover the four case kinds: **golden** (a normal input and its result); **edge** (`""`, `0`, empty
+`list`/`dict`, the boundary and one past it, the largest realistic input); **failure** (an input that must
+raise, pinned by type *and* message — §5); **adversarial** (trust-boundary footguns a boundary must reject — a
+path-traversal `Path`, a zip bomb, an oversized payload, a malformed encoding, an untrusted pickle — §9).
 
 ## 2. Test layout, discovery, and IDs
 
-- **Portable property — tests live outside the package and import it by its installed name.** Keep a
-  top-level `tests/` tree that mirrors the package. With the parent's `src/` layout (`packaging.md` §3) the
-  tests import the package as installed, so they exercise the module a user gets, not a sibling directory that
-  only resolves from the checkout root. This holds for any runner.
-- **Pytest mechanism — convention-based discovery and rewritten asserts.** Pytest (the example runner)
-  collects `test_*.py` files, `test_*` functions, and `Test*` classes with no `__init__`, and rewrites a plain
-  `assert` to report its operands — so a test is a plain function with a plain `assert`, no assertion
-  vocabulary to learn. This is pytest's convention, not a universal contract: stdlib `unittest` instead
-  subclasses `TestCase` and calls `self.assertEqual(...)`. Name the runner in config and follow its discovery
-  rules; the *portable* part is the isolated `tests/` tree above, not the discovery protocol.
-- **Prefer pytest's `importlib` import mode.** With it, test modules need no `__init__.py`, and two test files
-  may share a short name in different directories without a package clash. The older prepend-`sys.path` mode
-  couples discovery to directory layout and collides on duplicate basenames. (An import-mode choice is a
-  pytest setting; the property it serves — a test module resolves the *installed* package, not the source
-  tree — is what any runner must preserve.)
-- **Give each case a stable, readable ID.** A readable identifier per case is the portable goal; pytest
-  expresses it with an explicit `ids=` on a parametrized test (§4) so a failure reads `test_parse[empty-body]`,
-  not `test_parse[input3]`, and a reviewer can re-run one case by name.
+- **Tests live outside the package and import it by its installed name.** Keep a top-level `tests/` tree that
+  mirrors the package. With the parent's `src/` layout (`packaging.md` §3) tests exercise the module a user
+  gets, not a checkout-root sibling.
+- **Discovery is convention-based.** Pytest collects `test_*.py` files, `test_*` functions, and `Test*` classes
+  with no `__init__`, and rewrites a plain `assert` to report its operands — no assertion vocabulary to learn.
+  Stdlib `unittest` instead subclasses `TestCase` and calls `self.assertEqual(...)`. Name the runner in config.
+- **Prefer pytest's `importlib` import mode** — test modules need no `__init__.py`, and two files may share a
+  short name in different directories without a clash. The older prepend-`sys.path` mode couples discovery to
+  layout and collides on duplicate basenames. The portable requirement is installed-name resolution, not the
+  flag.
+- **Give each case a stable, readable ID** — pytest's `ids=` (§4) makes a failure read `test_parse[empty-body]`,
+  not `test_parse[input3]`, so a reviewer can re-run one case by name.
 
 ## 3. Fixtures and lifecycle
 
-The portable property: a test owns its dependencies' setup and teardown, keeps them isolated, and tears them
-down even when the test fails. Pytest expresses this with **fixtures**; stdlib `unittest` expresses the same
-property with `setUp` / `tearDown` and `addCleanup`. The mechanics below are pytest's form of it.
+A test owns its dependencies' setup and teardown, keeps them isolated, and tears them down even on failure.
+Pytest uses **fixtures**; `unittest` uses `setUp`/`tearDown` and `addCleanup`.
 
-- **A fixture owns setup and teardown.** Prefer a fixture that `yield`s the resource and runs teardown after
-  the `yield` — the teardown runs even when the test fails, the same deterministic-lifetime discipline the
-  parent applies to production resources with context managers.
-- **Choose the narrowest correct scope.** Function scope is the default: a fresh instance per test keeps
-  cases independent. Widen to module or session scope only for an expensive, immutable, read-only resource (a
-  built binary, a started read-only server). A wide scope that hands out *mutable* state leaks one test's
-  mutation into the next and makes failures order-dependent.
-- **Never make a mutable fixture `autouse` at session or module scope.** An autouse fixture that seeds shared
-  mutable state (a cache, a global registry, a populated store) couples every test to execution order — the
-  parent's shared-mutation footgun (*"Prefer values and transformations over shared mutation"*), surfaced
-  inside the suite. Fix: function scope, or reset the state in teardown.
-- **Return a factory when a test needs several, or a per-case configuration.** A factory fixture yields a
-  callable that builds the resource on demand and records each one for teardown, instead of yielding a single
-  fixed instance.
-- **Share a fixture through the nearest `conftest.py`;** the runner injects it by parameter name with no
-  import. Keep fixtures thin — a fixture that hides assertions or branches is test logic in disguise.
+- **A fixture `yield`s the resource and tears down after the `yield`** — teardown runs even when the test
+  fails, the deterministic-lifetime discipline the parent applies with context managers.
+- **Choose the narrowest correct scope.** Function scope (a fresh instance per test) is the default. Widen to
+  module or session scope only for an expensive, immutable, read-only resource (a built binary, a read-only
+  server); a wide scope handing out *mutable* state leaks one test's mutation into the next.
+- **Never make a mutable fixture `autouse` at session/module scope** — seeding shared mutable state (a cache, a
+  registry, a store) couples every test to execution order. Use function scope, or reset in teardown.
+- **Return a factory fixture** when a test needs several instances or per-case configuration — a callable that
+  builds on demand and records each for teardown.
+- **Share through the nearest `conftest.py`;** the runner injects it by parameter name with no import. Keep
+  fixtures thin: assertions and branches belong in tests.
 
 ## 4. Parametrize a contract
 
-The portable property is one test that asserts a contract over a case table rather than copies of the body;
-pytest expresses it with `@pytest.mark.parametrize` (below), `unittest` with `subTest`. One test with ten
-cases reports ten independent results and documents the contract's domain in one place.
+One test asserts a contract over a case table rather than copies of the body — pytest's
+`@pytest.mark.parametrize`, `unittest`'s `subTest`. Ten cases report ten independent results.
 
 ```python
 import pytest
@@ -117,133 +103,108 @@ def test_parse_int(raw: str, expected: int) -> None:
     assert parse_int(raw) == expected
 ```
 
-- **Give every case an explicit `id`** (§2) so a failure names the case.
-- **Keep each case row an immutable literal.** A row that shares a mutable object across cases (a list built
-  once at import) is the mutable-default footgun in the case table — one case's mutation corrupts the next.
-  Build per-case state in the test or a factory fixture (§3).
-- **Parametrize the failure cases too:** a table of `(input, expected_exception)` drives the same body
-  through §5's `raises` assertion.
-- **Do not let the table become an accidental property test** — a body run over hundreds of generated rows is
-  slow and opaque. For a true "holds for all inputs" claim, use a property engine (§10).
+- **Give every case an explicit `id`** (§2) so a failure names it and a new row does not renumber the others.
+- **Keep each row an immutable literal.** A row sharing a mutable object across cases (a list built once at
+  import) is the mutable-default footgun in the table. Build per-case state in the test or a factory fixture.
+- **Parametrize failures too** — a `(input, expected_exception)` table drives the same body through §5's
+  `raises`.
+- **Do not let the table become a hidden property test** — hundreds of generated rows are slow and opaque; use
+  a property engine (§9) for a "holds for all inputs" claim.
+- **Give every `skip`/`xfail` a tracked reason and a falsifiable re-enable condition** — a marker is runner
+  config, and an untracked skip silently stops proving its contract.
 
 ## 5. Assert on exceptions and effects
 
-- **Assert a failure by type *and* message,** so a test cannot pass on the wrong error that happens to be the
-  right class:
+- **Pin a failure by type *and* message,** so the wrong error of the right class cannot pass:
 
   ```python
   with pytest.raises(ValueError, match=r"unknown key: 'mode'"):
       parse(config)
   ```
 
-  `match` is a regex searched against the string form of the exception; anchor or escape it when the message
-  contains regex metacharacters. Asserting the type alone lets an unrelated `ValueError` satisfy the test.
-  (`pytest.raises` is the example; `unittest` spells the same assertion `assertRaisesRegex` — the property is
-  pinning type *and* message together.)
-- **Bind the exception to inspect it** — `with pytest.raises(HttpError) as exc_info:`, then assert on
-  `exc_info.value.status`. Assert on the chained cause (`exc_info.value.__cause__`) when the contract is that
-  a boundary translated the error with `raise ... from` (the parent's exception-chaining rule).
-- **Assert a warning the same way** with the runner's warning-capture context. A `DeprecationWarning` is part
-  of the *"MUST evolve a documented public API deliberately"* contract (`packaging.md` §8), so its emission is
-  a behavior to test, not noise to silence.
-- **Assert an effect by its result, not the call that produced it.** After the unit runs, read the file it
-  wrote, inspect the captured log records, or check the fake transport's recorded requests. Capturing
-  output or log records is asserting behavior; asserting "the logger's `.info` was called" is asserting
-  choreography — prefer the former (§9).
+  `match` is a regex over the exception's string form; anchor or escape it when the message has regex
+  metacharacters. Type alone lets an unrelated `ValueError` pass. (`unittest`'s `assertRaisesRegex` expresses
+  the same property.)
+- **Bind it to inspect** — `with pytest.raises(HttpError) as exc_info:`, then assert `exc_info.value.status`, or
+  `exc_info.value.__cause__` when the contract is a boundary translating the error with `raise ... from`.
+- **Assert a warning** with the runner's warning-capture context. A `DeprecationWarning` is public behavior
+  under H13 (`packaging.md` §8), to test rather than suppress.
+- **Assert an effect by its result** — read the written file, the `caplog` records, or the fake transport's
+  requests. Capturing output is behavior; "`.info` was called" is choreography (§6).
 
-## 6. Temporary resources and boundary substitution
+## 6. Boundary substitution and mocking
 
-- **Use a temp-path fixture for any filesystem test** — it hands each test a unique empty directory, so cases
-  never collide. Pytest's `tmp_path` is the example; the guarantee to rely on is the *isolation* (a fresh
-  directory per test), not eager deletion — pytest keeps the last few test-run directories on disk for
-  post-mortem and reaps the older ones itself. Never write to a hard-coded `/tmp` path or into the repo tree.
-- **Substitute an ambient dependency only through a scoped, auto-restoring patch.** The portable property is
-  that the patch reverts at test end; pytest's `monkeypatch` fixture is the example — it sets an environment
-  variable, a `sys.path` entry, an attribute, or the working directory and undoes it automatically (`unittest`
-  uses `mock.patch` as a context manager or `addCleanup`). A manual `os.environ[...] = ...` with no
-  restoration leaks into the next test.
-- **Patch at the external boundary, never inside the unit under test.** Replace the network client, the
-  clock, or the filesystem edge — the seams built for substitution — not a helper the unit calls internally.
-  Patching an internal function is the *"NEVER mock the unit under test"* anti-pattern: the test then asserts
-  the unit's private structure.
-- **Prefer injecting a fake through the unit's own parameter over patching a module global.** A unit that
-  receives its collaborators needs no patch at all — the test passes a stand-in directly, and a unit that is
-  hard to substitute is telling you to add a seam, not to patch harder.
+Substitute the external boundary — I/O, network, clock, randomness, a third-party service, the filesystem edge
+— and run the real code for everything the test proves.
+
+- **Use `tmp_path` for any filesystem test** — a unique empty directory per test, so cases never collide. Rely
+  on the *isolation*, not eager deletion: pytest keeps the last few run directories for post-mortem and reaps
+  older ones itself. Never write to a hard-coded `/tmp` path or into the repo.
+- **Patch ambient state only through an auto-restoring scope.** Pytest's `monkeypatch` sets an environment
+  variable, a `sys.path` entry, an attribute, or the working directory and undoes it (`unittest` uses
+  `mock.patch` as a context manager, or `addCleanup`). A manual `os.environ[...] = ...` with no restoration
+  leaks into the next test.
+- **Patch at the external boundary, not inside the unit** — the network client, clock, or filesystem edge, not
+  a helper the unit calls internally, which would make the test assert private structure. Patch by the *used*
+  location (the name in the module that looks it up), not the definition.
+- **Prefer injecting a fake over patching.** A unit that receives its collaborators needs no patch; a unit hard
+  to substitute is asking for a seam, not more patches — many patches to run one test is that design signal.
+- **Prefer a fake over a call-asserting mock** — a small working stand-in (an in-memory store, a recording
+  transport) lets the test assert the observable result. If a mock is unavoidable, assert the effect it
+  recorded: `assert transport.sent == [expected_request]`, not `assert helper.call_count == 3` (internal
+  structure, the anti-pattern).
 
 ## 7. Determinism: time, randomness, concurrency
 
-A test must give the same verdict on every run and every machine. Any nondeterministic input is injected or
-frozen — the *"make time, randomness, and concurrency deterministic"* clause of the parent testing floor.
+Every nondeterministic input is injected or frozen — the *"make time, randomness, and concurrency
+deterministic"* clause of the parent floor.
 
-- **Time:** never call the real wall clock in the unit under test. Take `now` (or a clock callable) as a
-  parameter, or patch the single time source at the boundary, so a test pins the instant. Freeze it to assert
-  a timestamped output; advance it explicitly to test a timeout. Measure durations against a monotonic source
-  the test controls (the parent's time-boundary rule).
-- **Randomness:** seed the generator, or inject it, so a "random" choice is reproducible. Production draws
-  security material from `secrets` (the parent's rule), but a test injects a fixed token through the boundary
-  rather than seeding `secrets`. A failing property case (§10) prints its seed so the exact case re-runs.
-- **Concurrency:** make a concurrent test deterministic by controlling the schedule — await a specific
-  completion order, use a barrier or an injected single-worker executor, and assert the aggregate result, not
-  the interleaving. A test that sleeps and hopes is flaky; replace the sleep with an awaited condition. Bound
-  every concurrent test with a timeout so a hang fails fast instead of blocking the suite.
+- **Time:** never call the real wall clock in the unit. Take `now` (or a clock callable) as a parameter, or
+  patch one time source at the boundary. Freeze it for a timestamped output; advance it to test a timeout;
+  measure durations against a monotonic source the test controls.
+- **Randomness:** seed or inject the generator. Production draws security material from `secrets`, but a test
+  injects a fixed token rather than seeding `secrets`. A failing property case (§9) prints its seed for exact
+  reruns.
+- **Concurrency:** control the schedule — await a specific completion order or condition, a barrier, or an
+  injected single-worker executor — and assert the aggregate result, not the interleaving. Replace a
+  sleep-and-hope with an awaited condition, and bound every concurrent test with a timeout so a hang fails
+  fast.
 
 ## 8. Async tests
 
-- **Drive `async def` code through the framework's async support** (a plugin or a built-in async mode) so the
-  runner owns the event loop; do not spin up your own loop per test. Name the mode explicitly in config
-  rather than relying on autodetection.
-- **Await the unit and assert on its result.** For code that owns tasks with a `TaskGroup` (the parent's
-  structured-concurrency rule), assert the group's aggregate outcome and that cancellation propagated — drive
-  one child to fail, then assert the sibling was cancelled and the `ExceptionGroup` surfaced.
-- **Substitute an async boundary with an async fake** (an object whose method is `async def`), and use an
-  `async with` fixture for an async resource so teardown awaits.
-- **Assert timeout behavior by injecting a deadline and a slow fake,** then asserting the `TimeoutError` —
-  never by making the test wait real seconds.
+- **Drive `async def` code through the framework's async support** (a plugin or built-in async mode) so the
+  runner owns the event loop; do not spin up your own loop. Name the mode in config, not by autodetection.
+- **Await the unit and assert its result.** For a `TaskGroup`, drive one child to fail, then assert the sibling
+  was cancelled and the `ExceptionGroup` surfaced.
+- **Substitute an async boundary with an async fake** (a method that is `async def`), and use an `async with`
+  fixture for a resource whose teardown must be awaited.
+- **Assert timeout behavior by injecting a deadline and a slow fake,** then asserting `TimeoutError` — never by
+  waiting real seconds.
 
-## 9. Mocking discipline
+## 9. Regression-first, property, and coverage
 
-- **Fake the boundary, never the unit under test.** Substitute I/O, the network, the clock, randomness, and a
-  third-party service — the edges. Exercise the real code for everything the test is meant to prove. This is
-  the whole of *"NEVER mock the unit under test or assert its private choreography"*.
-- **Prefer a fake over a call-asserting mock.** A fake is a small working stand-in — an in-memory store, a
-  recording transport — that lets the test assert the observable result. A mock that verifies call sequences
-  drifts toward asserting choreography.
-- **When you must use a mock, assert the effect it recorded, not the call sequence.** `assert transport.sent
-  == [expected_request]` tests behavior; `assert helper.call_count == 3` tests internal structure and is the
-  anti-pattern.
-- **Patch by the used location, not the definition** — replace the name in the module that looks it up, or
-  better, inject the collaborator so no patch is needed.
-- **Many patches to run one test is a design signal.** The unit is reaching for its dependencies instead of
-  receiving them; the fix is a seam in the design, not more patches.
+- **Reproduce a reported defect with a failing test before the fix.** It must fail on current code for the
+  defect's reason, then pass after the fix — proving the change targets the real cause and guarding against
+  return. A test that is already green, or fails for a different reason, does not reproduce the defect.
+- **Property tests assert an invariant over generated inputs** — a round-trip (`decode(encode(x)) == x`),
+  idempotence, ordering, or never-raises-on-valid-input — letting an engine search where a hand table misses. A
+  good engine shrinks a failing case and prints its seed for a deterministic rerun. Reach for one when the
+  claim ranges over an input space.
+- **Fuzz parsers and trust boundaries** with malformed, hostile bytes; require a declared exception, not a
+  crash, hang, or execution of the input.
+- **Coverage is a gap-finder, not a score.** Read the report for an untested branch or failure path, then add
+  the missing *behavioral* test. A percentage target invites tests that execute lines without asserting; aim at
+  "which contract has no test."
 
-## 10. Regression-first, property, and coverage
+## 10. Test the installed artifact
 
-- **Reproduce a reported defect with a failing test before the fix.** The test must fail on the current code
-  for the defect's reason, then pass after the fix — this proves the change targets the defect's real cause
-  and guards it from returning. A fix committed with no failing-first test proves neither.
-- **Property tests assert an invariant over generated inputs** — a round-trip (`decode(encode(x)) == x`), an
-  idempotence, an ordering, a never-raises-on-valid-input claim — letting an engine search the input space a
-  hand-written table misses. A good engine shrinks a failing case to its minimal form and prints the seed so
-  it re-runs deterministically. Reach for one when the contract is "holds for all inputs of this shape," not a
-  fixed set.
-- **Fuzz the parsers and the trust boundaries.** Feed malformed and hostile bytes and assert the code raises a
-  declared exception rather than crashing, hanging, or executing the input — the test side of the parent's
-  validate-untrusted-data rule.
-- **Coverage is a gap-finder, not a score.** Read a coverage report to find an untested branch or an
-  unexercised failure path, then write the missing *behavioral* test. A coverage percentage as a target
-  invites tests that execute lines without asserting anything — high coverage with no assertions proves
-  nothing. Aim the tool at "which contract has no test," never at a number.
-
-## 11. Test the installed artifact
-
-- **Test against the built, installed artifact, not the checkout.** A suite that imports the source tree still
-  lies about the distribution: undeclared package data, a missing dependency, or an entry point that only
-  resolves from the checkout all pass against the source and fail for a user. Installing the wheel into a
-  clean environment catches them. This is the test side of *"NEVER test only the checkout when shipping a
-  package"*; `packaging.md` §9–§10 own building the wheel and the clean-environment install.
-- **Run the suite twice:** once against the source for the fast inner loop, and once against the installed
-  wheel in CI. An editable install shares the source tree, so it does NOT prove the packaged artifact — only
-  the clean install does (`packaging.md` §9).
-- **Smoke-test the distribution's own claims** — import each public name by the installed package name, and
-  run each declared console command as an installed entry point (`packaging.md` §6–§7) — so the wheel's claims
-  are verified by the tests, not assumed.
+- **Test the built, installed artifact, not the checkout.** A source-tree suite hides undeclared package data,
+  a missing dependency, or a checkout-only entry point — each passes at source and fails for a user. The
+  clean-environment wheel install catches them (H15); `packaging.md` §9 owns the build and install.
+- **Run the suite twice** — against source for the fast inner loop, and against the installed wheel in CI. An
+  editable install shares the source tree, so it does NOT prove the packaged artifact. Keep the clean
+  environment free of dev dependencies beyond the runner, so an undeclared runtime import cannot succeed by
+  accident.
+- **Smoke-test the distribution's claims** — import each public name by the installed package name, and run
+  each declared console command through its generated launcher as an installed entry point (`packaging.md`
+  §6–§7).

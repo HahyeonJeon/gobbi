@@ -1,20 +1,35 @@
 # Python — Interoperability
 
 Child doc of the `python` skill: the deep reference for code that leaves ordinary Python and crosses a
-boundary — into a subprocess, a native/foreign library, the buffer protocol, a serialized or durable
-on-disk format, generated code, reflection, a plugin, or a notebook on its way to production. The `SKILL.md`
-§ Procedure P2 router sends a reader here when a change touches one of those boundaries. An ordinary typed
-module needs none of this — the parent floor already carries the common path.
+boundary — a subprocess, a native/foreign library, the buffer protocol, a serialized or durable on-disk
+format, generated code, reflection, a plugin, or a notebook on its way to production. The `SKILL.md` §
+Procedure P2 router sends a reader here when a change touches one. An ordinary typed module needs none of it.
 
-This doc **deepens, and does not restate,** these parent surfaces: the principle *"Make ownership and
-lifetime visible in the syntax."*, and the rules *"MUST isolate and document any CPython, operating-system,
-or native assumption"*, *"MUST validate untrusted data before use and choose safe primitives"*, *"MUST make
-persistence durable where correctness needs it"*, *"MUST keep reusable logic in importable, typed modules,
-not in a notebook or script body"*, *"NEVER `eval`/`exec` untrusted text, unpickle or otherwise unsafely
-deserialize untrusted data, build a shell command from untrusted text or default `shell=True`, or use
-`random` for security material"*, and *"NEVER hand-edit generated code"*. Those rules are the floor; the
-sections below give the mechanics. Every construct here is valid at Python 3.12; tool names are examples,
-never a lock.
+This doc **deepens, and does not restate,** the parent floor these boundaries touch: principle 6 (visible
+lifetime, local mutation); H6 (no untrusted execute/deserialize, no shell-interpolation, no `random` for
+security material); H8 (validate and bound boundary data, allowlist dynamic/plugin loading); H11 (atomic,
+durable, versioned persistence); H16 (no hand-edited generated code); H17 (no live mutable internal
+container); H18 (no raw `__annotations__`); and the *Delivery and evidence* default (each boundary behind a
+documented adapter with a pure-Python reference; reusable logic in typed modules). Every construct is valid at
+Python 3.12; tool names are examples.
+
+**Every boundary is one adapter with the same five-part contract.** Design each as a single narrow adapter
+that — narrowing the boundary surface per `final P9` — demands only the inputs it uses, in a signature the
+caller can read, not an opaque aggregate. Build it bottom-up: fix the signature, ownership, encoding, and
+error-translation, plus a pure-Python reference where feasible, *before* the native or dynamic body — the
+reference is an oracle for the contract, not a byte-for-byte equality claim. The table is the index, the
+sections the depth.
+
+| Boundary | Input to validate / encode | Ownership / lifetime | Failure translation | Cleanup | Trust |
+|---|---|---|---|---|---|
+| Subprocess (§1) | arg list; `encoding="utf-8"` | child process | `check=True`→`CalledProcessError`; `timeout`→`TimeoutExpired` | `timeout` / `kill()` reaps | untrusted argv is injection |
+| Native / FFI (§2) | `argtypes` / `restype`; `encode` / `decode` | who allocates vs frees, per call | check return / `errno` → Python exception | context manager, every path | wrong signature corrupts memory |
+| Buffer / `memoryview` (§3) | — | a view pins its source | `BufferError` on live-view resize | `with` / `mv.release()` | no writable view of internals |
+| Serialization (§4) | bound size; narrow to a typed object | payload owns a version tag | fail loudly on a newer layout | unlink the temp on failure | no executable format from untrusted |
+| Reflection (§5) | `inspect`, not raw `__annotations__` | wrapper keeps the contract | — | — | supported helpers only |
+| Generated code (§6) | the generator input | generator + input own output | CI `git diff --exit-code` | regenerate, never patch | never hand-edit |
+| Plugin (§7) | allowlist the name before load | host-process privileges | reject a non-conforming object | — | runs at your privileges |
+| Notebook → module (§8) | parameters parsed at the edge | the module owns the logic | — | — | seed and record |
 
 ## Contents
 
@@ -31,88 +46,60 @@ never a lock.
 
 ## 1. Subprocess boundaries
 
-A subprocess is a foreign program with its own encoding, exit convention, and failure modes. Cross the
-boundary explicitly.
+A subprocess is a foreign program with its own encoding, exit convention, and failure modes.
 
-- **Pass an argument list, never a shell string.** `subprocess.run(["git", "log", "-1"])` invokes the
-  program directly. `shell=True` runs the string through a shell that splits on metacharacters, so untrusted
-  text in it is command injection — the mechanics behind the parent's *"build a shell command from untrusted
-  text or default `shell=True`"* ban. When you genuinely need a shell feature, still never interpolate
-  untrusted text; the arg-list form is the default and `shlex.quote` is a last resort, not a habit.
-- **Make text vs bytes explicit.** `stdout`/`stderr` are `bytes` by default. Pass `encoding="utf-8"` (not a
-  bare `text=True`, which decodes with the ambient locale) so the boundary decodes the same way on every
-  machine — the subprocess face of *"MUST make I/O boundaries explicit"*. Keep binary output as `bytes` and
-  decode only at a known encoding boundary.
-- **Bound every child with a timeout.** A child that hangs hangs the parent. `run(..., timeout=T)` kills the
-  child and raises `TimeoutExpired`; with a raw `Popen`, `communicate(timeout=T)` does **not** kill on expiry
-  — you must `proc.kill()` then `proc.communicate()` to reap it.
-- **Handle the exit code deliberately.** `check=True` raises `CalledProcessError` (carrying `returncode`,
-  `stdout`, `stderr`) on any non-zero exit — prefer it unless a non-zero code is an expected branch you
-  inspect via `returncode`.
-- **Capture vs stream.** `capture_output=True` buffers all output in memory — fine when bounded, a memory
-  risk for large or unbounded output. To stream, drive a `Popen` and read incrementally, but avoid the
-  pipe-buffer deadlock (filling stdin while the child fills stdout) by letting `communicate()` pump both
-  ends, or by reading the pipes concurrently.
+- **Argument list, never a shell string.** `subprocess.run(["git", "log", "-1"])` invokes the program
+  directly; `shell=True` splits on metacharacters, so untrusted text is command injection — `shlex.quote` is a
+  last resort.
+- **Text vs bytes explicit.** `stdout` / `stderr` are `bytes` by default; pass `encoding="utf-8"` (not a bare
+  `text=True`, which uses the ambient locale), and keep binary output as `bytes` until a known decoding edge.
+- **Bound with a timeout.** `run(..., timeout=T)` kills the child and raises `TimeoutExpired`; a raw `Popen`'s
+  `communicate(timeout=T)` does **not** kill on expiry — `proc.kill()` then `proc.communicate()` to reap it.
+- **Exit code deliberate.** `check=True` raises `CalledProcessError` (`returncode`, `stdout`, `stderr`) on any
+  non-zero exit; inspect `returncode` instead when a non-zero code is an expected branch.
+- **Capture vs stream.** `capture_output=True` buffers everything in memory — safe when bounded. To stream,
+  read a `Popen` incrementally, avoiding the pipe-buffer deadlock (stdin fills while the child fills stdout) by
+  letting `communicate()` pump both ends or reading the pipes concurrently.
 
 ```python
-import subprocess
-
 result = subprocess.run(
     ["git", "log", "-1", "--format=%H"],   # an argument LIST, never a shell string
-    capture_output=True,
-    encoding="utf-8",                       # explicit; do not inherit the locale
-    timeout=30,                             # bound the child
-    check=True,                             # non-zero exit raises CalledProcessError
+    capture_output=True, encoding="utf-8", # explicit; do not inherit the locale
+    timeout=30, check=True,                # bound the child; non-zero exit raises CalledProcessError
 )
-commit = result.stdout.strip()
 ```
 
 ## 2. Native and foreign-function interfaces
 
-Calling into a C library is the sharpest boundary Python has: no type checker, no garbage collector, and no
-exception on misuse — a wrong signature corrupts memory silently. This is the core of the parent's *"MUST
-isolate and document any CPython, operating-system, or native assumption"* — put the whole foreign surface
-behind one narrow, documented adapter, and keep a pure-Python reference behind the same interface where
-feasible so the native path can be validated against it and disabled on an unsupported platform.
+Calling into a C library is the sharpest boundary: no type checker, no garbage collector, no exception on
+misuse. Put the whole surface behind one narrow, documented adapter with a pure-Python reference, so the
+native path is validated against it and disabled on an unsupported platform.
 
-- **Pick the route by need.** `ctypes` (stdlib) declares a C signature at runtime — good for a small, stable
-  ABI. `cffi` (third-party) parses real C declarations and is sturdier for a substantial library. A compiled
-  extension (hand-written C, Cython, pybind11) is for when you own the C side or need the speed. This is the
-  parent's *"Use the standard vocabulary until evidence earns an escape."* applied to the FFI choice.
-- **Declare every signature.** Set `argtypes` and `restype` on each `ctypes` function. An unset `restype`
-  defaults to `c_int` and truncates a returned pointer on a 64-bit build — a use-after-free waiting to
-  happen. The explicit declaration is what makes the assumption visible.
-- **State who allocates and who frees, per call.** If C returns a pointer that C must free, wrap acquire and
-  release in a context manager so the free runs on **every** path — the FFI face of *"MUST use a context
-  manager for deterministic resource lifetime on every path"*. If Python owns a buffer passed into C, keep a
-  reference to it alive for the whole call; `ctypes` does not track lifetime, and a buffer collected mid-call
-  is a use-after-free.
-- **Translate encoding and errors at the boundary.** C strings are bytes: `encode("utf-8")` on the way in,
-  `decode` on the way out — never assume the platform default. Check the C return/`errno` and raise a Python
-  exception at the adapter, so the interior sees Pythonic failures, not raw ints.
-- **Make the GIL / free-threading assumption explicit.** At the 3.12 baseline the GIL is present;
-  free-threading (PEP 703) is an experimental 3.13+ build, not the baseline. A `ctypes.CDLL` function
-  releases the GIL around the call (`PyDLL` holds it), and a C callback into Python re-acquires it. Do not
-  rely on the GIL to make a compound C-boundary operation atomic; if the native library keeps its own global
-  state or threads, guard it, and document the adapter's thread-safety rather than assuming the GIL serializes
-  it. Deep task/lock mechanics live in `concurrency.md`.
+- **Route by need.** `ctypes` (stdlib) declares a C signature at runtime, for a small stable ABI; `cffi` parses
+  real C declarations, for a substantial library; a compiled extension (C, Cython, pybind11) for when you own
+  the C side or need the speed — principle 8's standard-vocabulary-until-evidence escape at the FFI choice.
+- **Declare every signature.** Set `argtypes` and `restype` on each `ctypes` function; an unset `restype`
+  defaults to `c_int` and truncates a returned pointer on a 64-bit build — a use-after-free.
+- **Who allocates, who frees, per call.** A C-owned pointer's free runs in a context manager on **every** path;
+  a Python-owned buffer passed into C stays referenced for the whole call — `ctypes` does not track lifetime,
+  and a buffer collected mid-call is a use-after-free.
+- **Translate at the boundary.** C strings are bytes: `encode("utf-8")` in, `decode` out. Check the return /
+  `errno` and raise a Python exception, so the interior sees Pythonic failures.
+- **GIL / free-threading explicit.** At 3.12 the GIL is present; free-threading (PEP 703) is an experimental
+  3.13+ build. `ctypes.CDLL` releases the GIL around a call (`PyDLL` holds it), and a C callback re-acquires
+  it. Never rely on the GIL for compound-operation atomicity; guard the native library's own global state and
+  document thread-safety (`concurrency.md`).
 
 ```python
-import ctypes
-from contextlib import contextmanager
-from collections.abc import Iterator
-
 _lib = ctypes.CDLL("libfoo.so")             # CDLL releases the GIL around each call
 _lib.foo_open.argtypes = [ctypes.c_char_p]  # declare EVERY signature
 _lib.foo_open.restype = ctypes.c_void_p     # else c_int truncates the pointer
-_lib.foo_close.argtypes = [ctypes.c_void_p]
-_lib.foo_close.restype = None
 
 @contextmanager
 def foo_handle(path: str) -> Iterator[int]:
-    handle = _lib.foo_open(path.encode("utf-8"))   # encode at the boundary
-    if not handle:                                  # translate the C failure
-        raise OSError(f"foo_open failed for {path!r}")
+    handle = _lib.foo_open(path.encode("utf-8"))    # encode at the boundary
+    if not handle:
+        raise OSError(f"foo_open failed for {path!r}")   # translate the C failure
     try:
         yield handle
     finally:
@@ -121,21 +108,19 @@ def foo_handle(path: str) -> Iterator[int]:
 
 ## 3. The buffer protocol and memoryview
 
-The buffer protocol is Python's zero-copy contract for sharing raw memory between objects — `bytes`,
-`bytearray`, `array.array`, a native array — without copying. `memoryview(obj)` exposes it, and it is the
-right tool for slicing or streaming a large binary buffer that a copy would double in memory.
+The buffer protocol shares raw memory between objects — `bytes`, `bytearray`, `array.array`, a native array —
+without copying; `memoryview(obj)` exposes it, for slicing or streaming a large binary buffer a copy would
+double in memory.
 
-- **A view is not a copy, and it pins its source.** `memoryview(buf)[1024:2048]` is a window onto `buf`, not
-  new bytes. While the view lives it keeps the exporting object alive and pins its buffer — a live view on a
-  `bytearray` blocks a resize with `BufferError`. Release it deterministically with a `with` block (or
-  `mv.release()`) so the source can be freed or resized.
-- **Never hand a caller a writable view of internal state.** Returning `memoryview(self._buf)` lets the caller
-  mutate your object's private buffer — the buffer-protocol form of *"NEVER return a live mutable internal
-  container"*. Return `bytes(mv)` (a copy) or `mv.toreadonly()` (a read-only view) instead; check `mv.readonly`
-  when the writability matters.
-- **Across the FFI boundary, ownership still rules.** A `memoryview` or a `ctypes` array passed into C gives
-  zero-copy access, but the C side must not retain the pointer past the call unless Python guarantees the
-  buffer's lifetime (§2). A retained pointer to a freed buffer is the same use-after-free from the other side.
+- **A view is not a copy; it pins its source.** `memoryview(buf)[1024:2048]` is a window onto `buf`, not new
+  bytes; while it lives it pins the exporter, so a live view on a `bytearray` blocks a resize with
+  `BufferError`. Release it with a `with` block or `mv.release()`.
+- **Never return a writable view of internal state.** `memoryview(self._buf)` lets the caller mutate your
+  private buffer — H17's buffer-protocol form. Return `bytes(mv)` (a copy) or `mv.toreadonly()`, and check
+  `mv.readonly` when writability matters.
+- **Across the FFI boundary, ownership still rules.** A `memoryview` or `ctypes` array passed into C is
+  zero-copy, but C must not retain the pointer past the call unless Python guarantees the buffer's lifetime
+  (§2) — a retained pointer to a freed buffer is the same use-after-free.
 
 ```python
 with memoryview(buffer) as view:   # release() on exit so the source can be freed/resized
@@ -145,38 +130,25 @@ with memoryview(buffer) as view:   # release() on exit so the source can be free
 
 ## 4. Serialization and durable on-disk formats
 
-Serialization crosses a boundary in time or between processes, so the same trust and durability rules apply
-as any other boundary. (This section carries the interop depth for area 19; the parent floor states the
-minimums.)
+Serialization crosses a boundary in time or between processes, so the same trust and durability rules apply.
 
-- **Never deserialize untrusted data with an executable format.** `pickle` runs arbitrary code on load (via
-  `__reduce__`), and a permissive YAML `load` does the same — the mechanics behind *"NEVER ... unpickle or
-  otherwise unsafely deserialize untrusted data"*. Reserve `pickle` for a trusted, same-version, local cache
-  you fully own; for anything that crosses a trust boundary use an interoperable, non-executable format
-  (JSON) and a safe loader (a YAML `safe_load`).
-- **Validate the decoded structure.** JSON decodes to `dict`/`list`/`str`/`float`/`bool`/`None` — it does not
-  give you your types. Narrow the decoded value into typed domain objects at the boundary (a `TypedDict` or
-  dataclass adapter), the deserialization face of *"MUST narrow `Any` or untyped boundary data to a precise
-  type at the boundary immediately"* — see `typing.md` § 6. Bound the input size first; an unbounded decode is
-  a memory-exhaustion vector.
-- **Replace a durable file atomically.** Write to a **unique** temporary file in the same directory —
-  `tempfile.mkstemp(dir=...)` creates it exclusively (`O_EXCL`); a predictable shared `.tmp` name lets two
-  concurrent writers clobber the same temp and silently reuses any existing file or symlink at that path.
-  Flush and `fsync` the temp, then `os.replace(tmp, target)` — an atomic, overwriting rename on POSIX and
-  Windows (unlike `os.rename`, which is not an atomic overwrite on Windows). This is the mechanics of *"MUST
-  make persistence durable where correctness needs it"*. For crash durability on POSIX, `fsync` the containing
-  directory after the replace so the rename itself survives a crash; Windows has no directory-`fsync`
-  equivalent. Remove the temp on any failure so a crashed write leaves no orphan.
-- **Version the format.** Write a version tag into the payload or header so an old reader detects a newer
-  layout and fails loudly instead of misreading it. Keep serialized output deterministic — do not let it
-  depend on `dict`/`set` iteration order — so a regeneration or a diff is meaningful.
+- **No executable format on untrusted data.** `pickle` runs arbitrary code on load (via `__reduce__`), as does
+  a permissive YAML `load`; reserve `pickle` for a trusted, same-version, local cache you own, and across a
+  trust boundary use a non-executable format (JSON) and a safe loader (YAML `safe_load`).
+- **Validate the decoded structure.** JSON gives `dict` / `list` / `str` / `float` / `bool` / `None`, not your
+  types; bound the input size first (an unbounded decode is a memory-exhaustion vector), then narrow the value
+  into a typed domain object at the boundary (a `TypedDict` or dataclass adapter — H8; `typing.md` § 6).
+- **Replace a durable file atomically.** Write a **unique** temp file in the same directory with
+  `tempfile.mkstemp(dir=...)` (`O_EXCL`, so a predictable shared `.tmp` name cannot be clobbered by two writers
+  or reuse a symlink); flush and `fsync` the temp, then `os.replace(tmp, target)` — an atomic, overwriting
+  rename on POSIX and Windows (unlike `os.rename`, not an atomic overwrite on Windows). For crash durability on
+  POSIX, `fsync` the containing directory after the replace; Windows has no directory-`fsync`. Remove the temp
+  on any failure.
+- **Version the format.** A version tag in the payload or header lets an old reader detect a newer layout and
+  fail loudly; keep serialized output deterministic (`json.dumps(..., sort_keys=True)`), never dependent on
+  `dict` / `set` iteration order.
 
 ```python
-import json
-import os
-import tempfile
-from pathlib import Path
-
 def write_atomic(target: Path, body: dict[str, object]) -> None:
     payload = json.dumps({"version": 2, "body": body}, sort_keys=True)
     fd, tmp = tempfile.mkstemp(dir=target.parent, suffix=".tmp")   # unique, same dir, O_EXCL
@@ -198,36 +170,26 @@ def write_atomic(target: Path, body: dict[str, object]) -> None:
 
 ## 5. Reflection, decorators, and callable metadata
 
-Reflection reaches into a callable's internals; a decorator rewrites what the reflection sees. Both must
-preserve the contract they wrap, and read metadata through supported APIs rather than private attributes.
+Reflection reads a callable's internals; a decorator rewrites what it sees. Both preserve the wrapped contract
+and read metadata through supported APIs, not private attributes.
 
-- **Preserve identity with `functools.wraps`.** A wrapper without it introspects as `wrapper` everywhere —
-  `help()`, `repr`, `__name__`/`__qualname__`, `__doc__`, `__annotations__` — and carries no `__wrapped__`
-  link. `@functools.wraps(fn)` copies that metadata and sets `__wrapped__` back to the original, so
-  introspection and `inspect.signature` see the real function. It does **not** rewrite the wrapper's code
-  object, so a raw traceback frame still shows `wrapper` — `wraps` fixes the metadata, not the executing
-  frame's name.
-- **Preserve the static signature with `ParamSpec`.** A decorator typed `Callable[..., Any]` erases the
-  wrapped function's signature, so callers stop type-checking. Type it with a `ParamSpec` so the caller
-  contract survives — the mechanics live in `typing.md` § 4.
-- **Read metadata through the supported helpers, never raw attributes.** Use `inspect.signature(fn)` for
-  parameters (it follows `__wrapped__`, so a `wraps`-decorated function reports its real signature) and
-  `inspect.get_annotations(obj, eval_str=True)` or `typing.get_type_hints(obj)` for annotations — the reason
-  *"NEVER ... read or mutate raw `__annotations__`"* exists. Raw `__annotations__` can hold unresolved
-  strings (under a future-import or a forward ref), does not merge inherited class entries, and is not present
-  on every callable — a plain function carries it (`{}` when unannotated), but an arbitrary callable object
-  need not. Runtime-annotation depth and the 3.14 `annotationlib` path are in `typing.md` § 7.
-- **Give dynamic registration a discoverable, testable contract.** A registry — decorator-based
-  `@register("name")` or entry-point-based (§7) — needs a declared name space, a documented `Protocol` each
-  registered object must satisfy, a way to enumerate what is registered, and a test that asserts the
-  registry's contents. A registry populated by import side effects is invisible and untestable, and it
-  violates the parent's inert-import rule; prefer explicit registration or entry points.
+- **Preserve identity with `functools.wraps`.** Without it a wrapper introspects as `wrapper` — `help()`,
+  `repr`, `__name__` / `__qualname__`, `__doc__`, `__annotations__` — with no `__wrapped__` link.
+  `@functools.wraps(fn)` copies that metadata and links `__wrapped__`, so `inspect.signature` sees the real
+  function; it does **not** rewrite the code object, so a raw traceback frame still shows `wrapper`.
+- **Preserve the static signature with `ParamSpec`.** `Callable[..., Any]` erases the wrapped signature; a
+  `ParamSpec` keeps the caller contract (`typing.md` § 4).
+- **Read metadata through the supported helpers.** `inspect.signature(fn)` for parameters (follows
+  `__wrapped__`), `inspect.get_annotations(obj, eval_str=True)` or `typing.get_type_hints(obj)` for annotations
+  — the reason H18 exists. Raw `__annotations__` (or `__dict__["__annotations__"]`) can hold unresolved strings
+  (under a future-import or forward ref), does not merge inherited class entries, and is absent on some
+  callables (a plain function carries `{}` unannotated). The 3.14 `annotationlib` path is in `typing.md` § 7.
+- **Dynamic registration needs a testable contract.** A registry — `@register("name")` or entry-point-based
+  (§7) — needs a declared namespace, a documented `Protocol`, a way to enumerate what is registered, and a test
+  of its contents. One populated by import side effects is invisible and untestable and violates the
+  inert-import rule; prefer explicit registration or entry points.
 
 ```python
-import functools
-import inspect
-from collections.abc import Callable
-
 def audited[**P, R](fn: Callable[P, R]) -> Callable[P, R]:
     @functools.wraps(fn)                      # keep __name__, __doc__, __wrapped__, __qualname__
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
@@ -239,56 +201,44 @@ sig = inspect.signature(audited(load))        # follows __wrapped__ to load's re
 
 ## 6. Generated code
 
-Generated code is a build product, not source. The generator plus its input is the one authoritative home;
-the output is derived — the reasoning behind *"NEVER hand-edit generated code"*, whose next regeneration
-would silently overwrite any hand edit. Common Python generators: protobuf / gRPC emitting `*_pb2.py`, a
-schema-to-model tool emitting dataclass or attrs models, a stub generator emitting `.pyi`, and Cython
-emitting `.c`.
+Generated code is a build product; the generator plus its input is the one authoritative home — the reason for
+H16, whose next regeneration overwrites any hand edit. Common generators: protobuf / gRPC emitting `*_pb2.py`,
+a schema-to-model tool emitting dataclass or attrs models, a stub generator emitting `.pyi`, Cython emitting
+`.c`.
 
-- **Quarantine it.** Keep generated modules physically apart from hand-maintained ones (a `_generated/`
-  package, or a recognizable suffix like `*_pb2.py`), and mark each file with a `# @generated by <tool> from
-  <input>` header — the marker Python code-review and lint tooling reads to skip the file. Exclude the
-  generated tree from the formatter and linter in `pyproject.toml` (an `extend-exclude`) rather than
-  reformatting output the next regeneration reverts.
-- **Regenerate; never patch the output.** When generated code must change, change the generator or its input
-  (the `.proto`, the JSON Schema, the template) and regenerate. If the generator cannot be changed, apply the
-  fix as an automated post-generation `ast`/transform step in the build, never a hand edit. For code you would
-  otherwise generate by hand, prefer the stdlib's declarative generators — `dataclass`, `Enum`, `NamedTuple`,
-  `dataclasses.make_dataclass`, `types.new_class` — over an `exec`-of-a-source-string, which reopens the
-  `eval`/`exec` hole.
-- **Make regeneration deterministic and checked.** Pin the generator in the dev dependencies and emit in a
-  stable order (not `dict`/`set` iteration order), then gate it in CI with a regenerate-and-`git diff
-  --exit-code` step, so a stale checked-in file fails the build. Ship the generated package's types — a
-  `py.typed` marker or the generator's own `.pyi` — so downstream type-checking sees the generated API (the
-  marker mechanics live in `packaging.md`). Fix any type or lint finding in the generator, not the file.
+- **Quarantine it.** Keep generated modules apart from hand-maintained ones (a `_generated/` package or a
+  suffix like `*_pb2.py`), mark each with a `# @generated by <tool> from <input>` header, and exclude the tree
+  from the formatter and linter in `pyproject.toml` (an `extend-exclude`).
+- **Regenerate; never patch the output.** Change the generator or its input (the `.proto`, the JSON Schema, the
+  template) and regenerate; if the generator cannot change, apply an automated post-generation `ast` /
+  transform step, never a hand edit. For code you would otherwise generate by hand, prefer the stdlib's
+  declarative generators — `dataclass`, `Enum`, `NamedTuple`, `dataclasses.make_dataclass`, `types.new_class` —
+  over an `exec`-of-a-source-string, which reopens the `eval` / `exec` hole.
+- **Deterministic and checked.** Pin the generator in the dev dependencies, emit in a stable order (not `dict`
+  / `set` iteration order), and gate CI with a regenerate-and-`git diff --exit-code` step. Ship the generated
+  types (`py.typed` or the generator's `.pyi` — `packaging.md` §7). Fix any type or lint finding in the
+  generator, not the file.
 
 ## 7. Plugins and dynamic import
 
-A plugin loaded at runtime is code you did not write executing with your process's privileges. Discover it
+A plugin loaded at runtime is code you did not write executing at your process's privileges. Discover it
 through the packaging system and validate it before you trust it.
 
 - **Discover through entry points.** `importlib.metadata.entry_points(group="myapp.plugins")` (the selectable
   API, stable since 3.10) enumerates plugins that installed distributions declared in their `pyproject.toml`
-  `[project.entry-points]` — named, versioned, installed on purpose, not arbitrary paths. Declaring the entry
-  points is `packaging.md`'s job.
-- **Never import an arbitrary untrusted name.** `importlib.import_module(name)` or `__import__` on a name from
-  untrusted input runs that module's top-level code — remote code execution, the same class of hole as
-  *"NEVER `eval`/`exec` untrusted text"*. Gate every dynamic import behind an allowlist of known names and
-  reject anything not on it; this is the mechanics of the parent's "gate dynamic import or plugin loading
-  behind an allowlist" clause of *"MUST validate untrusted data before use and choose safe primitives"*.
-- **Validate the loaded object before calling it.** `ep.load()` returns whatever the distribution declared —
-  treat it as untrusted until checked. Verify it satisfies the expected contract (a `Protocol` check, required
-  attributes, a version) and fail loudly if it does not. `isinstance` against a `Protocol` works **only** if
-  that protocol is `@runtime_checkable` (a plain `Protocol` raises `TypeError`), and even then it confirms
-  method **presence only**, not signatures (`typing.md` § 5) — so pair it with a version or attribute check.
-- **Entry points are not a sandbox.** Loading a plugin runs its code at your privileges; entry points assume
-  the installed distribution is trusted because it was installed deliberately. Do not use them to run
-  genuinely untrusted third-party code.
+  `[project.entry-points]` — named, versioned, installed on purpose (declaring them is `packaging.md` §6).
+- **Never import an arbitrary untrusted name.** `importlib.import_module(name)` or `__import__` on an untrusted
+  name runs that module's top-level code — remote code execution, the hole H6 bans. Gate every dynamic import
+  behind an allowlist, checked against `ep.name` before load.
+- **Validate the loaded object before calling it.** `ep.load()` returns whatever was declared — untrusted until
+  checked; verify the contract (a `Protocol` check, required attributes, a version) and fail loudly.
+  `isinstance` against a `Protocol` works **only** if it is `@runtime_checkable` (a plain `Protocol` raises
+  `TypeError`), and even then confirms method **presence only**, not signatures (`typing.md` § 5) — pair it with
+  a version or attribute check.
+- **Entry points are not a sandbox.** A plugin runs at your privileges; use them only for deliberately
+  installed, trusted distributions, not genuinely untrusted third-party code.
 
 ```python
-from importlib.metadata import entry_points
-from typing import Protocol, runtime_checkable
-
 @runtime_checkable
 class Reader(Protocol):                            # runtime_checkable: the isinstance below is legal
     def read(self) -> bytes: ...
@@ -306,16 +256,16 @@ for ep in entry_points(group="myapp.readers"):     # the selectable API (3.10+)
 
 ## 8. Notebooks and scripts to production modules
 
-A notebook is an orchestration surface, not a home for reusable logic — the parent's *"MUST keep reusable
-logic in importable, typed modules, not in a notebook or script body"*. Logic trapped in a cell cannot be
-imported, type-checked, or tested.
+A notebook is an orchestration surface, not a home for reusable logic — the parent's rule that reusable logic
+lives in importable, typed modules, not a notebook or script body. Logic trapped in a cell cannot be imported,
+type-checked, or tested.
 
-- **Split the roles.** The reusable logic lives in an importable, typed module — functions with signatures,
-  Google docstrings, and tests. The notebook or script orchestrates: it imports the module, seeds randomness,
-  records the environment and inputs, runs the work, and displays results.
-- **Make the run reproducible.** In the orchestrator, seed every RNG explicitly (the stdlib `random` and any
-  numeric library in use), record the input and dependency versions, and pin what the result depends on. A
-  cell that reads ambient state produces a result no one can reproduce.
+- **Split the roles.** Reusable logic lives in an importable, typed module (functions with signatures, Google
+  docstrings, tests); the notebook or script orchestrates — imports the module, seeds randomness, records the
+  environment and inputs, runs, and displays results.
+- **Make the run reproducible.** Seed every RNG (the stdlib `random` and any numeric library), record the input
+  and dependency versions, and pin what the result depends on — a cell that reads ambient state is not
+  reproducible.
 
 **Productionization checklist** — turning notebook logic into a module:
 
@@ -327,5 +277,5 @@ imported, type-checked, or tested.
 6. Replace `print` and implicit cell display with a module logger at the handling boundary.
 7. Remove notebook-only global state; pass state explicitly instead.
 
-The notebook then imports the productionized module and only orchestrates — the same code runs in the
-notebook and in production.
+The notebook then imports the productionized module and only orchestrates — the same code runs in the notebook
+and in production.
