@@ -2,7 +2,7 @@
 
 Child doc of the `python` skill: the deep reference for how Python source is spelled, laid out, and documented
 at the 3.12 baseline. Read it when a naming, formatting, docstring, import, or comment question is genuinely on
-a fork. Every construct here is valid at Python 3.12; tool and library names are examples.
+a fork. Constructs here are valid at Python 3.12; tool and library names are examples.
 
 Project configuration is authoritative: follow its formatter, line length, import order, and docstring dialect.
 A new project with no dialect takes the parent's *softened style* default — PEP 8 names, one deterministic
@@ -54,9 +54,9 @@ PEP 695 declared type parameter or alias too; their type mechanics are `typing.m
 - **Acronyms keep case per the surrounding convention.** In `PascalCase`, preserve every letter — `HTTPServer`,
   `XMLParser`, `HTTPSConnection`, never `HttpServer` / `XmlParser`. In `snake_case`, lowercase it as an
   ordinary word — `http_server`, `xml_parser`, `parse_url`.
-- **The underscore ladder is meaning, not decoration.** A single `_` is advisory internal intent; a double
-  leading underscore invokes name mangling to avoid inheritance clashes, never as privacy (the parent's
-  `NEVER` floor); a double leading-and-trailing name is a reserved dunder — never invent one.
+- **The underscore ladder carries meaning.** A single `_` is advisory internal intent; two leading underscores
+  invoke name mangling to avoid inheritance clashes, never privacy (the parent's `NEVER` floor); a double
+  leading-and-trailing name is a reserved dunder — never invent one.
 - **Never shadow a builtin or keyword** — `list`, `dict`, `id`, `type`, `input`, `str`, or a keyword such as
   `match`. Pick the domain name first (`rows`, `record_type`, `user_id`); only when an externally fixed name or
   a keyword collision leaves no accurate alternative, append one trailing underscore (`type_`, `class_`) —
@@ -82,7 +82,7 @@ matching delimiters and let the formatter pick the compact or exploded form; nev
 | Case | Mechanics |
 |---|---|
 | Call, collection, or definition past the column limit | explode: one element per line, indented one level, a trailing comma on the last, the closing bracket dedented to the opening line |
-| The magic trailing comma | a hand-added trailing comma forces the exploded layout even when content fits — use it to lock a growing multi-line shape (a later addition stays a one-line diff). Omit it where it changes grammar, e.g. unparenthesized `return x,`, which creates a tuple |
+| The magic trailing comma | a hand-added trailing comma forces the exploded layout even when content fits — use it to lock a growing multi-line shape. Omit it where it changes grammar, e.g. unparenthesized `return x,`, which creates a tuple |
 | A fluent chain | parenthesize the whole expression, each call on its own line led by `.` |
 | A long string | adjacent literals concatenate at compile time; parenthesize a long message across lines. Footgun: a *missing* comma between two list items silently joins them into one string instead of erroring |
 | A long binary expression | break *before* the arithmetic or boolean operator so continuation lines expose the structure (PEP 8 / Knuth) |
@@ -90,14 +90,14 @@ matching delimiters and let the formatter pick the compact or exploded form; nev
 | Blank-line rhythm | two blank lines between top-level functions/classes; one between methods; inside a body one only to group related statements, never several as a fake heading |
 | `# fmt: off` / `on` / `skip` | suspend the formatter only where layout genuinely matters — a hand-aligned matrix or lookup table. Wrap a block with `# fmt: off` … `# fmt: on`, or one line with trailing `# fmt: skip`; confirm the formatter supports it, and remove a skip kept only for personal wrapping |
 
-Name modules and public signatures in the skeleton, then format and import-check that skeleton and every slice
-after it (`final P7`, Procedure steps P5–P6). Formatting is per-slice construction evidence, not a restyle
-deferred to the end.
+Name modules and public signatures in the skeleton, then format and import-check it and every slice after
+(`final P7`, Procedure steps P5–P6). Formatting is per-slice construction evidence, not a restyle deferred to
+the end.
 
 ## 3. Docstring grammar
 
 Use the project's configured dialect; the new-project Google default documents every public module, class,
-function, and method whose text adds contract information. Use only the sections that carry information.
+function, and method whose text adds contract information. Use only sections that carry information.
 
 | Section | Use |
 |---|---|
@@ -125,7 +125,7 @@ function, and method whose text adds contract information. Use only the sections
 
 ## 4. Import conventions
 
-The parent floor requires explicit, grouped, absolute, import-safe imports. The layout that produces them:
+The layout for the parent's explicit, grouped, absolute, import-safe imports:
 
 | Decision | Choose | Exceptions / limits |
 |---|---|---|
@@ -138,9 +138,9 @@ The parent floor requires explicit, grouped, absolute, import-safe imports. The 
 | `__all__` | a literal list declaring the module's public surface | not derived from `globals()` or a pattern; update it with every public rename |
 | Relative import | shallow intra-package `from . import x` or `from .sub import y` | two or more `..` levels signal a layout problem — restructure instead |
 
-The import block stays inert: imports run on import, so the module top level binds names only — a module logger
-handle is fine, but no I/O, connections, or work. This is the parent's import-safety floor (`H2`) from the
-convention side; it deepens the layout without replacing the entry-point rule.
+The import block binds names only: a module logger handle is inert, but I/O, connections, argument parsing, and
+other work are not. This is the parent's import-safety floor (`H2`) from the convention side; it deepens the
+layout without replacing the entry-point rule.
 
 ## 5. Comments
 

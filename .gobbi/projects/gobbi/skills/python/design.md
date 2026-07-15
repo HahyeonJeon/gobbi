@@ -6,10 +6,10 @@ decides from `SKILL.md` alone; read here only on a genuine fork.
 
 This doc **deepens, and does not restate,** the parent floor: `SKILL.md` § Procedure P3 (the six design acts),
 the § Principles it operationalizes (function-first, boundary protocols, failure shape, mutation and lifetime,
-the narrow input surface — `final P9`), and the § Rules *"Signatures and data models"* judgment default.
-`convention.md` owns how a name is spelled; `typing.md` owns the type-level form of `Self`, `Protocol`,
-`ParamSpec`, and generics; this doc owns the design choice and its Python mechanics. Every construct is valid
-at Python 3.12; tool and library names are illustrative, not a lock.
+the narrow input surface — `final P9`), and the § Rules *"Signatures and data models"* default. `convention.md`
+owns name spelling; `typing.md` owns the type form of `Self`, `Protocol`, `ParamSpec`, and generics; this doc
+owns the design choice and Python mechanics. Constructs are valid at Python 3.12; tool and library names are
+illustrative, not a lock.
 
 **One bottom-up design sequence:** module tree → candidate functions and data → only earned classes →
 signatures, errors, and test seams → body stubs. Revisit an earlier step when a later seam exposes a bad
@@ -61,8 +61,8 @@ to_unit = functools.partial(clamp, low=0.0, high=1.0)   # partial binds pure con
 
 ## 2. Parameter and signature shape
 
-This section owns a signature's *shape* — order, the positional/keyword boundary, defaults, and how wide the
-input surface is. Spelling is `convention.md`'s; each parameter's annotation is `typing.md`'s.
+This section owns a signature's *shape*: order, the positional/keyword boundary, defaults, and how wide the
+input surface is. `convention.md` owns spelling; `typing.md` owns the annotation.
 
 - **Caller-first ordering** — primary subject, required context, then rare options; the call reads like a
   sentence, not the body's consumption order.
@@ -74,13 +74,13 @@ input surface is. Spelling is `convention.md`'s; each parameter's annotation is 
   split functions when the branches carry different contracts.
 - **Sentinel vs `None`.** If `None` is a valid value, use a private sentinel for "not supplied". A private
   sentinel *class* appears in strict annotations; a bare `object()` cannot. Callers never import it.
-- **Narrow the input surface** — the Python act behind `final P9` and its parent, coding Principle 17. Demand
-  only the values the unit uses, in the plainest truthful form. When the body reads a few fields of a record,
-  do not take the whole `dataclass`, `TypedDict`, or config aggregate as one opaque parameter — stamp coupling
-  that hides the real dependency. Pass the fields, a small purpose-built `frozen` value object, or a `Protocol`
+- **Narrow the input surface** — the Python act behind `final P9` and coding Principle 17. Demand only the
+  values the unit uses, in the plainest truthful form. When the body reads a few fields of a record, do not
+  take the whole `dataclass`, `TypedDict`, or config aggregate as one opaque parameter — stamp coupling that
+  hides the real dependency. Pass the fields, a small purpose-built `frozen` value object, or a `Protocol`
   exposing exactly the operations and attributes used (§ 5 picks among those). Replace a deeply-nested
   annotation the caller must decode with a named intermediate type. Keep an aggregate whole only when the unit
-  uses it as one concept — the one case where the parameter-object bullet applies.
+  uses it as one concept — the parameter-object case.
 - **A parameter object** when roughly four or five arguments form one concept, or a cluster always moves
   together — a frozen value with that concept's invariants (§ 3), not an `Options` bag. First check whether the
   long signature hides several jobs or a missing collaborator.
@@ -125,9 +125,8 @@ type RouteHeaders = dict[str, Headers]
 ## 3. Class and dataclass patterns
 
 **Does the class earn its keep?** Start with a function over plain data; add a class only when state and
-behavior must live together — persistent identity, an invariant held across calls, or several behaviors over
-one owned state (`final P3`). Nothing below applies until that test passes. Pick a form by semantics, switch on
-evidence.
+behavior must live together (`final P3`). Nothing below applies until that test passes. Pick a form by
+semantics, switch on evidence.
 
 | Option | Choose when | Evidence to switch |
 |---|---|---|
@@ -181,10 +180,10 @@ Prefer composition and structural relationships to deep inheritance:
   do not inherit merely to obtain behavior. Composition keeps the surfaces independent; inheritance welds them.
 - **Delegate a responsibility, not an API.** Forward only the operation your contract promises, translate its
   result or errors, and keep the collaborator private. A wrapper forwarding every method unchanged is shallow.
-- **Strategy is a callable; variants are a registry; construction is a factory.** Vary one behavior with a
-  callable, not a subclass. Keep interchangeable variants in an explicit name→callable (or name→class) registry
-  assembled at the application boundary — hidden import-time registration makes availability depend on import
-  order. A factory function or `@classmethod` picks the concrete type so callers do not branch.
+- **Strategy, variants, factory.** Vary one behavior with a callable, not a subclass. Keep interchangeable
+  variants in an explicit name→callable (or name→class) registry assembled at the application boundary — hidden
+  import-time registration makes availability depend on import order. A factory function or `@classmethod` picks
+  the concrete type so callers do not branch.
 - **Mixins only for an orthogonal, self-contained capability** that defines what it uses, needs no private init
   order, and cooperates through `super()`. Several fields, sibling assumptions, or lifecycle overrides signal a
   collaborator instead.
@@ -216,7 +215,7 @@ PEP 695 is the 3.12 generic form; `typing.md` owns variance and bounds.
 
 Pick by caller semantics — no data model is mandatory. Test equality, hashing, mutability, iteration,
 serialization, and pattern-matching separately: identical field annotations do not imply identical runtime
-contracts. Below are the close-call tie-breaks and the migration paths.
+contracts.
 
 | Option | Choose when | Evidence to switch |
 |---|---|---|
@@ -259,19 +258,18 @@ class Row:                          # owned record: construction is validated
 
 ## 6. Failure-surface design
 
-The parent picks EAFP vs validate-first per operation; this section designs the failure surface as a whole —
-the exception hierarchy exposed, the data those exceptions carry, and each function's raise-vs-return shape.
+The parent picks EAFP vs validate-first per operation; this section designs the whole failure surface — the
+exception hierarchy, the data those exceptions carry, and each function's raise-vs-return shape.
 
-- **One domain base, subclasses earned by branch.** A single base exception; add a subclass only for a
-  category a caller branches on in its own `except`, or that stays stable across implementations. A category no
-  caller distinguishes reuses the most specific built-in. Grow the tree when a distinction is needed, not
-  speculatively.
-- **Carry structured attributes, not just a message.** Attach the machine-readable facts (offending id, limit,
-  service) as exception attributes; the message is for humans. Callers branch on the type and read a documented
-  attribute — never parse the text.
-- **Translate at the boundary, preserving the cause.** Only where the public abstraction changes,
-  `raise DomainError(...) from err` so the original traceback survives; inside the package let the built-in
-  propagate. Never translate a programmer defect.
+- **One domain base.** A single base exception; add a subclass only for a category a caller branches on in its
+  own `except`, or that stays stable across implementations. A category no caller distinguishes reuses the most
+  specific built-in. Grow the tree when a distinction is needed, not speculatively.
+- **Carry structured attributes.** Attach the machine-readable facts (offending id, limit, service) as
+  exception attributes; the message is for humans. Callers branch on the type and read a documented attribute —
+  never parse the text.
+- **Translate at the boundary.** Only where the public abstraction changes, `raise DomainError(...) from err`
+  so the original traceback survives; inside the package let the built-in propagate. Never translate a
+  programmer defect.
 - **Raise-vs-return is an API property** — consistent and documented. Mirror the standard library's pairing
   (`d[k]` raises, `d.get(k)` returns `None`). Do not expose an `exists()` plus a `get()` when state can change
   between the calls — offer one atomic operation.
@@ -296,7 +294,7 @@ def reserve(sku: str, quantity: int, stock: dict[str, int]) -> None:
         raise OutOfStock(sku, requested=quantity, available=available)
 ```
 
-The public raise-vs-return shape follows the situation:
+Public raise-vs-return shape by situation:
 
 | Situation | Public shape |
 |---|---|
