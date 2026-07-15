@@ -82,7 +82,7 @@ CWD-relative `.gobbi/…`), which silently strays to the main tree
 
 <<Fill this block ONLY when this is a delta-brief to a CONTINUED executor
 teammate; delete the whole section on a fresh spawn. The decision rule, F1
-predicate, saturation cap, and delta-brief shape live in `delegation/SKILL.md`
+predicate, saturation cap, and delta-brief shape live in `orchestration/delegation.md`
 § Continue vs Fresh — do not re-derive here. This block restates the
 write-safety discipline (see `executor.md` § Continuation discipline) for THIS
 turn, because the teammate's shell cwd resets across turns and a re-`cd` does
@@ -176,7 +176,7 @@ Status meanings:
   resolved one way the user might want the other).
 - **NEEDS_CONTEXT** — paused. State precisely what is missing (file, decision,
   user clarification) and from whom. Include a `user-question:` block if user
-  input is needed (see `delegation/SKILL.md` § NEEDS_CONTEXT user-question schema).
+  input is needed (see `orchestration/delegation.md` § NEEDS_CONTEXT user-question schema).
 - **BLOCKED** — cannot proceed. State the root cause with specific evidence.
 
 `Never silently produce work you are unsure about` — use DONE_WITH_CONCERNS

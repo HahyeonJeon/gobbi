@@ -18,7 +18,7 @@ For each task in the loop's task list (`3-planning/outputs/`), the manager:
 1. Identifies the task's scope boundary (which files to touch, which to avoid).
 2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
 3. Confirms with the user through the active runtime's user-decision primitive any contribution points the task requires.
-4. Constructs the executor delegation prompt per [delegation prompt requirements](../../delegation/SKILL.md#what-every-delegation-prompt-contains) with:
+4. Constructs the executor delegation prompt per [delegation prompt requirements](../delegation.md#what-every-delegation-prompt-contains) with:
    - The task description and acceptance criteria
    - Scope boundary (in-scope files, out-of-scope files)
    - Reference materials (skills to load, mistakes to respect)
@@ -38,7 +38,7 @@ Manager-side responsibilities:
 
 ### Executor continuation (shared subsystem, under cap)
 
-The decision rule, the F1 predicate, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh); this section states only the Execution-specific choreography. Continuation needs Claude Code Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, v2.1.32+); it is preferred-where-safe with a fresh-spawn fallback, never a hard dependency. Native Codex does not use this continuation path.
+The decision rule, the F1 predicate, the delta-brief shape, and the evaluator-FORBIDDEN wall live in [`orchestration/delegation.md` § Continue vs Fresh](../delegation.md#continue-vs-fresh); this section states only the Execution-specific choreography. Continuation needs Claude Code Agent Teams enabled (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`, v2.1.32+); it is preferred-where-safe with a fresh-spawn fallback, never a hard dependency. Native Codex does not use this continuation path.
 
 The manager **continues the same executor teammate from task NN to NN+1 iff BOTH hold**:
 
@@ -47,7 +47,7 @@ The manager **continues the same executor teammate from task NN to NN+1 iff BOTH
 
 When either test fails, the manager **fresh-spawns** the next executor with a full brief (the default path). When both hold, the manager sends a delta-brief (next task's goal + new inputs + changed-rule/mistake/scope re-anchor + re-stated scope + status) instead of a full re-paste.
 
-**Continuation write-discipline.** Each continuation turn that writes MUST use the absolute worktree path on every Write/Edit and `git -C <worktree-abs>` for all git ops — a re-`cd` does not persist across tool boundaries. After each continuation turn that writes, the manager runs a post-turn tree-check to confirm the write landed on the worktree branch, not the main tree. Full discipline: [`delegation/SKILL.md` § Continue vs Fresh](../../delegation/SKILL.md#continue-vs-fresh) and the executor agent spec.
+**Continuation write-discipline.** Each continuation turn that writes MUST use the absolute worktree path on every Write/Edit and `git -C <worktree-abs>` for all git ops — a re-`cd` does not persist across tool boundaries. After each continuation turn that writes, the manager runs a post-turn tree-check to confirm the write landed on the worktree branch, not the main tree. Full discipline: [`orchestration/delegation.md` § Continue vs Fresh](../delegation.md#continue-vs-fresh) and the executor agent spec.
 
 **Compaction kills the teammate.** After `/compact`, `/clear`, or resume, the in-process teammate is gone. The manager MUST spawn a FRESH executor and re-prime it from durable session record (the task's `outputs/`, prior `working/`, `state.json`) — never message a dead teammate.
 
@@ -137,6 +137,6 @@ session-root `transcripts/` — there is no per-task `transcripts/`.
 - Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
-- Delegation patterns → [`delegation`](../../delegation/SKILL.md)
-- Executor delegation template → [`delegation/templates/executor.md`](../../delegation/templates/executor.md)
+- Delegation patterns → [`delegation`](../delegation.md)
+- Executor delegation template → [`orchestration/templates/executor.md`](../templates/executor.md)
 - Git/worktree workflow → [`git` skill](../../git/SKILL.md)

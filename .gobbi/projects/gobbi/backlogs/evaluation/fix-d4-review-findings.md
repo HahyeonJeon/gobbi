@@ -17,6 +17,10 @@ shipped_in: null
 
 # Fix queue — D4 adversarial-review findings (naming / conventions / counts / doc-style)
 
+## Ownership closure
+
+Historical line citations below remain evidence of the reviewed tree. Any still-open remediation that changes Gobbi manager dispatch, role headers, Load Directives, or status wiring now targets `orchestration/delegation.md` and `orchestration/templates/`; generic delegation semantics remain in `delegation/SKILL.md`.
+
 ## Context
 
 The 2026-06-29 D4 adversarial-review session reviewed the **naming / term-Glossary consistency /

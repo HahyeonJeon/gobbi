@@ -28,7 +28,7 @@ Gobbi has a known process failure mode where a subagent can skip required load d
 
 ## Verification
 
-For future records with this claim, verify that the report contains a `SKILLS LOADED:` section and that the section enumerates each required Load-Directives path in order. If the intended proof surface is transcript verification instead, cite the transcript-verification artifact directly.
+For future records with this claim, verify that the report contains a `SKILLS LOADED:` section and that the section enumerates each required Load-Directives path in order. Load the current Gobbi owner `.gobbi/projects/gobbi/skills/orchestration/delegation.md` before checking the wire contract. If the intended proof surface is transcript verification instead, cite the transcript-verification artifact directly.
 
 ## Status notes
 
@@ -39,4 +39,4 @@ For future records with this claim, verify that the report contains a `SKILLS LO
 - `4-execution/task-02-workflow-artifact-fidelity-audit/working/draft-iter1.md`
 - `4-execution/task-02-workflow-artifact-fidelity-audit/evaluation/iter1/codex/consistency.md`
 - `4-execution/task-02-workflow-artifact-fidelity-audit/evaluation/iter1/codex/overall.md`
-- `.agents/skills/delegation/SKILL.md`
+- `.gobbi/projects/gobbi/skills/orchestration/delegation.md`

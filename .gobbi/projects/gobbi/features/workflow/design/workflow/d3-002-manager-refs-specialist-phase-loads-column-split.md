@@ -26,13 +26,13 @@ delegation prompt from the table could copy a manager-only ref into a specialist
 
 In scope: splitting the `Refs` column in the per-step tables of `auto-mode.md` §2 and `chat-mode.md` §3.
 Out of scope: any change to the workflow docs' own headers (already correct); any change to
-`delegation/SKILL.md`'s ownership of the full Load Directives block.
+`orchestration/delegation.md`'s ownership of the full Gobbi Load Directives block.
 
 ## Approach
 
 Replace the single `Refs` column with two columns: `Manager refs` (the manager-facing `workflow/*.md` doc)
 and `Specialist phase loads` (the phase-specific skill(s) the spawned agent loads for that phase, on top of
-the standard `delegation/SKILL.md` Load Directives). Manager-only rows (DISCUSSION, ITER-EXIT) get `—` in
+the standard `orchestration/delegation.md` Load Directives). Manager-only rows (DISCUSSION, ITER-EXIT) get `—` in
 `Specialist phase loads`. Per-phase mapping: Ideation WORK → `workflow/ideation.md` + `../ideation/SKILL.md`
 (+ `../research/SKILL.md` at Sub-step C); Preparation/Planning/Execution/Wrap-up WORK → their own
 `workflow/*.md` + `../*/SKILL.md`; EVALUATION → `workflow/evaluation.md` + `../evaluation/SKILL.md`; RECORD →
@@ -41,8 +41,8 @@ the standard `delegation/SKILL.md` Load Directives). Manager-only rows (DISCUSSI
 **Guardrail (unified wording, finalized at iter2):** the `Specialist phase loads` cell names the phase-
 specific skill(s) INCLUDING the conditional companion loads the workflow header itself names
 (`../research/SKILL.md` at Ideation Sub-step C; `../memory/memory-map.md` at RECORD) but does NOT restate the
-full `delegation/SKILL.md` Load block (principles / project-rules fallback / mistake / git) —
-`delegation/SKILL.md` remains the sole owner of that block. The earlier iter1 wording said the cell names
+full `orchestration/delegation.md` Load block (principles / project-rules fallback / mistake / git) —
+`orchestration/delegation.md` remains the sole owner of that block. The earlier iter1 wording said the cell names
 "ONLY the phase skill," which contradicted the mapping's own companion loads (a real defect — see § Related,
 `d3-002-guardrail-conflicted-with-required-companion-loads`); the unified wording above supersedes it
 everywhere the cell is described.
@@ -55,10 +55,10 @@ and no agent re-opens the S-vs-legend choice.
 ## Scenarios
 
 - S2 (golden) — manager builds a `leader` delegation prompt → `Specialist phase loads` sends it to
-  `../ideation/SKILL.md` (+ `../research/SKILL.md` at Sub-step C) + `delegation/SKILL.md`; it cannot copy a
+  `../ideation/SKILL.md` (+ `../research/SKILL.md` at Sub-step C) + `orchestration/delegation.md`; it cannot copy a
   `Manager refs` cell into the specialist's Load Directives.
 - S2b (golden, RECORD companion) — manager builds the RECORD `assistant` prompt → the cell sends it to
-  `../record/SKILL.md` + `../memory/memory-map.md` + `delegation/SKILL.md`.
+  `../record/SKILL.md` + `../memory/memory-map.md` + `orchestration/delegation.md`.
 
 Full enumeration lives in `sessions/2026-07-05-1fecddb4-255e-4829-9912-42deb9c36fc8/1-ideation/outputs/ideation-output.md` § Scenarios.
 
@@ -75,7 +75,7 @@ Chosen over a Refs-audience legend (advisory-only note explaining the column's a
 is High and the root cause is a structural column-overload — a legend only documents the boundary and a
 future row can still regress; the structural split makes the regression non-recurrable. Costs a larger diff
 (~9 loop tables across 2 docs, each row gaining a cell) and creates a third location for the phase→skill
-mapping (workflow headers + this column + `delegation/SKILL.md`'s ownership statement) — an accepted,
+mapping (workflow headers + this column + `orchestration/delegation.md`'s ownership statement) — an accepted,
 low-but-nonzero drift-recurrence risk (see § Related,
 `d3-002-specialist-phase-loads-column-third-mapping-surface`).
 

@@ -322,7 +322,7 @@ classify() {
     #      output files ("**DONE** — … per-perspective files written") — the
     #      output-completion contract that must gain "+ the filled checklist.md".
     #      Precise: requires the `**DONE**` marker, so it catches the DONE template
-    #      (`delegation/templates/evaluator.md:139`) without over-matching the
+    #      (`orchestration/templates/evaluator.md:139`) without over-matching the
     #      evaluator-topology / example-report lines that merely say "7 perspectives
     #      + Overall" (verified-leave).
     if m "$l" '\*\*done\*\*' && has_ppfiles "$l"; then printf 'FAMILY-9'; return 0; fi
@@ -918,7 +918,7 @@ mode_selftest() {
     #   (F-STRUCT-1): the locator anchors on `**DONE**` + "per-perspective files" so
     #   task 10 inserting "+ the filled checklist.md" between "files" and "written"
     #   does not break it; the surface still classifies Family-9 post-flip.
-    selftest_one "done-status-contract" "$PROJ/skills/delegation/templates/evaluator.md" \
+    selftest_one "done-status-contract" "$PROJ/skills/orchestration/templates/evaluator.md" \
         '\*\*DONE\*\*.*per-perspective files' 'FAMILY-9' || fails=$((fails+1))
     # Fixture 9 — codex finding-HIT vocab-glob count
     #   `codex/{project,…,overall}.md | wc -l  # >= 1 hit per file` → Family-8 (a finding

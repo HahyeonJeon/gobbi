@@ -143,7 +143,7 @@ Then in the body (answer in the Expected Output Shape):
   coverage of the question, or ambiguity you interpreted one way.
 - **NEEDS_CONTEXT** — paused. The question is broader than the assistant role
   can handle. Name what kind of agent should take it. Include a `user-question:`
-  block if user input is needed (see `delegation/SKILL.md` § NEEDS_CONTEXT
+  block if user input is needed (see `orchestration/delegation.md` § NEEDS_CONTEXT
   user-question schema).
 - **BLOCKED** — cannot proceed. Cited resources missing or question contradictory.
 

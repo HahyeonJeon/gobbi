@@ -75,7 +75,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | `discuss.mode = "user"` in Auto default — manager + user converge on the delegation prompt. Construct per [Delegation skill § What Every Delegation Prompt Needs](../delegation/SKILL.md#what-every-delegation-prompt-contains). | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md); specialist phase load: — | manager |
+| 1 | `DISCUSSION` | `discuss.mode = "user"` in Auto default — manager + user converge on the delegation prompt. Construct per [Delegation skill § What Every Delegation Prompt Needs](delegation.md#what-every-delegation-prompt-contains). | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
 | 2 | `WORK` | Spawn the `leader` subagent. Collect the leader's draft Idea. | manager orchestration: [ideation.md](workflow/ideation.md); specialist phase load: [../ideation/SKILL.md](../ideation/SKILL.md) (+ [../research/SKILL.md](../research/SKILL.md) at Sub-step C) | leader |
 | 3 | `EVALUATION` | Run per `workflow.ideation.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | **Full PASS path** (unmodified base procedure) — stages typed findings per [Routing Findings to RECORD](workflow/evaluation.md#routing-findings-to-record). | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
@@ -111,7 +111,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md); specialist phase load: — | manager |
+| 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
 | 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | manager orchestration: [planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
@@ -129,8 +129,8 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md); specialist phase load: — | manager |
-| 2 | `EXECUTION` | Spawn a fresh `executor` subagent by default. In Claude Code only, the manager may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`delegation/SKILL.md § Continue vs Fresh`). Native Codex uses fresh executor spawns. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | manager orchestration: [execution.md](workflow/execution.md); specialist phase load: [../execution/SKILL.md](../execution/SKILL.md) | executor |
+| 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs executor delegation prompt. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
+| 2 | `EXECUTION` | Spawn a fresh `executor` subagent by default. In Claude Code only, the manager may continue the same executor teammate per the bounded rule — shared subsystem, under the saturation cap (`orchestration/delegation.md § Continue vs Fresh`). Native Codex uses fresh executor spawns. Collect work artifact + verification evidence per the Execution Verify phase (`execution/SKILL.md`). | manager orchestration: [execution.md](workflow/execution.md); specialist phase load: [../execution/SKILL.md](../execution/SKILL.md) | executor |
 | 3 | `EVALUATION` | Run per `workflow.execution.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | Task complete → next task; all tasks complete → advance to Step 6. | manager orchestration: —; specialist phase load: — | manager |
@@ -147,7 +147,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs assistant delegation prompt. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](../delegation/SKILL.md); specialist phase load: — | manager |
+| 1 | `DISCUSSION` | `discuss.mode = "agent"`. Manager constructs assistant delegation prompt. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
 | 2 | `WRAPUP` | Spawn `assistant` subagent. Consolidate artifacts; archive backlogs; promote mistakes; write handoff. | manager orchestration: [wrap-up.md](workflow/wrap-up.md); specialist phase load: [../wrap-up/SKILL.md](../wrap-up/SKILL.md) | assistant |
 | 3 | `EVALUATION` | Run per `workflow.wrap-up.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path — write session and memory for this iteration. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |

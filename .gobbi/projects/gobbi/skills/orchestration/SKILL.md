@@ -71,6 +71,7 @@ Each session owns its own branch and working tree. That boundary keeps writes sc
 
 ### Must-Follow
 
+- **MUST read [`delegation.md`](delegation.md) before every specialist dispatch** — that child is the sole owner of Gobbi prompt construction, load tiers, templates, runtime dispatch, and response routing; point to it and do not restate its contract.
 - **MUST assign and coordinate phase work, never perform it** — each phase (Ideation, Preparation, Planning, Execution, Evaluation) has a specialist agent type; the manager directs the work and never does that work itself.
 - **MUST surface the orchestration mode at session start and never infer it from context** — the mode (Chat / Auto) is an explicit session-start choice shown to the user, not a value guessed from the conversation.
 - **MUST be the sole spawner** — only the manager spawns subagents and teammates; teammates never spawn teammates. The manager is the team lead.
@@ -141,11 +142,11 @@ The manager runs every session in one of two modes, picked at session start (§ 
 
 Where Claude Code Agent Teams is enabled, the manager may **continue** the same `leader`, `executor`, or `assistant` as a persistent teammate instead of always spawning fresh; native Codex fresh-spawns specialists with full Load Directives. The `evaluator` is never a teammate (§ Rules — producer/evaluator separation + dual-system independence). All coordination flows through the manager via a manager-owned shared task list (no teammate cross-talk); one team at a time, cleaned up before starting a new one; teammates do NOT survive `/compact` / `/clear` / `/resume` / `/rewind` → fresh-spawn and re-prime.
 
-Full setup, delegation, roster split, and lifecycle — including the two sanctioned use-modes (sequential single teammate vs bounded parallel fan-out) — live in [`agent-teams.md`](agent-teams.md). The continue-vs-fresh decision rule and the delta-brief live in [`delegation/SKILL.md` § Continue vs Fresh](../delegation/SKILL.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [`workflow/metadata.md` § Teammate-aware metadata](workflow/metadata.md#teammate-aware-metadata-agent-teams).
+Full setup, delegation, roster split, and lifecycle — including the two sanctioned use-modes (sequential single teammate vs bounded parallel fan-out) — live in [`agent-teams.md`](agent-teams.md). The continue-vs-fresh decision rule and the delta-brief live in [`delegation.md` § Continue vs Fresh](delegation.md#continue-vs-fresh); the teammate-aware session-metadata model lives in [`workflow/metadata.md` § Teammate-aware metadata](workflow/metadata.md#teammate-aware-metadata-agent-teams).
 
 ### Child-doc map
 
-Four reference sections live as child docs under `workflow/`; the per-loop and per-phase orchestration lives in the other `workflow/*.md` docs and the two mode docs. Read the one you need:
+The dispatch contract lives in `delegation.md`. Reference sections live under `workflow/`; per-loop and per-phase orchestration lives in the other `workflow/*.md` docs and the two mode docs. Read each child at its trigger:
 
 | Read | When |
 |---|---|
@@ -178,7 +179,7 @@ Each entry names an owner and the specific claim in this skill that the owner va
 - [`gobbi/SKILL.md`](../gobbi/SKILL.md) § Resolve runtime identity / § Enter the workflow — validates: the runtime session-id resolution used by Configuration and the Configuration-to-workflow handoff that resumes the persisted productive step (Step-1 rows 1 and 5; Procedure § Workflow).
 - [`record/record-map.md`](../record/record-map.md) § Initialization — validates: the session-record skeleton that `init-record-map.sh` materializes (Step-1 row 2).
 - [`discussion/SKILL.md`](../discussion/SKILL.md) § Decision Classification — validates: the active runtime's user-decision primitive that every clarification, decision, and approval flows through, and which user-owned decisions are surfaced rather than auto-resolved (Intro; Rules; Step-1 gates).
-- [`delegation/SKILL.md`](../delegation/SKILL.md) § Continue vs Fresh — validates: the teammate continue-vs-fresh decision rule and delta-brief (Procedure § Agent Teams).
+- [`delegation.md`](delegation.md) § Continue vs Fresh — validates: the teammate continue-vs-fresh decision rule and delta-brief (Procedure § Agent Teams).
 - [`workflow/state-machine.md`](workflow/state-machine.md) § State persistence — validates: `state.json` is the single source of truth and the resume-validation invariants (Principle "`state.json` is the single source of truth"; the "write `state.json` first" Rule; Step-1 row 4R).
 - [`workflow/status-display.md`](workflow/status-display.md) — validates: the Status Display and harness todo widget are one-way projections of `state.json` (Principles; the "NEVER let the Status Display or the todo widget write back" Rule).
 - [`auto-mode.md`](auto-mode.md) / [`chat-mode.md`](chat-mode.md) — validates: the per-mode Steps 2-6 workflow and the mode-specific interaction gates (Procedure § Workflow, § Orchestration Mode).

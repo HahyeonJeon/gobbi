@@ -17,6 +17,10 @@ shipped_in: null
 
 # Fix queue — D2 adversarial-review findings (completeness of agents + skills)
 
+## Ownership closure
+
+Historical finding locations below remain evidence of the reviewed tree. For any still-open Gobbi dispatch or Load-Directives remediation, the live owner is now `orchestration/delegation.md` with its templates under `orchestration/templates/`; generic delegation semantics remain in `delegation/SKILL.md`.
+
 ## Context
 
 The 2026-06-29 D2 adversarial-review session reviewed the **completeness of the gobbi agent +
@@ -155,8 +159,8 @@ Preparation was inserted into the lifecycle; several enumerations were never upd
 
 - **D2-004** (High) — RECORD postcondition "Memory writes complete" contradicts the sole-writer boundary. `orchestration/SKILL.md:251-257`.
   → change the RECORD postcondition to session-evidence/staging completion; reserve "memory writes complete" for the Wrap-up row.
-- **D2-009** (High) — Evaluator template puts `evaluation/SKILL.md` in the Principles tier, violating the load-tier order. `delegation/SKILL.md:38-40`; `templates/evaluator.md:59-67`.
-  → move it to the Skills tier, OR document an explicit evaluator-only exception in both docs.
+- **D2-009** (High) — Evaluator template puts `evaluation/SKILL.md` in the Principles tier, violating the load-tier order. Historical locations: `delegation/SKILL.md:38-40`; `templates/evaluator.md:59-67`.
+  → apply the remediation in `orchestration/delegation.md` and `orchestration/templates/evaluator.md`: move it to the Skills tier, OR document an explicit evaluator-only exception in both docs.
 - **D2-013** (High, conf 75) — codex production foreground-vs-background self-contradicts; `timeout 1200` exceeds the host Bash cap. `codex/SKILL.md:152,153,179,181,350`.
   → decide one proposer mode (BACKGROUND for runs over the cap), reconcile :152/:179/:181 + the :350 example, add a per-runtime-cap sentence. (Contradicts a project mistake created this session.)
 - **D2-014** (High) — Codex evaluator vocab-grep gate contradicts its own loaded mistake. `codex/SKILL.md:358-363`; `codex/mistakes.md:24-31`.
@@ -170,8 +174,8 @@ Preparation was inserted into the lifecycle; several enumerations were never upd
   → change to `"evaluation/iter{n}/"` (loop-relative) or `"5-wrap-up/evaluation/iter{n}/"` (session-relative).
 - **D2-021** (Medium, conf 50) — `AskUserQuestion` granted inconsistently across 5 loop skills + to a forbidden role. `ideation/preparation/planning vs execution/wrap-up SKILL.md:4`.
   → choose one rule (drop from all five or add to all five) aligned with the invoking role. (Relates to D2-040.)
-- **D2-027** (Medium, conf 50) — evaluator writes worktree session-record but is excluded from the git-skill gate. `delegation/SKILL.md:128`; `templates/evaluator.md:53-69`.
-  → add `git/SKILL.md` + `git/mistakes.md` to the evaluator template + the rule's enumeration, OR document the exemption.
+- **D2-027** (Medium, conf 50) — evaluator writes worktree session-record but is excluded from the git-skill gate. Historical locations: `delegation/SKILL.md:128`; `templates/evaluator.md:53-69`.
+  → apply the remediation in `orchestration/delegation.md` and `orchestration/templates/evaluator.md`: add `git/SKILL.md` + `git/mistakes.md` to the evaluator template + the rule's enumeration, OR document the exemption.
 - **D2-028** (Medium, conf 75, **Always-Ask #4**) — 8 skills omit operational-contract sections. `discussion/delegation/coding/principles/claude-plugin/codex/agent-writing/skill-writing SKILL.md`.
   → decide the bar: uniform operational footer, or a stated exemption class. (Claude: reference-skills exempt — divergence.)
 

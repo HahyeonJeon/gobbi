@@ -206,9 +206,9 @@ run_policy_checks() {
   check_literal ".gobbi/projects/gobbi/skills/codex/delegation.md" 'owns Codex runtime selection, model and effort policy' "Codex delegation routes high-level policy to the parent owner"
 
   for role in manager leader executor evaluator assistant; do
-    check_contains ".gobbi/projects/gobbi/skills/delegation/SKILL.md" '^\| `'$role'` .* \| gpt-5\.6-sol \| xhigh \|' "Delegation model table pins $role to gpt-5.6-sol/xhigh"
+    check_contains ".gobbi/projects/gobbi/skills/orchestration/delegation.md" '^\| `'$role'` .* \| gpt-5\.6-sol \| xhigh \|' "Orchestration delegation model table pins $role to gpt-5.6-sol/xhigh"
   done
-  check_not_contains ".gobbi/projects/gobbi/skills/delegation/SKILL.md" 'inherit parent|inherits the parent session model' "Delegation has no parent-model inheritance policy"
+  check_not_contains ".gobbi/projects/gobbi/skills/orchestration/delegation.md" 'inherit parent|inherits the parent session model' "Orchestration delegation has no parent-model inheritance policy"
 
   for role in manager leader executor evaluator assistant; do
     check_contains ".gobbi/projects/gobbi/skills/gobbi/SKILL.md" "^\\| \\*\\*$role\\*\\* \\| (opus|sonnet) \\| xhigh \\|" "Gobbi taxonomy sets $role effort to xhigh"
@@ -305,7 +305,7 @@ aliases = (
     ".agents/skills/agent-writing/SKILL.md",
     ".agents/skills/codex/SKILL.md",
     ".agents/skills/codex/delegation.md",
-    ".agents/skills/delegation/SKILL.md",
+    ".agents/skills/orchestration/delegation.md",
     ".agents/skills/gobbi/SKILL.md",
     ".agents/skills/orchestration/workflow/evaluation.md",
     ".agents/skills/git/conventions.md",
@@ -374,7 +374,7 @@ copy_policy_fixture() {
     ".gobbi/projects/gobbi/skills/agent-writing/SKILL.md"
     ".gobbi/projects/gobbi/skills/codex/SKILL.md"
     ".gobbi/projects/gobbi/skills/codex/delegation.md"
-    ".gobbi/projects/gobbi/skills/delegation/SKILL.md"
+    ".gobbi/projects/gobbi/skills/orchestration/delegation.md"
     ".gobbi/projects/gobbi/skills/gobbi/SKILL.md"
     ".gobbi/projects/gobbi/skills/orchestration/workflow/evaluation.md"
     ".gobbi/projects/gobbi/skills/git/conventions.md"

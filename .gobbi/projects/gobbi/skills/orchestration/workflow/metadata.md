@@ -98,7 +98,7 @@ Packaged as composable scripts in [`scripts/`](../scripts/):
 
 ### Teammate-aware metadata (Agent Teams)
 
-The continuation design (`delegation/SKILL.md` § Continue vs Fresh) lets the manager continue the same
+The continuation design (`orchestration/delegation.md` § Continue vs Fresh) lets the manager continue the same
 leader / executor / assistant as an **Agent-Teams teammate** instead of always spawning fresh. A teammate is NOT a plain
 `Task`/`Agent` subagent: it is a **separate, persistent Claude Code session** addressed by name via
 `SendMessage`. That difference breaks three assumptions the rollup above is built on, so the metadata model

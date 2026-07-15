@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_root_source="${GOBBI_SYNC_REPO_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
+repo_root="$(cd "$repo_root_source" && pwd -P)"
 package_root="$repo_root/plugins/gobbi"
 check_mode=false
 
@@ -22,6 +23,24 @@ expected_dev_session_end='../../.gobbi/projects/gobbi/hooks/session-end.sh'
 
 canonical_skills_root="$repo_root/.gobbi/projects/gobbi/skills"
 claude_skills_drift=0
+
+# Normal sync is intentionally a single-writer operation. Callers must not mutate the
+# canonical skill tree or .claude/skills while this script is running. The reconciler
+# uses that precondition instead of a lock/retry protocol: it proves the full mirror
+# safe before its first mutation, then applies the already-proved plan once.
+declare -a reconcile_skill_names=()
+declare -a reconcile_expected_dirs=()
+declare -a reconcile_expected_leaves=()
+declare -a reconcile_stale_dirs=()
+declare -a reconcile_stale_leaves=()
+declare -A reconcile_expected_dir_set=()
+declare -A reconcile_expected_leaf_set=()
+declare -A reconcile_expected_target=()
+reconcile_canonical_entries=0
+reconcile_mirror_entries=0
+reconcile_canonical_walks=0
+reconcile_mirror_walks=0
+reconcile_preflight_failed=0
 
 check_link() {
   local link_path="$1"
@@ -128,6 +147,266 @@ claude_link_target() {
   for (( i = 0; i < depth; i++ )); do prefix+="../"; done
   printf '%s.gobbi/projects/gobbi/skills/%s/%s' "$prefix" "$skill" "$rel"
 }
+
+report_reconcile_error() {
+  local path="$1" reason="$2"
+  printf 'unsafe mirror reconciliation entry %s: %s\n' "$path" "$reason" >&2
+  reconcile_preflight_failed=1
+}
+
+validate_reconcile_relative_path() {
+  local rel="$1" component
+  local -a components=()
+
+  reconcile_path_reason=''
+  if [[ -z "$rel" || "$rel" == /* || "$rel" == *$'\n'* || "$rel" == *$'\t'* ]]; then
+    reconcile_path_reason='path is empty, absolute, or contains a protected control character'
+    return 1
+  fi
+
+  IFS='/' read -r -a components <<< "$rel"
+  for component in "${components[@]}"; do
+    if [[ -z "$component" || "$component" == '.' || "$component" == '..' || "$component" == .* ]]; then
+      reconcile_path_reason='path contains a dot-prefixed or traversal component'
+      return 1
+    fi
+  done
+  return 0
+}
+
+write_reconcile_metrics() {
+  local metrics_path="${GOBBI_SYNC_METRICS_FILE:-}"
+  [[ -n "$metrics_path" ]] || return 0
+  case "$metrics_path" in
+    "$repo_root/.claude/skills"|"$repo_root/.claude/skills"/*)
+      printf 'metrics path must be outside the managed .claude/skills mirror: %s\n' "$metrics_path" >&2
+      return 1
+      ;;
+  esac
+  printf 'canonical_walks=%d\nmirror_walks=%d\ncanonical_entries=%d\nmirror_entries=%d\ninspected_entries=%d\n' \
+    "$reconcile_canonical_walks" \
+    "$reconcile_mirror_walks" \
+    "$reconcile_canonical_entries" \
+    "$reconcile_mirror_entries" \
+    "$((reconcile_canonical_entries + reconcile_mirror_entries))" > "$metrics_path"
+}
+
+sort_reconcile_paths() {
+  local direction="$1"
+  shift
+  local rel slashes depth
+
+  for rel in "$@"; do
+    slashes="${rel//[!\/]/}"
+    depth=$((1 + ${#slashes}))
+    printf '%08d\t%s\n' "$depth" "$rel"
+  done | if [[ "$direction" == 'deepest' ]]; then
+    LC_ALL=C sort -t $'\t' -k1,1nr -k2,2r
+  else
+    LC_ALL=C sort -t $'\t' -k1,1n -k2,2
+  fi | cut -f2-
+}
+
+preflight_claude_skills_reconciliation() {
+  local mirror_root="$repo_root/.claude/skills"
+  local canonical_inventory mirror_inventory sort_file entry rel skill leaf expected actual resolved display
+  local -a sorted=()
+
+  if [[ ! -d "$canonical_skills_root" || -L "$canonical_skills_root" ]]; then
+    report_reconcile_error '.gobbi/projects/gobbi/skills' 'canonical skill root is not a real directory'
+    write_reconcile_metrics
+    return 1
+  fi
+
+  canonical_inventory="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-canonical.XXXXXX")"
+  mirror_inventory="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-mirror.XXXXXX")"
+  reconcile_inventory_files=("$canonical_inventory" "$mirror_inventory")
+
+  # One non-following full-tree walk per side. Canonical dot entries remain metadata and
+  # are pruned; mirror dot entries are inventoried so they fail closed as protected paths.
+  find "$canonical_skills_root" -mindepth 1 -name '.*' -prune -o -print0 > "$canonical_inventory"
+  reconcile_canonical_walks=1
+  if [[ -L "$mirror_root" ]]; then
+    report_reconcile_error '.claude/skills' 'mirror root is a directory symlink'
+  elif [[ -e "$mirror_root" && ! -d "$mirror_root" ]]; then
+    report_reconcile_error '.claude/skills' 'mirror root is not a real directory'
+  elif [[ -d "$mirror_root" ]]; then
+    find "$mirror_root" -mindepth 1 -print0 > "$mirror_inventory"
+    reconcile_mirror_walks=1
+  fi
+
+  while IFS= read -r -d '' entry; do
+    reconcile_canonical_entries=$((reconcile_canonical_entries + 1))
+    case "$entry" in
+      "$canonical_skills_root"/*) rel="${entry#"$canonical_skills_root"/}" ;;
+      *)
+        report_reconcile_error "$entry" 'canonical inventory path escapes the canonical root'
+        continue
+        ;;
+    esac
+    display=".gobbi/projects/gobbi/skills/$rel"
+    if ! validate_reconcile_relative_path "$rel"; then
+      report_reconcile_error "$display" "$reconcile_path_reason"
+      continue
+    fi
+    if [[ -L "$entry" ]]; then
+      report_reconcile_error "$display" 'canonical entry is a symlink; only real directories and regular files are supported'
+    elif [[ -d "$entry" ]]; then
+      reconcile_expected_dir_set["$rel"]=1
+      reconcile_expected_dirs+=("$rel")
+      if [[ "$rel" != */* ]]; then
+        reconcile_skill_names+=("$rel")
+      fi
+    elif [[ -f "$entry" ]]; then
+      if [[ "$rel" != */* ]]; then
+        report_reconcile_error "$display" 'canonical file is not inside a skill directory'
+        continue
+      fi
+      skill="${rel%%/*}"
+      leaf="${rel#*/}"
+      reconcile_expected_leaf_set["$rel"]=1
+      reconcile_expected_leaves+=("$rel")
+      reconcile_expected_target["$rel"]="$(claude_link_target "$skill" "$leaf")"
+    else
+      report_reconcile_error "$display" 'canonical entry has an unsupported type'
+    fi
+  done < "$canonical_inventory"
+
+  while IFS= read -r -d '' entry; do
+    reconcile_mirror_entries=$((reconcile_mirror_entries + 1))
+    case "$entry" in
+      "$mirror_root"/*) rel="${entry#"$mirror_root"/}" ;;
+      *)
+        report_reconcile_error "$entry" 'mirror inventory path escapes the mirror root'
+        continue
+        ;;
+    esac
+    display=".claude/skills/$rel"
+    if ! validate_reconcile_relative_path "$rel"; then
+      report_reconcile_error "$display" "$reconcile_path_reason"
+      continue
+    fi
+
+    if [[ -L "$entry" ]]; then
+      if [[ -d "$entry" ]]; then
+        report_reconcile_error "$display" 'directory symlinks are forbidden; expected real directories with per-file symlinks'
+        continue
+      fi
+      if [[ "$rel" != */* ]]; then
+        report_reconcile_error "$display" 'top-level mirror skill entries must be real directories'
+        continue
+      fi
+      skill="${rel%%/*}"
+      leaf="${rel#*/}"
+      expected="$(claude_link_target "$skill" "$leaf")"
+      actual="$(readlink -- "$entry")"
+      if [[ "$actual" != "$expected" ]]; then
+        if ! resolved="$(realpath -m -- "${entry%/*}/$actual")"; then
+          report_reconcile_error "$display" 'symlink target could not be normalized'
+        elif [[ "$resolved" != "$canonical_skills_root"/* ]]; then
+          report_reconcile_error "$display" "symlink target escapes the generator-owned canonical root: $actual"
+        else
+          report_reconcile_error "$display" "raw symlink target is $actual; expected $expected"
+        fi
+        continue
+      fi
+      if [[ -n "${reconcile_expected_leaf_set[$rel]:-}" ]]; then
+        :
+      elif [[ -n "${reconcile_expected_dir_set[$rel]:-}" ]]; then
+        report_reconcile_error "$display" 'canonical path is a directory, so a mirror symlink leaf is unsafe'
+      else
+        reconcile_stale_leaves+=("$rel")
+      fi
+    elif [[ -d "$entry" ]]; then
+      if [[ -n "${reconcile_expected_leaf_set[$rel]:-}" ]]; then
+        report_reconcile_error "$display" 'expected mirror leaf is a real directory'
+      elif [[ -z "${reconcile_expected_dir_set[$rel]:-}" ]]; then
+        reconcile_stale_dirs+=("$rel")
+      fi
+    elif [[ -f "$entry" ]]; then
+      report_reconcile_error "$display" 'regular files are never generator-owned mirror leaves'
+    else
+      report_reconcile_error "$display" 'entry has an unsupported type'
+    fi
+  done < "$mirror_inventory"
+
+  write_reconcile_metrics
+  if [[ "$reconcile_preflight_failed" -ne 0 ]]; then
+    printf '.claude/skills reconciliation aborted before mutation\n' >&2
+    return 1
+  fi
+
+  if ((${#reconcile_skill_names[@]})); then
+    sort_file="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-sort.XXXXXX")"
+    reconcile_inventory_files+=("$sort_file")
+    printf '%s\n' "${reconcile_skill_names[@]}" | LC_ALL=C sort -u > "$sort_file"
+    mapfile -t sorted < "$sort_file"
+    reconcile_skill_names=("${sorted[@]}")
+  fi
+  if ((${#reconcile_expected_leaves[@]})); then
+    sort_file="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-sort.XXXXXX")"
+    reconcile_inventory_files+=("$sort_file")
+    printf '%s\n' "${reconcile_expected_leaves[@]}" | LC_ALL=C sort -u > "$sort_file"
+    mapfile -t sorted < "$sort_file"
+    reconcile_expected_leaves=("${sorted[@]}")
+  fi
+  if ((${#reconcile_stale_leaves[@]})); then
+    sort_file="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-sort.XXXXXX")"
+    reconcile_inventory_files+=("$sort_file")
+    printf '%s\n' "${reconcile_stale_leaves[@]}" | LC_ALL=C sort -u > "$sort_file"
+    mapfile -t sorted < "$sort_file"
+    reconcile_stale_leaves=("${sorted[@]}")
+  fi
+  return 0
+}
+
+apply_claude_skills_reconciliation() {
+  local mirror_root="$repo_root/.claude/skills"
+  local rel skill leaf sort_file
+  local -a sorted_dirs=()
+
+  # The global preflight above proved every path in these arrays. Never follow a
+  # directory symlink and never recursively force-delete: leaves go first, then rmdir.
+  for rel in "${reconcile_stale_leaves[@]}"; do
+    rm -f -- "$mirror_root/$rel"
+  done
+  if ((${#reconcile_stale_dirs[@]})); then
+    sort_file="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-sort.XXXXXX")"
+    reconcile_inventory_files+=("$sort_file")
+    sort_reconcile_paths deepest "${reconcile_stale_dirs[@]}" > "$sort_file"
+    mapfile -t sorted_dirs < "$sort_file"
+    for rel in "${sorted_dirs[@]}"; do
+      rmdir -- "$mirror_root/$rel"
+    done
+  fi
+
+  mkdir -p "$mirror_root"
+  if ((${#reconcile_expected_dirs[@]})); then
+    sort_file="$(mktemp "${TMPDIR:-/tmp}/gobbi-sync-sort.XXXXXX")"
+    reconcile_inventory_files+=("$sort_file")
+    sort_reconcile_paths shallowest "${reconcile_expected_dirs[@]}" > "$sort_file"
+    mapfile -t sorted_dirs < "$sort_file"
+    for rel in "${sorted_dirs[@]}"; do
+      mkdir -p "$mirror_root/$rel"
+    done
+  fi
+  for rel in "${reconcile_expected_leaves[@]}"; do
+    skill="${rel%%/*}"
+    leaf="${rel#*/}"
+    ensure_link "$mirror_root/$rel" "${reconcile_expected_target[$rel]}"
+  done
+}
+
+cleanup_reconcile_inventories() {
+  local path
+  for path in "${reconcile_inventory_files[@]:-}"; do
+    [[ -n "$path" ]] || continue
+    rm -f -- "$path"
+  done
+}
+
+declare -a reconcile_inventory_files=()
+trap cleanup_reconcile_inventories EXIT
 
 # Validate per-skill BIDIRECTIONAL parity for the .claude/skills mirror: the mirror's
 # child set must equal the canonical skill's agent-exposed child set (a missing child OR a
@@ -266,9 +545,14 @@ if $check_mode; then
   exit 0
 fi
 
-while IFS= read -r skill_name; do
+# Prove the whole .claude/skills mutation plan before changing any sync-managed path.
+# A mixed safe+unsafe mirror therefore leaves the complete mirror byte-for-byte intact.
+preflight_claude_skills_reconciliation
+apply_claude_skills_reconciliation
+
+for skill_name in "${reconcile_skill_names[@]}"; do
   ensure_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
-done < <(for_each_canonical_skill)
+done
 
 ensure_link "$package_root/skills" "$expected_plugin_skills"
 ensure_link "$package_root/agents" "$expected_plugin_agents"
@@ -276,18 +560,5 @@ ensure_link "$package_root/hooks" "$expected_plugin_hooks"
 ensure_link "$repo_root/.claude/hooks/session-start.sh" "$expected_dev_session_start"
 ensure_link "$repo_root/.claude/hooks/post-tool-use-agents.sh" "$expected_dev_post_tool_use"
 ensure_link "$repo_root/.claude/hooks/session-end.sh" "$expected_dev_session_end"
-
-# .claude/skills mirror — OWN it from the DERIVED per-skill child enumeration. One
-# mechanism throughout: a per-file symlink inside a real directory, for top-level files
-# AND every support subdir (scripts/ templates/ workflow/), at the `../` depth that
-# matches the leaf's nesting. Additive + idempotent: ensure_link only creates/repairs,
-# so a re-run is a no-op and the other mirrors are untouched. Stale leaves (a removed
-# canonical child) are reported by --check, not pruned here.
-while IFS= read -r skill_name; do
-  while IFS= read -r rel; do
-    [[ -n "$rel" ]] || continue
-    ensure_link "$repo_root/.claude/skills/$skill_name/$rel" "$(claude_link_target "$skill_name" "$rel")"
-  done < <(agent_exposed_files "$skill_name")
-done < <(for_each_canonical_skill)
 
 printf 'synchronized Codex skill, plugins/gobbi, .claude/skills, and .claude hook symlinks\n'

@@ -126,7 +126,7 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 │   ├── research/                 # prior-art study per design-bearing branch: {slug}.md, Source/Insight/Why (M3)
 │   ├── promotion-manifest.md     # per-file CRUD + per-touched-path preimage + supersede/archive plan (§7)
 │   ├── preimages/                # restorable original bytes of each pre-existing edited/moved path (§7, §9 step 5)
-│   └── evaluation/iter{n}/{claude,codex}/   # P6.5 dual-system gate evidence: 7 perspective + overall + checklist (§9 step 4) — record-level, never promoted
+│   └── evaluation/iter{n}/{claude,codex}/   # P6.5 dual-system gate evidence: 7 perspectives + overall.md + checklist.md (§9 step 4) — record-level, never promoted
 ├── staging/
 │   ├── decisions/                # decision records AND mistake-candidates (frontmatter `mistake-candidate: true`)
 │   ├── design/

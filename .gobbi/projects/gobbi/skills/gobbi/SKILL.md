@@ -21,9 +21,9 @@ Run these steps in order at session start, session resume, `/clear`, and compact
 Load these immediately, before anything else. Do not ask questions, do not check session state, do not proceed until they are loaded:
 
 1. **`principles`** — the 10 Iron Laws (Behavioral discipline floor). Mandatory.
-2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration.
+2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration, and the `orchestration/delegation.md` dispatch child.
 3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
-4. **`delegation`** — per-role templates, Load Directives block, status contract. Loaded on every `Agent` tool call.
+4. **`delegation`** — workflow-agnostic bounded-brief semantics. Load it before authoring a brief; `orchestration/delegation.md` owns Gobbi templates, load tiers, runtime dispatch, and wire formats.
 5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status may inform the customize gate settings.
 6. **`mistake`** — Cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections. Mandatory per `mistake/SKILL.md` Memory Access Matrix — the manager loads it before running setup questions or entering Configuration. Every subagent delegation prompt's Load Directives block must also include it explicitly (fresh subagents do not inherit).
 
@@ -159,7 +159,7 @@ Five roles. Each has a fixed behavioral spec at `.gobbi/projects/gobbi/agents/{r
 | **evaluator** | opus | xhigh | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
 | **assistant** | sonnet | xhigh | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
 
-Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`delegation/SKILL.md` § Status Contract](../delegation/SKILL.md#the-status-contract) for the full mapping.
+Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`orchestration/delegation.md` § The Status Contract](../orchestration/delegation.md#the-status-contract) for the full mapping.
 
 ---
 
@@ -179,9 +179,9 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 
 | Skill | Purpose |
 |---|---|
-| [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, six-step transitions. Sub-docs at `workflow/{step}.md` cover manager-facing orchestration of each step. |
+| [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, six-step transitions, plus the [`delegation.md`](../orchestration/delegation.md) manager-dispatch child. |
 | [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
-| [`delegation`](../delegation/SKILL.md) | Manager → specialist handoff — per-role templates (leader / executor / evaluator / assistant), Load Directives (Principles → Rules → Skills → Mistakes), status contract, model selection. Loaded on every `Agent` tool call. |
+| [`delegation`](../delegation/SKILL.md) | Workflow-agnostic bounded handoff semantics: objective, preparation, boundaries, autonomy, evidence, escape paths, and independent judgment. |
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
 | [`record`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's RECORD sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
 | [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
@@ -211,7 +211,7 @@ gobbi's durable capabilities — the things a README "Features" section would li
 |---|---|---|
 | `workflow` | The 6-step state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; the WORK sub-phase runs dual-system production — a Claude producer + a Codex proposer with selective-integration; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 5 loop bodies + `workflow/production.md` + research + discussion |
 | `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
-| `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + delegation/templates + the `agents/*.md` roster |
+| `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + orchestration/delegation + orchestration/templates + the `agents/*.md` roster |
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives — the review-time analogue of dual-system production | evaluation + the per-loop `evaluation.md` child docs + codex |
 | `guardrails` | The 10 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
 | `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
@@ -231,7 +231,7 @@ Gobbi skills are the workflow's shared contract. Edits to skills / agents / rule
 
 > **Load the role's skill before acting.**
 
-Every agent (manager included) loads its own role skill plus the phase-specific skill before acting. The Load Directives block in the delegation prompt enumerates the exact order: principles → rules → skills → mistakes.
+Every agent (manager included) loads its own role skill plus the phase-specific skill before acting. The Load Directives block owned by [`orchestration/delegation.md`](../orchestration/delegation.md) enumerates the exact order: principles → rules → skills → mistakes.
 
 > **Manager owns the user relationship.**
 
@@ -245,7 +245,7 @@ Ideation / Preparation / Planning / Execution loops write only to session record
 
 ## Operating Conventions
 
-**Model selection** (full table in [`delegation/SKILL.md` § Model Selection](../delegation/SKILL.md#model-selection)):
+**Model selection** (full table in [`orchestration/delegation.md` § Model Selection](../orchestration/delegation.md#model-selection)):
 
 - In Claude Code, reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **opus**; the read-only assistant uses **sonnet**.
 - Role effort defaults are explicit policy: every role uses **xhigh**.
@@ -253,7 +253,7 @@ Ideation / Preparation / Planning / Execution loops write only to session record
 
 The active runtime's user-decision primitive is mandatory for every decision point (not prose). In Claude Code this is `AskUserQuestion`; in Codex this is the parent-thread question flow or `request_user_input` when available. The Recommended option is the first option, labeled `(Recommended)`, when the primitive supports options. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
 
-**Status enum** is the contract every spawned agent reports with at the end of its response — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager dispatches deterministically per the status. See [`delegation/SKILL.md` § Status Contract](../delegation/SKILL.md#the-status-contract).
+**Status enum** is the contract every spawned agent reports at the beginning of its response — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager dispatches deterministically per the status. See [`orchestration/delegation.md` § The Status Contract](../orchestration/delegation.md#the-status-contract).
 
 ---
 
@@ -274,5 +274,5 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
 - **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
 - **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
-- **MUST never bypass the Load Directives block** in delegation prompts — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
+- **MUST read `orchestration/delegation.md` before every dispatch and never bypass its Load Directives block** — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
 - **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass among the workflow loops; closing without Wrap-up loses all session work.

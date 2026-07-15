@@ -174,7 +174,7 @@ Then in the body:
   scope ambiguity in the brief, or contradictory rules. Still provide a verdict.
 - **NEEDS_CONTEXT** — paused. The context bundle is incomplete. State what is
   missing. Include a `user-question:` block if user input is needed (see
-  `delegation/SKILL.md` § NEEDS_CONTEXT user-question schema).
+  `orchestration/delegation.md` § NEEDS_CONTEXT user-question schema).
 - **BLOCKED** — cannot proceed. State the root cause.
 
 `Never silently produce a PASS verdict you are unsure about` — use

@@ -17,6 +17,10 @@ shipped_in: null
 
 # Fix queue — D6 adversarial-review findings (plugin deployment readiness)
 
+## Ownership closure
+
+Historical line citations below remain evidence of the reviewed tree. Any still-open remediation involving Gobbi manager dispatch or Load-Directives navigation now targets `orchestration/delegation.md`; generic delegation semantics remain in `delegation/SKILL.md`.
+
 ## Context
 
 The 2026-06-29 D6 adversarial-review session reviewed **plugin deployment readiness** of the gobbi

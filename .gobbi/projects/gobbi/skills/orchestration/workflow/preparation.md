@@ -144,5 +144,5 @@ missed-memory-promotion candidates, all routed to memory by Wrap-up.
 - Proposer orchestration → [`workflow/production.md`](production.md)
 - Synthesis orchestration → [`workflow/record.md`](record.md)
 - Discussion templates → [`discussion`](../../discussion/SKILL.md)
-- Delegation patterns → [`delegation`](../../delegation/SKILL.md)
+- Delegation patterns → [`delegation`](../delegation.md)
 - Project-specific skill template (for "Generate now" decisions) → [`skill-writing/templates/project-skill.md`](../../skill-writing/templates/project-skill.md)
