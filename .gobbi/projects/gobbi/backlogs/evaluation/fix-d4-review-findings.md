@@ -252,7 +252,7 @@ fix them through THAT queue (or confirm the D2 fix closes them), never re-file:
 | record/SKILL.md omits 2-preparation `staging/skills/` | D2-026 | record matrix omits SSOT-declared surface |
 | evaluator.md files `evaluation/SKILL.md` under tier-1 Principles | D2-009 | load-tier-order violation (≠ D4-046, which is the duplicate-load) |
 | rules.md:351 `diataxis.fr`, :378 design-literal dead link | D2-037 | two broken markdown links (backlog-tracked) |
-| interview/SKILL.md `rawdata` retired slot vocab | D2-038 | sole residual `rawdata` user |
+| interview/SKILL.md `rawdata` retired slot vocab | D2-038 | sole residual `rawdata` user → RESOLVED by interview removal (2026-07-13); `interview/SKILL.md` no longer exists |
 | `.claude/skills/coding` missing — mirror count 21/22 | D2-010 | `.claude` mirror missing canonical `coding` |
 | codex evaluator vocab-grep gate contradicts its loaded mistake | D2-014 | wrapper gate vs mistakes.md |
 | Preparation generated-skill promotion contract self-contradicts | D2-006 | generated-skill promotion owner/timing conflict |

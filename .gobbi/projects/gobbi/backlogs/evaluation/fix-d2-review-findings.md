@@ -185,9 +185,9 @@ Preparation was inserted into the lifecycle; several enumerations were never upd
 - **D2-035** (Low, conf 50) — anchor-fragment drift on `+`/em-dash headings (wrong hyphen count). `evaluation/SKILL.md:102`; `record/SKILL.md:91`. → fix the fragments to the computed GitHub slugs (renderer-dependent).
 - **D2-036** (Low, **Always-Ask #2**) — stale "when that skill exists/created" — `coding/evaluation.md` already exists. `evaluation/SKILL.md:551`; `execution/evaluation.md:7`. → reword to present tense (load-wiring deferred). (Narrow angle on D2-003.)
 - **D2-037** (Low, **Always-Ask #5**, backlog-tracked) — two broken markdown links. `memory/rules.md:351,378`. → add `https://` to the Diátaxis URL; repoint/recreate the missing mistake link — or close via the existing backlog (see overlap).
-- **D2-038** (Low, conf 25) — interview retains the retired `rawdata`/`artifacts` slot vocabulary. `interview/SKILL.md:36,38,331,332`. → rename to `working/`/`outputs/`, OR document the bootstrap-shape exception.
+- **D2-038** (Low, conf 25) — interview retains the retired `rawdata`/`artifacts` slot vocabulary. `interview/SKILL.md:36,38,331,332`. → rename to `working/`/`outputs/`, OR document the bootstrap-shape exception. → RESOLVED by interview removal (2026-07-13, startup replacement); `interview/SKILL.md` no longer exists.
 - **D2-039** (Low, conf 25) — skill-writing/agent-writing declare read-only `allowed-tools` yet document file-creating procedures. `skill-writing/SKILL.md:77`; `agent-writing/SKILL.md:5`. → add a reference-skill note, OR add `Write, Edit`.
-- **D2-040** (Low, conf 25) — Claude-only `AskUserQuestion` baked into a runtime-neutral skill + generated skills. `interview/SKILL.md:4`; `templates/project-skill.md:26`. → drop it from the `project-skill.md` default, and/or document the permission-vs-behavior split. (Relates to D2-021.)
+- **D2-040** (Low, conf 25) — Claude-only `AskUserQuestion` baked into a runtime-neutral skill + generated skills. `interview/SKILL.md:4` (→ RESOLVED by interview removal (2026-07-13, startup replacement); `interview/SKILL.md` no longer exists); `skill-writing/templates/project-skill.md:26` (LIVE — template relocated from `interview/templates/`). → drop it from the `project-skill.md` default, and/or document the permission-vs-behavior split. (Relates to D2-021.)
 
 ## Note on overlap with existing backlogs
 

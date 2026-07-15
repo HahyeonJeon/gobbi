@@ -176,7 +176,7 @@ neg_check "leading slash"        "/1-ideation"
 neg_check "stray double slash"   "4-execution//task-01-x"
 neg_check "trailing slash"       "1-ideation/"
 neg_check "unknown loop"         "6-cleanup"
-neg_check "interview rejected"   "interview"
+neg_check "startup rejected"     "startup"
 neg_check "bad task ordinal"     "4-execution/task-1-x"
 neg_check "bad task slug case"   "4-execution/task-01-Bad"
 

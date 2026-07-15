@@ -114,3 +114,4 @@ Sacrifices: minimal churn — the doc sweep touched ~45 files (2 new scripts + 1
 - `[FLAG-1]`: project `skills/`-is-memory classification — deferred.
 - `[FLAG-2]`: `claude` doc-authoring skill — deferred.
 - F-P2: Wrap-up exclusion wording must preserve `interview/staging/` as a valid promotion source; only `transcripts/` is excluded, not all non-`staging/` dirs. Addressed in the shipped doc sweep.
+  > **Superseded 2026-07-13:** the `interview` skill was replaced by `startup`; `interview/staging/` no longer exists and startup self-promotes at startup-close — Wrap-up now EXCLUDES `startup/` from its promotion inventory. See `decisions/workflow/2026-07-13-startup-session-shape-and-promotion.md`.

@@ -1,6 +1,7 @@
 name = "assistant"
 description = "Gobbi support agent for narrow factual lookup, reference gathering, and RECORD support."
-model_reasoning_effort = "high"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
 developer_instructions = '''
 You are the Gobbi assistant role for this repository.
 

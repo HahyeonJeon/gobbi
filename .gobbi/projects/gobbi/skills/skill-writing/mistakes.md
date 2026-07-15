@@ -102,3 +102,27 @@ updated: 2026-07-15
 **Why it happens** — “Make it compact” is translated into a numerical proxy because counts are easy to measure. The proxy can reward deletion or relocation without proving that a cold-loading agent retains every necessary capability.
 **How to detect** — A skill or documentation redesign has no complete claim-owner ledger yet, but a word, line, or percentage target already appears as an acceptance gate.
 **Correct approach** — Build the claim-owner and necessity inventory first. Keep required content, remove content with no necessary role, and move owner-specific detail without duplication. Use size measurements only as descriptive evidence after the design is correct unless the user explicitly requests a quantitative limit.
+
+## Softening Can Narrow Scope Like A Merge
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-14` · `status: active` · `tags: [docs-sync, verification]`
+
+**What happened** — Compacting a skill doc, a pre-edit hard rule ("NEVER hide expensive or
+failure-prone work behind a `property`, `__repr__`, equality, hashing, or another special method") was
+softened down to a short default that mentioned only "cheap properties / an expensive method" —
+dropping the special-method BREADTH (`__repr__`/`__eq__`/`__hash__`/arithmetic dunders) and the
+caller-expectation hazard the hard rule named.
+**Why it happens** — The union-scope discipline (preserve every source condition when merging or
+consolidating) was applied to MERGES of hard rules but not to hard-to-SOFT conversions. A soften feels
+like "just relaxing strictness," so scope-preservation isn't checked — but softening rewrites the
+sentence and can silently drop a condition exactly like a merge does.
+**How to detect** — Any hard MUST/NEVER to prefer/consider/default-to conversion. Treat every such
+conversion as a union-scope checkpoint: does the softened sentence still name every subject and hazard
+the hard rule named?
+**Correct approach** — When softening a rule, preserve its full union scope (every named subject, the
+hazard, and the fix) — only the STRICTNESS relaxes (NEVER to prefer), never the coverage. Check
+softened items for dropped conditions with the same discipline used for merges.
+
+### Related
+- [[execution-evaluator-union-check-must-cover-softened-items]] (`skills/evaluation/mistakes.md`) — the
+  matching evaluator-side gap: a "no hard hazard dropped" pass must also diff the softened set

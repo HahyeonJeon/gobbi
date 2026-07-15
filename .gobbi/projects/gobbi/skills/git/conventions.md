@@ -376,7 +376,7 @@ The *runtime git posture* — which git ops run on their own, which prompt for a
 | Surface | Sets | Notes |
 |---|---|---|
 | `.codex/config.toml` | Codex sandbox mode, approval policy, and network access | Worktree HEAD ships **no** sandbox-loosening default — no `network_access = true`, no broad allow-list (D2 safe-by-default). The default Codex posture (`workspace-write` + `on-request`, network off) is the runtime's own default, not a gobbi override. |
-| `.codex/agents/*.toml` | Per-runtime git discipline for each Codex custom agent | Thin wrappers that point at the canonical `agents/{role}.md` role prompt; they carry the role's git posture pointer, not a copy of the model. |
+| `.codex/agents/*.toml` | Per-runtime git discipline for each Codex custom agent | Thin wrappers carry the role's Codex model and effort defaults plus the git-posture pointer; the canonical `agents/{role}.md` remains the behavioral and git-policy contract. |
 | `agents/manager.md`, `agents/executor.md` (role prompts) | Per-role git posture (manager remediation-vs-defer; executor commit-only, manager-handles-push) | The role prompts are the canonical role contract on both runtimes; the `.codex/agents/*.toml` wrappers point back to them. |
 | Claude Code settings (`allowedDomains`, `excludedCommands`) | Claude Code network + sandbox posture | Same safe-by-default rule: gobbi ships no network enablement; the remediation menu OFFERS it, the user decides. |
 

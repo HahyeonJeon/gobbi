@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write
 
 Skill for every agent in every role. Loaded as the first domain skill in the Load Directives block owned by [`orchestration/delegation.md`](../orchestration/delegation.md). Its discipline spans two directions: **check before acting** (so known pitfalls are avoided) and **write immediately after correction** (so the correction survives across sessions).
 
-The model is **staging → promotion**. During the working loops, agents write mistake-candidates to session staging only. Promotion to memory (`mistakes/` directories) is performed by agents during the Wrap-up phase (no CLI command). Working-loop agents never write directly to memory; the Wrap-up assistant performing promotion during Wrap-up is the documented sole exception.
+The model is **staging → promotion**. During the working loops, agents write mistake-candidates to session staging only. Promotion to memory (`mistakes/` directories) is performed by agents during the Wrap-up phase (no CLI command). Working-loop agents never write directly to memory; the Wrap-up assistant performing promotion during Wrap-up is the documented sole exception among the working loops. One bounded pre-loop exception also writes `mistakes/`: `startup`-close promotion (project bootstrap) promotes to project/feature `mistakes/{area}/`, though it only PROPOSES a skill-owned trap and never writes `skills/{skill}/mistakes.md`.
 
 ---
 
@@ -17,7 +17,7 @@ The model is **staging → promotion**. During the working loops, agents write m
 The moved Gobbi dispatch trap companion is `skills/orchestration/mistakes.md`; the generic
 `skills/delegation/` capability has no compatibility companion copy.
 
-The agent MUST observe these tier boundaries. For working-loop agents, the only write surface is session staging. The Wrap-up assistant is the sole exception: it writes promoted candidates to project or feature `mistakes/` — OR to a skill-owned `skills/{skill}/mistakes.md` home (the hybrid model; see the P4 routing modifier) — during the Wrap-up phase.
+The agent MUST observe these tier boundaries. For working-loop agents, the only write surface is session staging. The Wrap-up assistant is the sole exception among the working loops: it writes promoted candidates to project or feature `mistakes/` — OR to a skill-owned `skills/{skill}/mistakes.md` home (the hybrid model; see the P4 routing modifier) — during the Wrap-up phase. One bounded pre-loop exception also writes memory: `startup`-close promotion (project bootstrap) promotes to project/feature `mistakes/{area}/`; it only PROPOSES a skill-owned trap and never writes `skills/{skill}/mistakes.md`.
 
 | Memory tier | Path root | Access |
 |---|---|---|
@@ -50,7 +50,7 @@ A mistake without its cause and recovery pattern is unactionable. Every mistake 
 
 > **Promotion happens during the Wrap-up phase — working-loop agents do not promote.**
 
-The Wrap-up assistant promotes staged mistake-candidates from session staging to memory (`mistakes/`) during the Wrap-up phase. Working-loop agents write to session staging only and never write directly to `mistakes/`. The Wrap-up phase is the sole documented exception to the staging boundary.
+The Wrap-up assistant promotes staged mistake-candidates from session staging to memory (`mistakes/`) during the Wrap-up phase. Working-loop agents write to session staging only and never write directly to `mistakes/`. The Wrap-up phase is the sole documented exception to the staging boundary among the working loops; `startup`-close promotion (project bootstrap) is a second bounded pre-loop writer to project/feature `mistakes/`.
 
 > **Supersede, never delete. Active mistakes never move (except two sanctioned operations — a namespace refactor, or a compaction-merge).**
 

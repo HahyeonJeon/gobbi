@@ -40,7 +40,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-PROJ-SCENARIO-02-CHECK-03 — No "shipped X" claim names an item that was actually deferred (no phantom completion).
 
 ### WRAP-PROJ-SCENARIO-03 — Every staging file accounted for; every claim cited
-- [ ] WRAP-PROJ-SCENARIO-03-CHECK-01 — Every staging artifact from every promotion source — the workflow-loop `staging/` dirs, each Execution task-dir `staging/`, `interview/staging/`, and (Chat-mode) each per-slice `staging/` — is promoted to memory, explicitly backlogged, or dropped with a stated rationale.
+- [ ] WRAP-PROJ-SCENARIO-03-CHECK-01 — Every staging artifact from every promotion source — the workflow-loop `staging/` dirs, each Execution task-dir `staging/`, and (Chat-mode) each per-slice `staging/` — is promoted to memory, explicitly backlogged, or dropped with a stated rationale.
 - [ ] WRAP-PROJ-SCENARIO-03-CHECK-02 — An `ls` of every promotion source's `staging/` directory matches the promotion record (no file missing from the record).
 - [ ] WRAP-PROJ-SCENARIO-03-CHECK-03 — Every open / deferred item is named with an explicit `next-action:` field — no "we'll get to it" hand-wave.
 - [ ] WRAP-PROJ-SCENARIO-03-CHECK-04 — Each substantive claim in the handoff cites its supporting artifact (commit / file path / promotion-manifest entry / session note / discussion record); no hand-wavy uncitable summary.

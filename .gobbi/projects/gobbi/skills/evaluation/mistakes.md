@@ -2,7 +2,7 @@
 type: mistakes
 skill: evaluation
 description: "Recorded traps for evaluation — load before doing evaluation work"
-updated: 2026-07-08
+updated: 2026-07-15
 ---
 
 # Evaluation — Mistakes
@@ -54,3 +54,49 @@ updated: 2026-07-08
 
 ### Related
 - [[freeze-producer-artifact-before-evaluating]] — sibling evaluation-target-integrity trap: know exactly what you are diffing against before calling something a loss
+
+## Execution Evaluator Union-Check Must Cover Softened Items
+
+`priority: high` · `domain: process` · `added: 2026-07-14` · `status: active` · `tags: [evaluation, verification]`
+
+**What happened** — In a dual evaluation of a compaction task, one evaluator diffed the full pre-edit
+MUST/NEVER rule set against the post-edit doc, correctly found "no hard hazard dropped," and returned
+PASS. But it did not check the SOFTENED items for scope narrowing, so it missed that a softened rule
+had dropped a special-method breadth condition the hard rule originally named. The independent
+evaluator caught it — the dual-system's non-overlapping catch.
+**Why it happens** — The evaluator's union-scope verification was scoped to the hard-invariant set
+(the obvious risk surface) and treated softened items as lower-risk "just guidance," so it skipped the
+same diff on them.
+**How to detect** — Any compaction or reframe that both keeps some rules hard and softens others. The
+softened set is a scope-loss surface too.
+**Correct approach** — An evaluator reviewing a compaction must diff BOTH the hard set AND the
+softened set against the pre-edit source, confirming every softened item preserves its source union
+scope. Add "every softened item preserves its source union scope" as an explicit compaction-review
+check. Reinforces the dual-system value: run both systems; divergence is the signal.
+
+### Related
+- [[softening-can-narrow-scope-like-a-merge]] — the producer-side sibling: the same union-narrowing
+  failure on the artifact being reviewed
+
+## use-codex-for-shell-dependent-evaluation-proof
+
+`priority: medium` · `domain: process` · `added: 2026-07-11` · `status: active` · `tags: [process, evaluation, verification]`
+
+**What happened** — One evaluation system lacked the shell capability needed to prove exact Git scope, parsed values, inode identity, and file modes.
+**Why it happens** — Close reading can review content but cannot prove live repository state or parser behavior. A producer report is still a proxy for those claims.
+**How to detect** — An evaluator marks a Git, parse, inode, or mode claim as PASS without live command output, or caps the claim because its runtime cannot execute the required command.
+**Correct approach** — Keep the capability limit visible, then obtain fixed-target executable evidence from an independent system that can run the command. Never attribute the executable coverage to the shellless evaluator.
+
+## evaluator-retry-overwrote-canonical-files
+
+`priority: high` · `domain: process` · `added: 2026-07-11` · `status: active` · `tags: [process, evaluation, verification]`
+
+**What happened** — A complete Claude evaluation was retried directly into its populated canonical directory. The retry exhausted its budget after replacing only four perspective files, leaving a mixed canonical set from two attempts.
+**Why it happens** — The retry contract treated each output write as independently publishable and had no all-nine completion gate before replacing the prior complete attempt.
+**How to detect** — An evaluator retry targets an already populated canonical directory and writes multiple files incrementally, so timeout, capacity, or budget failure can publish only a prefix of the result set.
+**Correct approach** — Write every retry to a distinct attempt directory. Validate exactly nine nonempty, structurally complete files (seven perspectives, Overall, and the filled checklist) and a terminal status, then replace the canonical system directory as one coordinated operation. A failed retry leaves the last complete canonical set unchanged.
+
+### Related
+
+- [[iter-artifact-edited-in-place-destroys-snapshot]] — canonical iteration evidence must stay immutable.
+- [[evaluator-spawn-without-producer-done-handshake]] — publication begins only after the producer is complete.

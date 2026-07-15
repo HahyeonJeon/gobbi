@@ -36,7 +36,7 @@ Load per phase:
 - **Research** → `research` skill (loaded by ideation Sub-step C, or whenever the brief calls for it).
 - **Planning** → `orchestration/workflow/planning.md`, `planning` skill.
 
-Load when relevant: `interview` (when ideation or preparation needs structured user-elicitation or project-skill stamping). When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
+Load when relevant: `startup` (when ideation or preparation needs the manager's structured project-baseline elicitation). When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
 
 ---
 

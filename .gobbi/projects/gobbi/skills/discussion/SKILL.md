@@ -93,11 +93,11 @@ Description: 우선순위가 낮은 항목을 먼저 잡으면 이미 정렬된 
 header: "다음 작업"
 
 options[0]:
-  label: "research + interview skill 정렬 (Recommended)"
-  description: "Reason: 5-loop 도메인의 남은 work skill 2개 — peer 4-loop과 이미 anchor된 인접 영역.
-Evidence-to-change: 다른 skill이 더 시급하거나 interview의 영향권이 커서 별도 세션으로 분리하고 싶으면 변경.
-✅ Pros: preparation의 generate-now → staged skill 흐름이 interview까지 정렬되어 워크플로 완결성 확보.
-❌ Cons: 두 skill 한 세션 동시 처리는 context 부담↑ — interview는 project-skill template 영향권이 큼."
+  label: "인접 work-skill 마무리 (Recommended)"
+  description: "Reason: 이미 정렬된 loop skill과 인접한, 아직 남은 work skill 영역 — 같은 맥락에서 이어가면 재작업이 적음.
+Evidence-to-change: 진입점 문서나 보조 utility가 더 시급하다는 근거가 나오면 변경.
+✅ Pros: 정렬된 skill과 동일한 패턴으로 인접 영역을 맞춰 워크플로 일관성을 확보.
+❌ Cons: 한 세션에서 여러 skill을 연속 처리하면 context 부담이 커짐."
 
 options[1]:
   label: "gobbi + orchestration top-level 검토"

@@ -65,6 +65,8 @@ The final design has a 4-slot loop interior (`working/ evaluation/ staging/ outp
 
 Three items carried forward to Planning: (a) D7 git-verb (verify exact git behavior before finalizing lifecycle wording); (b) sync-check scope split (script-created step-dir baseline vs manager-created root invariants); (c) Wrap-up exclusion wording must preserve `interview/staging/` as a valid promotion source.
 
+> **Superseded 2026-07-13:** item (c) no longer holds — the `interview` skill was replaced by `startup`; `interview/staging/` no longer exists and startup self-promotes at startup-close, so Wrap-up now EXCLUDES `startup/` from its promotion inventory. See `decisions/workflow/2026-07-13-startup-session-shape-and-promotion.md`.
+
 ## Related
 
 - design/workflow/session-memory-tree.md
