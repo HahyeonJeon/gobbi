@@ -173,154 +173,52 @@ enforced directly by the pre-Topic-5 premise-gate check (`STARTUP-PROJ-SCENARIO-
 
 ## Procedure
 
-Startup runs seven phases in order, with a **P6.5 dual-system evaluation gate** between promotion (P6) and
-close (P7). Read [`topics.md`](topics.md) before asking any topic question — it holds the full
-Level-1/Level-2 question tree, the traversal, checkpoint, and mandatory-coverage rules, and the
-design-bearing branch markers that trigger the P3 micro-loop below. Read [`recording.md`](recording.md)
-before creating a staged draft, building the manifest, promoting, resuming an interrupted run, or reviewing
-an existing baseline — it holds the capture model, the staging→destination contract, and the startup-close
-promotion procedure.
+Startup is a bounded pre-Wrap-up memory writer. Everything under `sessions/{date}-{session-id}/startup/`
+is record-level, session-scoped, and never durable. Repository code, skill sources, templates, agents, and
+guards stay read-only. Durable writes are limited to approved manifest destinations: typed records at P6,
+then the root + feature living indexes at P7 after P6.5 PASS.
 
-### Phases
+Read [`topics.md`](topics.md) before P2/P3 topic traversal — it holds the full Level-1/Level-2 question
+tree, the traversal, checkpoint, and mandatory-coverage rules, and the design-bearing branch markers that
+trigger the inline P3 micro-loop. Read [`recording.md`](recording.md) before staging, manifest
+construction, promotion, recovery, resume, rerun, or close — it holds the capture model, the
+staging→destination contract, and the startup-close promotion procedure.
 
-Phase order is strict: do not enter a phase until the prior phase's exit condition is satisfied.
+Phase order is strict: P1 → P2 → P3 → P4 → P5 → P6 → P6.5 → P7. Do not enter a phase until the prior
+phase's exit condition is satisfied. P5 confirmation and P6 final baseline-write approval are two separate
+user gates; neither substitutes for the other.
 
-**P1 — Detect, classify & bound.** Run the read-only lifecycle/resume classifier in [`recording.md`](recording.md) §§11–12. Confirm the trigger, first-run vs resume vs rerun, the startup scope and decision authority, and that no productive loop is active. Inventory existing baseline records and verified repo facts. For an in-progress run, the user chooses resume or restart; for standalone use, create the `startup/` scaffold only AFTER classification and scope confirmation. Exit with a startup contract, resolved lifecycle state, existing-record inventory, and coverage matrix.
+**P1 — Detect, classify & bound.** Run the read-only lifecycle/rerun classifiers in [`recording.md`](recording.md) §§11–12 — a completed baseline enters the §11 rerun review, an interrupted run the §12 resume path. Confirm the trigger, first-run vs resume vs rerun, the startup scope and decision authority, and that no productive loop is active. Inventory existing baseline records and verified repo facts. For an in-progress run, the user chooses resume or restart; for standalone use, create the `startup/` scaffold only AFTER classification and scope confirmation. Exit with a startup contract, resolved lifecycle state, existing-record inventory, and coverage matrix.
 
 **P2 — Establish current reality.** Traverse Topic 1 in [`topics.md`](topics.md) (including 1.4 license/distribution/governance). Separate verified repo facts from claims, assumptions, and unknowns, and append every answer to the ledger. The user confirms the current-state summary before P3 opens. Exit with the evidence register and initial doc effects.
 
-**P3 — Traverse the tree.** Walk Topics 2–11 in order, one question per turn, evidence-led smart-skip. Apply the four P3 traversal contracts below (anti-sycophancy, riskiest-assumption-first depth, the problem-before-solution premise gate, and the design-decision micro-loop) and write a resumable checkpoint at each Level-1 close. The user confirms every Level-1 checkpoint and decides every design-bearing direction. Exit only when every required branch is `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner, and every design direction carries its references + rejected alternatives.
+**P3 — Traverse the tree.** Walk Topics 2–11 in [`topics.md`](topics.md) order, one question per turn, evidence-led smart-skip, under the [`topics.md` anti-sycophancy contract](topics.md#anti-sycophancy-contract) and using its coverage rules, design-bearing markers, and Level-1 checkpoints. Write a resumable checkpoint at each Level-1 close; the user confirms every Level-1 checkpoint and decides every design-bearing direction.
 
-**P4 — Synthesize staged docs.** Follow [`recording.md`](recording.md) §§4–6: turn confirmed answers into atomic, template-stamped typed drafts in the startup staging tree. Surface gaps; never fill them by inference. No durable write. Exit with a complete session-local staging set.
+<a id="p3-riskiest-assumption-first-depth-override"></a>
+**Riskiest-assumption-first depth override.** After the first real problem event, stack the design's riskiest assumptions and probe the top one first: (1) the claim whose falsity means there is no real problem or user, (2) the claim whose falsity makes the project infeasible or unsafe to build, then (3) the claim whose falsity makes the product shape wrong or unusable. The top claim gets the first disconfirming probe before normal traversal continues. This changes DEPTH only — never required coverage or the macro topic order — and every required branch still closes. Re-score the stack when a later answer changes the root problem.
 
-**P5 — Reconcile, challenge & pre-write validate.** Follow [`recording.md`](recording.md) §7 + §9 step 1: run the cross-topic contradiction pass and a jargon-free final challenge, build the promotion manifest with a restorable per-path preimage, create the draft startup summary (`baseline_valid: false`), run the automated + manual secret-scan, and validate the whole set — destinations, collisions, supersessions, archive moves — dry-run, no durable write. The user confirms the corrections and the complete manifest. Exit with one approved, whole-set-valid promotion plan.
+After Topic 4, run the [`topics.md` problem-before-solution premise gate](topics.md#problem-before-solution-premise-gate). Do not enter Topic 5 until it passes; a failed premise reopens its earliest owning branch.
 
-**P6 — Promote the typed baseline (startup-owned).** Separately ask the final Always-Ask baseline-write question, then follow [`recording.md`](recording.md) §9 steps 2–4: recheck each touched path against its manifest preimage, write only the approved typed records + supersession/archive moves (NOT the living index), verify every typed destination, and run the standing guards. Any failure HALTS and routes to the user-owned recovery in §9 step 5. Exit with the verified typed-record set — or a surfaced partial-state recovery.
+<a id="p3-design-decision-micro-loop"></a>
+**Design-decision micro-loop.** For every branch [`topics.md`](topics.md) marks design-bearing, run this loop before recording the direction:
 
-**P6.5 — Evaluate the promoted baseline (dual-system).** Run the non-skippable dual-system gate the sibling [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle defines: one fresh Claude evaluator and one fresh Codex evaluator assess the same frozen typed-record set. The manager reconciles both verdicts; material divergence is a user decision. Only `PASS` opens P7; `REVISE`/`FAIL` writes no completion predicate and routes through §9 step 5 to the earliest owning phase. The bundle procedure itself is authored in those sibling files, not here.
+1. **Study** internal and external prior art across three layers — tried-and-true, new-and-popular (scrutinized for maturity, fit, and survivorship), and first-principles (where convention does not apply, with the evidence for deviating); capture each as Source / Insight / Why and never fabricate a citation.
+2. **Recommend** at least two genuinely distinct, equal-weight options — one minimal, one ideal — with effort / risk / reuse trade-offs, the recommended option first, and the evidence-to-change, through the Question Card.
+3. **Decide** through the user-owned Always-Ask design gate; record the chosen direction, rationale, rejected alternatives, cited references, and decision-trace fields.
+
+This loop sets reference-informed DIRECTION only — which architecture style, stack, or convention. It never designs mechanism: interface signatures, module internals, algorithms, schemas, and task breakdown stay in Ideation / Planning / Execution.
+
+Exit P3 only when every required branch is `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner, and every design direction carries its references + rejected alternatives.
+
+**P4 — Synthesize staged docs.** Follow [`recording.md`](recording.md) §§4–6: turn confirmed answers into atomic, template-stamped typed drafts in the startup staging tree. Surface gaps; never fill them by inference; write no durable memory. Route mistake-candidates per [`recording.md`](recording.md) §5: startup may promote only a cross-cutting project/feature trap to `mistakes/`; a skill-owned trap becomes a decision/backlog handoff, and startup never writes `skills/{skill}/mistakes.md`. Exit with a complete session-local staging set.
+
+**P5 — Reconcile, challenge & pre-write validate.** Follow [`recording.md`](recording.md) §7 + §9 step 1: run the cross-topic contradiction pass and a jargon-free final challenge, build the promotion manifest with a restorable per-path preimage, create the draft startup summary (`baseline_valid: false`), run the automated + manual secret-scan, and validate the whole set — destinations, collisions, supersessions, archive moves — dry-run, no durable write. The user confirms the corrections and the complete manifest — this is pre-write gate 1; no durable write has occurred. Exit with one approved, whole-set-valid promotion plan.
+
+**P6 — Promote the typed baseline (startup-owned).** Ask the separate final Always-Ask baseline-write question — this is a second gate; do not reuse or infer it from the P5 confirmation. Then follow [`recording.md`](recording.md) §9 steps 2–4: recheck each touched path against its manifest preimage, write only the approved typed records + supersession/archive moves (NOT the living index), verify every typed destination, and run the standing guards. Startup never deletes pre-existing memory; the only removal recovery allows is an exact manifest-listed, matching-hash, uncommitted file that THIS promotion just created, under [`recording.md`](recording.md) §9 step 5. Any failure HALTS and routes to the user-owned recovery in §9 step 5. Exit with the verified typed-record set — or a surfaced partial-state recovery.
+
+**P6.5 — Evaluate the promoted baseline (dual-system).** Run the non-skippable dual-system gate the sibling [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle defines: one fresh Claude evaluator and one fresh Codex evaluator assess the same frozen typed-record set. Apply [`evaluation.md`'s two-gate resolution](evaluation.md#check-resolution--two-gates), the [`checklist.md`](checklist.md) legend, and the [`STARTUP-RISK-SCENARIO-06`](checklist.md#startup-risk-scenario-06--load-bearing-design-claims-are-evidenced-or-fail) check: coverage closure is a separate gate from an acceptance pass, and a `recorded-open` applicable load-bearing claim is valid coverage but drives REVISE — never infer acceptance PASS from branch closure. The manager reconciles both verdicts; material divergence is a user decision. Only `PASS` opens P7; `REVISE`/`FAIL` writes no completion predicate and routes through §9 step 5 to the earliest owning phase. The bundle procedure itself is authored in those sibling files, not here.
 
 **P7 — Close.** Only after P6.5 PASSES, follow [`recording.md`](recording.md) §9 step 6 + §13: write the root + feature living index — the durable **completion predicate** — verify its pointers, then stamp the record-level startup summary `baseline_valid: true` with final promoted paths. The user acknowledges the baseline summary; resume Configuration or apply the standalone exit contract. The living index exists only post-PASS, so a REVISE/FAIL or interrupted set never looks complete to a later session.
-
-### P3 traversal contracts
-
-The plain P3 phase above invokes these four contracts as a group; each defines how a mechanism runs, its
-limits, and its failure behavior.
-
-#### Anti-sycophancy traversal contract
-
-During traversal the manager holds an anti-sycophancy posture:
-
-- Do NOT use "that is interesting", "that could work", "there are many ways", or "you might consider" as
-  standalone assessments — they read as agreement and teach nothing.
-- Do NOT put the desired answer inside a discovery question.
-- After each answer, state the read explicitly: "My read: [evidence status] because [specific evidence or
-  gap]; this changes if [observable evidence]."
-- When disagreeing, cite the contradiction, the source, or the missing signal — not a feeling.
-- Push a vague or contradicted answer at most twice, then `recorded-open`.
-- A user decision can lock intent, but it cannot convert a contradicted external fact into evidence.
-
-#### Riskiest-assumption-first depth override
-
-After the first real problem event, the manager stacks the design's riskiest assumptions and probes the
-top one first — the **riskiest-assumption-first depth override**. Stack the claims in this order:
-
-1. the claim whose falsity means there is no real problem or user;
-2. the claim whose falsity makes the project infeasible or unsafe to build;
-3. the claim whose falsity makes the product shape wrong or unusable.
-
-The top claim gets the first disconfirming probe before normal traversal continues. This changes DEPTH
-only — never coverage or the macro topic order — and every required branch still closes. Re-score the
-stack when a later answer changes the root problem.
-
-#### Problem-before-solution premise gate (after Topic 4 / before Topic 5)
-
-Before entering the solution / features topics, run an explicit confirmed checkpoint. Show these premises
-one by one for agree / disagree:
-
-1. the recurring problem + its last-instance evidence;
-2. the first user / segment + the job;
-3. the current alternative + the behavioral evidence the problem is real;
-4. the root cause + why-now;
-5. the fatal assumption + the current disconfirming evidence;
-6. the outcome boundary + explicit non-goals.
-
-A failed premise reopens its earliest owning branch; do not enter features until it is confirmed. No
-commercial premise is graded here.
-
-#### Design-decision micro-loop
-
-For every **design-bearing branch** — every branch [`topics.md`](topics.md) § Design-bearing markers marks
-design-bearing (its authoritative set is an always-on core plus a conditional set that fires only when a
-branch selects or changes a direction, not when it inventories current state) — run this micro-loop before
-recording the direction. [`topics.md`](topics.md) is the ONE authoritative classification; do not restate
-its topic numbers here. It restores the manager's "investigate, challenge, recommend" role at DIRECTION
-altitude; it never designs mechanism.
-
-1. **PRIOR-ART STUDY (three layers)** — before asking the design question, study prior art per
-   [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research across three
-   layers: **Layer 1** tried-and-true, **Layer 2** new-and-popular (scrutinize maturity, fit, and
-   survivorship), **Layer 3** first-principles (where convention does not apply, plus the evidence for
-   deviating). Internal = grep the codebase + existing memory for patterns already in use; external =
-   references (via `WebSearch` / `WebFetch`, or a delegated `research` subagent) on how the decision is
-   solved well. Capture each as Source / Insight / Why in `working/research/{slug}.md`, judging each
-   reference for applicability rather than by count. Never fabricate a citation.
-2. **RECOMMENDATION** — present at least two genuinely distinct reference-backed options — one minimal,
-   one ideal, at equal weight — with effort / risk / reuse trade-offs, the recommended option first, and
-   the evidence-to-change ("this recommendation flips if X"), through the Question Card
-   ([`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure). The recommendation is
-   opinionated but defeasible — "all options are valid" is a failure.
-3. **DESIGN-DISCUSSION GATE** — the USER decides (an Always-Ask design decision —
-   [`discussion/SKILL.md`](../discussion/SKILL.md) § Decision Classification). Record the chosen direction +
-   rationale + rejected alternatives as one ADR-shaped `decisions/` (or `design/`) record citing the
-   studied references, and write the decision-trace fields to the ledger ([`recording.md`](recording.md)
-   §2).
-
-**Boundary.** The micro-loop sets the reference-informed DIRECTION (which architecture style / which stack /
-which convention) and records the user's decision. It does NOT design mechanism — interface signatures,
-module internals, algorithms, schemas, and task breakdown stay in Ideation / Planning / Execution.
-
-### Acceptance invariants + the two-gate check-resolution rule
-
-The sibling [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md)
-bundle is the acceptance surface the P6.5 gate grades. Two of its invariants bind the traversal above:
-
-- **A positive claim may never be stronger than its evidence** — an applicable load-bearing design claim
-  is graded on whether it is evidenced, not on whether it reads complete.
-- **Two gates that must not be collapsed** — a **coverage-closure gate** (a branch is accounted for when it
-  is `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner — the Level-2
-  coverage Rule) and an **acceptance-pass gate** (a load-bearing design claim PASSes only when it is
-  evidenced). `recorded-open` is a valid coverage closure but is NOT an acceptance pass — an applicable
-  load-bearing claim left `recorded-open` still drives REVISE (the `STARTUP-RISK-SCENARIO-06` teeth).
-
-### Rerun & supersession classification
-
-A rerun tests the existing baseline's claims and classifies each change — unchanged, living-index update,
-new record, superseding record, or deferred / open — rather than stacking a new layer of prose over an
-outdated one. The current, coherent reference wins over accumulated history; a supersession writes the new
-record, flips the old record's status in place, and archives the old file (never deletes it). See
-[`recording.md`](recording.md) for the resume / rerun classifier and the supersession procedure.
-
-### Record and memory boundary
-
-Startup is a bounded pre-Wrap-up memory writer. Everything under `sessions/{date}-{session-id}/startup/`
-is record-level, session-scoped, and never durable. Startup may write memory ONLY to destinations in the
-user-approved manifest: typed records at P6, then the root + feature living indexes at P7 after P6.5 PASS.
-Repository code, skill sources, templates, agents, and guards stay read-only.
-
-[`recording.md`](recording.md) is the single owner of the details: §1 defines the record/memory level
-invariant; §3 defines the startup session shape and record-level paths; §5 defines the staging→destination
-routing (including mistake-candidate routing); §9 defines promotion, validation, completion-predicate
-timing, and recovery; §13 defines the startup-summary lifecycle. Read those sections before staging,
-routing, promoting, recovering, or closing startup.
-
-Two skill-level invariants stay visible here because startup holds write-capable tools:
-
-- **Mistake-candidate routing is Always-Ask, and startup edits no skill.** Startup may promote only a
-  cross-cutting project/feature trap to `mistakes/`; a skill-owned trap becomes a decision/backlog handoff —
-  startup never writes `skills/{skill}/mistakes.md` (routing per [`recording.md`](recording.md) §5).
-- **Startup never deletes pre-existing memory.** Recovery may remove only a matching, uncommitted file that
-  THIS promotion just created, under the exact preimage/hash safeguards in [`recording.md`](recording.md)
-  §9 step 5.
 
 ---
 
@@ -329,12 +227,19 @@ Two skill-level invariants stay visible here because startup holds write-capable
 Each entry names one owner and the specific claim in this skill it validates. To audit a fact, find its
 claim here and follow the single owner link.
 
+- [`topics.md`](topics.md) § How to traverse the tree + § Anti-sycophancy contract + § Problem-before-solution
+  premise gate + § Design-bearing markers — validates: P3 traversal order, the anti-sycophancy posture, the
+  Topic 4→5 premise gate, and the authoritative design-bearing trigger classification.
+- [`recording.md`](recording.md) §§1, 3, 5, 9, 11–13 — validates: the record/memory boundary, the startup
+  session shape, mistake routing, startup-close promotion and recovery, rerun/resume classification, and the
+  close lifecycle used by P1 and P4–P7.
 - [`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure + § Decision Classification —
   validates: the active-runtime question-card form and the Always-Ask handling used at every startup user
-  gate (P1–P7; the P3 design-decision recommendation + gate; the promotion Always-Ask gate).
+  gate (P1–P7; the inline P3 design-decision micro-loop's recommendation + gate; the promotion Always-Ask
+  gate).
 - [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research — validates: the
-  prior-art study step of the P3 design-decision micro-loop — internal grep + external WebSearch/WebFetch,
-  captured in the Source / Insight / Why format.
+  prior-art study step of the inline P3 design-decision micro-loop — internal grep + external
+  WebSearch/WebFetch, captured in the Source / Insight / Why format.
 - [`evaluation/SKILL.md`](../evaluation/SKILL.md) § Phase-specific focus — validates: the shared
   dual-system evaluation procedure the P6.5 baseline gate runs (two systems × seven perspectives + Overall,
   reconciled verdict) and its recognition of `startup` as a non-loop evaluation target. The startup-specific
@@ -348,7 +253,7 @@ claim here and follow the single owner link.
   body contract; startup stamps the matching template owner rather than copying it (P4 synthesis).
 - [`record/record-map.md`](../record/record-map.md) § Canonical session tree + § Wrap-up promotion-inventory
   rule — validates: the numbered-loop session boundary that startup's own `startup/` surface sits outside,
-  and the rule that only enumerated staging surfaces are promotion sources (the Record and memory boundary;
+  and the rule that only enumerated staging surfaces are promotion sources (the Procedure intro and P4/P6 boundary actions;
   the Wrap-up-excludes-`startup/` boundary).
 - [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) § Staging → Memory routing — validates: the shared promotion
   rules and the standing post-promotion guards that startup follows by reference while running its own

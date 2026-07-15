@@ -42,13 +42,8 @@ end of this file.
    past-behavior and repository evidence over opinion or hypothetical, and never lead the answer** — ask
    what actually happened, not what the user supposes would happen.
 4. **When a branch reaches a design-bearing choice** (marked under the heading below), do not close it
-   from the user's initial preference. Run the [`SKILL.md`](SKILL.md) P3 study→recommend→decide
-   micro-loop: frame one axis → study prior art across three layers (Layer 1 tried-and-true, Layer 2
-   new-and-popular scrutinized for maturity / fit / survivorship, Layer 3 first-principles where
-   convention does not apply, with the evidence for deviating) → present at least two genuinely distinct
-   options (one minimal, one ideal, at equal weight) with a recommendation + evidence-to-change via the
-   Question Card → user decides → record the direction + rationale. Capture-only branches do not pay this
-   cost unless they expose a choice.
+   from the user's initial preference. Run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop)
+   before closing it. Capture-only branches trigger it only when they expose a choice.
 5. If an answer is vague, probe with a concrete example, a past-behavior question, or a counterexample.
    If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
    § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
@@ -66,12 +61,11 @@ end of this file.
 The core design cluster is **Topics 6–9**, plus the always-design-bearing capability and journey branches
 **5.1–5.2**; a conditional set (**4.4, 5.3, 5.4, 7.1, 8.4, 9.4, 10.4, 11.1, 11.2**) fires the same
 micro-loop only when the branch selects or changes a direction rather than inventorying current state.
-The markers below are the authoritative set; see [`SKILL.md`](SKILL.md) § Design-decision micro-loop (P3).
+The markers below are the authoritative set; see the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop).
 
 ### Anti-sycophancy contract
 
-Hold this posture through every turn ([`SKILL.md`](SKILL.md) § Anti-sycophancy traversal contract (P3)
-owns the rule):
+Hold this posture through every turn:
 
 - Do NOT use "that is interesting", "that could work", "there are many ways", or "you might consider" as
   standalone assessments — they read as agreement and teach nothing.
@@ -211,7 +205,7 @@ fabricate a license, and never skip the branch silently.
 
 #### 4.4 Decision tests
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What test decides whether a proposed capability belongs in the current scope?
 - Which past scope decision has already been reversed or expanded, and what evidence drove it? Then,
@@ -231,8 +225,7 @@ for agree / disagree:
 6. the outcome boundary + explicit non-goals.
 
 A failed premise reopens its earliest owning branch; do not enter features until it is confirmed. No
-commercial premise is graded here. ([`SKILL.md`](SKILL.md) § Problem-before-solution premise gate owns
-the rule.)
+commercial premise is graded here.
 
 ---
 
@@ -245,7 +238,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.1 Durable capabilities
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which durable capabilities deliver the in-scope outcome?
 - Which candidates are user-value features, and which are internal mechanisms or one-time tasks?
@@ -253,7 +246,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.2 Critical journeys
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Walk the primary journey from trigger to outcome in the user's own terms.
 - Where does the user decide, provide data, wait, recover, or hand work to someone else?
@@ -261,7 +254,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.3 States & dependencies
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which capabilities already exist, are in progress, are planned, or were abandoned?
 - What must be true before each planned capability can work?
@@ -269,7 +262,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.4 Edge & failure journeys
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What happens on invalid input, partial state, unavailable dependencies, or interrupted work?
 - How does the user recover without hidden manual repair?
@@ -279,7 +272,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.1 Interaction model
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which interface does each user need — CLI, API, UI, library, automation, or a mix?
 - What is the first meaningful action and the first clear success signal?
@@ -287,7 +280,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.2 Information & content model
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which objects and concepts does the user think in, and what names do they use?
 - What information must be shown together to support a sound decision?
@@ -295,7 +288,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.3 Accessibility, trust & failure experience
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which accessibility and internationalization needs belong in the first quality bar?
 - What must the project explain before a user can trust an action or result?
@@ -303,7 +296,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.4 Design references
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which existing product or interface do you already rely on as a positive reference, and for what exact,
   concrete property?
@@ -315,7 +308,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.1 System context
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which people and external systems exchange information with the project?
 - What crosses each trust boundary, and in which direction?
@@ -323,7 +316,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.2 Building blocks & responsibilities
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - What are the major deployable units or containers, and what single responsibility does each own?
 - Which boundaries should stay stable while their internals change?
@@ -331,7 +324,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.3 Runtime & lifecycle
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Walk the main runtime path from a user action to its result.
 - Which background, async, scheduled, startup, shutdown, or recovery paths also matter?
@@ -339,7 +332,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.4 Data & state
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - What data is created, read, updated, deleted, retained, and exported?
 - Which data is authoritative, derived, cached, sensitive, personal, or regulated?
@@ -347,7 +340,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.5 Architecture decisions & alternatives
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which architecture choices are already fixed, by whom, and for what reason?
 - What credible alternative exists for each expensive or hard-to-reverse choice?
@@ -357,7 +350,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.1 Stack choices
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - What does the repository use today — languages, frameworks, runtimes, data stores, build tools — and
   which concrete version or constraint has made a current choice succeed or fail?
@@ -367,7 +360,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.2 Environments & deployment
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Where does the project run in dev, test, staging, and production?
 - How is it built, configured, deployed, observed, rolled back, and recovered?
@@ -375,7 +368,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.3 Integrations & dependencies
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which external dependency is essential to the user value?
 - What happens if that dependency changes, fails, becomes expensive, or disappears?
@@ -383,7 +376,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.4 Ownership & support
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Who maintains each subsystem and responds when it fails?
 - Which operational task must remain possible without the original author?
@@ -400,7 +393,7 @@ they constrain a known project rather than invent one.
 
 #### 9.1 Engineering conventions
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which directory, module, naming, interface, error, and documentation patterns are intentional?
 - Which live files are the best examples of those patterns?
@@ -408,7 +401,7 @@ they constrain a known project rather than invent one.
 
 #### 9.2 Quality attributes
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which qualities dominate trade-offs — correctness, security, latency, availability, usability,
   maintainability, or another?
@@ -417,7 +410,7 @@ they constrain a known project rather than invent one.
 
 #### 9.3 Verification & review bar
 
-*Design-decision trigger: run the SKILL.md P3 study→recommend→decide micro-loop when this branch selects or changes a direction.*
+*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
 
 - Which unit, integration, end-to-end, security, and operational checks prove a change safe?
 - What must every change request or release include before acceptance?
@@ -425,7 +418,7 @@ they constrain a known project rather than invent one.
 
 #### 9.4 External & internal constraints
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which legal, regulatory, security, budget, schedule, compatibility, or organizational constraints bind
   the project?
@@ -452,7 +445,7 @@ they constrain a known project rather than invent one.
 
 #### 10.4 Roadmap & stop conditions
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What belongs in now, next, and later, and which dependency explains that order?
 - What milestone proves enough value to justify the next investment?
@@ -463,7 +456,7 @@ they constrain a known project rather than invent one.
 
 #### 11.1 Intentional idioms
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What looks unusual here but is intentional and should be preserved?
 - Which live example shows the idiom, and what problem does it solve?
@@ -471,7 +464,7 @@ they constrain a known project rather than invent one.
 
 #### 11.2 Binding rules
 
-*Conditionally design-bearing — triggers the SKILL.md P3 study→recommend→decide micro-loop only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which conventions are mandatory rather than preferred?
 - What concrete failure or cost does each rule prevent, and where does it apply?
@@ -537,13 +530,7 @@ first, regenerate the affected staged drafts from the ledger, then present the c
   staged drafts from the ledger (idempotent), and continue from the first unconfirmed checkpoint.
 - **Abandon-before-promote is safe.** If the user abandons an in-progress run before promotion, the
   session-local working and staging material can be dropped or ignored with no durable-memory cleanup.
-- **Riskiest-assumption-first depth override.** After the first real problem event, stack the design's
-  riskiest assumptions — (i) the claim whose falsity means there is no real problem or user, (ii) the
-  claim whose falsity makes the project infeasible or unsafe to build, (iii) the claim whose falsity makes
-  the product shape wrong or unusable — and give the top one the first disconfirming probe before normal
-  traversal continues. This changes DEPTH only, never coverage or the macro topic order; re-score the
-  stack when a later answer changes the root problem. ([`SKILL.md`](SKILL.md) § Riskiest-assumption-first
-  depth override owns the rule.)
+- **Depth override.** After the first real problem event, run the [P3 riskiest-assumption-first depth override](SKILL.md#p3-riskiest-assumption-first-depth-override).
 - **JTBD switching forces are user / problem understanding.** In 3.2 and 3.3, probe the four forces —
   push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
   the last real switch, to close the gap where a real problem still fails to produce a change in behavior.
