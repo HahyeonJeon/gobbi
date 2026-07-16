@@ -101,12 +101,18 @@ type Notification =
   | { readonly kind: "email"; readonly address: string }
   | { readonly kind: "sms"; readonly number: string };
 
+function assertNever(x: never): never {
+  throw new Error(`unhandled variant: ${JSON.stringify(x)}`);
+}
+
 function recipient(n: Notification): string {
   switch (n.kind) {
     case "email":
       return n.address;
     case "sms":
       return n.number;
+    default:
+      return assertNever(n); // a new variant becomes a compile error here
   }
 }
 ```
@@ -310,8 +316,9 @@ export interface PublicUser {
   readonly name: string;
 }
 
-// the explicit return annotation is the published contract; without it, inference
-// could widen the shape and leak `passwordHash` into the emitted .d.ts
+// the explicit return annotation pins the published contract to PublicUser; without it,
+// a later edit that returns an extra field (or `return row`) would silently widen the
+// emitted .d.ts and leak an internal field such as `passwordHash`
 export function loadUser(id: string): PublicUser {
   const row = { id, name: "Ada", passwordHash: "9f…" };
   return { id: row.id, name: row.name };

@@ -194,8 +194,9 @@ button?.addEventListener("click", () => {
 
 Three concerns cut across every runtime.
 
-**`lib` selection.** The `lib` is the single switch between a server and a browser type surface: server runtimes
-(Node, Bun, Deno) take `ES2023` with no `DOM`; the browser takes `DOM` + `DOM.Iterable`. Add `ESNext.Disposable`
+**`lib` selection.** The `lib` is the switch between a server and a browser type surface: Node (and Bun on its
+server default) take `ES2023` with no `DOM`; Deno instead uses its bundled `deno.window`, adding `dom` when it
+needs web globals (see its config above); the browser takes `DOM` + `DOM.Iterable`. Add `ESNext.Disposable`
 wherever `using` is used (below). The `lib` types what EXISTS; it never adds a runtime API — `@types/node`,
 `@types/bun`, and Deno's bundled lib are separate.
 
@@ -220,8 +221,8 @@ function run(): void {
 }
 ```
 
-**Type-stripping vs a `tsc` build.** Node 24+, Bun, and Deno all RUN `.ts` by stripping types — they never
-type-check. So a `tsc --noEmit` pass is the correctness gate on every stripping runtime, exactly as SKILL.md P7
+**Type-stripping vs a `tsc` build.** Node 24+ STRIPS types; Bun and Deno TRANSPILE — either way all three RUN
+`.ts` directly and none type-check. So a `tsc --noEmit` pass is the correctness gate on every stripping runtime, exactly as SKILL.md P7
 and `modules-tooling.md` §8 require: stripping runs the code, `tsc` judges it, and a green run is never a green
 type-check. The runtime-agnostic core proves the thesis — this web-standard code type-checks under the baseline,
 and once its annotations are erased to JavaScript (Node 24+/Bun/Deno strip or transpile it directly; a browser

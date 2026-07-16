@@ -249,9 +249,11 @@ const theme = {
 const green: number = theme.red[1]; // ok: theme.red is the tuple, not `[...] | string`
 ```
 
-An annotation (`: T`) *checks and widens* to `T`; an assertion (`as T`) *neither checks nor widens* — it asserts
-a type the value may not have, and the compiler stops catching drift. Prefer the annotation, which surfaces a
-missing field that `as` hides:
+An annotation (`: T`) *checks and widens* to `T`; an assertion (`as T`) does **no runtime check** and, unlike an
+annotation, does not re-validate the value against `T` — it just tells the compiler to treat the expression as
+`T` (TypeScript still rejects an assertion between insufficiently-overlapping types). It asserts a type the value
+may not have, so the compiler stops catching drift. Prefer the annotation, which surfaces a missing field that
+`as` hides:
 
 ```ts expect-error
 interface User {
