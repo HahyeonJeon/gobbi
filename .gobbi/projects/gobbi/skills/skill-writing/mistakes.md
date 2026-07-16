@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-07-15
+updated: 2026-07-16
 ---
 
 # Skill-Writing — Mistakes
@@ -126,3 +126,25 @@ softened items for dropped conditions with the same discipline used for merges.
 ### Related
 - [[execution-evaluator-union-check-must-cover-softened-items]] (`skills/evaluation/mistakes.md`) — the
   matching evaluator-side gap: a "no hard hazard dropped" pass must also diff the softened set
+
+## Production Mode Is Not Skill Frontmatter
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-16` · `status: active` · `tags: [docs-sync, schema]`
+
+**What happened** — The manager instructed a Task-1 executor to stamp `production_mode: dual` in the
+durable `.gobbi/projects/gobbi/skills/scenario/SKILL.md` frontmatter. The executor flagged it — it is
+the sole conformance NO.
+**Why it happens** — `production_mode` is a RECORD / loop-outputs provenance key, NOT skill
+frontmatter. skill-writing P4 = "three required keys (`name`/`description`/`allowed-tools`) + a named
+optional allowlist; NEVER a field from another schema." `production.md` stamps `production_mode` in an
+artifact's frontmatter ONLY for the DEGRADED `claude-only` case (a durable degraded label). A genuinely
+dual-produced skill carries NO `production_mode` — verified against python/startup/coding/research
+SKILL.md. Dual-production provenance already lives in the session record (the loop's own working and
+outputs directories), not in the skill's frontmatter.
+**How to detect** — Any instinct to stamp workflow/session provenance (`production_mode`, `iter`,
+`session`, `status`, `type`) into a DURABLE skill's frontmatter. Skill frontmatter ≠ session-artifact
+frontmatter.
+**Correct approach** — Do NOT stamp `production_mode` (or any session/RECORD schema key) in a skill's
+frontmatter, even for dual production. Only the degraded claude-only artifact case carries a frontmatter
+label, per production.md, and that is a session artifact, not a shipped skill. Let RECORD own the
+provenance.
