@@ -17,7 +17,7 @@ A future session honors the settled call without re-litigating it or losing who 
 | Promotes to | `features/{f}/discussions/{area}/` (feature-only — discussions are always bounded to a feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that held it); short descriptive slug (`2026-05-11-cache-vs-index.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 

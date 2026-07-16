@@ -17,7 +17,7 @@ An item a future reader cannot resume without re-deriving why it was deferred is
 | Promotes to | `features/{f}/backlogs/{area}/` (deferred task) · `backlogs/{area}/` (project, deferred feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words, no date prefix (evergreen-until-closed); no positional prefix (`password-reset-flow.md`, `search-system.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 

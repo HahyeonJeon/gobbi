@@ -21,7 +21,7 @@ A settled lock that is not written down is a lock the next session silently re-l
 | Promotes to | `notes/{area}/` (project-only — no `features/{f}/notes/` tier) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date prefix; slug answers "what did this session do?" in 3–6 words (`2026-05-11-mistakes-rename-sweep.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 

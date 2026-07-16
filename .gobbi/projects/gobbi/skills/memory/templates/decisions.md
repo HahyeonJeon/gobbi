@@ -17,7 +17,7 @@ A future reader applies the decision without re-opening the debate.
 | Promotes to | `features/{f}/decisions/{area}/` (default) · `decisions/{area}/` (project, cross-feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug names the decision in ≤6 words (`2026-05-11-use-redis-not-memcached.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 

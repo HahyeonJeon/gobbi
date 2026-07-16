@@ -64,7 +64,7 @@ Loop RECORD never writes to memory (`features/{feature-name}/...`, `mistakes/`, 
 
 > **RECORD never compacts.**
 
-Memory compaction — folding an over-cap `{type}/{area}/` directory into one consolidated Map-of-Content file — is a durable-memory operation owned by **Wrap-up's Stage-2c**, not the per-loop RECORD. RECORD stages findings; it never merges, caps, or archives memory records. The standard is [`memory/rules.md` § 5](../memory/rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out); the procedure is [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
+Memory compaction — folding an over-cap `{type}/{area}/` directory into one consolidated Map-of-Content file — is a durable-memory operation owned by **Wrap-up's compaction sub-procedure**, not the per-loop RECORD. RECORD stages findings; it never merges, caps, or archives memory records. The standard is [`memory/rules.md` § 5](../memory/rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out); the procedure is [`wrap-up/compaction.md`](../wrap-up/compaction.md).
 
 > **Run after every EVALUATION verdict — PASS, REVISE, or FAIL.**
 

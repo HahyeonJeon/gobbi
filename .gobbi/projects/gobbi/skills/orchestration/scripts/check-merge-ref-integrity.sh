@@ -2,7 +2,7 @@
 # check-merge-ref-integrity.sh — memory-compaction MERGE ref-integrity gate.
 #
 # Purpose:
-#   After a Wrap-up Stage-2c compaction MERGE folds several related records into
+#   After a Wrap-up compaction MERGE folds several related records into
 #   one Map-of-Content (MoC) "consolidated" file and `git mv`s the originals to
 #   archive/, two whole-tree properties must hold:
 #     (1) no LIVE inbound reference still resolves to a merged-away slug or to a

@@ -65,7 +65,7 @@ When a new mistake supersedes an older one (new understanding overrides the prio
 > - **(iii) Supersession-complete** — the consolidated file's `supersedes: [<all source slugs>]` equals its source set, and each source's `superseded_by: <consolidated-slug>` names it back; the two-way linkage is complete (rules.md §5.5).
 > - **(iv) Per-item-recoverable** — split-on-retire extracts any one merged section back to an atomic file under its stable anchor, so an individual merged mistake keeps its own terminal lifecycle and can be recovered (rules.md §5.3).
 >
-> A `mistakes` compaction-merge is **Always-Ask** — it surfaces through the manager's user-decision primitive before it runs (rules.md §5.4). Compaction is a **Wrap-up** operation only; a working loop's RECORD never compacts. The procedure (Stage-2c order, merge manifest, repoint sweep) lives in [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
+> A `mistakes` compaction-merge is **Always-Ask** — it surfaces through the manager's user-decision primitive before it runs (rules.md §5.4). Compaction is a **Wrap-up** operation only; a working loop's RECORD never compacts. The compaction sub-procedure (order, merge manifest, repoint sweep) lives in [`wrap-up/compaction.md`](../wrap-up/compaction.md).
 
 ---
 

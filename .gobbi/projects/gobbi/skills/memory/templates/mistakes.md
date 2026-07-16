@@ -19,7 +19,7 @@ A mistake missing the early-warning signal records history instead of preventing
 | Promotes to | `features/{f}/mistakes/{area}/` (feature-specific trap) · `mistakes/{area}/` (project, the common case) — `{area}` from the curated trap-class allowlist, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, names the trap in ≤6 words (`bun-write-no-append.md`); no date or finding-ID prefix |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
