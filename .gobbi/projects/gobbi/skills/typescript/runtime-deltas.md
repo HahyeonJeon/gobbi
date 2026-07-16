@@ -222,7 +222,7 @@ function run(): void {
 ```
 
 **Type-stripping vs a `tsc` build.** Node 24+ STRIPS types; Bun and Deno TRANSPILE — either way all three RUN
-`.ts` directly and none type-check. So a `tsc --noEmit` pass is the correctness gate on every stripping runtime, exactly as SKILL.md P7
+`.ts` directly and none type-check. So a `tsc --noEmit` pass is the correctness gate on every runtime that runs `.ts` without type-checking, exactly as SKILL.md P7
 and `modules-tooling.md` §8 require: stripping runs the code, `tsc` judges it, and a green run is never a green
 type-check. The runtime-agnostic core proves the thesis — this web-standard code type-checks under the baseline,
 and once its annotations are erased to JavaScript (Node 24+/Bun/Deno strip or transpile it directly; a browser

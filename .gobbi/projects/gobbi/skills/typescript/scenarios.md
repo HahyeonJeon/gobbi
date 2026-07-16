@@ -29,7 +29,8 @@ Bottom-up operation.
 - **Axis:** Hard invariant.
 - **Situation:** an async fan-out issues work under a deadline, and a file or connection handle is acquired
   inside the same scope.
-- **Good handling:** every promise is awaited, `void`ed deliberately, or given a `.catch`; the fan-out bounds
+- **Good handling:** every promise is awaited, `return`ed, or given a real `void promise.catch(...)` (a bare
+  `void` is not a handler); the fan-out bounds
   its concurrent task creation; cancellation is carried on an `AbortSignal`; each resource's release is bound
   to scope with `using` / `await using` so disposal runs on every path, including the throwing one.
 - **Bad handling:** a fire-and-forget call drops its rejection; an unbounded eager `Promise.all` retains every

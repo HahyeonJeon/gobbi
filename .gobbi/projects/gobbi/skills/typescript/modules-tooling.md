@@ -38,8 +38,7 @@ blocks are taught facts that type-check under the skill's maximal-strict example
 
 Every artifact extends one strict base — the `@tsconfig/strictest` preset plus a few flags that post-date it.
 This is the maximal-strict floor SKILL.md's first Rule names; the config below is the whole of it, each flag
-written once. (Track the preset's current contents at its source rather than a fixed count — it drifts across
-versions.)
+written once.
 
 ```jsonc
 // tsconfig.base.json — the 17 always-on flags. Extend it; never weaken it.
