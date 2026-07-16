@@ -76,6 +76,35 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-STRUCT-SCENARIO-04-CHECK-04 — Every "see X" reference in a promoted file targets an existing path.
 - [ ] WRAP-STRUCT-SCENARIO-04-CHECK-05 — Any user-confirmed routing fork (mistake scope / rules / project-wide design / cross-feature reviews / reports / learnings) cites the authorizing user decision.
 
+### WRAP-STRUCT-SCENARIO-05 — [S-1] Strip removes a required destination field
+- [ ] WRAP-STRUCT-SCENARIO-05-CHECK-01 — The renderer derives the durable allowlist and all required base + destination-extension fields from the memory-schema owner; only staging-only keys are stripped.
+- [ ] WRAP-STRUCT-SCENARIO-05-CHECK-02 — The final frontmatter is validated against the destination type's required-extension list (and required base set) BEFORE the manifest freeze — every mandatory field survives or is deterministically stamped (e.g. mistakes keeps `priority` + `domain`; backlogs keeps `priority` + `project-scope`).
+- [ ] WRAP-STRUCT-SCENARIO-05-CHECK-03 — The strip instruction was cross-checked against the required-extension list, not derived from the strip table alone.
+
+### WRAP-STRUCT-SCENARIO-06 — [S-2] Standing guards only partially re-run over the post-promotion tree
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-01 — Post-promotion evidence records the command + zero exit status for `validate-frontmatter.sh` over the post-promotion project tree.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-02 — Post-promotion evidence records the command + zero exit status for `check-markdown-links.sh` over the post-promotion tree.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-03 — Post-promotion evidence records the command + zero exit status for `check-residual-vocab.sh` over the post-promotion tree.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-04 — Post-promotion evidence records the command + zero exit status for `check-skill-mistakes.sh --all`.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-05 — Post-promotion evidence records the command + zero exit status for `check-workflow-mirror-consistency.sh`.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-06 — `check-merge-ref-integrity.sh <manifest> <scan-root>` also ran when, and only when, the compaction sub-procedure produced a merge manifest — additional to, never a substitute for, an always-run guard.
+- [ ] WRAP-STRUCT-SCENARIO-06-CHECK-07 — Where a promotion adds a legitimate new carrier a guard flags, the guard's allowlist is extended by its own discipline in the SAME commit as the promotion.
+
+### WRAP-STRUCT-SCENARIO-07 — [S-4] A plausible-but-invalid area is accepted instead of escalating
+- [ ] WRAP-STRUCT-SCENARIO-07-CHECK-01 — Each resolved `{area}/` segment is an area the destination type's allowlist permits, and the manifest records the resolved area + its authorizing basis.
+- [ ] WRAP-STRUCT-SCENARIO-07-CHECK-02 — A no-match area produces `NEEDS_CONTEXT` and a user-decision reference before manifest freeze — no fallback area is silently selected.
+- [ ] WRAP-STRUCT-SCENARIO-07-CHECK-03 — No promoted file lands at a generic, plausible, or newly invented `{area}/` that merely resolves on disk without explicit authorization + schema validation.
+
+### WRAP-STRUCT-SCENARIO-08 — [S-7] A `skills/` promotion carries an `{area}/` segment
+- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-01 — Every `skills/` destination has the exact shape `skills/{skill}/SKILL.md` or `skills/{skill}/mistakes.md`, with NO `{area}/` segment.
+- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-02 — The by-area `{area}/` layout is applied only to the project / feature memory types, never to the `skills/` surface.
+- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-03 — A Preparation-generated skill destination is recorded as already-promoted and not written again; a missing one is recovered only when the Preparation contract authorizes recovery.
+
+### WRAP-STRUCT-SCENARIO-09 — [S-10] A re-run creates suffixed duplicates
+- [ ] WRAP-STRUCT-SCENARIO-09-CHECK-01 — Idempotency is keyed on stable SOURCE identity `{session-id, source-relative-path}` plus the frozen manifest mapping, not on a stripped or re-derived field.
+- [ ] WRAP-STRUCT-SCENARIO-09-CHECK-02 — The source-identity-to-destination mapping is identical across re-runs over the same immutable inventory.
+- [ ] WRAP-STRUCT-SCENARIO-09-CHECK-03 — An already-equal destination is a no-op; no new `-2` / `-3` numeric or loop suffix is allocated.
+
 ---
 
 ## Performance
@@ -91,7 +120,12 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-PERF-SCENARIO-02-CHECK-02 — No "memory file per scratch thought" pattern (scratch thoughts are not each a file).
 - [ ] WRAP-PERF-SCENARIO-02-CHECK-03 — The total word count across promoted files is sanity-checked against the session's scale.
 - [ ] WRAP-PERF-SCENARIO-02-CHECK-04 — Any promoted file over the typical size bound is challenged, not accepted by default.
-- [ ] WRAP-PERF-SCENARIO-02-CHECK-05 — Stage-2c memory compaction was skipped explicitly when `settings.compaction.enabled` is false, or — when enabled — each over-cap `{type}/{area}/` was consolidated losslessly (sources kept recoverable + archived, inbound references repointed, standing guards green), never summarized away to hit a count.
+- [ ] WRAP-PERF-SCENARIO-02-CHECK-05 — The compaction sub-procedure always counts every `{type}/{area}/` post-promotion (independent of `settings.compaction.enabled`, which gates only automatic merging); an over-hard-cap area is routed to an Always-Ask decision, never a silent PASS; when a merge runs it consolidates losslessly (sources kept recoverable + archived, inbound references repointed, standing guards green), never summarized away to hit a count.
+
+### WRAP-PERF-SCENARIO-03 — [S-12] Compaction silently skips an over-hard-cap area
+- [ ] WRAP-PERF-SCENARIO-03-CHECK-01 — Every `{type}/{area}/` live count is recorded post-promotion whether or not `settings.compaction.enabled` is set (counting is unconditional; the flag gates only automatic merging).
+- [ ] WRAP-PERF-SCENARIO-03-CHECK-02 — An over-hard-cap area cannot reach PASS silently — it is routed to an Always-Ask decision (merge / raise cap / archive-terminal / accept-with-acknowledgement); `mistakes` and `rules` merges stay Always-Ask.
+- [ ] WRAP-PERF-SCENARIO-03-CHECK-03 — Disabling automatic merge, reaching `maxAutoActions`, or crossing a soft cap does not bypass hard-cap detection.
 
 ---
 
@@ -104,9 +138,9 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-AESTH-SCENARIO-01-CHECK-04 — Date / session-id / branch are stamped at the top of the handoff.
 - [ ] WRAP-AESTH-SCENARIO-01-CHECK-05 — Every required section has at least one substantive entry (or an explicit "(none)" with rationale); no "(see above)" points at absent content.
 
-### WRAP-AESTH-SCENARIO-02 — No placeholders; pointers use stable paths
+### WRAP-AESTH-SCENARIO-02 — No placeholders; pointers use durable repo-root-relative paths
 - [ ] WRAP-AESTH-SCENARIO-02-CHECK-01 — No "TODO: write this", `???`, or unfinished sentence remains in the handoff.
-- [ ] WRAP-AESTH-SCENARIO-02-CHECK-02 — Every path reference is absolute or repo-root–relative and resolves from any working directory.
+- [ ] WRAP-AESTH-SCENARIO-02-CHECK-02 — Every durable path reference is repo-root–relative (e.g. `.gobbi/projects/{name}/...`), NOT an absolute worktree path, and resolves from the repo root.
 - [ ] WRAP-AESTH-SCENARIO-02-CHECK-03 — No `./...` session-relative shortcut path is used.
 
 ---
@@ -123,7 +157,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-USAGE-SCENARIO-02-CHECK-02 — Each next-action is a runnable instruction, not a summary.
 
 ### WRAP-USAGE-SCENARIO-03 — Pointers resolve and decisions are constraints
-- [ ] WRAP-USAGE-SCENARIO-03-CHECK-01 — Resume-critical pointers use absolute or repo-root–relative durable paths (they resolve, and will keep resolving after worktree cleanup).
+- [ ] WRAP-USAGE-SCENARIO-03-CHECK-01 — Resume-critical pointers use repo-root–relative durable paths (NOT absolute worktree paths, which break after worktree cleanup) — they resolve, and will keep resolving after worktree cleanup.
 - [ ] WRAP-USAGE-SCENARIO-03-CHECK-02 — A session-scratch pointer appears only as audit evidence, never as the sole source needed to continue work.
 - [ ] WRAP-USAGE-SCENARIO-03-CHECK-03 — Every "decision to respect" is phrased as a constraint ("X must Y"), not narrative.
 - [ ] WRAP-USAGE-SCENARIO-03-CHECK-04 — The constraint format is consistent across all decisions.
@@ -150,7 +184,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-CONS-SCENARIO-03-CHECK-04 — Forward references match later-section content.
 
 ### WRAP-CONS-SCENARIO-04 — Corrections and findings reach memory; closure audit complete
-- [ ] WRAP-CONS-SCENARIO-04-CHECK-01 — Every user correction in the session transcript has a corresponding `mistakes/` entry, or an explicit "decided not to record" with a reason.
+- [ ] WRAP-CONS-SCENARIO-04-CHECK-01 — Every user correction in the session transcript has exactly ONE explicit accounting result — a promoted `mistakes/` entry, a staged mistake awaiting the user-confirmed route, OR a recorded "decided not to record" decision with a reason (never a silent disappearance, never a forced promotion after decline).
 - [ ] WRAP-CONS-SCENARIO-04-CHECK-02 — No promoted mistake lacks support in the session transcript.
 - [ ] WRAP-CONS-SCENARIO-04-CHECK-03 — For each loop the session ran, every iteration's findings are enumerated.
 - [ ] WRAP-CONS-SCENARIO-04-CHECK-04 — Each finding carries one of five dispositions — addressed (commit/diff pointer) / deferred (backlog pointer + reason) / disputed (rationale, optionally promoted as rule) / superseded (by which later finding) / still open (with the reason it survived).
@@ -160,13 +194,28 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-CONS-SCENARIO-04-CHECK-08 — Any finding that recurred (stuck) across iterations is promoted as a `mistakes/` candidate.
 - [ ] WRAP-CONS-SCENARIO-04-CHECK-09 — A pattern recurring across loops (same symptom in Planning + Execution) is promoted as a `features/{feature-name}/decisions/` or project-level rule candidate.
 
+### WRAP-CONS-SCENARIO-05 — [S-5] A terminal record is deleted instead of archived
+- [ ] WRAP-CONS-SCENARIO-05-CHECK-01 — Each terminal (superseded / merged) record moved in FULL to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`; no terminal record was hard-deleted or reduced to a tombstone.
+- [ ] WRAP-CONS-SCENARIO-05-CHECK-02 — The archived record retains its original memory `type`, required content, and lifecycle evidence; its `status:` is flipped and its supersession pointer set before the move.
+- [ ] WRAP-CONS-SCENARIO-05-CHECK-03 — Every inbound path reference was repointed to the archive destination and resolves.
+
+### WRAP-CONS-SCENARIO-06 — [S-6] Already-promoted `startup/` data is promoted again
+- [ ] WRAP-CONS-SCENARIO-06-CHECK-01 — No path under `startup/` appears as a Wrap-up promotion source; Wrap-up records ZERO manifest rows for `startup/`.
+- [ ] WRAP-CONS-SCENARIO-06-CHECK-02 — Startup's existing promoted destinations and completion evidence are verified and recorded without a second write.
+- [ ] WRAP-CONS-SCENARIO-06-CHECK-03 — No duplicate or suffixed destination was created from `startup/` staging.
+
+### WRAP-CONS-SCENARIO-07 — [S-11] Supersession links only one direction
+- [ ] WRAP-CONS-SCENARIO-07-CHECK-01 — The new record's `supersedes` names the old slug AND the old record's `superseded_by` names the new slug (reciprocal).
+- [ ] WRAP-CONS-SCENARIO-07-CHECK-02 — The old record is terminal and moved to the typed archive rather than left active or deleted.
+- [ ] WRAP-CONS-SCENARIO-07-CHECK-03 — Every inbound path-bearing reference (link / `required-mistakes:`) is included in the frozen mutation set and resolves after the move.
+
 ---
 
 ## Risk
 
 ### WRAP-RISK-SCENARIO-01 — No dangling work; scratch preserved as audit trail
-- [ ] WRAP-RISK-SCENARIO-01-CHECK-01 — `git status` after wrap-up shows no uncommitted scratch and no dangling work-in-progress without a pointer.
-- [ ] WRAP-RISK-SCENARIO-01-CHECK-02 — All session scratch state remains intact under `sessions/{date}-{session-id}/`.
+- [ ] WRAP-RISK-SCENARIO-01-CHECK-01 — The TRACKED promotion surface is clean — a `git status` scoped to the tracked tree shows no uncommitted promotion scratch and no dangling work-in-progress without a durable pointer.
+- [ ] WRAP-RISK-SCENARIO-01-CHECK-02 — A filesystem enumeration + per-file hashes (`find sessions/{date}-{session-id}/ -type f`) confirms all session scratch state remains intact under `sessions/{date}-{session-id}/` — `git status` is NOT used as proof of the gitignored session tree's contents (git is blind to gitignored paths).
 - [ ] WRAP-RISK-SCENARIO-01-CHECK-03 — Wrap-up did not delete any `sessions/.../{N}-{loop}/` directory — scratch is preserved as the audit trail.
 
 ### WRAP-RISK-SCENARIO-02 — Promotion does not silently overwrite or contradict existing memory
@@ -176,18 +225,53 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-RISK-SCENARIO-02-CHECK-04 — Any conflict that lacks explicit supersession is flagged Critical.
 
 ### WRAP-RISK-SCENARIO-03 — Every correction and process gap is recorded as a mistake
-- [ ] WRAP-RISK-SCENARIO-03-CHECK-01 — Every user correction during the session has a corresponding `mistakes/` entry.
+- [ ] WRAP-RISK-SCENARIO-03-CHECK-01 — Every user correction during the session has exactly ONE explicit accounting result — a promoted `mistakes/` entry, a staged mistake awaiting the user-confirmed route, OR a recorded user decision declining promotion with a reason (never silent disappearance).
 - [ ] WRAP-RISK-SCENARIO-03-CHECK-02 — Corrections that surfaced workflow / process gaps (e.g. evaluator missed a category, manager skipped escalation) became mistake candidates.
 - [ ] WRAP-RISK-SCENARIO-03-CHECK-03 — Stuck escalations the user resolved (recorded in the discussion log) have their resolution lessoned into memory.
 
-### WRAP-RISK-SCENARIO-04 — Session cost and sensitive-data exposure recorded
-- [ ] WRAP-RISK-SCENARIO-04-CHECK-01 — The session's total paid-API / cloud-cost is recorded in the handoff for future-self awareness.
-- [ ] WRAP-RISK-SCENARIO-04-CHECK-02 — Anomalous cost spend (e.g. 10× expected) is called out.
-- [ ] WRAP-RISK-SCENARIO-04-CHECK-03 — Any session activity that touched real PII or sensitive data (e.g. grepping production data) is recorded.
-- [ ] WRAP-RISK-SCENARIO-04-CHECK-04 — No transient sensitive data rides into a promoted memory file (the surface the wrap-up commit absorbs, e.g. `features/` or `mistakes/`) unless the user explicitly authorized it; sensitive data remaining in the gitignored session tree (`sessions/.../{N}-{loop}/working/`) is noted as session-local exposure, not committed history.
+### WRAP-RISK-SCENARIO-04 — Sensitive data does not ride into promoted memory
+- [ ] WRAP-RISK-SCENARIO-04-CHECK-01 — Any session activity that touched real PII or sensitive data (e.g. grepping production data) is recorded as session-local exposure.
+- [ ] WRAP-RISK-SCENARIO-04-CHECK-02 — No transient sensitive data rides into a promoted, tracked memory file (the surface the wrap-up commit absorbs, e.g. `features/` or `mistakes/`) unless the user explicitly authorized it; sensitive data remaining in the gitignored session tree (`sessions/.../{N}-{loop}/working/`) is noted as session-local exposure, not committed history.
 
 ### WRAP-RISK-SCENARIO-05 — Git finalization is gated and manager-owned
-- [ ] WRAP-RISK-SCENARIO-05-CHECK-01 — Stage-5 git finalization did not run before this Stage-3 memory validation returned PASS (the irreversible commit / push / merge / worktree-cleanup is gated behind the evaluation).
+- [ ] WRAP-RISK-SCENARIO-05-CHECK-01 — At Stage-3, no Stage-5 finalization commit / push / merge / worktree-cleanup has run on the branch yet (the irreversible action is still gated behind this evaluation).
 - [ ] WRAP-RISK-SCENARIO-05-CHECK-02 — Git finalization is manager-owned; the Wrap-up assistant did not push, merge, or clean up the worktree.
-- [ ] WRAP-RISK-SCENARIO-05-CHECK-03 — When a finalization commit exists, it carries the stage-2 memory promotion writes and the journal, not the gitignored session tree.
-- [ ] WRAP-RISK-SCENARIO-05-CHECK-04 — An already-open PR for the branch is reused rather than duplicated; if push or PR creation is unavailable, the PR-deferred state is recorded rather than reported complete.
+- [ ] WRAP-RISK-SCENARIO-05-CHECK-03 — The manager's finalization PLAN commits the Stage-2 promotion writes and the journal and excludes the gitignored session tree (verified from the manifest / plan, NOT from an executed commit that does not exist at Stage-3).
+- [ ] WRAP-RISK-SCENARIO-05-CHECK-04 — Stage-3 may verify the plan WILL reuse an open PR or record a PR-deferred state, but it never marks a commit / push / PR / merge / cleanup successful — Stage-5 verifies those executed postconditions itself after PASS.
+
+### WRAP-RISK-SCENARIO-06 — [S-3] A wrong-tree / wrong-inode promotion write
+- [ ] WRAP-RISK-SCENARIO-06-CHECK-01 — Every promoted path is rooted at the absolute worktree root (`session.json.git.worktreePath`) and literally contains the `worktrees/{branch}/` segment.
+- [ ] WRAP-RISK-SCENARIO-06-CHECK-02 — Live path or inode evidence distinguishes each written file from the corresponding path in the main checkout (a worktree-scoped check shows the new content).
+- [ ] WRAP-RISK-SCENARIO-06-CHECK-03 — No relative-path or current-directory assumption can redirect a promotion write to the main checkout.
+
+### WRAP-RISK-SCENARIO-07 — [S-8] A staging-only field survives promotion
+- [ ] WRAP-RISK-SCENARIO-07-CHECK-01 — No staging-only routing or evaluator key (`mistake-candidate`, `finding-id`, `area`, …) survives in any durable destination.
+- [ ] WRAP-RISK-SCENARIO-07-CHECK-02 — Required durable `author` and `keywords` values are preserved or deterministically stamped.
+- [ ] WRAP-RISK-SCENARIO-07-CHECK-03 — The no-stray-keys validator passes every derived destination, including shared skill-surface files through their own guard.
+
+### WRAP-RISK-SCENARIO-08 — [S-9] One malformed source causes a partial promotion
+- [ ] WRAP-RISK-SCENARIO-08-CHECK-01 — The frozen manifest accounts for the complete source set and every related mutation before the first durable write.
+- [ ] WRAP-RISK-SCENARIO-08-CHECK-02 — Every candidate and every destination preimage validates before apply, including whole-file preimages for shared destinations.
+- [ ] WRAP-RISK-SCENARIO-08-CHECK-03 — When any source, candidate, route, or preimage is invalid, evidence shows zero durable writes and names the exact failing item; Stage 2 rechecks preimages before applying the frozen manifest.
+
+### WRAP-RISK-SCENARIO-09 — [S-13] The evaluation gate evaluates a moving target
+- [ ] WRAP-RISK-SCENARIO-09-CHECK-01 — Producer completion and on-disk verification precede evaluator dispatch.
+- [ ] WRAP-RISK-SCENARIO-09-CHECK-02 — The exact hashes of outputs, frozen manifest, snapshots, applied delta, guard results, and derived target set are pinned in the evaluation brief.
+- [ ] WRAP-RISK-SCENARIO-09-CHECK-03 — The pinned inputs have identical hashes at evaluation start and exit for both systems; if the target changes, it is re-pinned and re-evaluated rather than reconciled across versions.
+
+### WRAP-RISK-SCENARIO-10 — [S-14] Stage-3 claims Stage-5 succeeded
+- [ ] WRAP-RISK-SCENARIO-10-CHECK-01 — No commit / push / PR mutation / merge / worktree cleanup ran before Stage-3 PASS.
+- [ ] WRAP-RISK-SCENARIO-10-CHECK-02 — Stage-3 validates a manager-owned finalization plan and labels every Stage-5 postcondition PENDING.
+- [ ] WRAP-RISK-SCENARIO-10-CHECK-03 — The Stage-3 report does not mark a planned Stage-5 action (e.g. "PR reused") successful, nor require evidence that can exist only after PASS.
+- [ ] WRAP-RISK-SCENARIO-10-CHECK-04 — The Stage-5 procedure, not Stage-3, owns post-action verification including open-PR reuse and PR-deferred reporting.
+
+### WRAP-RISK-SCENARIO-11 — [S-15] Session scratch deleted, or git used as proof of the gitignored tree
+- [ ] WRAP-RISK-SCENARIO-11-CHECK-01 — Direct filesystem enumeration proves every expected session loop / task / staging path still exists after promotion.
+- [ ] WRAP-RISK-SCENARIO-11-CHECK-02 — Per-file hashes reconcile the post-promotion session tree with the captured audit baseline and any authorized narrow cleanup.
+- [ ] WRAP-RISK-SCENARIO-11-CHECK-03 — No `sessions/.../{N}-{loop}/` directory was deleted, and no clean-`git-status` proxy is used as evidence for this gitignored tree.
+
+### WRAP-RISK-SCENARIO-12 — [S-16] Prior-loop staging bytes change during Stage-1
+- [ ] WRAP-RISK-SCENARIO-12-CHECK-01 — Every prior-loop `staging/` source has before-and-after path, hash, size, modification-time, and inode evidence for Stage 1.
+- [ ] WRAP-RISK-SCENARIO-12-CHECK-02 — All prior-loop staging paths and bytes are UNCHANGED after compliance validation.
+- [ ] WRAP-RISK-SCENARIO-12-CHECK-03 — Every mechanical repair exists ONLY in `sessions/{date}-{session-id}/5-wrap-up/working/correction-overlays/` and the rendered destination candidate; the manifest records source hash + normalization delta.
+- [ ] WRAP-RISK-SCENARIO-12-CHECK-04 — Every judgment-required repair returned `NEEDS_CONTEXT` instead of mutating a source.
