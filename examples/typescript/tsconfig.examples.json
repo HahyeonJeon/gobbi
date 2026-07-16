@@ -6,9 +6,10 @@
     "moduleResolution": "nodenext",
     "moduleDetection": "force",
     "target": "ES2023",
-    "lib": ["ES2023", "ESNext.Disposable"],
+    "lib": ["ES2023", "ESNext.Disposable", "DOM"],
     "noEmit": true,
     "skipLibCheck": true,
+    "types": [],
 
     "strict": true,
     "noUncheckedIndexedAccess": true,
