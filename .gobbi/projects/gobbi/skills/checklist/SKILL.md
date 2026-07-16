@@ -61,8 +61,9 @@ present-but-empty artifact is enough, the gate decorates the process instead of 
 - **CR-1 — MUST declare a mode, keep the source unchecked, and isolate every run in a filled copy.** Every
   checklist declares one mode (operational / design / evaluation coverage register), and the source ships
   with every box UNCHECKED. Each run works a fresh FILLED COPY that identifies the source version and the
-  run, and declares a use-style (`read-do` or `do-confirm`) for every pause point it uses — never the
-  source. A pre-ticked source or a run that mutates the source corrupts every later run.
+  run, and declares a use-style (`read-do` or `do-confirm`) for every pause point it uses (an evaluation
+  coverage register has no pause points, so it declares ONE run-level use-style, default `do-confirm`) —
+  never the source. A pre-ticked source or a run that mutates the source corrupts every later run.
 - **CR-2 — MUST keep an evaluation coverage register gate/required-only and closed to three tokens.** In
   evaluation-coverage-register mode a checklist carries gate and required items only — no advisory item —
   and every row closes to exactly one of `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`. An advisory
@@ -163,6 +164,11 @@ This document is written to the project's six-section skill standard form.
 | **Design** | prospective obligations plus decision gates | gate / required / advisory; grouped by pause point or scenario category |
 | **Evaluation coverage register** | evidence-based review of a broad frame | gate / required ONLY — no advisory (CR-2); may exceed nine rows; grouped by category + family |
 
+In evaluation-coverage-register mode a check is **gate/killer** when its miss is the most costly or
+irreversible (a load-bearing acceptance claim, or a safety / data-loss / trust-boundary check) and
+**required** otherwise; with no runtime pause point, the CR-7 stop action reads as *open a blocking
+finding*.
+
 ### Reference data — the five item dimensions
 
 Every item is placed on five orthogonal dimensions:
@@ -205,14 +211,17 @@ The unchecked marker is an unresolved (non-terminal) state, not another token.
 
 A scenario set, when one exists, is a READ input: preserve its hierarchy, stable IDs, obligations, and
 gaps as source traces, and turn each obligation into a `Check`. Do NOT reproduce its category or case
-taxonomy inside the checklist. The scenario set is never modified, so the dependency stays one-way.
+taxonomy inside the checklist. An evaluation register may import the set's family grouping and each
+family's owning-category header as traceability scaffold — that scaffold is NOT the scenario skill's
+10-category coverage register or its 8 case-type taxonomy, which stay owned there. The scenario set is
+never modified, so the dependency stays one-way.
 
 ### Reference data — a well-formed checklist (field lists)
 
 - **Checklist level** — purpose + owner + consumer · mode · use-style per pause point plus the per-run
   declaration · scope + applicability · pause points OR category hierarchy · legend = the resolution
-  enum plus the two-gate meaning (per CR-3) · stable item IDs · source / version distinction · completion
-  rule (per the per-mode grid) · traceability + counts.
+  enum plus the two-gate meaning — the coverage-closure-vs-acceptance split (per CR-3) · stable item IDs ·
+  source / version distinction · completion rule (per the per-mode grid) · traceability + counts.
 - **Item level** — the CR-5 required fields. An advisory item carries a recorded decision, rationale, and
   source, and no proof checkbox.
 

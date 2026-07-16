@@ -64,7 +64,9 @@ the scenario that leads to no design consequence. A set traced in only one direc
 - **SR-2 — MUST cover the positive floor and every triggered minimum.** Every `selected` category has ≥1
   case whose coverage-role exercises the positive discrimination, plus, for each triggered minimum, ≥1
   case whose coverage-role includes that type. Default: one case discharges at most one minimum. The
-  n-ary inseparability record (see § Procedure) is the only multi-discharge.
+  n-ary inseparability record (see § Procedure) is the only multi-discharge. For a category whose point is
+  the bad path (Failure/recovery, Trust/harm), the positive discrimination is its defining handled/safe
+  behavior succeeding — containment, recovery, or rejection works — not a happy path.
 - **SR-3 — MUST give every family an adversarial face.** Every family carries an adversarial case OR an
   explicit `n/a: <property>`. "We have some adversarial somewhere" ships substance-hollow families.
 - **SR-4 — MUST declare one justified primary per family and per case.** Every family declares ONE
@@ -151,6 +153,10 @@ Each category has an objective match predicate: the concrete property that makes
 | 8 | Inclusion / locale | an ACCESS need / input method / language / format / culture / locale |
 | 9 | Change / compatibility / reversibility | a version/lifecycle CHANGE event: upgrade / migration / rollback-as-planned-reversal / deprecation / mixed-version |
 | 10 | Evidence / traceability / clarity | whether the case's SOURCE / PROOF / trace is followable by a cold reader |
+
+**Choosing each category's disposition (SR-1):** Can this concern AFFECT the target? No → `n/a: <property>`
+(name the property that makes it inapplicable). Yes, and its coverage lives in a NAMED other artifact or
+owner → `covered-elsewhere` (plus the SR-7 ledger). Yes, and this set's own families cover it → `selected`.
 
 ### Reference data — declaring a family's primary category
 
