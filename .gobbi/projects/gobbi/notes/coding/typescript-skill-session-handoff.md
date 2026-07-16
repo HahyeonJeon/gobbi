@@ -23,8 +23,9 @@ The `typescript` language skill — the concrete TS-idiom layer beneath `coding`
 
 ## Dual-system evaluation status (the key follow-up)
 - **Codex Execution eval (iter1): REVISE** — found 9 real TS-technical PROSE defects the compile-harness cannot catch (`void` promise, `-> void`, NoInfer, branded-type, EventTarget, Deno/Bun strip-vs-transpile, browser-annotations, skipLibCheck/isolatedDeclarations/noUncheckedIndexedAccess/`as const` wording). **ALL 9 FIXED + re-verified (84 examples still compile, crosswalk 25/25, guards green) + pushed** (commit e49a33c5).
-- **Codex Execution eval (iter2 re-confirm): running at session end** — check `4-execution/evaluation/iter2/codex/overall.md` for its verdict; address any residual before merge.
-- **Claude holistic Execution eval: NOT RUN — blocked by a usage limit** (reset 8:50am UTC 2026-07-16). This is the one gap. Rerun it next session (holistic: deepen-not-restate, coverage vs design, cross-doc consistency, usage) before merging.
+- **Codex Execution eval (iter2 re-confirm): ATTEMPTED but FAILED — "Selected model is at capacity" (gpt-5.6-sol) after ~335k tokens; no `overall.md` verdict written.** RE-RUN when Codex capacity returns. (The iter1 fixes are independently verified — 84 examples compile, crosswalk 25/25, guards green — and each directly implements Codex's own cited iter1 correction, so residual risk is low; re-run for a clean loop-close.)
+- **Claude holistic Execution eval: NOT RUN — blocked by a usage limit** (reset 8:50am UTC 2026-07-16). Rerun next session (holistic: deepen-not-restate, coverage vs design, cross-doc consistency, usage) before merging.
+- **Both eval confirmations were capacity-blocked at session end** — the primary Codex iter1 eval (which found + drove the 9 fixes) DID complete; only the confirmation passes are pending.
 
 ## NEXT SESSION (in order)
 1. Read the Codex iter2 re-confirm verdict; fix any residual defect it flags.
