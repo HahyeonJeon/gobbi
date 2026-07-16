@@ -83,12 +83,17 @@ proof, because nothing downstream re-checks it.
 
 ## Rules
 
+These Rules are the greenfield house default. When reviewing or maintaining EXISTING code, apply them to
+new and changed code — they are not a mandate to migrate an existing codebase's module system or syntax.
+
 ### Must-Follow
 
 - **MUST compile under a maximal-strict `tsconfig`** — `strict` plus `noUncheckedIndexedAccess`,
   `exactOptionalPropertyTypes`, `noPropertyAccessFromIndexSignature`, `noImplicitOverride`,
   `noImplicitReturns`, and `noFallthroughCasesInSwitch`; an unchecked index, an exact-optional
-  violation, or a missing return then fails the build, not a reader.
+  violation, or a missing return then fails the build, not a reader. This Rule names the type-safety
+  flags; the full base (resolution, target, `lib`, isolated-module and erasable flags) lives in
+  [`modules-tooling.md` §1](modules-tooling.md) — read it when authoring a `tsconfig`.
 - **MUST use ESM with `verbatimModuleSyntax`** — a type-only import written `import type`, a value
   import left plain; erasure is then deterministic and the emitted JavaScript matches the source.
 - **MUST pick the import extension by consumption mode** — a `tsc`-emitted library uses the `.js`
@@ -358,7 +363,7 @@ focused evidence before the next, and every affected surface moved in lockstep.
 
 Prove the whole change after the per-slice checks, in this fixed order, fixing a failure before the
 next: **format** (deterministic formatter, check mode) → **lint** (`typescript-eslint` typed rules —
-under a TS 7.0 install this runs against the side-by-side TS 6.x-compat API, not the 7.0 binary) →
+under a TS 7.0 install this runs against a JS-based TS compatibility API — not the native 7.0 binary — whose exact package is pending 7.0 GA) →
 **type-check** (`tsc --noEmit`, maximal-strict) → **focused tests** → **full tests** → **type-level
 tests** (`expectTypeOf` / `tsd` / `@ts-expect-error`) → **build** (declaration emit + `publint` +
 `arethetypeswrong`, when publishing a package). Each gate is self-failing (`cmd || exit 1`). For a bug,

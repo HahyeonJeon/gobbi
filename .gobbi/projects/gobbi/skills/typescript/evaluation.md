@@ -87,7 +87,7 @@ Run this after the evaluation Stage 0 target read and before locking the Stage 1
    the filled `checklist.md` stays the coverage register.
 5. **Demand bottom-up evidence for the operation checks.** One final green `tsc` proves only final state; require
    ordered evidence of both checkpoints — a typed skeleton that imports and type-checks green before behavior
-   (`TS-CHECK-14`, `TS-SCENARIO-08`) and focused verification after each slice (`TS-CHECK-15`). First evidence
+   (`TS-CHECK-15`, `TS-SCENARIO-08`) and focused verification after each slice (`TS-CHECK-16`). First evidence
    arriving only after a whole-feature pass fails the bottom-up check.
 
 ---

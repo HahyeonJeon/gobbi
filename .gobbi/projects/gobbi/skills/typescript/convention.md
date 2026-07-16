@@ -129,7 +129,7 @@ TSDoc uses `/** … */`. Types live in the annotations — never repeat a type i
 |---|---|
 | `@param name - desc` | each meaningful parameter — the signature already carries its type |
 | `@returns desc` | the returned value; omit for a `void` return |
-| `@throws {ErrorType} desc` | each error a caller can reasonably catch |
+| `@throws {@link ErrorType} desc` | each error a caller can reasonably catch — name it with `{@link}` or prose, not a JSDoc `{Type}` expression |
 | `@typeParam T - desc` | a type parameter whose role is not obvious |
 | `@example` | runnable usage |
 | `@remarks` | rationale or constraints beyond the one-line summary |
@@ -141,7 +141,7 @@ TSDoc uses `/** … */`. Types live in the annotations — never repeat a type i
  *
  * @param userId - the caller whose quota is charged
  * @returns `true` when a token was granted, `false` when the bucket is empty
- * @throws {RangeError} when `userId` is empty
+ * @throws {@link RangeError} when `userId` is empty
  */
 function acquire(userId: string): boolean {
   if (userId.length === 0) {
