@@ -442,7 +442,7 @@ Stage 1 writes these session-scoped planning artifacts (all under `sessions/{dat
 
 | Path | Purpose |
 |---|---|
-| `working/pre-wrap-up-snapshot.txt` | Baseline project-memory state (filesystem + hashes) the Stage-3 gate diffs against |
+| `working/pre-wrap-up-snapshot.txt` | Baseline durable-memory state (filesystem + hashes) the Stage-3 gate diffs against |
 | `working/staging-inventory.md` | Complete permitted-source inventory with stable identities + hashes |
 | `working/correction-overlays/` | Mechanical normalization deltas (E1); prior-loop sources are never rewritten |
 | `working/promotion-manifest.md` | Frozen source-accounting rows, mutation rows, collision decisions, and destination preimages |
