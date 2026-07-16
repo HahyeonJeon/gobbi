@@ -136,9 +136,10 @@ class MapStore implements Store {
 ```
 
 Substitute at the *real* boundary — the injected `Store`, not a helper the unit calls internally, which
-would make the test assert private structure. If a mock is unavoidable, assert the effect it recorded
-(`transport.sent` equals the expected requests), never `callCount`. Needing many stand-ins to run one test
-is a design signal: the unit wants a narrower seam, not more mocks.
+would make the test assert private structure. If a mock is unavoidable, prefer asserting the effect it
+recorded (`transport.sent` equals the expected requests) over a bare `callCount`; assert the count or order
+only when it is itself the observable contract — a retry limit, a batch size, a rate cap, an audit sequence.
+Needing many stand-ins to run one test is a design signal: the unit wants a narrower seam, not more mocks.
 
 ## 3. Determinism at the seam: time, randomness, concurrency
 
@@ -237,8 +238,10 @@ type _bad = Expect<Equal<ReturnType<typeof first<number>>, number>>;
 ```
 
 `@ts-expect-error` asserts a line **should** fail to type-check: the block compiles clean *if and only if*
-the error is present. A genuinely-broken assertion fails, and a since-fixed one *also* fails (the directive
-now guards a valid line), so the marker self-verifies. It reads at the value level too — a wrong annotation
+some error is present on that line. A genuinely-broken assertion fails, and a since-fixed one *also* fails
+(the directive now guards a valid line). But it does NOT check WHICH error fires — a typo, a missing import,
+or an unrelated failure keeps it green too — so it proves the line errors, not that it errors for the intended
+reason. Where the exact reason matters, pair it with a positive assertion (the `Equal`/`Expect` form above). It reads at the value level too — a wrong annotation
 must be rejected:
 
 ```ts type-level
@@ -256,5 +259,5 @@ const wrong: string[] = flags;
 line that no longer errors is itself a `tsc` error under the type-test pass, so running the type tests
 (SKILL.md P7's *type-level tests* gate) catches a directive that has gone stale. This skill's own fenced
 `ts` blocks are type-tested by exactly this mechanism — the example harness compiles each one under the
-maximal-strict baseline, applying the same rule the SKILL.md Rules state: an example is a taught fact, not
-decoration.
+maximal-strict *type-safety* baseline (unused-symbol hygiene relaxed for standalone snippets), applying the
+same rule the SKILL.md Rules state: an example is a taught fact, not decoration.

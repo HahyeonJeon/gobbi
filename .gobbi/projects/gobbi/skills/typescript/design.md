@@ -190,10 +190,9 @@ generic *form* — `const` type parameters, variance, and bounds.
 
 ## 3. Composition and ownership boundaries
 
-**Compose by holding a collaborator; do not inherit to borrow behavior.** Receive a collaborator at the
-constructor boundary and hold it as a `readonly` field, typed by a small structural `interface` so the surface
-stays swappable and testable. Inheriting merely to reuse a method welds two surfaces that should move
-independently; vary one behavior with a function value or an injected collaborator, not a subclass.
+**Compose by holding a collaborator; do not inherit to borrow behavior** — `coding` owns *why* (composition
+over inheritance); the TypeScript spelling is here. Receive a collaborator at the constructor boundary and hold
+it as a `readonly` field, typed by a small structural `interface` so the surface stays swappable and testable.
 
 **`readonly` marks the ownership and mutation boundary the signature would otherwise leave unstated.** A
 `readonly` field cannot be reassigned; a `readonly T[]` parameter tells the caller "I only read this array, I

@@ -36,15 +36,16 @@ blocks are taught facts that type-check under the skill's maximal-strict example
 
 ## 1. The strict base: 17 always-on flags
 
-Every artifact extends one strict base — the 14-flag `@tsconfig/strictest` preset plus three flags that
-post-date it. This is the maximal-strict floor SKILL.md's first Rule names; the config below is the whole of
-it, each flag written once.
+Every artifact extends one strict base — the `@tsconfig/strictest` preset plus a few flags that post-date it.
+This is the maximal-strict floor SKILL.md's first Rule names; the config below is the whole of it, each flag
+written once. (Track the preset's current contents at its source rather than a fixed count — it drifts across
+versions.)
 
 ```jsonc
 // tsconfig.base.json — the 17 always-on flags. Extend it; never weaken it.
 {
   "compilerOptions": {
-    // @tsconfig/strictest (14)
+    // from @tsconfig/strictest
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
@@ -59,7 +60,7 @@ it, each flag written once.
     "isolatedModules": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    // added atop the preset (3)
+    // added atop the preset
     "verbatimModuleSyntax": true,
     "noUncheckedSideEffectImports": true,
     "erasableSyntaxOnly": true
@@ -248,23 +249,18 @@ per-keystroke cost.
 
 **TS 7.0 caveat (honest).** The native Go compiler at TS 7.0 ships NO programmatic compiler API (7.1 is
 expected to add one), and `typescript-eslint` needs that API. So under a 7.0 install, typed lint does NOT run
-against the 7.0 binary: it runs against a side-by-side TS 6.x-compatible API package
-(`@typescript/typescript6`, which exposes a `tsc6`). Treat 7.0 as a type-check SPEED target for
+against the 7.0 binary: it runs against a side-by-side JS-based TS-compatibility API package (the exact
+package and binary name are pending 7.0 GA). Treat 7.0 as a type-check SPEED target for
 `tsc --noEmit`, not as one toolchain that also satisfies the typed-lint gate — the P7 lint step runs on the
 6.x-compat API alongside it.
 
 ## 7. Formatting: Prettier or Biome
 
-Formatting is not a type concern: it runs first in the P7 verify order and never blocks on types. Pick one
-deterministic formatter and run it in check mode in CI:
-
-- **Prettier** is the default — ubiquitous, editor-integrated, opinionated.
-- **Biome** is the fast alternative — a single Rust tool that formats AND lints, much faster on a large tree,
-  at the cost of a smaller ecosystem.
-
-Follow the project's existing choice; two formatters fighting over the same file is pure churn. Neither
-replaces `typescript-eslint`'s typed rules (§6) — a formatter arranges code, it does not reason about types,
-and Biome's linter is not type-aware, so it does not cover `no-floating-promises`.
+`convention.md` §5 owns the formatter stance (Prettier is the default; Biome is the faster all-in-one; follow
+the project's choice, commit the config, run it in check mode in CI). The tooling point here: a formatter runs
+first in the P7 order and is layout-only — it never reasons about types, so neither Prettier nor Biome's linter
+replaces `typescript-eslint`'s typed rules (§6); Biome's linter is not type-aware, so it does not cover
+`no-floating-promises`.
 
 ## 8. Build: `tsc` vs a bundler
 
@@ -283,7 +279,8 @@ esbuild bundle — a library convenience, but the `.d.ts` still comes from `tsc`
 
 ## 9. Compiler performance
 
-Three levers cut `tsc` time on a growing codebase without weakening a single type:
+Three levers cut `tsc` time on a growing codebase. They do not weaken your SOURCE's type-checking — though
+`skipLibCheck` does relax full checking of `.d.ts` declaration files (the first lever below):
 
 - **`skipLibCheck`** (already in the base, §1) skips full checking of `.d.ts` declaration files — a large,
   mostly-stable surface, dependency and project-owned alike. Your `.ts` source is still fully checked; a local
