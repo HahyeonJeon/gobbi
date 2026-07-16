@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`. Provides the per-perspective evaluation **procedure** for a Wrap-up Loop's session consolidation: each perspective's **lens**, its **recommended verifications**, and its **perspective-specific anti-patterns**, plus the **Overall (Stage 3)** anchors. The concrete GOOD / BAD / adversarial **scenario families** live in the sibling `scenario.md`, and their yes/no **checks** live in the sibling `checklist.md` (whose heading tree mirrors `scenario.md`); each perspective below points to its section in both.
 
-The artifact under evaluation is the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/` files (the handoff summary, shipped-summary, next-session-pointers, and any decomposed artifact the Wrap-up assistant produced) **plus** the full set of memory promotions Wrap-up made.
+The artifact under evaluation is the Wrap-up loop's working handoff draft at `sessions/{date}-{session-id}/5-wrap-up/working/handoff-draft.md` **plus** the full set of memory promotions Wrap-up made. Stage 4 has not yet sealed the draft to the PASS-only `outputs/handoff.md` when this gate runs.
 
 **Derive the evaluated destination set from the frozen promotion manifest — not from a copied directory list.** Follow this procedure at Stage 0:
 
@@ -16,7 +16,7 @@ Wrap-up promotion targets span the entire memory surface (feature-scoped `featur
 
 The promotion is part of the wrap-up artifact — evaluation must verify it across every destination the manifest names, not assume it.
 
-**This evaluation IS pipeline stage 3 — memory validation.** In the wrap-up pipeline (see [`wrap-up/SKILL.md` § Loop and pipeline map](SKILL.md#loop-and-pipeline-map)), the Wrap-up loop's dual-system EVALUATION and stage-3 memory validation are the same gate (D11). The Stage-2 Promotion is the artifact under evaluation here; this evaluation validates it. The verdict gates the irreversible **stage 5 — git finalization** (commit / push / merge / worktree cleanup): only a stage-3 `PASS` lets git run. `REVISE` re-runs the Stage-2 Promotion; `FAIL` escalates to the user. Neither lets git run.
+**This evaluation IS pipeline stage 3 — memory validation.** In the wrap-up pipeline (see [`wrap-up/SKILL.md` § Loop and pipeline map](SKILL.md#loop-and-pipeline-map)), the Wrap-up loop's dual-system EVALUATION and stage-3 memory validation are the same gate (D11). The Stage-2 Promotion is the artifact under evaluation here; this evaluation validates it. The verdict gates the irreversible **stage 5 — git finalization** (commit / push / merge / worktree cleanup): only a stage-3 `PASS` lets git run. `REVISE` returns to Stage 1; `FAIL` escalates to the user. Neither lets git run.
 
 Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting — and no other settings path — can remove it. A wrap-up that consolidates incorrectly poisons every future session. The cost of catching a bad wrap-up is paid once; the cost of missing it compounds. Because stage 3 always gates the irreversible git stage 5, skipping it is never permitted. The scenario families in `scenario.md` already include adversarial cases (phantom completion claims, silent supersession, missed mistakes, premature finalization, a certified Stage-5 phantom, mutated prior-loop evidence) so Stage 2 walks each Frame once without a separate adversarial pass.
 
@@ -125,7 +125,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 
 | Tool | Use for |
 |---|---|
-| Read `5-wrap-up/outputs/` cold — required sections, substantive entries, stamps, placeholders, self-evident ordering | Test the "next session opens this first" experience |
+| Read `5-wrap-up/working/handoff-draft.md` cold — required sections, substantive entries, placeholders, self-evident ordering | Test the draft that Stage 3 actually evaluates before Stage 4 seals it on `PASS` |
 | Resolve every durable pointer from the repository root; reject both absolute worktree paths and `./...` cwd-relative paths | Detect a pointer that dies at worktree cleanup |
 
 ### Perspective-specific anti-patterns
@@ -174,7 +174,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 |---|---|
 | Diff `staging/` directory contents vs promoted memory files (source inventory vs manifest accounting: promote / backlog / documented-drop / already-promoted; startup excluded) | Detect staging artifacts that were silently dropped |
 | `grep` "supersedes" / "updates" in newly promoted files | Confirm conflicts with prior memory are declared, not silent |
-| Cross-reference scan: every link / path in `5-wrap-up/outputs/` and all manifest-derived destinations | Detect link rot at handoff time |
+| Cross-reference scan: every link / path in `5-wrap-up/working/handoff-draft.md` and all manifest-derived destinations | Detect link rot in the evaluated handoff draft |
 | Diff session transcript's correction passages vs new `mistakes/` entries, staged mistakes, and explicit user-decision records declining promotion | Detect a missed mistake (a correction the user did NOT decline is unaccounted) |
 | Confirm each superseded record is flipped `status: superseded` + `superseded_by:`, `git mv`-moved to `archive/{type}/{area}/` with original type/content retained, and its inbound path references repointed as one mutation set | Detect a one-directional supersession or a terminal-record deletion |
 
@@ -249,4 +249,4 @@ The evaluator writes **nine** output files per system: the seven per-perspective
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
 
-The Wrap-up loop is special: a `FAIL` here is **terminal escalation** — the manager uses the active runtime's user-decision primitive to present the failure findings to the user and decide next action (typically: accept the partial wrap-up with acknowledged gaps, re-run WORK with corrective direction, or abort session closure and defer to a follow-up session). `FAIL` does NOT automatically trigger a REVISE re-entry; that would mask a promotion failure the user should be aware of. `REVISE` (not FAIL) is the normal iteration path for fixable promotion gaps — a REVISE re-runs the Stage-2 Promotion, and Stage 5 remains blocked. See `wrap-up/SKILL.md` § EVALUATION — Stage 3 for the authoritative verdict routing.
+The Wrap-up loop is special: a `FAIL` here is **terminal escalation** — the manager uses the active runtime's user-decision primitive to present the failure findings to the user and decide next action (typically: accept the partial wrap-up with acknowledged gaps, re-run WORK with corrective direction, or abort session closure and defer to a follow-up session). `FAIL` does NOT automatically trigger a REVISE re-entry; that would mask a promotion failure the user should be aware of. `REVISE` (not FAIL) is the normal iteration path for fixable promotion gaps — a REVISE returns to Stage 1, and Stage 5 remains blocked. See `wrap-up/SKILL.md` § EVALUATION — Stage 3 for the authoritative verdict routing.

@@ -92,9 +92,14 @@ manager records the user's decision, resume at P1 so the complete plan is rebuil
 
 1. Read the manager-confirmed list of expected prior loops, Execution tasks, and Chat slices. Do NOT infer
    completion only from directories that happen to exist.
-2. Snapshot the pre-Wrap-up memory tree to `5-wrap-up/working/pre-wrap-up-snapshot.txt` — enumerate
-   `.gobbi/projects/{project-name}/` by filesystem listing plus per-file hashes, **never** `git status`. The
-   `sessions/` tree is gitignored and worktree-local, so `git status` is not proof of what it contains.
+2. On the **first** Stage-1 entry only, snapshot the pre-Wrap-up memory tree to
+   `5-wrap-up/working/pre-wrap-up-snapshot.txt` — enumerate `.gobbi/projects/{project-name}/` by filesystem
+   listing plus per-file hashes, **never** `git status`. Guard the write: capture this original baseline only
+   when the path is absent. It is immutable across `REVISE` iterations; a Stage-1 re-entry MUST read and reuse
+   it, never overwrite it with the already-mutated tree. Put any per-iteration derivative comparison in
+   `5-wrap-up/working/snapshot-iter{n}.txt`. The original `pre-wrap-up-snapshot.txt` remains the Stage-3 delta
+   authority. The `sessions/` tree is gitignored and worktree-local, so `git status` is not proof of what it
+   contains.
 3. Enumerate the permitted source paths recursively (staging only — never `transcripts/`, `working/`,
    `evaluation/`, `outputs/`, or the excluded `startup/`) and write `5-wrap-up/working/staging-inventory.md`:
    each source's session-root-relative path, byte size, content hash, and extracted staging metadata.
@@ -210,12 +215,13 @@ standard are owned by [`memory/rules.md § 5`](../memory/rules.md).
 
 ### P8 — Draft the handoff summary
 
-**Stage 2 — Promotion.** Author the canonical handoff at `5-wrap-up/outputs/handoff.md` with the required
+**Stage 2 — Promotion.** Author the handoff draft at `5-wrap-up/working/handoff-draft.md` with the required
 sections (Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary). Every claim
-cites a verifiable artifact path — a commit hash, a promoted file path, a backlog entry. This step authors the
-file only; the manager shows it to the session as the final message, and only after the Stage-3 gate returns
-`PASS`. The session-scoped `handoff.md` dies with the worktree; its durable counterpart is the per-session
-journal entry (a promoted `notes/{area}/{date}-{slug}.md` record) that survives for the next session.
+cites a verifiable artifact path — a commit hash, a promoted file path, a backlog entry. Stage 3 evaluates this
+working draft; Stage 4 copies and seals it to the PASS-only `5-wrap-up/outputs/handoff.md` only after Stage 3
+returns `PASS`. The manager then shows the sealed handoff to the session as the final message. The session-scoped
+handoff dies with the worktree; its durable counterpart is the per-session journal entry (a promoted
+`notes/{area}/{date}-{slug}.md` record) that survives for the next session.
 
 ### P9 — Prove the post-promotion tree is green
 
@@ -227,9 +233,9 @@ journal entry (a promoted `notes/{area}/{date}-{slug}.md` record) that survives 
    staging remains byte-and-path unchanged after both stages (E1; this is the S-16 immutability property).
 3. Run the [post-promotion standing-guard green-check](#post-promotion-standing-guard-green-check).
 4. If a guard exposes a legitimate new carrier that requires a tracked allowlist change, treat that change as a
-   **new planned mutation**: return to Stage 1, capture its preimage, and rebuild the complete manifest (a
-   Stage-2 re-run / `REVISE`). Never patch an allowlist outside the manifest and then claim the original
-   manifest covered it.
+   **new planned mutation**: on `REVISE`, return to Stage 1, re-inventory, capture its preimage, and rebuild the
+   complete manifest. Never patch an allowlist outside the manifest and then claim the original manifest
+   covered it.
 5. Freeze the final inventory, manifest, applied-delta report, and guard results for the independent Stage-3
    evaluation gate.
 
@@ -442,11 +448,12 @@ Stage 1 writes these session-scoped planning artifacts (all under `sessions/{dat
 
 | Path | Purpose |
 |---|---|
-| `working/pre-wrap-up-snapshot.txt` | Baseline durable-memory state (filesystem + hashes) the Stage-3 gate diffs against |
+| `working/pre-wrap-up-snapshot.txt` | Original baseline durable-memory state, captured only on the first Stage-1 entry and immutable across `REVISE`; the Stage-3 delta authority |
+| `working/snapshot-iter{n}.txt` | Optional iteration-scoped derivative comparison; never replaces or overwrites the original baseline |
 | `working/staging-inventory.md` | Complete permitted-source inventory with stable identities + hashes |
 | `working/correction-overlays/` | Mechanical normalization deltas (E1); prior-loop sources are never rewritten |
 | `working/promotion-manifest.md` | Frozen source-accounting rows, mutation rows, collision decisions, and destination preimages |
-| `outputs/handoff.md` | Session-scoped handoff (authored at P8; sealed at RECORD) |
+| `working/handoff-draft.md` | Session-scoped handoff draft authored at P8 and evaluated at Stage 3; Stage 4 seals it to `outputs/handoff.md` only on `PASS` |
 
 The promotion pass is complete only when:
 

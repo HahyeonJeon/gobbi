@@ -51,7 +51,7 @@ Promotion creates claims future sessions will trust, and a wrong wrap-up poisons
 - **MUST count every `{type}/{area}` post-promotion and route an over-`hardCap` area to an Always-Ask decision** — a dormant switch let an area reach 44 records against a 15 cap unnoticed.
 - **MUST cite a verifiable artifact for every handoff claim** — an unbacked "shipped X" is a phantom the next session acts on.
 - **MUST stamp every promotion from its type's template** — a freeform write drifts from the schema.
-- **MUST treat DISCUSSION as read-only on memory** — only WORK's Promotion stage may write memory.
+- **MUST treat DISCUSSION as read-only on memory** — substantive memory promotion is confined to WORK Stage 2; RECORD may only seal the evaluated result and performs no new promotion.
 
 ### Must-Not-Follow
 
@@ -70,7 +70,7 @@ Promotion creates claims future sessions will trust, and a wrong wrap-up poisons
 
 ## Procedure
 
-Wrap-up runs the four loop phases as a five-stage gated pipeline. The stages run in fixed order across three owners, and the one irreversible action — git — is last. The Stage-1/2 detail (routing, area resolution, the frontmatter strip allowlist, collision policy, archive routing, the compliance scan, the session-subdir cleanup, and the post-promotion green-check) lives in [`promotion.md`](promotion.md); the compaction sub-procedure lives in [`compaction.md`](compaction.md).
+Wrap-up runs the four loop phases as a five-stage gated pipeline. The stages are ordered on the `PASS` path across three owners, with verdict-dependent re-entry: a Stage-3 `REVISE` returns to Stage 1 and re-runs source inventory, validation, and the E6 complete-preimage preflight before re-promotion. The one irreversible action — git — is last. The Stage-1/2 detail (routing, area resolution, the frontmatter strip allowlist, collision policy, archive routing, the compliance scan, the session-subdir cleanup, and the post-promotion green-check) lives in [`promotion.md`](promotion.md); the compaction sub-procedure lives in [`compaction.md`](compaction.md).
 
 ### Loop and pipeline map
 
@@ -80,7 +80,7 @@ Wrap-up runs the four loop phases as a five-stage gated pipeline. The stages run
 | WORK | Stage 1 — Validate & plan | Inventory the immutable session sources; validate them (compliance scan); build the complete manifest plus candidates, collision decisions, and destination preimages. No memory mutation. |
 | WORK | Stage 2 — Promotion & consolidate | Recheck preimages; apply the frozen manifest; write the journal; supersede and archive; run the compaction sub-procedure; draft the handoff. |
 | EVALUATION | Stage 3 — Validate memory & handoff | Both systems evaluate the frozen inventory / manifest / delta / guards / handoff. Each verdict advances to RECORD first. `REVISE` → Stage 1; `FAIL` → escalate; neither permits Stage 5. |
-| RECORD | Stage 4 — Seal closure evidence | Seal the evaluated handoff, the memory-reads audit, the resolution log, and iter state. No new promotion. |
+| RECORD | Stage 4 — Seal closure evidence | On `PASS`, seal the evaluated working handoff draft to `outputs/handoff.md` with the memory-reads audit and resolution log; on every verdict, seal iter state. No new promotion. |
 | Manager exit | Stage 5 — Finalize & close | Manager runs git finalization after `PASS`, presents the handoff and result, emits `workflow.finish`, cleans the worktree. |
 
 ### Child docs
@@ -108,19 +108,19 @@ The leader is not spawned; the design is locked across the prior loops. The mana
 
 ### WORK — Stages 1–2 (delegated to `assistant`)
 
-WORK is the substantive Wrap-up work and the only loop's WORK that writes memory. The assistant runs the [`promotion.md`](promotion.md) procedure in order; the summary below maps its two stages.
+The substantive memory promotion happens in WORK Stage 2. RECORD is the uniquely permitted memory-writing RECORD across loops, but it only seals the evaluated result and performs no new promotion; Stage 4 does not promote. The assistant runs the [`promotion.md`](promotion.md) procedure in order; the summary below maps its two WORK stages.
 
 **Stage 1 — Validate & plan (no memory mutation).** Snapshot the pre-Wrap-up `.gobbi/projects/{project-name}/` state as the evaluation baseline. Inventory `staging/` across every expected prior loop — and every Chat per-slice `staging/` in a Chat session — and ONLY `staging/`; never `working/`, `outputs/`, `evaluation/`, or `transcripts/`, and never the `startup/` surface (startup owns its startup-close promotion). Run the prior-loop compliance scan (read-only: a mechanical gap normalizes only into the promoted candidate through a correction overlay, never into the source; a judgment gap escalates via `NEEDS_CONTEXT`). Resolve every route, render every candidate, and freeze one complete manifest plus destination preimages before any write.
 
-**Stage 2 — Promotion & consolidate.** Recheck the preimages, then apply the frozen manifest: bootstrap each destination lazily, stamp its type template, write each promoted file, and for a terminal collision supersede plus `git mv` the old file to `archive/`. Write the one per-session journal entry at `notes/{area}/{date}-{slug}.md` (the durable cross-session handoff). Run the compaction sub-procedure ([`compaction.md`](compaction.md)) as Stage 2's final sub-step, so the non-skippable Stage-3 gate validates its writes. Draft the handoff at `5-wrap-up/outputs/handoff.md`. When `propose.mode: dual`, integrate the frozen Codex proposal per [`production.md`](../orchestration/workflow/production.md) and log deltas to `reconciliation-iter{n}.md`; a missing proposal is not a gate — degraded mode stamps `production_mode: claude-only`.
+**Stage 2 — Promotion & consolidate.** Recheck the preimages, then apply the frozen manifest: bootstrap each destination lazily, stamp its type template, write each promoted file, and for a terminal collision supersede plus `git mv` the old file to `archive/`. Write the one per-session journal entry at `notes/{area}/{date}-{slug}.md` (the durable cross-session handoff). Run the compaction sub-procedure ([`compaction.md`](compaction.md)) as Stage 2's final sub-step, so the non-skippable Stage-3 gate validates its writes. Draft the handoff at `5-wrap-up/working/handoff-draft.md`; Stage 3 evaluates that working draft, and Stage 4 seals it to `5-wrap-up/outputs/handoff.md` only on `PASS`. When `propose.mode: dual`, integrate the frozen Codex proposal per [`production.md`](../orchestration/workflow/production.md) and log deltas to `reconciliation-iter{n}.md`; a missing proposal is not a gate — degraded mode stamps `production_mode: claude-only`.
 
 ### EVALUATION — Stage 3 (the non-skippable dual-system gate)
 
-This phase IS pipeline Stage 3 — memory validation — and it is NON-SKIPPABLE: no setting removes it, and it always gates the irreversible git Stage 5. Two independent systems (Claude Code + Codex) evaluate the frozen handoff, promotion manifest, staging inventory, pre-Wrap-up snapshot, and the post-promotion project delta across all seven perspectives plus Overall; the manager reconciles them to one `PASS` / `REVISE` / `FAIL` verdict. Stage 3 verifies only "no premature finalization plus a valid manager plan / ownership" — it never certifies a Stage-5 git outcome that cannot exist before finalization. The post-promotion standing-guard green-check that gates `PASS` re-runs every standing guard — `validate-frontmatter.sh`, `check-markdown-links.sh`, `check-residual-vocab.sh`, `check-skill-mistakes.sh`, and `check-workflow-mirror-consistency.sh` — over the post-promotion tree per [`promotion.md`](promotion.md#post-promotion-standing-guard-green-check); the compaction sub-procedure adds `check-merge-ref-integrity.sh` when it runs a merge. `REVISE` re-runs Stage 2; `FAIL` escalates through the user-decision primitive; neither lets Stage 5 run.
+This phase IS pipeline Stage 3 — memory validation — and it is NON-SKIPPABLE: no setting removes it, and it always gates the irreversible git Stage 5. Two independent systems (Claude Code + Codex) evaluate the frozen working handoff draft, promotion manifest, staging inventory, original pre-Wrap-up snapshot, and the post-promotion project delta across all seven perspectives plus Overall; the manager reconciles them to one `PASS` / `REVISE` / `FAIL` verdict. Stage 3 verifies only "no premature finalization plus a valid manager plan / ownership" — it never certifies a Stage-5 git outcome that cannot exist before finalization. The post-promotion standing-guard green-check that gates `PASS` re-runs every standing guard — `validate-frontmatter.sh`, `check-markdown-links.sh`, `check-residual-vocab.sh`, `check-skill-mistakes.sh`, and `check-workflow-mirror-consistency.sh` — over the post-promotion tree per [`promotion.md`](promotion.md#post-promotion-standing-guard-green-check); the compaction sub-procedure adds `check-merge-ref-integrity.sh` when it runs a merge. `REVISE` returns to Stage 1; `FAIL` escalates through the user-decision primitive; neither lets Stage 5 run.
 
 ### RECORD — Stage 4 (seal closure evidence)
 
-RECORD runs after every EVALUATION (any verdict) and seals — it does not promote (Promotion is Stage 2, in WORK). It stamps the handoff frontmatter, writes the `memory-reads` and `resolution-log` audits, upserts `session.json`, and preserves the transcript, per [`record/SKILL.md`](../record/SKILL.md). Any new promotable finding from Wrap-up's own EVALUATION routes through the promotion contract — RECORD improvises no destination.
+RECORD runs after every EVALUATION (any verdict) and seals — it performs no new promotion. On every verdict, it upserts `session.json` and preserves the transcript. On `PASS`, it copies the evaluated `5-wrap-up/working/handoff-draft.md` to the PASS-only `5-wrap-up/outputs/handoff.md`, stamps the handoff frontmatter, and writes the `memory-reads` and `resolution-log` audits, per [`record/SKILL.md`](../record/SKILL.md). Any new promotable finding from Wrap-up's own EVALUATION routes through the promotion contract — RECORD improvises no destination.
 
 ### EXIT — Stage 5 (manager-owned; runs LAST)
 
@@ -132,12 +132,13 @@ Session writes are scoped to `5-wrap-up/`; memory writes follow the [Staging →
 
 | Path | Written by |
 |---|---|
-| `5-wrap-up/working/{pre-wrap-up-snapshot.txt, staging-inventory.md, promotion-manifest.md, reconciliation-iter{n}.md, discussion-log.md}` | assistant (WORK) / manager (DISCUSSION) |
+| `5-wrap-up/working/{pre-wrap-up-snapshot.txt, snapshot-iter{n}.txt, staging-inventory.md, promotion-manifest.md, reconciliation-iter{n}.md, discussion-log.md, handoff-draft.md}` | assistant (WORK) / manager (DISCUSSION) |
 | `5-wrap-up/working/proposals/codex/draft-iter{n}.md` | Codex proposer — frozen before integration |
-| `5-wrap-up/outputs/{handoff.md, memory-reads.md, resolution-log.md}` | assistant (WORK / RECORD) — PASS only |
+| `5-wrap-up/outputs/{handoff.md, memory-reads.md, resolution-log.md}` | assistant (RECORD) — PASS only |
 | `5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` + `checklist.md` | evaluator (EVALUATION) |
 | memory promotions per the routing table, plus the `notes/{area}/{date}-{slug}.md` journal | assistant (WORK Stage 2) |
-| `session.json` (`workflow.wrap-up` upsert; `workflow.finish` on final PASS) | assistant (RECORD) |
+| `session.json` (`workflow.wrap-up` upsert) | assistant (RECORD) |
+| `workflow.finish` | manager (Stage 5) |
 
 ---
 
