@@ -36,8 +36,9 @@ compiler does not check.
 ## 1. Promise idioms and no floating promises
 
 A `Promise` is an ordinary value, so the compiler lets you discard one — and a discarded rejection
-surfaces later as an unhandled rejection, far from its cause. SKILL.md Rules state the fix (`await`,
-`void`, or `.catch`); the mechanic is that each is a *deliberate* handling and a bare call is not:
+surfaces later as an unhandled rejection, far from its cause. SKILL.md Rules state the fix — `await`,
+`return`, or a real `void promise.catch(...)`; a bare `void promise` is NOT a handler. The mechanic is
+that each real form is a *deliberate* handling and a bare call is not:
 
 ```ts
 declare function save(id: string): Promise<void>;
@@ -143,12 +144,21 @@ rejecting timer (typed `Promise<never>`, since it only ever rejects):
 
 ```ts
 async function withTimeout<T>(work: Promise<T>, ms: number): Promise<T> {
-  const timer = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error("timed out")), ms);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("timed out")), ms);
   });
-  return Promise.race([work, timer]); // Promise<T | never> is Promise<T>
+  try {
+    return await Promise.race([work, timeout]); // Promise<T | never> is Promise<T>
+  } finally {
+    clearTimeout(timer); // release the timer on every path — `race` never clears it
+  }
 }
 ```
+
+`Promise.race` does not *cancel* the losing input: after a timeout, `work` keeps running unless it is
+threaded an `AbortSignal` (§2). The `finally` above only clears the timer — race bounds the *wait*, not
+the *work*.
 
 `Promise.any` fulfills on the first input to *fulfill* — a rejection is ignored unless every input
 rejects, at which point it throws an `AggregateError` carrying them all. It is the "first success" idiom
@@ -185,8 +195,8 @@ async function sum(): Promise<number> {
 ```
 
 Type the *consumer* against `AsyncIterable<T>`, not a concrete generator, so any async source — a
-stream, a paginated API — satisfies it. `noUncheckedIndexedAccess` and `noImplicitReturns` force the
-empty-source path to be explicit:
+stream, a paginated API — satisfies it. `noImplicitReturns`, with the declared `Promise<T | undefined>`
+return type, forces the empty-source path to be explicit:
 
 ```ts
 async function firstOf<T>(source: AsyncIterable<T>): Promise<T | undefined> {
@@ -356,8 +366,9 @@ async function openAsync(): Promise<void> {
 
 The web-standard `EventTarget` is portable across Node, Deno, Bun, and the browser, so prefer it over
 Node's `EventEmitter` (which needs `@types/node` and is runtime-bound). Its base `addEventListener` is
-untyped (`type: string`, listener over a plain `Event`). Wrap it once with a typed `on` / `emit` keyed
-by an event map, so each event name resolves to its payload type:
+untyped (`type: string`, listener over a plain `Event`). Wrap it once — HOLD an `EventTarget` privately
+(compose it; do NOT `extends` it) and expose a typed `on` / `emit` keyed by an event map, so each event
+name resolves to its payload type:
 
 ```ts
 type BusEvents = {
@@ -365,18 +376,23 @@ type BusEvents = {
   done: Event;
 };
 
-class TypedBus extends EventTarget {
+// COMPOSE an EventTarget as a private field — do NOT `extends` it. Extending leaves the
+// inherited public `dispatchEvent(Event)` callable, an untyped escape that bypasses `emit`:
+// `bus.dispatchEvent(new CustomEvent<string>("data", { detail: "wrong" }))` would compile and
+// reach a `number`-typed listener. Held privately, the typed `on` / `emit` are the only way in.
+class TypedBus {
+  readonly #target = new EventTarget();
+
   on<K extends keyof BusEvents>(type: K, listener: (ev: BusEvents[K]) => void): void {
-    super.addEventListener(type, listener as EventListener); // the one cast, behind the typed gate
+    this.#target.addEventListener(type, listener as EventListener); // the one cast, behind the typed gate
   }
   emit<K extends keyof BusEvents>(type: K, ev: BusEvents[K]): void {
     // `dispatchEvent` routes by `ev.type`, NOT by the key `type` — the types cannot prove
-    // they agree, so bind them with a runtime check or `emit("data", …)` could dispatch a
-    // "wrong"-typed event that never reaches the "data" listener.
+    // they agree, so bind them with a runtime check before dispatching.
     if (ev.type !== type) {
       throw new Error(`event "${ev.type}" does not match key "${type}"`);
     }
-    super.dispatchEvent(ev);
+    this.#target.dispatchEvent(ev);
   }
 }
 
@@ -390,8 +406,9 @@ function useBus(): void {
 ```
 
 The single `as EventListener` is legitimate — it sits behind the typed wrapper (like the branded-type
-gate in `typing.md` §5), so callers never assert. The payoff is that the map catches a wrong payload at
-compile time — a `done` event has no `detail`:
+gate in `typing.md` §5), so callers never assert. Because the `EventTarget` is held privately, there is
+no inherited public `dispatchEvent` to slip past the map. The payoff is that the map catches a wrong
+payload at compile time — a `done` event has no `detail`:
 
 ```ts expect-error
 type BusEvents = {
@@ -399,9 +416,10 @@ type BusEvents = {
   done: Event;
 };
 
-class TypedBus extends EventTarget {
+class TypedBus {
+  readonly #target = new EventTarget();
   on<K extends keyof BusEvents>(type: K, listener: (ev: BusEvents[K]) => void): void {
-    super.addEventListener(type, listener as EventListener);
+    this.#target.addEventListener(type, listener as EventListener);
   }
 }
 
