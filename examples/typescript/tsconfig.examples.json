@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "Examples baseline for the `typescript` skill (design §2 + §9b). Maximal-strict TYPE-safety, but the fragment-hostile unused-checks are RELAXED so a teaching snippet may declare a value only to show its type. Type strictness is what is under test; unused-checks are not. Consumed as the `extends` base by examples/typescript/run-examples.sh; not run standalone.",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "moduleDetection": "force",
+    "target": "ES2023",
+    "lib": ["ES2023", "ESNext.Disposable", "DOM"],
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": [],
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true,
+
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
+}

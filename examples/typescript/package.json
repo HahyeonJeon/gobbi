@@ -1,0 +1,10 @@
+{
+  "name": "@gobbi/typescript-examples",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Example-verification harness for the gobbi `typescript` skill: extracts fenced ts blocks from the skill docs and type-checks them under a maximal-strict examples tsconfig. Not published.",
+  "devDependencies": {
+    "typescript": "5.9.3"
+  }
+}
