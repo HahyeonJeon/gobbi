@@ -122,16 +122,17 @@ Bottom-up operation.
 - **Situation:** a unit holds mutable internal state — a `#items` array, a `Map`, a `Set` — and a method,
   getter, or exported factory returns it directly to a caller.
 - **Good handling:** the boundary returns a defensive copy (`[...items]`, `new Map(m)`), an immutable view
-  (`readonly T[]` / `ReadonlyMap`, or a `readonly`-typed interface), or frozen data, so a caller cannot reach
-  in and mutate the owner's private state; a `readonly` return type documents and enforces the no-mutate
-  contract (the coding P16 "minimize shared mutable state" rule, in TypeScript form).
+  whose immutability REACHES the mutable state (`ReadonlyArray<Readonly<T>>` or primitive elements, not a
+  shallow `readonly T[]` over mutable objects), or frozen data, so a caller cannot reach in and mutate the
+  owner's private state (the coding P16 "minimize shared mutable state" rule, in TypeScript form).
 - **Bad handling:** `get items(): number[] { return this.#items; }` hands back the live array, so a caller's
-  `x.items.push(...)` silently corrupts internal state.
+  `x.items.push(...)` silently corrupts internal state; a shallow `readonly { x: T }[]` view is NOT enough —
+  the caller still assigns `view[0].x`, mutating the owner's nested state with zero diagnostics.
 - **Adversarial probe:** mutate the returned value and re-read the owner — if the owner's state changed, the
-  container leaked. TypeScript's `readonly` is shallow AND erased, so a `readonly` return type is a
-  compile-time boundary, not a runtime guard: an aliased non-`readonly` handle to the same object still
-  mutates it.
-- **Exercises:** P3, coding P16.
+  container leaked. TypeScript's `readonly` is shallow AND erased: it blocks reassigning an element or the
+  binding, but a `readonly { x: T }[]` still permits `view[0].x = ...`, and an aliased non-`readonly` handle
+  to the same object mutates it too.
+- **Exercises:** P3.
 - **Checklist IDs:** `TS-CHECK-20`.
 
 ## Bottom-up operation

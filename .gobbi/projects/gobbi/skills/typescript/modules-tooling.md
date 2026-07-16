@@ -176,15 +176,15 @@ differently:
 | Consumption | Import written | Enabled by |
 |---|---|---|
 | Emitted via `tsc` (published library) | `import { util } from "./util.js"` | `module: nodenext` — the emitted `.js` is what resolves |
-| Direct type-stripping (Node 24+, Bun, Deno) | `import { util } from "./util.ts"` | `rewriteRelativeImportExtensions: true` + `module: nodenext` |
+| Direct `.ts` run (Node 24+ strips, Bun/Deno transpile) | `import { util } from "./util.ts"` | `rewriteRelativeImportExtensions: true` + `module: nodenext` |
 
 **Why `.js` on the emitted path.** `tsc` does not rewrite specifiers by default, and `nodenext` resolves a
 relative specifier against the EMITTED file — which is `.js`. So the source must already name `.js`, even
 though the file on disk is `.ts`; name `"./util"` or `"./util.ts"` and the emitted import fails to resolve at
 runtime.
 
-**Why `.ts` on the stripping path.** A type-stripping runtime executes the `.ts` file in place and resolves
-the real on-disk `.ts` name. `rewriteRelativeImportExtensions` (5.7) lets the SAME source also be built by
+**Why `.ts` on the direct-run path.** A runtime that runs `.ts` in place (Node strips, Bun/Deno transpile)
+executes the file directly and resolves the real on-disk `.ts` name. `rewriteRelativeImportExtensions` (5.7) lets the SAME source also be built by
 `tsc`, which rewrites each `.ts` specifier to `.js` on emit — so one source both runs stripped and publishes a
 correct build.
 
@@ -248,8 +248,9 @@ per-keystroke cost.
 
 **TS 7.0 caveat (honest).** The native Go compiler at TS 7.0 ships NO programmatic compiler API (7.1 is
 expected to add one), and `typescript-eslint` needs that API. So under a 7.0 install, typed lint does NOT run
-against the 7.0 binary: it runs against a side-by-side JS-based TS-compatibility API package (the exact
-package and binary name are pending 7.0 GA). Treat 7.0 as a type-check SPEED target for
+against the 7.0 binary: it runs against the `@typescript/typescript6` compatibility package — installed side-by-side, it provides
+a `tsc6` binary and re-exports the TS 6.0 API for the tools that need it (TS 7.0 GA'd 2026-07-08). Treat 7.0
+as a type-check SPEED target for
 `tsc --noEmit`, not as one toolchain that also satisfies the typed-lint gate — the P7 lint step runs on the
 6.x-compat API alongside it.
 

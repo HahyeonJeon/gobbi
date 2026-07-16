@@ -68,10 +68,11 @@ ownership, ticket status, or review sign-off never stands in for the outcome its
   `finally`) so disposal runs on every path including the throwing one, cancellation is carried on an
   `AbortSignal`, and a fan-out bounds its concurrent task creation; FAIL if release runs only on the happy
   path, a long operation carries no cancellation, or the fan-out is unbounded. *(P5)*
-- [ ] `TS-CHECK-20` — PASS if every returned or exported reference to internal mutable state is a copy, an
-  immutable view, or a `readonly`-typed boundary, so a caller cannot mutate the owner's private state; FAIL if
-  a method, getter, or factory hands back a live mutable `T[]` / `Map` / `Set` a caller can mutate in place.
-  *(P3)*
+- [ ] `TS-CHECK-20` — PASS if every returned or exported reference to internal mutable state is a copy, or a
+  view whose immutability REACHES the mutable state (primitive or `readonly` elements, `ReadonlyArray<Readonly<T>>`,
+  or frozen data), so a caller cannot mutate the owner's private state; FAIL if a method, getter, or factory
+  hands back a live mutable `T[]` / `Map` / `Set`, OR a shallow `readonly T[]` over mutable objects whose nested
+  fields a caller can still assign. *(P3)*
 
 ## Operation & evidence
 
@@ -120,4 +121,4 @@ check (Principle `P1` — study the TypeScript contract — is operationalized t
 | `TS-CHECK-17` | Procedure P7 | `TS-SCENARIO-09` |
 | `TS-CHECK-18` | H3, Procedure P2 | `TS-SCENARIO-10` |
 | `TS-CHECK-19` | H12, Procedure P7 | `TS-SCENARIO-05` |
-| `TS-CHECK-20` | P3, coding P16 | `TS-SCENARIO-11` |
+| `TS-CHECK-20` | P3 | `TS-SCENARIO-11` |

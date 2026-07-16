@@ -116,7 +116,7 @@ the checkout?
 **Lens**: Are the **modules, exported types, unions, and resource lifetimes** idiomatic — illegal states
 unrepresentable, a deep type surface, earned generics, owned disposal, and erasable structure?
 
-**Activated**: `TS-SCENARIO-02`, `-06`, `-07` · `TS-CHECK-02`, `-09`, `-12`, `-13`, `-14`, `-15`.
+**Activated**: `TS-SCENARIO-02`, `-06`, `-07`, `-11` · `TS-CHECK-02`, `-09`, `-12`, `-13`, `-14`, `-15`, `-20`.
 
 | Anti-pattern | Correction |
 |---|---|

@@ -98,7 +98,7 @@ map for bare names:
 ```jsonc
 // deno.json — Deno's own config: a compilerOptions subset, an import map, tasks.
 {
-  "compilerOptions": { "lib": ["deno.window", "dom"] },
+  "compilerOptions": { "lib": ["deno.window"] },  // server default; deno.window conflicts with "dom" (use deno.ns + dom for DOM code)
   "imports": {
     "@std/assert": "jsr:@std/assert@^1",
     "zod": "npm:zod@^3"
@@ -195,8 +195,9 @@ button?.addEventListener("click", () => {
 Three concerns cut across every runtime.
 
 **`lib` selection.** The `lib` is the switch between a server and a browser type surface: Node (and Bun on its
-server default) take `ES2023` with no `DOM`; Deno instead uses its bundled `deno.window`, adding `dom` when it
-needs web globals (see its config above); the browser takes `DOM` + `DOM.Iterable`. Add `ESNext.Disposable`
+server default) take `ES2023` with no `DOM`; Deno uses `deno.window` (its server default); `deno.window` CONFLICTS with `dom`, so Deno code that also
+needs the DOM pairs `deno.ns` (not `deno.window`) with `dom` / `dom.iterable`; the browser takes `DOM` +
+`DOM.Iterable`. Add `ESNext.Disposable`
 wherever `using` is used (below). The `lib` types what EXISTS; it never adds a runtime API — `@types/node`,
 `@types/bun`, and Deno's bundled lib are separate.
 

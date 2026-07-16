@@ -97,9 +97,9 @@ new and changed code — they are not a mandate to migrate an existing codebase'
 - **MUST use ESM with `verbatimModuleSyntax`** — a type-only import written `import type`, a value
   import left plain; erasure is then deterministic and the emitted JavaScript matches the source.
 - **MUST pick the import extension by consumption mode** — a `tsc`-emitted library uses the `.js`
-  extension on relative imports (`import { util } from "./util.js"`); a directly type-stripped source
-  (Node 24+, Bun, Deno) uses `.ts` with `rewriteRelativeImportExtensions`. Never mix the two in one
-  source tree.
+  extension on relative imports (`import { util } from "./util.js"`); a source run directly
+  (Node 24+ strips types, Bun/Deno transpile) uses `.ts` with `rewriteRelativeImportExtensions`. Never mix
+  the two in one source tree.
 - **MUST validate untrusted boundary data before use** — JSON, network, `env`, and file input arrive as
   `unknown`; narrow with a guard or a schema parser into a domain type before any maintained logic
   reads it. This example type-checks under the skill's own baseline:
@@ -363,7 +363,7 @@ focused evidence before the next, and every affected surface moved in lockstep.
 
 Prove the whole change after the per-slice checks, in this fixed order, fixing a failure before the
 next: **format** (deterministic formatter, check mode) → **lint** (`typescript-eslint` typed rules —
-under a TS 7.0 install this runs against a JS-based TS compatibility API — not the native 7.0 binary — whose exact package is pending 7.0 GA) →
+under a TS 7.0 install (GA 2026-07-08) this runs against the `@typescript/typescript6` compatibility package — a `tsc6` binary that re-exports the TS 6.0 API — not the native 7.0 binary, which ships no stable programmatic API until 7.1) →
 **type-check** (`tsc --noEmit`, maximal-strict) → **focused tests** → **full tests** → **type-level
 tests** (`expectTypeOf` / `tsd` / `@ts-expect-error`) → **build** (declaration emit + `publint` +
 `arethetypeswrong`, when publishing a package). Each gate is self-failing (`cmd || exit 1`). For a bug,
