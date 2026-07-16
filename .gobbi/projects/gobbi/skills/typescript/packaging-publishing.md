@@ -80,7 +80,7 @@ the flags themselves live in `modules-tooling.md`.
 - **`declarationMap`** emits a `.d.ts.map` so a consumer's "go to definition" lands on your `.ts`
   source instead of the generated `.d.ts`. It only works if the `.ts` source ships too, so either add
   `src` to `files` when you publish maps, or leave `declarationMap` off for a `dist`-only package.
-- **`isolatedDeclarations`** forces every exported binding to carry an explicit type, so the `.d.ts`
+- **`isolatedDeclarations`** requires each exported binding's type to be trivially computable from the file — an explicit annotation wherever it is not already evident — so the `.d.ts`
   is produced from each file alone — fast emit, and an un-annotated public export becomes a compile
   error instead of a silently-inferred, fragile type in the shipped contract.
 

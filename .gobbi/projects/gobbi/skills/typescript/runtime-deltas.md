@@ -223,12 +223,14 @@ function run(): void {
 **Type-stripping vs a `tsc` build.** Node 24+, Bun, and Deno all RUN `.ts` by stripping types — they never
 type-check. So a `tsc --noEmit` pass is the correctness gate on every stripping runtime, exactly as SKILL.md P7
 and `modules-tooling.md` §8 require: stripping runs the code, `tsc` judges it, and a green run is never a green
-type-check. The runtime-agnostic core proves the thesis — this web-standard code type-checks under the baseline
-and runs unchanged on Node, Bun, Deno, and the browser; only the built-ins and config around it differ:
+type-check. The runtime-agnostic core proves the thesis — this web-standard code type-checks under the baseline,
+and once its annotations are erased to JavaScript (Node 24+/Bun/Deno strip or transpile it directly; a browser
+runs the emitted JS from a build step, never the `.ts` itself) the resulting code runs on all of them; only the
+built-ins and config around it differ:
 
 ```ts
 // Runtime-agnostic: fetch + AbortSignal are web standards on Node 18+, Bun,
-// Deno, and the browser. This exact source runs unchanged on every runtime.
+// Deno, and the browser. The algorithm is portable; a browser runs the emitted JS.
 async function getJson(url: string, timeoutMs: number): Promise<unknown> {
   const res = await fetch(url, { signal: AbortSignal.timeout(timeoutMs) });
   if (!res.ok) {

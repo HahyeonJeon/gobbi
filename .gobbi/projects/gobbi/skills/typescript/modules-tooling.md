@@ -73,15 +73,17 @@ Three flags carry most of the weight:
   `useUnknownInCatchVariables` (a caught error is typed `unknown`, not `any`). Treat `strict: false` as
   off-standard.
 - **`noUncheckedIndexedAccess`** is the highest-value flag `strict` omits: `arr[i]` and `rec[key]` become
-  `T | undefined`, so an out-of-range read is a compile error, not a runtime `undefined`. It sits outside
+  `T | undefined`, so USING an indexed read as a present `T` without narrowing is a compile error — the flag adds `undefined` to the read's type, and the error surfaces at a use that requires the narrower type, not at the read itself. It sits outside
   `strict` because it is noisy on code that indexes inside a checked loop.
 - **`exactOptionalPropertyTypes`** is the noisiest: with it, `{ x?: number }` accepts a MISSING `x` but rejects
   an explicit `x: undefined` — the two stop meaning the same thing. Live with it by choosing deliberately —
   `x?: number` for "may be absent," `x: number | undefined` for "must be present, may be undefined" — not by
   reaching for `as` to paper over the difference.
 
-`skipLibCheck` is in the base for speed (§9): it skips type-checking the `.d.ts` files under `node_modules`,
-never your own code.
+`skipLibCheck` is in the base for speed (§9): it skips full checking of `.d.ts` declaration files — dependency
+AND project-owned. Your `.ts` source is still fully type-checked, but a hand-written or generated local `.d.ts`
+is not itself deep-checked, so validate a package's published declarations with `attw` / `publint` (see
+`packaging-publishing.md`).
 
 ## 2. Thin overlays: library, app, runtime
 
@@ -106,8 +108,9 @@ lives in exactly ONE overlay and never in the base, so it applies only where it 
 }
 ```
 
-`isolatedDeclarations` (5.5) lives ONLY in the library overlay: it forces every exported binding to carry an
-explicit type, so a `.d.ts` can be produced from one file with no whole-program inference. That constraint
+`isolatedDeclarations` (5.5) lives ONLY in the library overlay: it requires each exported binding's type to be
+trivially computable from that one file — in practice an explicit annotation wherever the type is not already
+evident (a type it can derive locally is allowed) — so a `.d.ts` can be produced per-file with no whole-program inference. That constraint
 earns its cost only when a `.d.ts` is actually shipped, so an app never pays it. `declarationMap` is what lets
 a consumer's "go to definition" land on your source instead of the generated `.d.ts`. The `runtime` overlay's
 `rewriteRelativeImportExtensions` is the subject of §4.
@@ -196,7 +199,7 @@ and `erasableSyntaxOnly`; the library overlay (§2) adds `isolatedDeclarations`.
 | Flag | Guarantees one file can be… | Consumer |
 |---|---|---|
 | `isolatedModules` | transpiled with no whole-program type info | a single-file transpiler (esbuild, swc, Babel) |
-| `erasableSyntaxOnly` | run by stripping types, generating no code from a type | a type-stripping runtime (Node 24+, Bun, Deno) |
+| `erasableSyntaxOnly` | run by stripping types, generating no code from a type | Node 24+ `--experimental-strip-types` (the type-STRIPPING consumer; Bun / Deno transpile, so they accept more) |
 | `isolatedDeclarations` | turned into a `.d.ts` from itself alone | the declaration emitter for a library |
 
 `erasableSyntaxOnly` (5.8) is the flag that shapes daily syntax: it rejects any construct that would emit
@@ -282,8 +285,9 @@ esbuild bundle — a library convenience, but the `.d.ts` still comes from `tsc`
 
 Three levers cut `tsc` time on a growing codebase without weakening a single type:
 
-- **`skipLibCheck`** (already in the base, §1) skips type-checking the `.d.ts` files under `node_modules` — a
-  large, mostly-stable surface. It does NOT skip your own types.
+- **`skipLibCheck`** (already in the base, §1) skips full checking of `.d.ts` declaration files — a large,
+  mostly-stable surface, dependency and project-owned alike. Your `.ts` source is still fully checked; a local
+  `.d.ts` is not itself deep-checked, so validate a published package's declarations with `attw` / `publint`.
 - **`incremental`** writes a `.tsbuildinfo` cache so a rebuild re-checks only what changed. Cheap to enable;
   keep the cache file out of version control.
 - **Project references** split a large repo into composite sub-projects (`composite: true`) built with

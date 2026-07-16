@@ -37,7 +37,7 @@ Procedure keys always carry the word `Procedure`.
 - `H2` — Resolves to "MUST use ESM with `verbatimModuleSyntax`" — deterministic type-only vs value erasure.
 - `H3` — Resolves to "MUST pick the import extension by consumption mode" — `.js` emit vs `.ts` strip, never mixed.
 - `H4` — Resolves to "MUST validate untrusted boundary data before use" — narrow `unknown` before logic reads it.
-- `H5` — Resolves to "MUST handle every promise" — await, `void`, or `.catch`; no invisible rejection.
+- `H5` — Resolves to "MUST handle every promise" — `await`, `return`, or a real `.catch`; a bare `void` is not a rejection handler.
 - `H6` — Resolves to "MUST throw only `Error` subclasses and catch as `unknown`" — narrow before use, chain `cause`.
 - `H7` — Resolves to "MUST keep syntax erasable" — union or `as const` over `enum` / `namespace` / param-property.
 - `H8` — Resolves to "MUST make every taught `ts` example type-check" — a taught example is a checkable fact.
@@ -189,8 +189,8 @@ an `as` over a real check, a floating rejection, a non-erasable construct, or a 
 | Anti-pattern | Correction |
 |---|---|
 | **`as` as input validation** | An annotation states shape but never checks it; parse untrusted `unknown` with a guard or schema before use |
-| **A floating promise** | Await, `void`, or `.catch` every promise; an un-awaited rejection surfaces far from its cause with no signature warning |
-| **A non-erasable construct in a stripped runtime** | Keep syntax erasable; an `enum` or param-property is a syntax error where types are stripped, not compiled |
+| **A floating promise** | Await or `return` every promise, or attach a real handler (`void promise.catch(...)`); a bare `void` silences the lint but leaves the rejection unhandled, surfacing far from its cause |
+| **A non-erasable construct under the erasable baseline** | Keep syntax erasable (unions / `as const` over `enum` / `namespace` / param-property); Node `--experimental-strip-types` rejects them at load, while Bun and Deno transpile them — the baseline is a portability policy, not a claim that every runtime fails to load them |
 
 ---
 

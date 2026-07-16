@@ -142,13 +142,16 @@ const label = prop({ id: 1, label: "a" }, "label"); // string, tracked from the 
 merely checked against it:
 
 ```ts
-// Without NoInfer, `fallback` would also widen T; here T infers from `values`
-// only, and `fallback` must be one of those element types.
-function pick<T>(values: readonly T[], fallback: NoInfer<T>): T {
+// A `const` type parameter preserves the literal element types (T = "a" | "b", not
+// `string`); NoInfer then stops `fallback` from re-widening T, so it must be a member.
+// (Without `const`, T widens to `string` and any string fallback would be accepted.)
+function pick<const T extends string>(values: readonly T[], fallback: NoInfer<T>): T {
   return values[0] ?? fallback;
 }
 
-const chosen = pick(["a", "b"], "a"); // T = string; a non-member fallback is rejected
+const chosen = pick(["a", "b"], "a"); // T = "a" | "b"; ok
+// @ts-expect-error "c" is not one of the element types "a" | "b"
+const rejected = pick(["a", "b"], "c");
 ```
 
 Variance is inferred from usage, but an `in` / `out` annotation *declares* it — documenting the intent and
@@ -263,8 +266,9 @@ const u1 = { id: 1 } as User;
 const u2: User = { id: 1 };
 ```
 
-`as const` is the safe assertion: it only *restricts* — literals stay literal and the value becomes deeply
-`readonly` — so it can never lie. It pairs with a derived union to make one literal object the single source of
+`as const` is the safe assertion: it only *restricts* — literals stay literal and the literal's own structure
+becomes `readonly` at the type level, nested literals included (a compile-time constraint, not a runtime
+`Object.freeze`, and not a freeze of a mutable value the literal merely references) — so it can never lie. It pairs with a derived union to make one literal object the single source of
 truth:
 
 ```ts
@@ -288,15 +292,19 @@ non-constructable tag so two otherwise-identical types (both `string`) become di
 on top of the structural system. The tag exists only at the type level and is erased at runtime:
 
 ```ts
-// A `unique symbol` key makes the tag unforgeable; the value is still a string.
+// A `unique symbol` key means ordinary structural code cannot write the tag; the value
+// is still a plain string at runtime. A deliberate `as` CAN still forge one (assertions
+// are erased), so the brand discourages forgery and channels minting through the gate below.
 declare const brand: unique symbol;
 type Brand<T, B extends string> = T & { readonly [brand]: B };
 
 type UserId = Brand<string, "UserId">;
 
-// The only way to mint one is a checked constructor — the brand is the receipt.
+// Mint only behind a REAL runtime check, then assert — the check is what makes this `as`
+// honest (the invariant is verified first); the assertion alone would validate nothing.
 function toUserId(raw: string): UserId {
-  return raw as UserId; // legitimate `as`: applied once, behind a validating gate
+  if (!/^u_\d+$/.test(raw)) throw new Error(`not a UserId: ${raw}`);
+  return raw as UserId;
 }
 
 const id: UserId = toUserId("u_1");
@@ -441,7 +449,7 @@ const c: Config = { retries: 3 };
 c.retries = 5;
 ```
 
-`as const` (§4) is the value-level counterpart: it makes a literal deeply `readonly` and keeps every member at
+`as const` (§4) is the value-level counterpart: it makes a literal's structure `readonly` at the type level (a compile-time constraint, not a runtime freeze) and keeps every member at
 its narrow literal type.
 
 ## 8. Utility types and `interface` vs `type`

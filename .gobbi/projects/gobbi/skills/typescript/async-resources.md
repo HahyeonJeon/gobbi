@@ -369,7 +369,13 @@ class TypedBus extends EventTarget {
   on<K extends keyof BusEvents>(type: K, listener: (ev: BusEvents[K]) => void): void {
     super.addEventListener(type, listener as EventListener); // the one cast, behind the typed gate
   }
-  emit<K extends keyof BusEvents>(_type: K, ev: BusEvents[K]): void {
+  emit<K extends keyof BusEvents>(type: K, ev: BusEvents[K]): void {
+    // `dispatchEvent` routes by `ev.type`, NOT by the key `type` — the types cannot prove
+    // they agree, so bind them with a runtime check or `emit("data", …)` could dispatch a
+    // "wrong"-typed event that never reaches the "data" listener.
+    if (ev.type !== type) {
+      throw new Error(`event "${ev.type}" does not match key "${type}"`);
+    }
     super.dispatchEvent(ev);
   }
 }

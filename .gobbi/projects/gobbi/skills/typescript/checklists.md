@@ -35,9 +35,9 @@ condition itself. Groups: Hard invariants · Design judgment · Operation & evid
 - [ ] `TS-CHECK-06` — PASS if every value is checked by an annotation (`: T`) or `satisfies T`, with `as`
   reserved for a fact verified by a prior runtime narrow; FAIL if an `as` (or a `!` non-null assertion or a
   `@ts-ignore`) asserts a shape the value does not satisfy to silence an error. *(H10)*
-- [ ] `TS-CHECK-07` — PASS if every promise is awaited, `void`ed deliberately, or given a `.catch`, with any
-  background work owned explicitly; FAIL if a promise is left floating as a fire-and-forget invisible unhandled
-  rejection. *(H5, H13, P5)*
+- [ ] `TS-CHECK-07` — PASS if every promise is awaited, `return`ed, or given a real rejection handler
+  (`void promise.catch(...)`), with any background work owned explicitly; FAIL if a promise is left floating,
+  OR a bare `void` is used as if it handled the rejection. *(H5, H13, P5)*
 - [ ] `TS-CHECK-08` — PASS if `throw` carries only `Error` subclasses (chaining `cause`), every catch types the
   value as `unknown` and narrows with `instanceof` before use, and an expected failure is modeled as a typed
   result in the return type; FAIL if a non-`Error` is thrown, a caught value is used without narrowing, or an

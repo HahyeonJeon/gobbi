@@ -55,14 +55,16 @@ Bottom-up operation.
 
 ### TS-SCENARIO-04 — Non-erasable syntax in a type-stripping runtime
 - **Axis:** Hard invariant.
-- **Situation:** code that a type-stripping runtime (Node 24+, Bun, Deno) executes uses an `enum`, a
+- **Situation:** portable code — meant to run directly under Node 24+ `--experimental-strip-types`, which
+  STRIPS type syntax rather than transpiling (Bun and Deno transpile instead) — uses an `enum`, a
   `namespace`, or a constructor parameter-property to model a closed set or carry state.
 - **Good handling:** the closed set is a discriminated union or an `as const` object with a derived type;
   `erasableSyntaxOnly` is on, so only strippable syntax ships.
 - **Bad handling:** `enum Direction { Up, Down }`, a `namespace` wrapper, or a `constructor(private x: T)`
   parameter-property — each emits runtime code that type-stripping cannot produce.
-- **Adversarial probe:** run the source directly under a stripping runtime — the non-erasable construct is a
-  syntax error at load, not a compile error caught earlier.
+- **Adversarial probe:** run the source under Node's `--experimental-strip-types` — the non-erasable construct
+  is a load error there (Bun and Deno transpile it, so they accept it); the erasable baseline is a cross-runtime
+  portability policy, not a claim that every runtime rejects the construct.
 - **Exercises:** H7, H11, P7.
 - **Checklist IDs:** `TS-CHECK-09`.
 

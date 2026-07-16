@@ -108,8 +108,9 @@ function parseCount(raw: unknown): number {
 }
 ```
 
-- **MUST handle every promise** — `await` it, `void` it deliberately, or attach a `.catch`; an
-  un-awaited promise is an invisible unhandled rejection.
+- **MUST handle every promise** — `await` it, `return` it, or attach a real rejection handler. A bare
+  `void promise` silences the no-floating-promises lint but does NOT handle the rejection — only
+  `void promise.catch(handler)` does. An unhandled rejection is invisible until it fails.
 - **MUST throw only `Error` subclasses and catch as `unknown`** — narrow with `instanceof` before use
   and chain with `cause`; a thrown non-`Error` loses the stack and the cause chain.
 - **MUST keep syntax erasable** — `erasableSyntaxOnly`: model a closed set with a discriminated union or
@@ -138,8 +139,9 @@ enum Direction { Up, Down }
 - **NEVER ship dual ESM + CJS from one `verbatimModuleSyntax` source** — the two module systems are
   incompatible under verbatim erasure. Fix: publish ESM-only; treat a required CJS build as a separate,
   non-default emit.
-- **NEVER leave a `Promise` un-awaited to "fire and forget"** — the rejection is lost. Fix: `await`,
-  `void`, or `.catch` it; for background work, own it explicitly.
+- **NEVER leave a `Promise` un-awaited to "fire and forget"** — the rejection is lost. Fix: `await`
+  or `return` it, or attach a real handler with `void promise.catch(...)` — a bare `void` is not a
+  handler. For background work, own it explicitly.
 
 ---
 
@@ -329,7 +331,7 @@ review-mode surface is reconstructed and graded.
 *Deepens coding P7 and principles P2 — build bottom-up, skeleton first.*
 
 Materialize the approved design before any behavior: create the modules, the types, and the
-fully-annotated signatures (`-> void` included) with stub bodies. Verify it imports cleanly and passes
+fully-annotated signatures (an explicit `: void` return type included) with stub bodies. Verify it imports cleanly and passes
 `tsc --noEmit` under the maximal-strict base before growing any body; a structural defect returns
 through P2–P4 rather than being hidden in a body.
 
