@@ -75,7 +75,7 @@ Bottom-up operation.
   the shipped `.d.ts` under `nodenext`.
 - **Good handling:** `verbatimModuleSyntax` with `import type` on every type-only import; the relative
   extension matches the consumption mode (`.js` for the tsc-emitted library, `.ts` with
-  `rewriteRelativeImportExtensions` for the directly stripped source), one mode per tree; the package is
+  `rewriteRelativeImportExtensions` for the directly-run source, stripped or transpiled), one mode per tree; the package is
   ESM-only with a `types` + `import` `exports` map that resolves correctly for the consumer.
 - **Bad handling:** a type import left as a value import; mixed `.js` and `.ts` extensions in one tree; dual
   ESM + CJS emitted from the one `verbatimModuleSyntax` source; a `.d.ts` that resolves wrong under `nodenext`.
@@ -121,17 +121,17 @@ Bottom-up operation.
 - **Axis:** Design judgment.
 - **Situation:** a unit holds mutable internal state — a `#items` array, a `Map`, a `Set` — and a method,
   getter, or exported factory returns it directly to a caller.
-- **Good handling:** the boundary returns a defensive copy (`[...items]`, `new Map(m)`), an immutable view
-  whose immutability REACHES the mutable state (`ReadonlyArray<Readonly<T>>` or primitive elements, not a
-  shallow `readonly T[]` over mutable objects), or frozen data, so a caller cannot reach in and mutate the
-  owner's private state (the coding P16 "minimize shared mutable state" rule, in TypeScript form).
-- **Bad handling:** `get items(): number[] { return this.#items; }` hands back the live array, so a caller's
-  `x.items.push(...)` silently corrupts internal state; a shallow `readonly { x: T }[]` view is NOT enough —
-  the caller still assigns `view[0].x`, mutating the owner's nested state with zero diagnostics.
-- **Adversarial probe:** mutate the returned value and re-read the owner — if the owner's state changed, the
-  container leaked. TypeScript's `readonly` is shallow AND erased: it blocks reassigning an element or the
-  binding, but a `readonly { x: T }[]` still permits `view[0].x = ...`, and an aliased non-`readonly` handle
-  to the same object mutates it too.
+- **Good handling:** the boundary gives the caller no mutable path into private state — a DEEP copy, a
+  deeply-immutable or frozen structure, or primitive / fully-`readonly` elements. A shallow spread `[...items]`
+  and a one-level `Readonly<T>` each protect only the TOP level, so they suffice ONLY when the elements are
+  themselves immutable (the coding P16 "minimize shared mutable state" rule, in TypeScript form).
+- **Bad handling:** `get items(): number[] { return this.#items; }` hands back the live array. A shallow
+  `readonly { x: T }[]` (or `ReadonlyArray<Readonly<T>>` over NESTED objects) is no better — the caller still
+  assigns `view[0].x` / `view[0].inner.x`; and a spread `[...this.#items]` of mutable objects shares those same
+  element objects, so `copy[0].x = ...` mutates the owner too.
+- **Adversarial probe:** mutate the returned value AT DEPTH (`view[0].x`, `view[0].inner.x`, `copy[0].x`) and
+  re-read the owner — if the owner's state changed, a mutable path leaked. TypeScript's `readonly` and
+  `Readonly<T>` are shallow and erased: they block reassigning the top-level element or binding, nothing deeper.
 - **Exercises:** P3.
 - **Checklist IDs:** `TS-CHECK-20`.
 

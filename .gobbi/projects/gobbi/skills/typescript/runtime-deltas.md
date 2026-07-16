@@ -53,7 +53,7 @@ Node is the `nodenext` baseline the SKILL.md Rules assume by default. Set the re
 ```
 
 - **Import extension** — the fork from `modules-tooling.md` §4 applies here directly: a `tsc`-emitted library
-  writes `.js` on relative imports; a directly type-stripped source writes `.ts` with
+  writes `.js` on relative imports; a source run directly (stripped or transpiled) writes `.ts` with
   `rewriteRelativeImportExtensions`. Node is the runtime that hosts BOTH modes.
 - **Type-stripping** — Node 24+ runs `.ts` by stripping types with no build step (on by default; the 22.6–23.5
   line needed `--experimental-strip-types`). Stripping does not type-check, so a separate `tsc --noEmit` stays
@@ -224,7 +224,7 @@ function run(): void {
 
 **Type-stripping vs a `tsc` build.** Node 24+ STRIPS types; Bun and Deno TRANSPILE — either way all three RUN
 `.ts` directly and none type-check. So a `tsc --noEmit` pass is the correctness gate on every runtime that runs `.ts` without type-checking, exactly as SKILL.md P7
-and `modules-tooling.md` §8 require: stripping runs the code, `tsc` judges it, and a green run is never a green
+and `modules-tooling.md` §8 require: the runtime runs the code, `tsc` judges it, and a green run is never a green
 type-check. The runtime-agnostic core proves the thesis — this web-standard code type-checks under the baseline,
 and once its annotations are erased to JavaScript (Node 24+/Bun/Deno strip or transpile it directly; a browser
 runs the emitted JS from a build step, never the `.ts` itself) the resulting code runs on all of them; only the

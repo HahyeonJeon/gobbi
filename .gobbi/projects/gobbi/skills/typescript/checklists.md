@@ -23,7 +23,7 @@ ownership, ticket status, or review sign-off never stands in for the outcome its
   `import type`, a value import left plain — so erasure is deterministic; FAIL if a type import is left as a
   value import (or the reverse), or a CJS `require` sits in the verbatim source. *(H2)*
 - [ ] `TS-CHECK-03` — PASS if every relative import extension matches the file's consumption mode (`.js` for a
-  tsc-emitted library, `.ts` with `rewriteRelativeImportExtensions` for a directly type-stripped source),
+  tsc-emitted library, `.ts` with `rewriteRelativeImportExtensions` for a directly-run source (stripped or transpiled)),
   consistent across the tree; FAIL if the two modes are mixed in one source tree or an extension does not
   resolve under the declared runtime. *(H3)*
 - [ ] `TS-CHECK-04` — PASS if every untrusted boundary value (JSON, network, `env`, file) enters as `unknown`
@@ -68,11 +68,11 @@ ownership, ticket status, or review sign-off never stands in for the outcome its
   `finally`) so disposal runs on every path including the throwing one, cancellation is carried on an
   `AbortSignal`, and a fan-out bounds its concurrent task creation; FAIL if release runs only on the happy
   path, a long operation carries no cancellation, or the fan-out is unbounded. *(P5)*
-- [ ] `TS-CHECK-20` — PASS if every returned or exported reference to internal mutable state is a copy, or a
-  view whose immutability REACHES the mutable state (primitive or `readonly` elements, `ReadonlyArray<Readonly<T>>`,
-  or frozen data), so a caller cannot mutate the owner's private state; FAIL if a method, getter, or factory
-  hands back a live mutable `T[]` / `Map` / `Set`, OR a shallow `readonly T[]` over mutable objects whose nested
-  fields a caller can still assign. *(P3)*
+- [ ] `TS-CHECK-20` — PASS if a returned or exported reference gives the caller NO mutable path into the owner's
+  private state — a deep copy, a deeply-immutable or frozen structure, or primitive / fully-`readonly` elements;
+  FAIL if the caller can reach and mutate private state through the returned value: a live reference, a shallow
+  copy (`[...items]`) that shares mutable element objects, or a shallow `readonly` / one-level `Readonly<T>`
+  whose nested fields stay assignable. *(P3)*
 
 ## Operation & evidence
 

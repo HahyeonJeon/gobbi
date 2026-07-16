@@ -201,11 +201,11 @@ these erase at runtime they cost nothing, yet they document ownership at the exa
 `readonly` is *shallow*, so a value contract must reach one level in — `readonly tags: readonly string[]`, not
 `readonly tags: string[]`, which still permits `config.tags.push(...)`.
 
-And never RETURN a live reference to an internal mutable container: hand back a copy (`[...this.#items]`), an
-immutable view whose immutability REACHES the mutable state (`ReadonlyArray<Readonly<T>>` or primitive
-elements), or frozen data, so a caller cannot mutate the owner's private state (`coding` P16, in TypeScript
-form). A `readonly` type is SHALLOW and erased: a `readonly { x: T }[]` still lets a caller assign `view[0].x`,
-and an aliased non-`readonly` handle to the same object mutates it too (`scenarios.md` TS-SCENARIO-11).
+And never hand the caller a mutable PATH into internal state: return a DEEP copy, a deeply-immutable or frozen
+structure, or primitive / fully-`readonly` elements (`coding` P16, in TypeScript form). `readonly` and
+`Readonly<T>` are SHALLOW and erased — a `readonly { x: T }[]` still lets a caller assign `view[0].x`, and a
+spread `[...this.#items]` of mutable objects shares those objects, so `copy[0].x` mutates the owner too. A
+shallow guard suffices only when the elements are themselves immutable (`scenarios.md` TS-SCENARIO-11).
 
 Note a TypeScript-specific trap at the constructor boundary: `erasableSyntaxOnly` bans parameter-properties
 (`constructor(private clock: Clock)`), so assign the field explicitly in the body.

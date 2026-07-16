@@ -94,7 +94,7 @@ lives in exactly ONE overlay and never in the base, so it applies only where it 
 |---|---|---|
 | **library** | `declaration`, `declarationMap`, `isolatedDeclarations` | publishing a package that ships its own `.d.ts` |
 | **app** | `noEmit` (a bundler or runtime emits instead) | an application a bundler builds, publishing no types |
-| **runtime** | `lib` / `module` / `moduleResolution` deltas, and `rewriteRelativeImportExtensions` for a type-stripping runtime | cross-runtime code — see `runtime-deltas.md` |
+| **runtime** | `lib` / `module` / `moduleResolution` deltas, and `rewriteRelativeImportExtensions` for a directly-run runtime (Node strips, Bun/Deno transpile) | cross-runtime code — see `runtime-deltas.md` |
 
 ```jsonc
 // tsconfig.lib.json — the library overlay
@@ -185,8 +185,8 @@ runtime.
 
 **Why `.ts` on the direct-run path.** A runtime that runs `.ts` in place (Node strips, Bun/Deno transpile)
 executes the file directly and resolves the real on-disk `.ts` name. `rewriteRelativeImportExtensions` (5.7) lets the SAME source also be built by
-`tsc`, which rewrites each `.ts` specifier to `.js` on emit — so one source both runs stripped and publishes a
-correct build.
+`tsc`, which rewrites each `.ts` specifier to `.js` on emit — so one source both runs directly (stripped or
+transpiled) and publishes a correct build.
 
 Never mix the two in one source tree: read the mode off P1's target-runtime contract and keep every relative
 import in it.

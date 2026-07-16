@@ -363,7 +363,7 @@ focused evidence before the next, and every affected surface moved in lockstep.
 
 Prove the whole change after the per-slice checks, in this fixed order, fixing a failure before the
 next: **format** (deterministic formatter, check mode) → **lint** (`typescript-eslint` typed rules —
-under a TS 7.0 install (GA 2026-07-08) this runs against the `@typescript/typescript6` compatibility package — a `tsc6` binary that re-exports the TS 6.0 API — not the native 7.0 binary, which ships no stable programmatic API until 7.1) →
+under a TS 7.0 install (GA 2026-07-08) this runs against the `@typescript/typescript6` compatibility package — which ships a `tsc6` binary and re-exports the TS 6.0 API the tooling consumes — not the native 7.0 binary, which has no stable programmatic API until 7.1) →
 **type-check** (`tsc --noEmit`, maximal-strict) → **focused tests** → **full tests** → **type-level
 tests** (`expectTypeOf` / `tsd` / `@ts-expect-error`) → **build** (declaration emit + `publint` +
 `arethetypeswrong`, when publishing a package). Each gate is self-failing (`cmd || exit 1`). For a bug,
