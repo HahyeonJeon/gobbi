@@ -7,10 +7,10 @@ This register deepens, it does not restate: every item carries a `SKILL.md` anch
 `P{n}` = a Principle, `Procedure P{n}` = a Procedure step) that resolves to its verbatim clause through
 [`evaluation.md`](evaluation.md)'s rule-key legend; nothing is checked that `SKILL.md` does not teach.
 
-Each item states **one positive acceptance predicate**: the box passes if and only if that single condition
-holds. The FAIL clause only lists the forms the one condition can be violated in — no `AND`-conjunct softens
-the PASS into an escape hatch, and ownership, ticket status, or review sign-off never stands in for the
-condition itself. Groups: Hard invariants · Design judgment · Operation & evidence.
+Each item states **one positive acceptance outcome**: the box passes if and only if that outcome holds. The
+outcome may require a conjunction of conditions (all must hold — a compound check is still one outcome), but
+never an `OR` / sign-off escape. The FAIL clause only lists the forms the outcome can be violated in, and
+ownership, ticket status, or review sign-off never stands in for the outcome itself. Groups: Hard invariants · Design judgment · Operation & evidence.
 
 ## Hard invariants
 
@@ -68,6 +68,10 @@ condition itself. Groups: Hard invariants · Design judgment · Operation & evid
   `finally`) so disposal runs on every path including the throwing one, cancellation is carried on an
   `AbortSignal`, and a fan-out bounds its concurrent task creation; FAIL if release runs only on the happy
   path, a long operation carries no cancellation, or the fan-out is unbounded. *(P5)*
+- [ ] `TS-CHECK-20` — PASS if every returned or exported reference to internal mutable state is a copy, an
+  immutable view, or a `readonly`-typed boundary, so a caller cannot mutate the owner's private state; FAIL if
+  a method, getter, or factory hands back a live mutable `T[]` / `Map` / `Set` a caller can mutate in place.
+  *(P3)*
 
 ## Operation & evidence
 
@@ -91,8 +95,9 @@ condition itself. Groups: Hard invariants · Design judgment · Operation & evid
 
 ## Guaranteed coverage map
 
-Every Rule `H1`–`H13` is anchored by at least one check, every Principle `P1`–`P7` is anchored by at least one
-check, and every check is exercised by at least one seed scenario in `scenarios.md`.
+Every Rule `H1`–`H13` is anchored by at least one check, every Principle `P2`–`P7` is anchored by at least one
+check (Principle `P1` — study the TypeScript contract — is operationalized through Procedure `P1` →
+`TS-CHECK-15`), and every check is exercised by at least one seed scenario in `scenarios.md`.
 
 | Check | Anchor(s) | Seed scenario |
 |---|---|---|
@@ -115,3 +120,4 @@ check, and every check is exercised by at least one seed scenario in `scenarios.
 | `TS-CHECK-17` | Procedure P7 | `TS-SCENARIO-09` |
 | `TS-CHECK-18` | H3, Procedure P2 | `TS-SCENARIO-10` |
 | `TS-CHECK-19` | H12, Procedure P7 | `TS-SCENARIO-05` |
+| `TS-CHECK-20` | P3, coding P16 | `TS-SCENARIO-11` |

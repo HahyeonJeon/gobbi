@@ -116,6 +116,23 @@ Bottom-up operation.
 - **Exercises:** P2, H10.
 - **Checklist IDs:** `TS-CHECK-13`, `TS-CHECK-06`.
 
+### TS-SCENARIO-11 — Returning a live reference to internal mutable state
+- **Axis:** Design judgment.
+- **Situation:** a unit holds mutable internal state — a `#items` array, a `Map`, a `Set` — and a method,
+  getter, or exported factory returns it directly to a caller.
+- **Good handling:** the boundary returns a defensive copy (`[...items]`, `new Map(m)`), an immutable view
+  (`readonly T[]` / `ReadonlyMap`, or a `readonly`-typed interface), or frozen data, so a caller cannot reach
+  in and mutate the owner's private state; a `readonly` return type documents and enforces the no-mutate
+  contract (the coding P16 "minimize shared mutable state" rule, in TypeScript form).
+- **Bad handling:** `get items(): number[] { return this.#items; }` hands back the live array, so a caller's
+  `x.items.push(...)` silently corrupts internal state.
+- **Adversarial probe:** mutate the returned value and re-read the owner — if the owner's state changed, the
+  container leaked. TypeScript's `readonly` is shallow AND erased, so a `readonly` return type is a
+  compile-time boundary, not a runtime guard: an aliased non-`readonly` handle to the same object still
+  mutates it.
+- **Exercises:** P3, coding P16.
+- **Checklist IDs:** `TS-CHECK-20`.
+
 ## Bottom-up operation
 
 ### TS-SCENARIO-08 — Skeleton-first typed growth

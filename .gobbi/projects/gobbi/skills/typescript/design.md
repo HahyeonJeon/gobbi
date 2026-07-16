@@ -201,6 +201,12 @@ these erase at runtime they cost nothing, yet they document ownership at the exa
 `readonly` is *shallow*, so a value contract must reach one level in — `readonly tags: readonly string[]`, not
 `readonly tags: string[]`, which still permits `config.tags.push(...)`.
 
+And never RETURN a live reference to an internal mutable container: hand back a copy (`[...this.#items]`), an
+immutable view (`readonly T[]` / `ReadonlyMap`), or frozen data, so a caller cannot mutate the owner's private
+state (`coding` P16, in TypeScript form). A `readonly` return type documents that boundary, but — shallow and
+erased — it constrains only that reference's static type; an aliased non-`readonly` handle to the same object
+still mutates it (`scenarios.md` TS-SCENARIO-11).
+
 Note a TypeScript-specific trap at the constructor boundary: `erasableSyntaxOnly` bans parameter-properties
 (`constructor(private clock: Clock)`), so assign the field explicitly in the body.
 
