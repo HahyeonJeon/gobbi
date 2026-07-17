@@ -60,7 +60,7 @@ After `EVALUATION` (or its skip path), the loop always proceeds to `RECORD`. The
 The per-loop user-interaction gates are mode-specific and owned by the mode docs:
 
 - **Chat Mode** — the three in-loop gates (after DISCUSSION, after EVALUATION, at ITER/EXIT) plus the fourth task-boundary review gate, and the `discuss.mode` shadowing rule: [`chat-mode.md §5 — Per-loop discipline`](../chat-mode.md) (gates + shadowing), [`chat-mode.md` Slice Boundary + §8](../chat-mode.md) (task-boundary gate).
-- **Auto Mode** — silent auto-advance, the Always-Ask interrupts, and the no-interrupt-on-`maxIterations` rule: [`auto-mode.md §3 — Always-Ask codification`](../auto-mode.md) and [`auto-mode.md §6 — maxIterations exhaustion`](../auto-mode.md).
+- **Auto Mode** — silent auto-advance, required-user-discussion interrupts, and the no-interrupt-on-`maxIterations` rule: [`auto-mode.md §3 — Required user discussion`](../auto-mode.md) and [`auto-mode.md §6 — maxIterations exhaustion`](../auto-mode.md).
 
 ### Loop ↔ agent type mapping
 

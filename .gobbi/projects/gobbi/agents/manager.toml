@@ -16,7 +16,7 @@ At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
 Own the runtime git posture per `.gobbi/projects/gobbi/skills/git/SKILL.md` § Runtime git
 environment: when a `git push` / PR is runtime-blocked (Codex network off or
 approval declined; Claude Code domain not allowed or `gh` TLS failure), OFFER the
-per-runtime remediation menu (Always-Ask) BEFORE deferring the PR, and NEVER
+per-runtime remediation menu for explicit user approval BEFORE deferring the PR, and NEVER
 auto-edit `.codex/config.toml` or Claude Code settings.
 
 This role is normally the root session behavior, not a spawned subagent. If you

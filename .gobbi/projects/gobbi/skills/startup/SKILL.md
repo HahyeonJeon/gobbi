@@ -204,7 +204,7 @@ After Topic 4, run the [`topics.md` problem-before-solution premise gate](topics
 
 1. **Study** internal and external prior art across three layers — tried-and-true, new-and-popular (scrutinized for maturity, fit, and survivorship), and first-principles (where convention does not apply, with the evidence for deviating); capture each as Source / Insight / Why and never fabricate a citation.
 2. **Recommend** at least two genuinely distinct, equal-weight options — one minimal, one ideal — with effort / risk / reuse trade-offs, the recommended option first, and the evidence-to-change, through the Question Card.
-3. **Decide** through the user-owned Always-Ask design gate; record the chosen direction, rationale, rejected alternatives, cited references, and decision-trace fields.
+3. **Decide** through the user-owned design discussion; record the chosen direction, rationale, rejected alternatives, cited references, and decision-trace fields.
 
 This loop sets reference-informed DIRECTION only — which architecture style, stack, or convention. It never designs mechanism: interface signatures, module internals, algorithms, schemas, and task breakdown stay in Ideation / Planning / Execution.
 
@@ -233,8 +233,8 @@ claim here and follow the single owner link.
 - [`recording.md`](recording.md) §§1, 3, 5, 9, 11–13 — validates: the record/memory boundary, the startup
   session shape, mistake routing, startup-close promotion and recovery, rerun/resume classification, and the
   close lifecycle used by P1 and P4–P7.
-- [`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure + § Decision Classification —
-  validates: the active-runtime question-card form and the Always-Ask handling used at every startup user
+- [`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure + § What Requires Discussion? —
+  validates: the active-runtime question-card form and explicit user-input handling used at every startup
   gate (P1–P7; the inline P3 design-decision micro-loop's recommendation + gate; the promotion Always-Ask
   gate).
 - [`research/SKILL.md`](../research/SKILL.md) § Internal Research + § External Research — validates: the

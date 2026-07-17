@@ -114,7 +114,7 @@ These prerequisites gate the **PR lifecycle only**. The worktree and its branch 
 
 The session never falls back to working in the main tree. See [Runtime git environment](#runtime-git-environment) for the per-runtime posture behind triggers 4–5.
 
-**Remediation menu — OFFERED before deferral, never auto-applied (Always-Ask).** Before deferring on trigger 4 or 5, the manager OFFERS a runtime-specific remediation the user may accept or decline. This is an Always-Ask decision per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification) (it modifies sandbox / config state). The manager NEVER auto-edits `.codex/config.toml` or Claude Code settings, and gobbi ships NO default network enablement. If the user declines, the op defers.
+**Remediation menu — OFFERED before deferral, never auto-applied.** Before deferring on trigger 4 or 5, the manager OFFERS a runtime-specific remediation the user may accept or decline. This requires explicit user approval under the [`discussion` skill's user-input gate](../discussion/SKILL.md#what-requires-discussion) because it modifies sandbox or configuration state. The manager NEVER auto-edits `.codex/config.toml` or Claude Code settings, and gobbi ships NO default network enablement. If the user declines, the op defers.
 
 | Runtime | Offered remediation |
 |---|---|
@@ -160,7 +160,7 @@ The manager passes the worktree's absolute path in every delegation prompt. The 
 
 ## Forbidden Operations
 
-These commands are forbidden without **explicit user request** through the active runtime's user-decision primitive (Always-Ask category per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification) — they are destructive / irreversible operations).
+These commands are forbidden without an **explicit user request** through the active runtime's user-decision primitive. They are destructive or irreversible operations under the [`discussion` skill's user-input gate](../discussion/SKILL.md#what-requires-discussion).
 
 | Forbidden command | Why | Safe alternative |
 |---|---|---|
@@ -169,7 +169,7 @@ These commands are forbidden without **explicit user request** through the activ
 | `git checkout .` / `git restore .` | Mass discard of unstaged changes | Commit-then-discard individual files |
 | `git commit --amend` after push | Rewrites pushed history | New commit (`fix: <description>`) or revert |
 | `git rebase -i` on pushed history | Rewrites pushed history | New commits |
-| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged). **Sanctioned exception:** `git branch -D` IS allowed — no Always-Ask — WHEN the branch is confirmed merged-by-squash via PR-association (a merged PR whose head was this branch). This is the ONLY safe `-D` use: a squash-merge produces a new commit with no history overlap, so `git branch -d` cannot recognize the branch as merged and force-delete is the only path. See Procedure P5 step 5 for the procedure. The ban above stands for genuinely unmerged branches (no merged-PR association). |
+| `git branch -D` on unmerged branches | Discards branch tip irreversibly | `git branch -d` (only succeeds if merged). **Sanctioned exception:** `git branch -D` IS allowed without extra approval WHEN the branch is confirmed merged-by-squash via PR-association (a merged PR whose head was this branch). This is the ONLY safe `-D` use: a squash-merge produces a new commit with no history overlap, so `git branch -d` cannot recognize the branch as merged and force-delete is the only path. See Procedure P5 step 5 for the procedure. The ban above stands for genuinely unmerged branches (no merged-PR association). |
 | `git stash` inside a worktree | Stash is per-worktree but easy to forget / lose if worktree is force-removed — never use stash to defer work across delegation boundaries | Create a temporary linked worktree (`git worktree add -b emergency-fix <path> <base>`), do the work, commit, then remove the temp worktree. Per `git-scm.com/docs/git-worktree`. |
 | `gh pr close` without merge | Discards reviewed work | Either merge or convert to draft |
 | `gh issue delete` | GitHub does not support undelete | `gh issue close` + comment explaining |
@@ -249,7 +249,7 @@ After all subtasks for the issue are complete and verified:
 
 If any precondition fails, do not merge — surface the failing item to the user.
 
-**Merge-conflict recovery (runtime-neutral).** A base-sync `git pull --ff-only` (P2 step 1 or the post-merge sync below) or a PR-branch conflict against the base must not be resolved silently. Recovery path: **detect** the conflict (the `--ff-only` pull aborts, or the PR shows merge conflicts) → **surface to the manager** → the manager delegates resolution to the executor, who **resolves it in the worktree** (the in-boundary commit model applies) → **re-verify** (run the task's verification commands again on the resolved tree) → **continue** the merge sequence. Forbidden Operations still apply: no force-push and no `git reset --hard` without an explicit Always-Ask approval. This split — manager detects/owns the merge, executor resolves in the worktree — follows the same boundary as commit-vs-push.
+**Merge-conflict recovery (runtime-neutral).** A base-sync `git pull --ff-only` (P2 step 1 or the post-merge sync below) or a PR-branch conflict against the base must not be resolved silently. Recovery path: **detect** the conflict (the `--ff-only` pull aborts, or the PR shows merge conflicts) → **surface to the manager** → the manager delegates resolution to the executor, who **resolves it in the worktree** (the in-boundary commit model applies) → **re-verify** (run the task's verification commands again on the resolved tree) → **continue** the merge sequence. Forbidden Operations still apply: no force-push and no `git reset --hard` without explicit user approval. This split — manager detects/owns the merge, executor resolves in the worktree — follows the same boundary as commit-vs-push.
 
 **Merge sequence** (all preconditions pass):
 
@@ -283,11 +283,11 @@ When a PR's CI fails:
 5. **Push the fix** — `git push` (CI re-runs automatically against the updated branch).
 6. **Monitor** — `gh pr checks <num> --watch` until pass or the user decides to defer.
 
-If a merge conflict surfaces during the fix loop (the branch falls behind base and a re-sync conflicts), apply the same recovery as P5: detect → surface to the manager → executor resolves in the worktree → re-verify → re-push. No force-push without an explicit Always-Ask approval.
+If a merge conflict surfaces during the fix loop (the branch falls behind base and a re-sync conflicts), apply the same recovery as P5: detect → surface to the manager → executor resolves in the worktree → re-verify → re-push. No force-push without explicit user approval.
 
 ### P8 — Retro / bulk cleanup
 
-P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-session; P8 sweeps ACCUMULATED cruft across all four object classes (worktrees, remote branches, local branches, open issues) in one audited, confirmed pass. Modeled on the `gh poi` audit + dry-run + protect-list algorithm (use the algorithm, not the tool — no external CLI-extension dependency). Run the stages in this fixed order; every delete and close is an `[ASK]` destructive operation (Always-Ask per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification)).
+P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-session; P8 sweeps ACCUMULATED cruft across all four object classes (worktrees, remote branches, local branches, open issues) in one audited, confirmed pass. Modeled on the `gh poi` audit + dry-run + protect-list algorithm (use the algorithm, not the tool — no external CLI-extension dependency). Run the stages in this fixed order; every delete and close is an `[ASK]` destructive operation requiring explicit user approval under the [`discussion` skill's user-input gate](../discussion/SKILL.md#what-requires-discussion).
 
 **1. AUDIT (read-only).** Enumerate every object and record baseline counts: worktrees (`git worktree list`), remote branches (`git branch -r`), local branches (`git branch`), open issues (`gh issue list`). No mutation in this stage. The counts seed the durable record (stage 8).
 
@@ -299,12 +299,12 @@ P8 is the BULK companion to P6. P6 recovers a SINGLE orphaned worktree mid-sessi
 
 **4. DRY-RUN (preview before any confirm).** Present the FULL classified plan — each object with its classification and the proposed action (keep vs delete/close) and the reason — WITHOUT acting (the `gh poi --dry-run` model). The user reviews the whole set before any confirmation round.
 
-**5. CONFIRM `[ASK]` (destructive).** Nothing acts without confirmation (default-safe). After the dry-run review: **confirm-per-CLASS** for the bulk merged objects (the user approves "delete these N merged-squash branches / close these N resolved issues" as a reviewed batch per class); **per-OBJECT confirm** for any unmerged or ambiguous object (a tip near the freshness window, an inconclusive flock probe). An **unmerged-branch delete requires an EXTRA explicit per-object confirm** — unmerged means unique work at risk (S-07). Authority: [`discussion` skill](../discussion/SKILL.md#decision-classification).
+**5. CONFIRM `[ASK]` (destructive).** Nothing acts without confirmation (default-safe). After the dry-run review: **confirm-per-CLASS** for the bulk merged objects (the user approves "delete these N merged-squash branches / close these N resolved issues" as a reviewed batch per class); **per-OBJECT confirm** for any unmerged or ambiguous object (a tip near the freshness window, an inconclusive flock probe). An **unmerged-branch delete requires an EXTRA explicit per-object confirm** — unmerged means unique work at risk (S-07). Discussion rule: [`What Requires Discussion?`](../discussion/SKILL.md#what-requires-discussion).
 
 **6. TOCTOU re-check.** IMMEDIATELY before acting on each object, RE-VERIFY its merged-state and worktree-liveness (re-run the held-flock / process probe and the PR-association check). State can change between the dry-run and the act — a concurrent session may have started, a branch may have been pushed. If the re-check disagrees with the dry-run classification, SKIP that object and record the skip; do not act on stale classification.
 
 **7. ACT (per-object, idempotent, resumable).** Act only on confirmed, TOCTOU-revalidated objects:
-   - **Worktrees** — `git status` clean check first (no `--force`/`-f` without Always-Ask), then `git worktree remove <path>` + `git worktree prune` + empty-parent cleanup scoped to the removed worktree's parent (`rmdir -p "$(dirname <path>)" 2>/dev/null || true`) — NEVER `find .../worktrees/ -type d -empty -delete` over the shared root, which wipes a concurrent live session's empty scaffold dirs (`mistakes.md#worktree-empty-dir-sweep-deletes-live-session-scaffold`).
+   - **Worktrees** — `git status` clean check first (no `--force`/`-f` without explicit user approval), then `git worktree remove <path>` + `git worktree prune` + empty-parent cleanup scoped to the removed worktree's parent (`rmdir -p "$(dirname <path>)" 2>/dev/null || true`) — NEVER `find .../worktrees/ -type d -empty -delete` over the shared root, which wipes a concurrent live session's empty scaffold dirs (`mistakes.md#worktree-empty-dir-sweep-deletes-live-session-scaffold`).
    - **Branches** — `git push origin --delete <branch>` (remote) + the sanctioned `git branch -D <branch>` (local) per the P5 step 5 / Forbidden Operations `-D` carve-out (only after PR-association confirms the squash-merge).
    - **Issues** — `gh issue close <num> -c "<reason>"`. NEVER `gh issue delete` (Forbidden Operations — GitHub has no undelete).
 
@@ -338,7 +338,7 @@ Common failures and their recovery paths. The **Runtime** column marks which run
 | `gh` CLI not authenticated | both | Covered by Procedure P1 — verified at session setup. |
 | Orphaned worktrees from crashed session | both | Procedure P6 (Recover orphaned worktree) for a single orphan; Procedure P8 (Retro / bulk cleanup) when more than one has accumulated. |
 | CI failure on the PR | both | Procedure P7 (Handle CI failure). |
-| Merge conflict on base sync or PR branch | both | Detect → surface to the manager → executor resolves in the worktree → re-verify → continue (P5 Merge-conflict recovery; P7 step 6). No force-push without Always-Ask. |
+| Merge conflict on base sync or PR branch | both | Detect → surface to the manager → executor resolves in the worktree → re-verify → continue (P5 Merge-conflict recovery; P7 step 6). No force-push without explicit user approval. |
 | Write to `.git/hooks` or `.git/config` attempted from inside the worktree | both | OS-denied by the sandbox (not only the gobbi rule) — the write cannot succeed. Commit (refs + index) is unaffected. See [Role Boundaries](#role-boundaries). |
 | `git push` / `gh` blocked — network off or approval not granted | codex | Default `workspace-write` keeps network OFF; `on-request` raises an approval prompt and `never` offers none. The manager OFFERS the remediation menu, then DEFERS the PR (triggers 4–5 in [Prerequisites](#prerequisites)). |
 | `git push` / `gh` blocked — domain not allowed or `gh` TLS fails under Seatbelt | claude | No domains pre-allowed (needs `allowedDomains`); `gh` may fail TLS under macOS Seatbelt (needs `excludedCommands`). The manager OFFERS the remediation menu, then DEFERS the PR (triggers 4–5 in [Prerequisites](#prerequisites)). |
@@ -375,7 +375,7 @@ Git operations don't write to session record directly (writes happen via session
 - **MUST verify prerequisites** at session start (Procedure P1) and re-verify at point of use (Procedure P2 step 2 for base branch).
 - **MUST never push from a subagent** — subagents commit; the manager pushes.
 - **MUST never create or merge a PR from a subagent** — subagents return `DONE`; the manager handles PR creation and merge.
-- **MUST never run a Forbidden Operations command** without explicit user request through the active runtime's user-decision primitive (Always-Ask category).
+- **MUST never run a Forbidden Operations command** without an explicit user request through the active runtime's user-decision primitive.
 - **MUST never use `git stash` inside a worktree** — use a temporary linked worktree instead (per `git-scm.com/docs/git-worktree`).
 - **MUST install dependencies per worktree** — each worktree has its own working directory; package managers and caches are not shared.
 - **MUST validate branch names + commit messages** against the regexes in [`conventions.md`](conventions.md) before pushing.

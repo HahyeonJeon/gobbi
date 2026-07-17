@@ -84,7 +84,7 @@ When the producer cannot resolve a delta by principle, it classifies the gap. Th
 
 | Class | Trigger | Path |
 |---|---|---|
-| **LARGE** | ANY of: (a) an Always-Ask category (Design / Scope / Destructive); (b) the two drafts are mutually exclusive at the artifact's core (a fork); (c) principle analysis cannot pick a winner (equipoise) | producer surfaces → **manager adjudicates** → escalate a decision card to the user |
+| **LARGE** | ANY of: (a) a change to design or scope, or a destructive action; (b) the two drafts are mutually exclusive at the artifact's core (a fork); (c) principle analysis cannot pick a winner (equipoise) | producer surfaces → **manager adjudicates** → escalate a decision card to the user |
 | **SMALL** | additive / refinement / stylistic / clearly principle-decided | producer integrates locally + logs it in the Integration Log; no interrupt |
 
 The **large-gap escalation is a safety gate — it interrupts in BOTH Auto and Chat** (it is NOT routine triage). It reuses the evaluation safety-gate contract: it is the production analogue of evaluation's Major-divergence stop-the-line. Small-gap integration is producer-local: in Chat the manager may surface the Integration Log at the existing finding-discussion gate; in Auto it is recorded and reviewed at Wrap-up. See [`auto-mode.md`](../auto-mode.md) and [`chat-mode.md`](../chat-mode.md) for the per-mode behavior.

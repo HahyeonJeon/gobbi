@@ -44,8 +44,8 @@ integrator. Orchestration lives in `orchestration/workflow/production.md` + `cod
 - **Integration Log:** record one row per delta (`delta` / `decision` / `why` / `codex_origin`) to
   <<Integration-Log path — leader/assistant: `working/reconciliation-iter{n}.md`; Execution per-task:
   `task-{NN}-{slug}/working/reconciliation-iter{n}.md`>>.
-- **Large-gap escalation:** surface any unresolvable delta (a `large-gap` — Always-Ask /
-  mutually-exclusive fork / principle equipoise) to the manager; do NOT resolve it yourself. It is a
+- **Large-gap escalation:** surface any unresolvable delta (a `large-gap` — design or scope change /
+  destructive action / mutually-exclusive fork / principle equipoise) to the manager; do NOT resolve it yourself. It is a
   safety gate (interrupts in both Auto and Chat).
 - **Degraded mode:** if no proposal exists (Codex reported BLOCKED / empty / timeout), proceed
   Claude-only and stamp `production_mode: claude-only` +

@@ -1,7 +1,7 @@
 # Auto Mode
 
 Sub-document of the `orchestration` skill. Owns the **full** Auto-Mode specification: mode
-posture, the Always-Ask interrupt contract, the per-loop defaults (maxIterations, evaluate.mode,
+posture, the required-user-discussion interrupt contract, the per-loop defaults (maxIterations, evaluate.mode,
 discuss.mode, Preparation, RECORD), the banner-conditioning note, and the maxIterations
 exhaustion silence contract.
 
@@ -24,20 +24,19 @@ changes in Auto Mode. This document codifies discipline that was implicit; it do
 new runtime behavior.
 
 **When the manager auto-proceeds.** The manager initiates each step, runs subagents, and proceeds
-through the loop without pausing the user for decisions in the **Auto-decide** class
-(see `discussion/SKILL.md § Decision Classification`). Auto-decide decisions are resolved by the
-codebase, memory, rules, mistakes, or a clearly recommended approach; they are logged
-silently for auditability.
+through the loop without pausing when the codebase, memory, rules, mistakes, locked plan, or an exact
+current-session answer resolves the point. See
+[`discussion/SKILL.md § What Requires Discussion?`](../discussion/SKILL.md#what-requires-discussion).
 
 **When the manager MUST interrupt.** The manager pauses and uses the active runtime's user-decision primitive when:
 
-1. A decision falls in an **Always-Ask category** (Design / Scope / Destructive) — see §3.
+1. A point requires user input under the discussion gate — see §3.
 2. An eval finding implies a scope change the manager cannot resolve under existing authority.
 3. A step fails in a way the manager cannot resolve (e.g., a `BLOCKED` status from a subagent).
 4. The user explicitly intervenes mid-session.
 
 The manager does NOT pause for any other reason. "I'm not sure" and "this might be surprising"
-are not sufficient — if the decision is Auto-decide class, proceed.
+are not sufficient — if evidence resolves the point within the agreed contract, proceed.
 
 ---
 
@@ -111,7 +110,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
+| 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs the delegation prompt without a per-step user gate; points that require user input still interrupt per §3. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
 | 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | manager orchestration: [planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
@@ -155,43 +154,38 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 
 ---
 
-## §3 — Always-Ask codification
+## §3 — Required user discussion
 
 ### 3.1 Authoritative source
 
-The full Always-Ask matrix lives in
-[`discussion/SKILL.md § Always-Ask categories (override auto-decide; the user decides)`](../discussion/SKILL.md).
-`auto-mode.md` references that section as the authoritative source and restates the contract in
-Auto-Mode-specific language so an Auto-mode manager cannot rationalize past the gate.
+The user-input gate lives in
+[`discussion/SKILL.md § What Requires Discussion?`](../discussion/SKILL.md#what-requires-discussion).
+This section states only how that gate interrupts Auto Mode.
 
-### 3.2 Auto-Mode restatement
+### 3.2 Auto-Mode rule
 
-> **In Auto Mode, the manager auto-decides everything in the Auto-decide class without pausing.
-> The manager MUST NOT auto-decide anything in the Always-Ask class (Design / Scope /
-> Destructive). For those three categories, the active runtime's user-decision primitive fires exactly as it would in Chat
-> Mode — regardless of any per-step `discuss.mode: agent` setting.**
+> **In Auto Mode, the manager proceeds without pausing when evidence resolves the point inside the
+> agreed contract. The manager pauses when user goals or preferences, success criteria, design or
+> scope changes, destructive or irreversible work, or a material evidence conflict need the user's
+> judgment. This rule applies regardless of any per-step `discuss.mode: agent` setting.**
 
 The `discuss.mode: agent` default in Planning / Execution / Wrap-up (see §4) controls whether
-DISCUSSION rows are user-driven or agent-driven. It does **not** suppress Always-Ask interrupts.
-Always-Ask overrides `discuss.mode` unconditionally.
+DISCUSSION rows are user-driven or agent-driven. It does **not** suppress a required user discussion.
 
-### 3.3 Always-Ask categories with Auto-Mode examples
+### 3.3 Auto-Mode examples
 
-| Category | Definition | Auto-Mode example |
+| Point | Why user input is needed | Auto-Mode example |
 |---|---|---|
-| **Design** | Architecture choice, library selection, design pattern, API shape, persistence model, error-handling strategy, concurrency model. Anything that locks future code into a structural commitment. | The leader's mid-Planning research surfaces a new library not in the Ideation scope — e.g., the leader proposes `zod` for runtime schema validation when no validator was discussed in Ideation. This is a library selection (Design). The manager MUST ask before adopting it, regardless of `discuss.mode: agent`. |
-| **Scope** | In/out of scope of the Scope Contract, extending the contract to absorb adjacent work, narrowing to defer items mid-workflow, marking items as backlog vs in-this-workflow. | A mid-Execution executor's diff touches a file not in the plan's `files:` list — e.g., an executor editing `orchestration/SKILL.md` while scoped to `auto-mode.md` only. The manager detects the out-of-scope path and MUST ask before allowing it to proceed. |
-| **Destructive** | File deletion outside an explicit `files:` scope, `git reset --hard`, force-push, package downgrade, schema migration that drops data, modification of shared state outside the worktree, large-scale rename or move. | Mid-Wrap-up, an agent proposes `git reset --hard` to clean a branch after a merge conflict. This is destructive and irreversible. The manager MUST ask before issuing the command — even in Auto Mode with `discuss.mode: agent` active. |
+| **Design change** | It creates a structural commitment that the agreed design does not already authorize. | Mid-Planning research introduces a library that Ideation never considered. The manager asks before adopting it. |
+| **Scope change** | It expands, narrows, or defers part of the agreed contract. | A mid-Execution diff needs a file outside the plan's `files:` list. The manager asks before expanding the scope. |
+| **Destructive work** | It can discard data, history, or shared state and cannot be safely inferred. | Mid-Wrap-up, an agent proposes `git reset --hard` after a conflict. The manager asks before running it. |
 
-### 3.4 USER CHALLENGE cross-reference
+### 3.4 Material evidence conflicts
 
 When the Planning leader's research-backed analysis substantively disagrees with the user's stated
-Ideation direction, the manager escalates via the USER CHALLENGE primitive in
-[`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md). The 5-field card
-(What the user said / What the leader recommends / Why / What we might be missing / If we're
-wrong, the cost is) fires through the active runtime's user-decision primitive. USER CHALLENGE is **never auto-decided**.
-The user's original direction is the default; the leader's recommendation only wins if the user
-explicitly accepts.
+Ideation direction, the manager follows the [`discussion` response procedure](../discussion/SKILL.md#p5--respond-to-the-answer):
+state the evidence, likely consequence, and remaining choice. The user's original direction remains
+in force unless the user explicitly accepts the change.
 
 ---
 
@@ -211,9 +205,9 @@ The following defaults are locked for Auto Mode. They apply to every session tha
 | `propose.mode` (all loops) | `"dual"` | The mirror of `evaluate.mode` on the creation side: the Codex proposer runs alongside the Claude producer every WORK sub-phase (dual-system production) — see §7.5. `"single"` is a deliberate Claude-only override — a configured Claude-only run that is NOT degraded mode and does NOT stamp the degraded-mode label. The distinct **degraded** case is a missing or timed-out proposer under `dual`: it falls back to Claude-only WITH the degraded-mode label and is NOT a safety gate. Orchestration: [`workflow/production.md`](workflow/production.md). |
 | `workflow.ideation.discuss.mode` | `"user"` | Ideation DISCUSSION is user-driven — user confirms approach before leader works. |
 | `workflow.preparation.discuss.mode` | `"user"` | Preparation DISCUSSION is user-driven — user confirms readiness gaps before prep work. |
-| `workflow.planning.discuss.mode` | `"agent"` | Planning DISCUSSION is agent-driven — manager proceeds without a gate per loop entry. Always-Ask categories still fire (§3). |
-| `workflow.execution.discuss.mode` | `"agent"` | Execution DISCUSSION is agent-driven. Always-Ask categories still fire (§3). |
-| `workflow.wrap-up.discuss.mode` | `"agent"` | Wrap-up DISCUSSION is agent-driven. Always-Ask categories still fire (§3). |
+| `workflow.planning.discuss.mode` | `"agent"` | Planning DISCUSSION is agent-driven — manager proceeds without a gate per loop entry. Required user discussions still interrupt (§3). |
+| `workflow.execution.discuss.mode` | `"agent"` | Execution DISCUSSION is agent-driven. Required user discussions still interrupt (§3). |
+| `workflow.wrap-up.discuss.mode` | `"agent"` | Wrap-up DISCUSSION is agent-driven. Required user discussions still interrupt (§3). |
 
 **Preparation runs.** Auto Mode does not skip Preparation. The `skip: false` + `maxIterations: 5`
 values mean the standard loop contract runs (DISCUSSION → WORK → EVALUATION → RECORD →
@@ -236,15 +230,13 @@ The session-start system-reminder banner reads:
 
 > "Auto Mode Active — bias toward working without stopping for clarifying questions."
 
-**The banner's bias is conditioned by the Always-Ask matrix (§3).** The phrase "make the
-reasonable call and keep going" applies to the **Auto-decide class only**. It does not extend
-to Always-Ask categories (Design / Scope / Destructive). A manager reading the banner's
-"keep going" language and using it to rationalize past an Always-Ask category is violating the
-Always-Ask contract, not following the banner.
+**The banner's bias is conditioned by the user-input gate (§3).** The phrase "make the
+reasonable call and keep going" applies only when evidence resolves the point within the agreed
+contract. It does not extend to unresolved user goals, success criteria, design or scope changes,
+destructive work, or material evidence conflicts.
 
-Operationally: when the manager faces a decision, the first question is not "should I ask?" but
-"which class is this?" If the decision is Auto-decide, proceed. If the decision is Always-Ask,
-ask — the banner is irrelevant.
+Operationally, the manager first asks whether evidence settles the point. If yes, proceed. If the
+point needs user judgment under §3, ask; the banner does not override the discussion gate.
 
 The banner text is injected by the harness (currently not modified by this redesign). The
 conditioning is a semantic note, not a code change.
@@ -321,7 +313,7 @@ dual-system divergence** (`PASS`↔`FAIL` / `REVISE`↔`FAIL`,
 the **degraded-mode / single-system fallback** and **both systems failing**
 ([`evaluation.md § Degraded-mode policy`](workflow/evaluation.md#degraded-mode-policy-single-system-fallback)).
 These fall under [§1](#1--mode-posture)'s "a step fails in a way the manager cannot resolve."
-Always-Ask findings (Design / Scope / Destructive per [§3](#3--always-ask-codification)) and findings
+Findings that need user discussion under [§3](#3--required-user-discussion) and findings
 implying an unresolvable scope change ([§1](#1--mode-posture) interrupt #2) also still interrupt. A
 minor divergence (`PASS`↔`REVISE`) auto-proceeds, as today. Any aggregate `FAIL` verdict always
 escalates per [`SKILL.md § Iteration rule`](SKILL.md#iteration-rule) — a `FAIL` is always either a
@@ -358,7 +350,7 @@ it is recorded and surfaced in the **Wrap-up finding set** (§6), never mid-loop
 contract a minor divergence gets in §7.3.
 
 **A large-gap production escalation is a safety-gate — it interrupts in Auto (do NOT silence it).** A
-**large gap** — ANY of an Always-Ask category (Design / Scope / Destructive, §3), a mutually-exclusive
+**large gap** — a change to design or scope, a destructive action (§3), a mutually-exclusive
 fork at the artifact's core, or principle-equipoise the producer cannot resolve (per
 [`workflow/production.md § Gap classification`](workflow/production.md#gap-classification)) — is surfaced
 by the producer, adjudicated by the manager, and escalated to the user. It interrupts in BOTH Auto and
@@ -372,7 +364,7 @@ Scan this at any production-integration boundary:
 | The manager NEVER… | Instead… |
 |---|---|
 | lets the producer synthesize / naive-blend the two drafts | the producer SELECTS per principle and records the Integration Log |
-| silences a **large-gap** production escalation (Always-Ask / fork / equipoise) | **interrupts** — a large-gap is a production **safety-gate** in Auto, like §7.3's dual-system gates |
+| silences a **large-gap** production escalation (user-owned change / fork / equipoise) | **interrupts** — a large-gap is a production **safety-gate** in Auto, like §7.3's dual-system gates |
 | interrupts mid-loop on a **small gap** | producer integrates locally + logs it; surfaced at Wrap-up (§6) |
 | treats a missing Codex proposer as a safety gate | proceeds Claude-only with the degraded-mode label (production.md) |
 
@@ -388,12 +380,8 @@ Scan this at any production-integration boundary:
   `skip: true` (`preparation = {skip: true, maxIterations: 0} → state: Skipped`) is Chat-only and
   does not apply in Auto Mode. Both modes run the unmodified base RECORD — the Chat-vs-Auto
   difference is preparation-skip, not RECORD narrowing.
-- [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — authoritative
-  Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
-  why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`
-  is the single source of truth.
-- [`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md) — 5-field
-  escalation card for leader-user disagreement. Referenced in §3.4.
+- [`discussion/SKILL.md § What Requires Discussion?`](../discussion/SKILL.md#what-requires-discussion) — authoritative
+  user-input gate. §3 states its Auto-Mode interrupt behavior without redefining the SOP.
 - [`record/SKILL.md`](../record/SKILL.md) — the unmodified base RECORD
   procedure. Auto Mode runs this base procedure in full (no local override).
 - [`mistake/SKILL.md § P2`](../mistake/SKILL.md) — moment-of-capture discipline for

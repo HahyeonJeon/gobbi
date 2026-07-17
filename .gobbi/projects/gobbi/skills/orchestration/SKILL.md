@@ -136,7 +136,7 @@ the per-mode docs reference it.
 The manager runs every session in one of two modes, picked at session start (§ Rules). Both follow the same underlying workflow; what differs is who drives it and which state-machine shape runs between Configuration and Wrap-up.
 
 - **Chat** — the user drives the workflow one task at a time; the manager runs a per-task slice (Ideation → mini-Planning → mini-Execution) and returns control after each. Read [`chat-mode.md`](chat-mode.md) for the full spec.
-- **Auto** — the manager runs the linear 6-step state machine end-to-end, pausing only for Always-Ask decisions (design, scope, destructive). Read [`auto-mode.md`](auto-mode.md) for the full spec.
+- **Auto** — the manager runs the linear 6-step state machine end-to-end, pausing only when the [`discussion` gate](../discussion/SKILL.md#what-requires-discussion) requires user input. Read [`auto-mode.md`](auto-mode.md) for the full spec.
 
 ### Agent Teams
 
@@ -150,7 +150,7 @@ The dispatch contract lives in `delegation.md`. Reference sections live under `w
 
 | Read | When |
 |---|---|
-| [`auto-mode.md`](auto-mode.md) | After Step 1 selects Auto, and whenever Auto-specific Always-Ask, evaluation, or max-iteration behavior is needed. |
+| [`auto-mode.md`](auto-mode.md) | After Step 1 selects Auto, and whenever Auto-specific user-interrupt, evaluation, or max-iteration behavior is needed. |
 | [`chat-mode.md`](chat-mode.md) | After Step 1 selects Chat, and whenever per-task slice routing, task-record writing, or Chat status rendering is needed. |
 | [`agent-teams.md`](agent-teams.md) | Before any Claude Code Agent Teams setup, teammate delegation, teammate continuation, or team cleanup. |
 | [`workflow/status-display.md`](workflow/status-display.md) | Before rendering the Workflow Status Display or Harness Todo List, and after resume when projections must be rebuilt from `state.json`. |
@@ -178,7 +178,7 @@ Each entry names an owner and the specific claim in this skill that the owner va
 - [`git/conventions.md`](../git/conventions.md) § Branch Naming — validates: the session-worktree branch-name rule, exempt from the type-prefix and slug-length rules (Step-1 row 1).
 - [`gobbi/SKILL.md`](../gobbi/SKILL.md) § Resolve runtime identity / § Enter the workflow — validates: the runtime session-id resolution used by Configuration and the Configuration-to-workflow handoff that resumes the persisted productive step (Step-1 rows 1 and 5; Procedure § Workflow).
 - [`record/record-map.md`](../record/record-map.md) § Initialization — validates: the session-record skeleton that `init-record-map.sh` materializes (Step-1 row 2).
-- [`discussion/SKILL.md`](../discussion/SKILL.md) § Decision Classification — validates: the active runtime's user-decision primitive that every clarification, decision, and approval flows through, and which user-owned decisions are surfaced rather than auto-resolved (Intro; Rules; Step-1 gates).
+- [`discussion/SKILL.md`](../discussion/SKILL.md) § What Requires Discussion? — validates: the user-input gate applied before every clarification, decision, and approval, including which points are resolved from evidence and which are surfaced to the user (Intro; Rules; Step-1 gates).
 - [`delegation.md`](delegation.md) § Continue vs Fresh — validates: the teammate continue-vs-fresh decision rule and delta-brief (Procedure § Agent Teams).
 - [`workflow/state-machine.md`](workflow/state-machine.md) § State persistence — validates: `state.json` is the single source of truth and the resume-validation invariants (Principle "`state.json` is the single source of truth"; the "write `state.json` first" Rule; Step-1 row 4R).
 - [`workflow/status-display.md`](workflow/status-display.md) — validates: the Status Display and harness todo widget are one-way projections of `state.json` (Principles; the "NEVER let the Status Display or the todo widget write back" Rule).

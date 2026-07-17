@@ -22,7 +22,7 @@ Load these immediately, before anything else. Do not ask questions, do not check
 
 1. **`principles`** — the 10 Iron Laws (Behavioral discipline floor). Mandatory.
 2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration, and the `orchestration/delegation.md` dispatch child.
-3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
+3. **`discussion`** — internal Discussion Design, the user-input gate, focused question cards, one-point-at-a-time dialogue, and evidence-based pushback. Loaded before every manager-user clarification, approval, or decision point.
 4. **`delegation`** — workflow-agnostic bounded-brief semantics. Load it before authoring a brief; `orchestration/delegation.md` owns Gobbi templates, load tiers, runtime dispatch, and wire formats.
 5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status may inform the customize gate settings.
 6. **`mistake`** — Cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections. Mandatory per `mistake/SKILL.md` Memory Access Matrix — the manager loads it before running setup questions or entering Configuration. Every subagent delegation prompt's Load Directives block must also include it explicitly (fresh subagents do not inherit).
@@ -75,20 +75,20 @@ Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessio
 
 > **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are NOT validated by any automated seam in the current markdown-driven design — the v0.4.x CLI settings-IO validator was removed in the v0.5.0 redesign and nothing replaced it. In-skill shell interpolation performs no escaping; treat slot values such as `{project-name}` as untrusted at the point of interpolation and sanitize them before use, especially when the value originates from a manually-edited config file.
 
-- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask through the active runtime's user-decision primitive whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
+- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask through the manager-owned user-decision flow whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
 - **File missing** — no prior session settings. Proceed to step 4.
 - **Parse or I/O error** — surface the diagnostic to the user before proceeding.
 
 ### 4. Ask the user one setup question
 
-Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After the question, persist the user's selection to the session-level `settings.json`.
+Build the [`discussion` skill's question card](../discussion/SKILL.md#question-card-structure) and ask it through the active runtime's structured question interface, or directly in the parent thread when no structured interface is available. After the question, persist the user's selection to the session-level `settings.json`.
 
 **Question — orchestration mode** (default: `auto`; full mode semantics in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration)):
 
 - **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
 - **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
 
-After the mode is set, ask through the active runtime's user-decision primitive: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 3 to walk through each section. If no, apply defaults as-is.
+After the mode is set, ask through the manager-owned user-decision flow: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 3 to walk through each section. If no, apply defaults as-is.
 
 See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 4) and before `session.json` stamping (row 5, where `git.worktreePath` is recorded).
 
@@ -96,7 +96,7 @@ See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workf
 
 Check `.gobbi/projects/{project-name}/` for the memory baseline:
 
-- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the startup skill to populate it before starting work?" If the user accepts, load the [`startup` skill](../startup/SKILL.md) and run the structured startup talk; the workflow resumes after startup completes.
+- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Ask through the manager-owned user-decision flow: "Memory looks thin. Run the startup skill to populate it before starting work?" If the user accepts, load the [`startup` skill](../startup/SKILL.md) and run the structured startup talk; the workflow resumes after startup completes.
 - If memory is populated → proceed directly to the workflow.
 
 ### 6. Enter the workflow
@@ -180,7 +180,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | Skill | Purpose |
 |---|---|
 | [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, six-step transitions, plus the [`delegation.md`](../orchestration/delegation.md) manager-dispatch child. |
-| [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
+| [`discussion`](../discussion/SKILL.md) | Manager + user dialogue SOP — internal Discussion Design, the user-input gate, focused question cards, one-point-at-a-time dialogue, evidence-based pushback, prior-answer reuse, and spawned-session muting. Loaded before every manager-user clarification, approval, or decision point. |
 | [`delegation`](../delegation/SKILL.md) | Workflow-agnostic bounded handoff semantics: objective, preparation, boundaries, autonomy, evidence, escape paths, and independent judgment. |
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
 | [`record`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's RECORD sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
@@ -227,9 +227,9 @@ gobbi's durable capabilities — the things a README "Features" section would li
 
 ## Core Principles
 
-> **Never edit gobbi skills without asking the user with the active runtime's user-decision primitive.**
+> **Never edit gobbi skills without explicit user approval through the manager-owned user-decision flow.**
 
-Gobbi skills are the workflow's shared contract. Edits to skills / agents / rules / `.claude/` documentation are an Always-Ask category per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification).
+Gobbi skills are the workflow's shared contract. Edits to skills, agents, rules, or `.claude/` documentation require user input under the [`discussion` skill's gate](../discussion/SKILL.md#what-requires-discussion) because they change the workflow's shared behavior.
 
 > **Load the role's skill before acting.**
 
@@ -253,7 +253,7 @@ Ideation / Preparation / Planning / Execution loops write only to session record
 - Role effort defaults are explicit policy: every role uses **xhigh**.
 - In Codex, every repo-local `.codex/agents/*.toml` wrapper sets `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`. User-requested per-run overrides remain explicit exceptions.
 
-The active runtime's user-decision primitive is mandatory for every decision point (not prose). In Claude Code this is `AskUserQuestion`; in Codex this is the parent-thread question flow or `request_user_input` when available. The Recommended option is the first option, labeled `(Recommended)`, when the primitive supports options. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
+Before asking, the manager designs the discussion and resolves reversible mechanics from evidence. User goals, preferences, success criteria, design or scope changes, destructive actions, and material evidence conflicts go through the manager-owned user-decision flow. Claude Code uses `AskUserQuestion` when available. Codex uses `request_user_input` when exposed by the active mode and otherwise asks the same point in the parent thread. The canonical card lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
 
 **Status enum** is the contract every spawned agent reports at the beginning of its response — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager dispatches deterministically per the status. See [`orchestration/delegation.md` § The Status Contract](../orchestration/delegation.md#the-status-contract).
 
@@ -274,7 +274,7 @@ For the per-loop write paths, see each loop skill's "Output paths" section. For 
 - **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
 - **MUST offer the startup skill** when memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
 - **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
-- **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
-- **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
+- **MUST never edit gobbi skills, agents, or rules** without explicit user approval through the manager-owned user-decision flow (per [What Requires Discussion?](../discussion/SKILL.md#what-requires-discussion)).
+- **MUST design every user discussion and use the active runtime's question interface for every point that needs user input** — per the [`discussion` skill](../discussion/SKILL.md).
 - **MUST read `orchestration/delegation.md` before every dispatch and never bypass its Load Directives block** — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
 - **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass among the workflow loops; closing without Wrap-up loses all session work.

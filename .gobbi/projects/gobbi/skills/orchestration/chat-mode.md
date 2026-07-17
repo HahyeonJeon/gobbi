@@ -306,8 +306,8 @@ Execution):
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
 - **Production integration (when `propose.mode == dual`).** Every WORK sub-phase runs a parallel Codex
   proposer alongside the Claude producer; the Claude producer **selectively integrates** the frozen
-  proposal (SELECT, never blend) and records the **Integration Log**. A **large gap** — an Always-Ask
-  category / a mutually-exclusive fork / principle-equipoise the producer cannot resolve, per
+  proposal (SELECT, never blend) and records the **Integration Log**. A **large gap** — a change to design or scope, a destructive action,
+  a mutually-exclusive fork, or principle-equipoise the producer cannot resolve, per
   [`workflow/production.md § Gap classification`](workflow/production.md#gap-classification) — is a **user
   decision**, surfaced as a stop-the-line at the per-loop gate exactly as a major evaluation divergence
   is. A **small gap** is producer-local: the producer integrates it and the manager discusses the
@@ -460,8 +460,8 @@ The manager does **NOT** auto-trigger Wrap-up on any other signal:
 - No auto-trigger on idle.
 - No auto-trigger after N tasks.
 
-The discipline is symmetric to the Always-Ask Destructive category in
-`discussion/SKILL.md § Decision Classification`: ending the session changes durable memory
+The discipline is symmetric to the explicit-approval treatment of destructive work in
+`discussion/SKILL.md § What Requires Discussion?`: ending the session changes durable memory
 (mistake promotion, archive moves, handoff write) — that decision is the user's, always.
 
 **Partial session survival.** If the user closes the session without an explicit Wrap-up signal
@@ -611,9 +611,8 @@ DISCUSSION at every Chat loop entry. Documenting at both settings-level (`"user"
   Chat alongside the base RECORD procedure §4 runs.
 - [`orchestration/delegation.md § Inline-Paste Rule`](delegation.md) — governs fresh-subagent
   context per per-task slice; cited alongside Principle 1.
-- [`discussion/SKILL.md § Decision Classification`](../discussion/SKILL.md) — Always-Ask matrix
-  (Design / Scope / Destructive); the Wrap-up trigger in §7 is symmetric to the Destructive
-  category.
+- [`discussion/SKILL.md § What Requires Discussion?`](../discussion/SKILL.md#what-requires-discussion) — user-input gate;
+  the Wrap-up trigger in §7 follows the same explicit-approval rule as destructive work.
 - `mistakes/skills-mirror-symlinks-not-copies.md` — editing the canonical file at
   `.gobbi/projects/gobbi/skills/orchestration/chat-mode.md` reflects automatically via the
   `.claude/skills/orchestration/chat-mode.md` mirror symlink; do not double-edit.

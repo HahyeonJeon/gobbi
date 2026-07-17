@@ -18,7 +18,7 @@ Actionable git checklists per lifecycle point, derived from
 `features/git-workflow/scenarios/git/git-operation-scenarios.md`. Each item names the scenario id(s)
 it covers and the owning skill / procedure. `[ASK]` marks a destructive operation that requires
 the active runtime's user-decision primitive (Always-Ask per `discussion/SKILL.md`
-§ Decision Classification).
+§ What Requires Discussion?).
 
 ---
 

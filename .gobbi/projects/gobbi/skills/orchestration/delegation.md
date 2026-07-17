@@ -194,34 +194,40 @@ STATUS: NEEDS_CONTEXT
 Missing: the locked Scope Contract from the Ideation Loop. The brief references it
 by path but the file does not exist at the cited location.
 user-question:
-  question: "Where is the Scope Contract for this task?"
-  description: "The executor brief cites `sessions/.../1-ideation/outputs/scope-contract.md`
+  decision: "How should the missing Scope Contract be supplied?"
+  context: "The executor brief cites `sessions/.../1-ideation/outputs/scope-contract.md`
     but that path does not exist. The task cannot be scoped without it."
+  evidence:
+    - "The cited path does not exist in the worktree."
   options:
     - label: "Re-point to the correct path (Recommended)"
-      description: "Provide the actual path to the Scope Contract artifact."
+      trade-off: "Preserves the locked artifact as the source but requires its actual path."
     - label: "Supply the Scope Contract inline"
-      description: "Paste the Scope Contract text into a follow-up re-delegation."
+      trade-off: "Unblocks immediately but duplicates the contract in the next brief."
   recommended-option: "Re-point to the correct path"
+  evidence-to-change: "Use the inline option if no canonical artifact exists."
 ```
 
 ### NEEDS_CONTEXT user-question schema
 
-When a subagent emits `STATUS: NEEDS_CONTEXT` and the missing context requires user input, the response body MUST include a `user-question:` block. The manager reads this block and constructs an user-decision primitive call on behalf of the subagent.
+When a subagent emits `STATUS: NEEDS_CONTEXT` and the missing context requires user input, the response body MUST include a `user-question:` block. This is an evidence handoff, not a user-facing question card. The manager first tries to resolve the gap from available evidence. If user input is still needed, it follows the [`discussion` SOP](../discussion/SKILL.md#what-requires-discussion) and builds the parent skill's [Question Card](../discussion/SKILL.md#question-card-structure). The subagent does not conduct the discussion.
 
 ```yaml
 user-question:
-  question: <one-line statement of what is needed>
-  description: <1-2 sentence context — why this is blocking, what it affects>
+  decision: <one-line statement of what is needed>
+  context: <1-2 sentence explanation of why this blocks the task and what it affects>
+  evidence:
+    - <path, rule, command result, or missing artifact that proves the gap>
   options:
-    - label: <option label — first option is Recommended>
-      description: <reason + pros/cons, ≥ 40 chars>
+    - label: <recommended option label>
+      trade-off: <one sentence naming its material benefit and cost>
     - label: <alternative option>
-      description: <reason + pros/cons, ≥ 40 chars>
+      trade-off: <one sentence naming its material benefit and cost>
   recommended-option: <label of the preferred option>
+  evidence-to-change: <new fact that would make another option preferable>
 ```
 
-If the missing context can be fetched without user input (e.g., by reading a file, running a command, or delegating to an assistant), the manager does that first — only escalate to the user if the manager cannot resolve it independently. The `user-question:` block signals "user input required"; absence of the block signals "manager can resolve".
+Options are optional when the subagent cannot support an honest choice set; the block may instead provide only `decision`, `context`, and `evidence`. If the missing context can be fetched without user input (for example, by reading a file, running a command, or delegating to an assistant), the manager does that first and resolves contract-preserving mechanics from evidence. The `user-question:` block signals “manager must resolve this gap”; it does not prove that user input is required.
 
 ### Prompt placement (why Report Format is at the end)
 
