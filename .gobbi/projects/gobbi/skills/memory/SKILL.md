@@ -25,7 +25,7 @@ Each type is project-only, feature-scoped, or both — which type sits in which 
 
 ---
 
-## When memorization happens
+## When memory is written
 
 The **When**. A memorized fact moves through three beats:
 
@@ -33,10 +33,10 @@ The **When**. A memorized fact moves through three beats:
 2. **Promoted** to durable memory at Wrap-up — Wrap-up reads the accumulated staging across all loops and writes it to `.gobbi/projects/{project-name}/...`. Wrap-up is the **sole writer** to durable memory among the workflow loops.
 3. **Read** at the start of the next session — promoted memory is loaded back in (e.g. mistakes via the load-at-start model). This beat closes the lifecycle; building a read procedure is not this doc's job.
 
-**Vocabulary caveat.** "Memorization" names the **Wrap-up promotion stage** (stage 2 of the WORK pipeline), not the per-loop capture sub-phase, which is **RECORD**. The two are distinct — see [`wrap-up/SKILL.md` § RECORD Phase](../wrap-up/SKILL.md#record-phase), which states the distinction; this doc does not re-explain it.
+**Vocabulary caveat.** **Promotion** names Stage 2 of Wrap-up's WORK pipeline, not the per-loop capture sub-phase, which is **RECORD**. The two are distinct — see [`wrap-up/SKILL.md` § RECORD — Stage 4](../wrap-up/SKILL.md#record--stage-4-seal-closure-evidence), which states the distinction; this doc does not re-explain it.
 
 - For the staging mechanics (what RECORD writes, PASS-only, cumulative staging) → [`record/SKILL.md` § RECORD Phase](../record/SKILL.md#record-phase).
-- For the promotion mechanics (the 5-stage pipeline, stage 2 "memorization") → [`wrap-up/SKILL.md` § The 5-stage pipeline](../wrap-up/SKILL.md#the-5-stage-pipeline).
+- For the promotion mechanics (the five-stage pipeline, stage 2 — Promotion) → [`wrap-up/SKILL.md` § Loop and pipeline map](../wrap-up/SKILL.md#loop-and-pipeline-map).
 - For the read-at-start model (the read beat) → [`mistake/SKILL.md` § P1](../mistake/SKILL.md#p1--load-mistakes-before-starting-work).
 
 ---
@@ -47,11 +47,11 @@ The **How**, part 1. When an agent has something worth remembering, the write fl
 
 1. **Stage** the file under the correct type at session `staging/{type}/{slug}.md` — the type you pick determines the destination, so pick it from [`memory-map.md`](memory-map.md) + [`rules.md` § 3](rules.md#3-structure-rules). See [`record/SKILL.md` § RECORD Phase](../record/SKILL.md#record-phase) for the per-loop stage step-table and idempotency.
 2. **Stamp** the matching type template so the file is structured enough to promote — [`templates/{type}.md`](templates/).
-3. At Wrap-up, **Wrap-up reads** the accumulated staging across all loops — [`wrap-up/SKILL.md` § The 5-stage pipeline](../wrap-up/SKILL.md#the-5-stage-pipeline).
-4. Wrap-up **routes** each file deterministically to its memory destination — [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing).
-5. Wrap-up **strips** the staging-only fields, then writes through the per-type allowlist — [`wrap-up/SKILL.md` § Frontmatter allowlist on promotion](../wrap-up/SKILL.md#frontmatter-allowlist-on-promotion-strip-staging-only-fields) and [`rules.md` § 2.6](rules.md#26-staging-field-stripping-on-promotion).
+3. At Wrap-up, **Wrap-up reads** the accumulated staging across all loops — [`wrap-up/SKILL.md` § Loop and pipeline map](../wrap-up/SKILL.md#loop-and-pipeline-map).
+4. Wrap-up **routes** each file deterministically to its memory destination — [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing).
+5. Wrap-up **strips** the staging-only fields, then writes through the per-type allowlist — [`wrap-up/promotion.md` § Frontmatter allowlist on promotion](../wrap-up/promotion.md#frontmatter-allowlist-on-promotion) and [`rules.md` § 2.6](rules.md#26-staging-field-stripping-on-promotion).
 
-This doc does **not** contain the routing table — [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) owns it.
+This doc does **not** contain the routing table — [`wrap-up/promotion.md`](../wrap-up/promotion.md) owns it.
 
 ---
 
@@ -107,7 +107,7 @@ Every memory file holds exactly one concept — one decision, one mistake, one d
 
 > **Supersede and move-on-terminal, never delete.**
 
-A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Core Principles](../wrap-up/SKILL.md#core-principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix). Physical deletion stays forbidden for ALL pre-existing memory. The ONE narrow exception is startup's startup-close rollback: on a mid-promotion HALT, a P6.5 REVISE/FAIL, or a P7 write failure, rollback may `rm` ONLY a file that same promotion just created (uncommitted, manifest preimage `absent`) — never a pre-existing file. Its exact bounds are owned by [`startup/recording.md`](../startup/recording.md) §9 step 5.
+A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Principles](../wrap-up/SKILL.md#principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix). Physical deletion stays forbidden for ALL pre-existing memory. The ONE narrow exception is startup's startup-close rollback: on a mid-promotion HALT, a P6.5 REVISE/FAIL, or a P7 write failure, rollback may `rm` ONLY a file that same promotion just created (uncommitted, manifest preimage `absent`) — never a pre-existing file. Its exact bounds are owned by [`startup/recording.md`](../startup/recording.md) §9 step 5.
 
 > **Compaction is a Wrap-up operation — RECORD never compacts.**
 
@@ -163,8 +163,8 @@ A template's `## Core principles` section states what the `{type}/` doc must cap
 - **MUST stamp the matching template** — freeform writes are forbidden; see [`templates/`](templates/).
 - **MUST obey the standard** — naming + frontmatter + structure + dev-doc quality per [`rules.md`](rules.md).
 - **MUST NOT write durable memory from a working loop** — staging is the only write surface for Ideation / Preparation / Planning / Execution RECORD; Wrap-up promotes. See [`record/SKILL.md` § Constraints](../record/SKILL.md#constraints).
-- **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. Physical deletion of pre-existing memory is forbidden; the one narrow exception is startup-close rollback removing a file that same promotion just created (uncommitted, preimage-absent) — see [`startup/recording.md`](../startup/recording.md) §9 step 5. See [`wrap-up/SKILL.md` § Constraints](../wrap-up/SKILL.md#constraints).
-- **MUST NOT improvise a routing destination** — every staging file has a canonical destination in the routing table; an unroutable item returns `NEEDS_CONTEXT`, never an invented home. See [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing).
+- **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. Physical deletion of pre-existing memory is forbidden; the one narrow exception is startup-close rollback removing a file that same promotion just created (uncommitted, preimage-absent) — see [`startup/recording.md`](../startup/recording.md) §9 step 5. See [`wrap-up/SKILL.md` § Rules](../wrap-up/SKILL.md#rules).
+- **MUST NOT improvise a routing destination** — every staging file has a canonical destination in the routing table; an unroutable item returns `NEEDS_CONTEXT`, never an invented home. See [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing).
 
 ---
 
@@ -191,7 +191,8 @@ The anti-duplication contract. Each row names the single source of truth for one
 | [`memory/templates/{type}.md`](templates/) | The **per-type schema** — required fields, when-to-write, frontmatter + body contract per type | the schema each memorized file stamps — never restate a template's fields |
 | [`memory/templates/feature.md`](templates/feature.md) | The **per-feature subdir map** (README + 14 subdirs) + the feature-README identity spec | the feature dir's internal shape — never restate the 14 subdirs |
 | [`record/SKILL.md`](../record/SKILL.md) | The **capture / staging side** — the RECORD sub-phase procedure, staging mechanics, cumulative staging, idempotency, the assistant-role access matrix | how a finding is staged in-loop — never restate the RECORD step-table |
-| [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) | The **promotion side** — the 5-stage pipeline, the Staging → Memory routing table, the frontmatter allowlist, sole-writer + lazy bootstrap, move-on-terminal | how staging is promoted / the routing table — never restate the routing table |
+| [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) | The **promotion side** — the five-stage pipeline (loop-and-pipeline map), sole-writer + lazy bootstrap, move-on-terminal | how staging is promoted at the pipeline level — never restate the pipeline |
+| [`wrap-up/promotion.md`](../wrap-up/promotion.md) | The **promotion procedure** — the Staging → Memory routing table, area resolution, the frontmatter allowlist, collision/idempotency, archive routing | the routing table + promotion mechanics — never restate the routing table |
 
 ---
 
@@ -202,6 +203,6 @@ The anti-duplication contract. Each row names the single source of truth for one
 - Per-type schemas (required fields, body section contracts) → [`templates/`](templates/)
 - The feature dir's internal shape (README + 14 subdirs) → [`templates/feature.md`](templates/feature.md)
 - Capture / staging side (the RECORD sub-phase) → [`record/SKILL.md`](../record/SKILL.md)
-- Promotion / routing side (Wrap-up) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
+- Promotion side (Wrap-up) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md); the routing table + promotion mechanics → [`wrap-up/promotion.md`](../wrap-up/promotion.md)
 - The mistake type's memorize loop (check / stage / promote) → [`mistake/SKILL.md`](../mistake/SKILL.md)
 - Where the `memory` value-feature sits → [`gobbi/SKILL.md` § Product value-features](../gobbi/SKILL.md#product-value-features)

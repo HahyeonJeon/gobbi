@@ -11,21 +11,27 @@ whose heading tree mirrors this file exactly.
 
 The artifact under evaluation is **the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/`
 files** (the handoff summary and any decomposed artifact) **plus the full set of memory promotions
-Wrap-up made** across every destination — `features/{feature-name}/{scenarios,checklists,decisions,
-references,design,discussions,backlogs,plans,mistakes,changelogs,rules,learnings,reviews,reports}/`
-and its `README.md`, plus project-tier `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`,
-`learnings/`, `reviews/`, `reports/` — the staging inventory, the promotion manifest, the per-session
-journal entry, any Stage-2c memory-compaction writes when enabled, and the Stage-5 git-finalization
-evidence when it exists. This evaluation **IS pipeline stage 3 — memory validation**; its verdict
-gates the irreversible stage 5 (git finalization). Wrap-up is a **consolidation loop** — the artifact
-is a handoff + promotions, not code — so every family below judges **consolidation quality**: did the
-session's work get promoted completely and correctly, does promoted memory slot into the existing
-schema, does the handoff match `git log`, can the next session resume from it, and did the irreversible
-git action happen only after validation. Each family carries a `### {ID}` heading, a **Category**, the
-**Situation** it arises in, the **Good** outcome, the **Bad / failure** outcome, one **Adversarial**
-case a real evaluator would probe, and the **Checklist IDs** whose joint satisfaction proves the
-scenario handled. Scenario IDs follow `WRAP-{PERSPECTIVE}-SCENARIO-{NN}`; each check follows
-`{scenario-id}-CHECK-{NN}` and lives in `checklist.md`.
+Wrap-up made** — the evaluated destination set is DERIVED from the frozen promotion manifest
+(`sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md`), not from a copied directory
+list: every source-accounting row with a mapped destination and every mutation row (move source +
+destination, archive target, inbound-reference carrier, feature-index update, lifecycle flip, the journal
+row), plus — when the compaction sub-procedure produced a merge manifest — every path that manifest names.
+That set is cross-checked against the pre/post filesystem snapshot and the applied-delta report. The
+evaluation also covers the staging inventory, the per-session journal entry, the compaction sub-procedure's
+memory-compaction writes when enabled, and the Stage-5 git-finalization evidence when it exists. This
+evaluation **IS pipeline stage 3 — memory validation**; its verdict gates the irreversible stage 5 (git
+finalization). Wrap-up is a **consolidation loop** — the artifact is a handoff + promotions, not code —
+so every family below judges **consolidation quality**: did the session's work get promoted completely and
+correctly, does promoted memory slot into the existing schema, does the handoff match `git log`, can the
+next session resume from it, and did the irreversible git action happen only after validation. Each family
+carries a `### {ID}` heading, a **Category**, the **Situation** it arises in, the **Good** outcome, the
+**Bad / failure** outcome, one **Adversarial** case a real evaluator would probe, and the **Checklist IDs**
+whose joint satisfaction proves the scenario handled. Scenario IDs follow `WRAP-{PERSPECTIVE}-SCENARIO-{NN}`;
+each check follows `{scenario-id}-CHECK-{NN}` and lives in `checklist.md`.
+
+**The design bad-scenarios S-1..S-16 are embedded here**, each under ONE perspective family, tagged
+`[S-N]` in its heading, each citing a verified mistake it guards against. They preserve the 1:1
+scenario↔checklist mirror.
 
 ---
 
@@ -93,6 +99,51 @@ _Lens (see `evaluation.md`):_ is the **promoted memory** well-structured, routed
 **Adversarial:** a promotion lands at a plausible-looking but off-table destination while its cross-references still resolve, so the link check passes and the routing deviation goes unnoticed.
 **Checklist IDs:** `WRAP-STRUCT-SCENARIO-04-CHECK-*`
 
+### WRAP-STRUCT-SCENARIO-05 — [S-1] Strip removes a required destination field
+**Category:** failure-mode
+**Situation:** promotion strips staging-only routing fields while rendering a durable destination record.
+**Good:** the renderer derives the durable base + destination-type extension allowlist from the memory-schema owner and strips ONLY staging-only keys; the final frontmatter is validated against the destination type's REQUIRED-extension list (and required base set) before the manifest freeze — every mandatory field survives or is deterministically stamped (e.g. a mistakes file keeps `priority` + `domain`; a backlogs file keeps `priority` + `project-scope`).
+**Bad / failure:** the strip is derived from the strip table alone and drops a field that is required by the destination type but absent from the strip table (e.g. `domain` on a mistakes file), so the promoted file fails the non-skippable Stage-3 validator.
+**Adversarial:** a strip table says to remove a field and the implementer follows it without checking the destination-required set, producing a clean-looking record that fails the destination validator only after the strip.
+**Checklist IDs:** `WRAP-STRUCT-SCENARIO-05-CHECK-*`
+**Mistake cited:** `skills/wrap-up/mistakes.md` § Strip Contract Dropped Required Extension Field
+
+### WRAP-STRUCT-SCENARIO-06 — [S-2] Standing guards only partially re-run over the post-promotion tree
+**Category:** failure-mode
+**Situation:** promotion and any compaction writes have changed the project tree; the Stage-3 gate re-runs the standing guards AFTER promotion.
+**Good:** EVERY standing project guard runs over the POST-promotion tree — `validate-frontmatter.sh`, `check-markdown-links.sh`, `check-residual-vocab.sh`, `check-skill-mistakes.sh --all`, `check-workflow-mirror-consistency.sh` — each with its command + exit status recorded and all exit 0; the merge-integrity guard (`check-merge-ref-integrity.sh`) runs additionally ONLY when the compaction sub-procedure produced a merge manifest; where a promotion adds a legitimate new carrier a guard flags, the guard's allowlist is extended by its own discipline in the same commit.
+**Bad / failure:** only the frontmatter validator is re-run, a guard result comes from the pre-promotion tree, or the merge-integrity guard is treated as a substitute for an always-run guard — so a regression ships behind a PASS.
+**Adversarial:** promoted prose creates a legitimate new residual-vocabulary carrier; the allowlist was green before promotion, but no post-promotion content-guard run detects the new carrier — caught only by a manual pre-commit re-run AFTER the dual-system gate already passed.
+**Checklist IDs:** `WRAP-STRUCT-SCENARIO-06-CHECK-*`
+**Mistake cited:** `skills/wrap-up/mistakes.md` § Wrap Up Green Check Must Rerun Standing Guards Post Promotion
+
+### WRAP-STRUCT-SCENARIO-07 — [S-4] A plausible-but-invalid area is accepted instead of escalating
+**Category:** failure-mode
+**Situation:** a by-area destination has no valid first match in the destination type's area vocabulary.
+**Good:** the resolved `{area}/` segment is an area the destination type's allowlist permits; when the contract resolves NO valid area, the manifest records the attempted resolution and the promotion returns `NEEDS_CONTEXT` — the manager obtains a user decision before a new or changed area is authorized; no fallback area is silently selected.
+**Bad / failure:** a plausible-sounding but non-allowlisted area (or a generic catch-all area) is accepted, so the file lands at an area the type's allowlist does not permit.
+**Adversarial:** the proposed area name looks semantically correct and the path resolves on disk, but the destination type's allowlist rejects it — a mere path-existence check misses the schema violation.
+**Checklist IDs:** `WRAP-STRUCT-SCENARIO-07-CHECK-*`
+**Mistake cited:** `mistakes/verification/offered-memory-home-without-verifying-type-schema.md`; `../memory/rules.md` § 1.5
+
+### WRAP-STRUCT-SCENARIO-08 — [S-7] A `skills/` promotion carries an `{area}/` segment
+**Category:** failure-mode
+**Situation:** a `skills/` destination is promoted or verified — a Preparation-generated `skills/{skill}/SKILL.md`, or a skill-owned trap appended to `skills/{skill}/mistakes.md`.
+**Good:** `skills/` is NOT by-area — the only destination shapes are `skills/{skill}/SKILL.md` and `skills/{skill}/mistakes.md`, with NO `{area}/` segment; a Preparation-generated skill is normally recorded as already-promoted and is recovered only when the Preparation contract permits it; the by-area `{area}/` layout applies only to the project / feature memory types.
+**Bad / failure:** a `skills/` destination is rendered as `skills/{area}/{skill}/...` (or otherwise treated as a by-area memory type), inventing an area segment the skill surface does not use.
+**Adversarial:** a generic "every type receives `{area}/`" helper inserts an area into the skill path, and the file still exists at a plausible path that no runtime loads.
+**Checklist IDs:** `WRAP-STRUCT-SCENARIO-08-CHECK-*`
+**Mistake cited:** the non-by-area `skills/` contract in `skills/wrap-up/promotion.md` § Staging → Memory routing; `skills/mistake/SKILL.md` § Memory Access Matrix
+
+### WRAP-STRUCT-SCENARIO-09 — [S-10] A re-run creates suffixed duplicates
+**Category:** failure-mode
+**Situation:** the promotion is re-run over the SAME immutable source inventory (e.g. after an interrupted Stage 2).
+**Good:** idempotency is keyed on stable SOURCE identity `{session-id, source-relative-path}` plus the frozen manifest mapping; a re-run over the identical inventory resolves every source to the same target and — when the candidate bytes are equal — is a no-op; no `-2` / `-3` numeric or loop suffix is allocated.
+**Bad / failure:** the re-run keys on a field that did not survive the strip (or re-derives the slug / recomputes collision order), so it cannot recognize the prior write and creates a suffixed duplicate — or overwrites a distinct source.
+**Adversarial:** the first run strips `finding-id`; the second run then treats the same source as new and creates `slug-2.md`, even though the source bytes and the original manifest are unchanged.
+**Checklist IDs:** `WRAP-STRUCT-SCENARIO-09-CHECK-*`
+**Mistake cited:** `../memory/rules.md` § 2.6 (staging-field strip); the collision-and-idempotency policy in `skills/wrap-up/promotion.md`
+
 ---
 
 ## Performance
@@ -108,11 +159,20 @@ _Lens (see `evaluation.md`):_ does the wrap-up complete in **reasonable bound** 
 
 ### WRAP-PERF-SCENARIO-02 — Total memory delta is proportional; caps respected
 **Category:** failure-mode
-**Situation:** the session produced a set of promotions, and the dormant Stage-2c memory-compaction sub-step may apply after promotion.
-**Good:** the memory file count after wrap-up matches a reasonable distillation of the session's actual learning; there is no "memory file per scratch thought" pattern; the total word count across promoted files is sanity-checked against the session's scale; any file over the typical bound is challenged; Stage-2c is skipped explicitly when `settings.compaction.enabled` is false, and when enabled each over-cap `{type}/{area}/` is consolidated losslessly (sources kept recoverable + archived, inbound references repointed, standing guards green) rather than summarized away.
+**Situation:** the session produced a set of promotions, and the compaction sub-procedure runs after promotion.
+**Good:** the memory file count after wrap-up matches a reasonable distillation of the session's actual learning; there is no "memory file per scratch thought" pattern; the total word count across promoted files is sanity-checked against the session's scale; any file over the typical bound is challenged; the compaction sub-procedure always counts every `{type}/{area}/` post-promotion (independent of `settings.compaction.enabled`, which gates only automatic merging), routes an over-hard-cap area to an Always-Ask decision, and — when a merge runs — consolidates losslessly (sources kept recoverable + archived, inbound references repointed, standing guards green) rather than summarizing away to hit a count.
 **Bad / failure:** the session spawns one memory file per scratch thought, a bloated file passes because each section "looks fine" in isolation, or an enabled compaction summarizes away source detail to hit a count.
 **Adversarial:** each promoted file looks fine alone, but the total memory delta far exceeds the session's actual learning — the bloat is visible only in aggregate, never per-file.
 **Checklist IDs:** `WRAP-PERF-SCENARIO-02-CHECK-*`
+
+### WRAP-PERF-SCENARIO-03 — [S-12] Compaction silently skips an over-hard-cap area
+**Category:** adversarial
+**Situation:** a `{type}/{area}/` count exceeds its hard cap after promotion (e.g. `mistakes/verification/` = 44 against a hard cap of 15).
+**Good:** the compaction sub-procedure counts EVERY `{type}/{area}/` post-promotion whether or not `settings.compaction.enabled` is set; an over-hard-cap area CANNOT reach PASS silently — it is routed to an Always-Ask decision (merge / raise cap / archive-terminal / accept-with-acknowledgement), and `mistakes` and `rules` merges stay Always-Ask; disabling automatic merge, exhausting the action budget, or crossing a soft cap does not bypass hard-cap detection.
+**Bad / failure:** the count is gated behind `settings.compaction.enabled`, so with the flag off an over-hard-cap area is never counted and slides through with a silent PASS.
+**Adversarial:** `settings.compaction.enabled` is false and the implementation treats that as permission not to count, allowing a 44-record area to pass a hard cap of 15 without surfacing it.
+**Checklist IDs:** `WRAP-PERF-SCENARIO-03-CHECK-*`
+**Mistake cited:** `../memory/rules.md` § 5; live count 44 vs hard cap 15
 
 ---
 
@@ -127,12 +187,12 @@ _Lens (see `evaluation.md`):_ is the **handoff summary itself** readable and sel
 **Adversarial:** the handoff looks complete but a required section is silently empty — a heading with no entry, or a "(see above)" pointing at content that does not exist above.
 **Checklist IDs:** `WRAP-AESTH-SCENARIO-01-CHECK-*`
 
-### WRAP-AESTH-SCENARIO-02 — No placeholders; pointers use stable paths
+### WRAP-AESTH-SCENARIO-02 — No placeholders; pointers use durable repo-root-relative paths
 **Category:** failure-mode
 **Situation:** the handoff carries prose and path pointers.
-**Good:** no "TODO: write this", `???`, or unfinished sentence remains; every path reference is stable — absolute or repo-root–relative — and resolves from any working directory; no `./...` session-relative shortcut is used.
-**Bad / failure:** a placeholder or unfinished sentence ships, or a pointer uses a cwd-relative path that breaks when read elsewhere.
-**Adversarial:** a pointer reads cleanly but is a `./`-relative path that resolves only from the wrap-up's own directory, so the next session opening it from the repo root hits a dead path.
+**Good:** no "TODO: write this", `???`, or unfinished sentence remains; every durable path reference is repo-root–relative (e.g. `.gobbi/projects/{name}/...`) — NOT an absolute worktree path, which is temporary and breaks after the worktree is cleaned up — and resolves from the repo root; no `./...` session-relative shortcut is used.
+**Bad / failure:** a placeholder or unfinished sentence ships, a pointer uses an absolute worktree path that dies at worktree cleanup, or a pointer uses a cwd-relative `./...` path that breaks when read elsewhere.
+**Adversarial:** a pointer reads cleanly but is an absolute worktree path (or a `./`-relative path) that resolves only from this session's worktree, so the next session opening it from the repo root — after cleanup — hits a dead path.
 **Checklist IDs:** `WRAP-AESTH-SCENARIO-02-CHECK-*`
 
 ---
@@ -159,8 +219,8 @@ _Lens (see `evaluation.md`):_ can the **next session** open this wrap-up and **c
 ### WRAP-USAGE-SCENARIO-03 — Pointers resolve and decisions are constraints
 **Category:** failure-mode
 **Situation:** the wrap-up carries pointers and "decisions to respect".
-**Good:** resume-critical pointers use absolute or repo-root–relative durable paths and will keep resolving after worktree cleanup; a session-scratch pointer appears only as audit evidence, never as the sole source needed to continue work; every "decision to respect" is phrased as a constraint ("X must Y", not "we discussed X"); the constraint format is consistent across all decisions.
-**Bad / failure:** continuation depends on a private session-scratch pointer, or a "decision to respect" is narrative rather than a constraint.
+**Good:** resume-critical pointers use repo-root–relative durable paths (NOT absolute worktree paths, which break after worktree cleanup) and will keep resolving after the worktree is removed; a session-scratch pointer appears only as audit evidence, never as the sole source needed to continue work; every "decision to respect" is phrased as a constraint ("X must Y", not "we discussed X"); the constraint format is consistent across all decisions.
+**Bad / failure:** continuation depends on a private session-scratch pointer or an absolute worktree path, or a "decision to respect" is narrative rather than a constraint.
 **Adversarial:** a "decision to respect" is written as narrative history ("we discussed X and chose Y"), so the next session reads it as background and re-litigates the settled decision.
 **Checklist IDs:** `WRAP-USAGE-SCENARIO-03-CHECK-*`
 
@@ -196,10 +256,37 @@ _Lens (see `evaluation.md`):_ does the wrap-up tell **one coherent story**? Does
 ### WRAP-CONS-SCENARIO-04 — Corrections and findings reach memory; closure audit complete
 **Category:** coverage-matrix
 **Situation:** the session produced user corrections, evaluator findings across iterations, and recurring patterns.
-**Good:** every user correction in the session transcript has a corresponding `mistakes/` entry (or an explicit "decided not to record" with reason), and no promoted mistake lacks transcript support; for every loop the session ran, each iteration's findings are enumerated and carry one of five dispositions (addressed / deferred / disputed / superseded / still open, each with its required pointer); low-confidence appendix findings are in the audit; stuck findings escalated mid-session are accounted for; regression findings from a REVISE iteration are tagged; any finding that recurred across iterations becomes a `mistakes/` candidate, and a pattern recurring across loops becomes a `features/{feature-name}/decisions/` or project-level rule candidate.
-**Bad / failure:** a user correction has no mistake entry, a finding has no disposition, a low-confidence finding vanishes, or a recurring pattern is never promoted.
+**Good:** every user correction in the session transcript has exactly ONE explicit accounting result — a corresponding promoted `mistakes/` entry, OR a staged mistake awaiting the user-confirmed route, OR a recorded user decision declining promotion with a reason — and no promoted mistake lacks transcript support (never a silent disappearance, never a forced promotion after the user declined); for every loop the session ran, each iteration's findings are enumerated and carry one of five dispositions (addressed / deferred / disputed / superseded / still open, each with its required pointer); low-confidence appendix findings are in the audit; stuck findings escalated mid-session are accounted for; regression findings from a REVISE iteration are tagged; any finding that recurred across iterations becomes a `mistakes/` candidate, and a pattern recurring across loops becomes a `features/{feature-name}/decisions/` or project-level rule candidate.
+**Bad / failure:** a user correction has no accounting result (neither promoted, staged-awaiting-route, nor explicitly declined-with-reason), a finding has no disposition, a low-confidence finding vanishes, or a recurring pattern is never promoted.
 **Adversarial:** a low-confidence appendix finding silently disappears from the closure audit — the high-confidence findings all carry dispositions, so the audit looks complete while a real finding was dropped.
 **Checklist IDs:** `WRAP-CONS-SCENARIO-04-CHECK-*`
+
+### WRAP-CONS-SCENARIO-05 — [S-5] A terminal record is deleted instead of archived
+**Category:** failure-mode
+**Situation:** a record becomes superseded, retired, dropped, or merged during promotion or compaction.
+**Good:** the complete terminal record is MOVED (`git mv`) to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`, retaining its original type + content — never hard-deleted or reduced to a tombstone; its `status:` is flipped and its supersession pointer set before the move; inbound path references are repointed; memory stays an append-only auditable history.
+**Bad / failure:** a superseded or merged record is hard-deleted, reduced to a tombstone, or moved to an untyped archive path, leaving a vacuum a future reader cannot recover.
+**Adversarial:** the new record and reciprocal lifecycle fields look correct, but the old record was removed instead of moved, so its evidence — the audit trail of WHY it changed — cannot be recovered.
+**Checklist IDs:** `WRAP-CONS-SCENARIO-05-CHECK-*`
+**Mistake cited:** `skills/mistake/SKILL.md` § Delete semantics; `../memory/rules.md` §§ 2.4, 5
+
+### WRAP-CONS-SCENARIO-06 — [S-6] Already-promoted `startup/` data is promoted again
+**Category:** failure-mode
+**Situation:** the session includes a `startup/` surface, which self-promotes at startup-close — the entire `startup/` tree is EXCLUDED from Wrap-up's promotion inventory.
+**Good:** Wrap-up excludes the whole `startup/` tree from its source inventory, verifies the existing startup destinations from startup's summary, and records ZERO manifest rows for `startup/` — it never re-promotes a `startup/` record.
+**Bad / failure:** Wrap-up treats `startup/staging/` as an ordinary promotion source and re-promotes records startup-close already wrote, creating duplicates.
+**Adversarial:** a generic recursive search for every directory named `staging` includes `startup/`, and the re-run creates a suffixed duplicate that appears legitimate.
+**Checklist IDs:** `WRAP-CONS-SCENARIO-06-CHECK-*`
+**Mistake cited:** `../record/record-map.md` § Wrap-up promotion-inventory rule (`startup/` excluded); the named exclusion in `skills/wrap-up/promotion.md` § Stage boundary and source contract
+
+### WRAP-CONS-SCENARIO-07 — [S-11] Supersession links only one direction
+**Category:** failure-mode
+**Situation:** a new promoted record supersedes an existing active record.
+**Good:** supersession is RECIPROCAL — the new record names the old slug via `supersedes: <old>` AND the old record is flipped `status: superseded` + `superseded_by: <new>`; the old record then moves to the typed archive; every inbound path reference is repointed as one manifest-planned mutation set.
+**Bad / failure:** only one lifecycle direction is written — the new file names the old but the old is never flipped (or the reverse) — the old record stays active, or path references still point to its former location.
+**Adversarial:** the new record's `supersedes` field is correct, so a one-file inspection passes, but the old record lacks `superseded_by` and remains authoritative — a future session loading the old one cannot tell it was replaced.
+**Checklist IDs:** `WRAP-CONS-SCENARIO-07-CHECK-*`
+**Mistake cited:** `../memory/rules.md` §§ 2.4, 5 (reciprocal supersession + archive-on-terminal)
 
 ---
 
@@ -208,9 +295,9 @@ _Lens (see `evaluation.md`):_ what breaks if the wrap-up is **wrong** — memory
 
 ### WRAP-RISK-SCENARIO-01 — No dangling work; scratch preserved as audit trail
 **Category:** golden-path
-**Situation:** after wrap-up, git state and the session tree must be clean and intact.
-**Good:** `git status` after wrap-up shows no uncommitted scratch and no work-in-progress left dangling without a pointer; all session scratch state remains intact under `sessions/{date}-{session-id}/`; Wrap-up did not delete any `sessions/.../{N}-{loop}/` directory (scratch is the audit trail).
-**Bad / failure:** uncommitted scratch is left in the tree, or Wrap-up deleted a session directory.
+**Situation:** after wrap-up, the tracked promotion surface must be clean and the gitignored session tree intact.
+**Good:** the TRACKED promotion surface is clean (a `git status` scoped to the tracked tree shows no uncommitted promotion scratch and no work-in-progress left dangling without a durable pointer); a filesystem enumeration + per-file hashes (`find sessions/{date}-{session-id}/ -type f`) confirms all session scratch state remains intact under `sessions/{date}-{session-id}/` — `git status` is NOT used as proof of the gitignored session tree's contents, because git is blind to gitignored paths; Wrap-up did not delete any `sessions/.../{N}-{loop}/` directory (scratch is the audit trail).
+**Bad / failure:** uncommitted promotion scratch is left in the tracked tree, Wrap-up deleted a session directory, or `git status` is treated as proof the gitignored session tree is intact.
 **Adversarial:** Wrap-up "tidies up" by deleting a session scratch directory it already promoted from, so the audit trail is gone while the promotion looks complete.
 **Checklist IDs:** `WRAP-RISK-SCENARIO-01-CHECK-*`
 
@@ -225,23 +312,86 @@ _Lens (see `evaluation.md`):_ what breaks if the wrap-up is **wrong** — memory
 ### WRAP-RISK-SCENARIO-03 — Every correction and process gap is recorded as a mistake
 **Category:** failure-mode
 **Situation:** the session produced user corrections, some surfacing workflow / process gaps, and stuck escalations the user resolved.
-**Good:** every user correction during the session has a corresponding `mistakes/` entry; corrections that surfaced workflow / process gaps (evaluator missed a category, manager skipped escalation) become mistake candidates; stuck escalations the user resolved (recorded in the discussion log) have their resolution lessoned into memory.
-**Bad / failure:** a correction, a process gap, or a resolved escalation ends the session with no mistake entry — the session will hit it again.
+**Good:** every user correction during the session has exactly ONE explicit accounting result — a promoted `mistakes/` entry, a staged mistake awaiting the user-confirmed route, OR a recorded user decision declining promotion with a reason; corrections that surfaced workflow / process gaps (evaluator missed a category, manager skipped escalation) become mistake candidates; stuck escalations the user resolved (recorded in the discussion log) have their resolution lessoned into memory.
+**Bad / failure:** a correction, a process gap, or a resolved escalation ends the session with NO accounting result (neither recorded, staged-awaiting-route, nor explicitly declined-with-reason) — the session will hit it again.
 **Adversarial:** a workflow / process gap the user corrected is treated as a one-off and never recorded as a mistake, so the same process gap recurs in a later session.
 **Checklist IDs:** `WRAP-RISK-SCENARIO-03-CHECK-*`
 
-### WRAP-RISK-SCENARIO-04 — Session cost and sensitive-data exposure recorded
+### WRAP-RISK-SCENARIO-04 — Sensitive data does not ride into promoted memory
 **Category:** coverage-matrix
-**Situation:** the session may have consumed paid-API / cloud cost or touched sensitive data.
-**Good:** the session's total paid-API / cloud-cost is recorded in the handoff for future-self awareness, and anomalous spend (e.g. 10× expected) is called out; if any session activity touched real PII or sensitive data (e.g. grepping production data), that is recorded; transient sensitive data is not carried into a promoted memory file — the surface the wrap-up commit absorbs — unless the user explicitly authorized it, and any sensitive data left in the gitignored session tree is noted as session-local exposure, not committed history.
-**Bad / failure:** cost is unrecorded, a PII-touching activity is unlogged, or sensitive data rides into a promoted memory file with no authorization.
+**Situation:** the session may have touched sensitive data (e.g. grepping production data, handling real PII).
+**Good:** any session activity that touched real PII or sensitive data is recorded as session-local exposure; transient sensitive data is NOT carried into a promoted, tracked memory file — the surface the wrap-up commit absorbs (`features/` or `mistakes/`) — unless the user explicitly authorized it; sensitive data left in the gitignored session tree is noted as session-local exposure, not committed history.
+**Bad / failure:** a PII-touching activity is unlogged, or sensitive data rides into a promoted memory file with no authorization.
 **Adversarial:** sensitive data captured mid-session rides into a promoted memory file (`features/` or `mistakes/`) that the wrap-up commit absorbs, so a private payload ships into committed history unnoticed — whereas the same data left under the gitignored `sessions/.../{N}-{loop}/working/` is session-local exposure the commit never touches.
 **Checklist IDs:** `WRAP-RISK-SCENARIO-04-CHECK-*`
 
 ### WRAP-RISK-SCENARIO-05 — Git finalization is gated and manager-owned
 **Category:** failure-mode
-**Situation:** Stage-5 git finalization commits the promotions, pushes, opens or reuses the PR, merges, and cleans up the worktree — only after Stage-3 memory validation passes.
-**Good:** git finalization runs only after this Stage-3 memory validation returns PASS (the irreversible commit / push / merge / worktree-cleanup is gated behind the evaluation); it is manager-owned — the Wrap-up assistant never pushes, merges, or cleans up the worktree; the finalization commit carries the stage-2 memory promotion writes + the journal, not the gitignored session tree; an already-open PR for the branch is reused rather than duplicated, and an unavailable push / PR is recorded as PR-deferred rather than reported complete.
-**Bad / failure:** finalization runs before validation, is performed by the assistant, commits the wrong surface, opens a duplicate PR, or reports a push / PR step complete with no evidence.
+**Situation:** Stage-5 git finalization commits the promotions, pushes, opens or reuses the PR, merges, and cleans up the worktree — and runs ONLY AFTER Stage-3 memory validation passes. Stage-3 gates it; Stage-3 runs before it.
+**Good:** at Stage-3, no Stage-5 finalization commit / push / merge / worktree-cleanup has run yet on the branch (the irreversible action is still gated behind this evaluation); finalization is manager-owned — the Wrap-up assistant never pushes, merges, or cleans up the worktree; the manager's finalization PLAN commits the Stage-2 promotion writes + the journal and excludes the gitignored session tree, and Stage-3 may verify that the plan WILL reuse an open PR or record a PR-deferred state — but it never claims a commit, push, PR, merge, or cleanup succeeded. Each Stage-5 action verifies its own postconditions after Stage-3 PASS.
+**Bad / failure:** a finalization commit / push / merge already ran before Stage-3 PASS, the assistant performed finalization, or Stage-3 certifies an executed git outcome (commit contents, PR reuse, push success) that cannot exist until Stage-5 runs.
 **Adversarial:** a duplicate PR or a squash-merge publishes unvalidated memory while the session record still shows Stage 3 had not passed — the irreversible action outran its gate.
 **Checklist IDs:** `WRAP-RISK-SCENARIO-05-CHECK-*`
+
+### WRAP-RISK-SCENARIO-06 — [S-3] A wrong-tree / wrong-inode promotion write
+**Category:** failure-mode
+**Situation:** promotion writes durable memory into the project tree while the session operates in a linked worktree, where the same relative path exists in BOTH the main checkout and the worktree.
+**Good:** every promoted absolute path resolves through the session's canonical worktree root (`session.json.git.worktreePath`) and literally contains the `worktrees/{branch}/` segment; live path + inode checks prove no write landed in the main checkout.
+**Bad / failure:** a relative path, a reset current directory, or a mistyped absolute path omits the `worktrees/{branch}/` prefix and writes to the main checkout (on the base branch) — the write "succeeds" because the same relative path is a valid file there, so nothing errors.
+**Adversarial:** the main checkout and worktree have identical preimages, so a content diff looks correct while the write changed the wrong inode — caught only when a worktree-scoped check still shows the pre-edit content.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-06-CHECK-*`
+**Mistake cited:** `skills/git/mistakes.md` § Executor Edited Main Tree Not Worktree Copy · § Manager Edited Main Checkout Not The Session Worktree · § Codex Subagent Apply Patch Wrong Tree
+
+### WRAP-RISK-SCENARIO-07 — [S-8] A staging-only field survives promotion
+**Category:** failure-mode
+**Situation:** a staged finding carries routing, evaluator, and staging-provenance fields; promotion strips them and stamps the destination-type base fields.
+**Good:** the rendered durable record contains only the allowed durable base fields (including `author` + `keywords`, preserved or freshly stamped), the destination-type extensions, and sanctioned lifecycle links; every staging-only key (`mistake-candidate`, `finding-id`, `area`, …) is absent — the no-stray-keys validator passes.
+**Bad / failure:** a staging-only routing / evaluator key survives into tracked memory, or the strip wrongly removes `author` or `keywords`.
+**Adversarial:** the record passes a required-field presence check but still leaks an evaluator routing key that the no-stray-keys validator should reject.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-07-CHECK-*`
+**Mistake cited:** `../memory/rules.md` § 2.6 (staging-only fields stripped on promotion; `author` + `keywords` stamped); `mistakes/docs-sync/promotion-writer-leaks-content-wrapper-tag.md`
+
+### WRAP-RISK-SCENARIO-08 — [S-9] One malformed source causes a partial promotion
+**Category:** adversarial
+**Situation:** one source, route, candidate, preimage, or mutation row is invalid during the whole-batch preflight.
+**Good:** Stage 1 renders and validates the COMPLETE source set, candidate set, mutation set, and every destination preimage (including whole-file preimages for shared destinations) BEFORE the first durable-memory write; one invalid item halts with its exact path + reason and durable memory remains at the captured preimage state; Stage 2 rechecks preimages before applying the frozen manifest.
+**Bad / failure:** valid prefix rows are written before the malformed row is discovered, leaving a partial promotion with no clean recovery.
+**Adversarial:** the final source is malformed after twenty valid sources; an incremental writer has already published the first twenty before it reports failure.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-08-CHECK-*`
+**Mistake cited:** `mistakes/assumption/reuse-target-must-be-invocable-at-needed-granularity.md`; `mistakes/assumption/validity-signal-must-be-written-after-its-validation-gate.md`
+
+### WRAP-RISK-SCENARIO-09 — [S-13] The evaluation gate evaluates a moving target
+**Category:** failure-mode
+**Situation:** the producer completes the promotion evidence and the manager dispatches the two Stage-3 evaluators.
+**Good:** producer completion precedes dispatch (terminal output confirmed on disk); the exact manifest, output, snapshot, applied delta, guard results, and derived target-set hashes are pinned in the eval brief, and those inputs remain identical through both evaluations.
+**Bad / failure:** the producer or a queued follow-up changes any evaluated input after evaluator dispatch, so an in-flight write changes the target mid-evaluation.
+**Adversarial:** one evaluator reads before a late producer write and the other reads after it; both reports are internally sound but evaluate different artifacts.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-09-CHECK-*`
+**Mistake cited:** `mistakes/assumption/evaluator-spawn-without-producer-done-handshake.md`; `skills/evaluation/mistakes.md` § Freeze Producer Artifact Before Evaluating; D13 (non-skippable gate)
+
+### WRAP-RISK-SCENARIO-10 — [S-14] Stage-3 claims Stage-5 succeeded
+**Category:** adversarial
+**Situation:** Stage-3 evaluates the promotion before the manager may run git finalization; it is tempted to verify Stage-5 postconditions.
+**Good:** Stage-3 verifies ONLY that no premature finalization ran and that a valid manager-owned finalization plan exists; it labels commit / push / PR / merge / worktree-cleanup postconditions as PENDING and asserts no executed git outcome. Stage-5 verifies those postconditions — including open-PR reuse and PR-deferred reporting — itself after PASS.
+**Bad / failure:** the Stage-3 report says Stage-5 succeeded, marks a planned action (e.g. "PR reused") PASS from the plan alone, or requires finalization evidence that cannot yet exist — turning a future action into a false present-tense fact.
+**Adversarial:** a checklist marks "pull request reused" PASS from the plan alone, so a future action reads as a completed fact one stage before it can be true.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-10-CHECK-*`
+**Mistake cited:** `mistakes/docs-sync/split-added-content-must-match-skill-and-runtime-facts.md`; the E10 Stage-3/Stage-5 boundary; sibling WRAP-RISK-SCENARIO-05
+
+### WRAP-RISK-SCENARIO-11 — [S-15] Session scratch deleted, or git used as proof of the gitignored tree
+**Category:** failure-mode
+**Situation:** Wrap-up finishes promotion while the gitignored session record remains the audit trail.
+**Good:** direct filesystem enumeration + per-file hashes prove every prior session path still exists with unchanged source evidence; any authorized non-standard scratch cleanup is narrowly accounted; no session loop directory is deleted; `git status` is NOT used as proof — it is blind to the gitignored session tree and would report it "clean / unchanged" whatever its real contents.
+**Bad / failure:** a session scratch directory is deleted, or a clean `git status` is cited as proof that the gitignored tree is intact.
+**Adversarial:** the complete `sessions/.../4-execution/` directory is removed; `git status` stays clean because the tree is ignored, and a proxy-only check reports PASS.
+**Checklist IDs:** `WRAP-RISK-SCENARIO-11-CHECK-*`
+**Mistake cited:** `mistakes/verification/git-gate-blind-to-gitignored-writes.md`; sibling WRAP-RISK-SCENARIO-01
+
+### WRAP-RISK-SCENARIO-12 — [S-16] Prior-loop staging bytes change during Stage-1
+**Category:** adversarial
+**Situation:** the Stage-1 compliance scan finds mechanically repairable defects in prior-loop `staging/` files while rendering promotion candidates.
+**Good:** every prior-loop `staging/` file is hashed / stat-recorded BEFORE and AFTER Stage-1 and its path + bytes + timestamps are UNCHANGED; any mechanical repair exists ONLY as a correction overlay under `sessions/{date}-{session-id}/5-wrap-up/working/correction-overlays/` and in the rendered destination candidate — never in the prior-loop source; the manifest records the source hash + normalization delta + rendered candidate; a judgment-required repair escalates via `NEEDS_CONTEXT`.
+**Bad / failure:** Stage-1 normalizes, renames, appends to, or replaces an authoritative prior-loop staging source in place — mutating the read-only evidence the promotion is verified against.
+**Adversarial:** the validator fixes malformed frontmatter in place and then passes its own second read, erasing the evidence that the source was malformed. (Distinct from S-9, which checks manifest-preflight atomicity; S-16 checks the prior-loop SOURCE bytes are unchanged.)
+**Checklist IDs:** `WRAP-RISK-SCENARIO-12-CHECK-*`
+**Mistake cited:** `mistakes/verification/session-json-clobber-during-record-upsert.md` (preserve-authoritative-input); the immutable-source contract in `skills/wrap-up/promotion.md` § Stage boundary and source contract; the B-E1 read-only-matrix vs Step-2.5 contradiction

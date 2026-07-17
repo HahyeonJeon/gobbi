@@ -386,66 +386,41 @@ is_excluded_path() {
 
 # ---------------------------------------------------------------------------
 # D7-LEGIT allowlist — live (file:line) hits whose old-vocab use is CORRECT and
-# intentional AFTER the task-07b G1-G5 fix. Each entry is "file-substring|regex
-# the matched line must satisfy" so a future EDIT to that line (that drops the
-# legit framing) re-exposes it as a residual. Keyed by the legitimate phrasing,
-# not by line number, so the allowlist survives line drift.
+# intentional. Each entry is "file-substring|regex the matched line must satisfy"
+# so a future EDIT to that line (that drops the legit framing) re-exposes it as a
+# residual. Keyed by the legitimate phrasing, not by line number, so the allowlist
+# survives line drift.
 #
-#   1. memory/memory-map.md — "memorization stage": the Wrap-up promotion STAGE
-#      is legitimately named the memorization stage (D7 lowercase-stage retention).
-#   2. memory/templates/notes.md — "2026-05-11-memorization-skill-refactor.md":
-#      a historical filename used as a notes-naming EXAMPLE (D7 retention).
-#   3. agents/{manager,executor,leader,assistant}.md — "### Memorize": the generic
+#   1. memory/templates/notes.md — "2026-05-11-memorization-skill-refactor.md":
+#      a historical filename used as a notes-naming EXAMPLE (ii historical).
+#   2. agents/{manager,executor,leader,assistant}.md — "### Memorize": the generic
 #      Study->Plan->Execute->Verify->Memorize lifecycle VERB heading shared by every
-#      role doc; not the per-loop RECORD sub-phase (G5: leave).
-#   4. orchestration/templates/{leader,executor,assistant}.md — "...Verify -> Memorize
+#      role doc; not the per-loop RECORD sub-phase (iii lifecycle verb: leave).
+#   3. orchestration/templates/{leader,executor,assistant}.md — "...Verify -> Memorize
 #      lifecycle": the same generic lifecycle-verb reference in the delegation
-#      template body.
-#   5. wrap-up/SKILL.md — the Wrap-up "Memorization" STAGE 2 name introduced by
-#      task 09 (D7: "memorization" = the wrap-up stage-2 promotion stage). Five
-#      legit phrasings tie the word to stage 2: the stage-table row 2 cell
-#      ("Memorization** (promotion:"), the D7 defining statement
-#      ('"Memorization" names stage 2'), the step-table Stage column
-#      ("**2 — memorization**", 4 rows), the routing-table contract line
-#      ("stage 2 (memorization)"), and the RECORD-vs-stage disambiguation
-#      ("memorization** stage (stage 2 of the WORK"). Each binds the word to
-#      stage 2, so a genuinely-stale bare "memorization" still fails the match.
-#   6. wrap-up/evaluation.md — the same stage-2 name in the eval intro
-#      ("Stage 2 (memorization) is the promotion under evaluation").
-#   7. memory/SKILL.md — three legit phrasings: the "memorization happens"
-#      section heading, the "Memorization" names the Wrap-up stage vocabulary
-#      caveat, and the stage-2 "memorization" promotion-mechanics pointer. Each
-#      ties the word to the Wrap-up promotion stage (D7), so a genuinely-stale
-#      bare "memorization" still fails the match.
-#   8. memory/scripts/validate-frontmatter.sh — "the project memory root": a
+#      template body (iii lifecycle verb).
+#   4. memory/scripts/validate-frontmatter.sh — "the project memory root": a
 #      code comment naming the project's memory ROOT DIRECTORY (the validator
 #      resolves it), not the retired "project memory" storage tier. Legit.
+#
+#   REMOVED (wrap-up-skill-redesign campaign): the wrap-up/SKILL.md,
+#   wrap-up/evaluation.md, memory/SKILL.md, and memory/memory-map.md stage-2
+#   "Memorization" allowlist arms. The Wrap-up promotion stage-2 was RENAMED
+#   "Memorization" -> "Promotion" across those files, so no legitimate stage-2
+#   "memorization" mention remains — a residual "Memorization" in any of them is
+#   now a genuine stale-vocab FAIL, not an allowlisted retention.
 # ---------------------------------------------------------------------------
 is_allowlisted() {
     local file="$1" line="$2"
     case "$file" in
-        */skills/memory/memory-map.md)
-            [[ "$line" == *'memorization** stage'* || "$line" == *'memorization* stage'* || "$line" == *'memorization stage'* ]] && return 0 ;;
         */skills/memory/templates/notes.md)
             [[ "$line" == *'memorization-skill-refactor'* ]] && return 0 ;;
-        */skills/memory/SKILL.md)
-            [[ "$line" == *'When memorization happens'*  \
-            || "$line" == *'"Memorization" names'*       \
-            || "$line" == *'stage 2 "memorization"'* ]] && return 0 ;;
         */skills/memory/scripts/validate-frontmatter.sh)
             [[ "$line" == *'project memory root'* ]] && return 0 ;;
         */agents/manager.md|*/agents/executor.md|*/agents/leader.md|*/agents/assistant.md)
             [[ "$line" == '### Memorize'* ]] && return 0 ;;
         */skills/orchestration/templates/leader.md|*/skills/orchestration/templates/executor.md|*/skills/orchestration/templates/assistant.md)
             [[ "$line" == *'Memorize lifecycle'* ]] && return 0 ;;
-        */skills/wrap-up/SKILL.md)
-            [[ "$line" == *'Memorization** (promotion:'*       \
-            || "$line" == *'"Memorization" names stage 2'*     \
-            || "$line" == *'**2 — memorization**'*             \
-            || "$line" == *'stage 2 (memorization)'*           \
-            || "$line" == *'memorization** stage (stage 2 of the WORK'* ]] && return 0 ;;
-        */skills/wrap-up/evaluation.md)
-            [[ "$line" == *'Stage 2 (memorization)'* ]] && return 0 ;;
     esac
     return 1
 }

@@ -312,7 +312,7 @@ indexes.
 
 ## 9. Startup-close promotion (the honest "atomic")
 
-`startup` does NOT invoke Wrap-up. Wrap-up promotion is stage 2 of a non-callable 5-stage pipeline, so
+`startup` does NOT invoke Wrap-up. Wrap-up promotion is stage 2 of a non-callable five-stage pipeline, so
 startup defines its own promotion procedure that FOLLOWS the shared memory rules by reference (routing,
 placement, per-type templates, the frontmatter allowlist + staging-field strip, supersession, area
 resolution) but is a distinct step. "Atomic" here is a validate-heavy pre-write + verify + halt-on-failure
@@ -404,7 +404,7 @@ the baseline's **completeness + quality**: two fresh evaluators (Claude + Codex)
 [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle
 over the promoted baseline, each writing nine record-level files under
 `sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/` (§3). Startup does NOT run
-Stage-2c compaction or git finalization, but it DOES run this dual-system gate — the baseline becomes
+the compaction sub-procedure or git finalization, but it DOES run this dual-system gate — the baseline becomes
 every later session's reference, so it is not exempt (this overrides the earlier design in which the
 Always-Ask gate + standing guards were startup's full substitute for dual-system validation). The bundle
 procedure is owned by [`evaluation.md`](evaluation.md); its non-loop recognition by the shared evaluator

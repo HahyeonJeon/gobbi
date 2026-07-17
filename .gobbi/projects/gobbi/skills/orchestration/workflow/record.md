@@ -252,7 +252,7 @@ The dual-check (write-log + git-diff) eliminates the false-positive class where 
 
 A non-empty assistant write log into forbidden paths is an **immediate stop-the-line** — the assistant violated the staging→Wrap-up boundary; the loop halts and the manager escalates to user through the active runtime's user-decision primitive before any further progress.
 
-**Wrap-up loop exemption**: when `loop = wrap-up`, this gate is **inverted**. The assistant IS expected to write to memory (Wrap-up is the sole writer there among the workflow loops). The manager validates Wrap-up's writes against [`wrap-up/SKILL.md` § Staging → Memory routing](../../wrap-up/SKILL.md#staging--memory-routing) instead — each write must trace back to a staged source per the routing table.
+**Wrap-up loop exemption**: when `loop = wrap-up`, this gate is **inverted**. The assistant IS expected to write to memory (Wrap-up is the sole writer there among the workflow loops). The manager validates Wrap-up's writes against [`wrap-up/promotion.md` § Staging → Memory routing](../../wrap-up/promotion.md#staging--memory-routing) instead — each write must trace back to a staged source per the routing table.
 
 ### 6. Templates stamped
 

@@ -64,6 +64,7 @@
   },
   "compaction": {
     "enabled": false,
-    "maxAutoActions": 3
+    "maxAutoActions": 3,
+    "note": "`enabled` gates ONLY automatic merging and ships false (dormant); it does NOT gate counting, terminal archival, the `hardCap` check, or the Always-Ask decision. Wrap-up always counts every {type}/{area}/ area post-promotion and an over-`hardCap` area cannot silently PASS (routes to Always-Ask) regardless of this flag. `maxAutoActions` bounds automatic merges. Per-area softCap/hardCap (and any per-type override) live in memory/memory-vocabulary.json; the rule is memory/rules.md § 5 and the procedure is skills/wrap-up/compaction.md."
   }
 }

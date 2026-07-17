@@ -385,7 +385,7 @@ For Type = `general`, the Domain field selects the staging destination determini
 
 For Type = `design_flaw` or `assumption_risk`, the destination is always `staging/decisions/{slug}.md` regardless of Domain (the Domain becomes a frontmatter tag).
 
-**Frontmatter tags vs destination routing**: most Domain-specific frontmatter tags above (`security: true`, `privacy: true`, `cost-impact: <estimate>`, `regression: true`, etc.) are **metadata for downstream filtering and audit**, not routing keys — the destination is determined by the staging directory + slug. The only frontmatter tag that affects Wrap-up's destination routing is `mistake-candidate: true`, which routes `staging/decisions/*` to a feature-scoped or project-scoped `mistakes/` directory (see [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing)).
+**Frontmatter tags vs destination routing**: most Domain-specific frontmatter tags above (`security: true`, `privacy: true`, `cost-impact: <estimate>`, `regression: true`, etc.) are **metadata for downstream filtering and audit**, not routing keys — the destination is determined by the staging directory + slug. The only frontmatter tag that affects Wrap-up's destination routing is `mistake-candidate: true`, which routes `staging/decisions/*` to a feature-scoped or project-scoped `mistakes/` directory (see [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing)).
 
 For Type = `scenario_gap` / `checklist_gap`, the destination is `staging/scenarios/{slug}.md` / `staging/checklists/{slug}.md` regardless of Domain.
 

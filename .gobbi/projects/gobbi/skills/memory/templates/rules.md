@@ -17,7 +17,7 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 | Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
-Wrap-up writes directly to memory ([routing](../../wrap-up/SKILL.md#staging--memory-routing)).
+Wrap-up writes directly to memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 

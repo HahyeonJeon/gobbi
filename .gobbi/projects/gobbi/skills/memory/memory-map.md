@@ -4,7 +4,7 @@ Reference of every memory path the workflow touches. Two tiers: **Session record
 
 For the naming convention, frontmatter standard, and structure rules every memory file obeys, see [`rules.md`](rules.md). For the canonical per-session working-tree shape — the `{N}-{loop}/` ordinal map, the 4-slot loop interior, and the single session-root `transcripts/` — see [`../record/record-map.md`](../record/record-map.md), the single source of truth.
 
-The assistant in RECORD writes **only** to the session record. Wrap-up — in its **memorization** stage — is the sole writer to memory: it promotes the session-record staging subtree to memory. (One bounded pre-Wrap-up exception: `startup`-close promotion writes the startup skill's user-approved baseline to memory before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted.) Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not durable memory.
+The assistant in RECORD writes **only** to the session record. Wrap-up — in its **Promotion** stage — is the sole writer to memory: it promotes the session-record staging subtree to memory. (One bounded pre-Wrap-up exception: `startup`-close promotion writes the startup skill's user-approved baseline to memory before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted.) Both tiers are plain markdown trees — there is no per-session SQLite (`gobbi.db` was dropped) and no per-project summary JSON (`project.json` was dropped). `session.json` is the only JSON in the session tree, and it is per-session telemetry — not durable memory.
 
 Column legend:
 
@@ -72,7 +72,7 @@ Every staging file is stamped to its matching template. See [`SKILL.md` § Templ
 
 Root: `.gobbi/projects/{project-name}/`
 
-Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writer** (with one bounded pre-Wrap-up exception — `startup`-close promotion writes the project baseline at bootstrap); loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the staging → destination routing table.
+Persistent, per-project, git-tracked. Durable memory. **Wrap-up is the sole writer** (with one bounded pre-Wrap-up exception — `startup`-close promotion writes the project baseline at bootstrap); loop RECORD never writes here. The directory shape below matches the canonical memory layout — see [`wrap-up/promotion.md`](../wrap-up/promotion.md) for the staging → destination routing table.
 
 ### Per-type canonical homes (the 16 memory types)
 
@@ -184,6 +184,6 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 ## Cross-references
 
 - Tier access permissions for the assistant role → [`SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix)
-- Staging → memory routing table → [`wrap-up/SKILL.md` § Staging → Memory routing](../wrap-up/SKILL.md#staging--memory-routing)
+- Staging → memory routing table → [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing)
 - Type + Domain → staging-subdir routing → [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
 - Slug + collision policy → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)
