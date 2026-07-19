@@ -134,8 +134,9 @@ Design a scenario set in nine steps, grouped **FRAME** (P1–P4) → **DERIVE** 
 (P8–P9). Each step is a bare action that points at the invariant it must satisfy (`apply SR-x`); the
 invariant text lives once in § Rules and is never restated here. The catalogs below are reference DATA
 the steps consult — the category and case-type predicates, the primary-declaration mechanism, the
-perspective map, and the field lists. This document is written to the project's six-section skill
-standard form.
+perspective map, and the field lists. This document keeps its current shape as a legacy untyped skill;
+`skill-writing` now assigns section contracts by semantic type when a skill is created or substantively
+revised.
 
 ### Reference data — coverage categories (10)
 
@@ -365,5 +366,5 @@ One owner per borrowed fact; this skill owns the design-category → perspective
   validates the copy-then-tick mechanics and the nine-output contract an evaluation-mode handoff (P9) names.
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the `Check` definition and the two-gate /
   acceptance mechanics (coverage ≠ acceptance) that this skill points to but does not own.
-- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the six-section standard form this
-  document is written to.
+- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
+  type-specific section contract that will apply when this legacy skill is substantively revised.

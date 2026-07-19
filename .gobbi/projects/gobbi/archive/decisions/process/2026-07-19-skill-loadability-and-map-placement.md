@@ -4,14 +4,16 @@ description: DD-1 loadability model and DD-5 skill-map placement for skill-writi
 type: decisions
 scope: feature
 feature: agents
-status: accepted
+status: superseded
 created: 2026-06-24
 session: 2026-06-24-bb4eb896-bed0-42d6-9a3c-f74547df2611
 tags: [process]
 keywords: [skill-writing, agent-writing, loadability, user-invocable, disable-model-invocation, skill-map, meta-skill]
 author: claude
 supersedes: null
-superseded_by: null
+superseded_by: typed-skill-authoring-contract
+archived_at: 2026-07-19
+archive_reason: superseded
 ---
 
 # Skill loadability model and skill-map placement for skill-writing / agent-writing

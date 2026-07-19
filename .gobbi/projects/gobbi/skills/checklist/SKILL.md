@@ -135,7 +135,8 @@ Design a checklist in nine steps, grouped **FRAME** (P1–P3) → **BUILD** (P4�
 Each step is a bare action that points at the invariant it must satisfy (`apply CR-x`); the invariant
 text lives once in § Rules and is never restated here. The blocks below are reference DATA the steps
 consult — the modes, the item dimensions, the token definitions and per-mode grid, and the field lists.
-This document is written to the project's six-section skill standard form.
+This document keeps its current shape as a legacy untyped skill; `skill-writing` now assigns section
+contracts by semantic type when a skill is created or substantively revised.
 
 ### Reference data — structural terms
 
@@ -294,5 +295,5 @@ external owner.
   `checklist.md` plugs into.
 - [`../evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
   validates the finding schema a `FAIL:<finding-id>` token cites.
-- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the six-section standard form this
-  document is written to.
+- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
+  type-specific section contract that will apply when this legacy skill is substantively revised.

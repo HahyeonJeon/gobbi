@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/skill-writing/templates/project-skill.md

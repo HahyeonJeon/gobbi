@@ -853,7 +853,7 @@ mode_enforce_inclusion() {
 }
 
 # ---------------------------------------------------------------------------
-# Self-test — the four named smoke fixtures. Located by CONTENT (line numbers
+# Self-test — the nine named smoke fixtures. Located by CONTENT (line numbers
 # drift), and classified against the expected family. A disagreement fails.
 # ---------------------------------------------------------------------------
 selftest_one() {
@@ -891,9 +891,9 @@ mode_selftest() {
     # files" broad wording → verified-leave.
     selftest_one "exit-checklist-ppfiles" "$PROJ/skills/execution/SKILL.md" \
         'Both systems produced per-perspective files' 'VERIFIED-LEAVE' || fails=$((fails+1))
-    # Fixture 3 — startup memory-bloat `wc -l` → not-applicable.
-    selftest_one "startup-memory-wcl" "$PROJ/skills/startup/evaluation.md" \
-        '`wc -l` / `wc -w`' 'NOT-APPLICABLE' || fails=$((fails+1))
+    # Fixture 3 — startup promoted-record size counts → not-applicable.
+    selftest_one "startup-record-size-wcl" "$PROJ/skills/startup/evaluation.md" \
+        '`wc -l` / `wc -w` on the staged and promoted records' 'NOT-APPLICABLE' || fails=$((fails+1))
     # Fixture 4 — wrap-up promoted-file bloat `wc -l` → not-applicable.
     selftest_one "promoted-file-wcl" "$PROJ/skills/wrap-up/evaluation.md" \
         '`wc -l` on every manifest-derived destination file' 'NOT-APPLICABLE' || fails=$((fails+1))

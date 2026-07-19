@@ -38,7 +38,7 @@ The `executor-wrote-to-main-tree-not-worktree` mistake recurred TWICE this sessi
 - `skills/skill-writing/SKILL.md` — reference skill for authoring gobbi skills (commit `4e7c68a`)
 - `skills/agent-writing/SKILL.md` — reference skill for authoring gobbi agents (commit `4e7c68a`)
 - `features/agents/README.md` — feature bootstrap (this Wrap-up)
-- `features/agents/decisions/process/2026-06-24-skill-loadability-and-map-placement.md` — DD-1/DD-5 decision (this Wrap-up)
+- `archive/decisions/process/2026-07-19-skill-loadability-and-map-placement.md` — historical DD-1/DD-5/DD-3 contract, superseded on 2026-07-19
 - `mistakes/verification/verify-dont-assert-taught-facts.md` — promoted mistake, Layer-2 candidate (this Wrap-up)
 - `backlogs/docs/claude-doc-authoring-standard.md` — deferred backlog (this Wrap-up)
 - `backlogs/tooling/claude-skills-mirror-gap.md` — deferred backlog (this Wrap-up)
