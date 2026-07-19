@@ -34,6 +34,7 @@ set -euo pipefail
 SELF="verify-record-map.sh"
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 scaffold="$script_dir/../../orchestration/scripts/scaffold-session-dir.sh"
+initializer="$script_dir/init-record-map.sh"
 spec_doc="$script_dir/../record-map.md"
 
 log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
@@ -59,6 +60,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 [ -x "$scaffold" ] || { log "scaffold script not executable: $scaffold"; exit 1; }
+[ -x "$initializer" ] || { log "initializer script not executable: $initializer"; exit 1; }
 [ -f "$spec_doc" ] || { log "spec doc not found: $spec_doc"; exit 1; }
 
 # --- Expected step-dir subtree (baseline) ------------------------------------
@@ -84,8 +86,7 @@ for sub in "${base_staging[@]}"; do
     grep -qF "$leaf" "$spec_doc" || doc_missing+=("$sub")
 done
 # Loop-specific subdirs the doc declares.
-grep -qF "skills (2-preparation only)" "$spec_doc" || doc_missing+=("skills(prep)")
-grep -qF "plans (3-planning only)" "$spec_doc" || doc_missing+=("plans(planning)")
+grep -qF "plans (2-planning only)" "$spec_doc" || doc_missing+=("plans(planning)")
 # working/ slot addition the doc must still declare (drift-gated with the scaffold).
 grep -qF "proposals/codex" "$spec_doc" || doc_missing+=("proposals/codex")
 if [ "${#doc_missing[@]}" -gt 0 ]; then
@@ -100,7 +101,7 @@ expected_subtree() {
     local step="$1" pass="$2"
     local loop="$step"
     case "$step" in
-        4-execution/task-*) loop="4-execution" ;;
+        3-execution/task-*) loop="3-execution" ;;
     esac
     local dirs=( "$step" "$step/working" "$step/working/research" "$step/working/proposals" "$step/working/proposals/codex" "$step/evaluation" "$step/staging" )
     # backlogs/{feature,project} implies the intermediate backlogs/ parent dir
@@ -111,8 +112,7 @@ expected_subtree() {
         dirs+=( "$step/staging/$sub" )
     done
     case "$loop" in
-        2-preparation) dirs+=( "$step/staging/skills" ) ;;
-        3-planning)    dirs+=( "$step/staging/plans" ) ;;
+        2-planning) dirs+=( "$step/staging/plans" ) ;;
     esac
     [ "$pass" -eq 1 ] && dirs+=( "$step/outputs" )
     printf '%s\n' "${dirs[@]}" | LC_ALL=C sort -u
@@ -140,11 +140,10 @@ check_step() {
 }
 
 check_step 1-ideation 0
-check_step 2-preparation 0
-check_step 3-planning 1
-check_step 4-execution 0
-check_step 5-wrap-up 1
-check_step 4-execution/task-01-verify-gate 0
+check_step 2-planning 1
+check_step 3-execution 0
+check_step 4-wrap-up 1
+check_step 3-execution/task-01-verify-gate 0
 
 # Assert the scaffold never created the manager-owned root transcripts/ dir.
 if [ -d "$tmp/transcripts" ]; then
@@ -171,14 +170,14 @@ neg_check() {
 }
 
 neg_check "path traversal"       "../1-ideation"
-neg_check "embedded traversal"   "4-execution/../etc"
+neg_check "embedded traversal"   "3-execution/../etc"
 neg_check "leading slash"        "/1-ideation"
-neg_check "stray double slash"   "4-execution//task-01-x"
+neg_check "stray double slash"   "3-execution//task-01-x"
 neg_check "trailing slash"       "1-ideation/"
 neg_check "unknown loop"         "6-cleanup"
 neg_check "startup rejected"     "startup"
-neg_check "bad task ordinal"     "4-execution/task-1-x"
-neg_check "bad task slug case"   "4-execution/task-01-Bad"
+neg_check "bad task ordinal"     "3-execution/task-1-x"
+neg_check "bad task slug case"   "3-execution/task-01-Bad"
 
 # Relative session-root must also be rejected with nothing created.
 rel_root_rc=0
@@ -196,7 +195,16 @@ fi
 # overrides, so this never reads session state. Fail-closed: no jq ⇒ exit 2.
 templates_dir="$script_dir/../../orchestration/templates"
 command -v jq >/dev/null 2>&1 || { log "jq not found — required for the template cap-parity gate"; exit 2; }
-parity_loops="ideation preparation planning execution wrap-up"
+session_tmpl="$templates_dir/session.template.json"
+if ! jq -e '
+    .schemaVersion == 4 and
+    (.workflow | keys == ["chat", "configuration", "execution", "ideation", "planning", "wrap-up"]) and
+    (.workflow | has("preparation") | not)
+' "$session_tmpl" >/dev/null; then
+    log "SCHEMA DRIFT: session.template.json must be schema 4 with the five-step workflow key set"
+    drift=1
+fi
+parity_loops="ideation planning execution wrap-up"
 for mode in auto chat; do
     state_tmpl="$templates_dir/state.$mode.json"
     settings_tmpl="$templates_dir/settings.$mode.json"
@@ -209,6 +217,25 @@ for mode in auto chat; do
         fi
     done
     [ "$tmpl_ok" -eq 1 ] || continue
+    if ! jq -e '
+        .schemaVersion == 2 and
+        (.workflow | keys == ["execution", "ideation", "planning", "wrap-up"]) and
+        (.workflow | has("preparation") | not) and
+        (.workflow.planning.skip == false) and
+        (.workflow.planning.maxIterations >= 1)
+    ' "$settings_tmpl" >/dev/null; then
+        log "SCHEMA DRIFT: settings.$mode.json must be schema 2 and keep Planning non-skippable"
+        drift=1
+    fi
+    if ! jq -e '
+        .schemaVersion == 2 and
+        (.workflow | keys == ["chat", "configuration", "execution", "ideation", "planning", "wrap-up"]) and
+        (.workflow | has("preparation") | not) and
+        (.workflow.planning.maxIterations >= 1)
+    ' "$state_tmpl" >/dev/null; then
+        log "SCHEMA DRIFT: state.$mode.json must be schema 2 with the five-step workflow key set"
+        drift=1
+    fi
     for loop in $parity_loops; do
         state_cap="$(jq -r --arg l "$loop" '.workflow[$l].maxIterations' "$state_tmpl")"
         settings_cap="$(jq -r --arg l "$loop" '.workflow[$l].maxIterations' "$settings_tmpl")"
@@ -219,10 +246,91 @@ for mode in auto chat; do
     done
 done
 
+# --- Initializer compatibility + resume gates -------------------------------
+# Legacy session metadata must be rejected before any path or byte is mutated.
+legacy_root="$(mktemp -d)"
+printf '{"schemaVersion":3,"sentinel":"unchanged"}\n' > "$legacy_root/session.json"
+legacy_before="$(sha256sum "$legacy_root/session.json" | cut -d' ' -f1)"
+legacy_rc=0
+"$initializer" "$legacy_root" auto >/dev/null 2>&1 || legacy_rc=$?
+legacy_after="$(sha256sum "$legacy_root/session.json" | cut -d' ' -f1)"
+legacy_paths="$(find "$legacy_root" -mindepth 1 | wc -l | tr -d ' ')"
+if [ "$legacy_rc" -eq 0 ] || [ "$legacy_before" != "$legacy_after" ] || [ "$legacy_paths" -ne 1 ]; then
+    log "SCHEMA REGRESSION: legacy session was not rejected before mutation"
+    drift=1
+fi
+rm -rf "$legacy_root"
+
+# Current schema numbers do not legitimize a retired or hybrid workflow shape.
+# Inject the removed key into otherwise-current metadata and prove the initializer
+# rejects it before creating any session-tree path or changing any existing byte.
+hybrid_root="$(mktemp -d)"
+cp "$templates_dir/session.template.json" "$hybrid_root/session.json"
+cp "$templates_dir/state.auto.json" "$hybrid_root/state.json"
+cp "$templates_dir/settings.auto.json" "$hybrid_root/settings.json"
+hybrid_tmp="$(mktemp)"
+jq '.workflow.preparation = {"retired": true}' "$hybrid_root/session.json" > "$hybrid_tmp"
+mv "$hybrid_tmp" "$hybrid_root/session.json"
+hybrid_before="$(find "$hybrid_root" -maxdepth 1 -type f -printf '%f ' -exec sha256sum {} \; | sort)"
+hybrid_rc=0
+"$initializer" "$hybrid_root" auto >/dev/null 2>&1 || hybrid_rc=$?
+hybrid_after="$(find "$hybrid_root" -maxdepth 1 -type f -printf '%f ' -exec sha256sum {} \; | sort)"
+hybrid_paths="$(find "$hybrid_root" -mindepth 1 | wc -l | tr -d ' ')"
+if [ "$hybrid_rc" -eq 0 ] || [ "$hybrid_before" != "$hybrid_after" ] || [ "$hybrid_paths" -ne 3 ]; then
+    log "SCHEMA REGRESSION: current-version retired workflow shape was not rejected before mutation"
+    drift=1
+fi
+rm -rf "$hybrid_root"
+
+# Exact-shape means an extra retired top-level field is rejected too, even when
+# the nested workflow keys and all three schema numbers are current.
+extra_root="$(mktemp -d)"
+cp "$templates_dir/session.template.json" "$extra_root/session.json"
+cp "$templates_dir/state.auto.json" "$extra_root/state.json"
+cp "$templates_dir/settings.auto.json" "$extra_root/settings.json"
+extra_tmp="$(mktemp)"
+jq '.preparation = {"retired": true}' "$extra_root/session.json" > "$extra_tmp"
+mv "$extra_tmp" "$extra_root/session.json"
+extra_before="$(find "$extra_root" -maxdepth 1 -type f -printf '%f ' -exec sha256sum {} \; | sort)"
+extra_rc=0
+"$initializer" "$extra_root" auto >/dev/null 2>&1 || extra_rc=$?
+extra_after="$(find "$extra_root" -maxdepth 1 -type f -printf '%f ' -exec sha256sum {} \; | sort)"
+extra_paths="$(find "$extra_root" -mindepth 1 | wc -l | tr -d ' ')"
+if [ "$extra_rc" -eq 0 ] || [ "$extra_before" != "$extra_after" ] || [ "$extra_paths" -ne 3 ]; then
+    log "SCHEMA REGRESSION: extra current-version root field was not rejected before mutation"
+    drift=1
+fi
+rm -rf "$extra_root"
+
+# A current-schema session remains resumable and create-if-absent metadata is
+# preserved across repeated initialization.
+resume_root="$(mktemp -d)"
+if ! "$initializer" "$resume_root" auto >/dev/null 2>&1; then
+    log "RESUME REGRESSION: current-schema initialization failed"
+    drift=1
+else
+    stamped="$(mktemp)"
+    jq '.sessionId = "resume-sentinel" |
+        .workflow.ideation.iterations = [{
+            "iter": 1,
+            "verdict": "PASS",
+            "finishedAt": "2026-07-19T00:00:00Z",
+            "evaluation_dir": "evaluation/iter1/"
+        }]' "$resume_root/session.json" > "$stamped"
+    mv "$stamped" "$resume_root/session.json"
+    if ! "$initializer" "$resume_root" auto >/dev/null 2>&1 ||
+       [ "$(jq -r '.sessionId' "$resume_root/session.json")" != "resume-sentinel" ] ||
+       [ "$(jq -r '.workflow.ideation.iterations[0].evaluation_dir' "$resume_root/session.json")" != "evaluation/iter1/" ]; then
+        log "RESUME REGRESSION: repeated initialization clobbered current metadata"
+        drift=1
+    fi
+fi
+rm -rf "$resume_root"
+
 if [ "$drift" -ne 0 ]; then
     log "record-map verification FAILED"
     exit 1
 fi
 
-printf 'record-map.md and scaffold-session-dir.sh are in sync; state/settings cap-parity holds\n'
+printf 'record map, schema compatibility, scaffold, and template parity checks pass\n'
 exit 0

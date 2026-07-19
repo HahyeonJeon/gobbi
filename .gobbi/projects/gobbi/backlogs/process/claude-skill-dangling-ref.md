@@ -17,6 +17,9 @@ shipped_in: null
 
 # Fix or Create `skills/claude/SKILL.md` (Dangling `.claude/CLAUDE.md:61` Reference)
 
+> **v0.5.3 lifecycle note:** the Preparation wording below identifies the historical session where
+> this backlog was raised. The current workflow would surface the same gap through Planning readiness.
+
 ## Context
 
 `.claude/CLAUDE.md:61` navigation table lists `skills/claude/SKILL.md` with description "Documentation standard for `.claude/` authoring." This file does NOT exist — verified at `skills/claude/SKILL.md`, `.agents/skills/claude/`, and `.claude/skills/claude/`. Both the Claude and Codex evaluators independently confirmed the absence.

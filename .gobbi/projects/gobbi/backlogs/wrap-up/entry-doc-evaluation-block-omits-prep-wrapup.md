@@ -1,13 +1,13 @@
 ---
 name: entry-doc-evaluation-block-omits-prep-wrapup
-description: CLAUDE.md/AGENTS.md "Evaluation is mandatory" block names only Ideation/Planning/Execution; should include Preparation and Wrap-up with the non-skippable note for Wrap-up's stage 3
+description: CLAUDE.md/AGENTS.md "Evaluation is mandatory" block names only Ideation/Planning/Execution; should explicitly include Wrap-up's non-skippable stage-3 memory-validation gate.
 type: backlogs
 scope: project
 feature: null
 status: open
 created: 2026-06-13
 session: 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4
-tags: [docs-sync, evaluation, wrap-up, preparation]
+tags: [docs-sync, evaluation, wrap-up]
 keywords: []
 author: claude
 priority: low
@@ -15,11 +15,11 @@ project-scope: true
 shipped_in: null
 ---
 
-# Entry-doc evaluation block omits Preparation and Wrap-up
+# Entry-doc evaluation block omits Wrap-up
 
 ## Context
 
-The "Evaluation is mandatory" block in CLAUDE.md and AGENTS.md currently reads: "Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps." This omits two steps: Preparation (which can run optional evaluation) and Wrap-up (which runs NON-SKIPPABLE mandatory evaluation at stage 3 — memory validation).
+The "Evaluation is mandatory" block in CLAUDE.md and AGENTS.md names Ideation, Planning, and Execution but does not explicitly name Wrap-up. Wrap-up runs a NON-SKIPPABLE mandatory evaluation at stage 3 — memory validation.
 
 The omission is misleading for agents bootstrapping from the entry doc: they may conclude that evaluation is only relevant to Ideation/Planning/Execution and miss that Wrap-up has a non-bypassable evaluation gate (D13).
 
@@ -33,7 +33,7 @@ After the session `7e00f98e` PR merges to develop. No other prerequisites.
 
 ## Suggested approach
 
-Edit the "Evaluation is mandatory" paragraph in both CLAUDE.md (`.claude/`) and AGENTS.md (`.codex/`) to mention all five productive steps. The Wrap-up mention should note that its stage-3 memory validation is NON-SKIPPABLE (D13 lock) and cannot be bypassed via `evaluate.mode: skip`. Keep the edit narrow — one paragraph update plus the non-skippable note; no other changes.
+Edit the "Evaluation is mandatory" paragraph in both CLAUDE.md (`.claude/`) and AGENTS.md (`.codex/`) to name all four productive loops. The Wrap-up mention should note that its stage-3 memory validation is NON-SKIPPABLE (D13 lock) and cannot be bypassed via `evaluate.mode: skip`. Keep the edit narrow — one paragraph update plus the non-skippable note; no other changes.
 
 ## Originating session
 

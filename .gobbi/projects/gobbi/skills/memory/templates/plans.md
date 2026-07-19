@@ -12,8 +12,8 @@ A sub-task whose scope or check the executor must reconstruct from the planning 
 
 | Field | Value |
 |---|---|
-| When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / preparation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
-| Stage to | `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` |
+| When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
+| Stage to | `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` |
 | Promotes to | `features/{f}/plans/{area}/` (loop path — feature-only) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that produced it); slug describes the plan in ≤6 words (`2026-05-11-auth-middleware.md`) |
 

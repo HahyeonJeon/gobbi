@@ -4,7 +4,7 @@ description: Add explicit cite of discuss.mode=user to preparation/SKILL.md so u
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 created: 2026-06-28
 session: d45128ad-6a6c-4bb7-9925-343cd3b826c8
 tags: [process]
@@ -12,7 +12,9 @@ keywords: [preparation-skill, auto-mode, discuss-mode, user-driven, doc-gap]
 author: claude
 priority: low
 project-scope: true
-shipped_in: null
+shipped_in: CHANGELOG.md
+archived_at: 2026-07-19
+archive_reason: closed
 ---
 
 # Add Auto-Mode Carve-Out Citation to `preparation/SKILL.md`

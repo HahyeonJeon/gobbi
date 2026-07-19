@@ -1,6 +1,6 @@
 ---
 name: d3-002-chat-mode-preparation-row-does-not-exist
-description: Verify Execution does not manufacture a chat-mode Preparation specialist WORK row when applying the Option S split (F-STRUCT-02)
+description: Historical check closed because the chat-mode Preparation step and row were retired in v0.5.3
 type: checklists
 scope: feature
 feature: workflow
@@ -11,12 +11,15 @@ tags: [docs-sync, verification]
 keywords: [f-struct-02, chat-mode, preparation, option-s, skipped-table]
 author: claude
 scenario: d3-002-manager-refs-specialist-phase-loads-column-split
-item_status: pending
+item_status: implemented
 anchor: novel
 implemented_in: null
 ---
 
 # `chat-mode.md` has no Preparation specialist WORK row to split (F-STRUCT-02)
+
+> **v0.5.3 resolution:** the entire Preparation step was removed. The historical row-shape finding
+> below is retained as evidence; no current chat-mode table may recreate that step or specialist row.
 
 ## What
 

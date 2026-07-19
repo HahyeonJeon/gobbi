@@ -21,6 +21,12 @@ shipped_in: null
 
 Historical line citations below remain evidence of the reviewed tree. Any still-open remediation that changes Gobbi manager dispatch, role headers, Load Directives, or status wiring now targets `orchestration/delegation.md` and `orchestration/templates/`; generic delegation semantics remain in `delegation/SKILL.md`.
 
+## v0.5.3 lifecycle reconciliation
+
+The Preparation locator, D4-028, and Preparation-only frontmatter or omission findings are closed or
+obsolete. Their cited text remains historical evidence, not a current edit target. Revalidate every
+remaining finding against the current four-loop workflow and current line numbers before execution.
+
 ## Context
 
 The 2026-06-29 D4 adversarial-review session reviewed the **naming / term-Glossary consistency /

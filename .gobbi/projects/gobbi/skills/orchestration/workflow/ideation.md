@@ -84,7 +84,7 @@ PASS-only — NOT in the loop-entry scaffold. Every iter, the assistant copies t
 
 | Verdict | Manager action |
 |---|---|
-| `PASS` | Exit; advance to the **next loop** — **Preparation** in Auto mode, **Planning** in Chat mode (Chat skips Preparation). `outputs/` + `staging/` ready for Wrap-up promotion |
+| `PASS` | Exit; advance to the **Planning Loop** in either mode. Planning DISCUSSION runs the readiness entry gate before decomposition. `outputs/` + `staging/` are ready for its inventory and later Wrap-up promotion |
 | `REVISE` | Re-enter DISCUSSION with evaluator findings as input; increment the iter counter |
 | `FAIL` | **Safety-gate escalation to the user** (revise / abort-ideation / accept-with-deferral) — never auto-re-entered as a REVISE |
 | `SKIPPED` | Exit if settings skipped Ideation |

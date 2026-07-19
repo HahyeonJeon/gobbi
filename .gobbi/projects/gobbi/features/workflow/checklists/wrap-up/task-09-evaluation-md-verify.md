@@ -14,6 +14,10 @@ author: claude
 
 # Task-09: verify that wrap-up/evaluation.md was actually edited
 
+> **v0.5.3 lifecycle note:** the `3-planning/` links below identify the originating historical
+> five-loop session. Current Planning evidence uses `2-planning/`; preserve the old locators as audit
+> evidence.
+
 **Category:** checklist-gap
 **Coverage:** partial
 

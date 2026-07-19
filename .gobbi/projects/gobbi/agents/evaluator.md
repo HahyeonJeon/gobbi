@@ -40,7 +40,7 @@ Mandatory load:
 
 Load per target type:
 
-- Evaluating any workflow artifact (ideation, preparation, planning, execution, wrap-up) → load the phase-specific evaluation doc (e.g., `skills/ideation/evaluation.md`, `skills/preparation/evaluation.md`, `skills/execution/evaluation.md`). The canonical schema and perspective definitions are in `skills/evaluation/SKILL.md`.
+- Evaluating any workflow artifact (ideation, planning, execution, wrap-up) → load the phase-specific three-file evaluation bundle (e.g., `skills/ideation/{scenario,checklist,evaluation}.md`, `skills/planning/{scenario,checklist,evaluation}.md`, `skills/execution/{scenario,checklist,evaluation}.md`). The canonical schema and perspective definitions are in `skills/evaluation/SKILL.md`.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
 - No perspective-specific sub-docs exist under `skills/evaluation/`, `agents/evaluation/`, `rules/evaluation/`, or `project/evaluation/` — do not construct paths to those directories.
 

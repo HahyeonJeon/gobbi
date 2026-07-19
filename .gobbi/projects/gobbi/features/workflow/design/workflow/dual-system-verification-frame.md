@@ -35,7 +35,7 @@ Claude-alone if the integration step, the independence, or the exec reliability 
 frame that tells a future session whether the Codex co-worker is actually sharpening Claude's work or
 just adding noise and cost.
 
-**Impact.** Every session runs production default-`dual` at all five steps; the user pays ~1 extra
+**Impact.** Every session runs production default-`dual` at all four productive steps; the user pays ~1 extra
 `codex exec` per enabled WORK sub-phase and trusts the result is genuinely cross-family. A degraded
 dual-system is a **silent quality + cost regression** — the worst kind, because the artifact still
 "looks dual-system-produced." Precedent: the Codex-side assistant that *faked* an eval on timeout
@@ -55,7 +55,7 @@ single global verdict. The frame is therefore per-dimension.
 
 ## Scope
 
-**In-scope:** a 3-part verification frame for the dual-system at all five productive steps — (1) a
+**In-scope:** a 3-part verification frame for the dual-system at all four productive steps — (1) a
 scenario set, (2) per-dimension pass/fail checklists across six named dimensions, (3) the framing of the
 D1 topology decision.
 
@@ -121,9 +121,8 @@ situation, (b) GOOD co-worker behavior, (c) the observable shortfall signal.
   Design), keeps both positions intact, logs it `escalated`, and the manager escalates to the user;
   shortfall = the fork resolved silently (`took-codex`/`merged-selective`), or locked "DECIDED" with no
   matching `discussion-log.md` entry. Additive union → a proposal-only scenario silently dropped.
-- **Preparation** (additive): readiness additive gap; false-ready from output-only check (read the
-  source owner, not an `ls`/`readlink`); cost-toggle candidate.
-- **Planning** (fork-prone): task-decomposition fork; verification-gate hardening (runnable contracts,
+- **Planning** (readiness-additive, then fork-prone): false-ready from an output-only check (read the
+  source owner, not an `ls`/`readlink`); task-decomposition fork; verification-gate hardening (runnable contracts,
   zero placeholders); guard-source audit (hardcoded vs derived baseline); skill-path validation
   (`test -e` every declared skill path).
 - **Execution** (per task): implementation alternative within scope; additive test gap; stash/baseline
@@ -148,7 +147,7 @@ permitted in a GATE line are the documented constants: `<WT>` worktree root, `<S
 - **D1.2** At least one `took-codex`, `merged-selective`, OR `escalated` row exists. A log of only `kept-own` across many deltas is a noise signal (flag for Dim 4).
 - **D1.3** Every `codex_origin: true` section is traceable to a real passage in the canonical artifact (close-read; the element is actually present). *(evaluator-safe)*
 - **D1.4** No proposal element was adopted that violates the Scope Contract (re-read each `took-codex` row's `why` against the In-Scope list).
-- **D1.5** Per-step value criterion met (Ideation independent framing/scenario/checklist; Preparation a readiness fact with source path; Planning task order + deps + skills + gates vs live paths; Execution within task scope; Wrap-up promotion routing + frontmatter + guards + handoff).
+- **D1.5** Per-step value criterion met (Ideation independent framing/scenario/checklist; Planning readiness facts with source paths plus task order + deps + skills + gates vs live paths; Execution within task scope; Wrap-up promotion routing + frontmatter + guards + handoff).
 - **D1.6 `[Phase-B · C6]`** For any step with two consecutive no-value proposals, record a candidate to set `propose.mode: single`. *(Now runnable: C6 telemetry shipped.)*
 
 ### Dimension 2 — Integration quality (principled SELECT, complete Integration Log)

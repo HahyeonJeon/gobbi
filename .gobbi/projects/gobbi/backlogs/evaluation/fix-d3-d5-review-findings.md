@@ -21,6 +21,11 @@ shipped_in: null
 
 Historical locations remain evidence of the reviewed tree. The active owner for Gobbi Load-Directives companion-path dispatch is now `orchestration/delegation.md`; generic delegation semantics remain in `delegation/SKILL.md`.
 
+## v0.5.3 lifecycle reconciliation
+
+Historical locations remain evidence of the reviewed tree. Re-derive all still-open work against the
+current four-loop workflow; the former five-loop count is not an active instruction.
+
 ## Context
 
 Cycle 2 of the gobbi adversarial-review charter reviewed two dimensions — D3 (harness comparison, 14 findings) and D5 (text-polish, 15 findings) — dual-system, review-only. No source was edited. This backlog queues all **29 findings** as a deferred fix queue. The full evidence, per-axis mechanisms, and per-candidate locations live in the review artifact: `reviews/adversarial-review/2026-06-29-gobbi-adversarial-review-d3-d5.md`.
@@ -51,7 +56,7 @@ Lower-priority D3 directional fixes (parity-gap axes): D3-004 additive semantic 
 
 ### D5 — text-polish (centralize / compact / move candidates)
 
-- **Centralize (7 + the split D5-008):** D5-001 dual-system production block (5 loop skills → `production.md`), D5-002 value-telemetry counts (→ `record/SKILL.md`), D5-003 eval file-naming rule (→ `evaluation/SKILL.md`), D5-004 EVALUATION procedure table (→ `orchestration/workflow/evaluation.md`), D5-005 area-selection algorithm (→ `memory/rules.md §1.5`), D5-006 staging-field strip list (→ `memory/rules.md §2.6`), D5-007 Load-Directives companion-path mechanism (→ `orchestration/delegation.md`), D5-008 worktree write-root null→error rule (→ `git/SKILL.md § Worktree CWD discipline`).
+- **Centralize (7 + the split D5-008):** D5-001 dual-system production block (4 loop skills → `production.md`), D5-002 value-telemetry counts (→ `record/SKILL.md`), D5-003 eval file-naming rule (→ `evaluation/SKILL.md`), D5-004 EVALUATION procedure table (→ `orchestration/workflow/evaluation.md`), D5-005 area-selection algorithm (→ `memory/rules.md §1.5`), D5-006 staging-field strip list (→ `memory/rules.md §2.6`), D5-007 Load-Directives companion-path mechanism (→ `orchestration/delegation.md`), D5-008 worktree write-root null→error rule (→ `git/SKILL.md § Worktree CWD discipline`).
 - **Compact (4):** D5-009 wrap-up no-delete / move-on-terminal (4× → keep `:84-86`), D5-010 wrap-up idempotency (2× → keep Core Principles), D5-011 coding/review.md available-now-vs-deferred caveat (3-4× → keep `:358`), D5-012 Ideation RECORD section (→ pointer to `record/SKILL.md`).
 - **Move (1):** D5-013 code-review taxonomy → new child `skills/coding/review-taxonomy.md` (NOT deletion; leave a compact index table).
 - **Keep (2 — no fix):** D5-014 wrap-up routing table + 5-stage pipeline, D5-015 git Procedures P1-P8. Length is procedural/safety-justified.

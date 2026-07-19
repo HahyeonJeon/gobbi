@@ -8,7 +8,7 @@ The assistant in RECORD writes **only** to the session record. Wrap-up — in it
 
 Column legend:
 
-- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{area}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). `{area}` is the area sub-dir under a by-area type, resolved by the §1.5 selection rule ([`rules.md` § 1.5](rules.md#15-area-namespace-the-second-category-axis-under-each-type)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../record/record-map.md`](../record/record-map.md))
+- **Path** — canonical path; `{date}` / `{session-id}` / `{N}` / `{loop}` / `{role}` / `{agentId}` / `{iter-number}` / `{slug}` / `{area}` / `{project-name}` / `{feature-name}` / `{skill-name}` / `{agent-name}` are substitution variables (see [`SKILL.md` § Output paths](../record/SKILL.md#output-paths)). `{area}` is the area sub-dir under a by-area type, resolved by the §1.5 selection rule ([`rules.md` § 1.5](rules.md#15-area-namespace-the-second-category-axis-under-each-type)). On-disk loop dirs carry the `{N}-` ordinal prefix (`1-ideation` … `4-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`../record/record-map.md`](../record/record-map.md))
 - **Description** — what lives here and why
 - **Writer** — the role that creates / updates this path during the workflow
 - **When** — the workflow point at which the writer touches it
@@ -31,7 +31,7 @@ Volatile per-session storage. Wrap-up promotes the `staging/` subtree to memory 
 | `session.json.lock` | Advisory write-lock guarding concurrent `session.json` writes. Created and released by the manager around each `session.json` write; safe to ignore on read. Not memory content — a transient coordination artifact at the session root | manager | around every `session.json` write | — |
 | `transcripts/{role}-{agentId}.jsonl` | **Single** session-root transcript surface — one immutable file per agent run (manager = `manager-{sessionId}.jsonl`), accumulating across all loops by distinct `agentId`. Gitignored, session-scoped, never promoted, removed at worktree cleanup. There is no per-loop `transcripts/` | manager (creates dir at Configuration) + assistant (copies files at RECORD) | session start (dir); every iter (copy) | — |
 
-### Per-loop subtree — `{N}-{loop}/` (loop ∈ ideation / preparation / planning / execution / wrap-up; on-disk dirs carry the `{N}-` ordinal prefix — `1-ideation` … `5-wrap-up`)
+### Per-loop subtree — `{N}-{loop}/` (loop ∈ ideation / planning / execution / wrap-up; on-disk dirs carry the `{N}-` ordinal prefix — `1-ideation` … `4-wrap-up`)
 
 The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`, `outputs/`. There is no per-loop `transcripts/`; every agent's transcript lives in the single session-root `transcripts/` (see the Session-root table above). For the authoritative shape see [`../record/record-map.md`](../record/record-map.md).
 
@@ -64,7 +64,7 @@ Every staging file is stamped to its matching template. See [`SKILL.md` § Templ
 | `{N}-{loop}/staging/changelogs/{slug}.md` | Shipped-work changelog entry staged in-session for Wrap-up promotion (Execution loop typical; tracks what shipped per task) | assistant (RECORD) | `PASS` only when shipped-work occurred | [`templates/changelogs.md`](templates/changelogs.md) |
 | `{N}-{loop}/staging/learnings/{slug}.md` | Durable learning staged in-session for Wrap-up promotion | assistant (RECORD) | `PASS` only when the loop produced an actionable learning | [`templates/learnings.md`](templates/learnings.md) |
 | `{N}-{loop}/staging/notes/{slug}.md` | Loop-scope journal entry staged in-session for Wrap-up promotion. The per-session journal entry is written directly by Wrap-up; loop-scope staging here is the rare case of a substantial mid-loop work-log entry | assistant (RECORD) | `PASS` only when the loop produced a substantial work-log entry separate from the session note | [`templates/notes.md`](templates/notes.md) |
-| `3-planning/staging/plans/{slug}.md` | Plan artifact for Wrap-up to promote to `features/{feature-name}/plans/{area}/{date}-{slug}.md`. **Planning loop only** — `plans/` does not appear in other loops' staging trees | assistant (Planning RECORD) | `PASS` only, Planning loop only | [`templates/plans.md`](templates/plans.md) |
+| `2-planning/staging/plans/{slug}.md` | Plan artifact for Wrap-up to promote to `features/{feature-name}/plans/{area}/{date}-{slug}.md`. **Planning loop only** — `plans/` does not appear in other loops' staging trees | assistant (Planning RECORD) | `PASS` only, Planning loop only | [`templates/plans.md`](templates/plans.md) |
 
 ---
 
@@ -151,7 +151,7 @@ These directories hold knowledge that crosses features or is intentionally proje
 
 Project-specific skill / agent overrides live under runtime static-knowledge paths: `.claude/skills/{skill-name}/` and `.claude/agents/{agent-name}.md` in Claude Code, `.agents/skills/{skill-name}/` and `.codex/agents/{agent-name}.toml` in Codex. These are static-knowledge paths, **not memory** in this skill's sense. The memory-map only covers paths under `.gobbi/projects/{project-name}/`; runtime overrides are authored manually by the maintainer and are out of RECORD's scope.
 
-> **[FLAG-1] `skills/` placement contradiction — deferred follow-up (out of this redesign's scope).** This memory-map intentionally excludes `.gobbi/projects/{project-name}/skills/` from the memory type tables above (the project skills/ + agents/ trees are non-memory authoring surfaces), yet [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) lists `skills/` among Wrap-up's memory write targets (the Preparation `generate-now` exception). The canonical-location question — is project `skills/` memory or a separate authoring surface — is NOT resolved here; the `skills/` + `agents/` relocation is deferred per the locked-decision L8 out-of-scope boundary. File a follow-up; do not resolve in this pass.
+> **Project skills are an authoring surface, not a memory type.** `.gobbi/projects/{project-name}/skills/` remains outside the memory type tables and outside RECORD/Wrap-up promotion. When Planning's readiness gate identifies a missing project-specific skill, the plan creates it as the first ordered Execution task and verifies its runtime wiring before dependent tasks begin. Project agents remain a separate static-knowledge authoring surface as well.
 
 ---
 
@@ -168,7 +168,7 @@ All templates live under [`templates/`](templates/). The index below lets you ju
 | [`design.md`](templates/design.md) | `{N}-{loop}/staging/design/`, `features/{feature-name}/design/`, `.gobbi/projects/{project-name}/design/` |
 | [`discussions.md`](templates/discussions.md) | `{N}-{loop}/staging/discussions/`, `features/{feature-name}/discussions/` |
 | [`backlogs.md`](templates/backlogs.md) | `{N}-{loop}/staging/backlogs/{feature,project}/`, `features/{feature-name}/backlogs/`, `.gobbi/projects/{project-name}/backlogs/` |
-| [`plans.md`](templates/plans.md) | `3-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
+| [`plans.md`](templates/plans.md) | `2-planning/staging/plans/`, `features/{feature-name}/plans/`, `.gobbi/projects/{project-name}/plans/` |
 | [`feature.md`](templates/feature.md) | `features/{feature-name}/README.md` |
 | [`mistakes.md`](templates/mistakes.md) | `features/{feature-name}/mistakes/`, `.gobbi/projects/{project-name}/mistakes/` |
 | [`rules.md`](templates/rules.md) | `features/{feature-name}/rules/`, `.gobbi/projects/{project-name}/rules/` |

@@ -17,6 +17,11 @@ shipped_in: null
 
 # Codex-side dual-system prompts must load gobbi skills (detailed prompts)
 
+## v0.5.3 lifecycle reconciliation
+
+The evidence paths below identify a historical five-loop session and remain unchanged for audit.
+Apply any future fix to the current four-loop prompt surfaces and current ordinals.
+
 ## Design decision (USER, 2026-06-30)
 **In the gobbi system, Codex agents should get DETAILED prompts.** A Codex `codex exec` run
 in dual-system production/evaluation is a gobbi agent doing real gobbi work — it must be

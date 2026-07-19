@@ -18,6 +18,10 @@ related: []
 
 # Promote the 7 `COD-EXE-*-FRAME-001` frame-coverage findings into `skills/execution/checklist.md`
 
+> **v0.5.3 lifecycle note:** the `4-execution/` paths below identify the originating historical
+> session. Current sessions write Execution to `3-execution/`; do not rewrite the historical evidence
+> locator.
+
 ## Context
 
 During this session's Execution loop, the Codex evaluator returned 7 Low-severity `checklist_gap`

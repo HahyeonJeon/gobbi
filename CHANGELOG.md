@@ -37,6 +37,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wave A.2 — 9-doc reconciliation: stub-redirect files for retired `deterministic-orchestration.md` and `just-in-time-prompt-injection.md`, reconciled `v050-prompts.md`, `v050-hooks.md`, `v050-cli.md`, `v050-session.md` to post-Wave-A.1 reality (#150, #151)
 - Wave A.1 — Orchestration core: schema v6, `step.advancement.observed` audit event, explicit `EventStore` partition-key constructor params, WAL checkpoint after `workflow.step.exit`, handoff state-machine step (`specs/handoff/spec.json`), `gobbi maintenance migrate-state-db` + `restore-state-db`, memorization path-pointer manifest, `.gobbi/gobbi.db` git-tracked via `.gitignore` exception, 10 Wave A.1 integration tests (#146, #147)
 
+## [0.5.3] - 2026-07-19
+
+### Breaking
+
+- Retired the standalone Preparation phase. The workflow is now Configuration → Ideation → Planning → Execution → Wrap-up, with four productive loops.
+- Renumbered session loop directories to `1-ideation`, `2-planning`, `3-execution`, and `4-wrap-up`.
+- Bumped `session.json` to schema 4 and `state.json` / `settings.json` to schema 2. Legacy session metadata is rejected before any session-tree mutation; there is no in-place migration or dual-schema mode.
+
+### Changed
+
+- Made Planning non-skippable and moved readiness into the first operation of Planning DISCUSSION. The gate records `2-planning/working/readiness-gate-iter{n}.md` and returns `READY`, `RE-IDEATE`, or `NEEDS_CONTEXT`.
+- Routed upstream Ideation omissions back to Ideation without incrementing the Planning iteration. A clean readiness scan auto-advances; material gaps remain user decision points.
+- Routed missing project-specific skills to the first ordered Execution task, before dependent tasks. Missing workspace or domain skills return `NEEDS_CONTEXT`.
+- Added concrete authority, access, reversibility, and go/no-go evidence requirements for planned external writes, plus a second skill/readiness validation against the concrete task map.
+- Updated orchestration, agent prompts, record/scaffold contracts, runtime entry docs, plugin metadata, evaluation bundles, current memory, and compatibility guards for the four-loop model.
+
+### Removed
+
+- Removed `.gobbi/projects/gobbi/skills/preparation/`, the Preparation workflow child document, and their runtime discovery mirrors.
+- Removed Preparation-specific staging, skill-promotion, Wrap-up fallback, settings, state, and session metadata contracts.
+
+See [MIGRATION.md](MIGRATION.md) for the new-session-only compatibility policy.
+
 ## [0.5.0] - 2026-04-19
 
 ### Breaking

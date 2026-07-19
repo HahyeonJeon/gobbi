@@ -35,7 +35,7 @@ the active runtime's user-decision primitive (Always-Ask per `discussion/SKILL.m
 - [ ] `[ASK]` If Codex `read-only` blocks `git worktree add`: surface "needs ≥ workspace-write"; OFFER relaunch or plan / chat-only (C-07)
 - [ ] On resume / clear / compact: apply the 3-state idempotency guard — reuse the existing worktree, or recover an orphaned one via P6 (C-08, C-09)
 
-## CL-2 — Ideation / Preparation / Planning (read-only on git)
+## CL-2 — Ideation / Planning (read-only on git)
 
 - [ ] Any `git log` research is read-only; `git status --porcelain` empty after (D-01)
 - [ ] Every session-record write roots at absolute `session.json.git.worktreePath` — never relative / `pwd` (D-02)

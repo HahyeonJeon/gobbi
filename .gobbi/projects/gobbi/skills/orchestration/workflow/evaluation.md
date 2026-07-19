@@ -2,7 +2,7 @@
 
 **Doc kind:** gate-orchestration.
 
-How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Preparation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
+How the **manager** orchestrates the EVALUATION sub-phase that runs inside every workflow loop (Ideation, Planning, Execution, Wrap-up). This document is loaded by the manager — the evaluator agents that actually perform the per-perspective review load [`evaluation/SKILL.md`](../../evaluation/SKILL.md) instead.
 
 **Codex bridge owners:** [`codex/SKILL.md`](../../codex/SKILL.md) owns runtime selection, model and effort policy, launch selection, and high-level invocation; [`codex/delegation.md`](../../codex/delegation.md) owns exact prompt-file invocation and wrapper gates.
 
@@ -37,7 +37,7 @@ The evaluator runs **seven perspectives** + a final holistic **Overall** stage. 
 
 Every evaluation runs **all seven perspectives + Overall** for every loop. No pruning. A perspective that produces zero findings for a given artifact is still walked — its empty result is itself a recorded outcome, not a license to skip.
 
-The phase's evaluation child-doc bundle loaded at evaluator Stage 0 (`{phase}/scenario.md` + `{phase}/checklist.md` + `{phase}/evaluation.md`, phase ∈ ideation / preparation / planning / execution / wrap-up) supplies the Stage-1 seeds: `scenario.md` the per-perspective seed scenarios, `checklist.md` the seed checks (copied to the evaluator's output dir at Stage 0), and `evaluation.md` the procedure / verifications / anti-patterns. The manager passes the phase tag in the delegation prompt; the evaluator loads the matching bundle automatically.
+The phase's evaluation child-doc bundle loaded at evaluator Stage 0 (`{phase}/scenario.md` + `{phase}/checklist.md` + `{phase}/evaluation.md`, phase ∈ ideation / planning / execution / wrap-up) supplies the Stage-1 seeds: `scenario.md` the per-perspective seed scenarios, `checklist.md` the seed checks (copied to the evaluator's output dir at Stage 0), and `evaluation.md` the procedure / verifications / anti-patterns. The manager passes the phase tag in the delegation prompt; the evaluator loads the matching bundle automatically.
 
 ---
 
@@ -48,7 +48,7 @@ The manager spawns **exactly two evaluator agents in parallel** — one per syst
 - The artifact under evaluation (the prior phase's `WORK` output, e.g., `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md`)
 - Any artifact-embedded evaluation criteria the creator provided (context for Stage 1 frame-build, not a separate measurement pass)
 - The perspective set (always all seven + Overall; no pruning)
-- The workflow phase (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) — selects which evaluation child doc the evaluator loads at Stage 0
+- The workflow phase (`ideation` / `planning` / `execution` / `wrap-up`) — selects which evaluation child doc the evaluator loads at Stage 0
 
 Each evaluator is **one agent** that handles **all four stages (Target Understanding → Scenario & Checklist Build → Per-Perspective Sequential Evaluation → Overall) sequentially** — the manager does not spawn one evaluator per perspective. Perspectives iterate inside the agent in the documented order (Project → Structure → Performance → Aesthetics → Usage → Consistency → Risk → Overall). Per-perspective output files come from one agent's sequential pass, not from N parallel spawns.
 
@@ -281,7 +281,7 @@ This prevents wasted iter-3 cycles on issues the agent cannot resolve and surfac
 ## Iteration Caps
 
 The manager tracks the loop's revision count. Settings define:
-- `workflow.{loop}.maxIterations` (mode-specific defaults — Auto: 5 every loop; Chat: ideation 5, preparation 0/skipped, planning 1, execution 3, wrap-up 3)
+- `workflow.{loop}.maxIterations` (mode-specific defaults — Auto: 5 every loop; Chat: ideation 5, planning 1, execution 3, wrap-up 3)
 
 When the cap is reached without `PASS`, the manager's response is mode-specific (routine triage). **In Chat mode** the manager **escalates to the user** rather than continuing to revise — a stop-the-line user-decision primitive with three options: revise one more time, accept the artifact as-is despite findings, or abort the loop and reframe (consistent with chat-mode.md's "Budget exhausted → escalate to user"). **In Auto mode** the manager does NOT interrupt the user mid-session: it records the abort, continues to the next step if continuing is safe, and surfaces the failure at Wrap-up — per [`auto-mode.md §6`](../auto-mode.md). The one exception is `auto-mode.md §6`'s "unsound to proceed" case (e.g., Planning aborted with no deliverable plan), where the Auto manager MUST surface through the active runtime's user-decision primitive before proceeding.
 
@@ -320,7 +320,7 @@ sessions/{date}-{session-id}/{N}-{loop}/evaluation/
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
-- `{N}-{loop}` — the number-prefixed on-disk loop dir being evaluated (`1-ideation` / `2-preparation` / `3-planning` / `4-execution` / `5-wrap-up`). The `workflow.{loop}` JSON keys stay **bare** (no `{N}-` prefix) — see [`record/record-map.md` § SEAM-3](../../record/record-map.md)
+- `{N}-{loop}` — the number-prefixed on-disk loop dir being evaluated (`1-ideation` / `2-planning` / `3-execution` / `4-wrap-up`). The `workflow.{loop}` JSON keys stay **bare** (no `{N}-` prefix) — see [`record/record-map.md` § SEAM-3](../../record/record-map.md)
 - `{system}` — `claude` or `codex` (the system running this evaluator instance)
 - `{perspective}` — the perspective slug (`project` / `structure` / `performance` / `aesthetics` / `usage` / `consistency` / `risk`); the holistic Stage 3 output uses the fixed filename `overall.md`
 
@@ -331,7 +331,7 @@ The directory `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{syste
 ## Cross-references
 
 - Evaluator agent procedure (Stage 0 Target Understanding → Stage 1 Scenario-Checklist Frame Build → Stage 2 Per-Perspective Sequential Evaluation → Stage 3 Overall) → [`evaluation/SKILL.md`](../../evaluation/SKILL.md)
-- Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/preparation.md`](preparation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
+- Per-loop orchestration → [`workflow/ideation.md`](ideation.md), [`workflow/planning.md`](planning.md), [`workflow/execution.md`](execution.md), [`workflow/wrap-up.md`](wrap-up.md)
 - RECORD synthesis → [`workflow/record.md`](record.md), [`record/SKILL.md`](../../record/SKILL.md)
 - Wrap-up's memory promotion → [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Verdict aggregation rules in the state machine → [orchestration `SKILL.md` § Verdict aggregation](state-machine.md#verdict-aggregation)

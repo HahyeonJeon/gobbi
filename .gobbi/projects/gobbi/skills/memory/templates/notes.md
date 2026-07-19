@@ -41,7 +41,7 @@ tags: [refactor, docs-sync]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 features_touched: [{value-feature slugs this session promoted into}]
-loops_completed: [{ideation, preparation, planning, execution, wrap-up}]
+loops_completed: [{ideation, planning, execution, wrap-up}]
 shipped: [{slugs of artifacts that landed in memory this session}]
 ---
 
@@ -82,4 +82,4 @@ shipped: [{slugs of artifacts that landed in memory this session}]
   | `learnings/` | the takeaway ("do this in future") | the raw experience that produced it |
   | `discussions/` | one user-decision topic + answer | the session narrative that references many discussions |
   | `design/` | the architecture / intent | what actually happened building toward it |
-  | handoff (`5-wrap-up/outputs/`) | forward-looking ("what the next session needs") | backward-looking ("what this session did") |
+  | handoff (`4-wrap-up/outputs/`) | forward-looking ("what the next session needs") | backward-looking ("what this session did") |

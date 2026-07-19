@@ -6,7 +6,7 @@ see §4 for the canonical statement; it runs the unmodified base), the per-task 
 contract, the explicit end-of-session Wrap-up trigger, the Workflow Status Display rendering spec,
 and the per-task state-transition table.
 
-For the workflow governor and the global 6-step state machine, see
+For the workflow governor and the global 5-step state machine, see
 [`orchestration/SKILL.md`](SKILL.md). For the base RECORD procedure that §4 runs unchanged,
 see [`record/SKILL.md`](../record/SKILL.md).
 
@@ -23,7 +23,7 @@ start and an explicit end-of-session signal.
 241–242) originally stated "Mode controls user gates; it does not relax the workflow." That lock has
 been superseded by the mode-dispatched state-machine design ratified in session
 `2026-05-28-8eed14fb`. Chat Mode now controls *which state machine runs*, not just gate density —
-it dispatches a per-task slice loop, not the linear Ideation → Preparation → Planning → Execution
+it dispatches a per-task slice loop, not the linear Ideation → Planning → Execution
 → Wrap-up sequence. See the CORRECTION annotation in `orchestration/SKILL.md §
 Orchestration Mode` for the ADR record.
 
@@ -40,16 +40,15 @@ types between session start and the user's explicit end-of-session signal.
 **per-task slice**. Synonyms ("per-user-typed-task slice", "task slice", "Chat task") are
 non-canonical — use "per-task slice" consistently in all downstream prose.
 
-This re-frames the 6-step state machine:
+This re-frames the 5-step state machine:
 
 - **Configuration** (Step 1) runs once per session — unchanged.
-- **Wrap-up** (Step 6) runs once per session, triggered only on explicit user signal — see §7;
+- **Wrap-up** (Step 5) runs once per session, triggered only on explicit user signal — see §7;
   up to 3 remediation iterations on `REVISE` before abort (`wrap-up.maxIterations: 3`).
-- Between them, the manager runs **per-task slices**, not a linear Ideation → Preparation →
+- Between them, the manager runs **per-task slices**, not a linear Ideation →
   Planning → Execution → Wrap-up sequence.
-- Each per-task slice contains its own Ideation loop, its own Preparation loop (which resolves to
-  `state: Skipped` at loop entry — chat preparation carries `skip: true` AND `maxIterations: 0`;
-  either signal alone suffices), its own mini Planning loop, its own mini Execution loop,
+- Each per-task slice contains its own Ideation loop, its own non-skippable mini Planning loop
+  (whose DISCUSSION starts with the readiness entry gate), its own mini Execution loop,
   and its own task-record boundary.
 
 This is the structural change that supersedes the original SKILL.md 241–242 lock. Mode no longer
@@ -61,9 +60,9 @@ machine runs between Configuration and Wrap-up.
 ## §3 — Workflow
 
 Chat Mode dispatches a **per-task slice** loop between Configuration (Step 1) and
-Wrap-up (Step 6). Each slice runs Steps 2-5 inline, exits at the slice boundary
+Wrap-up (Step 5). Each slice runs Steps 2-4 inline, exits at the slice boundary
 (task-record + user review gate), and the manager either enters the next slice or
-exits to Step 6 on the user's explicit end-of-session signal.
+exits to Step 5 on the user's explicit end-of-session signal.
 
 ```
 Step 1 — Configuration (once per session)
@@ -85,24 +84,15 @@ Step 1 — Configuration (once per session)
 │      ITER / EXIT (PASS → next; REVISE → back to DISCUSSION)        │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 3 — Preparation Loop  ⊘  state: Skipped at loop entry        │
-│      (R1 + skip: settings.workflow.preparation =                   │
-│       {skip: true, maxIterations: 0} — either signal alone         │
-│       suffices → manager skips DISCUSSION+WORK+EVAL+MEMO rows      │
-│       entirely; stamps state: Skipped; no FAIL or Aborted verdict; │
-│       persists workflow.chat.tasks[i].preparation =                │
-│       {state: "Skipped", iterations: []}.)                         │
-│      The user MAY opt in for a complex task by typing an explicit  │
-│      prep override; opt-in runs the standard contract.             │
-│   │                                                                │
-│   ▼                                                                │
-│  Step 4 — mini Planning Loop  (maxIter=1)                          │
+│  Step 3 — mini Planning Loop  (maxIter=1)                          │
+│      DISCUSSION begins with readiness (READY auto-advances;        │
+│      material gaps route to re-Ideation / NEEDS_CONTEXT).          │
 │      Same 5-row loop, scope = this one task's worth of plan        │
 │      (one or a few sub-steps, ordered).                            │
 │      RECORD = unmodified base record/SKILL.md (§4).                │
 │   │                                                                │
 │   ▼                                                                │
-│  Step 5 — mini Execution Loop per Plan sub-step  (maxIter=3)       │
+│  Step 4 — mini Execution Loop per Plan sub-step  (maxIter=3)       │
 │      Same 5-row loop per sub-step (fresh executor by default);     │
 │      sub-steps sequence as the mini-Plan ordered them.             │
 │      RECORD = unmodified base record/SKILL.md (§4).                │
@@ -118,7 +108,7 @@ Step 1 — Configuration (once per session)
 └────────────────────────────────────────────────────────────────────┘
    │ (user signals "wrap up")
    ▼
-Step 6 — Wrap-up Loop  (maxIter=3)
+Step 5 — Wrap-up Loop  (maxIter=3)
    Wrap-up consolidation:
    - inventory staging/ only, including Chat slice staging paths
    - read every per-task task-record.md for review/navigation context only
@@ -128,7 +118,7 @@ Step 6 — Wrap-up Loop  (maxIter=3)
 ```
 
 Per-slice procedure follows the SKILL.md pattern: each step has Definition / Inputs /
-Output / Loop iteration / procedure table. Steps 2-5 are bounded loops scoped to one
+Output / Loop iteration / procedure table. Steps 2-4 are bounded loops scoped to one
 slice's worth of work.
 
 ### Step 1 — Configuration (session-level)
@@ -153,19 +143,7 @@ slice's worth of work.
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4 (transcript + session.json upsert + PASS-iter `outputs/` + typed-finding staging). Mistake stage moment-of-capture always live. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | `PASS` → advance to Step 3. `REVISE` with budget → return to row 1 with findings appended. Any `FAIL` → escalate to the user (safety gate, never auto-re-entered). Budget exhausted → escalate to user through the active runtime's user-decision primitive. | manager orchestration: —; specialist phase load: — | manager |
 
-### Step 3 — Slice Preparation Loop (Skipped at loop entry)
-
-**Definition.** Slice-level readiness verification — does the slice need memory or workspace-skill gap fixes before Planning?
-
-**Inputs.** Locked slice Idea.
-
-**Output.** Confirmed readiness — by default, `state: Skipped` (no work performed).
-
-**Loop iteration.** None. Chat preparation is `{skip: true, maxIterations: 0}`; either signal resolves to `state: Skipped` at loop entry (loop-entry Skipped resolution, two independent signals) — no DISCUSSION / WORK / EVALUATION / RECORD rows execute; no FAIL or Aborted verdict is emitted.
-
-**Opt-in.** A complex slice can opt back in by setting `skip: false` AND raising `workflow.preparation.maxIterations` above 0 via the customize gate (Step 1 row 3) — both signals must be cleared. The standard loop contract then runs.
-
-### Step 4 — Slice Mini Planning Loop
+### Step 3 — Slice Mini Planning Loop
 
 **Definition.** Lightweight decomposition of the slice into ordered sub-steps with verification anchors.
 
@@ -177,13 +155,13 @@ slice's worth of work.
 
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
-| 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user agree on decomposition shape. | manager orchestration: [discussion](../discussion/SKILL.md); specialist phase load: — | manager |
+| 1 | `DISCUSSION` | Atomically set Planning `Active` / `DISCUSSION`, then run the readiness entry gate. Forced user-driven per §9: READY auto-advances; RE-IDEATE returns Planning to Pending as Ideation becomes Revising; NEEDS_CONTEXT keeps Planning active until resolution or abort. Then manager + user agree on decomposition shape. | manager orchestration: [planning](workflow/planning.md), [discussion](../discussion/SKILL.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | manager + leader |
 | 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | manager orchestration: [planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | manager orchestration: —; specialist phase load: — | manager |
 
-### Step 5 — Slice Mini Execution Loop (per sub-step)
+### Step 4 — Slice Mini Execution Loop (per sub-step)
 
 **Definition.** Implement each Plan sub-step in sequence. Runs once per sub-step in the slice Plan.
 
@@ -205,7 +183,7 @@ slice's worth of work.
 
 **Definition.** Capture the slice outcome and prompt the user to choose the next move.
 
-**Inputs.** Outputs of Steps 2-5 (slice Idea + slice Plan + slice Results).
+**Inputs.** Outputs of Steps 2-4 (slice Idea + slice Plan + slice Results).
 
 **Output.** A per-task `task-record.md` written (per §6 spec) AND a user decision through the active runtime's user-decision primitive: next task / revise / wrap up.
 
@@ -216,13 +194,13 @@ slice's worth of work.
 | 1 | Write the per-task `task-record.md` to `sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/task-record.md` per §6. | [§6 task-record spec](#6--task-record-artifact-spec) | assistant |
 | 2 | Render the [Workflow Status Display](#8--workflow-status-display-chat-rendering) showing the just-completed task. | [§8](#8--workflow-status-display-chat-rendering) | manager |
 | 3 | Active runtime's user-decision primitive: Next task / Revise this task / Wrap up the session. | [discussion](../discussion/SKILL.md) | manager |
-| 4 | On `Next task`: enter the next slice (Step 2 of new slice). On `Revise`: re-enter Step 2 of current slice with the user-stated revision focus. On `Wrap up`: advance to Step 6. | — | manager |
+| 4 | On `Next task`: enter the next slice (Step 2 of new slice). On `Revise`: re-enter Step 2 of current slice with the user-stated revision focus. On `Wrap up`: advance to Step 5. | — | manager |
 
-### Step 6 — Session Wrap-up Loop
+### Step 5 — Session Wrap-up Loop
 
 **Definition.** Consolidate the session's artifacts; archive closed backlogs; promote staged mistakes to memory; write the handoff; open PR.
 
-**Inputs.** The per-slice typed-finding staging subtree (`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/4-execution/task-*/staging/`) + Configuration-time settings + cumulative session-staging (full typed-finding staging, written per the base RECORD each slice). The per-task `task-record.md` files are a user-facing review/navigation aid only, never a source Wrap-up promotes from.
+**Inputs.** The per-slice typed-finding staging subtree (`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/3-execution/task-*/staging/`) + Configuration-time settings + cumulative session-staging (full typed-finding staging, written per the base RECORD each slice). The per-task `task-record.md` files are a user-facing review/navigation aid only, never a source Wrap-up promotes from.
 
 **Output.** Session handoff doc; memory updates (mistakes promoted); archived backlogs (move-on-terminal); opened PR.
 
@@ -250,7 +228,7 @@ all cross-references in §3, §5, and `orchestration/SKILL.md` point here):**
 > on-disk staging under
 > `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/{type}/` — where `{type}` is the full base staging
 > vocabulary defined in [`record/record-map.md`](../record/record-map.md), not a narrowed subset —
-> (and `chat/tasks/{NN}-{slug}/4-execution/task-*/staging/` for execution sub-tasks). There is no
+> (and `chat/tasks/{NN}-{slug}/3-execution/task-*/staging/` for execution sub-tasks). There is no
 > deferral to Wrap-up, no transcript-mining, and no typed-finding reconstruction.
 >
 > - **Every-iter base steps run.** RECORD preserves the session audit for every verdict: the
@@ -285,8 +263,7 @@ base `record/SKILL.md` procedure.
 
 ## §5 — Per-loop discipline
 
-Inside any Chat-Mode loop slice (Ideation / Preparation when not skipped / mini Planning / mini
-Execution):
+Inside any Chat-Mode loop slice (Ideation / mini Planning / mini Execution):
 
 - **DISCUSSION is forced user-driven**, regardless of the resolved `discuss.mode`. The leader
   proposes (research-backed); the user decides through the active runtime's user-decision primitive. This is the discuss-first
@@ -299,8 +276,9 @@ Execution):
   exit. WORK and RECORD auto-advance — the delegation prompt is already user-approved and
   RECORD is mechanical capture.
 - **Iteration caps are per-loop in Chat:** Ideation 5, Planning 1 (one-shot — a REVISE routes to
-  the after-EVALUATION user gate, §3 Step 4 / §8.2, not a hard abort), Execution 3, Wrap-up 3;
-  Preparation skipped. (Auto keeps 5 across the board — `auto-mode.md §4`.) Exhausting a loop's
+  the after-EVALUATION user gate, §3 Step 3 / §8.2, not a hard abort), Execution 3, Wrap-up 3.
+  Planning is non-skippable and runs its readiness entry gate before decomposition.
+  (Auto keeps 5 across the board — `auto-mode.md §4`.) Exhausting a loop's
   budget without `PASS` is a signal to reframe or split — at the tighter Chat caps this is
   deliberate: short turn-over per topic while Ideation stays deep.
 - **Evaluation always runs.** `evaluate.mode: always` across all loops in Chat.
@@ -362,24 +340,22 @@ sessions/{date}-{ssid}/chat/tasks/{NN}-{slug}/
     task-record.md
     1-ideation/
         {working,evaluation,staging,outputs}/
-    3-planning/
+    2-planning/
         {working,evaluation,staging,outputs}/
-    4-execution/
+    3-execution/
         {working,evaluation,staging,outputs}/
 ```
 
 The per-task sub-loop dirs carry the same `{N}-{loop}` number prefix and the same
 4-slot interior (`working/ evaluation/ staging/ outputs/`) as the main session
 tree — see [`record/record-map.md`](../record/record-map.md) for the
-canonical shape. Preparation is not present in the directory tree for tasks where
-`state: Skipped` (the default — chat preparation is `{skip: true, maxIterations: 0}`).
-If a user opts into Preparation for a specific task, a `2-preparation/` subdirectory
-appears with the same 4-slot interior.
+canonical shape. Planning is always present and begins with
+`2-planning/working/readiness-gate-iter{n}.md`.
 
 **Materialization (manager-created).** The manager materializes this Chat slice tree —
 `chat/tasks/{NN}-{slug}/{N}-{loop}/{working,staging,evaluation,outputs}/` — DIRECTLY at slice
 entry, NOT via [`scaffold-session-dir.sh`](scripts/scaffold-session-dir.sh): that script is
-fail-closed to the fixed loop set (`1-ideation` … `5-wrap-up`) and does NOT cover `chat/tasks`.
+fail-closed to the fixed loop set (`1-ideation` … `4-wrap-up`) and does NOT cover `chat/tasks`.
 The per-slice `staging/` subdirs are also covered by RECORD's create-if-absent when it stages a
 typed finding. Extending `scaffold-session-dir.sh` +
 [`verify-record-map.sh`](../record/scripts/verify-record-map.sh) to materialize and validate the
@@ -436,7 +412,7 @@ user review gate before presenting active-runtime user-decision options.
 ### 6.5 Wrap-up role
 
 Wrap-up promotes each slice's typed findings from the per-slice staging subtree
-(`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/4-execution/task-*/staging/`) per
+(`chat/tasks/*/{N}-{loop}/staging/` + `chat/tasks/*/3-execution/task-*/staging/`) per
 `wrap-up/SKILL.md`. The base RECORD wrote that staging each slice (§4), so Wrap-up needs no
 transcript-mining and no finding reconstruction. The `task-record.md` stays a user-facing
 review/navigation aid: a reader scans it to see what each slice did. Wrap-up does not consume it
@@ -486,7 +462,7 @@ array-of-slices schema).
 Workflow Status — Mode: chat — Active: Task {NN} — {step-name}
 ```
 
-where `{step-name}` is one of: `Step 2 Full Ideation`, `Step 3 Preparation ⊘ Skipped`, `Step 4 mini Planning`, `Step 5 mini Execution`, `task-record`. The step name identifies the current row in the per-task tier of the body form below; Step 3 renders as ⊘ Skipped when default.
+where `{step-name}` is one of: `Step 2 Full Ideation`, `Step 3 mini Planning`, `Step 4 mini Execution`, `task-record`. The step name identifies the current row in the per-task tier of the body form below.
 
 **Body form (Chat) — two-tier:**
 
@@ -503,14 +479,13 @@ Per-task tier (current task sub-table):
 | Step | Loop | State | Iter | Verdict |
 |------|------|-------|------|---------|
 | 2 | Ideation | {state} | {n} | {verdict} |
-| 3 | Preparation | ⊘ Skipped | — | — |
-| 4 | mini Planning | {state} | {n} | {verdict} |
-| 5 | mini Execution | {state} | {n} | {verdict} |
+| 3 | mini Planning | {state} | {n} | {verdict} |
+| 4 | mini Execution | {state} | {n} | {verdict} |
 | — | task-record | {written\|pending} | — | — |
 
 **Render points:** unchanged — every user-decision primitive call in Chat; every loop boundary.
 
-**Auto Mode rendering:** unchanged — the existing 6-row table in `orchestration/SKILL.md §
+**Auto Mode rendering:** the existing 5-row table in `orchestration/SKILL.md §
 Workflow Status Display` is the canonical Auto view.
 
 ### 8.2 Per-task state-transition table (F-S2)
@@ -526,12 +501,10 @@ state-transition contract for Chat Mode.
 | `ideation.state: InProgress` | EVALUATION → PASS | `ideation.state: Done` | §4 base RECORD runs; move to Step 3 |
 | `ideation.state: InProgress` | EVALUATION → REVISE | `ideation.state: InProgress` | re-enter DISCUSSION with evaluator findings; iter++ |
 | `ideation.state: InProgress` | iter == maxIter (5) + REVISE | `ideation.state: Aborted` | manager escalates to user through the active runtime's user-decision primitive |
-| `ideation.state: Done` | loop-entry guard reads `skip: true` OR `maxIterations: 0` | `preparation.state: Skipped` | R1 lock + skip signal (two independent signals); no DISCUSSION/WORK/EVAL/MEMO rows run; stamps `{state: "Skipped", iterations: []}` |
-| `preparation.state: Skipped` | (auto-advance) | `planning.state: InProgress` | no user gate for the Skipped transition |
-| `preparation.state: Skipped` | user opts in for complex task | `preparation.state: InProgress` | user sets `skip: false` AND raises `maxIterations` explicitly (both signals cleared); standard loop contract runs |
-| `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 5 |
+| `ideation.state: Done` | enter Planning | `planning.state: InProgress` | run the readiness gate before decomposition; READY auto-advances, material gaps route to re-Ideation / NEEDS_CONTEXT |
+| `planning.state: InProgress` | EVALUATION → PASS | `planning.state: Done` | §4 base RECORD runs; move to Step 4 |
 | `planning.state: InProgress` | EVALUATION → REVISE, budget remaining (iter < maxIter) | `planning.state: InProgress` | re-enter DISCUSSION; iter++. For Chat one-shot Planning (maxIter 1) this branch is vacuous — the first REVISE is already at the cap, so the next row governs (routes to the after-EVALUATION user gate, not an auto re-entry). |
-| `planning.state: InProgress` | iter == maxIter (1) + REVISE | after-EVALUATION user gate (§3 Step 4 / §5) | one-shot Planning: the first REVISE routes to Chat's after-EVALUATION user gate — accept-as-is / revise-once (ad-hoc cap raise) / reframe; NOT a hard `Aborted` (locked decision 1) |
+| `planning.state: InProgress` | iter == maxIter (1) + REVISE | after-EVALUATION user gate (§3 Step 3 / §5) | one-shot Planning: the first REVISE routes to Chat's after-EVALUATION user gate — accept-as-is / revise-once (ad-hoc cap raise) / reframe; NOT a hard `Aborted` (locked decision 1) |
 | `planning.state: Done` | (auto-advance to first sub-step) | `execution.state: InProgress` | fresh executor per sub-step (default); Claude Code may continue per `orchestration/delegation.md § Continue vs Fresh` |
 | `execution.state: InProgress` | EVALUATION → PASS (last sub-step) | `execution.state: Done` | §4 base RECORD runs; write task-record |
 | `execution.state: InProgress` | EVALUATION → PASS (not last sub-step) | `execution.state: InProgress` | advance plan cursor to next sub-step; fresh executor by default, or Claude Code continuation per `orchestration/delegation.md § Continue vs Fresh` |
@@ -540,7 +513,7 @@ state-transition contract for Chat Mode.
 | `execution.state: Done` | task-record written | `taskRecord: written` | manager presents user review gate |
 | `taskRecord: written` | user selects "Next task" | `(new per-task slice begins)` | manager re-enters per-task slice loop for task {NN+1} |
 | `taskRecord: written` | user selects "Revise this task" | `ideation.state: InProgress` (same task, new per-task slice) | manager re-enters per-task slice at Step 2 |
-| `taskRecord: written` | user selects "Wrap up the session" | `wrapUp.state: InProgress` | manager exits per-task slice loop; enters Step 6 Wrap-up |
+| `taskRecord: written` | user selects "Wrap up the session" | `wrapUp.state: InProgress` | manager exits per-task slice loop; enters Step 5 Wrap-up |
 
 ### 8.3 Worked example — Status Display (§6.3 spec)
 
@@ -548,7 +521,7 @@ The following example shows the Workflow Status Display mid-session, after two c
 slices and during the third (mini Execution in progress):
 
 ```
-Workflow Status — Mode: chat — Active: Task 03 — Step 5 mini Execution
+Workflow Status — Mode: chat — Active: Task 03 — Step 4 mini Execution
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Session-level
   Configuration          ✓ Done
@@ -561,9 +534,8 @@ Completed tasks
 
 Task 03 — chat-mode-spec-draft
   Step 2  Ideation          ✓ Done          iter 1   PASS
-  Step 3  Preparation       ⊘ Skipped       —        —
-  Step 4  mini Planning     ✓ Done          iter 1   PASS
-  Step 5  mini Execution    ▸ InProgress    iter 1   …
+  Step 3  mini Planning     ✓ Done          iter 1   PASS
+  Step 4  mini Execution    ▸ InProgress    iter 1   …
           task-record       … pending
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```

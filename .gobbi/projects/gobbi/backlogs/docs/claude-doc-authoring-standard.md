@@ -27,7 +27,7 @@ Out of scope for the skill-writing/agent-writing session (D2). The new `skill-wr
 
 ## When to pick up
 
-No hard prerequisite. Can run any time as a standalone docs task. Pick up when the dangling references become a friction point for future skill authors or when a session's Preparation step surfaces the missing doc as a gap.
+No hard prerequisite. Can run any time as a standalone docs task. Pick up when the dangling references become a friction point for future skill authors or when a session's Planning readiness gate surfaces the missing doc as a gap.
 
 ## Suggested approach
 

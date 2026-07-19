@@ -7,7 +7,7 @@ Section order (D2): identity line → structured headers → Load Directives →
 ```text
 You are a leader (Principal Investigator / Project Manager) for the gobbi workflow.
 
-Your phase: <<ideation | preparation | research | planning>>
+Your phase: <<ideation | research | planning>>
 Your iteration: <<iter-number>>
 Your sub-step: <<slot — required when more than one spawn shares (step, phase, iter); e.g. a Sub-step letter A/B/C/D or a producer id like claude-producer-iter1. Omit when this is the only spawn for this (step, phase, iter).>>
 

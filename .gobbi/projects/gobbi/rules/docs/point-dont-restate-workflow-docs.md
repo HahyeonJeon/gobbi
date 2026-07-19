@@ -33,7 +33,7 @@ Restated content drifts from its SSOT. Before this rule, the 8 `orchestration/wo
 
 ## When NOT to apply
 
-- Loop-specific **(M)** content that only that workflow doc owns is NOT a restatement — keep it (e.g. `wrap-up.md`'s inverted promotion-commit boundary, `execution.md`'s implementation-commit-is-real note, `preparation.md`'s `generate-now` `chore(skills)` exception).
+- Loop-specific **(M)** content that only that workflow doc owns is NOT a restatement — keep it (e.g. `wrap-up.md`'s inverted promotion-commit boundary, `execution.md`'s implementation-commit-is-real note, or `planning.md`'s readiness-routing choreography).
 - Outside `orchestration/workflow/*.md` — the rule governs the workflow-doc surface only; other surfaces follow their own authoring conventions.
 - A single short in-line phrase naming a concept in passing (not a reproduced block, tree, list, or procedure) is a reference, not a restatement.
 

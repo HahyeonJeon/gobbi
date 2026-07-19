@@ -253,7 +253,7 @@ check_fenced_session_tree() {
     local path="$1" name="$2"
     awk -v name="$name" '
         function is_session_seg(s,   p) {
-            p = "sessions/|session\\.json|transcripts/|staging/|outputs/|working/|evaluation/|iter[0-9{]|task-[0-9{]|[1-5]-(ideation|preparation|planning|execution|wrap-up)|[{]perspective[}]|[{]slug[}]|[{]role[}]|[{]free-filename|(claude|codex)/"
+            p = "sessions/|session\\.json|transcripts/|staging/|outputs/|working/|evaluation/|iter[0-9{]|task-[0-9{]|[1-4]-(ideation|planning|execution|wrap-up)|[{]perspective[}]|[{]slug[}]|[{]role[}]|[{]free-filename|(claude|codex)/"
             return (s ~ p)
         }
         /^[[:space:]]*```/ { in_fence = !in_fence; next }
@@ -536,12 +536,11 @@ Covers all seven perspectives + Overall.
 DOC
     }
 
-    # Build the full 9-doc clean fixture tree under $1/wf + manifest at $1/manifest.txt.
+    # Build the full 8-doc clean fixture tree under $1/wf + manifest at $1/manifest.txt.
     build_clean_tree() {
         local root="$1"
         mkdir -p "$root/wf"
         write_clean_ideation "$root/wf/ideation.md"
-        write_loop_stub "$root/wf/preparation.md" "Preparation"
         write_loop_stub "$root/wf/planning.md" "Planning"
         write_loop_stub "$root/wf/execution.md" "Execution"
         write_loop_stub "$root/wf/wrap-up.md" "Wrap-up"
@@ -551,7 +550,6 @@ DOC
         write_reference_stub "$root/wf/metadata.md" "Metadata"
         cat > "$root/manifest.txt" <<'DOC'
 doc|ideation.md|loop-orchestration|compacted
-doc|preparation.md|loop-orchestration|-
 doc|planning.md|loop-orchestration|-
 doc|execution.md|loop-orchestration|-
 doc|wrap-up.md|loop-orchestration|-
@@ -564,7 +562,7 @@ DOC
 
     # === A: clean full partial-compaction tree (exit 0) ====================
     build_clean_tree "$tmp/A"
-    assert_exit 0 "clean 9-doc partial-compaction (all FP cases pass)" "$tmp/A/wf" "$tmp/A/manifest.txt"
+    assert_exit 0 "clean 8-doc partial-compaction (all FP cases pass)" "$tmp/A/wf" "$tmp/A/manifest.txt"
 
     # === B: fail-closed — a manifest doc absent on disk (exit 2) ============
     build_clean_tree "$tmp/B"
@@ -649,7 +647,7 @@ DOC
     # has no fenced session-tree, so #3/#7 finds nothing and #2 stays compacted-only
     # (a tree-free doc is NOT required to carry all five pointers).
     build_clean_tree "$tmp/N"
-    sed 's/^doc|preparation.md|loop-orchestration|-$/doc|preparation.md|loop-orchestration|tree-free/' \
+    sed 's/^doc|planning.md|loop-orchestration|-$/doc|planning.md|loop-orchestration|tree-free/' \
         "$tmp/N/manifest.txt" > "$tmp/N/manifest2.txt"
     assert_exit 0 "FP-PASS: tree-free doc with no tree (no 5-pointer demand)" "$tmp/N/wf" "$tmp/N/manifest2.txt"
 
@@ -658,15 +656,15 @@ DOC
     # later edit that re-adds one must FAIL (before this tier it was a non-compacted
     # doc and #3/#7 did not run — a silently re-grown tree).
     build_clean_tree "$tmp/O"
-    sed 's/^doc|preparation.md|loop-orchestration|-$/doc|preparation.md|loop-orchestration|tree-free/' \
+    sed 's/^doc|planning.md|loop-orchestration|-$/doc|planning.md|loop-orchestration|tree-free/' \
         "$tmp/O/manifest.txt" > "$tmp/O/manifest2.txt"
     {
         printf '\n%s\n' '```'
         printf 'sessions/{date}-{session-id}/\n'
-        printf '%s\n' '├── 2-preparation/'
+        printf '%s\n' '├── 2-planning/'
         printf '%s\n' '└── transcripts/'
         printf '%s\n' '```'
-    } >> "$tmp/O/wf/preparation.md"
+    } >> "$tmp/O/wf/planning.md"
     assert_exit 1 "CATCH: tree-free doc with a re-added session-tree (#3)" "$tmp/O/wf" "$tmp/O/manifest2.txt"
 
     printf '\n%s --self-test: %d/%d scenarios passed\n' "$SELF" "$((total - fails))" "$total" >&2

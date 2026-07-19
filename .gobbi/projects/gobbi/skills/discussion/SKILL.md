@@ -87,7 +87,7 @@ Field semantics:
 ### Concrete example
 
 ```
-question: "Decision: 5 loop skill 정렬이 끝난 이 세션에서 다음 작업 영역을 정하기.
+question: "Decision: 4 loop skill 정렬이 끝난 이 세션에서 다음 작업 영역을 정하기.
 Description: 우선순위가 낮은 항목을 먼저 잡으면 이미 정렬된 skill과 일관성이 깨진 채 변경이 그 위에 쌓이고 후속 수정 비용이 늘어납니다. 인접 work-skill 마무리, 진입점 문서 검토, 작업 보존(commit), 보조 utility 정렬 중 하나를 골라야 합니다."
 
 header: "다음 작업"

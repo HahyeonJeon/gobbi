@@ -34,7 +34,7 @@ Replace the single `Refs` column with two columns: `Manager refs` (the manager-f
 and `Specialist phase loads` (the phase-specific skill(s) the spawned agent loads for that phase, on top of
 the standard `orchestration/delegation.md` Load Directives). Manager-only rows (DISCUSSION, ITER-EXIT) get `—` in
 `Specialist phase loads`. Per-phase mapping: Ideation WORK → `workflow/ideation.md` + `../ideation/SKILL.md`
-(+ `../research/SKILL.md` at Sub-step C); Preparation/Planning/Execution/Wrap-up WORK → their own
+(+ `../research/SKILL.md` at Sub-step C); Planning/Execution/Wrap-up WORK → their own
 `workflow/*.md` + `../*/SKILL.md`; EVALUATION → `workflow/evaluation.md` + `../evaluation/SKILL.md`; RECORD →
 `workflow/record.md` + `../record/SKILL.md` (+ `../memory/memory-map.md`).
 

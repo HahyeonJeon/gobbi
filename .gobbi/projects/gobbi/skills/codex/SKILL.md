@@ -64,7 +64,7 @@ If the database or row is missing, leave `session.json.transcriptPath` null and 
 
 Codex supports project custom agents from `.codex/agents`. When Gobbi asks for specialist work:
 
-- Use `leader` for ideation, preparation, research, and planning.
+- Use `leader` for ideation, research, and planning.
 - Use `executor` for implementation.
 - Use `evaluator` for adversarial review; keep it read-only.
 - Use `assistant` for narrow lookup and RECORD support.
@@ -184,7 +184,7 @@ The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It wri
 
 > **Superseded (runtime-matrix):** the earlier guidance to run the proposer **foreground-blocking with `timeout ≥ 1200s`** is superseded by the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). In Claude Code the proposer runs **background** — its workload exceeds the ~600s foreground cap — and `timeout 1200` is the detached-run cap, not a foreground budget. Foreground `timeout <cap>` applies only in a native-Codex host that grants the budget.
 
-**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Preparation / Planning / Wrap-up), **background-launched in Claude Code** per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix):
+**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Planning / Wrap-up), **background-launched in Claude Code** per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix):
 
 ```bash
 prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md"
@@ -201,14 +201,14 @@ timeout 1200 codex exec \
 **Execution per-task variant.** The Execution quartet lives under the task dir, so swap the `--add-dir` writable set and the prompt path to the task's `working/proposals/codex` (draft → `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`):
 
 ```bash
-prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
+prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
 
 timeout 1200 codex exec \
   -m gpt-5.6-sol \
   -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/working/proposals/codex \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex \
   - < "$prompt_file"
 ```
 
@@ -296,7 +296,7 @@ timeout 600 codex exec \
   -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging \
   - < "$prompt_file"
 ```
 
@@ -387,14 +387,14 @@ still follows the runtime matrix: background if the run may exceed ~540s, and fo
 it fits under the ~600s cap.
 
 ```bash
-prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
+prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
 
 timeout 600 codex exec \
   -m gpt-5.6-sol \
   -c 'model_reasoning_effort="xhigh"' \
   --sandbox workspace-write \
   --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging \
+  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging \
   - < "$prompt_file"
 ```
 
@@ -404,21 +404,21 @@ The prompt then requires Step 2 through Step 4:
 Step 2. Verify output files landed at the absolute main-tree path:
 
   # Must be 9 evaluator output files (7 per-perspective + overall + the filled checklist):
-  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 9
-  test -s <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MISSING/EMPTY: checklist.md"; exit 1; }
-  if grep -qE '^- \[ \]' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md; then echo "INCOMPLETE: unresolved checklist item"; exit 1; fi
+  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 9
+  test -s <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MISSING/EMPTY: checklist.md"; exit 1; }
+  if grep -qE '^- \[ \]' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md; then echo "INCOMPLETE: unresolved checklist item"; exit 1; fi
   # Every ticked box carries EXACTLY ONE outcome marker (PASS: / FAIL:{id} / n/a:{reason}) — 0 or 2+ is malformed:
-  awk '/^- \[x\]/{ n=gsub(/PASS:|FAIL:|n\/a:/,"&"); if (n!=1){ print "MALFORMED("n"): " $0; bad=1 } } END{ exit bad?1:0 }' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MALFORMED: a [x] row lacks exactly one PASS/FAIL:{id}/n-a:{reason} marker"; exit 1; }
+  awk '/^- \[x\]/{ n=gsub(/PASS:|FAIL:|n\/a:/,"&"); if (n!=1){ print "MALFORMED("n"): " $0; bad=1 } } END{ exit bad?1:0 }' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MALFORMED: a [x] row lacks exactly one PASS/FAIL:{id}/n-a:{reason} marker"; exit 1; }
 
   # Each output file must be non-empty (9 files: 7 per-perspective + overall + the filled checklist):
-  find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex -type f -size +0c | wc -l  # must be 9
+  find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex -type f -size +0c | wc -l  # must be 9
 
   # 5-Type vocabulary is checked only in the 8 finding-bearing files; checklist.md is excluded (coverage artifact, carries no finding vocab):
   grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
-    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/{project,structure,performance,aesthetics,usage,consistency,risk,overall}.md | wc -l  # >= 1 hit per file (finding files only)
+    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/{project,structure,performance,aesthetics,usage,consistency,risk,overall}.md | wc -l  # >= 1 hit per file (finding files only)
 
   # Verdict line must be present in overall.md:
-  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
+  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
 
   # Finding vocabulary checks are advisory only; a clean PASS can validly contain no typed findings.
 
@@ -437,7 +437,7 @@ The sketch's `timeout 600 codex exec` is a foreground evaluator call at the ~600
 After both assistants return DONE, run the post-eval sanity check:
 
 ```bash
-find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/staging -type f | sort
+find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging -type f | sort
 ```
 
 Aggregate findings by reading the per-perspective output files directly. Do not rely on assistant-reported summaries alone.

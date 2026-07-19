@@ -1,6 +1,6 @@
 # Execution Loop — Evaluation Checklist
 
-> **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the evaluator COPIES this file to `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/checklist.md`. The filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective files + `overall.md`. The source here ships with every box UNCHECKED.
+> **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the evaluator COPIES this file to `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/checklist.md`. The filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective files + `overall.md`. The source here ships with every box UNCHECKED.
 >
 > **A ticked box = VERIFIED, not "done".** `- [x]` means the evaluator VERIFIED the check against the change-set with the strongest verification the check admits (run a tool / read the diff / `grep` / read the call site) — never that work merely happened.
 >

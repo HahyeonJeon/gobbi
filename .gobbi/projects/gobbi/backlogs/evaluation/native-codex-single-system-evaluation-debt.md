@@ -17,6 +17,10 @@ shipped_in: null
 
 # Native Codex Single-System Evaluation Debt
 
+> **v0.5.3 lifecycle note:** Ideation, Preparation, and `2-preparation/` below are historical evidence
+> labels from the originating session. Current degraded-mode design work must use the four-loop model;
+> the readiness equivalent is Planning DISCUSSION.
+
 ## Context
 
 This native Codex session could not truthfully produce the normal Gobbi dual-system evidence set. Ideation and Preparation used disclosed Codex-only evaluation evidence, and Execution task reviews preserved the same limitation instead of creating fake Claude directories or synthetic dual-system claims.

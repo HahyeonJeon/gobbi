@@ -17,6 +17,8 @@ related: []
 
 # Runtime-aware transcript audit branch (as shipped)
 
+> **v0.5.3 current-contract note:** this invariant now applies to the four productive loop skills. Preparation references in the historical problem statement show where the original defect was found; they are not current paths.
+
 ## Problem
 
 `codex/SKILL.md` and `gobbi/SKILL.md` permit `transcriptPath: null` for a Codex session when rollout
@@ -67,16 +69,17 @@ gitignored, session-ephemeral, and is never promoted regardless of runtime).
 - **Golden — Claude Code missing transcript (unchanged).** `session.json.system = "claude-code"` with
   an absent transcript path → still Critical `general`/`unevaluable`, still VERIFY-fail, still
   gate-2-block behavior — no weakening of the existing runtime-neutral rule for Claude Code.
-- **Regression check — per-loop restatement deferral.** All five per-loop RECORD exit checklists
-  (ideation / preparation / planning / execution / wrap-up) carry the "Canonical procedure:
-  `record/SKILL.md` ... do not re-derive" deferral note, confirmed present in all five during
-  iter3 ideation-loop verification — so the base fix alone closes every restatement site.
+- **Regression check — per-loop restatement deferral.** All four per-loop RECORD exit checklists
+  (ideation / planning / execution / wrap-up) carry the "Canonical procedure:
+  `record/SKILL.md` ... do not re-derive" deferral note. The pre-v0.5.3 iter3 verification covered
+  five loop docs, including the former Preparation loop; the current contract has four restatement
+  sites, so the base fix still closes every active site.
 
 ## Validation
 
 A runtime-aware trace confirming a Codex-null session passes Step 9 VERIFY and every per-loop exit
 checklist as degraded-pass; a trace confirming a Claude Code missing-transcript session still fails
-loudly; a case-insensitive, root-relative grep across all five loop docs plus
+loudly; a case-insensitive, root-relative grep across all four current loop docs plus
 `orchestration/workflow/record.md` confirming each restates the "transcript copied" gate but defers
 to the base via the canonical-procedure note; both Claude and Codex Execution-loop iter1 and iter2
 evaluations confirmed the branch is coherent across `gobbi/SKILL.md`, `orchestration/SKILL.md`,

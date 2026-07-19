@@ -30,7 +30,7 @@ Mature agent frameworks model a run as a trace-to-spans hierarchy that mirrors t
 
 ## Why it applies
 
-For D4 (debuggability): gobbi's workflow is a graph (6 steps × 4 phases × N iters), so a session tree that mirrors that graph makes step-to-phase-to-output legible as a path — the same proven pattern as trace-to-span trees. The number-prefixed loop dirs (`1-ideation/` … `5-wrap-up/`) implement this: a `ls` of the session dir reads as the workflow in order. For D1 (deterministic init): Cookiecutter-class tools prove the template + idempotent `mkdir -p` hook pattern — gobbi's scaffold-session-dir.sh copies this model exactly.
+For D4 (debuggability): gobbi's workflow is a graph (5 steps, 4 productive loops, 4 sub-phases per loop, N iterations), so a session tree that mirrors that graph makes step-to-phase-to-output legible as a path — the same proven pattern as trace-to-span trees. The number-prefixed loop dirs (`1-ideation/` … `4-wrap-up/`) implement this: a `ls` of the session dir reads as the workflow in order. For D1 (deterministic init): Cookiecutter-class tools prove the template + idempotent `mkdir -p` hook pattern — gobbi's scaffold-session-dir.sh copies this model exactly.
 
 ## Source
 

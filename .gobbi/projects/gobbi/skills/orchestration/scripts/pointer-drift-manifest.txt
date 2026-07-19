@@ -35,14 +35,13 @@
 #
 # Fail-closed: a malformed row, a bad kind, an unknown flag, a duplicate doc, a
 # manifest doc missing on disk, OR an on-disk workflow/*.md not listed here all
-# exit 2. Partial migration: ideation.md is `compacted`; preparation / planning /
-# execution / wrap-up are `tree-free` (redrawn tree removed, not yet fully
+# exit 2. Partial migration: ideation.md is `compacted`; planning / execution /
+# wrap-up are `tree-free` (redrawn tree removed, not yet fully
 # compacted); the three gate docs (evaluation / production / record) are
 # un-migrated. The four reference docs hold split-out top-level sections and are
 # part of the closed workflow doc set, but they do not run loop/gate-only checks.
 
 doc|ideation.md|loop-orchestration|compacted
-doc|preparation.md|loop-orchestration|tree-free
 doc|planning.md|loop-orchestration|tree-free
 doc|execution.md|loop-orchestration|tree-free
 doc|wrap-up.md|loop-orchestration|tree-free

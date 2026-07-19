@@ -11,16 +11,18 @@ tags: []
 keywords: [scenario-md, checklist-md, class-predicate, completeness-gate, three-way-split]
 author: claude
 value_proposition: A future reader of any loop's evaluation procedure gets three focused docs instead of one conflated file — the procedure, the per-perspective Good/Bad/Adversarial framing, and the per-check pass/fail bookkeeping — with a build-time gate that proves every co-touch surface was repointed, not a hand-list that silently misses one.
-subsystems: [skills/ideation, skills/preparation, skills/planning, skills/execution, skills/wrap-up, skills/evaluation, skills/skill-writing, skills/orchestration/scripts]
+subsystems: [skills/ideation, skills/planning, skills/execution, skills/wrap-up, skills/evaluation, skills/skill-writing, skills/orchestration/scripts]
 ---
 
 # Evaluation Child-Doc Split
 
 ## Overview
 
-Each of the 5 workflow-loop skills (`ideation`, `preparation`, `planning`, `execution`, `wrap-up`) used to carry one `evaluation.md` that conflated the evaluation procedure, the per-perspective scenario framing (what GOOD vs BAD vs ADVERSARIAL looks like), and the per-check pass/fail bookkeeping. This feature splits each into three sibling files — `evaluation.md` (procedure) + `scenario.md` (framing) + `checklist.md` (checks) — and makes checklist coverage a real 9th output file per evaluation run, certified complete by a build-time class-predicate gate (`check-eval-childdocs.sh`) rather than a hand-maintained co-touch list.
+Each of the 4 current workflow-loop skills (`ideation`, `planning`, `execution`, `wrap-up`) carries three sibling evaluation files: `evaluation.md` (procedure), `scenario.md` (framing), and `checklist.md` (checks). Checklist coverage is a real 9th output file per evaluation run, certified complete by a build-time class-predicate gate (`check-eval-childdocs.sh`) rather than a hand-maintained co-touch list. The former Preparation bundle was retired in v0.5.3; readiness coverage now belongs to Planning's entry gate and Planning's evaluation bundle.
 
 ## Status
+
+**Current contract (v0.5.3):** the guard and bundle inventory cover four productive loops. Preparation-specific paths in the historical session account below describe the pre-v0.5.3 implementation and are not current execution guidance.
 
 **Session `39f3dfb0-49df-44d4-a6bd-d2e4743b36e3` (2026-07-07 → 2026-07-10):** shipped complete. Ideation (6 iterations, dual-system PASS on iter6) locked the design and 4 user decisions. Planning (2 iterations, dual-system PASS on iter2) produced a 10-task guard-first-then-atomic-flip-last plan. Execution shipped all 10 tasks: task 01 built `check-eval-childdocs.sh` (8 evaluation iterations); tasks 02-04 proved the `execution/` 3-file bundle prototype; task 05 landed the prototype-safe shared docs (`evaluation/SKILL.md`, `skill-writing/SKILL.md`); tasks 06-09 split the remaining 4 loop bundles (ideation, preparation, planning, wrap-up); task 10 landed the atomic parent-contract flip (8→9 file count, Stage-0 hard-require, full Family-9 co-touch set) as a single commit, gated by `--enforce-inclusion`. Every task passed dual-system (Claude + Codex) evaluation. 24 commits total.
 

@@ -1,13 +1,13 @@
 ---
 name: git-workflow-feature-memory-absent
-description: Scenario — Preparation must bootstrap features/git-workflow/ before Planning depends on feature-scoped memory
+description: Scenario — Planning readiness must classify absent features/git-workflow/ memory before decomposition depends on it
 type: scenarios
 scope: feature
 feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [process, preparation]
+tags: [process, planning]
 keywords: [feature-memory, readiness]
 author: claude
 ---
@@ -16,7 +16,7 @@ author: claude
 
 ## Scenario description
 
-The Scope Contract names `feature: git-workflow`. When Preparation begins, `features/git-workflow/`
+The Scope Contract names `feature: git-workflow`. When Planning readiness begins, `features/git-workflow/`
 does NOT yet exist — only `features/workflow/` is present (verified). Planning must not assume
 feature-scoped memory (mistakes / decisions / scenarios / checklists) already exists for this
 feature.
@@ -30,10 +30,11 @@ nothing and silently skips the context check.
 
 ## Acceptance conditions
 
-- [ ] Preparation confirms `features/git-workflow/` does NOT exist at Preparation start.
-- [ ] Preparation bootstraps or confirms the directory before Planning reads from it.
-- [ ] If the directory is absent, Planning must NOT assume feature-scoped memory exists; it starts
-  from zero for this feature.
+- [ ] Planning readiness confirms whether `features/git-workflow/` exists before decomposition reads it.
+- [ ] If the directory is absent, the readiness report records `NO_FEATURE_MEMORY`; Planning must not
+  treat an empty read as proof that no relevant context exists.
+- [ ] A project-owned foundation gap becomes the first ordered Execution task. A missing workspace or
+  domain dependency returns `NEEDS_CONTEXT`; Planning does not write durable memory to close it.
 - [ ] The feature dir `features/git-workflow/` is named in `gobbi/SKILL.md:209` as a value-feature;
   its slug is correct even if the dir is absent.
 

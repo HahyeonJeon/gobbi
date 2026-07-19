@@ -116,7 +116,7 @@ a checkpoint marker to the ledger holding the topic number and confirmation time
 ## 3. Startup session shape
 
 `startup` is NOT a productive loop — it has no `{N}-` loop dir and is never smuggled into the fixed
-`1-ideation … 5-wrap-up` set. It uses its own unnumbered `startup/` surface:
+`1-ideation … 4-wrap-up` set. It uses its own unnumbered `startup/` surface:
 
 ```
 sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL (§1) — never durable
@@ -528,7 +528,7 @@ durable evidence a later Configuration can trust.
 2. After the read-only classifier and the scope gate, create `sessions/{date}-{session-id}/startup/` with
    the startup-owned `working/` + `staging/` + `outputs/` scaffold.
 3. Write a minimal `session.json` (`project`, `system`, `startedAt`, `mode: startup-standalone`); add NO
-   `1-ideation … 5-wrap-up` loop entries.
+   `1-ideation … 4-wrap-up` loop entries.
 4. Inherit settings from the repo `.claude/settings.json` (or the runtime's settings); do not fabricate a
    separate policy set.
 

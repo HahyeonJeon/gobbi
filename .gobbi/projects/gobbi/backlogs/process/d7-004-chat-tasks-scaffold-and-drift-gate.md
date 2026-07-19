@@ -22,8 +22,8 @@ shipped_in: null
 GEN-D1-003 (shipped this session) documents Chat-mode RECORD as writing real per-slice staging under
 `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/...`, with the manager responsible for materializing those
 directories in the interim. The canonical materializer (`scaffold-session-dir.sh`) and drift-gate
-(`verify-record-map.sh`) only recognize the fixed top-level loop set (`1-ideation` … `5-wrap-up`) plus
-`4-execution/task-{NN}-{slug}` — neither creates nor validates the `chat/tasks/...` subtree. This gap
+(`verify-record-map.sh`) only recognize the fixed top-level loop set (`1-ideation` … `4-wrap-up`) plus
+`3-execution/task-{NN}-{slug}` — neither creates nor validates the `chat/tasks/...` subtree. This gap
 was independently surfaced three times across this feature's review history: Ideation iter1
 (finding F-PROJ-1), Planning (finding G2), and Execution iter1 (Codex finding O2, High).
 
@@ -46,8 +46,8 @@ coverage to be real rather than manager-improvised.
 ## Suggested approach
 
 Extend `scaffold-session-dir.sh`'s allowed `<step-dir>` set to accept
-`chat/tasks/{NN}-{slug}/{N}-{loop}` (and nested `chat/tasks/{NN}-{slug}/4-execution/task-{MM}-{slug}`),
-mirroring the existing `4-execution/task-{NN}-{slug}` validation pattern. Extend
+`chat/tasks/{NN}-{slug}/{N}-{loop}` (and nested `chat/tasks/{NN}-{slug}/3-execution/task-{MM}-{slug}`),
+mirroring the existing `3-execution/task-{NN}-{slug}` validation pattern. Extend
 `verify-record-map.sh` to diff the Chat slice subtree the same way it diffs the top-level loop
 subtree today. Update `record-map.md` from a one-line parity cross-reference to a full spec section
 once the tooling exists.

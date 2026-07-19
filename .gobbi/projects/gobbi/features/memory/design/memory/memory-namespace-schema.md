@@ -17,6 +17,8 @@ related: []
 
 # Area-namespace schema for gobbi memory
 
+> **v0.5.3 current-contract note:** `preparation` remains below only as a classifier tag for historical records. It does not name a current skill, workflow step, loop, or session directory.
+
 ## Problem
 
 gobbi's memory standard (`rules.md` §1.1 rule 1) defines "directory = category" at one level: the TYPE is the only category facet. Within a type dir every record lands in one flat list. At develop@7ef21bf5: `mistakes/` = 16 files, `backlogs/` = 11, `features/workflow/decisions/` = 19. The root is structural — no sub-type namespace axis was defined, so growth has nowhere to go but a longer flat list. This makes the most-read type (`mistakes/`) increasingly hard to eyeball-scan, and makes the eventual migration of those files more expensive with every record added.

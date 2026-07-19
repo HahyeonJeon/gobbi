@@ -57,11 +57,11 @@ This doc does **not** contain the routing table — [`wrap-up/promotion.md`](../
 
 ## How — sole writer and the access boundary
 
-The **How**, part 2: who may write memory, and when. The invariant: a working loop's RECORD writes **only** to session staging; **Wrap-up is the sole writer** to durable memory. Two documented pre-Wrap-up exceptions exist — `startup`-close promotion (the startup skill writes its user-approved baseline to memory at startup-close, before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted, [`startup/SKILL.md`](../startup/SKILL.md)) and the Preparation `generate-now` skill promotion before Planning ([`preparation/SKILL.md`](../preparation/SKILL.md)).
+The **How**, part 2: who may write memory, and when. The invariant: a working loop's RECORD writes **only** to session staging; **Wrap-up is the sole writer** to durable memory. One documented pre-Wrap-up exception exists: `startup`-close promotion. The startup skill writes its user-approved baseline to memory at startup-close, before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted ([`startup/SKILL.md`](../startup/SKILL.md)). Project-specific skills identified by Planning are authored as the first ordered Execution task, not through RECORD or Wrap-up promotion.
 
 | Who | Writes to |
 |---|---|
-| Working loop (Ideation / Preparation / Planning / Execution) RECORD | session `staging/` **only** — never durable memory |
+| Working loop (Ideation / Planning / Execution) RECORD | session `staging/` **only** — never durable memory |
 | Wrap-up | the **sole writer** to durable memory (`.gobbi/projects/{project-name}/...`) |
 
 This is a summary, not the full matrix. The authoritative per-tier read/write matrices live in [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) (the assistant role's staging surfaces, including the two exception rows) and [`wrap-up/SKILL.md` § Memory Access Matrix](../wrap-up/SKILL.md#memory-access-matrix) (Wrap-up's write privileges). Do not reproduce them here.
@@ -162,7 +162,7 @@ A template's `## Core principles` section states what the `{type}/` doc must cap
 - **MUST stage under the correct type** — the type determines the destination; pick it from [`memory-map.md`](memory-map.md) + [`rules.md` § 3](rules.md#3-structure-rules).
 - **MUST stamp the matching template** — freeform writes are forbidden; see [`templates/`](templates/).
 - **MUST obey the standard** — naming + frontmatter + structure + dev-doc quality per [`rules.md`](rules.md).
-- **MUST NOT write durable memory from a working loop** — staging is the only write surface for Ideation / Preparation / Planning / Execution RECORD; Wrap-up promotes. See [`record/SKILL.md` § Constraints](../record/SKILL.md#constraints).
+- **MUST NOT write durable memory from a working loop** — staging is the only write surface for Ideation / Planning / Execution RECORD; Wrap-up promotes. See [`record/SKILL.md` § Constraints](../record/SKILL.md#constraints).
 - **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. Physical deletion of pre-existing memory is forbidden; the one narrow exception is startup-close rollback removing a file that same promotion just created (uncommitted, preimage-absent) — see [`startup/recording.md`](../startup/recording.md) §9 step 5. See [`wrap-up/SKILL.md` § Rules](../wrap-up/SKILL.md#rules).
 - **MUST NOT improvise a routing destination** — every staging file has a canonical destination in the routing table; an unroutable item returns `NEEDS_CONTEXT`, never an invented home. See [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing).
 

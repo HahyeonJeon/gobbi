@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "mode": "chat",
   "workflow": {
     "ideation": {
@@ -8,13 +8,6 @@
       "propose":  { "mode": "dual" },
       "skip": false,
       "maxIterations": 5
-    },
-    "preparation": {
-      "discuss":  { "mode": "user" },
-      "evaluate": { "mode": "always" },
-      "propose":  { "mode": "dual" },
-      "skip": true,
-      "maxIterations": 0
     },
     "planning": {
       "discuss":  { "mode": "user" },

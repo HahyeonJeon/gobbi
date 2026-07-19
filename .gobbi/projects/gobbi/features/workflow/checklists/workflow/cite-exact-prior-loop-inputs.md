@@ -11,7 +11,7 @@ tags: [planning, verification, docs-sync]
 keywords: [prior-loop-inputs, section-anchor, fresh-executor]
 author: codex
 scenario: enumerate-every-live-policy-site
-item_status: pending
+item_status: implemented
 anchor: novel
 implemented_in: null
 ---
@@ -20,11 +20,13 @@ implemented_in: null
 
 ## What
 
-Name each Ideation and Preparation input with its session path and exact section anchor.
+Name each locked Ideation input and each Planning-readiness source with its session path, source
+identity, and exact section anchor.
 
 ## Why
 
-The iter1 plan described inventories and matrices generically. A fresh executor had to reconstruct their locations.
+The pre-v0.5.3 iter1 plan described Ideation and Preparation inventories generically. A fresh executor
+had to reconstruct their locations. Planning readiness now owns the register and exact source identity.
 
 ## Verification
 

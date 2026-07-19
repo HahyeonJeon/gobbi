@@ -9,10 +9,10 @@ perspective anti-patterns, and Overall (Stage 3) anchors — lives in the siblin
 The concrete yes/no **checks** each scenario references live 1:1 in the sibling `checklist.md`,
 whose heading tree mirrors this file exactly.
 
-The artifact under evaluation is **the Wrap-up loop's `sessions/{date}-{session-id}/5-wrap-up/outputs/`
+The artifact under evaluation is **the Wrap-up loop's `sessions/{date}-{session-id}/4-wrap-up/outputs/`
 files** (the handoff summary and any decomposed artifact) **plus the full set of memory promotions
 Wrap-up made** — the evaluated destination set is DERIVED from the frozen promotion manifest
-(`sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md`), not from a copied directory
+(`sessions/{date}-{session-id}/4-wrap-up/working/promotion-manifest.md`), not from a copied directory
 list: every source-accounting row with a mapped destination and every mutation row (move source +
 destination, archive target, inbound-reference carrier, feature-index update, lifecycle flip, the journal
 row), plus — when the compaction sub-procedure produced a merge manifest — every path that manifest names.
@@ -41,7 +41,7 @@ _Lens (see `evaluation.md`):_ does the wrap-up consolidate **the right session's
 ### WRAP-PROJ-SCENARIO-01 — Right session, every artifact referenced
 **Category:** golden-path
 **Situation:** the handoff summarizes the session that just ran.
-**Good:** the handoff lists every loop that ran (Ideation / Preparation / Planning / Execution) with its final verdict; every artifact the session created across those loops is linked from the wrap-up.
+**Good:** the handoff lists every loop that ran (Ideation / Planning / Execution) with its final verdict; every artifact the session created across those loops is linked from the wrap-up.
 **Bad / failure:** a loop that ran is unlisted, its verdict is missing, or a session artifact is never referenced.
 **Adversarial:** the handoff references the wrong session's work — a linked artifact or a verdict actually belongs to a prior session — so the summary reads complete while describing work this session did not do.
 **Checklist IDs:** `WRAP-PROJ-SCENARIO-01-CHECK-*`
@@ -126,14 +126,14 @@ _Lens (see `evaluation.md`):_ is the **promoted memory** well-structured, routed
 **Checklist IDs:** `WRAP-STRUCT-SCENARIO-07-CHECK-*`
 **Mistake cited:** `mistakes/verification/offered-memory-home-without-verifying-type-schema.md`; `../memory/rules.md` § 1.5
 
-### WRAP-STRUCT-SCENARIO-08 — [S-7] A `skills/` promotion carries an `{area}/` segment
+### WRAP-STRUCT-SCENARIO-08 — [S-7] A skill-owned mistake promotion carries an `{area}/` segment
 **Category:** failure-mode
-**Situation:** a `skills/` destination is promoted or verified — a Preparation-generated `skills/{skill}/SKILL.md`, or a skill-owned trap appended to `skills/{skill}/mistakes.md`.
-**Good:** `skills/` is NOT by-area — the only destination shapes are `skills/{skill}/SKILL.md` and `skills/{skill}/mistakes.md`, with NO `{area}/` segment; a Preparation-generated skill is normally recorded as already-promoted and is recovered only when the Preparation contract permits it; the by-area `{area}/` layout applies only to the project / feature memory types.
+**Situation:** a staged mistake-candidate is user-routed to the skill-owned surface `skills/{skill}/mistakes.md`.
+**Good:** `skills/` is NOT by-area — the promotion destination is exactly `skills/{skill}/mistakes.md`, with NO `{area}/` segment; project-specific `SKILL.md` files are source artifacts created by ordered Execution tasks and never appear in the Wrap-up promotion inventory; the by-area `{area}/` layout applies only to the project / feature memory types.
 **Bad / failure:** a `skills/` destination is rendered as `skills/{area}/{skill}/...` (or otherwise treated as a by-area memory type), inventing an area segment the skill surface does not use.
 **Adversarial:** a generic "every type receives `{area}/`" helper inserts an area into the skill path, and the file still exists at a plausible path that no runtime loads.
 **Checklist IDs:** `WRAP-STRUCT-SCENARIO-08-CHECK-*`
-**Mistake cited:** the non-by-area `skills/` contract in `skills/wrap-up/promotion.md` § Staging → Memory routing; `skills/mistake/SKILL.md` § Memory Access Matrix
+**Mistake cited:** the non-by-area skill-owned-mistake contract in `skills/wrap-up/promotion.md` § Staging → Memory routing; `skills/mistake/SKILL.md` § Memory Access Matrix
 
 ### WRAP-STRUCT-SCENARIO-09 — [S-10] A re-run creates suffixed duplicates
 **Category:** failure-mode
@@ -181,8 +181,8 @@ _Lens (see `evaluation.md`):_ is the **handoff summary itself** readable and sel
 
 ### WRAP-AESTH-SCENARIO-01 — Handoff is self-evident and template-conformant
 **Category:** golden-path
-**Situation:** the handoff at `5-wrap-up/outputs/` is written for a cold reader.
-**Good:** it opens with a one-paragraph summary; all required sections (Summary / Shipped / Deferred / Open / Decisions to respect / Pointers / Promotion summary) are present in the order prior wrap-ups use; date / session-id / branch are stamped at the top; a reader opening only `5-wrap-up/outputs/` understands what the session did.
+**Situation:** the handoff at `4-wrap-up/outputs/` is written for a cold reader.
+**Good:** it opens with a one-paragraph summary; all required sections (Summary / Shipped / Deferred / Open / Decisions to respect / Pointers / Promotion summary) are present in the order prior wrap-ups use; date / session-id / branch are stamped at the top; a reader opening only `4-wrap-up/outputs/` understands what the session did.
 **Bad / failure:** a required section is missing, the order diverges from prior wrap-ups with no reason, or the top lacks the date / session-id / branch stamp.
 **Adversarial:** the handoff looks complete but a required section is silently empty — a heading with no entry, or a "(see above)" pointing at content that does not exist above.
 **Checklist IDs:** `WRAP-AESTH-SCENARIO-01-CHECK-*`
@@ -203,7 +203,7 @@ _Lens (see `evaluation.md`):_ can the **next session** open this wrap-up and **c
 ### WRAP-USAGE-SCENARIO-01 — Next session resumes without re-deriving context
 **Category:** golden-path
 **Situation:** a fresh agent opens the wrap-up at the next session start.
-**Good:** `5-wrap-up/outputs/` plus the promoted memory together carry enough context to resume; nothing assumes the next agent recalls the prior session.
+**Good:** `4-wrap-up/outputs/` plus the promoted memory together carry enough context to resume; nothing assumes the next agent recalls the prior session.
 **Bad / failure:** resuming requires context the wrap-up never captured, or the wrap-up leans on the next agent "remembering".
 **Adversarial:** simulate next-session start with only CLAUDE.md, the project README, and the wrap-up loaded — the wrap-up references a session-scratch note or an in-memory fact outside that set, so a fresh agent following it hits a gap the author never noticed.
 **Checklist IDs:** `WRAP-USAGE-SCENARIO-01-CHECK-*`
@@ -248,7 +248,7 @@ _Lens (see `evaluation.md`):_ does the wrap-up tell **one coherent story**? Does
 ### WRAP-CONS-SCENARIO-03 — Promoted memory syncs with existing memory
 **Category:** failure-mode
 **Situation:** promoted files may update or contradict existing memory, and the handoff carries internal cross-references.
-**Good:** a promoted file that updates or supersedes existing memory carries an explicit `supersedes:` reference; where a new file contradicts an existing one without supersession, the conflict is flagged; internal cross-references in `5-wrap-up/outputs/` ("see Section 3", "per the Ideation working draft") resolve, and forward references match later-section content.
+**Good:** a promoted file that updates or supersedes existing memory carries an explicit `supersedes:` reference; where a new file contradicts an existing one without supersession, the conflict is flagged; internal cross-references in `4-wrap-up/outputs/` ("see Section 3", "per the Ideation working draft") resolve, and forward references match later-section content.
 **Bad / failure:** a promoted file contradicts existing memory with no supersession, or an internal cross-reference dangles.
 **Adversarial:** a promoted file contradicts an existing memory file without a `supersedes:` link, so both read as authoritative and a future session cannot tell which is current.
 **Checklist IDs:** `WRAP-CONS-SCENARIO-03-CHECK-*`
@@ -383,14 +383,14 @@ _Lens (see `evaluation.md`):_ what breaks if the wrap-up is **wrong** — memory
 **Situation:** Wrap-up finishes promotion while the gitignored session record remains the audit trail.
 **Good:** direct filesystem enumeration + per-file hashes prove every prior session path still exists with unchanged source evidence; any authorized non-standard scratch cleanup is narrowly accounted; no session loop directory is deleted; `git status` is NOT used as proof — it is blind to the gitignored session tree and would report it "clean / unchanged" whatever its real contents.
 **Bad / failure:** a session scratch directory is deleted, or a clean `git status` is cited as proof that the gitignored tree is intact.
-**Adversarial:** the complete `sessions/.../4-execution/` directory is removed; `git status` stays clean because the tree is ignored, and a proxy-only check reports PASS.
+**Adversarial:** the complete `sessions/.../3-execution/` directory is removed; `git status` stays clean because the tree is ignored, and a proxy-only check reports PASS.
 **Checklist IDs:** `WRAP-RISK-SCENARIO-11-CHECK-*`
 **Mistake cited:** `mistakes/verification/git-gate-blind-to-gitignored-writes.md`; sibling WRAP-RISK-SCENARIO-01
 
 ### WRAP-RISK-SCENARIO-12 — [S-16] Prior-loop staging bytes change during Stage-1
 **Category:** adversarial
 **Situation:** the Stage-1 compliance scan finds mechanically repairable defects in prior-loop `staging/` files while rendering promotion candidates.
-**Good:** every prior-loop `staging/` file is hashed / stat-recorded BEFORE and AFTER Stage-1 and its path + bytes + timestamps are UNCHANGED; any mechanical repair exists ONLY as a correction overlay under `sessions/{date}-{session-id}/5-wrap-up/working/correction-overlays/` and in the rendered destination candidate — never in the prior-loop source; the manifest records the source hash + normalization delta + rendered candidate; a judgment-required repair escalates via `NEEDS_CONTEXT`.
+**Good:** every prior-loop `staging/` file is hashed / stat-recorded BEFORE and AFTER Stage-1 and its path + bytes + timestamps are UNCHANGED; any mechanical repair exists ONLY as a correction overlay under `sessions/{date}-{session-id}/4-wrap-up/working/correction-overlays/` and in the rendered destination candidate — never in the prior-loop source; the manifest records the source hash + normalization delta + rendered candidate; a judgment-required repair escalates via `NEEDS_CONTEXT`.
 **Bad / failure:** Stage-1 normalizes, renames, appends to, or replaces an authoritative prior-loop staging source in place — mutating the read-only evidence the promotion is verified against.
 **Adversarial:** the validator fixes malformed frontmatter in place and then passes its own second read, erasing the evidence that the source was malformed. (Distinct from S-9, which checks manifest-preflight atomicity; S-16 checks the prior-loop SOURCE bytes are unchanged.)
 **Checklist IDs:** `WRAP-RISK-SCENARIO-12-CHECK-*`

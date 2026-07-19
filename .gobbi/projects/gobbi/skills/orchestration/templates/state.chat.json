@@ -1,10 +1,9 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "mode": null,
   "workflow": {
     "configuration": { "state": "Active",  "verdict": null, "iter": null, "maxIterations": null, "phase": null },
     "ideation":      { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 5,    "phase": null },
-    "preparation":   { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 0,    "phase": null },
     "planning":      { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 1,    "phase": null },
     "execution":     { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },
     "wrap-up":        { "state": "Pending", "verdict": null, "iter": 0,    "maxIterations": 3,    "phase": null },

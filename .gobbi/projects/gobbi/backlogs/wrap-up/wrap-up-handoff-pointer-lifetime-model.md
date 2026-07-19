@@ -18,7 +18,7 @@ author: claude
 
 **Deferred from the 2026-07-16 wrap-up redesign** (design § Design H). The doc-only correction (durable pointers repo-root-relative, not absolute worktree paths; journal is the next-session source) was applied; the full contract redesign is deferred.
 
-**What**: `5-wrap-up/outputs/handoff.md` is session-scoped and dies with the worktree at Stage-5 cleanup; the durable cross-session source is the per-session journal (`notes/{area}/`). E11 = formalize this — one continuation source (the journal), repo-root-relative durable pointers, no competing second handoff. (Note: the USAGE-001 fix this session already moved the handoff DRAFT to `working/handoff-draft.md`, sealed to `outputs/` on PASS — a related lifecycle fix, but not the full E11 pointer model.)
+**What**: `4-wrap-up/outputs/handoff.md` is session-scoped and dies with the worktree at Stage-5 cleanup; the durable cross-session source is the per-session journal (`notes/{area}/`). E11 = formalize this — one continuation source (the journal), repo-root-relative durable pointers, no competing second handoff. (Note: the USAGE-001 fix this session already moved the handoff DRAFT to `working/handoff-draft.md`, sealed to `outputs/` on PASS — a related lifecycle fix, but not the full E11 pointer model.)
 
 **Why deferred**: changes the handoff/journal continuation-source contract.
 

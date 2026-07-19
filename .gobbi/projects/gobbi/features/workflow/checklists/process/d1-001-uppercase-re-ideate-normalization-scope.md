@@ -18,6 +18,10 @@ implemented_in: null
 
 # D1-001 optional uppercase-`RE-IDEATE` normalization must enumerate every surviving site
 
+> **v0.5.3 lifecycle note:** the Preparation paths below are frozen evidence of the original finding.
+> The current contract permits `RE-IDEATE` only as a Planning-readiness routing result, never as an
+> evaluator verdict; no Preparation path may exist.
+
 ## What
 
 The iter1 draft normalized uppercase `RE-IDEATE` only in `preparation/evaluation.md`, reasoning "the
@@ -36,7 +40,7 @@ friction for the FIX-phase executor.
 
 ## Verification
 
-`git grep -ni 'RE-IDEATE' -- .gobbi/projects/gobbi/skills/preparation .gobbi/projects/gobbi/skills/orchestration` → every hit classified (trigger/routing wording kept, or normalized) so no un-enumerated site remains.
+`git grep -ni 'RE-IDEATE' -- .gobbi/projects/gobbi/skills/planning .gobbi/projects/gobbi/skills/orchestration` → every hit is classified as Planning-readiness trigger/routing language, and no hit frames it as an evaluator verdict.
 
 ## Status notes
 

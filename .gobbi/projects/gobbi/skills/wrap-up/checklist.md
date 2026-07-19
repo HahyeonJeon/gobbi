@@ -1,7 +1,7 @@
 # Wrap-up Loop — Evaluation Checklist
 
 > **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the evaluator
-> COPIES this file to `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/checklist.md`.
+> COPIES this file to `sessions/{date}-{session-id}/4-wrap-up/evaluation/iter{n}/{system}/checklist.md`.
 > The filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective files
 > + `overall.md`. The source here ships with every box UNCHECKED.
 >
@@ -30,7 +30,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ## Project
 
 ### WRAP-PROJ-SCENARIO-01 — Right session, every artifact referenced
-- [ ] WRAP-PROJ-SCENARIO-01-CHECK-01 — The handoff lists every loop that ran (Ideation / Preparation / Planning / Execution) with its final verdict.
+- [ ] WRAP-PROJ-SCENARIO-01-CHECK-01 — The handoff lists every loop that ran (Ideation / Planning / Execution) with its final verdict.
 - [ ] WRAP-PROJ-SCENARIO-01-CHECK-02 — Every artifact the session created across those loops is linked from the wrap-up.
 - [ ] WRAP-PROJ-SCENARIO-01-CHECK-03 — Every referenced artifact and verdict belongs to this session, not a prior one.
 
@@ -95,10 +95,10 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] WRAP-STRUCT-SCENARIO-07-CHECK-02 — A no-match area produces `NEEDS_CONTEXT` and a user-decision reference before manifest freeze — no fallback area is silently selected.
 - [ ] WRAP-STRUCT-SCENARIO-07-CHECK-03 — No promoted file lands at a generic, plausible, or newly invented `{area}/` that merely resolves on disk without explicit authorization + schema validation.
 
-### WRAP-STRUCT-SCENARIO-08 — [S-7] A `skills/` promotion carries an `{area}/` segment
-- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-01 — Every `skills/` destination has the exact shape `skills/{skill}/SKILL.md` or `skills/{skill}/mistakes.md`, with NO `{area}/` segment.
+### WRAP-STRUCT-SCENARIO-08 — [S-7] A skill-owned mistake promotion carries an `{area}/` segment
+- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-01 — Every skill-owned mistake destination has the exact shape `skills/{skill}/mistakes.md`, with NO `{area}/` segment.
 - [ ] WRAP-STRUCT-SCENARIO-08-CHECK-02 — The by-area `{area}/` layout is applied only to the project / feature memory types, never to the `skills/` surface.
-- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-03 — A Preparation-generated skill destination is recorded as already-promoted and not written again; a missing one is recovered only when the Preparation contract authorizes recovery.
+- [ ] WRAP-STRUCT-SCENARIO-08-CHECK-03 — Project-specific `SKILL.md` files are absent from the promotion inventory because Planning routes them to ordered Execution tasks.
 
 ### WRAP-STRUCT-SCENARIO-09 — [S-10] A re-run creates suffixed duplicates
 - [ ] WRAP-STRUCT-SCENARIO-09-CHECK-01 — Idempotency is keyed on stable SOURCE identity `{session-id, source-relative-path}` plus the frozen manifest mapping, not on a stripped or re-derived field.
@@ -132,7 +132,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ## Aesthetics
 
 ### WRAP-AESTH-SCENARIO-01 — Handoff is self-evident and template-conformant
-- [ ] WRAP-AESTH-SCENARIO-01-CHECK-01 — `5-wrap-up/outputs/` opens with a one-paragraph summary.
+- [ ] WRAP-AESTH-SCENARIO-01-CHECK-01 — `4-wrap-up/outputs/` opens with a one-paragraph summary.
 - [ ] WRAP-AESTH-SCENARIO-01-CHECK-02 — All required sections (Summary / Shipped / Deferred / Open / Decisions to respect / Pointers / Promotion summary) are present.
 - [ ] WRAP-AESTH-SCENARIO-01-CHECK-03 — Section order matches prior wrap-ups in this project.
 - [ ] WRAP-AESTH-SCENARIO-01-CHECK-04 — Date / session-id / branch are stamped at the top of the handoff.
@@ -148,7 +148,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ## Usage
 
 ### WRAP-USAGE-SCENARIO-01 — Next session resumes without re-deriving context
-- [ ] WRAP-USAGE-SCENARIO-01-CHECK-01 — `5-wrap-up/outputs/` plus the promoted memory together contain enough context to resume the work.
+- [ ] WRAP-USAGE-SCENARIO-01-CHECK-01 — `4-wrap-up/outputs/` plus the promoted memory together contain enough context to resume the work.
 - [ ] WRAP-USAGE-SCENARIO-01-CHECK-02 — The wrap-up makes no silent assumption that the next agent recalls the prior session.
 - [ ] WRAP-USAGE-SCENARIO-01-CHECK-03 — Simulating next-session start (only CLAUDE.md, the project README, and the wrap-up loaded), every referenced item is in that loaded set — anything outside it is flagged as a gap.
 
@@ -180,7 +180,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ### WRAP-CONS-SCENARIO-03 — Promoted memory syncs with existing memory
 - [ ] WRAP-CONS-SCENARIO-03-CHECK-01 — Each promoted file that updates or supersedes existing memory carries an explicit `supersedes:` reference.
 - [ ] WRAP-CONS-SCENARIO-03-CHECK-02 — Where a new file contradicts an existing one without supersession, the conflict is flagged.
-- [ ] WRAP-CONS-SCENARIO-03-CHECK-03 — Internal cross-references in `5-wrap-up/outputs/` resolve.
+- [ ] WRAP-CONS-SCENARIO-03-CHECK-03 — Internal cross-references in `4-wrap-up/outputs/` resolve.
 - [ ] WRAP-CONS-SCENARIO-03-CHECK-04 — Forward references match later-section content.
 
 ### WRAP-CONS-SCENARIO-04 — Corrections and findings reach memory; closure audit complete
@@ -273,5 +273,5 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 ### WRAP-RISK-SCENARIO-12 — [S-16] Prior-loop staging bytes change during Stage-1
 - [ ] WRAP-RISK-SCENARIO-12-CHECK-01 — Every prior-loop `staging/` source has before-and-after path, hash, size, modification-time, and inode evidence for Stage 1.
 - [ ] WRAP-RISK-SCENARIO-12-CHECK-02 — All prior-loop staging paths and bytes are UNCHANGED after compliance validation.
-- [ ] WRAP-RISK-SCENARIO-12-CHECK-03 — Every mechanical repair exists ONLY in `sessions/{date}-{session-id}/5-wrap-up/working/correction-overlays/` and the rendered destination candidate; the manifest records source hash + normalization delta.
+- [ ] WRAP-RISK-SCENARIO-12-CHECK-03 — Every mechanical repair exists ONLY in `sessions/{date}-{session-id}/4-wrap-up/working/correction-overlays/` and the rendered destination candidate; the manifest records source hash + normalization delta.
 - [ ] WRAP-RISK-SCENARIO-12-CHECK-04 — Every judgment-required repair returned `NEEDS_CONTEXT` instead of mutating a source.

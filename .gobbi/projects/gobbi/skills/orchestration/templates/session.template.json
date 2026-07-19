@@ -1,5 +1,5 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "sessionId": null,
   "previousSessionId": null,
   "project": null,
@@ -19,11 +19,10 @@
   },
   "workflow": {
     "configuration": { "startedAt": null, "finishedAt": null },
-    "ideation":      { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
-    "preparation":   { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
-    "planning":      { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
-    "execution":     { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0, "tasks": [] } },
-    "wrap-up":        { "startedAt": null, "finishedAt": null, "iter": 0, "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
+    "ideation":      { "startedAt": null, "finishedAt": null, "iter": 0, "iterations": [], "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
+    "planning":      { "startedAt": null, "finishedAt": null, "iter": 0, "iterations": [], "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
+    "execution":     { "startedAt": null, "finishedAt": null, "iter": 0, "iterations": [], "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0, "tasks": [] } },
+    "wrap-up":        { "startedAt": null, "finishedAt": null, "iter": 0, "iterations": [], "verdict": null, "integration": { "changing_rows": 0, "kept_own_rows": 0, "total_rows": 0, "escalated_rows": 0 } },
     "chat":           { "tasks": [] }
   },
   "agents": [

@@ -2,7 +2,7 @@
 
 > **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the
 > evaluator COPIES this file to
-> `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/checklist.md`. The
+> `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{system}/checklist.md`. The
 > filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective
 > files + `overall.md`. The source here ships with every box UNCHECKED.
 >
@@ -46,6 +46,14 @@ tree below is 1:1 with `scenario.md`.
 - [ ] PLAN-PROJ-SCENARIO-03-CHECK-01 — Each task is scrutinized for adjacent-improvement creep.
 - [ ] PLAN-PROJ-SCENARIO-03-CHECK-02 — A task that improves neighboring work unrelated to the idea is flagged and re-routed to backlog, not included in the plan.
 
+### PLAN-PROJ-SCENARIO-04 — The readiness gate inventories Ideation and routes every upstream omission back
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-01 — `working/readiness-gate-iter{n}.md` inventories every required Ideation output and staging obligation with existence and usability evidence.
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-02 — A clean scan records READY and auto-advances without a confirmation-only user gate.
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-03 — Any missing, vague, contradictory, or unusable upstream artifact records RE-IDEATE and offers only re-Ideation or abort.
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-04 — Re-Ideation preserves the gate evidence, leaves Planning Pending, and does not increment Planning's iteration.
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-05 — Planning is persisted Active with phase DISCUSSION before the first readiness read; RE-IDEATE atomically returns it to Pending as Ideation becomes Revising.
+- [ ] PLAN-PROJ-SCENARIO-04-CHECK-06 — A rerun updates the current-attempt pointer and appends a complete immutable attempt to the same gate artifact without overwriting prior evidence.
+
 ---
 
 ## Structure
@@ -84,6 +92,13 @@ tree below is 1:1 with `scenario.md`.
 - [ ] PLAN-STRUCT-SCENARIO-05-CHECK-05 — Shared build / dependency-manifest lock contention is considered before marking tasks parallel.
 - [ ] PLAN-STRUCT-SCENARIO-05-CHECK-06 — File-touch sets are compared across tasks, and any overlap is sequenced or the tasks are merged.
 - [ ] PLAN-STRUCT-SCENARIO-05-CHECK-07 — No "task N+1 expects task N's edits" hand-off exists without an explicit dependency.
+
+### PLAN-STRUCT-SCENARIO-06 — Required skills are resolved at the correct boundary
+- [ ] PLAN-STRUCT-SCENARIO-06-CHECK-01 — Every required skill is revalidated against its canonical path after the concrete task map exists.
+- [ ] PLAN-STRUCT-SCENARIO-06-CHECK-02 — A genuinely missing workspace/domain skill routes to NEEDS_CONTEXT rather than an invented substitute.
+- [ ] PLAN-STRUCT-SCENARIO-06-CHECK-03 — A missing project-specific skill becomes Task 01 to author, wire, verify, and commit the skill during Execution.
+- [ ] PLAN-STRUCT-SCENARIO-06-CHECK-04 — Every task that consumes a newly created project skill depends explicitly on Task 01.
+- [ ] PLAN-STRUCT-SCENARIO-06-CHECK-05 — Planning does not generate or promote a missing skill itself.
 
 ---
 
@@ -162,6 +177,11 @@ tree below is 1:1 with `scenario.md`.
 - [ ] PLAN-CONS-SCENARIO-03-CHECK-03 — Forward dependencies (a later task influencing an earlier task's setup) are detected and flagged as plan-order bugs.
 - [ ] PLAN-CONS-SCENARIO-03-CHECK-04 — Implicit "we'll add this in task N" assumptions are surfaced.
 
+### PLAN-CONS-SCENARIO-04 — The readiness report, gate evidence, and task map agree
+- [ ] PLAN-CONS-SCENARIO-04-CHECK-01 — The Planning draft contains `## Readiness report` and cites the current gate artifact.
+- [ ] PLAN-CONS-SCENARIO-04-CHECK-02 — Inventory counts, gaps, skill obligations, external-write dispositions, user decisions, and result match the gate artifact.
+- [ ] PLAN-CONS-SCENARIO-04-CHECK-03 — The task map carries every obligation recorded by the gate and does not claim READY over an unresolved blocker.
+
 ---
 
 ## Risk
@@ -195,3 +215,9 @@ tree below is 1:1 with `scenario.md`.
 - [ ] PLAN-RISK-SCENARIO-04-CHECK-06 — Long-running tasks emit intermediate signals, not an all-or-nothing report (Coverage: Observability).
 - [ ] PLAN-RISK-SCENARIO-04-CHECK-07 — Tasks introducing new dependencies are flagged with a `dep-impact:` field (Coverage: Supply-chain).
 - [ ] PLAN-RISK-SCENARIO-04-CHECK-08 — Dependency-manifest / vendor changes are sequenced first so subsequent tasks build on a stable dependency graph (Coverage: Supply-chain).
+
+### PLAN-RISK-SCENARIO-05 — Every external write has actual-writer authority and reversal evidence
+- [ ] PLAN-RISK-SCENARIO-05-CHECK-01 — Every in-scope write outside the worktree names its actual writer/owner and exact surface.
+- [ ] PLAN-RISK-SCENARIO-05-CHECK-02 — Authority/access evidence is read-only and comes from the actual writer's context, not a sandbox proxy.
+- [ ] PLAN-RISK-SCENARIO-05-CHECK-03 — Every external write has a concrete reversal and go/no-go disposition.
+- [ ] PLAN-RISK-SCENARIO-05-CHECK-04 — The readiness clean claim and task map include all dispositioned external writes.
