@@ -1,6 +1,6 @@
 ---
 name: manager-skipped-user-driven-preparation-discussion
-description: Manager auto-dispositioned Preparation gaps without surfacing them to the user; Preparation DISCUSSION is user-driven even in Auto mode.
+description: Manager auto-dispositioned material readiness gaps without surfacing them to the user; Planning's readiness gate requires user decisions for material gaps even in Auto mode.
 type: mistakes
 scope: project
 feature: null
@@ -14,7 +14,7 @@ priority: high
 domain: process
 ---
 
-# Manager Skipped User-Driven Preparation DISCUSSION
+# Manager Skipped User Decisions for Readiness Gaps
 
 ## What happened
 
@@ -24,34 +24,16 @@ The dual-system Codex evaluator held a High/100 finding (`codex-prep-project-001
 
 ## Why it happens
 
-The manager confused two distinct modes:
-
-1. **Auto mode's general auto-decide authority** — in Auto mode, agents auto-decide many non-Always-Ask choices without interrupting the user.
-2. **The per-loop `discuss.mode` setting** — each loop has its own setting controlling whether DISCUSSION is user-driven or agent-driven. `orchestration/auto-mode.md:86` lists the per-loop modes; line 96 and 213 confirm that `workflow.preparation.discuss.mode = "user"`.
-
-**The missed rule:** `auto-mode.md` keeps Preparation and Ideation DISCUSSION as user-driven loops even in Auto mode. Only Planning, Execution, and Wrap-up DISCUSSION are agent-driven. The manager incorrectly assumed that Auto mode's general authority covered Preparation gap-resolution decisions.
+The historical manager confused Auto mode's general auto-decide authority with authority to bind unresolved readiness gaps. In the current v0.5.3 contract, Planning DISCUSSION is agent-driven, but that does not turn material readiness gaps into auto-decisions. The readiness gate may auto-advance only on a clean scan. Material gaps, external-write go/no-go choices, and scope-affecting dispositions remain user decision points under the discussion skill.
 
 ## How to detect
 
-Before auto-deciding any gap, deferred risk, or disposition in any Preparation or Ideation DISCUSSION step, check the loop's `discuss.mode` in `orchestration/auto-mode.md`. The check is:
-
-- `discuss.mode = "user"` → the user MUST confirm; emit a user-decision prompt; do not proceed with manager-auto rationale.
-- `discuss.mode = "agent"` → the manager may auto-decide non-Always-Ask items.
-
-The signal: if you are writing "manager-auto-dispositioned" into a Preparation or Ideation readiness draft, stop. Those two loops' DISCUSSION is user-driven; that framing is always wrong.
+Before auto-deciding a readiness disposition, inspect `2-planning/working/readiness-gate-iter{n}.md`. If the scan contains any material gap, missing authority, external-write go/no-go choice, or change to locked scope, stop and surface the decision to the user. The clean-scan auto-advance rule is not permission to auto-disposition a non-clean scan.
 
 ## Correct approach
 
-In Auto mode, Preparation DISCUSSION (and Ideation DISCUSSION) still runs the user-decision primitive for gap dispositions. The procedure:
-
-1. Complete the readiness inventory (Sub-steps A-D of `preparation/SKILL.md`).
-2. Surface ALL identified gaps to the user with proposed dispositions, citing `preparation/SKILL.md` and the relevant evidence.
-3. Wait for the user to accept or redirect each proposed disposition (via AskUserQuestion or the active runtime's user-decision primitive).
-4. Only after user confirmation: label each disposition USER-LOCKED and cite the confirmation record (`discussion-log.md`).
-5. Proceed to evaluation with genuine user-locked dispositions. Any disposition labeled "manager-auto-dispositioned" will correctly fail `preparation/SKILL.md:115`.
-
-Source: `orchestration/auto-mode.md:86,96,213`.
+Planning starts DISCUSSION by completing the readiness inventory defined in `planning/SKILL.md`. A clean scan records `READY` and auto-advances. For each material gap, the manager presents the evidence and recommended route, waits for the user decision, and records that decision in the readiness artifact. An upstream Ideation omission is never accepted or repaired in Planning; it routes to re-Ideation or abort. Missing workspace/domain context returns `NEEDS_CONTEXT`. Only a user-resolved scan may become `READY`.
 
 ## Related
 
-- [[preparation-skill-automode-carve-out]] — the backlog to add an explicit Auto-mode carve-out citation to `preparation/SKILL.md`
+- [`planning/SKILL.md`](../../skills/planning/SKILL.md) — current readiness entry-gate owner

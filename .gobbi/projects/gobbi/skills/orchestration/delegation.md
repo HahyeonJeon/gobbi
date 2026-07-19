@@ -29,7 +29,7 @@ The manager uses one template per role. Templates live in [`templates/`](templat
 
 | Role | Template | Use when |
 |---|---|---|
-| `leader` | [`templates/leader.md`](templates/leader.md) | Ideation, Preparation, Research, Planning sub-phases. Single leader per dispatch. |
+| `leader` | [`templates/leader.md`](templates/leader.md) | Ideation, Research, and Planning sub-phases. Single leader per dispatch. |
 | `executor` | [`templates/executor.md`](templates/executor.md) | Execution phase. One executor per task by default (a continued executor may span ≤3 shared-subsystem tasks — see [§ Continue vs Fresh](#continue-vs-fresh)); tasks sequence (never parallelize implementation — continuation is sequential, not parallel). |
 | `evaluator` | [`templates/evaluator.md`](templates/evaluator.md) | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex). Each evaluator handles all 7 perspectives + Overall sequentially; per-system isolation provides the anti-groupthink signal. |
 | `assistant` | [`templates/assistant.md`](templates/assistant.md) | Narrow read-only support (lookups, references, codebase exploration). Can parallelize. |
@@ -117,7 +117,7 @@ A subagent does not have to be fresh every time. The manager may **continue** th
 | Role × transition | Decision | Why |
 |---|---|---|
 | **leader** — Ideation Sub-step A→B→C→D→WORK (within one loop, team + session live) | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | The same PI can carry the framed problem in Claude Code; native Codex re-primes from durable artifacts instead. |
-| **leader** — Ideation→Preparation→Planning (across loops) | **Claude Code: CONTINUE best-effort** while team + session stay live; degrades to FRESH after `/compact`/`/clear`/resume. **Codex: FRESH** | Cross-loop continuation is live-session-only and not a Codex readiness assumption. |
+| **leader** — Ideation→Planning (across loops) | **Claude Code: CONTINUE best-effort** while team + session stay live; degrades to FRESH after `/compact`/`/clear`/resume. **Codex: FRESH** | Cross-loop continuation is live-session-only and not a Codex readiness assumption. |
 | **executor** — task NN→NN+1, **shared subsystem**, under the saturation cap | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Avoids re-learning in Claude Code; native Codex uses full re-prime. (F1 predicate below applies only to Claude Code continuation.) |
 | **executor** — task NN→NN+1, **disjoint subsystem OR cap reached** | **FRESH** (default) | Bounds context-rot; the fresh fallback is cheap because state is carried via files. |
 | **assistant** — RECORD across loops, or multi-step exploration | **Claude Code: CONTINUE** where Agent Teams is enabled. **Codex: FRESH** | Claude Code can carry session-synthesis context as a teammate; native Codex uses fresh assistant support with full context. |
@@ -163,7 +163,7 @@ Followed immediately by prose details (summary, findings, verification output, c
 **Example — executor reporting DONE:**
 ```
 STATUS: DONE
-ARTIFACT: sessions/2026-05-20-abc123/4-execution/working/draft-iter1.md
+ARTIFACT: sessions/2026-05-20-abc123/3-execution/working/draft-iter1.md
 SKILLS LOADED:
   - .gobbi/projects/gobbi/skills/principles/SKILL.md
   - .gobbi/projects/gobbi/skills/mistake/SKILL.md
@@ -311,7 +311,7 @@ Every evaluator delegation prompt opens with a `CRITICAL: Do Not Trust the Repor
 
 ## Producer Dispatch (Dual-System Production)
 
-The creation-time analogue of the evaluator Anti-trust Block. **Native Codex WORK dispatches exactly one native producer. Its rendered producer brief contains no proposal, reconciliation, `production_mode`, `claude-only`, `codex-only`, or synthetic-role label.** When Claude Code bridge production runs under `propose.mode: dual`, the manager spawns **two producers in parallel-independent generation**: the **Claude producer** (leader for Ideation / Preparation / Planning, executor for Execution, assistant for Wrap-up) writes the canonical `working/draft-iter{n}.md`, and the **Codex proposer** (the `codex exec` assistant-wrapper from [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md)) writes only its proposal at `working/proposals/codex/draft-iter{n}.md`. Neither sees the other while generating. The manager runs the spawn → freeze → integrate sequence through [`workflow/production.md`](workflow/production.md); this section owns only the **producer delegation brief shape**, not the orchestration and not the Codex prompt-file transport. The Claude-wrapper-to-Codex prompt-file contract lives in [`codex/delegation.md`](../codex/delegation.md).
+The creation-time analogue of the evaluator Anti-trust Block. **Native Codex WORK dispatches exactly one native producer. Its rendered producer brief contains no proposal, reconciliation, `production_mode`, `claude-only`, `codex-only`, or synthetic-role label.** When Claude Code bridge production runs under `propose.mode: dual`, the manager spawns **two producers in parallel-independent generation**: the **Claude producer** (leader for Ideation / Planning, executor for Execution, assistant for Wrap-up) writes the canonical `working/draft-iter{n}.md`, and the **Codex proposer** (the `codex exec` assistant-wrapper from [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md)) writes only its proposal at `working/proposals/codex/draft-iter{n}.md`. Neither sees the other while generating. The manager runs the spawn → freeze → integrate sequence through [`workflow/production.md`](workflow/production.md); this section owns only the **producer delegation brief shape**, not the orchestration and not the Codex prompt-file transport. The Claude-wrapper-to-Codex prompt-file contract lives in [`codex/delegation.md`](../codex/delegation.md).
 
 **Producer-integration brief shape.** Under `propose.mode: dual`, the producer's delegation prompt carries three elements beyond the base template (the per-role templates ship them as a dedicated dual-system block, filled only when the mode is `dual`):
 
@@ -373,19 +373,19 @@ If a specific Claude Code task calls for a model different from the role's defau
 
 ## Agent Roster
 
-Canonical phase list: **`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` § Glossary is the single source of truth**; `AGENTS.md` mirrors it. All agent + skill docs align to Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (Evaluation and RECORD are sub-phases that run inside each loop). Drift from this list — or between the mirror and the source — is a bug.
+Canonical phase list: **`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` § Glossary is the single source of truth**; `AGENTS.md` mirrors it. All agent + skill docs align to Configuration → Ideation → Planning → Execution → Wrap-up (Evaluation and RECORD are sub-phases that run inside each productive loop). Drift from this list — or between the mirror and the source — is a bug.
 
 The manager delegates to these agent types. Each has a distinct role — understanding boundaries prevents misrouting. Definitions live at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime wrappers point back to those canonical prompts: `.claude/agents/{role}.md` for Claude Code, `.codex/agents/{role}.toml` for Codex.
 
 | Agent | Role | When to use | Model | Effort |
 |---|---|---|---|---|
 | `manager` | Session chief — orchestration, user discussion, decision-making | The root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. | Opus | xhigh |
-| `leader` | PI/PM — research, ideation direction, planning decomposition | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. Writes artifacts; never implements code. | Opus | xhigh |
+| `leader` | PI/PM — research, ideation direction, readiness analysis, planning decomposition | Ideation / Research / Planning sub-phases. Single leader per dispatch. Writes artifacts; never implements code. | Opus | xhigh |
 | `executor` | Implementation — code, edits, docs within scope | Execution phase. Reads brief + research, implements within scope boundary, returns one of 4 statuses with verification evidence. | Opus | xhigh |
 | `evaluator` | Adversarial assessor — artifacts + process docs | Evaluation sub-phase (mandatory after Execution; optional after Ideation / Planning). Spawn exactly 2 in parallel — one per system (Claude + Codex). Each handles all 7 perspectives + Overall sequentially; cross-system divergence is the anti-groupthink signal. | Opus | xhigh |
 | `assistant` | Lightweight support — references, lookups, codebase exploration | Narrow factual / read-only support; can parallelize. Read-only tool surface. | Sonnet | xhigh |
 
-> **The workflow todo list is manager-owned.** The 6-step harness spine ([`orchestration/workflow/status-display.md` § Harness Todo List](workflow/status-display.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
+> **The workflow todo list is manager-owned.** The 5-step harness spine ([`orchestration/workflow/status-display.md` § Harness Todo List](workflow/status-display.md#harness-todo-list)) is created and updated only by the manager; no `leader` / `executor` / `assistant` / `evaluator` subagent creates or updates it.
 
 ---
 

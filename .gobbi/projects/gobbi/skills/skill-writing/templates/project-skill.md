@@ -1,12 +1,12 @@
 # `project-skill.md`
 
-Template stamped when Preparation's `generate-now` flow approves a project-specific skill. The stamped file lives at `.gobbi/projects/{project-name}/skills/{skill-name}/SKILL.md` and is loaded by downstream workflows when they touch the area the skill covers.
+Template used by the first ordered Execution task when Planning's readiness gate identifies a missing project-specific skill. The completed file lives at `.gobbi/projects/{project-name}/skills/{skill-name}/SKILL.md` and is loaded by dependent tasks when they touch the area the skill covers.
 
 This template is owned by the `skill-writing` skill: a skill stamped from it conforms to `skill-writing`'s six-section standard — Frontmatter → Intro → Principles → Rules → Procedure → References.
 
 ## When to stamp
 
-During Preparation's execution-skills readiness check, the manager uses the active runtime's user-decision primitive to offer skill-codification candidates (e.g., `{project-name}-typescript-conventions`, `{project-name}-testing`, `{project-name}-mistakes`). On a `generate-now` decision the manager stamps this template into staging — always a **complete** file, never a skeleton with TODOs.
+During Planning's readiness entry gate and concrete task-map revalidation, the manager identifies project-specific skill gaps (for example, `{project-name}-typescript-conventions`, `{project-name}-testing`, or `{project-name}-mistakes`). The plan makes skill authoring, wiring, conformance verification, and commit the first Execution task before any dependent task. That executor uses this template to author a **complete** skill, never a skeleton with TODOs and never a RECORD staging artifact.
 
 ## Location
 

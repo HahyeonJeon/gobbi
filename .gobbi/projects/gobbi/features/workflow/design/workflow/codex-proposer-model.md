@@ -23,7 +23,7 @@ Gobbi's dual-system anti-groupthink discipline applies only at EVALUATION (revie
 
 ## Scope
 
-**In-scope:** Extend Codex from evaluation-only to an independent proposer at all 5 productive WORK sub-phases (Ideation, Preparation, Planning, Execution, Wrap-up). Feature: `workflow`.
+**In-scope:** Extend Codex from evaluation-only to an independent proposer at all 4 productive WORK sub-phases (Ideation, Planning, Execution, Wrap-up). Planning's readiness gate is evidence gathering inside DISCUSSION, so it does not run a separate proposer. Feature: `workflow`.
 
 **Out-of-scope:** Native-Codex-runtime symmetry (deferred, project backlog `native-codex-proposer-symmetry`). No change to the existing dual-system EVALUATION mechanism.
 
@@ -49,18 +49,17 @@ Three structural facts preserve independence: (1) the Codex proposer and Codex e
 | Step | Producer | Proposal path | Integration character |
 |---|---|---|---|
 | Ideation | leader | `1-ideation/working/proposals/codex/draft-iter{n}.md` | fork-prone; large gaps common |
-| Preparation | leader | `2-preparation/working/proposals/codex/draft-iter{n}.md` | additive; small gaps common |
-| Planning | leader | `3-planning/working/proposals/codex/draft-iter{n}.md` | fork-prone |
-| Execution | executor | `4-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` | per-task; default-ON |
-| Wrap-up | assistant | `5-wrap-up/working/proposals/codex/draft-iter{n}.md` | Always-Ask-adjacent |
+| Planning | leader | `2-planning/working/proposals/codex/draft-iter{n}.md` | fork-prone |
+| Execution | executor | `3-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` | per-task; default-ON |
+| Wrap-up | assistant | `4-wrap-up/working/proposals/codex/draft-iter{n}.md` | Always-Ask-adjacent |
 
 ### D6 — Configuration, cost control, and degraded-mode label
-Per-step `workflow.{loop}.propose.mode: "dual" | "single"` + global master switch, stored in `settings.auto.json` + `settings.chat.json` (echoed to `state.template.json` / `session.template.json`). Default-ON ("dual") for all five steps; per-step toggleable. Cost magnitude: ~1 extra `codex exec` per enabled WORK sub-phase per iteration (Execution multiplies by task count). Single round only; `timeout ≥ 1200s`; structural output validation (not vocab-grep).
+Per-step `workflow.{loop}.propose.mode: "dual" | "single"`, stored in `settings.auto.json` + `settings.chat.json`. Default-ON (`dual`) for all four productive loops; per-loop toggleable. Cost magnitude: ~1 extra `codex exec` per enabled WORK sub-phase per iteration (Execution multiplies by task count). Single round only; `timeout ≥ 1200s`; structural output validation (not vocab-grep).
 
 **Degraded-mode label contract:** on empty/timeout, Codex wrapper reports BLOCKED; producer proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact frontmatter. RECORD preserves this into the loop `outputs/` frontmatter. A missing Codex *proposer* is NOT a safety-gate stop (contrast: a missing Codex *evaluator* IS a safety gate).
 
 ### D7 — Doc CRUD plan (summary)
-32 files across: `codex/SKILL.md` (new §); `orchestration/workflow/production.md` (new); 5 per-step `orchestration/workflow/{loop}.md`; 5 loop skills; `orchestration/SKILL.md`; `auto-mode.md`; `chat-mode.md`; Gobbi dispatch owner `orchestration/delegation.md` + 4 orchestration templates; generic `delegation/SKILL.md`; `evaluation/SKILL.md` (independence note only); 4 agent docs; `.claude/CLAUDE.md`; `gobbi/SKILL.md`; 2 settings templates; 2 state templates; `scaffold-session-dir.sh` + `record-map.md`. Drift-gated pair: `verify-record-map.sh --check` + `check-markdown-links.sh` + `check-residual-vocab.sh` green after edits.
+Current surfaces span: `codex/SKILL.md`; `orchestration/workflow/production.md`; 4 per-step `orchestration/workflow/{loop}.md` docs; 4 loop skills; `orchestration/SKILL.md`; `auto-mode.md`; `chat-mode.md`; Gobbi dispatch owner `orchestration/delegation.md` + 4 orchestration templates; generic `delegation/SKILL.md`; `evaluation/SKILL.md` (independence note only); agent docs; `.claude/CLAUDE.md`; `gobbi/SKILL.md`; settings/state/session templates; `scaffold-session-dir.sh`; and `record-map.md`. The record-map, link, and retired-vocabulary guards must remain green after edits.
 
 ### D8 — Integration is SELECT-not-SYNTHESIZE
 Integration is a **SELECTION** — fold in the principle-better element; keep own where stronger. Never naive-blend; never a third aggregator agent. The producer is the default selector; the manager adjudicates only large gaps. Selector quality is audited via the Integration Log's per-delta principle citation (D2). Evidence anchor: arXiv 2603.20324 (Selection Bottleneck) + internal precedent `orchestration/workflow/evaluation.md` § Aggregation rule ("never average").
@@ -71,7 +70,7 @@ Derived from `mistakes/verification/freeze-producer-artifact-before-evaluating.m
 2. **Integration:** producer selectively integrates (D2).
 3. **POST-INTEGRATION:** canonical artifact frozen before EVALUATION evaluators spawn.
 
-Documented in `orchestration/workflow/production.md` + each of the 5 loop skills' WORK phases.
+Documented in `orchestration/workflow/production.md` + each of the 4 productive loop skills' WORK phases.
 
 ## Scenarios
 

@@ -11,7 +11,7 @@ tags: [planning, verification]
 keywords: [verification-matrix, frozen-snapshot, ssot, docs-sync]
 author: codex
 scenario: enumerate-every-live-policy-site
-item_status: pending
+item_status: implemented
 anchor: novel
 implemented_in: null
 ---
@@ -25,8 +25,9 @@ handoff, it must label the copy as a frozen snapshot and identify the briefing a
 
 ## Why
 
-The Preparation draft repeated the verification list without an ownership label. A later edit to
-either copy could create a silent cross-artifact drift.
+The pre-v0.5.3 Preparation draft repeated the verification list without an ownership label. A later
+edit to either copy could create a silent cross-artifact drift. Planning readiness now records each
+attempt in the stable readiness report and identifies its source authority.
 
 ## Verification
 
@@ -36,8 +37,8 @@ explicitly frozen and is not presented as an independently editable specificatio
 
 ## Status notes
 
-Open Medium/50 Planning input from Claude `F-STRUCT-1` and `F-CONS-1`. It does not block
-Preparation PASS.
+Implemented by the v0.5.3 Planning readiness report's source-identity and append-only attempt
+contract. A failure blocks readiness routing; there is no Preparation PASS state.
 
 ## Related
 

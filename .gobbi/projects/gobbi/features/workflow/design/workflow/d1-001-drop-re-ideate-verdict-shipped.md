@@ -1,6 +1,6 @@
 ---
 name: d1-001-drop-re-ideate-verdict-shipped
-description: RE-IDEATE collapsed to a Preparation DISCUSSION user decision, not a verdict, as shipped
+description: RE-IDEATE is a Planning readiness result and user routing decision, never an evaluator verdict
 type: design
 scope: feature
 feature: workflow
@@ -8,7 +8,7 @@ status: active
 created: 2026-07-03
 session: bf4dc336-65bd-4a52-9055-d79fc82b7e2e
 tags: [design, process]
-keywords: [GEN-D1-001, RE-IDEATE, verdict-aggregation, discussion-model, preparation]
+keywords: [GEN-D1-001, RE-IDEATE, verdict-aggregation, discussion-model, planning-readiness]
 author: claude
 supersedes: d1-001-drop-re-ideate-verdict
 superseded_by: null
@@ -16,6 +16,8 @@ related: []
 ---
 
 # Drop the non-representable RE-IDEATE verdict (as shipped)
+
+> **v0.5.3 current-contract note:** `RE-IDEATE` is now a result of Planning's readiness entry gate inside DISCUSSION. It offers only re-enter Ideation or abort, never enters evaluator verdict aggregation, preserves readiness evidence, and does not increment the Planning iteration. Preparation-specific paths below describe the pre-v0.5.3 implementation that established the no-fourth-verdict rule.
 
 ## Problem
 

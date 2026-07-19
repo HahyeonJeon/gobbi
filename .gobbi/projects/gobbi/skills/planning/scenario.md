@@ -10,8 +10,9 @@ sibling `evaluation.md`. The concrete yes/no **checks** each scenario references
 the sibling `checklist.md`, whose heading tree mirrors this file exactly.
 
 The artifact under evaluation is **the Planning working draft**
-(`sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`): the locked Scope Contract
-inherited from Ideation, the ordered task list, per-task scope + `inputs:` + `outputs:` +
+(`sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md`) plus its cited
+`working/readiness-gate-iter{n}.md`: the locked Scope Contract inherited from Ideation,
+the readiness evidence, the ordered task list, per-task scope + `inputs:` + `outputs:` +
 `verifies:`, the dependency graph, and the agent-type assignment per task. A plan is **judged
 against the idea it implements** — the Ideation working draft is required input. Planning is a
 **process loop** — the artifact is a plan, not code — so every family below judges **plan
@@ -51,6 +52,14 @@ _Lens (see `evaluation.md`):_ does the plan implement the **right idea**, the wh
 **Bad / failure:** a task bundles an unrelated cleanup with in-scope work.
 **Adversarial:** a "while we're here" task that improves adjacent, unrelated work slips into the plan as if it were part of the idea.
 **Checklist IDs:** `PLAN-PROJ-SCENARIO-03-CHECK-*`
+
+### PLAN-PROJ-SCENARIO-04 — The readiness gate inventories Ideation and routes every upstream omission back
+**Category:** failure-mode
+**Situation:** Planning is entered with locked Ideation outputs and staging that may be incomplete or unusable.
+**Good:** Planning is persisted Active/DISCUSSION before the gate; the readiness artifact inventories every required Ideation output and staging obligation with evidence; a clean inventory records READY and auto-advances, while any omission records RE-IDEATE and offers only re-Ideation or abort without incrementing Planning. Each rerun appends an immutable attempt and advances the current-attempt pointer.
+**Bad / failure:** Planning stays Pending during its own gate, repairs or accepts a missing upstream artifact, or overwrites the attempt that triggered re-Ideation.
+**Adversarial:** all Ideation output files exist, but a required staging record is absent; the plan calls the scan clean because it checked only `outputs/`, then overwrites the failed gate when Ideation returns.
+**Checklist IDs:** `PLAN-PROJ-SCENARIO-04-CHECK-*`
 
 ---
 
@@ -96,6 +105,14 @@ _Lens (see `evaluation.md`):_ is the **task decomposition** sound? Are dependenc
 **Bad / failure:** two parallel-marked tasks contend on a shared resource the plan did not check.
 **Adversarial:** two tasks silently modify the same file with conflicting intent — the file-touch sets were never compared, so an overlap runs in parallel with no sequencing or dependency.
 **Checklist IDs:** `PLAN-STRUCT-SCENARIO-05-CHECK-*`
+
+### PLAN-STRUCT-SCENARIO-06 — Required skills are resolved at the correct boundary
+**Category:** failure-mode
+**Situation:** the concrete task map depends on workspace, domain, or project-specific skills.
+**Good:** each skill is checked at its canonical path; a missing workspace/domain skill returns NEEDS_CONTEXT, while a missing project-specific skill becomes Task 01 to author, wire, verify, and commit it before every dependent task.
+**Bad / failure:** Planning generates the skill itself, or dependent Execution tasks can run before the missing project skill exists.
+**Adversarial:** the entry scan sees a plausible skill name but no file; the plan lists it in later Load Directives without a foundation task or dependency edge.
+**Checklist IDs:** `PLAN-STRUCT-SCENARIO-06-CHECK-*`
 
 ---
 
@@ -197,6 +214,14 @@ _Lens (see `evaluation.md`):_ do task hand-offs match, do task fields mutually a
 **Adversarial:** a task implicitly relies on a shape introduced by a later task — a forward dependency — which is a plan-order bug the ordering hides.
 **Checklist IDs:** `PLAN-CONS-SCENARIO-03-CHECK-*`
 
+### PLAN-CONS-SCENARIO-04 — The readiness report, gate evidence, and task map agree
+**Category:** golden-path
+**Situation:** the Planning draft summarizes entry-gate findings that also constrain task assignments.
+**Good:** `## Readiness report` cites the current gate artifact; its inventory, skill obligations, external-write dispositions, user decisions, and READY result match the detailed evidence and the concrete task map.
+**Bad / failure:** the summary claims READY while the evidence records an unresolved gap, or the task map drops a recorded skill/external-write obligation.
+**Adversarial:** the gate correctly records a missing project skill, but Task 01 is ordinary implementation work and no task creates the skill.
+**Checklist IDs:** `PLAN-CONS-SCENARIO-04-CHECK-*`
+
 ---
 
 ## Risk
@@ -233,3 +258,11 @@ _Lens (see `evaluation.md`):_ what breaks if **the plan itself** is wrong? Order
 **Bad / failure:** a paid-service task has no cost ceiling, or a PII-touching task is unlabeled.
 **Adversarial:** twenty tasks each run a paid evaluation during verification with no per-task or plan-total cost ceiling, so cost multiplies twenty-fold on a path no single task flagged.
 **Checklist IDs:** `PLAN-RISK-SCENARIO-04-CHECK-*`
+
+### PLAN-RISK-SCENARIO-05 — Every external write has actual-writer authority and reversal evidence
+**Category:** failure-mode
+**Situation:** one or more in-scope tasks write outside the worktree or PR surface.
+**Good:** both the readiness gate and concrete task map name the actual writer/owner, exact surface, read-only authority/access evidence from that writer's real context, reversibility, and go/no-go for every external write.
+**Bad / failure:** a clean claim covers only repo-local readiness, or a task relies on an unverified external write.
+**Adversarial:** a sandboxed evaluator's `test -w` fails for a home file and is treated as authoritative even though the sandbox is not the eventual writer.
+**Checklist IDs:** `PLAN-RISK-SCENARIO-05-CHECK-*`

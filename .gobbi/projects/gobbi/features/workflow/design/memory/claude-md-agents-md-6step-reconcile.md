@@ -17,6 +17,8 @@ related: [vocabulary-rename-record-memory-split, wrap-up-5-stage-pipeline]
 
 # CLAUDE.md + AGENTS.md top-block reconcile to 6-step machine (D-f)
 
+> **Superseded 2026-07-19:** v0.5.3 replaced this six-step target with Configuration → Ideation → Planning → Execution → Wrap-up. Preparation-specific instructions below are historical evidence and must not be applied to current entry documents.
+
 ## Problem
 `.claude/CLAUDE.md:9-21` describes a 5-step "Ideation → Planning → Execution → Memorization → Handoff" pipeline. This predates the 6-step machine (Configuration + Ideation + Preparation + Planning + Execution + Wrap-up). "Memorization" and "Handoff" appear as separate final steps instead of as stages inside the Wrap-up pipeline. CLAUDE.md is the most-read entry document and currently the most stale.
 

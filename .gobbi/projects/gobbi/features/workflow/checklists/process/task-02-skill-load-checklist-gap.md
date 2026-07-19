@@ -18,6 +18,9 @@ implemented_in: null
 
 # Task 02 skill-load checklist gap
 
+> **v0.5.3 lifecycle note:** the `4-execution/` links below identify the originating historical
+> session. Current Execution evidence uses `3-execution/`; the generic load-audit requirement remains.
+
 ## What
 
 Task 02's executor report should include the exact `SKILLS LOADED` checklist when the work draft asserts that mandatory load-directive files were read. The checklist should list every loaded path in order, matching the delegation contract.

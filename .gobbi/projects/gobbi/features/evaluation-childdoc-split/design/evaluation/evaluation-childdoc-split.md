@@ -17,11 +17,11 @@ related: [eval-childdoc-cotouch-inventory]
 
 ## Problem
 
-Each of the 5 workflow-loop skills (`ideation`, `preparation`, `planning`, `execution`, `wrap-up`) carries one `evaluation.md` that conflates three distinct reader jobs: the evaluation procedure, the per-perspective situation-discrimination (what does GOOD vs BAD vs ADVERSARIAL look like), and the per-check pass/fail bookkeeping. The checklist coverage a per-run evaluator produces is never captured as a durable, citable artifact — it exists only implicitly inside prose. Split the file into three, and make checklist coverage a real 9th output file per run.
+Each of the 4 current workflow-loop skills (`ideation`, `planning`, `execution`, `wrap-up`) carries three sibling evaluation files for distinct reader jobs: the evaluation procedure, the per-perspective situation-discrimination, and per-check pass/fail bookkeeping. The filled checklist is a durable, citable 9th output file per run. The former Preparation bundle was retired in v0.5.3; readiness coverage now belongs to Planning's entry gate and Planning's evaluation bundle.
 
 ## Scope
 
-**In-scope**: the 5 loop skills' `evaluation.md` → `evaluation.md` + `scenario.md` + `checklist.md`; the Point-2 copy-then-tick 9th output (`evaluation/iter{n}/{system}/checklist.md`); `evaluation/SKILL.md` full repoint; `skill-writing/SKILL.md` 3-file bundle standard; every co-touch surface matching the eval-output-shape class predicate below.
+**In-scope**: the 4 current loop skills' `evaluation.md` + `scenario.md` + `checklist.md` bundles; the Point-2 copy-then-tick 9th output (`evaluation/iter{n}/{system}/checklist.md`); `evaluation/SKILL.md` routing; `skill-writing/SKILL.md`'s 3-file bundle standard; every co-touch surface matching the eval-output-shape class predicate below.
 **Out-of-scope**: `coding/evaluation.md` + `coding/review.md` (follow-up, OQ-6); `orchestration/workflow/evaluation.md` is updated in place, not split; child-doc frontmatter normalization; recorded mistake docs (frozen, supersede-only); the 7-perspective vocabulary, finding schema, verdict thresholds, 2-agent evaluation topology.
 
 ## Approach
@@ -31,7 +31,7 @@ Each of the 5 workflow-loop skills (`ideation`, `preparation`, `planning`, `exec
 - **Bold `### {ID} — {title}` scenario blocks** (Category / Situation / Good / Bad-failure / Adversarial / Checklist IDs) → `scenario.md`.
 - **Bullet `- [ ] {CHECK-ID} — {condition}` check items** (no suffix — a plain condition, no restated scenario text) → `checklist.md`.
 - **Procedure text, verifications, anti-patterns, `## Overall`** stay in `evaluation.md`.
-- Each `evaluation.md`'s `## Output reminder` gains a 9th line: the 5 loop `evaluation.md` files' "seven per-perspective files + one overall file" reminders each become "+ the filled `checklist.md`".
+- Each current loop `evaluation.md` has a 9th output-reminder line for the filled `checklist.md`, in addition to seven per-perspective files and one overall file.
 - **Authoring reality**: not a mechanical relocation. Roughly 35 net-new authored BAD/Adversarial blocks are required under the no-filler bar (`evaluation/SKILL.md:252`) — the current files carry no adversarial framing per scenario.
 
 ### D2 — `evaluation.md` skeleton (post-split)
@@ -42,7 +42,7 @@ Intro → per-perspective **Lens** (a one-line pointer: "see `scenario.md`/`chec
 
 Organized by the 7 perspectives, aligned 1:1 with `checklist.md` by identical heading tree.
 
-**Scenario ID convention**: `{STEP}-{PERSPECTIVE}-SCENARIO-{NN}` — full words, not terse forms (e.g. `EXE-PROJ-SCENARIO-01`, not `EXECUTION-PROJECT-01` or `EXE-PROJ-01`). `STEP ∈ {IDEA, PREP, PLAN, EXE, WRAP}`; `PERSPECTIVE ∈ {PROJ, STRUCT, PERF, AESTH, USAGE, CONS, RISK}`.
+**Scenario ID convention**: `{STEP}-{PERSPECTIVE}-SCENARIO-{NN}` — full words, not terse forms (e.g. `EXE-PROJ-SCENARIO-01`, not `EXECUTION-PROJECT-01` or `EXE-PROJ-01`). `STEP ∈ {IDEA, PLAN, EXE, WRAP}`; `PERSPECTIVE ∈ {PROJ, STRUCT, PERF, AESTH, USAGE, CONS, RISK}`.
 
 **Family block shape**: `### {ID} — {title}` + `**Category:**` + `**Situation:**` + `**Good:**` + `**Bad / failure:**` + `**Adversarial:**` + `**Checklist IDs:**`. One family per distinct post-step contract — not multiple loosely-related scenarios per perspective.
 
@@ -51,8 +51,7 @@ Organized by the 7 perspectives, aligned 1:1 with `checklist.md` by identical he
 | Step | Job | GOOD | BAD / adversarial |
 |---|---|---|---|
 | Ideation | Get the IDEA right | Root cause; sharp enumerated scope; research-backed | Symptom framing; adv: adjacent feature silently absorbs the idea |
-| Preparation | Prove READINESS | Every gap found + resolved/deferred; counts match | Invented gap; adv: "while we're here" skill stamp |
-| Planning | DECOMPOSE | Every task traces; every item covered; deps ordered | Orphan task; adv: "while we're here" task |
+| Planning | Prove READINESS, then DECOMPOSE | Every gate item evidenced; every task traces; every item covered; deps ordered | Upstream gap silently repaired; orphan task; adv: "while we're here" task |
 | Execution | IMPLEMENT | Change-set matches task 1:1; `verifies:` run; scoped | Partial-complete; adv: tidy abstraction hides a cycle |
 | Wrap-up | CONSOLIDATE | Every shipped artifact referenced; promotions valid; handoff matches `git log` | Phantom completion; adv: a promoted file makes old memory wrong and both stay active |
 
@@ -82,7 +81,7 @@ Full field-by-field design is at [`../../checklists/evaluation/eval-childdoc-che
 
 - **Family-9** — a surface that AUTHORITATIVELY enumerates or validates the eval-output directory `evaluation/iter{n}/{system}/…` as a structure: a tree, a table row/cell, a path/file list, an exact-N dir count/validation (`ls .../{system}/ | wc -l # must be 8`), a fully-expanded per-file tree (an `overall.md` node inside an `evaluation/iter…` tree block), or a DONE-contract phrasing ("one file per perspective + `overall.md`"). → must include the filled `checklist.md` (8 → 9).
 - **Family-8** — a finding-file COUNT: `orchestration/workflow/record.md:209`'s "Σ systems × 8" counts the finding-BEARING per-perspective files RECORD reads at Step-6 to enumerate findings. `checklist.md` is a coverage artifact RECORD does not read for findings, so it correctly stays out of this count and stays 8.
-- **`verified-leave`** — a surface that names an eval path as a single representative token (e.g. `record/SKILL.md:167`'s quartet-slot illustration, which already elides `overall.md`), a naming-vocabulary rule (bare 7-perspective names + `overall.md`), a single-file existence check, or a verdict/topology count. Every `verified-leave` MUST carry a checkable reason — the gate spot-checks it, and a `verified-leave` on a surface that actually satisfies the Family-9 predicate FAILS the gate. This closes the gap the iter4 presence-only gate left: proving presence (every hit classified) is not the same as proving correctness (classified correctly). The `preparation.md` misclassification (iter4→5) is the concrete instance this check catches.
+- **`verified-leave`** — a surface that names an eval path as a single representative token (e.g. `record/SKILL.md:167`'s quartet-slot illustration, which already elides `overall.md`), a naming-vocabulary rule (bare 7-perspective names + `overall.md`), a single-file existence check, or a verdict/topology count. Every `verified-leave` MUST carry a checkable reason — the gate spot-checks it, and a `verified-leave` on a surface that actually satisfies the Family-9 predicate FAILS the gate. This closes the gap the iter4 presence-only gate left: proving presence (every hit classified) is not the same as proving correctness (classified correctly). The historical pre-v0.5.3 `preparation.md` misclassification (iter4→5) is the concrete instance that established this check.
 
 ### The `D5 ⊇ genuine-hits` gate — the three checks
 
@@ -92,11 +91,11 @@ Full field-by-field design is at [`../../checklists/evaluation/eval-childdoc-che
 
 ### The co-touch inventory + sweep pattern families
 
-The full classified co-touch inventory (13 files, ~46 update sub-lines, organized into sections A–L by surface kind) is a reference: [`../../references/evaluation/eval-childdoc-cotouch-inventory.md`](../../references/evaluation/eval-childdoc-cotouch-inventory.md). The D6 sweep that certifies it is shape-aware, not wording-only, and covers these pattern families: output-SHAPE tokens (`{perspective}.md`, `overall.md`, "one (file )?per system", "per-perspective files"); N-file tokens ("8 (well-formed )?files", "exactly [a-z ]*8 files"); exact-N dir validation (`wc -l` / `must be [0-9]` in an `evaluation/iter` context); fully-expanded per-file trees (an `overall.md` node inside an `evaluation/iter…` tree block); DONE-contract phrasing ("one (output )?file per perspective" / "per perspective \+ overall"). Scope: `skills/` + `agents/` + `delegation/` + the SSOT/map docs + the 5 per-loop workflow eval-output trees.
+The full classified co-touch inventory (13 files, ~46 update sub-lines, organized into sections A–L by surface kind) is a reference: [`../../references/evaluation/eval-childdoc-cotouch-inventory.md`](../../references/evaluation/eval-childdoc-cotouch-inventory.md). The D6 sweep that certifies it is shape-aware, not wording-only, and covers these pattern families: output-SHAPE tokens (`{perspective}.md`, `overall.md`, "one (file )?per system", "per-perspective files"); N-file tokens ("8 (well-formed )?files", "exactly [a-z ]*8 files"); exact-N dir validation (`wc -l` / `must be [0-9]` in an `evaluation/iter` context); fully-expanded per-file trees (an `overall.md` node inside an `evaluation/iter…` tree block); DONE-contract phrasing ("one (output )?file per perspective" / "per perspective \+ overall"). Current scope: `skills/` + `agents/` + `delegation/` + the SSOT/map docs + the 4 productive-loop workflow eval-output trees.
 
 ### Rollout
 
-Prototype `execution/` first (the split + the generic Point-3/Point-4 edits). The other four loop bundles follow. The parent-contract flip — `evaluation/SKILL.md` requiring all 3 files + failing closed on a missing one, `orchestration/workflow/evaluation.md:309`'s mechanical gate going 8→9, and every Family-9 `checklist.md` addition across the co-touch set — lands **atomically last**, once all 5 bundles exist. A mid-rollout committed state that required 3 files while 4 loops still had 1 would break every other evaluator at Stage 0; this is why the flip is a single atomic step, not incremental. `check-eval-childdocs.sh` (the gate itself) is sequenced as an EARLY Planning/Execution task, ahead of the rollout — it generates and certifies the complete D5 rather than the design relying on hand-listing, which is the interim proxy only until the guard exists.
+The original rollout prototyped `execution/` first, then added the other pre-v0.5.3 bundles before the parent-contract flip. The current contract keeps the same fail-closed three-file requirement and Family-9 coverage across the four surviving productive-loop bundles. Preparation's retired bundle is not a required input.
 
 ## Scenarios
 

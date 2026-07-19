@@ -2,12 +2,21 @@
 type: mistakes
 skill: planning
 description: "Recorded traps for planning — load before doing planning work"
-updated: 2026-06-27
+updated: 2026-07-19
 ---
 
 # Planning — Mistakes
 
 > Load before any planning work. Each `## ` section is one active trap; `## Archived` holds superseded ones.
+
+## Readiness Scan Must Disposition Out of Worktree Writes
+
+`priority: high` · `domain: process` · `added: 2026-06-24` · `status: active` · `tags: [process]`
+
+**What happened** — A readiness gate issued a "0 blocking gaps" claim for a campaign whose plan included trimming a home-directory file outside the worktree and PR. The scan covered only repo-local signals and named no writer, access evidence, or reversal. A worktree-sandboxed evaluator then reported the home file as not writable, but that proxy result did not represent the actual writer's access.
+**Why it happens** — A repo-only readiness scan misses in-scope writes to home directories and external services. Those surfaces have separate ownership, authority, and reversibility. Sandbox access checks can also produce false negatives when the evaluator is not the eventual writer.
+**How to detect** — The locked scope or concrete task map includes a write outside the worktree or PR, while the readiness report's clean claim does not name the actual writer, exact surface, authority/access evidence, reversibility, and go/no-go disposition.
+**Correct approach** — Every external write gets an explicit disposition: actual writer/owner, exact surface, read-only authority/access evidence gathered from that writer's real context, reversibility, and go/no-go. Scope a clean claim to repo-local work plus fully dispositioned external writes. Treat a sandbox proxy's writability result as evidence about that sandbox only; confirm authority from the actual writer before classifying the task.
 
 ## Plan Verification As Contract Not Must Pass Now Shell
 

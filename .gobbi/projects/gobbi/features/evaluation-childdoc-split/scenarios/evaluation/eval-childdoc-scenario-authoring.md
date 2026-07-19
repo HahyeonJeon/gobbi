@@ -1,6 +1,6 @@
 ---
 name: eval-childdoc-scenario-authoring
-description: Authoring scenario.md across the 5 loop skills — per-perspective Good/Bad/Adversarial framing, worked examples, stable-ID scheme
+description: Authoring scenario.md across the 4 current loop skills — per-perspective Good/Bad/Adversarial framing, worked examples, stable-ID scheme
 type: scenarios
 scope: feature
 feature: evaluation-childdoc-split
@@ -15,16 +15,16 @@ author: claude
 # Author `scenario.md` per loop skill
 
 **Category:** golden-path
-**Coverage:** covered (all 5 loop bundles shipped this session; see [[evaluation-childdoc-split]] design's Rollout + this feature's plan)
+**Coverage:** covered (all 4 current loop bundles conform; the initial rollout also covered the former Preparation bundle)
 
 ## Situation
 
-Planning decomposes the split into 5 per-loop tasks (prototype `execution` first). For each loop skill, the executor extracts every existing bold scenario block out of the current `evaluation.md` into a new `scenario.md`, and authors the missing Good/Bad/Adversarial framing the current files do not carry per scenario (roughly 35 net-new blocks across the 5 loops, under the no-filler bar at `evaluation/SKILL.md:252`).
+The current contract applies the split to 4 loop skills. For each loop skill, the executor extracts every existing bold scenario block out of the current `evaluation.md` into a new `scenario.md`, and authors any missing Good/Bad/Adversarial framing without filler.
 
 ## Inputs
 
 - The current `evaluation.md`'s existing scenario prose (where present) — the starting content, not a template to copy verbatim.
-- The per-step Good/Bad/Adversarial table (below) — what "good" and "bad/adversarial" mean at each of the 5 workflow steps.
+- The per-step Good/Bad/Adversarial table (below) — what "good" and "bad/adversarial" mean at each of the 4 productive workflow steps.
 - The stable-ID scheme (below) — every scenario gets one.
 
 ## Expected behavior
@@ -43,15 +43,14 @@ Each `scenario.md` is organized by the 7 perspectives (`project`, `structure`, `
 **Checklist IDs:** `{ID}-CHECK-*`
 ```
 
-**Stable-ID scheme:** `{STEP}-{PERSPECTIVE}-SCENARIO-{NN}` — full words `SCENARIO`, not a terse form like `-C1` or `-01` alone. `STEP ∈ {IDEA, PREP, PLAN, EXE, WRAP}`; `PERSPECTIVE ∈ {PROJ, STRUCT, PERF, AESTH, USAGE, CONS, RISK}`. Example: `EXE-PROJ-SCENARIO-01`. The full-word form was a user-locked directive (see [[four-user-decisions]] OQ-3) over Codex's original terse `-C1` proposal — a citable ID a human parses at a glance, per Principle 7 (plain, literal writing). Each scenario's `Checklist IDs:` line cross-references its sibling checks as `{ID}-CHECK-{NN}` (e.g. `EXE-PROJ-SCENARIO-01-CHECK-01`), giving a stable trace that survives the checklist being copied out of its source file into `evaluation/iter{n}/{system}/checklist.md` — a relative link would break at that point; the shared ID does not.
+**Stable-ID scheme:** `{STEP}-{PERSPECTIVE}-SCENARIO-{NN}` — full words `SCENARIO`, not a terse form like `-C1` or `-01` alone. `STEP ∈ {IDEA, PLAN, EXE, WRAP}`; `PERSPECTIVE ∈ {PROJ, STRUCT, PERF, AESTH, USAGE, CONS, RISK}`. Example: `EXE-PROJ-SCENARIO-01`. The full-word form was a user-locked directive (see [[four-user-decisions]] OQ-3) over Codex's original terse `-C1` proposal — a citable ID a human parses at a glance, per Principle 7 (plain, literal writing). Each scenario's `Checklist IDs:` line cross-references its sibling checks as `{ID}-CHECK-{NN}` (e.g. `EXE-PROJ-SCENARIO-01-CHECK-01`), giving a stable trace that survives the checklist being copied out of its source file into `evaluation/iter{n}/{system}/checklist.md` — a relative link would break at that point; the shared ID does not.
 
-**How GOOD-vs-BAD differs across the 5 steps** — each step has a different job, so "good" and "adversarial" mean different things:
+**How GOOD-vs-BAD differs across the 4 productive steps** — each step has a different job, so "good" and "adversarial" mean different things:
 
 | Step | Job | GOOD | BAD / adversarial |
 |---|---|---|---|
 | Ideation | Get the IDEA right | Root cause; sharp enumerated scope; research-backed | Symptom framing; adv: adjacent feature silently absorbs the idea |
-| Preparation | Prove READINESS | Every gap found + resolved/deferred; counts match | Invented gap; adv: "while we're here" skill stamp |
-| Planning | DECOMPOSE | Every task traces; every item covered; deps ordered | Orphan task; adv: "while we're here" task |
+| Planning | Prove READINESS, then DECOMPOSE | Readiness sources and dispositions are complete; every task traces; deps ordered | Hidden gap or orphan task; adv: an unrelated readiness fix becomes an unapproved task |
 | Execution | IMPLEMENT | Change-set matches task 1:1; `verifies:` run; scoped | Partial-complete; adv: tidy abstraction hides a cycle |
 | Wrap-up | CONSOLIDATE | Every shipped artifact referenced; promotions valid; handoff matches `git log` | Phantom completion; adv: a promoted file makes old memory wrong, both stay active |
 

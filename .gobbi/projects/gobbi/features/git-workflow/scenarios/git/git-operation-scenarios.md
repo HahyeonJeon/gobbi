@@ -15,7 +15,7 @@ author: claude
 # Git-Operation Scenarios — session lifecycle baseline
 
 The standing baseline of every git operation across the gobbi session lifecycle
-(Configuration → Ideation → Preparation → Planning → Execution → Wrap-up), for BOTH
+(Configuration → Ideation → Planning → Execution → Wrap-up), for BOTH
 runtimes (Claude Code + Codex). Each scenario records: id, lifecycle phase, trigger,
 expected behavior, owning skill + procedure, runtime, and verification signal.
 
@@ -46,7 +46,7 @@ Type legend: G = golden path; F = failure mode; E = edge case; A = adversarial.
 | C-11 | A | Branch name fails session-worktree regex | Precondition violation; surface + re-derive (session branches use the fixed `(claude\|codex)-DATE-UUID` shape) | git conventions § Session-Worktree Branches | both | regex match before `git worktree add -b` |
 | C-12 | E | `.gobbi/.../worktrees/` not gitignored | Warning prereq; worktree contents would appear in main `git status`; inform + continue | git P1.6 | both | `git check-ignore -q` exit code |
 
-## Phase 2 — Ideation / Preparation / Planning (no git mutation; read-only on git)
+## Phase 2 — Ideation / Planning (no git mutation; read-only on git)
 
 These loops do NOT push, branch, merge, or touch issues. They read `git log` for prior-attempt
 research and write session-record files rooted at `worktreePath`. The only git-relevant risk is
@@ -124,7 +124,7 @@ open issues) in one audited, confirmed, liveness-protected pass.
 | Lifecycle phase | scenarios |
 |---|---|
 | Configuration | 12 (C-01..C-12) |
-| Ideation / Prep / Planning | 5 (D-01..D-05) |
+| Ideation / Planning | 5 (D-01..D-05) |
 | Execution | 11 (X-01..X-11) |
 | Wrap-up | 13 (W-01..W-13) |
 | Cross-session / retro | 9 (S-01..S-09) |

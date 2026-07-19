@@ -17,6 +17,8 @@ related: [three-surface-loader-fixup, workflow-memorization-doc-filename-rename,
 
 # Two-skill restructure: skills/memory/ + skills/record/ (D-b + D10)
 
+> **Superseded 2026-07-19 for workflow shape only:** Preparation was retired in v0.5.3. Any Preparation name or old loop ordinal below is historical design evidence, not current execution guidance. The memory/record ownership decisions remain active under the four productive loops.
+
 ## Problem
 `skills/memorization/` contains both the durable-memory CRUD standard (rules.md, memory-map.md, templates) and the per-loop session-record capture procedure (SKILL.md). These serve different consumers: wrap-up assistant needs the CRUD standard; loop assistants need the capture procedure. Mixing them in one skill dir causes load ambiguity.
 

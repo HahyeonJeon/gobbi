@@ -100,7 +100,7 @@ Standard prompt-file location:
 Execution per-task variant:
 
 ```text
-<session-root>/4-execution/task-{NN}-{slug}/working/proposals/codex/{purpose}-prompt.md
+<session-root>/3-execution/task-{NN}-{slug}/working/proposals/codex/{purpose}-prompt.md
 ```
 
 Evaluation prompts may live beside the evaluator output directory when the loop already has a
@@ -265,7 +265,7 @@ Template:
 You are Codex running through the Gobbi Claude Code bridge.
 
 Role: <proposer|evaluator>
-Loop: <ideation|preparation|planning|execution|wrap-up>
+Loop: <ideation|planning|execution|wrap-up>
 Iteration: <n>
 System label to write: <codex|claude>
 Actual runtime label: <codex-exec|native-codex-stand-in>
@@ -495,7 +495,7 @@ Required properties:
 The prompt must include:
 
 - The locked Scope Contract, inline or quoted in the prompt.
-- The loop-specific task: ideation design, preparation readiness, planning task decomposition,
+- The loop-specific task: ideation design, planning readiness and task decomposition,
   execution implementation proposal, or wrap-up synthesis proposal.
 - The expected proposal shape.
 - The exact proposal path.

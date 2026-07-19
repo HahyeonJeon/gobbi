@@ -6,7 +6,7 @@ allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
 
 # Research
 
-Skill for **research** activities — investigating internal and external surfaces to extract insights that anchor downstream design choices. Loaded by whichever agent needs to do reference-rich investigation before deciding direction: typically the Ideation Loop's leader during Sub-step C, and occasionally the Preparation Loop's leader when verifying readiness against external prior art.
+Skill for **research** activities — investigating internal and external surfaces to extract insights that anchor downstream design choices. Loaded by whichever agent needs to do reference-rich investigation before deciding direction: typically the Ideation Loop's leader during Sub-step C, and occasionally the Planning Loop's leader when its readiness gate must verify external prior art.
 
 Internal and external research surfaces are managed **independently** — each must be sufficiently deep on its own before any design decision is made. The thinking pattern is **research → consult → design**: insights are not just collected, they actively inform every downstream choice.
 
@@ -28,7 +28,7 @@ The agent in the leader role (or any role that loads this skill) MUST observe th
 
 **Write surface in practice (two-step model)**:
 1. **During WORK** — the leader integrates internal insights into `working/draft-iter{n}.md` (under a `Research Insights` section) and writes each confirmed external insight as a separate file at `working/research/{slug}.md` using the Insight format below. The leader does NOT write to `staging/references/` during WORK.
-2. **On PASS** — the assistant (RECORD phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `preparation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md` Memory Access Matrix sections.
+2. **On PASS** — the assistant (RECORD phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `planning/SKILL.md`, and `execution/SKILL.md` Memory Access Matrix sections.
 
 Research does not own its own session subdirectory — it lives inside the loop that invoked it.
 
@@ -143,8 +143,8 @@ Research does not own its own session subdirectory — it writes into the callin
 
 - `{date}` — the session start date in `YYYY-MM-DD` format
 - `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
-- `{loop}` — the calling loop's name (`ideation` / `preparation` / `planning`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` / `2-preparation` / `3-planning`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`record/record-map.md`](../record/record-map.md))
-- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning); the on-disk loop-dir prefix
+- `{loop}` — the calling loop's name (`ideation` / `planning`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` / `2-planning`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`record/record-map.md`](../record/record-map.md))
+- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=planning); the on-disk loop-dir prefix
 - `{slug}` — slug for a specific reference artifact, set by the writer at stage time
 
 | Path | Written by | Written |

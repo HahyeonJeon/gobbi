@@ -12,9 +12,9 @@
 #
 # Args:
 #   $1  <session-root>   Absolute path to sessions/{date}-{session-id}/.
-#   $2  <step-dir>       One of the fixed loop set — 1-ideation 2-preparation
-#                        3-planning 4-execution 5-wrap-up — OR an execution task
-#                        dir of the form 4-execution/task-{NN}-{slug} where
+#   $2  <step-dir>       One of the fixed loop set — 1-ideation 2-planning
+#                        3-execution 4-wrap-up — OR an execution task
+#                        dir of the form 3-execution/task-{NN}-{slug} where
 #                        {NN} is [0-9]{2} and {slug} matches [a-z0-9-]{1,40}.
 #   --pass               Also create the PASS-only outputs/ dir.
 #
@@ -34,8 +34,8 @@
 #
 # Example:
 #   ./scaffold-session-dir.sh /abs/sessions/2026-06-08-.../  1-ideation
-#   ./scaffold-session-dir.sh /abs/sessions/2026-06-08-.../  3-planning --pass
-#   ./scaffold-session-dir.sh /abs/sessions/2026-06-08-.../  4-execution/task-01-scaffold-script
+#   ./scaffold-session-dir.sh /abs/sessions/2026-06-08-.../  2-planning --pass
+#   ./scaffold-session-dir.sh /abs/sessions/2026-06-08-.../  3-execution/task-01-scaffold-script
 
 set -euo pipefail
 
@@ -49,8 +49,8 @@ usage: scaffold-session-dir.sh <session-root> <step-dir> [--pass]
   plus the loop's typed staging subdirs. --pass also creates outputs/.
   Never creates transcripts/ (manager-owned session-root dir).
   <session-root> must be absolute. <step-dir> is one of:
-    1-ideation 2-preparation 3-planning 4-execution 5-wrap-up
-    4-execution/task-{NN}-{slug}   ({NN}=[0-9]{2}, {slug}=[a-z0-9-]{1,40})
+    1-ideation 2-planning 3-execution 4-wrap-up
+    3-execution/task-{NN}-{slug}   ({NN}=[0-9]{2}, {slug}=[a-z0-9-]{1,40})
 EOF
 }
 
@@ -96,14 +96,14 @@ esac
 # step_loop is the loop name used to key the staging-vocabulary manifest below.
 step_loop=""
 case "$step_dir" in
-    1-ideation|2-preparation|3-planning|4-execution|5-wrap-up)
+    1-ideation|2-planning|3-execution|4-wrap-up)
         step_loop="$step_dir"
         ;;
-    4-execution/task-*)
-        task_seg="${step_dir#4-execution/}"
+    3-execution/task-*)
+        task_seg="${step_dir#3-execution/}"
         # task-{NN}-{slug}: {NN}=[0-9]{2}, {slug}=[a-z0-9-]{1,40}.
         if [[ "$task_seg" =~ ^task-[0-9]{2}-[a-z0-9-]{1,40}$ ]]; then
-            step_loop="4-execution"
+            step_loop="3-execution"
         else
             log "invalid execution task dir: $step_dir"; exit 2
         fi
@@ -114,15 +114,14 @@ case "$step_dir" in
 esac
 
 # --- Per-loop staging-subdir manifest (mirrors record-map.md) --------------
-# Base vocabulary shared by every loop; two loops add one extra subdir each.
+# Base vocabulary shared by every loop; Planning adds one extra subdir.
 base_staging=(
     scenarios checklists decisions references design discussions
     backlogs/feature backlogs/project reviews reports changelogs learnings notes
 )
 staging_subdirs=("${base_staging[@]}")
 case "$step_loop" in
-    2-preparation) staging_subdirs+=(skills) ;;
-    3-planning)    staging_subdirs+=(plans) ;;
+    2-planning) staging_subdirs+=(plans) ;;
 esac
 
 # --- Materialize (idempotent; only reached after all validation passes) ------

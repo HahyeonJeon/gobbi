@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # check-eval-childdocs.sh — the evaluation child-doc split completeness + inclusion guard.
 #
-# Feature: "evaluation child-doc 3-way split" — each of the 5 loop skills'
+# Feature: "evaluation child-doc 3-way split" — each of the 4 loop skills'
 # `evaluation.md` is split into `evaluation.md` (procedure) + `scenario.md` +
 # `checklist.md`, and the evaluator gains a filled `checklist.md` as a real 9th
 # output file under `evaluation/iter{n}/{system}/`. Every surface that
@@ -54,7 +54,7 @@
 #                               correctness spot-check. Prints the certified Family-9
 #                               surface list.
 #   --bundle <loop> --pre-flip  classify-completeness scoped to one loop's surfaces
-#                               (loop ∈ ideation|preparation|planning|execution|wrap-up).
+#                               (loop ∈ ideation|planning|execution|wrap-up).
 #   --enforce-inclusion         assert every Family-9 surface references `checklist.md`
 #                               (EXPECTED to fail pre-flip).
 #   --root <dir>                override the gobbi project dir (the dir holding
@@ -84,8 +84,8 @@ usage:
       every verified-leave, fail-closed on any unclassified/mis-classified hit.
       Prints the certified Family-9 surface list.
   check-eval-childdocs.sh --bundle <loop> --pre-flip
-      Classify-completeness scoped to one loop (ideation|preparation|planning|
-      execution|wrap-up).
+      Classify-completeness scoped to one loop (ideation|planning|execution|
+      wrap-up).
   check-eval-childdocs.sh --enforce-inclusion
       Assert every Family-9 surface references `checklist.md`. EXPECTED to fail
       until the atomic-last parent-contract flip has run.
@@ -621,8 +621,8 @@ mode_classify_only() {
 mode_bundle() {
     local loop="$1"
     case "$loop" in
-        ideation|preparation|planning|execution|wrap-up) : ;;
-        *) log "unknown loop '$loop' (ideation|preparation|planning|execution|wrap-up)"; exit 2 ;;
+        ideation|planning|execution|wrap-up) : ;;
+        *) log "unknown loop '$loop' (ideation|planning|execution|wrap-up)"; exit 2 ;;
     esac
     local -a files=()
     local c
@@ -891,12 +891,12 @@ mode_selftest() {
     # files" broad wording → verified-leave.
     selftest_one "exit-checklist-ppfiles" "$PROJ/skills/execution/SKILL.md" \
         'Both systems produced per-perspective files' 'VERIFIED-LEAVE' || fails=$((fails+1))
-    # Fixture 3 — skill-writing mirrored-skills `wc -l` → not-applicable.
-    selftest_one "mirrored-skills-wcl" "$PROJ/skills/skill-writing/SKILL.md" \
-        'ls \.claude/skills \| wc -l' 'NOT-APPLICABLE' || fails=$((fails+1))
+    # Fixture 3 — startup memory-bloat `wc -l` → not-applicable.
+    selftest_one "startup-memory-wcl" "$PROJ/skills/startup/evaluation.md" \
+        '`wc -l` / `wc -w`' 'NOT-APPLICABLE' || fails=$((fails+1))
     # Fixture 4 — wrap-up promoted-file bloat `wc -l` → not-applicable.
     selftest_one "promoted-file-wcl" "$PROJ/skills/wrap-up/evaluation.md" \
-        '`wc -l` on each promoted file' 'NOT-APPLICABLE' || fails=$((fails+1))
+        '`wc -l` on every manifest-derived destination file' 'NOT-APPLICABLE' || fails=$((fails+1))
     # Fixture 5 — codex eval-dir count `.../codex/ | wc -l  # must be 9` → Family-9.
     selftest_one "codex-dir-count" "$PROJ/skills/codex/SKILL.md" \
         'codex/ \| wc -l' 'FAMILY-9' || fails=$((fails+1))

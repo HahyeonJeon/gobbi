@@ -36,7 +36,7 @@ In scope: `orchestration/SKILL.md`'s Configuration procedure (rows 1-5), `gobbi/
 Row 4 (fresh) and row 4R (resume) are split as two distinct rows. Row 4 remains fresh-only: it
 stamps `workflow.ideation.state = "Active"` and enters Ideation. Row 4R is resume-only: it reads and
 validates the persisted `state.json`, then continues the persisted active step — which now
-explicitly includes Ideation (not only Preparation/Planning/Execution/Wrap-up), per the iter2 fix for
+explicitly includes Ideation alongside Planning/Execution/Wrap-up, per the iter2 fix for
 Claude's F1 finding. Row 4R never re-stamps `workflow.ideation.state = "Active"` — a persisted
 Ideation-Active state is read and continued, never re-initialized.
 
@@ -64,7 +64,7 @@ than silently guessing.
   `/clear`, compaction) resumes: `previousSessionId` is still `null`, but the three-fact signal
   (settings + state + worktree-guard) correctly classifies it as resume. Row 4R runs, Ideation is
   CONTINUED (read, not re-stamped).
-- **Golden — mid-Preparation/Planning/Execution/Wrap-up resume.** Same three-AND signal covers every
+- **Golden — mid-Planning/Execution/Wrap-up resume.** Same three-AND signal covers every
   productive step identically — no step-specific branch needed.
 - **Edge — mode reconfigure on resume.** User legitimately changes mode; row 4R's invariant 2
   validates the CURRENT settings.json rather than halting on the mismatch.

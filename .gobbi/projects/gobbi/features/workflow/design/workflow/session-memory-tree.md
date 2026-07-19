@@ -39,16 +39,16 @@ sessions/{date}-{session-id}/
 ├── session.json.lock
 ├── transcripts/                  ← single surface: {role}-{agentId}.jsonl per agent run,
 │                                    accumulating across all loops, gitignored, never promoted
-└── {N}-{loop}/                   1-ideation 2-preparation 3-planning 4-execution 5-wrap-up
+└── {N}-{loop}/                   1-ideation 2-planning 3-execution 4-wrap-up
     ├── working/                  ← drafts + discussion-log + research/ (only scratch surface)
     ├── evaluation/               ← iter{n}/{claude,codex}/{perspective}.md (unchanged interior)
     ├── staging/                  ← typed-finding stagings (Wrap-up promotion source, unchanged interior)
     └── outputs/                  ← PASS-only (renamed from artifacts/)
 ```
 
-Per-task nesting (4-execution/):
+Per-task nesting (3-execution/):
 ```
-4-execution/
+3-execution/
 ├── staging/                      ← cross-task findings
 └── task-{NN}-{slug}/
     ├── working/
@@ -111,7 +111,7 @@ Sacrifices: minimal churn — the doc sweep touched ~45 files (2 new scripts + 1
 
 ## Open issues
 
-- `[FLAG-1]`: project `skills/`-is-memory classification — deferred.
+- `[FLAG-1]`: resolved in v0.5.3 — project `skills/` is a source-authoring surface; Planning schedules a missing project skill as the first Execution task.
 - `[FLAG-2]`: `claude` doc-authoring skill — deferred.
 - F-P2: Wrap-up exclusion wording must preserve `interview/staging/` as a valid promotion source; only `transcripts/` is excluded, not all non-`staging/` dirs. Addressed in the shipped doc sweep.
   > **Superseded 2026-07-13:** the `interview` skill was replaced by `startup`; `interview/staging/` no longer exists and startup self-promotes at startup-close — Wrap-up now EXCLUDES `startup/` from its promotion inventory. See `decisions/workflow/2026-07-13-startup-session-shape-and-promotion.md`.

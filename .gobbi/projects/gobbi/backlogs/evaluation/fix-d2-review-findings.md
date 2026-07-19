@@ -21,6 +21,15 @@ shipped_in: null
 
 Historical finding locations below remain evidence of the reviewed tree. For any still-open Gobbi dispatch or Load-Directives remediation, the live owner is now `orchestration/delegation.md` with its templates under `orchestration/templates/`; generic delegation semantics remain in `delegation/SKILL.md`.
 
+## v0.5.3 lifecycle reconciliation
+
+Preparation-specific findings D2-001, D2-006, D2-008, D2-012, D2-018, and D2-026 are closed or
+obsolete. The Preparation-omission aspects of Cluster E are also obsolete. D2-011's project-skill
+classification is resolved by the Planning readiness gate: a missing project skill becomes Task 01,
+while a missing workspace or domain skill returns `NEEDS_CONTEXT`. The old locations below remain
+historical review evidence and must not be used as current edit targets. Other findings stay open only
+after they are re-derived against the current files, line numbers, and four-loop workflow.
+
 ## Context
 
 The 2026-06-29 D2 adversarial-review session reviewed the **completeness of the gobbi agent +

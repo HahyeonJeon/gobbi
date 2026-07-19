@@ -216,7 +216,7 @@ job, and a sound product shape — with complete, substantive coverage and user-
 
 | Tool | Use for |
 |---|---|
-| Cold-read the root README and the promoted typed records as a fresh Ideation / Preparation agent | Answer purpose, users, scope, features, directions, constraints, risks, evidence, and open questions without the ledger |
+| Cold-read the root README and the promoted typed records as a fresh Ideation / Planning-readiness agent | Answer purpose, users, scope, features, directions, constraints, risks, evidence, and open questions without the ledger |
 | Follow every recorded-open item | Confirm an owner, a resolution method, and a trigger / runnable next action exist |
 | Simulate a resume from the ledger and confirmed checkpoint markers | Confirm regeneration is idempotent and resumes at the first unconfirmed checkpoint without replaying settled answers |
 | Compare a rerun classification against the actual existing memory | Detect a blind append and confirm the unchanged / index-update / new / superseding / deferred-open handling |

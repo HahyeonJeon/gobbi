@@ -12,16 +12,15 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 **Format.**
 
-> **Workflow Status** — Mode: `chat` — Active: Step 2 of 6
+> **Workflow Status** — Mode: `chat` — Active: Step 2 of 5
 
 | # | Step | State | Iter | Verdict |
 |---|---|---|---|---|
 | 1 | Configuration | `✓ Done` | — | — |
 | 2 | Ideation Loop | `▸ DISCUSSION` | `1 / 5` | — |
-| 3 | Preparation Loop | `… Pending` | — | — |
-| 4 | Planning Loop | `… Pending` | — | — |
-| 5 | Execution Loop | `… Pending` | — | — |
-| 6 | Wrap-up Loop | `… Pending` | — | — |
+| 3 | Planning Loop | `… Pending` | — | — |
+| 4 | Execution Loop | `… Pending` | — | — |
+| 5 | Wrap-up Loop | `… Pending` | — | — |
 
 > Active: Constructing the leader delegation prompt — scope, inputs, constraints, success criteria, references.
 
@@ -38,11 +37,11 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 **Field rules.**
 
-- **`#` and `Step`** — fixed (1–6; Configuration / Ideation Loop / Preparation Loop / Planning Loop / Execution Loop / Wrap-up Loop).
+- **`#` and `Step`** — fixed (1–5; Configuration / Ideation Loop / Planning Loop / Execution Loop / Wrap-up Loop).
 - **`Iter`** — `{current} / {max}` while inside a loop; `—` for Configuration and pending steps.
 - **`Verdict`** — `—` until `EVALUATION` completes for the current iteration; then `PASS` / `REVISE` / `FAIL`. Cleared back to `—` on re-entry.
 - **`Active` line** — one sentence describing what the manager is doing right now: what is being constructed, which subagent is about to be spawned, what was just received. Omit between loops.
-- **Header line** — `Mode: chat | auto`; `Active: Step N of 6` (or `Active: — (between loops)` at boundaries).
+- **Header line** — `Mode: chat | auto`; `Active: Step N of 5` (or `Active: — (between loops)` at boundaries).
 
 **Render points.**
 
@@ -53,22 +52,22 @@ In both modes, the manager renders a workflow status snapshot so the user can se
 
 The display is for the user — it is not state storage. The state machine itself is governed by the [Workflow State Machine](state-machine.md#workflow-state-machine) section; the display is a read-only projection.
 
-**Chat-mode rendering.** In Chat Mode the display uses a two-tier structure (session-level + per-task tier) backed by `state.json.workflow.chat.tasks[currentIndex]` (R3 lock, §6.7). The full Chat rendering spec — header form, body form, and a worked example showing a completed prior task plus the active task — lives in [`chat-mode.md § Status Display`](../chat-mode.md). Auto-mode rendering is the existing 6-row table above; it is unchanged.
+**Chat-mode rendering.** In Chat Mode the display uses a two-tier structure (session-level + per-task tier) backed by `state.json.workflow.chat.tasks[currentIndex]` (R3 lock, §6.7). The full Chat rendering spec — header form, body form, and a worked example showing a completed prior task plus the active task — lives in [`chat-mode.md § Status Display`](../chat-mode.md). Auto-mode rendering is the 5-row table above.
 
 ---
 
 ## Harness Todo List
 
-The manager keeps a harness-native **workflow todo list** — an always-on progress widget that mirrors the 6 workflow steps — using the runtime's task tracker (Claude Code `TaskCreate` / `TaskUpdate`; Codex plan updates; a runtime with no widget falls back to the [Workflow Status Display](#workflow-status-display) table). It is a SECOND read-only projection of `state.json`, beside the Status Display — a COMPLEMENT, never a replacement.
+The manager keeps a harness-native **workflow todo list** — an always-on progress widget that mirrors the 5 workflow steps — using the runtime's task tracker (Claude Code `TaskCreate` / `TaskUpdate`; Codex plan updates; a runtime with no widget falls back to the [Workflow Status Display](#workflow-status-display) table). It is a SECOND read-only projection of `state.json`, beside the Status Display — a COMPLEMENT, never a replacement.
 
 **Authoritative source.** `state.json` is the single source of truth (see [§ State persistence](state-machine.md#state-persistence)). The todo list is a **one-way projection that never writes back**. The manager writes `state.json` FIRST, then projects the widget. On any disagreement `state.json` wins — re-render the widget from it. On resume / `/clear` / `/compact` the widget is REBUILT from `state.json` at Configuration row 4R; a stale resumed widget is never treated as recovery state.
 
-**Granularity.** Seed 6 items at Configuration (one per step). After Planning PASS, expand the Execution item into the locked per-task list; mark each task `in_progress` / `completed` as tasks land. (List grows 6 → 6 + N − 1 at Planning.)
+**Granularity.** Seed 5 items at Configuration (one per step). After Planning PASS, expand the Execution item into the locked per-task list; mark each task `in_progress` / `completed` as tasks land. (List grows 5 → 5 + N − 1 at Planning.)
 
-**Update cadence.** Mark a step `in_progress` when its `state.json` entry → `Active`; `completed` when → `Done`; completed-as-skipped on `skip: true` — the step STAYS in the list marked skipped (mirrors `⊘ Skipped`), never dropped from the six-step spine. A `REVISE` keeps the step `in_progress` — the widget does not churn per iteration.
+**Update cadence.** Mark a step `in_progress` when its `state.json` entry → `Active`; `completed` when → `Done`; completed-as-skipped on `skip: true` — the step STAYS in the list marked skipped (mirrors `⊘ Skipped`), never dropped from the five-step spine. A `REVISE` keeps the step `in_progress` — the widget does not churn per iteration.
 
 **Rendering.** Render in BOTH Auto and Chat. The widget is the always-on spine; the [Workflow Status Display](#workflow-status-display) table is KEPT as the periodic detailed snapshot. Widget item names/order mirror the table rows.
 
-**Chat specifics.** Steps 2-5 are annotated with the current Task NN/slug; prior completed Chat tasks collapse to a summary item (per [`chat-mode.md` § Status Display](../chat-mode.md)).
+**Chat specifics.** Steps 2-4 are annotated with the current Task NN/slug; prior completed Chat tasks collapse to a summary item (per [`chat-mode.md` § Status Display](../chat-mode.md)).
 
 **Ownership.** The workflow todo list is **manager-owned**; subagents never create or update it.

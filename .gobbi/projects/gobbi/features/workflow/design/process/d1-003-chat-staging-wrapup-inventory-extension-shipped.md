@@ -42,13 +42,13 @@ slice's RECORD writes typed findings to real staging under
 `chat/tasks/{NN}-{slug}/{N}-{loop}/staging/{type}/{slug}.md`, using the FULL base staging vocabulary
 (not a narrowed inline subset — the shipped fix replaced an incomplete inline list with a reference
 to the base vocabulary in `record-map.md`). Wrap-up's promotion inventory is extended to glob
-`chat/tasks/*/{N}-{loop}/staging/` (plus nested `chat/tasks/*/4-execution/task-*/staging/`) alongside
+`chat/tasks/*/{N}-{loop}/staging/` (plus nested `chat/tasks/*/3-execution/task-*/staging/`) alongside
 the existing top-level and execution-sub-task staging sources.
 
 **As-shipped interim materialization (post-iter1 correction).** Execution iter1 evaluation (Codex
 finding O2, High, confidence 85, echoed across Project/Structure/Risk/Consistency/Usage perspectives)
 found the documented Chat staging path was not actually creatable: `scaffold-session-dir.sh` and
-`verify-record-map.sh` only recognize the fixed top-level loop set plus `4-execution/task-{NN}-{slug}`
+`verify-record-map.sh` only recognize the fixed top-level loop set plus `3-execution/task-{NN}-{slug}`
 and reject the `chat/tasks/...` subtree outright — a probe scaffold call exited 2. The shipped fix
 does not silently leave this uncreatable: `chat-mode.md`, `record-map.md`, and `wrap-up/SKILL.md` now
 explicitly document that the Chat per-slice tree is **manager-materialized** in the interim (the

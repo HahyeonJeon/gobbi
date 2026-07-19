@@ -11,13 +11,13 @@ Skill for any agent performing the per-loop RECORD capture during a loop's RECOR
 The model is **staging → Wrap-up promotion**. Loop RECORD writes **only** to the session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Memory writes happen exclusively (among the workflow loops) during Wrap-up, which reads accumulated session-record staging across loops and promotes deterministically to `features/{feature-name}/...` + project-tier directories per the routing table in [`wrap-up/promotion.md`](../wrap-up/promotion.md#staging--memory-routing). For the canonical session-tree shape the assistant writes into — the `{N}-{loop}/` ordinal map, the 4-slot loop interior (`working/`, `evaluation/`, `staging/`, `outputs/`), and the single session-root `transcripts/` — see [`record-map.md`](record-map.md), the single source of truth.
 
 Inputs to a RECORD run:
-- The loop identity (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`)
+- The loop identity (`ideation` / `planning` / `execution` / `wrap-up`)
 - The iter number `n` (supplied by the manager from `session.json.workflow.{loop}.iterations.length`)
 - The EVALUATION verdict (`PASS`, `REVISE`, or `FAIL`)
 - Leader / executor drafts at `sessions/.../{N}-{loop}/working/draft-iter{n}.md`
 - Evaluator per-perspective files at `sessions/.../{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n`
 - The discussion log at `sessions/.../{N}-{loop}/working/discussion-log.md`
-- The dual-system integration log at `sessions/.../{N}-{loop}/working/reconciliation-iter{n}.md` (Execution: the per-task `4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`) — the source of the value-telemetry integration counts; absent for a `single`-mode loop
+- The dual-system integration log at `sessions/.../{N}-{loop}/working/reconciliation-iter{n}.md` (Execution: the per-task `3-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`) — the source of the value-telemetry integration counts; absent for a `single`-mode loop
 - The runtime + agent transcript (`session.json.system` + `session.json.transcriptPath`, tilde-expand `$HOME` on read; or `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env; or harness equivalent). `session.json.system` selects the Step-2 transcript branch (`claude-code` vs `codex`)
 - Prior-iter staging (if `n ≥ 2` AND verdict is `PASS`) — findings carried forward per cumulative-staging rule
 
@@ -44,7 +44,7 @@ The agent in the assistant role MUST observe these tier boundaries. The only wri
 | **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **UPSERT** — own loop's `workflow.{loop}.iterations[]` entries + `workflow.{loop}.finishedAt` + `workflow.{loop}.verdict`. All other fields preserved verbatim |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **FORBIDDEN for Ideation / Planning / Execution loops** — never written by these loops; Wrap-up owns feature-memory writes. **PERMITTED for Wrap-up loop's own RECORD** — see "Wrap-up loop exception" row below |
 | **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` | **FORBIDDEN for Ideation / Planning / Execution loops** — never written by these loops; Wrap-up owns memory writes. **PERMITTED for Wrap-up loop's own RECORD** — see "Wrap-up loop exception" row below |
-| **Wrap-up loop exception** | `.gobbi/projects/{project-name}/features/{feature-name}/...` + `.gobbi/projects/{project-name}/{...memory dirs...}/` when `loop = wrap-up` | **WRITE + UPSERT** — Wrap-up's RECORD is the sole writer to memory across the workflow loops. Wrap-up's procedure (in [`wrap-up/promotion.md`](../wrap-up/promotion.md#staging--memory-routing)) details the staging→destination promotion routing. The "FORBIDDEN" rows above apply only when `loop ∈ {preparation, ideation, planning, execution}` |
+| **Wrap-up loop exception** | `.gobbi/projects/{project-name}/features/{feature-name}/...` + `.gobbi/projects/{project-name}/{...memory dirs...}/` when `loop = wrap-up` | **WRITE + UPSERT** — Wrap-up's RECORD is the sole writer to memory across the workflow loops. Wrap-up's procedure (in [`wrap-up/promotion.md`](../wrap-up/promotion.md#staging--memory-routing)) details the staging→destination promotion routing. The "FORBIDDEN" rows above apply only when `loop ∈ {ideation, planning, execution}` |
 | **Wrap-up skill-surface mistakes write** | `.gobbi/projects/{project-name}/skills/{skill}/mistakes.md` when `loop = wrap-up` | **WRITE (Wrap-up promotion only)** — the skill-owned fork of mistake routing (the hybrid model) appends a promoted trap as a `## ` section to the owning skill's `mistakes.md`. A skill-surface doc, OUT of the memory frontmatter standard ([`memory/rules.md` § Scope boundary](../memory/rules.md)); consistent with [`mistake/SKILL.md` § Memory Access Matrix](../mistake/SKILL.md). Working-loop RECORD never writes it |
 | **Startup-close promotion exception** | `.gobbi/projects/{project-name}/{README.md,design/,decisions/,features/{feature-name}/,mistakes/,references/,backlogs/,learnings/,rules/}` when the `startup` skill runs its startup-close promotion | **WRITE** — `startup`-close promotion is the one additional standing exception to the Wrap-up sole-writer rule. At startup-close (before any productive loop), startup writes its user-approved baseline directly to memory via its own atomic promotion procedure ([`startup/recording.md` § 9](../startup/recording.md)) — a validate-whole-set → safe-order write → verify → halt-on-failure model, gated by an Always-Ask user-approval plus the standing memory guards. **Validation gate 5 is suspended for startup-close promotion** — the gate that prohibits memory writes from loop RECORD does not apply to this pre-loop write. startup does NOT defer to Wrap-up: it always self-promotes at startup-close (both first-run and mature-rerun baseline-review), and **Wrap-up EXCLUDES `startup/` from its promotion inventory** (see [`wrap-up/promotion.md` § Stage boundary and source contract](../wrap-up/promotion.md#stage-boundary-and-source-contract) and [`record/record-map.md` § Wrap-up promotion-inventory rule](record-map.md)) so nothing is double-promoted. See [`startup/SKILL.md` § Memory Access Matrix](../startup/SKILL.md#memory-access-matrix) for the authoritative access rules. |
 
@@ -102,7 +102,7 @@ Every file under `sessions/{date}-{session-id}/{N}-{loop}/outputs/` MUST carry t
 
 ```yaml
 ---
-loop: ideation | preparation | planning | execution | wrap-up
+loop: ideation | planning | execution | wrap-up
 iter: {iter number that produced this artifact}
 artifact_type: {short kebab-case label for this artifact's role — e.g., framed-problem, scope-contract, design-options, task-list, handoff, memory-reads}
 created_at: YYYY-MM-DD
@@ -164,7 +164,7 @@ The promoted file carries ONLY base + that type's extension fields ([`rules.md` 
 The canonical session-tree shapes the assistant reads at RECORD:
 
 - **Per-perspective evaluation filenames.** Evaluation outputs live at `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/{system}/{perspective}.md`, where `{system} ∈ {claude, codex}` and `{perspective}` is the **bare** perspective name from the fixed 7-vocabulary — `project`, `structure`, `performance`, `aesthetics`, `usage`, `consistency`, `risk` — plus `overall.md`. Bare names only: no `pN-` positional prefix, and the same 7-perspective vocabulary on both systems so cross-system reconciliation can pair files 1:1. The 7-perspective vocabulary is owned by [`evaluation/SKILL.md`](../evaluation/SKILL.md).
-- **Execution per-task quartet.** In the Execution loop, each task lives under `4-execution/task-{NN}-{slug}/` and carries the full `{working, evaluation, staging, outputs}` quartet — `4-execution/task-{NN}-{slug}/{working/draft-iter{n}.md, staging/{...}/, evaluation/iter{n}/{claude,codex}/{perspective}.md, outputs/{free-filename}.md}`. There is no per-task `transcripts/` dir — every agent's transcript lives in the single session-root `transcripts/`. Loop-level (cross-task) staging lives at `4-execution/staging/`. A task with only `evaluation/` (missing working/staging/outputs) is an incomplete task layout; the quartet is required unless a task is documented eval-only.
+- **Execution per-task quartet.** In the Execution loop, each task lives under `3-execution/task-{NN}-{slug}/` and carries the full `{working, evaluation, staging, outputs}` quartet — `3-execution/task-{NN}-{slug}/{working/draft-iter{n}.md, staging/{...}/, evaluation/iter{n}/{claude,codex}/{perspective}.md, outputs/{free-filename}.md}`. There is no per-task `transcripts/` dir — every agent's transcript lives in the single session-root `transcripts/`. Loop-level (cross-task) staging lives at `3-execution/staging/`. A task with only `evaluation/` (missing working/staging/outputs) is an incomplete task layout; the quartet is required unless a task is documented eval-only.
 
 ---
 
@@ -174,7 +174,7 @@ The canonical session-tree shapes the assistant reads at RECORD:
 Persist every iteration's evidence into session record, and — on the final `PASS` iteration — also emit the loop's `outputs/` files + cumulative typed-finding stagings. RECORD runs after **every** EVALUATION (whether `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail before the loop either restarts or completes. Memory is **not** written here.
 
 **Inputs**
-- Loop identity (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`) and iter number `n` (from manager)
+- Loop identity (`ideation` / `planning` / `execution` / `wrap-up`) and iter number `n` (from manager)
 - EVALUATION verdict (`PASS`, `REVISE`, or `FAIL`)
 - `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md` — current iteration's WORK output
 - `sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{m}/{system}/{perspective}.md` for `m ∈ 1..n` (cross-system divergence is derived by comparing per-system files; no separate divergence file is read)
@@ -201,7 +201,7 @@ Persist every iteration's evidence into session record, and — on the final `PA
 
 Step 3 writes per-step **value telemetry** into `session.json.workflow.{loop}.integration`. The source is the loop's
 dual-system integration log `working/reconciliation-iter{n}.md` (Execution: the per-task
-`4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`). RECORD counts the log's decision column:
+`3-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md`). RECORD counts the log's decision column:
 
 | Count | Rule |
 |---|---|
@@ -242,7 +242,7 @@ Only the `PASS` iteration also produces:
 - `sessions/{date}-{session-id}/{N}-{loop}/outputs/{free-filename}.md` — one or more artifact files (the loop's PASS-iter output; collectively serve as the next loop's briefing source). Mandatory: at least one `artifact_type: memory-reads` file. Loop-conditional: `artifact_type: resolution-log` when there were findings to close out
 - `sessions/{date}-{session-id}/{N}-{loop}/staging/{scenarios,checklists,decisions,references,design,discussions,reviews,reports,changelogs,learnings,notes}/{slug}.md` — typed-finding artifacts + design / discussions / reviews / reports / changelogs / learnings / notes stagings for Wrap-up to promote
 - `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` — backlog entries with feature-scope vs project-scope subdirs
-- `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — Planning-loop only (plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`)
+- `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` — Planning-loop only (plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`)
 - `sessions/{date}-{session-id}/session.json` — `workflow.{loop}.finishedAt` and `workflow.{loop}.verdict: PASS` set
 
 **No writes to memory.** All `features/{feature-name}/...`, `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive}/` writes are Wrap-up's responsibility per [`wrap-up/SKILL.md`](../wrap-up/SKILL.md).
@@ -254,7 +254,7 @@ Every iteration:
 - [ ] `session.json.workflow.{loop}.iterations[]` includes this iter's `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}` (full schema; do not omit `evaluation_dir`)
 - [ ] No writes to feature memory or memory
 
-> **Per-loop exit-checklists inherit this runtime-aware gate.** The "transcript copied" exit gate is restated near-verbatim in each loop's RECORD exit checklist (`ideation/SKILL.md`, `planning/SKILL.md`, `preparation/SKILL.md`, `execution/SKILL.md`). Each of those RECORD sections carries an explicit "Canonical procedure: `record/SKILL.md` … do not re-derive the shared procedure here" deferral, so they INHERIT this runtime-aware branch (Codex-null = degraded-pass; Claude-null = loud failure) with NO independent edit.
+> **Per-loop exit-checklists inherit this runtime-aware gate.** The "transcript copied" exit gate is restated near-verbatim in each working loop's RECORD exit checklist (`ideation/SKILL.md`, `planning/SKILL.md`, `execution/SKILL.md`). Each of those RECORD sections carries an explicit "Canonical procedure: `record/SKILL.md` … do not re-derive the shared procedure here" deferral, so they INHERIT this runtime-aware branch (Codex-null = degraded-pass; Claude-null = loud failure) with NO independent edit.
 
 `PASS` iteration additionally:
 - [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per [Artifact frontmatter schema](#artifact-frontmatter-schema)
@@ -291,8 +291,8 @@ See also: `evaluation/SKILL.md § Coverage Ownership Matrix § RECORD staging sh
 
 - `{date}` — session start date in `YYYY-MM-DD`
 - `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
-- `{loop}` — the workflow loop being persisted (`ideation` / `preparation` / `planning` / `execution` / `wrap-up`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` … `5-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`record-map.md`](record-map.md))
-- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=preparation, `3`=planning, `4`=execution, `5`=wrap-up); the on-disk loop-dir prefix
+- `{loop}` — the workflow loop being persisted (`ideation` / `planning` / `execution` / `wrap-up`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` … `4-wrap-up`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`record-map.md`](record-map.md))
+- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=planning, `3`=execution, `4`=wrap-up); the on-disk loop-dir prefix
 - `{role}` / `{agentId}` — agent role label and distinct agent run id, used for the session-root `transcripts/{role}-{agentId}.jsonl` files
 - `{feature-name}` — feature slug (only used by Wrap-up when promoting to memory; not used inside session paths)
 - `{slug}` — slug for a specific artifact, set by the writer at stage time
@@ -317,7 +317,7 @@ See also: `evaluation/SKILL.md § Coverage Ownership Matrix § RECORD staging sh
 | `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` | assistant (RECORD) | PASS only — shipped-work changelog entries (Execution loop typical) |
 | `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` | assistant (RECORD) | PASS only — durable cross-cutting insights (loop-conditional) |
 | `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md` | assistant (RECORD) | PASS only — loop-scope journal entry (rare; per-session journal is written at Wrap-up) |
-| `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` | assistant (RECORD) | Planning loop only, PASS only — plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`. **Not in other loops' staging trees** |
+| `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` | assistant (RECORD) | Planning loop only, PASS only — plan artifact for Wrap-up to promote to `features/{feature-name}/plans/`. **Not in other loops' staging trees** |
 
 The session directory tree at `sessions/{date}-{session-id}/{N}-{loop}/{working,staging,evaluation}/` is bootstrapped by the manager during the loop's DISCUSSION (Lock Scope for Ideation; equivalent setup point for downstream loops). RECORD assumes the tree exists on entry and surfaces an error to the manager if it does not.
 
@@ -364,8 +364,8 @@ Session-level templates: see [`orchestration/templates/`](../orchestration/templ
 - **MUST stamp templates** — never write freeform to a staging subdirectory; see [`templates/`](../memory/templates/).
 - **MUST preserve all iterations' working data** — earlier iter drafts in `working/` remain alongside the current iter's, and each agent's accumulating `transcripts/{role}-{agentId}.jsonl` is never overwritten with a filtered window.
 - **MUST be read-only against the artifact AND all memory tiers except own write surfaces** — never modify leader / executor drafts; never write to feature memory, memory, prior loops' session dirs, or other systems' evaluation dirs. The ONLY allowed write surfaces are listed in § Memory Access Matrix.
-- **MUST NEVER write to memory when `loop ∈ {preparation, ideation, planning, execution}`** — no `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, `references/`, `decisions/`, `plans/`, `reviews/`, `reports/`, `learnings/`, `archive/` writes from those loops' RECORD. Wrap-up's RECORD owns those writes (see Memory Access Matrix § Wrap-up loop exception).
-- **MUST NEVER create feature directories when `loop ∈ {preparation, ideation, planning, execution}`** — `features/{feature-name}/` is bootstrapped by Wrap-up at promotion time, not earlier.
+- **MUST NEVER write to memory when `loop ∈ {ideation, planning, execution}`** — no `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, `references/`, `decisions/`, `plans/`, `reviews/`, `reports/`, `learnings/`, `archive/` writes from those loops' RECORD. Wrap-up's RECORD owns those writes (see Memory Access Matrix § Wrap-up loop exception).
+- **MUST NEVER create feature directories when `loop ∈ {ideation, planning, execution}`** — `features/{feature-name}/` is bootstrapped by Wrap-up at promotion time, not earlier.
 - **MUST NEVER delete** — supersession via `disposition: superseded` field; physical deletion of any file in any tier is forbidden. Terminal memory artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST extend `session.json` only via UPSERT keyed by `iter`** — own loop's fields only; all other session.json fields preserved verbatim.
 - **MUST apply Type + Domain routing without improvisation** — every staging destination follows the canonical table in `evaluation/SKILL.md`; `general/general` is a contract violation.

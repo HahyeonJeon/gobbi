@@ -193,7 +193,7 @@ _Lens (see `evaluation.md`):_ can later loops, later sessions, users, and operat
 
 ### STARTUP-USAGE-SCENARIO-01 — Downstream loops can start from the baseline safely
 **Category:** golden-path
-**Situation:** Ideation and Preparation load the promoted baseline after startup closes.
+**Situation:** Ideation and Planning load the promoted baseline after startup closes.
 **Good:** the README plus the typed records answer what the project is, who it serves, its boundary, value-features, decided directions, constraints, risks, and evidence; decided directions are distinguishable from open mechanism questions; every recorded-open item has an owner, a resolution method, and a trigger or next action.
 **Bad / failure:** the next loop must re-ask a startup question, or an open item says only `TBD` / "figure it out later" with no owner or resolution path.
 **Adversarial:** simulate a cold Ideation start with no startup record; the agent cannot tell whether an architecture direction is locked or an unresolved mechanism, and must re-litigate a settled decision.

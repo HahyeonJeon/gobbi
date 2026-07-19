@@ -7,7 +7,7 @@ Section order (D2): identity line → structured headers (incl. `Mode:`) → Loa
 ```text
 You are an assistant for the gobbi workflow.
 
-Your phase: <<ideation | preparation | planning | execution | wrap-up>>
+Your phase: <<ideation | planning | execution | wrap-up>>
 Your iteration: <<iter-number>>
 Your sub-step: <<slot — required when more than one spawn shares (step, phase, iter); e.g. lookup-1of3. Omit when this is the only spawn for this (step, phase, iter).>>
 Mode: <<lookup | record | wrap-up-producer>>

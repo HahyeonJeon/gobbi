@@ -2,7 +2,7 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `planning`. Provides the per-perspective evaluation **procedure** for a Planning Loop's task decomposition: each perspective's **lens**, its **recommended verifications**, and its **perspective-specific anti-patterns**, plus the **Overall (Stage 3)** anchors. The concrete GOOD / BAD / adversarial **scenario families** live in the sibling `scenario.md`, and their yes/no **checks** live in the sibling `checklist.md` (whose heading tree mirrors `scenario.md`); each perspective below points to its section in both.
 
-The artifact under evaluation is the leader's plan at `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`. It contains: the locked Scope Contract (inherited from Ideation), ordered task list, per-task scope + inputs + outputs + verification criteria, dependency graph, agent-type assignment per task. Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
+The artifact under evaluation is the leader's plan at `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md` plus its cited `working/readiness-gate-iter{n}.md`. Together they contain the locked Scope Contract (inherited from Ideation), readiness evidence and routing, ordered task list, per-task scope + inputs + outputs + verification criteria, dependency graph, and agent-type assignment per task. Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
 
 A plan is **judged against the idea it implements**. The Ideation working draft is required input — without it, every perspective's evaluation is shallow. Planning is a process loop — the artifact is a plan, not code — so the scenario families in `scenario.md` already include adversarial cases (mis-ordered tasks, dangling traces, hidden coupling, silent scope expansion) so Stage 2 walks each Frame once without a separate adversarial pass.
 
@@ -21,6 +21,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 |---|---|
 | Diff Ideation checklist vs plan task list | Detect orphaned items or scope expansion mechanically |
 | Read the Ideation Scope Contract alongside the plan | Confirm phrasing identity |
+| Inventory `1-ideation/{outputs,staging}/` against the readiness artifact | Detect upstream omissions, including missing staging, that Planning must route back |
 
 ### Perspective-specific anti-patterns
 
@@ -28,6 +29,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 |---|---|
 | **"While we're here" tasks** | A task that improves something adjacent but unrelated is scope creep. Re-route to backlog, do not include in plan |
 | **Re-framing the idea during planning** | If the plan reveals the idea was wrong, return to Ideation — do not silently re-frame inside Planning |
+| **Planning repairs an upstream gap** | Any missing or unusable Ideation obligation routes to re-Ideation or abort; acceptance and repair in Planning are forbidden |
 
 ---
 
@@ -45,6 +47,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 | Count files-touched per task | Quantify task size mechanically |
 | Diff task list for file overlap | Detect tasks that conflict on the same file (must be sequenced) |
 | Read project's `delegation` skill | Confirm agent-type assignment matches delegation conventions |
+| Resolve each required skill's canonical path | Confirm missing workspace/domain skills route to NEEDS_CONTEXT and missing project skills become the first Execution task |
 
 ### Perspective-specific anti-patterns
 
@@ -53,6 +56,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 | **"This task is trivial, no decomposition needed"** | "Trivial" is the rationalization for bundled tasks. If verification is multi-step, the task is multi-step |
 | **Implicit task ordering** | If a reader has to infer order from context, the order field is missing. Flag `checklist_gap` |
 | **One mega-task** | A plan with fewer than 3 tasks for a non-trivial idea is suspect. Either the idea was tiny (re-check) or the decomposition is missing |
+| **Planning generates a missing skill** | Planning records and orders a project-skill obligation; Execution authors, wires, verifies, and commits it before dependents |
 
 ---
 
@@ -134,6 +138,7 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 | Diff `outputs:` and `inputs:` fields across hand-offs | Detect name drift mechanically |
 | Cross-reference each `traces-to:` against Ideation checklist text | Detect dangling traces |
 | `grep` task command surface for inconsistent tooling | Detect mixed runners / scripts |
+| Diff `## Readiness report` against the gate artifact and task map | Detect dropped or contradictory readiness obligations |
 
 ### Perspective-specific anti-patterns
 
@@ -157,12 +162,14 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 |---|---|
 | Count cumulative files-touched across the plan | Detect total-scope explosion vs Ideation |
 | Diff task `outputs:` field against project's external interface surface | Detect inadvertent API changes |
+| Inspect every out-of-worktree write disposition | Confirm actual writer/owner, exact surface, real-context read-only authority evidence, reversibility, and go/no-go |
 
 ### Perspective-specific anti-patterns
 
 | Anti-pattern | Correction |
 |---|---|
 | **"Each task is small, total risk is fine"** | Task-local risk does not aggregate to plan risk. A plan of 20 small tasks across the codebase can have higher blast radius than 3 big tasks in one module |
+| **Sandbox writability treated as authority** | A proxy sandbox proves only its own access. Confirm external-write authority from the actual writer's context |
 
 ---
 
@@ -181,10 +188,10 @@ A plan is **judged against the idea it implements**. The Ideation working draft 
 
 ## Output reminder
 
-The evaluator writes **nine** output files per system: the seven per-perspective files + one `overall.md` + the filled `checklist.md` (copied from the sibling `checklist.md` at Stage 0 and ticked through Stage 2), all under `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/`:
+The evaluator writes **nine** output files per system: the seven per-perspective files + one `overall.md` + the filled `checklist.md` (copied from the sibling `checklist.md` at Stage 0 and ticked through Stage 2), all under `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{system}/`:
 
-- Seven per-perspective files at `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
-- One overall file at `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/overall.md`
-- One filled `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/checklist.md` — the copy-then-tick coverage artifact (Stage 0 copy → Stage 1 `## Stage 1 Additions` → Stage 2 tick with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`)
+- Seven per-perspective files at `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
+- One overall file at `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{system}/overall.md`
+- One filled `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{system}/checklist.md` — the copy-then-tick coverage artifact (Stage 0 copy → Stage 1 `## Stage 1 Additions` → Stage 2 tick with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`)
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.

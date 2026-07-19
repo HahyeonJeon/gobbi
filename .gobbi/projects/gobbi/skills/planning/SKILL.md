@@ -8,14 +8,19 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 
 Skill for the **Planning Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → RECORD) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
 
-The Planning Loop runs **between Preparation and Execution**. It concentrates on **Who, When, and Where**:
+The Planning Loop runs **between Ideation and Execution**. Its DISCUSSION begins
+with a readiness gate, then concentrates on **Who, When, and Where**:
 - **Who** — which agent type implements each task (`executor` / `leader` / `assistant`) and what skills they must load
 - **When** — task order, dependencies, parallel-safe lanes (lanes are documentation; Execution runs sequentially)
 - **Where** — which files / directories each task touches; scope boundaries between tasks
 
-Planning takes the locked Ideation artifacts (`1-ideation/outputs/`) + Preparation's readiness output (`2-preparation/outputs/`) as its inputs and produces `3-planning/outputs/` files the Execution Loop reads as its briefing source.
+Planning takes the locked Ideation artifacts (`1-ideation/outputs/`) as its input,
+verifies that the memory, skill, authority, and staging prerequisites are usable,
+and produces `2-planning/outputs/` files the Execution Loop reads as its briefing source.
 
-The leader's role spans **both** DISCUSSION and WORK — same shape as Ideation and Preparation. The assistant owns RECORD (loaded via [`record/SKILL.md`](../record/SKILL.md)). The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
+The leader's role spans **both** DISCUSSION and WORK — the same shape as Ideation.
+The assistant owns RECORD (loaded via [`record/SKILL.md`](../record/SKILL.md)).
+The evaluator owns EVALUATION (loaded via [`evaluation/SKILL.md`](../evaluation/SKILL.md)).
 
 The manager's orchestration of the Planning Loop (when to spawn the leader, EVALUATION coordination, RECORD delegation, ITER/EXIT decision) is in [`orchestration/workflow/planning.md`](../orchestration/workflow/planning.md).
 
@@ -27,9 +32,9 @@ The agent in the leader role MUST observe these tier boundaries. The only write 
 
 | Memory tier | Path root | Access from leader role |
 |---|---|---|
-| **Session record — own loop working** | `sessions/{date}-{session-id}/3-planning/working/` | **READ + WRITE** — leader draft, restore-point snapshots, transcripts; during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the leader writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
-| **Session record — own loop staging** | `sessions/{date}-{session-id}/3-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — Planning-loop staging (notably `staging/plans/{slug}.md`); Wrap-up promotes to memory |
-| **Session record — prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-preparation}/{outputs,staging}/` | **READ-ONLY** — required input: ideation's locked design + scope contract + scenarios + checklists; preparation's readiness assessment + generated skills |
+| **Session record — own loop working** | `sessions/{date}-{session-id}/2-planning/working/` | **READ + WRITE** — leader draft, restore-point snapshots, transcripts; during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the leader writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
+| **Session record — own loop staging** | `sessions/{date}-{session-id}/2-planning/staging/{plans,scenarios,checklists,decisions,references,design,discussions,backlogs/{feature,project}}/` | **READ + WRITE (WORK only)** — Planning-loop staging (notably `staging/plans/{slug}.md`); Wrap-up promotes to memory |
+| **Session record — prior loop** | `sessions/{date}-{session-id}/1-ideation/{outputs,staging}/` | **READ-ONLY** — required input: Ideation's locked design, scope contract, scenarios, checklists, and staging inventory |
 | **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the leader never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
 | **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for scenario/checklist accumulation context. Never written; Wrap-up owns feature-memory writes |
 | **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake/rule lookup during task assignment. Never written; Wrap-up owns memory writes |
@@ -52,7 +57,7 @@ Every task is a YAML schema record: `{id, what, traces-to, requires, files, inpu
 
 > **The artifact is the program.**
 
-The `3-planning/outputs/` files become the Execution Loop's briefing. Vague tasks produce ambiguous executor work. Spell out file scope, anchor (which scenario / checklist item the task satisfies), verification method, and the skills the executor must load.
+The `2-planning/outputs/` files become the Execution Loop's briefing. Vague tasks produce ambiguous executor work. Spell out file scope, anchor (which scenario / checklist item the task satisfies), verification method, and the skills the executor must load.
 
 > **Anchor every task.**
 
@@ -61,6 +66,19 @@ Every task names its source — a scenario from `1-ideation/outputs/`, a checkli
 > **Stay in scope.**
 
 The Scope Contract from Ideation is binding. Tasks that drift beyond it are either dropped or trigger a REVISE back to Ideation. The leader does not silently grow the plan beyond what Ideation locked. Out-of-scope items get logged as backlog candidates; they never silently graduate into the canonical artifact. Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schema.
+
+> **Readiness is an entry gate, not a second loop.**
+
+The readiness scan is the first operation inside Planning DISCUSSION. It creates
+one evidence file, adds no workflow state, does not increment Planning's iter,
+and has no separate WORK, EVALUATION, or RECORD. A clean scan advances
+automatically. Only a material gap invokes the user-decision primitive.
+
+> **Planning does not repair Ideation.**
+
+Any missing or unusable upstream obligation — including an omitted Ideation
+staging record — routes to re-Ideation or abort. Planning may identify and
+preserve the evidence, but it may not silently repair, waive, or accept the gap.
 
 > **Disagree when you disagree.**
 
@@ -86,27 +104,34 @@ Verification is anchored, not authored, by Planning. Every task's acceptance cri
 
 > **NEEDS_CONTEXT escalation.**
 
-This loop's DISCUSSION phase is manager-direct (the manager uses the active runtime's user-decision primitive when user input is needed); subagents do not run DISCUSSION here. NEEDS_CONTEXT escalation primitive applies to subagents during the WORK phase only — the leader returns NEEDS_CONTEXT in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
+This loop's DISCUSSION phase is manager-owned: only the manager uses the active runtime's user-decision primitive or speaks for a binding disposition. The manager may spawn a leader during DISCUSSION for the readiness inventory and decomposition proposals; that leader reports evidence and recommendations back to the manager and never questions the user directly. A delegated readiness or WORK analysis that lacks required context returns `NEEDS_CONTEXT` in its final report; the manager handles the user-question block per `discussion/SKILL.md`. See `agents/leader.md` § Status Contract for the leader's NEEDS_CONTEXT pattern.
 
 ---
 
 ## DISCUSSION Phase
 
 **Purpose**
-Take the locked Ideation output + Preparation readiness and decompose it into a user-approved task plan with explicit Who / When / Where. Each sub-step pushes the decomposition toward more specificity, so that by the end of DISCUSSION no downstream phase has to guess at task scope, dependencies, or agent assignments.
+Verify readiness against the locked Ideation output, then decompose it into a
+user-approved task plan with explicit Who / When / Where. Each sub-step pushes
+the decomposition toward more specificity, so that by the end of DISCUSSION no
+downstream phase has to guess at task scope, dependencies, or agent assignments.
 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` (canonical, locked design)
-- `sessions/{date}-{session-id}/2-preparation/outputs/` (readiness assessment + any generated project-specific skills now staged)
-- `sessions/{date}-{session-id}/2-preparation/staging/` (skills / scenarios / decisions staged by Preparation)
+- `sessions/{date}-{session-id}/1-ideation/staging/` (the upstream staging inventory)
 - `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,decisions,design,mistakes}/` (accumulated feature memory)
-- `.gobbi/projects/{project-name}/{mistakes,rules}/` (project-wide context)
+- `.gobbi/projects/{project-name}/{mistakes,rules,skills}/` (project-wide context and project-specific skills)
+- The workspace skill roots and any external write surfaces named by the locked scope
 - On `REVISE` iterations: prior iter's evaluator findings + the restore-point copy of prior draft
 
 **Procedure**
-Run sub-steps A → B → C → D → E in order. Each sub-step's procedure block is below. On REVISE iterations, **Restore Point is taken before Sub-step A** (see § Restore Point).
+Run the **Readiness Entry Gate** first, then sub-steps A → B → C → D → E in
+order. Each block is below. On REVISE iterations, **Restore Point is taken before
+the gate** (see § Restore Point). A prior READY result is revalidated rather than
+blindly reused.
 
 **Outputs**
+- Readiness report and result: `READY`, `RE-IDEATE`, or `NEEDS_CONTEXT`
 - Task seed set (Sub-step A) — checklist items inside the Scope Contract, with their parent scenarios
 - File map + task slicing (Sub-step B)
 - Dependency table + parallel-lane table (Sub-step C)
@@ -115,7 +140,8 @@ Run sub-steps A → B → C → D → E in order. Each sub-step's procedure bloc
 - Discussion log (manager-captured user-decision exchanges, including any USER CHALLENGE outcomes)
 
 **Exit checklist**
-- [ ] All five sub-steps (A–E) completed
+- [ ] Readiness Entry Gate recorded `READY`
+- [ ] All five decomposition sub-steps (A–E) completed
 - [ ] Every task has a scenario / checklist anchor
 - [ ] Every task has agent type + required skills + required mistakes
 - [ ] Self-review report shows zero placeholders, zero type/name drift, full spec coverage
@@ -132,23 +158,78 @@ Preserve the prior iteration's draft byte-for-byte before any REVISE mutation, s
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | `sessions/{date}-{session-id}/3-planning/working/draft-iter{n-1}.md` | Copy verbatim to `sessions/{date}-{session-id}/3-planning/working/restore/iter{n-1}-pre-revise.md`; prepend a 3-line header: `# Restore point — iter {n-1} pre-REVISE`, `# Captured: {YYYY-MM-DD}`, `# To re-run: copy this file back to draft-iter{n-1}.md` | Restore-point snapshot |
+| 1 | Leader | `sessions/{date}-{session-id}/2-planning/working/draft-iter{n-1}.md` | Copy verbatim to `sessions/{date}-{session-id}/2-planning/working/restore/iter{n-1}-pre-revise.md`; prepend a 3-line header: `# Restore point — iter {n-1} pre-REVISE`, `# Captured: {YYYY-MM-DD}`, `# To re-run: copy this file back to draft-iter{n-1}.md` | Restore-point snapshot |
 | 2 | Leader | Restore-point path + prior evaluator findings | Read both; surface to manager which findings will drive this REVISE iter | Findings-driven entry brief |
 
 Restore points accumulate across REVISE iterations — each one is preserved as `restore/iter{m}-pre-revise.md` for `m ∈ 1..n-1`. They are session-scoped only and never promoted to memory.
 
 ---
 
-### Sub-step A — Read Ideation + Preparation Output
+### Readiness Entry Gate — first operation inside DISCUSSION
 
 **Purpose**
-Read the locked Scope Contract, design, scenarios, checklist, and Preparation readiness end-to-end. Enumerate the **task seed set** — every checklist item inside the Scope Contract becomes a candidate task.
+Prove that the locked Ideation contract is plan-ready without creating another
+workflow step. The gate is evidence gathering and routing only; it does not fix
+upstream artifacts or generate skills.
+
+**Artifact**
+`sessions/{date}-{session-id}/2-planning/working/readiness-gate-iter{n}.md`.
+The file is append-only across re-Ideation attempts. Its header carries
+`Current attempt: {k}` and links to `## Attempt {k}`. Each attempt records the
+timestamp and the identity of the locked Ideation output it inspected, then
+contains these required sections:
+
+1. **Scope and Ideation inventory** — every locked output and required staging
+   artifact, with existence and usability evidence.
+2. **Memory read register** — recursive reads of applicable project/feature
+   memory, mistakes, and rules; absence is stated explicitly.
+3. **Candidate skills** — every workspace/domain/project skill implied by the
+   scope, its canonical path, and existence/usability status.
+4. **External-write dispositions** — for every in-scope write outside the
+   worktree: actual writer/owner, exact surface, read-only access/authority
+   evidence gathered from that writer's real context, reversibility, and a
+   go/no-go result. A sandbox proxy's `test -w` result is not authority evidence.
+5. **Gaps and routing** — each material gap, its evidence, and one permitted
+   route: `RE-IDEATE` or `NEEDS_CONTEXT`.
+6. **User decisions** — only material-gap decisions; write `none — clean scan`
+   when the gate auto-advances.
+7. **Result** — exactly `READY`, `RE-IDEATE`, or `NEEDS_CONTEXT` for that attempt.
+
+Attempt 1 creates the file. A rerun updates only the `Current attempt` pointer
+and appends `## Attempt {k+1}`; it never rewrites, removes, or summarizes an
+earlier attempt. Every consumer uses the result under the current attempt while
+the complete re-Ideation evidence remains auditable at the stable contracted path.
+
+**Routing contract**
+
+| Condition | Result | Action |
+|---|---|---|
+| All evidence is usable | `READY` | Auto-advance to Sub-step A; do not ask the user merely to confirm a clean scan |
+| Any Ideation output/staging/constraint is absent, vague, contradictory, or unusable | `RE-IDEATE` | Show the evidence and ask only whether to re-enter Ideation or abort; accepting or repairing the gap in Planning is forbidden |
+| A required workspace/domain skill is genuinely unavailable, or authority/access evidence cannot be obtained | `NEEDS_CONTEXT` | Show the evidence and ask for the missing context/authority or abort |
+| A project-specific skill is required but does not yet exist | `READY` with execution obligation | Record it; Sub-step D must create the first Execution task that authors, wires, verifies, and commits the skill before dependent tasks |
+
+Planning enters the gate as `Active` with `phase: DISCUSSION`. On `RE-IDEATE`,
+atomically return Planning to `Pending`, set Ideation `Revising`, preserve the
+readiness artifact, and do **not** increment Planning's iteration. After Ideation
+passes again, append a new attempt against the new locked artifacts. On
+`NEEDS_CONTEXT`, keep Planning Active in DISCUSSION until the context is supplied
+or the session is aborted. Any upstream omission, including missing staging,
+follows the `RE-IDEATE` route.
+
+---
+
+### Sub-step A — Read Ideation Output
+
+**Purpose**
+Read the locked Scope Contract, design, scenarios, and checklist end-to-end after
+the entry gate is READY. Enumerate the **task seed set** — every checklist item
+inside the Scope Contract becomes a candidate task.
 
 **Inputs**
 - `sessions/{date}-{session-id}/1-ideation/outputs/` — every file
-- `sessions/{date}-{session-id}/2-preparation/outputs/` — every file
-- `sessions/{date}-{session-id}/2-preparation/staging/` — staged readiness fixes (generated skills, missed-promotion scenarios/checklists/decisions)
 - Existing feature directory at `.gobbi/projects/{project-name}/features/{feature-name}/{scenarios,checklists,design}/`
+- The READY entry-gate artifact for this Planning entry
 
 **Procedure**
 
@@ -158,9 +239,8 @@ Read the locked Scope Contract, design, scenarios, checklist, and Preparation re
 | 2 | Leader | Framed problem + design decisions | Inherit context (do not redo Ideation's research); record any decisions that constrain task slicing | Constraint notes |
 | 3 | Leader | Ideation checklist + Scope Contract | Enumerate checklist items that fall inside the Scope Contract — these become the task seed set | Task seed list |
 | 4 | Leader | Scenarios | Identify scenarios with no anchored checklist item; surface as gap findings rather than silently inventing tasks | Gap findings (zero or more) |
-| 5 | Leader | Preparation artifacts | Read readiness assessment; confirm every "generate-now" decision has produced a staged skill / scenario / decision; if any gap remains, surface it as a planning blocker | Readiness confirmation or blocker |
-| 6a | Leader | Gaps + readiness blockers | Surface to manager via findings package | Findings package |
-| 6b | Manager | Findings package | Either advance (if no blocker) or use the active runtime's user-decision primitive to decide remediation (re-Ideate / re-Prepare / accept gap) | Advance decision |
+| 5a | Leader | Gap findings | Surface to manager with exact upstream evidence | Findings package |
+| 5b | Manager | Findings package | If non-empty, apply the entry-gate upstream routing: re-Ideate or abort; never accept or repair in Planning | Routing decision |
 
 **Outputs**
 - Task seed set (consumed by Sub-step B)
@@ -246,10 +326,13 @@ Assign each task an agent type, model override (if any), required skills, and re
 |---|---|---|---|---|
 | 1 | Leader | Task | Propose **agent type**: typically `executor`. Use `leader` only when the task requires sub-decomposition or sub-planning. Use `assistant` only for mechanical / trivial work (doc edits, file renames, copy-and-modify) | Agent type per task |
 | 2 | Leader | Task + agent type | Propose **model override** if any. Defaults follow [orchestration/delegation.md § Model Selection](../orchestration/delegation.md#model-selection): executor→opus, leader→opus, assistant→sonnet. Override only when a task has unusual complexity or simplicity | Model override (if any) per task |
-| 3 | Leader | Task + agent type + files | Enumerate **required skills**: `principles` (always), workflow skills for the task's phase (e.g., `execution` for implementation tasks), domain skills from the current skill tree (e.g., `git` for branch work), project-specific skills (e.g., `{project-name}-typescript-conventions` if they exist in `.gobbi/projects/{project-name}/skills/`), and the phase doc relevant to the task | Required skills list per task |
-| 4 | Leader | Task + files | Enumerate **required mistakes**: project mistakes at `.gobbi/projects/{project-name}/mistakes/` filtered by domain, feature-specific mistakes at `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` if present (read both recursively — mistakes nest under `{area}/` subdirs, so descend into every area subdir) | Required mistakes list per task |
-| 5a | Leader | Per-task assignments | Surface to manager | Package |
-| 5b | Manager | Package | Run the active runtime's user-decision primitive when: (a) a task's agent type is ambiguous, (b) a task's required skills are not obvious from the files touched, (c) a model override is proposed | User decisions |
+| 3 | Leader | Task + agent type + files | Enumerate **required skills**: `principles` (always), workflow skills for the task's phase (e.g., `execution` for implementation tasks), domain skills from the current skill tree (e.g., `git` for branch work), project-specific skills, and the phase doc relevant to the task | Required skills list per task |
+| 4 | Leader | Required skills + concrete task map | Revalidate every required skill against its canonical path. A genuinely missing workspace/domain skill returns `NEEDS_CONTEXT`. A missing project-specific skill creates an obligation for the first Execution task; it is not authored or staged during Planning | Skill disposition per task |
+| 5 | Leader | Missing project-specific skill obligations | If any exist, make Task 01 author, wire, verify, and commit those skills. Every dependent task lists Task 01 in `requires:` and consumes its verified skill output | Foundation task + dependency edges |
+| 6 | Leader | Task + files | Enumerate **required mistakes**: project mistakes at `.gobbi/projects/{project-name}/mistakes/` filtered by domain, feature-specific mistakes at `.gobbi/projects/{project-name}/features/{feature-name}/mistakes/` if present (read both recursively — mistakes nest under `{area}/` subdirs, so descend into every area subdir) | Required mistakes list per task |
+| 7 | Leader | External-write tasks | Revalidate owner, exact surface, actual-writer read-only authority/access evidence, reversibility, and go/no-go against the concrete task map | External-write dispositions |
+| 8a | Leader | Per-task assignments | Surface to manager | Package |
+| 8b | Manager | Package | Run the active runtime's user-decision primitive when: (a) a task's agent type is ambiguous, (b) a task's required skills are not obvious from the files touched, (c) a model override is proposed, or (d) an external-write go/no-go remains material | User decisions |
 
 The skill / mistake set is **declarative** — the planning artifacts list what the Execution Loop's manager must inject into each delegation prompt's Load Directives block (see [orchestration/delegation.md § The Load Directives Block](../orchestration/delegation.md#the-load-directives-block)).
 
@@ -290,25 +373,29 @@ Persist every DISCUSSION decision into a durable session draft. WORK is a **docu
 
 **Inputs**
 - DISCUSSION outputs from Sub-steps A–E
-- Existing session directory tree at `sessions/{date}-{session-id}/3-planning/{working,staging,evaluation}/` (bootstrapped by the manager)
+- Existing session directory tree at `sessions/{date}-{session-id}/2-planning/{working,staging,evaluation}/` (bootstrapped by the manager)
 
 **Procedure**
 
 | # | Agent | Input | Action | Output |
 |---|---|---|---|---|
-| 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` |
+| 1 | Leader | DISCUSSION outputs; required-sections template | Write the working draft using the required-sections template | `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md` |
 | 2 | Leader | Locked task list + per-task assignments | Stamp `staging/plans/{slug}.md` per the [plans template](../memory/templates/plans.md) — one file per substantive plan topic; on simple workflows a single `plans/main.md` is acceptable | One or more staged plan files |
 | 3 | Leader | All DISCUSSION user-decision outcomes from transcript | Stamp the Decisions Log section — task slicing decisions, agent type ambiguity resolutions, model overrides, USER CHALLENGE outcomes, self-review acceptances | Populated Decisions Log |
 | 4 | Leader | Working draft + staged plans | Verify the WORK exit checklist | Completion signal, or gap surfaced to manager |
 
 **Outputs**
 
-- `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` — canonical working draft, stamped to the required-sections template below
-- `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — staged plan file(s); Wrap-up promotes to `features/{feature-name}/plans/`
+- `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md` — canonical working draft, stamped to the required-sections template below
+- `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` — staged plan file(s); Wrap-up promotes to `features/{feature-name}/plans/`
 
 Required-sections template for the working draft:
 
 ```markdown
+## Readiness report
+{Link to `working/readiness-gate-iter{n}.md`; summarize the inventories,
+external-write dispositions, skill obligations, user decisions, and READY result.}
+
 ## Scope reference
 {Link to `1-ideation/outputs/` and the locked Scope Contract section. Verbatim copy of Project / Feature / Task triplet.}
 
@@ -349,7 +436,8 @@ verifies: {runnable command or file-existence check}
 ```
 
 **Exit checklist**
-- [ ] Working draft has all 9 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
+- [ ] Working draft has all 10 required sections populated, no `TODO` / `TBD` / `<...>` placeholders
+- [ ] `## Readiness report` cites a current gate artifact whose result is `READY`
 - [ ] `staging/plans/{slug}.md` stamped for every substantive plan topic
 - [ ] Decisions Log cites every user-decision outcome (including USER CHALLENGEs)
 - [ ] No writes to memory (`features/{feature-name}/...` or top-level project dirs)
@@ -366,9 +454,9 @@ verifies: {runnable command or file-existence check}
 
 When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; default `dual`), a Codex proposer runs in parallel with the leader during WORK — the creation-time analogue of the dual-system EVALUATION. The proposer is the `codex exec` assistant-wrapper owned by [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md); the manager orchestrates the spawn, selective integration, and gap classification per [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). This section states only the per-loop boundary and does not re-derive that orchestration.
 
-- **Codex proposal artifact.** The Codex proposer writes an independent alternative task decomposition to `sessions/{date}-{session-id}/3-planning/working/proposals/codex/draft-iter{n}.md` — never the canonical `working/draft-iter{n}.md`. Codex proposes; the leader writes.
+- **Codex proposal artifact.** The Codex proposer writes an independent alternative task decomposition to `sessions/{date}-{session-id}/2-planning/working/proposals/codex/draft-iter{n}.md` — never the canonical `working/draft-iter{n}.md`. Codex proposes; the leader writes.
 - **Two-phase freeze boundary.** The Codex proposal is **frozen** before the leader integrates it; the canonical `working/draft-iter{n}.md` is **frozen** before EVALUATION spawns. The leader integrates against the frozen proposal — it never races a still-writing Codex run — and the canonical artifact does not change under the evaluator. Derived from [`evaluation/mistakes.md#freeze-producer-artifact-before-evaluating`](../evaluation/mistakes.md#freeze-producer-artifact-before-evaluating).
-- **Producer selective integration.** The leader is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/3-planning/working/reconciliation-iter{n}.md` (the Integration Log). The leader integrates the slicing, dependencies, and assignments and surfaces fork-level disagreements; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
+- **Producer selective integration.** The leader is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/2-planning/working/reconciliation-iter{n}.md` (the Integration Log). The leader integrates the slicing, dependencies, and assignments and surfaces fork-level disagreements; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
 - **Degraded mode.** If the Codex proposal is empty, times out, or errors, the leader proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is not a safety gate.
 
 ---
@@ -381,8 +469,8 @@ Find the planning gaps WORK missed. Two independent systems (Claude Code + Codex
 See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
 
 **Inputs** (consumed from the WORK phase output)
-- `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`
-- `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` — every staged plan file
+- `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md`
+- `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` — every staged plan file
 - The locked Scope Contract (from Ideation artifacts)
 - The discussion log (manager-captured user-decision exchanges)
 
@@ -398,8 +486,8 @@ See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 
 | 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. After RECORD, `PASS` exits the loop; `REVISE` re-enters DISCUSSION (iter increments; evaluator findings feed next DISCUSSION); `FAIL` escalates through the active runtime's user-decision primitive | Workflow-state verdict |
 
 **Outputs**
-- `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
-- `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
+- `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
+- `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
 - Aggregated verdict recorded in workflow state (cross-system divergence is derived at RECORD by comparing the per-system files; no separate divergence file is written)
 
 **Planning-specific evaluation emphasis** (the phase child doc directs)
@@ -424,12 +512,12 @@ Persist every iteration's evidence into session record and — on the final `PAS
 See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
 
 **Inputs**
-- `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` — current iteration's WORK output
-- `sessions/{date}-{session-id}/3-planning/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
+- `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md` — current iteration's WORK output
+- `sessions/{date}-{session-id}/2-planning/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
 - `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/3-planning/working/discussion-log.md`
+- `sessions/{date}-{session-id}/2-planning/working/discussion-log.md`
 - EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
-- WORK-staged plans under `sessions/{date}-{session-id}/3-planning/staging/plans/` (already in place — RECORD supplements, never replaces)
+- WORK-staged plans under `sessions/{date}-{session-id}/2-planning/staging/plans/` (already in place — RECORD supplements, never replaces)
 
 **Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Planning-specific notes:
 
@@ -444,8 +532,8 @@ Every iteration produces:
 - `sessions/{date}-{session-id}/session.json` — upserted `workflow.planning.iterations[]` entry
 
 Only the `PASS` iteration also produces:
-- `sessions/{date}-{session-id}/3-planning/outputs/` — canonical artifact files (task-list + dependencies + memory-reads, plus loop-specific decompositions)
-- `sessions/{date}-{session-id}/3-planning/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged plan files
+- `sessions/{date}-{session-id}/2-planning/outputs/` — canonical artifact files (task-list + dependencies + memory-reads, plus loop-specific decompositions)
+- `sessions/{date}-{session-id}/2-planning/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged plan files
 - `sessions/{date}-{session-id}/session.json` — `workflow.planning.finishedAt` and `verdict: PASS` set
 
 **Exit checklist**
@@ -478,30 +566,36 @@ All writes during the Planning Loop are **session-scoped**. Wrap-up promotes the
 
 | Path | Written by | Written |
 |---|---|---|
-| `sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md` | leader (WORK) | every iteration |
-| `sessions/{date}-{session-id}/3-planning/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration |
-| `sessions/{date}-{session-id}/3-planning/working/reconciliation-iter{n}.md` | leader (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
-| `sessions/{date}-{session-id}/3-planning/working/restore/iter{n}-pre-revise.md` | leader (REVISE entry) | per REVISE iter — verbatim copy of prior iter's draft |
-| `sessions/{date}-{session-id}/3-planning/staging/plans/{slug}.md` | leader (WORK) | per substantive plan topic |
-| `sessions/{date}-{session-id}/3-planning/staging/scenarios/{slug}.md` | assistant (RECORD) | per `scenario_gap` finding |
-| `sessions/{date}-{session-id}/3-planning/staging/checklists/{slug}.md` | assistant (RECORD) | per `checklist_gap` finding |
-| `sessions/{date}-{session-id}/3-planning/staging/decisions/{slug}.md` | assistant (RECORD) | per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding + Domain-routed `general` findings |
-| `sessions/{date}-{session-id}/3-planning/staging/discussions/{slug}.md` | assistant (RECORD) | per substantive user-decision topic |
-| `sessions/{date}-{session-id}/3-planning/staging/backlogs/feature/{slug}.md` | assistant (RECORD) | per `deferred` finding landing in the feature backlog |
-| `sessions/{date}-{session-id}/3-planning/staging/backlogs/project/{slug}.md` | assistant (RECORD) | per `deferred` finding landing in the project backlog |
-| `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
+| `sessions/{date}-{session-id}/2-planning/working/readiness-gate-iter{n}.md` | leader (DISCUSSION entry gate) | every Planning entry; append-only attempt sections preserve re-Ideation evidence while `Current attempt` identifies the operative result |
+| `sessions/{date}-{session-id}/2-planning/working/draft-iter{n}.md` | leader (WORK) | every iteration |
+| `sessions/{date}-{session-id}/2-planning/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration |
+| `sessions/{date}-{session-id}/2-planning/working/reconciliation-iter{n}.md` | leader (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
+| `sessions/{date}-{session-id}/2-planning/working/restore/iter{n}-pre-revise.md` | leader (REVISE entry) | per REVISE iter — verbatim copy of prior iter's draft |
+| `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` | leader (WORK) | per substantive plan topic |
+| `sessions/{date}-{session-id}/2-planning/staging/scenarios/{slug}.md` | assistant (RECORD) | per `scenario_gap` finding |
+| `sessions/{date}-{session-id}/2-planning/staging/checklists/{slug}.md` | assistant (RECORD) | per `checklist_gap` finding |
+| `sessions/{date}-{session-id}/2-planning/staging/decisions/{slug}.md` | assistant (RECORD) | per `design_flaw` / `assumption_risk` / `disputed` / `deferred` finding + Domain-routed `general` findings |
+| `sessions/{date}-{session-id}/2-planning/staging/discussions/{slug}.md` | assistant (RECORD) | per substantive user-decision topic |
+| `sessions/{date}-{session-id}/2-planning/staging/backlogs/feature/{slug}.md` | assistant (RECORD) | per `deferred` finding landing in the feature backlog |
+| `sessions/{date}-{session-id}/2-planning/staging/backlogs/project/{slug}.md` | assistant (RECORD) | per `deferred` finding landing in the project backlog |
+| `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
+| `sessions/{date}-{session-id}/2-planning/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
 | `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — preserved transcript window |
-| `sessions/{date}-{session-id}/3-planning/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: task-list`, ≥ 1 with `artifact_type: memory-reads` |
+| `sessions/{date}-{session-id}/2-planning/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: task-list`, ≥ 1 with `artifact_type: memory-reads` |
 | `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | loop completion timestamps, iter, verdict |
 
-The session directory tree at `sessions/{date}-{session-id}/3-planning/{working,staging,evaluation}/` is bootstrapped by the manager at Planning Loop entry. WORK and RECORD assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Planning; Wrap-up creates them as needed during memory promotion.
+The session directory tree at `sessions/{date}-{session-id}/2-planning/{working,staging,evaluation}/` is bootstrapped by the manager at Planning Loop entry. WORK and RECORD assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Planning; Wrap-up creates them as needed during memory promotion.
 
 ---
 
 ## Constraints
 
 - **MUST anchor every task** to a scenario or checklist item from Ideation — anchor-less tasks are forbidden.
+- **MUST run the readiness entry gate before Sub-step A** — a clean scan auto-advances; only material gaps invoke the user-decision primitive.
+- **MUST route every upstream omission to re-Ideation or abort** — Planning never repairs or accepts an Ideation gap, including missing staging.
+- **MUST keep Planning non-skippable** — every workflow performs the gate and produces a task plan.
+- **MUST make missing project-specific skill creation the first Execution task** — Planning records and orders the obligation but does not generate the skill.
+- **MUST return `NEEDS_CONTEXT` for a genuinely missing workspace/domain skill or unresolved authority evidence**.
 - **MUST never silently invent tasks** not approved by the user in DISCUSSION — re-enter DISCUSSION if WORK surfaces a gap.
 - **MUST never embed test-writing as a Planning task** — testing is EVALUATION's job; Planning anchors verification, doesn't perform it.
 - **MUST never embed implementation code or step-by-step recipes** in task descriptions — the executor decides "how" based on the locked design and memory.
@@ -512,7 +606,7 @@ The session directory tree at `sessions/{date}-{session-id}/3-planning/{working,
 - **MUST run Sub-step E (Self-Review)** before WORK — zero placeholders, zero type/name drift, full spec coverage (or explicit user-approved acceptances).
 - **MUST take a Restore Point** at every REVISE entry — copy prior `draft-iter{n-1}.md` to `restore/iter{n-1}-pre-revise.md` with re-run header.
 - **MUST escalate via USER CHALLENGE** when the leader substantively disagrees with the user's stated Ideation direction — use the 5-field card; bias defaults to user's original direction.
-- **MUST never write to memory or feature memory during the Planning Loop** — all staging happens at `sessions/{date}-{session-id}/3-planning/staging/...`. Wrap-up promotes.
+- **MUST never write to memory or feature memory during the Planning Loop** — all staging happens at `sessions/{date}-{session-id}/2-planning/staging/...`. Wrap-up promotes.
 - **MUST never delete** — supersession via frontmatter (`status: superseded`, `superseded_by:`); physical deletion of any file in any tier is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
 - **MUST never read or write `session.json` from the leader role** — the manager owns it.
 - **MUST disagree when you disagree** — surface technical conflicts with evidence; trigger USER CHALLENGE for substantive disagreements with user direction.

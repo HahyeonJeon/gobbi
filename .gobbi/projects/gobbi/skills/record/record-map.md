@@ -30,12 +30,13 @@ sessions/{date}-{session-id}/                  ← session root
 │                                   Session-scoped, gitignored, never promoted,
 │                                   removed at worktree cleanup. NO per-loop transcripts/.
 └── {N}-{loop}/                   number-prefixed loop dir (one per workflow loop):
-                                    1-ideation  2-preparation  3-planning
-                                    4-execution  5-wrap-up
+                                    1-ideation  2-planning
+                                    3-execution  4-wrap-up
     ├── working/                  raw working capture (the only scratch surface):
     │   ├── draft-iter{n}.md            mutable working draft (WORK)
     │   ├── reconciliation-iter{n}.md   dual-system Integration Log (Claude producer; WRITTEN, not scaffolded)
     │   ├── discussion-log.md           append-only AskUserQuestion journal (manager)
+    │   ├── readiness-gate-iter{n}.md   Planning entry-gate evidence (2-planning only)
     │   ├── research/{slug}.md          pre-staging external refs (leader, research skill)
     │   └── proposals/codex/draft-iter{n}.md  Codex proposer's frozen draft (codex exec; scaffolded dir)
     ├── evaluation/               per-iter dual-system eval:
@@ -43,12 +44,12 @@ sessions/{date}-{session-id}/                  ← session root
     ├── staging/                  typed-finding stagings (Wrap-up promotion source):
     │   └── {scenarios,checklists,decisions,references,design,discussions,
     │        backlogs/{feature,project},reviews,reports,changelogs,learnings,notes,
-    │        skills (2-preparation only), plans (3-planning only)}/{slug}.md
+    │        plans (2-planning only)}/{slug}.md
     └── outputs/                  PASS-only loop output:
         └── {free-filename}.md          carries the Artifact frontmatter schema
 
-# 4-execution/ per-task nesting (recursive 4-slot interior; no per-task transcripts/):
-4-execution/
+# 3-execution/ per-task nesting (recursive 4-slot interior; no per-task transcripts/):
+3-execution/
 ├── staging/{...}/                loop-level (cross-task) staging
 └── task-{NN}-{slug}/             e.g. task-01-scaffold-script/
     ├── working/
@@ -80,10 +81,9 @@ workflow, fixed:
 | `{N}` | `{loop}` | On-disk dir |
 |---|---|---|
 | 1 | ideation | `1-ideation` |
-| 2 | preparation | `2-preparation` |
-| 3 | planning | `3-planning` |
-| 4 | execution | `4-execution` |
-| 5 | wrap-up | `5-wrap-up` |
+| 2 | planning | `2-planning` |
+| 3 | execution | `3-execution` |
+| 4 | wrap-up | `4-wrap-up` |
 
 `{N}-{loop}` is the only valid on-disk loop-dir form. `{date}` is the session
 start date in `YYYY-MM-DD`. `{session-id}` is the parent session's Claude Code
@@ -97,7 +97,7 @@ number. `{slug}` is a kebab-case identifier set by the writer.
 This is the single most error-prone part of the spec. Read it before editing any
 session-path prose.
 
-- **On disk**: loop dirs carry the `{N}-` prefix — `1-ideation`, `4-execution`.
+- **On disk**: loop dirs carry the `{N}-` prefix — `1-ideation`, `3-execution`.
 - **In JSON**: the `workflow.{loop}` keys in `session.json` and `state.json` stay
   **BARE** — `workflow.ideation`, `workflow.execution`. No number prefix, ever.
 
@@ -111,7 +111,7 @@ the same loop.
 
 ## Per-slot dir contract
 
-Each loop dir (and each `4-execution/task-{NN}-{slug}/`) holds exactly these four
+Each loop dir (and each `3-execution/task-{NN}-{slug}/`) holds exactly these four
 slots.
 
 | Slot | Holds | Writer | Created | Lifecycle |
@@ -132,7 +132,7 @@ flag).
 ## Per-loop staging-subdir vocabulary
 
 `staging/` holds typed-finding subdirs. The base vocabulary is shared by every
-loop; two loops add one extra subdir each.
+loop; Planning adds one extra subdir.
 
 Base (every loop): `scenarios`, `checklists`, `decisions`, `references`, `design`,
 `discussions`, `backlogs/feature`, `backlogs/project`, `reviews`, `reports`,
@@ -142,10 +142,9 @@ Loop-specific additions:
 
 | Loop | Extra staging subdir |
 |---|---|
-| `2-preparation` | `skills/` |
-| `3-planning` | `plans/` |
+| `2-planning` | `plans/` |
 
-No other loop carries `skills/` or `plans/`. The scaffold script embeds this
+No other loop carries `plans/`. The scaffold script embeds this
 vocabulary in a `case` block keyed by loop name; this table is the source it is
 verified against.
 
@@ -207,7 +206,7 @@ values.
 - Creates the **session-root invariants** — `transcripts/` plus create-if-absent
   metadata stubs (`session.json`, `state.json`, `settings.json`, `session.json.lock`)
   copied from `orchestration/templates/`, and a `README.md` index stub.
-- Creates all **five loop dirs** (`1-ideation` … `5-wrap-up`) by **delegating** each
+- Creates all **four loop dirs** (`1-ideation` … `4-wrap-up`) by **delegating** each
   loop interior to [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh),
   the single dir-materializer, so the per-loop dir + staging vocabulary stays defined
   in exactly one place. Execution task dirs (`task-{NN}-{slug}`) stay lazy (names
@@ -216,7 +215,11 @@ values.
 - **Idempotent + create-if-absent**: dirs use `mkdir -p`; metadata + README stubs are
   never overwritten, so re-running on a resumed / cleared / compacted session preserves
   the manager's stamped values. Args: `<session-root>` (absolute) and `<mode>`
-  (`chat|auto`, selects the settings template). Fail-closed on bad args.
+  (`chat|auto`, selects the settings template). Before any mutation, the initializer
+  compares every existing metadata file's `schemaVersion` with the selected shipped
+  template and rejects invalid or legacy metadata. Pre-0.5.3 sessions finish in their
+  pinned old worktrees; this code performs no migration or dual-schema writes.
+  Fail-closed on bad args or a schema mismatch.
 
 ---
 
@@ -255,12 +258,12 @@ values.
   the parallel [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
   states the same exclusion.
 - **Chat-mode parity**: in a Chat-mode session the per-slice
-  `chat/tasks/*/{N}-{loop}/staging/` (and `chat/tasks/*/4-execution/task-*/staging/`)
+  `chat/tasks/*/{N}-{loop}/staging/` (and `chat/tasks/*/3-execution/task-*/staging/`)
   is a **valid** non-loop promotion source, so
   Chat typed findings reach memory (see [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
   and [`orchestration/chat-mode.md` §4](../orchestration/chat-mode.md)); absent in non-Chat sessions.
   The `chat/tasks` subtree is **manager-materialized** at slice entry — it lies OUTSIDE the fixed
-  scaffold set (`1-ideation` … `5-wrap-up`) that
+  scaffold set (`1-ideation` … `4-wrap-up`) that
   [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh) creates and
   [`verify-record-map.sh`](scripts/verify-record-map.sh) validates — so the drift-gate's exclusion of
   `chat/tasks` from its fixed set is INTENTIONAL, pending the GEN-D7-004 follow-up that extends both
@@ -289,9 +292,9 @@ The scaffold script enforces these rules before creating anything. On any failur
 it exits non-zero and creates **nothing**.
 
 - `<session-root>` must be an **absolute** path. A relative path is rejected.
-- `<step-dir>` must be one of the fixed loop set — `1-ideation`, `2-preparation`,
-  `3-planning`, `4-execution`, `5-wrap-up` — **or** a single execution task dir of
-  the form `4-execution/task-{NN}-{slug}`, where `{NN}` is `[0-9]{2}` and `{slug}`
+- `<step-dir>` must be one of the fixed loop set — `1-ideation`, `2-planning`,
+  `3-execution`, `4-wrap-up` — **or** a single execution task dir of
+  the form `3-execution/task-{NN}-{slug}`, where `{NN}` is `[0-9]{2}` and `{slug}`
   matches `[a-z0-9-]{1,40}`.
 - A `<step-dir>` containing `..`, a leading `/`, or stray/duplicate slashes is
   rejected.

@@ -2,11 +2,11 @@
 
 Phase child doc loaded by the evaluator at Stage 0 when the workflow phase is `wrap-up`. Provides the per-perspective evaluation **procedure** for a Wrap-up Loop's session consolidation: each perspective's **lens**, its **recommended verifications**, and its **perspective-specific anti-patterns**, plus the **Overall (Stage 3)** anchors. The concrete GOOD / BAD / adversarial **scenario families** live in the sibling `scenario.md`, and their yes/no **checks** live in the sibling `checklist.md` (whose heading tree mirrors `scenario.md`); each perspective below points to its section in both.
 
-The artifact under evaluation is the Wrap-up loop's working handoff draft at `sessions/{date}-{session-id}/5-wrap-up/working/handoff-draft.md` **plus** the full set of memory promotions Wrap-up made. Stage 4 has not yet sealed the draft to the PASS-only `outputs/handoff.md` when this gate runs.
+The artifact under evaluation is the Wrap-up loop's working handoff draft at `sessions/{date}-{session-id}/4-wrap-up/working/handoff-draft.md` **plus** the full set of memory promotions Wrap-up made. Stage 4 has not yet sealed the draft to the PASS-only `outputs/handoff.md` when this gate runs.
 
 **Derive the evaluated destination set from the frozen promotion manifest — not from a copied directory list.** Follow this procedure at Stage 0:
 
-1. Require the frozen `sessions/{date}-{session-id}/5-wrap-up/working/promotion-manifest.md`, its recorded hash, the pre-Wrap-up filesystem/hash snapshot (`working/pre-wrap-up-snapshot.txt`), the applied-delta report, and the post-promotion guard results.
+1. Require the frozen `sessions/{date}-{session-id}/4-wrap-up/working/promotion-manifest.md`, its recorded hash, the pre-Wrap-up filesystem/hash snapshot (`working/pre-wrap-up-snapshot.txt`), the applied-delta report, and the post-promotion guard results.
 2. Build the evaluated destination set from the manifest, not prose. Include every mapped destination from source-accounting rows — including no-op / already-promoted destinations that still require verification — and every target from mutation rows: a move contributes both its source and destination; a repoint contributes the reference carrier; a shared-file append contributes the whole shared file; a directory, feature-index update, lifecycle flip, archive target, and the journal row each contribute their actual path.
 3. When the compaction sub-procedure produced a merge manifest, union every source, consolidated destination, archive destination, and inbound-reference carrier that manifest names into the evaluated set.
 4. Compare that derived set against the pre/post filesystem snapshot and the applied-delta report: a changed path with no manifest row is a failure; a manifest mutation with no resulting path/state is a failure.
@@ -38,7 +38,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 | `git diff` for new files under `features/{feature-name}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/` | Verify promotion actually happened across all project-tier destinations |
 | `find .gobbi/projects/{project-name}/` (pre-Wrap-up vs post-Wrap-up) reconciled to the frozen manifest | Identify exactly what was promoted at each destination — the manifest-derived destination set replaces (does not narrow) a copied `git diff` destination list |
 | Applied-delta reconciliation: every changed destination is a manifest row and every planned mutation actually happened | Detect an off-manifest write or a planned mutation that never landed |
-| Read the frozen promotion manifest (`5-wrap-up/working/promotion-manifest.md`) and take its row set as the destination set | Verify the evaluated destinations come from the manifest, not a copied list |
+| Read the frozen promotion manifest (`4-wrap-up/working/promotion-manifest.md`) and take its row set as the destination set | Verify the evaluated destinations come from the manifest, not a copied list |
 
 ### Perspective-specific anti-patterns
 
@@ -125,7 +125,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 
 | Tool | Use for |
 |---|---|
-| Read `5-wrap-up/working/handoff-draft.md` cold — required sections, substantive entries, placeholders, self-evident ordering | Test the draft that Stage 3 actually evaluates before Stage 4 seals it on `PASS` |
+| Read `4-wrap-up/working/handoff-draft.md` cold — required sections, substantive entries, placeholders, self-evident ordering | Test the draft that Stage 3 actually evaluates before Stage 4 seals it on `PASS` |
 | Resolve every durable pointer from the repository root; reject both absolute worktree paths and `./...` cwd-relative paths | Detect a pointer that dies at worktree cleanup |
 
 ### Perspective-specific anti-patterns
@@ -174,7 +174,7 @@ Wrap-up evaluation is **non-skippable** (D13). No `evaluate.mode: skip` setting 
 |---|---|
 | Diff `staging/` directory contents vs promoted memory files (source inventory vs manifest accounting: promote / backlog / documented-drop / already-promoted; startup excluded) | Detect staging artifacts that were silently dropped |
 | `grep` "supersedes" / "updates" in newly promoted files | Confirm conflicts with prior memory are declared, not silent |
-| Cross-reference scan: every link / path in `5-wrap-up/working/handoff-draft.md` and all manifest-derived destinations | Detect link rot in the evaluated handoff draft |
+| Cross-reference scan: every link / path in `4-wrap-up/working/handoff-draft.md` and all manifest-derived destinations | Detect link rot in the evaluated handoff draft |
 | Diff session transcript's correction passages vs new `mistakes/` entries, staged mistakes, and explicit user-decision records declining promotion | Detect a missed mistake (a correction the user did NOT decline is unaccounted) |
 | Confirm each superseded record is flipped `status: superseded` + `superseded_by:`, `git mv`-moved to `archive/{type}/{area}/` with original type/content retained, and its inbound path references repointed as one mutation set | Detect a one-directional supersession or a terminal-record deletion |
 
@@ -241,11 +241,11 @@ Derive the Overall review's artifact set from the SAME frozen manifest — do no
 
 ## Output reminder
 
-The evaluator writes **nine** output files per system: the seven per-perspective files + one `overall.md` + the filled `checklist.md` (copied from the sibling `checklist.md` at Stage 0 and ticked through Stage 2), all under `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/`:
+The evaluator writes **nine** output files per system: the seven per-perspective files + one `overall.md` + the filled `checklist.md` (copied from the sibling `checklist.md` at Stage 0 and ticked through Stage 2), all under `sessions/{date}-{session-id}/4-wrap-up/evaluation/iter{n}/{system}/`:
 
-- Seven per-perspective files at `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
-- One overall file at `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/overall.md`
-- One filled `sessions/{date}-{session-id}/5-wrap-up/evaluation/iter{n}/{system}/checklist.md` — the copy-then-tick coverage artifact (Stage 0 copy → Stage 1 `## Stage 1 Additions` → Stage 2 tick with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`)
+- Seven per-perspective files at `sessions/{date}-{session-id}/4-wrap-up/evaluation/iter{n}/{system}/{project,structure,performance,aesthetics,usage,consistency,risk}.md`
+- One overall file at `sessions/{date}-{session-id}/4-wrap-up/evaluation/iter{n}/{system}/overall.md`
+- One filled `sessions/{date}-{session-id}/4-wrap-up/evaluation/iter{n}/{system}/checklist.md` — the copy-then-tick coverage artifact (Stage 0 copy → Stage 1 `## Stage 1 Additions` → Stage 2 tick with `PASS:` / `FAIL: {finding-id}` / `n/a: {reason}`)
 
 Each per-perspective file structure (mandatory headers): `## Artifact Summary + Memory reads` (Stage 0) → `## Locked Frame (Stage 1)` → `## Per-scenario per-check results` → `## Typed findings` (Stage 2, each with Type / Domain / Disposition / Confidence / Severity / Evidence) → `## Low-confidence appendix` section.
 

@@ -19,6 +19,10 @@ related: [evaluation-childdoc-split]
 
 # Evaluation child-doc split — classified co-touch inventory (D5)
 
+> **v0.5.3 lifecycle note:** the classified list below is the frozen five-loop rollout inventory.
+> Preparation paths are historical evidence, not current targets. The live completeness proof is
+> `check-eval-childdocs.sh`, applied to the four current bundles.
+
 ## Insight
 
 The complete co-touch set is the CERTIFIED OUTPUT of the `D5 ⊇ genuine-hits` build-time gate applied with the two-family class predicate (Family-9 / Family-8 / `verified-leave`) — not a hand-perfect prose list. The table below is the Ideation draft's illustrative D5 as of iter6 (13 files, ~46 update sub-lines), the starting inventory Planning/Execution worked from; `check-eval-childdocs.sh` (built in task 01) is the actual completeness proof.

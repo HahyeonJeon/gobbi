@@ -24,7 +24,7 @@ The wrap-up procedure produces a handoff summary but its location, naming, templ
 In: specify the handoff artifact; define the "shown to session" mechanic. Out: handoff content (already exists at `wrap-up/SKILL.md:155`).
 
 ## Approach
-- **Location/naming**: `sessions/{date}-{session-id}/5-wrap-up/outputs/handoff.md` (`artifact_type: handoff`). Session-scoped (gitignored). Unchanged from existing `wrap-up/SKILL.md:155,438`.
+- **Location/naming**: `sessions/{date}-{session-id}/4-wrap-up/outputs/handoff.md` (`artifact_type: handoff`). Session-scoped (gitignored). The ordinal follows the v0.5.3 four-loop session shape.
 - **Durable cross-session handoff**: the per-session journal `notes/{date}-{slug}.md` — written at WORK Step 6, promoted to memory. Survives across sessions via memory promotion. `handoff.md` itself is session-ephemeral.
 - **Template**: the `notes` section contract from `memory/rules.md` §4.2 for the journal (What happened / What shipped / What got stuck / What shifted / Decisions to respect / Next session). `handoff.md` keeps its required sections (Summary / Shipped / Deferred-Open / Decisions to respect / Pointers / Promotion summary).
 - **"Shown to the session" mechanic**: the manager reads `outputs/handoff.md` back to the session as the final message before `workflow.finish`. Explicit stage-4 step: assistant writes `handoff.md`; manager surfaces its contents to the session. Respects manager-owns-the-user-relationship role boundary.

@@ -156,7 +156,7 @@ sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The he
 - [ ] STARTUP-USAGE-SCENARIO-01-CHECK-01 — The README plus the typed records answer what the project is, who it serves, its scope / non-goals, durable features, decided directions, constraints, risks, and evidence without the startup record.
 - [ ] STARTUP-USAGE-SCENARIO-01-CHECK-02 — Decided baseline directions are clearly distinguishable from open mechanism questions reserved for later loops.
 - [ ] STARTUP-USAGE-SCENARIO-01-CHECK-03 — Every `recorded-open` item has an owner, a resolution method, and a trigger or runnable next action.
-- [ ] STARTUP-USAGE-SCENARIO-01-CHECK-04 — A cold Ideation / Preparation simulation reveals no startup question that must be re-asked because the baseline omitted its answer or status.
+- [ ] STARTUP-USAGE-SCENARIO-01-CHECK-04 — A cold Ideation / Planning-readiness simulation reveals no startup question that must be re-asked because the baseline omitted its answer or status.
 
 ### STARTUP-USAGE-SCENARIO-02 — Resume, rerun, and completion states are usable
 - [ ] STARTUP-USAGE-SCENARIO-02-CHECK-01 — Ledger events have stable Answer IDs; a correction appends a linked superseding event rather than editing history in place.

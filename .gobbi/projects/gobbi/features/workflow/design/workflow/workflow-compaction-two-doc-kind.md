@@ -14,6 +14,8 @@ author: claude
 
 # Workflow-doc compaction design — two doc kinds, hoist-then-point pointers, drift guard
 
+> **Superseded 2026-07-19 for workflow shape:** Preparation and its orchestration child were retired in v0.5.3. The compaction rationale and guard design remain historical evidence, but every five-loop inventory, old ordinal, and Preparation-specific pointer below is non-operative. Current edits must derive their inventory from the four productive loop docs.
+
 **Validated core (kept intact across two iterations).** The two-kind split
 (`loop-orchestration` / `gate-orchestration`), the visible `**Doc kind:**` marker, the typed
 owner pointers, and the rule+guard drift strategy. Both independent producers (Claude + Codex),

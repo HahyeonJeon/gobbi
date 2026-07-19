@@ -1,6 +1,6 @@
 ---
 name: README
-description: The gobbi workflow engine — the 6-step state machine that governs every session, its per-session working-memory tree, and the orchestration skills that drive it.
+description: The gobbi workflow engine — the 5-step state machine that governs every session, its per-session working-memory tree, and the orchestration skills that drive it.
 type: features
 scope: feature
 feature: workflow
@@ -10,23 +10,25 @@ session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
 tags: []
 keywords: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
 author: claude
-value_proposition: Deterministic, auditable session execution — every session runs the same 6-step machine against a spec-defined, script-materialized working-memory tree, with a vocabulary that unambiguously names per-loop capture (RECORD) separately from durable promotion (memorization in the 5-stage Wrap-up pipeline).
-subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation, skills/preparation, skills/planning, skills/execution, skills/wrap-up]
+value_proposition: Deterministic, auditable session execution — every session runs the same 5-step machine against a spec-defined, script-materialized working-memory tree, with Planning owning readiness and decomposition, RECORD owning per-loop capture, and Wrap-up owning durable promotion.
+subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation, skills/planning, skills/execution, skills/wrap-up]
 ---
 
 # Workflow
 
 ## Overview
 
-The `workflow` feature is the gobbi session engine. It defines the 6-step state machine (Configuration + Ideation + Preparation + Planning + Execution + Wrap-up), the per-session working-memory tree, and the orchestration skills that govern each step. Every gobbi session runs against this feature's spec — from the moment a session starts (Configuration) to the moment it closes (Wrap-up emits `workflow.finish`).
+The `workflow` feature is the gobbi session engine. It defines the 5-step state machine (Configuration + Ideation + Planning + Execution + Wrap-up), the per-session working-memory tree, and the orchestration skills that govern each step. Planning is non-skippable and begins DISCUSSION with a readiness entry gate over the locked Ideation output, memory, skills, authority, and staging. Every Gobbi session runs against this feature's spec — from Configuration to Wrap-up's `workflow.finish`.
 
 ## Status
+
+**v0.5.3 (2026-07-19):** the standalone Preparation phase and skill were retired. Readiness is now the first gate inside Planning DISCUSSION; the session tree uses four contiguous loop directories (`1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`). Session schema v4 and state/settings schema v2 reject legacy session metadata before mutation; pre-v0.5.3 sessions must be completed in a worktree pinned to the older Gobbi version. Missing project-specific skills become the first ordered Execution task, while missing workspace/domain skills return `NEEDS_CONTEXT`.
 
 **Session `7e00f98e` (2026-06-12):** vocabulary rename + Wrap-up pipeline redesign shipped. The per-loop capture sub-phase is now named RECORD (`skills/record/`); durable-tier CRUD standards are now in `skills/memory/`; the old `skills/memorization/` directory is gone. Wrap-up is restructured as a 5-stage gated pipeline: (1) session-record validation, (2) promotion/memorization, (3) memory validation (NON-SKIPPABLE — gates stage 5), (4) handoff, (5) git finalization (manager-owned, LAST). CLAUDE.md and AGENTS.md reconciled to the 6-step machine. 13 commits, all loops dual-system PASS. Two guard scripts added: `check-markdown-links.sh` + `check-residual-vocab.sh`.
 
 **Session `1abeb43f` (2026-06-08):** session-memory tree redesign shipped. Spec-defined and script-materialized tree: `orchestration/templates/session-tree.md` + `orchestration/scripts/scaffold-session-dir.sh`. Full 45-file doc sweep. All 5 loops dual-system PASS.
 
-Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/persist-session-memory-past-cleanup.md`), `[FLAG-1]` project-skills-is-memory classification, `[FLAG-2]` claude doc-authoring skill.
+Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/persist-session-memory-past-cleanup.md`) and `[FLAG-2]` claude doc-authoring skill. The former `[FLAG-1]` is resolved: project skills are an authoring surface and missing project skills are created by an ordered Execution task.
 
 ## Subdirectories
 
@@ -47,6 +49,7 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 
 | Date | Session | What |
 |---|---|---|
+| 2026-07-19 | Codex worktree implementation | Retired the standalone Preparation skill/loop, absorbed readiness into non-skippable Planning, renumbered the four productive-loop directories, added fail-closed schema compatibility gates, and documented the v0.5.3 new-session-only migration contract. Evaluation was intentionally Codex-only because Claude was unavailable; no synthetic Claude evidence was created. |
 | 2026-07-08 | 33de02b8-4dff-4768-bafa-c1f53ae81890 | Skill-standard redesign + orchestration refactor: new 6-section skill skeleton (Frontmatter → Intro → Principles → Rules → Procedure → References) with source-free body + per-doc-local References; `skill-writing/SKILL.md` (dogfood) + `orchestration/SKILL.md` migrated; orchestration split into 4 `orchestration/workflow/*.md` child docs (status-display, session-record, state-machine, metadata) with inbound anchors repointed. Full dual-system workflow — Ideation 3 iterations (iter1 incomplete artifact, iter2 missed child-doc anchors + anchor-blind guard, both fixed) + Execution task 01 and task 05 dual eval (allowlist mismatch + non-source-free Rules; user-approved-removal false positive). 6 commits. Lazy migration going forward — `agent-writing/SKILL.md` and the Interview project-skill template deferred to backlogs; 1 skill-owned mistakes.md (skill-writing, 2 sections) + 1 skill-owned mistakes.md (evaluation, 1 section) + 1 project-tier mistake + 2 learnings promoted |
 | 2026-07-07 | 122609f7-3c4c-44ea-af90-efe1531a5cbf | Chat-mode "deepen ideation" session, Ideation-only (no Preparation/Planning/Execution): refined the 2026-07-06 review's Point 2 uniform 8-point compaction skeleton into a validated two-doc-kind (`loop-orchestration`/`gate-orchestration`) design for `orchestration/workflow/*.md`, with a hoist-then-point pointer mechanism and a `check-workflow-pointer-drift.sh` drift-guard spec. Dual-system production (Claude + Codex, reconciled 10/14 rows changed toward Codex, 0 escalated) + two full dual-system evaluation rounds (iter1 REVISE ×2 systems → iter2 PASS). 1 design + 4 decisions promoted; 1 project-tier process mistake promoted (`mistakes/verification/verify-ssot-and-metrics-by-location-not-intent.md`). No implementation this session — a future session executes the design against Planning's re-verification gate |
 | 2026-07-06 | 019f283d-e961-7442-9c22-319f26798141 | Previous Codex branch audit-and-record session closed: preserved official Codex/Git references, the four-task branch-audit plan, Preparation and Task 01 review evidence, pinned diff-stat discussion, two Execution task changelogs, one checklist gap, and explicit native-Codex degraded-evaluation debt. Final wrap-up also fixed standing-guard blockers found while validating promoted memory: `.agents` symlink guard self-location, broken relative links, residual Family B wording, and skill-mistakes placeholder path wording. No fake Claude lane was invented. |
@@ -63,7 +66,7 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 - `backlogs/workflow/agent-writing-six-section-migration.md` (project-level, session `33de02b8`): migrate `agent-writing/SKILL.md` to the new 6-section skill standard — lazy follow-up.
 - `backlogs/workflow/project-skill-template-realign.md` (project-level, session `33de02b8`): RESOLVED — the project-skill template was relocated to `skill-writing/templates/project-skill.md` and realigned to the 6-section standard; backlog closed.
 - `backlogs/process/d5-012-ideation-skill-md-stale-routing-copy.md` (session `1fecddb4`): `ideation/SKILL.md:496` carries the same stale routing-table wording GEN-D1-002 fixed at `workflow/evaluation.md`; deferred, out of this session's locked scope.
-- `[FLAG-1]`: clarify whether project `skills/` is memory (out of scope for this session).
+- `[FLAG-1]`: RESOLVED in v0.5.3 — project `skills/` is a non-memory authoring surface; Planning schedules missing project skills as the first ordered Execution task.
 - `[FLAG-2]`: author the `claude` doc-authoring skill (out of scope for this session).
 - GEN-D4-003 (2026-07-01 adversarial review, `backlogs/evaluation/fix-d4-review-findings.md:223`): the only remaining High from the original 4; not part of this session's locked scope.
 

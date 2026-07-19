@@ -34,12 +34,11 @@ Load per workflow phase (one of these — never more than one at a time):
 
 - **Configuration** → driven by `gobbi workflow init` CLI; no extra skill.
 - **Ideation** → `orchestration/workflow/ideation.md`, plus the `ideation` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
-- **Preparation** → `orchestration/workflow/preparation.md`, plus the `preparation` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
-- **Planning** → `orchestration/workflow/planning.md`, plus the `planning` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
+- **Planning** → `orchestration/workflow/planning.md`, plus the `planning` skill. Begin DISCUSSION with the readiness entry gate; delegate WORK to **leader** and RECORD to **assistant**.
 - **Execution** → `orchestration/workflow/execution.md`, plus the `execution` skill. Delegate WORK to **executor**; delegate RECORD to **assistant**.
 - **Wrap-up** → `orchestration/workflow/wrap-up.md`, plus the `wrap-up` skill. Delegate WORK to **assistant** (sole writer to memory among the workflow loops); delegate RECORD to **assistant** (seals session artifacts, upserts `session.json`, emits `workflow.finish` on PASS).
 
-Canonical phase list: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up. Evaluation and RECORD are sub-phases that run inside each loop. Any enumeration that claims to be exhaustive must list exactly these six phases (or explicitly name Evaluation / RECORD as sub-phases). Drift from this list is a bug.
+Canonical phase list: Configuration → Ideation → Planning → Execution → Wrap-up. Evaluation and RECORD are sub-phases that run inside each productive loop. Planning's readiness gate is inside DISCUSSION, not a phase. Any exhaustive enumeration must list exactly these five phases (or explicitly name Evaluation / RECORD as sub-phases). Drift from this list is a bug.
 
 Load `discussion` skill any time the user prompt is vague enough that a subagent would have to guess.
 
@@ -77,7 +76,7 @@ Decide the delegation, not the implementation.
 
 - For each unit of work: which role (leader / executor / evaluator / assistant), how many parallel instances (research/investigation/evaluation may parallelize; implementation never does), what scope boundary.
 - Write the delegation prompt with: load directives (principles + rules + skills), specific deliverable, scope boundary, expected output schema, status contract.
-- Use the active runtime's task tracker (TaskCreate / TaskUpdate in Claude Code; plan updates in Codex) for two duties: (a) the manager-owned **workflow todo list** — the 6-step spine that mirrors `state.json`, seeded at Configuration and expanded into the locked per-task list after Planning PASS (cadence + projection rule in [`orchestration/SKILL.md` § Harness Todo List](../skills/orchestration/SKILL.md#harness-todo-list)); and (b) tracking every delegation. Both are manager-owned; subagents never manage the workflow todo list.
+- Use the active runtime's task tracker (TaskCreate / TaskUpdate in Claude Code; plan updates in Codex) for two duties: (a) the manager-owned **workflow todo list** — the 5-step spine that mirrors `state.json`, seeded at Configuration and expanded into the locked per-task list after Planning PASS (cadence + projection rule in [`orchestration/SKILL.md` § Harness Todo List](../skills/orchestration/SKILL.md#harness-todo-list)); and (b) tracking every delegation. Both are manager-owned; subagents never manage the workflow todo list.
 
 ### Execute
 

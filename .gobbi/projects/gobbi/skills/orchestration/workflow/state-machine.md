@@ -8,7 +8,7 @@ The loop-internal phase mechanics shared by every productive loop — the DISCUS
 
 ## Workflow State Machine
 
-In Auto Mode the state machine runs linearly across the six steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](../chat-mode.md) for the Chat per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](../chat-mode.md) for the per-task state-transition table. This section specifies the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → RECORD → ITER/EXIT) shared by both modes for steps 2-6. The manager moves between states only when each state's postcondition is met.
+In Auto Mode the state machine runs linearly across the five steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](../chat-mode.md) for the Chat per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](../chat-mode.md) for the per-task state-transition table. This section specifies the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → RECORD → ITER/EXIT) shared by both modes for steps 2-5. The manager moves between states only when each state's postcondition is met.
 
 > **Loop-entry Skipped resolution.** A step resolves to `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set — two independent signals, either alone sufficient. A Skipped step runs no phase rows, emits no `FAIL` / `Aborted` verdict, and stamps `{state: "Skipped", iterations: []}`. `skip: true` is the preferred explicit signal; `maxIterations: 0` (the original "R1 lock") stays valid for back-compatibility. This is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase — the loop still runs WORK → RECORD.
 
@@ -23,7 +23,7 @@ The manager maintains state in a per-session `state.json` file.
 | Writer / Reader | manager — writer on every transition; reader during Configuration (the resume-only **row 4R**, [§ Step 1](../SKILL.md#step-1--workflow-configuration)) to recover position after `/clear` / `/compact` / resume — validating the row-4R resume invariants before continuing, and never re-stamping Ideation `Active` — and as the projection source for the [Workflow Status Display](status-display.md#workflow-status-display) |
 | Update points | every state transition: `DISCUSSION`→`WORK`, `WORK`→`EVALUATION`, `EVALUATION`→`RECORD`, `RECORD`→`ITER/EXIT`, plus inter-step transitions at loop exits |
 | Status semantics | <ul><li>`state` ∈ `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`.</li><li>When `Active`, `phase` names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `RECORD`, `ITER/EXIT`).</li></ul> |
-| Schema shape | <ul><li>`workflow` is keyed by step name — `configuration` / `ideation` / `preparation` / `planning` / `execution` / `wrap-up` — matching the `workflow.{step}` keys in `settings.json`; each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`.</li><li>The active step is **derived** (the entry whose `state` is `Active` or `Revising`) — there is no `active` key.</li><li>Display order (Configuration → Ideation → Preparation → Planning → Execution → Wrap-up) is fixed by convention regardless of object iteration, and is the order the row-4R resume validation uses for the earlier-`Done` / later-not-`Done` invariants.</li><li>`skip` is a `settings.json`-only key; the state-machine entry derives `Skipped` from it at loop entry per the resolution above — `state.json` itself gains **no** `skip` key.</li><li>Chat sessions additionally carry `workflow.chat.tasks[]` — see below.</li></ul> |
+| Schema shape | <ul><li>`schemaVersion: 2`.</li><li>`workflow` is keyed by step name — `configuration` / `ideation` / `planning` / `execution` / `wrap-up` — matching the productive `workflow.{step}` keys in `settings.json`; each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`.</li><li>The active step is **derived** (the entry whose `state` is `Active` or `Revising`) — there is no `active` key.</li><li>Display order (Configuration → Ideation → Planning → Execution → Wrap-up) is fixed by convention regardless of object iteration, and is the order the row-4R resume validation uses.</li><li>`skip` is a `settings.json`-only key. Planning is the exception: it must always be `false` with a positive cap.</li><li>Chat sessions additionally carry `workflow.chat.tasks[]` — see below.</li></ul> |
 | `workflow.chat.tasks[]` | Chat-only additive array (empty for Auto), present in both `state.json` and `session.json`. Owned by [`chat-mode.md`](../chat-mode.md); full field reference in [§ Workflow Metadata → Field reference](metadata.md#workflow-metadata). The `state.json` variant is the live state-machine projection (R3). |
 
 ### Loop states
@@ -36,7 +36,7 @@ The manager maintains state in a per-session `state.json` file.
 | `RECORD` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; memory promotion only in Wrap-up | Memory writes complete |
 | `ITER / EXIT` | `RECORD` complete | manager | Decide on verdict + budget: continue (transition to `DISCUSSION`, `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
 
-`iter` starts at `0` on loop entry and counts WORK passes 0-based, so the WORK-pass number is `iter + 1` — the [Workflow Status Display](status-display.md#workflow-status-display) renders it 1-based as `current / max` (the first pass shows `1 / max`). **`maxIterations` is the maximum number of WORK passes** — not re-entries after the first pass — so `maxIterations: 1` means exactly one WORK pass. `maxIterations` is read from the resolved `settings.json` `workflow.{step}.maxIterations`; the default is **mode-specific** (Auto: `5` for every productive loop; Chat: ideation `5`, preparation `0`-skipped, planning `1`, execution `3`, wrap-up `3`). If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and runs `WORK` → `RECORD` → `ITER/EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER/EXIT`.
+`iter` starts at `0` on loop entry and counts WORK passes 0-based, so the WORK-pass number is `iter + 1` — the [Workflow Status Display](status-display.md#workflow-status-display) renders it 1-based as `current / max` (the first pass shows `1 / max`). **`maxIterations` is the maximum number of WORK passes** — not re-entries after the first pass — so `maxIterations: 1` means exactly one WORK pass. `maxIterations` is read from the resolved `settings.json` `workflow.{step}.maxIterations`; the default is **mode-specific** (Auto: `5` for every productive loop; Chat: ideation `5`, planning `1`, execution `3`, wrap-up `3`). Planning remains non-skippable in both modes. If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and runs `WORK` → `RECORD` → `ITER/EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER/EXIT`.
 
 ### Verdict aggregation
 
@@ -68,10 +68,9 @@ The per-loop user-interaction gates are mode-specific and owned by the mode docs
 |---|---|
 | 1 — Configuration | manager (direct) |
 | 2 — Ideation | `leader` |
-| 3 — Preparation | `leader` |
-| 4 — Planning | `leader` |
-| 5 — Execution | `executor` |
-| 6 — Wrap-up | `assistant` |
+| 3 — Planning | `leader` |
+| 4 — Execution | `executor` |
+| 5 — Wrap-up | `assistant` |
 | `EVALUATION` (every loop) | `evaluator` (independent of the work owner) |
 | `RECORD` (every loop) | `assistant` |
 

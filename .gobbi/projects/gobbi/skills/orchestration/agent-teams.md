@@ -16,7 +16,7 @@ The continue-vs-fresh **decision rule** (when to continue a teammate vs spawn fr
 This doc does NOT re-derive that rule — it points to it. This doc covers the operator surface:
 turning Agent Teams on, handing work to a teammate, and running the team.
 
-For the workflow governor and the global 6-step state machine, see
+For the workflow governor and the global 5-step state machine, see
 [`orchestration/SKILL.md`](SKILL.md). For the summary that points here, see
 [`orchestration/SKILL.md` § Agent Teams](SKILL.md#agent-teams).
 

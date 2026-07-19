@@ -41,7 +41,7 @@ them.
 ## Stage boundary and source contract
 
 **Stage 1 — Validate & plan.** Reads session evidence and existing memory; may write planning artifacts under
-`5-wrap-up/working/`. It MUST NOT mutate durable memory or any prior-loop staging source.
+`4-wrap-up/working/`. It MUST NOT mutate durable memory or any prior-loop staging source.
 
 **Stage 2 — Promotion & consolidate.** Applies the frozen Stage-1 manifest only after rechecking every
 captured destination preimage. It MUST NOT discover a new source, choose a new route, or change a collision
@@ -55,16 +55,14 @@ durable rerun authority (E5); no stripped staging-only field is.
 **Promotion sources** (the enumerated set — owner:
 [`record/record-map.md § Wrap-up promotion-inventory rule`](../record/record-map.md#wrap-up-promotion-inventory-rule)):
 
-- Every prior workflow loop's `staging/`: `1-ideation/staging/`, `2-preparation/staging/`,
-  `3-planning/staging/`, `4-execution/staging/` and each `4-execution/task-{NN}-{slug}/staging/`.
-- In Chat mode only: every `chat/tasks/*/{N}-{loop}/staging/` and `chat/tasks/*/4-execution/task-*/staging/`.
+- Every prior workflow loop's `staging/`: `1-ideation/staging/`, `2-planning/staging/`,
+  `3-execution/staging/` and each `3-execution/task-{NN}-{slug}/staging/`.
+- In Chat mode only: every `chat/tasks/*/{N}-{loop}/staging/` and `chat/tasks/*/3-execution/task-*/staging/`.
   A non-Chat session has no `chat/tasks/` tree, so this source is simply absent.
 - The two Wrap-up-authored **non-staging** inputs the current contract retains: a user-confirmed rule
   candidate and the per-session journal candidate. Each is materialized as ONE deterministic rendered
-  candidate under `5-wrap-up/working/` before manifest freeze, so it carries a stable source-relative path.
+  candidate under `4-wrap-up/working/` before manifest freeze, so it carries a stable source-relative path.
   This is a named exception, NOT permission to scan `working/` generally.
-- A Preparation `generate-now` skill is normally an already-promoted, manifest-only row: verify its
-  destination and re-promote only when it is missing and the Preparation contract authorizes recovery.
 
 **Excluded:**
 
@@ -93,15 +91,15 @@ manager records the user's decision, resume at P1 so the complete plan is rebuil
 1. Read the manager-confirmed list of expected prior loops, Execution tasks, and Chat slices. Do NOT infer
    completion only from directories that happen to exist.
 2. On the **first** Stage-1 entry only, snapshot the pre-Wrap-up memory tree to
-   `5-wrap-up/working/pre-wrap-up-snapshot.txt` — enumerate `.gobbi/projects/{project-name}/` by filesystem
+   `4-wrap-up/working/pre-wrap-up-snapshot.txt` — enumerate `.gobbi/projects/{project-name}/` by filesystem
    listing plus per-file hashes, **never** `git status`. Guard the write: capture this original baseline only
    when the path is absent. It is immutable across `REVISE` iterations; a Stage-1 re-entry MUST read and reuse
    it, never overwrite it with the already-mutated tree. Put any per-iteration derivative comparison in
-   `5-wrap-up/working/snapshot-iter{n}.txt`. The original `pre-wrap-up-snapshot.txt` remains the Stage-3 delta
+   `4-wrap-up/working/snapshot-iter{n}.txt`. The original `pre-wrap-up-snapshot.txt` remains the Stage-3 delta
    authority. The `sessions/` tree is gitignored and worktree-local, so `git status` is not proof of what it
    contains.
 3. Enumerate the permitted source paths recursively (staging only — never `transcripts/`, `working/`,
-   `evaluation/`, `outputs/`, or the excluded `startup/`) and write `5-wrap-up/working/staging-inventory.md`:
+   `evaluation/`, `outputs/`, or the excluded `startup/`) and write `4-wrap-up/working/staging-inventory.md`:
    each source's session-root-relative path, byte size, content hash, and extracted staging metadata.
 4. Sort sources by normalized source-relative path. This stable order controls collision allocation and makes
    a fresh manifest render deterministic across re-runs.
@@ -118,7 +116,7 @@ for the gap table and finding-class routing.
 2. Treat prior-loop staging as **immutable** — never edit, replace, rename, move, or append to a source file
    to repair a gap. Mutating the evidence to fix the promoted result destroys the audit trail (E1).
 3. For a mechanical normalization, write a **correction overlay** under
-   `5-wrap-up/working/correction-overlays/` recording the source identity, original source hash, detected gap,
+   `4-wrap-up/working/correction-overlays/` recording the source identity, original source hash, detected gap,
    deterministic normalization delta, and rendered-candidate hash. The overlay is applied **only** while
    rendering the promoted destination candidate (P3) — the original staging file stays byte-for-byte unchanged.
 4. A correction that needs semantic judgment (a `design_flaw` / `assumption_risk`, or any missing value that
@@ -215,10 +213,10 @@ standard are owned by [`memory/rules.md § 5`](../memory/rules.md).
 
 ### P8 — Draft the handoff summary
 
-**Stage 2 — Promotion.** Author the handoff draft at `5-wrap-up/working/handoff-draft.md` with the required
+**Stage 2 — Promotion.** Author the handoff draft at `4-wrap-up/working/handoff-draft.md` with the required
 sections (Summary, Shipped, Deferred / Open, Decisions to respect, Pointers, Promotion summary). Every claim
 cites a verifiable artifact path — a commit hash, a promoted file path, a backlog entry. Stage 3 evaluates this
-working draft; Stage 4 copies and seals it to the PASS-only `5-wrap-up/outputs/handoff.md` only after Stage 3
+working draft; Stage 4 copies and seals it to the PASS-only `4-wrap-up/outputs/handoff.md` only after Stage 3
 returns `PASS`. The manager then shows the sealed handoff to the session as the final message. The session-scoped
 handoff dies with the worktree; its durable counterpart is the per-session journal entry (a promoted
 `notes/{area}/{date}-{slug}.md` record) that survives for the next session.
@@ -296,10 +294,9 @@ during Stage-1 candidate rendering. The Wrap-up EVALUATION (Stage 3) verifies ad
 | `sessions/.../{N}-{loop}/staging/changelogs/{slug}.md` | `features/{feature-name}/changelogs/{area}/{slug}.md` | Always — feature-scope shipped-work changelog entries (Execution-loop typical) |
 | `sessions/.../{N}-{loop}/staging/learnings/{slug}.md` | `features/{feature-name}/learnings/{area}/{slug}.md` (default) OR `learnings/{area}/{slug}.md` (project-wide; cross-feature) | Default feature-scope; if cross-feature, return `NEEDS_CONTEXT`; manager confirms through the active runtime's user-decision primitive |
 | `sessions/.../{N}-{loop}/staging/notes/{slug}.md` | `notes/{area}/{date}-{slug}.md` | Always — loop-scope journal entry (rare; the per-session journal is Wrap-up's direct candidate below) |
-| `sessions/.../3-planning/staging/plans/{slug}.md` | `features/{feature-name}/plans/{area}/{date}-{slug}.md` | Always — Planning-loop output |
-| `sessions/.../2-preparation/staging/skills/{slug}/SKILL.md` | `.gobbi/projects/{project-name}/skills/{slug}/SKILL.md` | Normally already-promoted (manifest-only): the manager promotes these before Planning starts; Wrap-up verifies presence and records the row, recovering a missing destination only under the Preparation contract. **`skills/` is NOT by-area** — an authoring surface, not a memory type, so no `{area}/` segment |
-| Named direct input — user-confirmed rule candidate surfaced during Wrap-up | `rules/{area}/{slug}.md` (project-wide) OR `features/{feature-name}/rules/{area}/{slug}.md` (feature-specific) | Return `NEEDS_CONTEXT`; manager confirms scope — rules are rare and load-bearing. Render ONE deterministic direct candidate under `5-wrap-up/working/` before manifest freeze |
-| Named direct input — per-session development journal candidate | `notes/{area}/{date}-{slug}.md` | Always — exactly one journal record per session, capturing the work-log narrative. Render ONE deterministic direct candidate under `5-wrap-up/working/` before manifest freeze |
+| `sessions/.../2-planning/staging/plans/{slug}.md` | `features/{feature-name}/plans/{area}/{date}-{slug}.md` | Always — Planning-loop output |
+| Named direct input — user-confirmed rule candidate surfaced during Wrap-up | `rules/{area}/{slug}.md` (project-wide) OR `features/{feature-name}/rules/{area}/{slug}.md` (feature-specific) | Return `NEEDS_CONTEXT`; manager confirms scope — rules are rare and load-bearing. Render ONE deterministic direct candidate under `4-wrap-up/working/` before manifest freeze |
+| Named direct input — per-session development journal candidate | `notes/{area}/{date}-{slug}.md` | Always — exactly one journal record per session, capturing the work-log narrative. Render ONE deterministic direct candidate under `4-wrap-up/working/` before manifest freeze |
 
 Every by-area destination carries the `{area}/` segment between the type dir and the filename — resolved at
 promotion by the [area-resolution rule](#area-resolution-on-promotion); `skills/` is the sole non-by-area
@@ -444,7 +441,7 @@ Legacy root `state.json` and root `HANDOFF.md` files in closed sessions remain u
 
 ## Working artifacts and exit criteria
 
-Stage 1 writes these session-scoped planning artifacts (all under `sessions/{date}-{session-id}/5-wrap-up/`):
+Stage 1 writes these session-scoped planning artifacts (all under `sessions/{date}-{session-id}/4-wrap-up/`):
 
 | Path | Purpose |
 |---|---|

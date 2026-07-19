@@ -23,9 +23,9 @@ supersedes: d7-002-transcript-copy-contract-surfaces
 
 iter2 added the 4 surfaces named by `d7-002-transcript-copy-contract-surfaces` to the D7-002 map, but
 a tree-wide grep for `Each agent transcript copied` showed the SAME contract restated as a per-loop
-RECORD exit-checklist gate — word-identically — in `ideation/SKILL.md:457`, `planning/SKILL.md:453`,
-`preparation/SKILL.md:386`, and `execution/SKILL.md:241`, plus descriptive (non-gate) restatements at
-`orchestration/workflow/record.md:63` and `:328`. None of these were in the D7-002 affected-file map,
+RECORD exit-checklist gate. The current sites are the four loop skills (`ideation`, `planning`,
+`execution`, and `wrap-up`) plus descriptive restatements in
+`orchestration/workflow/record.md`. None of these were in the original D7-002 affected-file map,
 and the D7-002 validation grep (scoped only to `record/SKILL.md` + `record/record-map.md`) could not
 have caught them.
 
@@ -42,11 +42,11 @@ applied to its own D7-002 map.
 
 ## Verification
 
-`git grep -niE 'each agent transcript copied|transcript copied' -- .gobbi/projects/gobbi/skills/ideation/SKILL.md .gobbi/projects/gobbi/skills/planning/SKILL.md .gobbi/projects/gobbi/skills/preparation/SKILL.md .gobbi/projects/gobbi/skills/execution/SKILL.md .gobbi/projects/gobbi/skills/wrap-up/SKILL.md .gobbi/projects/gobbi/skills/orchestration/workflow/record.md`
+`git grep -niE 'each agent transcript copied|transcript copied' -- .gobbi/projects/gobbi/skills/ideation/SKILL.md .gobbi/projects/gobbi/skills/planning/SKILL.md .gobbi/projects/gobbi/skills/execution/SKILL.md .gobbi/projects/gobbi/skills/wrap-up/SKILL.md .gobbi/projects/gobbi/skills/orchestration/workflow/record.md`
 — for each hit, confirm its RECORD section carries the "Canonical procedure: `record/SKILL.md` ... do
 not re-derive" deferral note OR is a descriptive (non-gate) line; none may be an independent
 "FAIL if absent" assertion. Complement:
-`git grep -n 'Canonical procedure' -- .gobbi/projects/gobbi/skills/ideation/SKILL.md .gobbi/projects/gobbi/skills/planning/SKILL.md .gobbi/projects/gobbi/skills/preparation/SKILL.md .gobbi/projects/gobbi/skills/execution/SKILL.md`
+`git grep -n 'Canonical procedure' -- .gobbi/projects/gobbi/skills/ideation/SKILL.md .gobbi/projects/gobbi/skills/planning/SKILL.md .gobbi/projects/gobbi/skills/execution/SKILL.md .gobbi/projects/gobbi/skills/wrap-up/SKILL.md`
 confirms the deferral note is present in all four loop RECORD sections.
 
 ## Status notes

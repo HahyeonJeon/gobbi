@@ -1,6 +1,6 @@
 ---
 name: d3-002-workflow-header-mapping-verification-todo
-description: The design draft still says "check the rest before writing" for 5 deferred workflow-header mappings, a live TODO for the Execution consumer (F-USAGE-01)
+description: The current four-loop workflow-header mapping has been revalidated after Preparation retirement
 type: checklists
 scope: feature
 feature: workflow
@@ -11,12 +11,16 @@ tags: [docs-sync, verification]
 keywords: [f-usage-01, checklist_gap, workflow-headers, verification-todo]
 author: claude
 scenario: d3-002-manager-refs-specialist-phase-loads-column-split
-item_status: pending
+item_status: implemented
 anchor: novel
 implemented_in: null
 ---
 
-# Design leaves a verification TODO for 5 workflow-header mappings (F-USAGE-01)
+# Workflow-header mappings are revalidated for the four-loop workflow (F-USAGE-01)
+
+> **v0.5.3 resolution:** Preparation and its workflow header were retired. The active mapping now
+> covers Planning, Execution, Wrap-up, and the cross-loop production header; each resolves to its
+> current specialist skill. The historical finding below explains the original TODO.
 
 ## What
 

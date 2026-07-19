@@ -12,9 +12,9 @@ once **per planned task** — the entire loop body repeats for each task in the 
 ## DISCUSSION Orchestration
 
 **Manager's job**: construct the executor delegation prompt for the current task — manager +
-user directly, with no leader spawned (the design is already locked in `3-planning/outputs/`).
+user directly, with no leader spawned (the design is already locked in `2-planning/outputs/`).
 
-For each task in the loop's task list (`3-planning/outputs/`), the manager:
+For each task in the loop's task list (`2-planning/outputs/`), the manager:
 1. Identifies the task's scope boundary (which files to touch, which to avoid).
 2. Locates the relevant Step 3 reference (or `novel` marker) from the Ideation insights.
 3. Confirms with the user through the active runtime's user-decision primitive any contribution points the task requires.
@@ -33,7 +33,7 @@ For each task in the loop's task list (`3-planning/outputs/`), the manager:
 Manager-side responsibilities:
 - Ensure the executor commits to the worktree (per `git` skill), not pushes
 - Collect the work artifact (code/doc diff + verification evidence)
-- Stage executor notes in the task's `4-execution/task-{NN}-{slug}/working/`; transcripts are copied to the session-root `transcripts/` (one `{role}-{agentId}.jsonl` per agent, all loops)
+- Stage executor notes in the task's `3-execution/task-{NN}-{slug}/working/`; transcripts are copied to the session-root `transcripts/` (one `{role}-{agentId}.jsonl` per agent, all loops)
 - On re-entry, pass prior evaluator findings as additional delegation prompt input
 
 ### Executor continuation (shared subsystem, under cap)
@@ -72,7 +72,7 @@ When either test fails, the manager **fresh-spawns** the next executor with a fu
 **Manager's job**: orchestrate the dual-system evaluator spawn per [`workflow/evaluation.md`](evaluation.md). Execution-specific notes:
 
 - **Perspectives**: all seven + Overall (no pruning per evaluation contract)
-- **Output path**: per-task, per-iter scoped under `sessions/{date}-{session-id}/4-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
+- **Output path**: per-task, per-iter scoped under `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{system}/` — nine files per system: `{perspective}.md` (seven), `overall.md`, and the filled `checklist.md`
 - Phase-specific focus is built from [`execution/evaluation.md`](../../execution/evaluation.md) — implementation match, build/test status (verified via tools), security, mistake compliance, scope discipline, supply-chain, observability, privacy
 - **Tool verification is critical at Execution** — evaluators run tests, type checks, and `grep`/`rg` to anchor confidence ≥ 75 (subject to the verification preflight in [`evaluation/SKILL.md`](../../evaluation/SKILL.md))
 
@@ -80,11 +80,11 @@ When either test fails, the manager **fresh-spawns** the next executor with a fu
 
 ## RECORD Orchestration
 
-**Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `4-execution/task-{NN}-{slug}/outputs/` files. The Execution Loop iterates per-task — each task produces its own `outputs/` directory under its task subdirectory.
+**Manager's job**: spawn the `assistant` agent. For Execution, the assistant integrates the executor's work artifact, both systems' evaluator findings, and the discussion log into the task's `3-execution/task-{NN}-{slug}/outputs/` files. The Execution Loop iterates per-task — each task produces its own `outputs/` directory under its task subdirectory.
 
 ### Per-task value telemetry
 
-Because the Execution Loop is per-task, its value telemetry is per-task too. At RECORD, the assistant parses the task's dual-system integration log `4-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` and appends one element to `session.json.workflow.execution.integration.tasks[]`: `{ taskNo, slug, iter, changing_rows, kept_own_rows, total_rows, escalated_rows }` (`taskNo` + `slug` identify the task, `iter` is the task's final loop count, then the four counts). The four counts follow the same rule as every loop (see [`record/SKILL.md` § Value-telemetry integration counts](../../record/SKILL.md#value-telemetry-integration-counts)). The append is idempotent — keyed by `taskNo`, so a re-run overwrites rather than duplicates. The loop-level `workflow.execution.integration` counts roll up the dual-mode tasks; a `single`-mode task contributes no integration log and leaves its per-task counts `0`. This per-task array is what answers D4.3 (per-task value — which task the Codex proposer actually moved).
+Because the Execution Loop is per-task, its value telemetry is per-task too. At RECORD, the assistant parses the task's dual-system integration log `3-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` and appends one element to `session.json.workflow.execution.integration.tasks[]`: `{ taskNo, slug, iter, changing_rows, kept_own_rows, total_rows, escalated_rows }` (`taskNo` + `slug` identify the task, `iter` is the task's final loop count, then the four counts). The four counts follow the same rule as every loop (see [`record/SKILL.md` § Value-telemetry integration counts](../../record/SKILL.md#value-telemetry-integration-counts)). The append is idempotent — keyed by `taskNo`, so a re-run overwrites rather than duplicates. The loop-level `workflow.execution.integration` counts roll up the dual-mode tasks; a `single`-mode task contributes no integration log and leaves its per-task counts `0`. This per-task array is what answers D4.3 (per-task value — which task the Codex proposer actually moved).
 
 > **Record owner:** [`workflow/record.md`](record.md) for manager spawn + the validation
 > gates (incl. the session-record commit boundary); [`record/SKILL.md`](../../record/SKILL.md)
@@ -113,8 +113,8 @@ When all tasks `PASS`, the loop exits and the Wrap-up Loop begins.
 
 ## Output Pointers
 
-Execution's loop dir is `4-execution/`, with per-task subdirs `task-{NN}-{slug}/` (each a
-recursive 4-slot interior) plus loop-level cross-task `4-execution/staging/`. Per-task
+Execution's loop dir is `3-execution/`, with per-task subdirs `task-{NN}-{slug}/` (each a
+recursive 4-slot interior) plus loop-level cross-task `3-execution/staging/`. Per-task
 loop-specific files: WORK draft `task-{NN}-{slug}/working/draft-iter{n}.md`; optional Codex
 proposal `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` + Integration Log
 `task-{NN}-{slug}/working/reconciliation-iter{n}.md`; evaluation

@@ -1,6 +1,6 @@
 ---
 name: source-edits-before-preparation-planning
-description: Editing source docs after Ideation PASS but before Preparation and Planning violates the Gobbi workflow contract.
+description: Editing source docs after Ideation PASS but before Planning passes its readiness and decomposition gates violates the Gobbi workflow contract.
 type: mistakes
 scope: project
 feature: null
@@ -16,7 +16,7 @@ supersedes: null
 superseded_by: null
 ---
 
-# Source Edits Before Preparation Planning
+# Source Edits Before Planning Completes
 
 ## What happened
 
@@ -28,11 +28,11 @@ The user corrected the workflow drift with "Please follow the workflow" and late
 
 ## Why it happens
 
-The mistaken assumption is that a locked Ideation design plus user approval of a scope option is enough authorization to implement. Gobbi requires Preparation to verify readiness and Planning to decompose the approved work before Execution changes source files.
+The mistaken assumption is that a locked Ideation design plus user approval of a scope option is enough authorization to implement. In the current v0.5.3 workflow, Planning must first pass its readiness entry gate and decompose the approved work before Execution changes source files.
 
 ## Correct approach
 
-After Ideation `PASS`, freeze the design and run Preparation, then Planning, then Execution. If source edits already exist, treat them as WIP evidence, stop further editing, stage the process mistake immediately, and run the missing workflow gates before declaring the task done.
+After Ideation `PASS`, freeze the design and run Planning's readiness gate and task decomposition before Execution. If source edits already exist, treat them as WIP evidence, stop further editing, stage the process mistake immediately, and run the missing Planning gates before declaring the task done.
 
 ## How to detect
 
@@ -40,4 +40,4 @@ Check `state.json` before any source edit. If the active step is before Executio
 
 ## Related
 
-- [[manager-skipped-user-driven-preparation-discussion]] — related assumption trap around missing required workflow discussion.
+- [[manager-skipped-user-driven-preparation-discussion]] — related historical trap, now applied to material decisions in Planning's readiness gate.

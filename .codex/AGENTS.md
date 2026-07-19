@@ -48,17 +48,15 @@ When Codex subagents are explicitly authorized by the user, use these custom age
 
 ## Core Principles
 
-> **The logic of good work: Configuration -> Ideation -> Preparation -> Planning -> Execution -> Wrap-up.**
+> **The logic of good work: Configuration -> Ideation -> Planning -> Execution -> Wrap-up.**
 
-Every session runs this 6-step state machine — Configuration plus five productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION -> WORK -> EVALUATION -> **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the gobbi skill Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
+Every session runs this 5-step state machine — Configuration plus four productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION -> WORK -> EVALUATION -> **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the gobbi skill Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
 
 **Configuration** - Session start: settings, memory check, workflow configuration. Not a loop.
 
 **Ideation** - Explore what to do. PI agents investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
 
-**Preparation** - Verify readiness: memory + workspace skills against the locked Ideation output; close gaps before planning. Optional evaluation.
-
-**Planning** - Decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Optional evaluation.
+**Planning** - Begin DISCUSSION with a readiness gate over locked Ideation, memory, skills, authority, and staging; then decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Non-skippable; optional evaluation.
 
 **Execution** - Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
 
@@ -104,7 +102,7 @@ Every agent MUST load `.gobbi/projects/gobbi/skills/mistake/SKILL.md` before sta
 | `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
 | `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
-| `.codex/agents/leader.toml` | Ideation, preparation, research, and planning custom-agent wrapper |
+| `.codex/agents/leader.toml` | Ideation, research, and planning custom-agent wrapper |
 | `.codex/agents/executor.toml` | Scoped implementation custom-agent wrapper |
 | `.codex/agents/evaluator.toml` | Independent adversarial evaluation custom-agent wrapper |
 | `.codex/agents/assistant.toml` | Narrow lookup and RECORD support custom-agent wrapper |

@@ -8,7 +8,7 @@ allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
 
 You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping, active-runtime user decisions, and status updates to the user. The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 6-step state machine: **Configuration → Ideation → Preparation → Planning → Execution → Wrap-up**, with Evaluation and RECORD running as **sub-phases inside every productive loop**. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
+`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 5-step state machine: **Configuration → Ideation → Planning → Execution → Wrap-up**, with Evaluation and RECORD running as **sub-phases inside every productive loop**. Planning begins with a readiness entry gate inside DISCUSSION; it is not a separate state or loop. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
 
 ---
 
@@ -101,12 +101,12 @@ Check `.gobbi/projects/{project-name}/` for the memory baseline:
 
 ### 6. Enter the workflow
 
-Hand off to the [`orchestration/SKILL.md § Workflow`](../orchestration/SKILL.md#workflow) governor. It runs Configuration (Step 1), then reads `settings.mode` and dispatches Steps 2-6 to the matching mode doc — [`auto-mode.md`](../orchestration/auto-mode.md) (linear 6-step state machine) or [`chat-mode.md`](../orchestration/chat-mode.md) (per-task slice loop). Each step runs the DISCUSSION → WORK → EVALUATION → RECORD loop. Whether the session enters Step 2 fresh or continues a persisted step is the **fresh-vs-resume** branch — the signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):
+Hand off to the [`orchestration/SKILL.md § Workflow`](../orchestration/SKILL.md#workflow) governor. It runs Configuration (Step 1), then reads `settings.mode` and dispatches Steps 2-5 to the matching mode doc — [`auto-mode.md`](../orchestration/auto-mode.md) (linear 5-step state machine) or [`chat-mode.md`](../orchestration/chat-mode.md) (per-task slice loop). Each productive step runs the DISCUSSION → WORK → EVALUATION → RECORD loop. Whether the session enters Step 2 fresh or continues a persisted step is the **fresh-vs-resume** branch — the signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):
 
 - **Fresh session** — the mode doc's Step 2 is **Ideation**, the first productive step. The dispatch to Ideation runs through `orchestration/SKILL.md § Workflow` and the selected mode doc; do NOT load the `ideation` skill from here — the mode doc's Step 2 enters Ideation and its WORK sub-phase spawns the leader with the Ideation loop contract.
-- **Resume / post-`/clear` / post-`/compact`** — do NOT re-STAMP Ideation `Active` or restart Ideation fresh. Configuration's [`§ Step 1 row 4R`](../orchestration/SKILL.md#step-1--workflow-configuration) rehydrates and validates the persisted `state.json`, then the selected mode doc's state machine CONTINUES whichever of the five productive steps it records as `Active`/`Revising` — Ideation / Preparation / Planning / Execution / Wrap-up, INCLUDING an in-progress Ideation (a mid-Ideation `/compact` or resume continues that Ideation, it does not restart it) — never loading the loop skill directly from here.
+- **Resume / post-`/clear` / post-`/compact`** — do NOT re-STAMP Ideation `Active` or restart Ideation fresh. Configuration's [`§ Step 1 row 4R`](../orchestration/SKILL.md#step-1--workflow-configuration) rehydrates and validates the persisted `state.json`, then the selected mode doc's state machine CONTINUES whichever of the four productive steps it records as `Active`/`Revising` — Ideation / Planning / Execution / Wrap-up, INCLUDING an in-progress Ideation (a mid-Ideation `/compact` or resume continues that Ideation, it does not restart it) — never loading the loop skill directly from here.
 
-The orchestration skill steers transitions between the six steps.
+The orchestration skill steers transitions between the five steps.
 
 ---
 
@@ -116,7 +116,7 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 
 | Term | Definition |
 |---|---|
-| **Phase** | One of the 6 workflow steps: Configuration / Ideation / Preparation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
+| **Phase** | One of the 5 workflow steps: Configuration / Ideation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
 | **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → RECORD. Every productive phase is structured as a loop body. |
 | **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / RECORD. |
 | **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
@@ -132,18 +132,17 @@ Gobbi-specific terms used throughout the skill tree. Load this section to anchor
 
 ## Workflow Overview
 
-The 6-step state machine and who owns each step:
+The 5-step state machine and who owns each step:
 
 | Step | Phase | Owner | Specialist agents spawned | Purpose |
 |---|---|---|---|---|
 | **Configuration** | session init | manager + user | — | Session start, settings, memory check, workflow configuration |
 | **Ideation** | Loop body | manager + user + leader | leader (DISCUSSION) | Refine What / Why / How until the idea is concrete enough to plan against |
-| **Preparation** | Loop body | manager + user + leader | leader (DISCUSSION) | Verify readiness — memory + workspace skills against the locked Ideation output; close gaps |
-| **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Decompose into ordered tasks with agent assignments + verification anchors |
+| **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Run the readiness entry gate, then decompose into ordered tasks with agent assignments + verification anchors |
 | **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
 | **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → memory; write the handoff; emit `workflow.finish` |
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Preparation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory among the workflow loops.
+**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory among the workflow loops.
 
 ---
 
@@ -154,7 +153,7 @@ Five roles. Each has a fixed behavioral spec at `.gobbi/projects/gobbi/agents/{r
 | Role | Model | Effort | Owns | When spawned |
 |---|---|---|---|---|
 | **manager** | opus | xhigh | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
-| **leader** | opus | xhigh | PI / PM — research, ideation direction, preparation readiness, planning decomposition. Never implements code. | Ideation / Preparation / Research / Planning sub-phases. Single leader per dispatch. |
+| **leader** | opus | xhigh | PI / PM — research, ideation direction, planning readiness and decomposition. Never implements code. | Ideation / Research / Planning sub-phases. Single leader per dispatch. |
 | **executor** | opus | xhigh | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default. Claude Code may continue an executor teammate across ≤3 shared-subsystem tasks; native Codex uses fresh spawns. Tasks sequence; never parallelize implementation. |
 | **evaluator** | opus | xhigh | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
 | **assistant** | sonnet | xhigh | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
@@ -170,8 +169,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 | Skill | Purpose |
 |---|---|
 | [`ideation`](../ideation/SKILL.md) | Ideation Loop — leader's four sub-step procedure (Frame / Lock Scope / Research / Design). |
-| [`preparation`](../preparation/SKILL.md) | Preparation Loop — leader's readiness check (Read Ideation / Design+Memory / Execution Skills / Gap Resolution). |
-| [`planning`](../planning/SKILL.md) | Planning Loop — leader's task decomposition with file map, dependency graph, agent assignment, self-review (Sub-steps A-E). |
+| [`planning`](../planning/SKILL.md) | Planning Loop — readiness entry gate plus task decomposition with file map, dependency graph, agent assignment, and self-review (Sub-steps A-E). |
 | [`execution`](../execution/SKILL.md) | Execution Loop — per-task implementation; executor's 5-phase WORK lifecycle (Study → Plan → Execute → Verify → Commit). |
 | [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory among the workflow loops). |
 
@@ -179,7 +177,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 
 | Skill | Purpose |
 |---|---|
-| [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, six-step transitions, plus the [`delegation.md`](../orchestration/delegation.md) manager-dispatch child. |
+| [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, five-step transitions, plus the [`delegation.md`](../orchestration/delegation.md) manager-dispatch child. |
 | [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
 | [`delegation`](../delegation/SKILL.md) | Workflow-agnostic bounded handoff semantics: objective, preparation, boundaries, autonomy, evidence, escape paths, and independent judgment. |
 | [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
@@ -209,7 +207,7 @@ gobbi's durable capabilities — the things a README "Features" section would li
 
 | Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
 |---|---|---|
-| `workflow` | The 6-step state machine: Configuration → Ideation → Preparation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; the WORK sub-phase runs dual-system production — a Claude producer + a Codex proposer with selective-integration; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 5 loop bodies + `workflow/production.md` + research + discussion |
+| `workflow` | The 5-step state machine: Configuration → Ideation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; Planning DISCUSSION begins with readiness; the WORK sub-phase runs dual-system production — a Claude producer + a Codex proposer with selective-integration; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 4 loop bodies + `workflow/production.md` + research + discussion |
 | `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
 | `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + orchestration/delegation + orchestration/templates + the `agents/*.md` roster |
 | `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives — the review-time analogue of dual-system production | evaluation + the per-loop `evaluation.md` child docs + codex |
@@ -241,7 +239,7 @@ Subagents do not speak to the user directly. Spawned-session muting applies — 
 
 > **All writes are session-scoped until Wrap-up.**
 
-Ideation / Preparation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. `startup`-close promotion is the documented bounded exception — the startup baseline writes to memory before any productive loop, via startup's own startup-close promotion.
+Ideation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. `startup`-close promotion is the documented bounded exception — the startup baseline writes to memory before any productive loop, via startup's own startup-close promotion.
 
 ---
 

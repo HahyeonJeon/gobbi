@@ -38,7 +38,7 @@ Promotion creates claims future sessions will trust, and a wrong wrap-up poisons
 
 ### Must-Follow
 
-- **MUST be the sole writer to durable memory for cross-loop session artifacts** — only the two named pre-Wrap-up exceptions (startup-close promotion; Preparation `generate-now` skills) write memory earlier, so a stray writer scatters promotion authority.
+- **MUST be the sole writer to durable memory for cross-loop session artifacts** — only the named startup-close promotion exception writes memory earlier, so a stray writer scatters promotion authority. Project-specific skills are source artifacts authored and committed by their ordered Execution task, not Wrap-up promotions.
 - **MUST leave the session scratch tree (`{N}-{loop}/working/`, `staging/`, `evaluation/`) intact after Wrap-up** — the scratch is the audit trail the promotion is verified against.
 - **MUST preserve every prior-loop staging source as read-only evidence** — mutating the evidence to fix the result destroys the audit trail.
 - **MUST build and validate one complete promotion manifest (all candidate files plus destination preimages) before the first durable-memory mutation** — a half-finished multi-write has no recovery boundary.
@@ -55,7 +55,7 @@ Promotion creates claims future sessions will trust, and a wrong wrap-up poisons
 
 ### Must-Not-Follow
 
-- **NEVER rewrite prior-loop staging as "auto-backfill."** Fix: normalize only the promoted destination through a correction overlay under `5-wrap-up/working/`; never touch the source file.
+- **NEVER rewrite prior-loop staging as "auto-backfill."** Fix: normalize only the promoted destination through a correction overlay under `4-wrap-up/working/`; never touch the source file.
 - **NEVER promote from `working/`, `outputs/`, `evaluation/`, or `transcripts/`.** Fix: promote from `staging/` — plus the two Wrap-up-authored non-staging sources the current contract defines (a session-surfaced rule candidate and the per-session journal, both user-confirmed and manifest-recorded).
 - **NEVER re-promote `startup/`.** Fix: verify its startup-close destinations and record zero manifest rows.
 - **NEVER use a stripped staging-only field (e.g. `finding-id`) as the durable rerun identity.** Fix: key on `{session-id, source-relative-path}` plus the frozen manifest.
@@ -94,8 +94,8 @@ The assistant owns Wrap-up's WORK and has broader write privileges than any othe
 
 | Memory tier | Path root | Access |
 |---|---|---|
-| Session record — own loop | `sessions/{date}-{session-id}/5-wrap-up/{working,outputs}/` | READ + WRITE — manifest, inventory, snapshot, reconciliation log, handoff |
-| Session record — all prior loops | `sessions/{date}-{session-id}/{1-ideation..4-execution}/` (plus the Chat per-slice trees) | READ-ONLY — the immutable promotion sources and evidence |
+| Session record — own loop | `sessions/{date}-{session-id}/4-wrap-up/{working,outputs}/` | READ + WRITE — manifest, inventory, snapshot, reconciliation log, handoff |
+| Session record — all prior loops | `sessions/{date}-{session-id}/{1-ideation..3-execution}/` (plus the Chat per-slice trees) | READ-ONLY — the immutable promotion sources and evidence |
 | Session record — `session.json` | `sessions/{date}-{session-id}/session.json` | READ triplet; UPSERT own `workflow.wrap-up.iterations[]` |
 | Feature memory | `.gobbi/projects/{project-name}/features/{feature-name}/` | WRITE + UPSERT — bootstrapped lazily on first write per sub-directory |
 | Memory | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | WRITE + UPSERT — project-scope promotions |
@@ -104,7 +104,7 @@ Wrap-up NEVER deletes: supersede via frontmatter, then `git mv` the terminal fil
 
 ### DISCUSSION — Pre-stage (manager + user, direct)
 
-The leader is not spawned; the design is locked across the prior loops. The manager reads every prior loop's PASS-iter `outputs/` and builds a short outcome summary (what shipped, what was deferred, evaluator verdicts) plus an explicit expected-source register — naming each completed loop, Execution task, and Chat slice, not inferred only from the directories that happen to exist. The manager then runs the active runtime's user-decision primitive: is anything deferred, open, or observed to log before close — a rule discovered mid-session, a mistake candidate, a backlog candidate, a supersession decision? Additions are captured in `5-wrap-up/working/discussion-log.md`. The manager constructs the assistant delegation prompt and verifies it has zero unfilled slots.
+The leader is not spawned; the design is locked across the prior loops. The manager reads every prior loop's PASS-iter `outputs/` and builds a short outcome summary (what shipped, what was deferred, evaluator verdicts) plus an explicit expected-source register — naming each completed loop, Execution task, and Chat slice, not inferred only from the directories that happen to exist. The manager then runs the active runtime's user-decision primitive: is anything deferred, open, or observed to log before close — a rule discovered mid-session, a mistake candidate, a backlog candidate, a supersession decision? Additions are captured in `4-wrap-up/working/discussion-log.md`. The manager constructs the assistant delegation prompt and verifies it has zero unfilled slots.
 
 ### WORK — Stages 1–2 (delegated to `assistant`)
 
@@ -112,7 +112,7 @@ The substantive memory promotion happens in WORK Stage 2. RECORD is the uniquely
 
 **Stage 1 — Validate & plan (no memory mutation).** Snapshot the pre-Wrap-up `.gobbi/projects/{project-name}/` state as the evaluation baseline. Inventory `staging/` across every expected prior loop — and every Chat per-slice `staging/` in a Chat session — and ONLY `staging/`; never `working/`, `outputs/`, `evaluation/`, or `transcripts/`, and never the `startup/` surface (startup owns its startup-close promotion). Run the prior-loop compliance scan (read-only: a mechanical gap normalizes only into the promoted candidate through a correction overlay, never into the source; a judgment gap escalates via `NEEDS_CONTEXT`). Resolve every route, render every candidate, and freeze one complete manifest plus destination preimages before any write.
 
-**Stage 2 — Promotion & consolidate.** Recheck the preimages, then apply the frozen manifest: bootstrap each destination lazily, stamp its type template, write each promoted file, and for a terminal collision supersede plus `git mv` the old file to `archive/`. Write the one per-session journal entry at `notes/{area}/{date}-{slug}.md` (the durable cross-session handoff). Run the compaction sub-procedure ([`compaction.md`](compaction.md)) as Stage 2's final sub-step, so the non-skippable Stage-3 gate validates its writes. Draft the handoff at `5-wrap-up/working/handoff-draft.md`; Stage 3 evaluates that working draft, and Stage 4 seals it to `5-wrap-up/outputs/handoff.md` only on `PASS`. When `propose.mode: dual`, integrate the frozen Codex proposal per [`production.md`](../orchestration/workflow/production.md) and log deltas to `reconciliation-iter{n}.md`; a missing proposal is not a gate — degraded mode stamps `production_mode: claude-only`.
+**Stage 2 — Promotion & consolidate.** Recheck the preimages, then apply the frozen manifest: bootstrap each destination lazily, stamp its type template, write each promoted file, and for a terminal collision supersede plus `git mv` the old file to `archive/`. Write the one per-session journal entry at `notes/{area}/{date}-{slug}.md` (the durable cross-session handoff). Run the compaction sub-procedure ([`compaction.md`](compaction.md)) as Stage 2's final sub-step, so the non-skippable Stage-3 gate validates its writes. Draft the handoff at `4-wrap-up/working/handoff-draft.md`; Stage 3 evaluates that working draft, and Stage 4 seals it to `4-wrap-up/outputs/handoff.md` only on `PASS`. When `propose.mode: dual`, integrate the frozen Codex proposal per [`production.md`](../orchestration/workflow/production.md) and log deltas to `reconciliation-iter{n}.md`; a missing proposal is not a gate — degraded mode stamps `production_mode: claude-only`.
 
 ### EVALUATION — Stage 3 (the non-skippable dual-system gate)
 
@@ -120,7 +120,7 @@ This phase IS pipeline Stage 3 — memory validation — and it is NON-SKIPPABLE
 
 ### RECORD — Stage 4 (seal closure evidence)
 
-RECORD runs after every EVALUATION (any verdict) and seals — it performs no new promotion. On every verdict, it upserts `session.json` and preserves the transcript. On `PASS`, it copies the evaluated `5-wrap-up/working/handoff-draft.md` to the PASS-only `5-wrap-up/outputs/handoff.md`, stamps the handoff frontmatter, and writes the `memory-reads` and `resolution-log` audits, per [`record/SKILL.md`](../record/SKILL.md). Any new promotable finding from Wrap-up's own EVALUATION routes through the promotion contract — RECORD improvises no destination.
+RECORD runs after every EVALUATION (any verdict) and seals — it performs no new promotion. On every verdict, it upserts `session.json` and preserves the transcript. On `PASS`, it copies the evaluated `4-wrap-up/working/handoff-draft.md` to the PASS-only `4-wrap-up/outputs/handoff.md`, stamps the handoff frontmatter, and writes the `memory-reads` and `resolution-log` audits, per [`record/SKILL.md`](../record/SKILL.md). Any new promotable finding from Wrap-up's own EVALUATION routes through the promotion contract — RECORD improvises no destination.
 
 ### EXIT — Stage 5 (manager-owned; runs LAST)
 
@@ -128,14 +128,14 @@ Stage 5 is the manager's and runs ONLY after Stage-3 `PASS`. The gitignored `ses
 
 ### Output paths
 
-Session writes are scoped to `5-wrap-up/`; memory writes follow the [Staging → Memory routing](promotion.md#staging--memory-routing) table. `{date}` = session start date; `{session-id}` = the manager-supplied parent session id; `{project-name}` / `{feature-name}` from `session.json`; `{n}` = the manager-supplied iter.
+Session writes are scoped to `4-wrap-up/`; memory writes follow the [Staging → Memory routing](promotion.md#staging--memory-routing) table. `{date}` = session start date; `{session-id}` = the manager-supplied parent session id; `{project-name}` / `{feature-name}` from `session.json`; `{n}` = the manager-supplied iter.
 
 | Path | Written by |
 |---|---|
-| `5-wrap-up/working/{pre-wrap-up-snapshot.txt, snapshot-iter{n}.txt, staging-inventory.md, promotion-manifest.md, reconciliation-iter{n}.md, discussion-log.md, handoff-draft.md}` | assistant (WORK) / manager (DISCUSSION) |
-| `5-wrap-up/working/proposals/codex/draft-iter{n}.md` | Codex proposer — frozen before integration |
-| `5-wrap-up/outputs/{handoff.md, memory-reads.md, resolution-log.md}` | assistant (RECORD) — PASS only |
-| `5-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` + `checklist.md` | evaluator (EVALUATION) |
+| `4-wrap-up/working/{pre-wrap-up-snapshot.txt, snapshot-iter{n}.txt, staging-inventory.md, promotion-manifest.md, reconciliation-iter{n}.md, discussion-log.md, handoff-draft.md}` | assistant (WORK) / manager (DISCUSSION) |
+| `4-wrap-up/working/proposals/codex/draft-iter{n}.md` | Codex proposer — frozen before integration |
+| `4-wrap-up/outputs/{handoff.md, memory-reads.md, resolution-log.md}` | assistant (RECORD) — PASS only |
+| `4-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` + `checklist.md` | evaluator (EVALUATION) |
 | memory promotions per the routing table, plus the `notes/{area}/{date}-{slug}.md` journal | assistant (WORK Stage 2) |
 | `session.json` (`workflow.wrap-up` upsert) | assistant (RECORD) |
 | `workflow.finish` | manager (Stage 5) |

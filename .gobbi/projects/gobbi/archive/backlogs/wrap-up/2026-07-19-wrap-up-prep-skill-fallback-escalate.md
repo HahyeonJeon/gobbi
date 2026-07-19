@@ -4,7 +4,7 @@ description: "E8 (deferred): when a Preparation-generated skill's durable destin
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 priority: medium
 project-scope: true
 created: 2026-07-16
@@ -12,6 +12,9 @@ session: e5c0af1d-005d-4455-a58f-efe601ed342f
 tags: [wrap-up, process]
 keywords: [e8, preparation-skill, fallback, escalate, transition-contract, silent-repair]
 author: claude
+shipped_in: CHANGELOG.md
+archived_at: 2026-07-19
+archive_reason: closed
 ---
 
 # E8 — Preparation-skill fallback should escalate, not silently repair (deferred)

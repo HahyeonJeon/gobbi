@@ -1,6 +1,6 @@
 ---
 name: eval-childdoc-checklist-authoring
-description: Authoring checklist.md across the 5 loop skills — the Point-2 copy-then-tick contract, box=VERIFIED, legend + counts
+description: Authoring checklist.md across the 4 current loop skills — the Point-2 copy-then-tick contract, box=VERIFIED, legend + counts
 type: checklists
 scope: feature
 feature: evaluation-childdoc-split

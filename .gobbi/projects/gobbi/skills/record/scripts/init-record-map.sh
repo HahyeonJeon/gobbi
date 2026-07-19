@@ -8,7 +8,7 @@
 #     - session-root invariants: the transcripts/ dir + metadata STUBS
 #       (session.json, state.json, settings.json, session.json.lock)
 #     - a session-root README.md index stub pointing at record-map.md
-#     - all five loop dirs (1-ideation … 5-wrap-up), by DELEGATING each loop's
+#     - all four loop dirs (1-ideation … 4-wrap-up), by DELEGATING each loop's
 #       4-slot interior to scaffold-session-dir.sh — the single dir-materializer —
 #       so the per-loop dir + staging vocabulary stays defined in exactly one place.
 #
@@ -21,7 +21,7 @@
 #   compacted session preserves the manager's stamped values. Dirs use mkdir -p.
 #   The whole script is therefore idempotent and safe on every Configuration entry.
 #
-#   Execution task dirs (4-execution/task-{NN}-{slug}) are NOT created here — their
+#   Execution task dirs (3-execution/task-{NN}-{slug}) are NOT created here — their
 #   names are unknown at init; they stay lazy via scaffold-session-dir.sh per task.
 #   startup/ owns its own session shape (not a loop) and is out of scope here too.
 #
@@ -44,7 +44,7 @@ usage() {
 usage: init-record-map.sh <session-root> <mode>
   Bootstraps the full session-record skeleton at <session-root>:
   transcripts/ + metadata stubs (session.json state.json settings.json
-  session.json.lock) + README index + all 5 loop dirs (via scaffold-session-dir.sh).
+  session.json.lock) + README index + all 4 loop dirs (via scaffold-session-dir.sh).
   Stubs are create-if-absent (never clobber stamped values). Idempotent.
   <session-root> must be absolute; <mode> is chat|auto.
 EOF
@@ -72,6 +72,88 @@ scaffold="$script_dir/../../orchestration/scripts/scaffold-session-dir.sh"
 templates="$script_dir/../../orchestration/templates"
 [ -x "$scaffold" ] || { log "scaffold script not executable: $scaffold"; exit 1; }
 [ -d "$templates" ] || { log "templates dir not found: $templates"; exit 1; }
+
+# --- Schema compatibility gate (read-only; MUST precede every mutation) ------
+# Gobbi 0.5.3 starts a new session-record schema. Existing sessions belong to
+# the code pinned in their original worktrees; this initializer does not migrate
+# or operate on them. Derive expected versions from the shipped templates so the
+# gate cannot silently drift from the files it will copy.
+command -v jq >/dev/null 2>&1 || { log "jq not found — required for schema compatibility checks"; exit 1; }
+preflight_schema() {
+    local dest_name="$1" template_name="$2"
+    local dest="$session_root/$dest_name" template="$templates/$template_name"
+    [ -f "$template" ] || { log "missing template: $template"; exit 1; }
+    local expected
+    expected="$(jq -er '.schemaVersion | select(type == "number")' "$template")" || {
+        log "template has no numeric schemaVersion: $template"
+        exit 1
+    }
+    if [ -e "$dest" ]; then
+        local actual
+        actual="$(jq -er '.schemaVersion | select(type == "number")' "$dest" 2>/dev/null)" || {
+            log "refusing to mutate session with invalid metadata: $dest"
+            exit 1
+        }
+        if [ "$actual" != "$expected" ]; then
+            log "refusing legacy session schema in $dest_name (found $actual, expected $expected); finish it in its pinned pre-0.5.3 worktree"
+            exit 1
+        fi
+        local shape_filter
+        case "$dest_name" in
+            session.json)
+                shape_filter='(keys == ["agents","feature","finishedAt","git","previousSessionId","project","schemaVersion","sessionId","startedAt","system","task","transcriptPath","usage","workflow"]) and
+                    (.git | keys == ["baseBranch","branch","issue","pr","repo","worktreePath"]) and
+                    (.workflow | keys == ["chat","configuration","execution","ideation","planning","wrap-up"]) and
+                    (.workflow.configuration | keys == ["finishedAt","startedAt"]) and
+                    all(.workflow.ideation,.workflow.planning,.workflow["wrap-up"];
+                        (keys == ["finishedAt","integration","iter","iterations","startedAt","verdict"])) and
+                    (.workflow.execution | keys == ["finishedAt","integration","iter","iterations","startedAt","verdict"]) and
+                    all(.workflow.ideation.integration,.workflow.planning.integration,.workflow["wrap-up"].integration;
+                        (keys == ["changing_rows","escalated_rows","kept_own_rows","total_rows"])) and
+                    (.workflow.execution.integration | keys == ["changing_rows","escalated_rows","kept_own_rows","tasks","total_rows"]) and
+                    (.workflow.chat | keys == ["tasks"]) and
+                    (.agents | type == "array") and
+                    all(.agents[];
+                        (keys == ["continuationOf","finishedAt","id","iter","kind","model","name","phase","startedAt","status","step","sub_step","system","teammateName","tokensUsed","transcriptPath","turns","type"]) and
+                        (.tokensUsed | keys == ["cacheCreation","cacheRead","input","output","total"])) and
+                    (.usage | keys == ["codex","computedAt","grandTotal","sessionTotal"]) and
+                    (.usage.codex | keys == ["cacheCreation","cacheRead","input","output","total"])'
+                ;;
+            state.json)
+                shape_filter='(keys == ["activeNote","mode","schemaVersion","workflow"]) and
+                    (.workflow | keys == ["chat","configuration","execution","ideation","planning","wrap-up"]) and
+                    all(.workflow.configuration,.workflow.ideation,.workflow.planning,.workflow.execution,.workflow["wrap-up"];
+                        (keys == ["iter","maxIterations","phase","state","verdict"])) and
+                    (.workflow.chat | keys == ["tasks"]) and
+                    (.workflow.planning.maxIterations >= 1)'
+                ;;
+            settings.json)
+                shape_filter='(keys == ["compaction","git","mode","models","schemaVersion","workflow"]) and
+                    (.workflow | keys == ["execution","ideation","planning","wrap-up"]) and
+                    all(.workflow.ideation,.workflow.planning,.workflow.execution,.workflow["wrap-up"];
+                        (keys == ["discuss","evaluate","maxIterations","propose","skip"])) and
+                    (.models | keys == ["claude","codex"]) and
+                    all(.models.claude,.models.codex;
+                        (keys == ["assistant","evaluator","executor","leader","manager"])) and
+                    (.git | keys == ["baseBranch","branch","issue","pr","repo","worktree"]) and
+                    (.git.pr | keys == ["draft","open"]) and
+                    (.git.issue | keys == ["create"]) and
+                    (.git.worktree | keys == ["autoRemove"]) and
+                    (.git.branch | keys == ["autoRemove"]) and
+                    (.compaction | keys == ["enabled","maxAutoActions","note"]) and
+                    (.workflow.planning.skip == false) and
+                    (.workflow.planning.maxIterations >= 1)'
+                ;;
+        esac
+        if ! jq -e "$shape_filter" "$dest" >/dev/null 2>&1; then
+            log "refusing retired or malformed current-schema shape in $dest_name; finish legacy sessions in their pinned pre-0.5.3 worktree"
+            exit 1
+        fi
+    fi
+}
+preflight_schema session.json session.template.json
+preflight_schema state.json "state.$mode.json"
+preflight_schema settings.json "settings.$mode.json"
 
 # --- Session-root invariants -------------------------------------------------
 mkdir -p "$session_root" "$session_root/transcripts"
@@ -104,7 +186,7 @@ EOF
 fi
 
 # --- Loop dirs: delegate each interior to the single dir-materializer ---------
-for loop in 1-ideation 2-preparation 3-planning 4-execution 5-wrap-up; do
+for loop in 1-ideation 2-planning 3-execution 4-wrap-up; do
     "$scaffold" "$session_root" "$loop" >/dev/null 2>&1 || { log "scaffold failed for $loop"; exit 1; }
 done
 
