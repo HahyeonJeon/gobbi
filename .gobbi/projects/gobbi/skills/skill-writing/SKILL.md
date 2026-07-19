@@ -1,67 +1,48 @@
 ---
 name: skill-writing
-description: "Use when authoring a project skill, or revising, migrating, or splitting one — the frontmatter schema, the six-section standard form, the design gates, and the wiring + conformance procedure."
-allowed-tools: Read, Grep, Glob, Bash
+description: "Use when authoring, revising, migrating, or splitting a project skill — classifies preference, tool, and operation skills, dispatches the matching writing procedure, and verifies wiring and cold use."
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+skill-type: operation
 ---
 
 # Skill Writing
 
-Skill for authoring a project skill — a standard operating procedure for one capability. Load it when
-creating a new skill, or when revising, migrating, or splitting an existing one.
+Operation skill for producing one cold-load-sufficient project skill. It classifies the target as a
+preference, tool, or operation skill, applies the matching type-owned writing procedure, then proves the
+canonical source, runtime wiring, and fresh-agent use.
 
-A skill does not just describe a capability; it standardizes how the capability is performed. It does
-that by defining the specifications for its operations — how each step is done — so every agent that
-loads it works the one specified way instead of improvising. A second, lesser standard governs the
-document itself — every skill uses the same standard form: the same sections in the same order, the
-same rules, one owner per borrowed fact. You standardize the operations; you fill a standard form to
-present the procedure.
+Load it for a new skill and for any substantive revision, migration, or split. A legacy skill may remain
+untyped until it is substantively revised; narrow compatibility corrections alone do not trigger migration.
 
 ---
 
 ## Principles
 
-> **A skill is a standard operating procedure for one capability.**
+> **Type follows the capability, not the topic.**
 
-A skill is loaded by an agent with no prior context that must perform the work, not study a
-subject. So it is written as an executable procedure for one coherent capability — ordered steps,
-clear boundaries, and enough orientation to act without reconstructing the session that wrote it. It
-standardizes the work by defining the specifications for its operations — how each step is done — so
-every agent that loads the skill performs it the one specified way instead of improvising. A document
-that only describes a topic transfers information but not a reliable practice; and because a skill
-exists to be run, its worth is realized only when an agent can load it and follow it.
+The same topic can support judgment, tool lookup, or an executable outcome. Classification by subject name
+hides that difference; classification by what the agent must do makes the document shape predictable.
 
-> **Evidence and the user shape the design.**
+> **One document kind has one dominant job.**
 
-A skill is a shared contract every agent will obey, so its design is worth getting right over
-getting done fast. Two sources shape it: research into how the capability actually works and where
-it fails, and discussion with the user about intent and tradeoffs. The same discipline governs the
-skill's claims — a statement about behavior or wiring is trustworthy only when read from the
-mechanism that makes it true, never assumed. Together they keep a polished procedure from
-standardizing the wrong work.
+A preference skill improves judgment, a tool skill explains a named tool, and an operation skill directs an
+outcome. Supporting material is useful only while it remains subordinate to that dominant job.
 
-> **Standard form makes skills predictable to read.**
+> **Shared gates belong in the parent; type decisions belong with the type.**
 
-A set of skills is usable only if any one of them reads the same way. A shared section grammar gives
-each kind of guidance — orientation, mental model, enforcement, action, ownership — a stable home,
-so a cold-loading agent finds what it needs without learning a new layout each time. The uniformity
-is functional, not cosmetic: it is what makes the corpus navigable and its skills interchangeable,
-and a skill that deviates taxes every future reader. The standard form governs how a skill reads, not
-how its operations are specified — that substance is the procedure's.
+Evidence, ownership, affected-file mapping, wiring, and cold-load proof apply to every skill. Section shape
+and writing order differ by type, so they stay in direct child procedures instead of being flattened into one
+universal form.
 
-> **The SKILL.md holds the top-level flow; depth lives in child docs.**
+> **An operation is incomplete without evidence that the operation works.**
 
-The entry document is loaded first and often, so it stays legible by carrying the whole top-level
-procedure and nothing heavier. Detail with its own depth — a long reference, a set of templates, a
-per-unit sub-procedure — moves into a child doc the reader opens only when a step calls for it.
-Separating the layers keeps the operation visible as a whole while giving complex detail room to
-grow one hop away — present when needed, never crammed into the parent.
+An ordered procedure can look plausible while failing at a branch, boundary, or recovery path. Its scenario,
+checklist, and evaluation companions turn the procedure into observable obligations and binary evidence.
 
-> **Every fact has one owner; a copy drifts.**
+> **A borrowed fact has one owner.**
 
-A skill leans on facts owned by other documents — a frontmatter standard, a script, a template. Copy
-such a fact and the copy rots the moment the owner changes, and the two quietly disagree. So a skill
-states the fact and records its owner, never restating what another file owns — which is why the
-body stays free of borrowed detail and one source can settle any factual disagreement.
+Copying another surface's policy makes the copy stale as soon as the owner changes. A skill states the local
+action or consequence and records the single validating owner in References.
 
 ---
 
@@ -69,319 +50,173 @@ body stays free of borrowed detail and one source can settle any factual disagre
 
 ### Must-Follow
 
-- **MUST scope a skill to ONE coherent capability, cold-load-sufficient** — an agent with no prior
-  context can perform the capability from the Intro + Procedure alone. A skill that bundles two
-  capabilities, or needs the authoring session's context to act, fails this.
-- **MUST ground the design in prior art and user alignment before locking the Procedure** — study
-  the existing skills that share the shape and decide the design with the user; never author a new
-  skill's shape from a first guess.
-- **MUST name the file `SKILL.md`** in the canonical skill directory, with `name` matching that
-  directory — the loader resolves a skill by its dir name.
-- **MUST carry the three required keys, plus optional keys ONLY from the named allowlist in
-  § Procedure P4; NEVER a field from another schema.** The three required keys (`name`, `description`,
-  `allowed-tools`) are the baseline; an allowlist key is added only for non-default behavior. A skill
-  carries only skill frontmatter, so keys like `type` / `scope` / `status` / `tags` (from a memory or
-  config schema) never appear.
-- **MUST match the description grammar to the load mode** — `MUST load …` for a deterministic
-  load, `Use when …` / `Load when …` for an on-demand load. A mismatched grammar misleads the
-  reader about when the skill loads.
-- **MUST follow the six-section order** (Frontmatter → Intro → Principles → Rules → Procedure
-  → References; § Procedure preamble), writing one section per step; place Memory Access Matrix
-  and Output paths as Procedure sub-sections ONLY when the skill's work writes (§ Procedure P8).
-  A read-only reference skill omits both.
-- **MUST keep Intro, Principles, and Rules source-free** — those three sections name no other
-  file. Ownership links live in § References; load/read actions live in § Procedure. A cross-doc
-  mention scattered through the body is what drifts; the register in References is the one place
-  to audit it.
-- **MUST state each borrowed fact plainly and record its owner in § References** — never copy
-  the owner's content into the body, because a copied fact drifts when the owner changes.
-- **MUST base every wiring claim on the owner read directly** — the script source, the live
-  symlink, the settings file — never an assumption. Assert "the script creates the mirror"
-  only after reading the loop that creates it.
-- **MUST verify loadability empirically before declaring the skill done** — the project's skill
-  guards pass and each runtime mirror resolves, AND the skill loads cold in each runtime and a fresh
-  agent can follow it. Structural checks are necessary but not sufficient; a skill no runtime loads is
-  unfinished.
+- **MUST classify every new or substantively revised skill as `preference`, `tool`, or `operation` and stamp
+  `skill-type` after `allowed-tools`.** The type is the body-shape contract, so leaving it implicit makes both
+  authoring and evaluation ambiguous.
+- **MUST carry the four required frontmatter keys plus optional keys only from P2's named allowlist.** Omit an
+  optional key when its default behavior is intended, and reject keys owned by memory, workflow, or another
+  schema.
+- **MUST classify in precedence order: operation, then tool, then preference.** If the skill owns an ordered
+  SOP, it is an operation even when it contains preferences or named-tool facts; otherwise a named-tool manual
+  is a tool; the remaining judgment guidance is a preference.
+- **MUST load exactly one type child at P5.** The selected child owns the final section shape, type-specific
+  writing order, boundary tests, and reclassification triggers.
+- **MUST keep the selected type's dominant section dominant.** Preference centers Principles and Rules; tool
+  centers Manual; operation centers Procedure.
+- **MUST ship every new or substantively revised operation with `scenarios.md`, `checklists.md`, and
+  `evaluation.md`.** The operation-writing child authors them last through the scenario, checklist, and
+  evaluation skills.
+- **MUST edit the canonical project skill directory only.** Runtime paths are generated or symlinked views;
+  editing them by hand creates drift or destroys the mirror topology.
+- **MUST verify mechanism claims from their owner and verify taught examples against the live surface.** A
+  plausible command, path, field, or wiring statement is not evidence.
+- **MUST finish with structural guards, runtime cold loads, and a fresh-agent proof.** A readable source file
+  that a target runtime cannot load or a fresh agent cannot follow is unfinished.
 
 ### Must-Not-Follow
 
-- **NEVER copy an owner's content into the body** instead of stating the fact and naming the
-  owner — the copy drifts the moment the owner changes. Fix: state the fact plainly; record
-  the owner path + section in § References.
-- **NEVER assert a wiring surface without verifying it** — writing "the skill is mirrored"
-  without running the check, or "the load path exists" without testing it. Fix: verify the
-  MECHANISM by reading its owner (script / settings / mirror), not the end-state.
-- **NEVER hand-create the runtime mirrors** — a hand-made one drifts from what the project's sync
-  mechanism produces. Fix: run the sync mechanism and let it build every mirror.
-- **NEVER edit the plugin / package manifest to register a skill** — conventional skill directories
-  auto-load with no manifest key, and a manifest key can break loading. Fix: leave the manifest
-  untouched.
-- **NEVER add a tool-permission entry unless zero-prompt preapproval is wanted** — it is a
-  permission gate, not a discoverability gate; the skill loads without it. Fix: omit it and accept a
-  first-use tool prompt, or add it only to silence that prompt.
-- **NEVER register a skill in the project's skill index against its convention** — follow the index's
-  rule for the skill's kind (a project may list operational skills, name meta skills in prose, or omit
-  some). Fix: place the skill by the index's convention, not by default.
-- **NEVER split a skill into child docs by length alone** — a child doc is justified by
-  ownership of a SET of artifacts, a too-long lookup reference, per-unit orchestration, or an
-  independent-audience sub-procedure. Fix: default to standalone; split only on one of those.
-- **NEVER collapse a per-unit artifact SET the skill owns into one monolithic file** — per-perspective
-  review scenarios, per-item checklists, and the like. A monolith hides per-unit drift, blocks stable
-  per-unit references, and ships no independently reusable piece. Fix: give each unit its own child doc
-  per the P3 (a)/(c) split criteria; the owning skill records the multi-file contract.
+- **NEVER classify from a topic label such as language, domain, workflow, or reference.** Fix: ask whether the
+  skill owns an outcome SOP, a named-tool manual, or non-procedural judgment.
+- **NEVER add `Procedure` to a preference skill or `Manual` as a peer of `Procedure` in an operation skill.**
+  Fix: reclassify an ordered preference as operation; keep only step-local tool facts in an operation and route
+  larger tool material to a child reference or tool skill.
+- **NEVER force every preference entry into a rigid mini-schema.** Fix: write enough rationale, force, scope,
+  and exceptions for the judgment at hand, using the lightest clear structure.
+- **NEVER let a tool skill own a broader normative workflow.** Fix: keep short setup and capability-local
+  sequences in Manual; move end-to-end outcome coordination into an operation skill.
+- **NEVER add policy only to an operation companion.** Fix: put the rule or step in `SKILL.md`, then make its
+  scenarios, checks, and evaluation routes trace back to that parent clause.
+- **NEVER hand-create or hand-edit a runtime mirror or register a conventional skill through a plugin
+  manifest.** Fix: run the project-owned sync mechanism and follow the owning index convention.
+- **NEVER split by length alone or nest a child below another child.** Fix: split only for an independently
+  consumed procedure, owned artifact set, or lookup reference; keep every child one hop from `SKILL.md`.
 
 ---
 
 ## Procedure
 
-Author a skill in three parts. **FRAME (P1–P3)** — lock the one capability, the evidence, and the user's
-direction first. **WRITE (P4–P9)** — the six sections in fixed order, one per step, never paired or
-collapsed. **WIRE (P10)** — build the mirrors, then prove a fresh agent finds and follows it.
+Run seven steps in order: **FRAME (P1–P4) → WRITE (P5) → PROVE (P6–P7)**. Do not draft the target skill
+before P1–P4 lock its capability, type, evidence, ownership, and file set.
 
-**P1–P3 are a hard design gate:** draft no section until the capability, evidence, and direction are locked.
-A skill framed wrong standardizes the wrong work under a polished, trustworthy-looking surface.
+### P1 — Frame one capability
 
-One flow fits every origin — create from scratch, extract from a session, revise, migrate, split. Only the
-set of already-existing files differs, and P3's affected-file map captures that.
+State:
 
-Every skill in the project uses the same **standard form** — the same six sections in the same order, the
-same rules, one owner per borrowed fact. The steps below fill that fixed shape; after P9, the **conformance
-checklist** (`checklists.md`) confirms the finished skill conforms to the standard form before wiring. The
-shape is fixed; the operations the skill specifies are yours to design.
+- the narrowest actor that always needs the skill;
+- its deterministic or on-demand load trigger;
+- the observable outcome or judgment it enables;
+- its non-goals;
+- the first intended consumer when the capability is new.
 
-### P1 — Frame the one capability
+Draft the frontmatter description from the frame. Use `MUST load …` for deterministic loading and `Use
+when …` or `Load when …` for on-demand loading. The description says what the skill does and when to load it.
 
-Name the single capability in four parts:
+### P2 — Classify and stamp the type
 
-- **Actor** — who loads and runs it. Pick the NARROWEST that always needs it: a phase or role that loads it
-  every run → `phase:{x}` / `role:{x}`; many unrelated callers → `any-agent`. Take the name from a real
-  consumer, not the topic.
-- **Trigger / load mode** — by rule, not feel. **Deterministic** iff a phase or role loads it every time
-  that phase/role runs; else **on-demand** (a task loads it when it touches the domain). The load mode sets
-  the description grammar and the P4 frontmatter.
-- **Outcome** — what a fresh agent produces by following the skill end to end.
-- **Non-goals** — what it deliberately skips. One coherent, cold-load-sufficient capability; a second
-  capability is a second skill. Can't state the outcome and non-goals in a sentence each? It isn't one thing
-  yet — narrow it.
+Apply the first matching branch:
 
-Draft the **description** — the line that makes the skill load: what it does AND when to load it (its
-triggers), specific and a little pushy (skills under-trigger on vague ones), never first- or second-person.
-The grammar matches the load mode — `MUST load …` (deterministic) or `Use when …` / `Load when …`
-(on-demand; a new authoring/reference skill is on-demand). It goes into the P4 frontmatter.
+1. **Operation:** Does the skill own ordered actions that produce one observable work outcome? If yes, choose
+   `operation` even when the procedure uses a named tool or carries preferences.
+2. **Tool:** Otherwise, is its dominant job helping an agent understand and use one named tool or platform?
+   If yes, choose `tool`. Short setup and one-capability sequences do not turn it into an operation.
+3. **Preference:** Otherwise, choose `preference` for judgment, behavior, conventions, constraints, and
+   defaults that do not require ordered execution.
 
-### P2 — Study the evidence and pass the user design gate
-
-Ground the design in prior art and in the mechanisms that own its facts, before locking anything.
-
-- **Analogous skills** — read those sharing the shape (reference vs loop vs role, read-only vs state-writing)
-  and follow their form; never author a shape from a first guess. Extract-from-session: the session record is
-  a source too. Revise/migrate: the existing skill and its history are the prior art.
-- **Consumers** — read the callers that will load this skill (a workflow step, a role, a delegation prompt),
-  so the description and Procedure fit the real load. A net-new capability may have no consumer yet — say so,
-  and design for the first intended caller.
-- **External prior art** — study an established outside practice and keep only what improves the procedure;
-  adapt it to the project's standard, never import it wholesale.
-- **Applicable mistakes** — load `skills/skill-writing/mistakes.md` and any domain mistakes.
-- **Owner mechanisms, not assumptions** — read every behavior or wiring claim from the mechanism that makes
-  it true (script source, live symlink, settings file). A claim not read from its owner is a guess.
-- **User design gate** — the user locks the direction (shape, altitude, scope) from reference-backed options,
-  not a finished draft. **An explicit task direction already satisfies the gate:** when the user or the brief
-  has stated the shape, record it and proceed — do not re-ask a settled decision.
-
-### P3 — Map ownership, affected files, and altitude; lay the skeleton
-
-With the capability and direction locked, design the structure before filling it.
-
-- **Claim-owner ledger** — list every fact the skill will borrow and its ONE owner (path + section); this
-  becomes § References at P9. A borrowed fact with no single owner: state it locally or drop it, never copy.
-- **Affected-file map (blast radius)** — list every file the change touches beyond `SKILL.md`: the runtime
-  mirror(s) the skill syncs into, the project's skill index, the permission / settings file, the skill
-  guards, and any caller that loads the skill. On a migrate or split this map IS the job — which files move,
-  shrink, or gain a child-doc pointer, kept consistent across all. Mark each surface by how it is touched —
-  **authored** (you write it), **generated** (the mirrors the sync builds — never hand-edited),
-  **conditionally-updated** (the skill index, the settings file), or **read-only** (guards you only run) — so
-  you never run line-level CRUD on a generated mirror.
-- **CRUD + 5W1H over the set** — for the target and each authored file, name what to Create, what to Read for
-  consistency, what to Update (to the line), what to Delete; then who depends on it, what changes, when it
-  applies, where else it must change, why, and how it propagates. Scale it: a one-file standalone collapses
-  to a few lines; the full pass earns its keep on a migrate or multi-file split.
-- **Altitude — standalone vs child docs** — default to one standalone `SKILL.md`. Split detail into a child
-  doc ONLY when the skill owns one of: **(a)** a SET of stamped per-instance artifacts (a `templates/` set
-  the skill ships); **(b)** a deterministic rule-reference too long for the body, read by
-  lookup; **(c)** per-step / per-loop / per-role orchestration docs, one per unit; **(d)** a self-contained
-  sub-procedure another phase or audience reads on its own, or a block whose inline length would push the
-  parent well past the length norm. Never split by length alone. A child doc stays ONE hop from `SKILL.md`
-  (no child of a child), and one over ~100 lines opens with a table of contents.
-- **Lay the empty skeleton** — Frontmatter → Intro → Principles → Rules → Procedure → References as empty
-  headings, plus stubs for any child docs the altitude decision requires. Fill it in the fixed order below,
-  one section per step.
-
-### P4 — Write the Frontmatter
-
-Three REQUIRED keys, in order: `name`, `description`, `allowed-tools` (verify: every skill head in the
-project carries all three). The schema is "three required keys plus a
-named optional allowlist," NOT "exactly three and no others" — an official optional field is valid when the
-skill needs its non-default behavior.
+Record the decision and the rejected alternatives. Stamp four required frontmatter keys in this exact order:
 
 ```yaml
 ---
-name: {skill-name}
-description: {one line; grammar depends on how the skill loads — see below}
-allowed-tools: Read, Grep, Glob, Bash
+name: {skill-directory-name}
+description: {one line from P1}
+allowed-tools: {smallest surface the skill's own work needs}
+skill-type: preference|tool|operation
 ---
 ```
 
-- **`name`** — MUST equal the skill's directory name (`skills/{name}/` → `name: {name}`).
-- **`description`** — the P1 draft, one line; quote-wrap if it holds a colon. Grammar matches the load:
-  `MUST load …` (deterministic) or `Use when …` / `Load when …` (on-demand).
-- **`allowed-tools`** — the smallest surface the skill's OWN work needs. Reads-and-informs →
-  `Read, Grep, Glob, Bash`; work that PRODUCES or edits a file — even a "reference" skill whose output is a
-  written artifact (a doc, a changelog entry) — adds `Write, Edit`. "Reference" is the shape, not the tool
-  surface. Scope to the work, not to what you used to research it.
-- **Optional allowlist keys** set two of the four reach axes: `user-invocable: false` hides it from `/`;
-  `disable-model-invocation: true` stops the model auto-loading it; the rare official `license` /
-  `compatibility` / `metadata` only with a stated reason. Both discoverability defaults are visible /
-  auto-loadable — omit the key unless you want the non-default. (The other two axes — mirror availability and
-  the `Skill()` permission — are P10 wiring.)
-- **NEVER a field from another schema** — a skill carries only skill frontmatter, never keys borrowed from
-  the project's memory, config, or other file standards (e.g. `type` / `scope` / `status` / `tags`).
+`name` equals the directory. `allowed-tools` describes the target skill's work, not the tools used to research
+it. The named optional allowlist is:
 
-**Trap:** do not revive "exactly three keys and no others" — the schema is required baseline plus a named
-optional allowlist.
+- `user-invocable: false` when the skill must be hidden from user invocation;
+- `disable-model-invocation: true` when the model must not auto-load the skill; and
+- the rare official `license`, `compatibility`, or `metadata` keys only with a stated, verified need.
 
-### P5 — Write the Intro
+User-visible and model-loadable are the invocation defaults, so omit both invocation keys when those defaults
+are intended. Plain `type`, memory fields, and workflow provenance such as `production_mode`, `session`,
+`status`, or `iter` are not skill frontmatter.
 
-The H1 title (skill name, Title Case) plus one or two short paragraphs: what the skill is, and when to load
-it. The Intro orients a cold-loading agent; it does not instruct.
+### P3 — Study evidence and pass the user design gate
 
-- **Source-free** — name no other file, no owner link, no exemplar pointer. Ownership lives in § References;
-  load actions in § Procedure.
-- **No procedure detail, no enforcement bullet** — those are Procedure's and Rules' jobs.
-- **Role-defining exception** — a skill that defines an agent role MAY carry a longer Intro: the role
-  definition plus its reference tables. The exception is the role content, not extra rationale.
-- **Trap** — a WHY sentence belongs in Principles, not the Intro.
+Before locking the shape:
 
-### P6 — Write the Principles
+1. Read two or three same-type skills when they exist; use them for structure, never verbatim policy.
+2. Read the consumers that will load the skill.
+3. Study established external practice that improves the capability.
+4. Load `mistakes.md` and applicable project or domain mistakes.
+5. Read every mechanism that owns a behavior, command, path, schema, permission, or wiring claim.
+6. Present reference-backed direction at the user design gate. An explicit user or task decision already
+   satisfies the gate; record it and do not ask again.
 
-Three to six entries, each a one-line concept in a `> **…**` blockquote followed by a short WHY paragraph.
-Principles teach the mental model — judgment, not compliance.
+### P4 — Map ownership, blast radius, and document altitude
 
-- **Conceptual only** — no `MUST` / `NEVER` / `ALWAYS`, no procedure step, no cross-doc citation.
-- **Boundary test** — a line gradable pass/fail against a specific edit is a Rule; move it to § Rules.
-- **Pair with Rules** — each Principle has at least one matching Rule that makes it checkable; not every Rule
-  needs a Principle.
-- **Trap** — a principle that says "do X" is a Rule in disguise.
+Build four planning artifacts before writing:
 
-### P7 — Write the Rules
+- **Claim-owner ledger:** every borrowed fact and its one owner, which becomes References.
+- **Affected-file map:** every authored, generated, conditionally updated, read-only, moved, or deleted
+  surface. Discover it with exhaustive and synonymous searches, not a named-file guess.
+- **CRUD and 5W1H pass:** what is created, read, updated, deleted, who consumes it, when it applies, where it
+  propagates, why it exists, and how it is verified.
+- **Altitude decision:** default to one `SKILL.md`; add direct children only for an owned artifact set, a long
+  lookup reference, per-unit orchestration, or a self-contained sub-procedure another consumer loads.
 
-The enforceable floor, as scannable bullets in two labeled sub-groups: `### Must-Follow` (`MUST` / `ALWAYS`)
-and `### Must-Not-Follow` (`NEVER` bullets / anti-patterns).
+When revising or splitting, preserve the semantic union of the old content. A structural section map alone
+does not prove that no subject, exception, hazard, or recovery condition was lost.
 
-- **Self-contained** — each bullet carries a terse inline rationale, and each anti-pattern its one-line fix.
-  A reader never jumps to Principles to understand a Rule.
-- **Checkable** — every bullet reads as a review-checklist item, gradable against a draft skill.
-- **Source-free** — no owner link, no other file name; a same-file `§` pointer is navigation, allowed.
-- **Two sub-groups are the norm** — a very short skill with only a rule or two per side MAY use a single
-  `## Rules` list when the split would leave near-empty sub-headings.
-- **Rule vs Procedure step** — a Rule states an **invariant** (a condition any *finished* skill must satisfy,
-  gradable without knowing the authoring order); a Procedure step states an **ordered action**. The same
-  sentence never appears verbatim as both — the invariant once as the Rule, the act once as the Procedure
-  gate.
+### P5 — Run exactly one type-writing procedure
 
-### P8 — Write the Procedure
+Load the child selected at P2 and follow it completely:
 
-The operational SOP: numbered `### P#` steps for a reference skill, or phase tables for a loop skill. Every
-step says what to do, in what order, and how to know it is done.
+| `skill-type` | Required child | Target shape |
+|---|---|---|
+| `preference` | [`preference-skill.md`](preference-skill.md) | Frontmatter → Intro → Principles → Rules → References |
+| `tool` | [`tool-skill.md`](tool-skill.md) | Frontmatter → Intro → Principles → Rules → Manual → References |
+| `operation` | [`operation-skill.md`](operation-skill.md) | Frontmatter → Intro → Principles → Rules → Procedure → References, plus the plural verification bundle |
 
-- **Match specificity to fragility** — judgment steps as prose that trusts the agent; fragile steps pinned to
-  exact commands. State only what the agent cannot infer.
-- **The only body section that names a file *as an action*** — a load / read / run action ("Read `<path>`
-  § … when …", "run `<script>`"). References also names files, but as *ownership* links, not actions — that
-  is its distinct job. A see-also pointer is not an action; it goes to References. A path used as a value
-  stays inline as a code span.
-- **Conditional write-only sub-sections** — if the skill's work writes to the session record or memory, place
-  `### Memory Access Matrix` and `### Output paths` here (or a child-doc pointer when large); a read-only
-  skill omits both. These two are the only sections beyond the six that ever appear, and only inside
-  Procedure.
-- **Child-doc mapping** — if P3's altitude decision moved detail into child docs, map when to read each one
-  ("Read `<child>` when …"). The split criteria live in P3, not here.
-- **Length norm** — skills run ~140–600 lines (median ~340). A reference skill aims short; an authoring-SOP
-  skill (this one) runs longer — completeness beats line count. Length is still bounded by single source of
-  truth: copying an owner's content bloats; stating the fact and recording the owner stays tight.
-- **A per-skill companion (optional)** — separately from length-driven child docs, a skill MAY carry a
-  companion doc in its dir if the project keeps one (e.g. a `mistakes.md` of recorded traps). It is a
-  skill-surface doc governed by the project's skill guards, not by any other frontmatter standard, and a
-  caller that loads `SKILL.md` also loads the companion. The same per-file sync that mirrors `SKILL.md`
-  mirrors the companion, so it needs no separate wiring step (P10).
-- **Trap** — do not copy an owner's content into a step; state the local action, record ownership in
-  § References.
+Before loading, record the one selected child path from the P2 classification. Load that child and no other
+type child. Loading two or all three type children invalidates the P5 run even when the resulting headings look
+compliant: discard the P5 draft and restart P5 in a clean agent context with only the selected child. If the
+selected child's boundary test fails while writing, return to P2 and reclassify explicitly.
 
-### P9 — Write the References
+### P6 — Run the skill-writing verification bundle
 
-A section-level ownership register: one entry per owner naming WHICH FACT it validates —
-`{owner path + section} validates {the claim in this skill}`. This is the one section holding the inline
-markdown links (each `[label]` pointing to an owner path), so the markdown-link guard resolves them.
+Use [`scenarios.md`](scenarios.md) to activate the cases that match the target. Work a fresh filled copy of
+[`checklists.md`](checklists.md), inspect the named evidence for every applicable item, and compute coverage
+closure separately from acceptance. A failed gate returns to its owning P-step.
 
-- **One owner per borrowed claim** — every borrowed fact has exactly one entry, drawn from the P3 ledger; no
-  bare see-also list.
-- **No borrowed facts?** A skill that owns all its content — the project files it touches are runtime inputs,
-  not borrowed claims — writes a one-line section ("No borrowed claims; this skill owns its content."), never
-  omitting it or inventing a link.
-- **States no new fact** — References only names owners for facts the body already stated.
-- **Mirror-stable links** — prefer sibling-skill and same-directory links; a deep `../` climb can resolve
-  from the canonical path yet break through the runtime mirrors. A repo-root file (a script, or a doc like
-  `CHANGELOG.md`) usually appears as a Procedure code span or a plain path, not a fragile `../` link.
-- **Anchored entries** — link a `#anchor` only when the named section is the real owner, and record the exact
-  target heading so P10 can verify its slug (the link guard is anchor-blind).
-- **Trap** — a "related docs" list with no claim mapping is not an ownership register.
+For independent review, the evaluator enters through [`evaluation.md`](evaluation.md), which loads the
+scenario and checklist sources and extends the active phase evaluation without changing its output schema.
 
-### Conformance checklist — close P1–P9 before wiring
+### P7 — Wire and prove cold use
 
-Before P10 wiring, run the judgment-free conformance checklist — read `checklists.md`. A single NO sends you
-back to the step that owns it; the skill moves to P10 only when every line is YES.
+1. Run the project-owned sync mechanism; never build mirrors by hand.
+2. Run mirror, link, reference, compatibility, and retired-vocabulary guards.
+3. Verify a runtime mirror still resolves to the canonical directory and retains its expected symlink or
+   generated topology.
+4. Update a skill index only by that index's placement convention. Semantic `skill-type` does not replace a
+   workflow-placement category.
+5. Add a tool-permission entry only when zero-prompt preapproval is deliberately required.
+6. Cold-load the skill through its normal entrypoint in every target runtime.
+7. Give a fresh agent only the normal load context and verify it can perform the capability and complete the
+   applicable checklist evidence.
 
-### P10 — Wire the skill and verify it loads cold
-
-Writing the body is half the job. A skill exists to be loaded and run, so it is done only when a runtime
-can load it and a fresh agent can follow it. Wiring also sets the last two reach axes: **mirror
-availability** (default: every runtime the project mirrors into; make a skill single-runtime only as a
-deliberate decision) and the **tool-permission entry** (default: none; add one only for zero-prompt
-preapproval). P4 forward-references both as P10 wiring.
-
-Wire and prove the skill in order, each step with its check:
-
-- **Build the mirrors with the project's sync mechanism — never by hand.** Run the mechanism that owns the
-  runtime mirrors; it derives every mirror from the canonical skill, including each child doc and companion
-  the skill added. P3 marks the mirrors *generated* for this reason — a hand-made mirror drifts from what
-  the guard expects.
-- **Confirm mirror and reference integrity with the project's structural guards.** Run the mirror-parity
-  check and the link / reference checks; both must report clean. Spot-check that one mirror leaf resolves
-  to the canonical file. A failure means the sync did not build what the runtimes load — fix the sync and
-  run it again, never hand-patch the mirror.
-- **Leave the plugin / package manifest untouched.** Conventional skill directories auto-load with no
-  manifest entry, and adding one can break loading. Registering the skill is the skill index's job, not
-  the manifest's.
-- **Place the skill in the project's skill index by the index's own convention.** The convention varies by
-  the skill's kind — an operational skill may get an index row, a meta / authoring skill a prose mention,
-  and some skills no entry at all. Follow the rule for this kind, do not add a row by default, and confirm
-  the entry you added is present.
-- **Add a tool-permission entry only for zero-prompt preapproval.** It is a permission gate, not a
-  discoverability gate — the skill loads and appears without it. Omit it and accept a first-use tool
-  prompt, or add it only to silence that prompt.
-- **Prove each target runtime loads it cold.** Start the runtime with a clean context and load the skill
-  through its normal entry; confirm it is found without help from the authoring session. Structural checks
-  are necessary but not sufficient.
-- **Run the fresh-agent proof in every target runtime.** Give an agent no prior context and confirm it can
-  find the skill and perform the capability from the Intro + Procedure alone. A skill that passes every
-  guard but that a fresh agent cannot follow is not done.
-
-P10 passes only when the sync, the structural guards, the mirror spot-check, the cold load, and the
-fresh-agent proof all pass.
+P7 passes only when structural checks, runtime loading, and fresh-agent use all pass.
 
 ---
 
 ## References
 
-No borrowed claims — this skill owns its content: the standard form, its sections, and the authoring
-procedure. It borrows no project-specific fact, so there is no external owner to register. A skill you
-write with it that DOES borrow facts fills this section per P9 — one owner per borrowed claim.
+- [`../scenario/SKILL.md`](../scenario/SKILL.md) validates the scenario-set procedure used to author an
+  operation skill's `scenarios.md` and this skill's own scenario source.
+- [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the operational checklist, evidence, coverage
+  closure, and acceptance mechanics used by `checklists.md`.
+- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) validates the evaluator lenses, finding schema, scoring,
+  and active-phase extension used by `evaluation.md`.

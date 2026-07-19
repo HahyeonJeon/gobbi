@@ -258,8 +258,9 @@ claim here and follow the single owner link.
 - [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) § Staging → Memory routing — validates: the shared promotion
   rules and the standing post-promotion guards that startup follows by reference while running its own
   distinct startup-close procedure (P5–P6; the "does not invoke Wrap-up" boundary).
-- [`skill-writing/SKILL.md`](../skill-writing/SKILL.md) — validates: the six-section skill form, the
-  child-doc split into `topics.md` + `recording.md`, and the claim-owner register shape used here.
+- [`skill-writing/SKILL.md`](../skill-writing/SKILL.md) — validates: the shared authoring gates, the
+  child-doc altitude decision for `topics.md` + `recording.md`, and the claim-owner register used here;
+  startup remains a legacy untyped skill until its own substantive type migration.
 - [`gobbi/SKILL.md`](../gobbi/SKILL.md) § Session Bootstrap Order — validates: Configuration's
   empty/sparse-memory trigger that loads startup on-demand, and the return point after startup closes (Intro;
   P7 close).

@@ -2,7 +2,7 @@
 type: mistakes
 skill: skill-writing
 description: "Recorded traps for skill-writing — load before doing skill-writing work"
-updated: 2026-07-16
+updated: 2026-07-19
 ---
 
 # Skill-Writing — Mistakes
@@ -135,16 +135,40 @@ softened items for dropped conditions with the same discipline used for merges.
 durable `.gobbi/projects/gobbi/skills/scenario/SKILL.md` frontmatter. The executor flagged it — it is
 the sole conformance NO.
 **Why it happens** — `production_mode` is a RECORD / loop-outputs provenance key, NOT skill
-frontmatter. skill-writing P4 = "three required keys (`name`/`description`/`allowed-tools`) + a named
-optional allowlist; NEVER a field from another schema." `production.md` stamps `production_mode` in an
-artifact's frontmatter ONLY for the DEGRADED `claude-only` case (a durable degraded label). A genuinely
-dual-produced skill carries NO `production_mode` — verified against python/startup/coding/research
-SKILL.md. Dual-production provenance already lives in the session record (the loop's own working and
-outputs directories), not in the skill's frontmatter.
-**How to detect** — Any instinct to stamp workflow/session provenance (`production_mode`, `iter`,
-`session`, `status`, `type`) into a DURABLE skill's frontmatter. Skill frontmatter ≠ session-artifact
+frontmatter. The skill-writing contract has four required keys
+(`name`/`description`/`allowed-tools`/`skill-type`) plus P2's named optional allowlist; it rejects fields
+owned by another schema. `production.md` stamps `production_mode` in an artifact's frontmatter ONLY for
+the DEGRADED `claude-only` case (a durable degraded label). A genuinely dual-produced skill carries NO
+`production_mode` — verified against python/startup/coding/research SKILL.md. Dual-production provenance
+already lives in the session record (the loop's own working and outputs directories), not in the skill's
 frontmatter.
+**How to detect** — Any instinct to stamp workflow/session provenance (`production_mode`, `iter`,
+`session`, `status`, or plain `type`) into a DURABLE skill's frontmatter. The sanctioned semantic
+classifier is the exact field `skill-type`; plain `type` remains foreign. Skill frontmatter ≠
+session-artifact frontmatter.
 **Correct approach** — Do NOT stamp `production_mode` (or any session/RECORD schema key) in a skill's
 frontmatter, even for dual production. Only the degraded claude-only artifact case carries a frontmatter
-label, per production.md, and that is a session artifact, not a shipped skill. Let RECORD own the
-provenance.
+label, per production.md, and that is a session artifact, not a shipped skill. Stamp exactly one
+`skill-type: preference|tool|operation` after `allowed-tools`, and let RECORD own provenance.
+
+## Verify Owner Lifecycle Before Redesigning A Dependent Artifact
+
+`priority: high` · `domain: docs-sync` · `added: 2026-07-19` · `status: active` · `tags: [docs-sync, refactor, verification]`
+
+**What happened** — A skill-writing redesign initially treated the now-removed project-skill template as a
+live authoring surface to reshape around the new three-type contract. The
+user clarified that the template's only owner, Preparation, was being removed in a concurrent session and
+that the correct terminal action was deletion after that removal landed. Redesigning it first would have
+spent work on an artifact whose owning workflow was already scheduled to disappear.
+**Why it happens** — A dependency is found during the blast-radius sweep and is assumed to be durable because
+it is still present and referenced in the current worktree. The sweep checks present consumers but not the
+owner's approved lifecycle or concurrent destination, so a terminal artifact is mistaken for a migration
+target.
+**How to detect** — Before redesigning a dependent template, child doc, helper, or compatibility surface, the
+plan names its current owner and consumers but does not state whether that owner is staying, moving, merging,
+or being removed. A concurrent branch or user decision already changes the owner's lifecycle, yet the
+dependent artifact still has a rewrite task.
+**Correct approach** — Verify the owner's approved lifecycle and destination before choosing CRUD for each
+dependent artifact. If the owner is being removed, keep the dependency unchanged while it is still consumed,
+then delete it only after the removal lands and a fresh reference sweep proves no live consumer remains. Do
+not redesign a terminal dependency merely because it still exists in the current checkout.
