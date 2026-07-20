@@ -1,208 +1,164 @@
 ---
 name: memory
-description: "MUST load when memorizing — staging a finding/decision/mistake during a loop, or promoting it to durable memory at Wrap-up. The What/When/How of gobbi memory."
-allowed-tools: Read, Grep, Glob, Bash
+description: MUST load when identifying, staging, promoting, superseding, or verifying durable-memory candidates.
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+skill-type: operation
 ---
 
 # Memory
 
-This skill is the **main description of gobbi's durable memory** and the home of the **memorize procedure** — the What / When / How an agent follows to remember something across sessions. Memory and capture are two halves of one value-feature: [`record/SKILL.md`](../record/SKILL.md) owns the **capture / staging side** (the per-loop RECORD sub-phase that writes session staging), and this doc owns the **durable side** (what memory is, when it is written, how the staging→promotion lifecycle completes). Together they are the `memory` value-feature defined in [`gobbi/SKILL.md` § Product value-features](../gobbi/SKILL.md#product-value-features). This doc is the **procedure** — the paths, the standard, and the per-type schemas live in the siblings it points to, never restated here.
+Use this skill when evidence may deserve a durable life beyond the current session. The operation identifies candidate material, filters it for durable value, assigns one authorized type and scope, prepares a typed candidate, and follows it through staging, promotion, lifecycle change, and final verification.
 
----
+Memory owns the candidate policy and durable lifecycle. [Record](../record/SKILL.md) owns session-record writes and typed staging mechanics. [Wrap-up](../wrap-up/SKILL.md) owns inventory, manifest, apply, and handoff mechanics. [Memory rules](rules.md) and the matching [templates](templates/) own durable file shape.
 
-## What memory is — tiers and types
+## Principles
 
-The **What**. Durable memory is a set of typed markdown trees under `.gobbi/projects/{project-name}/`, on two tiers:
+### Evidence before persistence
 
-- **Project tier** — `.gobbi/projects/{project-name}/{type}/` (e.g. `mistakes/`, `rules/`, `decisions/`, `notes/`). Knowledge that crosses features or is intentionally project-scope.
-- **Feature tier** — `features/{feature-name}/...`. A `features/{slug}/` directory is its own tier — a durable-capability dir, not a tagged content type. It holds a README identity doc plus type-scoped subdirs.
+Durable memory preserves supported facts, decisions, constraints, and reusable lessons. It does not preserve speculation merely because a directory exists.
 
-Each type is project-only, feature-scoped, or both — which type sits in which bucket is owned by [`rules.md` § 3](rules.md#3-structure-rules) and the per-type homes in [`memory-map.md`](memory-map.md), not restated here. This is the conceptual shape; the enumeration is not here.
+### Empty is a complete result
 
-- For which type lives where, who writes it, and when → [`memory-map.md`](memory-map.md). It owns the path inventory and the per-type canonical homes — this doc never restates the path table.
-- For the complete 16-type `type` enum (one flat enum — all types are first-class; placement is a `scope`/directory constraint, not an enum split) → [`rules.md` § 2.3](rules.md#23-the-complete-type-enum--16-first-class-types); for which type lives at which tier → [`rules.md` § 3](rules.md#3-structure-rules).
-- For the feature dir's internal shape (the README + 14 subdirs) → [`templates/feature.md`](templates/feature.md). This doc never restates the 14 subdirs.
+An empty candidate set and empty typed staging are valid. A clean result is evidence that nothing durable was justified, not a gap to fill.
 
----
+### Type and scope carry meaning
 
-## When memory is written
+The selected type states what job the record does. Scope states who must keep using it. A convenient path never substitutes for either decision.
 
-The **When**. A memorized fact moves through three beats:
+### Lifecycle changes preserve history
 
-1. **Staged** during a loop's RECORD sub-phase — the assistant writes the finding/decision/mistake to session staging at `sessions/.../{N}-{loop}/staging/{type}/`. Loop RECORD never writes durable memory.
-2. **Promoted** to durable memory at Wrap-up — Wrap-up reads the accumulated staging across all loops and writes it to `.gobbi/projects/{project-name}/...`. Wrap-up is the **sole writer** to durable memory among the workflow loops.
-3. **Read** at the start of the next session — promoted memory is loaded back in (e.g. mistakes via the load-at-start model). This beat closes the lifecycle; building a read procedure is not this doc's job.
+New understanding may supersede an older record, but it does not erase it. Reciprocal references and the complete terminal record keep the change auditable.
 
-**Vocabulary caveat.** **Promotion** names Stage 2 of Wrap-up's WORK pipeline, not the per-loop capture sub-phase, which is **RECORD**. The two are distinct — see [`wrap-up/SKILL.md` § RECORD — Stage 4](../wrap-up/SKILL.md#record--stage-4-seal-closure-evidence), which states the distinction; this doc does not re-explain it.
+## Rules
 
-- For the staging mechanics (what RECORD writes, PASS-only, cumulative staging) → [`record/SKILL.md` § RECORD Phase](../record/SKILL.md#record-phase).
-- For the promotion mechanics (the five-stage pipeline, stage 2 — Promotion) → [`wrap-up/SKILL.md` § Loop and pipeline map](../wrap-up/SKILL.md#loop-and-pipeline-map).
-- For the read-at-start model (the read beat) → [`mistake/SKILL.md` § P1](../mistake/SKILL.md#p1--load-mistakes-before-starting-work).
+### M-1
 
----
+**Require an authoritative source.** Every candidate cites exact accepted evidence, a user decision, a verified result, or a supported correction. Unsupported recollection is not a candidate.
 
-## How — the staging → promotion lifecycle
+### M-2
 
-The **How**, part 1. When an agent has something worth remembering, the write flows like this:
+**Filter for durable value and permit an empty set.** Keep only material that will change a future decision, action, verification, or understanding. Never add filler to make a candidate set or typed staging non-empty.
 
-1. **Stage** the file under the correct type at session `staging/{type}/{slug}.md` — the type you pick determines the destination, so pick it from [`memory-map.md`](memory-map.md) + [`rules.md` § 3](rules.md#3-structure-rules). See [`record/SKILL.md` § RECORD Phase](../record/SKILL.md#record-phase) for the per-loop stage step-table and idempotency.
-2. **Stamp** the matching type template so the file is structured enough to promote — [`templates/{type}.md`](templates/).
-3. At Wrap-up, **Wrap-up reads** the accumulated staging across all loops — [`wrap-up/SKILL.md` § Loop and pipeline map](../wrap-up/SKILL.md#loop-and-pipeline-map).
-4. Wrap-up **routes** each file deterministically to its memory destination — [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing).
-5. Wrap-up **strips** the staging-only fields, then writes through the per-type allowlist — [`wrap-up/promotion.md` § Frontmatter allowlist on promotion](../wrap-up/promotion.md#frontmatter-allowlist-on-promotion) and [`rules.md` § 2.6](rules.md#26-staging-field-stripping-on-promotion).
+### M-3
 
-This doc does **not** contain the routing table — [`wrap-up/promotion.md`](../wrap-up/promotion.md) owns it.
+**Select one authorized type and scope.** Choose from the current typed staging and durable-home map. Apply the type boundary and project-versus-feature scope deliberately. If evidence cannot resolve a legal choice, return `NEEDS_CONTEXT` through the manager.
 
----
+### M-4
 
-## How — sole writer and the access boundary
+**Author a complete typed candidate.** Use the matching memory template, one stable concept slug, required durable content, exact sources, and only authorized routing fields. A label or directory alone does not make a candidate valid.
 
-The **How**, part 2: who may write memory, and when. The invariant: a working loop's RECORD writes **only** to session staging; **Wrap-up is the sole writer** to durable memory. One documented pre-Wrap-up exception exists: `startup`-close promotion. The startup skill writes its user-approved baseline to memory at startup-close, before any productive loop; Wrap-up EXCLUDES `startup/` from its promotion inventory so nothing is double-promoted ([`startup/SKILL.md`](../startup/SKILL.md)). Project-specific skills identified by Planning are authored as the first ordered Execution task, not through RECORD or Wrap-up promotion.
+### M-5
 
-| Who | Writes to |
-|---|---|
-| Working loop (Ideation / Planning / Execution) RECORD | session `staging/` **only** — never durable memory |
-| Wrap-up | the **sole writer** to durable memory (`.gobbi/projects/{project-name}/...`) |
+**Give session writes to Record.** Record stages the candidate under the authorized typed `staging/` directory and preserves earlier staged evidence. Memory policy never grants a working-step actor direct durable-tree write authority.
 
-This is a summary, not the full matrix. The authoritative per-tier read/write matrices live in [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) (the assistant role's staging surfaces, including the two exception rows) and [`wrap-up/SKILL.md` § Memory Access Matrix](../wrap-up/SKILL.md#memory-access-matrix) (Wrap-up's write privileges). Do not reproduce them here.
+### M-6
 
----
+**Give promotion mechanics to Wrap-up and accept typed staging only.** Every promotion input is a regular file below an authorized `staging/` type. Scratch work, evaluations, outputs, and direct ad hoc inputs are ineligible. Wrap-up accounts for every eligible source, including a valid empty inventory.
 
-## How — the standard every memorized file obeys
+### M-7
 
-The **How**, part 3. Every memory write obeys one standard — naming, frontmatter, structure, and dev-doc quality — and that standard is [`rules.md`](rules.md). This section routes you there at write time; it does not teach the standard.
+**Keep one evaluated handoff body.** The handoff candidate originates as typed notes staging. On acceptance, the same body appears at `4-wrap-up/outputs/handoff.md` and `notes/{area}/{YYYY-MM-DD}-{slug}.md`; only the durable frontmatter wrapper may differ.
 
-- **Address** (the slug / naming convention) → [`rules.md` § 1](rules.md#1-naming-standard).
-- **Header** (base frontmatter + per-type extensions) → [`rules.md` § 2](rules.md#2-frontmatter-standard).
-- **Placement** (scope, atomicity, tier) → [`rules.md` § 3](rules.md#3-structure-rules).
-- **Prose quality** (the zero-context-reader bar, the type-aware allowlist, the §4.5 grep-gate) → [`rules.md` § 4](rules.md#4-dev-document-quality-standard).
+### M-8
 
-The per-type **section contracts** each memorized file's body obeys are stamped from [`templates/`](templates/).
+**Make ordinary supersession reciprocal.** The new record names the old record in `supersedes`. The old record changes to its terminal status and names the new record in `superseded_by`. One-sided linkage is invalid.
 
-**Disambiguation.** `memory/rules.md` (the standard) is not `memory/templates/rules.md` (the rules-TYPE template) and not `rules/` (the rules memory type) — three distinct things, two sharing the filename. The CRITICAL disambiguation block at the top of [`rules.md`](rules.md) is the source; this doc only points at it.
+### M-9
 
----
+**Move terminal records whole and never delete them.** Move the complete terminal record to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`, preserve its original type and body, and repoint inbound path references. Plain-slug lifecycle references remain stable.
 
-## Memory Access Matrix
+### M-10
 
-This skill is **read-only-procedural** — it teaches the memorize procedure and routes to the docs that do the writing. An agent that loads `memory/SKILL.md` gets no write authority from it.
+**Verify the final lifecycle, not the intended change.** Confirm source eligibility, type and scope, template conformance, path mapping, reciprocal references, archive state, inbound links, unchanged prior evidence, handoff-body equality when applicable, and exact changed-path scope. A failed check halts completion.
 
-| Memory tier | Access from a `memory/SKILL.md` loader |
-|---|---|
-| All memory tiers (project + feature) | **READ-ONLY** — this skill is a procedure reference; it grants no write surface |
+## Procedure
 
-The actual writes happen under [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix) (staging) and [`wrap-up/SKILL.md` § Memory Access Matrix](../wrap-up/SKILL.md#memory-access-matrix) (promotion). Those are the authoritative matrices.
+### 1. Establish the memory decision boundary
 
----
+Read the accepted artifact, finding dispositions, relevant user decisions, verification results, and current durable records. Confirm which actor has authority to stage, promote, supersede, or move the material.
 
-## Core Principles
+If the evidence or authority is missing, stop with the exact missing input. Do not infer a durable claim from a task summary.
 
-> **Stage first, promote at Wrap-up.**
+Evidence: a source register with exact paths or decision identifiers. Apply M-1.
 
-A working loop's RECORD writes only to session staging; Wrap-up promotes. A loop's RECORD touching durable memory is a constraint violation — see [`record/SKILL.md` § Core Principles](../record/SKILL.md#core-principles).
+### 2. Identify candidate material
 
-> **One record, one concept.**
+List each distinct fact that may help a future session: an approved decision, reusable reference, architecture choice, durable discussion outcome, deferred item, independent assessment, shipped change, verified lesson, handoff, or accepted plan.
 
-Every memory file holds exactly one concept — one decision, one mistake, one design topic. Bundle files are forbidden because supersede / archive / promotion then operate at the wrong granularity — see [`rules.md` § 3](rules.md#3-structure-rules).
+Keep one row per concept. Record its source, intended future consumer, and the future action or understanding it changes. Do not choose a path yet.
 
-> **Supersede and move-on-terminal, never delete.**
+Evidence: a candidate inventory that may contain zero rows. Apply M-1 and M-2.
 
-A superseded file is flipped in place (`status: superseded` + `superseded_by:`) and, at terminal state, moved (`git mv`) to `archive/{type}/` — never deleted. The authoritative semantics live in [`wrap-up/SKILL.md` § Principles](../wrap-up/SKILL.md#principles) and [`record/SKILL.md` § Memory Access Matrix](../record/SKILL.md#memory-access-matrix). Physical deletion stays forbidden for ALL pre-existing memory. The ONE narrow exception is startup's startup-close rollback: on a mid-promotion HALT, a P6.5 REVISE/FAIL, or a P7 write failure, rollback may `rm` ONLY a file that same promotion just created (uncommitted, manifest preimage `absent`) — never a pre-existing file. Its exact bounds are owned by [`startup/recording.md`](../startup/recording.md) §9 step 5.
+### 3. Apply the durable-value filter
 
-> **Compaction is a Wrap-up operation — RECORD never compacts.**
+For each row, ask whether the content remains useful after the current session and whether its source supports the durable claim. Drop session-only detail, duplicated evidence, tentative thought, and material already represented by the same durable record.
 
-Folding an over-cap `{type}/{area}/` directory into one consolidated Map-of-Content file is **compaction** — a durable-memory write owned by Wrap-up's promotion stage. The standard is [`rules.md` § 5](rules.md#5-memory-compaction-the-consolidated--map-of-content-carve-out); a working loop's RECORD stages only and **never compacts**. See [`record/SKILL.md` § Core Principles](../record/SKILL.md#core-principles) for the capture-side boundary.
+When no row passes, declare the candidate set empty and continue with no staged file. Do not invent a note or finding.
 
-> **A memorized file must survive its session.**
+Evidence: a keep/drop decision and reason for every row. Apply M-2.
 
-A memory doc must be understandable by a zero-context reader — a future agent opening it cold, with no access to the originating session. The bar is [`rules.md` § 4](rules.md#4-dev-document-quality-standard). A correction not recorded is a correction repeated — see [`mistake/SKILL.md`](../mistake/SKILL.md) for the mistake type's loop.
+### 4. Select type, scope, and lifecycle intent
 
----
+Use [memory-map.md](memory-map.md) to select one authorized typed source and durable home. Use [rules.md](rules.md) and the matching template to test the type boundary. Select project scope only for cross-feature material; otherwise use feature scope when the type permits it.
 
-## Authoring style
+Compare the concept with existing durable records. Choose create, same-source no-op, or ordinary supersession. A collision without clear identity or authority returns `NEEDS_CONTEXT`.
 
-How every memory doc and every template body is written. The bar is a dev-doc a zero-context reader scans fast — not an essay.
+Evidence: type, scope, area input, preferred slug, lifecycle intent, and existing-record comparison. Apply M-3, M-8, and M-9.
 
-> **Lists and tables over prose.**
+### 5. Author the typed candidate
 
-If the content is a set of fixed fields, options, or steps, use a table or a bullet list — not sentences. Prose is for the one idea a list cannot hold.
+Prepare one candidate from the selected template. Include the stable slug, durable body, exact evidence, scope, type-specific fields, and the smallest authorized routing data needed by Record and Wrap-up. Reference or redact sensitive source material instead of copying it.
 
-> **Short dev-vibe labels.**
+Challenge cosmetic compliance: remove the source evidence or the substantive body and confirm the candidate would fail.
 
-Section and field labels are short nouns a developer would use. Rename narrative labels to their plain form:
+Evidence: a candidate that satisfies its template and source trace before staging. Apply M-1 and M-4.
 
-| Avoid | Use |
-|---|---|
-| Why it applies / Why it matters | Reason |
-| How to apply | How |
-| When to write / Location / File naming / Lifecycle | Write it (one table) |
-| Distinguishing X from neighbors | Vs other types |
-| Item template | Frontmatter + body |
+### 6. Stage through Record
 
-> **Plain, short words.**
+Hand the candidate to [Record](../record/SKILL.md). Record writes it beneath the exact authorized typed `staging/` path, or records the empty candidate result. It preserves earlier staged files and uses explicit supersession rather than rewriting prior evidence.
 
-"use" not "utilize"; "fix" not "implement a solution for". One idea per sentence. Cut filler ("just", "really", "in order to", "it's worth noting"). Principle 7.
+Reread the staged file and confirm its path, bytes, source identity, and type agree with the candidate decision. Filesystem shape, output placement, and command use remain Record-owned.
 
-> **Do not restate a global rule.**
+Evidence: one typed staging path and hash per kept candidate, or an explicit empty result. Apply M-4 and M-5.
 
-The staging→promotion lifecycle, supersede-not-delete, and move-on-terminal are owned by `rules.md` / `wrap-up/SKILL.md` / `archive.md`. Link them; do not re-explain them in a template. A template carries only what is specific to its type.
+### 7. Prepare Wrap-up inputs
 
-> **One section per job.**
+Before promotion, enumerate every authorized typed staging source across expected step and task roots. Reject any source outside an authorized `staging/` type. An empty inventory proceeds as a valid input.
 
-Fold type-specific guidance under a single `## Notes` list rather than a separate H2 per tip. Fewer sections, same content.
+For the handoff, author one evidence-backed body through the notes template and stage it at the Wrap-up notes source. Bind both intended handoff destinations to that body before review.
 
-> **Core principles are a documentation discipline, shaped as a blockquote + body.**
+Evidence: a complete typed-source inventory and, when closing a session, one handoff-body identity. Apply M-6 and M-7.
 
-A template's `## Core principles` section states what the `{type}/` doc must capture and how to write it so a future reader is served — never how to perform the underlying activity (write "record the conclusion", not "make the decision"). Each principle is a bold one-line directive in a blockquote — a verb that names producing or maintaining the doc (`Record`, `Write`, `Capture`, `Keep`, `State`, `Preserve`, `Carry`, …), never the underlying activity (not `Decompose` / `Assess` / `Decide`) — then a one-sentence `so [a reader gets X without redoing the work]` rationale below. A type carries 1-3 such principles — only as many as guard a real reader-failure mode.
+### 8. Promote through Wrap-up
 
----
+Hand the immutable inventory to [Wrap-up](../wrap-up/SKILL.md). Wrap-up resolves destinations from the frozen mapping, validates complete candidates, captures destination preimages, applies the authorized durable changes inside the isolated worktree, and proves every changed path has one typed source.
 
-## Constraints
+Memory supplies type, scope, lifecycle, and history-preservation policy. Wrap-up supplies manifest and filesystem mechanics. If the durable target changes before apply, halt and rebuild through the Wrap-up owner.
 
-- **MUST stage under the correct type** — the type determines the destination; pick it from [`memory-map.md`](memory-map.md) + [`rules.md` § 3](rules.md#3-structure-rules).
-- **MUST stamp the matching template** — freeform writes are forbidden; see [`templates/`](templates/).
-- **MUST obey the standard** — naming + frontmatter + structure + dev-doc quality per [`rules.md`](rules.md).
-- **MUST NOT write durable memory from a working loop** — staging is the only write surface for Ideation / Planning / Execution RECORD; Wrap-up promotes. See [`record/SKILL.md` § Constraints](../record/SKILL.md#constraints).
-- **MUST NOT delete** — supersede via frontmatter; terminal files are moved to `archive/{type}/`. Physical deletion of pre-existing memory is forbidden; the one narrow exception is startup-close rollback removing a file that same promotion just created (uncommitted, preimage-absent) — see [`startup/recording.md`](../startup/recording.md) §9 step 5. See [`wrap-up/SKILL.md` § Rules](../wrap-up/SKILL.md#rules).
-- **MUST NOT improvise a routing destination** — every staging file has a canonical destination in the routing table; an unroutable item returns `NEEDS_CONTEXT`, never an invented home. See [`wrap-up/promotion.md` § Staging → Memory routing](../wrap-up/promotion.md#staging--memory-routing).
+Evidence: source-to-destination mapping, validated durable candidates, and actual-tree results. Apply M-3, M-6, and M-10.
 
----
+### 9. Complete ordinary supersession and terminal moves
 
-## Output paths
+When a new record replaces one existing record, write the new `supersedes` reference and the old `superseded_by` reference as one authorized change. Move the complete old record to its typed archive home after it reaches terminal status.
 
-Two tier roots, nothing more here:
+Enumerate and repoint inbound path references. Do not hard-delete the old file, reduce it to a pointer, or leave it active beside the replacement.
 
-- **Session staging** — `sessions/{date}-{session-id}/{N}-{loop}/staging/{type}/` (where a working loop writes).
-- **Durable memory** — `.gobbi/projects/{project-name}/` (where Wrap-up promotes).
+Evidence: both lifecycle directions, the full archive record, and resolved inbound references. Apply M-8 and M-9.
 
-For the per-path inventory — every session-record and memory location, its writer, when written, and which template stamps it → [`memory-map.md`](memory-map.md). The full path table is **not** duplicated here; `memory-map.md` owns it.
+### 10. Verify and close the lifecycle
 
----
+Inspect the final files and actual diff. Trace every durable change back to one typed staging source and every source to one accounted outcome. Run the current memory-shape and scoped-link validators from their owners. Confirm prior staged evidence is unchanged.
 
-## Ownership-boundary table
+When a handoff exists, compare the session and durable bodies byte-for-byte after removing the durable frontmatter wrapper. Report exact paths, checks, results, empty sets, and unresolved concerns.
 
-The anti-duplication contract. Each row names the single source of truth for one thing, and what `memory/SKILL.md` points there for.
+Completion evidence: all applicable checks in [checklists.md](checklists.md) pass, the scenario frame in [scenarios.md](scenarios.md) has no uncovered applicable obligation, and independent review enters through [evaluation.md](evaluation.md). Apply M-7 and M-10.
 
-| Doc | Owns (single source of truth for) | `memory/SKILL.md` points here for |
-|---|---|---|
-| [`memory/SKILL.md`](SKILL.md) (this doc) | The **memorize procedure** — the What/When/How and the entry point | it points OUT; nothing points to it for detail |
-| [`memory/memory-map.md`](memory-map.md) | The **path inventory** — every session-record + memory path, its writer, when, which template; per-type canonical homes; the Templates index | which path holds what / who writes it / when — never restate the path tables |
-| [`memory/rules.md`](rules.md) | The **standard** — naming (§1), frontmatter (§2), structure (§3), dev-doc quality (§4), staging-field stripping (§2.6) | how to name / what frontmatter / what structure / the zero-context bar — never restate the rules |
-| [`memory/templates/{type}.md`](templates/) | The **per-type schema** — required fields, when-to-write, frontmatter + body contract per type | the schema each memorized file stamps — never restate a template's fields |
-| [`memory/templates/feature.md`](templates/feature.md) | The **per-feature subdir map** (README + 14 subdirs) + the feature-README identity spec | the feature dir's internal shape — never restate the 14 subdirs |
-| [`record/SKILL.md`](../record/SKILL.md) | The **capture / staging side** — the RECORD sub-phase procedure, staging mechanics, cumulative staging, idempotency, the assistant-role access matrix | how a finding is staged in-loop — never restate the RECORD step-table |
-| [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) | The **promotion side** — the five-stage pipeline (loop-and-pipeline map), sole-writer + lazy bootstrap, move-on-terminal | how staging is promoted at the pipeline level — never restate the pipeline |
-| [`wrap-up/promotion.md`](../wrap-up/promotion.md) | The **promotion procedure** — the Staging → Memory routing table, area resolution, the frontmatter allowlist, collision/idempotency, archive routing | the routing table + promotion mechanics — never restate the routing table |
+## References
 
----
-
-## Cross-references
-
-- Path inventory (which directory holds what, writer, when, template) → [`memory-map.md`](memory-map.md)
-- The standard (naming + frontmatter + structure + dev-doc quality) → [`rules.md`](rules.md)
-- Per-type schemas (required fields, body section contracts) → [`templates/`](templates/)
-- The feature dir's internal shape (README + 14 subdirs) → [`templates/feature.md`](templates/feature.md)
-- Capture / staging side (the RECORD sub-phase) → [`record/SKILL.md`](../record/SKILL.md)
-- Promotion side (Wrap-up) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md); the routing table + promotion mechanics → [`wrap-up/promotion.md`](../wrap-up/promotion.md)
-- The mistake type's memorize loop (check / stage / promote) → [`mistake/SKILL.md`](../mistake/SKILL.md)
-- Where the `memory` value-feature sits → [`gobbi/SKILL.md` § Product value-features](../gobbi/SKILL.md#product-value-features)
+- [Memory map](memory-map.md) owns the thin typed-source-to-durable-home mapping and ownership boundaries.
+- [Memory rules](rules.md) own durable naming, frontmatter, type constraints, scope, area, and archive form.
+- [Memory templates](templates/) own the per-type candidate and durable body shapes.
+- [Record](../record/SKILL.md) and its [record map](../record/record-map.md) own typed staging writes and the complete session tree.
+- [Wrap-up](../wrap-up/SKILL.md) owns typed-source inventory, frozen mapping, apply, actual-tree verification, and matching handoff mechanics.
+- [Evaluation](../evaluation/SKILL.md) owns independent review, findings, checklist completion, and verdict derivation.
+- [Scenario](../scenario/SKILL.md) and [Checklist](../checklist/SKILL.md) own the companion authoring contracts used by this operation.
