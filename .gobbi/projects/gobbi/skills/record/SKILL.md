@@ -38,7 +38,7 @@ session.json version 5 is the lifecycle manifest. state.json version 3 is the on
 - **R-3 — Stage only typed candidates.** Every staged file uses one authorized staging type, a memory-owned template, exact evidence, and a stable source identity.
 - **R-4 — Accept empty staging.** A clean PASS or non-durable result may leave all staging directories empty. Never create filler.
 - **R-5 — Keep prior staging immutable.** Append a distinct supported candidate or record an explicit supersession relationship; do not rewrite earlier evidence to match a later conclusion.
-- **R-6 — Keep outputs PASS-only.** No output file exists for an unaccepted step or task. On PASS, seal the exact evaluated subject and its acceptance evidence.
+- **R-6 — Keep outputs PASS-only and verify them before routing.** A canonical output is legal when its exact step or Execution task is the current `RECORD` cursor and `lastVerdict` is `PASS`, or after that step or task appears in the matching completed list. It is illegal at DISCUSSION, WORK, EVALUATION, non-PASS RECORD, another task, or an unaccepted future step. This lets RECORD verify the sealed output before the subsequent completion transition without weakening PASS-only placement.
 - **R-7 — Keep routing and lifecycle separate.** transition changes only state fields. checkpoint changes only authorized manifest lifecycle fields. Neither path may cross the boundary.
 - **R-8 — Use patch files and atomic commands.** Never pass shell-interpolated JSON or edit manifest/state bytes in place. A failed operation leaves prior bytes unchanged.
 - **R-9 — Verify shape and placement before routing.** Run the record verifier with the locked task list when applicable and reread every promised artifact.
@@ -100,7 +100,7 @@ If no candidate is justified, write none and explicitly report empty staging as 
 
 ### 5. Resolve the verdict-specific record
 
-For PASS, prepare the canonical output from the exact evaluated subject. For REVISE or FAIL, preserve the full creation, evaluation, checklist, and disposition evidence but create no output file.
+For PASS, prepare the canonical output from the exact evaluated subject while state still names the matching step or task in RECORD with `lastVerdict: PASS`. The manager completes the step or task only after this output verifies. For REVISE or FAIL, preserve the full creation, evaluation, checklist, and disposition evidence but create no output file.
 
 Canonical output placement is:
 
@@ -123,7 +123,7 @@ For Wrap-up, compare the handoff body with the evaluated durable note body befor
 
 ### 7. Validate staging and output placement
 
-Confirm every staging file matches an authorized type and template, cites real evidence, and stays under the current step or task staging root. Confirm no output exists unless the corresponding step or task is accepted. Confirm a PASS output exists at the one canonical path and hashes to the evaluated subject where required.
+Confirm every staging file matches an authorized type and template, cites real evidence, and stays under the current step or task staging root. Confirm each output belongs either to the matching current RECORD/PASS cursor or to a step or task already listed as completed. Confirm no output exists at another stage, under a non-PASS verdict, for another task, or for an unaccepted future step. Confirm a PASS output exists at the one canonical path and hashes to the evaluated subject where required.
 
 Run [scenarios.md](scenarios.md) and a fresh copy of [checklists.md](checklists.md). A cosmetic file or empty directory cannot satisfy an artifact check.
 
@@ -146,7 +146,7 @@ RECORD normally uses verify and prepares evidence for the manager's later transi
 
 Run session-record.sh verify with the absolute session root. Supply the complete locked task file after Planning. Reread session.json, state.json, all promised artifacts, the current output placement, and staging inventory.
 
-Confirm there is no separate settings file, lock file, retired capture directory, unknown root entry, symbolic link, unscaffolded task, unauthorized iteration, pre-PASS output, or artifact outside its owner-defined path. Confirm empty staging passes.
+Confirm there is no separate settings file, lock file, retired capture directory, unknown root entry, symbolic link, unscaffolded task, unauthorized iteration, pre-PASS or wrong-cursor output, or artifact outside its owner-defined path. Exercise placement at the matching RECORD/PASS cursor before the manager applies the completion transition, then verify again after that legal transition. Confirm empty staging passes.
 
 On failure, report the exact path and invariant. Do not work around the command with ad hoc writes.
 

@@ -1147,29 +1147,73 @@ assert_root_entries() {
     done < <(find "$root" -mindepth 1 -maxdepth 1 -printf '%f\n' | LC_ALL=C sort)
 }
 
+step_output_is_accepted() {
+    local state="$1" step="$2"
+    jq -e --arg step "$step" '
+        (.completedSteps | index($step) != null) or
+        (.current.step == $step and
+         .current.stage == "RECORD" and
+         .lastVerdict == "PASS")
+    ' "$state" >/dev/null
+}
+
+task_output_is_accepted() {
+    local state="$1" task_id="$2"
+    jq -e --arg task "$task_id" '
+        (.completedTasks | index($task) != null) or
+        (.current.step == "execution" and
+         .current.stage == "RECORD" and
+         .current.task == $task and
+         .lastVerdict == "PASS")
+    ' "$state" >/dev/null
+}
+
+execution_step_output_is_accepted() {
+    local state="$1" tasks="$2" number slug final_task_id required_tasks
+    if jq -e '.completedSteps | index("execution") != null' "$state" >/dev/null; then
+        return 0
+    fi
+    [ -n "$tasks" ] || return 1
+    IFS=$'\t' read -r number slug < <(jq -r '.tasks | max_by(.number) | [.number, .slug] | @tsv' "$tasks")
+    [ -n "$number" ] && [ -n "$slug" ] || return 1
+    final_task_id="$(task_id_from_row "$number" "$slug")"
+    required_tasks="$(jq -c --arg final "$final_task_id" '
+        [.tasks[] |
+          ((if .number < 10 then "0" else "" end) + (.number | tostring) + "-" + .slug)
+        ] - [$final]
+    ' "$tasks")"
+    jq -e --arg task "$final_task_id" --argjson required "$required_tasks" '
+        .current.step == "execution" and
+        .current.stage == "RECORD" and
+        .current.task == $task and
+        .lastVerdict == "PASS" and
+        ((($required - .completedTasks) | length) == 0)
+    ' "$state" >/dev/null
+}
+
 assert_artifact_placement() {
-    local root="$1" state="$root/state.json" file relative top task_id
+    local root="$1" tasks="$2" state="$root/state.json" file relative top task_id
     while IFS= read -r file; do
         [ -n "$file" ] || continue
         relative="${file#$root/}"
         case "$relative" in
             README.md|session.json|state.json) ;;
             1-ideation/outputs/*)
-                jq -e '.completedSteps | index("ideation") != null' "$state" >/dev/null || die "Ideation output exists before PASS: $relative"
+                step_output_is_accepted "$state" ideation || die "Ideation output lacks matching RECORD/PASS or completed-step evidence: $relative"
                 ;;
             2-planning/outputs/*)
-                jq -e '.completedSteps | index("planning") != null' "$state" >/dev/null || die "Planning output exists before PASS: $relative"
+                step_output_is_accepted "$state" planning || die "Planning output lacks matching RECORD/PASS or completed-step evidence: $relative"
                 ;;
             3-execution/outputs/*)
-                jq -e '.completedSteps | index("execution") != null' "$state" >/dev/null || die "Execution output exists before PASS: $relative"
+                execution_step_output_is_accepted "$state" "$tasks" || die "Execution step output lacks final-task RECORD/PASS or completed-step evidence: $relative"
                 ;;
             4-wrap-up/outputs/*)
-                jq -e '.completedSteps | index("wrap-up") != null' "$state" >/dev/null || die "Wrap-up output exists before PASS: $relative"
+                step_output_is_accepted "$state" wrap-up || die "Wrap-up output lacks matching RECORD/PASS or completed-step evidence: $relative"
                 ;;
             3-execution/task-*/outputs/*)
                 top="${relative#3-execution/task-}"
                 task_id="${top%%/outputs/*}"
-                jq -e --arg task "$task_id" '.completedTasks | index($task) != null' "$state" >/dev/null || die "Execution output exists before task PASS: $relative"
+                task_output_is_accepted "$state" "$task_id" || die "Execution task output lacks matching RECORD/PASS or completed-task evidence: $relative"
                 ;;
             */outputs/*)
                 die "output artifact is not in a recognized PASS location: $relative"
@@ -1188,7 +1232,7 @@ verify_shape() {
     if [ -n "$tasks" ]; then validate_tasks_file "$tasks"; fi
     assert_root_entries "$root"
     assert_directory_shape "$root" "$tasks"
-    assert_artifact_placement "$root"
+    assert_artifact_placement "$root" "$tasks"
 }
 
 command_verify() {
@@ -1221,6 +1265,29 @@ expect_failure_preserving_file() {
     after="$(sha256sum "$target")"
     [ "$rc" -ne 0 ] || self_test_fail "$label unexpectedly succeeded"
     [ "$before" = "$after" ] || self_test_fail "$label changed $target"
+}
+
+expect_verify_failure_preserving_record() {
+    local root="$1" tasks="$2" label="$3" before_state before_session after_state after_session rc=0
+    before_state="$(sha256sum "$root/state.json")"
+    before_session="$(sha256sum "$root/session.json")"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null 2>&1 || rc=$?
+    after_state="$(sha256sum "$root/state.json")"
+    after_session="$(sha256sum "$root/session.json")"
+    [ "$rc" -ne 0 ] || self_test_fail "$label unexpectedly verified"
+    [ "$before_state" = "$after_state" ] || self_test_fail "$label changed state.json"
+    [ "$before_session" = "$after_session" ] || self_test_fail "$label changed session.json"
+}
+
+verify_preserving_record() {
+    local root="$1" tasks="$2" label="$3" before_state before_session after_state after_session
+    before_state="$(sha256sum "$root/state.json")"
+    before_session="$(sha256sum "$root/session.json")"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    after_state="$(sha256sum "$root/state.json")"
+    after_session="$(sha256sum "$root/session.json")"
+    [ "$before_state" = "$after_state" ] || self_test_fail "$label changed state.json"
+    [ "$before_session" = "$after_session" ] || self_test_fail "$label changed session.json"
 }
 
 make_pass_evaluation_fixture() {
@@ -1352,14 +1419,78 @@ command_self_test() {
     [ ! -d "$root/1-ideation/working/iteration-4" ] || self_test_fail "execution cap extension scaffolded Ideation iteration 4"
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
-    printf '%s\n' '# premature' > "$root/1-ideation/outputs/premature.md"
-    if "$0" verify --root "$root" --tasks "$tasks" >/dev/null 2>&1; then self_test_fail "PASS-only output placement failed open"; fi
-    rm -f -- "$root/1-ideation/outputs/premature.md"
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    printf '%s\n' '{"current":{"step":"planning","stage":"DISCUSSION","iteration":1},"completedSteps":["configuration","ideation"],"lastVerdict":"PASS"}' > "$patch"
+    printf '%s\n' '# canonical Ideation artifact' > "$root/1-ideation/outputs/ideation.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Ideation output during DISCUSSION"
+    printf '%s\n' '{"current":{"step":"ideation","stage":"RECORD","iteration":1,"task":null},"lastVerdict":"REVISE"}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
-    printf '%s\n' '# canonical Ideation artifact' > "$root/1-ideation/outputs/canonical.md"
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    expect_verify_failure_preserving_record "$root" "$tasks" "Ideation output during non-PASS RECORD"
+    printf '%s\n' '{"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Ideation output during matching RECORD/PASS"
+    printf '%s\n' '{"current":{"step":"planning","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation"],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Ideation output after completed-step transition"
+
+    printf '%s\n' '# canonical Planning artifact' > "$root/2-planning/outputs/plan.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Planning output during DISCUSSION"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"FAIL"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    expect_verify_failure_preserving_record "$root" "$tasks" "Planning output during non-PASS RECORD"
+    printf '%s\n' '{"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Planning output during matching RECORD/PASS"
+    printf '%s\n' '{"current":{"step":"execution","stage":"DISCUSSION","iteration":1,"task":"01-record-foundation"},"completedSteps":["configuration","ideation","planning"],"completedTasks":[],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Planning output after completed-step transition"
+
+    printf '%s\n' '{"current":{"step":"execution","stage":"RECORD","iteration":1,"task":"02-atomic-updates"},"completedTasks":[],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    printf '%s\n' '# premature final-task Execution step artifact' > "$root/3-execution/outputs/execution.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Execution step output with incomplete earlier locked tasks"
+    rm -f -- "$root/3-execution/outputs/execution.md"
+    printf '%s\n' '{"current":{"step":"execution","stage":"DISCUSSION","iteration":1,"task":"01-record-foundation"},"completedTasks":[],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+
+    printf '%s\n' '# task 1 result' > "$root/3-execution/task-01-record-foundation/outputs/result.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Execution task 1 output during DISCUSSION"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Execution task 1 output during matching RECORD/PASS"
+    printf '%s\n' '# future task result' > "$root/3-execution/task-02-atomic-updates/outputs/result.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "future Execution task output"
+    rm -f -- "$root/3-execution/task-02-atomic-updates/outputs/result.md"
+    printf '%s\n' '# premature Execution step artifact' > "$root/3-execution/outputs/execution.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Execution step output before final task"
+    rm -f -- "$root/3-execution/outputs/execution.md"
+    printf '%s\n' '{"current":{"step":"execution","stage":"DISCUSSION","iteration":1,"task":"02-atomic-updates"},"completedTasks":["01-record-foundation"],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Execution task 1 output after completed-task transition"
+
+    printf '%s\n' '# task 2 result' > "$root/3-execution/task-02-atomic-updates/outputs/result.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Execution task 2 output during DISCUSSION"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"FAIL"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    expect_verify_failure_preserving_record "$root" "$tasks" "Execution task 2 output during non-PASS RECORD"
+    printf '%s\n' '{"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Execution task 2 output during matching RECORD/PASS"
+    printf '%s\n' '# canonical Execution step artifact' > "$root/3-execution/outputs/execution.md"
+    verify_preserving_record "$root" "$tasks" "Execution step output during final-task RECORD/PASS"
+    printf '%s\n' '{"current":{"step":"wrap-up","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution"],"completedTasks":["01-record-foundation","02-atomic-updates"],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Execution outputs after completed-step transition"
+
+    printf '%s\n' '# evaluated handoff' > "$root/4-wrap-up/outputs/handoff.md"
+    expect_verify_failure_preserving_record "$root" "$tasks" "Wrap-up output during DISCUSSION"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"FAIL"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    expect_verify_failure_preserving_record "$root" "$tasks" "Wrap-up output during non-PASS RECORD"
+    printf '%s\n' '{"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Wrap-up output during matching RECORD/PASS"
+    printf '%s\n' '{"status":"complete","current":{"step":"wrap-up","stage":null,"iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution","wrap-up"],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    verify_preserving_record "$root" "$tasks" "Wrap-up output after completed-step transition"
 
     artifact_contract="$(printf '%s' 'artifact-contract-v1' | sha256sum | awk '{print $1}')"
     claude_draft_json="$temporary/claude-draft.json"

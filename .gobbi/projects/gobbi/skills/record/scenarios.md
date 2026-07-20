@@ -19,18 +19,18 @@ This source exercises [SKILL.md](SKILL.md). It adds no session schema, command, 
 
 Scale threshold: split above 12 families or 40 selected category-by-type cells.
 
-## RECORD-SC-01 — RECORD seals the exact verdict-specific result and nothing else
+## RECORD-SC-01 — RECORD seals and verifies PASS output before the completion transition
 
 - Primary category: 1. Primary type: Positive. Secondary: Adversarial.
 - Coverage role: accepted result; prohibited judgment.
 - Source: R-1, R-2, R-6, R-9, Procedure 1–2 and 5–10.
-- Given: current cursor, complete WORK package, reports or waiver, aggregate verdict, dispositions, and expected artifact.
-- When: record paths, output placement, content digest, and manager handoff are reconciled.
-- Then: iteration evidence is immutable; PASS alone has the exact canonical output; REVISE and FAIL have no output.
-- Failure oracle: changed verdict, missing evidence, pre-PASS output, materially altered subject, or RECORD-owned route.
-- Evidence: state/manifest read, artifact hashes, output tree, and verifier result.
-- Adversarial face: a polished output hides one material wording change made after evaluation.
-- Obligation: RECORD must preserve and place the evaluated result without judging it.
+- Given: current cursor, complete WORK package, reports or waiver, aggregate verdict, dispositions, and the expected step or task output.
+- When: placement is checked before PASS, at the matching RECORD cursor with each aggregate verdict, and again after the legal completed-step or completed-task transition.
+- Then: an output is rejected before RECORD and for REVISE or FAIL; the exact PASS output verifies during matching RECORD before completion; it remains legal after the matching completion transition.
+- Failure oracle: an output is accepted in DISCUSSION, WORK, EVALUATION, non-PASS RECORD, another Execution task, or an unaccepted future step; or matching RECORD/PASS output is rejected until `completedSteps` or `completedTasks` changes.
+- Evidence: state before and after transition, artifact digest, output path, verifier result, and unchanged state bytes during verification.
+- Adversarial face: `lastVerdict: PASS` from an earlier step is reused to place an output for the current DISCUSSION cursor or a future task.
+- Obligation: RECORD must verify the exact PASS output at the matching RECORD cursor before the manager completes the step or task, without admitting any other pre-completion output.
 - Checklist: RECORD-CK-01.
 
 ## RECORD-SC-02 — The manager and next session can route from the sealed evidence
@@ -68,8 +68,8 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Source: R-2, R-3, R-6, R-9, Procedure 2–9.
 - Given: configured iteration caps, locked task list, session root, typed staging, working evidence, evaluation reports, and outputs.
 - When: root entries, iteration directories, task interiors, symlinks, filenames, and verdict placement are inspected.
-- Then: predictable directories exist, every task is scaffolded, artifacts stay in owned slots, and output files remain PASS-only.
-- Failure oracle: unknown root entry, unscaffolded task, symbolic link, stale iteration, wrong-system file, or pre-PASS output.
+- Then: predictable directories exist, every task is scaffolded, artifacts stay in owned slots, and output files are legal only at matching RECORD/PASS or after matching completion.
+- Failure oracle: unknown root entry, unscaffolded task, symbolic link, stale iteration, wrong-system file, or output at a wrong stage, verdict, task, or future step.
 - Evidence: tree inventory, schemas, locked tasks, state, and verifier output.
 - Adversarial face: a correct output exists under the wrong task and passes a simple filename check.
 - Obligation: the record tree must encode ownership and acceptance exactly.

@@ -7,7 +7,7 @@ Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It suppl
 - version 5 session manifest, version 3 router, current cursor, locked tasks, configured iteration caps, and exact session root;
 - complete current-iteration WORK and EVALUATION evidence, approved dispositions, waiver when applicable, and expected canonical artifact;
 - typed staging inventory, source ledger, template validation, canonical output or absent-output proof, and completion report;
-- command invocations, patch files, before/after byte evidence, failure fixtures, and verifier output;
+- command invocations, patch files, before/at/after RECORD output-placement fixtures, byte-preservation evidence, failure fixtures, and verifier output;
 - session tree, branch/worktree topology, and sensitive-data inspection;
 - [scenarios.md](scenarios.md) and [checklists.md](checklists.md); and
 - exact subject and acceptance-evidence digests.
@@ -16,11 +16,11 @@ Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It suppl
 
 ### Project
 
-Compare the record with the agreed step or task result, aggregate verdict, approved dispositions, and expected artifact. Detect lost evidence, invented durable candidates, pre-PASS output, materially changed subject, and RECORD-owned judgment or routing.
+Compare the record with the agreed step or task result, aggregate verdict, approved dispositions, and expected artifact. Prove the matching RECORD/PASS output is accepted before completion and every earlier-stage, non-PASS, wrong-task, or future-step output is rejected. Detect lost evidence, invented durable candidates, materially changed subject, and RECORD-owned judgment or routing.
 
 ### Structure
 
-Inspect v5/v3 owner boundaries, root and task shape, configured iterations, typed staging paths, evidence slots, canonical output placement, schema alignment, symlink rejection, and operation inputs. A correct filename in the wrong task is a structural failure.
+Inspect v5/v3 owner boundaries, root and task shape, configured iterations, typed staging paths, evidence slots, canonical output placement, schema alignment, symlink rejection, and operation inputs. Placement must distinguish matching current RECORD/PASS from matching completed state; a correct filename in the wrong task or future step is a structural failure.
 
 ### Performance
 
@@ -36,7 +36,7 @@ Cold-read completion proof as the manager and a resumed session. Verify exact pa
 
 ### Consistency
 
-Compare system, step, task, iteration, assignment, digest, verdict, dispositions, report paths, output bytes, staging sources, schemas, state, manifest, locked tasks, and verifier result. Search for old versions, unauthorized iterations, wrong-system artifacts, stale hashes, and cross-boundary patches.
+Compare system, step, task, iteration, assignment, digest, verdict, dispositions, report paths, output bytes, staging sources, schemas, state, manifest, locked tasks, and verifier result. Search for old versions, unauthorized iterations, wrong-system artifacts, stale hashes, cross-boundary patches, and output acceptance that disagrees with the state-machine transition order.
 
 ### Risk
 
@@ -48,7 +48,7 @@ Challenge file existence used as semantic proof, non-empty staging used as quali
 
 ## Recommended verification
 
-Use the record command's own self-tests and explicit fixtures. Run schema validation, idempotent init, task scaffolding, valid and invalid transition/checkpoint patches, peer rendering, verify, traversal and symlink rejection, old-version rejection, output-placement cases, empty staging, and exact before/after byte comparison. Inspect the final tree and rerun the exact verifier with locked tasks.
+Use the record command's own self-tests and explicit fixtures. Run schema validation, idempotent init, task scaffolding, valid and invalid transition/checkpoint patches, peer rendering, verify, traversal and symlink rejection, old-version rejection, empty staging, and exact before/after byte comparison. For Ideation, Planning, each Execution task, the final Execution step output, and Wrap-up, exercise rejection before PASS, acceptance at matching RECORD/PASS before completion, and acceptance after the legal completed transition. Also exercise non-PASS RECORD, wrong-task, and future-step rejection while confirming `verify` does not mutate state. Inspect the final tree and rerun the exact verifier with locked tasks.
 
 ## Rule crosswalk
 

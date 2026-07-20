@@ -1,85 +1,95 @@
 # `notes/`
 
-> Development journal entries — the running narrative of each session, like a developer's daily diary. One entry per session: what was attempted, what shipped, what got stuck, what shifted, what to pick up next.
+> Evaluated session handoffs. One project-scoped note preserves the agreed outcome, evidence, durable changes, decisions, risks, recovery state, and exact next-session start point.
 
 ## Core principles
 
-> **Record what happened and what to pick up next, in prose a future session can read cold.**
+> **Write one evidence-backed body that both session and durable readers receive unchanged.**
 
-The next session continues the work instead of reconstructing it from a vanished session's context.
+A handoff is not a recollection of the session. Each completion, decision, risk, unresolved item, Git fact, and next action points to evidence the next manager can inspect.
 
-> **Carry the standing decisions forward so a future session builds on them instead of re-opening them.**
+> **Keep evaluated facts separate from later finalization facts.**
 
-A settled lock that is not written down is a lock the next session silently re-litigates.
+The evaluated body freezes the pre-finalization state and authorized plan. Commit, publication, merge, and cleanup results created afterward belong only in the factual receipt appended by the manager.
 
 ## Write it
 
 | Field | Value |
 |---|---|
-| When | Wrap-up RECORD of every session writes one journal entry — the default. A loop's RECORD writes its own entry only when the loop's content warrants one separate from the session-level note (rare). |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/notes/{slug}.md` |
-| Promotes to | `notes/{area}/` (project-only — no `features/{f}/notes/` tier) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
-| Filename | `{YYYY-MM-DD}-{slug}.md` — date prefix; slug answers "what did this session do?" in 3–6 words (`2026-05-11-mistakes-rename-sweep.md`) |
+| When | Wrap-up WORK authors exactly one handoff candidate after closure inputs and material decisions are resolved. |
+| Typed source | `4-wrap-up/staging/notes/{slug}.md` — the only handoff promotion source; it follows the same manifest, preimage, apply, and evaluation rules as every typed source. |
+| PASS session destination | `4-wrap-up/outputs/handoff.md` — written only by RECORD after the evaluated Wrap-up subject receives PASS. |
+| Durable destination | `notes/{area}/{YYYY-MM-DD}-{slug}.md` — project-only; `{area}` follows the [Memory area-selection owner](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
+| Body equality | The body beginning at the `#` title is byte-for-byte identical in the PASS session output and durable note. Only this durable frontmatter wrapper differs. |
+| Receipt boundary | The evaluated body ends before Git finalization. The manager appends the factual finalization receipt after displaying the complete body and does not edit either evaluated copy. |
+| Filename | `{YYYY-MM-DD}-{slug}.md`; the slug names the session's durable outcome in three to six words. |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+[`wrap-up/SKILL.md`](../../wrap-up/SKILL.md) owns the nine-section handoff contract. [`wrap-up/promotion.md`](../../wrap-up/promotion.md) owns source inventory, mapping, body comparison, and actual-tree evidence.
 
 ## Frontmatter + body
 
-Base frontmatter plus the notes extensions — `notes/` keeps the **richer set**: `features_touched` (the value-feature slugs this session promoted into), plus `loops_completed` and `shipped` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). `notes/` is project-only, so `status` stays `active`.
+Use the shared base frontmatter plus the notes extensions `features_touched`, `loops_completed`, and `shipped` from [Memory rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model). Notes are project-only and use `status: active`.
 
 ```markdown
 ---
-name: {slug — session dominant theme}
-description: {one-line what this session did}
+name: {stable handoff slug}
+description: {one-line session outcome}
 type: notes
 scope: project
 feature: null
 status: active
 created: YYYY-MM-DD
-session: {session-id}
-tags: [refactor, docs-sync]          # this type's controlled pool (§2.5)
-keywords: []                         # freeform escape-hatch tags (required; may be [])
-author: claude                       # claude | codex | user — the runtime that authored it
-features_touched: [{value-feature slugs this session promoted into}]
-loops_completed: [{ideation, planning, execution, wrap-up}]
-shipped: [{slugs of artifacts that landed in memory this session}]
+session: {Gobbi session UUID}
+tags: [{values from the notes controlled vocabulary}]
+keywords: []
+author: claude | codex | user
+features_touched: [{value-feature slugs changed or promoted into}]
+loops_completed: [ideation, planning, execution, wrap-up]
+shipped: [{durable artifact slugs produced or superseded}]
 ---
 
-# {Session dominant theme}
+# {Session handoff title}
 
-## What happened
-{Chronological narrative of the session. 1–3 paragraphs. What was attempted, in what order, with what outcome. Read this and a future reader knows what the session was about.}
+## 1. Outcome and agreed scope
 
-## What shipped
-{Concrete artifacts that landed in memory this session — decisions, plans, mistakes, learnings, reviews, reports. Cite paths. If nothing shipped, state "nothing shipped — session was {discussion-only / blocked / aborted}".}
+{State the final outcome and the exact agreed in-scope and out-of-scope boundary. Cite the locked design, plan, or user decision that defines it.}
 
-## What got stuck
-{Threads that didn't resolve. The "I tried X but" moments. Distinct from backlog (the deferred work); this is the in-flight stuck — useful for the next session to pick up cleanly.}
+## 2. Completed or shipped work, with artifact and verification evidence
 
-## What shifted
-{Direction changes during the session — decisions reconsidered, plans rescoped, assumptions that broke. The journal captures *motion*, not just outcomes.}
+{List each completed result with its canonical artifact, focused commit when available, and exact verification evidence. Do not claim work from status text alone.}
 
-## Decisions to respect
-{The standing decisions a future session must not silently re-litigate — locks the user ratified, constraints accepted, directions chosen. The handoff shortlist: "these are settled; build on them, do not reopen them without cause." Cite the `decisions/` slug where one exists.}
+## 3. Dual-system evaluation result, approved finding dispositions, and any waiver
 
-## Next session
-{Pointer to what the next session should pick up — "continue {feature}", "evaluate {plan}", "react to {finding}". Keep terse; detail belongs in backlogs / handoff summary.}
+{Record both systems' final report identities and verdicts, the aggregate result, the approved disposition artifact, and each exact user-approved missing-system waiver. State none when there is no waiver.}
 
-## Related
-{Navigable `[[slug]]` links to the artifacts this session produced or built on — the journal's index, mirroring the `shipped` frontmatter ([rules §2.4](../rules.md#24-cross-references-and-the-doc-graph)).}
+## 4. Decisions to respect
 
-- [[2026-05-11-use-redis-not-memcached]] — decision shipped this session
+{List settled user decisions, scope locks, and constraints the next session must preserve. Link the durable decision when one exists.}
+
+## 5. Durable memory promoted or superseded
+
+{List every promoted record, ordinary reciprocal supersession, archive move, or explicit empty result. Cite durable repository-relative paths and promotion evidence.}
+
+## 6. Pre-finalization Git state and authorized finalization plan
+
+{State the exact branch, absolute worktree, head commit, clean or known-dirty status, configured publication, issue and pull-request state, and authorized next Git actions. Future actions remain plans, not completed facts.}
+
+## 7. Unresolved, blocked, or deferred items with explicit reasons
+
+{For every remaining item, state its status, reason, owner, evidence pointer, and exact continuation action. State none when the set is empty.}
+
+## 8. Known risks and accepted exceptions
+
+{State each remaining risk or accepted exception, its evidence, consequence, authority, and containment. State none when there are no known accepted risks.}
+
+## 9. Exact next-session start point: objective, required reads, current branch/worktree state, and first action
+
+{Give one concrete objective, ordered required reads, exact branch and worktree state, and the first safe action or command. The next manager must be able to start without private session context.}
 ```
 
 ## Notes
 
-- **Append-only history.** Journal entries are never edited after the session closes — even if a later session reveals the understanding was wrong, the journal preserves what was thought at the time. The correction is captured in the *new* session's note.
-- **Vs other types.** A note carries the session narrative; the durable artifacts it references live in their own types:
-
-  | Type | Holds | The note holds |
-  |---|---|---|
-  | `decisions/` | the conclusion ("we chose X") | the surrounding story ("we considered X/Y/Z, chose X") |
-  | `learnings/` | the takeaway ("do this in future") | the raw experience that produced it |
-  | `discussions/` | one user-decision topic + answer | the session narrative that references many discussions |
-  | `design/` | the architecture / intent | what actually happened building toward it |
-  | handoff (`4-wrap-up/outputs/`) | forward-looking ("what the next session needs") | backward-looking ("what this session did") |
+- **Typed-source only.** The handoff enters promotion through `4-wrap-up/staging/notes/{slug}.md`; no working-file or direct journal exception exists.
+- **PASS-only session copy.** The session output is absent before Wrap-up RECORD with `lastVerdict: PASS` and remains valid after the completed-step transition.
+- **Append-only evaluated body.** A later session corrects a handoff through new durable evidence. It does not rewrite the closed session's evaluated body.
+- **Evidence over narrative.** Short chronological context may explain an outcome, but it never replaces artifacts, commits, verification, dispositions, or exact paths.

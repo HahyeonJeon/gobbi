@@ -12,12 +12,12 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 
 | Field | Value |
 |---|---|
-| When | Wrap-up identifies an invariant the team wants enforced going forward (naming conventions, layering constraints, banned patterns). Promotion **requires explicit user confirmation** through the active runtime's user-decision primitive — Wrap-up never promotes a rule unilaterally. |
-| Written by | Wrap-up RECORD (direct write — no staging). There is no `staging/rules/` subdir and no `rule-candidate:` upstream flag; loop RECORD never writes here. |
-| Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| When | Startup-close establishes a baseline invariant with explicit user confirmation. The normal productive-step workflow has no authorized rule candidate or promotion route. |
+| Written by | The startup skill's distinct user-approved startup-close behavior. Record defines no `staging/rules/` type, and ordinary Wrap-up cannot write a rule directly. |
+| Durable home | `rules/{area}/` for a project-wide startup baseline or `features/{f}/rules/{area}/` for a feature-specific startup baseline. `{area}` follows the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
-Wrap-up writes directly to memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+[`memory-map.md`](../memory-map.md) intentionally lists no typed rule source. Adding ordinary rule promotion requires a prior user-approved change to the Record staging vocabulary, validators, Memory map, and Wrap-up contract; this template cannot create that route.
 
 ## Frontmatter + body
 
@@ -64,5 +64,6 @@ supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | n
 
 ## Notes
 
-- **Promotion contract.** Wrap-up is the only writer to `rules/` among the workflow loops — no loop RECORD writes directly; the one pre-Wrap-up exception is the startup skill's startup-close promotion, which writes its user-approved baseline to `rules/` before any loop runs. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
-- **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.
+- **Normal Wrap-up boundary.** Ordinary Wrap-up accepts typed staging only. It does not turn a decision, finding, working file, or user comment into a rule and has no special direct-write exception.
+- **Startup-close exception.** Startup-close is distinct from the productive loop. It may write a user-approved baseline rule through its own contract before normal workflow promotion begins.
+- **Update by supersede, never delete.** A separately authorized rule-maintenance change uses the global `supersedes:` field and preserves the prior complete file. A terminal superseded rule moves whole to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` under the Memory lifecycle owner.

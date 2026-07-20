@@ -134,9 +134,13 @@ Planning alone also has `staging/plans/`. A valid clean PASS may leave every
 staging directory empty. Do not create a placeholder finding.
 
 Scaffolding creates output directories early, but output files are PASS-only.
-An Ideation, Planning, Execution, or Wrap-up output is invalid until its step is
-listed in `state.json.completedSteps`. A task output is invalid until its
-`{NN}-{slug}` identity is listed in `state.json.completedTasks`.
+A step or task output is legal while that exact step or task is the current
+`RECORD` cursor with `lastVerdict: PASS`, or after it appears in the matching
+completed list. It is invalid at an earlier stage, under a non-PASS verdict, for
+another task, or for an unaccepted future step. Before Execution completes, a
+step-level Execution output additionally requires the locked task file, the
+final locked task as the current `RECORD/PASS` task, and every other locked task
+in `completedTasks`.
 
 ## `session.json` version 5
 
@@ -297,8 +301,12 @@ session-record.sh verify --root ABS [--tasks FILE]
 
 `verify` checks both schemas, cross-document invariants, exact root ownership,
 retired surfaces, exact directory shape, optional complete task coverage, and
-artifact placement. Empty staging is valid. Unknown root entries, extra
-directories, unscaffolded tasks, and pre-PASS output files fail verification.
+artifact placement. An output requires either its matching current
+`RECORD/PASS` cursor or its matching completed state. A pre-completion Execution
+step output also requires the locked task file, the final locked task as the
+current task, and every other locked task in `completedTasks`. Empty staging is
+valid. Unknown root entries, extra directories, unscaffolded tasks, and output
+files without that acceptance evidence fail verification.
 
 The embedded `self-test` command exercises positive and negative foundation
 paths without installing another shell implementation.
