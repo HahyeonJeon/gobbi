@@ -1,304 +1,306 @@
 # Record Map
 
-The single source of truth for the on-disk shape of the **session record** — the
-per-session working tree at
-`.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`.
+This document owns the filesystem and JSON mechanics for one Gobbi session
+record. The record lives at:
 
-Every skill doc that names a session path points here. The scaffold script
-[`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh) materializes this
-tree; the verify script [`verify-record-map.sh`](scripts/verify-record-map.sh)
-diffs the script's output against this doc and fails on drift. This doc — not the
-prose scattered across the skills — defines the shape.
+```text
+{worktree}/.gobbi/projects/{project}/sessions/{date}-{gobbi-session-id}/
+```
 
----
+The Gobbi session ID is a Gobbi-owned UUID. It does not change when a runtime
+context changes. The worktree, project, start date, and UUID together determine
+the only valid session-root path.
+
+[`session-record.sh`](scripts/session-record.sh) creates and verifies the tree.
+The command uses the versioned schemas in [`schemas/`](schemas/) and the seed
+documents in [`templates/`](templates/). New sessions use session schema version
+5 and state schema version 3. There is no migration, compatibility reader, or
+dual-write path for older session records.
 
 ## Canonical session tree
 
-```
-sessions/{date}-{session-id}/                  ← session root
-├── session.json                  metadata — telemetry (manager init + assistant UPSERT)
-├── state.json                    metadata — workflow state machine (manager)
-├── settings.json                 metadata — resolved config (cascade)
-├── session.json.lock             metadata — advisory write-lock
-├── README.md                     index stub — human-readable map (init-record-map.sh)
-├── transcripts/                  SINGLE transcript surface — every agent, whole session:
-│   ├── manager-{sessionId}.jsonl       manager transcript (id = session id)
-│   └── {role}-{agentId}.jsonl          one immutable file per agent run,
-│                                        accumulating across ALL loops by distinct
-│                                        agentId, never overwritten.
-│                                   Copied by the assistant at RECORD.
-│                                   Session-scoped, gitignored, never promoted,
-│                                   removed at worktree cleanup. NO per-loop transcripts/.
-└── {N}-{loop}/                   number-prefixed loop dir (one per workflow loop):
-                                    1-ideation  2-planning
-                                    3-execution  4-wrap-up
-    ├── working/                  raw working capture (the only scratch surface):
-    │   ├── draft-iter{n}.md            mutable working draft (WORK)
-    │   ├── reconciliation-iter{n}.md   dual-system Integration Log (Claude producer; WRITTEN, not scaffolded)
-    │   ├── discussion-log.md           append-only AskUserQuestion journal (manager)
-    │   ├── readiness-gate-iter{n}.md   Planning entry-gate evidence (2-planning only)
-    │   ├── research/{slug}.md          pre-staging external refs (leader, research skill)
-    │   └── proposals/codex/draft-iter{n}.md  Codex proposer's frozen draft (codex exec; scaffolded dir)
-    ├── evaluation/               per-iter dual-system eval:
-    │   └── iter{n}/{claude,codex}/{perspective}.md + overall.md + checklist.md
-    ├── staging/                  typed-finding stagings (Wrap-up promotion source):
-    │   └── {scenarios,checklists,decisions,references,design,discussions,
-    │        backlogs/{feature,project},reviews,reports,changelogs,learnings,notes,
-    │        plans (2-planning only)}/{slug}.md
-    └── outputs/                  PASS-only loop output:
-        └── {free-filename}.md          carries the Artifact frontmatter schema
+Configuration eagerly creates every predictable directory authorized by the
+resolved iteration caps:
 
-# 3-execution/ per-task nesting (recursive 4-slot interior; no per-task transcripts/):
+```text
+sessions/{date}-{gobbi-session-id}/
+├── README.md
+├── session.json
+├── state.json
+├── 1-ideation/
+├── 2-planning/
+├── 3-execution/
+└── 4-wrap-up/
+```
+
+The root contains no `settings.json`, `session.json.lock`, `transcripts/`, or
+Chat-task tree. A `working/discussion-log.md` file is also forbidden anywhere in
+the record.
+
+Every non-Execution step has this shape:
+
+```text
+{N}-{step}/
+├── working/
+│   └── iteration-{n}/
+│       ├── drafts/
+│       ├── cross-reviews/
+│       └── research/
+├── evaluation/
+│   └── iteration-{n}/
+├── staging/
+│   └── {typed-memory-directories}/
+└── outputs/
+```
+
+Files created during WORK and EVALUATION use these fixed locations inside an
+iteration:
+
+```text
+working/iteration-{n}/drafts/claude.md
+working/iteration-{n}/drafts/codex.md
+working/iteration-{n}/cross-reviews/claude-on-codex.md
+working/iteration-{n}/cross-reviews/codex-on-claude.md
+working/iteration-{n}/synthesis.md
+working/iteration-{n}/open-decisions.md
+working/iteration-{n}/research/{slug}.md
+evaluation/iteration-{n}/claude.md
+evaluation/iteration-{n}/codex.md
+```
+
+Execution has step-level `staging/` and `outputs/` directories. After Planning
+locks task numbers and names, every task receives the same four-slot interior:
+
+```text
 3-execution/
-├── staging/{...}/                loop-level (cross-task) staging
-└── task-{NN}-{slug}/             e.g. task-01-scaffold-script/
-    ├── working/
-    │   ├── research/
-    │   └── proposals/codex/
-    ├── evaluation/
-    ├── staging/
+├── staging/{typed-memory-directories}/
+├── outputs/
+└── task-{NN}-{slug}/
+    ├── working/iteration-{n}/{drafts,cross-reviews,research}/
+    ├── evaluation/iteration-{n}/
+    ├── staging/{typed-memory-directories}/
     └── outputs/
-    # No transcripts/ here — every agent's transcript lives in session-root transcripts/.
-
-# startup/ — OWN SESSION SHAPE (not a loop):
-# NOT a workflow loop, NOT swept to the flat-4-slot + number-prefix shape.
-# Owns its own unnumbered startup/ surface (working/ + staging/ + outputs/),
-# defined by startup/recording.md § 3. Out of scope for this loop-dir spec.
-# Its staging/ is EXCLUDED from Wrap-up promotion (startup self-promotes).
 ```
 
-The loop interior is **4 slots only** — `working/`, `evaluation/`, `staging/`,
-`outputs/`. There is no per-loop `transcripts/` dir. The single session-root
-`transcripts/` holds every agent's transcript for the whole session.
+The fixed step mapping is:
 
----
-
-## The `{N}-{loop}` ordinal map
-
-On-disk loop dirs carry a number prefix. The number is the loop's order in the
-workflow, fixed:
-
-| `{N}` | `{loop}` | On-disk dir |
+| Step | Directory | Iteration-cap key |
 |---|---|---|
-| 1 | ideation | `1-ideation` |
-| 2 | planning | `2-planning` |
-| 3 | execution | `3-execution` |
-| 4 | wrap-up | `4-wrap-up` |
+| Ideation | `1-ideation` | `settings.workflow.ideation.maxIterations` |
+| Planning | `2-planning` | `settings.workflow.planning.maxIterations` |
+| Execution | `3-execution` | `settings.workflow.execution.maxIterations` |
+| Wrap-up | `4-wrap-up` | `settings.workflow["wrap-up"].maxIterations` |
 
-`{N}-{loop}` is the only valid on-disk loop-dir form. `{date}` is the session
-start date in `YYYY-MM-DD`. `{session-id}` is the parent session's Claude Code
-session id (8-4-4-4-12 UUID). `{n}` is the per-loop (or per-task) iteration
-number. `{slug}` is a kebab-case identifier set by the writer.
+The directory ordinal is a filesystem ordering aid. JSON always uses the bare
+step names `ideation`, `planning`, `execution`, and `wrap-up`.
 
----
+## Eager scaffolding
 
-## SEAM-3 — on-disk prefix vs bare JSON key (TRAP)
+Iteration 1 is the first complete pass. A cap of 3 creates
+`iteration-1` through `iteration-3`; it does not authorize three retries after
+the initial pass.
 
-This is the single most error-prone part of the spec. Read it before editing any
-session-path prose.
+Configuration creates every non-Execution iteration directory, all step-level
+staging type directories, and every outputs directory. It cannot create task
+interiors because task identities are not known yet. `scaffold-tasks` creates all
+planned task interiors after Planning locks those identities. A later,
+user-approved cap extension creates only the newly authorized iteration
+directories. Repeating either scaffold operation is idempotent.
 
-- **On disk**: loop dirs carry the `{N}-` prefix — `1-ideation`, `3-execution`.
-- **In JSON**: the `workflow.{loop}` keys in `session.json` and `state.json` stay
-  **BARE** — `workflow.ideation`, `workflow.execution`. No number prefix, ever.
+The base staging vocabulary is:
 
-The number prefix is a filesystem-ordering device only. The state machine keys it
-by bare loop name. Do NOT add `{N}-` to a JSON key, and do NOT strip it from a dir
-path. A renamed JSON key breaks the state machine; an unprefixed dir breaks the
-scaffold/verify contract. The two namespaces are deliberately different shapes for
-the same loop.
+```text
+scenarios/
+checklists/
+decisions/
+references/
+design/
+discussions/
+reviews/
+reports/
+changelogs/
+learnings/
+notes/
+backlogs/feature/
+backlogs/project/
+```
 
----
+Planning alone also has `staging/plans/`. A valid clean PASS may leave every
+staging directory empty. Do not create a placeholder finding.
 
-## Per-slot dir contract
+Scaffolding creates output directories early, but output files are PASS-only.
+An Ideation, Planning, Execution, or Wrap-up output is invalid until its step is
+listed in `state.json.completedSteps`. A task output is invalid until its
+`{NN}-{slug}` identity is listed in `state.json.completedTasks`.
 
-Each loop dir (and each `3-execution/task-{NN}-{slug}/`) holds exactly these four
-slots.
+## `session.json` version 5
 
-| Slot | Holds | Writer | Created | Lifecycle |
-|---|---|---|---|---|
-| `working/` | Mutable scratch: `draft-iter{n}.md` (WORK draft), `reconciliation-iter{n}.md` (dual-system Integration Log — Claude producer; written, not scaffolded), `discussion-log.md` (append-only AskUserQuestion journal), `research/{slug}.md` (pre-staging external refs), `proposals/codex/draft-iter{n}.md` (Codex proposer's frozen draft — scaffolded dir) | executor / leader (drafts, research, reconciliation); manager (discussion-log); Codex proposer (proposals/codex) | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
-| `evaluation/` | `iter{n}/{claude,codex}/{perspective}.md` + `overall.md` + filled `checklist.md` — nine per-system per-iter dual-system evaluation outputs | evaluator | At loop/task entry | Session-scoped, gitignored, never promoted, removed at cleanup |
-| `staging/` | Typed-finding stagings — the **only** Wrap-up promotion source | executor / leader / assistant | At loop/task entry | Session-scoped, gitignored; **promoted** by Wrap-up into tracked project/feature memory |
-| `outputs/` | PASS-only loop output; `{free-filename}.md` carrying the Artifact frontmatter schema | assistant (RECORD, PASS only) | On PASS (`--pass`) | Session-scoped, gitignored, never promoted, removed at cleanup |
+[`session.schema.json`](schemas/session.schema.json) is the executable contract.
+`session.json` is a low-frequency lifecycle manifest, not a workflow event log.
+It owns:
 
-`working/research/` and `working/proposals/codex/` are created together with
-`working/` at every loop/task entry. `working/reconciliation-iter{n}.md` is a
-producer-written file (the dual-system Integration Log), not a scaffolded dir.
-`outputs/` is created only on a PASS iteration (the scaffold script's `--pass`
-flag).
+- the stable session, project, scope, and runtime identities;
+- start and finish timestamps;
+- worktree, branch, and optional publication identities;
+- resolved workflow, model, and Git settings; and
+- the final durable outcome summary.
 
----
+The `runtime.system` value records the active runtime. `runtime.ids` is an
+ordered, unique list. A context boundary may append one newly observed runtime
+ID. It may not reorder, remove, or duplicate prior IDs.
 
-## Per-loop staging-subdir vocabulary
+The manifest is written only at Configuration, scope lock, runtime attachment,
+an explicit settings change, and the Wrap-up outcome. It never stores routing,
+agents, teammate turns, usage, token or cache counts, integration counters,
+iteration telemetry, transcripts, Chat history, or other operational events.
 
-`staging/` holds typed-finding subdirs. The base vocabulary is shared by every
-loop; Planning adds one extra subdir.
+The final `outcome` contains only durable summaries: final status, each
+productive step's verdict and canonical artifact, the durable handoff path,
+user-approved dual-system waivers, and any halted or aborted reason.
 
-Base (every loop): `scenarios`, `checklists`, `decisions`, `references`, `design`,
-`discussions`, `backlogs/feature`, `backlogs/project`, `reviews`, `reports`,
-`changelogs`, `learnings`, `notes`.
+## `state.json` version 3
 
-Loop-specific additions:
+[`state.schema.json`](schemas/state.schema.json) is the executable contract.
+`state.json` is the sole active workflow router. The manager updates it before
+each visible transition through the `transition` command.
 
-| Loop | Extra staging subdir |
-|---|---|
-| `2-planning` | `plans/` |
+It owns only:
 
-No other loop carries `plans/`. The scaffold script embeds this
-vocabulary in a `case` block keyed by loop name; this table is the source it is
-verified against.
+- overall status;
+- the current step, stage, iteration, and optional Execution task;
+- completed steps and tasks;
+- the last aggregate verdict; and
+- active dispatch identity and scheduling status.
 
----
+The canonical stages are `DISCUSSION`, `WORK`, `EVALUATION`, and `RECORD`.
+Configuration has no stage. A runtime-native task or todo list is a projection
+of this state and cannot write back to it.
 
-## Transcript rules
+State never duplicates settings, model choices, Git settings, manifest metadata,
+or iteration caps. The command validates the active iteration against the cap in
+`session.json` and validates each current or completed task against a scaffolded
+task directory.
 
-- One **single** session-root `transcripts/` dir. There is no per-loop or per-task
-  `transcripts/`.
-- File name: `{role}-{agentId}.jsonl`, one immutable file per agent run. The
-  manager's file is `manager-{sessionId}.jsonl` (its id is the session id).
-- Each agent's transcript **accumulates across all loops** by its distinct
-  `agentId`; it is never overwritten.
-- The assistant **copies** transcripts into `transcripts/` at RECORD.
-- **Runtime-aware absent-transcript case (RECORD, on `session.json.system`).** When
-  `session.json.transcriptPath` is absent, a `claude-code` session records a **Critical**
-  `general`/`unevaluable` finding (Claude Code guarantees a transcript, so absence is
-  unexpected), while a `codex` session with a permitted null `transcriptPath` (rollout lookup
-  failed) **skips the raw copy** and records a **lower-severity** `general`/`process`
-  audit-coverage-degraded note — a degraded-pass, not a Critical. See
-  [`record/SKILL.md`](SKILL.md) Step 2 / Step 9.
-- Transcripts are **gitignored, session-scoped, never promoted, and removed at
-  worktree cleanup**. Promoting a transcript is a constraint violation.
-- A Codex-null transcript path is an audit-coverage degradation, not a licence to promote any
-  raw audit surface. The durable signal remains `session.json` plus the RECORD
-  `audit-coverage-degraded` note.
-- The scaffold script **never** creates `transcripts/`. [`init-record-map.sh`](scripts/init-record-map.sh)
-  creates it (with the root metadata stubs) at Configuration; the manager then stamps the stubs.
+## Command contract
 
----
+Run the record command from its canonical skill-owned location:
 
-## Spec-to-script binding
+```text
+.gobbi/projects/gobbi/skills/record/scripts/session-record.sh
+```
 
-- The scaffold script [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh)
-  **embeds** the per-loop dir manifest (the 4 slots + the per-loop staging
-  vocabulary) in a `case "$step_loop" in` block.
-- This doc is the **human-readable single source of truth**. When the manifest and
-  this doc disagree, this doc is correct and the script is the drift.
-- The verify script [`verify-record-map.sh`](scripts/verify-record-map.sh)
-  scaffolds a throwaway step-dir and diffs the script's output against the tree
-  declared here. Drift is **caught by the check**, never silently tolerated.
-- **COD-STRUCTURE-2 narrowing**: the verify diff covers **only** the
-  script-created loop/task subtree (the `{N}-{loop}/` or `task-{NN}-{slug}/`
-  interior). It does **not** diff the session-root invariants — `transcripts/`,
-  `session.json`, `state.json`, `settings.json`, `session.json.lock`. Those are
-  created by `init-record-map.sh` (invoked by the manager in Configuration), never
-  by the scaffold script, so diffing them against the script's output would always
-  fail. The script's verify target is the `<step-dir>` subtree only.
+Every path argument is explicit. Commands do not discover a global active
+session and do not scan other worktrees.
 
----
+### 1. `init`
 
-## Initialization (`init-record-map.sh`)
+```text
+session-record.sh init --root ABS --session-id UUID --project SLUG
+  --runtime-system claude-code|codex --runtime-id ID
+  --started-at TIMESTAMP --branch BRANCH --worktree ABS
+  [--base-branch BRANCH] [--repo OWNER/REPO] [--settings FILE]
+```
 
-The full skeleton is bootstrapped in one call by
-[`init-record-map.sh`](scripts/init-record-map.sh), which the manager runs **first**
-in Configuration (after worktree creation), then stamps the metadata stubs with real
-values.
+`init` validates all inputs and both complete JSON candidates before it creates
+the session root. The root must exactly match the worktree, project, date, and
+Gobbi UUID supplied. `--settings` contains the complete `settings` object only;
+when omitted, the shipped defaults are used. Existing v5/v3 records are
+preserved. A conflicting identity, retired surface, invalid document, or old
+schema is rejected before record mutation. Repeating a valid initialization is
+idempotent.
 
-- Creates the **session-root invariants** — `transcripts/` plus create-if-absent
-  metadata stubs (`session.json`, `state.json`, `settings.json`, `session.json.lock`)
-  copied from `orchestration/templates/`, and a `README.md` index stub.
-- Creates all **four loop dirs** (`1-ideation` … `4-wrap-up`) by **delegating** each
-  loop interior to [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh),
-  the single dir-materializer, so the per-loop dir + staging vocabulary stays defined
-  in exactly one place. Execution task dirs (`task-{NN}-{slug}`) stay lazy (names
-  unknown at init); `startup/` is out of scope (it owns its own session shape, not
-  a loop — see `startup/recording.md` § 3).
-- **Idempotent + create-if-absent**: dirs use `mkdir -p`; metadata + README stubs are
-  never overwritten, so re-running on a resumed / cleared / compacted session preserves
-  the manager's stamped values. Args: `<session-root>` (absolute) and `<mode>`
-  (`chat|auto`, selects the settings template). Before any mutation, the initializer
-  compares every existing metadata file's `schemaVersion` with the selected shipped
-  template and rejects invalid or legacy metadata. Pre-0.5.3 sessions finish in their
-  pinned old worktrees; this code performs no migration or dual-schema writes.
-  Fail-closed on bad args or a schema mismatch.
+### 2. `scaffold-tasks`
 
----
+```text
+session-record.sh scaffold-tasks --root ABS --tasks FILE
+```
 
-## D7 — lifecycle property: the whole `sessions/` tree is gitignored
+The task file has one exact shape:
 
-- `sessions/` is gitignored (`.gitignore:21`), worktree-local, and removed at
-  worktree cleanup. Nothing under `sessions/` survives the session by itself.
-- The per-iter "commit session record" cadence commits **no** session content,
-  because the tree is gitignored. Iteration boundaries are recorded in
-  `session.json.workflow.{loop}.iterations[]`, not in git.
-- Durable memory exists **only** via Wrap-up promotion — or the bounded
-  startup-close exception (the startup skill self-promotes its user-approved
-  baseline at startup-close; Wrap-up EXCLUDES `startup/` from its inventory, so
-  nothing is double-promoted — see § Wrap-up promotion-inventory rule): Wrap-up
-  copies promotable `staging/` content into tracked `features/`, `mistakes/`,
-  `rules/`, `design/`, `notes/`, `backlogs/`, etc. Only promoted content survives.
+```json
+{
+  "tasks": [
+    { "number": 1, "slug": "record-foundation" }
+  ]
+}
+```
 
----
+Numbers and slugs must each be unique. Numbers are integers from 1 through 99.
+Slugs are lower-case kebab-case strings. The command validates the whole task
+set before creating any task directory, then creates every configured Execution
+iteration for each task.
 
-## Wrap-up promotion-inventory rule
+### 3. `transition`
 
-- Wrap-up inventories **`staging/` only** for promotion. It never inventories
-  `transcripts/`, `working/`, `evaluation/`, or `outputs/` as promotable.
-  Promoting a transcript (or any non-`staging/` dir) is a constraint violation.
-- **F-P2**: the exclusion targets `transcripts/` (and `working/`, `evaluation/`,
-  `outputs/`) — it does **not** exclude all non-loop dirs. The Chat-mode per-slice
-  `staging/` (below) remains a **valid** non-loop promotion source. Do NOT
-  over-narrow the rule to "workflow-loop `staging/` only" in a way that drops it.
-- **`startup/` is EXCLUDED — a named exclusion despite carrying a `staging/`.**
-  `startup/staging/` is **NOT** a Wrap-up promotion source. `startup` promotes its
-  own staging at startup-close (before any productive loop), so by the time a
-  same-session Wrap-up runs, `startup/staging/` is already durable memory.
-  Enumerating it would re-promote (a double-promotion), so Wrap-up EXCLUDES the
-  entire `startup/` tree — even though it holds a `staging/`. The startup-owned
-  promotion + completion marker live in [`startup/recording.md` § 9](../startup/recording.md);
-  the parallel [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
-  states the same exclusion.
-- **Chat-mode parity**: in a Chat-mode session the per-slice
-  `chat/tasks/*/{N}-{loop}/staging/` (and `chat/tasks/*/3-execution/task-*/staging/`)
-  is a **valid** non-loop promotion source, so
-  Chat typed findings reach memory (see [`wrap-up/SKILL.md` § Promotion-inventory rule](../wrap-up/SKILL.md)
-  and [`orchestration/chat-mode.md` §4](../orchestration/chat-mode.md)); absent in non-Chat sessions.
-  The `chat/tasks` subtree is **manager-materialized** at slice entry — it lies OUTSIDE the fixed
-  scaffold set (`1-ideation` … `4-wrap-up`) that
-  [`scaffold-session-dir.sh`](../orchestration/scripts/scaffold-session-dir.sh) creates and
-  [`verify-record-map.sh`](scripts/verify-record-map.sh) validates — so the drift-gate's exclusion of
-  `chat/tasks` from its fixed set is INTENTIONAL, pending the GEN-D7-004 follow-up that extends both
-  the scaffold script and the gate to cover it.
+```text
+session-record.sh transition --root ABS --patch FILE
+```
 
----
+The patch may change only `status`, `current`, `completedSteps`,
+`completedTasks`, `lastVerdict`, or `activeDispatches`. It cannot change
+`schemaVersion` and cannot write manifest or settings data.
 
-## startup/ session shape
+### 4. `checkpoint`
 
-`startup/` is **not** a workflow loop. It is the bootstrap surface used at
-session start. It owns its own unnumbered session shape — a `startup/` dir with a
-`working/` + `staging/` + `outputs/` interior, defined by
-[`startup/recording.md` § 3](../startup/recording.md); it is **not** swept to the
-flat-4-slot model and does **not** carry a `{N}-` number prefix. The scaffold
-script rejects `startup/` as a `<step-dir>` (it is not in the fixed loop set), so
-the interior shape of `startup/` is out of scope for this loop-dir spec. Unlike a
-workflow loop, `startup/staging/` is **NOT** a Wrap-up promotion source: startup
-self-promotes its approved set at startup-close, so Wrap-up EXCLUDES the whole
-`startup/` tree (see the rule above).
+```text
+session-record.sh checkpoint --root ABS --patch FILE
+```
 
----
+The patch may change only `feature`, `task`, `runtime`, `finishedAt`, `git`,
+`settings`, or `outcome`. It cannot write workflow routing. Stable session
+identity, project, start timestamp, base branch, session branch, and worktree
+path are immutable. Iteration caps cannot decrease. A cap increase scaffolds
+only the new iterations after the manifest candidate is accepted.
 
-## Path-validation contract (scaffold script, fail-closed)
+### 5. `write-artifact`
 
-The scaffold script enforces these rules before creating anything. On any failure
-it exits non-zero and creates **nothing**.
+The command name is reserved by the record API. This foundation version rejects
+every call without touching the target. The peer-artifact implementation adds
+the artifact-specific schemas and Markdown renderers before enabling it. Silent
+or unvalidated generic writes are not an interim fallback.
 
-- `<session-root>` must be an **absolute** path. A relative path is rejected.
-- `<step-dir>` must be one of the fixed loop set — `1-ideation`, `2-planning`,
-  `3-execution`, `4-wrap-up` — **or** a single execution task dir of
-  the form `3-execution/task-{NN}-{slug}`, where `{NN}` is `[0-9]{2}` and `{slug}`
-  matches `[a-z0-9-]{1,40}`.
-- A `<step-dir>` containing `..`, a leading `/`, or stray/duplicate slashes is
-  rejected.
-- Any `<step-dir>` outside the fixed set (including `startup`) is rejected.
+### 6. `verify`
 
-The same allowed-set is the manifest the script materializes — a single source for
-both validation and creation.
+```text
+session-record.sh verify --root ABS [--tasks FILE]
+```
+
+`verify` checks both schemas, cross-document invariants, exact root ownership,
+retired surfaces, exact directory shape, optional complete task coverage, and
+artifact placement. Empty staging is valid. Unknown root entries, extra
+directories, unscaffolded tasks, and pre-PASS output files fail verification.
+
+The embedded `self-test` command exercises positive and negative foundation
+paths without installing another shell implementation.
+
+## Patch and atomic-write semantics
+
+`transition` and `checkpoint` accept patch files, never shell-interpolated JSON.
+Their merge is a Gobbi object merge implemented by `jq`'s object multiplication:
+
+- object members merge recursively;
+- arrays replace the prior array;
+- scalars replace the prior scalar; and
+- `null` is a value and replaces the prior value.
+
+This is deliberately not JSON Merge Patch: `null` never means delete. The full
+merged candidate must pass JSON parsing, its versioned schema, command-specific
+field authorization, and cross-document invariants.
+
+After validation, replacement uses a temporary file in the target file's own
+directory and a same-filesystem rename. Parse, schema, authorization,
+containment, and reserved-renderer failures leave the prior target bytes
+unchanged. A cap-scaffold failure restores the prior manifest bytes.
+
+## Containment and lifecycle
+
+All session paths are absolute and root-contained. A symbolic-link parent that
+would redirect the session path is rejected before initialization. Symbolic
+links are forbidden inside the session record. Task slugs reject separators,
+traversal components, and malformed names. The verifier rejects files outside
+the declared record locations.
+
+The entire `sessions/` tree is worktree-local and gitignored. Working,
+evaluation, and output artifacts remain session evidence. Durable memory is
+created only by Wrap-up promotion from typed `staging/` directories. Wrap-up
+must reject any promotion source outside staging.
