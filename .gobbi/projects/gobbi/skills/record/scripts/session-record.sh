@@ -7,6 +7,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RECORD_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SESSION_SCHEMA="$RECORD_DIR/schemas/session.schema.json"
 STATE_SCHEMA="$RECORD_DIR/schemas/state.schema.json"
+DRAFT_SCHEMA="$RECORD_DIR/schemas/draft.schema.json"
+CROSS_REVIEW_SCHEMA="$RECORD_DIR/schemas/cross-review.schema.json"
+EVALUATION_REPORT_SCHEMA="$RECORD_DIR/schemas/evaluation-report.schema.json"
 SESSION_TEMPLATE="$RECORD_DIR/templates/session.json"
 STATE_TEMPLATE="$RECORD_DIR/templates/state.json"
 CLEANUP_FILES=()
@@ -55,7 +58,11 @@ usage:
   session-record.sh transition --root ABS --patch FILE
   session-record.sh checkpoint --root ABS --patch FILE
   session-record.sh verify --root ABS [--tasks FILE]
-  session-record.sh write-artifact ...
+  session-record.sh write-artifact --root ABS
+      --kind draft|cross-review|evaluation-report --input FILE --target REL
+      --expected-system claude|codex
+      --expected-step ideation|planning|execution|wrap-up
+      --expected-iteration N --expected-assignment ID
   session-record.sh self-test
 
 Patch semantics for transition and checkpoint are Gobbi object merge:
@@ -65,8 +72,9 @@ Both commands validate the complete candidate before atomic replacement.
 Task data format:
   {"tasks":[{"number":1,"slug":"record-foundation"}]}
 
-write-artifact is reserved for the peer-artifact implementation task and fails
-closed in this foundation version.
+write-artifact validates peer JSON against its kind-specific schema, verifies
+the expected metadata and canonical target, renders deterministic Markdown, and
+atomically replaces the target only after validating the rendered candidate.
 EOF
 }
 
@@ -77,6 +85,9 @@ require_dependencies() {
     done
     [ -f "$SESSION_SCHEMA" ] || die "session schema not found: $SESSION_SCHEMA"
     [ -f "$STATE_SCHEMA" ] || die "state schema not found: $STATE_SCHEMA"
+    [ -f "$DRAFT_SCHEMA" ] || die "draft schema not found: $DRAFT_SCHEMA"
+    [ -f "$CROSS_REVIEW_SCHEMA" ] || die "cross-review schema not found: $CROSS_REVIEW_SCHEMA"
+    [ -f "$EVALUATION_REPORT_SCHEMA" ] || die "evaluation-report schema not found: $EVALUATION_REPORT_SCHEMA"
     [ -f "$SESSION_TEMPLATE" ] || die "session template not found: $SESSION_TEMPLATE"
     [ -f "$STATE_TEMPLATE" ] || die "state template not found: $STATE_TEMPLATE"
 }
@@ -101,6 +112,337 @@ validate_session_schema() {
 
 validate_state_schema() {
     validate_schema "$STATE_SCHEMA" "$1" "workflow state"
+}
+
+artifact_schema() {
+    case "$1" in
+        draft) printf '%s\n' "$DRAFT_SCHEMA" ;;
+        cross-review) printf '%s\n' "$CROSS_REVIEW_SCHEMA" ;;
+        evaluation-report) printf '%s\n' "$EVALUATION_REPORT_SCHEMA" ;;
+        *) die "unknown artifact kind: $1" ;;
+    esac
+}
+
+opposite_system() {
+    case "$1" in
+        claude) printf 'codex\n' ;;
+        codex) printf 'claude\n' ;;
+        *) die "unknown system: $1" ;;
+    esac
+}
+
+assert_artifact_text() {
+    local input="$1"
+    jq -e '
+        . as $document |
+        [paths(scalars)] as $paths |
+        all($paths[];
+            . as $path | $document | getpath($path) as $value |
+            if ($value | type) == "string" then ($value | test("\\S")) else true end)
+    ' "$input" >/dev/null || die "artifact contains an empty or whitespace-only string: $input"
+}
+
+evaluation_findings() {
+    jq -c '.perspectives[].findings[], .overall.findings[]' "$1"
+}
+
+finding_verdict_filter='def contributes: (.disposition == "open" or .disposition == "disputed");
+def finding_verdict:
+  if any(.[]; contributes and .severity == "Critical" and .confidence >= 75) then "FAIL"
+  elif any(.[]; contributes and .severity == "High" and .confidence >= 50) then "REVISE"
+  else "PASS" end;'
+
+assert_finding_fingerprints() {
+    local input="$1" finding declared calculated
+    while IFS= read -r finding; do
+        [ -n "$finding" ] || continue
+        declared="$(jq -r '.fingerprint' <<<"$finding")"
+        calculated="$(jq -cS '{symptom, rootCause}' <<<"$finding" | sha256sum | awk '{print $1}')"
+        [ "$declared" = "$calculated" ] || die "finding fingerprint does not match its symptom and root cause: $(jq -r '.id' <<<"$finding")"
+    done < <(evaluation_findings "$input")
+}
+
+assert_evaluation_semantics() {
+    local input="$1"
+    jq -e '
+        . as $report |
+        ([.perspectives[].name] == ["Project", "Structure", "Performance", "Aesthetics", "Usage", "Consistency", "Risk"]) and
+        (all(.perspectives[];
+            . as $perspective |
+            all($perspective.findings[]; .perspective == $perspective.name))) and
+        (all(.overall.findings[]; .perspective == "Overall")) and
+        ([.perspectives[].findings[], .overall.findings[]] as $findings |
+            ([ $findings[].id ] | length) == ([ $findings[].id ] | unique | length) and
+            ([ $findings[].fingerprint ] | length) == ([ $findings[].fingerprint ] | unique | length) and
+            all($findings[];
+                (.type != "general" or .domain != "general") and
+                (.provenance | length == 1) and
+                (.provenance[0].system == $report.system) and
+                (.provenance[0].runtimeIdentity == $report.runtimeIdentity) and
+                (.provenance[0].findingId == .id))) and
+        ([.checklist[].id] | length) == ([.checklist[].id] | unique | length) and
+        ([.checklist[].perspective] | unique | sort) ==
+          (["Project", "Structure", "Performance", "Aesthetics", "Usage", "Consistency", "Risk", "Overall"] | sort) and
+        ([.perspectives[].findings[].id, .overall.findings[].id] as $ids |
+            all(.checklist[];
+                if .status == "FAIL" then
+                    (.findingIds | length >= 1) and all(.findingIds[]; . as $id | $ids | index($id) != null)
+                else (.findingIds | length == 0)
+                end))
+    ' "$input" >/dev/null || die "evaluation report violates perspective, finding, provenance, or checklist invariants"
+
+    jq -e "$finding_verdict_filter
+        all(.perspectives[]; .verdict == (.findings | finding_verdict)) and
+        (.overall.verdict == (.overall.findings | finding_verdict)) and
+        ([.perspectives[].verdict, .overall.verdict] |
+            if any(.[]; . == \"FAIL\") then \"FAIL\"
+            elif any(.[]; . == \"REVISE\") then \"REVISE\"
+            else \"PASS\" end) == .verdict
+    " "$input" >/dev/null || die "evaluation verdict contradicts its authoritative findings"
+    assert_finding_fingerprints "$input"
+}
+
+assert_artifact_semantics() {
+    local kind="$1" input="$2"
+    assert_artifact_text "$input"
+    case "$kind" in
+        draft) ;;
+        cross-review)
+            jq -e '([.findings[].id] | length) == ([.findings[].id] | unique | length)' "$input" >/dev/null ||
+                die "cross-review finding IDs must be unique"
+            ;;
+        evaluation-report) assert_evaluation_semantics "$input" ;;
+    esac
+}
+
+artifact_prefix_from_target() {
+    local target="$1" step="$2"
+    case "$step" in
+        ideation) printf '1-ideation\n' ;;
+        planning) printf '2-planning\n' ;;
+        wrap-up) printf '4-wrap-up\n' ;;
+        execution)
+            if [[ "$target" =~ ^(3-execution/task-[0-9]{2}-[a-z0-9]+(-[a-z0-9]+)*)/ ]]; then
+                printf '%s\n' "${BASH_REMATCH[1]}"
+            else
+                die "Execution artifacts require a canonical task target"
+            fi
+            ;;
+        *) die "unknown workflow step: $step" ;;
+    esac
+}
+
+assert_artifact_target() {
+    local root="$1" kind="$2" target="$3" system="$4" step="$5" iteration="$6"
+    case "$target" in
+        /*|*//*|../*|*/../*|*/..|./*|*/./*) die "artifact target must be a canonical root-relative path: $target" ;;
+    esac
+    [[ "$target" =~ ^[a-zA-Z0-9._/-]+$ ]] || die "artifact target contains unsupported characters: $target"
+    local prefix expected other normalized
+    prefix="$(artifact_prefix_from_target "$target" "$step")"
+    other="$(opposite_system "$system")"
+    case "$kind" in
+        draft) expected="$prefix/working/iteration-$iteration/drafts/$system.md" ;;
+        cross-review) expected="$prefix/working/iteration-$iteration/cross-reviews/$system-on-$other.md" ;;
+        evaluation-report) expected="$prefix/evaluation/iteration-$iteration/$system.md" ;;
+    esac
+    [ "$target" = "$expected" ] || die "artifact target does not match kind and metadata: expected $expected, got $target"
+    normalized="$(realpath -m -- "$root/$target")"
+    [ "$normalized" = "$root/$target" ] || die "artifact target resolves through a symbolic link: $target"
+    case "$normalized" in "$root"/*) ;; *) die "artifact target escapes the session root: $target" ;; esac
+    [ -d "$(dirname "$normalized")" ] || die "artifact target directory is not scaffolded: $(dirname "$target")"
+    [ ! -L "$normalized" ] || die "artifact target is a symbolic link: $target"
+}
+
+append_machine_json() {
+    local input="$1" target="$2"
+    {
+        printf '\n<!-- gobbi-machine-json:v1:begin -->\n```json\n'
+        jq -S . "$input"
+        printf '```\n<!-- gobbi-machine-json:v1:end -->\n'
+    } >> "$target"
+}
+
+render_draft() {
+    local input="$1" target="$2"
+    jq -r '
+        [
+          "---",
+          "artifact-kind: draft",
+          "schema-version: \(.schemaVersion)",
+          "system: \(.system)",
+          "step: \(.step)",
+          "iteration: \(.iteration)",
+          "assignment: \(.assignment)",
+          "runtime-identity: \(.runtimeIdentity)",
+          "contract-sha256: \(.contractSha256)",
+          "---",
+          "",
+          "# \(.title)",
+          "",
+          "## Summary",
+          "",
+          .summary,
+          "",
+          "## Draft",
+          "",
+          .content
+        ] | .[]
+    ' "$input" > "$target"
+    append_machine_json "$input" "$target"
+}
+
+render_cross_review() {
+    local input="$1" target="$2"
+    jq -r '
+        def finding_lines:
+          if length == 0 then ["_No findings._"]
+          else map([
+            "### `\(.id)` — \(.severity)",
+            "",
+            .summary,
+            "",
+            "- Evidence: \(.evidence)",
+            "- Recommendation: \(.recommendation)",
+            ""
+          ]) | add end;
+        ([
+          "---",
+          "artifact-kind: cross-review",
+          "schema-version: \(.schemaVersion)",
+          "system: \(.system)",
+          "step: \(.step)",
+          "iteration: \(.iteration)",
+          "assignment: \(.assignment)",
+          "runtime-identity: \(.runtimeIdentity)",
+          "contract-sha256: \(.contractSha256)",
+          "subject-system: \(.subjectSystem)",
+          "subject-sha256: \(.subjectSha256)",
+          "conclusion: \(.conclusion)",
+          "---",
+          "",
+          "# \(.system | ascii_upcase) review of \(.subjectSystem)",
+          "",
+          "## Summary",
+          "",
+          .summary,
+          "",
+          "## Findings",
+          ""
+        ] + (.findings | finding_lines)) | .[]
+    ' "$input" > "$target"
+    append_machine_json "$input" "$target"
+}
+
+render_evaluation_report() {
+    local input="$1" target="$2"
+    jq -r '
+        def finding_lines:
+          if length == 0 then ["_No findings._", ""]
+          else map([
+            "### Finding `\(.id)`",
+            "",
+            "- Fingerprint: `\(.fingerprint)`",
+            "- Perspective: \(.perspective)",
+            "- Type: `\(.type)`",
+            "- Domain: `\(.domain)`",
+            "- Disposition: `\(.disposition)`",
+            "- Confidence: \(.confidence)",
+            "- Severity: \(.severity)",
+            "- Symptom: \(.symptom)",
+            "- Root cause: \(.rootCause)",
+            "- Evidence: \(.evidence)",
+            "- False-positive check: \(.falsePositiveCheck)",
+            "- Recommendation: \(.recommendation)",
+            "- Provenance: \(.provenance | map(.system + "/" + .runtimeIdentity + "/" + .findingId) | join(", "))",
+            ""
+          ]) | add end;
+        def perspective_lines:
+          ["## \(.name)", "", "VERDICT: \(.verdict)", "", .summary, "", "### Findings", ""] +
+          (.findings | finding_lines);
+        ([
+          "---",
+          "artifact-kind: evaluation-report",
+          "schema-version: \(.schemaVersion)",
+          "system: \(.system)",
+          "step: \(.step)",
+          "iteration: \(.iteration)",
+          "assignment: \(.assignment)",
+          "runtime-identity: \(.runtimeIdentity)",
+          "subject-sha256: \(.subjectSha256)",
+          "verdict: \(.verdict)",
+          "---",
+          "",
+          "# \(.system | ascii_upcase) Evaluation Report",
+          ""
+        ] +
+        ([.perspectives[] | perspective_lines] | add) +
+        ["## Overall", "", "VERDICT: \(.overall.verdict)", "", .overall.summary, "", "### Findings", ""] +
+        (.overall.findings | finding_lines) +
+        ["### Preserve", ""] +
+        [.overall.preserve[] | "- " + .] +
+        ["", "## Evaluation Checklist", ""] +
+        [.checklist[] |
+          "- [x] `\(.id)` [\(.perspective)] \(.status): \(.description) — \(.evidence)" +
+          (if (.findingIds | length) > 0 then " — findings: " + (.findingIds | join(", ")) else "" end)
+        ]) | .[]
+    ' "$input" > "$target"
+    append_machine_json "$input" "$target"
+}
+
+render_artifact() {
+    local kind="$1" input="$2" target="$3"
+    case "$kind" in
+        draft) render_draft "$input" "$target" ;;
+        cross-review) render_cross_review "$input" "$target" ;;
+        evaluation-report) render_evaluation_report "$input" "$target" ;;
+    esac
+}
+
+header_value() {
+    local file="$1" key="$2"
+    awk -v key="$key" '
+        NR == 1 && $0 == "---" {in_header = 1; next}
+        in_header && $0 == "---" {exit}
+        in_header && index($0, key ": ") == 1 {print substr($0, length(key) + 3)}
+    ' "$file"
+}
+
+extract_machine_json() {
+    local source="$1" target="$2"
+    [ "$(grep -Fxc '<!-- gobbi-machine-json:v1:begin -->' "$source")" -eq 1 ] || die "rendered artifact must contain one machine JSON start marker"
+    [ "$(grep -Fxc '<!-- gobbi-machine-json:v1:end -->' "$source")" -eq 1 ] || die "rendered artifact must contain one machine JSON end marker"
+    awk '
+        $0 == "<!-- gobbi-machine-json:v1:begin -->" {inside = 1; next}
+        $0 == "<!-- gobbi-machine-json:v1:end -->" {inside = 0; done = 1; next}
+        inside && $0 == "```json" {next}
+        inside && $0 == "```" {next}
+        inside {print}
+        END {if (!done) exit 1}
+    ' "$source" > "$target" || die "could not extract rendered machine JSON"
+    validate_json "$target"
+}
+
+assert_rendered_candidate() {
+    local kind="$1" input="$2" candidate="$3" system="$4" step="$5" iteration="$6" assignment="$7"
+    [ -s "$candidate" ] || die "renderer produced an empty artifact"
+    [ "$(header_value "$candidate" artifact-kind)" = "$kind" ] || die "rendered artifact kind header mismatch"
+    [ "$(header_value "$candidate" system)" = "$system" ] || die "rendered system header mismatch"
+    [ "$(header_value "$candidate" step)" = "$step" ] || die "rendered step header mismatch"
+    [ "$(header_value "$candidate" iteration)" = "$iteration" ] || die "rendered iteration header mismatch"
+    [ "$(header_value "$candidate" assignment)" = "$assignment" ] || die "rendered assignment header mismatch"
+    local embedded expected_sorted embedded_sorted
+    embedded="$(mktemp)"
+    expected_sorted="$(mktemp)"
+    embedded_sorted="$(mktemp)"
+    cleanup_file_later "$embedded"
+    cleanup_file_later "$expected_sorted"
+    cleanup_file_later "$embedded_sorted"
+    extract_machine_json "$candidate" "$embedded"
+    validate_schema "$(artifact_schema "$kind")" "$embedded" "rendered $kind machine JSON"
+    jq -S . "$input" > "$expected_sorted"
+    jq -S . "$embedded" > "$embedded_sorted"
+    diff -u "$expected_sorted" "$embedded_sorted" >/dev/null || die "rendered machine JSON differs from the validated input"
 }
 
 is_uuid() {
@@ -656,6 +998,72 @@ command_checkpoint() {
     log "checkpointed session manifest at $root/session.json"
 }
 
+command_write_artifact() {
+    local root="" kind="" input="" target="" expected_system="" expected_step=""
+    local expected_iteration="" expected_assignment=""
+    while [ "$#" -gt 0 ]; do
+        case "$1" in
+            --root) root="${2:-}"; shift 2 ;;
+            --kind) kind="${2:-}"; shift 2 ;;
+            --input) input="${2:-}"; shift 2 ;;
+            --target) target="${2:-}"; shift 2 ;;
+            --expected-system) expected_system="${2:-}"; shift 2 ;;
+            --expected-step) expected_step="${2:-}"; shift 2 ;;
+            --expected-iteration) expected_iteration="${2:-}"; shift 2 ;;
+            --expected-assignment) expected_assignment="${2:-}"; shift 2 ;;
+            -h|--help) usage; exit 0 ;;
+            *) die "unknown write-artifact argument: $1" ;;
+        esac
+    done
+    [ -n "$root" ] || die "write-artifact requires --root"
+    [ -n "$kind" ] || die "write-artifact requires --kind"
+    [ -n "$input" ] || die "write-artifact requires --input"
+    [ -n "$target" ] || die "write-artifact requires --target"
+    [ -n "$expected_system" ] || die "write-artifact requires --expected-system"
+    [ -n "$expected_step" ] || die "write-artifact requires --expected-step"
+    [ -n "$expected_iteration" ] || die "write-artifact requires --expected-iteration"
+    [ -n "$expected_assignment" ] || die "write-artifact requires --expected-assignment"
+    case "$kind" in draft|cross-review|evaluation-report) ;; *) die "invalid artifact kind: $kind" ;; esac
+    case "$expected_system" in claude|codex) ;; *) die "invalid expected system: $expected_system" ;; esac
+    case "$expected_step" in ideation|planning|execution|wrap-up) ;; *) die "invalid expected step: $expected_step" ;; esac
+    [[ "$expected_iteration" =~ ^[1-9][0-9]?$ ]] || die "expected iteration must be an integer from 1 through 99"
+    [[ "$expected_assignment" =~ ^[a-z0-9][a-z0-9-]{0,127}$ ]] || die "invalid expected assignment: $expected_assignment"
+    [ -f "$input" ] && [ ! -L "$input" ] || die "artifact input must be a regular non-symlink file: $input"
+    [ -s "$input" ] || die "artifact input is empty: $input"
+
+    root="$(normalize_path "$root" "session root")"
+    validate_existing_session "$root"
+    validate_json "$input"
+    local schema other candidate normalized_target
+    schema="$(artifact_schema "$kind")"
+    validate_schema "$schema" "$input" "$kind input"
+    assert_artifact_semantics "$kind" "$input"
+    jq -e \
+        --arg kind "$kind" \
+        --arg system "$expected_system" \
+        --arg step "$expected_step" \
+        --argjson iteration "$expected_iteration" \
+        --arg assignment "$expected_assignment" '
+            .kind == $kind and
+            .system == $system and
+            .step == $step and
+            .iteration == $iteration and
+            .assignment == $assignment
+        ' "$input" >/dev/null || die "artifact metadata does not match the expected contract"
+    if [ "$kind" = "cross-review" ]; then
+        other="$(opposite_system "$expected_system")"
+        [ "$(jq -r '.subjectSystem' "$input")" = "$other" ] || die "cross-review subject system is not opposite its reviewer"
+    fi
+    assert_artifact_target "$root" "$kind" "$target" "$expected_system" "$expected_step" "$expected_iteration"
+    normalized_target="$root/$target"
+    candidate="$(mktemp)"
+    cleanup_file_later "$candidate"
+    render_artifact "$kind" "$input" "$candidate"
+    assert_rendered_candidate "$kind" "$input" "$candidate" "$expected_system" "$expected_step" "$expected_iteration" "$expected_assignment"
+    atomic_replace "$candidate" "$normalized_target"
+    log "wrote $kind artifact $target ($(sha256sum "$normalized_target" | awk '{print $1}'))"
+}
+
 expected_staging_dirs() {
     local prefix="$1" include_plans="$2"
     printf '%s\n' \
@@ -815,8 +1223,47 @@ expect_failure_preserving_file() {
     [ "$before" = "$after" ] || self_test_fail "$label changed $target"
 }
 
+make_pass_evaluation_fixture() {
+    local target="$1" system="$2" runtime_identity="$3" subject_sha256="$4"
+    jq -n -S \
+        --arg system "$system" \
+        --arg runtime "$runtime_identity" \
+        --arg subject "$subject_sha256" '
+        ["Project", "Structure", "Performance", "Aesthetics", "Usage", "Consistency", "Risk"] as $perspectives |
+        {
+          schemaVersion: 1,
+          kind: "evaluation-report",
+          system: $system,
+          step: "ideation",
+          iteration: 1,
+          assignment: "artifact-contract",
+          runtimeIdentity: $runtime,
+          subjectSha256: $subject,
+          perspectives: ($perspectives | map({
+            name: ., summary: (. + " perspective completed."), findings: [], verdict: "PASS"
+          })),
+          overall: {
+            summary: "Overall evaluation completed.",
+            findings: [],
+            preserve: ["Preserve the verified digest chain."],
+            verdict: "PASS"
+          },
+          checklist: (["Project", "Structure", "Performance", "Aesthetics", "Usage", "Consistency", "Risk", "Overall"] | map({
+            id: ("CHECK-" + (ascii_upcase | gsub("[^A-Z0-9]"; "-"))),
+            perspective: ., description: (. + " check completed."), status: "PASS",
+            evidence: (. + " evidence inspected."), findingIds: []
+          })),
+          verdict: "PASS"
+        }
+    ' > "$target"
+}
+
 command_self_test() {
     local temporary worktree session_id root tasks patch target_count before_tree after_tree
+    local artifact_contract claude_draft_json codex_draft_json claude_draft_target codex_draft_target
+    local claude_review_json codex_review_json claude_review_target codex_review_target
+    local claude_eval_json codex_eval_json claude_eval_target codex_eval_target subject_digest
+    local bad_artifact linked_input external_target artifact_backup
     temporary="$(mktemp -d)"
     cleanup_dir_later "$temporary"
     worktree="$temporary/worktree"
@@ -914,14 +1361,69 @@ command_self_test() {
     printf '%s\n' '# canonical Ideation artifact' > "$root/1-ideation/outputs/canonical.md"
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
-    printf '%s\n' '# sentinel' > "$root/1-ideation/working/iteration-1/synthesis.md"
-    expect_failure_preserving_file \
-        "$root/1-ideation/working/iteration-1/synthesis.md" \
-        "unavailable renderer" \
-        "$0" write-artifact --root "$root" --input "$tasks" \
-        --target 1-ideation/working/iteration-1/synthesis.md
-    if "$0" write-artifact --root "$root" --input "$tasks" --target 1-ideation/outputs/test.md >/dev/null 2>&1; then self_test_fail "unavailable renderer succeeded"; fi
-    [ ! -e "$root/1-ideation/outputs/test.md" ] || self_test_fail "unavailable renderer created a target"
+    artifact_contract="$(printf '%s' 'artifact-contract-v1' | sha256sum | awk '{print $1}')"
+    claude_draft_json="$temporary/claude-draft.json"
+    codex_draft_json="$temporary/codex-draft.json"
+    claude_draft_target="$root/1-ideation/working/iteration-1/drafts/claude.md"
+    codex_draft_target="$root/1-ideation/working/iteration-1/drafts/codex.md"
+    jq -n --arg contract "$artifact_contract" '{schemaVersion:1,kind:"draft",system:"claude",step:"ideation",iteration:1,assignment:"artifact-contract",runtimeIdentity:"claude-draft-self-test",contractSha256:$contract,title:"Claude draft",summary:"Independent Claude draft.",content:"Complete Claude candidate."}' > "$claude_draft_json"
+    jq -n --arg contract "$artifact_contract" '{schemaVersion:1,kind:"draft",system:"codex",step:"ideation",iteration:1,assignment:"artifact-contract",runtimeIdentity:"codex-draft-self-test",contractSha256:$contract,title:"Codex draft",summary:"Independent Codex draft.",content:"Complete Codex candidate."}' > "$codex_draft_json"
+    "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+    "$0" write-artifact --root "$root" --kind draft --input "$codex_draft_json" --target 1-ideation/working/iteration-1/drafts/codex.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+
+    claude_review_json="$temporary/claude-review.json"
+    codex_review_json="$temporary/codex-review.json"
+    claude_review_target="$root/1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md"
+    codex_review_target="$root/1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md"
+    jq -n --arg contract "$artifact_contract" --arg subject "$(sha256sum "$codex_draft_target" | awk '{print $1}')" '{schemaVersion:1,kind:"cross-review",system:"claude",step:"ideation",iteration:1,assignment:"artifact-contract",runtimeIdentity:"claude-review-self-test",contractSha256:$contract,subjectSystem:"codex",subjectSha256:$subject,conclusion:"accept",summary:"Claude reviewed the frozen Codex draft.",findings:[]}' > "$claude_review_json"
+    jq -n --arg contract "$artifact_contract" --arg subject "$(sha256sum "$claude_draft_target" | awk '{print $1}')" '{schemaVersion:1,kind:"cross-review",system:"codex",step:"ideation",iteration:1,assignment:"artifact-contract",runtimeIdentity:"codex-review-self-test",contractSha256:$contract,subjectSystem:"claude",subjectSha256:$subject,conclusion:"accept",summary:"Codex reviewed the frozen Claude draft.",findings:[]}' > "$codex_review_json"
+    "$0" write-artifact --root "$root" --kind cross-review --input "$claude_review_json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+    "$0" write-artifact --root "$root" --kind cross-review --input "$codex_review_json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+
+    subject_digest="$(printf '%s' 'canonical-synthesis' | sha256sum | awk '{print $1}')"
+    claude_eval_json="$temporary/claude-evaluation.json"
+    codex_eval_json="$temporary/codex-evaluation.json"
+    claude_eval_target="$root/1-ideation/evaluation/iteration-1/claude.md"
+    codex_eval_target="$root/1-ideation/evaluation/iteration-1/codex.md"
+    make_pass_evaluation_fixture "$claude_eval_json" claude claude-evaluator-self-test "$subject_digest"
+    make_pass_evaluation_fixture "$codex_eval_json" codex codex-evaluator-self-test "$subject_digest"
+    "$0" write-artifact --root "$root" --kind evaluation-report --input "$claude_eval_json" --target 1-ideation/evaluation/iteration-1/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+    "$0" write-artifact --root "$root" --kind evaluation-report --input "$codex_eval_json" --target 1-ideation/evaluation/iteration-1/codex.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
+
+    expect_failure_preserving_file "$claude_draft_target" "draft wrong assignment" "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment wrong-assignment
+    expect_failure_preserving_file "$claude_review_target" "cross-review wrong assignment" "$0" write-artifact --root "$root" --kind cross-review --input "$claude_review_json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment wrong-assignment
+    expect_failure_preserving_file "$claude_eval_target" "evaluation wrong assignment" "$0" write-artifact --root "$root" --kind evaluation-report --input "$claude_eval_json" --target 1-ideation/evaluation/iteration-1/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment wrong-assignment
+
+    bad_artifact="$temporary/bad-artifact.json"
+    printf '%s\n' '{bad json' > "$bad_artifact"
+    expect_failure_preserving_file "$claude_draft_target" "malformed artifact JSON" "$0" write-artifact --root "$root" --kind draft --input "$bad_artifact" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    : > "$bad_artifact"
+    expect_failure_preserving_file "$claude_draft_target" "empty artifact JSON" "$0" write-artifact --root "$root" --kind draft --input "$bad_artifact" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    expect_failure_preserving_file "$claude_draft_target" "wrong artifact kind" "$0" write-artifact --root "$root" --kind cross-review --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    expect_failure_preserving_file "$claude_draft_target" "wrong expected system" "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    expect_failure_preserving_file "$claude_draft_target" "wrong expected step" "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step planning --expected-iteration 1 --expected-assignment artifact-contract
+    expect_failure_preserving_file "$claude_draft_target" "wrong expected iteration" "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 2 --expected-assignment artifact-contract
+
+    linked_input="$temporary/linked-artifact.json"
+    ln -s -- "$claude_draft_json" "$linked_input"
+    expect_failure_preserving_file "$claude_draft_target" "symbolic artifact input" "$0" write-artifact --root "$root" --kind draft --input "$linked_input" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    if "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target ../escape.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null 2>&1; then self_test_fail "artifact target traversal succeeded"; fi
+    [ ! -e "$worktree/.gobbi/projects/project/sessions/escape.md" ] || self_test_fail "artifact target traversal created a file"
+
+    external_target="$temporary/external-target.md"
+    artifact_backup="$temporary/claude-draft.md"
+    printf '%s\n' 'external sentinel' > "$external_target"
+    cp -- "$claude_draft_target" "$artifact_backup"
+    rm -- "$claude_draft_target"
+    ln -s -- "$external_target" "$claude_draft_target"
+    expect_failure_preserving_file "$external_target" "symbolic artifact target" "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" --target 1-ideation/working/iteration-1/drafts/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    rm -- "$claude_draft_target"
+    cp -- "$artifact_backup" "$claude_draft_target"
+
+    jq '.subjectSystem = "claude"' "$claude_review_json" > "$bad_artifact"
+    expect_failure_preserving_file "$claude_review_target" "same-system cross-review" "$0" write-artifact --root "$root" --kind cross-review --input "$bad_artifact" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
+    jq '.verdict = "REVISE"' "$claude_eval_json" > "$bad_artifact"
+    expect_failure_preserving_file "$claude_eval_target" "contradictory evaluation verdict" "$0" write-artifact --root "$root" --kind evaluation-report --input "$bad_artifact" --target 1-ideation/evaluation/iteration-1/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
     ln -s -- "$temporary" "$root/1-ideation/working/iteration-1/research/escape"
@@ -967,7 +1469,7 @@ main() {
         transition) command_transition "$@" ;;
         checkpoint) command_checkpoint "$@" ;;
         verify) command_verify "$@" ;;
-        write-artifact) die "write-artifact is unavailable until peer artifact schemas and renderers are installed" ;;
+        write-artifact) command_write_artifact "$@" ;;
         self-test) command_self_test "$@" ;;
         -h|--help|help) usage ;;
         *) usage; die "unknown command: $command" ;;

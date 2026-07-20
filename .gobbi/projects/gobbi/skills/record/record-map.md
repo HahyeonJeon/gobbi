@@ -17,6 +17,11 @@ documents in [`templates/`](templates/). New sessions use session schema version
 5 and state schema version 3. There is no migration, compatibility reader, or
 dual-write path for older session records.
 
+Peer results use three artifact-specific schemas: [`draft.schema.json`](schemas/draft.schema.json),
+[`cross-review.schema.json`](schemas/cross-review.schema.json), and
+[`evaluation-report.schema.json`](schemas/evaluation-report.schema.json). The
+schemas are closed contracts; an unknown field is invalid.
+
 ## Canonical session tree
 
 Configuration eagerly creates every predictable directory authorized by the
@@ -254,10 +259,35 @@ only the new iterations after the manifest candidate is accepted.
 
 ### 5. `write-artifact`
 
-The command name is reserved by the record API. This foundation version rejects
-every call without touching the target. The peer-artifact implementation adds
-the artifact-specific schemas and Markdown renderers before enabling it. Silent
-or unvalidated generic writes are not an interim fallback.
+```text
+session-record.sh write-artifact --root ABS
+  --kind draft|cross-review|evaluation-report --input FILE --target REL
+  --expected-system claude|codex
+  --expected-step ideation|planning|execution|wrap-up
+  --expected-iteration N --expected-assignment ID
+```
+
+The command accepts only a regular, non-symbolic-link JSON input. It validates
+the kind-specific schema, semantic invariants, and every expected metadata
+field. The target must be the canonical system-labeled location for that kind,
+step, and iteration. Execution targets must also identify a scaffolded canonical
+task directory.
+
+After validation, the command renders deterministic Markdown with strict
+frontmatter and one canonical, sorted JSON block delimited by
+`gobbi-machine-json:v1` markers. The JSON block is the machine-readable copy of
+the exact validated input. The human frontmatter repeats routing and digest
+fields so validators can reject a visible header that contradicts the embedded
+record. Draft and cross-review frontmatter carries the neutral-contract digest;
+cross-review frontmatter also carries the opposite subject system and the
+SHA-256 digest of the frozen rendered draft. Evaluation frontmatter carries the
+evaluated subject digest and derived verdict.
+
+Rendering occurs in a temporary candidate. The command revalidates the rendered
+kind, headers, and embedded JSON before a same-directory atomic replacement.
+Malformed JSON, schema failure, wrong kind, system, step, iteration, assignment,
+path escape, symbolic link, or render failure leaves an existing target
+byte-for-byte unchanged.
 
 ### 6. `verify`
 
@@ -289,8 +319,8 @@ field authorization, and cross-document invariants.
 
 After validation, replacement uses a temporary file in the target file's own
 directory and a same-filesystem rename. Parse, schema, authorization,
-containment, and reserved-renderer failures leave the prior target bytes
-unchanged. A cap-scaffold failure restores the prior manifest bytes.
+containment, and rendering failures leave the prior target bytes unchanged. A
+cap-scaffold failure restores the prior manifest bytes.
 
 ## Containment and lifecycle
 
