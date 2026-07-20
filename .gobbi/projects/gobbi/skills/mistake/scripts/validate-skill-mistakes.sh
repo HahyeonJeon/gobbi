@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check-skill-mistakes.sh — conformance gate for skill-surface `mistakes.md` files.
+# validate-skill-mistakes.sh — conformance gate for skill-surface `mistakes.md` files.
 #
 # Purpose:
 #   A skill-owned trap lives as one `## ` section inside skills/{skill}/mistakes.md
@@ -21,13 +21,13 @@
 #     - the `## Archived` heading is recognized; every `## ` section AT OR BELOW it is
 #       NON-active and EXEMPT from the 4-element + strip checks (it keeps its anchor in
 #       the uniqueness check, and its refs are still resolved).
-#   REF-RESOLUTION (the class check-markdown-links.sh CANNOT see — it scans only
+#   REF-RESOLUTION (the class scripts/check-markdown-links.sh CANNOT see — it scans only
 #   `](path)` / `[label]: path`)
 #     - every body `[[slug]]` wikilink resolves: the slug names an existing memory-tree
 #       record (a `{slug}.md` file, with or without a `YYYY-MM-DD-` date prefix) OR a
 #       `## ` section anchor in some skill `mistakes.md` (incl. the file being checked).
 #       A trailing `#anchor` on a `[[slug#anchor]]` is stripped — only the slug is
-#       resolved (anchor validity is out of scope, matching check-markdown-links.sh).
+#       resolved (anchor validity is out of scope, matching scripts/check-markdown-links.sh).
 #     - every backtick BARE-PATH (a `` `path/...` `` token that contains `/` and ends in
 #       a file extension or `/`, with no `{}<>* ` placeholder/glob/space) resolves on
 #       disk against the linking file's dir, the project dir, or the repo root.
@@ -53,18 +53,18 @@
 
 set -uo pipefail
 
-SELF="check-skill-mistakes.sh"
+SELF="validate-skill-mistakes.sh"
 
 log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 
 usage() {
     cat <<'EOF'
 usage:
-  check-skill-mistakes.sh --all
+  validate-skill-mistakes.sh --all
       Check every skills/{skill}/mistakes.md (one level under skills/).
-  check-skill-mistakes.sh <file> [<file> ...]
+  validate-skill-mistakes.sh <file> [<file> ...]
       Check each given skill-surface mistakes.md.
-  check-skill-mistakes.sh --help | -h
+  validate-skill-mistakes.sh --help | -h
       Print this usage.
 
 Verifies skill-surface mistakes.md conformance: each active `## ` section has the
@@ -72,7 +72,7 @@ Verifies skill-surface mistakes.md conformance: each active `## ` section has th
 **Correct approach**) + a well-formed `priority:`/`domain:`/`added:`/`status:`/`tags:`
 metadata strip; section anchors are unique; `## Archived` sections are exempt from
 the active checks; and every body `[[slug]]` wikilink AND backtick bare-path resolves
-(the reference class check-markdown-links.sh does not see).
+(the reference class scripts/check-markdown-links.sh does not see).
 
 Exit 0 = all conform, 1 = violation(s), 2 = bad args.
 EOF
@@ -81,7 +81,7 @@ EOF
 # ---------------------------------------------------------------------------
 # Resolve the canonical project root from this script's own location, so the
 # slug universe + path bases resolve correctly regardless of caller CWD. This
-# script lives at <proj>/skills/orchestration/scripts/<self>.
+# script lives at <proj>/skills/mistake/scripts/<self>.
 # ---------------------------------------------------------------------------
 SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJ_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"          # <proj> = .gobbi/projects/gobbi

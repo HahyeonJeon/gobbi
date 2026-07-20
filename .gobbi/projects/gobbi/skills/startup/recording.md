@@ -394,9 +394,9 @@ deferred to step 6 — the indexes are not written until P7.)
 
 Run the standing memory guards over the post-promotion tree; ALL must exit 0:
 - `validate-frontmatter.sh` — memory frontmatter + per-type allowed fields.
-- `check-markdown-links.sh` — relative-link resolution.
+- `scripts/check-markdown-links.sh` — relative-link resolution.
 - `check-residual-vocab.sh` — retired vocabulary.
-- `check-skill-mistakes.sh` — skill-owned mistake sections.
+- `skills/mistake/scripts/validate-skill-mistakes.sh` — skill-owned mistake sections.
 
 A clean frontmatter check alone is not sufficient. These standing guards judge **form** (frontmatter /
 links / vocab / skill-mistake sections). After they pass, the **P6.5 dual-system evaluation gate** judges
@@ -458,7 +458,7 @@ promoted set can never present as a complete baseline.
    (root README, feature READMEs) in place — after the typed docs they point to exist, so every index
    pointer resolves to an existing typed record.
 2. **Verify** each index destination exists with the expected content and every living-index pointer
-   resolves to an existing typed record; re-run `check-markdown-links.sh` over the indices (they add the
+   resolves to an existing typed record; re-run `scripts/check-markdown-links.sh` over the indices (they add the
    pointers the P6 guard pass could not yet check).
 3. **Stamp the summary** — set `baseline_valid: true` and finalize `promoted_paths` (now including the
    written indices) in `outputs/startup-summary.md` (§13 lifecycle). A P7 write or verify failure routes to

@@ -237,7 +237,7 @@ Wire a role in this order, each step with its verify command. From the worktree 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
 ```bash
-bash .gobbi/projects/gobbi/skills/orchestration/scripts/check-markdown-links.sh \
+bash scripts/check-markdown-links.sh \
   .gobbi/projects/gobbi/agents/{role}.md
 ```
 A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.

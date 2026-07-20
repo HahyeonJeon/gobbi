@@ -8,10 +8,10 @@ status: active
 created: 2026-06-27
 session: 659a1b3f-0b70-419a-848b-a02db5dbbded
 tags: []
-keywords: [mistakes, hybrid, two-home, skill-surface, check-skill-mistakes, layer2-removal, guards]
+keywords: [mistakes, hybrid, two-home, skill-surface, validate-skill-mistakes, layer2-removal, guards]
 author: claude
 value_proposition: A mistake is recorded once, homed where it loads in context, and protected by a conformance guard — so a correction is never copied, never diverges, and never loads context-blind.
-subsystems: [skills/mistake, skills/memory, skills/orchestration/scripts/check-skill-mistakes.sh, skills/wrap-up, skills/orchestration]
+subsystems: [skills/mistake, skills/memory, skills/mistake/scripts/validate-skill-mistakes.sh, skills/wrap-up, skills/orchestration]
 ---
 
 # Guardrails
@@ -24,7 +24,7 @@ Reusable delegation semantics remain in `skills/delegation/SKILL.md`; Gobbi-spec
 
 ## Status
 
-**Session `659a1b3f` (2026-06-27):** the hybrid two-home model shipped, replacing the old dual storage (project `mistakes/` + 9 Layer-2 copies bridged by `check-layer2-source.sh`). 14 commits, all standing guards green, dual-system Execution evaluation PASS. Shipped: the skill-surface `mistakes.md` template + the new `check-skill-mistakes.sh` conformance guard; skill-owned mistake homes for `codex`, `git`, `memory`, `skill-writing`, `wrap-up`, `planning`, `mistake`, `delegation`, `evaluation`, `preparation`; migration of the skill-owned subset; deletion of the 9 Layer-2 copies + `check-layer2-source.sh`; de-referencing `layer2-source` from `check-merge-ref-integrity.sh` + `check-residual-vocab.sh`; the Load-Directives companion-path wiring + mandatory git load; and the model-doc rewrites across `mistake/SKILL.md`, `wrap-up/SKILL.md`, `memory/rules.md`, `gobbi/SKILL.md`, the runtime `CLAUDE.md` / `AGENTS.md` mirrors, and the skill docs.
+**Session `659a1b3f` (2026-06-27):** the hybrid two-home model shipped, replacing the old dual storage (project `mistakes/` + 9 Layer-2 copies bridged by `check-layer2-source.sh`). 14 commits, all standing guards green, dual-system Execution evaluation PASS. Shipped: the skill-surface `mistakes.md` template + the now Mistake-owned `validate-skill-mistakes.sh` conformance guard; skill-owned mistake homes for `codex`, `git`, `memory`, `skill-writing`, `wrap-up`, `planning`, `mistake`, `delegation`, `evaluation`, `preparation`; migration of the skill-owned subset; deletion of the 9 Layer-2 copies + `check-layer2-source.sh`; de-referencing `layer2-source` from `check-merge-ref-integrity.sh` + `check-residual-vocab.sh`; the Load-Directives companion-path wiring + mandatory git load; and the model-doc rewrites across `mistake/SKILL.md`, `wrap-up/SKILL.md`, `memory/rules.md`, `gobbi/SKILL.md`, the runtime `CLAUDE.md` / `AGENTS.md` mirrors, and the skill docs.
 
 Deferred: per-lesson mistake → rule graduation; the `check-residual-vocab.sh` skill-memory allowlist hardening (backlog); the 20 pre-existing markdown-link breaks (backlog).
 
