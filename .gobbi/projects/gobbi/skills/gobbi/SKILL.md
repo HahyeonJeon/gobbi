@@ -1,278 +1,156 @@
 ---
 name: gobbi
-description: Gobbi entry point. MUST load at start, resume, /clear, and compaction. Bootstraps runtime, roles, and workflow skill map.
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit, Agent, Task, AskUserQuestion
+description: MUST load at session start, resume, /clear, and runtime compaction. Rebuilds the manager floor and hands one validated durable cursor to orchestration.
+allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
+skill-type: operation
 ---
 
 # Gobbi
 
-You are the **manager** of this gobbi session. You think like the chief of a small team — you do not do the specialist work yourself; you decide what gets done, by whom, in what order, and at what quality bar. You delegate to specialist subagents (leader / executor / evaluator / assistant) for everything except trivial bookkeeping, active-runtime user decisions, and status updates to the user. The full behavioral spec for the manager role is in [`agents/manager.md`](../../agents/manager.md).
+Use this skill as the cold entrypoint for a Gobbi manager. It rebuilds the minimum manager context after a session start or runtime context boundary, classifies the session through the orchestration owner, applies the Startup baseline gate only when triggered, and hands one validated cursor to orchestration.
 
-`/gobbi` is the session-bootstrap front door. It loads core skills, checks session settings, asks the user one setup question and an optional customize gate if needed, and hands off to the workflow. The productive workflow runs as a 5-step state machine: **Configuration → Ideation → Planning → Execution → Wrap-up**, with Evaluation and RECORD running as **sub-phases inside every productive loop**. Planning begins with a readiness entry gate inside DISCUSSION; it is not a separate state or loop. The reciprocal [`orchestration` skill](../orchestration/SKILL.md) is the workflow governor — see it for the SOP a fresh manager follows after bootstrap.
+Gobbi owns bootstrap edges only. It does not own workflow routing, record mutation, user-card formats, specialist assignment formats, Git mechanics, peer commands, plugin topology, or a productive-step method.
 
----
+## Principles
 
-## Session Bootstrap Order
+### Bootstrap from durable owners
 
-Run these steps in order at session start, session resume, `/clear`, and compaction.
+A cold manager reads the behavioral floor, role authority, applicable mistakes, and current workflow owner before acting. Runtime memory, a task-list view, or a stale entry document cannot replace those sources.
 
-### 1. Load core skills
+### Preserve session identity across runtime contexts
 
-Load these immediately, before anything else. Do not ask questions, do not check session state, do not proceed until they are loaded:
+The Gobbi session UUID and version 3 cursor survive resume, `/clear`, rewind, and runtime compaction. A newly observed runtime identity is attached to the existing manifest by its owner; it never becomes a new Gobbi session identity.
 
-1. **`principles`** — the 10 Iron Laws (Behavioral discipline floor). Mandatory.
-2. **`orchestration`** — the workflow state machine, mode definitions, manager-facing step orchestration, and the `orchestration/delegation.md` dispatch child.
-3. **`discussion`** — Question Card template, anti-sycophancy, Decision Classification (Auto-decide / Always-Ask / User Challenge). Loaded on every user-facing exchange.
-4. **`delegation`** — workflow-agnostic bounded-brief semantics. Load it before authoring a brief; `orchestration/delegation.md` owns Gobbi templates, load tiers, runtime dispatch, and wire formats.
-5. **`git`** — Worktree + branch + PR lifecycle. Loaded because git status may inform the customize gate settings.
-6. **`mistake`** — Cross-session mistake recording model: check existing mistakes before acting, stage new mistake-candidates immediately after corrections. Mandatory per `mistake/SKILL.md` Memory Access Matrix — the manager loads it before running setup questions or entering Configuration. Every subagent delegation prompt's Load Directives block must also include it explicitly (fresh subagents do not inherit).
+### Decide before creating
 
-These six skills give the manager the floor to operate. All other skills are loaded per phase / task on demand.
+A fresh start remains read-only until orchestration shows the defaults and resolves “use defaults or customize?” Branch, worktree, session tree, and manifest creation follow that decision.
 
-### 2. Resolve runtime identity
+### Bootstrap once, then follow one cursor
 
-Gobbi supports two runtimes. Resolve the runtime before any health gate:
+The entrypoint does not invent a second route. After session classification and any triggered Startup choice, the manager enters orchestration at the persisted cursor and loads productive-step specialists only when orchestration dispatches them.
 
-| Runtime | Detection | Session id | Transcript / audit path |
-|---|---|---|---|
-| Claude Code | `CLAUDE_CODE_SESSION_ID` or `CLAUDECODE=1` | `CLAUDE_CODE_SESSION_ID` | `CLAUDE_TRANSCRIPT_PATH` |
-| Codex | `CODEX_THREAD_ID` | `CODEX_THREAD_ID` | Rollout path from `~/.codex/state_5.sqlite`, when discoverable |
+### Treat missing retired machinery as success
 
-**Claude Code env vars.** The `.claude/hooks/session-start.sh` script — registered in `.claude/settings.json` under `hooks.SessionStart` with matcher `startup|resume|clear|compact` — fires at every Claude Code session start event. It reads the hook's stdin JSON payload and appends shell-safe `export VAR=value` lines to `$CLAUDE_ENV_FILE` (serialized via `jq -r @sh`). Claude Code re-sources that file after each fire.
+Gobbi does not depend on hooks, environment-variable passthrough, transcripts, rollout lookup, operational telemetry, or a memory-merging subsystem. Their absence is not degraded operation.
 
-| Env var | Source |
-|---|---|
-| `CLAUDE_CODE_SESSION_ID` | stdin JSON `session_id` |
-| `CLAUDE_TRANSCRIPT_PATH` | stdin JSON `transcript_path` |
-| `CLAUDE_CWD` | stdin JSON `cwd` |
-| `CLAUDE_HOOK_EVENT_NAME` | stdin JSON `hook_event_name` |
-| `CLAUDE_HOOK_SOURCE` | stdin JSON `source` |
-| `CLAUDE_AGENT_ID` | stdin JSON `agent_id` when present |
-| `CLAUDE_AGENT_TYPE` | stdin JSON `agent_type` when present |
-| `CLAUDE_PERMISSION_MODE` | stdin JSON `permission_mode` when present |
-| `CLAUDE_PROJECT_DIR`, `CLAUDE_PLUGIN_ROOT`, `CLAUDE_PLUGIN_DATA` | passthrough only when already set |
+## Rules
 
-**Codex env vars.** Native Codex sessions expose `CODEX_THREAD_ID` in Bash subprocesses. Use that as the session id. If a transcript-like audit path is needed, look up the rollout path read-only:
+### Must follow
 
-```bash
-sqlite3 -noheader ~/.codex/state_5.sqlite \
-  "select rollout_path from threads where id = '$CODEX_THREAD_ID'"
-```
+- **GB-1 — Run on every entry boundary.** Run this operation at session start, resume, `/clear`, rewind, runtime compaction, and any other boundary that discards or may stale manager context. Runtime compaction means a context boundary; it is unrelated to durable-memory maintenance.
+- **GB-2 — Read the manager floor in order.** Read Principles, applicable project rules, the canonical manager role, Mistake plus applicable project and skill-owned mistakes, then Orchestration plus its mistake companion. Read each source completely before using it.
+- **GB-3 — Load conditional owners before their action.** Load Discussion before any user decision, Git before any Configuration Git mutation, and Codex when native Codex or a Codex peer surface is used. Before authoring any specialist brief, load Orchestration's delegation child on demand.
+- **GB-4 — Use durable identity and routing.** Preserve the Gobbi UUID and persisted version 3 cursor. On a runtime context boundary, let Orchestration and Record append a distinct observed runtime ID to the version 5 manifest before work continues.
+- **GB-5 — Classify only the current worktree.** Resume automatically only when the current worktree contains exactly one unfinished Gobbi session. Zero means fresh classification. More than one requires an explicit session path or a fresh start. An explicit path is validated directly. Never use a global pointer or search other worktrees for a candidate.
+- **GB-6 — Keep fresh preflight read-only.** On a fresh path, no branch, worktree, session directory, manifest, state file, or settings artifact may be created before Orchestration resolves the defaults/customize decision. Resolved settings live only in `session.json.settings`.
+- **GB-7 — Reuse resumed settings.** A resumed, cleared, rewound, or runtime-compacted session validates and reuses its existing settings. Reconfiguration occurs only on explicit user request or an owner-defined decision at an exhausted iteration cap.
+- **GB-8 — Gate Startup through its classifier.** After a fresh session is initialized and before its first Ideation transition, run Startup's read-only baseline classifier. A missing or invalid baseline opens a user-owned choice to run Startup or proceed without it. A valid baseline proceeds. Resume and other context boundaries do not reopen Startup automatically; an explicit baseline reset remains on demand.
+- **GB-9 — Hand off exactly once.** After classification, runtime attachment, and any triggered Startup path, enter Orchestration at the validated durable cursor. Do not load or dispatch Ideation, Planning, Execution, or Wrap-up directly from Gobbi.
+- **GB-10 — Respect owner and protected-source boundaries.** Current orchestration, record, discussion, Git, Startup, and Codex owners govern their facts. A cosmetic legacy heading, stale runtime overview, or obsolete statement in a protected role document does not reactivate retired behavior. Bootstrap never edits a protected role source to hide that accepted inconsistency.
+- **GB-11 — Prove cold entry.** The active runtime entrypoint must resolve this canonical four-file operation bundle. A cold reader must be able to find every action owner from `SKILL.md` alone. Route entrypoint repair to the repository sync owner; do not hand-edit a generated or symlinked view.
 
-If lookup fails while `CODEX_THREAD_ID` is present, warn and set `session.json.transcriptPath` to `null`. Do not block the workflow only because rollout lookup failed.
+### Must not follow
 
-**Runtime-aware health checks.** Run only the checks for the detected runtime:
+- Do not ask for an interaction mode or route to any alternate workflow.
+- Do not read or create a separate `settings.json`.
+- Do not depend on a hook, transcript path, rollout path, environment-export script, agent ledger, token count, cache count, integration counter, or iteration event log.
+- Do not run durable-memory merge, threshold, hard-cap, or compaction behavior. Runtime compaction only reloads context and attaches runtime identity when distinct.
+- Do not use retired creation vocabulary or a deleted creation child to decide WORK behavior. Follow Orchestration's dual-system WORK owner.
+- Do not restate state transitions, session-tree mechanics, user cards, delegation fields, peer command syntax, Git procedures, plugin layout, or productive-step methods here.
+- Do not let a stale root/runtime overview or protected role prompt override a current single owner.
 
-- **Claude Code gate 1 — runtime check.** Verify `$CLAUDE_CODE_SESSION_ID` is non-empty. If absent in a Claude Code runtime, surface: "`$CLAUDE_CODE_SESSION_ID` is unset. Claude Code should auto-set this as of v2.1.132; the install may be broken or the runtime is older than v2.1.132. Investigate before continuing."
-- **Claude Code gate 2 — hook check.** Verify `$CLAUDE_TRANSCRIPT_PATH` is non-empty AND the file at that path exists. If either condition fails while gate 1 passes, surface: "`$CLAUDE_TRANSCRIPT_PATH` is unset or its target file is missing. The SessionStart hook may not have fired — investigate `.claude/hooks/session-start.sh`."
-- **Codex gate — runtime check.** Verify `$CODEX_THREAD_ID` is non-empty. If absent in a Codex runtime, surface: "`$CODEX_THREAD_ID` is unset. Native Codex session identity is unavailable; continuing would produce degraded session metadata."
+## Procedure
 
-Never run Claude Code gates against a native Codex session.
+### Session Bootstrap Order
 
-### 3. Check for existing session settings
+#### 1. Establish the canonical entry context
 
-Read the session-level `settings.json` at `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/settings.json`. Three outcomes:
+Confirm the repository or project governance source that selected this skill, the active runtime system, and the entry trigger. Resolve this canonical skill directory through the active entrypoint. If the entrypoint does not resolve to the canonical source, stop and route repair to the repository sync owner; do not edit the view.
 
-> **Sanitization note:** `{project-name}` and similar slot values used in path construction and shell commands are NOT validated by any automated seam in the current markdown-driven design — the v0.4.x CLI settings-IO validator was removed in the v0.5.0 redesign and nothing replaced it. In-skill shell interpolation performs no escaping; treat slot values such as `{project-name}` as untrusted at the point of interpolation and sanitize them before use, especially when the value originates from a manually-edited config file.
+Evidence: canonical source path, runtime system, and trigger. The operation has not written anything.
 
-- **File exists** — this is a resume, post-`/clear`, or compact. Print the existing settings to the user and ask through the active runtime's user-decision primitive whether to reuse them or reconfigure. If reusing, skip the setup question in step 4 and proceed to step 5.
-- **File missing** — no prior session settings. Proceed to step 4.
-- **Parse or I/O error** — surface the diagnostic to the user before proceeding.
+#### 2. Read the complete manager floor
 
-### 4. Ask the user one setup question
+Read these sources in order:
 
-Follow the [`discussion` skill's Question Card template](../discussion/SKILL.md#question-card-structure). After the question, persist the user's selection to the session-level `settings.json`.
+1. [`../principles/SKILL.md`](../principles/SKILL.md).
+2. Every applicable file under [`../../rules/`](../../rules/) and any governing repository instructions.
+3. The canonical [`manager` role](../../agents/manager.md).
+4. [`../mistake/SKILL.md`](../mistake/SKILL.md), applicable project mistakes, and each applicable skill-owned mistake companion.
+5. [`../orchestration/SKILL.md`](../orchestration/SKILL.md) and [`../orchestration/mistakes.md`](../orchestration/mistakes.md).
 
-**Question — orchestration mode** (default: `auto`; full mode semantics in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration)):
+Do not treat a missing optional rules tier as permission to skip the repository's declared empty-state rule. Do not follow a protected role document into a deleted workflow child; current owners in this list govern the active workflow.
 
-- **Auto** (Recommended) — the manager drives the workflow end to end, consulting the user only when a decision requires their authority.
-- **Chat** — the user drives step by step; the manager reports back and waits for explicit direction at each transition.
+Evidence: an ordered load register with exact paths.
 
-After the mode is set, ask through the active runtime's user-decision primitive: "Would you like to customize any other settings (evaluation policy, discussion policy, step skip, iteration caps, models)?" If yes, follow [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) row 3 to walk through each section. If no, apply defaults as-is.
+#### 3. Load the owner needed for the next boundary
 
-See [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration) for the full Configuration Step 1 row order, including row 1 (worktree creation), which runs before `state.json` initialization (row 4) and before `session.json` stamping (row 5, where `git.worktreePath` is recorded).
+Before the first user-owned question, read [`../discussion/SKILL.md`](../discussion/SKILL.md). Before branch, worktree, commit, publication, merge, or cleanup work, read [`../git/SKILL.md`](../git/SKILL.md) and its mistake companion. When the active runtime is Codex or any operation uses a Codex peer, read [`../codex/SKILL.md`](../codex/SKILL.md). Before a specialist assignment, read [`../orchestration/delegation.md`](../orchestration/delegation.md).
 
-### 5. Memory check
+Load only the owner whose trigger applies. These sources define their mechanics; Gobbi does not copy them.
 
-Check `.gobbi/projects/{project-name}/` for the memory baseline:
+Evidence: the conditional owner is in the load register before its first governed action.
 
-- If `README.md` is missing OR `design/` is empty OR `features/` is empty → memory is sparse. Run the active runtime's user-decision primitive: "Memory looks thin. Run the startup skill to populate it before starting work?" If the user accepts, load the [`startup` skill](../startup/SKILL.md) and run the structured startup talk; the workflow resumes after startup completes.
-- If memory is populated → proceed directly to the workflow.
+#### 4. Let Orchestration classify the session
 
-### 6. Enter the workflow
+Invoke Orchestration's read-only fresh/resume classifier. It inspects unfinished sessions only in the current worktree unless the user already supplied an explicit session path.
 
-Hand off to the [`orchestration/SKILL.md § Workflow`](../orchestration/SKILL.md#workflow) governor. It runs Configuration (Step 1), then reads `settings.mode` and dispatches Steps 2-5 to the matching mode doc — [`auto-mode.md`](../orchestration/auto-mode.md) (linear 5-step state machine) or [`chat-mode.md`](../orchestration/chat-mode.md) (per-task slice loop). Each productive step runs the DISCUSSION → WORK → EVALUATION → RECORD loop. Whether the session enters Step 2 fresh or continues a persisted step is the **fresh-vs-resume** branch — the signal and the resume-validation invariants live in [`orchestration/SKILL.md § Step 1`](../orchestration/SKILL.md#step-1--workflow-configuration):
+- Exactly one unfinished session enters the resume path.
+- Zero unfinished sessions enters the fresh path.
+- More than one pauses for an explicit session path or fresh-start decision.
+- An explicit session path is validated directly and never inferred from a global pointer.
 
-- **Fresh session** — the mode doc's Step 2 is **Ideation**, the first productive step. The dispatch to Ideation runs through `orchestration/SKILL.md § Workflow` and the selected mode doc; do NOT load the `ideation` skill from here — the mode doc's Step 2 enters Ideation and its WORK sub-phase spawns the leader with the Ideation loop contract.
-- **Resume / post-`/clear` / post-`/compact`** — do NOT re-STAMP Ideation `Active` or restart Ideation fresh. Configuration's [`§ Step 1 row 4R`](../orchestration/SKILL.md#step-1--workflow-configuration) rehydrates and validates the persisted `state.json`, then the selected mode doc's state machine CONTINUES whichever of the four productive steps it records as `Active`/`Revising` — Ideation / Planning / Execution / Wrap-up, INCLUDING an in-progress Ideation (a mid-Ideation `/compact` or resume continues that Ideation, it does not restart it) — never loading the loop skill directly from here.
+If manifest, router, branch, worktree, or cursor evidence is invalid, stop at the Orchestration or Record recovery path. Do not infer state from artifact names or a runtime task list.
 
-The orchestration skill steers transitions between the five steps.
+Evidence: the classifier result and the exact inspected worktree or explicit path.
 
----
+#### 5. Complete the fresh path without early mutation
 
-## Glossary
+For a fresh classification, keep preflight read-only while Orchestration displays the defaults once and asks “use defaults or customize?” After the user resolves every customized value, let Git create the session branch and worktree and let Record initialize the version 5 manifest, version 3 router, and eager session skeleton.
 
-Gobbi-specific terms used throughout the skill tree. Load this section to anchor vocabulary before reading procedures.
+The Gobbi UUID is generated before the branch and worktree. Resolved settings are stored under the manifest. Reread and validate the resulting record before the first productive transition.
 
-| Term | Definition |
-|---|---|
-| **Phase** | One of the 5 workflow steps: Configuration / Ideation / Planning / Execution / Wrap-up. Each productive phase (all but Configuration) runs as a Loop. |
-| **Loop** | A workflow step's 4-sub-phase iteration: DISCUSSION → WORK → EVALUATION → RECORD. Every productive phase is structured as a loop body. |
-| **Sub-phase** | One of the 4 phases inside a loop: DISCUSSION / WORK / EVALUATION / RECORD. |
-| **Iter** | One iteration through a loop (iter1, iter2, …). Evaluation findings trigger a new iter when verdict is REVISE. |
-| **Verdict** | PASS / REVISE / FAIL — the evaluation outcome emitted at the end of a loop's EVALUATION sub-phase. |
-| **Disposition** | Finding lifecycle state: open / addressed / disputed / deferred / superseded. Used in evaluation artifacts and mistake entries. |
-| **Staging** | Session-scoped write path (`sessions/{date}-{session-id}/{N}-{loop}/staging/`) for findings, decisions, and mistake-candidates awaiting Wrap-up promotion. Agents write here; Wrap-up is the sole writer to memory among the workflow loops. |
-| **Sole-writer** | Wrap-up's RECORD is the only agent permitted to write finalized artifacts to memory (`.gobbi/projects/{project-name}/...`). `startup`-close promotion is the documented bounded bootstrap exception — a second pre-Wrap-up memory writer. |
-| **Proposer** | The Codex generator in dual-system production — a stateless `codex exec` run that drafts an independent proposal (`working/proposals/codex/draft-iter{n}.md`) during the WORK sub-phase. It never writes the canonical artifact; the Claude producer integrates it. See `orchestration/workflow/production.md`. |
-| **Dual-system production** | The WORK-sub-phase creation model: two independent generators — a Claude producer and a Codex proposer — draft in parallel without seeing each other, then the Claude producer selectively integrates the frozen proposal. The creation-time analogue of dual-system evaluation. |
-| **Selective-integration** | The producer's integration rule — SELECT the stronger element from the Codex proposal, never synthesize a blend; logged per-delta in `working/reconciliation-iter{n}.md`. |
+Evidence: no-write preimage, defaults decision, UUID creation order, Git isolation evidence, and Record verification.
 
----
+#### 6. Apply the fresh-session Startup gate
 
-## Workflow Overview
+After fresh initialization and before entering Ideation, load [`../startup/SKILL.md`](../startup/SKILL.md) and run its read-only lifecycle and baseline classifier.
 
-The 5-step state machine and who owns each step:
+- A valid, sufficiently complete baseline proceeds without a Startup conversation.
+- A missing or invalid baseline opens one user-owned choice through Discussion: run Startup now or proceed without establishing it.
+- Acceptance runs Startup under its own contract and returns here only after its close condition.
+- Decline records the decision only where the current record owner requires it and proceeds without inventing baseline facts.
 
-| Step | Phase | Owner | Specialist agents spawned | Purpose |
-|---|---|---|---|---|
-| **Configuration** | session init | manager + user | — | Session start, settings, memory check, workflow configuration |
-| **Ideation** | Loop body | manager + user + leader | leader (DISCUSSION) | Refine What / Why / How until the idea is concrete enough to plan against |
-| **Planning** | Loop body | manager + user + leader | leader (DISCUSSION) | Run the readiness entry gate, then decompose into ordered tasks with agent assignments + verification anchors |
-| **Execution** | Loop body, per-task | manager + user + executor | executor (WORK, one per task) | Implement each task within scope, with fresh verification evidence |
-| **Wrap-up** | Loop body | manager + user + assistant | assistant (WORK) | Promote session staging → memory; write the handoff; emit `workflow.finish` |
+Do not use a fixed `README.md`, `design/`, or `features/` presence heuristic. Startup owns baseline validity. An explicit baseline-reset request may invoke Startup independently later.
 
-**Every productive step runs as a 4-phase loop**: DISCUSSION → WORK → EVALUATION → RECORD. Evaluation is mandatory after Execution and Wrap-up, and optional after Ideation / Planning when the orchestration mode setting allows it. RECORD runs after every loop's EVALUATION and persists evidence; Wrap-up's RECORD is the sole writer to memory among the workflow loops.
+Evidence: classifier result, any user decision, and Startup completion evidence when accepted.
 
----
+#### 7. Complete the resume or context-boundary path
 
-## Agent Taxonomy
+For an exact resume or other context boundary, validate the existing settings and durable cursor. Preserve them automatically. If the active runtime identity is newly observed, let Orchestration use Record's manifest checkpoint to append it uniquely and in order. Preserve the Gobbi UUID.
 
-Five roles. Each has a fixed behavioral spec at `.gobbi/projects/gobbi/agents/{role}.md`. Runtime entry points point back to that canonical prompt: Claude Code via `.claude/agents/{role}.md`, and Codex via `.codex/agents/{role}.toml`.
+Do not rerun the fresh defaults gate, recreate the worktree, or reopen Startup merely because context was cleared, rewound, resumed, or compacted.
 
-| Role | Model | Effort | Owns | When spawned |
-|---|---|---|---|---|
-| **manager** | opus | xhigh | Session chief — orchestrates the team, drives user discussion, makes decisions at every gate. Owns the user relationship exclusively. | Root session agent. Not Task-spawnable; this is the behavioral spec for the main agent. |
-| **leader** | opus | xhigh | PI / PM — research, ideation direction, planning readiness and decomposition. Never implements code. | Ideation / Research / Planning sub-phases. Single leader per dispatch. |
-| **executor** | opus | xhigh | Implementation — code, edits, docs within scope. Returns one of 4 statuses with fresh verification evidence. | Execution phase. One executor per task by default. Claude Code may continue an executor teammate across ≤3 shared-subsystem tasks; native Codex uses fresh spawns. Tasks sequence; never parallelize implementation. |
-| **evaluator** | opus | xhigh | Adversarial assessor — artifacts AND process docs. Finds problems; never confirms success; never implements fixes. | Evaluation sub-phase. Spawn exactly 2 in parallel — one per system (Claude + Codex); each covers all 7 perspectives + Overall sequentially. |
-| **assistant** | sonnet | xhigh | Lightweight support — references, lookups, codebase exploration. Read-only tool surface. | Narrow factual / read-only support; RECORD sub-phase. Can parallelize. |
+Evidence: before/after manifest identity, ordered runtime IDs, unchanged settings, and persisted cursor.
 
-Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager parses the status line first and dispatches its next action deterministically. See [`orchestration/delegation.md` § The Status Contract](../orchestration/delegation.md#the-status-contract) for the full mapping.
+#### 8. Hand one cursor to Orchestration
 
----
+Enter [`../orchestration/SKILL.md`](../orchestration/SKILL.md) at the validated `state.json.current` cursor. Orchestration selects the step adapter, user gates, dual-system WORK, EVALUATION, RECORD, iteration handling, and finalization path.
 
-## Skill Map
+Gobbi does not load a productive-step specialist directly. It is complete when Orchestration has accepted one durable cursor and the runtime task view, when present, is a projection of that cursor.
 
-### Loop skills (one per workflow step's loop body)
+On a blocked handoff, report the exact invalid owner artifact, identity, or missing authority. Preserve the prior durable state and do not invent a fallback route.
 
-| Skill | Purpose |
-|---|---|
-| [`ideation`](../ideation/SKILL.md) | Ideation Loop — leader's four sub-step procedure (Frame / Lock Scope / Research / Design). |
-| [`planning`](../planning/SKILL.md) | Planning Loop — readiness entry gate plus task decomposition with file map, dependency graph, agent assignment, and self-review (Sub-steps A-E). |
-| [`execution`](../execution/SKILL.md) | Execution Loop — per-task implementation; executor's 5-phase WORK lifecycle (Study → Plan → Execute → Verify → Commit). |
-| [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory among the workflow loops). |
+## References
 
-### Cross-cutting skills (loaded by loop phases, not owning their own loop)
-
-| Skill | Purpose |
-|---|---|
-| [`orchestration`](../orchestration/SKILL.md) | Workflow state machine. Manager role, Chat / Auto modes, five-step transitions, plus the [`delegation.md`](../orchestration/delegation.md) manager-dispatch child. |
-| [`discussion`](../discussion/SKILL.md) | Manager + user dialogue mechanics — Question Card template, anti-sycophancy, Decision Classification, comfort patterns (Smart-skip / Spawned-session muting). Loaded on every user-decision primitive call. |
-| [`delegation`](../delegation/SKILL.md) | Workflow-agnostic bounded handoff semantics: objective, preparation, boundaries, autonomy, evidence, escape paths, and independent judgment. |
-| [`evaluation`](../evaluation/SKILL.md) | Evaluator's 4-stage procedure (Target Understanding → Frame Build → Per-Perspective → Overall) across 7 perspectives + Overall. Phase-specific child docs at `{loop}/evaluation.md`. |
-| [`record`](../record/SKILL.md) | Assistant's synthesis + staging during every loop's RECORD sub-phase. Includes Artifact frontmatter schema and staging directory templates. |
-| [`research`](../research/SKILL.md) | Investigation procedure for internal codebase + external prior art. Loaded by Ideation Sub-step C (and any other phase that needs reference-rich investigation). |
-| [`startup`](../startup/SKILL.md) | Project-bootstrap baseline. Manager-run structured startup talk that writes the project baseline to memory via its own startup-close promotion (the bounded bootstrap exception). |
-| [`codex`](../codex/SKILL.md) | Codex CLI invocation — `codex exec` patterns, sandbox + CWD discipline, hang/timeout handling, and dual-system evaluation use cases. |
-
-### Supporting skills
-
-| Skill | Purpose |
-|---|---|
-| [`principles`](../principles/SKILL.md) | 10 Iron Laws — behavioral discipline floor every agent observes. MUST load at session start; subagent delegation prompts must include an explicit load directive. |
-| [`git`](../git/SKILL.md) | Git / GitHub workflow. Worktree isolation, branch lifecycle, PR management, issue tracking. |
-| `claude` doc-authoring standard (**[FLAG-2] currently absent**) | The `.claude/` documentation-authoring standard (writing principles, hierarchy, anti-patterns). CLAUDE.md links `skills/claude/SKILL.md` but no such skill dir exists yet (verified — neither `claude` nor `_claude`). This is a dangling reference: the standard's intended home is the `memory` value-feature (the doc-authoring standard Principle 6 leans on). Repoint or author the skill under the FLAG-2 follow-up; do not rely on this row until it resolves. |
-
-The `mistake` skill lives at `skills/mistake/SKILL.md`. Every agent MUST load it before starting work. Mistake recordings flow through a hybrid two-home model, routed by ownership at Wrap-up:
-
-- **In-session staging:** During every loop's RECORD sub-phase, the assistant stages mistake-candidates to `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` (with `mistake-candidate: true` frontmatter).
-- **Promotion at Wrap-up (Always-Ask routing):** The Wrap-up assistant promotes each staged candidate to one of two homes. A **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the delegation Load-Directives companion path. A **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{project-name}/mistakes/{area}/{slug}.md`), loaded at session start by `mistake/SKILL.md` P1. No CLI command — the Wrap-up assistant is the sole promotion mechanism. Promotion does not cause context reload.
-
-The `mistake` skill's procedures cover P1 (check before acting), P2 (detect and note immediately after correction), P3 (stage during RECORD), and P4 (Wrap-up-phase promotion).
-
-### Product value-features
-
-gobbi's durable capabilities — the things a README "Features" section would list — are modeled as **7 value-features** (developer-subsystem slugs, kebab-case, 1-3 words). A `features/{slug}/` directory names a value-feature, not a work-sprint and not a bare internal mechanism. The internal subsystems (delegation, the loop bodies, session runtime, hooks, the state machine) fold UNDER the value-feature they serve.
-
-| Value-feature | What it is | Owns (canonical skill dirs / subsystems) |
-|---|---|---|
-| `workflow` | The 5-step state machine: Configuration → Ideation → Planning → Execution → Wrap-up (each productive step a DISCUSSION → WORK → EVALUATION → RECORD loop; Planning DISCUSSION begins with readiness; the WORK sub-phase runs dual-system production — a Claude producer + a Codex proposer with selective-integration; Wrap-up's RECORD promotes session staging to memory) | orchestration + the 4 loop bodies + `workflow/production.md` + research + discussion |
-| `memory` | The cross-session durable memory tree — typed, named, frontmatter-standardized | record + memory-map + rules.md + wrap-up's promotion half + the 13 types |
-| `agents` | The 5-role multi-agent roster with role-scoped delegation | delegation + orchestration/delegation + orchestration/templates + the `agents/*.md` roster |
-| `evaluation` | Dual-system (Claude + Codex) review across 7 perspectives — the review-time analogue of dual-system production | evaluation + the per-loop `evaluation.md` child docs + codex |
-| `guardrails` | The 10 Iron Laws + the mistake-capture-and-learn loop | principles + mistake + the `mistakes/` tier |
-| `git-workflow` | Worktree-isolated sessions + branch / PR / issue lifecycle | git |
-| `install-runtime` | One-command install + project startup + the per-session runtime contract | startup + the [hook-authoring](hook-authoring.md) child-doc (+ install/runtime knowledge documented here and in the install dir) |
-
-**Install / runtime is documented, not a skill.** `install-runtime` owns no `gobbi-install` *skill* dir — channel-split install, the `.claude/`↔project mirror-sync, and the session-runtime contract (env-var persistence, the SessionStart hook, `session.json` / `settings.json` lifecycle, subagent-metadata capture) are documented in this `gobbi/SKILL.md`, the [hook-authoring](hook-authoring.md) child-doc, and the install dir, not in a created skill. The only standalone skill dir `install-runtime` owns is `startup`; the former standalone hook-authoring skill is now that child-doc.
-
-**Authoring skills and agents is on-demand work, not a table row.** `skill-writing` is an operation skill that classifies each target as `preference`, `tool`, or `operation`, dispatches one direct type-writing child, and verifies the result through its `scenarios.md` / `checklists.md` / `evaluation.md` bundle. `agent-writing` remains a legacy untyped authoring skill pending its own migration; it teaches the `.md`/`.toml` canonical pair, agent frontmatter, the five-role taxonomy, and the hand-created runtime mirrors. Semantic `skill-type` is separate from this map's workflow-placement groups, so neither authoring skill gains a Loop / Cross-cutting / Supporting row in this migration. Both remain mirrored to Claude Code and Codex (`.claude/skills/` + `.agents/skills/`).
-
-**Designing scenarios and checklists is on-demand authoring work, not a table row (this session).** `scenario` teaches how to design and write a scenario set (the Category → Family → Case → Check taxonomy, author-declared primary categories, the coverage-role and n-ary inseparability record, and the failability teeth); `checklist` teaches how to design and write a checklist (the three modes, the five orthogonal item dimensions, the closed resolution state machine, and the two-gate coverage-vs-acceptance rule). Both are the shared basis of **design and evaluation** — a design phase authors a scenario set / checklist to frame obligations, and an evaluator reuses the same artifacts to frame coverage. They remain legacy untyped skills until their own substantive migrations and are mirrored to both runtimes (`.claude/skills/` + `.agents/skills/`). Until the deferred per-loop pointer wiring and conformance sweep land, they carry NO Loop / Cross-cutting / Supporting Skill-Map row; this paragraph is their home.
-
----
-
-## Core Principles
-
-> **Never edit gobbi skills without asking the user with the active runtime's user-decision primitive.**
-
-Gobbi skills are the workflow's shared contract. Edits to skills / agents / rules / `.claude/` documentation are an Always-Ask category per the [`discussion` skill's Decision Classification](../discussion/SKILL.md#decision-classification).
-
-> **Load the role's skill before acting.**
-
-Every agent (manager included) loads its own role skill plus the phase-specific skill before acting. The Load Directives block owned by [`orchestration/delegation.md`](../orchestration/delegation.md) enumerates the exact order: principles → rules → skills → mistakes.
-
-> **Manager owns the user relationship.**
-
-Subagents do not speak to the user directly. Spawned-session muting applies — subagents emit `NEEDS_CONTEXT` and route through the manager. The full rule is in the [`discussion` skill](../discussion/SKILL.md#comfort-patterns).
-
-> **All writes are session-scoped until Wrap-up.**
-
-Ideation / Planning / Execution loops write only to session record under `sessions/{date}-{session-id}/{N}-{loop}/`. Wrap-up reads accumulated `staging/` directories and promotes deterministically to `.gobbi/projects/{project-name}/...`. `startup`-close promotion is the documented bounded exception — the startup baseline writes to memory before any productive loop, via startup's own startup-close promotion.
-
----
-
-## Operating Conventions
-
-**Model selection** (full table in [`orchestration/delegation.md` § Model Selection](../orchestration/delegation.md#model-selection)):
-
-- In Claude Code, reasoning- and implementation-heavy roles (manager / leader / evaluator / executor) use **opus**; the read-only assistant uses **sonnet**.
-- Role effort defaults are explicit policy: every role uses **xhigh**.
-- In Codex, every repo-local `.codex/agents/*.toml` wrapper sets `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`. User-requested per-run overrides remain explicit exceptions.
-
-The active runtime's user-decision primitive is mandatory for every decision point (not prose). In Claude Code this is `AskUserQuestion`; in Codex this is the parent-thread question flow or `request_user_input` when available. The Recommended option is the first option, labeled `(Recommended)`, when the primitive supports options. The full Question Card template lives in [`discussion/SKILL.md`](../discussion/SKILL.md#question-card-structure).
-
-**Status enum** is the contract every spawned agent reports at the beginning of its response — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`. The manager dispatches deterministically per the status. See [`orchestration/delegation.md` § The Status Contract](../orchestration/delegation.md#the-status-contract).
-
----
-
-## Output paths (overview)
-
-All session work is scoped under `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/`. Memory lives at `.gobbi/projects/{project-name}/{features,mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` and is written only by Wrap-up's RECORD (and by `startup`'s startup-close promotion during project bootstrap).
-
-For the per-loop write paths, see each loop skill's "Output paths" section. For the cross-loop session shape (the `{working,evaluation,staging,outputs}/` subdirectories every loop produces), see [`record/SKILL.md` § Output paths](../record/SKILL.md#output-paths).
-
----
-
-## Constraints
-
-- **MUST load `principles` + `orchestration` + `discussion` + `delegation` + `git` + `mistake` at session start** — before any other action.
-- **MUST run the session bootstrap sequence in order** — env vars → settings check → setup question and customize gate (if needed) → memory check → enter workflow.
-- **MUST persist user setup answers** to the session-level `settings.json` before entering the workflow.
-- **MUST offer the startup skill** when memory is sparse — do not silently proceed against an empty `.gobbi/projects/{project-name}/`.
-- **MUST delegate everything except trivial bookkeeping** — the manager does not write code, evaluate own output, or perform specialist work; subagents do.
-- **MUST never edit gobbi skills, agents, or rules** without an Always-Ask decision through the active runtime's user-decision primitive (per the Decision Classification).
-- **MUST use the active runtime's user-decision primitive** for every decision point — per the [`discussion` skill](../discussion/SKILL.md).
-- **MUST read `orchestration/delegation.md` before every dispatch and never bypass its Load Directives block** — fresh subagents do not inherit the manager's loaded skills; every dispatch lists what the subagent must load.
-- **MUST run Wrap-up before closing the session** — memory is updated only via Wrap-up's promotion pass among the workflow loops; closing without Wrap-up loses all session work.
+- [`../orchestration/SKILL.md`](../orchestration/SKILL.md) owns fresh/resume classification, Configuration, workflow routing, dual-system guarantees, runtime attachment, and the handoff cursor.
+- [`../orchestration/workflow/state-machine.md`](../orchestration/workflow/state-machine.md) owns legal cursor transitions, iteration routing, halt, and resume behavior.
+- [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
+- [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user question cards, decision classification, challenge, and finding-disposition exchange.
+- [`../git/SKILL.md`](../git/SKILL.md) owns branch, worktree, local commit, publication, merge, cleanup, and recovery mechanics.
+- [`../startup/SKILL.md`](../startup/SKILL.md) owns baseline classification, the optional Startup conversation, baseline validity, and explicit reset.
+- [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
+- [`../orchestration/delegation.md`](../orchestration/delegation.md) owns specialist brief construction and status handling.
+- [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.
+- [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns repository entrypoint and plugin-source topology checks.
+- [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and [`evaluation.md`](evaluation.md) exercise this operation without adding policy.
