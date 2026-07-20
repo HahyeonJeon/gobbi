@@ -1,298 +1,142 @@
 ---
 name: execution
-description: MUST load for Execution. Covers Study, Plan, Execute, Verify, Commit, fresh evidence, status, and artifacts.
+description: MUST load for Execution. Implements one locked plan task through study, bounded change, fresh verification, and a focused local commit.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+skill-type: operation
 ---
 
 # Execution
 
-Skill for the **Execution Loop**. Defines what each of the four phases (DISCUSSION → WORK → EVALUATION → RECORD) does, which agent owns it, what inputs it consumes, and what artifacts it produces. Loaded by every agent participating in the loop — the manager for orchestration context, and each specialist for the procedural contract of the phase it owns.
+Use this skill for one ordered Execution task at a time. The executor studies the locked task and live tree, applies only the resolved change, proves it on the final tree, and creates one focused local commit.
 
-The Execution Loop runs **once per planned task**. The loop body — DISCUSSION → WORK → EVALUATION → RECORD — repeats for each task in `2-planning/outputs/`. Within a single task, REVISE iterations re-enter that task's DISCUSSION until verdict is `PASS`; `PASS` then advances to the next task in the Plan.
+This skill owns the executor method. The plan is the scope contract; the repository is the current implementation truth. Orchestration owns shared dual-system WORK mechanics, evaluator dispatch, record routing, and cursor transitions.
 
-The Execution Loop differs from Ideation / Planning in two ways:
+## Principles
 
-- **DISCUSSION is manager + user only**, not leader-led. The leader's design work is locked in `2-planning/outputs/`; Execution's DISCUSSION is just delegation-prompt construction and contribution-point confirmation. No leader is spawned at DISCUSSION.
-- **WORK is the executor's domain**, not the leader's. The executor runs a five-phase lifecycle (Study → Plan → Execute → Verify → Commit) inside WORK and reports back with a 4-state status enum + fresh verification evidence.
+### The plan is the contract, not a script
 
-The manager's orchestration of the Execution Loop (per-task iteration, REVISE/PASS/FAIL routing, iteration cap, plan-advance decision) is in [`orchestration/workflow/execution.md`](../orchestration/workflow/execution.md). Code-changeset evaluation specifics live in [`execution/evaluation.md`](evaluation.md), loaded by the evaluator at Stage 0 when the workflow phase is `execution`.
+The executor must satisfy the task's observable outcome and constraints. Routine in-scope implementation judgment is allowed. Scope, architecture, destructive action, publication, and user decisions are not.
 
----
+### Study before mutation
 
-## Memory Access Matrix
+Read the complete affected surface, consumers, tests, conventions, and mistakes before editing. A change built from a guessed preimage is not controlled work.
 
-The agent in the executor role MUST observe these tier boundaries. The only write surfaces are the per-task session subdirectories and the codebase itself (within the task's declared scope).
+### One writer, one bounded diff
 
-| Memory tier | Path root | Access from executor role |
-|---|---|---|
-| **Workspace codebase (in-scope files)** | Files explicitly listed in the task's `files:` scope | **READ + WRITE** — the executor's primary work surface; constrained to the task's declared scope |
-| **Workspace codebase (out-of-scope files)** | All other files under the repository | **READ-ONLY** — reading is required for context; writing is a scope violation |
-| **Session record — own task working** | `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/` | **READ + WRITE** — executor notes (`draft-iter{n}.md`), discussion-log, research (transcripts live in the session-root `transcripts/`, not here); during dual-system production the Codex proposer writes the frozen `proposals/codex/draft-iter{n}.md` and the executor writes the `reconciliation-iter{n}.md` Integration Log (WORK) |
-| **Session record — own task staging** | `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,discussions,changelogs,learnings,notes,backlogs/{feature,project}}/` | **READ + WRITE** — surfacing mid-task discoveries that need promotion (e.g., a mistake learned mid-implementation, a backlog candidate noticed in passing). Wrap-up promotes |
-| **Session record — prior loops** | `sessions/{date}-{session-id}/{1-ideation,2-planning}/{outputs,staging}/` | **READ-ONLY** — required inputs: Ideation design and Planning readiness/task spec |
-| **Session record — prior tasks** | `sessions/{date}-{session-id}/3-execution/task-{MM}-{slug}/outputs/` | **READ-ONLY** — context for tasks that depend on prior task outputs |
-| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — the executor never reads or writes session.json; the manager owns it (iter `n` is supplied as an input) |
-| **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — required for mistake / scenario / decision lookup. Never written; Wrap-up owns feature-memory writes |
-| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for mistake / rule lookup. Never written; Wrap-up owns memory writes |
-| **Runtime documentation** | `.claude/`, `.agents/`, `.codex/`, `plugins/gobbi/` | **READ + WRITE only when the task explicitly scopes them** — runtime-doc edits are workspace codebase edits; same in-scope / out-of-scope rule applies. Reading is always permitted |
+Only the active-runtime executor mutates the worktree. Peer work and parallel investigation remain read-only. Every changed path maps to the current task.
 
-**Delete semantics**: the executor NEVER deletes any file in any tier except when the task **explicitly** lists a file for deletion in its `files:` scope. Supersession is recorded via frontmatter (`status: superseded`, `superseded_by:`); unexplained physical deletion is forbidden. Once an artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
+### Fresh evidence closes the task
 
-**Write enforcement**: any write attempted outside the WRITE rows above is a constraint violation. Writes to memory, feature memory, or out-of-scope workspace files must be revoked and the executor restarted with a corrected scope or BLOCKED back to the manager for re-planning.
+Verification runs after the final edit on the exact tree to be committed. A prior run, a plausible summary, or an executor's confidence is not completion evidence.
 
-**Git semantics**: the executor commits to the worktree (one focused commit per subtask, Conventional Commits format) but **never pushes**. The manager owns pushing, PR creation, and merge. See [`git/SKILL.md`](../git/SKILL.md) for the full role boundary.
+## Rules
 
----
+### Must follow
 
-## Core Principles
+- **X-1 — Execute one locked task.** Use its stable ID, objective, files, inputs, outputs, traces, authority, and acceptance criteria. Stop if the contract is not executable as written.
+- **X-2 — Preserve user work.** Inspect status and diffs before editing. Do not overwrite, reset, clean, or absorb unrelated changes.
+- **X-3 — Map the blast radius.** Read all affected callers, schemas, validators, manifests, docs, tests, examples, and runtime references before the first edit.
+- **X-4 — Keep scope exact.** Every changed path and behavior maps to the current task. Surface adjacent work; do not implement it.
+- **X-5 — Build bottom-up.** Establish interfaces and the smallest valid structure first, then grow one verified increment at a time.
+- **X-6 — Keep related surfaces synchronized.** Code, tests, types, docs, examples, schemas, validators, manifests, migrations, and references change together when the task affects them.
+- **X-7 — Preserve safety and reversibility.** Validate untrusted input, keep authorization before privileged work, bound retries and cost, and pause for destructive or one-way actions not already authorized.
+- **X-8 — Verify with direct evidence.** Run the task's exact checks on the final tree, add targeted checks for discovered risk, and inspect the final diff and status.
+- **X-9 — Commit locally and focus the commit.** Stage only task paths, inspect the staged diff, commit the verified change, and never push or merge unless a later manager-owned finalization authorizes it.
+- **X-10 — Report exactly.** Return the stable task ID, status, commit, changed paths, commands, results, and concerns. Do not claim success for an unrun or failing check.
 
-Cross-cutting principles for every agent participating in this loop.
+### Must not follow
 
-> **The plan is the contract.**
+- Do not start editing before the task, relevant files, rules, skills, and mistakes are read.
+- Do not reinterpret a missing design decision as routine implementation judgment.
+- Do not run a second worktree writer in parallel.
+- Do not weaken a test, threshold, fixture, schema, or validator merely to make the result pass.
+- Do not leave temporary logs, skipped tests, commented-out code, placeholders, or stale docs.
+- Do not push, merge, delete a worktree, or rewrite user history.
 
-The executor implements the locked task spec from `2-planning/outputs/`. The scope, files, anchor, and acceptance criterion are non-negotiable. If the plan is wrong or incomplete, the executor emits `BLOCKED` or `NEEDS_CONTEXT` — never silently invents a different scope. Re-planning is the manager's call, not the executor's.
+## Procedure
 
-> **The codebase is the source of truth.**
+### 1. Confirm the task and tree
 
-The plan tells the executor *what* to do; the codebase tells the executor *how* it fits. Read existing patterns before writing new ones. Match the surrounding code's style, types, and conventions. Do not introduce new patterns when existing ones work. Research artifacts from Ideation are direction, not prescription — adapt based on what the code actually shows.
+Read the task in isolation. Restate its objective, reason, traces, in-scope and out-of-scope paths, inputs, outputs, checks, required skills, authority, and stop conditions. Inspect the absolute worktree, branch, status, current diff, and recent commits.
 
-> **Fresh verification evidence, every time.**
+If the task conflicts with the live tree, user changes, or an upstream contract, return NEEDS_CONTEXT with exact evidence. Do not repair the plan silently.
 
-Every `DONE` status requires fresh evidence — run the verification command(s) the plan specifies and capture the output. "Tests pass" without a captured command + result is not verification (the Verify phase below is the gate). Pre-existing failures must be verified on the base branch before being claimed as pre-existing.
+Evidence: a task-to-tree preimage register and a clean ownership decision for every existing change.
 
-> **Stay in scope.**
+### 2. Study the affected surface
 
-The task's `files:` scope is binding. Adjacent fixes, opportunistic refactors, and "while I'm here" improvements are forbidden. Note them in the executor's final response under "Out of scope observations"; do not implement them. Scope creep is the most common Execution failure mode.
+Read each target file completely enough to understand its contract. Trace callers and consumers. Inspect adjacent conventions, tests, types, schemas, validators, manifests, documentation, examples, build paths, and relevant history. Load applicable language and tool skills plus their mistake companions.
 
-> **Tell the manager what you discovered.**
+Run CRUD and 5W1H over the entire affected set. For a move or deletion, freeze the semantic union and inbound references before changing the source.
 
-If implementation surfaces a mistake worth recording, a backlog candidate, an architectural insight, or a known-pitfall avoided, stage it under `3-execution/task-{NN}-{slug}/staging/` per the routing table. Wrap-up promotes; the executor does not write to memory directly.
+Evidence: an affected-file map that explains why each path is read, changed, created, moved, or deleted.
 
----
+### 3. Establish a failing or discriminating check
 
-## DISCUSSION Phase (manager + user, direct)
+When the task fixes behavior, reproduce the failure before changing it. When the task is structural or documentary, construct a direct discriminating check that fails the stale state. Identify a cosmetic-compliance result and ensure the check rejects it.
 
-**Purpose**
-Construct the executor delegation prompt for the current task. The leader is **not** spawned at this phase — the design work is already locked in `2-planning/outputs/`. The manager confirms scope and contribution points with the user, then constructs the prompt per the executor template.
+If no check can distinguish correct from incorrect behavior, stop and repair the verification contract through the manager.
 
-**Inputs**
-- `sessions/{date}-{session-id}/2-planning/outputs/` — the locked task list (current task)
-- `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` — the staged plan file(s) for context
-- `sessions/{date}-{session-id}/1-ideation/outputs/` — the design the plan implements
-- Prior-task outputs at `sessions/{date}-{session-id}/3-execution/task-{MM}-{slug}/outputs/` — when current task depends on them
-- On `REVISE` iterations: prior iter's evaluator findings for THIS task
+Evidence: a before-state failure or explicit preimage mismatch.
 
-**Procedure**
+### 4. Prepare the neutral WORK contract
 
-| # | Agent | Input | Action | Output |
-|---|---|---|---|---|
-| 1 | Manager | Current task from `2-planning/outputs/` | Read the task spec fields: `id`, `what`, `traces-to`, `requires`, `files`, `inputs`, `outputs`, `verifies`; also read the Sub-step D agent assignment for the task's `required skills` and `required mistakes` (these are assignment metadata, not task YAML fields) | Loaded task context |
-| 2 | Manager | Task spec + Ideation design | Identify any contribution points the task requires — choices the user has explicit authority on that the plan did not fully resolve | Contribution-point list |
-| 3 | Manager | Contribution-point list | Run the active runtime's user-decision primitive for each contribution point | User decisions |
-| 4 | Manager | Task spec + user decisions + verification commands | Construct the executor delegation prompt per [`orchestration/templates/executor.md`](../orchestration/templates/executor.md): paste task spec inline, fill scene-setting context, list Load Directives (principles + rules + skills + mistakes), specify files in-scope / out-of-scope, embed verification commands the executor must run, include the 4-status Report Format | Executor delegation prompt |
-| 5 | Manager | Prompt | Verify the prompt has zero `<<slot>>` placeholders; every slot is filled with concrete content | Verified prompt |
+Freeze the task contract, worktree preimage, affected-file map, applicable references, checks, and constraints as identical inputs to the orchestration-owned dual-system WORK procedure. Both systems analyze the same task independently. Peer processes remain read-only.
 
-**Outputs**
-- Executor delegation prompt — ready for WORK phase spawn
+The active-runtime executor synthesizes the implementation approach after both drafts and cross-reviews freeze. Record material design, scope, destructive, dependency, or authority disagreements and route them to the user before editing.
 
-**Exit checklist**
-- [ ] Task spec read; scope boundary clear
-- [ ] All contribution points resolved by the active runtime's user-decision primitive
-- [ ] Delegation prompt constructed; zero unfilled slots
-- [ ] Verification commands specified explicitly (no "run the tests" — name the actual commands)
-- [ ] Status enum included in prompt's Report Format section
+Evidence: a validated, decision-complete dual-system package.
 
----
+### 5. Lay the smallest valid foundation
 
-## WORK Phase (delegated to `executor`)
+Create or settle the interfaces, directory shape, types, schemas, or document skeleton the task requires before filling behavior. Reuse project patterns and names. Keep the tree valid at each increment.
 
-**Purpose**
-Implement the contracted task within scope, verify the change-set with fresh evidence, commit (when git is active), and report back with a 4-state status enum.
+For a bug, fix the root cause that produced the failure chain. For a refactor, prove behavior preservation before deleting the old path. For documentation, update the owner and all affected consumers in the same task.
 
-The **default** is a **fresh** executor agent per task — fresh context is what makes scope discipline reliable. **Continuation is a Claude Code Agent Teams exception only**: in Claude Code, the manager may continue the same executor teammate from task NN to NN+1 iff the next task shares the current task's subsystem (the task's `files:`/feature scope overlaps) AND the chain is under the saturation cap (at most 3 consecutive continued tasks). Native Codex uses fresh executor spawns with full Load Directives. The decision rule, the F1 predicate, the saturation cap, the delta-brief shape, and the continuation write-discipline live in [`orchestration/delegation.md` § Continue vs Fresh](../orchestration/delegation.md#continue-vs-fresh) and the Execution-specific choreography in [`orchestration/workflow/execution.md` § Executor continuation](../orchestration/workflow/execution.md#executor-continuation-shared-subsystem-under-cap) — this section does not re-derive them.
+Evidence: a reviewable sequence of bounded changes, not one opaque rewrite.
 
-**Inputs**
-- Executor delegation prompt (from DISCUSSION)
-- Workspace codebase (read across the repo; write only to in-scope files)
-- Research artifacts at `sessions/{date}-{session-id}/{N}-{prior-loop}/staging/` and `outputs/` — direction, not prescription
+### 6. Implement the resolved change
 
-**Procedure** — the executor follows a five-phase lifecycle. Each phase depth scales with task complexity.
+Apply only the synthesized, user-resolved approach. Keep inputs validated before privileged sinks. Make errors actionable. Define timeouts, retries, batching, cache behavior, cost ceilings, synchronization, migration, and rollback where applicable. Update tests and documentation with the behavior they cover.
 
-| Phase | Action |
-|---|---|
-| **Study** | Load the Load-Directives content in order: `principles` skill, project rules per skills/memory/rules.md § Empty-state contract (RULES_PRESENT / NO_PROJECT_RULES), `mistake` skill, phase doc, domain skills, project skill. Read the task's primary spec (inline in the prompt). Read research artifacts referenced in the prompt. Read every file listed in `files:` and its surrounding code — patterns, types, conventions. Map dependencies the task touches. |
-| **Plan** | Outline the implementation before writing: which files to modify in what order, type-level design (what types change, what new types are needed), the smallest reversible step (Principle 2) to start with, the verification strategy that will confirm each piece. Non-trivial tasks fail when this phase is skipped. |
-| **Execute** | Implement per the plan. Follow existing patterns — the codebase is the style guide. Keep changes minimal and focused. Do not introduce new patterns when existing ones work. Do not add error handling, abstractions, comments, or features beyond what the task specifies. Adjacent fixes go in "Out of scope observations" — never silently implemented. |
-| **Verify** | Run the verification commands the prompt specifies; capture output verbatim. Re-read the diff against scope: any file outside `files:` touched? Revert it. Re-check against `mistake`: any known pitfall triggered? Re-verify preconditions (correct branch, no unexpected state). For runtime-doc edits: cross-references still resolve, terminology consistent. **Fresh evidence is mandatory for `DONE`** (the Verify gate). |
-| **Commit** *(when git is active)* | Commit only after Verify passes — never unverified work. One focused commit per subtask. Conventional Commits format (`feat:`, `fix:`, `refactor:`, etc.). The executor commits but **never pushes**; the manager owns pushing and PR creation. See [`git/SKILL.md`](../git/SKILL.md). |
+After each increment, run the narrowest useful check. Stop if the change requires new scope, new authority, destructive recovery, or a protected user-file overwrite.
 
-After the five-phase lifecycle, the executor produces a final response — captured as the work artifact — with the 4-status enum and supporting evidence (per the executor delegation template's Report Format section).
+### 7. Verify the final tree
 
-**Outputs**
-- Code / doc changes in workspace files (committed if git is active)
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/draft-iter{n}.md` — the executor's notes (final response, captured by the manager from the transcript). Contains: status, what was implemented, verification command + output, files changed, self-review findings, out-of-scope observations
-- Optional staging files at `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/{type}/{slug}.md` — for mid-task discoveries that need promotion (mistakes learned, backlog candidates, references gathered)
+Run the task's exact verifies commands on the final tree. Add targeted regression, type, format, link, schema, security, performance, compatibility, and runtime checks where the changed surface requires them. Confirm tests actually ran and no check modified the tree to create its own pass.
 
-**Status enum** (in the executor's final response — see [`orchestration/templates/executor.md`](../orchestration/templates/executor.md) for the full Report Format):
+Inspect old names, stale paths, skipped tests, debug output, placeholders, safety-bypass flags, unbounded external calls, sensitive logging, and unexpected generated churn. Re-run the direct discriminating check from step 3.
 
-- **DONE** — change-set matches the contracted deliverable; fresh verification evidence attached; scope boundary respected.
-- **DONE_WITH_CONCERNS** — change-set done; flag specific concerns (incomplete edge-case coverage, pre-existing test failure, scope ambiguity resolved one way the user might prefer the other).
-- **NEEDS_CONTEXT** — paused. State precisely what is missing (file, decision, user clarification) and from whom.
-- **BLOCKED** — cannot proceed. State the root cause: contradictory requirements, wrong premise in the plan, or verification failing the brief did not anticipate.
+Evidence: fresh command lines, exit statuses, and relevant output from the final tree.
 
-**Exit checklist**
-- [ ] All five phases (Study / Plan / Execute / Verify / Commit) completed (Commit only when git is active)
-- [ ] Status enum value picked and supported by evidence
-- [ ] Fresh verification command output captured in the response
-- [ ] Diff scope respected (no out-of-scope files touched)
-- [ ] Out-of-scope observations recorded (or "none")
-- [ ] Mid-task staging (if any) written under `3-execution/task-{NN}-{slug}/staging/`
+### 8. Inspect scope and consistency
 
-### Dual-system production (Codex proposer)
+Read the complete diff, not only the summary. Compare changed paths with the task allowlist and each diff hunk with an output or trace. Confirm related code, tests, types, docs, schemas, validators, manifests, migrations, examples, and runtime references agree.
 
-When `propose.mode: dual` (the per-loop `workflow.{loop}.propose.mode` setting; default `dual`), a Codex proposer runs in parallel with the executor during WORK — the creation-time analogue of the dual-system EVALUATION. The proposer is the `codex exec` assistant-wrapper owned by [`codex/SKILL.md` § Dual-System Production](../codex/SKILL.md); the manager orchestrates the spawn, selective integration, and gap classification per [`orchestration/workflow/production.md`](../orchestration/workflow/production.md). This section states only the per-loop boundary and does not re-derive that orchestration.
+Run [scenarios.md](scenarios.md) and a fresh copy of [checklists.md](checklists.md). Revert any unrelated edit only when it is known to be this task's own change; never discard pre-existing user work.
 
-- **Codex proposal artifact.** The Codex proposer writes an independent alternative implementation **approach** (not competing code) to `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` — never the canonical `task-{NN}-{slug}/working/draft-iter{n}.md`. Every proposal is task-scoped under `task-{NN}-{slug}/` — the Execution per-task path exception. Codex proposes; the executor writes.
-- **Two-phase freeze boundary.** The Codex proposal is **frozen** before the executor integrates it; the canonical `task-{NN}-{slug}/working/draft-iter{n}.md` is **frozen** before EVALUATION spawns. The executor integrates against the frozen proposal — it never races a still-writing Codex run — and the canonical artifact does not change under the evaluator. Derived from [`evaluation/mistakes.md#freeze-producer-artifact-before-evaluating`](../evaluation/mistakes.md#freeze-producer-artifact-before-evaluating).
-- **Producer selective integration.** The executor is the default integrator. After the pre-integration freeze it reads the frozen proposal and **selects** the principle-better elements (folds in the stronger Codex element; keeps its own where stronger; **never naive-blends**), logging each delta to `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` (the Integration Log). The executor integrates the approach at or before its Plan phase, per task; it surfaces any LARGE gap to the manager, who adjudicates and escalates to the user. See [`orchestration/workflow/production.md`](../orchestration/workflow/production.md) for the integration + gap-classification orchestration.
-- **Degraded mode.** If the Codex proposal is empty, times out, or errors, the executor proceeds Claude-only and stamps `production_mode: claude-only` + `codex_proposal_absent_reason: <timeout|empty|error>` in the canonical artifact's frontmatter. A missing Codex proposer is not a safety gate.
+### 9. Create the focused local commit
 
----
+Confirm the final verification still passes and the worktree contains only the intended task delta plus any preserved unrelated user change. Stage only task-owned paths. Inspect the staged diff and staged file list. Commit with the stable task ID and an accurate description.
 
-## EVALUATION Phase
+Reread the commit and verify the branch contains it. Do not push. If committing would absorb unrelated work or miss an in-scope path, stop and report the conflict.
 
-**Purpose**
-Find the implementation gaps WORK missed. Two independent systems (Claude Code + Codex) evaluate the change-set across all seven perspectives + Overall; the manager reconciles their findings and produces a single `PASS` / `REVISE` / `FAIL` verdict for THIS task's current iteration.
+Evidence: commit hash, staged-diff review, and post-commit status.
 
-See [evaluation skill](../evaluation/SKILL.md) for the full Stage 0 / 1 / 2 / 3 procedure, [`execution/scenario.md`](scenario.md) + [`execution/checklist.md`](checklist.md) for the execution-phase seed scenarios and checks (with [`execution/evaluation.md`](evaluation.md) for the procedure and tool-verification expectations), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) for the manager's spawn / reconciliation orchestration.
+### 10. Hand off for independent review
 
-**Inputs** (consumed from the WORK phase output)
-- The change-set (committed code or staged diff) for this task iteration
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/draft-iter{n}.md` — the executor's notes + verification evidence
-- The task spec from `2-planning/outputs/` (the contract being evaluated)
-- The discussion log (manager-captured user-decision exchanges, including any contribution-point decisions)
+Return the required status contract with the canonical task artifact, commit, changed paths, checks, evidence, and any concern. The manager rereads the commit and routes two fresh evaluations. The executor does not accept its own work or apply evaluator findings before the user approves their dispositions.
 
-**Procedure**
+On REVISE, start a complete new iteration from the current committed evidence and approved dispositions. Rebuild the full dual-system WORK package and final verification; do not patch the prior evidence in place.
 
-| # | Agent | Input | Action | Output |
-|---|---|---|---|---|
-| 1 | Manager | WORK outputs; task spec; discussion log | Spawn one evaluator per system (Claude Code + Codex); each handles all seven perspectives + Overall sequentially | Two evaluator agent instances |
-| 2 | Evaluator | All step-1 inputs | Run the four-stage procedure per `evaluation/SKILL.md`, loading the `execution/{scenario,checklist,evaluation}.md` bundle at Stage 0 | `evaluation/iter{n}/{claude,codex}/{perspective}.md` + `evaluation/iter{n}/{claude,codex}/overall.md` + `evaluation/iter{n}/{claude,codex}/checklist.md` |
-| 3a | Manager | Both systems' per-perspective files | Cross-system reconciliation: pessimistic union of findings; severity-gated divergence handling | Reconciled findings + per-perspective verdicts |
-| 3b | Manager | Major divergence (if any) | Run the active runtime's user-decision primitive | (skipped if no major divergence) |
-| 3c | User | Divergence question | Decide which verdict to honor | User-confirmed verdict |
-| 4 | Manager | Reconciled findings + verdicts | Record aggregated verdict for THIS task / iter: `PASS` / `REVISE` / `FAIL`. **All verdicts advance to RECORD first**. After RECORD, `PASS` exits this task's loop and advances to the next planned task; `REVISE` re-enters THIS task's DISCUSSION (iter increments); `FAIL` escalates through the active runtime's user-decision primitive | Per-task verdict |
+Completion evidence: a task-scoped commit, fresh final-tree checks, complete dual-system creation evidence, and no unauthorized side effect.
 
-**Outputs**
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` — one file per system × perspective
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/checklist.md` — the filled copy-then-tick coverage register, one per system
-- Aggregated per-task verdict recorded in workflow state
+## References
 
-**Execution-specific evaluation emphasis** (from [`execution/evaluation.md`](evaluation.md))
-- **Implementation match** — change-set matches the task's `files:` and `outputs:` 1:1; no silent scope expansion
-- **Build / test status** — verified by running the commands, not by asserting; tool-verified findings are required for confidence ≥ 75
-- **Mistake compliance** — known pitfalls in the domain not triggered
-- **Scope discipline** — `git diff --name-only` confirms no out-of-scope files touched
-- **Supply-chain / security / observability / privacy** — perspective coverage per the Coverage Ownership Matrix
-
-**Exit checklist**
-- [ ] Both systems produced per-perspective files for every perspective
-- [ ] Verdict aggregated and recorded; `REVISE` increments THIS task's iteration counter; `PASS` advances the Plan cursor after RECORD
-
----
-
-## RECORD Phase
-
-> **Canonical procedure: [`record/SKILL.md`](../record/SKILL.md).** RECORD is the per-loop capture sub-phase. Its mechanics — transcript copy, `session.json` iter upsert, PASS-only `outputs/` + typed-finding staging, cumulative-staging, idempotency — are defined once in [`record/SKILL.md`](../record/SKILL.md). This section states only what is specific to the Execution loop (per-task scoping); do not re-derive the shared procedure here.
-
-**Purpose**
-Persist every iteration's evidence into session record and — on the final `PASS` iteration for this task — emit the task's `outputs/` files + cumulative typed-finding stagings. RECORD runs after **every** EVALUATION (whether the verdict is `PASS`, `REVISE`, or `FAIL`) so each iteration leaves a durable audit trail. Memory is **not** written here; Wrap-up handles session → project promotion.
-
-See [record skill](../record/SKILL.md) for the every-iter / PASS-only procedure, template-stamping conventions, artifact frontmatter schema, and cumulative-staging rule. [`orchestration/workflow/record.md`](../orchestration/workflow/record.md) covers the manager's spawn / collect orchestration.
-
-**Inputs**
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/draft-iter{n}.md` — executor's notes for this iter
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{m}/{claude,codex}/{perspective}.md` for `m ∈ 1..n`
-- `session.json.transcriptPath` (tilde-expand `$HOME` on read) — manager-stamped transcript path; use `$CLAUDE_TRANSCRIPT_PATH` if reading directly from env. Claude Code transcript jsonl for the iteration window
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/discussion-log.md` — manager-captured user-decision exchanges (contribution points, divergence decisions)
-- EVALUATION verdict for this iteration (`PASS` / `REVISE` / `FAIL`)
-- WORK-staged artifacts under `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/` (already in place — RECORD supplements, never replaces)
-
-**Procedure** — see [record/SKILL.md § RECORD Phase](../record/SKILL.md#record-phase) for the canonical step-by-step. Execution-specific notes:
-
-- The `{loop}` token in the RECORD procedure resolves to `3-execution/task-{NN}-{slug}` for Execution — every path is task-scoped under `sessions/.../3-execution/task-{NN}-{slug}/...`. The session.json field is `workflow.execution.iterations[]` keyed by `{task-id, iter}` (per-task iter, not loop-wide).
-- On PASS, the artifacts directory should include at least one file with `artifact_type: change-summary` (what was implemented + verification result), one with `artifact_type: verification-report` (commands run + output), and the mandatory `artifact_type: memory-reads` audit file.
-- Cumulative finding staging on PASS: per the routing table in [`evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity). Execution-specific findings frequently land at `staging/changelogs/` (shipped change records) and `staging/learnings/` (durable cross-cutting insights surfaced mid-task).
-- Mid-task `staging/` files written by the executor during WORK are **preserved as-is**; RECORD supplements with evaluator-finding-driven staging on top.
-
-**Outputs**
-
-Every iteration produces:
-- `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` — each agent's transcript copied into the single session-root `transcripts/` (no per-task transcripts/)
-- `sessions/{date}-{session-id}/session.json` — upserted `workflow.execution.iterations[]` entry keyed by `{task-id, iter}`
-
-Only the `PASS` iteration also produces:
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/outputs/` — canonical artifact files (change-summary + verification-report + memory-reads, plus loop-specific decompositions)
-- `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/` — cumulative evaluator-finding stagings on top of the WORK-staged mid-task discoveries
-- `sessions/{date}-{session-id}/session.json` — `workflow.execution.tasks[{task-id}].finishedAt` and `verdict: PASS` set; Plan cursor advances
-
-**Exit checklist**
-
-Every iteration:
-- [ ] Each agent transcript copied to session-root `transcripts/{role}-{agentId}.jsonl` (no per-task transcripts/)
-- [ ] `session.json.workflow.execution.iterations[]` includes this iter's `{task-id, iter, verdict, finishedAt, evaluation_dir: "3-execution/task-{NN}-{slug}/evaluation/iter{n}/"}`
-- [ ] No writes to feature memory or memory
-
-`PASS` iteration additionally:
-- [ ] `3-execution/task-{NN}-{slug}/outputs/` contains one or more files, each carrying valid frontmatter per the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema)
-- [ ] At least one artifact has `artifact_type: change-summary`
-- [ ] At least one artifact has `artifact_type: verification-report`
-- [ ] At least one artifact has `artifact_type: memory-reads`
-- [ ] Every evaluator finding across this task's iters `1..n` staged to the correct `staging/` destination per Type + Domain routing
-- [ ] `session.json.workflow.execution.tasks[{task-id}]` marked PASS; Plan cursor advanced
-
----
-
-## Output paths
-
-All writes during the Execution Loop are **session-scoped** under per-task subdirectories. Wrap-up promotes the `staging/` directory to memory after the workflow completes — see [wrap-up skill](../wrap-up/SKILL.md). Code changes go to the workspace codebase directly (and are committed to the worktree when git is active).
-
-**Path conventions**
-
-- `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — runtime session ID resolved by the manager during Configuration. Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value; use the parent session id supplied by the manager.
-- `{task-id}` — the Task ID assigned by Planning (e.g., `01-add-cache-layer`)
-- `{feature-name}` — feature slug (only used by Wrap-up when promoting to memory; not used inside session paths)
-- `{slug}` — slug for a specific artifact, set by the writer at stage time
-- `{n}` — iter number for THIS task, supplied by the manager
-
-| Path | Written by | Written |
-|---|---|---|
-| Workspace files in task `files:` scope | executor (WORK) | committed per task (when git is active) |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/draft-iter{n}.md` | executor (WORK) / manager-captured | every iteration |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` | Codex proposer (`codex exec` wrapper) | per enabled WORK iter (`propose.mode: dual`) — independent proposal, frozen before integration (per-task path) |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/reconciliation-iter{n}.md` | executor (WORK) | per integration — the Integration Log (frozen-proposal selective integration) |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/{scenarios,checklists,decisions,references,design,changelogs,learnings,notes,backlogs/{feature,project}}/{slug}.md` | executor (WORK) or assistant (RECORD) | per mid-task discovery (executor) or per evaluator finding (assistant) |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/{perspective}.md` | evaluator (EVALUATION) | one per system × perspective |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/{claude,codex}/checklist.md` | evaluator (EVALUATION) | filled copy-then-tick coverage register, one per system |
-| `sessions/{date}-{session-id}/transcripts/{role}-{agentId}.jsonl` | assistant (RECORD) | per iter — copied into the single session-root `transcripts/`, accumulating across loops |
-| `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/outputs/{free-filename}.md` | assistant (RECORD) | PASS only — one or more artifact files; each carries the [Artifact frontmatter schema](../record/SKILL.md#artifact-frontmatter-schema). Mandatory: ≥ 1 with `artifact_type: change-summary`, ≥ 1 with `artifact_type: verification-report`, ≥ 1 with `artifact_type: memory-reads` |
-| `sessions/{date}-{session-id}/session.json` | assistant (RECORD) | per-task iter completion timestamps, iter, verdict |
-
-The session subdirectory tree at `sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/{working,staging,evaluation}/` is bootstrapped by the manager when the Execution Loop enters each new task. WORK and RECORD assume the tree exists and surface an error if it does not. Feature directories under `features/{feature-name}/...` are **not** touched during Execution; Wrap-up creates them as needed during memory promotion.
-
----
-
-## Constraints
-
-- **MUST implement only the contracted task** — scope is defined by `2-planning/outputs/`'s task spec; adjacent fixes are forbidden, only logged as "Out of scope observations".
-- **MUST follow existing codebase patterns** — the code is the style guide; do not introduce new patterns when existing ones work.
-- **MUST produce fresh verification evidence** for every `DONE` status — run the commands, capture the output. "Tests pass" without captured evidence is not verification.
-- **MUST report with the 4-state status enum** — `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` — supported by evidence; never silently produce work the executor is unsure about.
-- **MUST commit but never push** — when git is active, commit to the worktree per `git/SKILL.md`; the manager owns pushing and PR creation.
-- **MUST never write outside the task's `files:` scope** — out-of-scope code edits are a constraint violation; revert and re-emit status.
-- **MUST never write to memory or feature memory during the Execution Loop** — mid-task discoveries stage at `3-execution/task-{NN}-{slug}/staging/...`. Wrap-up promotes.
-- **MUST never delete** unless the task explicitly lists the file for deletion in `files:` — supersession via frontmatter; physical deletion otherwise is forbidden. Terminal artifacts are moved (never deleted) to `archive/{type}/` by Wrap-up at session close.
-- **MUST never read or write `session.json`** from the executor role — the manager owns it; iter is supplied as an input.
-- **MUST not embed test-writing as a separate task** — verification is anchored by Planning; the executor runs the specified verification commands, doesn't author the test framework itself unless the task explicitly scopes test creation.
-- **MUST emit `NEEDS_CONTEXT` instead of inventing** when the brief is ambiguous — never silently resolve ambiguity and proceed.
+- [Orchestration Execution adapter](../orchestration/workflow/execution.md) owns per-task entry, user gates, and task transitions.
+- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent drafts, reciprocal reviews, decision handling, and package validation.
+- [Delegation](../orchestration/delegation.md) owns the executor brief, authority boundary, and status contract.
+- [Git](../git/SKILL.md) owns worktree safety, commit procedure, publication, and cleanup.
+- [Coding](../coding/SKILL.md) owns language-agnostic construction quality; language skills add concrete idioms.
+- [Evaluation](../evaluation/SKILL.md) owns independent review and finding disposition rules.
+- [Record](../record/SKILL.md) owns task evidence, typed staging, and PASS-only artifacts.

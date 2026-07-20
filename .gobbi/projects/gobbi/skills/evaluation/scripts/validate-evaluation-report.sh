@@ -542,6 +542,14 @@ command_self_test() {
     run_pair "$claude_report" "$codex_report" "$subject" > "$output"
     jq -e '.pairComplete and .aggregateVerdict == "PASS" and .findings == []' "$output" >/dev/null || self_test_fail "PASS/PASS aggregation"
 
+    make_report_json "$claude_json" claude claude-evaluator-step-mismatch REVISE "$subject"
+    jq '.perspectives[0].findings[0].domain = "step-mismatch"' "$claude_json" > "$sandbox/step-mismatch.json"
+    render_report_fixture "$sandbox/step-mismatch.json" "$sandbox/step-mismatch.md"
+    run_one "$sandbox/step-mismatch.md" claude "$subject" | jq -e '.reportVerdict == "REVISE"' >/dev/null || self_test_fail "step-mismatch domain was rejected"
+    jq '.perspectives[0].findings[0].domain = "phase-mismatch"' "$claude_json" > "$sandbox/phase-mismatch.json"
+    render_report_fixture "$sandbox/phase-mismatch.json" "$sandbox/phase-mismatch.md"
+    expect_one_failure retired-phase-mismatch-domain "$sandbox/phase-mismatch.md" claude "$subject"
+
     for combo_json in 'PASS REVISE REVISE' 'FAIL PASS FAIL' 'PASS FAIL FAIL' 'FAIL REVISE FAIL' 'REVISE FAIL FAIL' 'FAIL FAIL FAIL'; do
         read -r claude_verdict codex_verdict expected <<<"$combo_json"
         make_report_json "$claude_json" claude "claude-evaluator-$claude_verdict" "$claude_verdict" "$subject"
