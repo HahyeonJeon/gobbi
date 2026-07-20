@@ -221,7 +221,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Given:** a valid resumed session has saved settings and earlier Startup disposition.
 - **When:** a manager treats context loss as a fresh conversation.
 - **Then:** Gobbi rejects the rerun and resumes the stored cursor. Only explicit reconfiguration or baseline reset can reopen those choices.
-- **Failure oracle:** repeated defaults question, implicit setting change, or automatic Startup talk.
+- **Failure oracle:** repeated defaults question, implicit setting change, or automatic Startup questioning.
 - **Evidence tuple:** manifest settings, earlier decision evidence, and question trace; absence confirms.
 - **Obligation / checks:** runtime boundaries are not project/session resets. GOBBI-CHK-RESUME-01, GOBBI-CHK-START-04.
 
@@ -237,14 +237,14 @@ All ten categories are exercised here. Applicable case types are positive, alter
 
 ## GOBBI-SCN-05 — Fresh-session Startup classifier
 
-**Actor/outcome:** the manager gets usable baseline context without an obsolete presence heuristic or surprise rerun. **Sources:** GB-P08. **Priority:** required.
+**Actor/outcome:** the manager gets a read-only baseline classification and a user-owned Ideation input disposition without an obsolete presence heuristic or surprise rerun. **Sources:** GB-P08. **Priority:** required.
 
 ### GOBBI-SCN-05-A — Rich valid baseline
 
 - **Primary type / coverage-role:** Positive / positive.
 - **Given:** a fresh initialized session targets a project whose baseline passes Startup's classifier.
 - **When:** the pre-Ideation Startup gate runs.
-- **Then:** no Startup conversation opens and bootstrap proceeds to the cursor handoff.
+- **Then:** no guided question operation opens and bootstrap proceeds to the cursor handoff.
 - **Failure oracle:** a hard-coded directory check overrides classifier PASS.
 - **Evidence tuple:** Startup classifier result and absence of Startup write/question; direct inspection confirms.
 - **Obligation / checks:** rich baseline avoids redundant user attention. GOBBI-CHK-START-01.
@@ -252,17 +252,20 @@ All ten categories are exercised here. Applicable case types are positive, alter
 ### GOBBI-SCN-05-B — Missing baseline, user accepts Startup
 
 - **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** Startup classifies the fresh baseline missing or invalid.
+- **Given:** Startup classifies the fresh baseline `sparse`, `absent`, or `contradictory`.
 - **When:** Discussion presents the user-owned choice and the user accepts Startup.
-- **Then:** Startup runs under its own contract, returns only after its close condition, and bootstrap proceeds without inventing facts.
-- **Failure oracle:** Gobbi writes baseline files itself or skips Startup's user gates.
-- **Evidence tuple:** classifier, user decision, Startup completion evidence, and changed-path owner trace.
-- **Obligation / checks:** baseline creation remains Startup-owned. GOBBI-CHK-START-02.
+- **Then:** bootstrap preserves an accepted Startup input directive, hands the Configuration cursor to
+  Orchestration once, and Orchestration invokes Startup inside ordinary Ideation DISCUSSION to return a
+  structured packet without writing files.
+- **Failure oracle:** Gobbi writes baseline files, creates a Startup cursor, invokes questions before the
+  ordinary Ideation transition, or skips the user gate.
+- **Evidence tuple:** classifier, user decision, unchanged tree, cursor transition, and returned input packet.
+- **Obligation / checks:** Startup is a read-only Ideation input operation. GOBBI-CHK-START-02.
 
 ### GOBBI-SCN-05-C — Missing baseline, user declines Startup
 
 - **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** the same missing/invalid classifier result.
+- **Given:** the same `sparse`, `absent`, or `contradictory` classifier result.
 - **When:** the user chooses to proceed without Startup.
 - **Then:** bootstrap proceeds without a fabricated baseline; the choice is recorded only if the record owner requires it.
 - **Failure oracle:** decline is ignored, facts are invented, or an empty baseline is created for appearances.
@@ -274,7 +277,8 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Primary type / coverage-role:** Change / change.
 - **Given:** one run is a normal resume and another carries an explicit baseline-reset request.
 - **When:** both pass bootstrap.
-- **Then:** normal resume does not invoke Startup; explicit reset loads Startup on demand under its lifecycle contract.
+- **Then:** normal resume does not invoke Startup; explicit reset runs its read-only classifier on demand,
+  with any accepted questioning routed to ordinary Ideation DISCUSSION.
 - **Failure oracle:** all resumes rerun baseline review or explicit reset is ignored.
 - **Evidence tuple:** triggers, load trace, and owner route; direct comparison confirms.
 - **Obligation / checks:** reset is explicit, not inferred from context loss. GOBBI-CHK-START-04.
@@ -284,7 +288,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Primary type / coverage-role:** Adversarial / adversarial.
 - **Given:** placeholder `README.md`, `design/`, and `features/` paths exist but Startup considers the baseline invalid.
 - **When:** the pre-Ideation gate runs.
-- **Then:** the classifier result opens the user choice; path presence cannot force PASS.
+- **Then:** the classifier result opens the user choice; path presence cannot force `sufficient`.
 - **Failure oracle:** three path-existence checks suppress the gate.
 - **Evidence tuple:** placeholder fixture and Startup result; disagreement proves the old heuristic unsafe.
 - **Obligation / checks:** classifier semantics defeat cosmetic baseline shape. GOBBI-CHK-START-01.
@@ -296,7 +300,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 ### GOBBI-SCN-06-A — Fresh or resumed cursor enters Orchestration
 
 - **Primary type / coverage-role:** Positive / positive.
-- **Given:** classification, required identity attachment, record verification, and any Startup path are complete.
+- **Given:** classification, required identity attachment, record verification, and any Startup disposition are complete.
 - **When:** bootstrap hands off.
 - **Then:** Orchestration accepts `state.json.current` and selects all later adapters and transitions.
 - **Failure oracle:** Gobbi invents a stage, task, iteration, or second route.

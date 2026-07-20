@@ -44,8 +44,8 @@ Gobbi does not depend on hooks, environment-variable passthrough, transcripts, r
 - **GB-5 — Classify only the current worktree.** Resume automatically only when the current worktree contains exactly one unfinished Gobbi session. Zero means fresh classification. More than one requires an explicit session path or a fresh start. An explicit path is validated directly. Never use a global pointer or search other worktrees for a candidate.
 - **GB-6 — Keep fresh preflight read-only.** On a fresh path, no branch, worktree, session directory, manifest, state file, or settings artifact may be created before Orchestration resolves the defaults/customize decision. Resolved settings live only in `session.json.settings`.
 - **GB-7 — Reuse resumed settings.** A resumed, cleared, rewound, or runtime-compacted session validates and reuses its existing settings. Reconfiguration occurs only on explicit user request or an owner-defined decision at an exhausted iteration cap.
-- **GB-8 — Gate Startup through its classifier.** After a fresh session is initialized and before its first Ideation transition, run Startup's read-only baseline classifier. A missing or invalid baseline opens a user-owned choice to run Startup or proceed without it. A valid baseline proceeds. Resume and other context boundaries do not reopen Startup automatically; an explicit baseline reset remains on demand.
-- **GB-9 — Hand off exactly once.** After classification, runtime attachment, and any triggered Startup path, enter Orchestration at the validated durable cursor. Do not load or dispatch Ideation, Planning, Execution, or Wrap-up directly from Gobbi.
+- **GB-8 — Gate Startup through its classifier.** After a fresh session is initialized and before its first Ideation transition, run Startup's read-only baseline classifier. A sparse, absent, or contradictory baseline opens a user-owned choice to run guided questioning or proceed without it. Acceptance becomes an input directive for ordinary Ideation DISCUSSION; Startup never creates or repairs the baseline itself. A sufficient baseline proceeds. Resume and other context boundaries do not reopen Startup automatically; an explicit baseline reset remains on demand.
+- **GB-9 — Hand off exactly once.** After classification, runtime attachment, and the Startup disposition, enter Orchestration at the validated durable cursor. Do not load or dispatch Ideation, Planning, Execution, or Wrap-up directly from Gobbi. Orchestration owns the Ideation transition and any accepted Startup input-building invocation there.
 - **GB-10 — Respect owner and protected-source boundaries.** Current orchestration, record, discussion, Git, Startup, and Codex owners govern their facts. A cosmetic legacy heading, stale runtime overview, or obsolete statement in a protected role document does not reactivate retired behavior. Bootstrap never edits a protected role source to hide that accepted inconsistency.
 - **GB-11 — Prove cold entry.** The active runtime entrypoint must resolve this canonical four-file operation bundle. A cold reader must be able to find every action owner from `SKILL.md` alone. Route entrypoint repair to the repository sync owner; do not hand-edit a generated or symlinked view.
 
@@ -114,16 +114,18 @@ Evidence: no-write preimage, defaults decision, UUID creation order, Git isolati
 
 #### 6. Apply the fresh-session Startup gate
 
-After fresh initialization and before entering Ideation, load [`../startup/SKILL.md`](../startup/SKILL.md) and run its read-only lifecycle and baseline classifier.
+After fresh initialization and before entering Ideation, load [`../startup/SKILL.md`](../startup/SKILL.md) and run its read-only baseline classifier.
 
-- A valid, sufficiently complete baseline proceeds without a Startup conversation.
-- A missing or invalid baseline opens one user-owned choice through Discussion: run Startup now or proceed without establishing it.
-- Acceptance runs Startup under its own contract and returns here only after its close condition.
-- Decline records the decision only where the current record owner requires it and proceeds without inventing baseline facts.
+- A `sufficient` baseline proceeds without guided questions.
+- A `sparse`, `absent`, or `contradictory` baseline opens one user-owned choice through Discussion: use
+  Startup's guided question operation in Ideation DISCUSSION or proceed with the named gaps.
+- Acceptance records only that input directive. After the single handoff, Orchestration enters Ideation
+  DISCUSSION and invokes Startup there; Startup returns a structured input packet and writes nothing.
+- Decline preserves the classifier and disposition for the handoff and proceeds without inventing facts.
 
-Do not use a fixed `README.md`, `design/`, or `features/` presence heuristic. Startup owns baseline validity. An explicit baseline-reset request may invoke Startup independently later.
+Do not use a fixed `README.md`, `design/`, or `features/` presence heuristic. Startup owns baseline validity. An explicit baseline-reset request may rerun the read-only classifier later; accepted questioning still runs only at an ordinary Ideation DISCUSSION cursor.
 
-Evidence: classifier result, any user decision, and Startup completion evidence when accepted.
+Evidence: classifier result, any user decision, unchanged baseline tree, and the Ideation input directive when accepted.
 
 #### 7. Complete the resume or context-boundary path
 
@@ -148,7 +150,7 @@ On a blocked handoff, report the exact invalid owner artifact, identity, or miss
 - [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
 - [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user question cards, decision classification, challenge, and finding-disposition exchange.
 - [`../git/SKILL.md`](../git/SKILL.md) owns branch, worktree, local commit, publication, merge, cleanup, and recovery mechanics.
-- [`../startup/SKILL.md`](../startup/SKILL.md) owns baseline classification, the optional Startup conversation, baseline validity, and explicit reset.
+- [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional Ideation input-building operation, baseline validity, and explicit reset.
 - [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
 - [`../orchestration/delegation.md`](../orchestration/delegation.md) owns specialist brief construction and status handling.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.

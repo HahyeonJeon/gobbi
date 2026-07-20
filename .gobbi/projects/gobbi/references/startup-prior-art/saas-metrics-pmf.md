@@ -26,7 +26,7 @@ axes" half of the scenario/checklist work.
 project — an open-source solo-user tool (gobbi itself), an internal tool, or a commercial SaaS.
 Most SaaS benchmarks below (LTV:CAC, NRR, Rule of 40) do NOT apply to a non-commercial project.
 So every axis is written to plug into the skill's EXISTING checklist grammar — "evidenced to this
-standard, **or proven irrelevant with a reason**" (see `startup/checklist.md`
+standard, **or proven irrelevant with a reason**" (see `startup/checklists.md`
 STARTUP-STRUCT-SCENARIO-04-CHECK-01, STARTUP-PERF-SCENARIO-03-CHECK-03). The axis grades whether a
 claim, once made, is EVIDENCED and NON-VANITY — not whether every project must have a CAC. A project
 that makes NO market/growth/monetization claim passes each commercial axis as `proven-irrelevant`.
@@ -337,7 +337,7 @@ One line each — "looks like signal, isn't." These are the discriminators a de-
 
 ## E. Directly reusable checks (gradable pass/fail — drop-in for scenario/checklist)
 
-Written in `startup/checklist.md` grammar (one falsifiable sentence; each admits PASS / FAIL /
+Written in `startup/checklists.md` grammar (one falsifiable sentence; each admits PASS / FAIL /
 `n/a`-proven-irrelevant, mirroring the existing "or proven irrelevant with a reason" pattern). These
 would live under a new "Market / demand / economics" scenario family (candidate perspectives:
 Consistency for claim-vs-evidence, Risk for un-evidenced load-bearing business claims).

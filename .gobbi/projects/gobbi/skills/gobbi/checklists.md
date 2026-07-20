@@ -165,21 +165,21 @@
 - [ ] **GOBBI-CHK-START-01** `[gate/killer, read-do]` Startup's classifier, not a fixed directory-presence heuristic, determines baseline validity.
   - **Applicability:** conditional — freshly initialized session before first Ideation.
   - **Source:** GB-P08; GOBBI-SCN-05-A, GOBBI-SCN-05-E.
-  - **Pass condition:** the classifier's valid result proceeds; its missing/invalid result opens the user choice even when cosmetic paths exist.
+  - **Pass condition:** `sufficient` proceeds; `sparse`, `absent`, or `contradictory` opens the user choice even when cosmetic paths exist.
   - **Evidence:** Startup classifier result and baseline fixture inventory.
   - **On fail:** consequence — unusable or already-valid baseline state is misclassified; stop the transition.
   - **Resolution:** ______
 
-- [ ] **GOBBI-CHK-START-02** `[gate/killer, read-do]` An accepted Startup choice runs only through Startup and returns after its close evidence.
-  - **Applicability:** conditional — classifier is missing/invalid and user accepts Startup.
+- [ ] **GOBBI-CHK-START-02** `[gate/killer, read-do]` An accepted Startup choice becomes an ordinary Ideation input directive and produces no Startup-owned write or cursor.
+  - **Applicability:** conditional — classifier is `sparse`, `absent`, or `contradictory` and the user accepts Startup.
   - **Source:** GB-P08; GOBBI-SCN-05-B.
-  - **Pass condition:** Discussion holds the user decision, Startup owns all baseline work, and its completion proof exists before handoff.
-  - **Evidence:** decision, Startup artifact/validation evidence, and changed-path owner map.
-  - **On fail:** consequence — baseline facts or writes bypass authority; halt before Ideation.
+  - **Pass condition:** Discussion holds the user decision; Gobbi hands off once; Orchestration enters Ideation DISCUSSION; Startup returns its packet read-only at that ordinary cursor.
+  - **Evidence:** decision, unchanged baseline tree, v3 cursor transition, and returned packet.
+  - **On fail:** consequence — a second lifecycle or unauthorized write bypasses authority; halt the route.
   - **Resolution:** ______
 
 - [ ] **GOBBI-CHK-START-03** `[required, read-do]` A declined Startup choice proceeds without fabricated baseline material.
-  - **Applicability:** conditional — classifier is missing/invalid and user declines Startup.
+  - **Applicability:** conditional — classifier is `sparse`, `absent`, or `contradictory` and the user declines Startup.
   - **Source:** GB-P08; GOBBI-SCN-05-C.
   - **Pass condition:** baseline paths remain unchanged and the next action is cursor handoff.
   - **Evidence:** user decision, baseline tree diff, and next cursor.
@@ -189,7 +189,7 @@
 - [ ] **GOBBI-CHK-START-04** `[gate/killer, read-do]` Resume does not reopen Startup; explicit baseline reset does.
   - **Applicability:** conditional — run is resume/context-boundary or carries an explicit reset.
   - **Source:** GB-P07, GB-P08; GOBBI-SCN-04-C, GOBBI-SCN-05-D.
-  - **Pass condition:** no automatic Startup load on normal resume; explicit reset is routed to Startup on demand.
+  - **Pass condition:** no automatic Startup load on normal resume; explicit reset routes to the read-only classifier, and accepted questions route to ordinary Ideation DISCUSSION.
   - **Evidence:** trigger, load/question trace, and prior Startup disposition.
   - **On fail:** consequence — user attention or project baseline changes without the right trigger; halt the unexpected route.
   - **Resolution:** ______

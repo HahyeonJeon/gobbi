@@ -1,170 +1,172 @@
 ---
 name: research
-description: MUST load for internal or external research. Defines targets, procedure, and artifacts for downstream design.
-allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
+description: "Use for bounded internal or external research that returns source-grounded evidence to a caller at an exact Gobbi workflow cursor."
+allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+skill-type: operation
 ---
 
 # Research
 
-Skill for **research** activities — investigating internal and external surfaces to extract insights that anchor downstream design choices. Loaded by whichever agent needs to do reference-rich investigation before deciding direction: typically the Ideation Loop's leader during Sub-step C, and occasionally the Planning Loop's leader when its readiness gate must verify external prior art.
+Research is a read-only evidence operation. It studies a bounded question, distinguishes what the
+evidence supports from what remains uncertain, and returns a structured report to the caller. It does
+not own scope, product decisions, a workflow transition, a session-tree writer, RECORD staging, or
+durable memory.
 
-Internal and external research surfaces are managed **independently** — each must be sufficiently deep on its own before any design decision is made. The thinking pattern is **research → consult → design**: insights are not just collected, they actively inform every downstream choice.
+## Principles
 
----
+1. **Begin with a falsifiable question.** State what decision the evidence will inform and what finding
+   would change the current hypothesis.
+2. **Study the closest evidence first.** Repository code, tests, project memory, and history establish
+   actual local behavior before analogy or general advice.
+3. **Prefer primary and official sources.** Use standards, maintainers' documentation, source code,
+   release notes, original research, and direct records where available.
+4. **Separate source, insight, and relevance.** A citation is not a conclusion. Explain exactly what it
+   says, why it applies, and where the analogy stops.
+5. **Expose contradiction and uncertainty.** Conflicting evidence, missing evidence, scope limits, and
+   open questions are part of the result, not defects to hide.
+6. **Evidence informs judgment.** Research narrows uncertainty; it never makes a user decision, changes
+   scope, or substitutes a popularity count for applicability.
 
-## Memory Access Matrix
+## Rules
 
-The agent in the leader role (or any role that loads this skill) MUST observe these tier boundaries. Research writes only to the calling loop's session record.
+- **RS-1 — Require an exact caller contract.** The caller supplies the absolute Gobbi session root,
+  exact `step`, `stage`, `iteration`, and optional Execution `task`, plus the question, scope, intended
+  decision, and stable slug.
+- **RS-2 — Never derive identity from runtime state.** Do not use a runtime ID, thread ID, environment
+  variable, global pointer, current directory guess, or worktree scan to locate the session.
+- **RS-3 — Keep work read-only.** Do not write to the repository, worktree, session tree, staging, cache,
+  or durable memory. Return the report to the caller.
+- **RS-4 — Cover internal evidence when applicable.** Inspect relevant code, typed project memory,
+  tests, documentation, and history. Report an explicit not-applicable reason for an omitted class.
+- **RS-5 — Cover external evidence when applicable.** Prefer primary, official, and citable sources;
+  use secondary sources only when their role and limits are explicit.
+- **RS-6 — Record exact citations.** Identify a file and line/section, commit, command result, or direct
+  source URL precise enough for another agent to verify. Never invent a citation.
+- **RS-7 — Reject link dumps.** Every evidence item contains Source, Insight, Why it matters, scope or
+  applicability, and limitations.
+- **RS-8 — Do not stockpile.** Include evidence that informs the assigned decision. Exclude interesting
+  material with no demonstrated bearing on it.
+- **RS-9 — Preserve negative evidence.** Report failed searches, counterexamples, contradictions, and
+  evidence that weakens the current hypothesis.
+- **RS-10 — Keep conclusions calibrated.** Distinguish `verified`, `supported`, `inferred`, `disputed`,
+  and `unknown`; do not convert correlation, convention, or absence of evidence into certainty.
+- **RS-11 — Respect the operation boundary.** Recommend a conclusion when the evidence supports one,
+  but leave scope changes, material tradeoffs, user-owned choices, and step-by-step implementation plans
+  to their owning workflow specialists.
+- **RS-12 — Use only the Record-owned destination.** The active runtime assistant validates and stores
+  the returned Markdown at the cursor-derived research path. Research itself never writes that path.
 
-| Memory tier | Path root | Access from research |
-|---|---|---|
-| **Session record — calling loop's working** | `sessions/{date}-{session-id}/{N}-{loop}/working/` | **READ + WRITE** — internal insights integrated into `working/draft-iter{n}.md`; per-external-reference files written to `working/research/{slug}.md` |
-| **Session record — calling loop's staging** | `sessions/{date}-{session-id}/{N}-{loop}/staging/` | **READ-ONLY during WORK** — the assistant (RECORD) promotes working/research/ to `staging/references/` on PASS; the leader does not write to staging directly |
-| **Workspace codebase** | The repository under analysis | **READ-ONLY** — internal research reads files, types, tests, git history; never modifies code |
-| **Feature memory** | `.gobbi/projects/{project-name}/features/{feature-name}/` | **READ-ONLY** — mistakes, decisions, design, scenarios, checklists provide internal context |
-| **Memory** | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | **READ-ONLY** — required for project-wide internal context. Never written; Wrap-up owns memory writes |
-| **External sources** | URLs / documentation / RFC / blog posts / open-source repositories | **READ-ONLY (via WebSearch / WebFetch)** — external research surfaces; cite stable anchors |
-| **Session record — `session.json`** | `sessions/{date}-{session-id}/session.json` | **FORBIDDEN** — research never reads or writes session.json; the manager owns it |
+## Procedure
 
-**Write surface in practice (two-step model)**:
-1. **During WORK** — the leader integrates internal insights into `working/draft-iter{n}.md` (under a `Research Insights` section) and writes each confirmed external insight as a separate file at `working/research/{slug}.md` using the Insight format below. The leader does NOT write to `staging/references/` during WORK.
-2. **On PASS** — the assistant (RECORD phase) reads `working/research/*.md`, extracts confirmed external insights, and stages them at `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` per the calling loop's procedure. This keeps **research's external-reference staging** (`staging/references/`) as an assistant-owned, PASS-only surface. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — see `ideation/SKILL.md`, `planning/SKILL.md`, and `execution/SKILL.md` Memory Access Matrix sections.
+### 1. Validate the assignment envelope
 
-Research does not own its own session subdirectory — it lives inside the loop that invoked it.
+Require all of the following:
 
-**Delete semantics**: research never deletes any file in any tier. Supersession via frontmatter is handled by the calling loop's RECORD. Once a memory artifact reaches a terminal state, Wrap-up moves the full file (`git mv`) to `archive/{type}/` per the move-on-terminal model — never deletes it.
+- absolute Gobbi session root;
+- `step`: `ideation`, `planning`, `execution`, or `wrap-up`;
+- `stage`: the exact current v3 stage;
+- positive `iteration`;
+- Execution task directory identity when `step` is `execution`;
+- stable kebab-case report slug;
+- research question, decision it informs, in-scope and out-of-scope boundaries;
+- required internal and external evidence classes; and
+- time, access, or source constraints.
 
----
+Reject a missing or contradictory envelope. Do not guess the session, cursor, task, or destination.
+The caller verifies the supplied cursor against `state.json`; Research treats that verified envelope as
+the authority and does not mutate state.
 
-## Core Principles
+### 2. Resolve the Record-owned target
 
-> **Strategic direction, not implementation recipes.**
+Compute one target relative to the supplied Gobbi session root:
 
-Research surfaces what approach to take and which references matter — not step-by-step code. Findings inform design; design defers detail to execution. Research that micromanages implementation suppresses downstream judgment.
+- non-Execution:
+  `{N}-{step}/working/iteration-{iteration}/research/{slug}.md`
+- Execution:
+  `3-execution/task-{NN}-{task-slug}/working/iteration-{iteration}/research/{slug}.md`
 
-> **Reference-rich output.**
+`N` is the fixed productive-step ordinal: `1` Ideation, `2` Planning, `3` Execution, `4` Wrap-up.
+Normalize the joined path and require it to remain beneath the supplied root. This calculation is part
+of the returned envelope; it does not authorize Research to write the file.
 
-Specific file paths + line numbers, function signatures, doc URLs + section anchors, RFC sections, code snippets. Vague findings ("consider caching") force re-investigation. Strong findings name the source precisely so the next reader can verify in seconds.
+### 3. Frame the evidence test
 
-> **Internal and external surfaces are managed independently.**
+Restate the question, current hypothesis, decision to inform, inclusion and exclusion criteria, and the
+evidence that would strengthen, weaken, or falsify the hypothesis. Define freshness and authority
+requirements before searching so source selection cannot drift toward a preferred answer.
 
-Each surface must be researched to sufficient depth on its own. Internal coverage gaps cannot be compensated by external research and vice versa. Insights are extracted per surface (internal insights / external insights) so coverage and bias can be evaluated separately.
+### 4. Inspect internal evidence
 
-> **Insights, not link dumps.**
+When applicable, search the relevant project memory, code, tests, documentation, configuration, and Git
+history. Read definitions and call sites, not only keyword hits. Capture exact paths and line or commit
+references. Distinguish present behavior from historical intent and proposed behavior. Record negative
+search results with their scope rather than claiming universal absence.
 
-A bare URL or file path is not an insight. Every captured insight states (a) the specific lesson that applies HERE, (b) why it applies given the current scope, and (c) the source it came from.
+### 5. Inspect external evidence
 
-> **Out-of-scope insights are dropped.**
+When applicable, search official documentation, standards, primary research, maintainers' source or
+release notes, and direct data. Check publication and event dates, version and product applicability,
+authoritative status, and whether a source merely repeats another. Use multiple independent sources for
+load-bearing or contested conclusions when available.
 
-Even high-quality findings that don't apply to the current Scope Contract are dropped rather than stockpiled. Out-of-scope candidates may become backlog hints, but they do not enter the insight pool.
+### 6. Triangulate and challenge
 
----
+Compare local evidence with external evidence. Look deliberately for counterexamples, conflicting
+definitions, version differences, survivorship bias, and hidden preconditions. Explain conflicts rather
+than averaging them away. Mark any conclusion whose evidence remains indirect, stale, incomplete, or
+inapplicable.
 
-## Internal Research
+### 7. Synthesize the evidence report
 
-**Purpose**
-Investigate the project's own codebase, memory, tests, and history to extract insights that inform design. Internal research grounds design in what already exists — the patterns, conventions, mistakes, and decisions the project carries — so new work doesn't accidentally diverge from or duplicate existing solutions.
+Return Markdown with this exact semantic structure:
 
-**Inputs**
-- Locked Scope Contract (defines what's in scope) — schema canonical at `evaluation/SKILL.md` § Scope Contract Schema
-- Framed Problem (defines what to look for and why)
+1. **Assignment** — cursor, question, decision, scope, exclusions, and target path.
+2. **Executive finding** — concise answer and confidence label.
+3. **Evidence ledger** — one item per source with Source, Insight, Why it matters, applicability, and
+   limitations; classify each source as internal/external and primary/secondary where relevant.
+4. **Contradictions and counterevidence** — competing evidence and its effect on the finding.
+5. **Uncertainty and limits** — unknowns, freshness/access limits, and claims that must not be made.
+6. **Recommendation** — evidence-backed position and the evidence that would change it.
+7. **Open questions** — owner and consequence for each unresolved question.
+8. **Verification notes** — searches, commands, or source checks another agent can repeat.
 
-**Procedure**
+Do not include hidden reasoning, credentials, raw transcript capture, or unrelated source lists.
 
-| # | Agent | Input | Action | Output |
-|---|---|---|---|---|
-| 1 | Leader | Scope Contract; codebase | **Grep / Glob the codebase** for patterns related to the Scope Contract's `Feature` and `Task` — similar features, related modules, recurring patterns. Note specific file paths + line numbers | Codebase pattern findings |
-| 2 | Leader | Scope Contract; `.gobbi/projects/{project-name}/` | **Read memory** — mistakes, decisions, design docs, prior discussions in `.gobbi/projects/{project-name}/` and `features/{feature-name}/` | Memory findings |
-| 3 | Leader | Scope Contract; existing tests | **Grep test files** for behaviors / scenarios similar to the task — what is already verified and how | Existing test findings |
-| 4 | Leader | Scope Contract; git log | **Grep git log** for the area being touched — prior attempts, refactors, reverts, what was tried and what worked | Git history findings |
-| 5 | Leader | All step-1–4 findings | **Extract internal insights** using the Insight format below — drop out-of-scope; bare links and file lists are not insights | Internal insights |
+### 8. Return to the caller for validation and storage
 
-**Outputs**
+Return the report plus the supplied identity envelope and computed relative target. The active runtime
+assistant checks the root, cursor identity, slug, required sections, and citations, then stores the
+rendered Markdown through the Record-owned path. A validation or containment failure stores nothing and
+returns the exact error. Research does not retry by choosing another path.
 
-- Internal insights stamped to the Insight format below (target: 3–5; deeper research may yield more — coverage is the bar, not the count)
+### 9. Hand evidence to the owning workflow step
 
-Insight format (one block per insight):
+The caller reads the stored report and decides how it informs the current canonical artifact. Research
+does not update synthesis, resolve material choices, stage a reference candidate, or mark work complete.
+During RECORD, the Record owner may derive a typed reference candidate from evidence that proves durable;
+clean or non-durable research may leave staging empty. Wrap-up alone may promote an approved candidate.
 
-- **Source** — codebase path (with line numbers) / git ref / memory path
-- **Insight** — the specific lesson that applies HERE (one or two sentences)
-- **Why** — in one sentence, why the insight applies given the Scope Contract
+## Output contract
 
----
+The operation returns one structured Markdown evidence report and its identity envelope. The expected
+storage path is Record-owned, cursor-derived, and relative to the caller-supplied absolute Gobbi root.
+There is no Research-owned file, staging record, or durable-memory output.
 
-## External Research
+## Failure contract
 
-**Purpose**
-Investigate prior art outside the project — library / framework docs, RFCs, papers, blog posts, open-source codebases — to extract insights that inform design. External research grounds design in proven approaches from the broader community, so choices stand on community-tested ground rather than reinvention.
+Stop and report the exact cause when the assignment envelope is incomplete, a source is unavailable, a
+citation cannot be verified, the path escapes the supplied root, required evidence coverage is missing,
+or the report fails its checklist. Never fill the gap with a guessed fact, fabricated citation, unscoped
+web result, runtime-derived path, or direct write.
 
-**Inputs**
-- Locked Scope Contract
-- Framed Problem
+## References
 
-**Procedure**
-
-| # | Agent | Input | Action | Output |
-|---|---|---|---|---|
-| 1 | Leader | Scope Contract | **WebSearch / WebFetch library and framework documentation** relevant to the Research Targets below. Note exact URLs + section anchors | Library / framework findings |
-| 2 | Leader | Scope Contract | **WebSearch / WebFetch prior art** — open-source codebases, blog posts, papers, RFCs / design docs that solved similar problems | Prior art findings |
-| 3 | Leader | Scope Contract | **WebSearch / WebFetch adversarial references** — what failed, what the community warns against, known footguns | Adversarial findings |
-| 4 | Leader | All step-1–3 findings | **Extract external insights** using the Insight format below — drop out-of-scope; bare links are not insights | External insights |
-
-**Outputs**
-
-- External insights stamped to the Insight format below (target: 3–5; deeper research may yield more — coverage is the bar, not the count)
-
-Insight format (one block per insight):
-
-- **Source** — URL with stable anchor or section reference
-- **Insight** — the specific lesson that applies HERE (one or two sentences)
-- **Why** — in one sentence, why the insight applies given the Scope Contract
-
----
-
-## Research Targets
-
-What to investigate during Internal and External research. The list is a **checklist of what to consider**, not what to always cover — coverage is judged per Scope Contract.
-
-| Target | What to look for |
-|---|---|
-| **Library / framework / SDK** | What tools the project (internal) or community (external) uses for the same problem space. Version, maturity, license, integration cost, alternatives. |
-| **Design pattern** | Patterns that solve similar problems — factory, observer, strategy, etc. — and how they're applied in the codebase or external code. |
-| **API shape** | How interfaces are typically structured — config object vs positional parameters, REST vs GraphQL vs RPC, sync vs async, builder vs fluent, etc. |
-| **Code API interface** | Specific function signatures, class constructors, type definitions, method names. Both (a) external library APIs the design will *consume*, and (b) existing codebase APIs the design will *pattern after* or extend. |
-| **Others** | Anything else relevant to the design direction: data model / persistence, concurrency model, error-handling strategy, configuration approach, security model, performance characteristics, build / deployment, migration / versioning, etc. |
-
----
-
-## Output paths
-
-Research does not own its own session subdirectory — it writes into the calling loop's session record. The calling loop's RECORD (and Wrap-up) handles promotion to memory.
-
-**Path conventions**
-
-- `{date}` — the session start date in `YYYY-MM-DD` format
-- `{session-id}` — runtime session ID resolved by the manager during Configuration and supplied by the delegation prompt's `session-id:` header field (the parent session's id). Use `CLAUDE_CODE_SESSION_ID` for Claude Code and `CODEX_THREAD_ID` for native Codex. Do NOT read runtime env vars from spawned subagents for this value: in a spawned-subagent context that env-var holds the subagent's own UUID, not the parent session's — use the parent session id supplied by the manager.
-- `{loop}` — the calling loop's name (`ideation` / `planning`). On disk the loop dir carries the `{N}-` ordinal prefix (`1-ideation` / `2-planning`); the `workflow.{loop}` keys in `session.json` stay **bare** (SEAM-3 — see [`record/record-map.md`](../record/record-map.md))
-- `{N}` — the loop's fixed ordinal (`1`=ideation, `2`=planning); the on-disk loop-dir prefix
-- `{slug}` — slug for a specific reference artifact, set by the writer at stage time
-
-| Path | Written by | Written |
-|---|---|---|
-| `sessions/{date}-{session-id}/{N}-{loop}/working/draft-iter{n}.md` (Research Insights section) | leader (calling loop's WORK) | Internal + external insights integrated into the loop's working draft |
-| `sessions/{date}-{session-id}/{N}-{loop}/working/research/{slug}.md` | leader (calling loop's WORK) | One file per confirmed external insight — raw capture in Insight format, pre-staging. Written during WORK. |
-| `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` | assistant (RECORD, PASS only) | Promoted from `working/research/{slug}.md` by RECORD on PASS; Wrap-up promotes to `features/{feature-name}/references/` |
-
-Internal insights do not stage as separate reference files — they live inline in the working draft's Decisions Log and design rationale. Only confirmed external insights with citable URLs produce working/research/ files that RECORD later stages.
-
----
-
-## Constraints
-
-- **MUST never extract an insight without a source** — a bare claim without citation is not an insight.
-- **MUST never mix internal and external insights** into a single bucket — they're managed independently so coverage and bias can be evaluated separately.
-- **MUST never produce step-by-step implementation guidance** — research provides direction and references; implementation detail belongs to Execution.
-- **MUST never stockpile out-of-scope findings** — drop them or log a backlog hint.
-- **MUST read the relevant codebase** before extracting external insights — internal context shapes which external patterns apply.
-- **MUST cite the specific source** — file path + line numbers, URL + section anchor, git ref + commit hash — not the project / repo at large.
-- **MUST write every confirmed external insight to `working/research/{slug}.md`** during WORK — the leader does not stage to `staging/references/` directly. RECORD (PASS only) promotes working/research/ to staging. Silent drops of citable externals are forbidden.
-- **MUST never write to `staging/references/` during WORK** — research's external-reference staging is an assistant-owned, PASS-only surface. The leader writes external insights to `working/research/{slug}.md` only; RECORD promotes to `staging/references/` on PASS. Other staging surfaces (decisions, scenarios, design, etc.) remain leader-writable during WORK per the calling loop's skill — this constraint applies only to research's reference surface, not to staging at large.
-- **MUST never write to memory or feature memory** — Wrap-up owns those writes; research lives in session record only.
+- [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and [`evaluation.md`](evaluation.md)
+  exercise this operation without adding policy.
+- [`../record/SKILL.md`](../record/SKILL.md) and [`../record/record-map.md`](../record/record-map.md) own
+  session-tree paths, containment, storage, staging, and artifact placement.
+- [`../orchestration/workflow/state-machine.md`](../orchestration/workflow/state-machine.md) owns the
+  exact v3 cursor vocabulary.
+- [`../discussion/SKILL.md`](../discussion/SKILL.md) owns material user decisions.
+- [`../memory/SKILL.md`](../memory/SKILL.md) and [`../wrap-up/SKILL.md`](../wrap-up/SKILL.md) own durable
+  reference records and promotion.

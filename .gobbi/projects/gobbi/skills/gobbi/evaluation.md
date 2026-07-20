@@ -136,7 +136,8 @@ Overall must answer all of these:
 2. Does every entry trigger preserve one Gobbi identity and produce exactly one validated Orchestration cursor?
 3. Does a fresh run stay read-only until the defaults/customize decision?
 4. Do zero, exact-one, multiple, and explicit-path classifications have distinct evidence-based outcomes?
-5. Does Startup run only through its classifier and correct user-owned trigger?
+5. Does Startup run only through its read-only classifier and correct user-owned trigger, with accepted
+   questioning handed to ordinary Ideation DISCUSSION and no Startup writer or cursor?
 6. Can missing hooks, transcripts, rollouts, telemetry, modes, separate settings, and memory compaction remain absent without degraded operation?
 7. Do current owners outrank cosmetic legacy while protected role and manifest files remain unchanged?
 8. Do the canonical, native Codex, and plugin-source views expose the operation, with partial later-task views reported honestly?
