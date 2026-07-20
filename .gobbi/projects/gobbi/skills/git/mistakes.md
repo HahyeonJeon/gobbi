@@ -2,7 +2,7 @@
 type: mistakes
 skill: git
 description: "Recorded traps for git — load before doing git work"
-updated: 2026-07-06
+updated: 2026-07-20
 ---
 
 # Git — Mistakes
@@ -13,7 +13,7 @@ updated: 2026-07-06
 
 `priority: high` · `domain: process` · `added: 2026-06-26` · `status: active` · `tags: [git, process, verification]`
 
-**What happened** — The brief defined `PM = $WT/.gobbi/projects/gobbi` (the per-session worktree). The executor read and Edited the MAIN-tree absolute path, dropping the `worktrees/{branch}/` segment. Because gobbi edits its OWN skill tree, the same tracked path `.gobbi/projects/gobbi/skills/...` exists in BOTH the main checkout (branch `develop`) and the worktree checkout (the session branch) as separate inodes. All 6 edits landed in the main tree; the worktree copies stayed untouched. The verification gate (which read `$PM` = worktree) reported the OLD values (`schemaVersion 2`, `integration: null`), surfacing the error.
+**What happened** — The brief defined `PM = $WT/.gobbi/projects/gobbi` (the per-session worktree). The executor read and Edited the MAIN-tree absolute path, dropping the `worktrees/{branch}/` segment. Because gobbi edits its OWN skill tree, the same tracked path `.gobbi/projects/gobbi/skills/...` exists in BOTH the main checkout (branch `develop`) and the worktree checkout (the session branch) as separate inodes. All 6 edits landed in the main tree; the worktree copies stayed untouched. The verification gate read the exact worktree paths and still found the committed preimage, surfacing the error.
 **Why it happens** — Self-referential repo trap: when the project being edited is gobbi itself, the worktree contains a nested `.gobbi/projects/gobbi/skills/` that mirrors the main tree's path exactly. An absolute path that omits the `worktrees/{branch}/` prefix silently resolves to the main tree — it is NOT a relative-path slip, so re-`cd` and `git -C` discipline do not catch it. The Edit tool reported success because the main-tree file IS a valid writable file; nothing flagged the wrong tree.
 **How to detect** — The task edits files under `.gobbi/projects/{name}/skills/...` AND the project name equals the repo's own gobbi project (self-edit), so the worktree contains a nested duplicate of that subtree. Before the FIRST Read/Edit, confirm the path begins with the worktree root (it must contain `worktrees/{branch}/`). A gate that reads `$PM`/worktree returns BASELINE values after edits "succeeded" → the edits hit a different tree.
 **Correct approach** — Resolve every in-scope path against the absolute worktree root from the brief (`$WT` / `session.json.git.worktreePath`) and verify each path literally contains the `worktrees/{branch}/` segment before the first write. When the gate disagrees with the edits, immediately diff main-tree vs worktree inodes (`ls -i`) rather than re-editing. Recovery: per-file `git restore --source=HEAD -- <paths>` on the main tree (safe, single-file), then re-apply against the worktree — never `cp` main→worktree when the worktree branch carries prior commits that diverge from the main baseline.
@@ -69,8 +69,8 @@ updated: 2026-07-06
 
 `priority: high` · `domain: git` · `added: 2026-06-23` · `status: active` · `tags: [process]`
 
-**What happened** — During P5 cleanup of a merged PR's worktree, the documented empty-parent sweep `find .gobbi/projects/<name>/worktrees/ -type d -empty -delete` was run. That command recurses the ENTIRE worktrees tree and deletes EVERY empty dir — including the freshly-scaffolded but still-empty loop dirs and transcripts of the CURRENT live session's own worktree, which `init-record-map.sh` had just created. The live session's record skeleton was wiped.
-**Why it happens** — `find <dir> -type d -empty -delete` is not "remove the leftover parent of the worktree I just removed" — it is "remove every empty directory anywhere under <dir>". A just-scaffolded session tree is all-empty dirs, so it matches. The git skill's P5 step 3 and P8 stage 7 BOTH prescribe this exact whole-worktrees form for the nested-branch empty-parent case, so the footgun is in the documented procedure, not just ad-hoc use.
+**What happened** — During P5 cleanup of a merged PR's worktree, the documented empty-parent sweep `find .gobbi/projects/<name>/worktrees/ -type d -empty -delete` was run. That command recurses the ENTIRE worktrees tree and deletes EVERY empty dir — including the freshly-scaffolded iteration, evaluation, staging, and output directories of the CURRENT live session, which `skills/record/scripts/session-record.sh init` had just created. The live session's record skeleton was wiped.
+**Why it happens** — `find <dir> -type d -empty -delete` is not "remove the leftover parent of the worktree I just removed" — it is "remove every empty directory anywhere under <dir>". A just-scaffolded session record contains many deliberately empty directories, so it matches. The git skill's P5 step 3 and P8 stage 7 BOTH prescribe this exact whole-worktrees form for the nested-branch empty-parent case, so the footgun is in the documented procedure, not just ad-hoc use.
 **How to detect** — Any time a cleanup runs `find .../worktrees/ -type d -empty -delete` (or any recursive empty-dir delete) while another worktree/session is live or just-scaffolded. Red flag: the target path is the shared `worktrees` parent rather than the single removed worktree's own parent directory.
 **Correct approach** — Scope the empty-parent cleanup to ONLY the removed worktree's parent chain. For a flat branch name there is no leftover parent — skip the find entirely. For a nested branch name (`feat/42-x` → leftover `worktrees/feat`), `rmdir` just that specific parent, or run the find rooted at that specific parent, never at the shared `worktrees` root. (The git skill P5 step 3 / P8 stage 7 commands should be fixed to the scoped form — tracked separately as a git-workflow backlog.)
 
@@ -80,7 +80,7 @@ updated: 2026-07-06
 
 **What happened** — A Codex subagent ran shell reads and verification with `workdir` set to the session worktree, but wrote evaluation files through patch paths like `.gobbi/projects/...`. Those patch writes landed in the main checkout, not the worktree session path.
 **Why it happens** — `exec_command.workdir` anchors shell commands only. Other write surfaces can resolve relative patch paths against the subagent's own root, so a shell command can verify the right tree while patch output appears in a different checkout.
-**How to detect** — The transcript shows worktree-scoped shell commands, but patch output uses relative `.gobbi/...` targets. The expected files are missing under `session.json.git.worktreePath` and appear under the main repo root.
+**How to detect** — Runtime evidence shows worktree-scoped shell commands, but the reported patch targets are relative `.gobbi/...` paths. The expected files are missing under `session.json.git.worktreePath`, while the main checkout reports the unexpected changes.
 **Correct approach** — Give every writable session-artifact target as a fully expanded absolute path under the worktree root. After the subagent returns, verify the exact worktree path with `test`, `find`, or `rg` before accepting the artifact.
 
 ### Related
