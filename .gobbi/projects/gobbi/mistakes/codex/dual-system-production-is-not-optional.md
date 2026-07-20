@@ -1,6 +1,6 @@
 ---
 name: dual-system-production-is-not-optional
-description: "Manager downgraded dual-system PRODUCTION to single-mode for efficiency; user corrected — keep the Codex co-work at creation, not only evaluation."
+description: A manager reduced creation rigor for efficiency; every WORK stage requires independent Claude and Codex contributions.
 type: mistakes
 scope: project
 feature: null
@@ -8,39 +8,28 @@ status: active
 created: 2026-06-30
 session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
 tags: [codex, process]
-keywords: [dual-system, production, proposer]
+keywords: [dual-system-work, independent-drafts, cross-review, named-waiver]
 author: claude
 domain: codex
 priority: high
 ---
 
-# Dual-system production is core, not optional ceremony
+# Dual-system WORK is mandatory, not an efficiency option
 
-**What went wrong**
-At the Ideation WORK sub-phase, the manager (auto-decide) downgraded `propose.mode`
-from the default `dual` to a single Claude-only leader run, framing the Codex
-proposer as heavyweight ceremony not worth it for a "well-specified fix whose
-design decisions the user decides anyway." The manager reserved dual-system only
-for evaluation. The user corrected: "keep the codex co-work system, not only for
-evaluation."
+## What happened
 
-**Why it went wrong (mistaken assumption)**
-The manager assumed the cross-family value of the Codex co-worker lives mainly at
-review time, and that at creation the user's own decision is a sufficient
-cross-check. That is wrong: dual-system PRODUCTION is a core gobbi principle —
-the anti-groupthink second generator at creation that the user trusts at review
-must also exist at creation (`orchestration/workflow/production.md` § Why
-dual-system production). Treating the proposer as optional silently strips the
-creation-time anti-groupthink signal.
+In a historical Ideation WORK stage, the manager proposed using only Claude for creation to save effort and keeping cross-system rigor only for evaluation. The user corrected the decision: independent Codex work must contribute during creation too.
 
-**How to recognize it next time**
-Any internal monologue that proposes setting `propose.mode: single`, skipping the
-Codex proposer, or "running this loop Claude-only to save effort / because the
-user decides anyway." Default is `dual` for all five productive steps; `single`
-is a deliberate, user-authorized exception, never a manager efficiency shortcut.
+## Why it happens
 
-**Corrected approach**
-Run dual-system production (Codex proposer in parallel with the Claude producer,
-then selective integration of the frozen proposal) for every productive loop by
-default. Only set `single` mode when the user explicitly authorizes it. The
-Codex co-work runs at BOTH production and evaluation.
+The mistaken assumption is that a second system adds value only after an artifact exists. In fact, independent creation exposes different reasoning paths before synthesis. Removing one draft because the task looks clear, the user will decide later, or token cost seems high removes the creation-time anti-groupthink control.
+
+## Correct approach
+
+Every WORK stage sends the same neutral contract to Claude and Codex. Freeze and validate both system-labeled drafts before either system sees the other. Then run reciprocal cross-review, synthesize through the active-runtime specialist, and resolve every material item in `open-decisions.md` with the user before EVALUATION.
+
+If a system is unavailable, times out, or returns invalid output, pause and surface the exact failure. Continue with one system only after the user explicitly waives that named system for the named step and iteration. Never narrow Ideation, dual-system creation, or evaluation rigor to save tokens.
+
+## How to detect
+
+The trap is firing when current guidance proposes one creation system because the task is mechanical, well specified, expensive, or scheduled for dual evaluation later. It also fires when a missing system is treated as an implicit fallback instead of a blocking failure or exact user-approved waiver.

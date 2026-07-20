@@ -1,6 +1,6 @@
 ---
 name: single-evaluator-pass-is-provisional
-description: A PASS from only one evaluation system (the other absent for that round) is provisional, not final — a subsequent run of the missing system found a real defect the sole evaluator missed.
+description: One evaluator PASS cannot close a step unless the user approved the exact missing-system waiver for that iteration.
 type: mistakes
 scope: project
 feature: null
@@ -8,51 +8,32 @@ status: active
 created: 2026-07-16
 session: 59694f66-422a-4fd5-b93b-625c2f354fc3
 tags: [evaluation, process]
-keywords: [sole-evaluator, cross-system-divergence, anti-groupthink, dual-system]
+keywords: [single-evaluator, cross-system-divergence, named-waiver, dual-system-evaluation]
 author: claude
 priority: high
 domain: process
 related: [no-touch-git-gate-has-many-fail-open-modes]
 ---
 
-# A single-evaluator PASS is provisional, not a final verdict
+# One evaluator PASS is insufficient without an exact user-approved waiver
 
 ## What happened
 
-During Ideation iter4, Claude ran as the sole evaluator for that round and returned PASS with only 2
-Medium findings (`working/consolidated-findings-iter4.md`: "Claude PASS (sole-evaluator, 2 Mediums)").
-Codex was retried on the same draft and returned REVISE with 3 new Highs the sole Claude pass had
-missed — including, across the following iteration, the symlink-traversal gap in the no-touch gate
-(`COD5-RISK-001`, see `no-touch-git-gate-has-many-fail-open-modes`). Had the loop accepted the
-Claude-only PASS as final and moved on, the design would have locked with a fail-open verification gate
-and an unresolved classification-determinism defect.
+During a historical Ideation iteration, Claude was the only evaluator and returned PASS. A later Codex evaluation of the same subject returned REVISE with new High findings, including a fail-open symlink case. Accepting the first result would have locked an unsafe design.
 
 ## Why it happens
 
-The dual-system model's whole value is the anti-groupthink signal: Claude and Codex are independent
-generators/evaluators that do not see each other's work, so a defect one system's structural checks pass
-can still be caught by the other's different vantage point. A single-evaluator round removes exactly
-that signal for the round it covers — a PASS from one system says only "this one system's checks did not
-find a problem," not "no problem exists." Treating it as equivalent to a normal dual-system PASS silently
-discards the cross-system divergence check the workflow is built around.
+Fresh independent systems find different defects. One PASS proves only that one complete report found no blocking issue. It does not provide the required cross-system divergence check and cannot be silently upgraded into a pair result.
 
 ## Correct approach
 
-Treat any eval round where only one system produced a verdict as PROVISIONAL. Before locking a
-foundation artifact (a design spec, a scope contract, anything downstream work will depend on), re-run
-the missing system on the same draft and reconcile both verdicts — do not proceed to the next loop or
-lock status on a sole-evaluator PASS. A missing evaluator in a `propose.mode: dual` loop is itself a
-safety-relevant condition, not a routine scheduling gap: the same discipline the design guide already
-applies to a missing Codex PRODUCER (degraded-mode labeling, no silent fallback) applies to a missing
-Codex EVALUATOR.
+Dispatch one fresh Claude evaluator and one fresh Codex evaluator with the same complete evidence bundle. Validate both reports independently, then aggregate with `FAIL > REVISE > PASS`. Normal PASS requires PASS/PASS.
+
+If an evaluator is unavailable or invalid, pause and show the exact failure. The only single-report closure path is an explicit user waiver naming the missing system, step, and iteration. Store that decision as a material artifact and link it from the final outcome. Do not reuse a waiver across another iteration or infer one from urgency or token cost.
 
 ## How to detect
 
-Any evaluation round's consolidated findings or reconciliation log stating or implying "sole-evaluator"
-or listing a verdict from only one of {claude, codex} for that iteration. The signal to watch for: a
-PASS reached with one system's coverage, immediately followed (same or next iteration) by the other
-system finding a new High/Critical on the identical draft — this is the concrete pattern that already
-happened once in this session and is the early-warning shape to recognize before it recurs.
+Only one system-labeled report exists under `evaluation/iteration-{n}/`, yet state is about to record PASS and advance. If no exact waiver artifact exists for that missing system, step, and iteration, the transition is invalid.
 
 ## Related
 

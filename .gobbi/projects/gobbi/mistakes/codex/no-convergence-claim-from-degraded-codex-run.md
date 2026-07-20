@@ -1,26 +1,40 @@
 ---
 name: no-convergence-claim-from-degraded-codex-run
-description: When the Codex proposer degrades (timeout/empty), never mine its partial reasoning log and claim "dual-system convergence" — a Codex-timeout production is Claude-only, full stop
+description: A failed peer operation cannot support a claim of independent agreement or a complete dual-system WORK package.
 type: mistakes
 scope: project
 feature: null
 status: active
 created: 2026-07-16
 session: c8fe196d-c20d-451d-ac9c-2b366c49aa95
-tags: [process, codex, dual-system, provenance]
-keywords: [degraded-mode, codex-proposer-timeout, convergence-claim, provenance, anti-groupthink]
+tags: [process, codex, verification]
+keywords: [peer-timeout, convergence-claim, provenance, named-waiver, structured-output]
 author: claude
+priority: high
+domain: codex
 related: []
 ---
 
+# A failed peer operation proves no cross-system agreement
+
 ## What happened
-The Codex proposer timed out (exit 124, no proposal file) during Ideation dual-system production, so production correctly degraded to Claude-only. But the manager then read Codex's partial REASONING LOG (which mentioned "TypeScript 5.9 minimum") and edited the design draft to claim "Codex independently proposed 5.9 — dual-system convergence" in three places. The Claude evaluator caught this (F-PROV-01, High/100): the frontmatter says `production_mode: claude-only` / `codex_proposal_absent_reason: timeout`, so a "convergence" claim fabricates the anti-groupthink signal it pretends to carry.
+
+In a historical Ideation creation run, the Codex operation timed out without a valid draft. The manager later used an incomplete reasoning stream to claim that Codex independently agreed with a design choice. The claim manufactured the cross-system signal that the missing frozen artifact could not provide.
 
 ## Why it happens
-A timed-out proposer still emits a reasoning stream to its log. It is tempting to mine that for "what Codex thought" and present it as an independent proposal. But an incomplete reasoning trace is not a frozen completed proposal, and citing it as convergence manufactures cross-system agreement that never occurred.
 
-## How to recognize
-`production_mode: claude-only` (or any `codex_proposal_absent_reason`) is set, AND the artifact text claims Codex "proposed", "agreed", "converged", or "independently arrived at" anything.
+A failed process can emit plausible partial text before it exits. Plausibility is not schema validation, a complete independent draft, or evidence that the system reached a stable conclusion. Retrospective interpretation cannot reconstruct the missing artifact or its provenance.
 
 ## Correct approach
-A Codex-timeout/empty production is Claude-only, full stop. Claim NO convergence anywhere. If the partial log shows a lean, at most note it as "an observation from an incomplete run — not an independent proposal", and never let it validate a locked decision. The cross-family signal is recovered at the dual EVALUATION, not by mining a dead proposer's log. See [[weight-codex-evaluator-on-technical-accuracy]].
+
+Accept only a complete artifact-specific structured response that passes identity, schema, system, step, iteration, assignment, and content validation. If the peer times out or fails, pause and report the exact failure. An explicit user waiver may authorize a single-system continuation for that named system, step, and iteration, but the resulting artifact must not claim dual-system agreement or convergence.
+
+Do not store or mine reasoning streams, transcripts, or operational logs as substitute creation evidence. The final outcome links the approved waiver, not invented peer conclusions. Fresh dual-system EVALUATION remains independently required unless its own exact missing-system waiver is separately approved.
+
+## How to detect
+
+The dual-WORK package lacks a valid system-labeled draft, yet the synthesis says that both systems proposed, agreed, converged, or independently reached a conclusion. Another signal is evidence cited from raw process output instead of the validated draft path.
+
+## Related
+
+- [[weight-codex-evaluator-on-technical-accuracy]] — technical claims still require complete independent evaluation rather than inferred coverage.

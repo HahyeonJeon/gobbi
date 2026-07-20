@@ -7,7 +7,7 @@ feature: git-workflow
 status: active
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
-tags: [process, planning]
+tags: [process]
 keywords: [feature-memory, readiness]
 author: claude
 ---
@@ -16,30 +16,27 @@ author: claude
 
 ## Scenario description
 
-The Scope Contract names `feature: git-workflow`. When Planning readiness begins, `features/git-workflow/`
-does NOT yet exist — only `features/workflow/` is present (verified). Planning must not assume
-feature-scoped memory (mistakes / decisions / scenarios / checklists) already exists for this
-feature.
+The locked scope names `feature: git-workflow`. When Planning DISCUSSION runs its readiness gate,
+`features/git-workflow/` does not yet exist. Planning must not assume feature-scoped mistakes,
+decisions, scenarios, or checklists are present, and it must not interpret an empty read as evidence
+that the feature has no relevant context.
 
 ## Why it matters
 
-Codex evaluator finding P1 (scenario_gap, process, Medium/75): the artifact named a feature whose
-memory directory is absent but did not surface this as a readiness scenario. If Planning assumes
-feature-scoped memory exists and reads `features/git-workflow/` for prior decisions, it reads
-nothing and silently skips the context check.
+This scenario originated from a supported evaluation finding: the plan named a feature whose memory
+directory was absent but did not make that absence visible. A missing directory produces no read
+output, so an unrecorded empty-state branch silently skips required context checks.
 
 ## Acceptance conditions
 
-- [ ] Planning readiness confirms whether `features/git-workflow/` exists before decomposition reads it.
-- [ ] If the directory is absent, the readiness report records `NO_FEATURE_MEMORY`; Planning must not
-  treat an empty read as proof that no relevant context exists.
-- [ ] A project-owned foundation gap becomes the first ordered Execution task. A missing workspace or
-  domain dependency returns `NEEDS_CONTEXT`; Planning does not write durable memory to close it.
-- [ ] The feature dir `features/git-workflow/` is named in `gobbi/SKILL.md:209` as a value-feature;
-  its slug is correct even if the dir is absent.
+- [ ] Planning confirms whether `features/git-workflow/` exists before decomposition consumes feature memory.
+- [ ] If absent, the readiness evidence records `NO_FEATURE_MEMORY`; empty command output is not treated as proof of no context.
+- [ ] A project-owned foundation gap becomes the first ordered Execution task. A missing workspace or domain dependency returns `NEEDS_CONTEXT`.
+- [ ] Planning does not create durable memory directly. Any justified candidate is typed, staged through RECORD, and promoted only during Wrap-up.
+- [ ] The feature identity remains `git-workflow` in `session.json` version 5. Routing stays in `state.json` version 3 and is not inferred from the feature directory.
 
 ## Related
 
-- R5 remediation in `working/draft-iter2.md`
-- `working/draft-iter2.md § Deferred` — feature-memory readiness note
-- `skills/gobbi/SKILL.md:209` — `git-workflow` listed as a value-feature
+- Historical source: the originating session's second Ideation iteration readiness remediation.
+- Current owner: `skills/planning/SKILL.md` for readiness and decomposition.
+- Current memory owner: `skills/memory/SKILL.md` for typed candidates and durable promotion.

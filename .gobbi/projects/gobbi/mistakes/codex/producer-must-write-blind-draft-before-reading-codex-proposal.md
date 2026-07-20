@@ -1,6 +1,6 @@
 ---
 name: producer-must-write-blind-draft-before-reading-codex-proposal
-description: The Claude producer opened the frozen Codex proposal during Study before writing its own blind draft, breaking dual-system production independence.
+description: One contributor saw the peer draft before freezing its own, destroying the independence required by dual-system WORK.
 type: mistakes
 scope: project
 feature: null
@@ -8,7 +8,7 @@ status: active
 created: 2026-07-14
 session: 6a9e0963-2ca1-4d07-83d3-1889aa16bcf4
 tags: [codex, process]
-keywords: [dual-system-production, blind-first, independence, proposer, producer, integration]
+keywords: [dual-system-work, independent-draft, freeze-order, cross-review, package-validation]
 author: claude
 priority: high
 domain: process
@@ -17,43 +17,27 @@ superseded_by: null
 related: [codex-proposer-must-be-source-read-only, dual-system-production-is-not-optional]
 ---
 
-# The producer must write its blind draft before opening the Codex proposal
+# Freeze each independent draft before any cross-system read
 
 ## What happened
 
-During a dual-system PRODUCTION loop, the Claude producer (an executor compacting
-`convention.md` + `typing.md`) opened the frozen `working/proposals/codex/draft-iter{n}.md`
-during its Study phase, BEFORE writing its own STEP-1 blind draft. That is a blind-first
-independence violation: the producer is supposed to generate its canonical draft without
-seeing the Codex proposal, then selectively integrate the frozen proposal afterward. The
-impact was bounded this time (the union self-diff compares against the pre-trim, not against
-Codex, and the producer's independent audit still caught two conditions the Codex proposal
-had dropped, so the dual EVALUATION independence held), but reading the peer first weakens
-production-side independence and risks anchoring the "independent" draft on the peer.
+During a historical dual-system creation loop, the Claude contributor opened the Codex draft before finishing its own. The later artifact still contained useful differences, but the ordering made Claude's work vulnerable to anchoring and removed proof that the drafts were independently generated.
 
 ## Why it happens
 
-The proposal file already sits in the worktree when the producer starts, and Study naturally
-reads everything available. Nothing physically gates the read: the producer can open the
-proposal as easily as any other input, and a brief that says "integrate the Codex proposal"
-without ordering the steps invites reading it up front.
+The peer artifact was visible before both drafts reached the freeze barrier. A brief that asks for later synthesis without an explicit independence boundary invites a contributor to treat the peer's structure and conclusions as ordinary study inputs.
 
 ## Correct approach
 
-Write the blind draft FIRST, then open the proposal. The executor/producer brief must make
-STEP-1 write-then-verify explicit and instruct the producer NOT to open
-`working/proposals/codex/` until its own blind draft file exists on disk. Only after the
-blind draft is written does the producer read the frozen proposal and selectively integrate.
-(Enforced strictly in the later tasks of this session's briefs, and honored there.)
+Give Claude and Codex the same neutral contract and isolate their operations. Each returns a system-labeled draft. The active-runtime assistant validates and stores each response through the record command. Do not give either contributor the other draft until both files under `working/iteration-{n}/drafts/` are complete, frozen, and validated.
+
+Only after that barrier may Claude review the frozen Codex draft and Codex review the frozen Claude draft. The dual-WORK validator must reject missing, mislabeled, stale-iteration, same-author, extra, or incorrectly ordered artifacts before synthesis.
 
 ## How to detect
 
-The producer's transcript shows a read of `working/proposals/codex/draft-iter{n}.md` earlier
-than the write of its own `working/draft-iter{n}.md`. Tell: the "independent" draft echoes
-the proposal's structure or wording. Order-check the two events; the blind-draft write must
-precede the proposal read.
+The package cannot prove both drafts froze before either cross-review, or one independent draft imports peer-specific structure, wording, or conclusions that were absent from the neutral contract. Treat an unverifiable freeze order as a blocked WORK package; do not rely on a captured transcript to repair provenance later.
 
 ## Related
 
-- [[codex-proposer-must-be-source-read-only]] — the mirror-image independence discipline on the Codex proposer side
-- [[dual-system-production-is-not-optional]] — the dual-system production model this independence protects
+- [[codex-proposer-must-be-source-read-only]] — the peer process must also be read-only and unable to alter the shared inputs.
+- [[dual-system-production-is-not-optional]] — the mandatory dual-system WORK contract this independence protects.

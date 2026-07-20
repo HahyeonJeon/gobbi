@@ -1,6 +1,6 @@
 ---
 name: README
-description: Two sibling SOP skills — `scenario` and `checklist` — that are the shared basis of design AND evaluation authoring across the gobbi workflow.
+description: Shared scenario and checklist authoring standards used by current design, execution, memory, and evaluation owners.
 type: features
 scope: feature
 feature: scenario-checklist
@@ -10,7 +10,7 @@ session: 59694f66-422a-4fd5-b93b-625c2f354fc3
 tags: []
 keywords: [scenario, checklist, sop-skills, taxonomy, evaluation-basis]
 author: claude
-value_proposition: One authoring reference for "what makes a good scenario set" and "what makes a good checklist" — a full 10-category × 8-case-type taxonomy plus an author-declared primary-category discipline — so any skill or workflow-loop bundle that needs scenarios or checklists has a single, non-duplicated SOP to build against.
+value_proposition: One scenario standard and one evidence-bearing checklist standard, reused without duplicating the active evaluation procedure.
 subsystems: [skills/scenario, skills/checklist]
 ---
 
@@ -24,7 +24,18 @@ checklist (per-item resolution with an evidence-before-acceptance floor). They a
 pair — `checklist` may read a `scenario` set; `scenario` never reads or constructs checks — intended as
 the shared basis of design AND evaluation authoring project-wide.
 
-## Status
+## Current contract (2026-07-20)
+
+- The single workflow is `Configuration -> Ideation -> Planning -> Execution -> Wrap-up`; each productive step uses `DISCUSSION -> WORK -> EVALUATION -> RECORD`.
+- Scenario owns coverage and failability. Checklist owns evidence-bearing checks and its closed resolution model. Evaluation owns the seven perspectives, Overall, findings, checklist completion, and report verdict; step skills point to these owners.
+- Ideation and Planning use the standards while locking obligations. Execution, Memory, and Evaluation use them for final-tree proof. The standalone Preparation skill and its bundle no longer exist.
+- A runtime evaluator produces one complete report per system, not separate scenario/checklist output files. Both reports must be fresh after material revision, and the user approves finding dispositions before correction.
+- `session.json` version 5 and `state.json` version 3 hold lifecycle and routing respectively. Scenario/checklist artifacts do not store transcripts, telemetry, runtime histories, or a second cursor.
+- The former child-doc completeness shell command is retired. Current conformance is covered by owner review, the root scoped link validator, the dual-WORK validator, and the evaluation-report validator within the ten-command set.
+
+## Historical status
+
+The dated account below records how the two SOP skills were introduced. References to Preparation, deferred wiring, or bounded nonstandard iterations are historical, not current procedure.
 
 **Session `59694f66` (2026-07-16):** both skills shipped. Ideation ran 5 dual-system iterations plus one
 bounded finalization pass (2 mechanical residuals — a symlink-gate leg and a duplicate token-scoping
@@ -48,7 +59,14 @@ this session — no phase reader loads them yet; see the open item below.
 |---|---|---|
 | 2026-07-16 | `59694f66-422a-4fd5-b93b-625c2f354fc3` | Both SOP skills designed (5 iter + finalization) and shipped (4 commits); wiring deferred |
 
-## Open items
+## Current open work
+
+- Complete the final ownership sweep so each consumer points to the scenario/checklist owners without copying their procedure.
+- Prove the current evaluation package through both runtime fixtures and fresh dual-system Execution evaluation.
+
+## Historical backlog references
+
+The entries below are preserved from the feature's introduction and are not the current queue.
 
 - Per-phase pointer wiring + conformance sweep of the 6 existing `scenario.md`/`checklist.md` bundles —
   see `[[wire-scenario-checklist-into-workflow]]`

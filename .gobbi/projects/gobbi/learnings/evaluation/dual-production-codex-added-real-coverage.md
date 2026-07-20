@@ -1,6 +1,6 @@
 ---
 name: dual-production-codex-added-real-coverage
-description: Dual-system production with a blind Codex proposer adds real, verifiable coverage rather than noise — this session's evidence
+description: Independent Codex and Claude creation exposed complementary coverage that survived reciprocal review and synthesis.
 type: learnings
 scope: project
 feature: null
@@ -8,34 +8,37 @@ status: active
 created: 2026-06-26
 session: babc6f3b-e845-4ed3-9625-c14ea9237fd8
 tags: [evaluation, codex, process]
-keywords: [dual-system, proposer, coverage-breadth, integration-log, blind-parallel]
+keywords: [dual-system-work, coverage-breadth, independent-drafts, cross-review, synthesis]
 author: claude
 related: []
 ---
 
-# Dual production: Codex blind proposal added real coverage this session
+# Independent dual-system WORK added real creation coverage
 
 ## Insight
 
-A blind Codex proposal integrated via principled SELECT (not blend) can add genuine artifact coverage across 13 of 16 integration decisions (4 took-codex + 9 merged-selective) while Claude-main catches what the proposal misses (F1, the missing runtime mirror — 2 kept-own).
+Independent Claude and Codex drafts can expose complementary obligations before evaluation. The originating session showed substantive Codex additions while Claude preserved an omitted runtime-mirror requirement. The value came from difference and evidence, not agreement counts.
 
 ## Context
 
-Ideation iter1 (session babc6f3b) ran dual production per the D1–D9 model: Claude leader authored the canonical frame; a blind Codex proposer (separate `codex exec`, no shared context) wrote a parallel draft; the producer ran principled selective integration (16 deltas logged in `reconciliation-iter1.md`). Both systems independently reached the same headline conclusions (keep blind-parallel default; reject interactive-advisor; selection is the lever). The proposal added coverage breadth the producer's draft lacked.
+In the historical session, Claude and a separate read-only Codex process created drafts without seeing each other. The old reconciliation record attributed artifact-changing contributions to both systems. Although that file shape is retired, it remains evidence that independent creation found different useful content before review.
 
 ## Reason
 
-Without evidence that dual production adds real value (vs just adding cost and Codex-label theater), there is no basis for keeping it as the default. This session's Integration Log is a concrete, per-delta-cited record that the Codex co-worker shaped 13 of 16 decisions — the value is attributable, not a vibe.
+Different systems follow different reasoning paths. Freezing both drafts before exposure preserves those paths so reciprocal reviews and synthesis can compare concrete obligations. A single draft plus later dual evaluation would miss creation-time alternatives that never entered the candidate.
 
 ## How
 
-Read the Integration Log counts after each dual production run: `took-codex` + `merged-selective` = artifact-changing rows; `kept-own` = noise or Claude-main superiority; `escalated` = LARGE-gap surfacing. A run with zero `took-codex` + zero `merged-selective` across all rows is a noise signal (D1.2 in the verification frame). The coverage areas the proposal added: step-specific scenarios (1B), 8 sharper checklist items, the labeled `consult` sub-mode, the closing verification invariant — all cited in the Integration Log with their source principle.
+Give both systems the same neutral contract. Freeze and validate both drafts before reciprocal cross-review. Require each review to identify supported strengths, omissions, and conflicts in the peer artifact. The active-runtime specialist synthesizes from all four inputs and records material conflicts in `open-decisions.md` for the user.
+
+Evaluate value by traceable obligations and evidence preserved in the drafts, cross-reviews, and synthesis. Do not add operational counters, token telemetry, or an integration score, and do not use perceived low yield or cost to narrow future dual-system WORK.
 
 ## Counter-cases
 
-- **Low-yield steps (Preparation, mechanical Execution):** Codex may add nothing across several runs. D1.2 flags this; D4.1 + D1.6 (when C6 telemetry ships) make the single-mode-candidate case. Do not generalize this session's Ideation result to every step.
-- **Weak selector:** a low `took-codex` count may reflect a producer that does not integrate well, not a Codex proposal that adds nothing (D4.6 in the verification frame). Read the Integration Log `why` columns to distinguish.
+- Similar drafts are still valid independent evidence when the freeze order is proven; agreement does not justify dropping a system next time.
+- A missing or invalid draft is not low yield. It is a blocking failure that requires retry or an exact user-approved waiver.
+- Synthesis may reject a peer suggestion when evidence supports that choice, but it must still account for both drafts and both cross-reviews and resolve material conflict with the user.
 
 ## Related
 
-- [[dual-eval-caught-managers-own-audit-gap]] — the evaluation-side complement: dual eval also caught a real defect
+- [[dual-eval-caught-managers-own-audit-gap]] — the evaluation-side complement: independent review also exposed a real defect.

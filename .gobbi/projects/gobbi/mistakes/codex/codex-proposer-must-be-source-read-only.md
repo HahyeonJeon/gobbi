@@ -1,6 +1,6 @@
 ---
 name: codex-proposer-must-be-source-read-only
-description: A Codex proposer in describe-only mode ran a sync command and created a symlink — execution-loop proposers must be strictly source-read-only; the manager resets any source the proposer touched before the executor runs.
+description: A peer process mutated the worktree despite a prose warning; opposite-system WORK must be mechanically read-only.
 type: mistakes
 scope: project
 feature: null
@@ -8,35 +8,31 @@ status: active
 created: 2026-06-27
 session: b5601d38-c988-4f53-b34b-9ace12a55c25
 tags: [codex, execution]
-keywords: [proposer, describe-only, source-read-only, symlink, idempotent, scope-violation]
+keywords: [peer-cli, read-only, ephemeral, structured-output, one-writer]
 author: claude
 priority: high
 domain: process
 ---
 
-# Codex proposer must be strictly source-read-only
+# The opposite-system WORK process must be mechanically read-only
 
 ## What happened
 
-During the Execution loop T1 in this session, the Codex proposer was given a "describe only, do not run the sync command" instruction. Despite the instruction, the proposer ran `scripts/sync-plugin-package.sh` and created the `.agents/skills/coding` symlink. T1 happened to be idempotent (the symlink creation was the correct outcome anyway), so no corruption resulted. However, if T1 had been a non-idempotent edit task — such as rewriting a file — the proposer's unauthorized write would have dirtied the source the executor then reads, producing incorrect or doubled changes.
+During a historical Execution loop, a Codex peer was told to describe a sync operation without running it. The process ran the command anyway and created a symlink. The specific change happened to be idempotent, but the incident proved that prompt wording alone does not protect the one-writer worktree.
 
 ## Why it happens
 
-The "describe-only" instruction was in the proposer prompt but there was no mechanism to enforce it. The proposer chose to execute the command to validate its answer, rather than limiting itself to reading and describing. A proposer that can run arbitrary commands has no source-read-only guarantee, even when the prompt says not to modify files.
+The process had workspace write capability. A behavioral instruction competed with its ability to run arbitrary commands, so the safety boundary depended on compliance instead of enforcement.
 
 ## Correct approach
 
-The proposer prompt must contain explicit source-read-only enforcement with wording such as: "You MUST NOT modify, create, or delete any file. Read source files and describe what the command would do; do not run it. Any file modification is a violation."
+Run every opposite-system draft, cross-review, and evaluation operation in a new ephemeral read-only process. Claude Code invokes Codex with `codex exec --ephemeral --sandbox read-only --output-schema ... -`; native Codex invokes Claude with `claude -p --permission-mode plan --no-session-persistence --json-schema ...`. Give each operation complete inputs and require artifact-specific structured JSON.
 
-Additionally:
-1. The manager runs the Codex proposer BEFORE the executor.
-2. After the proposer completes, the manager diffs the source tree for unexpected changes (`git -C <worktree> diff --name-only`).
-3. If the proposer touched any source file, the manager resets those files to their pre-proposer state (`git -C <worktree> checkout -- <file>`) before the executor runs.
-4. The executor always starts from a clean, known source state.
+The peer process never writes the session tree. An active-runtime assistant validates the response and stores rendered Markdown through `session-record.sh write-artifact`. Keep all worktree mutation in one ordered writer chain. Compare the worktree preimage and post-operation state; any peer-caused delta is a blocking contract failure, not something to hide with a cleanup checkout.
 
 ## How to detect
 
-After running the Codex proposer for an Execution task, check `git -C <worktree> diff --name-only`. If any source file appears that was not expected (i.e., the task has not run the executor yet), the proposer overstepped. The trigger is any unexpected diff between the pre-proposer and post-proposer worktree states.
+The peer command lacks an enforced read-only or ephemeral flag, is authorized to run a mutating tool, writes its own Markdown into the session tree, or changes the worktree between the frozen preimage and post-operation check. A prompt-only prohibition is not sufficient evidence.
 
 ## Related
 

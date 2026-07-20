@@ -1,6 +1,6 @@
 ---
 name: README
-description: The gobbi workflow engine — the 5-step state machine that governs every session, its per-session working-memory tree, and the orchestration skills that drive it.
+description: The single Gobbi workflow, v5/v3 session router, dual-system quality loop, and session-record ownership.
 type: features
 scope: feature
 feature: workflow
@@ -10,7 +10,7 @@ session: 1abeb43f-6389-4abf-b098-b2b3e68d79b2
 tags: []
 keywords: [workflow, session-memory, orchestration, scaffold, vocabulary-rename, wrap-up-pipeline]
 author: claude
-value_proposition: Deterministic, auditable session execution — every session runs the same 5-step machine against a spec-defined, script-materialized working-memory tree, with Planning owning readiness and decomposition, RECORD owning per-loop capture, and Wrap-up owning durable promotion.
+value_proposition: Deterministic, auditable work through one workflow, one active router, independent dual-system creation, and fresh dual evaluation.
 subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation, skills/planning, skills/execution, skills/wrap-up]
 ---
 
@@ -18,9 +18,27 @@ subsystems: [skills/orchestration, skills/record, skills/memory, skills/ideation
 
 ## Overview
 
-The `workflow` feature is the gobbi session engine. It defines the 5-step state machine (Configuration + Ideation + Planning + Execution + Wrap-up), the per-session working-memory tree, and the orchestration skills that govern each step. Planning is non-skippable and begins DISCUSSION with a readiness entry gate over the locked Ideation output, memory, skills, authority, and staging. Every Gobbi session runs against this feature's spec — from Configuration to Wrap-up's `workflow.finish`.
+The `workflow` feature is the Gobbi session engine. It routes one mandatory workflow:
 
-## Status
+`Configuration -> Ideation -> Planning -> Execution -> Wrap-up`
+
+Every productive step uses `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning is non-skippable and begins with a readiness gate over locked Ideation, memory, skills, authority, and staging.
+
+## Current contract (2026-07-20)
+
+- `session.json` schema version 5 is the low-frequency lifecycle manifest. It owns settings, stable Gobbi session identity, ordered runtime IDs, Git identity, and the final durable outcome.
+- `state.json` schema version 3 is the only active router. Its canonical cursor is `current.step`, `current.stage`, `current.iteration`, and `current.task`; `activeDispatches` records bounded live assignments. Runtime task lists are projections only.
+- WORK always starts with independent Claude and Codex drafts from one neutral contract. Both drafts freeze before reciprocal cross-review. The active-runtime specialist then writes the synthesis and resolves material items in `open-decisions.md` with the user.
+- EVALUATION always uses two fresh independent evaluators. Each writes one system report containing Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, Overall, a finding ledger, a completed checklist, and a derived verdict. A finding is not applied before the user approves its disposition.
+- A missing system pauses the loop. Continuation requires an explicit waiver naming the system, step, and iteration. Token cost never reduces Ideation, creation, or evaluation rigor.
+- The package has no Gobbi hooks, transcript capture, operational telemetry, or memory-compaction subsystem.
+- The ten owned commands are the three root package commands, the root Markdown-link validator, Git posture probe, Memory frontmatter validator, Mistake conformance validator, Record session command, dual-WORK validator, and evaluation-report validator. `examples/typescript/run-examples.sh` is an example harness, not a Gobbi workflow command.
+
+The current owners are `skills/orchestration/`, `skills/record/`, `skills/evaluation/`, and `skills/wrap-up/`. Output files are PASS-only; typed staging may validly remain empty.
+
+## Historical status
+
+The dated entries below are factual records of earlier contracts. They are not current execution guidance.
 
 **v0.5.3 (2026-07-19):** the standalone Preparation phase and skill were retired. Readiness is now the first gate inside Planning DISCUSSION; the session tree uses four contiguous loop directories (`1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`). Session schema v4 and state/settings schema v2 reject legacy session metadata before mutation; pre-v0.5.3 sessions must be completed in a worktree pinned to the older Gobbi version. Missing project-specific skills become the first ordered Execution task, while missing workspace/domain skills return `NEEDS_CONTEXT`.
 
@@ -28,7 +46,7 @@ The `workflow` feature is the gobbi session engine. It defines the 5-step state 
 
 **Session `1abeb43f` (2026-06-08):** session-memory tree redesign shipped. Spec-defined and script-materialized tree: `orchestration/templates/session-tree.md` + `orchestration/scripts/scaffold-session-dir.sh`. Full 45-file doc sweep. All 5 loops dual-system PASS.
 
-Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/persist-session-memory-past-cleanup.md`) and `[FLAG-2]` claude doc-authoring skill. The former `[FLAG-1]` is resolved: project skills are an authoring surface and missing project skills are created by an ordered Execution task.
+At the time, post-cleanup session-memory retention and a Claude doc-authoring skill were deferred. The former `[FLAG-1]` was resolved: project skills are an authoring surface and missing project skills become ordered Execution work.
 
 ## Subdirectories
 
@@ -59,7 +77,15 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 | 2026-06-13 | 7e00f98e-9ee8-4270-ba76-0d2f58d3f7e4 | Vocabulary rename + Wrap-up pipeline redesign: RECORD/memory/memorization vocabulary lock; 2-skill split (record + memory); 5-stage Wrap-up pipeline; CLAUDE.md/AGENTS.md reconcile; 2 guard scripts; 13 commits; 4 mistakes promoted (2 layer-2) |
 | 2026-06-08 | 1abeb43f-6389-4abf-b098-b2b3e68d79b2 | Session-memory tree redesign: spec doc + scaffold script + 45-file doc sweep shipped; 6 decisions + design + plan + 3 references promoted |
 
-## Open items
+## Current open work
+
+- Complete the repository-wide ownership review and the full Claude Code and native Codex fixtures from the locked 2026-07-20 implementation plan.
+- Run the complete dual-system Execution evaluation and resolve its finding batch through the user gate.
+- Keep the protected role documents' known obsolete wording isolated as the accepted exception; do not use it as workflow guidance.
+
+## Historical backlog references
+
+These entries record what earlier sessions considered open. They are not the current work queue.
 
 - `backlogs/process/task-record-template-and-dangling-ref.md`: author task-record template + fix 17 dangling refs in chat-mode.md.
 - `backlogs/workflow/persist-session-memory-past-cleanup.md` (project-level): retain session working memory after worktree cleanup for post-session debugging.
@@ -70,17 +96,17 @@ Deferred: post-cleanup session-memory retention (backlog `backlogs/workflow/pers
 - `[FLAG-2]`: author the `claude` doc-authoring skill (out of scope for this session).
 - GEN-D4-003 (2026-07-01 adversarial review, `backlogs/evaluation/fix-d4-review-findings.md:223`): the only remaining High from the original 4; not part of this session's locked scope.
 
-## Key design decisions (session `7e00f98e`)
+## Historical design decisions (session `7e00f98e`)
 
 - **D5/D6/D7** — Vocabulary lock: per-loop sub-phase = RECORD; durable store = memory; wrap-up promotion stage = memorization.
 - **D-b/D10** — Two-skill split: `skills/record/` = per-loop procedure; `skills/memory/` = durable CRUD standard.
 - **D-c/D8/D13** — Wrap-up 5-stage pipeline; git finalization is stage 5 (LAST, manager-owned); stage 3 memory validation is NON-SKIPPABLE and gates stage 5.
 - **D-f** — CLAUDE.md/AGENTS.md reconciled to 6-step machine (Configuration named explicitly).
 
-## Related
+## Current owners
 
-- `record/record-map.md` — single source of truth for the session record tree shape.
-- `orchestration/scripts/scaffold-session-dir.sh` — the idempotent materializer.
-- `record/scripts/verify-record-map.sh` — the sync-check gate.
-- `orchestration/scripts/check-markdown-links.sh` — link-resolution guard (added session `7e00f98e`).
-- `orchestration/scripts/check-residual-vocab.sh` — multi-class vocabulary residual guard (added session `7e00f98e`).
+- `skills/record/record-map.md` — v5/v3 schemas, eager tree shape, command contract, and atomic patch-file semantics.
+- `skills/orchestration/workflow/dual-system-work.md` — independent drafts, cross-review, synthesis, open decisions, and waiver behavior.
+- `skills/evaluation/SKILL.md` — the complete report method and verdict derivation.
+- `skills/record/scripts/session-record.sh` — the single session-record command.
+- `scripts/check-markdown-links.sh` — the root scoped link validator.
