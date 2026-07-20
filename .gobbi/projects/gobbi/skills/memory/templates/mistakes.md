@@ -40,7 +40,7 @@ keywords: []                         # freeform escape-hatch tags (required; may
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 domain: {e.g. process, hooks, docs-sync}
-supersedes: {prior mistake slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior mistake slug} | null        # one plain slug, not a path
 superseded_by: {newer mistake slug} | null    # plain slug, not a path
 ---
 
@@ -87,7 +87,7 @@ updated: YYYY-MM-DD
 ---
 ```
 
-**Body** — one `## ` section per trap. The heading slugifies to the trap's stable anchor, so an inbound reference resolves to `skills/{skill}/mistakes.md#{anchor}` (the Map-of-Content section-anchor model, [`../rules.md`](../rules.md) §5.2). Each ACTIVE section carries a one-line metadata strip, then the 4 mandatory elements, then an OPTIONAL `**User feedback**` line, then an optional `### Related` `[[slug]]` list. Retired sections move under a single `## Archived` heading at the file bottom and are NOT active:
+**Body** — one `## ` section per trap. The heading slugifies to the trap's stable anchor, so an inbound reference resolves to `skills/{skill}/mistakes.md#{anchor}`. Each ACTIVE section carries a one-line metadata strip, then the 4 mandatory elements, then an OPTIONAL `**User feedback**` line, then an optional `### Related` `[[slug]]` list. Retired sections move under a single `## Archived` heading at the file bottom and are NOT active:
 
 ```markdown
 # {Skill} — Mistakes
@@ -121,7 +121,7 @@ updated: YYYY-MM-DD
 
 **The metadata strip** is the one-line `priority:` · `domain:` · `added:` · `status:` · `tags:` row directly under the heading. `validate-skill-mistakes.sh` requires all five keys on an active section's strip.
 
-**The `## Archived` convention (skill-tier supersession).** The skill surface has no `archive/` directory and no `git mv`-to-archive lifecycle. When a skill-owned trap is superseded, flip its section's metadata `status:` to `superseded`, then move the whole `## ` section under the single `## Archived` heading at the file bottom (or remove it when it has no historical value). A reader — and `validate-skill-mistakes.sh` — treats every `## ` section at or below `## Archived` as NON-active: it is EXEMPT from the 4-element + strip checks, but its anchor still participates in the uniqueness check and its references are still resolved. This is the co-located analog of the Map-of-Content split-on-retire rule ([`../rules.md`](../rules.md) §5.3).
+**The `## Archived` convention (skill-tier supersession).** The skill surface has no separate `archive/` directory and no `git mv` lifecycle. When a skill-owned trap is superseded, flip its section's metadata `status:` to `superseded`, then move the complete `## ` section under the single `## Archived` heading at the file bottom. A reader — and `validate-skill-mistakes.sh` — treats every `## ` section at or below `## Archived` as NON-active: it is EXEMPT from the 4-element + strip checks, but its anchor still participates in the uniqueness check and its references are still resolved. Preserve the full section so the trap's history and reciprocal supersession reference remain auditable.
 
 **Migration is copy-the-elements, not a verbatim file copy.** When a memory-tier mistake file becomes a skill-owned section, copy its 4 elements (+ optional `User feedback`) into a `## ` section and DROP every memory-only piece — the 11-field frontmatter, and any obsolete `## Layer-2 candidate` section or `layer:` / `layer2-source:` frontmatter. The skill-surface section carries only the light strip + the elements.
 

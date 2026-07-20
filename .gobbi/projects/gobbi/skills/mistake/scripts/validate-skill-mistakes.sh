@@ -92,8 +92,8 @@ REPO_ROOT="$(cd "$PROJ_DIR/../../.." && pwd)"           # repo root holds .gobbi
 # Helpers.
 # ---------------------------------------------------------------------------
 
-# slugify <text> — GitHub-style anchor slug (identical convention to
-# check-merge-ref-integrity.sh): lowercase, drop punctuation except hyphen,
+# slugify <text> — the repository's GitHub-style Markdown-anchor convention:
+# lowercase, drop punctuation except hyphen,
 # spaces -> hyphen, squeeze + trim hyphens. `## Guard X` -> guard-x.
 slugify() {
     printf '%s' "$1" \

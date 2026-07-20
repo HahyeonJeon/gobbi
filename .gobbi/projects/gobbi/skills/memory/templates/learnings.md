@@ -40,7 +40,7 @@ session: {session-id}
 tags: [process, verification]        # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
-supersedes: {prior learning slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior learning slug} | null        # one plain slug, not a path
 superseded_by: {newer learning slug} | null    # plain slug, not a path
 related: [{related learning slugs}]            # list[slug] — plain slugs, not paths
 ---

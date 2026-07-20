@@ -25,9 +25,8 @@
 #       reviews -> review_kind; reports -> report_type (kind axis REQUIRED, L16)
 #     - tags is an inline flow list [a, b] (§2.5); a block-style list (key: then '  - item')
 #       is REJECTED with a clear message (gobbi convention is inline flow lists)
-#     - slug-link value-shape (§2.1/§2.4): superseded_by (scalar, null ok) and
-#       supersedes (scalar slug OR list[slug] for consolidation-merge, null ok),
-#       and each item of related[] / supersedes[] must be a PLAIN SLUG (kebab-case),
+#     - slug-link value-shape (§2.1/§2.4): superseded_by and supersedes are scalar
+#       plain slugs (null ok); each item of related[] must be a PLAIN SLUG (kebab-case),
 #       never a path (no '/', no '.md', no spaces, no [[ ]])
 #     - no-stray-keys: every frontmatter key ∈ base (the 11 required, incl. keywords +
 #       author) + the global-optional slug-link fields (supersedes / superseded_by /
@@ -52,7 +51,8 @@
 #   instead; default is the whole P_live tree.
 #
 # Args:
-#   [paths...]  Zero or more .md files to validate. Default: the whole P_live tree.
+#   [paths...]   Zero or more .md files to validate. Default: the whole P_live tree.
+#   --self-test  Run isolated scalar/null/absent acceptance and list-rejection fixtures.
 #
 # Output: one line per violation — FILE:FIELD: message. A summary count on stderr.
 #   Exit non-zero if any violation; exit 0 + "OK: N files validated" if clean.
@@ -60,7 +60,7 @@
 # Bash + jq. jq is an accepted repo dependency (GAP-1 decision) — the AREA + TAG
 # vocabularies are de-hardcoded into the project-owned memory-vocabulary.json (one
 # file per project), and this validator reads them via jq so the harness is
-# project-general. Precedent: hooks/session-end.sh (:54) reads session.json via jq.
+# project-general.
 # Frontmatter parsing stays self-contained bash: flat YAML (key: value, flow lists
 # [a, b]); block lists (key: then '  - item' lines) are tolerated (their
 # continuation lines are not top-level keys, so key-collection skips them).
@@ -92,16 +92,19 @@ log() { printf '%s: %s\n' "$SELF" "$*" >&2; }
 usage() {
     cat >&2 <<'EOF'
 usage: validate-frontmatter.sh [paths...]
+       validate-frontmatter.sh --self-test
   Validates memory frontmatter against memory/rules.md §2.
   No args  -> validates the whole P_live tree under .gobbi/projects/gobbi/
               (excluding archive/ sessions/ skills/ agents/ tmp/ worktrees/).
   [paths]  -> validates only the given .md files.
+  --self-test -> runs isolated slug-link fixtures.
   Prints one line per violation (FILE:FIELD: message); exits non-zero if any.
 EOF
 }
 
 case "${1:-}" in
     -h|--help) usage; exit 0 ;;
+    --self-test) ;;
 esac
 
 # --- Resolve the project memory root (relative to this script) ----------------
@@ -122,6 +125,72 @@ vocab_config="$script_dir/../memory-vocabulary.json"
 [ -f "$vocab_config" ] || { log "vocabulary config not found: $vocab_config"; exit 2; }
 command -v jq >/dev/null 2>&1 || { log "jq not found — required to read $vocab_config"; exit 2; }
 jq -e . "$vocab_config" >/dev/null 2>&1 || { log "invalid JSON in $vocab_config"; exit 2; }
+
+self_test() {
+    local tmp self_path failures=0 total=0
+    tmp="$(mktemp -d)"
+    self_path="$script_dir/$SELF"
+    trap 'rm -rf "$tmp"' RETURN
+
+    write_fixture() {
+        local path="$1" supersedes_block="$2" slug
+        slug="$(basename "$path" .md)"
+        mkdir -p "$(dirname "$path")"
+        {
+            printf '%s\n' '---'
+            printf 'name: %s\n' "$slug"
+            printf '%s\n' 'description: isolated validator self-test fixture'
+            printf '%s\n' 'type: design' 'scope: project' 'feature: null' 'status: active'
+            printf '%s\n' 'created: 2026-07-20' 'session: self-test' 'tags: [memory]' 'keywords: []' 'author: codex'
+            [ -z "$supersedes_block" ] || printf '%s\n' "$supersedes_block"
+            printf '%s\n' '---' '' '# Validator self-test fixture'
+        } > "$path"
+    }
+
+    expect_exit() {
+        local expected="$1" label="$2" path="$3" pattern="${4:-}" got output
+        total=$((total + 1))
+        output="$tmp/result-$total.txt"
+        set +e
+        "$self_path" "$path" >"$output" 2>&1
+        got=$?
+        set -e
+        if [ "$got" -eq "$expected" ] \
+           && { [ -z "$pattern" ] || grep -Fq "$pattern" "$output"; }; then
+            printf 'PASS: %s\n' "$label"
+        else
+            printf 'FAIL: %s (expected exit %s, got %s)\n' "$label" "$expected" "$got" >&2
+            [ -z "$pattern" ] || printf '  expected output containing: %s\n' "$pattern" >&2
+            sed 's/^/  | /' "$output" >&2
+            failures=$((failures + 1))
+        fi
+    }
+
+    write_fixture "$tmp/design/memory/scalar-link.md" 'supersedes: prior-record'
+    expect_exit 0 'scalar supersedes accepted' "$tmp/design/memory/scalar-link.md"
+    write_fixture "$tmp/design/memory/null-link.md" 'supersedes: null'
+    expect_exit 0 'null supersedes accepted' "$tmp/design/memory/null-link.md"
+    write_fixture "$tmp/design/memory/absent-link.md" ''
+    expect_exit 0 'absent supersedes accepted' "$tmp/design/memory/absent-link.md"
+    write_fixture "$tmp/design/memory/flow-list.md" 'supersedes: [first-record, second-record]'
+    expect_exit 1 'flow-list supersedes rejected' "$tmp/design/memory/flow-list.md" \
+        'supersedes: must be one plain scalar slug or null, not a list'
+    write_fixture "$tmp/design/memory/block-list.md" $'supersedes:\n  - first-record\n  - second-record'
+    expect_exit 1 'block-list supersedes rejected' "$tmp/design/memory/block-list.md" \
+        'supersedes: must be one plain scalar slug or null, not a block list'
+
+    if [ "$failures" -gt 0 ]; then
+        log "SELF-TEST FAIL: $failures/$total fixture(s) failed"
+        return 1
+    fi
+    log "SELF-TEST OK: $total/$total fixtures passed"
+}
+
+if [ "${1:-}" = "--self-test" ]; then
+    [ "$#" -eq 1 ] || { usage; log "--self-test takes no additional arguments"; exit 2; }
+    self_test
+    exit $?
+fi
 
 # type_areas_for <type>  -> echoes the type's space-separated AREA allowlist, read
 # from memory-vocabulary.json .types.{type}.areas (§1.5). Empty for an unknown type.
@@ -518,32 +587,20 @@ for f in "${files[@]}"; do
 
     # --- slug-link value-shape (§2.1/§2.4) -----------------------------------
     # supersedes / superseded_by / related carry PLAIN SLUGS — the target file's
-    # name (= filename stem), never a path and never `[[ ]]`. `superseded_by` is a
-    # scalar slug-link (null/empty ok). `supersedes` accepts EITHER a scalar slug
-    # (a single supersession) OR a flow list of plain slugs (a consolidation-merge
-    # that supersedes several files at once); null/empty ok. `related` is a flow
+    # name (= filename stem), never a path and never `[[ ]]`. `superseded_by` and
+    # `supersedes` are scalar slug-links (null/empty ok). `related` is a flow
     # list whose every item must be a plain slug. Reject any path / `.md` / spaced
     # value with a clear message.
     v="$(fm_value "$f" superseded_by)"
     if [ -n "$v" ] && [ "$v" != "null" ] && ! is_plain_slug "$v"; then
         report "$f" "superseded_by" "'$v' must be a plain slug, not a path (§2.1/§2.4)"
     fi
-    # supersedes — scalar slug OR list[slug] (consolidation-merge); null/empty ok.
-    # The list branch reuses the `related` slug-list path below (flow-list parse +
-    # per-item is_plain_slug); the scalar branch keeps the original single-slug check.
+    # supersedes — one scalar slug; null/empty ok. Both flow and block lists fail.
     sup_raw="$(fm_value "$f" supersedes)"
     if printf '%s' "$sup_raw" | grep -qE '^\[.*\]$'; then
-        sup_body="$(printf '%s' "$sup_raw" | sed -E 's/^\[//; s/\]$//')"
-        IFS=',' read -r -a sup_arr <<< "$sup_body"
-        for s in "${sup_arr[@]}"; do
-            s="$(printf '%s' "$s" | sed -E 's/^[[:space:]]+//; s/[[:space:]]+$//')"
-            [ -z "$s" ] && continue
-            if ! is_plain_slug "$s"; then
-                report "$f" "supersedes" "'$s' must be a plain slug, not a path (§2.1/§2.4)"
-            fi
-        done
+        report "$f" "supersedes" "must be one plain scalar slug or null, not a list (§2.1/§2.4)"
     elif [ -z "$sup_raw" ] && fm_is_block_list "$f" supersedes; then
-        report "$f" "supersedes" "must be an inline [..] flow list of plain slugs (§2.1/§2.4)"
+        report "$f" "supersedes" "must be one plain scalar slug or null, not a block list (§2.1/§2.4)"
     elif [ -n "$sup_raw" ] && [ "$sup_raw" != "null" ] && ! is_plain_slug "$sup_raw"; then
         report "$f" "supersedes" "'$sup_raw' must be a plain slug, not a path (§2.1/§2.4)"
     fi

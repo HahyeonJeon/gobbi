@@ -56,10 +56,10 @@ updated: 2026-07-19
 
 `priority: medium` · `domain: docs-sync` · `added: 2026-06-27` · `status: active` · `tags: [docs-sync, vocabulary]`
 
-**What happened** — Rewriting docs to the new hybrid mistakes model, the fresh prose used the phrase "project / memory tier" — but `project / memory` is a RETIRED-vocab bigram (the `check-residual-vocab.sh` VOCAB list covers `memorize*` — the old pipeline label — `session / memory`, and `project / memory`). The guard plus the dual-system evaluation caught it after the fact, forcing a reword pass over already-written prose.
-**Why it happens** — When authoring NEW prose, the writer reaches for natural phrasing without checking the project's retired-vocab list. New text feels exempt from a guard whose name ("residual") implies it only scans leftover OLD content — so the writer never runs the guard against prose they just wrote.
-**How to detect** — Any doc rewrite or fresh authoring can introduce a retired bigram in the NEW prose; "residual-vocab" applies to new prose too, not only to leftover old content. The trigger: you just wrote or reworded a doc that names a renamed concept.
-**Correct approach** — Run `check-residual-vocab.sh` on the changed files AFTER a doc rewrite, not only against old content. Treat the guard's VOCAB list as forbidden in new prose; on a hit, reword it (e.g. "project / memory tier" → "the project `mistakes/` tier"). Make the guard part of the rewrite's own verification, not a separate later cleanup.
+**What happened** — Rewriting docs to the new hybrid mistakes model, fresh prose reintroduced a retired bigram from the prior workflow vocabulary. Dual-system evaluation caught it after the rewrite, forcing another pass over already-written prose.
+**Why it happens** — When authoring new prose, the writer reaches for natural phrasing without checking the task's explicit retired-term families. New text feels exempt from a residual sweep because it is not leftover old content, even though a rename contract applies equally to every new sentence.
+**How to detect** — Any doc rewrite or fresh authoring can reintroduce a retired term or synonymous old mechanic. The trigger: you just wrote or reworded a doc that names a renamed concept, but the verification plan lists only exact old paths or only the pre-edit occurrence count.
+**Correct approach** — Derive an explicit retired-term and synonym pattern set from the approved design, then run scoped `rg` searches over every changed current-owner file after the rewrite. Report each pattern and scope, not just a zero count. Pair that semantic sweep with the current owner validators (for example, the root Markdown-link validator for changed Markdown and the owning schema validator for structured artifacts).
 
 ### Related
 - [[scrub-stack-idioms-when-adapting-to-general-doc]] — sibling docs-sync authoring-contamination trap (source tokens leak into new prose)
@@ -127,29 +127,24 @@ softened items for dropped conditions with the same discipline used for merges.
 - [[execution-evaluator-union-check-must-cover-softened-items]] (`skills/evaluation/mistakes.md`) — the
   matching evaluator-side gap: a "no hard hazard dropped" pass must also diff the softened set
 
-## Production Mode Is Not Skill Frontmatter
+## Workflow Provenance Is Not Skill Frontmatter
 
 `priority: high` · `domain: docs-sync` · `added: 2026-07-16` · `status: active` · `tags: [docs-sync, schema]`
 
-**What happened** — The manager instructed a Task-1 executor to stamp `production_mode: dual` in the
-durable `.gobbi/projects/gobbi/skills/scenario/SKILL.md` frontmatter. The executor flagged it — it is
-the sole conformance NO.
-**Why it happens** — `production_mode` is a RECORD / loop-outputs provenance key, NOT skill
-frontmatter. The skill-writing contract has four required keys
+**What happened** — A manager instructed an executor to stamp loop provenance in a durable skill's
+frontmatter. The executor flagged it as the sole conformance failure.
+**Why it happens** — Workflow provenance belongs to session artifacts, not skill frontmatter. The
+skill-writing contract has four required keys
 (`name`/`description`/`allowed-tools`/`skill-type`) plus P2's named optional allowlist; it rejects fields
-owned by another schema. `production.md` stamps `production_mode` in an artifact's frontmatter ONLY for
-the DEGRADED `claude-only` case (a durable degraded label). A genuinely dual-produced skill carries NO
-`production_mode` — verified against python/startup/coding/research SKILL.md. Dual-production provenance
-already lives in the session record (the loop's own working and outputs directories), not in the skill's
-frontmatter.
-**How to detect** — Any instinct to stamp workflow/session provenance (`production_mode`, `iter`,
-`session`, `status`, or plain `type`) into a DURABLE skill's frontmatter. The sanctioned semantic
-classifier is the exact field `skill-type`; plain `type` remains foreign. Skill frontmatter ≠
-session-artifact frontmatter.
-**Correct approach** — Do NOT stamp `production_mode` (or any session/RECORD schema key) in a skill's
-frontmatter, even for dual production. Only the degraded claude-only artifact case carries a frontmatter
-label, per production.md, and that is a session artifact, not a shipped skill. Stamp exactly one
-`skill-type: preference|tool|operation` after `allowed-tools`, and let RECORD own provenance.
+owned by another schema. Draft, review, system, iteration, and waiver evidence already lives in the
+session's dual-system work package and lifecycle records.
+**How to detect** — Any instinct to stamp workflow/session provenance (`iteration`, `session`, `status`,
+runtime-system labels, or plain `type`) into a durable skill's frontmatter. The sanctioned semantic
+classifier is the exact field `skill-type`; plain `type` remains foreign. Skill frontmatter and
+session-artifact frontmatter are separate schemas.
+**Correct approach** — Stamp only the skill-writing frontmatter contract, including exactly one
+`skill-type: preference|tool|operation` after `allowed-tools`. Keep creation, review, runtime, iteration,
+and waiver evidence in the session record artifacts owned by RECORD.
 
 ## Verify Owner Lifecycle Before Redesigning A Dependent Artifact
 

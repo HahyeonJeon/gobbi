@@ -312,8 +312,8 @@ indexes.
 
 ## 9. Startup-close promotion (the honest "atomic")
 
-`startup` does NOT invoke Wrap-up. Wrap-up promotion is stage 2 of a non-callable five-stage pipeline, so
-startup defines its own promotion procedure that FOLLOWS the shared memory rules by reference (routing,
+`startup` does NOT invoke the productive Wrap-up loop. It defines its own bounded startup-close promotion
+procedure that FOLLOWS the shared memory rules by reference (routing,
 placement, per-type templates, the frontmatter allowlist + staging-field strip, supersession, area
 resolution) but is a distinct step. "Atomic" here is a validate-heavy pre-write + verify + halt-on-failure
 model, NOT a database transaction — it promises no automatic rollback.
@@ -395,16 +395,16 @@ deferred to step 6 — the indexes are not written until P7.)
 Run the standing memory guards over the post-promotion tree; ALL must exit 0:
 - `validate-frontmatter.sh` — memory frontmatter + per-type allowed fields.
 - `scripts/check-markdown-links.sh` — relative-link resolution.
-- `check-residual-vocab.sh` — retired vocabulary.
 - `skills/mistake/scripts/validate-skill-mistakes.sh` — skill-owned mistake sections.
+- scoped `rg` searches for every retired path, label, and synonymous mechanic named by the startup change.
 
-A clean frontmatter check alone is not sufficient. These standing guards judge **form** (frontmatter /
-links / vocab / skill-mistake sections). After they pass, the **P6.5 dual-system evaluation gate** judges
+A clean frontmatter check alone is not sufficient. These checks judge **form and reference integrity**
+(frontmatter / links / retired terms / skill-mistake sections). After they pass, the **P6.5 dual-system evaluation gate** judges
 the baseline's **completeness + quality**: two fresh evaluators (Claude + Codex) run the startup
 [`scenario.md`](scenario.md) + [`checklist.md`](checklist.md) + [`evaluation.md`](evaluation.md) bundle
 over the promoted baseline, each writing nine record-level files under
 `sessions/{date}-{session-id}/startup/working/evaluation/iter{n}/{system}/` (§3). Startup does NOT run
-the compaction sub-procedure or git finalization, but it DOES run this dual-system gate — the baseline becomes
+manager-owned Git finalization, but it DOES run this dual-system gate — the baseline becomes
 every later session's reference, so it is not exempt (this overrides the earlier design in which the
 Always-Ask gate + standing guards were startup's full substitute for dual-system validation). The bundle
 procedure is owned by [`evaluation.md`](evaluation.md); its non-loop recognition by the shared evaluator
@@ -563,7 +563,7 @@ gate passes (§9 step 6).
 
 **Standalone git:** a standalone run's promotion writes are committed by an explicit standalone commit step
 (manager/user-owned); startup itself never pushes or merges. Inside a `/gobbi` session, the enclosing
-Wrap-up git-finalization stage later absorbs the already-promoted tracked writes.
+session's post-loop manager finalization later absorbs the already-promoted tracked writes.
 
 ## 14. Privacy / retention
 

@@ -38,7 +38,7 @@ keywords: []                         # freeform escape-hatch tags (required; may
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 established: YYYY-MM-DD
-supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | null   # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior rule slug if this replaces an existing rule} | null   # one plain slug, not a path
 ---
 
 # {Rule title}
