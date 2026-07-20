@@ -133,8 +133,8 @@ Run from the repository root with side-effect preflight:
 5. Search all live consumers for retired universal-form, fourth-type, and deleted-path claims; classify historical
    carriers separately from live contracts.
 6. Run the project markdown-link and retired-vocabulary guards.
-7. Run `scripts/sync-plugin-package.sh --check`, `scripts/test-sync-plugin-package.sh`,
-   `scripts/check-codex-compatibility.sh`, and the applicable plugin smoke checks.
+7. Run `scripts/sync-plugin-package.sh --check`, `scripts/test-sync-plugin-package.sh`, and
+   `scripts/check-codex-plugin-smoke.sh`.
 8. Inspect mirror topology from the live tree rather than relying on a content comparison through a symlink.
 9. Cold-load in every target runtime and capture one fresh-agent capability proof per runtime.
 
