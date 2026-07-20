@@ -1,79 +1,103 @@
-# Workflow — State Machine (Orchestration)
+# Workflow State Machine
 
-**Doc kind:** reference-orchestration.
+This document is the sole owner of Gobbi cursor transitions. The manager applies every transition with [`record/scripts/session-record.sh`](../../record/scripts/session-record.sh) `transition`, using a patch file. The command validates the complete candidate and atomically replaces `state.json`; this document owns when a transition is legal, not how bytes are written.
 
-The loop-internal phase mechanics shared by every productive loop — the DISCUSSION → WORK → EVALUATION → RECORD → ITER/EXIT states, the `state.json` schema shape, verdict aggregation, the iteration rule, mode-specific gates, and the loop-to-agent mapping. Loaded by the manager, which is the sole writer of `state.json`.
+## Cursor contract
 
----
+Version 3 `state.json` is the only active router. `current.step`, `current.stage`, `current.iteration`, and `current.task` identify the exact work position.
 
-## Workflow State Machine
+- `configuration` uses `stage: null` and iteration 1.
+- `ideation`, `planning`, and `wrap-up` use `task: null`.
+- `execution` uses the current locked task identity.
+- Iteration 1 is the initial pass. The cap in `session.json.settings.workflow.<step>.maxIterations` is the total number of authorized passes.
+- `completedSteps`, `completedTasks`, `lastVerdict`, and `activeDispatches` are routing evidence, not alternate cursors.
 
-In Auto Mode the state machine runs linearly across the five steps. In Chat Mode it dispatches a per-task slice meta-loop between Configuration and Wrap-up; see [`chat-mode.md §3 — Workflow`](../chat-mode.md) for the Chat per-slice procedure and [`chat-mode.md §8.2 — Per-task state-transition table`](../chat-mode.md) for the per-task state-transition table. This section specifies the loop-internal phase mechanics (DISCUSSION → WORK → EVALUATION → RECORD → ITER/EXIT) shared by both modes for steps 2-5. The manager moves between states only when each state's postcondition is met.
+The runtime task list is a one-way projection. It may be rebuilt from `state.json` but may never modify it.
 
-> **Loop-entry Skipped resolution.** A step resolves to `state: Skipped` at loop entry when **either** `skip: true` **OR** `maxIterations: 0` is set — two independent signals, either alone sufficient. A Skipped step runs no phase rows, emits no `FAIL` / `Aborted` verdict, and stamps `{state: "Skipped", iterations: []}`. `skip: true` is the preferred explicit signal; `maxIterations: 0` (the original "R1 lock") stays valid for back-compatibility. This is distinct from `evaluate.mode: "skip"`, which skips only the EVALUATION phase — the loop still runs WORK → RECORD.
+## Legal transitions
 
-### State persistence
+The fixed step order is Configuration → Ideation → Planning → Execution → Wrap-up. Every productive step uses the same stage order.
 
-The manager maintains state in a per-session `state.json` file.
+| From | Required evidence | To |
+|---|---|---|
+| Configuration | Fresh or resumed manifest and record verify | Ideation DISCUSSION, iteration 1 |
+| DISCUSSION | User gates resolved and neutral WORK contract locked | WORK, same step/iteration/task |
+| WORK | Complete validated dual-system package and no unresolved material decision | EVALUATION, same step/iteration/task |
+| EVALUATION | Two valid fresh reports, aggregate verdict, and approved finding-disposition batch | RECORD, same step/iteration/task, `lastVerdict` set |
+| RECORD after PASS | Valid PASS artifacts and step completion proof | Next step DISCUSSION; next Execution task DISCUSSION; or complete after Wrap-up |
+| RECORD after REVISE | Valid iteration record and authorized next pass below cap | Same step/task DISCUSSION, iteration + 1 |
+| Any active cursor | Explicit halt condition | Same cursor with `status: halted` |
 
-| Item | Value |
-|---|---|
-| Location | `.gobbi/projects/{project-name}/sessions/{date}-{session-id}/state.json` |
-| Initial template | mode-specific: [`templates/state.auto.json`](../templates/state.auto.json) / [`templates/state.chat.json`](../templates/state.chat.json) (seeded by `init-record-map.sh` per the bootstrap mode) |
-| Writer / Reader | manager — writer on every transition; reader during Configuration (the resume-only **row 4R**, [§ Step 1](../SKILL.md#step-1--workflow-configuration)) to recover position after `/clear` / `/compact` / resume — validating the row-4R resume invariants before continuing, and never re-stamping Ideation `Active` — and as the projection source for the [Workflow Status Display](status-display.md#workflow-status-display) |
-| Update points | every state transition: `DISCUSSION`→`WORK`, `WORK`→`EVALUATION`, `EVALUATION`→`RECORD`, `RECORD`→`ITER/EXIT`, plus inter-step transitions at loop exits |
-| Status semantics | <ul><li>`state` ∈ `Pending` / `Active` / `Revising` / `Done` / `Skipped` / `Aborted`.</li><li>When `Active`, `phase` names the current state (`DISCUSSION`, `WORK`'s loop verb, `EVALUATION`, `RECORD`, `ITER/EXIT`).</li></ul> |
-| Schema shape | <ul><li>`schemaVersion: 2`.</li><li>`workflow` is keyed by step name — `configuration` / `ideation` / `planning` / `execution` / `wrap-up` — matching the productive `workflow.{step}` keys in `settings.json`; each entry carries `state`, `verdict`, `iter`, `maxIterations`, `phase`.</li><li>The active step is **derived** (the entry whose `state` is `Active` or `Revising`) — there is no `active` key.</li><li>Display order (Configuration → Ideation → Planning → Execution → Wrap-up) is fixed by convention regardless of object iteration, and is the order the row-4R resume validation uses.</li><li>`skip` is a `settings.json`-only key. Planning is the exception: it must always be `false` with a positive cap.</li><li>Chat sessions additionally carry `workflow.chat.tasks[]` — see below.</li></ul> |
-| `workflow.chat.tasks[]` | Chat-only additive array (empty for Auto), present in both `state.json` and `session.json`. Owned by [`chat-mode.md`](../chat-mode.md); full field reference in [§ Workflow Metadata → Field reference](metadata.md#workflow-metadata). The `state.json` variant is the live state-machine projection (R3). |
+Write the transition before announcing it. After success, report only `step`, `stage`, `iteration`, and `task` from the persisted candidate.
 
-### Loop states
+## Verdict routing
 
-| State | Precondition | Owner | Action | Postcondition (artifact) |
-|---|---|---|---|---|
-| `DISCUSSION` | Loop entered with input from the prior step, OR re-entered from `ITER/EXIT` after `REVISE` / `FAIL` | manager | Construct the delegation prompt for the owning specialist; in Chat Mode, confirm with the user; spawn the specialist through the active runtime's subagent primitive (Claude Code captures the prompt in the parent transcript's tool_use entry; Codex custom agents use `.codex/agents/{role}.toml`) | Specialist spawned; prompt persisted in the available runtime audit trail |
-| `WORK` | Specialist spawned in `DISCUSSION` | owning specialist (`leader` / `executor` / `assistant`) | Execute the loop's work per the delegation prompt. When `propose.mode == dual` (per-loop default), a **parallel Codex proposer** generates an independent proposal alongside the Claude producer (neither sees the other); the producer then **selectively integrates** the frozen proposal into the canonical draft after the pre-integration freeze, before the loop finalizes — orchestration in [`workflow/production.md`](production.md) | Loop's work artifact |
-| `EVALUATION` | Work artifact exists; `workflow.{step}.evaluate.mode != 'skip'` | evaluator subagents (independent of the work owner) | Multi-perspective review per the evaluation policy | Aggregated verdict: `PASS` / `REVISE` / `FAIL` |
-| `RECORD` | `EVALUATION` complete OR skipped per policy | `assistant` subagent | Write session staging for this iteration; memory promotion only in Wrap-up | Memory writes complete |
-| `ITER / EXIT` | `RECORD` complete | manager | Decide on verdict + budget: continue (transition to `DISCUSSION`, `iter += 1`) or exit (loop closed; surface output to next step) | Loop continues OR loop closed |
+### PASS
 
-`iter` starts at `0` on loop entry and counts WORK passes 0-based, so the WORK-pass number is `iter + 1` — the [Workflow Status Display](status-display.md#workflow-status-display) renders it 1-based as `current / max` (the first pass shows `1 / max`). **`maxIterations` is the maximum number of WORK passes** — not re-entries after the first pass — so `maxIterations: 1` means exactly one WORK pass. `maxIterations` is read from the resolved `settings.json` `workflow.{step}.maxIterations`; the default is **mode-specific** (Auto: `5` for every productive loop; Chat: ideation `5`, planning `1`, execution `3`, wrap-up `3`). Planning remains non-skippable in both modes. If `evaluate.mode == 'skip'`, the loop bypasses `EVALUATION` and runs `WORK` → `RECORD` → `ITER/EXIT` on the first pass; the absent verdict is treated as `Skipped` at `ITER/EXIT`.
+PASS advances only after RECORD verifies the canonical artifact and required evidence.
 
-### Verdict aggregation
+- Ideation PASS appends `ideation` to `completedSteps` and enters Planning DISCUSSION at iteration 1.
+- Planning PASS appends `planning`, scaffolds every locked Execution task through the record command, and enters the first task's DISCUSSION.
+- An Execution task PASS appends its stable identity to `completedTasks`. Enter the next ordered task at iteration 1, or append `execution` and enter Wrap-up DISCUSSION when all tasks pass.
+- Wrap-up PASS appends `wrap-up`, records final completion, and sets `status: complete` only after the manifest outcome and local finalization evidence are checkpointed.
 
-| Evaluator verdicts | Aggregated verdict |
-|---|---|
-| All `PASS` | `PASS` |
-| Any `REVISE`, no `FAIL` | `REVISE` |
-| Any `FAIL` | `FAIL` |
+### REVISE below the cap
 
-### Iteration rule
+REVISE means the canonical artifact requires material change. RECORD first seals the current evidence. The next transition returns to DISCUSSION and increments the iteration. The entire WORK package and both fresh evaluator reports are rebuilt for the new iteration; no prior draft, review, or evaluator report satisfies the new pass.
 
-After `EVALUATION` (or its skip path), the loop always proceeds to `RECORD`. The iteration decision happens at `ITER/EXIT`:
+Revision may begin only after the user approves or edits the complete finding-disposition batch.
 
-- **`PASS`** → exit the loop; surface the work artifact as input to the next step.
-- **`Skipped`** (no verdict — `evaluate.mode == 'skip'`) → exit the loop; surface the work artifact.
-- **`REVISE` / `FAIL` before the `maxIterations`-th WORK pass** (`iter + 1 < maxIterations`) → increment `iter`, attach the eval findings to the next delegation prompt, re-enter `DISCUSSION`. Re-entry is always at `DISCUSSION` — never directly at `WORK`. (At `maxIterations: 1` this branch never runs — one WORK pass is the whole budget.)
-- **`REVISE` / `FAIL` on the `maxIterations`-th WORK pass** (`iter + 1 == maxIterations`) → the budget is exhausted; exit to the mode's cap-exhaustion path. The failure is captured in this iteration's `RECORD`; the next loop's input notes the exhaustion. (Auto records the abort and continues per [`auto-mode.md §6`](../auto-mode.md); Chat escalates to the user per [`chat-mode.md §5`](../chat-mode.md).)
+### REVISE at the cap
 
-### Mode-specific gates within a loop
+If the current iteration equals the configured cap, set `status: halted` at the current RECORD cursor. Do not scaffold or enter an unauthorized iteration. Ask the user to choose among:
 
-The per-loop user-interaction gates are mode-specific and owned by the mode docs:
+1. extend the cap;
+2. change direction;
+3. narrow scope;
+4. return to Ideation; or
+5. abort.
 
-- **Chat Mode** — the three in-loop gates (after DISCUSSION, after EVALUATION, at ITER/EXIT) plus the fourth task-boundary review gate, and the `discuss.mode` shadowing rule: [`chat-mode.md §5 — Per-loop discipline`](../chat-mode.md) (gates + shadowing), [`chat-mode.md` Slice Boundary + §8](../chat-mode.md) (task-boundary gate).
-- **Auto Mode** — silent auto-advance, the Always-Ask interrupts, and the no-interrupt-on-`maxIterations` rule: [`auto-mode.md §3 — Always-Ask codification`](../auto-mode.md) and [`auto-mode.md §6 — maxIterations exhaustion`](../auto-mode.md).
+For an extension, checkpoint the new cap in `session.json.settings` first. Then scaffold only the newly authorized iteration, verify it, and transition to DISCUSSION. A direction or scope change returns to Ideation unless the user explicitly determines the locked Ideation contract still holds.
 
-### Loop ↔ agent type mapping
+### FAIL
 
-| Step | Owning agent type |
-|---|---|
-| 1 — Configuration | manager (direct) |
-| 2 — Ideation | `leader` |
-| 3 — Planning | `leader` |
-| 4 — Execution | `executor` |
-| 5 — Wrap-up | `assistant` |
-| `EVALUATION` (every loop) | `evaluator` (independent of the work owner) |
-| `RECORD` (every loop) | `assistant` |
+FAIL never consumes another iteration automatically. After RECORD seals the failure evidence, set `status: halted` at the current cursor and ask whether to return to Ideation, change scope, or abort. There is no direct automatic revision path.
 
-The manager owns no loop directly except Configuration; the manager coordinates.
+## Returning to Ideation
 
-*RECORD detail (what files, scope of memory updates) lives in [`workflow/record.md`](record.md).*
+A user-authorized return preserves prior artifacts as evidence and resets only progress invalidated by the new Ideation decision.
+
+1. Identify the first Ideation iteration authorized for the changed scope.
+2. Remove `ideation`, `planning`, `execution`, and `wrap-up` from `completedSteps` only where their completion depends on the invalidated contract.
+3. Remove invalidated entries from `completedTasks`; keep independent completed tasks only when the user explicitly accepts them under the new scope.
+4. Set `status: active`, clear obsolete `activeDispatches`, and enter Ideation DISCUSSION.
+5. Planning runs again after the revised Ideation PASS.
+
+The old files remain immutable evidence. New iteration directories receive the new work.
+
+## Halt, abort, and resume
+
+- `halted` preserves the exact cursor and reason in the material decision or final outcome. It does not imply failure or completion.
+- Abort checkpoints the reason in the manifest outcome, clears active dispatches, and retains the branch and worktree unless authorized safe cleanup is possible.
+- Resume validates the manifest, state, worktree, branch, and record. Continue the persisted cursor; do not infer a cursor from filenames or the runtime task list.
+- After a runtime context boundary, attach the distinct runtime ID through a manifest checkpoint before continuing.
+- Rewind uses the same validation. If durable state and runtime projection disagree, rebuild the projection from durable state.
+- A partially reported specialist is not complete. Verify its identity, assignment, report, addressability when applicable, and promised artifact before transitioning.
+
+## Active dispatch rules
+
+`activeDispatches` records only currently relevant assignments. The manager may change an entry from assigned to running to reported to idle as evidence arrives. An idle value cannot create a completion transition. Remove or replace stale entries at a verified context boundary. Evaluator entries are always fresh and may never represent a persistent teammate.
+
+Only one write-capable dispatch may be running at a time. Read-only dispatches may run concurrently when their contracts cannot mutate the worktree, session record, external systems, scope, or user decisions.
+
+## Transition completion proof
+
+A transition is complete only when:
+
+1. the patch file expresses a legal branch above;
+2. the record command accepts and atomically writes the candidate;
+3. rereading `state.json` shows the intended cursor and status;
+4. the required artifact, decision, verification, or record evidence exists and validates; and
+5. the runtime task projection matches the persisted cursor.
+
+On any failure, leave the prior state authoritative, keep the user-facing status unchanged, and surface the exact validation or evidence gap.
