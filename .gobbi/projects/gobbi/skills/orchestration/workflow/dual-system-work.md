@@ -19,10 +19,7 @@ Neither contributor receives the other system's draft before both drafts are com
 
 Dispatch one Claude contributor and one Codex contributor from the same contract. Each authors only its system-labeled draft.
 
-The active-runtime contributor follows the applicable specialist and delegation skills. Every opposite-system operation is a new read-only, ephemeral command-line process supplied with complete inputs and an artifact-specific JSON Schema:
-
-- From Claude Code, invoke Codex with `codex exec --ephemeral --sandbox read-only --output-schema <schema> -`.
-- From native Codex, invoke Claude with `claude -p --permission-mode plan --no-session-persistence --json-schema <schema>`.
+The active-runtime contributor follows the applicable specialist and delegation skills. Every opposite-system operation is a new read-only, ephemeral command-line process supplied with complete inputs and an artifact-specific JSON Schema. The [`codex` tool owner](../../codex/SKILL.md) defines both runtime command envelopes and their pre-storage validation; this workflow does not copy that syntax.
 
 The peer process cannot write into the session tree. An active-runtime assistant passes its structured response to [`record/scripts/session-record.sh`](../../record/scripts/session-record.sh) `write-artifact`, supplying expected system, step, iteration, assignment, kind, and canonical target.
 
