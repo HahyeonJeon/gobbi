@@ -41,9 +41,12 @@ Every completion claim cites an artifact, verification result, or commit. The ev
 - **W-6 — Apply idempotently.** Stable source identity plus the frozen mapping selects the destination. Equal bytes are a no-op; preimage drift halts and rebuilds the complete manifest.
 - **W-7 — Close with the right lifecycle, archive, and never delete.** A true one-record supersession is
   reciprocal. Retirement, completion, and abandonment do not invent successors. Move every complete
-  terminal record to the sole project-root typed archive with its exact compatible reason, then repoint
-  inbound path references.
-- **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest, prove prior staging is unchanged, and run the applicable memory, link, mistake, vocabulary, and topology guards.
+  terminal record to the sole project-root typed archive with its exact compatible reason. Preserve the
+  frozen body verbatim under Memory's archive-body contract, then repoint active inbound path references.
+- **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest,
+  prove prior staging is unchanged, and run the applicable memory, link, mistake, vocabulary, and
+  topology guards. Apply Memory's link scope exactly: archive bodies stay outside relative-link
+  resolution, while every changed active carrier and every live namespace move remains link-gated.
 - **W-9 — Produce one nine-section handoff body.** The session output and durable note bodies match. Every claim and next action has direct evidence.
 - **W-10 — Keep finalization manager-owned.** The assistant does not push, merge, remove a worktree, delete a branch, or claim that a planned Git action succeeded.
 - **W-11 — Repeat full review after material change.** A change to the manifest, promoted tree, or handoff starts another complete iteration with dual-system WORK and two fresh evaluations.
@@ -113,8 +116,10 @@ For each authorized true one-record supersession, write the new record and add r
 links. For each authorized design retirement, plan completion/abandonment, or checklist retirement,
 keep `superseded_by` absent or null. Stamp the status-compatible archive reason and matching date, move
 the complete record to project-root `archive/{type}/{area}/`, and repoint every inbound path reference
-as one frozen mutation set. Preserve original type, scope, feature, and body. A feature-local archive
-destination is invalid.
+as one frozen mutation set. Preserve original type, scope, feature, and every body byte, including
+historical outbound relative-link text. A feature-local archive destination is invalid. The exact
+archive-body, active-carrier, and live-namespace link boundary remains owned by
+[`memory/rules.md` §2.7](../memory/rules.md#27-strict-archive-form); do not invent or narrow it here.
 
 Never delete or reduce the old record to a tombstone. If the source and new candidate conflict without authorized supersession, halt for a user decision.
 
@@ -124,8 +129,12 @@ Diff the actual durable project tree against the frozen preimages. Every changed
 
 Run all applicable post-promotion validators from their current owners. Run Memory validation with no
 arguments for the live tree, then explicitly validate every newly rendered project-root archive path in
-strict mode. Resolve a legitimate new guard carrier through a new complete iteration; do not patch it
-outside the manifest. Freeze final tree hashes and guard evidence for EVALUATION.
+strict mode. Prove each new archive body byte-identical to its frozen active preimage. Run the root
+Markdown-link validator over every changed active Markdown file, including inbound carriers, but do not
+submit frozen archive bodies to relative-link resolution. A stale active inbound path fails, and a live
+namespace move receives the complete changed-Markdown gate with no archive exception. Resolve a
+legitimate new guard carrier through a new complete iteration; do not patch it outside the manifest.
+Freeze final tree hashes and guard evidence for EVALUATION.
 
 ### 9. Reconcile the handoff with the actual result
 
@@ -172,6 +181,6 @@ Completion evidence: complete staging accounting, frozen and idempotently applie
 - [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
 - [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
 - [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
-  non-successor terminal states, and strict archive behavior.
+  non-successor terminal states, strict archive behavior, and archive/link validation scope.
 - [Evaluation](../evaluation/SKILL.md) owns fresh dual reports, finding dispositions, and repeat-review rules.
 - [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.

@@ -22,8 +22,9 @@ Compare agreed scope, canonical artifacts, task results, staging accounting, dur
 
 Inspect typed source routing, destination ownership, frontmatter, areas, manifest completeness, whole-file
 preimages, shared destinations, true-successor reciprocity, non-successor terminal semantics,
-status/reason compatibility, sole project-root archive paths, inbound-reference carriers, and
-session/durable handoff placement. Every actual changed path must map to one mutation row.
+status/reason compatibility, sole project-root archive paths, frozen archive bodies, active
+inbound-reference carriers, live namespace changes, and session/durable handoff placement. Every actual
+changed path must map to one mutation row.
 
 ### Performance
 
@@ -40,9 +41,11 @@ Cold-read the handoff as the next manager. Verify objective, required reads, bra
 ### Consistency
 
 Compare inventory, candidates, manifest, preimages, actual delta, prior-staging hashes, lifecycle records,
-default live and explicit strict archive guard output, references, report subject digest, both handoff
-bodies, dispositions, commits, and Git plan. Search for a changed path without a row, row without a
-result, illegal archive pair or location, invented successor, stale reference, or claim without evidence.
+default live and explicit strict archive guard output, archived-body preimage comparisons, scoped active
+link inputs and output, report subject digest, both handoff bodies, dispositions, commits, and Git plan.
+Search for a changed path without a row, row without a result, illegal archive pair or location,
+rewritten archive-body link text, invented successor, stale active reference, an archive exclusion
+borrowed by a live namespace move, or a claim without evidence.
 
 ### Risk
 
@@ -50,16 +53,22 @@ Inspect root containment, symlinks, wrong-worktree and main-checkout risk, prote
 
 ### Overall
 
-Challenge a perfect intended manifest whose applied bytes differ, a matching handoff pair that shares one false claim, hidden non-staging input, partial evidence disguised as empty staging, and checks weakened to accept the result. Preserve exact source accounting, recoverability, and evidence-linked next actions.
+Challenge a perfect intended manifest whose applied bytes differ, a matching handoff pair that shares one
+false claim, hidden non-staging input, partial evidence disguised as empty staging, and checks weakened to
+accept the result. Separately probe an expected unresolved outbound link inside a frozen archive body, a
+stale active inbound carrier, and a broken live namespace link. Preserve exact source accounting,
+recoverability, and evidence-linked next actions.
 
 ## Recommended verification
 
 Use safe read-only commands against the session and project tree: sorted staging inventory and hashes,
 manifest-to-diff comparison, whole-file preimage comparison, root and symlink resolution, no-argument
 live frontmatter validation, explicit validation of each new project-root archive, link and vocabulary
-checks, prior-staging rehash, body comparison, Git branch/worktree/status inspection, and exact record
-verification. Record any mutating command as part of already frozen apply evidence; do not rerun it
-during review.
+checks over every changed active Markdown file, prior-staging rehash, archive-preimage and handoff-body
+comparisons, Git branch/worktree/status inspection, and exact record verification. Confirm archive bodies
+are absent from relative-link inputs without omitting strict validation, body identity, lifecycle, or
+actual-tree proof. Confirm active carriers and live namespace moves remain in scope. Record any mutating
+command as part of already frozen apply evidence; do not rerun it during review.
 
 ## Rule crosswalk
 

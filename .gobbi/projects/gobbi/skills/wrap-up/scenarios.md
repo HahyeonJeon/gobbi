@@ -72,9 +72,10 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Then: every changed path has one legal row, every row has a result, and destination/status/reason shapes
   follow their owners.
 - Failure oracle: unowned path, missing reference carrier, undefined area, one-sided true successor,
-  invented successor, illegal reason, feature-local archive, or row without result.
+  invented successor, illegal reason, feature-local archive, a stale active inbound path, a live
+  namespace link hidden behind the archive exception, or row without result.
 - Evidence: manifest-to-diff bijection, no-argument live validation, explicit strict archive validation,
-  link checks, and memory owner rules.
+  archive-body comparison, scoped active-file link checks, and memory owner rules.
 - Adversarial face: a shared destination changes outside its declared append row.
 - Obligation: structure changes must be complete, owned, and exactly manifest-backed.
 - Checklist: WRAP-CK-04.
@@ -139,21 +140,32 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 
 - Primary category: 9. Primary type: Change/regression/compat. Secondary: Failure/recovery.
 - Coverage role: reciprocal supersession; archive move; deferred publication.
-- Source: W-7, W-10, Procedure 7 and 12.
+- Source: W-7, W-8, W-10, Procedure 7–8 and 12.
 - Given: a true supersession; a retired design; a completed or abandoned plan; a retired checklist; or a
-  local-only finalization plan.
+  local-only finalization plan; plus a live area split, merge, or rename when that change is in scope.
 - When: lifecycle semantics, reason compatibility, archive path/date/type/area, inbound references, old
-  body, branch, worktree, and authorized actions are verified.
+  body, archive/link scope, branch, worktree, and authorized actions are verified.
 - Then: true successors are reciprocal; other terminal states have no invented successor; the old
-  complete record remains recoverable under the sole project-root archive; references resolve; and
-  unmerged work stays at its exact branch and worktree path.
-- Failure oracle: deleted old record, illegal pair, feature-local archive, broken inbound path, one-sided
-  true successor, invented non-successor link, or cleanup before confirmed merge.
-- Evidence: old/new records, explicit strict archive validation, link validation, branch/worktree list,
-  and finalization plan.
+  complete record remains recoverable under the sole project-root archive with byte-identical body;
+  active inbound references resolve; and unmerged work stays at its exact branch and worktree path.
+- Failure oracle: deleted or rewritten old body, illegal pair, feature-local archive, stale active inbound
+  path, one-sided true successor, invented non-successor link, a live namespace break accepted under an
+  archive exception, or cleanup before confirmed merge.
+- Evidence: old/new records, body comparison, explicit strict archive validation, scoped active-file link
+  validation, branch/worktree list, and finalization plan.
 - Adversarial face: the new record links back correctly while one hidden inbound path still names the moved source.
 - Obligation: memory evolution and deferred Git work must remain traceable and recoverable.
 - Checklist: WRAP-CK-09.
+
+Archive/link discrimination for this scenario uses three concrete cases from the Memory owner:
+
+1. **WRAP-SC-09A — Frozen outbound archive link:** preserve the complete body and exact link text; an expected
+   unresolved relative link inside that frozen archive body is not a link-gate failure, while strict
+   archive, body-identity, lifecycle, and actual-tree proof remain mandatory. Checklist: WRAP-CK-09A.
+2. **WRAP-SC-09B — Stale active inbound path:** fail until the active carrier is repointed to the archive
+   path and passes scoped link validation. Checklist: WRAP-CK-09B.
+3. **WRAP-SC-09C — Broken live namespace link:** fail the complete changed-Markdown gate; the
+   archive-body exclusion is unavailable. Checklist: WRAP-CK-09C.
 
 ## WRAP-SC-10 — Actual-tree review and matching handoff prove closure
 
@@ -165,7 +177,7 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Then: evaluators inspected the actual tree, both bodies match, every claim has evidence, and any material change received a new full iteration.
 - Failure oracle: manifest-only review, mismatched body, stale digest, reused report, weakened guard, or uncited completion.
 - Evidence: tree hashes, default live and explicit strict archive validator output, report identities,
-  body comparison, and disposition record.
+  archive-preimage and handoff-body comparisons, scoped active-file link output, and disposition record.
 - Adversarial face: the manifest is perfect but the applied bytes differ at one shared destination.
 - Obligation: Wrap-up acceptance must bind to the actual durable result and complete handoff.
 - Checklist: WRAP-CK-10.

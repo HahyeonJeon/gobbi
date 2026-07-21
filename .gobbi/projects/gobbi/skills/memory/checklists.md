@@ -10,7 +10,7 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 - **Run use-style:** `do-confirm`.
 - **Source state:** every item below remains unchecked. Work a fresh filled copy for each run.
 - **Source version:** the filled copy records this file's Git blob hash and the review identity.
-- **Trace count:** 18 checks map one-to-one to 18 stable scenario seeds and one or more parent rules.
+- **Trace count:** 21 checks map one-to-one to 21 stable scenario seeds and one or more parent rules.
 - **Permitted terminal tokens in a filled copy:** `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`.
 - **Coverage closure:** every row has one terminal token with inspected evidence.
 - **Acceptance:** every applicable row is `PASS`. Coverage closure alone is not acceptance.
@@ -187,6 +187,58 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 - **On fail:** open a blocking recovery finding; stop acceptance because terminal history can be lost during a failed move.
 - **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10), [MEM-SCEN-17](scenarios.md#mem-scen-17).
 
+### MEM-CHECK-19
+
+- [ ] **Criticality:** gate
+- **Claim:** A terminal archive preserves the active preimage body byte-for-byte, including outbound
+  relative-link text, without treating an expected unresolved frozen-body link as a link-gate failure.
+- **Applicability:** every terminal move whose body contains a relative link; otherwise
+  `n/a:<property>` with inspected body evidence.
+- **Pass:** body digests and exact link text match; the archive body is absent from scoped link inputs;
+  and explicit strict archive, lifecycle, and actual-tree proofs independently pass.
+- **Evidence:** active-preimage and archive body comparison, scoped link input register, strict archive
+  output, lifecycle fields, and actual-tree result.
+- **On fail:** open a blocking history-integrity finding; stop acceptance because archived evidence was
+  rewritten or a required independent proof was skipped.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §2.7](rules.md#27-strict-archive-form),
+  [MEM-SCEN-19](scenarios.md#mem-scen-19).
+
+### MEM-CHECK-20
+
+- [ ] **Criticality:** gate
+- **Claim:** Every changed active inbound carrier is repointed to the new archive path and remains
+  inside scoped Markdown-link validation.
+- **Applicability:** every terminal move with an active inbound path carrier; otherwise
+  `n/a:<property>` with an inspected old-path search.
+- **Pass:** no active carrier retains the old path, every changed carrier is manifest-backed, and the
+  scoped link validator passes those files.
+- **Evidence:** old-path search, carrier preimages and results, manifest rows, scoped link output, and
+  actual-tree delta.
+- **On fail:** open a blocking active-reference finding; stop acceptance because a current consumer has
+  a stale or unresolved path.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §2.7](rules.md#27-strict-archive-form),
+  [MEM-SCEN-20](scenarios.md#mem-scen-20).
+
+### MEM-CHECK-21
+
+- [ ] **Criticality:** gate
+- **Claim:** A live namespace move sends every changed Markdown record and carrier through the complete
+  link-resolution gate and cannot use the archive-body exclusion.
+- **Applicability:** every live area split, merge, or rename; otherwise `n/a:<property>` with inspected
+  mutation-class evidence.
+- **Pass:** all changed live Markdown inputs are present, the link validator passes, and the scoped old
+  path and label sweeps reach zero.
+- **Evidence:** mutation classification, changed-path set, link input register and output, residual
+  searches, and actual live tree.
+- **On fail:** open a blocking namespace-integrity finding; stop acceptance because a live reference is
+  broken or an archive-only exception escaped its boundary.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §1.5](rules.md#refactor-procedure--split--merge--rename-an-area),
+  [Memory rules §2.7](rules.md#27-strict-archive-form),
+  [MEM-SCEN-21](scenarios.md#mem-scen-21).
+
 ## Safe evidence
 
 ### MEM-CHECK-15
@@ -231,5 +283,8 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 | One-sided handoff edit | MEM-CHECK-11 `FAIL:<finding-id>`; not accepted |
 | One-sided supersession, invented non-successor link, illegal archive pair, misplaced/incomplete archive | MEM-CHECK-12, 13, or 14 `FAIL:<finding-id>`; not accepted |
 | Terminal move preimage conflict | MEM-CHECK-17 `PASS` only when both locations stay unchanged; no history loss |
+| Frozen archive body has an outbound relative link that no longer resolves from the archive directory | MEM-CHECK-19 `PASS` only when link text and full body stay identical and the separate archive proofs pass |
+| Active inbound carrier still names the pre-archive path | MEM-CHECK-20 `FAIL:<finding-id>`; not accepted |
+| Live namespace move leaves a broken relative link | MEM-CHECK-21 `FAIL:<finding-id>`; the archive-only exclusion is unavailable |
 | Sensitive source safely referenced | MEM-CHECK-15 and 16 `PASS`; no protected payload retained |
 | Protected payload hidden in a valid-looking candidate | MEM-CHECK-18 `FAIL:<finding-id>`; not accepted |

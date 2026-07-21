@@ -32,8 +32,8 @@ Every selected scenario must reach its linked check. Every applicable check must
 | Performance | Does the concrete implementation add material repeated scans, unbounded work, or avoidable file churn? | target-specific when applicable | Inspect counts and command evidence; otherwise record N/A from the absence of a resource property |
 | Aesthetics | Are names, type choices, hierarchy, and handoff content concise and clear to a cold reader? | 01, 06, 10 | Inspect slugs, headings, body focus, and duplicated prose |
 | Usage | Can the next actor identify what to stage, when to stop, what owner acts next, and how to recover? | 02, 05, 07, 09 | Walk an empty run, ambiguous classification, and failed validation from the documented entrypoint |
-| Consistency | Do rules, scenarios, checks, mappings, staged candidates, durable records, lifecycle enums/reasons, and handoff copies agree? | 06–14, 17 | Run trace closure, links, exact archive-path and status/reason checks, explicit strict archive validation, and body comparison |
-| Risk | Can unsupported, ineligible, unsafe, destructive, misplaced, or unreviewed material become durable? | 03, 05, 08, 09, 11, 14–18 | Run false-pass, source-ingress, mutation-before-validation, invented-successor, illegal-pair, feature-local archive, failed-move, and protected-evidence probes |
+| Consistency | Do rules, scenarios, checks, mappings, staged candidates, durable records, lifecycle enums/reasons, archive-body link scope, active carriers, live namespace changes, and handoff copies agree? | 06–14, 17, 19–21 | Run trace closure, scoped active-file links, exact archive-path and status/reason checks, explicit strict archive validation, body comparison, and namespace probes |
+| Risk | Can unsupported, ineligible, unsafe, destructive, misplaced, unreviewed, or stale active material become durable? | 03, 05, 08, 09, 11, 14–21 | Run false-pass, source-ingress, mutation-before-validation, invented-successor, illegal-pair, feature-local archive, failed-move, frozen-body, active-carrier, live-namespace, and protected-evidence probes |
 | Overall | Does the complete lifecycle turn supported evidence into durable memory without bypassing authority, losing history, or overstating completion? | all applicable cases | Compare the parent contract, actual tree, completed register, and direct evidence |
 
 ## Rule crosswalk
@@ -48,8 +48,8 @@ Every selected scenario must reach its linked check. Every applicable check must
 | [M-6](SKILL.md#m-6) | 02, 07, 08, 09 | 02, 07, 08, 09 | Structure, Risk |
 | [M-7](SKILL.md#m-7) | 10, 11 | 10, 11 | Consistency, Usage |
 | [M-8](SKILL.md#m-8) | 12, 14 | 12, 14 | Consistency, Risk |
-| [M-9](SKILL.md#m-9) | 13, 14, 17 | 13, 14, 17 | Consistency, Risk |
-| [M-10](SKILL.md#m-10) | 06, 09–15, 17, 18 | 06, 09–15, 17, 18 | Consistency, Overall |
+| [M-9](SKILL.md#m-9) | 13, 14, 17, 19–21 | 13, 14, 17, 19–21 | Consistency, Risk |
+| [M-10](SKILL.md#m-10) | 06, 09–15, 17–21 | 06, 09–15, 17–21 | Consistency, Overall |
 
 ## Required adversarial verifications
 
@@ -64,6 +64,13 @@ Every selected scenario must reach its linked check. Every applicable check must
   feature-local archive path; early move; incomplete archive; deletion; or dangling inbound path must
   fail. The validator is invoked with each exact new project-root archive path.
 - **Failed-move probe:** a conflicting archive destination or changed preimage must leave active and archive bytes unchanged.
+- **Frozen-archive-body probe:** an outbound relative link that resolved before the terminal move may be
+  unresolved afterward without failure only when its text and the complete body remain byte-identical,
+  the archive is outside link-resolution inputs, and every separate archive proof passes.
+- **Active-inbound-carrier probe:** a changed active carrier that retains the old path must fail scoped
+  link and actual-tree verification; it cannot borrow the frozen archive-body exclusion.
+- **Live-namespace probe:** a broken relative link after an active area split, merge, or rename must fail
+  the full changed-Markdown gate; it cannot borrow the terminal archive-body exclusion.
 - **Protected-evidence probe:** a full protected payload must be rejected when a safe pointer and bounded summary preserve proof.
 
 ## Finding focus
@@ -84,6 +91,11 @@ Open a finding when direct evidence shows:
 - a terminal record moved early, stayed active, lost its body, or was deleted;
 - a failed terminal move changed or overwrote either location;
 - an inbound path no longer resolves;
+- an archive body was normalized or its outbound relative-link text changed;
+- a new archive body was incorrectly included in link-resolution inputs, or its exclusion was used to
+  skip body identity, explicit strict validation, lifecycle, or actual-tree proof;
+- an active inbound carrier escaped scoped link validation or retained the old path;
+- a live namespace move borrowed the archive-only link exclusion;
 - protected payload entered durable memory; or
 - a completion claim lacks final-tree evidence.
 
@@ -104,7 +116,7 @@ Use the finding schema, confidence, severity, provenance, checklist result, and 
 
 ### PASS anchor
 
-All applicable Memory checks pass with inspected evidence. Candidate selection is justified, empty results stay valid, owner boundaries hold, typed staging is the only ingress, actual durable paths match the sole project-root map, every new archive passes explicit strict validation, handoff bodies match, successor semantics and history are preserved, and no supported blocking finding remains.
+All applicable Memory checks pass with inspected evidence. Candidate selection is justified, empty results stay valid, owner boundaries hold, typed staging is the only ingress, actual durable paths match the sole project-root map, every new archive preserves its body and passes explicit strict and actual-tree proof, active carriers and live namespace moves pass their complete link gates, handoff bodies match, successor semantics and history are preserved, and no supported blocking finding remains.
 
 ### REVISE anchor
 

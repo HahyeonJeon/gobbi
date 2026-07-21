@@ -191,6 +191,11 @@ PLUS the two label-rename classes — **in-fence example paths** (paths inside `
 
 Before declaring the refactor done, run the root-owned `scripts/check-markdown-links.sh` over every changed Markdown file, run [`scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh) over every moved memory record, and use an exhaustive scoped `rg` sweep for every old path and label identified by the reference-class inventory. When skill-owned mistake companions move or change, also run [`../mistake/scripts/validate-skill-mistakes.sh`](../mistake/scripts/validate-skill-mistakes.sh) over those files.
 
+This is a **live namespace refactor**, not a terminal archive move. Every changed Markdown file remains
+inside the link-resolution gate, including each moved live record and active reference carrier. The
+terminal-archive body exclusion in [§2.7](#27-strict-archive-form) does not apply to a live namespace
+move.
+
 **Active-mistake-move carve-out (USER-APPROVED 2026-06-21).** [`../mistake/SKILL.md`](../mistake/SKILL.md) states "active mistakes never move" — that rule governs NORMAL operation (only a supersession moves a file, to `archive/`). A **namespace refactor is a distinct, sanctioned operation class** that MAY move an active mistake between areas, BECAUSE: (a) the mistake's OWN slug identity is preserved (still findable by slug and by the recursive consumer read-glob); (b) the move is procedured — it runs the full reference-repoint sweep above INCLUDING the inbound `required-mistakes:` PATH refs, so no inbound citation is left dangling; (c) every owner check and retired-reference sweep above runs to zero.
 
 ---
@@ -401,6 +406,31 @@ No other pair is valid. A superseded archive requires the reciprocal successor p
 §2.2. Retired, completed, abandoned, addressed, dropped, closed, and shipped outcomes do not invent a
 successor.
 
+**Archive-body and link-scope contract.** A terminal archive move freezes the complete body: every byte
+after the closing frontmatter delimiter is preserved verbatim from the active preimage, including the
+exact text of historical outbound relative links. Do not normalize, repair, or rewrite those body
+links after the move. Because their text is historical evidence and their new directory can make them
+intentionally unresolved, project-root `archive/` bodies are excluded from scoped Markdown-link
+resolution. An unresolved outbound relative link inside that frozen body is therefore not, by itself,
+a failed terminal move.
+
+The exclusion is body-local, not path-wide. Every active Markdown carrier that pointed to the old
+active path must be repointed to the new archive path and remains an input to the root-owned
+`scripts/check-markdown-links.sh` gate. A stale or unresolved active inbound path fails. A live
+namespace split, merge, or rename remains subject to the full changed-Markdown gate in §1.5 and cannot
+borrow this archive-only exclusion.
+
+Every newly rendered archive still must pass all of the following independent proofs:
+
+- a byte-for-byte body comparison against the frozen active preimage;
+- explicit strict Memory validation of the exact new archive path;
+- exact path, terminal status, compatible reason, matching date, and successor-semantics checks;
+- scoped link validation of every changed active Markdown file, including inbound carriers; and
+- actual-tree review proving the archive result and every carrier match the frozen mutation set.
+
+No one proof substitutes for another. In particular, strict archive validation does not prove body
+identity or active inbound-link health, and the archive-body link exclusion does not weaken either.
+
 ---
 
 ## 3. Structure rules
@@ -572,7 +602,10 @@ Frozen `archive/` docs are excluded from default collection and every retrofit o
 archived file is terminal history and is never normalized merely because the current schema changed.
 Explicit validation is different: naming one project-root archive file asks the gate to validate its
 complete current bytes strictly without mutating them. This preserves no-argument archive pruning while
-giving Wrap-up a fail-closed check for each newly rendered archive candidate.
+giving Wrap-up a fail-closed check for each newly rendered archive candidate. The complete archive-body,
+active-carrier, and live-namespace link boundary is owned by [§2.7](#27-strict-archive-form); default
+scan pruning must not be misread as permission to skip its explicit archive proofs or active-file link
+gate.
 
 ---
 

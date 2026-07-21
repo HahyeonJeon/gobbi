@@ -66,9 +66,11 @@ For every `promote` row, resolve the legal durable home through [Staging → Mem
 Record the candidate path and digest, exact source digest, resolved type, preserved scope and feature,
 area, preferred slug, destination, user-decision references, any deterministic normalization delta,
 collision decision, and lifecycle intent. For an archive candidate, also record terminal status,
-compatible archive reason, filename date, and successor identity only when status is `superseded`.
-Validate the entire rendered candidate. For a shared destination, render and validate the complete
-resulting file, not only an appended section.
+compatible archive reason, filename date, successor identity only when status is `superseded`, and the
+frozen active-preimage body digest. An archive render may change only authorized frontmatter; its body,
+including historical outbound relative-link text, stays byte-identical. Validate the entire rendered
+candidate. For a shared destination, render and validate the complete resulting file, not only an
+appended section.
 
 Never invent a type, scope, area, schema key, route, or collision rule. A missing owner decision returns `NEEDS_CONTEXT` before any durable write.
 
@@ -107,12 +109,16 @@ its project-root typed archive path, and repoint every inbound path reference.
 
 For a retired design, completed or abandoned plan, or retired checklist, omit a non-null successor.
 Stamp only the type-compatible terminal reason, then use the same complete project-root move. The old
-record keeps its original type, scope, feature, and complete body. The active source, archive
-destination, optional new record, and every reference carrier have whole-file preimages. Verify
-successor directions only when a true replacement exists; otherwise verify their absence. Never use a
-feature-local archive, hard-delete a record, or replace it with a tombstone.
+record keeps its original type, scope, feature, and byte-identical body, including outbound relative-link
+text that may no longer resolve from the archive directory. The active source, archive destination,
+optional new record, and every active reference carrier have whole-file preimages. Repoint active
+inbound path carriers to the archive destination. Verify successor directions only when a true
+replacement exists; otherwise verify their absence. Never use a feature-local archive, hard-delete a
+record, or replace it with a tombstone.
 
-Use [`memory/templates/archive.md`](../memory/templates/archive.md) for the current move form and [`memory/rules.md`](../memory/rules.md) for ordinary lifecycle constraints. Promotion does not define another archival policy.
+Use [`memory/templates/archive.md`](../memory/templates/archive.md) for the current move form and
+[`memory/rules.md` §2.7](../memory/rules.md#27-strict-archive-form) for lifecycle, archive-body, and link
+scope. Promotion does not define another archival policy.
 
 ### 9. Reconcile the actual tree and prior evidence
 
@@ -122,11 +128,15 @@ Re-enumerate and re-hash every earlier staging path. The path set and bytes must
 
 Run every applicable current validator from its authoritative owner against the actual post-promotion
 tree. At minimum, run the Memory frontmatter validator with no arguments over live records and pass
-every newly rendered project-root archive path explicitly for strict validation; run the scoped
-Markdown-link validator for changed Markdown and inbound carriers; run the Mistake validator when a
-skill-owned mistake file changed; and run any topology or content guard whose declared scope includes a
-changed path. Preserve exact commands and results. A legitimate guard-carrier correction is a new
-planned mutation and requires another complete iteration; it is not patched outside the manifest.
+every newly rendered project-root archive path explicitly for strict validation; compare each archived
+body byte-for-byte with its frozen active preimage; and run the scoped Markdown-link validator for every
+changed active Markdown file and inbound carrier. Frozen archive bodies are not link-resolution inputs,
+so an outbound relative link left unresolved only by the terminal move is not a failure. A stale active
+inbound path still fails. A live namespace move remains under the full changed-Markdown link gate. Run
+the Mistake validator when a skill-owned mistake file changed, and run any topology or content guard
+whose declared scope includes a changed path. Preserve exact commands and results. A legitimate
+guard-carrier correction is a new planned mutation and requires another complete iteration; it is not
+patched outside the manifest.
 
 ### 10. Freeze evaluator inputs and matching handoff evidence
 
@@ -173,8 +183,9 @@ Promotion WORK is complete only when:
 - each applied or no-op row has a verified receipt;
 - an interrupted run has an exact safe continuation point or a mandatory rebuild decision;
 - true supersession is reciprocal; non-successor terminal states carry no invented successor; every
-  archive has a compatible reason, exact project-root path, strict validation, complete bytes, and
-  resolved links;
+  archive has a compatible reason, exact project-root path, strict validation, a body identical to its
+  frozen preimage, and actual-tree proof; every changed active inbound carrier resolves; frozen archive
+  outbound links are not normalized; and live namespace moves pass the full changed-Markdown link gate;
 - earlier staging paths and bytes are unchanged;
 - the actual project delta is a bijection with completed mutation rows;
 - all applicable current owner-provided validators pass on the actual tree;

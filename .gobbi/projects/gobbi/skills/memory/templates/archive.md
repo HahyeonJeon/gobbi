@@ -2,6 +2,9 @@
 
 > Project-root holding area for terminal artifacts moved here in full — including superseded or retired designs, superseded, completed, or abandoned plans, retired checklists, closed backlogs, and superseded durable knowledge. Each file is the complete moved artifact, not a stub or pointer.
 
+[`rules.md` §2.7](../rules.md#27-strict-archive-form) owns the terminal archive-body and link-scope
+contract. This template applies that contract; it does not define a second archive policy.
+
 ## Core principles
 
 > **Keep the archived record whole — the complete original file, marked with why and when it was retired.**
@@ -65,13 +68,26 @@ When a typed staging source authorizes a terminal transition, Wrap-up WORK inclu
 1. **Stamp archival frontmatter** — add `archived_at: {YYYY-MM-DD}` and one compatible
    `archive_reason: shipped|closed|completed|addressed|superseded|retired|dropped|abandoned`. Preserve
    the original scope and feature. Require a non-null successor only for `status: superseded`; do not
-   invent one for retirement, completion, or abandonment. The body is preserved verbatim.
+   invent one for retirement, completion, or abandonment. Freeze the active preimage and its body
+   digest. Preserve every body byte verbatim, including historical outbound relative-link text.
 2. **Move** — `git mv {active-path} .gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`. `git mv` preserves history; `{area}` is the file's resolved area (preserved from its active path); `{YYYY-MM-DD}` is the archive date.
 3. **Validate the rendered archive explicitly** — the Memory validator's no-argument mode remains
    live-only. Pass the exact new project-root archive path so strict mode checks filename date, path
    type, source area, archive-only fields, status/reason compatibility, and successor semantics.
-4. **Repoint inbound PATH references** — any `required-mistakes:` path or prose path pointing at the old active path is updated to the archive path. `supersedes:`/`superseded_by:` slug-links and `[[slug]]` body links are **plain slugs** (§2.4) — rename-robust, so they do NOT need repointing on a move. For mistakes: since only superseded ones move, active `required-mistakes:` citations are unaffected.
-5. **Never delete** — the move preserves the file in `archive/`; it is never removed.
+4. **Repoint active inbound PATH references** — any `required-mistakes:` path, Markdown link target, or
+   prose path in an active carrier that points at the old active path is updated to the archive path.
+   `supersedes:`/`superseded_by:` slug-links and `[[slug]]` body links are **plain slugs** (§2.4) —
+   rename-robust, so they do NOT need repointing on a move. For mistakes: since only superseded ones
+   move, active `required-mistakes:` citations are unaffected.
+5. **Apply the owner-defined link scope** — run the root Markdown-link validator over every changed
+   active Markdown file, including each inbound carrier. Do not include the new archive body in
+   relative-link resolution: its outbound link text is frozen and may intentionally stop resolving
+   from the archive directory. This exclusion never applies to a live namespace move.
+6. **Prove the actual terminal result** — compare the archived body byte-for-byte with the frozen body,
+   verify path/status/reason/date/successor semantics, and inspect the actual tree and carrier changes
+   against the frozen mutation set. Strict validation, body identity, active-carrier links, and tree
+   reconciliation are separate required proofs.
+7. **Never delete** — the move preserves the file in `archive/`; it is never removed.
 
 ## Archival frontmatter additions
 
@@ -103,7 +119,7 @@ The allowed status/reason pairs are exact:
 No compatibility status or migration reader broadens this matrix. A non-null `superseded_by` is
 required for `superseded` and invalid for every other status.
 
-`type:` is **not** in the block above on purpose — it is never rewritten on a move. `original_path` is not a required field — `git log --follow` recovers the move history; Wrap-up WORK may add an `original_path:` comment for readability. The file retains its complete original body — the archive holds the full artifact, not a summary or stub.
+`type:` is **not** in the block above on purpose — it is never rewritten on a move. `original_path` is not a required field — `git log --follow` recovers the move history; Wrap-up WORK may add an `original_path:` comment for readability. The file retains its complete original body — including outbound relative-link text that may no longer resolve from the archive directory — and the archive holds the full artifact, not a summary or stub.
 
 ## What NOT to move
 

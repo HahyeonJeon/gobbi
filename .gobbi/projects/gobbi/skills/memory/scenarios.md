@@ -36,7 +36,7 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 | MEM-FAMILY-02 | 04 | 04 | 05 | n/a: scope is a closed choice, not a numeric edge | n/a: ambiguity halts before mutation | 06 | n/a: no version event | n/a: no load-bearing premise |
 | MEM-FAMILY-03 | 07 | n/a: one owner boundary | n/a: malformed input is exercised by 09 | n/a: eligibility is binary | 09 | 08 | n/a: no version event | n/a: no load-bearing premise |
 | MEM-FAMILY-04 | 10 | n/a: one handoff identity | n/a: mismatch is exercised by 11 | n/a: equality is binary | n/a: output stays absent until accepted | 11 | n/a: no version event | n/a: no load-bearing premise |
-| MEM-FAMILY-05 | 12 | n/a: one-record replacement is the ordinary class | n/a: one-sided change is exercised by 14 | 13 | 17 | 14 | 12 | n/a: disconfirmation becomes supersession |
+| MEM-FAMILY-05 | 12 | n/a: one-record replacement is the ordinary class | n/a: stale active paths are exercised by 20 | 13 | 17 | 14, 20 | 12, 19, 21 | n/a: disconfirmation becomes supersession |
 | MEM-FAMILY-06 | 15 | n/a: one safe evidence route | n/a: unsafe copy is exercised by 18 | n/a: disclosure is binary | n/a: rejection leaves sources unchanged | 18 | n/a: no version event | 16 |
 
 ## Source register
@@ -51,8 +51,8 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 | [M-6](SKILL.md#m-6) | 02, 08, 09 |
 | [M-7](SKILL.md#m-7) | 10, 11 |
 | [M-8](SKILL.md#m-8) | 12, 14 |
-| [M-9](SKILL.md#m-9) | 13, 14, 17 |
-| [M-10](SKILL.md#m-10) | 06, 09, 10, 11, 12, 13, 14, 15, 17, 18 |
+| [M-9](SKILL.md#m-9) | 13, 14, 17, 19, 20, 21 |
+| [M-10](SKILL.md#m-10) | 06, 09, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20, 21 |
 
 ## MEM-FAMILY-01 — Candidate discrimination
 
@@ -328,6 +328,67 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - **Obligation:** the design must preserve the complete active record when a terminal move cannot safely apply.
 - **Check:** [MEM-CHECK-17](checklists.md#mem-check-17).
 
+### MEM-SCEN-19
+
+- **Primary type:** Change / regression / compat — a valid active-body relative link becomes unresolved
+  only because the complete terminal body moves into its typed archive directory.
+- **Coverage role:** change; categories 3, 9, 10.
+- **Actor:** Wrap-up lifecycle actor and independent evaluator.
+- **Given:** an active terminal record whose body contains an outbound relative link that resolves from
+  the active directory but not from the project-root archive directory.
+- **When:** the authorized terminal move freezes and archives the complete body.
+- **Then:** the outbound link text remains byte-identical; the archive body is excluded from scoped
+  Markdown-link resolution; and body identity, explicit strict archive validation, lifecycle fields,
+  and actual-tree review still pass independently.
+- **Failure oracle:** the body link is rewritten or normalized, or closure fails solely because the
+  expected frozen outbound link no longer resolves from the archive directory.
+- **Evidence tuple:** compare active-preimage and archive body digests and link text, inspect the scoped
+  link input set, exact strict-validator output, lifecycle fields, and actual tree.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §2.7](rules.md#27-strict-archive-form).
+- **Obligation:** the design must preserve historical archive-body bytes while retaining every separate
+  archive proof.
+- **Check:** [MEM-CHECK-19](checklists.md#mem-check-19).
+
+### MEM-SCEN-20
+
+- **Primary type:** Adversarial — a stale active inbound carrier attempts to borrow the archive-body
+  link exclusion.
+- **Coverage role:** adversarial; categories 4, 6, 9, 10.
+- **Actor:** Wrap-up lifecycle actor and independent evaluator.
+- **Given:** a terminal move completed, but one changed active Markdown carrier still points to the old
+  active path.
+- **When:** scoped link and actual-tree verification run.
+- **Then:** the active carrier remains inside the link-resolution gate and fails until it is repointed to
+  the new archive path.
+- **Failure oracle:** the stale active inbound path passes because archive bodies are excluded.
+- **Evidence tuple:** inspect old-path search, carrier preimage and result, scoped link output, manifest
+  row, and actual-tree delta.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §2.7](rules.md#27-strict-archive-form).
+- **Obligation:** the design must keep every active inbound carrier link-gated and manifest-backed.
+- **Check:** [MEM-CHECK-20](checklists.md#mem-check-20).
+
+### MEM-SCEN-21
+
+- **Primary type:** Change / regression / compat — a live namespace move breaks a relative link.
+- **Coverage role:** change; categories 4, 9, 10.
+- **Actor:** namespace-refactor actor and independent evaluator.
+- **Given:** a live memory record moves between active area namespaces and one changed Markdown link no
+  longer resolves from its new live location.
+- **When:** the full changed-Markdown link gate runs.
+- **Then:** the live move fails until every changed live record and carrier resolves; the terminal
+  archive-body exclusion is inapplicable.
+- **Failure oracle:** the broken live link passes by citing frozen-archive history preservation.
+- **Evidence tuple:** inspect the namespace move class, changed-Markdown input set, link-validator output,
+  old-path/label sweep, and actual active tree.
+- **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10),
+  [Memory rules §1.5](rules.md#refactor-procedure--split--merge--rename-an-area),
+  [Memory rules §2.7](rules.md#27-strict-archive-form).
+- **Obligation:** the design must keep live namespace refactors under the complete changed-Markdown link
+  gate.
+- **Check:** [MEM-CHECK-21](checklists.md#mem-check-21).
+
 ## MEM-FAMILY-06 — Safe evidence and trace closure
 
 - **Primary category:** 7 Trust / harm / governance — the defining concern is retaining proof without disclosing protected source material.
@@ -386,5 +447,6 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - Every family has an adversarial face.
 - Every case links to a live parent rule, one observable obligation, and one checklist item.
 - Every parent rule appears in the source register. Lifecycle coverage includes true supersession,
-  design retirement, plan completion/abandonment, checklist retirement, and strict root-archive form.
+  design retirement, plan completion/abandonment, checklist retirement, strict root-archive form,
+  frozen archive outbound-link text, active inbound-carrier repair, and live namespace link safety.
 - No evidence is embedded beyond safe synthetic case data.
