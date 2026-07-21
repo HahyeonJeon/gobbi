@@ -253,7 +253,8 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 
 - **Primary category:** 9 Change / compatibility / reversibility — the defining concern is replacing knowledge without erasing history.
 - **Secondary categories:** 3, 6, 10.
-- **Actor and outcome:** Wrap-up applies reciprocal ordinary supersession and moves the full terminal record.
+- **Actor and outcome:** Wrap-up distinguishes a true successor from non-successor closure, then moves
+  the full terminal record to the sole project-root archive.
 - **Source and rationale:** M-8, M-9, and M-10 require reciprocal history, full terminal moves, and final proof.
 - **Applicability:** a durable record is replaced or reaches terminal status.
 - **Priority:** critical.
@@ -264,9 +265,10 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - **Primary type:** Change / regression / compat — new understanding replaces one active record.
 - **Coverage role:** change; categories 3, 9, 10.
 - **Actor:** Wrap-up lifecycle actor.
-- **Given:** one active old record and one authorized new record that replaces it.
+- **Given:** one active old record and one authorized new record that truly replaces it.
 - **When:** ordinary supersession completes.
-- **Then:** the new record names the old, the old names the new, and the new record is the only active understanding.
+- **Then:** the new record names the old, the old uses `status: superseded` plus a non-null successor,
+  and the new record is the only active understanding.
 - **Failure oracle:** either lifecycle direction is absent or both records remain active.
 - **Evidence tuple:** inspect both frontmatter records and active-tree paths.
 - **Sources:** [M-8](SKILL.md#m-8), [M-10](SKILL.md#m-10).
@@ -278,11 +280,17 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - **Primary type:** Boundary — the exact active-to-terminal transition triggers the move.
 - **Coverage role:** boundary; categories 3, 6, 9.
 - **Actor:** Wrap-up lifecycle actor.
-- **Given:** the same complete record immediately before and after its type-defined terminal status.
+- **Given:** representative design, plan, and checklist records immediately before and after their
+  type-defined terminal statuses: design `retired`, plan `completed` or `abandoned`, and checklist
+  `retired`, plus an ordinary supersession control.
 - **When:** lifecycle handling runs on both states.
-- **Then:** the pre-terminal record stays active; the terminal record moves whole to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`.
-- **Failure oracle:** an active record moves early, or a terminal record remains at its active home.
-- **Evidence tuple:** compare status, active path, archive path, original type, and body bytes across the transition.
+- **Then:** each pre-terminal record stays live; each terminal record moves whole to the project-root
+  `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`, carries the matching date and compatible reason, and
+  preserves original scope and feature. Only the superseded control has a non-null successor.
+- **Failure oracle:** an active record moves early; a terminal record remains live; a reason mismatches
+  status; a feature-local archive appears; or retirement/completion/abandonment invents a successor.
+- **Evidence tuple:** compare status, reason, successor field, active path, project-root archive path,
+  original type/scope/feature, and body bytes across each transition.
 - **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10).
 - **Obligation:** the design must move exactly at the terminal boundary and preserve the full record.
 - **Check:** [MEM-CHECK-13](checklists.md#mem-check-13).
@@ -292,11 +300,16 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - **Primary type:** Adversarial — a shortcut attempts one-sided linkage, a pointer-only archive, or deletion.
 - **Coverage role:** adversarial; categories 6, 9, 10.
 - **Actor:** independent evaluator.
-- **Given:** a replacement whose new record is valid but whose old record is missing reciprocal linkage, full body, or inbound-reference updates.
+- **Given:** either a replacement whose old record lacks reciprocal linkage, or a non-successor terminal
+  record with a fabricated successor, wrong reason, missing archive fields, mismatched filename date,
+  wrong path type/area, feature-local destination, incomplete body, or stale inbound reference.
 - **When:** lifecycle verification runs.
-- **Then:** the change fails until both directions, the full archive record, and inbound paths are correct.
-- **Failure oracle:** the valid new record hides loss or dangling references in the old path.
-- **Evidence tuple:** inspect both lifecycle fields, archived bytes, inbound-link search, and changed-path list.
+- **Then:** strict explicit archive validation and lifecycle verification fail until successor semantics,
+  exact project-root path, archive fields, full bytes, and inbound paths are correct.
+- **Failure oracle:** a plausible terminal label or valid new record hides an illegal pair, invented
+  successor, misplaced archive, lost body, or dangling path.
+- **Evidence tuple:** inspect lifecycle fields and compatibility, explicit archive-validator output,
+  archived bytes, inbound-link search, and changed-path list.
 - **Sources:** [M-8](SKILL.md#m-8), [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10).
 - **Obligation:** the design must make destructive or one-sided shortcuts fail.
 - **Check:** [MEM-CHECK-14](checklists.md#mem-check-14).
@@ -372,5 +385,6 @@ Seed scenarios for the [Memory operation](SKILL.md). They exercise the parent ru
 - Every selected category has a positive handled case and every triggered stress type has a case.
 - Every family has an adversarial face.
 - Every case links to a live parent rule, one observable obligation, and one checklist item.
-- Every parent rule appears in the source register.
+- Every parent rule appears in the source register. Lifecycle coverage includes true supersession,
+  design retirement, plan completion/abandonment, checklist retirement, and strict root-archive form.
 - No evidence is embedded beyond safe synthetic case data.

@@ -262,19 +262,19 @@ The `status` enum is per-type — each type allows only the values in its row. T
 | features (README) | `active` \| `retired` | `value_proposition`, `subsystems` (list) |
 | notes | `active` | `features_touched` (list) (plus `steps_completed`, `shipped` — see note) |
 | decisions | `proposed` \| `accepted` \| `superseded` | (none) |
-| design | `active` \| `superseded` | (none) |
+| design | `active` \| `superseded` \| `retired` | (none) |
 | mistakes | `active` \| `superseded` | `priority` **(required)**, `domain` **(required)** |
 | rules | `active` \| `superseded` | `priority`, `established` (date) |
 | learnings | `active` \| `superseded` | (none) |
 | backlogs | `open` \| `deferred` \| `closed` | `priority` **(required)**, `project-scope` (bool) **(required)**, `shipped_in` (slug\|null) |
 | references | `active` \| `superseded` | `title` **(required)**, `source` **(required)**, `accessed` (date), `ref_type` **(required)** |
-| plans | `active` \| `superseded` | `task`, `task_count` (number) |
+| plans | `active` \| `superseded` \| `completed` \| `abandoned` | `task`, `task_count` (number) |
 | reviews | `active` | `review_kind` **(required)**, `subject`, `verdict` |
 | reports | `active` | `report_type` **(required)**, `related_reports` (list[slug]) (plus `generated_by`, `subject`, `related_reviews`, `related_decisions`) |
 | changelogs | `active` | `shipped_in` (slug) |
 | discussions | `active` | `outcome` |
 | scenarios | `active` | (none) |
-| checklists | `active` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
+| checklists | `active` \| `retired` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
 
 > **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `steps_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
 
@@ -286,6 +286,18 @@ The `status` enum is per-type — each type allows only the values in its row. T
 - `verdict` = `pass` \| `revise` \| `fail` \| `needs-attention` \| `n/a`
 - `report_type` = `status` \| `post-mortem` \| `analytics` \| `other`
 - `item_status` = `pending` \| `implemented` \| `deferred`
+
+**Terminal status semantics are distinct.** `superseded` means one true successor replaces the record.
+It requires a non-null plain-slug `superseded_by`, and the successor carries the reciprocal
+`supersedes`. The non-successor terminal states do not invent that relationship:
+
+- `design: retired` means the design is intentionally withdrawn without a replacement;
+- `plans: completed` means every accepted task outcome closed;
+- `plans: abandoned` means the plan stopped without completion and without a replacement; and
+- `checklists: retired` means the checklist no longer governs future work.
+
+For those non-successor states, `superseded_by` is absent or `null`. A non-null value is invalid.
+There are no compatibility aliases or migration statuses: a new record uses exactly the enum above.
 
 ### 2.3 The complete `type` enum — 16 first-class types
 
@@ -312,6 +324,9 @@ The enum says only WHAT a file is; `scope` and the directory say WHERE it lives.
 Memory files link to each other in two distinct ways. Keep them separate.
 
 **Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: grep-absence-claim-needs-exact-pattern`, `superseded_by: null`. `supersedes` and `superseded_by` are scalar-or-null lifecycle pointers. A `related:` field is a `list[slug]`.
+
+`superseded_by` is a successor pointer, not a generic terminal explanation. A `status: superseded`
+record requires one non-null plain slug. Every other status permits only absent or `null`.
 
 **Navigable graph links in the body = `[[slug]]`.** Human- and graph-navigable links live in the BODY, in a `## Related` section near the doc's end — one bullet per link in `[[slug]]` identifier-link form. Foam / Obsidian derive the graph and backlinks from these. Format:
 
@@ -347,6 +362,44 @@ Staging-only fields exist during the session and MUST be stripped when Wrap-up W
 **Empty staging is valid.** A clean result may leave every authorized typed staging directory empty. Wrap-up WORK records the empty inventory and creates no filler memory record.
 
 **Enforcement.** A promoted file carrying a stray staging-only key is caught by the bash validator's **no-stray-keys** check (§2 lead note) — the validator's per-type allowlist is exactly base (§2.1) + that type's extensions (§2.2), so any key outside it is reported.
+
+### 2.7 Strict archive form
+
+Archive is one project-root-only destination:
+
+```text
+.gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md
+```
+
+The move preserves the record's original `type`, `scope`, `feature`, base fields, type extensions, and
+complete body. A feature-scoped record still lives in the project-root archive and keeps its non-null
+`feature`; there is no `features/{feature}/archive/` tier. The path type must equal frontmatter `type`,
+and `{area}` must be allowed for that source type. For a retired `features` identity record, the
+structural-exception area is its preserved `feature` slug. `archive` is never a frontmatter type.
+
+Two fields are required only on an archived record:
+
+```yaml
+archived_at: YYYY-MM-DD
+archive_reason: shipped | closed | completed | addressed | superseded | retired | dropped | abandoned
+```
+
+`archived_at` equals the filename's leading date. Live records reject either archive field. The
+status/reason compatibility matrix is fail-closed:
+
+| Source type and terminal status | Allowed `archive_reason` |
+|---|---|
+| Any type whose status is `superseded` | `superseded` |
+| `design: retired` | `retired` |
+| `plans: completed` | `completed` |
+| `plans: abandoned` | `abandoned` |
+| `checklists: retired` | `addressed` \| `dropped` \| `retired` |
+| `backlogs: closed` | `shipped` \| `closed` \| `addressed` \| `dropped` |
+| `features: retired` | `retired` |
+
+No other pair is valid. A superseded archive requires the reciprocal successor pointer described in
+§2.2. Retired, completed, abandoned, addressed, dropped, closed, and shipped outcomes do not invent a
+successor.
 
 ---
 
@@ -471,7 +524,12 @@ There is no second, broader keep-list. The old pre-standard keep-list enumerated
 
 ### 4.5 The conformance gate — the bash validator
 
-The canonical conformance gate is the bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh). It is a **strict superset** of the old `find | xargs grep` leak-scan: rather than matching a hand-maintained list of leak keys, it validates every frontmatter key against the per-type allowlist (base §2.1 + that type's extensions §2.2) and also checks required fields, the 16-type enum (§2.3), the per-type `status` enum (§2.2), `scope` + the `feature` conditional (§2.1), extension enums, `name == filename stem`, and slug uniqueness. The no-stray-keys check subsumes the old leak-scan: any key outside the per-type allowlist — including session-routing residue and the removed `decision_status` / `disposition` — is reported. The validator is **archive-safe** by construction: its `P_live` prune excludes `archive/` / `sessions/` / `skills/` / `agents/` / `tmp/` / `worktrees/` (the §4.6 archive-exclusion), so a sweep never touches frozen history.
+The canonical conformance gate is the bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh). It is a **strict superset** of the old `find | xargs grep` leak-scan: rather than matching a hand-maintained list of leak keys, it validates every frontmatter key against the per-type allowlist (base §2.1 + that type's extensions §2.2) and also checks required fields, the 16-type enum (§2.3), the per-type `status` enum (§2.2), `scope` + the `feature` conditional (§2.1), extension enums, `name == filename stem`, successor-link semantics, and live slug uniqueness. The no-stray-keys check subsumes the old leak-scan: any key outside the per-type allowlist — including session-routing residue and the removed `decision_status` / `disposition` — is reported.
+
+No arguments select only `P_live`; the default prune excludes `archive/` / `sessions/` / `skills/` /
+`agents/` / `tmp/` / `worktrees/`. An explicitly named file under the canonical project-root
+`archive/` enters strict archive mode and must satisfy §2.7. An explicitly named feature-local archive
+path fails the exact-shape check. Archive files never enter the live-only slug uniqueness set.
 
 Run it over the whole live tree, or pass paths to scope it:
 
@@ -481,6 +539,9 @@ skills/memory/scripts/validate-frontmatter.sh
 
 # Validate specific files:
 skills/memory/scripts/validate-frontmatter.sh path/to/file.md ...
+
+# Validate one archived file strictly:
+skills/memory/scripts/validate-frontmatter.sh archive/design/workflow/2026-07-21-old-design.md
 ```
 
 **Fast advisory pre-check (optional).** The old one-liner below is no longer the gate — the validator is authoritative — but it remains a quick, archive-safe, underscore-aware scan for the most common staging-routing leaks when the full validator is not at hand:
@@ -505,9 +566,13 @@ find .gobbi/projects/gobbi -name '*.md' \
 
 A clean validator run reports no violations; any reported file is a doc to normalize so it carries only base + its type's extensions (§4.4). Note: `disposition` is no longer a backlogs extension — it folded into `status` (§2.2) — so it is now a stray key wherever it appears; the validator flags it like any other.
 
-### 4.6 Scope edge — `archive/` is excluded
+### 4.6 Scope edge — default scans exclude `archive/`
 
-Frozen `archive/` docs are excluded from this standard, from any retrofit pass, and from the gate. An archived file is terminal history; it is not normalized or re-prosed. Every command and predicate in §4 carries the `archive/` exclusion (`-not -path '*/archive/*'` / "NOT under `archive/`") so a sweep never touches frozen history.
+Frozen `archive/` docs are excluded from default collection and every retrofit or re-prose pass. An
+archived file is terminal history and is never normalized merely because the current schema changed.
+Explicit validation is different: naming one project-root archive file asks the gate to validate its
+complete current bytes strictly without mutating them. This preserves no-argument archive pruning while
+giving Wrap-up a fail-closed check for each newly rendered archive candidate.
 
 ---
 

@@ -31,7 +31,7 @@ description: {one-line what this plan decomposes}
 type: plans
 scope: feature
 feature: {feature-name}
-status: active | superseded
+status: active | superseded | completed | abandoned
 created: YYYY-MM-DD
 session: {Gobbi-owned session UUID}
 tags: [planning, execution]          # this type's controlled pool (§2.5)
@@ -76,5 +76,13 @@ task_count: {number of sub-tasks in this plan}
 
 ## Notes
 
-- **Update by supersede, never edit in place.** When Execution surfaces a plan change, return through the workflow and stage a newly accepted plan with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug. Wrap-up WORK applies the new promotion, reciprocal link, and complete archive move as one frozen mutation set.
+- **Update by supersede, never edit in place.** When Execution surfaces a replacement plan, return
+  through the workflow and stage a newly accepted plan with `supersedes: {old-slug}`. The old plan uses
+  `status: superseded` plus a non-null reciprocal successor. Wrap-up WORK applies the new promotion,
+  reciprocal link, and complete archive move as one frozen mutation set.
+- **Complete without inventing a successor.** Use `completed` when every accepted task outcome closes.
+  Archive with `archive_reason: completed`; leave `superseded_by` absent or null.
+- **Abandon without inventing a successor.** Use `abandoned` when the plan stops without completion or a
+  replacement. Archive with `archive_reason: abandoned`; leave `superseded_by` absent or null.
+- **No compatibility status.** A plan uses exactly `active`, `superseded`, `completed`, or `abandoned`.
 - **Sub-task granularity.** Each sub-task must be narrow enough that scope is unambiguous to one executor. If a description starts with "and then" or "while doing this also", split it.

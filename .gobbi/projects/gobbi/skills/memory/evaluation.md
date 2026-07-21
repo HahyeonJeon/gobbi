@@ -32,8 +32,8 @@ Every selected scenario must reach its linked check. Every applicable check must
 | Performance | Does the concrete implementation add material repeated scans, unbounded work, or avoidable file churn? | target-specific when applicable | Inspect counts and command evidence; otherwise record N/A from the absence of a resource property |
 | Aesthetics | Are names, type choices, hierarchy, and handoff content concise and clear to a cold reader? | 01, 06, 10 | Inspect slugs, headings, body focus, and duplicated prose |
 | Usage | Can the next actor identify what to stage, when to stop, what owner acts next, and how to recover? | 02, 05, 07, 09 | Walk an empty run, ambiguous classification, and failed validation from the documented entrypoint |
-| Consistency | Do rules, scenarios, checks, mappings, staged candidates, durable records, and handoff copies agree? | 06–14, 17 | Run trace closure, relative-link validation, lifecycle-pair checks, and body comparison |
-| Risk | Can unsupported, ineligible, unsafe, destructive, or unreviewed material become durable? | 03, 05, 08, 09, 11, 14–18 | Run false-pass, source-ingress, mutation-before-validation, one-sided-change, failed-move, and protected-evidence probes |
+| Consistency | Do rules, scenarios, checks, mappings, staged candidates, durable records, lifecycle enums/reasons, and handoff copies agree? | 06–14, 17 | Run trace closure, links, exact archive-path and status/reason checks, explicit strict archive validation, and body comparison |
+| Risk | Can unsupported, ineligible, unsafe, destructive, misplaced, or unreviewed material become durable? | 03, 05, 08, 09, 11, 14–18 | Run false-pass, source-ingress, mutation-before-validation, invented-successor, illegal-pair, feature-local archive, failed-move, and protected-evidence probes |
 | Overall | Does the complete lifecycle turn supported evidence into durable memory without bypassing authority, losing history, or overstating completion? | all applicable cases | Compare the parent contract, actual tree, completed register, and direct evidence |
 
 ## Rule crosswalk
@@ -59,7 +59,10 @@ Every selected scenario must reach its linked check. Every applicable check must
 - **Ingress probe:** a plausible durable file outside authorized typed staging must not enter the inventory.
 - **Pre-write failure probe:** a malformed typed source must fail before any durable change and leave prior evidence unchanged.
 - **Handoff-drift probe:** a one-sided material body edit must fail body identity and reviewed-subject checks.
-- **Lifecycle-shortcut probe:** one-sided supersession, early move, incomplete archive, deletion, or dangling inbound path must fail.
+- **Lifecycle-shortcut probe:** one-sided supersession; a non-null successor on retired/completed/abandoned
+  material; an illegal status/reason pair; missing archive fields; date/type/area mismatch; a
+  feature-local archive path; early move; incomplete archive; deletion; or dangling inbound path must
+  fail. The validator is invoked with each exact new project-root archive path.
 - **Failed-move probe:** a conflicting archive destination or changed preimage must leave active and archive bytes unchanged.
 - **Protected-evidence probe:** a full protected payload must be rejected when a safe pointer and bounded summary preserve proof.
 
@@ -75,7 +78,9 @@ Open a finding when direct evidence shows:
 - prior staged evidence changed;
 - a durable mutation began before complete validation;
 - handoff bodies or reviewed identity differ;
-- reciprocal supersession is incomplete;
+- reciprocal true supersession is incomplete, or a non-successor state invents a successor;
+- a terminal record has an illegal reason, archive-only field defect, date/type/area/path mismatch, or
+  feature-local destination;
 - a terminal record moved early, stayed active, lost its body, or was deleted;
 - a failed terminal move changed or overwrote either location;
 - an inbound path no longer resolves;
@@ -99,7 +104,7 @@ Use the finding schema, confidence, severity, provenance, checklist result, and 
 
 ### PASS anchor
 
-All applicable Memory checks pass with inspected evidence. Candidate selection is justified, empty results stay valid, owner boundaries hold, typed staging is the only ingress, actual durable paths match the map, handoff bodies match, history is preserved, and no supported blocking finding remains.
+All applicable Memory checks pass with inspected evidence. Candidate selection is justified, empty results stay valid, owner boundaries hold, typed staging is the only ingress, actual durable paths match the sole project-root map, every new archive passes explicit strict validation, handoff bodies match, successor semantics and history are preserved, and no supported blocking finding remains.
 
 ### REVISE anchor
 

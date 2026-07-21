@@ -139,9 +139,11 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 ### MEM-CHECK-12
 
 - [ ] **Criticality:** gate
-- **Claim:** Ordinary one-record supersession is reciprocal and leaves one active understanding.
+- **Claim:** A true one-record supersession is reciprocal and leaves one active understanding without
+  borrowing successor semantics for other terminal states.
 - **Applicability:** when one durable record replaces one other record; otherwise `n/a:<property>` with inspected lifecycle evidence.
-- **Pass:** the new record's `supersedes` and old record's `superseded_by` name each other, and the old record is terminal.
+- **Pass:** the new record's `supersedes` and old record's non-null `superseded_by` name each other, the
+  old status is `superseded`, and every non-superseded record has no non-null successor.
 - **Evidence:** both frontmatter records, active-tree inventory, and source decision.
 - **On fail:** open a blocking lifecycle finding; stop acceptance because history or active meaning is ambiguous.
 - **Sources:** [M-8](SKILL.md#m-8), [M-10](SKILL.md#m-10), [MEM-SCEN-12](scenarios.md#mem-scen-12).
@@ -149,20 +151,29 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 ### MEM-CHECK-13
 
 - [ ] **Criticality:** gate
-- **Claim:** A record moves whole exactly when it reaches its type-defined terminal state.
+- **Claim:** A record moves whole to the sole project-root archive exactly when it reaches a legal
+  type-defined terminal state and compatible reason.
 - **Applicability:** when a durable record changes lifecycle state; otherwise `n/a:<property>` with inspected lifecycle evidence.
-- **Pass:** the pre-terminal probe stays active, the terminal record occupies its typed archive path, and original type plus body are preserved.
-- **Evidence:** status transition, active and archive paths, frontmatter type, and body comparison.
+- **Pass:** live controls stay live; design retirement, plan completion/abandonment, checklist retirement,
+  and supersession controls occupy exact typed/area archive paths with matching date/reason; original
+  type, scope, feature, and body survive; only supersession has a successor.
+- **Evidence:** status/reason matrix, active and archive paths, explicit strict validator, frontmatter,
+  and body comparison.
 - **On fail:** open a blocking history-loss finding; stop acceptance because a live record moved early or terminal history was lost.
 - **Sources:** [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10), [MEM-SCEN-13](scenarios.md#mem-scen-13).
 
 ### MEM-CHECK-14
 
 - [ ] **Criticality:** gate
-- **Claim:** Verification rejects one-sided lifecycle links, pointer-only archives, deletion, and dangling inbound paths.
+- **Claim:** Verification rejects one-sided successor links, invented successors, illegal status/reason
+  pairs, missing archive fields, date/type/area/path mismatch, feature-local archive paths, pointer-only
+  archives, deletion, and dangling inbound paths.
 - **Applicability:** every supersession or terminal move.
-- **Pass:** the adversarial shortcut probe fails; the actual change has reciprocal links, full archived bytes, no deletion, and resolving inbound paths.
-- **Evidence:** lifecycle fields, archive body, path-reference search, scoped link result, and changed-path list.
+- **Pass:** every adversarial shortcut fails; the actual change passes explicit strict archive validation,
+  uses reciprocal links only for a true successor, preserves full bytes, deletes nothing, and leaves
+  inbound paths resolving.
+- **Evidence:** lifecycle fields, strict archive output, archive body, path-reference search, scoped link
+  result, and changed-path list.
 - **On fail:** open a blocking preservation finding; stop acceptance because a valid new record can hide lost history.
 - **Sources:** [M-8](SKILL.md#m-8), [M-9](SKILL.md#m-9), [M-10](SKILL.md#m-10), [MEM-SCEN-14](scenarios.md#mem-scen-14).
 
@@ -218,7 +229,7 @@ Unchecked source register for evaluating the [Memory operation](SKILL.md) agains
 | Ineligible promotion source | MEM-CHECK-08 `FAIL:<finding-id>`; not accepted |
 | Malformed typed source | MEM-CHECK-09 `FAIL:<finding-id>`; no durable change |
 | One-sided handoff edit | MEM-CHECK-11 `FAIL:<finding-id>`; not accepted |
-| One-sided supersession or incomplete archive | MEM-CHECK-12, 13, or 14 `FAIL:<finding-id>`; not accepted |
+| One-sided supersession, invented non-successor link, illegal archive pair, misplaced/incomplete archive | MEM-CHECK-12, 13, or 14 `FAIL:<finding-id>`; not accepted |
 | Terminal move preimage conflict | MEM-CHECK-17 `PASS` only when both locations stay unchanged; no history loss |
 | Sensitive source safely referenced | MEM-CHECK-15 and 16 `PASS`; no protected payload retained |
 | Protected payload hidden in a valid-looking candidate | MEM-CHECK-18 `FAIL:<finding-id>`; not accepted |

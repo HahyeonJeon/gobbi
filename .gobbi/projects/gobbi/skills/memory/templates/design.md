@@ -35,7 +35,7 @@ description: {one-line what this design covers}
 type: design
 scope: project | feature
 feature: {feature-name} | null
-status: active | superseded
+status: active | superseded | retired
 created: YYYY-MM-DD
 session: {Gobbi-owned session UUID}
 tags: [design, schema]               # this type's controlled pool (§2.5)
@@ -74,3 +74,11 @@ related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug]
 
 - [[2026-05-11-use-redis-not-memcached]] — the decision this design implements
 ```
+
+## Lifecycle notes
+
+- Use `superseded` only when one new design replaces this design. Both plain-slug lifecycle pointers are
+  required and reciprocal.
+- Use `retired` when the design is intentionally withdrawn without a successor. Leave
+  `superseded_by` absent or `null`; archive it with `archive_reason: retired`.
+- A status outside the declared enum is invalid. There is no compatibility or migration status.

@@ -40,13 +40,17 @@ The session and durable bodies are identical. The durable file adds only its not
 
 ## Lifecycle destinations
 
-Ordinary one-record supersession keeps both directions:
+True one-record supersession keeps both directions: the new record carries `supersedes: {old-slug}`
+and the old record carries `status: superseded` plus non-null
+`superseded_by: {new-slug}`. A retired design, completed or abandoned plan, or retired checklist has no
+successor and keeps `superseded_by` absent or null.
 
-- the new record carries `supersedes: {old-slug}`;
-- the old record carries terminal `status` plus `superseded_by: {new-slug}`; and
-- the complete old record moves to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`.
-
-The archive move preserves the original type and body. Inbound path references follow the move; plain-slug lifecycle references do not change. [Memory rules](rules.md) own the durable field and archive constraints. [Wrap-up](../wrap-up/SKILL.md) owns the filesystem mutation set.
+Every terminal move uses the sole project-root destination
+`archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`. It preserves original type, scope, feature, extensions,
+and body. It adds the matching archive date and one status-compatible reason. There is no
+`features/{feature}/archive/` route. Inbound path references follow the move; plain-slug lifecycle
+references do not change. [Memory rules](rules.md) own the exact status/reason matrix and strict archive
+form. [Wrap-up](../wrap-up/SKILL.md) owns the filesystem mutation set.
 
 ## Ownership boundaries
 

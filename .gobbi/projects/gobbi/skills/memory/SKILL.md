@@ -27,7 +27,9 @@ The selected type states what job the record does. Scope states who must keep us
 
 ### Lifecycle changes preserve history
 
-New understanding may supersede an older record, but it does not erase it. Reciprocal references and the complete terminal record keep the change auditable.
+New understanding may supersede an older record, but completion, abandonment, or retirement may also
+end a record without replacing it. Exact terminal status, archive reason, and the complete archived
+record keep either lifecycle auditable.
 
 ## Rules
 
@@ -61,11 +63,17 @@ New understanding may supersede an older record, but it does not erase it. Recip
 
 ### M-8
 
-**Make ordinary supersession reciprocal.** The new record names the old record in `supersedes`. The old record changes to its terminal status and names the new record in `superseded_by`. One-sided linkage is invalid.
+**Make true supersession reciprocal.** Only a real successor uses `superseded` and a non-null
+`superseded_by`. The new record names the old record in `supersedes`. Retirement, completion, and
+abandonment are not successor relationships and do not invent a `superseded_by`; a record may retain
+its own `supersedes` link when it genuinely replaced an earlier record.
 
 ### M-9
 
-**Move terminal records whole and never delete them.** Move the complete terminal record to `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`, preserve its original type and body, and repoint inbound path references. Plain-slug lifecycle references remain stable.
+**Move terminal records whole and never delete them.** Move the complete terminal record to the sole
+project-root `archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md`, preserve its original type, scope, feature,
+and body, stamp the compatible reason and matching archive date, and repoint inbound path references.
+Plain-slug lifecycle references remain stable.
 
 ### M-10
 
@@ -101,7 +109,10 @@ Evidence: a keep/drop decision and reason for every row. Apply M-2.
 
 Use [memory-map.md](memory-map.md) to select one authorized typed source and durable home. Use [rules.md](rules.md) and the matching template to test the type boundary. Select project scope only for cross-feature material; otherwise use feature scope when the type permits it.
 
-Compare the concept with existing durable records. Choose create, same-source no-op, or ordinary supersession. A collision without clear identity or authority returns `NEEDS_CONTEXT`.
+Compare the concept with existing durable records. Choose create, same-source no-op, true
+supersession, or one of the type's non-successor terminal outcomes. A collision without clear identity
+or authority returns `NEEDS_CONTEXT`. Do not relabel retired, completed, or abandoned material as
+superseded merely to reuse a successor path.
 
 Evidence: type, scope, area input, preferred slug, lifecycle intent, and existing-record comparison. Apply M-3, M-8, and M-9.
 
@@ -137,9 +148,16 @@ Memory supplies type, scope, lifecycle, and history-preservation policy. Wrap-up
 
 Evidence: source-to-destination mapping, validated durable candidates, and actual-tree results. Apply M-3, M-6, and M-10.
 
-### 9. Complete ordinary supersession and terminal moves
+### 9. Complete lifecycle links and terminal moves
 
-When a new record replaces one existing record, write the new `supersedes` reference and the old `superseded_by` reference as one authorized change. Move the complete old record to its typed archive home after it reaches terminal status.
+When a new record replaces one existing record, write the new `supersedes` reference and the old
+non-null `superseded_by` reference as one authorized change. When a design retires, a plan completes or
+is abandoned, or a checklist retires, keep `superseded_by` absent or null. These outcomes have no
+replacement.
+
+Move the complete terminal record to the project-root typed archive only after its status and archive
+reason form an allowed pair. Stamp `archived_at` with the same date that leads the archive filename.
+Preserve original scope and feature values; never route to a feature-local archive.
 
 Enumerate and repoint inbound path references. Do not hard-delete the old file, reduce it to a pointer, or leave it active beside the replacement.
 
@@ -147,7 +165,7 @@ Evidence: both lifecycle directions, the full archive record, and resolved inbou
 
 ### 10. Verify and close the lifecycle
 
-Inspect the final files and actual diff. Trace every durable change back to one typed staging source and every source to one accounted outcome. Run the current memory-shape and scoped-link validators from their owners. Confirm prior staged evidence is unchanged.
+Inspect the final files and actual diff. Trace every durable change back to one typed staging source and every source to one accounted outcome. Run the current memory-shape validator with no arguments for the live tree and explicitly name every newly rendered archive candidate for strict validation. Run scoped links from their owner. Confirm prior staged evidence is unchanged.
 
 When a handoff exists, compare the session and durable bodies byte-for-byte after removing the durable frontmatter wrapper. Report exact paths, checks, results, empty sets, and unresolved concerns.
 

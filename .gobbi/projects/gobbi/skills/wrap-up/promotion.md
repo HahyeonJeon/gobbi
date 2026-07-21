@@ -63,7 +63,12 @@ Do not create a `staging/rules/` directory. The Record vocabulary has no ordinar
 
 For every `promote` row, resolve the legal durable home through [Staging → Memory routing](#staging--memory-routing), then render the complete destination bytes through the matching Memory template and [frontmatter allowlist](#frontmatter-allowlist-on-promotion).
 
-Record the candidate path and digest, exact source digest, resolved type, scope, area, preferred slug, destination, user-decision references, any deterministic normalization delta, collision decision, and lifecycle intent. Validate the entire rendered candidate. For a shared destination, render and validate the complete resulting file, not only an appended section.
+Record the candidate path and digest, exact source digest, resolved type, preserved scope and feature,
+area, preferred slug, destination, user-decision references, any deterministic normalization delta,
+collision decision, and lifecycle intent. For an archive candidate, also record terminal status,
+compatible archive reason, filename date, and successor identity only when status is `superseded`.
+Validate the entire rendered candidate. For a shared destination, render and validate the complete
+resulting file, not only an appended section.
 
 Never invent a type, scope, area, schema key, route, or collision rule. A missing owner decision returns `NEEDS_CONTEXT` before any durable write.
 
@@ -74,7 +79,7 @@ The manifest contains two closed sets:
 1. one source-accounting row for every file in the final inventory; and
 2. one mutation row for every path the apply may create, replace, append, move, or repoint.
 
-Each mutation row records a stable row ID, owning source identity or authorized lifecycle set, operation, target, complete candidate digest or move result, dependencies, and expected postcondition. Include related mutations such as shared-file changes, reciprocal supersession edits, archive moves, inbound path-reference repoints, and any owner-required index change.
+Each mutation row records a stable row ID, owning source identity or authorized lifecycle set, operation, target, complete candidate digest or move result, dependencies, and expected postcondition. Include related mutations such as shared-file changes, reciprocal true-supersession edits, non-successor terminal stamps, project-root archive moves, inbound path-reference repoints, and any owner-required index change.
 
 Capture the whole-file preimage for every mutable path. Use `absent` for a missing path or the exact content digest plus relevant metadata for an existing path. A move captures both source and destination preimages. A shared file captures its complete bytes. A reference repoint captures the complete carrier file. Directory creation is explicit and root-contained.
 
@@ -94,11 +99,18 @@ After each row, verify the actual bytes or move state, then append a receipt con
 
 If a filesystem operation fails after earlier rows completed, stop at the exact row and preserve the manifest plus receipts. Do not continue to later rows. Before resuming, verify every completed row still equals its frozen postcondition and every remaining row still has its frozen preimage. Any mismatch causes zero further writes and requires a rebuilt complete manifest. Otherwise continue from the first unreceipted row. Never allocate a new suffix for the same frozen source.
 
-### 8. Complete ordinary supersession and archive moves
+### 8. Complete terminal lifecycles and project-root archive moves
 
-Apply one authorized supersession as one manifest-owned mutation set: write the new record, add reciprocal plain-slug lifecycle links, move the complete terminal old record to its typed archive path, and repoint every inbound path reference.
+Apply one authorized true supersession as one manifest-owned mutation set: write the new record, add
+reciprocal plain-slug lifecycle links, stamp the old status/reason/date, move the complete old record to
+its project-root typed archive path, and repoint every inbound path reference.
 
-The old record keeps its original type and complete body. The active source, archive destination, new record, and every reference carrier have whole-file preimages. Verify both lifecycle directions, the complete archived bytes, and every repointed path. Never hard-delete a record or replace it with a tombstone.
+For a retired design, completed or abandoned plan, or retired checklist, omit a non-null successor.
+Stamp only the type-compatible terminal reason, then use the same complete project-root move. The old
+record keeps its original type, scope, feature, and complete body. The active source, archive
+destination, optional new record, and every reference carrier have whole-file preimages. Verify
+successor directions only when a true replacement exists; otherwise verify their absence. Never use a
+feature-local archive, hard-delete a record, or replace it with a tombstone.
 
 Use [`memory/templates/archive.md`](../memory/templates/archive.md) for the current move form and [`memory/rules.md`](../memory/rules.md) for ordinary lifecycle constraints. Promotion does not define another archival policy.
 
@@ -108,7 +120,13 @@ Compare the actual post-promotion project tree with the frozen preimages. Every 
 
 Re-enumerate and re-hash every earlier staging path. The path set and bytes must equal the initial source register. Confirm no source, draft, review, synthesis, evaluator report, or prior output changed during apply.
 
-Run every applicable current validator from its authoritative owner against the actual post-promotion tree. At minimum, use the Memory frontmatter validator for durable records, the scoped Markdown-link validator for changed Markdown and its inbound carriers, the Mistake validator when a skill-owned mistake file changed, and any topology or content guard whose declared scope includes a changed path. Preserve exact commands and results. A legitimate guard-carrier correction is a new planned mutation and requires another complete iteration; it is not patched outside the manifest.
+Run every applicable current validator from its authoritative owner against the actual post-promotion
+tree. At minimum, run the Memory frontmatter validator with no arguments over live records and pass
+every newly rendered project-root archive path explicitly for strict validation; run the scoped
+Markdown-link validator for changed Markdown and inbound carriers; run the Mistake validator when a
+skill-owned mistake file changed; and run any topology or content guard whose declared scope includes a
+changed path. Preserve exact commands and results. A legitimate guard-carrier correction is a new
+planned mutation and requires another complete iteration; it is not patched outside the manifest.
 
 ### 10. Freeze evaluator inputs and matching handoff evidence
 
@@ -142,7 +160,7 @@ Idempotency uses the stable source identity `{sessionId, source-relative-path}` 
 
 For the same source and mapping, equal destination bytes are a no-op, a still-absent destination may be created only while its absent preimage remains true, and any other byte drift halts. For distinct sources that request one preferred path, allocate the deterministic disambiguation during manifest construction and freeze it. Never recompute a suffix during apply or rerun.
 
-Semantic similarity is not source identity. Treat existing related content as a distinct collision, an approved drop, or an authorized ordinary supersession; never overwrite it because it looks equivalent.
+Semantic similarity is not source identity. Treat existing related content as a distinct collision, an approved drop, or an authorized true supersession; never overwrite it because it looks equivalent.
 
 ## Completion proof
 
@@ -154,7 +172,9 @@ Promotion WORK is complete only when:
 - all whole-file preimages match immediately before apply;
 - each applied or no-op row has a verified receipt;
 - an interrupted run has an exact safe continuation point or a mandatory rebuild decision;
-- ordinary supersession and archive moves are reciprocal, complete, and link-resolved;
+- true supersession is reciprocal; non-successor terminal states carry no invented successor; every
+  archive has a compatible reason, exact project-root path, strict validation, complete bytes, and
+  resolved links;
 - earlier staging paths and bytes are unchanged;
 - the actual project delta is a bijection with completed mutation rows;
 - all applicable current owner-provided validators pass on the actual tree;

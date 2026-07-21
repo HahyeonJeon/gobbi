@@ -45,14 +45,27 @@
 #     - slug uniqueness: no two live files share a name: — EXCEPT README.md files, which
 #       carry the fixed identity name `README` (§2.4) and are exempt from uniqueness
 #
+#   An explicitly named file below the canonical project-root `archive/` enters strict
+#   archive mode. Feature-local archive paths are invalid. In addition to the live
+#   record contract, strict archive mode checks:
+#     - exact {archive-root}/{type}/{area}/{YYYY-MM-DD}-{slug}.md shape
+#     - path type == frontmatter type and area ∈ the source type's area allowlist
+#     - original scope and feature values remain valid without selecting another tier
+#     - archived_at + archive_reason are present only in archive mode
+#     - archived_at matches the leading filename date
+#     - status/archive_reason is one of the type-owned compatible terminal pairs
+#     - a superseded record has one non-null plain-slug superseded_by; non-successor
+#       terminal states do not carry a non-null superseded_by
+#
 # Scope of files (P_live, mirrors the §4.5 find-prune predicate):
 #   under .gobbi/projects/gobbi/ EXCLUDING */archive/* */sessions/* */skills/*
 #   */agents/* */tmp/* */worktrees/*. Optional [paths...] args validate specific files
-#   instead; default is the whole P_live tree.
+#   instead; an explicitly named archive path is validated strictly. Default collection
+#   remains P_live and never scans frozen archives.
 #
 # Args:
 #   [paths...]   Zero or more .md files to validate. Default: the whole P_live tree.
-#   --self-test  Run isolated scalar/null/absent acceptance and list-rejection fixtures.
+#   --self-test  Run isolated live-link, lifecycle, and strict-archive fixtures.
 #
 # Output: one line per violation — FILE:FIELD: message. A summary count on stderr.
 #   Exit non-zero if any violation; exit 0 + "OK: N files validated" if clean.
@@ -96,8 +109,9 @@ usage: validate-frontmatter.sh [paths...]
   Validates memory frontmatter against memory/rules.md §2.
   No args  -> validates the whole P_live tree under .gobbi/projects/gobbi/
               (excluding archive/ sessions/ skills/ agents/ tmp/ worktrees/).
-  [paths]  -> validates only the given .md files.
-  --self-test -> runs isolated slug-link fixtures.
+  [paths]  -> validates only the given .md files; explicitly named project-root
+              archive paths enter strict archive mode.
+  --self-test -> runs isolated live-link, lifecycle, and archive fixtures.
   Prints one line per violation (FILE:FIELD: message); exits non-zero if any.
 EOF
 }
@@ -111,7 +125,13 @@ esac
 # Script lives at .gobbi/projects/gobbi/skills/memory/scripts/ ; the memory root
 # is three levels up (skills/memory/scripts -> skills/memory -> skills -> gobbi).
 script_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
+if [ -n "${_GOBBI_VALIDATE_PROJECT_ROOT:-}" ]; then
+    # Private test seam used only by --self-test to exercise no-argument collection
+    # against an isolated tree. Production calls derive the root from this script.
+    project_root="$(cd "$_GOBBI_VALIDATE_PROJECT_ROOT" && pwd -P)"
+else
+    project_root="$(cd "$script_dir/../../.." && pwd)"   # .gobbi/projects/gobbi
+fi
 [ -d "$project_root" ] || { log "project root not found: $project_root"; exit 2; }
 
 # --- Resolve the memory skill AREA + TAG vocabulary config (relative to script_dir) -
@@ -127,77 +147,161 @@ command -v jq >/dev/null 2>&1 || { log "jq not found — required to read $vocab
 jq -e . "$vocab_config" >/dev/null 2>&1 || { log "invalid JSON in $vocab_config"; exit 2; }
 
 self_test() {
-    local tmp self_path failures=0 total=0
+    local tmp self_path fixture_root failures=0 total=0
     tmp="$(mktemp -d)"
     self_path="$script_dir/$SELF"
+    fixture_root="$tmp/.gobbi/projects/gobbi"
     trap 'rm -rf "$tmp"' RETURN
 
-    write_fixture() {
-        local path="$1" supersedes_block="$2" slug
-        slug="$(basename "$path" .md)"
+    write_memory_fixture() {
+        local path="$1" ftype="$2" scope="$3" feature="$4" status="$5"
+        local extension_block="$6" lifecycle_block="$7" archive_block="$8" slug
+        slug="$(basename "$path" .md | sed -E 's/^[0-9]{4}-[0-9]{2}-[0-9]{2}-//')"
         mkdir -p "$(dirname "$path")"
         {
             printf '%s\n' '---'
             printf 'name: %s\n' "$slug"
             printf '%s\n' 'description: isolated validator self-test fixture'
-            printf '%s\n' 'type: design' 'scope: project' 'feature: null' 'status: active'
-            printf '%s\n' 'created: 2026-07-20' 'session: self-test' 'tags: [memory]' 'keywords: []' 'author: codex'
-            [ -z "$supersedes_block" ] || printf '%s\n' "$supersedes_block"
+            printf 'type: %s\n' "$ftype"
+            printf 'scope: %s\n' "$scope"
+            printf 'feature: %s\n' "$feature"
+            printf 'status: %s\n' "$status"
+            printf '%s\n' 'created: 2026-07-20' 'session: self-test'
+            if [ "$ftype" = "features" ]; then
+                printf '%s\n' 'tags: []'
+            else
+                printf '%s\n' 'tags: [memory]'
+            fi
+            printf '%s\n' 'keywords: []' 'author: codex'
+            [ -z "$extension_block" ] || printf '%s\n' "$extension_block"
+            [ -z "$lifecycle_block" ] || printf '%s\n' "$lifecycle_block"
+            [ -z "$archive_block" ] || printf '%s\n' "$archive_block"
             printf '%s\n' '---' '' '# Validator self-test fixture'
         } > "$path"
     }
 
-    write_note_fixture() {
-        local path="$1" extension_block="$2" slug
-        slug="$(basename "$path" .md)"
-        mkdir -p "$(dirname "$path")"
-        {
-            printf '%s\n' '---'
-            printf 'name: %s\n' "$slug"
-            printf '%s\n' 'description: isolated notes-extension self-test fixture'
-            printf '%s\n' 'type: notes' 'scope: project' 'feature: null' 'status: active'
-            printf '%s\n' 'created: 2026-07-20' 'session: 37d3c8ef-57dd-477a-b10c-dcbbc1c2327d' 'tags: [process]' 'keywords: []' 'author: codex'
-            printf '%s\n' "$extension_block"
-            printf '%s\n' '---' '' '# Notes-extension self-test fixture'
-        } > "$path"
-    }
-
     expect_exit() {
-        local expected="$1" label="$2" path="$3" pattern="${4:-}" got output
+        local expected="$1" label="$2" path="$3" pattern="${4:-}" got output before after
         total=$((total + 1))
         output="$tmp/result-$total.txt"
+        before="$(sha256sum "$path" | awk '{print $1}')"
         set +e
         "$self_path" "$path" >"$output" 2>&1
         got=$?
         set -e
+        after="$(sha256sum "$path" | awk '{print $1}')"
         if [ "$got" -eq "$expected" ] \
+           && [ "$before" = "$after" ] \
            && { [ -z "$pattern" ] || grep -Fq "$pattern" "$output"; }; then
             printf 'PASS: %s\n' "$label"
         else
             printf 'FAIL: %s (expected exit %s, got %s)\n' "$label" "$expected" "$got" >&2
             [ -z "$pattern" ] || printf '  expected output containing: %s\n' "$pattern" >&2
+            [ "$before" = "$after" ] || printf '  source bytes changed: %s -> %s\n' "$before" "$after" >&2
             sed 's/^/  | /' "$output" >&2
             failures=$((failures + 1))
         fi
     }
 
-    write_fixture "$tmp/design/memory/scalar-link.md" 'supersedes: prior-record'
+    expect_root_exit() {
+        local expected="$1" label="$2" root="$3" watched="$4" pattern="${5:-}"
+        local got output before after
+        total=$((total + 1))
+        output="$tmp/result-$total.txt"
+        before="$(sha256sum "$watched" | awk '{print $1}')"
+        set +e
+        _GOBBI_VALIDATE_PROJECT_ROOT="$root" "$self_path" >"$output" 2>&1
+        got=$?
+        set -e
+        after="$(sha256sum "$watched" | awk '{print $1}')"
+        if [ "$got" -eq "$expected" ] \
+           && [ "$before" = "$after" ] \
+           && { [ -z "$pattern" ] || grep -Fq "$pattern" "$output"; }; then
+            printf 'PASS: %s\n' "$label"
+        else
+            printf 'FAIL: %s (expected exit %s, got %s)\n' "$label" "$expected" "$got" >&2
+            [ -z "$pattern" ] || printf '  expected output containing: %s\n' "$pattern" >&2
+            [ "$before" = "$after" ] || printf '  source bytes changed: %s -> %s\n' "$before" "$after" >&2
+            sed 's/^/  | /' "$output" >&2
+            failures=$((failures + 1))
+        fi
+    }
+
+    write_memory_fixture "$tmp/design/memory/scalar-link.md" design project null active '' 'supersedes: prior-record' ''
     expect_exit 0 'scalar supersedes accepted' "$tmp/design/memory/scalar-link.md"
-    write_fixture "$tmp/design/memory/null-link.md" 'supersedes: null'
+    write_memory_fixture "$tmp/design/memory/null-link.md" design project null active '' 'supersedes: null' ''
     expect_exit 0 'null supersedes accepted' "$tmp/design/memory/null-link.md"
-    write_fixture "$tmp/design/memory/absent-link.md" ''
+    write_memory_fixture "$tmp/design/memory/absent-link.md" design project null active '' '' ''
     expect_exit 0 'absent supersedes accepted' "$tmp/design/memory/absent-link.md"
-    write_fixture "$tmp/design/memory/flow-list.md" 'supersedes: [first-record, second-record]'
+    write_memory_fixture "$tmp/design/memory/flow-list.md" design project null active '' 'supersedes: [first-record, second-record]' ''
     expect_exit 1 'flow-list supersedes rejected' "$tmp/design/memory/flow-list.md" \
         'supersedes: must be one plain scalar slug or null, not a list'
-    write_fixture "$tmp/design/memory/block-list.md" $'supersedes:\n  - first-record\n  - second-record'
+    write_memory_fixture "$tmp/design/memory/block-list.md" design project null active '' $'supersedes:\n  - first-record\n  - second-record' ''
     expect_exit 1 'block-list supersedes rejected' "$tmp/design/memory/block-list.md" \
         'supersedes: must be one plain scalar slug or null, not a block list'
-    write_note_fixture "$tmp/notes/tooling/steps-field.md" 'steps_completed: [ideation, planning, execution, wrap-up]'
+    write_memory_fixture "$tmp/notes/tooling/steps-field.md" notes project null active 'steps_completed: [ideation, planning, execution, wrap-up]' '' ''
     expect_exit 0 'steps_completed notes extension accepted' "$tmp/notes/tooling/steps-field.md"
-    write_note_fixture "$tmp/notes/tooling/loops-field.md" 'loops_completed: [ideation, planning, execution, wrap-up]'
+    write_memory_fixture "$tmp/notes/tooling/loops-field.md" notes project null active 'loops_completed: [ideation, planning, execution, wrap-up]' '' ''
     expect_exit 1 'loops_completed notes extension rejected' "$tmp/notes/tooling/loops-field.md" \
         "loops_completed: stray key — not allowed for type 'notes'"
+
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-design-retired.md" design project null retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 0 'design retired archive accepted without successor' "$fixture_root/archive/design/memory/2026-07-21-design-retired.md"
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-design-retired-bad.md" design project null retired '' '' $'archived_at: 2026-07-21\narchive_reason: superseded'
+    expect_exit 1 'design retired rejects successor reason' "$fixture_root/archive/design/memory/2026-07-21-design-retired-bad.md" "archive_reason: 'superseded' is incompatible with design status 'retired'"
+
+    write_memory_fixture "$fixture_root/archive/plans/workflow/2026-07-21-plan-completed.md" plans feature demo completed '' '' $'archived_at: 2026-07-21\narchive_reason: completed'
+    expect_exit 0 'plan completed archive accepted without successor' "$fixture_root/archive/plans/workflow/2026-07-21-plan-completed.md"
+    write_memory_fixture "$fixture_root/archive/plans/workflow/2026-07-21-plan-completed-bad.md" plans feature demo completed '' '' $'archived_at: 2026-07-21\narchive_reason: abandoned'
+    expect_exit 1 'plan completed rejects abandoned reason' "$fixture_root/archive/plans/workflow/2026-07-21-plan-completed-bad.md" "archive_reason: 'abandoned' is incompatible with plans status 'completed'"
+
+    write_memory_fixture "$fixture_root/archive/plans/workflow/2026-07-21-plan-abandoned.md" plans feature demo abandoned '' '' $'archived_at: 2026-07-21\narchive_reason: abandoned'
+    expect_exit 0 'plan abandoned archive accepted without successor' "$fixture_root/archive/plans/workflow/2026-07-21-plan-abandoned.md"
+    write_memory_fixture "$fixture_root/archive/plans/workflow/2026-07-21-plan-abandoned-bad.md" plans feature demo abandoned '' '' $'archived_at: 2026-07-21\narchive_reason: completed'
+    expect_exit 1 'plan abandoned rejects completed reason' "$fixture_root/archive/plans/workflow/2026-07-21-plan-abandoned-bad.md" "archive_reason: 'completed' is incompatible with plans status 'abandoned'"
+
+    write_memory_fixture "$fixture_root/archive/checklists/process/2026-07-21-checklist-retired.md" checklists feature demo retired '' '' $'archived_at: 2026-07-21\narchive_reason: addressed'
+    expect_exit 0 'checklist retired archive accepts addressed reason' "$fixture_root/archive/checklists/process/2026-07-21-checklist-retired.md"
+    write_memory_fixture "$fixture_root/archive/checklists/process/2026-07-21-checklist-retired-bad.md" checklists feature demo retired '' '' $'archived_at: 2026-07-21\narchive_reason: completed'
+    expect_exit 1 'checklist retired rejects plan-only reason' "$fixture_root/archive/checklists/process/2026-07-21-checklist-retired-bad.md" "archive_reason: 'completed' is incompatible with checklists status 'retired'"
+
+    write_memory_fixture "$fixture_root/archive/features/widget/2026-07-21-README.md" features feature widget retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 0 'retired feature identity structural exception accepted' "$fixture_root/archive/features/widget/2026-07-21-README.md"
+    write_memory_fixture "$fixture_root/archive/features/wrong-area/2026-07-21-README.md" features feature widget retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'retired feature identity requires matching feature area' "$fixture_root/archive/features/wrong-area/2026-07-21-README.md" "area: features archive area 'wrong-area' must equal preserved feature identity 'widget'"
+    write_memory_fixture "$fixture_root/archive/features/widget/2026-07-21-widget.md" features feature widget retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'retired feature identity requires README filename' "$fixture_root/archive/features/widget/2026-07-21-widget.md" "path: archive filename '2026-07-21-widget.md' must be YYYY-MM-DD-{slug}.md"
+
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-date-mismatch.md" design project null retired '' '' $'archived_at: 2026-07-20\narchive_reason: retired'
+    expect_exit 1 'archive date must equal filename date' "$fixture_root/archive/design/memory/2026-07-21-date-mismatch.md" "archived_at: '2026-07-20' does not match archive filename date '2026-07-21'"
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-path-type-mismatch.md" plans project null completed '' '' $'archived_at: 2026-07-21\narchive_reason: completed'
+    expect_exit 1 'archive path type must match frontmatter type' "$fixture_root/archive/design/memory/2026-07-21-path-type-mismatch.md" "frontmatter type 'plans' does not match archive path type 'design'"
+    write_memory_fixture "$fixture_root/archive/design/banana/2026-07-21-area-mismatch.md" design project null retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'archive area must be valid for source type' "$fixture_root/archive/design/banana/2026-07-21-area-mismatch.md" "area: 'banana' not in design area allowlist"
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-missing-archive-fields.md" design project null retired '' '' ''
+    expect_exit 1 'archive fields are required in strict archive mode' "$fixture_root/archive/design/memory/2026-07-21-missing-archive-fields.md" 'archived_at: missing required archive field'
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-illegal-active-pair.md" design project null active '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'nonterminal archive status/reason pair rejected' "$fixture_root/archive/design/memory/2026-07-21-illegal-active-pair.md" "archive_reason: 'retired' is incompatible with design status 'active'"
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-unknown-reason.md" design project null retired '' '' $'archived_at: 2026-07-21\narchive_reason: mystery'
+    expect_exit 1 'unknown archive reason rejected' "$fixture_root/archive/design/memory/2026-07-21-unknown-reason.md" "archive_reason: 'mystery' not in {shipped, closed, completed, addressed, superseded, retired, dropped, abandoned}"
+
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-valid-superseded.md" design project null superseded '' 'superseded_by: replacement-design' $'archived_at: 2026-07-21\narchive_reason: superseded'
+    expect_exit 0 'superseded archive requires and accepts successor slug' "$fixture_root/archive/design/memory/2026-07-21-valid-superseded.md"
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-missing-successor.md" design project null superseded '' '' $'archived_at: 2026-07-21\narchive_reason: superseded'
+    expect_exit 1 'superseded archive without successor rejected' "$fixture_root/archive/design/memory/2026-07-21-missing-successor.md" 'superseded_by: status superseded requires one non-null successor slug'
+    write_memory_fixture "$fixture_root/archive/design/memory/2026-07-21-retired-with-successor.md" design project null retired '' 'superseded_by: unrelated-design' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'non-successor terminal state rejects invented successor' "$fixture_root/archive/design/memory/2026-07-21-retired-with-successor.md" 'superseded_by: non-null successor is valid only when status is superseded'
+
+    write_memory_fixture "$fixture_root/design/memory/live-archive-fields.md" design project null active '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'archive-only fields rejected on live record' "$fixture_root/design/memory/live-archive-fields.md" "archived_at: stray key — not allowed for type 'design'"
+    write_memory_fixture "$fixture_root/features/demo/archive/checklists/memory/2026-07-21-feature-local.md" checklists feature demo retired '' '' $'archived_at: 2026-07-21\narchive_reason: retired'
+    expect_exit 1 'feature-local archive destination rejected' "$fixture_root/features/demo/archive/checklists/memory/2026-07-21-feature-local.md" 'path: feature-local archive paths are invalid'
+
+    # No-argument collection validates only live records. This deliberately invalid
+    # archive fixture remains untouched and ignored while the valid live fixture passes.
+    rm -f "$fixture_root/design/memory/live-archive-fields.md"
+    write_memory_fixture "$fixture_root/design/memory/live-default.md" design project null active '' '' ''
+    expect_root_exit 0 'default live collection ignores archive history' "$fixture_root" "$fixture_root/archive/design/memory/2026-07-21-missing-archive-fields.md" 'OK: 1 files validated'
 
     if [ "$failures" -gt 0 ]; then
         log "SELF-TEST FAIL: $failures/$total fixture(s) failed"
@@ -245,6 +349,7 @@ REVIEW_KIND_ENUM="adversarial-review ultrareview code-review retrospective secur
 VERDICT_ENUM="pass revise fail needs-attention n/a"
 REPORT_TYPE_ENUM="status post-mortem analytics other"
 ITEM_STATUS_ENUM="pending implemented deferred"
+ARCHIVE_REASON_ENUM="shipped closed completed addressed superseded retired dropped abandoned"
 
 # §2.1 — author enum (coarse provider tag, stable across model versions).
 AUTHOR_ENUM="claude codex user"
@@ -255,6 +360,7 @@ BASE_REQUIRED="name description type scope feature status created session tags k
 # They are NOT per-type extensions (ext_fields_for never lists them), so they are
 # counted exactly once — as global-optional — and never double-counted per type.
 SLUG_LINK_FIELDS="supersedes superseded_by related"
+ARCHIVE_FIELDS="archived_at archive_reason"
 
 # in_set <needle> <space-separated-set>  -> 0 if member, 1 otherwise.
 in_set() {
@@ -280,19 +386,19 @@ status_enum_for() {
         features)    echo "active retired" ;;
         notes)       echo "active" ;;
         decisions)   echo "proposed accepted superseded" ;;
-        design)      echo "active superseded" ;;
+        design)      echo "active superseded retired" ;;
         mistakes)    echo "active superseded" ;;
         rules)       echo "active superseded" ;;
         learnings)   echo "active superseded" ;;
         backlogs)    echo "open deferred closed" ;;
         references)  echo "active superseded" ;;
-        plans)       echo "active superseded" ;;
+        plans)       echo "active superseded completed abandoned" ;;
         reviews)     echo "active" ;;
         reports)     echo "active" ;;
         changelogs)  echo "active" ;;
         discussions) echo "active" ;;
         scenarios)   echo "active" ;;
-        checklists)  echo "active" ;;
+        checklists)  echo "active retired" ;;
         *)           echo "" ;;
     esac
 }
@@ -362,6 +468,62 @@ area_allowlist_for() {
 # no config key, so its allowlist is empty.
 is_by_area() {
     [ -n "$(area_allowlist_for "$1")" ]
+}
+
+# archive_reasons_for <type> <status> -> allowed archive_reason values for one
+# terminal pair. Supersession is universal among types that admit the status; the
+# remaining pairs are type-owned non-successor terminal outcomes.
+archive_reasons_for() {
+    local ftype="$1" fstatus="$2"
+    if [ "$fstatus" = "superseded" ]; then
+        echo "superseded"
+        return
+    fi
+    case "$ftype:$fstatus" in
+        features:retired)   echo "retired" ;;
+        design:retired)     echo "retired" ;;
+        plans:completed)    echo "completed" ;;
+        plans:abandoned)    echo "abandoned" ;;
+        checklists:retired) echo "addressed dropped retired" ;;
+        backlogs:closed)    echo "shipped closed addressed dropped" ;;
+        *)                  echo "" ;;
+    esac
+}
+
+# classify_archive_path <file>
+# Sets archive_mode=1 for an explicit path below the canonical project-root archive,
+# even when the remainder is malformed. archive_shape_valid=1 only for the exact
+# project archive layout. The `.gobbi/projects/gobbi` marker is deliberate:
+# a live record in an unrelated directory named `archive` is not silently reclassified.
+# A feature-local archive path is recognized only to reject it explicitly; it never
+# enters strict archive mode or becomes a supported destination.
+classify_archive_path() {
+    local f="$1" abs rest
+    local -a parts
+    archive_mode=0
+    archive_location_invalid=0
+    archive_shape_valid=0
+    archive_path_type=""
+    archive_path_area=""
+    archive_filename=""
+
+    abs="$(cd -P "$(dirname "$f")" && pwd)/$(basename "$f")"
+    case "$abs" in
+        */.gobbi/projects/gobbi/features/*/archive/*)
+            archive_location_invalid=1
+            ;;
+        */.gobbi/projects/gobbi/archive/*)
+            archive_mode=1
+            rest="${abs##*/.gobbi/projects/gobbi/archive/}"
+            IFS='/' read -r -a parts <<< "$rest"
+            if [ "${#parts[@]}" -eq 3 ]; then
+                archive_shape_valid=1
+                archive_path_type="${parts[0]}"
+                archive_path_area="${parts[1]}"
+                archive_filename="${parts[2]}"
+            fi
+            ;;
+    esac
 }
 
 # =============================================================================
@@ -458,7 +620,12 @@ report() { printf '%s:%s: %s\n' "$1" "$2" "$3"; violations=$((violations + 1)); 
 declare -A seen_name
 
 for f in "${files[@]}"; do
+    classify_archive_path "$f"
     keys="$(fm_keys "$f")"
+
+    if [ "$archive_location_invalid" -eq 1 ]; then
+        report "$f" "path" "feature-local archive paths are invalid; expected project-root archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md"
+    fi
 
     # --- required base fields present -----------------------------------------
     for req in $BASE_REQUIRED; do
@@ -466,6 +633,13 @@ for f in "${files[@]}"; do
             report "$f" "$req" "missing required base field"
         fi
     done
+    if [ "$archive_mode" -eq 1 ]; then
+        for req in $ARCHIVE_FIELDS; do
+            if ! printf '%s\n' "$keys" | grep -qx "$req"; then
+                report "$f" "$req" "missing required archive field"
+            fi
+        done
+    fi
 
     ftype="$(fm_value "$f" type)"
     fstatus="$(fm_value "$f" status)"
@@ -517,6 +691,59 @@ for f in "${files[@]}"; do
     stem="$(stem_of "$f")"
     if [ -n "$fname" ] && [ "$fname" != "$stem" ]; then
         report "$f" "name" "'$fname' != filename stem '$stem' (§2.1)"
+    fi
+
+    # --- strict archive layout + lifecycle contract --------------------------
+    # Default collection never reaches this branch because P_live prunes archive.
+    # Explicit project-root archive args do: they must be complete terminal records
+    # at the exact archive layout, with path and frontmatter in agreement.
+    if [ "$archive_mode" -eq 1 ]; then
+        farchived_at="$(fm_value "$f" archived_at)"
+        farchive_reason="$(fm_value "$f" archive_reason)"
+        archive_date=""
+
+        if [ "$archive_shape_valid" -ne 1 ]; then
+            report "$f" "path" "archive file must be at project-root archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md"
+        else
+            if [ "$archive_path_type" != "$ftype" ]; then
+                report "$f" "type" "frontmatter type '$ftype' does not match archive path type '$archive_path_type'"
+            fi
+            if [ "$ftype" = "features" ]; then
+                if [ -z "$ffeature" ] || [ "$ffeature" = "null" ] || [ "$archive_path_area" != "$ffeature" ]; then
+                    report "$f" "area" "features archive area '$archive_path_area' must equal preserved feature identity '$ffeature'"
+                fi
+            elif [ -n "$ftype" ] && in_set "$ftype" "$TYPES"; then
+                archive_area_allowlist="$(area_allowlist_for "$ftype")"
+                if [ -z "$archive_area_allowlist" ] || ! in_set "$archive_path_area" "$archive_area_allowlist"; then
+                    report "$f" "area" "'$archive_path_area' not in $ftype area allowlist {$(printf '%s' "$archive_area_allowlist" | sed 's/ /, /g')} (§1.5)"
+                fi
+            fi
+            if [ "$ftype" = "features" ] \
+               && [[ "$archive_filename" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})-README\.md$ ]]; then
+                archive_date="${BASH_REMATCH[1]}"
+            elif [ "$ftype" != "features" ] \
+                 && [[ "$archive_filename" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})-([a-z0-9][a-z0-9-]*)\.md$ ]]; then
+                archive_date="${BASH_REMATCH[1]}"
+            else
+                report "$f" "path" "archive filename '$archive_filename' must be YYYY-MM-DD-{slug}.md"
+            fi
+
+        fi
+
+        if [ -n "$farchived_at" ] && ! printf '%s' "$farchived_at" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'; then
+            report "$f" "archived_at" "'$farchived_at' is not YYYY-MM-DD"
+        elif [ -n "$archive_date" ] && [ -n "$farchived_at" ] && [ "$farchived_at" != "$archive_date" ]; then
+            report "$f" "archived_at" "'$farchived_at' does not match archive filename date '$archive_date'"
+        fi
+
+        if [ -n "$farchive_reason" ] && ! in_set "$farchive_reason" "$ARCHIVE_REASON_ENUM"; then
+            report "$f" "archive_reason" "'$farchive_reason' not in {${ARCHIVE_REASON_ENUM// /, }}"
+        elif [ -n "$ftype" ] && in_set "$ftype" "$TYPES" && [ -n "$fstatus" ] && [ -n "$farchive_reason" ]; then
+            compatible_reasons="$(archive_reasons_for "$ftype" "$fstatus")"
+            if [ -z "$compatible_reasons" ] || ! in_set "$farchive_reason" "$compatible_reasons"; then
+                report "$f" "archive_reason" "'$farchive_reason' is incompatible with $ftype status '$fstatus'"
+            fi
+        fi
     fi
 
     # --- tags ⊆ the type's controlled vocabulary (§2.5, per-type pool) ---------
@@ -615,6 +842,13 @@ for f in "${files[@]}"; do
     if [ -n "$v" ] && [ "$v" != "null" ] && ! is_plain_slug "$v"; then
         report "$f" "superseded_by" "'$v' must be a plain slug, not a path (§2.1/§2.4)"
     fi
+    if [ "$fstatus" = "superseded" ]; then
+        if [ -z "$v" ] || [ "$v" = "null" ]; then
+            report "$f" "superseded_by" "status superseded requires one non-null successor slug"
+        fi
+    elif [ -n "$v" ] && [ "$v" != "null" ]; then
+        report "$f" "superseded_by" "non-null successor is valid only when status is superseded"
+    fi
     # supersedes — one scalar slug; null/empty ok. Both flow and block lists fail.
     sup_raw="$(fm_value "$f" supersedes)"
     if printf '%s' "$sup_raw" | grep -qE '^\[.*\]$'; then
@@ -645,6 +879,9 @@ for f in "${files[@]}"; do
     # Allowed set = base(11, incl. keywords + author) + slug-link(3) + §2.2 extensions.
     if [ -n "$ftype" ] && in_set "$ftype" "$TYPES"; then
         allowed="$BASE_REQUIRED $SLUG_LINK_FIELDS $(ext_fields_for "$ftype")"
+        if [ "$archive_mode" -eq 1 ]; then
+            allowed="$allowed $ARCHIVE_FIELDS"
+        fi
         while IFS= read -r k; do
             [ -z "$k" ] && continue
             if ! in_set "$k" "$allowed"; then
@@ -663,6 +900,7 @@ for f in "${files[@]}"; do
     # type's §1.5 allowlist. README.md and the `features` type are exempt (the
     # feature dir is itself the area axis). Both checks run only for by-area types.
     if [ -n "$ftype" ] && in_set "$ftype" "$TYPES" \
+       && [ "$archive_mode" -eq 0 ] \
        && [ "$(basename "$f")" != "README.md" ] && is_by_area "$ftype"; then
         rel="${f#"$project_root"/}"
         # Isolate the remainder after the LAST '/{type}/' marker: {area}/{file}
@@ -691,7 +929,9 @@ for f in "${files[@]}"; do
     # name `README`, so every feature README shares the same name on purpose — a
     # fixed identity doc, not a unique wikilink-addressed slug. Skip uniqueness for
     # them (the name == stem check above still applies: `README` == `README`).
-    if [ "$(basename "$f")" = "README.md" ]; then
+    if [ "$archive_mode" -eq 1 ]; then
+        :  # archive history is excluded from live-only slug uniqueness
+    elif [ "$(basename "$f")" = "README.md" ]; then
         :  # exempt from slug-uniqueness
     elif [ -n "$fname" ]; then
         if [ -n "${seen_name[$fname]:-}" ]; then

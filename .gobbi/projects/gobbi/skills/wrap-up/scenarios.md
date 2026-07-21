@@ -66,11 +66,15 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Primary category: 4. Primary type: Positive. Secondary: Adversarial.
 - Coverage role: complete dependency mapping; hidden carrier mutation.
 - Source: W-4, W-5, W-6, W-7, W-8, Procedure 4–8.
-- Given: candidates, destination rules, preimages, lifecycle edits, archive moves, and inbound references.
+- Given: candidates, destination rules, preimages, successor or non-successor lifecycle edits,
+  project-root archive moves, and inbound references.
 - When: manifest rows are compared with all changed project paths and ownership rules.
-- Then: every changed path has one legal row, every row has a result, and destination shapes follow their owners.
-- Failure oracle: unowned path, missing reference carrier, undefined area, one-sided lifecycle link, or row without result.
-- Evidence: manifest-to-diff bijection, frontmatter checks, link checks, and memory owner rules.
+- Then: every changed path has one legal row, every row has a result, and destination/status/reason shapes
+  follow their owners.
+- Failure oracle: unowned path, missing reference carrier, undefined area, one-sided true successor,
+  invented successor, illegal reason, feature-local archive, or row without result.
+- Evidence: manifest-to-diff bijection, no-argument live validation, explicit strict archive validation,
+  link checks, and memory owner rules.
 - Adversarial face: a shared destination changes outside its declared append row.
 - Obligation: structure changes must be complete, owned, and exactly manifest-backed.
 - Checklist: WRAP-CK-04.
@@ -136,11 +140,17 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Primary category: 9. Primary type: Change/regression/compat. Secondary: Failure/recovery.
 - Coverage role: reciprocal supersession; archive move; deferred publication.
 - Source: W-7, W-10, Procedure 7 and 12.
-- Given: an ordinary supersession, terminal archive move, or local-only finalization plan.
-- When: lifecycle links, inbound references, old body, branch, worktree, and authorized actions are verified.
-- Then: the old complete record remains recoverable, references resolve, and unmerged work stays at its exact branch and worktree path.
-- Failure oracle: deleted old record, broken inbound path, one-sided link, or cleanup before confirmed merge.
-- Evidence: old/new records, archive path, link validation, branch/worktree list, and finalization plan.
+- Given: a true supersession; a retired design; a completed or abandoned plan; a retired checklist; or a
+  local-only finalization plan.
+- When: lifecycle semantics, reason compatibility, archive path/date/type/area, inbound references, old
+  body, branch, worktree, and authorized actions are verified.
+- Then: true successors are reciprocal; other terminal states have no invented successor; the old
+  complete record remains recoverable under the sole project-root archive; references resolve; and
+  unmerged work stays at its exact branch and worktree path.
+- Failure oracle: deleted old record, illegal pair, feature-local archive, broken inbound path, one-sided
+  true successor, invented non-successor link, or cleanup before confirmed merge.
+- Evidence: old/new records, explicit strict archive validation, link validation, branch/worktree list,
+  and finalization plan.
 - Adversarial face: the new record links back correctly while one hidden inbound path still names the moved source.
 - Obligation: memory evolution and deferred Git work must remain traceable and recoverable.
 - Checklist: WRAP-CK-09.
@@ -154,7 +164,8 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - When: exact checks rerun and one plausible unintended path or stale claim is challenged.
 - Then: evaluators inspected the actual tree, both bodies match, every claim has evidence, and any material change received a new full iteration.
 - Failure oracle: manifest-only review, mismatched body, stale digest, reused report, weakened guard, or uncited completion.
-- Evidence: tree hashes, validator output, report identities, body comparison, and disposition record.
+- Evidence: tree hashes, default live and explicit strict archive validator output, report identities,
+  body comparison, and disposition record.
 - Adversarial face: the manifest is perfect but the applied bytes differ at one shared destination.
 - Obligation: Wrap-up acceptance must bind to the actual durable result and complete handoff.
 - Checklist: WRAP-CK-10.

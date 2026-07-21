@@ -33,7 +33,7 @@ description: {one-line — implementation checklist for this scenario}
 type: checklists
 scope: feature
 feature: {feature-name}
-status: active
+status: active | retired
 created: YYYY-MM-DD
 session: {Gobbi-owned session UUID}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
@@ -73,7 +73,7 @@ description: {one-line — the implementation point}
 type: checklists
 scope: feature
 feature: {feature-name}
-status: active
+status: active | retired
 created: YYYY-MM-DD
 session: {Gobbi-owned session UUID}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
@@ -108,4 +108,13 @@ implemented_in: {changelog path} | null
 ## Notes
 
 - **Every item needs an anchor.** Either a reference insight slug from `references/` or the literal string `novel`. Unanchored items become noise; Ideation WORK establishes this, and RECORD carries it into typed staging only after acceptance.
-- **`item_status` (per-checklist file) tracks per-item progress** — distinct from base `status`, which stays `active`: `pending` (added, not yet implemented; Execution is expected to address it) · `implemented` (work shipped; cross-reference the changelog) · `deferred` (intentionally skipped this round; cross-reference the backlog entry or decision explaining why).
+- **`item_status` (per-checklist file) tracks per-item progress** — distinct from base `status`:
+  `pending` (added, not yet implemented; Execution is expected to address it) · `implemented` (work
+  shipped; cross-reference the changelog) · `deferred` (intentionally skipped this round;
+  cross-reference the backlog entry or decision explaining why).
+- **Base `status` governs the checklist record.** `active` means it still governs future work. `retired`
+  means it no longer does. A retired checklist has no successor unless a true replacement exists; this
+  lifecycle uses no non-null `superseded_by` and archives with `addressed`, `dropped`, or `retired` as
+  the evidence-supported reason.
+- **`item_status` remains per-item progress.** It does not substitute for base retirement and does not
+  authorize an archive move by itself.

@@ -39,7 +39,10 @@ Every completion claim cites an artifact, verification result, or commit. The ev
 - **W-4 — Freeze all mutations and preimages.** The manifest covers the entire source set and every destination or related lifecycle mutation before apply. Capture whole-file preimages for shared destinations.
 - **W-5 — Write only inside the isolated worktree.** Resolve every durable target from the validated session worktree and prove it is not the main checkout or another worktree.
 - **W-6 — Apply idempotently.** Stable source identity plus the frozen mapping selects the destination. Equal bytes are a no-op; preimage drift halts and rebuilds the complete manifest.
-- **W-7 — Supersede and archive, never delete.** Ordinary one-record supersession is reciprocal. Move the complete terminal record to its typed archive and repoint inbound path references.
+- **W-7 — Close with the right lifecycle, archive, and never delete.** A true one-record supersession is
+  reciprocal. Retirement, completion, and abandonment do not invent successors. Move every complete
+  terminal record to the sole project-root typed archive with its exact compatible reason, then repoint
+  inbound path references.
 - **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest, prove prior staging is unchanged, and run the applicable memory, link, mistake, vocabulary, and topology guards.
 - **W-9 — Produce one nine-section handoff body.** The session output and durable note bodies match. Every claim and next action has direct evidence.
 - **W-10 — Keep finalization manager-owned.** The assistant does not push, merge, remove a worktree, delete a branch, or claim that a planned Git action succeeded.
@@ -92,7 +95,9 @@ Evidence: one validated candidate or explicit no-write outcome for every invento
 
 ### 5. Freeze the promotion manifest and preimages
 
-Create one source-accounting row per staged source and one mutation row per path the apply may change. Include creates, replacements, shared-file appends, reciprocal lifecycle edits, archive moves, inbound-reference repoints, and any required index update.
+Create one source-accounting row per staged source and one mutation row per path the apply may change.
+Include creates, replacements, shared-file appends, reciprocal true-supersession edits, non-successor
+terminal stamps, project-root archive moves, inbound-reference repoints, and any required index update.
 
 Capture absent or exact hashed preimages for every target, move source, move destination, and reference carrier. Freeze the complete manifest and its hash only after all rows and candidates validate. If any row is invalid, make zero durable writes.
 
@@ -104,7 +109,12 @@ After each mutation, verify the expected bytes or move state. Stop at the exact 
 
 ### 7. Complete supersession and archive moves
 
-For each authorized one-record supersession, write the new record, add reciprocal lifecycle links, move the complete terminal old record to archive/{type}/{area}/, and repoint every inbound path reference as one frozen mutation set. Preserve the original type and body.
+For each authorized true one-record supersession, write the new record and add reciprocal lifecycle
+links. For each authorized design retirement, plan completion/abandonment, or checklist retirement,
+keep `superseded_by` absent or null. Stamp the status-compatible archive reason and matching date, move
+the complete record to project-root `archive/{type}/{area}/`, and repoint every inbound path reference
+as one frozen mutation set. Preserve original type, scope, feature, and body. A feature-local archive
+destination is invalid.
 
 Never delete or reduce the old record to a tombstone. If the source and new candidate conflict without authorized supersession, halt for a user decision.
 
@@ -112,7 +122,10 @@ Never delete or reduce the old record to a tombstone. If the source and new cand
 
 Diff the actual durable project tree against the frozen preimages. Every changed path must map to exactly one mutation row, and every mutation row must have the expected result. Re-hash prior staging and prove paths and bytes are unchanged.
 
-Run all applicable post-promotion validators from their current owners. Resolve a legitimate new guard carrier through a new complete iteration; do not patch it outside the manifest. Freeze the final tree hashes and guard evidence for EVALUATION.
+Run all applicable post-promotion validators from their current owners. Run Memory validation with no
+arguments for the live tree, then explicitly validate every newly rendered project-root archive path in
+strict mode. Resolve a legitimate new guard carrier through a new complete iteration; do not patch it
+outside the manifest. Freeze final tree hashes and guard evidence for EVALUATION.
 
 ### 9. Reconcile the handoff with the actual result
 
@@ -158,6 +171,7 @@ Completion evidence: complete staging accounting, frozen and idempotently applie
 - [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent creation and reciprocal review mechanics.
 - [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
 - [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
-- [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, ordinary supersession, and archive behavior.
+- [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
+  non-successor terminal states, and strict archive behavior.
 - [Evaluation](../evaluation/SKILL.md) owns fresh dual reports, finding dispositions, and repeat-review rules.
 - [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.
