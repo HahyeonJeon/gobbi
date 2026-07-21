@@ -11,7 +11,7 @@ tags: [docs-sync, process]
 keywords: [delegation-skill, core-principles, dual-system-eval, codex-proposer, worktree-divergence, next-session-orchestration-split]
 author: claude
 features_touched: [agents]
-loops_completed: [wrap-up]
+steps_completed: [wrap-up]
 ---
 
 # Delegation Core Principles Redesign — session journal (2026-07-11)

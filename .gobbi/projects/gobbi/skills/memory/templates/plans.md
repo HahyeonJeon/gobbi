@@ -1,6 +1,6 @@
 # `plans/`
 
-> Task-decomposition records — the output of the Planning Loop. Each plan breaks a locked task into narrow, ordered sub-tasks the Execution Loop can run one at a time.
+> Task-decomposition records — the output of the Planning step. Each plan breaks a locked task into narrow, ordered tasks the Execution step can run one at a time.
 
 ## Core principles
 
@@ -12,12 +12,13 @@ A sub-task whose scope or check the executor must reconstruct from the planning 
 
 | Field | Value |
 |---|---|
-| When | Planning RECORD when the loop produces a canonical plan. `plans/` is **Planning-loop-only** — ideation / execution / wrap-up do not produce plans. A mid-execution refinement creates a new versioned plan, never an in-place edit. |
-| Stage to | `sessions/{date}-{session-id}/2-planning/staging/plans/{slug}.md` |
-| Promotes to | `features/{f}/plans/{area}/` (loop path — feature-only) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`). Project-level `plans/` holds maintainer cross-feature roadmaps ONLY; no loop RECORD or Wrap-up promotion targets it. |
+| When | Planning RECORD after the canonical plan passes. A mid-Execution refinement creates a new plan through another complete Planning iteration, never an in-place edit. |
+| Source cursor | Gobbi-owned session UUID plus `step: planning`, `stage: RECORD`, the current `iteration`, and `task: null`. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/2-planning/staging/plans/{slug}.md` |
+| Promotes to | `features/{f}/plans/{area}/` (productive-step path — feature-only) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`). Project-level `plans/` holds separately authorized maintainer roadmaps only; no productive-step staging route targets it. |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that produced it); slug describes the plan in ≤6 words (`2026-05-11-auth-middleware.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+Planning RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,7 +33,7 @@ scope: feature
 feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [planning, execution]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -75,5 +76,5 @@ task_count: {number of sub-tasks in this plan}
 
 ## Notes
 
-- **Update by supersede, never edit in place.** When execution surfaces a plan change (a sub-task was harder, an ordering flipped), write a new `{new-date}-{slug}.md` with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug (no `-v2`; [`rules.md` § 1.3](../rules.md) anti-pattern #6). The superseded plan is moved (`git mv`) to `archive/plans/{area}/{date}-{slug}.md` at Wrap-up, never deleted.
+- **Update by supersede, never edit in place.** When Execution surfaces a plan change, return through the workflow and stage a newly accepted plan with `supersedes: {old-slug}`. The version lives in frontmatter, never the slug. Wrap-up WORK applies the new promotion, reciprocal link, and complete archive move as one frozen mutation set.
 - **Sub-task granularity.** Each sub-task must be narrow enough that scope is unambiguous to one executor. If a description starts with "and then" or "while doing this also", split it.

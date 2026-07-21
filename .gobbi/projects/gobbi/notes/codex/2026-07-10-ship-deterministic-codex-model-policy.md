@@ -12,7 +12,7 @@ keywords: [gpt-5.6-sol, xhigh, plugin-0.5.2, compatibility-self-test]
 author: codex
 related: [deterministic-codex-model-policy, native-defaults-and-settings-shipped, policy-docs-and-validator-shipped, release-metadata-and-integration-gates-shipped]
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [native-defaults-and-settings-shipped, policy-docs-and-validator-shipped, release-metadata-and-integration-gates-shipped, evaluator-retry-overwrote-canonical-files, auto-mode-research-overgated, scope-summary-omits-named-surfaces, single-quoted-jq-apostrophe, json-patch-ambiguous-sibling-field]
 ---
 

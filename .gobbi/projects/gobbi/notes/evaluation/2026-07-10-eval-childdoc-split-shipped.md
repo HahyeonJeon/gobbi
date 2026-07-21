@@ -11,7 +11,7 @@ tags: [evaluation]
 keywords: [evaluation-childdoc-split, scenario-md, checklist-md, atomic-flip, dual-system-production]
 author: claude
 features_touched: [evaluation-childdoc-split]
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [evaluation-childdoc-split, eval-childdoc-scenario-authoring, eval-childdoc-checklist-authoring, eval-childdoc-split-scope-lock, eval-childdoc-cotouch-inventory, eval-childdoc-split-plan, four-user-decisions, guard-run-mode-not-separated, dual-system-plan-integration, completeness-model-is-a-build-time-gate, execution-bundle-source-before-trim, verifies-must-be-self-failing, cotouch-classifier-must-model-exclusion-flips, exit-in-command-substitution-fails-open, load-directive-path-must-exist-in-worktree-base, mechanical-boundary-guard-relocates-not-converges, over-scrub-drops-idea-level-seed-condition, merging-two-seed-bullets-narrows-broader-scope, usage-context-check-narrowed-to-inputs-only, split-added-content-must-match-skill-and-runtime-facts, atomic-flip-must-propagate-to-cotouch-prose-and-active-mistakes]
 supersedes: null
 superseded_by: null

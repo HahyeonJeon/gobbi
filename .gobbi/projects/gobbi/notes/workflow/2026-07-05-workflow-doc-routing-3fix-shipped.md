@@ -11,7 +11,7 @@ tags: [docs-sync, verification]
 keywords: [2026-07-01-adversarial-review, gen-d3-001, gen-d3-002, gen-d1-002, review-fix-campaign, option-s]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [d3-001-route-both-step6-bullets-through-mode-dispatch, d3-002-manager-refs-specialist-phase-loads-column-split, d1-002-canonical-pointer-replaces-drifted-routing-table, evaluator-spawn-without-producer-done-handshake]
 ---
 

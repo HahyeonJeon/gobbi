@@ -11,7 +11,7 @@ tags: [memory, refactor, schema]
 keywords: [area-namespace, tag-vocabulary, config-as-data, jq, migration-manifest, harness-generality]
 author: claude
 features_touched: [memory]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [project-defined-vocab-config-as-data, universal-base-layer, tag-area-map-combined-config, mistakes-trap-class-axis, config-format-json-jq, dehardcode-area-tag-vocab, area-tag-dehardcoding, area-tag-migration-manifest, execute-area-tag-migration-114-files, git-skill-find-empty-delete-too-broad, worktree-empty-dir-sweep-deletes-live-session-scaffold]
 ---
 

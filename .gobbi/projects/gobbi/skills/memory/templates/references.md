@@ -16,12 +16,13 @@ An insight with no condition-of-applicability gets invoked in the wrong situatio
 
 | Field | Value |
 |---|---|
-| When | Ideation Sub-step C (Research); or a loop's RECORD on a citable `general` finding. Bar = applicability, not novelty. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/references/{slug}.md` |
+| When | A productive step's RECORD when accepted research or an approved finding contains a durable, citable insight. Bar = applicability, not novelty. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/references/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/references/{area}/` (default) · `references/{area}/` (project, cross-feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug; name the topic, not the source (`redis-ttl-eviction.md`, not `redis-docs-ch7.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -36,7 +37,7 @@ scope: project | feature
 feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [memory, design]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -65,7 +66,7 @@ ref_type: docs | blog | paper | rfc | code | book | other
 
 | Date | Session | Used for |
 |---|---|---|
-| YYYY-MM-DD | {session_id} | {what design / decision / checklist item used this} |
+| YYYY-MM-DD | {gobbi-session-id} | {what design / decision / checklist item used this} |
 
 ## Related
 {Navigable `[[slug]]` links to the learning / mistake / decision this reference connects to ([`rules.md` § 2.4](../rules.md#24-cross-references-and-the-doc-graph)). Body content, not frontmatter — the base + `title`/`source`/`accessed`/`ref_type` allowlist is the only frontmatter references carry.}

@@ -11,7 +11,7 @@ tags: [memory, design]
 keywords: [compaction, stage-2c, delegation, skill-loading, dual-system-eval]
 author: claude
 features_touched: [memory]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [subagents-skip-load-directives-no-enforcement, claude-skills-mirror-is-symlink-not-copy, compaction-cap-tuning, dual-system-eval-catches-defects, agent-memory-consolidation-governed, lsm-compaction-threshold-merge-similar, sleep-consolidation-push-pull, zettelkasten-map-of-content-atomicity]
 ---
 

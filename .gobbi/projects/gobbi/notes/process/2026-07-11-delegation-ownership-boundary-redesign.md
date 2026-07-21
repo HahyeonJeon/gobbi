@@ -11,7 +11,7 @@ tags: [process, refactor, docs-sync, verification]
 keywords: [delegation, orchestration, ownership, codex, closure]
 author: codex
 features_touched: [guardrails, workflow]
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [delegation-ownership-boundary-redesign, explicit-draft-demoted-to-advisory, quantitative-compaction-before-necessity, root-chat-execution-scaffolds-at-the-task-slice]
 ---
 

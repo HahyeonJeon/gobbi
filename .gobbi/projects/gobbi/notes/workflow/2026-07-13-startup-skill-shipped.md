@@ -11,7 +11,7 @@ tags: [refactor, docs-sync]
 keywords: [startup, interview-removal, session-shape, bootstrap]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [reuse-target-must-be-invocable-at-needed-granularity, asserted-file-absent-from-a-mislisted-dir-used-proxy, removal-must-reclassify-active-design-docs-and-open-backlogs, workflow-compaction-doc-broken-links, startup-session-shape-and-promotion, sweep-must-grep-synonymous-phrasings-not-just-primary, validity-signal-must-be-written-after-its-validation-gate]
 ---
 

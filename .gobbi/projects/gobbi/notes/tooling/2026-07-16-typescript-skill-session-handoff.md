@@ -3,11 +3,11 @@ name: typescript-skill-session-handoff
 description: Handoff — the `typescript` skill was authored+wired+pushed this session (branch claude-2026-07-16-c8fe196d); dual-system Execution eval Codex-REVISE 9 defects fixed; Claude holistic eval + Codex re-confirm are the follow-ups before merge
 type: notes
 scope: project
-feature: coding
+feature: null
 status: active
 created: 2026-07-16
 session: c8fe196d-c20d-451d-ac9c-2b366c49aa95
-tags: [handoff, typescript, coding, skill-writing, execution-eval]
+tags: [process, git, evaluation, verification]
 keywords: [typescript-skill, next-session, pr, execution-eval, session-limit, claude-eval-deferred]
 author: claude
 related: []

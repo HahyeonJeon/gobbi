@@ -17,7 +17,8 @@ The evaluated body freezes the pre-finalization state and authorized plan. Commi
 | Field | Value |
 |---|---|
 | When | Wrap-up WORK authors exactly one handoff candidate after closure inputs and material decisions are resolved. |
-| Typed source | `4-wrap-up/staging/notes/{slug}.md` — the only handoff promotion source; it follows the same manifest, preimage, apply, and evaluation rules as every typed source. |
+| Source cursor | Gobbi-owned session UUID plus `step: wrap-up`, `stage: WORK`, the current `iteration`, and `task: null`. |
+| Typed staging source | `4-wrap-up/staging/notes/{slug}.md` — the only handoff promotion source; it follows the same manifest, preimage, apply, and evaluation rules as every typed source. |
 | PASS session destination | `4-wrap-up/outputs/handoff.md` — written only by RECORD after the evaluated Wrap-up subject receives PASS. |
 | Durable destination | `notes/{area}/{YYYY-MM-DD}-{slug}.md` — project-only; `{area}` follows the [Memory area-selection owner](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
 | Body equality | The body beginning at the `#` title is byte-for-byte identical in the PASS session output and durable note. Only this durable frontmatter wrapper differs. |
@@ -28,7 +29,7 @@ The evaluated body freezes the pre-finalization state and authorized plan. Commi
 
 ## Frontmatter + body
 
-Use the shared base frontmatter plus the notes extensions `features_touched`, `loops_completed`, and `shipped` from [Memory rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model). Notes are project-only and use `status: active`.
+Use the shared base frontmatter plus the notes extensions `features_touched`, `steps_completed`, and `shipped` from [Memory rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model). Notes are project-only and use `status: active`.
 
 ```markdown
 ---
@@ -44,7 +45,7 @@ tags: [{values from the notes controlled vocabulary}]
 keywords: []
 author: claude | codex | user
 features_touched: [{value-feature slugs changed or promoted into}]
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [{durable artifact slugs produced or superseded}]
 ---
 
@@ -90,6 +91,7 @@ shipped: [{durable artifact slugs produced or superseded}]
 ## Notes
 
 - **Typed-source only.** The handoff enters promotion through `4-wrap-up/staging/notes/{slug}.md`; no working-file or direct journal exception exists.
+- **Wrap-up WORK promotion only.** Durable note creation occurs through the frozen promotion manifest during Wrap-up WORK; no other step or stage writes the durable notes tree.
 - **PASS-only session copy.** The session output is absent before Wrap-up RECORD with `lastVerdict: PASS` and remains valid after the completed-step transition.
 - **Append-only evaluated body.** A later session corrects a handoff through new durable evidence. It does not rewrite the closed session's evaluated body.
 - **Evidence over narrative.** Short chronological context may explain an outcome, but it never replaces artifacts, commits, verification, dispositions, or exact paths.

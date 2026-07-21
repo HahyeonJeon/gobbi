@@ -11,7 +11,7 @@ tags: [process, codex]
 keywords: [handoff, deployment, fix-campaign, dual-system]
 author: claude
 features_touched: [deployment-hygiene]
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [deployment-hygiene, dual-system-production-is-not-optional]
 ---
 

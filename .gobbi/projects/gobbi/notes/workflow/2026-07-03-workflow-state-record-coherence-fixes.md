@@ -11,7 +11,7 @@ tags: [process]
 keywords: [cluster-1, GEN-D1-001, GEN-D1-003, GEN-D7-001, GEN-D7-002, review-fix-campaign, dual-system]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: true
 ---
 

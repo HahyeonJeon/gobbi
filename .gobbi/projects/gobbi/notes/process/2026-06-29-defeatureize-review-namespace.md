@@ -11,7 +11,7 @@ tags: [refactor, process]
 keywords: [defeatureize, namespace-refactor, review-feature, dissolution, coding-feature]
 author: claude
 features_touched: [coding]
-loops_completed: [execution]
+steps_completed: [execution]
 shipped: []
 supersedes: null
 superseded_by: null

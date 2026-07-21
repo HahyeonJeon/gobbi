@@ -2,7 +2,7 @@
 
 > A durable-capability directory — one per gobbi value-feature, with a README identity doc plus one subdir per memory type scoped to this feature.
 
-A feature directory is its **own tier**, not a project-scoped or feature-tagged content type ([`rules.md` § 3](../rules.md#3-structure-rules)). Its `README.md` is the **identity document**: a lightweight overview that points into the typed subdirs without duplicating them. Each subdir holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated by Wrap-up promoting session staging.
+A feature directory is its **own tier**, not a project-scoped or feature-tagged content type ([`rules.md` § 3](../rules.md#3-structure-rules)). Its `README.md` is the **identity document**: a lightweight overview that points into the typed subdirs without duplicating them. Each subdir holds one memory type scoped to this feature (`design/`, `decisions/`, `scenarios/`, …), populated only when Wrap-up WORK promotes an authorized typed staging source.
 
 This doc has two parts: the **map of a feature directory** (the per-feature subdir layout) and the **feature README spec** (how the identity doc is stamped and maintained).
 
@@ -39,7 +39,7 @@ The set is **README.md + 14 subdirectories**. Six — `changelogs/`, `mistakes/`
 
 ### Per-subdir reference
 
-The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes the feature tree. Wrap-up promotes the session `staging/` subtree into these subdirs and stamps each file with the matching template under [`templates/`](.). For the naming / frontmatter / structure rules every file obeys → [`rules.md`](../rules.md); for the tier-wide path index → [`memory-map.md`](../memory-map.md).
+The writer is uniform: **Wrap-up WORK, through the frozen promotion manifest**. Earlier productive steps write only typed staging. Each source keeps the Gobbi-owned UUID and exact `step` / `stage` / `iteration` / `task` cursor in session evidence; durable files keep the UUID in `session` and strip routing coordinates. Wrap-up WORK promotes the session `staging/` subtree into these subdirs and stamps each file with the matching template under [`templates/`](.). For the naming / frontmatter / structure rules every file obeys → [`rules.md`](../rules.md); for the tier-wide path index → [`memory-map.md`](../memory-map.md).
 
 | Subdir | What it holds | Template |
 |---|---|---|
@@ -49,8 +49,8 @@ The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes th
 | `decisions/` | Feature-scope decisions (design choices, dispute rationales, deferred risks) | [`decisions.md`](decisions.md) |
 | `design/` | Feature-scope design topics (project-wide design escalates to `.gobbi/projects/{project-name}/design/`) | [`design.md`](design.md) |
 | `discussions/` | Substantive user-decision topics scoped to the feature | [`discussions.md`](discussions.md) |
-| `references/` | External-insight references confirmed during Ideation Sub-step C | [`references.md`](references.md) |
-| `plans/` | Plan artifacts from the Planning loop (date-prefixed) | [`plans.md`](plans.md) |
+| `references/` | External-insight references confirmed during Ideation WORK | [`references.md`](references.md) |
+| `plans/` | Plan artifacts from the Planning step (date-prefixed) | [`plans.md`](plans.md) |
 | `backlogs/` | Feature-scope deferred tasks | [`backlogs.md`](backlogs.md) |
 | `changelogs/` | Feature-scope changelog entries — what shipped, when | [`changelogs.md`](changelogs.md) |
 | `mistakes/` | Feature-scope mistakes — corrections that apply only within this feature | [`mistakes.md`](mistakes.md) |
@@ -61,7 +61,7 @@ The writer is uniform: **Wrap-up, on promotion** — loop RECORD never writes th
 
 ### Lazy bootstrapping
 
-The feature directory is created on **first promotion** to that feature — not at Ideation Lock Scope or earlier. Each subdir is then created on its **first write**: Wrap-up creates the destination's parent dir only when it has a file to promote into it. Subdirs with no content yet do not exist on disk. `changelogs/` and `mistakes/` typically appear later than the rest, because a feature usually accrues design and decisions before it first ships a changelog entry or records a feature-scope mistake.
+The feature directory is created during **Wrap-up WORK's first typed promotion** to that feature — not at scope lock or earlier. Each subdir is then created on its **first manifest-owned write**. Subdirs with no content yet do not exist on disk. `changelogs/` and `mistakes/` typically appear later than the rest, because a feature usually accrues design and decisions before it first ships a changelog entry or records a feature-scope mistake.
 
 ## The feature README (`README.md`) — identity-doc spec
 
@@ -73,8 +73,9 @@ The `README.md` gives a **high-level overview** of the feature, its current stat
 
 | Field | Value |
 |---|---|
-| Written by | Wrap-up RECORD (direct write — no staging; loop RECORD never writes here) |
-| When | At first promotion to a new feature (stamp a fresh README); and on subsequent activity (a later session promotes new design / plan / changelog), update the `Status` + `Recent activity` sections |
+| Source identity | The Gobbi-owned UUID and exact `step` / `stage` / `iteration` / `task` cursor of the typed staging source that enters this feature. |
+| Written by | Wrap-up WORK as a related mutation in the frozen manifest; there is no direct feature-README write path. |
+| When | At the first typed promotion to a new feature, then on later typed promotions that materially change its status or recent activity |
 | Location | `.gobbi/projects/{project-name}/features/{feature-name}/README.md` |
 
 ### Frontmatter + body
@@ -90,7 +91,7 @@ scope: feature
 feature: {feature-name}   # self-reference — the README names its own feature
 status: active | retired
 created: YYYY-MM-DD
-session: {session-id of first promotion to this feature}
+session: {Gobbi-owned UUID of the first promoting session}
 tags: [memory, process]              # tags declared per type (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -127,7 +128,7 @@ subsystems: [{skill / path this value-feature owns}]
 
 | Date | Session | What |
 |---|---|---|
-| YYYY-MM-DD | {session_id} | {short summary — design shipped, plan revised, etc.} |
+| YYYY-MM-DD | {gobbi-session-id} | {short summary — design shipped, plan revised, etc.} |
 
 ## Open items
 
@@ -150,5 +151,5 @@ subsystems: [{skill / path this value-feature owns}]
 
 - Tier-wide path index (session-staging rows, cross-tier routing, the Templates index) → [`memory-map.md`](../memory-map.md). This doc owns the per-feature subdir spec; `memory-map.md` owns the tier-wide path index.
 - Naming, frontmatter, structure rules — including `features` as its own tier → [`rules.md` § 3](../rules.md#3-structure-rules)
-- Wrap-up's promotion + README stamp/update procedure → [`../../wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
+- Wrap-up WORK promotion + README manifest-mutation procedure → [`../../wrap-up/SKILL.md`](../../wrap-up/SKILL.md)
 - Move-on-terminal procedure for a retired feature directory → [`archive.md`](archive.md)

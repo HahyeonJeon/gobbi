@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [handoff, adversarial-review, charter, d2-d6, staleness, dual-system]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: []
 ---
 

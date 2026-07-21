@@ -11,7 +11,7 @@ tags: [process, docs-sync]
 keywords: [coding-skill, skill-authoring, language-agnostic, coding-principles, evaluation-child-doc]
 author: claude
 features_touched: []
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [freeze-producer-artifact-before-evaluating, scrub-stack-idioms-when-adapting-to-general-doc, coding-skill-created]
 ---
 

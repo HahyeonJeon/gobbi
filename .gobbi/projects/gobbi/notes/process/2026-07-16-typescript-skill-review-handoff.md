@@ -11,7 +11,7 @@ tags: [process, verification, docs-sync]
 keywords: [handoff, typescript, adversarial-review, dual-system, ts7-ga, pr-353]
 author: claude
 features_touched: [coding]
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [typescript]
 ---
 

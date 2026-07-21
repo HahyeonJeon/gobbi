@@ -11,7 +11,7 @@ tags: [codex, docs-sync, verification]
 keywords: [delegation, prompt-file, claude-wrapper, workflow]
 author: codex
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [codex-bridge-prompt-file-contract, codex-delegation-prompt-contract, task-01-codex-bridge-contract, task-02-claude-child-doc-exposure, task-03-parent-routing-docs]
 ---
 

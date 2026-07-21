@@ -11,7 +11,7 @@ tags: [process, docs-sync, verification]
 keywords: [gen-d4-003, harness-todo, dual-system, producer-mislabel, workflow-doc]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [harness-todo-workflow-mirror, read-model-projection, single-source-of-truth-ui, mirror-topology-needs-inode-not-md5, finding-location-understates-blast-radius, gobbi-worktree-git-pathspec-omits-memory-tree-prefix]
 ---
 

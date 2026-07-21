@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, d6, dual-system, background-codex, review-only, plugin-deployment, charter-complete]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [2026-06-29-gobbi-adversarial-review-d6, fix-d6-review-findings, 2026-06-29-review-campaign-complete]
 ---
 

@@ -11,7 +11,7 @@ tags: [memory, refactor, docs-sync]
 keywords: [mistakes, hybrid, two-home, layer2-removal, check-skill-mistakes, skill-surface]
 author: claude
 features_touched: [guardrails]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [hybrid-two-home-mistake-model, verify-zero-new-against-prefeature-base, harden-skill-memory-residual-vocab-allowlist]
 ---
 

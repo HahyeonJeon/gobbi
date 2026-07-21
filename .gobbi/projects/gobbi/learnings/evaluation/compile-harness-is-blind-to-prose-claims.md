@@ -3,11 +3,11 @@ name: compile-harness-is-blind-to-prose-claims
 description: A compile-harness proves code EXAMPLES compile, not that the PROSE around them is TRUE; the Codex Execution evaluator caught 9 real TS-technical prose defects that 84 green tsc runs + all guards could not
 type: learnings
 scope: project
-feature: coding
+feature: null
 status: active
 created: 2026-07-16
 session: c8fe196d-c20d-451d-ac9c-2b366c49aa95
-tags: [evaluation, codex, dual-system, verification]
+tags: [evaluation, codex, verification]
 keywords: [prose-vs-code, compile-harness-blind-spot, typescript-skill, execution-eval, void-promise, noinfer, branded-type]
 author: claude
 related: []

@@ -11,7 +11,7 @@ tags: [process, docs-sync]
 keywords: [chat-mode, maxIterations, state-template, point-1, point-2]
 author: claude
 features_touched: [workflow]
-loops_completed: [execution, wrap-up]
+steps_completed: [execution, wrap-up]
 shipped: [pin-convention-sweep-derived-displays]
 ---
 

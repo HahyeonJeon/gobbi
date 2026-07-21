@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [startup-skill, dual-system, design-craft, pr-350]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [acceptance-gate-and-conjunct-escape-hatch, confirm-craft-vs-graded-axis-when-user-narrows-scope, yc-canon, startup-canon, saas-metrics-pmf, skill-frameworks, current-skill-gap-study, scope-narrowed-to-design-craft, startup-review-proportionality, startup-skill-prior-art-review, startup-skill-dedup-skill-topics, execution-eval-bundle-frame-checks]
 ---
 

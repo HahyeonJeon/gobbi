@@ -11,7 +11,7 @@ tags: [process, refactor]
 keywords: [gobbi-hook-authoring, memory-vocabulary, coding-skill, dual-system, refactor, R1, R2, R3]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [gitignore-aware-residual-gate, frozen-history-by-doc-type-not-dir, codex-proposer-must-be-source-read-only, claude-skills-mirror-policy, validate-integration-log-spec-drift, skill-writing-dead-mistake-links]
 ---
 

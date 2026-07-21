@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [adversarial-review, handoff, charter-complete, fix-campaign, dual-system, review-only]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [review-campaign-complete]
 ---
 

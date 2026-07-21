@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, d7, d1, dual-system, background-codex, review-only]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [2026-06-29-gobbi-adversarial-review, fix-d7-d1-review-findings, codex-background-exec-exit-code-unreliable, gh-2-45-graphql-projects-classic-and-closingissues, coding-as-value-feature-taxonomy-question, 2026-06-29-review-handoff-next-session]
 ---
 

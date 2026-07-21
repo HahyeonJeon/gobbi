@@ -11,7 +11,7 @@ tags: [codex, process]
 keywords: [workflow, evaluation, previous-branch, audit-and-record, wrap-up]
 author: codex
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [previous-codex-branch-audit, native-codex-single-system-evaluation-debt, post-promotion-standing-guard-fixes, codex-subagent-partial-write-no-status, codex-subagent-apply-patch-wrong-tree, moving-base-invalidates-diff-stat-gate, provenance-trailer-syntax-drift, use-runtime-skill-surface-in-load-directives, resume-agent-id-duplicate-dispatch, session-json-clobber-during-record-upsert, shell-backticks-in-double-quoted-pattern]
 ---
 

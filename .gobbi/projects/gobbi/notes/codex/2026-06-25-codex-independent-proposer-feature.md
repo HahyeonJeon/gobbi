@@ -11,7 +11,7 @@ tags: [codex, process]
 keywords: [dual-system-production, proposer, selective-integration, propose-mode, degraded-mode, freeze-boundary]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [codex-proposer-model, codex-proposer-decisions, integration-log-missing-from-record-map-row, success-criteria-proposal-path-wording, plan-verification-as-contract-not-must-pass-now-shell, hardcoded-baseline-guard-is-an-edit-target-of-the-structure-it-guards, background-codex-exec-must-redirect-stdin-from-devnull, proposer-evaluator-model-tier-guard, native-codex-proposer-symmetry]
 ---
 

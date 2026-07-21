@@ -11,7 +11,7 @@ tags: [process, codex, docs-sync]
 keywords: [delegation-skill, ssot, skill-load-path, hook-routing, dual-system-eval]
 author: claude
 features_touched: []
-loops_completed: [ideation, planning, execution, wrap-up]
+steps_completed: [ideation, planning, execution, wrap-up]
 shipped: [skill-prose-template-drift, documented-trap-not-gated, template-embeds-unnamed-exception, session-header-dual-writer, delegation-brief-cited-nonexistent-skill-path, compaction-line-savings-overestimate, ssot-wording-borderline-lines, ssot-class-a-grep-guard-gap]
 ---
 

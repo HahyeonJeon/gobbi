@@ -1,6 +1,6 @@
 # `discussions/`
 
-> Summaries of substantive DISCUSSION-phase exchanges with the user that future sessions need to recall — exchanges that resolved an ambiguity, set a constraint, or shifted direction.
+> Summaries of substantive DISCUSSION-stage exchanges with the user that future sessions need to recall — exchanges that resolved an ambiguity, set a constraint, or shifted direction.
 
 ## Core principles
 
@@ -12,12 +12,13 @@ A future session honors the settled call without re-litigating it or losing who 
 
 | Field | Value |
 |---|---|
-| When | A loop's RECORD (`ideation` / `planning` / `execution`) when the DISCUSSION produced decisions worth preserving beyond this session. A one-off clarification belongs in the canonical artifact's "Decisions and rationale" section, not here. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/discussions/{slug}.md` |
+| When | A productive step's RECORD when DISCUSSION produced a user-approved decision worth preserving beyond this session. A one-off clarification belongs in the canonical artifact's "Decisions and rationale" section, not here. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/discussions/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/discussions/{area}/` (feature-only — discussions are always bounded to a feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (tied to the session that held it); short descriptive slug (`2026-05-11-cache-vs-index.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,7 +33,7 @@ scope: feature
 feature: {feature-name}
 status: active
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [ideation, process]            # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it

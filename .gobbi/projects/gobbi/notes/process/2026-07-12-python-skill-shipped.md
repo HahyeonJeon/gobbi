@@ -11,7 +11,7 @@ tags: [process, docs-sync]
 keywords: [python-skill, skill-authoring, dual-system-eval, codex-live-interpreter, link-guard-fix, pep695, typescript-sibling]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [brief-override-silently-competes-with-loaded-skill-default, python-skill-shipped]
 ---
 

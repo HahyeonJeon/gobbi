@@ -11,7 +11,7 @@ tags: [evaluation, docs-sync, process]
 keywords: [python-skill, compaction, pr-349, dual-system, band-exception, interface-narrowness, handoff]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [python-coding-interface-narrowness-principle, python-compaction-band-exception, stamp-coupling-example-must-show-unused-fields, union-diff-must-reach-named-primitive-granularity, producer-must-write-blind-draft-before-reading-codex-proposal, compaction-brief-must-not-list-example-primitives-absent-from-source, codex-eval-overall-md-can-contradict-perspective-verdicts, union-diff-occurrence-vs-distinct-primitive, codex-lean-density-is-often-union-incomplete-not-a-safe-floor, dual-system-caught-broken-teaching-example]
 ---
 

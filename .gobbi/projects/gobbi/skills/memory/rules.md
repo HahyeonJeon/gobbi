@@ -18,9 +18,9 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 
 > **The `rules/` tier is lazily created; an absent or empty `rules/` is the valid "no
 > project rules yet" state.** Like every lazily-created memory tier (`rules/`, `design/`,
-> …), the project `rules/` directory does NOT exist until Wrap-up promotes the first
-> project rule (rules are rare and load-bearing — §3). An absent — or present-but-empty
-> (zero `.md` files) — `rules/` is not an error. Any agent or phase directed to read
+> …), the project `rules/` directory does not need to exist when the active workflow has
+> no authorized typed rule source (rules are rare and load-bearing — §3). An absent — or present-but-empty
+> (zero `.md` files) — `rules/` is not an error. Any agent directed to read
 > project rules MUST resolve to exactly ONE explicit audit state:
 >
 > - **`RULES_PRESENT`** — `.gobbi/projects/{project-name}/rules/` exists and holds ≥1
@@ -42,8 +42,11 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 > the `NO_PROJECT_RULES` token; it is never a silent read-nothing. Do NOT create a `rules/`
 > skeleton to make a read succeed: empty dirs are not durable in git, and a placeholder
 > file would be a second structural exception to the `rules/{area}/{slug}.md` shape (§1.5).
-> New rule files are written only through Wrap-up promotion after explicit user
-> confirmation. Productive-step agents and the read-only Startup operation never write them directly.
+> The current Record staging vocabulary has no `staging/rules/` source, so the active
+> workflow has no rule-creation path. A future route must first add an authorized typed
+> source across Record, Memory, Wrap-up, and their validators. Durable writes would then
+> occur only through Wrap-up WORK's frozen promotion manifest. Productive-step agents,
+> Startup, CLI commands, and RECORD never write the durable rules tree directly.
 
 ---
 
@@ -81,7 +84,7 @@ A slug is a **stable address that names the concept**. The test: *could a reader
 | Positional / sequence index | `task-01`, `tasks-07-08`, `d-1`, `d-3-2`, `item-1-2`, `step-2-5` | "task 01 of what plan?" — the number is an address in a vanished session, not a subject | name the work: `worktree-create-row-insertion`, `shared-executor-context-continuity` |
 | Cryptic internal reference | `row-5-5`, `decimal-row-numbering-55`, `1-3`, `4-1`, `t1g`, `t1j` | table coordinates / checkpoint IDs / task codes mean nothing without the session's working state | name the topic: `state-init-before-worktree`, `direct-mode-opt-out-doc-home` |
 | Uninformative generic | `main`, `misc-`, `common-`, `notes.md`, `helper-` | tells the reader nothing about the subject; "main" is a branch/file convention, not a concept | name the deliverable: `orch-workflow-improvements` |
-| Loop / phase prefix (non-descriptive) | `ideation-decisions.md`, `planning-` | the workflow phase is in frontmatter; the prefix adds noise without subject | one file per concept, concept slug |
+| Workflow-cursor prefix (non-descriptive) | `ideation-decisions.md`, `planning-` | the session record already carries the step; the prefix adds noise without subject | one file per concept, concept slug |
 | Restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | the directory already carries the facet (§1.1 rule 1) | drop the prefix |
 | Status / version words | `final-`, `locked-`, `approved-`, `v2-`, `schema-v5-` | lifecycle / version belong in frontmatter; a transition would force a rename (§1.1 rules 4–5) | status/version → frontmatter |
 | Wording excerpt of a finding | `concern-3-coverage-ownership-cell-text` | quotes the finding instead of naming its subject | name the concept |
@@ -103,9 +106,9 @@ The fix is never "delete the date" or "delete a content word" — it is "replace
 
 ### 1.4 Ordered-step-dir carve-out (the `{N}-` prefix is exempt)
 
-The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{session-id}/` — `1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the loop's fixed, meaningful position in the workflow (`1`=ideation … `4`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk loop dirs so a reader sees the workflow sequence at a glance.
+The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{gobbi-session-id}/` — `1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the step's fixed, meaningful position in the workflow (`1`=ideation … `4`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk step dirs so a reader sees the workflow sequence at a glance.
 
-This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step-dirs are runtime working dirs whose shape is owned by [`../record/record-map.md`](../record/record-map.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. (Note SEAM-3: the prefix lives on the **dir** only; the `workflow.{loop}` keys in `session.json` stay **bare**.)
+This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step dirs are runtime working dirs whose shape is owned by [`../record/record-map.md`](../record/record-map.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. The router stores the bare step name at `state.json.current.step`; stage, iteration, and task are the other canonical cursor fields.
 
 ---
 
@@ -182,7 +185,7 @@ An area is split / merged / renamed by `git mv`-ing the files and running this p
 3. **Skill-name refs** — `required-skills`, `Load Directives`, `Skill()` permission arrays.
 4. **Inventory / list refs** — manifests, capability lists, feature-value tables.
 5. **Wrapper-description refs** — agent prompt blocks that name the area / path.
-6. **Pipeline-label refs** — hook scripts, sub-phase labels, comment strings.
+6. **Runtime-label refs** — stage labels, command names, and comment strings.
 
 PLUS the two label-rename classes — **in-fence example paths** (paths inside ```` ```markdown ```` example blocks) and **cross-doc** mentions — AND the inbound **`required-mistakes:` PATH refs** (a path-ref sub-class; these are PATH references, NOT plain slugs — §2.4's plain-slug set is only `supersedes` / `superseded_by` / `related` — so they DO break on a move and must be repointed). A moved record's OWN slug identity (`name`, body `[[slug]]` links, the `supersedes` / `superseded_by` / `related` slug-link fields) is rename-robust and needs no repointing.
 
@@ -211,7 +214,7 @@ scope: project | feature
 feature: {feature slug when scope=feature (a feature README self-references its own slug); null when scope=project}
 status: {the type's allowed status value — see §2.2}
 created: YYYY-MM-DD
-session: {session-id that created this}
+session: {Gobbi-owned UUID of the session that created this}
 tags: [{...}]         # each tag ∈ the controlled vocabulary (§2.5); may be empty []
 keywords: [{...}]      # REQUIRED — freeform, uncontrolled escape-hatch tags; may be empty []
 author: claude | codex | user   # REQUIRED — coarse provider tag (the runtime that authored the file)
@@ -230,7 +233,7 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 | `feature` | string \| null | yes | feature slug when `scope: feature`; `null` when `scope: project` |
 | `status` | enum | yes | the type's allowed status set (§2.2) |
 | `created` | date `YYYY-MM-DD` | yes | creation date |
-| `session` | string | yes | session-id that created it |
+| `session` | string | yes | Gobbi-owned session UUID that created it |
 | `tags` | list[string] | yes | each tag ∈ the controlled vocabulary (§2.5); may be empty `[]` |
 | `keywords` | list[string] | yes | freeform, uncontrolled escape-hatch tags; may be empty `[]` |
 | `author` | enum | yes | `claude` \| `codex` \| `user` — the runtime/system that authored the file |
@@ -240,7 +243,7 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 
 **`keywords` is required-may-be-empty.** Parallel to `tags`: the field must be present, but `[]` is a valid value. It is the freeform overflow for tags outside the §2.5 controlled vocabulary.
 
-**`author` is a coarse provider tag.** It names the runtime/system that authored the file, stable across model versions: `claude` for Claude Code agents, `codex` for Codex agents, `user` for a human who directly authored or edited it. Wrap-up auto-stamps it at promotion from `session.json.system` (`claude-code` → `claude`, `codex` → `codex`); a human hand-edit sets `author: user`.
+**`author` is a coarse provider tag.** It names the runtime/system that authored the file, stable across model versions: `claude` for Claude Code agents, `codex` for Codex agents, `user` for a human who directly authored or edited it. Wrap-up WORK stamps it during promotion from `session.json.runtime.system` (`claude-code` → `claude`, `codex` → `codex`); a human hand-edit sets `author: user`.
 
 **`feature` is conditionally required by `scope`.** `scope: feature` ⇒ `feature` is a non-null slug. `scope: project` ⇒ `feature: null`. The validator (§2.6) enforces this conditional.
 
@@ -257,7 +260,7 @@ The `status` enum is per-type — each type allows only the values in its row. T
 | Type | `status` enum (unified) | Extensions on top of base (non-link only) |
 |---|---|---|
 | features (README) | `active` \| `retired` | `value_proposition`, `subsystems` (list) |
-| notes | `active` | `features_touched` (list) (plus `loops_completed`, `shipped` — see note) |
+| notes | `active` | `features_touched` (list) (plus `steps_completed`, `shipped` — see note) |
 | decisions | `proposed` \| `accepted` \| `superseded` | (none) |
 | design | `active` \| `superseded` | (none) |
 | mistakes | `active` \| `superseded` | `priority` **(required)**, `domain` **(required)** |
@@ -273,7 +276,7 @@ The `status` enum is per-type — each type allows only the values in its row. T
 | scenarios | `active` | (none) |
 | checklists | `active` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
 
-> **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `loops_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
+> **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `steps_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
 
 **Extension-field enums:**
 
@@ -299,7 +302,7 @@ references | plans | reviews | reports | changelogs | discussions | scenarios | 
 
 - `scenarios` / `checklists` / `changelogs` / `discussions` live **only** under `features/{f}/` (always `scope: feature`).
 - `notes` is **project-only**.
-- `plans` is **feature-level on the loop path** (a project-level `plans/` may exist for maintainer roadmaps, but is never loop-written).
+- `plans` is **feature-level on the productive-step path** (a project-level `plans/` may exist for separately authorized maintainer roadmaps, but is never written by the workflow).
 - The rest (`features`, `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`) live at **both** levels, defaulting to feature-level and promoting up to project when the content is cross-feature.
 
 The enum says only WHAT a file is; `scope` and the directory say WHERE it lives. (See §3 for the full per-scope placement rules.)
@@ -333,13 +336,15 @@ When a tag outside its type's pool is genuinely needed, use the required-may-be-
 
 ### 2.6 Staging-field stripping on promotion
 
-Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to memory:
+Staging-only fields exist during the session and MUST be stripped when Wrap-up WORK promotes a typed staged file to memory:
 
 - **`mistake-candidate: true`** — stripped on promotion; its *presence* is what routes the file to `mistakes/`, after which it has done its job.
 - **`area:`** — an optional write/stage-time override input that selects the destination area (§1.5 selection rule, step 1). Stripped on promotion: once the file lands under `{type}/{area}/`, the directory encodes the resolved area, so a promoted file carries NO `area:`. Because `area:` never reaches a promoted file, it is NOT a §2.2 type extension and the validator's area checks derive the area from the PATH, not from frontmatter.
 - **`finding-id`, eval-routing `disposition`, `promoted-from`, `promoted-at`** — session-routing and session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
 
-**Mechanism.** Wrap-up's promotion step reads the staging frontmatter, applies the routing modifier, then writes the destination file with ONLY base + that type's extension fields (a per-type frontmatter allowlist). See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+**Mechanism.** Wrap-up WORK reads the typed staging frontmatter, applies the routing modifier, then writes the destination file through the frozen manifest with ONLY base + that type's extension fields (a per-type frontmatter allowlist). No other step or stage writes durable memory. See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+
+**Empty staging is valid.** A clean result may leave every authorized typed staging directory empty. Wrap-up WORK records the empty inventory and creates no filler memory record.
 
 **Enforcement.** A promoted file carrying a stray staging-only key is caught by the bash validator's **no-stray-keys** check (§2 lead note) — the validator's per-type allowlist is exactly base (§2.1) + that type's extensions (§2.2), so any key outside it is reported.
 
@@ -355,8 +360,8 @@ The structure rules thread through the 16 per-type specs in [`memory-map.md`](me
 - **Declared scope + promote-up.** Each type declares its scope:
   - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
   - **Project-only** types: `notes` (and `archive` as a destination). These live only at the project root; there is no `features/{f}/` tier for them.
-  - **Feature-only (loop path)** types: `plans` — the loop path writes plans only to `features/{f}/plans/`. (A project-level `plans/` may exist for maintainer-authored cross-feature roadmaps, but it is never loop-written.)
-  - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`. Most default to feature-level and **promote up** to the project root only when the content sets a project-wide convention / cross-feature architecture (user-confirmed through the active runtime's user-decision primitive at Wrap-up). `learnings` / `reviews` / `reports` are **default-feature** like `decisions` / `design`: a feature-scoped one lives in `features/{f}/{type}/`, promoting up to project when cross-feature. `rules` are rare and load-bearing: a project-wide rule lives in `rules/`, a feature-specific rule in `features/{f}/rules/`; either tier is user-confirmed at Wrap-up.
+  - **Feature-only (productive-step path)** types: `plans` — Planning stages plans only for `features/{f}/plans/`. (A project-level `plans/` may exist for separately authorized maintainer roadmaps, but the workflow never writes it.)
+  - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`. Types with an authorized typed source default to feature-level and **promote up** to the project root only when the content sets a project-wide convention or cross-feature architecture, with user confirmation during Wrap-up. `learnings` / `reviews` / `reports` are **default-feature** like `decisions` / `design`: a feature-scoped one lives in `features/{f}/{type}/`, promoting up to project when cross-feature. `rules` are rare and load-bearing, but the current Record vocabulary has no rules source; their durable locations do not create a write route.
   - The four feature-subdir-only types (`changelogs`, `discussions`, `scenarios`, `checklists`) exist ONLY as `features/{f}/` subdirs.
 
 For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, see [`memory-map.md`](memory-map.md).
@@ -434,17 +439,16 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | promotion provenance (time) | `promoted-at` | `promoted_at` |
 | finding-disposition provenance | `addressed-by` | `addressed_by` |
 
-**Session-routing residue** — session-internal coordinates that identify a file's position within a session (which loop iteration or evaluation round produced it). These coordinates have no meaning to a future reader; provenance is already carried by `session` + `created` in base frontmatter and by `git log`. Both spellings must be caught:
+**Session-routing residue** — session-internal coordinates that identify a file's cursor within a session. The durable record keeps the Gobbi UUID in `session`; `step`, `stage`, `iteration`, and Execution assignment identity remain in session evidence. These coordinates have no meaning to a future reader and must be stripped. Both hyphen and underscore spellings must be caught:
 
 | Concept | Hyphen spelling | Underscore spelling |
 |---|---|---|
-| workflow loop phase | `loop` | `loop` (same) |
-| iteration counter | `iter` | `iter` (same) |
+| workflow step | `step` | `step` (same) |
+| workflow stage | `stage` | `stage` (same) |
+| iteration counter | `iteration` | `iteration` (same) |
 | slug duplicate | `slug` | `slug` (same) |
 | finding source label | `finding-source` | `finding_source` |
-| workflow phase coordinate | `phase` | `phase` (same) |
-| loop iteration counter | `loop-iter` | `loop_iter` |
-| sub-step coordinate | `sub-step` | `sub_step` |
+| workflow task duplicate | `workflow-task` | `workflow_task` |
 | session-id (redundant with base `session`) | `session-id` | `session_id` |
 
 > **`task` and `scenario` are NOT residue — they are §2.2 type extensions.** `task` is a `plans` extension and `scenario` is a `checklists` extension (§2.2), so on those types they are legitimate keys, not session-routing residue. They are deliberately absent from the residue table above. The validator's per-type allowlist is the authority: it accepts `task` on `plans/` and `scenario` on `checklists/`, and reports either as a stray key on any OTHER type. Listing them as residue here (or in the §4.5 advisory grep) would wrongly flag every live `plans/` / `checklists/` file that uses its own extension.
@@ -495,7 +499,7 @@ find .gobbi/projects/gobbi -name '*.md' \
 # type extensions (plans / checklists), not residue; matching them here would
 # false-positive on every live plans/ / checklists/ file. The authoritative gate
 # (the validator) accepts them per-type; this advisory scan must not contradict it.
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|loop|iter|slug|finding[-_]source|phase|loop[-_]iter|sub[-_]step|session[-_]id|decision_status):' \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|step|stage|iteration|slug|finding[-_]source|workflow[-_]task|session[-_]id|decision_status):' \
   2>/dev/null
 ```
 

@@ -7,9 +7,11 @@ feature: null
 status: active
 created: 2026-07-16
 session: c8fe196d-c20d-451d-ac9c-2b366c49aa95
-tags: [process, orchestration, git, concurrency, agent-teams]
+tags: [process, verification, git, execution]
 keywords: [watcher, executor-done, commit-amend, slow-executor, concurrent-writer, no-commit-pattern, duplicate-dispatch]
 author: claude
+priority: high
+domain: verification
 related: []
 ---
 

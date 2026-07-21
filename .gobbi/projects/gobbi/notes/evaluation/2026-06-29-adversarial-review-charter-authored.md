@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, charter, dual-system, dogfooding, by-dimension, seven-dimensions]
 author: claude
 features_touched: [review]
-loops_completed: [ideation, execution, wrap-up]
+steps_completed: [ideation, execution, wrap-up]
 shipped: [adversarial-review-charter, agent-os-layered-standards, claude-flow-swarm-memory, claude-task-master-dependency-tasks, superpowers-skill-harness, fix-confirmed-seed-findings, run-deep-adversarial-review, automated-cross-layer-drift-validator, codex-exec-timeout-exceeds-bash-cap, research-ideation-reference-staging-conflict, find-misses-symlinked-mirror-dirs]
 supersedes: null
 superseded_by: null

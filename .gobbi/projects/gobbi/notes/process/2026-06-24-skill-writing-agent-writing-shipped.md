@@ -11,7 +11,7 @@ tags: [process]
 keywords: [skill-writing, agent-writing, meta-skill, verify-dont-assert, dual-system-eval, layer-2]
 author: claude
 features_touched: [agents]
-loops_completed: [ideation, execution, wrap-up]
+steps_completed: [ideation, execution, wrap-up]
 shipped:
   - verify-dont-assert-taught-facts
   - skill-loadability-and-map-placement

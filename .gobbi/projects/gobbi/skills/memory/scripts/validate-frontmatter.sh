@@ -147,6 +147,21 @@ self_test() {
         } > "$path"
     }
 
+    write_note_fixture() {
+        local path="$1" extension_block="$2" slug
+        slug="$(basename "$path" .md)"
+        mkdir -p "$(dirname "$path")"
+        {
+            printf '%s\n' '---'
+            printf 'name: %s\n' "$slug"
+            printf '%s\n' 'description: isolated notes-extension self-test fixture'
+            printf '%s\n' 'type: notes' 'scope: project' 'feature: null' 'status: active'
+            printf '%s\n' 'created: 2026-07-20' 'session: 37d3c8ef-57dd-477a-b10c-dcbbc1c2327d' 'tags: [process]' 'keywords: []' 'author: codex'
+            printf '%s\n' "$extension_block"
+            printf '%s\n' '---' '' '# Notes-extension self-test fixture'
+        } > "$path"
+    }
+
     expect_exit() {
         local expected="$1" label="$2" path="$3" pattern="${4:-}" got output
         total=$((total + 1))
@@ -178,6 +193,11 @@ self_test() {
     write_fixture "$tmp/design/memory/block-list.md" $'supersedes:\n  - first-record\n  - second-record'
     expect_exit 1 'block-list supersedes rejected' "$tmp/design/memory/block-list.md" \
         'supersedes: must be one plain scalar slug or null, not a block list'
+    write_note_fixture "$tmp/notes/tooling/steps-field.md" 'steps_completed: [ideation, planning, execution, wrap-up]'
+    expect_exit 0 'steps_completed notes extension accepted' "$tmp/notes/tooling/steps-field.md"
+    write_note_fixture "$tmp/notes/tooling/loops-field.md" 'loops_completed: [ideation, planning, execution, wrap-up]'
+    expect_exit 1 'loops_completed notes extension rejected' "$tmp/notes/tooling/loops-field.md" \
+        "loops_completed: stray key — not allowed for type 'notes'"
 
     if [ "$failures" -gt 0 ]; then
         log "SELF-TEST FAIL: $failures/$total fixture(s) failed"
@@ -283,7 +303,7 @@ status_enum_for() {
 ext_fields_for() {
     case "$1" in
         features)    echo "value_proposition subsystems" ;;
-        notes)       echo "features_touched loops_completed shipped" ;;
+        notes)       echo "features_touched steps_completed shipped" ;;
         decisions)   echo "" ;;                       # supersedes/superseded_by are slug-link
         design)      echo "" ;;                       # related is slug-link
         mistakes)    echo "priority domain" ;;

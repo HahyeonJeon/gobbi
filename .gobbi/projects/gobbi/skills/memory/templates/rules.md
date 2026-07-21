@@ -12,9 +12,10 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 
 | Field | Value |
 |---|---|
-| When | Startup-close establishes a baseline invariant with explicit user confirmation. The normal productive-step workflow has no authorized rule candidate or promotion route. |
-| Written by | The startup skill's distinct user-approved startup-close behavior. Record defines no `staging/rules/` type, and ordinary Wrap-up cannot write a rule directly. |
-| Durable home | `rules/{area}/` for a project-wide startup baseline or `features/{f}/rules/{area}/` for a feature-specific startup baseline. `{area}` follows the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
+| Current source | None. Record defines no typed `staging/rules/` source, so the active workflow cannot create a durable rule. |
+| Required source identity | Any future route must first define a typed staging source carrying the Gobbi-owned UUID and exact `step` / `stage` / `iteration` / `task` cursor. |
+| Durable writer | Wrap-up WORK only, through a frozen manifest after the Record, Memory-map, validator, and Wrap-up owners explicitly add that typed route. No direct, Startup, CLI, or RECORD durable write exists. |
+| Durable home | If a typed route is added later: `rules/{area}/` for a project-wide rule or `features/{f}/rules/{area}/` for a feature-specific rule. `{area}` follows the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
 [`memory-map.md`](../memory-map.md) intentionally lists no typed rule source. Adding ordinary rule promotion requires a prior user-approved change to the Record staging vocabulary, validators, Memory map, and Wrap-up contract; this template cannot create that route.
@@ -32,7 +33,7 @@ scope: project
 feature: null
 status: active
 created: YYYY-MM-DD
-session: {session-id that established the rule}
+session: {Gobbi-owned UUID of the session that established the rule}
 tags: [process, docs-sync]           # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -64,6 +65,6 @@ supersedes: {prior rule slug if this replaces an existing rule} | null   # one p
 
 ## Notes
 
-- **Normal Wrap-up boundary.** Ordinary Wrap-up accepts typed staging only. It does not turn a decision, finding, working file, or user comment into a rule and has no special direct-write exception.
-- **Startup-close exception.** Startup-close is distinct from the productive loop. It may write a user-approved baseline rule through its own contract before normal workflow promotion begins.
+- **Typed-source boundary.** Wrap-up WORK accepts typed staging only. It does not turn a decision, finding, working file, CLI result, Startup result, or user comment into a rule, and it has no direct-write exception.
+- **No current creation route.** This template documents the durable shape but does not authorize a write. Adding rules requires a prior contract change across Record, Memory, Wrap-up, and their validators.
 - **Update by supersede, never delete.** A separately authorized rule-maintenance change uses the global `supersedes:` field and preserves the prior complete file. A terminal superseded rule moves whole to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` under the Memory lifecycle owner.

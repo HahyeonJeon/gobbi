@@ -12,12 +12,13 @@ A future reader applies the decision without re-opening the debate.
 
 | Field | Value |
 |---|---|
-| When | A loop's RECORD (`ideation` / `planning` / `execution`) when a significant decision was made — technology choice, architecture trade-off, scope inclusion/exclusion, or a `design_flaw` / `assumption_risk` finding that received `PASS` (a deferred risk). |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` |
+| When | A productive step's RECORD when a significant user-approved decision or finding disposition is durable. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/decisions/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/decisions/{area}/` (default) · `decisions/{area}/` (project, cross-feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (decisions are time-indexed); slug names the decision in ≤6 words (`2026-05-11-use-redis-not-memcached.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,7 +33,7 @@ scope: project | feature
 feature: {feature-name} | null
 status: proposed | accepted | superseded
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [process, design]              # this type's controlled pool (§2.5)
 keywords: [cache-layer]              # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
