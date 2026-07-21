@@ -1,9 +1,12 @@
 # UI Design — Operational Checklist
 
-Unchecked source for running and evaluating one complete UI outcome. Each run works a fresh filled copy,
-identifies this source and the run, and declares the actual use style at each pause point. Never mark this
-source. Mode: **operational**. Default use style is **read-do** at pause points A–D and **do-confirm** at pause
-point E.
+Unchecked reusable source for running and evaluating one complete UI outcome. Never mark this source. Each run
+works a fresh filled copy that records three distinct provenance fields: this source's identity/path, its
+immutable source version or revision (for example a commit SHA, release tag, or content hash), and the run
+identity (for example session plus task/evaluation ID). Stable item IDs identify checks, not source bytes; the
+run identity identifies the execution, not the source revision. The filled copy also declares the actual use
+style at each pause point. Mode: **operational**. Default use style is **read-do** at pause points A–D and
+**do-confirm** at pause point E.
 
 Coverage closure means every applicable gate and required item has a terminal resolution. Acceptance is a
 separate result: every applicable gate and required item must be `PASS`. The one operational waiver permitted
@@ -252,8 +255,11 @@ the UI design.
 
 ## Filled-copy close
 
-In a run-specific copy, inspect the named evidence before resolving each row. Record coverage closure and
-acceptance separately. Acceptance requires `PASS` on every applicable gate and required item. Pilot the source
-against a passing complete run, a single-surface `n/a` disposition, the timeout/recovery boundary, the
-big-bang/premature-prototype/cosmetic-access adversarial cases, and a failed direct-evidence gate. A label,
-heading, component name, visual match, or present-but-empty artifact must never earn `PASS`.
+In a run-specific copy, first record the reusable checklist source identity/path, the exact immutable source
+version/revision, and the distinct run identity. At close, repeat those three values with the result so another
+reader can reconstruct both the rules used and the execution that applied them. Inspect the named evidence
+before resolving each row. Record coverage closure and acceptance separately. Acceptance requires `PASS` on
+every applicable gate and required item. Pilot the source against a passing complete run, a single-surface
+`n/a` disposition, the timeout/recovery boundary, the big-bang/premature-prototype/cosmetic-access adversarial
+cases, and a failed direct-evidence gate. A label, heading, component name, visual match, or present-but-empty
+artifact must never earn `PASS`.

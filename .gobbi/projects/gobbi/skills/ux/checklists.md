@@ -1,16 +1,27 @@
 # UX Design — Operational Checklist
 
-Unchecked source for running and evaluating one UX design outcome. Each run works a fresh filled copy and
-identifies this source plus the run; never mark this source. Mode: **operational**. Default use style is
+Unchecked reusable source for running and evaluating one UX design outcome. Never mark this source. Each run
+works a fresh filled copy that records three distinct provenance fields: this source's identity/path, its
+immutable source version or revision (for example a commit SHA, release tag, or content hash), and the run
+identity (for example session plus task/evaluation ID). Stable item IDs identify checks, not source bytes; the
+run identity identifies the execution, not the source revision. Mode: **operational**. Default use style is
 **read-do** at pause points A–D and **do-confirm** at pause point E; a filled copy declares the actual style at
 each pause point.
 
-Coverage closure means every applicable gate and required item has a terminal resolution. Acceptance is a
+Coverage closure means every applicable gate and required item has a valid terminal resolution. Acceptance is a
 separate result: every applicable gate and required item must be `PASS`, except that the checklist owner's
-bounded operational waiver may substitute on one item only when named authority covers that item's consequence
-and stop action and the authorization evidence and rationale are recorded. A waiver never counts as `PASS`, and
-accessibility or safety cannot be waived. A recorded-open or failed item can close coverage but cannot make this
-UX run accepted.
+bounded operational waiver may substitute on at most one **non-protected gate** when named authority covers that
+item's consequence and stop action and the authorization evidence and rationale are recorded. A waiver never
+counts as `PASS`.
+
+Five protected mandatory classes are explicitly non-waivable: (1) current-run direct generative research before
+convergence (`UX-CHECK-03`); (2) complete whole-specification approval before every prototype, including both
+document closure and chronology (`UX-CHECK-11`, `UX-CHECK-12`); (3) current direct representative-user prototype
+evaluation (`UX-CHECK-14`); (4) accessibility in any applicable item's claim or pass condition; and (5) safety
+in any applicable item's claim or pass condition. A waiver token on a protected item is invalid: it closes
+neither coverage nor acceptance. Resolve that item with a permitted terminal; `FAIL` or `recorded-open` can close
+coverage but cannot accept the run. A recorded-open or failed non-protected item likewise closes coverage
+without acceptance.
 
 ## Resolution legend
 
@@ -19,7 +30,24 @@ UX run accepted.
 - `n/a:<property>` — inspected evidence proves the applicability predicate false.
 - `recorded-open:<owner+resolution-method>` — operational coverage is closed but acceptance is not granted.
 - `waived/exception-authorized:<authority+rationale>` — permitted only for an operational gate when the named
-  authority covers its stated consequence; it does not count as `PASS` and cannot waive accessibility or safety.
+  authority covers its stated consequence; it does not count as `PASS`. It is invalid for direct generative
+  research, whole-specification-before-prototype document closure or chronology, direct representative-user
+  prototype evaluation, accessibility, or safety.
+
+## Protected-waiver acceptance truth table
+
+Each adversarial row holds every other applicable gate and required item at `PASS`. Coverage closure and
+acceptance are evaluated separately.
+
+| Protected class | Attempted protected-item resolution | All other applicable items | Coverage closed? | Accepted? |
+|---|---|---|---|---|
+| Direct generative research (`UX-CHECK-03`) | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Whole-specification-before-prototype (`UX-CHECK-11` or `UX-CHECK-12`) | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Direct representative-user prototype evaluation (`UX-CHECK-14`) | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Accessibility in any applicable item | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Safety in any applicable item | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Coverage/acceptance separation control | protected item is `FAIL:<finding-id>` or `recorded-open:<owner+resolution-method>` | `PASS` | Yes | No |
+| Bounded-waiver control | every protected item is `PASS`; one non-protected gate has a valid authorized waiver | `PASS` | Yes | Yes, only under the bounded exception |
 
 ## Pause point A — Before the skeleton: outcome, people, evidence, identity
 
@@ -224,3 +252,13 @@ UX run accepted.
 | `UX-CHECK-17` | `UX-SCENARIO-02`, `UX-SCENARIO-21`, `UX-SCENARIO-25`, `UX-SCENARIO-28` |
 | `UX-CHECK-18` | `UX-SCENARIO-27`, `UX-SCENARIO-28` |
 | `UX-CHECK-20` | `UX-SCENARIO-05`, `UX-SCENARIO-06`, `UX-SCENARIO-08` |
+
+## Filled-copy close
+
+Before resolving any item in a run-specific copy, record the reusable checklist source identity/path, the exact
+immutable source version/revision, and the distinct run identity. At close, repeat those three values with the
+result so another reader can reconstruct both the rules used and the execution that applied them. Inspect the
+named evidence before resolving each row, record coverage closure and acceptance separately, and replay every
+protected-waiver truth-table row. A protected waiver is an invalid resolution even when every other applicable
+item is `PASS`; a label, authority, rationale, owner, future plan, or present-but-empty artifact must never earn
+`PASS`.

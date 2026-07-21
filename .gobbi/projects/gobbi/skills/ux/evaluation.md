@@ -47,18 +47,38 @@ Frame.
    `UX-CHECK-*` item except conditional `UX-CHECK-18`. These cases distinguish a substantive completed run from
    big-bang polish, evidence theater, premature prototype work, cosmetic concepts, inaccessible evidence,
    mockup-only revision, and metric gaming.
-3. **Activate actor and surface variants.** Select `UX-SCENARIO-02` for a command-line or other alternative
+3. **Activate protected-waiver probes.** Copy the protected-waiver truth table below into the filled evaluation
+   checklist. Attempt an authorized waiver separately on direct generative research, whole-specification-before-
+   prototype closure/chronology, direct representative-user prototype evaluation, accessibility, and safety
+   while every other applicable item is `PASS`. Each protected waiver must remain an invalid resolution and the
+   run must remain not accepted.
+4. **Activate actor and surface variants.** Select `UX-SCENARIO-02` for a command-line or other alternative
    realization. Select `UX-SCENARIO-04` whenever a recovery/dependency boundary can be mistaken for an adjacent
    outcome. Select `UX-SCENARIO-19`–`21` when the outcome crosses a channel, actor, organization, or system.
-4. **Activate conflict and change cases.** Select `UX-SCENARIO-27` and `UX-CHECK-18` when UX and UI guidance or
+5. **Activate conflict and change cases.** Select `UX-SCENARIO-27` and `UX-CHECK-18` when UX and UI guidance or
    another loaded parent conflict. Select `UX-SCENARIO-28` for a downstream surface/child handoff or change.
-5. **Disposition non-selected cases with evidence.** Use `n/a:<property>` only when inspected target evidence
+6. **Disposition non-selected cases with evidence.** Use `n/a:<property>` only when inspected target evidence
    proves the trigger false. Do not omit an inconvenient path or relabel an applicable gate.
-6. **Copy exact checks.** Copy activated `UX-CHECK-*` records into the active phase's filled checklist without
+7. **Copy exact checks.** Copy activated `UX-CHECK-*` records into the active phase's filled checklist without
    changing their ID, claim, pass condition, evidence, or on-fail route. Resolve them through the active
    checklist/evaluation state machine.
-7. **Extend only the run copy.** A newly discovered UX scenario or check becomes a `scenario_gap` or
+8. **Extend only the run copy.** A newly discovered UX scenario or check becomes a `scenario_gap` or
    `checklist_gap` finding and an active-run Stage 1 addition. Evaluators never edit the shipped UX bundle.
+
+## Protected-waiver adversarial truth table
+
+This is an evaluation copy of the acceptance probe owned by [`checklists.md`](checklists.md). Hold every other
+applicable gate and required item at `PASS`; do not infer acceptance from coverage closure.
+
+| Protected class | Attempted resolution | Coverage result | Acceptance result | Required scenario evidence |
+|---|---|---|---|---|
+| Direct generative research (`UX-CHECK-03`) | authorized waiver | invalid / not closed | not accepted | `UX-SCENARIO-06`, `08` |
+| Whole-specification-before-prototype (`UX-CHECK-11` or `UX-CHECK-12`) | authorized waiver | invalid / not closed | not accepted | `UX-SCENARIO-13`, `18` |
+| Direct representative-user prototype evaluation (`UX-CHECK-14`) | authorized waiver | invalid / not closed | not accepted | `UX-SCENARIO-22` |
+| Accessibility in any applicable item | authorized waiver | invalid / not closed | not accepted | `UX-SCENARIO-10`, `23` |
+| Safety in any applicable item | authorized waiver | invalid / not closed | not accepted | `UX-SCENARIO-10`, `23` |
+| Coverage/acceptance control | protected item is `FAIL` or `recorded-open` | closed | not accepted | `UX-SCENARIO-07` |
+| Bounded-waiver control | protected items `PASS`; one valid non-protected gate waiver | closed | accepted only under the bounded exception | named non-protected scenario/check |
 
 ## Perspectives
 
@@ -76,7 +96,8 @@ artifact for the outcome or absorbing adjacent work?
 
 **Verify:** compare the user-locked outcome/scope with the skeleton, complete document, prototype questions,
 measures, and actual acceptance claim. Check that necessary supporting actors and recovery remain in while
-registration, reset, administration, or other independent outcomes remain out.
+registration, reset, administration, or other independent outcomes remain out. Replay the five protected-waiver
+rows with every other applicable check at `PASS`; none may yield acceptance.
 
 **Anti-patterns:** a screen or command called a feature outcome; stakeholder preference called user evidence;
 scope expansion hidden as “whole experience”; a proxy measure replacing user completion.
@@ -165,7 +186,9 @@ metric integrity, conflicts, and unsupported acceptance claims?
 
 **Verify:** attempt each required adversarial behavior probe; inspect consent/data limits; inject timeout and
 partial-state failure; test the accessibility/safety floor against identity pressure; invert the success metric;
-check final status when user evidence is missing.
+check final status when user evidence is missing. Separately attempt an authorized waiver on each of the five
+protected classes; verify the token is invalid, coverage remains unclosed until a permitted terminal replaces
+it, and acceptance remains unavailable even though every other applicable item is `PASS`.
 
 **Anti-patterns:** research theater; consent assumed; safety waiver; prior evidence replacing current direct
 contact; early prototype normalized after the fact; cosmetic compliance passing; acceptance declared with
@@ -183,21 +206,28 @@ cross-reference, and direct evidence inspection for design claims.
 3. Extract `UX-R*`, `UX-SCENARIO-*`, and `UX-CHECK-*` IDs. Prove every load-bearing parent rule has scenarios
    and checks, every scenario points to a live parent rule and check, every check points to live scenarios and
    parent clauses, and every applicable check is selected here.
-4. Verify the scenario coverage register dispositions all ten categories and each family has an adversarial
-   case or evidenced `n/a`; inspect each failure oracle against a cosmetically compliant but non-working target.
-5. Confirm the checklist source has only unchecked boxes. In the active filled copy, require named inspected
-   evidence and separate coverage closure from acceptance.
-6. Inspect dated/versioned history to prove foundation → skeleton → core → accumulated specification → whole
+4. Verify the scenario set declares purpose/target/consumer, lifecycle, scope/non-goals, scale, all ten category
+   dispositions, a complete family×case-type matrix with a property reason in every empty cell, source and
+   stable-ID registers, gaps/decisions, and a bidirectional orphan sweep. Confirm every family has all required
+   fields and every case has a justified primary type, declared coverage-role set, actor, Given/When/Then,
+   failure oracle, evidence tuple, obligation, source trace, and checklist trace.
+5. Confirm both checklist sources have only unchecked boxes. In each active filled copy, record source
+   identity/path, immutable source version/revision, and run identity as separate provenance values; require
+   named inspected evidence and separate coverage closure from acceptance.
+6. Replay the protected-waiver truth table with all other applicable items `PASS`. Assert mechanically in the
+   filled result that each of the five protected waiver attempts is invalid and not accepted; also prove a
+   protected `FAIL`/`recorded-open` may close coverage without acceptance.
+7. Inspect dated/versioned history to prove foundation → skeleton → core → accumulated specification → whole
    approval → prototype. Fail if any prototype predates the whole-spec gate.
-7. Inspect evidence provenance to prove new generative contact and new direct prototype evaluation with
+8. Inspect evidence provenance to prove new generative contact and new direct prototype evaluation with
    representative users, ethical conditions, accommodations, and bounded claims. Fail acceptance on absent
    conditions even if the stakeholder approved.
-8. Trace one prototype finding through specification revision first, prototype revision second, and affected
+9. Trace one prototype finding through specification revision first, prototype revision second, and affected
    direct retest third.
-9. Run the identity fallback and conflict probes, login/web + command-line boundary probe, adjacent-outcome
+10. Run the identity fallback and conflict probes, login/web + command-line boundary probe, adjacent-outcome
    probe, cross-channel failure probe, material-concept probe, inaccessible-prototype probe, metric-gaming probe,
    co-load conflict probe, and future-child deviation probe.
-10. Run the project markdown-link and retired-vocabulary guards against the canonical directory. Inspect live
+11. Run the project markdown-link and retired-vocabulary guards against the canonical directory. Inspect live
     runtime wiring through its owning sync mechanism; do not edit mirrors during evaluation.
 
 Tool evidence is required for chronology, file, path, ID, link, and wiring claims at confidence 75 or 100.
@@ -214,6 +244,9 @@ The Overall pass must answer:
   prototype evaluation support acceptance under ethical conditions?
 - Did identity come from the evidence chain, and were identity/accessibility/safety conflicts resolved visibly
   without waiving the floor?
+- Did every attempted waiver on direct generative research, whole-specification-before-prototype chronology,
+  direct representative-user prototype evaluation, accessibility, or safety remain invalid and unable to yield
+  acceptance, with coverage closure reported separately?
 - Was the top-down skeleton established before bottom-up growth, with every local unit reconciled to the whole?
 - Were two material concepts compared or was the single-concept exception genuinely proved?
 - Was the whole specification complete and explicitly approved before every prototype artifact?
