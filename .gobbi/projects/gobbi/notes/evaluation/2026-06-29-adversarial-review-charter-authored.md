@@ -47,7 +47,7 @@ deliverable needed no readiness gaps and no decomposition. Execution ran single-
 final adversarial gate was consolidated into this Wrap-up's memory-validation (Codex).
 
 ## What shipped
-- `plans/workflow/2026-06-29-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
+- `archive/plans/workflow/2026-07-20-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
 - 4 references → `references/memory/` (the harness baselines above).
 - 2 feature backlogs → `backlogs/` (`run-deep-adversarial-review`, `fix-confirmed-seed-findings`).
 - 1 project backlog → `backlogs/process/automated-cross-layer-drift-validator.md` (issue #258 class).

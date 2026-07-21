@@ -34,7 +34,7 @@ operation (memory `rules.md` §1.5 carve-out + `mistake/SKILL.md`) in two passes
 - **(a) Cross-system adversarial-review work → PROJECT level (7 files).** The gobbi
   whole-system adversarial-review charter and its harness baselines are genuinely
   project-scoped (they review the whole system, not one feature): the charter
-  `plans/workflow/2026-06-29-adversarial-review-charter.md`, four harness references under
+  `archive/plans/workflow/2026-07-20-adversarial-review-charter.md`, four harness references under
   `references/memory/` (Agent OS, Claude Flow, Claude Task Master, Superpowers), and two
   backlogs (`backlogs/evaluation/run-deep-adversarial-review.md`,
   `backlogs/process/fix-confirmed-seed-findings.md`). These stay at project level.
@@ -76,7 +76,7 @@ adversarial-review files at project level.
 ## Decisions to respect
 - `review` is NOT a canonical value-feature — do not recreate `features/review/`.
 - The review.md code-review playbook's design memory lives under `features/coding/` (the coding skill's feature).
-- The adversarial-review charter is project-scoped: its durable home is `plans/workflow/2026-06-29-adversarial-review-charter.md`, NOT under a feature.
+- The adversarial-review charter is project-scoped: its durable home is `archive/plans/workflow/2026-07-20-adversarial-review-charter.md`, NOT under a feature.
 - Namespace refactor preserves slug identity: `[[slug]]` wikilinks and `supersedes`/`related` slug-links survived the moves untouched; only path references were repointed.
 
 ## Next session

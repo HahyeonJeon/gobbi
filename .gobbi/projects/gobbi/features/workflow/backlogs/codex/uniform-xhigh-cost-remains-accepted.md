@@ -14,24 +14,23 @@ priority: low
 project-scope: false
 shipped_in: null
 ---
-
 # Measure the accepted uniform xhigh cost
 
 ## Context
 
-The deterministic policy now applies `xhigh` to every live Codex role. The user accepted the likely token and latency increase in exchange for consistent reasoning quality.
+The deterministic policy applies `xhigh` to every live Codex role. The user accepted the likely latency and token increase in exchange for consistent reasoning quality.
 
 ## Why deferred
 
-Benchmarking was outside this release task. The cost is qualitatively known but its magnitude was not measured.
+Benchmarking was outside the release task. The cost is qualitatively known, but its magnitude has not been measured.
 
 ## When to pick up
 
-Pick this up only when maintainers need measured latency or token-cost data to reconsider the uniform `xhigh` policy. It does not block the shipped configuration.
+Measure it when maintainers need evidence for a user-requested model or effort settings change. Cost evidence may change configured models; it may not narrow mandatory dual-system Ideation, independent creation, reciprocal review, fresh evaluation, or seven-perspective-plus-Overall coverage.
 
 ## Suggested approach
 
-Run a representative role-by-role workload with fixed inputs, compare `xhigh` against the previously mixed efforts, and record latency, reasoning-token use, and output-quality deltas.
+Run representative fixed-input workloads for each role. Compare latency, resource use, schema validity, finding quality, and final artifact quality. Present the results at the normal settings decision gate without changing workflow rigor.
 
 ## Originating session
 
@@ -39,4 +38,4 @@ Run a representative role-by-role workload with fixed inputs, compare `xhigh` ag
 
 ## Related
 
-- [[native-defaults-and-settings-shipped]] — applied the accepted uniform policy.
+- [[native-defaults-and-settings-shipped]] — the current configured policy.

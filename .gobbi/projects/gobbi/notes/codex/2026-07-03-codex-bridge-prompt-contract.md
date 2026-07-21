@@ -25,8 +25,8 @@ Execution shipped three commits: the canonical `codex/delegation.md` child doc, 
 
 ## What shipped
 
-- `features/workflow/design/codex/codex-bridge-prompt-file-contract.md`
-- `features/workflow/plans/workflow/2026-07-02-codex-delegation-prompt-contract.md`
+- `archive/design/codex/2026-07-20-codex-bridge-prompt-file-contract.md`
+- `archive/plans/workflow/2026-07-20-codex-delegation-prompt-contract.md`
 - `features/workflow/changelogs/codex/2026-07-03-task-01-codex-bridge-contract.md`
 - `features/workflow/changelogs/codex/2026-07-03-task-02-claude-child-doc-exposure.md`
 - `features/workflow/changelogs/codex/2026-07-03-task-03-parent-routing-docs.md`
@@ -52,7 +52,7 @@ The command contract also shifted from undocumented `@prompt-file` examples to o
 - `codex/delegation.md` is the detailed Claude-wrapper-to-Codex prompt-file contract owner.
 - `codex/SKILL.md` owns runtime selection, entry points, invocation posture, and high-level use cases.
 - `delegation/SKILL.md` owns general subagent delegation and producer brief shape, not Codex prompt-file transport.
-- Full dual-system production/evaluation architecture redesign remains deferred in `features/workflow/backlogs/codex/dual-system-architecture-redesign.md`.
+- Full dual-system production/evaluation architecture redesign remains deferred in `archive/backlogs/codex/2026-07-20-dual-system-architecture-redesign.md`.
 
 ## Next session
 

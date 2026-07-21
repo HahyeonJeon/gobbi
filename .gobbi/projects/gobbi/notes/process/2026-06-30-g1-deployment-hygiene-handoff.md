@@ -36,7 +36,7 @@ First fix session of the adversarial-review FIX campaign. User restructured the 
 
 ## Open / next
 - **G2** and **G3** clusters (separate sessions, per the fix-phase handoff plan on the 5ac6cf6e `-fixplan` branch — note that plan is NOT yet merged to develop).
-- `backlogs/process/integration-log-schema-doc-validator-drift.md` — production.md Integration-Log schema omits the `#` column its validator requires.
+- `archive/backlogs/process/2026-07-20-integration-log-schema-doc-validator-drift.md` — production.md Integration-Log schema omits the `#` column its validator requires.
 - `backlogs/evaluation/g1-eval-low-followups.md` — 3 Low doc-tightening items.
 - The fire-once validator was non-runnable at baseline (printf crash) — fixed here; flags that the review campaign reads guards without running them.
 

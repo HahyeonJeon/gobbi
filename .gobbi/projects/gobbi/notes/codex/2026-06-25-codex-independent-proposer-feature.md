@@ -27,7 +27,7 @@ Code/doc changeset (11 commits `1ca7e501`..`47eee764`, 32 non-session files):
 - `skills/codex/SKILL.md` § Dual-System Production proposer wrapper; new `orchestration/workflow/production.md`; the 5 per-step `orchestration/workflow/{loop}.md`; the 5 loop skills' WORK phases; `orchestration/SKILL.md`, `auto-mode.md`, `chat-mode.md`; `delegation/SKILL.md` + 3 templates; `evaluation/SKILL.md` independence note; 4 agent docs; `.claude/CLAUDE.md`; `gobbi/SKILL.md`; per-step `propose.mode` in both settings templates; `scaffold-session-dir.sh` + `record/record-map.md` + `verify-record-map.sh` baseline.
 
 Memory promoted this Wrap-up (13 staging files):
-- design `features/workflow/design/workflow/codex-proposer-model.md`; discussion `features/workflow/discussions/workflow/2026-06-25-codex-proposer-decisions.md`; 4 references in `features/workflow/references/memory/`; 2 resolved decisions in `features/workflow/decisions/workflow/`; feature backlog `features/workflow/backlogs/codex/proposer-evaluator-model-tier-guard.md`; project backlog `backlogs/codex/native-codex-proposer-symmetry.md`; 3 process mistakes (`mistakes/verification/` ×2 + `mistakes/codex/` ×1).
+- design `archive/design/workflow/2026-07-20-codex-proposer-model.md`; discussion `features/workflow/discussions/workflow/2026-06-25-codex-proposer-decisions.md`; 4 references in `features/workflow/references/memory/`; 2 resolved decisions in `features/workflow/decisions/workflow/`; feature backlog `features/workflow/backlogs/codex/proposer-evaluator-model-tier-guard.md`; project backlog `archive/backlogs/codex/2026-07-20-native-codex-proposer-symmetry.md`; 3 process mistakes (`mistakes/verification/` ×2 + `mistakes/codex/` ×1).
 
 ## What got stuck
 
@@ -49,7 +49,7 @@ Planning verification stalled across two REVISE iterations before the model erro
 
 ## Next session
 
-React to the deferred follow-ups: F-RISK-1 (evaluator filesystem-fence — accepted D4 residual, relates to `backlogs/codex/proposer-evaluator-model-tier-guard.md`); pull the model-tier guard only if residual self-preference is empirically observed; consider the native-Codex proposer symmetry (`backlogs/codex/native-codex-proposer-symmetry.md`) after this feature stabilizes.
+React to the deferred follow-ups: F-RISK-1 (evaluator filesystem-fence — accepted D4 residual, relates to `backlogs/codex/proposer-evaluator-model-tier-guard.md`); pull the model-tier guard only if residual self-preference is empirically observed; consider the native-Codex proposer symmetry (`archive/backlogs/codex/2026-07-20-native-codex-proposer-symmetry.md`) after this feature stabilizes.
 
 ## Related
 

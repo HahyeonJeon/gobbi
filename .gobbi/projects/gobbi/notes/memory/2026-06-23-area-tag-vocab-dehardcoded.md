@@ -82,7 +82,7 @@ execution spec for that deferred move.
 
 Pick up [[execute-area-tag-migration-114-files]] — the deferred bulk move of all 114 flat
 by-area files (both tiers) into namespaced paths, driven by the row-level manifest at
-`features/memory/plans/memory/2026-06-23-area-tag-migration-manifest.md`. Repoint every
+`archive/plans/memory/2026-07-20-area-tag-migration-manifest.md`. Repoint every
 inbound reference and run both guards to zero. Separately, fix the git skill P5/P8
 empty-parent sweep ([[git-skill-find-empty-delete-too-broad]]) to scope the
 `find -type d -empty -delete` to the removed worktree only.

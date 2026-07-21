@@ -12,29 +12,30 @@ keywords: [gpt-5.6-sol, xhigh, authority]
 author: codex
 related: [claude-to-codex-bridge-contract, validator-and-residual-guard-design, plugin-delivery-and-alias-topology]
 ---
-
 # Deterministic Codex policy authorities
 
 ## Problem
-Gobbi's model and effort behavior varies because native config, role wrappers, workflow settings, bridge commands, policy docs, and validators encode different inheritance rules.
+
+Draft, cross-review, and evaluation peer operations can drift when native config, session settings, peer commands, and validators resolve models or output contracts differently.
 
 ## Scope
-Update exactly the locked 19 current files. Preserve Claude models, runtime security posture, histories, fallback behavior, and role taxonomy.
+
+This record covers current cross-system draft, reciprocal cross-review, and evaluation operations. It preserves the configured role taxonomy, read-only peer posture, and user-owned settings decisions.
 
 ## Approach
-Set `gpt-5.6-sol` at repository config, all five canonical wrappers, both settings templates, and every live proposer/evaluator bridge command. Set effective `xhigh` at config, wrappers, and each bridge run.
 
-## Scenarios
-Native roles, settings bootstrap, Claude-hosted bridge runs, partial updates, plugin distribution, historical isolation, unsupported accounts, cost, pointer drift, and rollback.
+Resolve every role model from `session.json.settings.models`. Start a new ephemeral, read-only opposite-system command-line process for each draft, cross-review, and evaluation operation. Give it the complete operation inputs and require artifact-specific schema-valid JSON.
+
+The peer process never writes the session tree. The active-runtime assistant validates the response and stores the rendered Markdown through the record-owned command. Availability, timeout, empty output, malformed JSON, and schema failure halt with the exact error. Only an explicit user decision may waive one named system for one named step and iteration.
 
 ## Validation
-Use exact TOML and JSON assertions, command-form coverage, compatibility checks, alias checks, and the final 19-modification diff gate.
+
+Check the installed non-interactive CLI flags, schema enforcement, read-only behavior, model resolution, system and iteration labels, failure fixtures, and exact waiver scope in both runtime directions.
 
 ## Trade-offs
-Determinism improves consistency but increases cost and reduces local machine control.
+
+Deterministic peer operations increase repeatability and auditability. They do not authorize reducing dual-system rigor to control cost.
 
 ## Open issues
-Planning must complete negative-side residual classification and same-task workflow/validator sequencing.
 
-## Related
-- [[model-and-effort-defaults]] — the user choice this design implements.
+None. Settings changes remain available only through the workflow's explicit user gate.

@@ -1,6 +1,6 @@
 ---
 name: proposer-evaluator-model-tier-guard
-description: Add a different model/effort tier between the Codex proposer and the Codex evaluator to harden against residual self-preference when proposer content is integrated.
+description: "Consider a different model or effort tier between a draft contributor and same-system evaluator when evidence shows residual self-preference."
 type: backlogs
 scope: feature
 feature: workflow
@@ -8,31 +8,36 @@ status: deferred
 created: 2026-06-25
 session: 6cf13813-a002-4e55-96b9-a5d65f619ef8
 tags: [process, codex]
-keywords: [self-preference, proposer-evaluator-independence, model-tier, dual-system-production, hardening]
+keywords: [self-preference, contributor-evaluator-independence, model-tier, dual-system-work, hardening]
 author: claude
 priority: low
 project-scope: false
 shipped_in: null
 ---
-
-# Proposer / evaluator model-tier guard
+# Draft-contributor and evaluator model-tier guard
 
 ## Context
-D4 of the Codex-proposer design preserves proposer↔evaluator independence by three structural facts: stateless `codex exec` runs, a Claude-authored canonical artifact under review, and forbidding the proposal transcript from entering the evaluator prompt. A **residual** self-preference risk remains: where the producer integrates Codex-origin content, the Codex evaluator partially reviews Codex ideas and may over-rate those sections. The current mitigation is the Integration Log (records Codex-origin deltas so the manager weighs the Codex verdict with awareness) — but it does not eliminate the bias.
+
+Dual-system WORK uses independent Claude and Codex draft contributors, reciprocal cross-review, and active-runtime synthesis. EVALUATION then uses fresh Claude and Codex evaluators over the complete creation package.
+
+A residual same-family preference risk remains when a system evaluator reviews canonical material derived from that system's draft. Fresh process identity and complete provenance reduce the risk but do not prove it is absent.
 
 ## Why deferred
-The structural guards + the Integration-Log mitigation are judged sufficient for the initial rollout; adding a configurable different-model/effort tier for the Codex proposer vs the Codex evaluator adds config + cost surface without evidence yet that the residual bias materializes. Pull it in only if observed.
+
+The current structural controls are stronger than the retired one-way creation topology: independent frozen drafts, reciprocal review, active-runtime synthesis, fresh evaluators, and provenance-preserving finding ledgers. A separate configurable model tier adds settings surface without current evidence of a material failure.
 
 ## When to pick up
-- When telemetry / observed behavior shows a Codex evaluator over-rating Claude artifacts that absorbed Codex proposals (the residual-self-preference symptom).
-- Requires a settings shape decision: how to express distinct `model`/`effort` for the proposer vs evaluator without violating "do not hard-code model/effort unless the user asks."
+
+Revisit only when evaluation evidence shows one system repeatedly over-rating canonical material traceable to its own draft after controlling for finding quality and independent peer evidence.
 
 ## Suggested approach
-Add an optional per-step proposer model/effort override (distinct from the evaluator's), defaulting to inherit (unset). Document it as the option (b) hardening named in Ideation D4. Validate by checking the proposer and evaluator `codex exec` invocations resolve to different tiers when the guard is enabled.
+
+If evidence justifies it, allow the user to configure distinct contributor and evaluator models within the existing role settings. Preserve two independent drafts, two reciprocal reviews, and two fresh complete evaluations. A tier change must never remove a system or reduce perspective coverage.
 
 ## Originating session
+
 `.gobbi/projects/gobbi/sessions/2026-06-25-6cf13813-a002-4e55-96b9-a5d65f619ef8/`
 
 ## Related
 
-- [[llm-self-preference-bias]] — the bias this guard hardens against
+- [[llm-self-preference-bias]] — the residual bias this guard would address.

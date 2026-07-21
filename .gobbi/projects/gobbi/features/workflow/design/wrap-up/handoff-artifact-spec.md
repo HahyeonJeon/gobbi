@@ -14,30 +14,45 @@ supersedes: null
 superseded_by: null
 related: [wrap-up-5-stage-pipeline]
 ---
-
-# Handoff artifact spec (D-d)
+# Evaluated handoff artifact specification
 
 ## Problem
-The wrap-up procedure produces a handoff summary but its location, naming, template, and "shown to the session" mechanic were not explicitly specified, leaving each session to infer these from context.
+
+Wrap-up needs one closure contract whose promoted durable body, session output, evaluation subject, and final Git facts cannot drift.
 
 ## Scope
-In: specify the handoff artifact; define the "shown to session" mechanic. Out: handoff content (already exists at `wrap-up/SKILL.md:155`).
+
+This record defines the universal Wrap-up loop, the matching handoff body in two locations, its nine required sections, and the separate post-evaluation finalization receipt.
 
 ## Approach
-- **Location/naming**: `sessions/{date}-{session-id}/4-wrap-up/outputs/handoff.md` (`artifact_type: handoff`). Session-scoped (gitignored). The ordinal follows the v0.5.3 four-loop session shape.
-- **Durable cross-session handoff**: the per-session journal `notes/{date}-{slug}.md` — written at WORK Step 6, promoted to memory. Survives across sessions via memory promotion. `handoff.md` itself is session-ephemeral.
-- **Template**: the `notes` section contract from `memory/rules.md` §4.2 for the journal (What happened / What shipped / What got stuck / What shifted / Decisions to respect / Next session). `handoff.md` keeps its required sections (Summary / Shipped / Deferred-Open / Decisions to respect / Pointers / Promotion summary).
-- **"Shown to the session" mechanic**: the manager reads `outputs/handoff.md` back to the session as the final message before `workflow.finish`. Explicit stage-4 step: assistant writes `handoff.md`; manager surfaces its contents to the session. Respects manager-owns-the-user-relationship role boundary.
 
-## Scenarios
-- Normal wrap-up: assistant writes `handoff.md`; manager reads it back to the user; user acknowledges; `workflow.finish`.
-- Handoff missing a required section: stage 4 → REVISE before manager reads back.
+Wrap-up uses the same four stages as every productive step:
+
+1. DISCUSSION confirms closure inputs and final material additions.
+2. WORK runs dual-system creation over the promotion plan and handoff, freezes source and destination preimages, applies the complete manifest idempotently inside the isolated worktree, and verifies the actual project delta.
+3. EVALUATION gives two fresh systems the actual post-promotion tree and handoff.
+4. RECORD seals only PASS artifacts and checkpoints the final outcome.
+
+One evaluated Markdown body appears at `4-wrap-up/outputs/handoff.md` and as a durable notes record at `notes/{area}/{YYYY-MM-DD}-{slug}.md`. The body is byte-identical after removing only the durable notes frontmatter wrapper.
+
+The body contains exactly these required sections:
+
+1. Outcome and agreed scope.
+2. Completed or shipped work with artifact and verification evidence.
+3. Dual-system evaluation result, approved finding dispositions, and waivers.
+4. Decisions to respect.
+5. Durable memory promoted or superseded.
+6. Pre-finalization Git state and authorized finalization plan.
+7. Unresolved, blocked, or deferred items with explicit reasons.
+8. Known risks and accepted exceptions.
+9. Exact next-session start point: objective, required reads, branch/worktree state, and first action.
+
+The manager displays the complete evaluated body. After finalization, it appends a factual receipt for the actual local commit, issue, push, pull request, merge, branch, worktree, and cleanup results. The receipt never mutates the evaluated handoff.
 
 ## Validation
-`handoff.md` exists with all required sections + frontmatter; the manager's final session message contains the handoff summary; the journal note exists.
+
+Verify staging-only provenance, the frozen manifest and preimages, actual-tree reconciliation, two PASS reports, matching handoff bodies, all nine sections, evidence for every completion claim, and an accurate separate Git receipt.
 
 ## Trade-offs
-Minimal: the mechanic just makes explicit what was implicit (manager reads back the handoff). No behavioral change beyond naming the step.
 
-## Open issues
-None. D-d was an uncontested auto-decide.
+The evaluated body intentionally excludes facts that do not exist until finalization. Keeping those facts in a receipt preserves the integrity of what the evaluators actually reviewed.

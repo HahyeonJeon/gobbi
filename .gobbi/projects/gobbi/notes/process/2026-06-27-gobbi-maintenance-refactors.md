@@ -41,7 +41,7 @@ Memory promotions this wrap-up:
 - `mistakes/assumption/frozen-history-by-doc-type-not-dir.md` — classify references by doc-type and claim-tense, not directory
 - `mistakes/codex/opposite-system-peer-must-be-read-only.md` — Execution-loop Codex proposers must not modify source files
 - `backlogs/tooling/claude-skills-mirror-policy.md` — open: decide `.claude/skills/` mirror mechanism
-- `backlogs/tooling/validate-integration-log-spec-drift.md` — open: reconcile Integration Log validator vs production.md spec + pipe-escape rule
+- `archive/backlogs/tooling/2026-07-20-validate-integration-log-spec-drift.md` — open: reconcile Integration Log validator vs production.md spec + pipe-escape rule
 - `backlogs/docs/skill-writing-dead-mistake-links.md` — open: repoint 3 dead links in skill-writing/SKILL.md
 
 Not promoted (duplicate-covered by existing mistakes):
@@ -74,9 +74,9 @@ Nothing is in-flight stuck. All three refactors completed. The `.claude/skills/c
 
 - No active work needed to continue R1/R2/R3 — all shipped.
 - Open: `.claude/skills/coding` mirror policy (`backlogs/tooling/claude-skills-mirror-policy.md`)
-- Open: Integration Log validator/spec drift + pipe-escape rule (`backlogs/tooling/validate-integration-log-spec-drift.md`)
+- Open: Integration Log validator/spec drift + pipe-escape rule (`archive/backlogs/tooling/2026-07-20-validate-integration-log-spec-drift.md`)
 - Open: `skill-writing/SKILL.md` dead links (`backlogs/docs/skill-writing-dead-mistake-links.md`)
-- The coding skill (`skills/coding/SKILL.md`) was added 2026-06-24 but workflow wiring (how it fits into the gobbi orchestration as a loadable skill) is deferred per `backlogs/evaluation/layer2-skill-promotions-pending.md`.
+- The coding skill (`skills/coding/SKILL.md`) was added 2026-06-24 but workflow wiring (how it fits into the gobbi orchestration as a loadable skill) is deferred per `archive/backlogs/evaluation/2026-07-20-layer2-skill-promotions-pending.md`.
 
 ## Related
 

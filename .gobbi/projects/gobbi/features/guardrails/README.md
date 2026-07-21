@@ -60,8 +60,8 @@ At the time, mistake-to-rule graduation, residual-guard hardening, and pre-exist
 
 These paths record older follow-up work. They are not current guardrail instructions.
 
-- `backlogs/tooling/harden-skill-memory-residual-vocab-allowlist.md` — harden the `check-residual-vocab.sh` whole-file allowlist for `skills/memory/mistakes.md` to a file+line allowlist
-- `backlogs/memory/preexisting-broken-markdown-links.md` — 20 pre-existing broken markdown links across the tree (none introduced by this feature)
+- `archive/backlogs/tooling/2026-07-20-harden-skill-memory-residual-vocab-allowlist.md` — harden the `check-residual-vocab.sh` whole-file allowlist for `skills/memory/mistakes.md` to a file+line allowlist
+- `archive/backlogs/memory/2026-07-20-preexisting-broken-markdown-links.md` — 20 pre-existing broken markdown links across the tree (none introduced by this feature)
 
 ## Related
 

@@ -8,33 +8,34 @@ status: active
 created: 2026-07-10
 session: 019f4a1e-8898-7e51-845b-ec289f1400c7
 tags: [codex, verification]
-keywords: [plugin, symlink, version, 0.5.2]
+keywords: [plugin, symlink, version, 0.5.3]
 author: codex
 related: [deterministic-codex-policy-authorities]
 ---
-
 # Plugin delivery and alias topology
 
 ## Problem
-Gobbi exposes canonical skills and agents through several symlinked runtime and plugin paths, while three release fields must stay synchronized.
+
+Gobbi needs one canonical skill source while Claude Code and Codex discover the package through different manifests and repo-local entry points.
 
 ## Scope
-Edit canonical sources and three version fields only. Do not materialize plugin component directories.
+
+The shared plugin distributes skills only. Native custom-agent wrappers remain repo-local. Gobbi has no plugin or development hooks, and the protected role documents are not rewritten by this lifecycle change.
 
 ## Approach
-Let aliases propagate canonical edits. Bump both plugin manifests and the Claude marketplace from `0.5.1` to `0.5.2`.
 
-## Scenarios
-Native alias resolution, installed plugin smoke, expected cache omissions for symlinked components, and version mismatch.
+Keep canonical skills under `.gobbi/projects/gobbi/skills/` and expose them through the repository discovery and plugin skill symlinks. Keep Codex role wrappers under `.codex/agents/`, pointing to canonical role definitions in the repository rather than installing agents as plugin components.
+
+Both plugin manifests declare the supported skills component and no hooks component. Marketplace entries point to the same bounded package. The plugin version remains unchanged for this redesign.
 
 ## Validation
-Use `realpath`, dereferenced inode, tracked mode, package sync, plugin smoke, strict Claude validation, and publish readiness.
+
+`scripts/sync-plugin-package.sh --check` verifies canonical source topology, both manifests, both marketplaces, skill entry points, symlinks, and repo-local agent-wrapper presence. The isolated Codex smoke check verifies installed-cache behavior without hooks.
 
 ## Trade-offs
-Installed-cache omissions remain a platform limitation and are not worked around in source.
+
+One skills-only package keeps delivery explicit and avoids runtime-specific hook behavior. Native agent wrappers remain a repository capability rather than a portable plugin component.
 
 ## Open issues
-None at Ideation; Execution must supply fresh topology evidence.
 
-## Related
-- [[live-surface-scope]] — the explicit skill, agent, and plugin scope.
+Installed-cache handling of symlinked component directories remains runtime-owned and is reported by smoke evidence.

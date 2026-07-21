@@ -31,7 +31,7 @@ Wrap-up inventoried 86 staged records. It promoted 82 records, converted one exp
 - Native defaults and settings: `c70de262ed5baac75b88f82f19b551733ef1d15d`, indexed by `features/workflow/changelogs/codex/2026-07-10-native-defaults-and-settings-shipped.md`.
 - Policy owners and validator self-test: `7d043fe41a7edfe8c66ef4c2bdd6854cf3deb379`, indexed by `features/workflow/changelogs/codex/2026-07-11-policy-docs-and-validator-shipped.md`.
 - Plugin metadata and complete release gates: `138e49171806efad0f341c90aa8bfce59604d5b4`, indexed by `features/workflow/changelogs/codex/2026-07-11-release-metadata-and-integration-gates-shipped.md`.
-- The durable implementation plan at `features/workflow/plans/codex/2026-07-10-deterministic-codex-model-policy.md` and the supporting workflow decisions, designs, scenarios, checklists, references, discussions, and reviews.
+- The durable implementation plan at `archive/plans/codex/2026-07-20-deterministic-codex-model-policy.md` and the supporting workflow decisions, designs, scenarios, checklists, references, discussions, and reviews.
 - Three skill-owned mistake sections across the discussion and evaluation companions, plus three cross-cutting project mistakes under `mistakes/assumption/` and `mistakes/tooling/`.
 - The script-owned `.claude/skills/discussion/mistakes.md` symlink for the new canonical discussion companion; plugin-package synchronization passes.
 - A low-priority deferred measurement item at `features/workflow/backlogs/codex/uniform-xhigh-cost-remains-accepted.md`; it does not change or block the accepted runtime policy.

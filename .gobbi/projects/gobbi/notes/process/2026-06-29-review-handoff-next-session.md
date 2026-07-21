@@ -20,7 +20,7 @@ shipped: []
 ## What happened
 
 This session executed the **D7 + D1** slice of the adversarial-review charter
-(`plans/workflow/2026-06-29-adversarial-review-charter.md`), dual-system, review-only. It produced
+(`archive/plans/workflow/2026-07-20-adversarial-review-charter.md`), dual-system, review-only. It produced
 40 findings and queued them; it changed no source. This note is the forward-looking handoff for
 whoever picks up the charter next.
 

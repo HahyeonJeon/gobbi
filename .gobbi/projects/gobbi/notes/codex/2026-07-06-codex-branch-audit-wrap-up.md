@@ -26,12 +26,12 @@ Wrap-up ran in native-Codex degraded production. It did not create `5-wrap-up/wo
 ## What shipped
 
 - Feature references under `features/workflow/references/{git,codex}/` for Git evidence commands, AGENTS.md context, Codex subagents, Codex CLI boundaries, and non-interactive `codex exec`.
-- Feature plan `features/workflow/plans/workflow/2026-07-05-previous-codex-branch-audit.md`.
+- Feature plan `archive/plans/workflow/2026-07-20-previous-codex-branch-audit.md`.
 - Feature discussion records for Preparation gap dispositions and the pinned diff-stat gate.
 - Feature reviews for Preparation readiness and Task 01 Codex evaluation.
 - Feature changelogs for Task 01 and Task 02 audit-only Execution outputs.
 - Feature checklist `features/workflow/checklists/process/task-02-skill-load-checklist-gap.md`.
-- Project backlog `backlogs/evaluation/native-codex-single-system-evaluation-debt.md`.
+- Project backlog `archive/backlogs/evaluation/2026-07-20-native-codex-single-system-evaluation-debt.md`.
 - Post-promotion guard fixes for markdown links, skill-mistake path examples, residual-vocabulary carriers, and `.agents` symlink self-location in guard scripts.
 - Post-rebase frontmatter repairs for six base-branch memory files that entered from `origin/develop` after the branch's first green guard run.
 - Skill-owned mistakes in `codex`, `git`, and `delegation`, plus project mistakes under `mistakes/{codex,verification,tooling}/`.

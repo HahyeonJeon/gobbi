@@ -35,7 +35,7 @@ Durable memory writes this session:
 - 4 references — `features/memory/references/memory/{agent-memory-consolidation-governed,
   lsm-compaction-threshold-merge-similar, sleep-consolidation-push-pull,
   zettelkasten-map-of-content-atomicity}.md`.
-- 1 project backlog — `backlogs/memory/compaction-cap-tuning.md`.
+- 1 project backlog — `archive/backlogs/memory/2026-07-20-compaction-cap-tuning.md`.
 - 1 cross-feature learning — `learnings/evaluation/dual-system-eval-catches-defects.md`.
 
 Code/standard (committed, develop..HEAD): compaction caps + dormant settings knobs;

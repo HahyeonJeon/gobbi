@@ -66,7 +66,7 @@ The leader's single-home recommendation shifted to the user's hybrid two-home re
 
 ## Next session
 
-Pick up the two deferred backlogs: `backlogs/tooling/harden-skill-memory-residual-vocab-allowlist.md` (file+line allowlist for `skills/memory/mistakes.md`) and `backlogs/memory/preexisting-broken-markdown-links.md` (20 pre-existing link breaks). Per-lesson mistake → rule graduation remains open against the Q4 test.
+Pick up the two deferred backlogs: `archive/backlogs/tooling/2026-07-20-harden-skill-memory-residual-vocab-allowlist.md` (file+line allowlist for `skills/memory/mistakes.md`) and `archive/backlogs/memory/2026-07-20-preexisting-broken-markdown-links.md` (20 pre-existing link breaks). Per-lesson mistake → rule graduation remains open against the Q4 test.
 
 ## Related
 

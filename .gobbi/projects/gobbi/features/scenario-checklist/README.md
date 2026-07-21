@@ -74,7 +74,7 @@ The entries below are preserved from the feature's introduction and are not the 
   the inline catalogs are in place — flagged, not yet needed; touches the locked "no child docs" scope
   and needs a fresh user decision before adding either
 - `check-eval-childdocs.sh --self-test` fixture drift found during this session's wrap-up is unrelated to
-  this feature and tracked separately (`backlogs/tooling/eval-childdocs-selftest-fixture-drift.md`,
+  this feature and tracked separately (`archive/backlogs/tooling/2026-07-20-eval-childdocs-selftest-fixture-drift.md`,
   project tier)
 
 ## Related
