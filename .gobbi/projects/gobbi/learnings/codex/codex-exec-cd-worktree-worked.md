@@ -38,4 +38,4 @@ Use `codex exec --cd <worktree-abs> --add-dir <worktree-abs> < /dev/null` for th
 
 ## Related
 
-- [[dual-production-codex-added-real-coverage]] — this learning enabled the dual production run that added real coverage
+- [[dual-system-work-added-real-coverage]] — this learning enabled the dual production run that added real coverage

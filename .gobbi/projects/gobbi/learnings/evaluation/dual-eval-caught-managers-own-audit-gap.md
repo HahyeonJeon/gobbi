@@ -38,5 +38,5 @@ Trust the dual-FAIL verdict even when it feels like a process technicality. The 
 
 ## Related
 
-- [[dual-production-codex-added-real-coverage]] — the production-side complement: dual production also added real value
+- [[dual-system-work-added-real-coverage]] — the production-side complement: dual production also added real value
 - [[manager-locked-decision-without-audit-trail-sync]] — the mistake this learning demonstrates

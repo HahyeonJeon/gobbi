@@ -1,5 +1,5 @@
 ---
-name: dual-production-codex-added-real-coverage
+name: dual-system-work-added-real-coverage
 description: Independent Codex and Claude creation exposed complementary coverage that survived reciprocal review and synthesis.
 type: learnings
 scope: project
@@ -21,7 +21,7 @@ Independent Claude and Codex drafts can expose complementary obligations before 
 
 ## Context
 
-In the historical session, Claude and a separate read-only Codex process created drafts without seeing each other. The old reconciliation record attributed artifact-changing contributions to both systems. Although that file shape is retired, it remains evidence that independent creation found different useful content before review.
+In the historical session, Claude and a separate read-only Codex process created drafts without seeing each other. The frozen creation evidence attributed artifact-changing contributions to both systems and showed that independent work found different useful content before review.
 
 ## Reason
 
@@ -31,7 +31,7 @@ Different systems follow different reasoning paths. Freezing both drafts before 
 
 Give both systems the same neutral contract. Freeze and validate both drafts before reciprocal cross-review. Require each review to identify supported strengths, omissions, and conflicts in the peer artifact. The active-runtime specialist synthesizes from all four inputs and records material conflicts in `open-decisions.md` for the user.
 
-Evaluate value by traceable obligations and evidence preserved in the drafts, cross-reviews, and synthesis. Do not add operational counters, token telemetry, or an integration score, and do not use perceived low yield or cost to narrow future dual-system WORK.
+Evaluate value by traceable obligations and evidence preserved in the drafts, cross-reviews, and synthesis. Do not add activity counters or a contribution score, and do not use perceived low yield or cost to narrow future dual-system WORK.
 
 ## Counter-cases
 

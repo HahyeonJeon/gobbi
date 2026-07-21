@@ -34,7 +34,7 @@ Execution shipped three commits: the canonical `codex/delegation.md` child doc, 
 - `mistakes/verification/regex-header-check-false-missing.md`
 - `mistakes/tooling/tempfile-move-after-jq-error.md`
 - `mistakes/verification/zsh-special-variable-names-break-shell-checks.md`
-- `mistakes/assumption/source-edits-before-preparation-planning.md`
+- `mistakes/assumption/source-edits-before-planning-readiness.md`
 - `mistakes/verification/rg-l-is-not-files-without-match.md`
 
 ## What got stuck

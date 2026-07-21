@@ -34,9 +34,9 @@ Evaluation findings use a separate batch disposition gate. Do not rewrite creati
 
 The synthesis says a material question is decided while `open-decisions.md` still marks it open, or the decision file says resolved without the synthesis reflecting the answer. Another signal is an EVALUATION transition while any material decision remains unresolved.
 
-**Historical recurrence, 2026-07-05:** a locked scope change was prepended as an amendment while several body sections retained the old direction. The lesson remains: a superseding header is not a full reconciliation of every material restatement.
+**Historical recurrence, 2026-07-05:** a locked scope change was prepended as an amendment while several body sections retained the old direction. The lesson remains: a superseding header does not propagate through every material restatement.
 
 ## Related
 
-- [[freeze-producer-artifact-before-evaluating]] — sibling verification-discipline trap
+- `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` — sibling verification-discipline trap
 - [[dual-eval-caught-managers-own-audit-gap]] — the learning this mistake demonstrates

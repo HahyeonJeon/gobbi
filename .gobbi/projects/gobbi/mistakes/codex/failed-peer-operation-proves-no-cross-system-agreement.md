@@ -1,5 +1,5 @@
 ---
-name: no-convergence-claim-from-degraded-codex-run
+name: failed-peer-operation-proves-no-cross-system-agreement
 description: A failed peer operation cannot support a claim of independent agreement or a complete dual-system WORK package.
 type: mistakes
 scope: project
@@ -29,7 +29,7 @@ A failed process can emit plausible partial text before it exits. Plausibility i
 
 Accept only a complete artifact-specific structured response that passes identity, schema, system, step, iteration, assignment, and content validation. If the peer times out or fails, pause and report the exact failure. An explicit user waiver may authorize a single-system continuation for that named system, step, and iteration, but the resulting artifact must not claim dual-system agreement or convergence.
 
-Do not store or mine reasoning streams, transcripts, or operational logs as substitute creation evidence. The final outcome links the approved waiver, not invented peer conclusions. Fresh dual-system EVALUATION remains independently required unless its own exact missing-system waiver is separately approved.
+Do not store or mine partial reasoning or process output as substitute creation evidence. The final outcome links the approved waiver, not invented peer conclusions. Fresh dual-system EVALUATION remains independently required unless its own exact missing-system waiver is separately approved.
 
 ## How to detect
 

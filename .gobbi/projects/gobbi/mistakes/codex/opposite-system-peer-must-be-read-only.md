@@ -1,5 +1,5 @@
 ---
-name: codex-proposer-must-be-source-read-only
+name: opposite-system-peer-must-be-read-only
 description: A peer process mutated the worktree despite a prose warning; opposite-system WORK must be mechanically read-only.
 type: mistakes
 scope: project
@@ -14,7 +14,7 @@ priority: high
 domain: process
 ---
 
-# The opposite-system WORK process must be mechanically read-only
+# The opposite-system peer must be mechanically read-only
 
 ## What happened
 
@@ -26,7 +26,7 @@ The process had workspace write capability. A behavioral instruction competed wi
 
 ## Correct approach
 
-Run every opposite-system draft, cross-review, and evaluation operation in a new ephemeral read-only process. Claude Code invokes Codex with `codex exec --ephemeral --sandbox read-only --output-schema ... -`; native Codex invokes Claude with `claude -p --permission-mode plan --no-session-persistence --json-schema ...`. Give each operation complete inputs and require artifact-specific structured JSON.
+Run every opposite-system draft, cross-review, and evaluation operation in a new ephemeral read-only process. Claude Code invokes Codex with `codex exec --ephemeral --sandbox read-only --output-schema ... -`; native Codex invokes Claude with `claude -p --permission-mode plan --no-session-persistence --safe-mode --tools "Read,Grep,Glob" --json-schema ...`. Give each operation complete inputs and require artifact-specific structured JSON.
 
 The peer process never writes the session tree. An active-runtime assistant validates the response and stores rendered Markdown through `session-record.sh write-artifact`. Keep all worktree mutation in one ordered writer chain. Compare the worktree preimage and post-operation state; any peer-caused delta is a blocking contract failure, not something to hide with a cleanup checkout.
 

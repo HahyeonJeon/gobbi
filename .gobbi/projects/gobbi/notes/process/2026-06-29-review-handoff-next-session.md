@@ -60,7 +60,7 @@ Pick the next charter dimension (D2 recommended next — it also absorbs the cod
 **Reuse the method that worked this session:** independent Claude reviewer + background `codex exec`
 reviewer per pass, manager reconciles by pessimistic union (divergence preserved). When launching the
 background Codex run, validate the `-o` output file, not the exit code
-(`mistakes/codex/codex-background-exec-exit-code-unreliable.md`).
+(`mistakes/codex/peer-cli-completion-requires-validated-structured-output.md`).
 
 ## Related
 

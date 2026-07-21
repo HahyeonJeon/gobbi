@@ -12,7 +12,7 @@ keywords: [adversarial-review, d7, d1, dual-system, background-codex, review-onl
 author: claude
 features_touched: []
 steps_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [2026-06-29-gobbi-adversarial-review, fix-d7-d1-review-findings, codex-background-exec-exit-code-unreliable, gh-2-45-graphql-projects-classic-and-closingissues, coding-as-value-feature-taxonomy-question, 2026-06-29-review-handoff-next-session]
+shipped: [2026-06-29-gobbi-adversarial-review, fix-d7-d1-review-findings, peer-cli-completion-requires-validated-structured-output, gh-2-45-graphql-projects-classic-and-closingissues, coding-as-value-feature-taxonomy-question, 2026-06-29-review-handoff-next-session]
 ---
 
 # D7 + D1 adversarial review executed
@@ -36,7 +36,7 @@ routed to a fix-backlog, not fixed.
 
 - `reviews/adversarial-review/2026-06-29-gobbi-adversarial-review.md` — the consolidated 40-finding source of record.
 - `backlogs/evaluation/fix-d7-d1-review-findings.md` — the deferred fix queue.
-- `mistakes/codex/codex-background-exec-exit-code-unreliable.md` — background-codex exit-code discipline.
+- `mistakes/codex/peer-cli-completion-requires-validated-structured-output.md` — background-codex exit-code discipline.
 - `mistakes/tooling/gh-2-45-graphql-projects-classic-and-closingissues.md` — gh 2.45.0 REST-vs-porcelain workaround (merges the prior session's uncaptured tooling note).
 - `backlogs/process/coding-as-value-feature-taxonomy-question.md` — D2 review item (prior session's uncaptured note).
 - `notes/process/2026-06-29-review-handoff-next-session.md` — the next-session handoff.

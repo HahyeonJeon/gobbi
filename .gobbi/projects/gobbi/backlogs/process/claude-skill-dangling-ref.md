@@ -48,4 +48,4 @@ Option B: Remove the navigation row from `.claude/CLAUDE.md:61` if the standard 
 
 ## Related
 
-- [[manager-skipped-user-driven-preparation-discussion]] — the same session's process mistake
+- [[manager-dispositioned-material-readiness-gap-without-user]] — the same session's process mistake

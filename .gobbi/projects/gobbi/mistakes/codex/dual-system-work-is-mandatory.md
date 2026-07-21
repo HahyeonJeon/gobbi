@@ -1,5 +1,5 @@
 ---
-name: dual-system-production-is-not-optional
+name: dual-system-work-is-mandatory
 description: A manager reduced creation rigor for efficiency; every WORK stage requires independent Claude and Codex contributions.
 type: mistakes
 scope: project

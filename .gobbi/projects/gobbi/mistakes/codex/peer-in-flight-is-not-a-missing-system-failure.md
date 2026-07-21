@@ -1,5 +1,5 @@
 ---
-name: dual-production-race-false-degraded-mode
+name: peer-in-flight-is-not-a-missing-system-failure
 description: A fast contributor treated a still-running peer as absent; peer failure must be established before any waiver decision.
 type: mistakes
 scope: project
@@ -28,7 +28,7 @@ The workflow conflated “not finished yet” with “finished unsuccessfully.�
 
 The manager dispatches the two independent draft operations, waits for both explicit results, validates each structured response, and freezes both rendered drafts. Cross-review cannot begin before that barrier.
 
-Only a completed timeout, availability failure, empty result, malformed response, or schema failure establishes a missing-system failure. Then pause, show the exact error, and ask whether to retry or grant an explicit waiver for the named system, step, and iteration. There is no automatic degraded fallback.
+Only a completed timeout, availability failure, nonzero process failure, empty result, malformed response, schema failure, identity mismatch, digest mismatch, renderer failure, or validator failure establishes a missing-system failure. Then pause, show the exact error, and ask whether to retry or grant an explicit waiver for the named system, step, and iteration. There is no automatic degraded fallback.
 
 ## How to detect
 

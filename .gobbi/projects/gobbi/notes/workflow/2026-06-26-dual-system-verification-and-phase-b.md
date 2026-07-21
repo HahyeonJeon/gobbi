@@ -12,7 +12,7 @@ keywords: [dual-system, verification-frame, phase-b, C1-C6, F1, dogfood]
 author: claude
 features_touched: [workflow]
 steps_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [dual-system-verification-frame, verification-frame-phase-b-shipped, manager-locked-decision-without-audit-trail-sync, iter-artifact-edited-in-place-destroys-snapshot, literal-grep-gate-false-fails-legitimate-usage, executor-edited-main-tree-not-worktree-copy, git-stash-in-worktree-recurred-despite-loaded, recorded-mistakes-recurred-recording-is-not-enforcement]
+shipped: [dual-system-verification-frame, verification-frame-phase-b-shipped, manager-locked-decision-without-audit-trail-sync, iteration-artifact-edited-in-place-destroys-snapshot, literal-grep-gate-false-fails-legitimate-usage, executor-edited-main-tree-not-worktree-copy, git-stash-in-worktree-recurred-despite-loaded, recorded-mistakes-recurred-recording-is-not-enforcement]
 ---
 
 # Dual-system verification frame + Phase B shipped

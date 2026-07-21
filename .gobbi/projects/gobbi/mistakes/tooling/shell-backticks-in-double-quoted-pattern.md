@@ -14,7 +14,7 @@ priority: medium
 domain: tooling
 supersedes: null
 superseded_by: null
-related: [codex-background-exec-exit-code-unreliable]
+related: [peer-cli-completion-requires-validated-structured-output]
 ---
 
 # Quote shell patterns that contain backticks literally
@@ -37,4 +37,4 @@ A shell command searches for text like `` `codex exec` `` or another Markdown co
 
 ## Related
 
-- [[codex-background-exec-exit-code-unreliable]] — Codex command status can be misleading when invoked unintentionally.
+- [[peer-cli-completion-requires-validated-structured-output]] — Codex command status can be misleading when invoked unintentionally.

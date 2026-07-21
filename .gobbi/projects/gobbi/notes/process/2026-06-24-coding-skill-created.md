@@ -12,7 +12,7 @@ keywords: [coding-skill, skill-authoring, language-agnostic, coding-principles, 
 author: claude
 features_touched: []
 steps_completed: [ideation, planning, execution, wrap-up]
-shipped: [freeze-producer-artifact-before-evaluating, scrub-stack-idioms-when-adapting-to-general-doc, coding-skill-created]
+shipped: [freeze-canonical-candidate-before-evaluating, scrub-stack-idioms-when-adapting-to-general-doc, coding-skill-created]
 ---
 
 # coding skill created
@@ -38,7 +38,7 @@ Two skill files landed on the session branch:
 
 Two mistakes promoted to project memory:
 
-- `mistakes/verification/freeze-producer-artifact-before-evaluating.md` — manager dispatched evaluators while the producer was still writing the artifact.
+- `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` — manager dispatched evaluators while the producer was still writing the artifact.
 - `mistakes/docs-sync/scrub-stack-idioms-when-adapting-to-general-doc.md` — shape-reference overreach dragged stack idioms and wiring claims into a general doc.
 
 ## What got stuck
@@ -73,5 +73,5 @@ Wire the `coding` skill into the workflow:
 
 ## Related
 
-- [[freeze-producer-artifact-before-evaluating]] — mistake promoted this session
+- `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` — mistake promoted this session
 - [[scrub-stack-idioms-when-adapting-to-general-doc]] — mistake promoted this session

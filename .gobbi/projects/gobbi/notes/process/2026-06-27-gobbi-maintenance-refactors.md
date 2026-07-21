@@ -12,7 +12,7 @@ keywords: [gobbi-hook-authoring, memory-vocabulary, coding-skill, dual-system, r
 author: claude
 features_touched: []
 steps_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [gitignore-aware-residual-gate, frozen-history-by-doc-type-not-dir, codex-proposer-must-be-source-read-only, claude-skills-mirror-policy, validate-integration-log-spec-drift, skill-writing-dead-mistake-links]
+shipped: [gitignore-aware-residual-gate, frozen-history-by-doc-type-not-dir, opposite-system-peer-must-be-read-only, claude-skills-mirror-policy, validate-integration-log-spec-drift, skill-writing-dead-mistake-links]
 ---
 
 # Gobbi maintenance refactors — 2026-06-27
@@ -39,13 +39,13 @@ Dual-system production (`propose.mode: dual`) ran across Ideation and Preparatio
 Memory promotions this wrap-up:
 - `mistakes/verification/gitignore-aware-residual-gate.md` — residual gates in worktree sessions must use `git grep`, not plain grep
 - `mistakes/assumption/frozen-history-by-doc-type-not-dir.md` — classify references by doc-type and claim-tense, not directory
-- `mistakes/codex/codex-proposer-must-be-source-read-only.md` — Execution-loop Codex proposers must not modify source files
+- `mistakes/codex/opposite-system-peer-must-be-read-only.md` — Execution-loop Codex proposers must not modify source files
 - `backlogs/tooling/claude-skills-mirror-policy.md` — open: decide `.claude/skills/` mirror mechanism
 - `backlogs/tooling/validate-integration-log-spec-drift.md` — open: reconcile Integration Log validator vs production.md spec + pipe-escape rule
 - `backlogs/docs/skill-writing-dead-mistake-links.md` — open: repoint 3 dead links in skill-writing/SKILL.md
 
 Not promoted (duplicate-covered by existing mistakes):
-- `per-iter-draft-must-be-immutable` (staged) → covered by `mistakes/verification/iter-artifact-edited-in-place-destroys-snapshot.md`
+- `per-iter-draft-must-be-immutable` (staged) → covered by `mistakes/verification/iteration-artifact-edited-in-place-destroys-snapshot.md`
 - Execution mistake 2 (Codex wrapper 0 files) → covered by `mistakes/codex/codex-wrapper-file-persistence-failure.md`
 
 Folded into this journal (minor session records):
@@ -82,7 +82,7 @@ Nothing is in-flight stuck. All three refactors completed. The `.claude/skills/c
 
 - [[gitignore-aware-residual-gate]] — mistake promoted this session
 - [[frozen-history-by-doc-type-not-dir]] — mistake promoted this session
-- [[codex-proposer-must-be-source-read-only]] — mistake promoted this session
+- [[opposite-system-peer-must-be-read-only]] — mistake promoted this session
 - [[claude-skills-mirror-policy]] — backlog added this session
 - [[validate-integration-log-spec-drift]] — backlog added this session
 - [[skill-writing-dead-mistake-links]] — backlog added this session

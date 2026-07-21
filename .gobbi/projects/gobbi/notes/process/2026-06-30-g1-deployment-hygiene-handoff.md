@@ -12,7 +12,7 @@ keywords: [handoff, deployment, fix-campaign, dual-system]
 author: claude
 features_touched: [deployment-hygiene]
 steps_completed: [ideation, planning, execution, wrap-up]
-shipped: [deployment-hygiene, dual-system-production-is-not-optional]
+shipped: [deployment-hygiene, dual-system-work-is-mandatory]
 ---
 
 # Handoff — G1 deployment hygiene shipped
@@ -31,8 +31,8 @@ First fix session of the adversarial-review FIX campaign. User restructured the 
 - **Execution eval: Codex caught 2 High deployment bugs the Claude evaluator rated PASS** — validator not fail-closed on a broken install; gate accepting leading-zero semver. Both fixed (commit 23d669cd). This is the anti-groupthink signal earning its cost on the exact bug-class G1 fixes.
 
 ## Lessons promoted to memory
-- `mistakes/codex/dual-system-production-is-not-optional.md` — never downgrade dual PRODUCTION to single for efficiency (user correction).
-- `mistakes/codex/concurrent-proposer-checkout-wipes-unstaged-edits.md` — the Execution dual-proposer must NOT share the executor's worktree with workspace-write; a stray `git checkout` wipes unstaged edits. **System fix needed:** run the Execution Codex proposer read-only (`-o`) or in an isolated worktree; never let it run tree-level git checkout/restore/stash. (production.md / codex skill should encode this.)
+- `mistakes/codex/dual-system-work-is-mandatory.md` — never downgrade dual PRODUCTION to single for efficiency (user correction).
+- `mistakes/codex/peer-operation-must-not-mutate-shared-worktree.md` — the Execution dual-proposer must NOT share the executor's worktree with workspace-write; a stray `git checkout` wipes unstaged edits. **System fix needed:** run the Execution Codex proposer read-only (`-o`) or in an isolated worktree; never let it run tree-level git checkout/restore/stash. (production.md / codex skill should encode this.)
 
 ## Open / next
 - **G2** and **G3** clusters (separate sessions, per the fix-phase handoff plan on the 5ac6cf6e `-fixplan` branch — note that plan is NOT yet merged to develop).

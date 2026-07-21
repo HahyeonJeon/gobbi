@@ -72,5 +72,5 @@ A future dual-system session's `proposer-prompt.md` / `codex-eval-prompt.md` ope
 canonical finding metadata + shows a mistakes cross-check.
 
 ## Related
-- [[dual-system-production-is-not-optional]] — same theme: don't shortcut the Codex co-work.
+- [[dual-system-work-is-mandatory]] — same theme: don't shortcut the Codex co-work.
 - Evidence file: `sessions/2026-06-29-0dc5cf75-.../{1-ideation,3-planning,4-execution}/**/{proposer-prompt,codex-eval-prompt}.md` (the 5 as-shipped Codex prompts — none carry a skill-load preamble).

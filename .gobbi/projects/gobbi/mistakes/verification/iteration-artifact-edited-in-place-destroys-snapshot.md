@@ -1,5 +1,5 @@
 ---
-name: iter-artifact-edited-in-place-destroys-snapshot
+name: iteration-artifact-edited-in-place-destroys-snapshot
 description: Editing a prior iteration package destroys frozen evidence; every material revision requires a new full iteration directory.
 type: mistakes
 scope: project
@@ -36,5 +36,5 @@ The proposed revision edits any file below a prior `working/iteration-*` or `eva
 
 ## Related
 
-- [[freeze-producer-artifact-before-evaluating]] — the WORK-time origin of this freeze discipline
-- [[iter-artifact-snapshot-frozen-not-mutated]] — the scenario that covers this trap
+- `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` — the WORK-time origin of this freeze discipline
+- [[iteration-artifact-snapshot-frozen-not-mutated]] — the scenario that covers this trap

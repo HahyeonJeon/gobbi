@@ -1,5 +1,5 @@
 ---
-name: evaluator-spawn-without-producer-done-handshake
+name: evaluator-dispatch-before-work-handoff-complete
 description: The manager dispatched evaluators before the WORK package and writer handoff were complete, creating a moving target.
 type: mistakes
 scope: project
@@ -14,7 +14,7 @@ priority: high
 domain: process
 ---
 
-# Do not dispatch evaluators before WORK completion is proven
+# Do not dispatch evaluators before WORK handoff is complete
 
 ## What happened
 
@@ -26,7 +26,7 @@ An availability signal was mistaken for a structured status report, and artifact
 
 ## Correct approach
 
-Wait for the assigned specialist's explicit structured report for the stable assignment. Confirm the dispatch is idle and addressable, then reread the promised synthesis and the complete dual-WORK package. Require the dual-WORK validator to pass and every material item in `open-decisions.md` to be resolved. Only then transition `state.json` to EVALUATION and dispatch two fresh evaluators.
+Wait for the assigned specialist's explicit structured report for the stable assignment. Confirm the dispatch is idle and addressable, then reread the promised synthesis and complete dual-WORK package. Require the package validator to pass, resolve every material item in `open-decisions.md`, and freeze the subject digest. Only then transition `state.json` to EVALUATION and dispatch two fresh evaluators.
 
 Keep one writer for the synthesis. If a user decision changes it, route the edit through that writer and repeat the completion handshake. An idle notification or lagging task-list status is only scheduling information; it never proves completion or failure.
 
@@ -36,4 +36,4 @@ The only completion evidence is an idle notice, task-list state, or the manager'
 
 ## Related
 
-Sibling trap (skill-surface, not a memory-tier `[[slug]]` link): `skills/evaluation/mistakes.md#freeze-producer-artifact-before-evaluating` covers the same immutable-subject boundary from the evaluator side.
+Sibling trap (skill-surface, not a memory-tier `[[slug]]` link): `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` covers the same immutable-subject boundary from the evaluator side.

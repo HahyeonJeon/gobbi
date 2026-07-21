@@ -12,7 +12,7 @@ keywords: [scenario, checklist, sop-skills, dual-system, cold-load-proof]
 author: claude
 features_touched: [scenario-checklist]
 steps_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [mechanical-single-primary-from-overlapping-set-impossible, step-back-after-repeated-fixes-on-one-axis, no-touch-git-gate-has-many-fail-open-modes, single-evaluator-pass-is-provisional, dual-production-race-false-degraded-mode, design-should-symmetrically-floor-sibling-resolution-enums, production-mode-not-skill-frontmatter, four-ideation-forks, author-declared-primary-category, ideation-finalization-then-lock, wire-scenario-checklist-into-workflow, p10-cold-load-proof-catches-what-dual-eval-misses, eval-childdocs-selftest-fixture-drift]
+shipped: [mechanical-single-primary-from-overlapping-set-impossible, step-back-after-repeated-fixes-on-one-axis, no-touch-git-gate-has-many-fail-open-modes, single-evaluator-pass-is-provisional, peer-in-flight-is-not-a-missing-system-failure, design-should-symmetrically-floor-sibling-resolution-enums, production-mode-not-skill-frontmatter, four-ideation-forks, author-declared-primary-category, ideation-finalization-then-lock, wire-scenario-checklist-into-workflow, p10-cold-load-proof-catches-what-dual-eval-misses, eval-childdocs-selftest-fixture-drift]
 ---
 
 # Built the scenario + checklist SOP skills, end to end

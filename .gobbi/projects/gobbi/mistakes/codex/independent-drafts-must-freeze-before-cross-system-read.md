@@ -1,5 +1,5 @@
 ---
-name: producer-must-write-blind-draft-before-reading-codex-proposal
+name: independent-drafts-must-freeze-before-cross-system-read
 description: One contributor saw the peer draft before freezing its own, destroying the independence required by dual-system WORK.
 type: mistakes
 scope: project
@@ -14,7 +14,7 @@ priority: high
 domain: process
 supersedes: null
 superseded_by: null
-related: [codex-proposer-must-be-source-read-only, dual-system-production-is-not-optional]
+related: [opposite-system-peer-must-be-read-only, dual-system-work-is-mandatory]
 ---
 
 # Freeze each independent draft before any cross-system read
@@ -35,9 +35,9 @@ Only after that barrier may Claude review the frozen Codex draft and Codex revie
 
 ## How to detect
 
-The package cannot prove both drafts froze before either cross-review, or one independent draft imports peer-specific structure, wording, or conclusions that were absent from the neutral contract. Treat an unverifiable freeze order as a blocked WORK package; do not rely on a captured transcript to repair provenance later.
+The package cannot prove both drafts froze before either cross-review, or one independent draft imports peer-specific structure, wording, or conclusions that were absent from the neutral contract. Treat an unverifiable freeze order as a blocked WORK package; do not reconstruct provenance from an unvalidated process stream.
 
 ## Related
 
-- [[codex-proposer-must-be-source-read-only]] — the peer process must also be read-only and unable to alter the shared inputs.
-- [[dual-system-production-is-not-optional]] — the mandatory dual-system WORK contract this independence protects.
+- [[opposite-system-peer-must-be-read-only]] — the peer process must also be read-only and unable to alter the shared inputs.
+- [[dual-system-work-is-mandatory]] — the mandatory dual-system WORK contract this independence protects.
