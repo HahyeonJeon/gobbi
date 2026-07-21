@@ -169,7 +169,7 @@ structure, 10 Evidence / traceability / clarity.
 - **Then:** completion blocks and returns to a user design decision; the implementer does not silently move the
   field, suppress the failure, or declare single-runtime success.
 - **Failure oracle:** structural success is treated as runtime compatibility.
-- **Evidence:** fresh cold-load transcript from each target runtime.
+- **Evidence:** one P7 `cold-load-result` per target runtime, with successful runtime loading in `checks`.
 - **Obligation:** the extension must be proven in every target runtime and fail closed on incompatibility.
 - **Exercises:** P7; final Must-Follow rule.
 - **Checklist IDs:** `SW-CHECK-17`, `SW-CHECK-18`.
@@ -253,7 +253,8 @@ or consumers disagree. **Secondary:** 4 Interfaces / dependencies / structure, 7
 - **Then:** it must classify and author the intended capability without hidden session context; otherwise P7
   fails and returns to the owning authoring step.
 - **Failure oracle:** mechanical green is accepted as proof of usable behavior.
-- **Evidence:** per-runtime cold-load and fresh-agent transcripts.
+- **Evidence:** each runtime's P7 `cold-load-result`, including its bounded `fixture`, produced `output`, and
+  completed `checks`.
 - **Obligation:** structural checks and behavioral proof must both pass.
 - **Exercises:** P6–P7.
 - **Checklist IDs:** `SW-CHECK-16`, `SW-CHECK-17`, `SW-CHECK-18`.
@@ -275,8 +276,8 @@ recovery / operations, 10 Evidence / traceability / clarity.
   clean agent context with only the recorded child.
 - **Failure oracle:** final headings or prose quality are accepted without inspecting the type-child load
   record, or a multiple-child synthesis reaches P6.
-- **Evidence:** P2 classification record, type-child read/load transcript, and the restarted P5 context's load
-  record.
+- **Evidence:** P2 classification record plus the P7 `cold-load-result` fields `selected_type_child`,
+  `loaded_type_children`, and `no_extra_type_child_proof` from the original and restarted runs.
 - **Obligation:** progressive disclosure and the anti-synthesis boundary require exactly one selected type
   child per P5 run.
 - **Exercises:** Rules one-child Must-Follow item; P5 selected-child record and invalid-run recovery.

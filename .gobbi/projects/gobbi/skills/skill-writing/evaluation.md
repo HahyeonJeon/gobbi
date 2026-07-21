@@ -1,8 +1,8 @@
 # Skill Writing — Evaluation Entry
 
-Evaluator entrypoint for grading a skill-writing result. It extends the active phase evaluation with the
-skill-writing scenario and checklist sources; it does not replace the phase's singular bundle, finding schema,
-seven-perspective order, verdict thresholds, or nine-output contract.
+Evaluator entrypoint for grading a skill-writing result. It extends a productive step's EVALUATION with the
+skill-writing scenario and checklist sources. One fresh independent system report still contains the seven
+perspectives, Overall, the finding ledger, the completed checklist, and its evidence-derived verdict.
 
 Load [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and the target skill's complete canonical
 directory. For an operation target, include all direct children and its plural verification bundle.
@@ -23,6 +23,7 @@ changes, update this crosswalk and every affected trace in the same edit.
 | `CANONICAL` | “MUST edit the canonical project skill directory only.” |
 | `VERIFY-OWNER` | “MUST verify mechanism claims from their owner and verify taught examples against the live surface.” |
 | `COLD-PROOF` | “MUST finish with structural guards, runtime cold loads, and a fresh-agent proof.” |
+| `COLD-LOAD-RESULT` | `SKILL.md` P7 `cold-load-result` field contract and rejection rules |
 | `PREF-SHAPE` | `preference-skill.md` § Required shape and § Completion checks |
 | `TOOL-SHAPE` | `tool-skill.md` § Required shape and § Completion checks |
 | `OP-SHAPE` | `operation-skill.md` § Required artifact set and § Completion checks |
@@ -30,7 +31,7 @@ changes, update this crosswalk and every affected trace in the same edit.
 
 ## Selecting scenarios and checks
 
-Run after the active phase evaluator understands the artifact and before its Stage 1 frame is frozen.
+Run after the productive-step evaluator understands the artifact and before its evaluation frame is frozen.
 
 1. **Identify the change mode.** Record new, substantive revision, migration, split, or narrow compatibility
    correction. Activate `SW-CHECK-19` whenever untyped legacy skills remain in the repository.
@@ -42,8 +43,8 @@ Run after the active phase evaluator understands the artifact and before its Sta
    untouched; activate `09` for every target-runtime cold load.
 5. **Select ownership and wiring cases.** Always activate `SW-CHECK-03`, `04`, and `16`–`18`. Activate
    `SW-SCENARIO-13` when another change moves, removes, or changes an owner or consumer.
-6. **Copy, do not rewrite.** Add activated `SW-CHECK-*` items verbatim to the active phase's filled checklist
-   under `## Stage 1 Additions`. Keep IDs stable and leave this source unchecked.
+6. **Select, do not rewrite.** Carry activated `SW-CHECK-*` IDs and their resolutions into the report's
+   completed checklist. Keep IDs stable and leave this source unchecked.
 7. **Extend on discovery.** Put new scenarios or checks only in the filled evaluation copy for the current run;
    report a `scenario_gap` or `checklist_gap` finding rather than editing these sources during evaluation.
 
@@ -127,8 +128,9 @@ Run from the repository root with side-effect preflight:
 1. Parse the target frontmatter and confirm required key order, the three-value enum, optional-key membership,
    non-default invocation values, and a stated reason for each rare optional key.
 2. Extract the heading tree and compare it with the selected type child.
-3. Inspect the P2 record and type-child read/load transcript; fail if the P5 run consumed more than the one
-   selected child, even when the final headings conform.
+3. Validate every target runtime's `cold-load-result` against the P7 owner contract. Fail if its selected child,
+   loaded-child set, exact-one-child proof, fixture, output, or checks are missing or inconsistent, even when
+   the final headings conform.
 4. For an operation, verify all three direct sibling files exist and close both trace directions.
 5. Search all live consumers for retired universal-form, fourth-type, and deleted-path claims; classify historical
    carriers separately from live contracts.
@@ -147,8 +149,8 @@ or confirming artifact passage.
 The Overall pass must answer:
 
 - Does the selected type reflect the actual capability, including mixed-content precedence?
-- Did the P5 run load exactly one selected type child, with no multiple-child synthesis hidden by compliant
-  headings?
+- Does every P7 `cold-load-result` prove exactly one selected type child, with no multiple-child synthesis
+  hidden by compliant headings?
 - Does frontmatter preserve the four-key prefix while using only evidenced non-default optional keys?
 - Does the document have the exact type shape in substance, not only headings?
 - For an operation, can the SOP succeed and recover, and does the complete plural bundle prove it?

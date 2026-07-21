@@ -92,9 +92,10 @@ gate and required item to be `PASS`; a recorded owner, deferral, or failed item 
   - Source: `operation-skill.md`; `SW-SCENARIO-03`, `05`.
 - [ ] **SW-CHECK-20 [GATE, do-confirm] — Exactly one selected type child was loaded.**
   - Applicability: every P5 run.
-  - Pass: the P2 record names one direct type child, the read/load transcript contains that child and no other
-    type child, and the child matches the stamped `skill-type`.
-  - Evidence: P2 classification record and type-child read/load transcript.
+  - Pass: the P2 record names one direct type child; the P7 `cold-load-result` names the same
+    `selected_type_child`; `loaded_type_children` contains only that child; and
+    `no_extra_type_child_proof` proves one loaded child with no unexpected child.
+  - Evidence: P2 classification record and the P7 `cold-load-result`.
   - On fail: stop acceptance, discard the P5 draft, and restart P5 in a clean agent context with only the
     selected child.
   - Source: `SKILL.md` P5; `SW-SCENARIO-15`.
@@ -129,11 +130,12 @@ gate and required item to be `PASS`; a recorded owner, deferral, or failed item 
   - Evidence: checklist source, pilot filled copies, and two-way ID map.
   - On fail: return to operation child S9.
   - Source: `operation-skill.md` S9, S11; `SW-SCENARIO-10`, `11`.
-- [ ] **SW-CHECK-15 [REQUIRED, do-confirm] — Evaluation selects the bundle without redefining phase outputs.**
+- [ ] **SW-CHECK-15 [REQUIRED, do-confirm] — Evaluation selects the bundle without redefining the report.**
   - Applicability: `skill-type: operation`.
   - Pass: evaluator entrypoint loads both siblings, selects applicable cases/checks, supplies lenses and tool
-    verification, and contributes to the active phase's existing verdict and nine-output contract.
-  - Evidence: evaluation route trace and a trial selection.
+    verification, and contributes them to one fresh independent system report with seven perspectives,
+    Overall, a finding ledger, and a completed checklist.
+  - Evidence: evaluation route trace, a trial selection, and the validated system report.
   - On fail: return to operation child S10.
   - Source: `operation-skill.md` S10–S11; `SW-SCENARIO-10`, `11`.
 
@@ -149,14 +151,14 @@ gate and required item to be `PASS`; a recorded owner, deferral, or failed item 
 - [ ] **SW-CHECK-17 [GATE, do-confirm] — Every target runtime cold-loads the typed skill.**
   - Applicability: unconditional for each declared target runtime.
   - Pass: a clean runtime finds and loads the skill, including top-level `skill-type`, through its normal entry.
-  - Evidence: one fresh cold-load transcript per runtime.
+  - Evidence: each runtime's P7 `cold-load-result`, including the runtime-loading check and its evidence.
   - On fail: block completion and return the compatibility decision to the user.
   - Source: `SKILL.md` P7; `SW-SCENARIO-09`, `14`.
 - [ ] **SW-CHECK-18 [GATE, do-confirm] — A fresh agent performs the capability from normal load context.**
   - Applicability: unconditional for each declared target runtime.
   - Pass: the agent selects the correct type, follows the selected child, and produces or evaluates the expected
     artifact without author-session context.
-  - Evidence: fresh-agent task transcript and completed applicable checklist items.
+  - Evidence: each runtime's P7 `cold-load-result`, including its `fixture`, `output`, and completed `checks`.
   - On fail: return to the authoring step that withheld required context.
   - Source: `SKILL.md` P6–P7; `SW-SCENARIO-09`, `14`.
 - [ ] **SW-CHECK-19 [REQUIRED, do-confirm] — Staged migration stays within scope.**
