@@ -1325,6 +1325,79 @@ make_pass_evaluation_fixture() {
     ' > "$target"
 }
 
+exercise_runtime_workflow_fixture() {
+    local temporary="$1" runtime_system="$2" session_id="$3" runtime_id="$4"
+    local worktree root patch tasks stage
+    worktree="$temporary/full-$runtime_system-worktree"
+    root="$worktree/.gobbi/projects/project/sessions/2026-07-20-$session_id"
+    patch="$temporary/full-$runtime_system-patch.json"
+    tasks="$temporary/full-$runtime_system-tasks.json"
+    mkdir -p -- "$worktree"
+
+    "$0" init \
+        --root "$root" \
+        --session-id "$session_id" \
+        --project project \
+        --runtime-system "$runtime_system" \
+        --runtime-id "$runtime_id" \
+        --started-at 2026-07-20T00:00:00Z \
+        --branch "full-$runtime_system-fixture" \
+        --worktree "$worktree" >/dev/null
+    printf '%s\n' '{"tasks":[{"number":1,"slug":"runtime-fixture"}]}' > "$tasks"
+    "$0" scaffold-tasks --root "$root" --tasks "$tasks" >/dev/null
+
+    printf '%s\n' '{"current":{"step":"ideation","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration"],"lastVerdict":null}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    for stage in WORK EVALUATION RECORD; do
+        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
+        "$0" transition --root "$root" --patch "$patch" >/dev/null
+        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    done
+    printf '%s\n' '# Ideation fixture output' > "$root/1-ideation/outputs/ideation.md"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+
+    printf '%s\n' '{"current":{"step":"planning","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation"],"lastVerdict":null}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    for stage in WORK EVALUATION RECORD; do
+        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
+        "$0" transition --root "$root" --patch "$patch" >/dev/null
+        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    done
+    printf '%s\n' '# Planning fixture output' > "$root/2-planning/outputs/plan.md"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+
+    printf '%s\n' '{"current":{"step":"execution","stage":"DISCUSSION","iteration":1,"task":"01-runtime-fixture"},"completedSteps":["configuration","ideation","planning"],"completedTasks":[],"lastVerdict":null}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    for stage in WORK EVALUATION RECORD; do
+        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
+        "$0" transition --root "$root" --patch "$patch" >/dev/null
+        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    done
+    printf '%s\n' '# Execution task fixture output' > "$root/3-execution/task-01-runtime-fixture/outputs/result.md"
+    printf '%s\n' '# Execution fixture output' > "$root/3-execution/outputs/execution.md"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+
+    printf '%s\n' '{"current":{"step":"wrap-up","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution"],"completedTasks":["01-runtime-fixture"],"lastVerdict":null}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    for stage in WORK EVALUATION RECORD; do
+        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
+        "$0" transition --root "$root" --patch "$patch" >/dev/null
+        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    done
+    printf '%s\n' '# Wrap-up fixture handoff' > "$root/4-wrap-up/outputs/handoff.md"
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+
+    printf '%s\n' '{"status":"complete","current":{"step":"wrap-up","stage":null,"iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution","wrap-up"],"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    [ "$(jq -r '.runtime.system' "$root/session.json")" = "$runtime_system" ] || self_test_fail "$runtime_system fixture changed runtime system"
+    [ "$(jq -r '.status' "$root/state.json")" = "complete" ] || self_test_fail "$runtime_system fixture did not complete"
+}
+
 command_self_test() {
     local temporary worktree session_id root tasks patch target_count before_tree after_tree
     local artifact_contract claude_draft_json codex_draft_json claude_draft_target codex_draft_target
@@ -1585,6 +1658,9 @@ command_self_test() {
     linked_root="$linked_worktree/.gobbi/projects/project/sessions/2026-07-20-44444444-4444-4444-8444-444444444444"
     if "$0" init --root "$linked_root" --session-id 44444444-4444-4444-8444-444444444444 --project project --runtime-system codex --runtime-id linked --started-at 2026-07-20T00:00:00Z --branch linked --worktree "$linked_worktree" >/dev/null 2>&1; then self_test_fail "symlinked session parent succeeded"; fi
     [ ! -e "$linked_target/2026-07-20-44444444-4444-4444-8444-444444444444" ] || self_test_fail "symlinked parent escaped the worktree"
+
+    exercise_runtime_workflow_fixture "$temporary" codex 55555555-5555-4555-8555-555555555555 codex-native-runtime
+    exercise_runtime_workflow_fixture "$temporary" claude-code 66666666-6666-4666-8666-666666666666 claude-code-runtime
 
     printf 'session-record self-test: PASS\n'
 }
