@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added independent, cross-surface `ui` and `ux` parent operation skills with staged specification workflows, adaptive decision trees, scenario/checklist/evaluation companions, and required representative-user prototype testing.
 - PR-FIN-1a — `gobbi config init [--level workspace|project|session] [--session-id <id>] [--project <name>] [--force]` verb: scaffolds the minimum-valid `{schemaVersion: 1}` seed at the target level; refuses without `--force` if file exists; `--force` overwrites with a stderr WARN line. (#214)
 - PR-FIN-1a — CFG-19..CFG-23 integration tests: workspace init, project init, session init, `--force` WARN assertion, and fresh-setup ordering invariant (#185 lock). (#214)
 
