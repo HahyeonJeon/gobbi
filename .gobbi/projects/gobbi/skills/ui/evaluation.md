@@ -49,21 +49,41 @@ Run this selection after Stage 0 target understanding and before each Stage 1 pe
    every `UI-CHECK-*` item except conditional `UI-CHECK-16`. These cases distinguish a substantive run from
    big-bang polish, missing evidence, premature prototyping, local-unit breakage, aesthetics-first work,
    cosmetic concepts/access, mockup-only fixes, and hidden trace gaps.
-3. **Activate surface cases.** Select `UI-SCENARIO-02`, `14`, and `15` when multiple surfaces are included, an
+3. **Activate protected-waiver probes.** Copy the protected-waiver truth table below into the filled evaluation
+   checklist. Attempt an authorized waiver separately on accessibility, safety, current direct
+   representative-user prototype testing, and whole-specification-before-prototype document closure/chronology
+   while every other applicable item is `PASS`. Each protected waiver must remain invalid and leave coverage
+   open and the run not accepted. Also replay the coverage-without-acceptance control and the valid bounded
+   non-protected `UI-CHECK-05` waiver control.
+4. **Activate surface cases.** Select `UI-SCENARIO-02`, `14`, and `15` when multiple surfaces are included, an
    alternative surface is proposed, or a surface boundary is disputed. Keep `UI-CHECK-02` active even for a
    single-surface run so inspected scope proves other surfaces are out. Apply `UI-CHECK-12` to each included
    surface.
-4. **Activate child and co-load cases.** Select `UI-SCENARIO-25`, `26`, and `UI-CHECK-15` when an existing or
+5. **Activate child and co-load cases.** Select `UI-SCENARIO-25`, `26`, and `UI-CHECK-15` when an existing or
    future child/surface handoff is in the target; otherwise inspect the parent-preserving generic handoff. Select
    `UI-SCENARIO-27` and `UI-CHECK-16` when UI and UX or another parent materially conflict.
-5. **Disposition non-selected cases with evidence.** Use `n/a:<property>` only when inspected target evidence
+6. **Disposition non-selected cases with evidence.** Use `n/a:<property>` only when inspected target evidence
    proves the trigger false. Never omit an inconvenient surface, child, actor, failure, access mode, or conflict.
-6. **Copy exact checks.** Copy activated `UI-CHECK-*` records into the active filled checklist without changing
+7. **Copy exact checks.** Copy activated `UI-CHECK-*` records into the active filled checklist without changing
    ID, claim, pass condition, evidence, or on-fail route. Resolve them through the active checklist/evaluation
    state machine.
-7. **Extend only the run copy.** A newly discovered UI scenario or check becomes a `scenario_gap` or
+8. **Extend only the run copy.** A newly discovered UI scenario or check becomes a `scenario_gap` or
    `checklist_gap` finding plus a Stage 1 addition in the active run. Evaluators never edit the shipped UI
    bundle. A missing policy obligation is a parent-policy finding; do not repair it in a companion.
+
+## Protected-waiver adversarial truth table
+
+This is an evaluation copy of the acceptance probe owned by [`checklists.md`](checklists.md). Hold every other
+applicable gate and required item at `PASS`; do not infer acceptance from coverage closure.
+
+| Protected class or control | Attempted resolution | Coverage result | Acceptance result | Required scenario/check evidence |
+|---|---|---|---|---|
+| Accessibility in any applicable item | authorized waiver | invalid / not closed | not accepted | `UI-SCENARIO-20`, `24`; `UI-CHECK-10` |
+| Safety in any applicable item | authorized waiver | invalid / not closed | not accepted | `UI-SCENARIO-19`, `20`; `UI-CHECK-10` |
+| Current direct representative-user prototype testing (`UI-CHECK-13`) | authorized waiver | invalid / not closed | not accepted | `UI-SCENARIO-05`, `06`, `29`; `UI-CHECK-13` |
+| Whole-specification-before-prototype document closure or chronology (`UI-CHECK-11`) | authorized waiver | invalid / not closed | not accepted | `UI-SCENARIO-10`, `11`; `UI-CHECK-11` |
+| Coverage/acceptance control | one applicable protected or non-protected item is `FAIL` or `recorded-open` | closed | not accepted | `UI-SCENARIO-06`, `21`; applicable check |
+| Bounded-waiver control | protected items `PASS`; one valid waiver on non-protected `UI-CHECK-05`, with authority covering its halt-and-return-to-P3 consequence and stop action | closed | accepted only under the bounded exception | `UI-SCENARIO-07`, `09`; `UI-CHECK-05` |
 
 ## Perspectives
 
@@ -82,7 +102,9 @@ substituting a screen, command, component, prototype, or related product area fo
 **Verify:** compare the user-locked outcome, surface contract, scope, non-goals, evidence conditions, feature
 document, prototype questions, and acceptance claim. Check that login recovery remains in while registration,
 password reset, account administration, and onboarding stay out. Confirm multi-surface scope rests on one
-outcome and skeleton rather than a shared product label.
+outcome and skeleton rather than a shared product label. Replay the four protected-waiver attempts plus both
+controls with every other applicable item at `PASS`; only the one valid non-protected bounded-waiver control may
+accept by exception.
 
 **Anti-patterns:** a page or command called the outcome; breadth called completeness; a project owner called
 representative by title; prior evidence called the current direct test; cosmetic options called concepts.
@@ -178,7 +200,10 @@ acceptance claims?
 **Verify:** run every required adversarial probe. Inject timeout, partial/late result, false completion,
 inaccessible operation, misleading output, identity pressure, child waiver, co-load conflict, prior-evidence
 replacement, premature prototype, cosmetic concept, and mockup-only revision. Inspect final status when any
-direct-evidence condition is missing and confirm safety/accessibility cannot be waived.
+direct-evidence condition is missing. Replay the complete protected-waiver truth table: four protected waiver
+tokens stay invalid and close neither result; protected or non-protected `FAIL`/`recorded-open` closes coverage
+without acceptance; and one valid non-protected `UI-CHECK-05` waiver accepts only under the bounded exception
+with every protected item `PASS`.
 
 **Anti-patterns:** evidence theater; consent assumed; `NEEDS_CONTEXT` relabeled accepted; familiar component or
 standard treated as proof; brand/platform authority waives access; polished big-bang artifact passes.
@@ -200,7 +225,9 @@ claims.
    triggered minima, one adversarial face per family, observable failure oracle, evidence tuple, and cosmetic-
    compliance failure.
 5. Confirm the checklist source has exactly 19 unchecked items and no checked source box. In the active filled
-   copy, require named inspected evidence and record coverage closure separately from acceptance.
+   copy, require named inspected evidence and record coverage closure separately from acceptance. Replay all
+   four protected-waiver attempts, the `FAIL`/`recorded-open` coverage control, and the valid non-protected
+   `UI-CHECK-05` bounded-waiver accepting control with every other applicable item at `PASS`.
 6. Inspect feature-document content against all ten schema sections. Headings, placeholders, a design-system
    component name, or a present prototype do not satisfy missing content.
 7. Reconstruct dated/versioned chronology: foundation/G1 → skeleton/G2 → core/G3 → accumulated complete
@@ -243,6 +270,8 @@ The Overall pass must answer:
 - Did representative users directly use every claimed surface's prototype under valid consent, accommodation,
   and evidence conditions, with claims bounded to the test?
 - Did each supported finding revise the specification first, prototype second, and affected evidence third?
+- Do the four protected classes reject waiver tokens without closing coverage, while exactly one valid
+  non-protected operational-gate waiver can accept only as the recorded bounded exception?
 - Does the handoff preserve parent invariants across UI/UX co-loading and future surface children without
   precedence, load-order override, or platform-convention waiver?
 - Would a polished big-bang design, present-but-empty document, familiar component, or visually compliant but

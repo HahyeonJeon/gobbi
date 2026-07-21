@@ -35,22 +35,22 @@ category carriers; no concern is delegated through `covered-elsewhere`.
 Each selected category has a positive case and each family has an adversarial face. Other minima appear when
 the family's properties trigger them. An `n/a` cell names the property that makes that minimum inapplicable.
 
-| Family | Good | Alternative-valid | Boundary | Failure/recovery | Adversarial | Change | Counterfactual |
-|---|---|---|---|---|---|---|---|
-| `UI-FAMILY-01` | `01` | `02` | n/a: no numeric or finite limit | n/a: failure owned by family 06 | `03` | n/a: no version event | n/a: outcome premise is directly locked |
-| `UI-FAMILY-02` | `04` | n/a: one actor-evidence class per claim | n/a: sample is risk-based, not a numeric threshold | `06` | `05` | n/a: no version event | n/a: representativeness is inspected, not assumed |
-| `UI-FAMILY-03` | `07` | n/a: alternative surface is exercised in `02` | `08` | n/a: injected failure owned by family 06 | `09` | n/a: no version event | n/a: state inventory is inspected directly |
-| `UI-FAMILY-04` | `10` | n/a: parent order has one valid chronology | n/a: stage transition is audited chronologically | `12` | `11` | n/a: no version event | n/a: chronology is evidenced, not premised |
-| `UI-FAMILY-05` | `13` | `14` | n/a: no universal participant or fidelity threshold | n/a: operational failure owned by family 06 | `15` | n/a: no version event | n/a: proportionality claim has named questions |
-| `UI-FAMILY-06` | `16` | n/a: alternative recovery paths are enumerated in the same contract | `17` | `17` | `18` | n/a: planned reversibility owned by family 09 | n/a: dependency failure is injected directly |
-| `UI-FAMILY-07` | `19` | n/a: one non-waivable safety floor | n/a: no numeric or finite limit | `21` | `20` | n/a: no version event | n/a: conflict evidence is inspected directly |
-| `UI-FAMILY-08` | `22` | `23` | n/a: platform limits are surface-owned inputs | n/a: failed access behavior appears as adversarial exclusion | `24` | n/a: no version event | n/a: modality equivalence is directly inspected |
-| `UI-FAMILY-09` | `25` | n/a: UI/UX conflict and child change are distinct cases | n/a: no finite limit | n/a: runtime recovery owned by family 06 | `26` | `25` | `27` |
-| `UI-FAMILY-10` | `28` | n/a: one bidirectional evidence model | n/a: no numeric or finite limit | n/a: missing evidence closes as `NEEDS_CONTEXT` in family 02 | `29`, `31`, `32` | n/a: artifact revision chronology is family 04 | `30` |
+| Family | Good | Alternative-valid | Negative / Bad | Boundary | Failure/recovery | Adversarial | Change | Counterfactual |
+|---|---|---|---|---|---|---|---|---|
+| `UI-FAMILY-01` | `01` | `02` | n/a: no invalid input, state, authorization, or precondition discrimination; intentional scope expansion is adversarial | n/a: no numeric or finite limit | n/a: failure owned by family 06 | `03` | n/a: no version event | n/a: outcome premise is directly locked |
+| `UI-FAMILY-02` | `04` | n/a: one actor-evidence class per claim | n/a: no supplied invalid input, state, authorization, or precondition; unavailable evidence conditions are a recoverable dependency failure | n/a: sample is risk-based, not a numeric threshold | `06` | `05` | n/a: no version event | n/a: representativeness is inspected, not assumed |
+| `UI-FAMILY-03` | `07` | n/a: alternative surface is exercised in `02` | n/a: no invalid input, state, authorization, or precondition discrimination; the invalid-looking local/whole mismatch is an intentional acceptance-gate attempt | `08` | n/a: injected failure owned by family 06 | `09` | n/a: no version event | n/a: state inventory is inspected directly |
+| `UI-FAMILY-04` | `10` | n/a: parent order has one valid chronology | n/a: no independently discriminating invalid input, state, authorization, or precondition case; premature-prototype pressure is an intentional gate bypass | n/a: stage transition is audited chronologically | `12` | `11` | n/a: no version event | n/a: chronology is evidenced, not premised |
+| `UI-FAMILY-05` | `13` | `14` | n/a: no invalid input, state, authorization, or precondition discrimination; incompatible surface bundling is intentional scope-label gaming | n/a: no universal participant or fidelity threshold | n/a: operational failure owned by family 06 | `15` | n/a: no version event | n/a: proportionality claim has named questions |
+| `UI-FAMILY-06` | `16` | n/a: alternative recovery paths are enumerated in the same contract | n/a: no invalid input, state, authorization, or precondition is supplied; the exercised defect is an injected dependency or timeout failure | `17` | `17` | `18` | n/a: planned reversibility owned by family 09 | n/a: dependency failure is injected directly |
+| `UI-FAMILY-07` | `19` | n/a: one non-waivable safety floor | n/a: no independently discriminating invalid input, state, authorization, or precondition case; unsafe evidence and identity pressure are governance failure or authority gaming | n/a: no numeric or finite limit | `21` | `20` | n/a: no version event | n/a: conflict evidence is inspected directly |
+| `UI-FAMILY-08` | `22` | `23` | n/a: no invalid input, state, authorization, or precondition discrimination; valid-looking inaccessible behavior games the access gate | n/a: platform limits are surface-owned inputs | n/a: failed access behavior appears as adversarial exclusion | `24` | n/a: no version event | n/a: modality equivalence is directly inspected |
+| `UI-FAMILY-09` | `25` | n/a: UI/UX conflict and child change are distinct cases | n/a: no invalid input, state, authorization, or precondition discrimination; the child waiver is an intentional authority override | n/a: no finite limit | n/a: runtime recovery owned by family 06 | `26` | `25` | `27` |
+| `UI-FAMILY-10` | `28` | n/a: one bidirectional evidence model | n/a: no independently discriminating invalid input, state, authorization, or precondition case; stale evidence, cosmetic concepts, and invalid smart-skips are acceptance-gate gaming | n/a: no numeric or finite limit | n/a: missing evidence closes as `NEEDS_CONTEXT` in family 02 | `29`, `31`, `32` | n/a: artifact revision chronology is family 04 | `30` |
 
-`UI-SCENARIO-17` genuinely exercises both an exact timeout transition and failure/recovery. Its primary and
-coverage role are failure/recovery only; boundary coverage is supporting context and is not claimed as a
-second minimum discharge.
+`UI-SCENARIO-17` is the set's one bounded n-ary record and discharges both Boundary and Failure/recovery. Its
+primary remains Failure/recovery; the case-level coverage-role explanations, per-type proof, and gaming probe
+justify the two matrix cells. No other case claims more than one minimum discharge.
 
 ## Source register and stable IDs
 
@@ -390,7 +390,24 @@ Renaming a title does not change an ID. A changed discrimination gets a new case
 
 - **Primary type + justification:** Failure/recovery — the defining concern is recovery from a timeout at the
   exact pending-to-timeout transition.
-- **Coverage-role:** Failure/recovery; boundary is supporting context, not a second discharge.
+- **Coverage-role:** Failure/recovery — injects an external-handoff timeout and requires containment,
+  late-result handling, and recovery; Boundary — exercises below, at, and above the exact pending-to-timeout
+  transition.
+- **Inseparability record:**
+  - `discharges: [boundary, failure/recovery]`.
+  - `per-type-proof:` Boundary cannot preserve this exact below/at/above timeout discrimination without the
+    timeout failure that activates containment and late-result recovery; Failure/recovery cannot preserve this
+    case's timeout-recovery discrimination without crossing the exact time-window boundary. Replacing the
+    timeout with another failure creates a different case and does not prove this obligation.
+  - `no-cosmetic-duplicate:` one below/at/above observation proves both discriminations; relabeling it as two
+    cases would duplicate the same Given/When/Then.
+  - `bounded + auditable:` the joint discharge applies only to this external-authorization timeout transition,
+    not to other boundaries or failures in the family.
+  - `gaming-probe gate (SR-12, P8):` a Boundary-only attempt collapses into the generic state transition already
+    covered by `UI-SCENARIO-08` and loses the timeout failure; a Failure/recovery-only attempt collapses into the
+    generic recovery floor covered by `UI-SCENARIO-16` and loses the exact threshold and late-result
+    discrimination. No dedicated single-type case can preserve this obligation, so both roles remain
+    inseparable here.
 - **Actor:** authenticating user.
 - **Given:** an external authorization handoff has a defined timeout and may return just before, exactly at, or
   just after it.
@@ -560,7 +577,8 @@ Renaming a title does not change an ID. A changed discrimination gets a new case
 
 - **Primary type + justification:** Change/regression — a downstream version introduces exact platform
   mechanics while preserving the existing contract.
-- **Coverage-role:** Change/regression; proves safe specialization across a lifecycle change.
+- **Coverage-role:** Good — proves the positive parent-preserving specialization floor; Change/regression —
+  proves safe specialization across a lifecycle change.
 - **Actor:** child-skill author and UI reviewer.
 - **Given:** a future web, CLI, desktop, mobile, or voice child adds exact standards, patterns, and examples.
 - **When:** its output is compared with the approved parent handoff.

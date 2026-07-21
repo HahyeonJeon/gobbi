@@ -8,13 +8,19 @@ run identity identifies the execution, not the source revision. The filled copy 
 style at each pause point. Mode: **operational**. Default use style is **read-do** at pause points A–D and
 **do-confirm** at pause point E.
 
-Coverage closure means every applicable gate and required item has a terminal resolution. Acceptance is a
-separate result: every applicable gate and required item must be `PASS`. The one operational waiver permitted
-by the checklist state machine may substitute for `PASS` on one item only when named authority covers that
-item's consequence and stop action and the authorization evidence and rationale are recorded. It never counts
-as `PASS`. Accessibility, safety, direct representative-user testing, and the whole-specification-before-
-prototype order cannot be waived. A failed, recorded-open, or waived item can close coverage without accepting
-the UI design.
+Coverage closure means every applicable gate and required item has a valid terminal resolution. Acceptance is a
+separate result: every applicable gate and required item must be `PASS`, except that the checklist owner's
+bounded operational waiver may substitute on at most one **non-protected operational gate** when named authority
+covers that item's consequence and stop action and the authorization evidence and rationale are recorded. A
+valid waiver is an acceptance exception and never counts as `PASS`.
+
+Four protected mandatory classes are explicitly non-waivable: (1) accessibility in any applicable item's claim
+or pass condition; (2) safety in any applicable item's claim or pass condition; (3) current direct
+representative-user prototype testing (`UI-CHECK-13`); and (4) complete whole-specification approval before
+every prototype, including both document closure and chronology (`UI-CHECK-11`). A waiver token on a protected
+item is invalid: it closes neither coverage nor acceptance. Resolve that item with a permitted terminal;
+`FAIL` or `recorded-open` can close coverage but cannot accept the run. A failed or recorded-open non-protected
+item likewise closes coverage without acceptance.
 
 ## Resolution legend
 
@@ -22,8 +28,24 @@ the UI design.
 - `FAIL:<finding-id>` — the pass condition was verified false and the finding or action is cited.
 - `n/a:<property>` — inspected evidence proves the applicability predicate false.
 - `recorded-open:<owner+resolution-method>` — operational coverage is closed but acceptance is not granted.
-- `waived/exception-authorized:<authority+rationale>` — allowed only within the bounded operational rule above;
-  it never counts as `PASS`.
+- `waived/exception-authorized:<authority+rationale>` — permitted only for one non-protected operational gate
+  when the named authority covers its stated consequence and stop action and evidence plus rationale are
+  recorded; it does not count as `PASS`. It is invalid for accessibility, safety, `UI-CHECK-13`, or
+  `UI-CHECK-11` document closure or chronology.
+
+## Protected-waiver acceptance truth table
+
+Each adversarial row holds every other applicable gate and required item at `PASS`. Coverage closure and
+acceptance are evaluated separately.
+
+| Protected class or control | Attempted item resolution | All other applicable items | Coverage closed? | Accepted? |
+|---|---|---|---|---|
+| Accessibility in any applicable item | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Safety in any applicable item | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Current direct representative-user prototype testing (`UI-CHECK-13`) | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Whole-specification-before-prototype document closure or chronology (`UI-CHECK-11`) | `waived/exception-authorized:<authority+rationale>` | `PASS` | No — invalid token | No |
+| Coverage/acceptance separation control | one applicable protected or non-protected item is `FAIL:<finding-id>` or `recorded-open:<owner+resolution-method>` | `PASS` | Yes | No |
+| Bounded-waiver accepting control | every protected item is `PASS`; non-protected `UI-CHECK-05` has one valid authorized waiver whose named authority covers its halt-and-return-to-P3 consequence and stop action | `PASS` | Yes | Yes, only under the bounded exception |
 
 ## Pause point A — Before the skeleton: outcome, surfaces, evidence, identity
 
@@ -259,7 +281,10 @@ In a run-specific copy, first record the reusable checklist source identity/path
 version/revision, and the distinct run identity. At close, repeat those three values with the result so another
 reader can reconstruct both the rules used and the execution that applied them. Inspect the named evidence
 before resolving each row. Record coverage closure and acceptance separately. Acceptance requires `PASS` on
-every applicable gate and required item. Pilot the source against a passing complete run, a single-surface
-`n/a` disposition, the timeout/recovery boundary, the big-bang/premature-prototype/cosmetic-access adversarial
-cases, and a failed direct-evidence gate. A label, heading, component name, visual match, or present-but-empty
-artifact must never earn `PASS`.
+every applicable gate and required item, except that one valid authorized waiver may substitute on at most one
+non-protected operational gate under the bounded rule above; the waiver remains an exception and never becomes
+`PASS`. A protected waiver is invalid and closes neither result. A `FAIL` or `recorded-open` closes coverage but
+never acceptance, whether its item is protected or non-protected. Pilot the source against all six truth-table
+rows, a passing complete run, a single-surface `n/a` disposition, the timeout/recovery boundary, the big-bang/
+premature-prototype/cosmetic-access adversarial cases, and a failed direct-evidence gate. A label, heading,
+component name, visual match, or present-but-empty artifact must never earn `PASS`.

@@ -53,7 +53,7 @@ type inapplicable.
 ## Source register and stable IDs
 
 - `SRC-UX-PARENT` — [`SKILL.md`](SKILL.md), UX-R1–UX-R14 and P1–P9; sole policy owner.
-- `SRC-UX-DECISIONS` — [`ideation.md`](ideation.md); D0–D15 questions and G1–G6 decision-gate trace.
+- `SRC-UX-DECISIONS` — [`ideation.md`](ideation.md); D0–D14 questions and G1–G6 decision-gate trace.
 - `SRC-UX-ISO` — ISO 9241-210 and ISO 9241-11 references named by the parent.
 - `SRC-UX-RESEARCH` — Digital.gov user-research guidance and GOV.UK service/user-research guidance named by
   the parent; applicable only to their stated research claims.
@@ -440,7 +440,7 @@ discrimination gets a new case ID.
 - **Declared primary category:** 4 — Interfaces / dependencies / structure. The defining discrimination is
   whether state and completion remain coherent across actor, channel, and system boundaries.
 - **Secondary categories:** 3, 6, 8.
-- **Source / rationale:** `SRC-UX-PARENT` UX-R1, UX-R10, UX-R14, P3–P5/P9; `SRC-UX-DECISIONS` D3–D5/D15.
+- **Source / rationale:** `SRC-UX-PARENT` UX-R1, UX-R10, UX-R14, P3–P5/P9; `SRC-UX-DECISIONS` D3–D5/D14.
 - **Actor + outcome:** a person crosses terminal, browser, system, or support boundaries and still completes or
   safely recovers from one outcome.
 - **Situation / invariant:** locally polished channels do not prove the handoff, shared state, access path, or
@@ -567,7 +567,7 @@ discrimination gets a new case ID.
 - **Declared primary category:** 10 — Evidence / traceability / clarity. The defining discrimination is whether
   measures, parent conflicts, and future changes remain tied to observable outcome evidence.
 - **Secondary categories:** 4, 5, 7, 9.
-- **Source / rationale:** `SRC-UX-PARENT` UX-R10, UX-R13, UX-R14, P6/P9; `SRC-UX-DECISIONS` D15/G6;
+- **Source / rationale:** `SRC-UX-PARENT` UX-R10, UX-R13, UX-R14, P6/P9; `SRC-UX-DECISIONS` D14/G6;
   `SRC-UX-MEASUREMENT`.
 - **Actor + outcome:** product, measurement, UI/UX, and child-skill owners preserve a cold-readable experience
   contract after handoff.
