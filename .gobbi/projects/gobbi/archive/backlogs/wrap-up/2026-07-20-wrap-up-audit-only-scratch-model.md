@@ -4,7 +4,7 @@ description: "E9 (deferred): make Wrap-up audit-only for session-scratch shape (
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
 priority: medium
 project-scope: true
 created: 2026-07-16
@@ -12,6 +12,8 @@ session: e5c0af1d-005d-4455-a58f-efe601ed342f
 tags: [wrap-up, process]
 keywords: [e9, scratch-model, audit-only, session-tree-immutable, git-gate-blind-gitignored, preserve-vs-delete]
 author: claude
+archived_at: 2026-07-20
+archive_reason: dropped
 ---
 
 # E9 — Audit-only session-scratch model (deferred)
