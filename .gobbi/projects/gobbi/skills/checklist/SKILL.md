@@ -288,12 +288,11 @@ external owner.
 - [`../scenario/SKILL.md`](../scenario/SKILL.md) validates the scenario set this skill reads as a P3
   input, and the consumer relationship in which a scenario set references this skill's `Check` definition
   and two-gate / acceptance machinery.
-- [`../evaluation/SKILL.md` § Perspectives](../evaluation/SKILL.md#perspectives) validates the seven
-  perspective filenames and fixed order an evaluation-register grouping and its filled copy align to.
-- [`../evaluation/SKILL.md` § Evaluation child-doc bundle](../evaluation/SKILL.md#evaluation-child-doc-bundle-and-the-copy-then-tick-checklist)
-  validates the copy-then-tick mechanics and the nine-output contract that an evaluation-mode filled
-  `checklist.md` plugs into.
-- [`../evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
-  validates the finding schema a `FAIL:<finding-id>` token cites.
+- [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
+  fixed order an evaluation-register grouping and its filled copy align to.
+- [`../evaluation/SKILL.md` § Complete the evaluation checklist](../evaluation/SKILL.md#13-complete-the-evaluation-checklist)
+  validates the evidence-bearing completed checklist that an evaluation-mode filled copy supplies.
+- [`../evaluation/SKILL.md` § Write findings](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema)
+  validates the finding schema a failed checklist row cites.
 - [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
   type-specific section contract that will apply when this legacy skill is substantively revised.

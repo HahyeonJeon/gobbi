@@ -12,6 +12,8 @@ CROSS_REVIEW_SCHEMA="$RECORD_DIR/schemas/cross-review.schema.json"
 EVALUATION_REPORT_SCHEMA="$RECORD_DIR/schemas/evaluation-report.schema.json"
 SESSION_TEMPLATE="$RECORD_DIR/templates/session.json"
 STATE_TEMPLATE="$RECORD_DIR/templates/state.json"
+DUAL_WORK_VALIDATOR="$RECORD_DIR/../orchestration/scripts/validate-dual-system-work.sh"
+EVALUATION_VALIDATOR="$RECORD_DIR/../evaluation/scripts/validate-evaluation-report.sh"
 CLEANUP_FILES=()
 CLEANUP_DIRS=()
 
@@ -80,7 +82,7 @@ EOF
 
 require_dependencies() {
     local dependency
-    for dependency in jq jsonschema realpath mktemp find diff sha256sum; do
+    for dependency in cmp git jq jsonschema realpath mktemp find diff sha256sum; do
         command -v "$dependency" >/dev/null 2>&1 || die "required dependency not found: $dependency"
     done
     [ -f "$SESSION_SCHEMA" ] || die "session schema not found: $SESSION_SCHEMA"
@@ -90,6 +92,8 @@ require_dependencies() {
     [ -f "$EVALUATION_REPORT_SCHEMA" ] || die "evaluation-report schema not found: $EVALUATION_REPORT_SCHEMA"
     [ -f "$SESSION_TEMPLATE" ] || die "session template not found: $SESSION_TEMPLATE"
     [ -f "$STATE_TEMPLATE" ] || die "state template not found: $STATE_TEMPLATE"
+    [ -x "$DUAL_WORK_VALIDATOR" ] || die "dual-work validator not executable: $DUAL_WORK_VALIDATOR"
+    [ -x "$EVALUATION_VALIDATOR" ] || die "evaluation validator not executable: $EVALUATION_VALIDATOR"
 }
 
 validate_json() {
@@ -687,6 +691,15 @@ assert_allowed_patch_keys() {
     ' "$patch" >/dev/null || die "$label patch contains an unauthorized top-level field"
 }
 
+assert_init_field_matches() {
+    local existing="$1" candidate="$2" jq_path="$3" field="$4"
+    local existing_value candidate_value
+    existing_value="$(jq -c "$jq_path" "$existing")" || die "cannot read existing session field: $field"
+    candidate_value="$(jq -c "$jq_path" "$candidate")" || die "cannot read candidate session field: $field"
+    [ "$existing_value" = "$candidate_value" ] ||
+        die "init argument does not match existing session field: $field"
+}
+
 command_init() {
     local root="" session_id="" project="" runtime_system="" runtime_id=""
     local started_at="" branch="" worktree="" base_branch="develop" repo="" settings=""
@@ -800,20 +813,16 @@ command_init() {
     if [ -e "$normalized_root/session.json" ]; then
         [ -f "$normalized_root/session.json" ] || die "session.json is not a regular file"
         assert_manifest_invariants "$normalized_root" "$normalized_root/session.json"
-        jq -e \
-            --arg session_id "$session_id" \
-            --arg project "$project" \
-            --arg started_at "$started_at" \
-            --arg branch "$branch" \
-            --arg worktree "$normalized_worktree" \
-            --arg runtime_id "$runtime_id" '
-                .sessionId == $session_id and
-                .project == $project and
-                .startedAt == $started_at and
-                .git.branch == $branch and
-                .git.worktreePath == $worktree and
-                .runtime.ids[0] == $runtime_id
-            ' "$normalized_root/session.json" >/dev/null || die "init arguments do not match the existing session identity"
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.sessionId' sessionId
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.project' project
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.startedAt' startedAt
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.runtime.system' runtime.system
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.runtime.ids[0]' 'runtime.ids[0]'
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.git.repo' git.repo
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.git.baseBranch' git.baseBranch
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.git.branch' git.branch
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.git.worktreePath' git.worktreePath
+        assert_init_field_matches "$normalized_root/session.json" "$session_candidate" '.settings' settings
     fi
     if [ -e "$normalized_root/state.json" ]; then
         [ -f "$normalized_root/state.json" ] || die "state.json is not a regular file"
@@ -1267,6 +1276,23 @@ expect_failure_preserving_file() {
     [ "$before" = "$after" ] || self_test_fail "$label changed $target"
 }
 
+expect_init_failure_preserving_record() {
+    local root="$1" label="$2"
+    shift 2
+    local before_session before_state before_tree after_session after_state after_tree rc=0
+    before_session="$(sha256sum "$root/session.json")"
+    before_state="$(sha256sum "$root/state.json")"
+    before_tree="$(find "$root" -printf '%P %y\n' | LC_ALL=C sort)"
+    "$@" >/dev/null 2>&1 || rc=$?
+    after_session="$(sha256sum "$root/session.json")"
+    after_state="$(sha256sum "$root/state.json")"
+    after_tree="$(find "$root" -printf '%P %y\n' | LC_ALL=C sort)"
+    [ "$rc" -ne 0 ] || self_test_fail "$label unexpectedly succeeded"
+    [ "$before_session" = "$after_session" ] || self_test_fail "$label changed session.json"
+    [ "$before_state" = "$after_state" ] || self_test_fail "$label changed state.json"
+    [ "$before_tree" = "$after_tree" ] || self_test_fail "$label changed the session tree"
+}
+
 expect_verify_failure_preserving_record() {
     local root="$1" tasks="$2" label="$3" before_state before_session after_state after_session rc=0
     before_state="$(sha256sum "$root/state.json")"
@@ -1292,18 +1318,22 @@ verify_preserving_record() {
 
 make_pass_evaluation_fixture() {
     local target="$1" system="$2" runtime_identity="$3" subject_sha256="$4"
+    local step="$5" iteration="$6" assignment="$7"
     jq -n -S \
         --arg system "$system" \
         --arg runtime "$runtime_identity" \
-        --arg subject "$subject_sha256" '
+        --arg subject "$subject_sha256" \
+        --arg step "$step" \
+        --argjson iteration "$iteration" \
+        --arg assignment "$assignment" '
         ["Project", "Structure", "Performance", "Aesthetics", "Usage", "Consistency", "Risk"] as $perspectives |
         {
           schemaVersion: 1,
           kind: "evaluation-report",
           system: $system,
-          step: "ideation",
-          iteration: 1,
-          assignment: "artifact-contract",
+          step: $step,
+          iteration: $iteration,
+          assignment: $assignment,
           runtimeIdentity: $runtime,
           subjectSha256: $subject,
           perspectives: ($perspectives | map({
@@ -1325,14 +1355,217 @@ make_pass_evaluation_fixture() {
     ' > "$target"
 }
 
+write_runtime_work_fixture() {
+    local temporary="$1" root="$2" prefix="$3" step="$4" assignment="$5"
+    local runtime_system="$6" task="$7" package owner contract
+    local claude_draft_json codex_draft_json claude_review_json codex_review_json
+    local claude_draft codex_draft claude_review codex_review
+    local -a validator_args
+    package="$root/$prefix/working/iteration-1"
+    case "$runtime_system" in
+        claude-code) owner=claude ;;
+        codex) owner=codex ;;
+        *) self_test_fail "unknown runtime fixture system: $runtime_system" ;;
+    esac
+    contract="$(printf '%s' "$runtime_system:$step:$assignment:contract" | sha256sum | awk '{print $1}')"
+    claude_draft_json="$temporary/$runtime_system-$step-claude-draft.json"
+    codex_draft_json="$temporary/$runtime_system-$step-codex-draft.json"
+    claude_review_json="$temporary/$runtime_system-$step-claude-review.json"
+    codex_review_json="$temporary/$runtime_system-$step-codex-review.json"
+    claude_draft="$package/drafts/claude.md"
+    codex_draft="$package/drafts/codex.md"
+    claude_review="$package/cross-reviews/claude-on-codex.md"
+    codex_review="$package/cross-reviews/codex-on-claude.md"
+
+    jq -n -S --arg contract "$contract" --arg step "$step" --arg assignment "$assignment" \
+        --arg runtime "$runtime_system-$step-claude-draft" \
+        '{schemaVersion:1,kind:"draft",system:"claude",step:$step,iteration:1,assignment:$assignment,runtimeIdentity:$runtime,contractSha256:$contract,title:"Claude compatibility draft",summary:"Independent Claude-labeled fixture draft.",content:"Complete fixture candidate for the locked step contract."}' > "$claude_draft_json"
+    jq -n -S --arg contract "$contract" --arg step "$step" --arg assignment "$assignment" \
+        --arg runtime "$runtime_system-$step-codex-draft" \
+        '{schemaVersion:1,kind:"draft",system:"codex",step:$step,iteration:1,assignment:$assignment,runtimeIdentity:$runtime,contractSha256:$contract,title:"Codex compatibility draft",summary:"Independent Codex-labeled fixture draft.",content:"Complete fixture candidate for the locked step contract."}' > "$codex_draft_json"
+    "$0" write-artifact --root "$root" --kind draft --input "$claude_draft_json" \
+        --target "$prefix/working/iteration-1/drafts/claude.md" --expected-system claude \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+    "$0" write-artifact --root "$root" --kind draft --input "$codex_draft_json" \
+        --target "$prefix/working/iteration-1/drafts/codex.md" --expected-system codex \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+
+    jq -n -S --arg contract "$contract" --arg step "$step" --arg assignment "$assignment" \
+        --arg runtime "$runtime_system-$step-claude-review" --arg subject "$(sha256sum "$codex_draft" | awk '{print $1}')" \
+        '{schemaVersion:1,kind:"cross-review",system:"claude",step:$step,iteration:1,assignment:$assignment,runtimeIdentity:$runtime,contractSha256:$contract,subjectSystem:"codex",subjectSha256:$subject,conclusion:"accept",summary:"Claude-labeled fixture review of the frozen Codex draft.",findings:[]}' > "$claude_review_json"
+    jq -n -S --arg contract "$contract" --arg step "$step" --arg assignment "$assignment" \
+        --arg runtime "$runtime_system-$step-codex-review" --arg subject "$(sha256sum "$claude_draft" | awk '{print $1}')" \
+        '{schemaVersion:1,kind:"cross-review",system:"codex",step:$step,iteration:1,assignment:$assignment,runtimeIdentity:$runtime,contractSha256:$contract,subjectSystem:"claude",subjectSha256:$subject,conclusion:"accept",summary:"Codex-labeled fixture review of the frozen Claude draft.",findings:[]}' > "$codex_review_json"
+    "$0" write-artifact --root "$root" --kind cross-review --input "$claude_review_json" \
+        --target "$prefix/working/iteration-1/cross-reviews/claude-on-codex.md" --expected-system claude \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+    "$0" write-artifact --root "$root" --kind cross-review --input "$codex_review_json" \
+        --target "$prefix/working/iteration-1/cross-reviews/codex-on-claude.md" --expected-system codex \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+
+    printf '%s\n' \
+        '---' 'artifact-kind: synthesis' 'protocol-stage: synthesis' "system: $owner" \
+        "step: $step" 'iteration: 1' "assignment: $assignment" \
+        "runtime-identity: $runtime_system-$step-synthesis" \
+        "claude-draft-sha256: $(sha256sum "$claude_draft" | awk '{print $1}')" \
+        "codex-draft-sha256: $(sha256sum "$codex_draft" | awk '{print $1}')" \
+        "claude-on-codex-sha256: $(sha256sum "$claude_review" | awk '{print $1}')" \
+        "codex-on-claude-sha256: $(sha256sum "$codex_review" | awk '{print $1}')" \
+        '---' '' '# Canonical fixture synthesis' '' \
+        'The runtime owner synthesized both frozen drafts and reciprocal reviews.' > "$package/synthesis.md"
+    printf '%s\n' \
+        '---' 'artifact-kind: open-decisions' 'protocol-stage: decisions-resolved' \
+        "step: $step" 'iteration: 1' "assignment: $assignment" \
+        "synthesis-sha256: $(sha256sum "$package/synthesis.md" | awk '{print $1}')" \
+        'status: resolved' 'unresolved-count: 0' '---' '' '# Open decisions' '' \
+        'No unresolved material fixture decisions.' > "$package/open-decisions.md"
+
+    validator_args=(--root "$root" --step "$step" --iteration 1 --assignment "$assignment")
+    [ -z "$task" ] || validator_args+=(--task "$task")
+    "$DUAL_WORK_VALIDATOR" "${validator_args[@]}" >/dev/null
+}
+
+write_runtime_evaluation_fixture() {
+    local temporary="$1" root="$2" prefix="$3" step="$4" assignment="$5"
+    local subject_sha256="$6" runtime_system="$7"
+    local claude_json codex_json claude_target codex_target
+    claude_json="$temporary/$runtime_system-$step-claude-evaluation.json"
+    codex_json="$temporary/$runtime_system-$step-codex-evaluation.json"
+    claude_target="$root/$prefix/evaluation/iteration-1/claude.md"
+    codex_target="$root/$prefix/evaluation/iteration-1/codex.md"
+    make_pass_evaluation_fixture "$claude_json" claude "$runtime_system-$step-claude-evaluator" \
+        "$subject_sha256" "$step" 1 "$assignment"
+    make_pass_evaluation_fixture "$codex_json" codex "$runtime_system-$step-codex-evaluator" \
+        "$subject_sha256" "$step" 1 "$assignment"
+    "$0" write-artifact --root "$root" --kind evaluation-report --input "$claude_json" \
+        --target "$prefix/evaluation/iteration-1/claude.md" --expected-system claude \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+    "$0" write-artifact --root "$root" --kind evaluation-report --input "$codex_json" \
+        --target "$prefix/evaluation/iteration-1/codex.md" --expected-system codex \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" >/dev/null
+    "$EVALUATION_VALIDATOR" pair --claude-report "$claude_target" --codex-report "$codex_target" \
+        --expected-step "$step" --expected-iteration 1 --expected-assignment "$assignment" \
+        --expected-subject-sha256 "$subject_sha256" >/dev/null
+}
+
+promotion_manifest_has_typed_source() {
+    local manifest="$1"
+    jq -e '
+        (.source | test("^(1-ideation|2-planning|3-execution|4-wrap-up)(/task-[0-9]{2}-[a-z0-9-]+)?/staging/(scenarios|checklists|decisions|references|design|discussions|reviews|reports|changelogs|learnings|notes|plans|backlogs/(feature|project))/[^/]+[.]md$")) and
+        (.source | contains("..") | not) and
+        (.destination | test("^[.]gobbi/projects/[a-z0-9-]+/notes/[a-z0-9-]+/[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+[.]md$")) and
+        (.destination | contains("..") | not) and
+        (.preimage == "absent") and
+        (.sourceSha256 | test("^[0-9a-f]{64}$")) and
+        (.destinationSha256 | test("^[0-9a-f]{64}$")) and
+        (.bodySha256 | test("^[0-9a-f]{64}$"))
+    ' "$manifest" >/dev/null
+}
+
+extract_frontmatter_body() {
+    awk '
+        NR == 1 && $0 == "---" {in_header = 1; next}
+        in_header && $0 == "---" {in_header = 0; closed = 1; next}
+        closed && !started && $0 ~ /^# / {started = 1}
+        started {print}
+    ' "$1"
+}
+
+prepare_runtime_promotion_fixture() {
+    local temporary="$1" worktree="$2" root="$3" runtime_system="$4"
+    local source_relative destination_relative source destination body manifest wrong_manifest source_before
+    local promoted_candidate promoted_sha256 author session_id
+    source_relative="4-wrap-up/staging/notes/runtime-fixture-handoff.md"
+    destination_relative=".gobbi/projects/project/notes/workflow/2026-07-20-runtime-fixture-handoff.md"
+    source="$root/$source_relative"
+    destination="$worktree/$destination_relative"
+    body="$root/4-wrap-up/working/iteration-1/research/handoff-body.md"
+    manifest="$root/4-wrap-up/working/iteration-1/research/promotion-manifest.md"
+    wrong_manifest="$temporary/$runtime_system-wrong-promotion-manifest.json"
+    promoted_candidate="$temporary/$runtime_system-promoted-handoff.md"
+    session_id="$(jq -r '.sessionId' "$root/session.json")"
+    case "$runtime_system" in
+        claude-code) author=claude ;;
+        codex) author=codex ;;
+        *) self_test_fail "unknown runtime fixture system: $runtime_system" ;;
+    esac
+
+    printf '%s\n' \
+        '# Runtime fixture handoff' '' \
+        '## 1. Outcome and agreed scope' 'The complete deterministic runtime fixture passed its locked scope.' '' \
+        '## 2. Completed work and evidence' 'Creation, evaluation, promotion, handoff, and local Git gates produced direct evidence.' '' \
+        '## 3. Evaluation and dispositions' 'Both fixture reports returned PASS with no findings or waivers.' '' \
+        '## 4. Decisions to respect' 'Keep session identity distinct from runtime identity.' '' \
+        '## 5. Durable memory' 'The typed Wrap-up note is the sole promotion source.' '' \
+        '## 6. Pre-finalization Git state' 'The isolated fixture worktree is ready for a local commit only.' '' \
+        '## 7. Unresolved or deferred items' 'None.' '' \
+        '## 8. Known risks and exceptions' 'None in the deterministic fixture.' '' \
+        '## 9. Exact next-session start point' 'Read this handoff, inspect the retained local branch, and begin with the next authorized objective.' \
+        > "$body"
+    printf '%s\n' \
+        '---' 'name: runtime-fixture-handoff' 'description: Durable handoff produced by the integrated runtime fixture.' \
+        'type: notes' 'scope: project' 'feature: null' 'status: active' 'created: 2026-07-20' \
+        "session: $session_id" 'tags: [process, validation]' \
+        'keywords: [runtime-fixture, handoff, promotion]' "author: $author" 'area: workflow' \
+        'features_touched: []' 'steps_completed: [ideation, planning, execution, wrap-up]' \
+        'shipped: [runtime-fixture-handoff]' \
+        '---' '' > "$source"
+    sed -n '1,$p' "$body" >> "$source"
+    awk '$0 != "area: workflow" {print}' "$source" > "$promoted_candidate"
+    [ ! -e "$destination" ] || self_test_fail "$runtime_system promotion destination preimage was not absent"
+    printf '%s\n' absent > "$root/4-wrap-up/working/iteration-1/research/destination-preimage.md"
+    source_before="$(sha256sum "$source" | awk '{print $1}')"
+    promoted_sha256="$(sha256sum "$promoted_candidate" | awk '{print $1}')"
+    jq -n -S --arg source "$source_relative" --arg destination "$destination_relative" \
+        --arg source_sha "$source_before" --arg destination_sha "$promoted_sha256" \
+        --arg body_sha "$(sha256sum "$body" | awk '{print $1}')" \
+        '{schemaVersion:1,source:$source,destination:$destination,preimage:"absent",sourceSha256:$source_sha,destinationSha256:$destination_sha,bodySha256:$body_sha}' \
+        > "$manifest"
+    promotion_manifest_has_typed_source "$manifest" || self_test_fail "$runtime_system valid promotion manifest was rejected"
+    jq '.source = "4-wrap-up/working/iteration-1/research/handoff-body.md"' "$manifest" > "$wrong_manifest"
+    if promotion_manifest_has_typed_source "$wrong_manifest"; then
+        self_test_fail "$runtime_system non-staging promotion source was accepted"
+    fi
+
+    mkdir -p -- "$(dirname "$destination")"
+    cp -- "$promoted_candidate" "$destination"
+    [ "$source_before" = "$(sha256sum "$source" | awk '{print $1}')" ] ||
+        self_test_fail "$runtime_system promotion mutated its staging source"
+    [ "$(jq -r '.destinationSha256' "$manifest")" = "$(sha256sum "$destination" | awk '{print $1}')" ] ||
+        self_test_fail "$runtime_system promoted destination digest mismatch"
+    cmp -s "$body" <(extract_frontmatter_body "$destination") ||
+        self_test_fail "$runtime_system durable handoff body mismatch"
+}
+
+verify_runtime_handoff_equality() {
+    local temporary="$1" worktree="$2" root="$3" runtime_system="$4"
+    local output durable backup
+    output="$root/4-wrap-up/outputs/handoff.md"
+    durable="$worktree/.gobbi/projects/project/notes/workflow/2026-07-20-runtime-fixture-handoff.md"
+    backup="$temporary/$runtime_system-handoff.backup"
+    cmp -s "$output" <(extract_frontmatter_body "$durable") ||
+        self_test_fail "$runtime_system session and durable handoff bodies differ"
+    cp -- "$output" "$backup"
+    printf '%s\n' 'cosmetic but wrong mutation' >> "$output"
+    if cmp -s "$output" <(extract_frontmatter_body "$durable"); then
+        self_test_fail "$runtime_system handoff equality guard accepted a wrong body"
+    fi
+    mv -- "$backup" "$output"
+    cmp -s "$output" <(extract_frontmatter_body "$durable") ||
+        self_test_fail "$runtime_system handoff restore failed"
+}
+
 exercise_runtime_workflow_fixture() {
     local temporary="$1" runtime_system="$2" session_id="$3" runtime_id="$4"
-    local worktree root patch tasks stage
+    local worktree root patch tasks assignment subject commit receipt
     worktree="$temporary/full-$runtime_system-worktree"
     root="$worktree/.gobbi/projects/project/sessions/2026-07-20-$session_id"
     patch="$temporary/full-$runtime_system-patch.json"
     tasks="$temporary/full-$runtime_system-tasks.json"
     mkdir -p -- "$worktree"
+    git -C "$worktree" init -q -b "full-$runtime_system-fixture"
+    git -C "$worktree" config user.name 'Gobbi Runtime Fixture'
+    git -C "$worktree" config user.email 'gobbi-fixture@example.invalid'
 
     "$0" init \
         --root "$root" \
@@ -1344,58 +1577,96 @@ exercise_runtime_workflow_fixture() {
         --branch "full-$runtime_system-fixture" \
         --worktree "$worktree" >/dev/null
     printf '%s\n' '{"tasks":[{"number":1,"slug":"runtime-fixture"}]}' > "$tasks"
-    "$0" scaffold-tasks --root "$root" --tasks "$tasks" >/dev/null
 
     printf '%s\n' '{"current":{"step":"ideation","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration"],"lastVerdict":null}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    for stage in WORK EVALUATION RECORD; do
-        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
-        "$0" transition --root "$root" --patch "$patch" >/dev/null
-        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    done
+    "$0" verify --root "$root" >/dev/null
+    assignment="$runtime_system-ideation-fixture"
+    printf '%s\n' '{"current":{"stage":"WORK"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_work_fixture "$temporary" "$root" 1-ideation ideation "$assignment" "$runtime_system" ""
+    subject="$(sha256sum "$root/1-ideation/working/iteration-1/synthesis.md" | awk '{print $1}')"
+    printf '%s\n' '{"current":{"stage":"EVALUATION"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_evaluation_fixture "$temporary" "$root" 1-ideation ideation "$assignment" "$subject" "$runtime_system"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
     printf '%s\n' '# Ideation fixture output' > "$root/1-ideation/outputs/ideation.md"
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
+    "$0" verify --root "$root" >/dev/null
 
     printf '%s\n' '{"current":{"step":"planning","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation"],"lastVerdict":null}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    for stage in WORK EVALUATION RECORD; do
-        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
-        "$0" transition --root "$root" --patch "$patch" >/dev/null
-        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    done
+    assignment="$runtime_system-planning-fixture"
+    printf '%s\n' '{"current":{"stage":"WORK"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_work_fixture "$temporary" "$root" 2-planning planning "$assignment" "$runtime_system" ""
+    subject="$(sha256sum "$root/2-planning/working/iteration-1/synthesis.md" | awk '{print $1}')"
+    printf '%s\n' '{"current":{"stage":"EVALUATION"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_evaluation_fixture "$temporary" "$root" 2-planning planning "$assignment" "$subject" "$runtime_system"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
     printf '%s\n' '# Planning fixture output' > "$root/2-planning/outputs/plan.md"
+    "$0" scaffold-tasks --root "$root" --tasks "$tasks" >/dev/null
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
     printf '%s\n' '{"current":{"step":"execution","stage":"DISCUSSION","iteration":1,"task":"01-runtime-fixture"},"completedSteps":["configuration","ideation","planning"],"completedTasks":[],"lastVerdict":null}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    for stage in WORK EVALUATION RECORD; do
-        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
-        "$0" transition --root "$root" --patch "$patch" >/dev/null
-        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    done
+    assignment="$runtime_system-execution-fixture"
+    printf '%s\n' '{"current":{"stage":"WORK"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_work_fixture "$temporary" "$root" 3-execution/task-01-runtime-fixture execution "$assignment" "$runtime_system" task-01-runtime-fixture
+    subject="$(sha256sum "$root/3-execution/task-01-runtime-fixture/working/iteration-1/synthesis.md" | awk '{print $1}')"
+    printf '%s\n' '{"current":{"stage":"EVALUATION"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_evaluation_fixture "$temporary" "$root" 3-execution/task-01-runtime-fixture execution "$assignment" "$subject" "$runtime_system"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
     printf '%s\n' '# Execution task fixture output' > "$root/3-execution/task-01-runtime-fixture/outputs/result.md"
     printf '%s\n' '# Execution fixture output' > "$root/3-execution/outputs/execution.md"
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
     printf '%s\n' '{"current":{"step":"wrap-up","stage":"DISCUSSION","iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution"],"completedTasks":["01-runtime-fixture"],"lastVerdict":null}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
-    "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    for stage in WORK EVALUATION RECORD; do
-        jq -n --arg stage "$stage" '{current:{stage:$stage}} + (if $stage == "RECORD" then {lastVerdict:"PASS"} else {} end)' > "$patch"
-        "$0" transition --root "$root" --patch "$patch" >/dev/null
-        "$0" verify --root "$root" --tasks "$tasks" >/dev/null
-    done
-    printf '%s\n' '# Wrap-up fixture handoff' > "$root/4-wrap-up/outputs/handoff.md"
+    assignment="$runtime_system-wrap-up-fixture"
+    printf '%s\n' '{"current":{"stage":"WORK"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_work_fixture "$temporary" "$root" 4-wrap-up wrap-up "$assignment" "$runtime_system" ""
+    prepare_runtime_promotion_fixture "$temporary" "$worktree" "$root" "$runtime_system"
+    subject="$(sha256sum \
+        "$root/4-wrap-up/working/iteration-1/synthesis.md" \
+        "$root/4-wrap-up/working/iteration-1/research/promotion-manifest.md" \
+        "$root/4-wrap-up/working/iteration-1/research/handoff-body.md" \
+        "$worktree/.gobbi/projects/project/notes/workflow/2026-07-20-runtime-fixture-handoff.md" | sha256sum | awk '{print $1}')"
+    printf '%s\n' '{"current":{"stage":"EVALUATION"}}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    write_runtime_evaluation_fixture "$temporary" "$root" 4-wrap-up wrap-up "$assignment" "$subject" "$runtime_system"
+    printf '%s\n' '{"current":{"stage":"RECORD"},"lastVerdict":"PASS"}' > "$patch"
+    "$0" transition --root "$root" --patch "$patch" >/dev/null
+    cp -- "$root/4-wrap-up/working/iteration-1/research/handoff-body.md" "$root/4-wrap-up/outputs/handoff.md"
+    verify_runtime_handoff_equality "$temporary" "$worktree" "$root" "$runtime_system"
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
 
+    jq -n -S '{finishedAt:"2026-07-20T01:00:00Z",outcome:{status:"complete",steps:{ideation:{verdict:"PASS",artifact:"1-ideation/outputs/ideation.md"},planning:{verdict:"PASS",artifact:"2-planning/outputs/plan.md"},execution:{verdict:"PASS",artifact:"3-execution/outputs/execution.md"},"wrap-up":{verdict:"PASS",artifact:"4-wrap-up/outputs/handoff.md"}},handoffPath:"4-wrap-up/outputs/handoff.md",waivers:[],reason:null}}' > "$patch"
+    "$0" checkpoint --root "$root" --patch "$patch" >/dev/null
     printf '%s\n' '{"status":"complete","current":{"step":"wrap-up","stage":null,"iteration":1,"task":null},"completedSteps":["configuration","ideation","planning","execution","wrap-up"],"lastVerdict":"PASS"}' > "$patch"
     "$0" transition --root "$root" --patch "$patch" >/dev/null
     "$0" verify --root "$root" --tasks "$tasks" >/dev/null
     [ "$(jq -r '.runtime.system' "$root/session.json")" = "$runtime_system" ] || self_test_fail "$runtime_system fixture changed runtime system"
     [ "$(jq -r '.status' "$root/state.json")" = "complete" ] || self_test_fail "$runtime_system fixture did not complete"
+    [ "$(jq -r '.outcome.handoffPath' "$root/session.json")" = '4-wrap-up/outputs/handoff.md' ] ||
+        self_test_fail "$runtime_system fixture did not checkpoint its handoff"
+
+    git -C "$worktree" add .
+    git -C "$worktree" commit -q -m "test: complete $runtime_system workflow fixture"
+    commit="$(git -C "$worktree" rev-parse HEAD)"
+    git -C "$worktree" diff --quiet HEAD -- || self_test_fail "$runtime_system fixture worktree is dirty after finalization"
+    [ -z "$(git -C "$worktree" status --porcelain)" ] || self_test_fail "$runtime_system fixture has untracked finalization residue"
+    receipt="$temporary/full-$runtime_system-finalization-receipt.txt"
+    printf '%s\n' \
+        "commit: $commit" 'push: not configured' 'pull-request: not configured' \
+        'merge: not authorized' "worktree: $worktree" 'cleanup: retained local fixture worktree' > "$receipt"
+    grep -q "^commit: $commit$" "$receipt" || self_test_fail "$runtime_system finalization receipt omitted the commit"
 }
 
 command_self_test() {
@@ -1403,7 +1674,7 @@ command_self_test() {
     local artifact_contract claude_draft_json codex_draft_json claude_draft_target codex_draft_target
     local claude_review_json codex_review_json claude_review_target codex_review_target
     local claude_eval_json codex_eval_json claude_eval_target codex_eval_target subject_digest
-    local bad_artifact linked_input external_target artifact_backup
+    local bad_artifact linked_input external_target artifact_backup conflicting_settings
     temporary="$(mktemp -d)"
     cleanup_dir_later "$temporary"
     worktree="$temporary/worktree"
@@ -1438,6 +1709,28 @@ command_self_test() {
         --worktree "$worktree" >/dev/null
     after_tree="$(find "$root" -printf '%P %y\n' | LC_ALL=C sort)"
     [ "$before_tree" = "$after_tree" ] || self_test_fail "repeated init changed the tree"
+
+    expect_init_failure_preserving_record "$root" "conflicting runtime system" "$0" init \
+        --root "$root" --session-id "$session_id" --project project \
+        --runtime-system claude-code --runtime-id runtime-one \
+        --started-at 2026-07-20T00:00:00Z --branch test-session --worktree "$worktree"
+    expect_init_failure_preserving_record "$root" "conflicting base branch" "$0" init \
+        --root "$root" --session-id "$session_id" --project project \
+        --runtime-system codex --runtime-id runtime-one \
+        --started-at 2026-07-20T00:00:00Z --branch test-session --worktree "$worktree" \
+        --base-branch main
+    expect_init_failure_preserving_record "$root" "conflicting repository" "$0" init \
+        --root "$root" --session-id "$session_id" --project project \
+        --runtime-system codex --runtime-id runtime-one \
+        --started-at 2026-07-20T00:00:00Z --branch test-session --worktree "$worktree" \
+        --repo owner/project
+    conflicting_settings="$temporary/conflicting-settings.json"
+    jq '.settings | .git.publication = "push"' "$SESSION_TEMPLATE" > "$conflicting_settings"
+    expect_init_failure_preserving_record "$root" "conflicting resolved settings" "$0" init \
+        --root "$root" --session-id "$session_id" --project project \
+        --runtime-system codex --runtime-id runtime-one \
+        --started-at 2026-07-20T00:00:00Z --branch test-session --worktree "$worktree" \
+        --settings "$conflicting_settings"
     "$0" verify --root "$root" >/dev/null
 
     patch="$temporary/runtime-append.json"
@@ -1589,8 +1882,8 @@ command_self_test() {
     codex_eval_json="$temporary/codex-evaluation.json"
     claude_eval_target="$root/1-ideation/evaluation/iteration-1/claude.md"
     codex_eval_target="$root/1-ideation/evaluation/iteration-1/codex.md"
-    make_pass_evaluation_fixture "$claude_eval_json" claude claude-evaluator-self-test "$subject_digest"
-    make_pass_evaluation_fixture "$codex_eval_json" codex codex-evaluator-self-test "$subject_digest"
+    make_pass_evaluation_fixture "$claude_eval_json" claude claude-evaluator-self-test "$subject_digest" ideation 1 artifact-contract
+    make_pass_evaluation_fixture "$codex_eval_json" codex codex-evaluator-self-test "$subject_digest" ideation 1 artifact-contract
     "$0" write-artifact --root "$root" --kind evaluation-report --input "$claude_eval_json" --target 1-ideation/evaluation/iteration-1/claude.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
     "$0" write-artifact --root "$root" --kind evaluation-report --input "$codex_eval_json" --target 1-ideation/evaluation/iteration-1/codex.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment artifact-contract >/dev/null
 

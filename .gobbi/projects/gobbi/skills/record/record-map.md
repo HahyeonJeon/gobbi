@@ -216,7 +216,10 @@ Gobbi UUID supplied. `--settings` contains the complete `settings` object only;
 when omitted, the shipped defaults are used. Existing v5/v3 records are
 preserved. A conflicting identity, retired surface, invalid document, or old
 schema is rejected before record mutation. Repeating a valid initialization is
-idempotent.
+idempotent. A repeat must also match the original runtime system and first
+runtime ID, repository, base and session branches, worktree, and complete
+resolved settings. A mismatch names the conflicting manifest field and leaves
+both record files and the directory tree unchanged.
 
 ### 2. `scaffold-tasks`
 

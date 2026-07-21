@@ -86,7 +86,7 @@ When a correction occurs:
 
 1. Stop and acknowledge it — do not silently adjust and continue.
 2. Note it as a mistake-candidate with: what went wrong, why (the mistaken assumption), how to recognize it next time, the corrected approach.
-3. Write the candidate note **immediately** — do not defer to RECORD. If the session is interrupted before RECORD runs, deferred notes are lost. This is the moment-of-capture discipline; see [`record/SKILL.md` § Core Principles § Moment-of-capture](../record/SKILL.md#core-principles) for the rationale and empirical witness.
+3. Write the candidate note **immediately** — do not defer to RECORD. If the session is interrupted before RECORD runs, deferred notes are lost. Follow [`record/SKILL.md` § Derive typed staging candidates](../record/SKILL.md#3-derive-typed-staging-candidates) for the evidence and deduplication contract.
 
 ### 3. Stage a mistake-candidate during RECORD
 

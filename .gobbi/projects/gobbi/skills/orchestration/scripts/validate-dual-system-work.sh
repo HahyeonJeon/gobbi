@@ -205,13 +205,15 @@ assert_exact_entries() {
 validate_synthesis() {
     local file="$1" step="$2" iteration="$3" assignment="$4"
     local claude_draft="$5" codex_draft="$6" claude_review="$7" codex_review="$8"
-    local system runtime
+    local expected_system="$9" system runtime
     assert_regular_artifact "$file"
     assert_header_keys "$file" $'artifact-kind\nprotocol-stage\nsystem\nstep\niteration\nassignment\nruntime-identity\nclaude-draft-sha256\ncodex-draft-sha256\nclaude-on-codex-sha256\ncodex-on-claude-sha256'
     [ "$(header_value "$file" artifact-kind)" = synthesis ] || die "synthesis artifact-kind mismatch"
     [ "$(header_value "$file" protocol-stage)" = synthesis ] || die "synthesis protocol-stage mismatch"
     system="$(header_value "$file" system)"
     case "$system" in claude|codex) ;; *) die "invalid synthesis system: $system" ;; esac
+    [ "$system" = "$expected_system" ] ||
+        die "synthesis system $system does not match session runtime owner $expected_system"
     runtime="$(header_value "$file" runtime-identity)"
     [ -n "${runtime//[[:space:]]/}" ] || die "synthesis runtime identity is empty"
     [ "$(header_value "$file" step)" = "$step" ] || die "synthesis step mismatch"
@@ -293,7 +295,13 @@ command_validate() {
     jq -e . "$root/session.json" >/dev/null 2>&1 || die "session manifest is malformed"
 
     local prefix package claude_draft codex_draft claude_review codex_review synthesis decisions
-    local claude_json codex_json claude_review_json codex_review_json contract synthesis_owner
+    local claude_json codex_json claude_review_json codex_review_json contract runtime_system synthesis_owner
+    runtime_system="$(jq -er '.runtime.system' "$root/session.json")" || die "session runtime system is missing"
+    case "$runtime_system" in
+        claude-code) synthesis_owner=claude ;;
+        codex) synthesis_owner=codex ;;
+        *) die "invalid session runtime system: $runtime_system" ;;
+    esac
     prefix="$(package_prefix "$step" "$task")"
     package="$root/$prefix/working/iteration-$iteration"
     [ -d "$package" ] && [ ! -L "$package" ] || die "WORK package directory is missing: $package"
@@ -328,8 +336,7 @@ command_validate() {
     [ "$(jq -r '.subjectSystem' "$codex_review_json")" = claude ] || die "Codex review does not review Claude"
     [ "$(jq -r '.subjectSha256' "$codex_review_json")" = "$(sha256_file "$claude_draft")" ] || die "Codex review does not bind the frozen Claude draft"
 
-    validate_synthesis "$synthesis" "$step" "$iteration" "$assignment" "$claude_draft" "$codex_draft" "$claude_review" "$codex_review"
-    synthesis_owner="$(header_value "$synthesis" system)"
+    validate_synthesis "$synthesis" "$step" "$iteration" "$assignment" "$claude_draft" "$codex_draft" "$claude_review" "$codex_review" "$synthesis_owner"
     validate_peer_ephemerality "$synthesis_owner" "$claude_json" "$codex_json" "$claude_review_json" "$codex_review_json"
     validate_open_decisions "$decisions" "$step" "$iteration" "$assignment" "$synthesis"
     log "PASS $step iteration $iteration assignment $assignment"
@@ -384,6 +391,7 @@ expect_validation_failure() {
 
 command_self_test() {
     local sandbox worktree uuid root package contract claude_digest codex_digest
+    local claude_worktree claude_uuid claude_root claude_package
     local backup target
     sandbox="$(temp_dir)"
     worktree="$sandbox/worktree"
@@ -406,28 +414,52 @@ command_self_test() {
     jq -n --arg contract "$contract" --arg subject "$claude_digest" '{schemaVersion:1,kind:"cross-review",system:"codex",step:"ideation",iteration:1,assignment:"dual-package",runtimeIdentity:"codex-review-self-test",contractSha256:$contract,subjectSystem:"claude",subjectSha256:$subject,conclusion:"accept",summary:"Codex review of the frozen Claude draft.",findings:[]}' > "$sandbox/codex-review.json"
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/claude-review.json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
-    write_synthesis_fixture "$package" claude claude-synthesis-self-test ideation 1 dual-package
-    write_decisions_fixture "$package" ideation 1 dual-package
-    command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package
-
-    jq '.runtimeIdentity = "codex-draft-self-test"' "$sandbox/codex-review.json" > "$sandbox/reused-codex-review.json"
-    "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/reused-codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
-    write_synthesis_fixture "$package" claude claude-synthesis-self-test ideation 1 dual-package
-    write_decisions_fixture "$package" ideation 1 dual-package
-    expect_validation_failure claude-owned-reused-codex-peer-identity "$root"
-    "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
-
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
     command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package
 
+    write_synthesis_fixture "$package" claude claude-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$package" ideation 1 dual-package
+    expect_validation_failure codex-session-claude-owner "$root"
+
+    write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$package" ideation 1 dual-package
     jq '.runtimeIdentity = "claude-draft-self-test"' "$sandbox/claude-review.json" > "$sandbox/reused-claude-review.json"
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/reused-claude-review.json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
     expect_validation_failure codex-owned-reused-claude-peer-identity "$root"
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/claude-review.json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
-    write_synthesis_fixture "$package" claude claude-synthesis-self-test ideation 1 dual-package
+
+    claude_worktree="$sandbox/claude-worktree"
+    claude_uuid=33333333-3333-4333-8333-333333333333
+    claude_root="$claude_worktree/.gobbi/projects/gobbi/sessions/2026-07-20-$claude_uuid"
+    mkdir -p "$claude_worktree"
+    "$RECORD_TOOL" init --root "$claude_root" --session-id "$claude_uuid" --project gobbi \
+        --runtime-system claude-code --runtime-id dual-work-claude-self-test --started-at 2026-07-20T00:00:00Z \
+        --branch dual-work-claude-self-test --worktree "$claude_worktree" >/dev/null
+    claude_package="$claude_root/1-ideation/working/iteration-1"
+    cp -- "$package/drafts/claude.md" "$claude_package/drafts/claude.md"
+    cp -- "$package/drafts/codex.md" "$claude_package/drafts/codex.md"
+    cp -- "$package/cross-reviews/claude-on-codex.md" "$claude_package/cross-reviews/claude-on-codex.md"
+    cp -- "$package/cross-reviews/codex-on-claude.md" "$claude_package/cross-reviews/codex-on-claude.md"
+    write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$claude_package" ideation 1 dual-package
+    command_validate --root "$claude_root" --step ideation --iteration 1 --assignment dual-package
+
+    write_synthesis_fixture "$claude_package" codex codex-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$claude_package" ideation 1 dual-package
+    expect_validation_failure claude-session-codex-owner "$claude_root"
+
+    write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$claude_package" ideation 1 dual-package
+    jq '.runtimeIdentity = "codex-draft-self-test"' "$sandbox/codex-review.json" > "$sandbox/reused-codex-review.json"
+    "$RECORD_TOOL" write-artifact --root "$claude_root" --kind cross-review --input "$sandbox/reused-codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
+    write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
+    write_decisions_fixture "$claude_package" ideation 1 dual-package
+    expect_validation_failure claude-owned-reused-codex-peer-identity "$claude_root"
+
+    write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
 
     backup="$sandbox/artifact.backup"

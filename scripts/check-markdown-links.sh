@@ -12,10 +12,9 @@
 #     - reference-style:  [label]: target
 #   It IGNORES (never reports) links that are not local relative paths:
 #     - absolute URLs:    http://… https://… mailto:… (any scheme://)
-#     - pure anchors:     [text](#section)   (in-document fragment only)
-#   For a checked link, any trailing #anchor or ?query is stripped before
-#   resolving the path part (the path must exist; anchor validity is out of
-#   scope — this guard verifies PATH resolution, not heading anchors).
+#   For a checked link, any query is ignored. The path must exist and every
+#   fragment must match a GitHub-style Markdown heading anchor or explicit HTML
+#   id in the target document. Pure in-document anchors are checked too.
 #
 # Args:
 #   One or more files and/or directories. Directories are walked for *.md.
@@ -38,7 +37,7 @@ usage() {
 usage: check-markdown-links.sh <file-or-dir> [<file-or-dir> ...]
   Verifies every markdown relative link (inline ](path) and reference ]: path)
   resolves relative to its linking file's directory. Ignores http(s)/mailto URLs
-  and pure #anchor links; strips #anchor / ?query tails before resolving.
+  and query strings. Validates pure and cross-document heading fragments.
   Exit 0 = all resolve, 1 = broken link(s) found, 2 = bad args.
 EOF
 }
@@ -70,6 +69,7 @@ fi
 
 broken=0
 checked=0
+anchors_checked=0
 
 # Emit the file with all CODE removed, so link extraction never sees code.
 # WHY: extraction is a plain grep for ](target) and [label]: target. Code can
@@ -117,6 +117,61 @@ extract_targets() {
     fi
 }
 
+# Emit the anchors GitHub-style Markdown rendering assigns to ATX headings,
+# including the numeric suffix used for duplicate headings. Explicit HTML ids
+# are accepted because Markdown renderers expose them as navigable fragments.
+extract_anchors() {
+    local file="$1"
+    awk '
+        function heading_slug(text, base, count) {
+            gsub(/<[^>]*>/, "", text)
+            gsub(/`/, "", text)
+            text = tolower(text)
+            gsub(/[^[:alnum:] _-]/, "", text)
+            # GitHub removes punctuation before replacing each remaining space.
+            # Two spaces left around a removed dash or plus therefore become
+            # two hyphens; collapsing whitespace would reject valid anchors.
+            gsub(/[[:space:]]/, "-", text)
+            sub(/^-+/, "", text)
+            sub(/-+$/, "", text)
+            base = text
+            count = seen[base]++
+            if (count > 0) text = base "-" count
+            print text
+        }
+        {
+            line = $0
+            trimmed = line
+            sub(/^[[:space:]]+/, "", trimmed)
+            if (trimmed ~ /^(```|~~~)/) {
+                in_fence = !in_fence
+                next
+            }
+            if (in_fence) next
+            if (line ~ /^#{1,6}[[:space:]]+/) {
+                sub(/^#{1,6}[[:space:]]+/, "", line)
+                sub(/[[:space:]]+#+[[:space:]]*$/, "", line)
+                heading_slug(line)
+            }
+            remainder = $0
+            while (match(remainder, /id=["\047][^"\047]+["\047]/)) {
+                explicit_id = substr(remainder, RSTART + 4, RLENGTH - 5)
+                print explicit_id
+                remainder = substr(remainder, RSTART + RLENGTH)
+            }
+        }
+    ' "$file" 2>/dev/null
+}
+
+anchor_exists() {
+    local target_file="$1" fragment="$2" anchor
+    [ -f "$target_file" ] || return 1
+    while IFS= read -r anchor; do
+        [ "$anchor" = "$fragment" ] && return 0
+    done < <(extract_anchors "$target_file")
+    return 1
+}
+
 for file in "${files[@]}"; do
     dir="$(dirname "$file")"
     for form in inline reference; do
@@ -126,21 +181,34 @@ for file in "${files[@]}"; do
             case "$target" in
                 *://*|mailto:*) continue ;;
             esac
-            # Skip pure in-document anchors.
+            fragment=""
             case "$target" in
-                '#'*) continue ;;
+                *'#'*)
+                    fragment="${target#*#}"
+                    fragment="${fragment%%\?*}"
+                    ;;
             esac
-            # Strip a trailing #anchor and/or ?query — resolve the path part only.
+            # Strip a trailing #anchor and/or ?query before resolving the path.
             path="${target%%#*}"
             path="${path%%\?*}"
-            [ -z "$path" ] && continue
-            checked=$((checked + 1))
-            # Resolve relative to the linking file's directory.
-            if [ -e "$dir/$path" ]; then
-                continue
+            if [ -z "$path" ]; then
+                target_file="$file"
+            else
+                target_file="$dir/$path"
+                checked=$((checked + 1))
+                if [ ! -e "$target_file" ]; then
+                    printf 'BROKEN: %s -> %s\n' "$file" "$target"
+                    broken=$((broken + 1))
+                    continue
+                fi
             fi
-            printf 'BROKEN: %s -> %s\n' "$file" "$target"
-            broken=$((broken + 1))
+            if [ -n "$fragment" ]; then
+                anchors_checked=$((anchors_checked + 1))
+                if ! anchor_exists "$target_file" "$fragment"; then
+                    printf 'BROKEN-ANCHOR: %s -> %s\n' "$file" "$target"
+                    broken=$((broken + 1))
+                fi
+            fi
         done < <(extract_targets "$file" "$form")
     done
 done
@@ -150,5 +218,6 @@ if [ "$broken" -gt 0 ]; then
     exit 1
 fi
 
-printf 'ALL LINKS RESOLVE (%d relative links checked across %d file(s))\n' "$checked" "${#files[@]}"
+printf 'ALL LINKS RESOLVE (%d relative paths and %d anchors checked across %d file(s))\n' \
+    "$checked" "$anchors_checked" "${#files[@]}"
 exit 0

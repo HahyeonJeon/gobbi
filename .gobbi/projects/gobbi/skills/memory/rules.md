@@ -453,7 +453,7 @@ For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, se
 
 ## 4. Dev-document quality standard
 
-§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap. Memory-template bodies additionally follow [`memory/SKILL.md` § Authoring style](SKILL.md#authoring-style).
+§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap. Memory-template bodies additionally follow [`memory/SKILL.md` § Author the typed candidate](SKILL.md#5-author-the-typed-candidate).
 
 ### 4.1 What a good dev-doc looks like (the positive bar)
 
@@ -614,4 +614,5 @@ gate.
 - Path-and-type semantics (which directory holds what, who writes it, when, which template stamps it) → [`memory-map.md`](memory-map.md)
 - The assistant's RECORD procedure and memory-tier access matrix → [`SKILL.md`](../record/SKILL.md)
 - Staging → memory promotion routing (including the frontmatter allowlist on promotion) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
-- Slug + collision policy for staging files → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)
+- Slug formation and collision policy for staging files → [§1.1 Naming rules](#11-naming-rules) and
+  [§2.4 Cross-references and the doc graph](#24-cross-references-and-the-doc-graph)
