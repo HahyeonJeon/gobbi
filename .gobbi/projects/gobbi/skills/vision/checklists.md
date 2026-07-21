@@ -72,6 +72,21 @@ token is valid here. An unchecked box is unresolved, not terminal.
   - On fail: return to parent step 1 and lower or remove affected claims.
   - Source: `SKILL.md` step 1; O-002, O-023.
   - Resolution: `[ ]`
+- [ ] **VISION-CHECK-A06 [GATE, read-do] — Sensitive-evidence handling is authorized before inspection.**
+  - Claim: each source has a valid pre-inspection sensitivity disposition that authorizes the planned handling
+    or stops it.
+  - Applicability: unconditional.
+  - Pass: every source is classified; potentially sensitive or sensitive sources record local-inspection and
+    external-transfer authority separately, approved environments, minimum or redacted content, passive-data
+    controls, least-access derivatives with neutral names and metadata, report-safe evidence, and
+    retention/cleanup plans. Missing authority or environment produces the parent stop-and-recovery path.
+  - Evidence: source classification and authority ledger, local/external environment record, minimization and
+    passive-handling disposition, and derivative/report/retention plan.
+  - On fail: consequence — credentials, PII, regulated data, confidential customer information,
+    private UI state, or proprietary material could be exposed or executed; stop content inspection and
+    transfer, then request a redacted copy or approved governed environment under parent step 1.
+  - Source: `SKILL.md` Rules and step 1; O-042.
+  - Resolution: `[ ]`
 
 ## Pause point B — After observation, before judgment
 
@@ -303,6 +318,19 @@ token is valid here. An unchecked box is unresolved, not terminal.
   - On fail: return to parent step 10 and add falsifiable verification.
   - Source: `SKILL.md` step 10; O-040.
   - Resolution: `[ ]`
+- [ ] **VISION-CHECK-E06 [GATE, read-do] — Sensitive-evidence handling is closed safely before handoff.**
+  - Claim: sensitive report evidence and temporary derivatives have a verified safe terminal state.
+  - Applicability: any source classified potentially sensitive or sensitive, or any sensitive derivative;
+    otherwise `n/a:<classification proves no potentially sensitive source or derivative>`.
+  - Pass: terminal traces and the durable report contain only report-safe locators or necessary redacted
+    excerpts, never sensitive pixels or text. The derivative inventory covers every crop, extracted frame, OCR
+    output, transcript, and measurement; each is deleted with evidence or retained at an approved locator with
+    a named owner and expiry.
+  - Evidence: terminal/report audit, complete derivative inventory, and deletion or approved-retention records.
+  - On fail: consequence — sensitive material may persist or leak through the handoff; stop handoff, remove or
+    sanitize it when authorized, and report non-acceptance until every derivative has a valid terminal.
+  - Source: `SKILL.md` Rules and step 1; O-042.
+  - Resolution: `[ ]`
 
 ## Coverage Closure and Acceptance
 
@@ -315,6 +343,7 @@ token is valid here. An unchecked box is unresolved, not terminal.
 | `VISION-CHECK-A03` | O-037, O-038 |
 | `VISION-CHECK-A04` | O-013–O-016, O-029, O-031 |
 | `VISION-CHECK-A05` | O-002, O-023 |
+| `VISION-CHECK-A06` | O-042 |
 | `VISION-CHECK-B01` | O-007, O-009 |
 | `VISION-CHECK-B02` | O-009, O-024, O-025 |
 | `VISION-CHECK-B03` | O-009, O-012 |
@@ -338,8 +367,9 @@ token is valid here. An unchecked box is unresolved, not terminal.
 | `VISION-CHECK-E03` | O-002–O-003, O-008, O-015, O-022, O-028, O-033, O-036, O-041 |
 | `VISION-CHECK-E04` | O-039 |
 | `VISION-CHECK-E05` | O-040 |
+| `VISION-CHECK-E06` | O-042 |
 
-Every O-001 through O-041 appears in at least one check above; every check points back to at least one parent
+Every O-001 through O-042 appears in at least one check above; every check points back to at least one parent
 clause and scenario obligation. Verify this two-way closure on the filled copy rather than assuming it from the
 table.
 
