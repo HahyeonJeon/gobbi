@@ -238,10 +238,10 @@ Do not collapse the two registrations into one — the dev registration must use
 The Claude Code manifest remains metadata-only. Claude Code auto-loads components from conventional directories:
 
 - `plugins/gobbi/agents/` — 5 agent files (manager, leader, executor, evaluator, assistant) auto-loaded by convention
-- `plugins/gobbi/skills/` — all 25 canonical skill directories auto-loaded by convention; merged with the user's existing skills (ADDS-TO semantics)
+- `plugins/gobbi/skills/` — all 27 canonical skill directories auto-loaded by convention; merged with the user's existing skills (ADDS-TO semantics)
 - `plugins/gobbi/hooks/hooks.json` — hook registrations (4 event groups) auto-loaded by convention
 
-Verified on CLI v2.1.159: `claude plugin details gobbi` historically reported `Skills (19), Agents (5), Hooks (3)`; the current canonical package tree contains 25 skills after subsequent additions and retirement of Preparation. Re-verify the installed count on the next CLI compatibility check. Adding `skills`/`agents`/`hooks` keys to the Claude manifest previously produced `Status: failed to load` and `Agents (0)` — those keys stay out of `plugins/gobbi/.claude-plugin/plugin.json`.
+Verified on CLI v2.1.159: `claude plugin details gobbi` historically reported `Skills (19), Agents (5), Hooks (3)`; the current canonical package tree contains 27 skills after subsequent additions and retirement of Preparation. Re-verify the installed count on the next CLI compatibility check. Adding `skills`/`agents`/`hooks` keys to the Claude manifest previously produced `Status: failed to load` and `Agents (0)` — those keys stay out of `plugins/gobbi/.claude-plugin/plugin.json`.
 
 The Codex manifest is explicit where Codex needs it:
 
@@ -250,13 +250,13 @@ The Codex manifest is explicit where Codex needs it:
 
 Codex custom agents remain repo-local under `.codex/agents/*.toml`; the plugin package includes `agents/` as a shared distribution snapshot, not as the native Codex custom-agent discovery path.
 
-### Skills shipped by the package (25 total)
+### Skills shipped by the package (27 total)
 
-The package ships all 25 canonical skills:
+The package ships all 27 canonical skills:
 
-`agent-writing`, `checklist`, `claude-plugin`, `codex`, `coding`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `ideation`, `memory`, `mistake`, `orchestration`, `planning`, `principles`, `python`, `record`, `research`, `scenario`, `skill-writing`, `startup`, `typescript`, `wrap-up`
+`agent-writing`, `checklist`, `claude-plugin`, `codex`, `coding`, `delegation`, `discussion`, `evaluation`, `execution`, `git`, `gobbi`, `ideation`, `memory`, `mistake`, `orchestration`, `planning`, `principles`, `python`, `record`, `research`, `scenario`, `skill-writing`, `startup`, `typescript`, `ui`, `ux`, `wrap-up`
 
-The `claude-plugin` skill (this file) is one of the 25. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package path `plugins/gobbi/skills/claude-plugin/SKILL.md` resolves through the package symlink.
+The `claude-plugin` skill (this file) is one of the 27. The canonical source lives at `.gobbi/projects/gobbi/skills/claude-plugin/SKILL.md`; the workspace-visible mirror is `.claude/skills/claude-plugin/SKILL.md` (a symlink). The package path `plugins/gobbi/skills/claude-plugin/SKILL.md` resolves through the package symlink.
 
 ### Pointer to the claude-plugin skill
 
