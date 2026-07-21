@@ -299,12 +299,25 @@ surface-specific mechanic to its future owner without treating one platform's co
 is co-loaded, show that the UI handoff preserves its outcome, content, state, recovery, accessibility, evidence,
 and risk contract.
 
-A run is complete only when the whole specification is coherent, direct prototype evidence supports its
-claims, every required user gate is explicit, and a cold reader can realize the interface without hidden
-session context or waived parent obligations.
+Every applicable gate and required item must be `PASS` for acceptance, with one bounded exception: exactly one
+valid authorized waiver may substitute for `PASS` on at most one non-protected operational gate. The waiver is
+an acceptance exception, not `PASS`. The named authority's mandate must cover that item's stated consequence
+and stop action, and the authorization evidence and rationale must be recorded.
 
-**Evidence:** handed-off document, trace and owner maps, cold-reader result, prototype/test status, and reopen
-conditions.
+Accessibility and safety in every applicable item are protected and non-waivable. Current direct
+representative-user prototype testing through `UI-CHECK-13` is protected and non-waivable. Complete
+whole-specification approval before every prototype, including document closure and chronology through
+`UI-CHECK-11`, is protected and non-waivable. A waiver token on a protected item is invalid and closes neither
+coverage nor acceptance. `FAIL` or `recorded-open` on any applicable item closes coverage only, never
+acceptance. A child convention, platform authority, co-loaded contract, precedence rule, or load order cannot
+authorize or widen the bounded exception.
+
+A run is complete only when the whole specification is coherent, direct prototype evidence supports its
+claims, every required user gate is explicit, a cold reader can realize the interface without hidden session
+context, and every applicable item satisfies this acceptance rule.
+
+**Evidence:** handed-off document, trace and owner maps, cold-reader result, prototype/test status, any bounded
+waiver's authority/evidence/rationale record, and reopen conditions.
 
 ### Feature design document schema
 

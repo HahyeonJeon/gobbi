@@ -9,7 +9,7 @@ style at each pause point. Mode: **operational**. Default use style is **read-do
 **do-confirm** at pause point E.
 
 Coverage closure means every applicable gate and required item has a valid terminal resolution. Acceptance is a
-separate result: every applicable gate and required item must be `PASS`, except that the checklist owner's
+separate result: every applicable gate and required item must be `PASS`, except that parent `SKILL.md` P9's
 bounded operational waiver may substitute on at most one **non-protected operational gate** when named authority
 covers that item's consequence and stop action and the authorization evidence and rationale are recorded. A
 valid waiver is an acceptance exception and never counts as `PASS`.
@@ -35,8 +35,8 @@ item likewise closes coverage without acceptance.
 
 ## Protected-waiver acceptance truth table
 
-Each adversarial row holds every other applicable gate and required item at `PASS`. Coverage closure and
-acceptance are evaluated separately.
+This six-row table directly replays parent `SKILL.md` P9. Each adversarial row holds every other applicable
+gate and required item at `PASS`. Coverage closure and acceptance are evaluated separately.
 
 | Protected class or control | Attempted item resolution | All other applicable items | Coverage closed? | Accepted? |
 |---|---|---|---|---|
@@ -282,9 +282,9 @@ version/revision, and the distinct run identity. At close, repeat those three va
 reader can reconstruct both the rules used and the execution that applied them. Inspect the named evidence
 before resolving each row. Record coverage closure and acceptance separately. Acceptance requires `PASS` on
 every applicable gate and required item, except that one valid authorized waiver may substitute on at most one
-non-protected operational gate under the bounded rule above; the waiver remains an exception and never becomes
-`PASS`. A protected waiver is invalid and closes neither result. A `FAIL` or `recorded-open` closes coverage but
-never acceptance, whether its item is protected or non-protected. Pilot the source against all six truth-table
-rows, a passing complete run, a single-surface `n/a` disposition, the timeout/recovery boundary, the big-bang/
-premature-prototype/cosmetic-access adversarial cases, and a failed direct-evidence gate. A label, heading,
-component name, visual match, or present-but-empty artifact must never earn `PASS`.
+non-protected operational gate under parent `SKILL.md` P9's bounded rule above; the waiver remains an exception
+and never becomes `PASS`. A protected waiver is invalid and closes neither result. A `FAIL` or `recorded-open`
+closes coverage but never acceptance, whether its item is protected or non-protected. Pilot the source against
+all six truth-table rows, a passing complete run, a single-surface `n/a` disposition, the timeout/recovery
+boundary, the big-bang/premature-prototype/cosmetic-access adversarial cases, and a failed direct-evidence gate.
+A label, heading, component name, visual match, or present-but-empty artifact must never earn `PASS`.

@@ -37,6 +37,7 @@ through the active Gobbi schema and destinations.
 | UI-R14 — specification-first revision and retest | `UI-SCENARIO-12`, `30` | `UI-CHECK-14`, `18` |
 | UI-R15 — parent-preserving handoff and child boundary | `UI-SCENARIO-25`, `26` | `UI-CHECK-15`, `18` |
 | UI-R16 — evidence-led UI/UX conflict resolution | `UI-SCENARIO-27` | `UI-CHECK-16`, `18` |
+| P9 — bounded acceptance, protected floors, and coverage separation | `UI-SCENARIO-05`–`07`, `09`–`11`, `19`–`21`, `24`, `29` | `UI-CHECK-03`, `05`, `10`, `11`, `13` |
 
 ## Selecting scenarios and checks
 
@@ -49,8 +50,8 @@ Run this selection after Stage 0 target understanding and before each Stage 1 pe
    every `UI-CHECK-*` item except conditional `UI-CHECK-16`. These cases distinguish a substantive run from
    big-bang polish, missing evidence, premature prototyping, local-unit breakage, aesthetics-first work,
    cosmetic concepts/access, mockup-only fixes, and hidden trace gaps.
-3. **Activate protected-waiver probes.** Copy the protected-waiver truth table below into the filled evaluation
-   checklist. Attempt an authorized waiver separately on accessibility, safety, current direct
+3. **Activate protected-waiver probes.** Copy the parent-P9 protected-waiver truth table below into the filled
+   evaluation checklist. Attempt an authorized waiver separately on accessibility, safety, current direct
    representative-user prototype testing, and whole-specification-before-prototype document closure/chronology
    while every other applicable item is `PASS`. Each protected waiver must remain invalid and leave coverage
    open and the run not accepted. Also replay the coverage-without-acceptance control and the valid bounded
@@ -73,8 +74,9 @@ Run this selection after Stage 0 target understanding and before each Stage 1 pe
 
 ## Protected-waiver adversarial truth table
 
-This is an evaluation copy of the acceptance probe owned by [`checklists.md`](checklists.md). Hold every other
-applicable gate and required item at `PASS`; do not infer acceptance from coverage closure.
+This is an evaluation replay of the six-row acceptance probe that [`checklists.md`](checklists.md)
+operationalizes from parent [`SKILL.md`](SKILL.md) P9. Hold every other applicable gate and required item at
+`PASS`; do not infer acceptance from coverage closure.
 
 | Protected class or control | Attempted resolution | Coverage result | Acceptance result | Required scenario/check evidence |
 |---|---|---|---|---|
