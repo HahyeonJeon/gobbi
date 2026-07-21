@@ -629,13 +629,13 @@ for f in "${files[@]}"; do
 
     # --- required base fields present -----------------------------------------
     for req in $BASE_REQUIRED; do
-        if ! printf '%s\n' "$keys" | grep -qx "$req"; then
+        if ! grep -Fxq -- "$req" <<<"$keys"; then
             report "$f" "$req" "missing required base field"
         fi
     done
     if [ "$archive_mode" -eq 1 ]; then
         for req in $ARCHIVE_FIELDS; do
-            if ! printf '%s\n' "$keys" | grep -qx "$req"; then
+            if ! grep -Fxq -- "$req" <<<"$keys"; then
                 report "$f" "$req" "missing required archive field"
             fi
         done
@@ -826,7 +826,7 @@ for f in "${files[@]}"; do
     # is keyed off the top-level key list (a required key must appear as a key).
     if [ -n "$ftype" ] && in_set "$ftype" "$TYPES"; then
         for req_ext in $(required_ext_for "$ftype"); do
-            if ! printf '%s\n' "$keys" | grep -qx "$req_ext"; then
+            if ! grep -Fxq -- "$req_ext" <<<"$keys"; then
                 report "$f" "$req_ext" "missing required $ftype extension (§2.2)"
             fi
         done
