@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/orchestration/scripts/validate-dual-system-work.sh

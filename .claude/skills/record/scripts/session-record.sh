@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/record/scripts/session-record.sh
