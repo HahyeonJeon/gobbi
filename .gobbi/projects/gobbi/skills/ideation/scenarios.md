@@ -9,13 +9,13 @@ This source exercises the obligations in [SKILL.md](SKILL.md). It adds no Ideati
 | 1 Purpose / outcomes / scope | selected | IDEA-SC-01 |
 | 2 Actors / stakeholders / use-context | selected | IDEA-SC-02 |
 | 3 Behavior / state / data | selected | IDEA-SC-03 |
-| 4 Interfaces / dependencies / structure | selected | IDEA-SC-04 |
+| 4 Interfaces / dependencies / structure | selected | IDEA-SC-04, IDEA-SC-11 |
 | 5 Quality attributes / resource economics | selected | IDEA-SC-05 |
 | 6 Failure / recovery / operations | selected | IDEA-SC-06 |
 | 7 Trust / harm / governance | selected | IDEA-SC-07 |
 | 8 Inclusion / locale | selected | IDEA-SC-08 |
 | 9 Change / compatibility / reversibility | selected | IDEA-SC-09 |
-| 10 Evidence / traceability / clarity | selected | IDEA-SC-10 |
+| 10 Evidence / traceability / clarity | selected | IDEA-SC-10, IDEA-SC-12 |
 
 Scale threshold: split this source under an index above 12 families or 40 selected category-by-type cells.
 
@@ -24,7 +24,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 1 — the defining discrimination is outcome and scope.
 - Primary type: Positive. Secondary: Counterfactual, adversarial.
 - Coverage role: positive purpose; counterfactual premise; adversarial scope-gaming.
-- Source: I-1, I-2, I-3, Procedure 2–3.
+- Source: Rules “problem and boundaries,” “genuine alternatives,” “requested solution or visible symptom,” “scope open-ended,” and “cosmetic alternatives”; Procedure 2–3.
 - Given: a user trigger, active project scopes, and a proposed design.
 - When: the framing, cause chain, strongest do-nothing case, scope contract, and design are compared.
 - Then: removing the stated cause would remove the need; design solves that cause; boundaries enumerate in, out, and deferred work; the user approved them.
@@ -39,7 +39,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 2 — actors and use context define the discrimination.
 - Primary type: Alternative-valid. Secondary: Adversarial.
 - Coverage role: positive alternative actor; adversarial hidden-stakeholder case.
-- Source: I-1, I-7, Procedure 2 and 6.
+- Source: Rules “problem and boundaries” and “complete observable outcome”; Procedure 2 and 6–8.
 - Given: primary users, operators, maintainers, approvers, and affected consumers.
 - When: each actor's goal, environment, constraint, and authority are traced through the design.
 - Then: every material actor has a supported path or explicit exclusion with user authority.
@@ -54,7 +54,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 3 — state transition and data lifecycle are defining.
 - Primary type: Boundary. Secondary: Negative.
 - Coverage role: positive handled transition; exact boundary; invalid-state rejection.
-- Source: I-7, I-8, Procedure 6–7.
+- Source: Rules “complete observable outcome” and “directional and traceable”; Procedure 6–9.
 - Given: the main input classes and pre/post states.
 - When: empty, one, many, below, at, and above each finite boundary are considered.
 - Then: valid transitions, invariants, rejected states, and prohibited side effects are explicit.
@@ -69,7 +69,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 4 — interface and dependency structure define the case.
 - Primary type: Positive. Secondary: Failure/recovery, adversarial.
 - Coverage role: positive contract; dependency failure; adversarial coupling.
-- Source: I-5, I-7, I-9, Procedure 5–6.
+- Source: Rules “sufficient evidence,” “parent decisions to dependent details,” “complete observable outcome,” “directional and traceable,” “dependent detail while its parent decision,” and “ordered task plan”; Procedure 4–7.
 - Given: proposed components, interfaces, dependencies, and data flow.
 - When: ownership, call direction, failure propagation, and test seams are traced.
 - Then: each concern has one owner, interfaces are consumer-readable, dependencies are acyclic, and failure is contained.
@@ -84,7 +84,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 5 — resource economics define the discrimination.
 - Primary type: Boundary. Secondary: Failure/recovery.
 - Coverage role: positive budget; exact capacity boundary; slow-call recovery.
-- Source: I-6, I-7, Procedure 6.
+- Source: Rules “load-bearing assumption and risk” and “complete observable outcome”; Procedure 8.
 - Given: variable volume, external calls, memory, storage, or paid resources.
 - When: ordinary load, expected growth, the exact capacity edge, and slow or failed dependencies are modeled.
 - Then: dominant cost, call pattern, measurement, budget, and refusal or degradation behavior are explicit.
@@ -99,7 +99,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 6 — handled failure and recovery are defining.
 - Primary type: Failure/recovery. Secondary: Boundary.
 - Coverage role: positive containment; injected failure; timeout boundary.
-- Source: I-7, Procedure 6.
+- Source: Rule “complete observable outcome”; Procedure 8.
 - Given: dependency outage, timeout, interruption, partial mutation, and invalid recovery input.
 - When: each failure is injected before, during, and after the mutation boundary.
 - Then: detection, containment, rollback or safe continuation, ownership, logging, and alerting are named.
@@ -114,7 +114,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 7 — harm and governance define the case.
 - Primary type: Adversarial. Secondary: Negative.
 - Coverage role: positive safe rejection; adversarial abuse; invalid-authority rejection.
-- Source: I-3, I-4, I-7, Procedure 4–6.
+- Source: Rules “sufficient evidence,” “genuine alternatives,” “complete observable outcome,” “assumption or weak source,” and “user-owned material choice”; Procedure 4–8.
 - Given: untrusted input, privileged action, sensitive data, destructive action, and borrowed external material.
 - When: an unauthorized actor attempts the path and retention, egress, license, and approval are inspected.
 - Then: validation precedes privileged sinks, authority is explicit, data purpose and retention are bounded, and licenses are compatible.
@@ -129,7 +129,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 8 — access and locale define the discrimination.
 - Primary type: Alternative-valid. Secondary: Boundary.
 - Coverage role: positive alternative input method; locale boundary.
-- Source: I-7, Procedure 6.
+- Source: Rule “complete observable outcome”; Procedure 8.
 - Given: a user-facing surface, text, sorting, dates, numbers, input methods, or assistive technology.
 - When: keyboard, screen reader, contrast, non-default locale, and alternate formats are considered.
 - Then: applicable behavior is designed and testable, or inspected evidence supports a precise not-applicable reason.
@@ -144,7 +144,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 9 — lifecycle change and reversibility define the case.
 - Primary type: Change/regression/compat. Secondary: Failure/recovery.
 - Coverage role: positive compatible path; version change; failed rollback.
-- Source: I-2, I-7, I-10, Procedure 3 and 6.
+- Source: Rules “problem and boundaries,” “complete observable outcome,” “approved decisions and constraints,” and “silently remove”; Procedure 3 and 8–9.
 - Given: existing users, files, data, APIs, behavior, or mixed versions.
 - When: before, during, after, rollback, and partial-upgrade states are compared.
 - Then: compatibility promise, migration, go/no-go, rollback, and deliberate breaks are explicit.
@@ -159,7 +159,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 10 — evidence and clarity define the discrimination.
 - Primary type: Positive. Secondary: Counterfactual, adversarial.
 - Coverage role: positive traceability; counterfactual unsupported premise; adversarial cosmetic completeness.
-- Source: I-4, I-6, I-8, I-10, Procedure 1, 4, 7, 10.
+- Source: Rules “sufficient evidence,” “load-bearing assumption and risk,” “directional and traceable,” “canonical artifacts,” “readiness before a phase transition,” “approved decisions and constraints,” “assumption or weak source,” and “advance with an unresolved material decision”; Procedure 1, 4, 9–10.
 - Given: the canonical artifact without private discussion context.
 - When: a cold planner resolves every term, source, decision, assumption, scenario, obligation, and check.
 - Then: every reference resolves, traces close both ways, names stay stable, and no placeholder or uncited conclusion remains.
@@ -169,6 +169,36 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Obligation: the artifact must be cold-readable and fully traceable.
 - Checklist: IDEA-CK-10.
 
+## IDEA-SC-11 — Domain routing preserves one base method and independent specializations
+
+- Primary category: 4 — the defining discrimination is ownership and dependency structure between the base method and domain skills.
+- Primary type: Alternative-valid. Secondary: Adversarial.
+- Coverage role: positive mixed-domain routing; alternative project-only routing; adversarial owner leakage.
+- Source: Rules scope paragraph “base method” and “domain skills”; Procedure 1, 4, and 6–8.
+- Given: a request that may span project, interface, experience, software, and language-specific design, plus several candidate governing documents.
+- When: the request, baseline, domains, and authority of each candidate source are classified.
+- Then: the routing register selects only applicable domain skills, preserves this complete base procedure, leaves specialized mechanics with their owners, and treats a named document as governing only when its authority and applicability are verified.
+- Failure oracle: every available domain skill is loaded by default, specialized policy is copied into the base procedure, a needed owner is omitted, or a non-authoritative `DESIGN.md` or configuration file dictates the design.
+- Evidence: input and routing register, file-existence checks, authority assessment, and parent-to-domain ownership trace.
+- Adversarial face: present a polished but non-authoritative design document and an unrelated domain skill; neither may become governing merely because it exists.
+- Obligation: the design must preserve one universal Ideation spine while routing each specialized decision to its applicable owner.
+- Checklist: IDEA-CK-11.
+
+## IDEA-SC-12 — A validation plan is not represented as produced evidence
+
+- Primary category: 10 — the defining discrimination is whether evidence status is represented truthfully.
+- Primary type: Counterfactual. Secondary: Adversarial.
+- Coverage role: positive evidence distinction; counterfactual load-bearing assumption; adversarial artifact theater.
+- Source: Rules “load-bearing assumption and risk,” “canonical artifacts,” and “readiness before a phase transition”; Procedure 4, 8, and 10.
+- Given: a material assumption whose best later validation may use a walkthrough, prototype, experiment, code spike, benchmark, or representative-user study.
+- When: current evidence, remaining uncertainty, and the proposed validation approach are recorded.
+- Then: the artifact distinguishes existing evidence from future evidence and names the question, method or artifact, participants or environment, pass and fail signals, reopen condition, owner, and later phase without claiming the output was created.
+- Failure oracle: a proposed prototype or spike is cited as completed evidence, the base procedure creates a realization output, or the design handoff omits how the assumption will be tested and reopened.
+- Evidence: evidence ledger, validation plan, artifact inventory, and cold-reader classification of every evidence claim.
+- Adversarial face: add a polished prototype heading with no artifact or test record; the readiness gate must treat it as future work, not proof.
+- Obligation: every planned validation must remain clearly separate from produced evidence and must carry a followable later test contract.
+- Checklist: IDEA-CK-12.
+
 ## Omission sweep
 
-Every load-bearing I-rule maps to at least one seed. Every seed maps to one obligation and one checklist item. Target-specific obligations discovered during a run must be added to the filled frame before review; they do not change this source.
+Every load-bearing rule and Procedure boundary maps to at least one seed. Every seed maps to one obligation and one checklist item. Target-specific obligations discovered during a run must be added to the filled frame before review; they do not change this source.
