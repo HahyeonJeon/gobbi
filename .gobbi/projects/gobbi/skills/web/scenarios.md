@@ -50,6 +50,14 @@ Every family has a positive floor and an adversarial face. Triggered minima have
 Case IDs are permanent `WEB-SCENARIO-NN`. Checklist reservations are permanent `WEB-CHECK-NN`. A changed
 discrimination receives a new ID.
 
+### Authoritative case-to-check relation
+
+Each case-level `Trace` field is the authoritative case-to-check relation. Checklist `Seeds`, the source and
+guaranteed-coverage ledgers, and the check-to-obligation reverse audit must be exact projections of that set:
+no forward-only, reverse-only, grouped, or inferred edge is valid. Every retained edge also means the check's
+actual PASS condition and named evidence independently preserve the full case-level `Obligation`; a ledger or
+audit summary is not proof of that semantic union.
+
 ## WEB-FAMILY-01 — One bounded feature outcome
 
 - **Primary category:** 1. Scope and outcome are the defining discrimination.
@@ -68,7 +76,7 @@ discrimination receives a new ID.
 - **Failure oracle:** a polished form or redirect with no verified session or recovery fails.
 - **Evidence tuple:** observe browser plus session state; run the complete path; confirm both completion signals.
 - **Obligation:** bind the entire outcome and its adjacent non-goals.
-- **Trace:** WEB-R01, WEB-R15; `WEB-CHECK-01`, `WEB-CHECK-12`.
+- **Trace:** WEB-R01, WEB-R15; `WEB-CHECK-01`.
 
 ### WEB-SCENARIO-02 — Shared code expands scope
 
@@ -519,23 +527,29 @@ The gaming probe rejected relabeled clones: `29` changes the claim-aggregation a
 the evidence shortcut; `31` changes the exact finite edge; and `32` changes the ordinary release-preparation
 outcome. Each produces an observable result that its source case does not.
 
-## Source-to-obligation ledger
+## Source → scenario → obligation → check ledger
 
-| Parent rules | Scenarios | Reserved checks |
-|---|---|---|
-| WEB-R01, WEB-R15 | `01`, `02`, `07` | `01`, `12` |
-| WEB-R02 | `08`, `23`, `32` | `04`, `05`, `11` |
-| WEB-R03, WEB-R04 | `03`, `04`, `20`, `29` | `02`, `03`, `14` |
-| WEB-R05 | `05`, `08`, `09` | `04`, `05` |
-| WEB-R06 | `16`–`19` | `07` |
-| WEB-R07 | `05`, `06`, `27` | `06` |
-| WEB-R08 | `06`, `07`, `09`, `14`–`16` | `08` |
-| WEB-R09 | `11`, `12`, `14`, `17`, `20`, `21`, `28`, `31` | `09` |
-| WEB-R10 | `07`, `10`, `13`, `20`, `22`, `26`, `27`, `30` | `10` |
-| WEB-R11 | `05`, `23`, `32` | `11` |
-| WEB-R12 | `23`, `25`, `27`, `32` | `12` |
-| WEB-R13 | `04`, `12`, `26`, `28`, `29` | `13` |
-| WEB-R14 | `10`, `24`, `30` | `14` |
+This check-level ledger is an exact projection of the authoritative case `Trace` relation. `Check policy
+sources` identifies the rule(s) that own the check predicate; it does not assert a cross-product between every
+listed case and every rule. Keeping one row per check prevents grouped rule rows from manufacturing false
+case-to-check edges.
+
+| Check policy sources | Scenarios | Exposed obligation union | Reserved check |
+|---|---|---|---|
+| WEB-R01, WEB-R15 | `01`, `02` | the complete bounded outcome and adjacent non-goals remain intact when implementation proximity pressures scope | `01` |
+| WEB-R03 | `03` | applicable design and implementation owners plus their evidence states are explicit | `02` |
+| WEB-R04 | `03`, `04`, `20`, `29` | owner routing, direct design evidence, equivalent access/meaning, and claim aggregation cannot be replaced by technical status | `03` |
+| WEB-R02, WEB-R05 | `05`, `08` | the first real vertical path and every changed contract retain an owner-aware vertical-contract decision | `04` |
+| WEB-R02, WEB-R05, WEB-R14 | `08`, `10`, `24`, `30` | existing and framework-integrated contracts preserve state, semantics, navigation, the parent web contract, and owner-correct proof | `05` |
+| WEB-R07 | `05`, `06`, `27` | thin-skeleton order, exact duplicate/concurrency behavior, and multi-owner evidence remain verified rather than collapsed into final green status | `06` |
+| WEB-R06 | `16`–`19` | replay-safe recovery plus validation, authorization, minimization, consent/privacy, abuse controls, and versioned security evidence hold at every boundary | `07` |
+| WEB-R08 | `06`, `07`, `09`, `14`–`16`, `31` | duplicate, false-success, dependency ambiguity, known-failure, timeout/late-result, replay, and retry-limit paths reach one truthful recoverable effect | `08` |
+| WEB-R09 | `09`, `11`, `12`, `14`, `15`, `20`, `21`, `28`, `31` | sourced quality targets cover dependency and failure observability, exact performance/retry/time edges, equivalent access, locale/context meaning, and outcome-stage measurement | `09` |
+| WEB-R10 | `07`, `10`, `13`, `20`, `22`, `26`, `27`, `30` | authoritative completion, framework/browser outcomes, rendered limits, access semantics, and multi-owner claims stay at resolvable evidence owners | `10` |
+| WEB-R02, WEB-R11 | `23`, `25`, `32` | production surfaces and operational instructions include mixed-state rollout, data/provider/user rollback consequences, and a cold-operator release handoff | `11` |
+| WEB-R01, WEB-R12, WEB-R15 | `23`, `25`, `27`, `32` | mixed-state rollout, full-gate readiness, rollback/forward-fix, and cold-operator release preparation remain complete before deployment | `12` |
+| WEB-R13 | `04`, `12`, `26`, `28`, `29` | design, performance, evidence-owner, attempted/visible/authoritative outcome, and technical-override claims remain distinct | `13` |
+| WEB-R03, WEB-R04, WEB-R14 | `24`, `30` | framework specialization and framework evidence cannot waive framework-independent web outcomes or their owner-correct proof | `14` |
 
 ## Failability and omission audit
 

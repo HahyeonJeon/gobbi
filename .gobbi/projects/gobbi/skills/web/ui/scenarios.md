@@ -56,6 +56,14 @@ change, and framework cases are distinct rather than implied by a happy case.
 Case IDs are permanent `WEB-UI-SCENARIO-NN`; checklist reservations are permanent `WEB-UI-CHECK-NN`. A changed
 discrimination receives a new ID.
 
+### Authoritative case-to-check relation
+
+Each case-level `Trace` field is the authoritative case-to-check relation. Checklist `Seeds`, the source and
+guaranteed-coverage ledgers, and the check-to-obligation reverse audit must be exact projections of that set:
+no forward-only, reverse-only, grouped, or inferred edge is valid. Every retained edge also means the check's
+actual PASS condition and named evidence independently preserve the full case-level `Obligation`; a ledger or
+audit summary is not proof of that semantic union.
+
 ## WEB-UI-FAMILY-01 — Semantic document and exposed structure
 
 - **Primary category:** 4 Interfaces / dependencies / structure — document and control contracts are the
@@ -668,21 +676,22 @@ and family 09 now has the dedicated failure case `34`.
 
 ## Source → scenario → obligation → check ledger
 
-The obligation column exposes the semantic union of the explicit case-level `Obligation` fields. The reserved
-check must preserve that whole union; a scenario reference alone is not the bridge.
+The obligation column exposes the semantic union of the explicit case-level `Obligation` fields. This
+check-level layout is an exact projection of `Trace`. `Check policy sources` identifies the rule(s) that own
+the check predicate; it does not assert a cross-product between every listed case and every rule.
 
-| Rules | Scenarios | Exposed obligation union | Reserved checks |
+| Check policy sources | Scenarios | Exposed obligation union | Reserved check |
 |---|---|---|---|
 | WEB-UI-R01 | `01`, `03`, `22` | accepted hierarchy and clauses remain traceable through semantic structure, truthful states, and complete framework output | `01` |
 | WEB-UI-R02 | `01`, `02`, `09`, `23` | native semantics, custom-control equivalence, correct form structure, and framework-produced semantic output | `02` |
 | WEB-UI-R03 | `03`–`05`, `10`, `11`, `16`, `18`, `24`, `25`, `28`, `29` | every state, authority inversion, cardinality edge, validation/rejection, pending transition, persistent result, and mismatch remains truthful and recoverable | `03` |
-| WEB-UI-R04 | `08`, `12`–`14`, `27` | alternative input, full variation matrix, exact content/reflow edge, evidence limits, and exact target/spacing edge preserve the outcome | `04`, `09` |
-| WEB-UI-R05 | `02`, `06`, `08`, `27` | native-equivalent operation and all selected modalities, alternatives, focus visibility, and target limits remain usable | `04`, `05` |
-| WEB-UI-R06 | `06`, `07`, `15`, `23`, `26`, `30` | logical focus across ordinary, modal, async-removal, overlay-failure, and framework states remains contained and recoverable | `05`, `07` |
+| WEB-UI-R04, WEB-UI-R05 | `06`, `08`, `12`, `13`, `27` | equivalent modality operation, alternatives, full variation cells, exact locale/content/zoom/reflow edges, and target limits preserve the complete outcome | `04` |
+| WEB-UI-R05, WEB-UI-R06 | `02`, `06`–`08`, `15`, `23`, `26`, `30` | logical visible focus and restoration across controls, modalities, modal/async removal, overlays, and framework states remain operable | `05` |
 | WEB-UI-R07 | `09`–`11`, `28`, `29` | valid, invalid, rejected, repeated, and exact pending-edge form transactions retain labels, errors, work, focus, and one effect | `06` |
-| WEB-UI-R08 | `04`, `05`, `07`, `10`, `11`, `15`, `16`, `24`, `26`, `29`, `30` | async and temporary states stay authoritative, announced, controlled, persistent where critical, and recoverable across every terminal result | `07` |
+| WEB-UI-R06, WEB-UI-R08 | `04`, `05`, `07`, `10`, `11`, `15`, `16`, `24`, `26`, `29`, `30` | async and temporary states stay authoritative, announced, controlled, persistent where critical, and recoverable across every terminal result | `07` |
 | WEB-UI-R09 | `17`–`19`, `22`, `23`, `31`, `33`, `34` | direct/render/restore/framework lifecycle behavior remains compatible, complete, and recoverable across versions and partial failure | `08` |
-| WEB-UI-R10 | `12`–`14`, `17`, `19`, `20`, `27`, `31` | the sourced matrix, exact limits, lifecycle versions, and evidence ledger are freshly exercised with bounded claims | `09`, `10` |
+| WEB-UI-R04, WEB-UI-R10 | `08`, `12`–`14`, `27` | the sourced matrix covers modality, locale/content/zoom/reflow, visible-evidence limits, and exact target boundaries while preserving the outcome | `09` |
+| WEB-UI-R10 | `12`–`14`, `17`, `19`, `20`, `27`, `31` | the full variation matrix, exact limits, lifecycle versions, and evidence ledger are freshly operated with bounded claims | `10` |
 | WEB-UI-R11 | `01`, `02`, `14`, `18`, `20`, `21`, `32` | each semantic, operated, adaptive, captured, automated, and counterfactual claim stays at its observable evidence owner | `11` |
 | WEB-UI-R12 | `19`, `22`, `23`, `31`, `33`, `34` | production and framework integration are complete and preserve browser outcomes through change, recovery, and handoff | `12` |
 

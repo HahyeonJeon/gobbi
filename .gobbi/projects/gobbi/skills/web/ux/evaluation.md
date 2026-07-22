@@ -44,10 +44,13 @@ evidence remains `NEEDS_CONTEXT`.
    Good case and distinct triggered
    external-dependency, identity, failure/recovery, irreversible, privacy, accessibility/locale, change, and
    counterfactual measurement cases. Record inspected reasons for plausible inapplicable triggers.
-3. Select every named operational `WEB-UX-CHECK-*` plus any directly applicable source item. Confirm its claim
-   preserves the full semantic union of every mapped case obligation in the reverse audit. Preserve its ID,
-   criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
-   UX and root web checks independently active.
+3. Treat each case-level `Trace` as the authoritative case-to-check relation. Before selection, prove exact set
+   equality among `Trace`, checklist `Seeds`, the check-level source ledger, the guaranteed-coverage map, and
+   the check-to-obligation reverse audit. A forward-only, reverse-only, grouped, or inferred edge is a finding.
+   Then select every named operational `WEB-UX-CHECK-*` plus any directly applicable source item. For every
+   retained edge, confirm the source item's actual PASS condition and named evidence—not reverse-audit prose—
+   preserve the full case-level `Obligation`. Preserve its ID, criticality, claim, applicability, pass
+   condition, evidence, on-fail route, and source wording. Keep generic UX and root web checks independently active.
 4. Copy each selection into `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
    `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
    operational pause points.
@@ -58,6 +61,16 @@ evidence remains `NEEDS_CONTEXT`.
    their respective owners; one evidence class cannot close another.
 6. Walk all seven perspectives and Overall. Findings name the child rule, scenario/check, exact entry/context/
    state, reproducible evidence, affected people/outcome, correction, and owner-correct verification.
+
+### Relation and obligation verification
+
+Compare normalized edge sets in all five projections bidirectionally and fail on any symmetric difference.
+Then enumerate every named primitive in each selected case `Obligation` and require every mapped item's actual
+PASS and evidence wording to own it. A time/interruption check cannot inherit external-handoff actor, purpose,
+domain, request, return, cancellation, or suspicious-mismatch trust primitives from a ledger; route those
+primitives to the trust item or state them in the actual predicate. Prove the method with disposable
+forward-only, reverse-only, and PASS/evidence-primitive-loss fixtures; counts, IDs, and audit prose alone are
+insufficient.
 
 ## Perspectives
 

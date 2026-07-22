@@ -55,10 +55,13 @@ new rule.
    Good case and every triggered minimum:
    external dependency, security/trust, irreversible effect, performance/resource, change/regression,
    accessibility/locale, and claim-integrity cases. Record a concrete reason for a plausible inapplicable case.
-3. Select every operational source item named by the scenarios, plus any directly applicable item even when no
-   selected scenario is a close fit. Confirm the selected item's claim preserves the full semantic union of
-   every mapped case obligation in the source ledger. Keep its ID, criticality, claim, applicability, pass
-   condition, evidence, on-fail route, and source wording unchanged.
+3. Treat each case-level `Trace` as the authoritative case-to-check relation. Before selection, prove exact set
+   equality among `Trace`, checklist `Seeds`, the check-level source ledger, the guaranteed-coverage map, and
+   the check-to-obligation reverse audit. A forward-only, reverse-only, grouped, or inferred edge is a finding.
+   Then select every named operational source item plus any directly applicable item even when no selected
+   scenario is a close fit. For every retained edge, confirm the check's actual PASS condition and named
+   evidence—not audit-table prose—preserve the full case-level `Obligation`. Keep its ID, criticality, claim,
+   applicability, pass condition, evidence, on-fail route, and source wording unchanged in the evaluation copy.
 4. Copy each selection into the active checklist's `## Stage 1 Additions` as an evaluator-owned coverage row.
    Set the evaluation-copy use-style to `do-confirm`; retain the operational pause-point ID only as trace
    metadata, because an evaluation copy has no operational pause point.
@@ -68,6 +71,15 @@ new rule.
    resolves `FAIL:<finding-id>`. A missing design precondition is not `n/a`.
 6. Walk all seven perspectives and Overall even when a lens produces zero findings. Findings point to the
    earliest owning WEB rule and include concrete evidence, impact, correction, and verification.
+
+### Relation and obligation verification
+
+The relation test is bidirectional and self-failing: compare normalized edge sets in all five projections and
+fail on any symmetric difference. Separately enumerate every named primitive in each selected case
+`Obligation`; require each mapped source item's actual PASS and evidence wording to own every primitive. Plant
+one forward-only edge, one reverse-only edge, and one obligation primitive absent from PASS/evidence in
+disposable fixtures and prove that the verifier rejects all three. Scenario/check counts, matching IDs, or an
+audit summary alone do not close either test.
 
 ## Evidence classes and claim boundaries
 

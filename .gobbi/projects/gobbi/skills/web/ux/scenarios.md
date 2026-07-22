@@ -57,6 +57,14 @@ their own cases.
 Case IDs are permanent `WEB-UX-SCENARIO-NN`; checklist reservations are permanent `WEB-UX-CHECK-NN`. A changed
 discrimination receives a new ID.
 
+### Authoritative case-to-check relation
+
+Each case-level `Trace` field is the authoritative case-to-check relation. Checklist `Seeds`, the source and
+guaranteed-coverage ledgers, and the check-to-obligation reverse audit must be exact projections of that set:
+no forward-only, reverse-only, grouped, or inferred edge is valid. Every retained edge also means the check's
+actual PASS condition and named evidence independently preserve the full case-level `Obligation`; a ledger or
+audit summary is not proof of that semantic union.
+
 ## WEB-UX-FAMILY-01 — Entry, URL, history, and return
 
 - **Primary category:** 4 Interfaces / dependencies / structure — URL, history, and browser-return contracts
@@ -443,7 +451,7 @@ discrimination receives a new ID.
 - **Evidence tuple:** operate normal/cancel/mismatch/late return; inspect content/URL/effect and safe exit.
 - **Obligation:** external handoff must make actor, purpose, domain, request, return status, cancellation, and
   suspicious mismatch understandable without training unsafe trust.
-- **Trace:** WEB-UX-R02, WEB-UX-R05, WEB-UX-R08; `WEB-UX-CHECK-02`, `-05`, `-08`.
+- **Trace:** WEB-UX-R02, WEB-UX-R05, WEB-UX-R08; `WEB-UX-CHECK-02`, `-08`.
 
 ### WEB-UX-SCENARIO-16 — Consent is coerced or analytics ignores refusal
 
@@ -725,22 +733,22 @@ trigger, and family 09 now has the dedicated failure case `36`.
 
 ## Source → scenario → obligation → check ledger
 
-The obligation column exposes the semantic union of the explicit case-level `Obligation` fields. The reserved
-check must preserve that whole union; a scenario reference alone is not the bridge.
+The obligation column exposes the semantic union of the explicit case-level `Obligation` fields. This
+check-level layout is an exact projection of `Trace`. `Check policy sources` identifies the rule(s) that own
+the check predicate; it does not assert a cross-product between every listed case and every rule.
 
-| Rules | Scenarios | Exposed obligation union | Reserved checks |
+| Check policy sources | Scenarios | Exposed obligation union | Reserved check |
 |---|---|---|---|
 | WEB-UX-R01 | `01`, `04`, `23` | accepted journey clauses remain traceable through every entry/state and the production handoff | `01` |
 | WEB-UX-R02 | `01`–`03`, `05`, `15`, `24`–`26`, `31`, `35`, `36` | safe URL/history meaning, direct orientation, external return, route/provider/framework change, and partial-failure recovery preserve intent without repeated effect | `02` |
 | WEB-UX-R03 | `01`, `04`, `05`, `12`, `37` | every entry and failure state, including a failed recovery route, independently explains location, status, consequence, next action, and support | `03` |
 | WEB-UX-R04 | `02`, `03`, `06`–`08`, `26`–`29` | stale, expiry, reauthentication, exact ordering, and authority change preserve only permissible context and truthful recovery | `04` |
-| WEB-UX-R05 | `03`, `06`, `07`, `09`–`11`, `15`, `17`, `24`, `26`–`28`, `30`, `32`, `36` | latency, interruption, duplicate/late result, exact time/confirmation edges, external/framework failure, and return preserve work and one effect | `05` |
+| WEB-UX-R05 | `03`, `06`, `07`, `09`–`11`, `17`, `24`, `26`–`28`, `30`, `32`, `36` | time, interruption, duplicate/late result, exact wait/session/confirmation edges, framework failure, and return preserve safe work and one authoritative effect | `05` |
 | WEB-UX-R06 | `07`, `09`–`13`, `27`, `30`, `37` | every failure class, uncertainty inversion, wait threshold, retry route, nested recovery failure, and support handoff remains actionable and diagnosable without harm | `06` |
 | WEB-UX-R07 | `14`, `17`, `32` | consequential commitments retain informed review, exact confirmation, one effect, receipt, reversal/dispute, and support | `07` |
-| WEB-UX-R08 | `02`, `08`, `14`–`16`, `29`, `31` | identity, authority, consent, external provider, account change, consequence, and refusal remain legible and non-coercive | `08` |
+| WEB-UX-R08 | `02`, `08`, `14`–`16`, `29`, `31` | identity, authority, consent, external provider actor/purpose/domain/request/mismatch, account change, consequence, and refusal remain legible and non-coercive | `08` |
 | WEB-UX-R09 | `18`, `19`, `33` | claims remain bounded to valid direct evidence and change when a material context or ethical condition is absent | `09` |
-| WEB-UX-R10 | `20`–`22`, `34` | the full outcome chain, authority reconciliation, missingness, and exact window edge remain defined, private, and falsifiable | `10` |
-| WEB-UX-R11 | `13`, `16`, `20`–`22`, `24`, `34`–`36` | support and instrumentation remain minimal, versioned, deduplicated, reconcilable, consent-aware, change-compatible, and recovery-aware | `10` |
+| WEB-UX-R10, WEB-UX-R11 | `13`, `16`, `20`–`22`, `24`, `34`–`36` | support and the full outcome chain remain private, versioned, joined, deduplicated, missingness-aware, exactly windowed, reconcilable, change-compatible, and falsifiable | `10` |
 | WEB-UX-R12 | `13`, `19`, `23`, `24`, `35`, `36` | production routes, content, identity, recovery, support, measurement, framework change/failure, and claim separation are complete | `11` |
 
 ## Failability and omission audit

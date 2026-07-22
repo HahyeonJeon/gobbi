@@ -47,6 +47,9 @@ No waiver can satisfy a current child pause point or the downstream root release
   return to P1 and the owning specification. **Evidence:** accepted-clause-to-production trace and inspected
   conflict log. **Source:** WEB-UI-R01. **Seeds:** `WEB-UI-SCENARIO-01`, `-03`,
   `-22`.
+  **Mapped-obligation condition:** PASS additionally requires accepted hierarchy, every activated truthful
+  state, and complete framework output to remain traceable without silent redesign. Evidence must join each
+  accepted clause to the implemented semantic/state/framework surface and its owner-correct passing proof.
 - [ ] `WEB-UI-CHECK-02` — **[gate/killer · `WEB-UI-PAUSE-1` · read-do · unconditional].** PASS if the rendered document uses meaningful native structure
   and controls, with logical source order and correct headings, landmarks, lists/tables/forms, labels,
   descriptions, relationships, status, and accessible name/role/value/state confirmed in the DOM/accessibility
@@ -55,6 +58,9 @@ No waiver can satisfy a current child pause point or the downstream root release
   **On FAIL:** inaccessible meaning/action can exclude users; stop release, open a blocking finding, and return
   to P2/P5. **Source:** WEB-UI-R02. **Seeds:** `WEB-UI-SCENARIO-01`, `-02`,
   `-09`, `-23`.
+  **Mapped-obligation condition:** PASS additionally requires native document/form semantics and custom or
+  framework control equivalence in identity, state, activation, disabling, correction, and form behavior.
+  Evidence must include DOM/tree inspection and operated applicable-modality/form transactions.
 - [ ] `WEB-UI-CHECK-03` — **[required · `WEB-UI-PAUSE-1` · read-do · unconditional].** PASS if every activated initial, empty, loading, partial, stale,
   invalid, disabled, pending, optimistic, success, error, recovery, unavailable, denied, and duplicate state
   has truthful visible/programmatic status and a safe next action reconciled to authoritative state; FAIL if
@@ -62,6 +68,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   P2/P6. **Evidence:** injected state table reconciled to visible/programmatic and authoritative state.
   **Source:** WEB-UI-R03. **Seeds:** `WEB-UI-SCENARIO-03`–`-05`, `-10`, `-11`, `-16`, `-18`, `-24`, `-25`,
   `-28`, `-29`.
+  **Mapped-obligation condition:** PASS additionally requires the complete truthful state model across
+  authority inversion, zero/one/many cardinality, invalid and rejected input, ready/pending edges, persistent
+  critical results, and rendering mismatch. Evidence must inject every selected primitive and reconcile
+  visible/programmatic status, work, focus/action, request/effect count, and authoritative state.
 
 ## Interaction and adaptation gates
 
@@ -72,6 +82,11 @@ No waiver can satisfy a current child pause point or the downstream root release
   input-mode exclusion blocks the outcome; stop release, open a blocking finding, and return to P3/P6.
   **Source:** WEB-UI-R04, WEB-UI-R05. **Seeds:**
   `WEB-UI-SCENARIO-06`, `-08`, `-12`, `-13`, `-27`.
+  **Mapped-obligation condition:** PASS additionally requires equivalent modality operation and alternatives
+  across every selected variation cell, including the longest locale/content at supported zoom/text
+  enlargement and narrow-viewport reflow edge, plus exact sourced target/spacing limits. Evidence must operate
+  the complete action/recovery path in each named cell and measure below/at/above target boundaries where
+  applicable; a matrix row or screenshot alone is insufficient.
 - [ ] `WEB-UI-CHECK-05` — **[gate/killer · `WEB-UI-PAUSE-2` · do-confirm · unconditional].** PASS if live operation confirms logical focus order and visible
   focus plus correct entry, validation/async result, containment, exit, and restoration, with inactive content
   neither operable nor exposed as active; FAIL if focus is lost, obscured, visually reordered, trapped
@@ -79,6 +94,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   traces across entry/error/exit. **On FAIL:** lost or leaked focus can trap/exclude users; stop release, open a
   blocking finding, and return to P3/P6. **Source:** WEB-UI-R05,
   WEB-UI-R06. **Seeds:** `WEB-UI-SCENARIO-02`, `-06`–`-08`, `-15`, `-23`, `-26`, `-30`.
+  **Mapped-obligation condition:** PASS additionally requires logical visible focus and restoration across
+  native/custom controls, all selected modalities, modal states, asynchronous removal, overlay-owner failure,
+  and framework-produced states. Evidence must operate every entry/result/exit and record active element,
+  surviving target, inactive subtree, and next action.
 - [ ] `WEB-UI-CHECK-06` — **[required · `WEB-UI-PAUSE-2` · do-confirm · conditional: the feature contains a form].** PASS if native form ownership, persistent
   labels, input types/autocomplete, instructions, constraints, invalid association/summary, error focus,
   retained safe input, review/correction, pending/duplicate behavior, server rejection, and recovery are
@@ -87,6 +106,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   traces; an `n/a` cites the inspected absence of a form. **On FAIL:** open a finding and return to P3/P6.
   **Source:** WEB-UI-R07. **Seeds:**
   `WEB-UI-SCENARIO-09`–`-11`, `-28`, `-29`.
+  **Mapped-obligation condition:** PASS additionally requires valid, browser-invalid, server-rejected,
+  repeatedly activated, and exact ready-to-pending transactions to retain labels, errors, safe work, useful
+  focus, and one authoritative effect. Evidence must operate each class and exact edge while inspecting DOM
+  relationships, values, request/effect count, announcements, and recovery.
 - [ ] `WEB-UI-CHECK-07` — **[required · `WEB-UI-PAUSE-2` · do-confirm · conditional: an overlay or asynchronous change exists].** PASS if trigger,
   ownership, label, dismissal, escape/outside behavior, focus, inactive background, scroll, stacking, progress,
   status announcement, cancellation, late result, terminal state, and persistent recovery all match the locked
@@ -94,6 +117,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   transition/focus/status/background traces; an `n/a` cites the inspected absence of both triggers. **On FAIL:**
   open a finding and return to P3/P6. **Source:** WEB-UI-R06, WEB-UI-R08. **Seeds:**
   `WEB-UI-SCENARIO-04`, `-05`, `-07`, `-10`, `-11`, `-15`, `-16`, `-24`, `-26`, `-29`, `-30`.
+  **Mapped-obligation condition:** PASS additionally requires every optimistic, stale/partial, modal, form,
+  transient, inverted-authority, async-removal, pending-edge, and owner-failure result to remain authoritative,
+  announced, controlled, persistent where critical, and recoverable. Evidence must operate each terminal
+  result and inspect work, focus, background, status, effect count, dismissal/cancel, and recovery.
 - [ ] `WEB-UI-CHECK-08` — **[required · `WEB-UI-PAUSE-2` · do-confirm · conditional: one listed rendering lifecycle is promised or activated].** PASS if direct entry, navigation,
   refresh, back/forward, restore, pre/server-rendering, hydration, delayed/unavailable JavaScript as promised,
   stale assets, and duplicate initialization preserve semantics, state, form values, focus, events, and recovery
@@ -102,6 +129,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   cites the project lifecycle map. **On FAIL:** open a finding and return to P4/P6 and the framework owner.
   **Source:** WEB-UI-R09.
   **Seeds:** `WEB-UI-SCENARIO-17`–`-19`, `-22`, `-23`, `-31`, `-33`, `-34`.
+  **Mapped-obligation condition:** PASS additionally requires direct/render/restore/framework lifecycle
+  continuity, mixed-version compatibility, complete production behavior, and partial-failure recovery.
+  Evidence must operate before/after and supported mixed or failed states while inspecting semantics, content,
+  form values, state, focus, route, listeners/events, authoritative effects, and recovery.
 
 ## Matrix, evidence, and production gates
 
@@ -112,12 +143,20 @@ No waiver can satisfy a current child pause point or the downstream root release
   **Evidence:** sourced matrix and live per-cell operation results. **On FAIL:** open a finding and return to
   P4/P7. **Source:** WEB-UI-R04, WEB-UI-R10. **Seeds:**
   `WEB-UI-SCENARIO-08`, `-12`–`-14`, `-27`.
+  **Mapped-obligation condition:** PASS additionally requires the sourced matrix to cover modality,
+  locale/content/zoom/reflow, captured-evidence limits, and exact target boundaries while preserving the
+  complete outcome. Evidence must name and operate every selected cell, measure exact target edges, and leave
+  unobserved semantic/focus/interaction/conformance claims open.
 - [ ] `WEB-UI-CHECK-10` — **[required · `WEB-UI-PAUSE-3` · do-confirm · unconditional].** PASS if the selected matrix was freshly exercised with live
   resizing/zoom/preferences/content plus operated actions, and every result records environment, state,
   artifact, freshness, and limitation; FAIL if one static viewport or unexecuted matrix is reported as
   coverage. **Evidence:** fresh result ledger with environment/state/artifact/freshness/limit. **On FAIL:** open
   a finding and return to P4/P7. **Source:** WEB-UI-R10.
   **Seeds:** `WEB-UI-SCENARIO-12`–`-14`, `-17`, `-19`, `-20`, `-27`, `-31`.
+  **Mapped-obligation condition:** PASS additionally requires fresh operation of the full variation matrix,
+  exact content/target limits, direct/render/restore lifecycle states, and supported lifecycle versions with
+  bounded claim records. Evidence must include environment, state/version, action, artifact, freshness,
+  result, and limitation for each selected primitive.
 - [ ] `WEB-UI-CHECK-11` — **[required · `WEB-UI-PAUSE-3` · do-confirm · unconditional].** PASS if source/static, DOM/accessibility-tree, operated
   keyboard/pointer/touch, live adaptation, captured rendering, and inherited representative-user evidence each
   support only their observable claim; FAIL if a screenshot, DOM snapshot, automated scan, framework/library,
@@ -125,6 +164,10 @@ No waiver can satisfy a current child pause point or the downstream root release
   collect owner-correct evidence. **Evidence:** resolvable interface claim-owner matrix. **Source:** WEB-UI-R11.
   **Seeds:** `WEB-UI-SCENARIO-01`, `-02`, `-14`,
   `-18`, `-20`, `-21`, `-32`.
+  **Mapped-obligation condition:** PASS additionally requires semantic, operated, adaptive, captured,
+  automated, representative-user, and hidden-property counterfactual claims to change only with their
+  observable evidence owner. Evidence must resolve paired control/broken artifacts and show that pixels or
+  scans do not close DOM/tree, focus, interaction, adaptation, conformance, or acceptance.
 - [ ] `WEB-UI-CHECK-12` — **[gate/killer · `WEB-UI-PAUSE-3` · do-confirm · unconditional].** PASS if all affected production markup/styles/
   behavior, routes, state/error bindings, tests, docs, diagnostics, and compatibility surfaces are complete,
   every framework-specific decision is owned by its framework skill, and browser outcomes pass without mocks
@@ -133,35 +176,42 @@ No waiver can satisfy a current child pause point or the downstream root release
   owner record. **On FAIL:** partial or unowned production behavior can break the released interface; stop
   release, open a blocking finding, and return to P6/P8 and the owning framework skill. **Source:**
   WEB-UI-R12. **Seeds:** `WEB-UI-SCENARIO-19`, `-22`, `-23`, `-31`, `-33`, `-34`.
+  **Mapped-obligation condition:** PASS additionally requires production/framework completeness through
+  restore failure, framework convention probes, supported version changes, partial rollout recovery, and root
+  handoff. Evidence must inspect all affected production surfaces and operate compatible, failed, rollback, or
+  forward-fix paths without mocks while preserving framework-owner boundaries.
 
 ## Guaranteed coverage map
 
-| Child rule | Checks | Scenario coverage |
+This check-level map is an exact projection of the authoritative case `Trace` relation.
+
+| Check | Check policy sources | Scenario coverage |
 |---|---|---|
-| WEB-UI-R01 | `01` | `01`, `03`, `22` |
-| WEB-UI-R02 | `02` | `01`, `02`, `09`, `23` |
-| WEB-UI-R03 | `03` | `03`–`05`, `10`, `11`, `16`, `18`, `24`, `25`, `28`, `29` |
-| WEB-UI-R04 | `04`, `09` | `08`, `12`–`14`, `27` |
-| WEB-UI-R05 | `04`, `05` | `02`, `06`, `08`, `27` |
-| WEB-UI-R06 | `05`, `07` | `06`, `07`, `15`, `23`, `26`, `30` |
-| WEB-UI-R07 | `06` | `09`–`11`, `28`, `29` |
-| WEB-UI-R08 | `07` | `04`, `05`, `07`, `10`, `11`, `15`, `16`, `24`, `26`, `29`, `30` |
-| WEB-UI-R09 | `08` | `17`–`19`, `22`, `23`, `31`, `33`, `34` |
-| WEB-UI-R10 | `09`, `10` | `12`–`14`, `17`, `19`, `20`, `27`, `31` |
-| WEB-UI-R11 | `11` | `01`, `02`, `14`, `18`, `20`, `21`, `32` |
-| WEB-UI-R12 | `12` | `19`, `22`, `23`, `31`, `33`, `34` |
+| `01` | WEB-UI-R01 | `01`, `03`, `22` |
+| `02` | WEB-UI-R02 | `01`, `02`, `09`, `23` |
+| `03` | WEB-UI-R03 | `03`–`05`, `10`, `11`, `16`, `18`, `24`, `25`, `28`, `29` |
+| `04` | WEB-UI-R04, WEB-UI-R05 | `06`, `08`, `12`, `13`, `27` |
+| `05` | WEB-UI-R05, WEB-UI-R06 | `02`, `06`–`08`, `15`, `23`, `26`, `30` |
+| `06` | WEB-UI-R07 | `09`–`11`, `28`, `29` |
+| `07` | WEB-UI-R06, WEB-UI-R08 | `04`, `05`, `07`, `10`, `11`, `15`, `16`, `24`, `26`, `29`, `30` |
+| `08` | WEB-UI-R09 | `17`–`19`, `22`, `23`, `31`, `33`, `34` |
+| `09` | WEB-UI-R04, WEB-UI-R10 | `08`, `12`–`14`, `27` |
+| `10` | WEB-UI-R10 | `12`–`14`, `17`, `19`, `20`, `27`, `31` |
+| `11` | WEB-UI-R11 | `01`, `02`, `14`, `18`, `20`, `21`, `32` |
+| `12` | WEB-UI-R12 | `19`, `22`, `23`, `31`, `33`, `34` |
 
 ## Check-to-obligation union audit
 
 This table is the reverse sweep from each reserved check to every mapped case-level obligation in
-[`scenarios.md`](scenarios.md). The check's PASS condition must preserve the whole stated union.
+[`scenarios.md`](scenarios.md). It is an exact projection of `Trace`. The third column summarizes, but does not
+replace, the actual `Mapped-obligation condition` and evidence wording inside each check item.
 
 | Check | Scenario obligations consumed | Union preserved by the check |
 |---|---|---|
 | `01` | `01`, `03`, `22` | trace accepted hierarchy, all states, and completed framework output without silent redesign |
 | `02` | `01`, `02`, `09`, `23` | native document/form semantics plus proven custom/framework control equivalence |
 | `03` | `03`–`05`, `10`, `11`, `16`, `18`, `24`, `25`, `28`, `29` | truthful complete state model across authority inversion, cardinality, invalid/rejected input, pending edges, persistent results, and mismatch |
-| `04` | `06`, `08`, `12`, `13`, `27` | equivalent modality operation, alternatives, variation cells, content edges, and exact target limits |
+| `04` | `06`, `08`, `12`, `13`, `27` | equivalent modality operation and alternatives across full variation cells, exact locale/content/zoom/reflow edges, and target limits |
 | `05` | `02`, `06`–`08`, `15`, `23`, `26`, `30` | logical visible focus and restoration across controls, modalities, modal/async removal, overlays, and framework states |
 | `06` | `09`–`11`, `28`, `29` | valid, invalid, rejected, repeated, and exact-edge form transactions with retained work and one effect |
 | `07` | `04`, `05`, `07`, `10`, `11`, `15`, `16`, `24`, `26`, `29`, `30` | complete truthful async/overlay ownership, status, focus, persistence, cancellation, late result, and recovery |

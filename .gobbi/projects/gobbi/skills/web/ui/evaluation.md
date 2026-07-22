@@ -42,10 +42,13 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
    Good case plus distinct triggered
    accessibility, locale/content, failure/recovery, lifecycle/change, and adversarial evidence cases. Give an
    inspected reason for each plausible inapplicable trigger.
-3. Select every named operational `WEB-UI-CHECK-*` plus any directly applicable source item. Confirm its claim
-   preserves the full semantic union of every mapped case obligation in the reverse audit. Preserve its ID,
-   criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
-   UI and root web items independently active.
+3. Treat each case-level `Trace` as the authoritative case-to-check relation. Before selection, prove exact set
+   equality among `Trace`, checklist `Seeds`, the check-level source ledger, the guaranteed-coverage map, and
+   the check-to-obligation reverse audit. A forward-only, reverse-only, grouped, or inferred edge is a finding.
+   Then select every named operational `WEB-UI-CHECK-*` plus any directly applicable source item. For every
+   retained edge, confirm the source item's actual PASS condition and named evidence—not reverse-audit prose—
+   preserve the full case-level `Obligation`. Preserve its ID, criticality, claim, applicability, pass
+   condition, evidence, on-fail route, and source wording. Keep generic UI and root web items independently active.
 4. Copy each selection under `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
    `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
    operational pause points.
@@ -56,6 +59,15 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
    as substitutes for live or hidden properties they cannot observe.
 6. Walk all seven perspectives and Overall. Findings cite the child rule, scenario/check, exact state/matrix
    cell, reproducible evidence, user impact, correction, and owner-correct verification.
+
+### Relation and obligation verification
+
+Compare normalized edge sets in all five projections bidirectionally and fail on any symmetric difference.
+Then enumerate every named primitive in each selected case `Obligation` and require every mapped item's actual
+PASS and evidence wording to own it. In particular, a modality predicate cannot inherit locale, content,
+zoom/text-enlargement, reflow, or narrow-viewport obligations from a matrix table: those primitives must be in
+the item itself. Prove the method with disposable forward-only, reverse-only, and PASS/evidence-primitive-loss
+fixtures; counts, matching IDs, and audit prose alone are insufficient.
 
 ## Perspectives
 
