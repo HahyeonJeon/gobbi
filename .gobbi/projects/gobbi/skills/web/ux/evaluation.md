@@ -40,10 +40,12 @@ evidence remains `NEEDS_CONTEXT`.
    context transitions; latency/interruption/stale/duplicate states; failures/recovery/support; trust/privacy/
    consequential actions; representative contexts; event/outcome definitions; framework integration; and
    production handoff.
-2. Select every applicable `WEB-UX-SCENARIO-*`, including each family Good case and distinct triggered
+2. Select every applicable `WEB-UX-SCENARIO-*` and its explicit case-level `Obligation`, including each family
+   Good case and distinct triggered
    external-dependency, identity, failure/recovery, irreversible, privacy, accessibility/locale, change, and
    counterfactual measurement cases. Record inspected reasons for plausible inapplicable triggers.
-3. Select every named operational `WEB-UX-CHECK-*` plus any directly applicable source item. Preserve its ID,
+3. Select every named operational `WEB-UX-CHECK-*` plus any directly applicable source item. Confirm its claim
+   preserves the full semantic union of every mapped case obligation in the reverse audit. Preserve its ID,
    criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
    UX and root web checks independently active.
 4. Copy each selection into `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to

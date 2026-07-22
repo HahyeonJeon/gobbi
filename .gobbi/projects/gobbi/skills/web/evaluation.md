@@ -51,12 +51,14 @@ new rule.
 
 1. Map the feature to scope, actors, URL/browser state, server/data/provider effects, trust crossings,
    quality targets, UI/UX evidence, compatibility, operations, and claims.
-2. Select every applicable `WEB-SCENARIO-*`. Include each family's Good case and every triggered minimum:
+2. Select every applicable `WEB-SCENARIO-*` and its explicit case-level `Obligation`. Include each family's
+   Good case and every triggered minimum:
    external dependency, security/trust, irreversible effect, performance/resource, change/regression,
    accessibility/locale, and claim-integrity cases. Record a concrete reason for a plausible inapplicable case.
 3. Select every operational source item named by the scenarios, plus any directly applicable item even when no
-   selected scenario is a close fit. Keep its ID, criticality, claim, applicability, pass condition, evidence,
-   on-fail route, and source wording unchanged.
+   selected scenario is a close fit. Confirm the selected item's claim preserves the full semantic union of
+   every mapped case obligation in the source ledger. Keep its ID, criticality, claim, applicability, pass
+   condition, evidence, on-fail route, and source wording unchanged.
 4. Copy each selection into the active checklist's `## Stage 1 Additions` as an evaluator-owned coverage row.
    Set the evaluation-copy use-style to `do-confirm`; retain the operational pause-point ID only as trace
    metadata, because an evaluation copy has no operational pause point.

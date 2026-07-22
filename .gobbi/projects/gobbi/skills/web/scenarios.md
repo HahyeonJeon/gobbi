@@ -5,7 +5,7 @@ Scenario source for [`SKILL.md`](SKILL.md). Its consumers are [`checklists.md`](
 design obligations plus implementation/evaluation coverage. Scope is one release-ready web feature; adjacent
 outcomes and framework-specific idioms are non-goals. Sensitive evidence is referenced, not copied.
 
-Scale: ten families and 28 cases. Split the set if it grows beyond about 12 families or 40 distinct
+Scale: ten families and 32 cases. Split the set if it grows beyond about 12 families or 40 distinct
 category/type cells.
 
 ## Coverage register
@@ -30,14 +30,14 @@ Every family has a positive floor and an adversarial face. Triggered minima have
 | Family | Good | Alternative | Negative | Boundary | Failure/recovery | Adversarial | Change | Counterfactual |
 |---|---|---|---|---|---|---|---|---|
 | `01` | `01` | n/a: one locked outcome | n/a: no invalid input | n/a: no finite edge | n/a: owned by `06` | `02` | n/a: no version event | n/a: outcome is user-locked |
-| `02` | `03` | n/a: claims select their own representative contexts | n/a: missing precondition is recovery | n/a: no fixed participant count | `04` | `04` | n/a: no version event | n/a: context is inspected |
+| `02` | `03` | n/a: claims select their own representative contexts | n/a: missing precondition is recovery | n/a: no fixed participant count | `04` | `29` | n/a: no version event | n/a: context is inspected |
 | `03` | `05` | n/a: alternate entry is in `04` | n/a: invalid input is trust-owned | `06` | n/a: owned by `06` | `07` | n/a: change owned by `09` | n/a: state is observable |
-| `04` | `08` | `10` | n/a: malformed input is trust-owned | n/a: no finite edge | `09` | `10` | n/a: lifecycle change owned by `09` | n/a: contracts are inspected |
+| `04` | `08` | `10` | n/a: malformed input is trust-owned | n/a: no finite edge | `09` | `30` | n/a: lifecycle change owned by `09` | n/a: contracts are inspected |
 | `05` | `11` | n/a: target varies by project context | n/a: no invalid input | `12` | n/a: reliability failure owned by `06` | `13` | n/a: target versions recorded, not changed here | n/a: target source is inspected |
-| `06` | `14` | n/a: recovery routes share one contract | n/a: invalid input is trust-owned | `15` | `15` | `16` | n/a: planned rollback owned by `09` | n/a: failure is injected |
+| `06` | `14` | n/a: recovery routes share one contract | n/a: invalid input is trust-owned | `31` | `15` | `16` | n/a: planned rollback owned by `09` | n/a: failure is injected |
 | `07` | `17` | n/a: one least-authority floor | `18` | n/a: rate/capacity edges select `05` | n/a: operational recovery owned by `06` | `19` | n/a: requirement version is evidence metadata | n/a: trust boundaries are traced |
 | `08` | `20` | `21` | n/a: exclusion is adversarial | n/a: exact reflow/focus edges live in `web/ui` | n/a: access recovery lives in child cases | `22` | n/a: compatibility owned by `09` | n/a: modalities are operated |
-| `09` | `23` | n/a: one compatible rollout contract | n/a: invalid input is not the change | n/a: version edge is the change case | `25` | `24` | `23`, `25` | n/a: change is exercised |
+| `09` | `32` | n/a: one compatible rollout contract | n/a: invalid input is not the change | n/a: version edge is the change case | `25` | `24` | `23` | n/a: change is exercised |
 | `10` | `26` | n/a: evidence classes are combined, not interchangeable | n/a: missing evidence is a failed claim | n/a: no finite edge | n/a: proof failure appears as adversarial | `27` | n/a: evidence revisions retain IDs | `28` |
 
 ## Sources and IDs
@@ -57,6 +57,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R01, WEB-R15; P1.
 - **Actor/outcome:** the intended user completes one feature without absorbing neighboring outcomes.
 - **Applicability:** every run; gate.
+- **Cases:** `WEB-SCENARIO-01`, `WEB-SCENARIO-02`.
 
 ### WEB-SCENARIO-01 — Complete login outcome
 
@@ -86,6 +87,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R03, WEB-R04; P2.
 - **Actor/outcome:** product owners and representative users supply distinct decisions and evidence.
 - **Applicability:** every user-facing feature; gate.
+- **Cases:** `WEB-SCENARIO-03`, `WEB-SCENARIO-04`, `WEB-SCENARIO-29`.
 
 ### WEB-SCENARIO-03 — Applicable UI and UX chains are completed
 
@@ -100,8 +102,8 @@ discrimination receives a new ID.
 
 ### WEB-SCENARIO-04 — Missing representative evidence is hidden by technical completion
 
-- **Primary type / coverage-role:** Failure/recovery / {Failure/recovery, Adversarial}; a missing design
-  precondition is masked by a working build.
+- **Primary type / coverage-role:** Failure/recovery / {Failure/recovery}; recovery from a missing design
+  precondition is the discharge; its adversarial match is exercised independently by scenario 29.
 - **Given/When/Then:** Given required representative users, consent, or accommodations are unavailable, when
   all automated tests pass, then design acceptance remains `NEEDS_CONTEXT` and release readiness is blocked
   while a recovery plan is recorded.
@@ -111,6 +113,20 @@ discrimination receives a new ID.
 - **Obligation:** technical proof cannot replace design acceptance evidence.
 - **Trace:** WEB-R04, WEB-R13; `WEB-CHECK-03`, `WEB-CHECK-13`.
 
+### WEB-SCENARIO-29 — Technical green status is used to overwrite design status
+
+- **Primary type / coverage-role:** Adversarial / {Adversarial}; a release claimant intentionally attempts to
+  promote technical completion into design acceptance.
+- **Given/When/Then:** Given the design ledger records missing or non-representative evidence, when a green
+  build, audit, or implementation demo is used to rewrite that ledger as accepted, then the claim is rejected,
+  the original design state remains, and release readiness stays blocked.
+- **Failure oracle:** changing the technical status changes the design-acceptance status without new direct
+  representative-user evidence.
+- **Evidence tuple:** compare the frozen design and release claim ledgers; apply the technical-green claim;
+  confirm design status and release blocking remain unchanged.
+- **Obligation:** claim aggregation must reject technical evidence used as a design-acceptance override.
+- **Trace:** WEB-R04, WEB-R13; `WEB-CHECK-03`, `WEB-CHECK-13`.
+
 ## WEB-FAMILY-03 — Vertical state and data behavior
 
 - **Primary category:** 3. Correct state/effect transitions define the family.
@@ -118,6 +134,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R05, WEB-R07, WEB-R11; P3/P5–P7.
 - **Actor/outcome:** browser, server, and data/provider state agree through completion.
 - **Applicability:** every run; gate.
+- **Cases:** `WEB-SCENARIO-05`–`WEB-SCENARIO-07`.
 
 ### WEB-SCENARIO-05 — Thin vertical skeleton proves one real path
 
@@ -158,6 +175,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R02, WEB-R05, WEB-R14; P3/P5.
 - **Actor/outcome:** current consumers and providers keep a clear, compatible contract.
 - **Applicability:** every cross-layer feature; gate.
+- **Cases:** `WEB-SCENARIO-08`–`WEB-SCENARIO-10`, `WEB-SCENARIO-30`.
 
 ### WEB-SCENARIO-08 — Existing contracts are preserved deliberately
 
@@ -182,8 +200,8 @@ discrimination receives a new ID.
 
 ### WEB-SCENARIO-10 — React integration violates the web contract
 
-- **Primary type / coverage-role:** Alternative-valid / {Alternative-valid, Adversarial}; React is a valid
-  implementation whose framework behavior attempts to override web outcomes.
+- **Primary type / coverage-role:** Alternative-valid / {Alternative-valid}; React is a materially different
+  valid realization; framework-ownership gaming is exercised independently by scenario 30.
 - **Given/When/Then:** Given a React realization uses server rendering, client routing, and component state,
   when hydration differs, a tree/key change resets user work, or routing breaks refresh/history, then the web
   feature fails without prescribing a React API fix.
@@ -194,6 +212,20 @@ discrimination receives a new ID.
   navigation outcomes.
 - **Trace:** WEB-R10, WEB-R14; `WEB-CHECK-05`, `WEB-CHECK-10`.
 
+### WEB-SCENARIO-30 — Framework ownership is used as an acceptance shortcut
+
+- **Primary type / coverage-role:** Adversarial / {Adversarial}; framework authority intentionally attempts to
+  replace operated web evidence.
+- **Given/When/Then:** Given a framework or router is project-standard and its unit tests pass, when that status
+  is offered instead of direct URL, history, semantic, recovery, and state-continuity proof, then every
+  unobserved web claim remains open and any browser-contract failure blocks the feature.
+- **Failure oracle:** library adoption, framework popularity, or framework-local tests satisfy a web outcome
+  without operating the affected browser contract.
+- **Evidence tuple:** inspect the framework claim and owner map; operate the omitted web paths; confirm the
+  shortcut is rejected and any violation remains visible.
+- **Obligation:** framework ownership cannot substitute for owner-correct web outcome evidence.
+- **Trace:** WEB-R10, WEB-R14; `WEB-CHECK-05`, `WEB-CHECK-10`, `WEB-CHECK-14`.
+
 ## WEB-FAMILY-05 — Quality targets and resource evidence
 
 - **Primary category:** 5. Context-owned quality targets define the discrimination.
@@ -201,6 +233,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R09, WEB-R10; P4/P8.
 - **Actor/outcome:** users and operators receive evidenced feature quality without universal thresholds.
 - **Applicability:** every run; target selection varies.
+- **Cases:** `WEB-SCENARIO-11`–`WEB-SCENARIO-13`.
 
 ### WEB-SCENARIO-11 — Applicable quality targets have owners and sources
 
@@ -242,6 +275,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R08, WEB-R12; P4/P7–P10.
 - **Actor/outcome:** users and operators safely recover or stop.
 - **Applicability:** every feature with state/effects; gate.
+- **Cases:** `WEB-SCENARIO-14`–`WEB-SCENARIO-16`, `WEB-SCENARIO-31`.
 
 ### WEB-SCENARIO-14 — Known failure is truthful and recoverable
 
@@ -255,8 +289,8 @@ discrimination receives a new ID.
 
 ### WEB-SCENARIO-15 — Timeout and late result cross the exact boundary
 
-- **Primary type / coverage-role:** Failure/recovery / {Boundary, Failure/recovery}; timeout is inseparable from
-  the exact late-result transition.
+- **Primary type / coverage-role:** Failure/recovery / {Failure/recovery}; late-result reconciliation defines
+  the recovery discharge; an independent configured-limit boundary is exercised by scenario 31.
 - **Given/When/Then:** Given an operation can finish just before, at, or after timeout, when the boundary is
   crossed, then one terminal interpretation, safe retry/cancel, late-result reconciliation, and telemetry
   remain coherent.
@@ -264,6 +298,20 @@ discrimination receives a new ID.
 - **Evidence tuple:** observe states/events; inject below/at/above timing; confirm one reconciled outcome.
 - **Obligation:** exact timeout transitions need late-result and recovery behavior.
 - **Trace:** WEB-R08; `WEB-CHECK-08`, `WEB-CHECK-09`.
+
+### WEB-SCENARIO-31 — Retry stops at the configured limit
+
+- **Primary type / coverage-role:** Boundary / {Boundary}; the below/at/above transition at the project-owned
+  retry limit defines this case without requiring an injected dependency failure.
+- **Given/When/Then:** Given a sourced bounded retry policy, when attempts occur below, at, and one beyond its
+  exact limit, then permitted attempts retain one truthful outcome while the first disallowed attempt is
+  refused before work, explains the next safe action, and does not amplify effects or cost.
+- **Failure oracle:** an extra attempt starts work, the last permitted attempt is refused, or the interface
+  silently loops past the configured bound.
+- **Evidence tuple:** inspect the sourced limit; exercise below/at/above counts; confirm request, effect, status,
+  telemetry, and next action at each point.
+- **Obligation:** every configured retry limit needs exact enforcement before another effect begins.
+- **Trace:** WEB-R08, WEB-R09; `WEB-CHECK-08`, `WEB-CHECK-09`.
 
 ### WEB-SCENARIO-16 — Retry converts recovery into duplicate harm
 
@@ -282,6 +330,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R06, WEB-R09; P3/P7/P8.
 - **Actor/outcome:** only authorized actors cause permitted effects with minimized data exposure.
 - **Applicability:** every run; gate.
+- **Cases:** `WEB-SCENARIO-17`–`WEB-SCENARIO-19`.
 
 ### WEB-SCENARIO-17 — Trust and data boundaries are explicit
 
@@ -322,6 +371,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R03, WEB-R04, WEB-R09; `SRC-WEB-UI`, `SRC-WEB-UX`.
 - **Actor/outcome:** people in applicable ability, input, language, and context variants complete and recover.
 - **Applicability:** every user-facing feature; gate.
+- **Cases:** `WEB-SCENARIO-20`–`WEB-SCENARIO-22`.
 
 ### WEB-SCENARIO-20 — Required paths work across applicable modalities
 
@@ -361,15 +411,32 @@ discrimination receives a new ID.
 - **Source:** WEB-R02, WEB-R11, WEB-R12, WEB-R14; P7/P10.
 - **Actor/outcome:** existing users/data and operators survive change and reversal.
 - **Applicability:** every feature changing contracts, state, configuration, or runtime behavior.
+- **Cases:** `WEB-SCENARIO-23`–`WEB-SCENARIO-25`, `WEB-SCENARIO-32`.
 
 ### WEB-SCENARIO-23 — Compatible rollout preserves old and new paths
 
-- **Primary type / coverage-role:** Change/regression / {Good, Change/regression}; safe change succeeds.
+- **Primary type / coverage-role:** Change/regression / {Change/regression}; the before/during/after lifecycle
+  comparison is the discharge; ordinary rollout readiness is exercised independently by scenario 32.
 - **Given/When/Then:** Given existing clients, sessions, data, or provider state, when migration/rollout begins,
   then compatibility, sequencing, observability, stop conditions, and rollback keep data and outcomes valid.
 - **Failure oracle:** mixed versions corrupt, strand, misread, or falsely complete the feature.
 - **Evidence tuple:** observe before/during/after state; rehearse rollout matrix; confirm compatibility.
 - **Obligation:** lifecycle change needs mixed-state and reversal proof.
+- **Trace:** WEB-R02, WEB-R11, WEB-R12; `WEB-CHECK-11`, `WEB-CHECK-12`.
+
+### WEB-SCENARIO-32 — Release change is prepared before deployment authority
+
+- **Primary type / coverage-role:** Good / {Good}; ordinary release preparation defines this case while the
+  change comparison remains scenario 23's discrimination.
+- **Given/When/Then:** Given a production-complete feature changes routes, state, configuration, data, or a
+  provider, when its release-ready handoff is prepared before any deployment, then sequencing, monitoring,
+  stop conditions, partial-state handling, rollback/forward-fix, support, and the separate authority state are
+  complete and resolvable by a cold operator.
+- **Failure oracle:** planned work, a code-only rollback, or implied deployment authority is called a complete
+  release-ready handoff.
+- **Evidence tuple:** resolve the production and release bundle as a cold operator; rehearse the instructions;
+  confirm every applicable control and the separate authority state.
+- **Obligation:** ordinary release preparation must close the full operational handoff without deploying.
 - **Trace:** WEB-R02, WEB-R11, WEB-R12; `WEB-CHECK-11`, `WEB-CHECK-12`.
 
 ### WEB-SCENARIO-24 — Framework child waives the web contract
@@ -384,8 +451,8 @@ discrimination receives a new ID.
 
 ### WEB-SCENARIO-25 — Rollback is attempted after an incompatible effect
 
-- **Primary type / coverage-role:** Failure/recovery / {Change/regression, Failure/recovery}; planned reversal
-  is exercised after partial rollout.
+- **Primary type / coverage-role:** Failure/recovery / {Failure/recovery}; recovery after a partial rollout is
+  the discharge; lifecycle change is independently discharged by scenario 23.
 - **Given/When/Then:** Given code, config, schema, or provider changes are partly active, when a stop condition
   fires, then rollback/forward-fix preserves data, reconciles effects, and restores an operable path.
 - **Failure oracle:** code rollback leaves unreadable data, orphan effects, or no user recovery.
@@ -400,6 +467,7 @@ discrimination receives a new ID.
 - **Source:** WEB-R10, WEB-R13; P8–P10.
 - **Actor/outcome:** a cold reviewer can verify every readiness claim without hidden context.
 - **Applicability:** every run; gate.
+- **Cases:** `WEB-SCENARIO-26`–`WEB-SCENARIO-28`.
 
 ### WEB-SCENARIO-26 — Claim-owner matrix supports a bounded handoff
 
@@ -434,28 +502,46 @@ discrimination receives a new ID.
 - **Obligation:** measurement must distinguish attempted, visible, and authoritative completion.
 - **Trace:** WEB-R09, WEB-R13; `WEB-CHECK-09`, `WEB-CHECK-13`.
 
+## Multi-role construction audit
+
+Each original multi-role case was challenged with a dedicated single-type construction. Every secondary
+discrimination was independently constructible or already had a distinct case, so no n-ary record remains.
+
+| Original case | Attempted secondary construction | Disposition |
+|---|---|---|
+| `04` | intentional claim promotion can be exercised without making the evidence condition itself fail | keep Failure/recovery on `04`; append Adversarial `29` |
+| `10` | framework-evidence gaming can be exercised without changing the alternative-valid React realization | keep Alternative-valid on `10`; append Adversarial `30` |
+| `15` | a configured retry-count edge can be exercised without injecting a timeout or late result | keep Failure/recovery on `15`; append Boundary `31` |
+| `23` | ordinary release preparation can be exercised without using the before/after change comparison as its discharge | keep Change/regression on `23`; append Good `32` |
+| `25` | the existing `23` change case independently discriminates lifecycle compatibility | keep Failure/recovery on `25`; use existing Change/regression `23` |
+
+The gaming probe rejected relabeled clones: `29` changes the claim-aggregation actor and oracle; `30` changes
+the evidence shortcut; `31` changes the exact finite edge; and `32` changes the ordinary release-preparation
+outcome. Each produces an observable result that its source case does not.
+
 ## Source-to-obligation ledger
 
 | Parent rules | Scenarios | Reserved checks |
 |---|---|---|
 | WEB-R01, WEB-R15 | `01`, `02`, `07` | `01`, `12` |
-| WEB-R02 | `08`, `23` | `04`, `05`, `11` |
-| WEB-R03, WEB-R04 | `03`, `04`, `20` | `02`, `03`, `14` |
+| WEB-R02 | `08`, `23`, `32` | `04`, `05`, `11` |
+| WEB-R03, WEB-R04 | `03`, `04`, `20`, `29` | `02`, `03`, `14` |
 | WEB-R05 | `05`, `08`, `09` | `04`, `05` |
 | WEB-R06 | `16`–`19` | `07` |
 | WEB-R07 | `05`, `06`, `27` | `06` |
 | WEB-R08 | `06`, `07`, `09`, `14`–`16` | `08` |
-| WEB-R09 | `11`, `12`, `14`, `17`, `20`, `21`, `28` | `09` |
-| WEB-R10 | `07`, `10`, `13`, `20`, `22`, `26`, `27` | `10` |
-| WEB-R11 | `05`, `23` | `11` |
-| WEB-R12 | `23`, `25`, `27` | `12` |
-| WEB-R13 | `04`, `12`, `26`, `28` | `13` |
-| WEB-R14 | `10`, `24` | `14` |
+| WEB-R09 | `11`, `12`, `14`, `17`, `20`, `21`, `28`, `31` | `09` |
+| WEB-R10 | `07`, `10`, `13`, `20`, `22`, `26`, `27`, `30` | `10` |
+| WEB-R11 | `05`, `23`, `32` | `11` |
+| WEB-R12 | `23`, `25`, `27`, `32` | `12` |
+| WEB-R13 | `04`, `12`, `26`, `28`, `29` | `13` |
+| WEB-R14 | `10`, `24`, `30` | `14` |
 
 ## Failability and omission audit
 
-Every parent rule maps to a case and reserved check. Every case maps to a live parent rule and check. Each
-family has a Good case and an adversarial face; every matrix omission names its property. Polished screenshots,
+Every parent rule maps to a case and reserved check. All 32 cases map to a live parent rule, explicit
+obligation, and check. Each family has a Good case and an adversarial face; every matrix omission names its
+property. No coverage-role set contains more than one type. Polished screenshots,
 client-only security, final-green tests, false client completion, framework authority, missing design evidence,
 duplicate effects, and unsafe rollback all fail concrete cases. No exploratory or sensitive-evidence exemption
 is used.

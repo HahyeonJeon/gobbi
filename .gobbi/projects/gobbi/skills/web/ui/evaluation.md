@@ -38,10 +38,12 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
 1. Map the changed interface to accepted clauses, semantic regions/controls, activated states, forms,
    modalities/focus, overlays/async work, variation matrix, browser lifecycle, framework integration, and
    production surfaces.
-2. Select every applicable `WEB-UI-SCENARIO-*`, including each family Good case plus distinct triggered
+2. Select every applicable `WEB-UI-SCENARIO-*` and its explicit case-level `Obligation`, including each family
+   Good case plus distinct triggered
    accessibility, locale/content, failure/recovery, lifecycle/change, and adversarial evidence cases. Give an
    inspected reason for each plausible inapplicable trigger.
-3. Select every named operational `WEB-UI-CHECK-*` plus any directly applicable source item. Preserve its ID,
+3. Select every named operational `WEB-UI-CHECK-*` plus any directly applicable source item. Confirm its claim
+   preserves the full semantic union of every mapped case obligation in the reverse audit. Preserve its ID,
    criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
    UI and root web items independently active.
 4. Copy each selection under `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
