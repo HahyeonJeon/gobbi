@@ -4,7 +4,9 @@ description: Decide whether and how to keep .claude/skills/ in sync with the can
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
+archived_at: 2026-07-21
+archive_reason: addressed
 created: 2026-06-27
 session: b5601d38-c988-4f53-b34b-9ace12a55c25
 tags: [process]

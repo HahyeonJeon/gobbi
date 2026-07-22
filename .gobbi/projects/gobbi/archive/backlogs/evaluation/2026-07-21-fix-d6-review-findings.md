@@ -4,7 +4,9 @@ description: "Deferred fix queue for the 7 D6 (plugin deployment-readiness) adve
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
+archived_at: 2026-07-21
+archive_reason: addressed
 created: 2026-06-29
 session: 5ac6cf6e-aae6-4e28-85b3-e90b0a10aaaf
 tags: [evaluation, process]

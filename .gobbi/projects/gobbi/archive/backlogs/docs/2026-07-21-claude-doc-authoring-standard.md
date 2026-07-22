@@ -4,7 +4,9 @@ description: Author or repoint the missing skills/claude/SKILL.md documentation-
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
+archived_at: 2026-07-21
+archive_reason: addressed
 created: 2026-06-24
 session: 2026-06-24-bb4eb896-bed0-42d6-9a3c-f74547df2611
 tags: [docs-sync]

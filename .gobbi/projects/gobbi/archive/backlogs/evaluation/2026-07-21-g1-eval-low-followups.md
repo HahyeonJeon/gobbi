@@ -4,7 +4,9 @@ description: "3 Low-severity doc-tightening follow-ups from the G1 dual-system E
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
+archived_at: 2026-07-21
+archive_reason: addressed
 created: 2026-06-30
 session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
 tags: [evaluation, process]

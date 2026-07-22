@@ -48,17 +48,19 @@ codex-timeout). All were re-verified unchanged as of 2026-06-29 and route to the
 re-filed under D6. The `.claude/{hooks,scripts}` link-depth bug overlaps D2-017/D2-022 by location but
 is RETAINED as the new D6-001 under the deployment-path-integrity lens.
 
-Execution EVALUATION verdicted on the consolidated merge. Review-only → all 7 dispositions stay `open`
-and route to `backlogs/evaluation/fix-d6-review-findings.md`; no source was edited.
+Execution EVALUATION verdicted on the consolidated merge. Review-only meant all 7 dispositions
+originally stayed `open` and routed to
+`archive/backlogs/evaluation/2026-07-21-fix-d6-review-findings.md`; no source was edited in that
+review session. The later workflow redesign addressed or invalidated six items and split the surviving
+D6-006 policy question to `backlogs/tooling/plugin-version-cadence-policy.md`.
 
 ## What shipped
 
 - `reviews/adversarial-review/2026-06-29-gobbi-adversarial-review-d6.md` — the consolidated 7-finding
   source of record (+ the D6.1–D6.9 state-verification table, cross-system divergence, and the
   `## Already covered by D2` cross-dimension dedup).
-- `backlogs/evaluation/fix-d6-review-findings.md` — the deferred fix queue (clustered: docs link-depth
-  + gate enforcement, install-validation guard coverage, deployment-update cadence, hook-matcher
-  consistency; the 2 manager-decision items called out).
+- `archive/backlogs/evaluation/2026-07-21-fix-d6-review-findings.md` — the complete historical fix
+  queue, closed after the redesign addressed or invalidated six items and split D6-006.
 - `notes/process/2026-06-29-review-campaign-complete.md` — the CAMPAIGN-COMPLETION handoff (all 7
   dimensions done; the next phase is FIX sessions, not more review).
 
@@ -127,18 +129,16 @@ defects, which is exactly the value the dual-system method exists to produce:
 ## Next session
 
 **The charter's review phase is COMPLETE — all 7 dimensions reviewed** (D7+D1, D3+D5, D2, D4, and now
-D6). The next phase is **FIX sessions, not more review** — see the campaign-completion handoff
-`notes/process/2026-06-29-review-campaign-complete.md`. React to the five fix-backlogs
-(`fix-d7-d1-review-findings`, `fix-d3-d5-review-findings`, `fix-d2-review-findings`,
-`fix-d4-review-findings`, `fix-d6-review-findings`) in scoped Execution sessions, settling each
-backlog's manager-decision items with the user first. The triangulated top fix priority is the
-`.claude/skills` mirror root cause (D2-015), which closes the largest cluster at once. **Merge this D6
-PR to `develop`** so the findings land on the base branch.
+D6). The later workflow redesign addressed the D6 link, mirror, and hook items. The historical queue
+now lives at `archive/backlogs/evaluation/2026-07-21-fix-d6-review-findings.md`; its only surviving
+policy question is `backlogs/tooling/plugin-version-cadence-policy.md`. Other review-campaign
+backlogs retain their own current lifecycle and must be checked directly before pickup.
 
 ## Related
 
 - [[gobbi-adversarial-review-d6]] — the reviews artifact this session produced
 - [[fix-d6-review-findings]] — the fix queue
+- [[plugin-version-cadence-policy]] — the surviving D6-006 policy question
 - [[review-campaign-complete]] — the campaign-completion handoff (all 7 dimensions done)
 - [[gobbi-adversarial-review-d2]] — the prior-dimension review whose mirror + timeout seeds D6 dedups against
 - [[adversarial-review-charter-authored]] — the charter

@@ -4,7 +4,9 @@ description: .claude/CLAUDE.md:61 links skills/claude/SKILL.md ("Documentation s
 type: backlogs
 scope: project
 feature: null
-status: open
+status: closed
+archived_at: 2026-07-21
+archive_reason: addressed
 created: 2026-06-28
 session: d45128ad-6a6c-4bb7-9925-343cd3b826c8
 tags: [process]
