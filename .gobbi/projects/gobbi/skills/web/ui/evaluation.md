@@ -23,10 +23,11 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
 | WEB-UI-R01 | `WEB-UI-FAMILY-01`, `-02`, `-09` | `WEB-UI-CHECK-01` |
 | WEB-UI-R02 | `WEB-UI-FAMILY-01`, `-04`, `-09` | `WEB-UI-CHECK-02` |
 | WEB-UI-R03 | `WEB-UI-FAMILY-02`, `-04`, `-06`, `-07` | `WEB-UI-CHECK-03` |
-| WEB-UI-R04, WEB-UI-R05 | `WEB-UI-FAMILY-03`, `-05` | `WEB-UI-CHECK-04`, `WEB-UI-CHECK-09` |
+| WEB-UI-R04 | `WEB-UI-FAMILY-03`, `-05` | `WEB-UI-CHECK-04`, `WEB-UI-CHECK-09` |
+| WEB-UI-R05 | `WEB-UI-FAMILY-01`, `-03` | `WEB-UI-CHECK-04`, `WEB-UI-CHECK-05` |
 | WEB-UI-R06 | `WEB-UI-FAMILY-03`, `-06`, `-09` | `WEB-UI-CHECK-05`, `WEB-UI-CHECK-07` |
 | WEB-UI-R07 | `WEB-UI-FAMILY-04` | `WEB-UI-CHECK-06` |
-| WEB-UI-R08 | `WEB-UI-FAMILY-02`, `-04`, `-06` | `WEB-UI-CHECK-07` |
+| WEB-UI-R08 | `WEB-UI-FAMILY-02`, `-03`, `-04`, `-06` | `WEB-UI-CHECK-07` |
 | WEB-UI-R09 | `WEB-UI-FAMILY-07`, `-09` | `WEB-UI-CHECK-08` |
 | WEB-UI-R10 | `WEB-UI-FAMILY-05`, `-07`, `-08` | `WEB-UI-CHECK-09`, `WEB-UI-CHECK-10` |
 | WEB-UI-R11 | `WEB-UI-FAMILY-01`, `-05`, `-07`, `-08` | `WEB-UI-CHECK-11` |
@@ -40,11 +41,18 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
 2. Select every applicable `WEB-UI-SCENARIO-*`, including each family Good case plus distinct triggered
    accessibility, locale/content, failure/recovery, lifecycle/change, and adversarial evidence cases. Give an
    inspected reason for each plausible inapplicable trigger.
-3. Copy every named `WEB-UI-CHECK-*` and any directly applicable check into the active phase checklist under
-   `## Stage 1 Additions`; preserve ID and wording. Keep generic UI and root web items independently active.
-4. Execute each copy against fresh evidence. Do not accept screenshots, automated scans, component-library
-   claims, or final DOM state as substitutes for the live/hidden properties they cannot observe.
-5. Walk all seven perspectives and Overall. Findings cite the child rule, scenario/check, exact state/matrix
+3. Select every named operational `WEB-UI-CHECK-*` plus any directly applicable source item. Preserve its ID,
+   criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
+   UI and root web items independently active.
+4. Copy each selection under `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
+   `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
+   operational pause points.
+5. Resolve every evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>` and named
+   inspected evidence. Operational-only `recorded-open` and `waived/exception-authorized` terminals are invalid
+   in the evaluation copy and never become `PASS`; an applicable unmet obligation opens a finding and resolves
+   `FAIL:<finding-id>`. Do not accept screenshots, automated scans, component-library claims, or final DOM state
+   as substitutes for live or hidden properties they cannot observe.
+6. Walk all seven perspectives and Overall. Findings cite the child rule, scenario/check, exact state/matrix
    cell, reproducible evidence, user impact, correction, and owner-correct verification.
 
 ## Perspectives
@@ -112,17 +120,21 @@ rules, route/lifecycle behavior, tests, docs, and diagnostics agree across all s
 **Watch for:** success in UI but failure on server, desktop/mobile state divergence, pre/post-hydration meaning
 change, old/new component conventions mixed, or tests/captures that exercise a different state than claimed.
 
-### Security
+### Risk
 
-**Lens:** Does the interface avoid exposing sensitive values or authority, preserve trusted browser and form
-semantics, communicate permission/consent/irreversible actions, handle session and server rejection safely, and
-resist duplicate or deceptive interaction without pretending UI controls enforce authorization?
+Write this seventh perspective to `risk.md`.
 
-**Activate:** `WEB-UI-FAMILY-02`, `-04`, `-06`, `-07`; checks `03`, `06`–`08`, `11`.
+**Lens:** Does the interface control security and non-security blast radius: sensitive values and authority,
+trusted browser/form semantics, permission/consent/irreversible actions, session and server rejection, duplicate
+or deceptive interaction, state/data integrity, resource runaway from rendering or repeated work, third-party
+component failure, partial release state, and rollback/reversibility of interface and lifecycle changes?
+
+**Activate:** `WEB-UI-FAMILY-02`, `-04`, `-06`, `-07`, `-09`; checks `03`, `06`–`08`, `10`–`12`.
 
 **Watch for:** secrets in DOM/messages/captures, autocomplete mistakes on sensitive fields, clickjacking-like
-overlays, ambiguous destructive confirmation, client validation treated as trust, or disabled controls treated
-as server authorization.
+overlays, ambiguous destructive confirmation, client validation treated as trust, disabled controls treated as
+server authorization, retry/render loops, unrecoverable local work, provider/library failure, or a partial
+rollout whose old and new interface states cannot be safely reversed.
 
 ## Verification matrix
 

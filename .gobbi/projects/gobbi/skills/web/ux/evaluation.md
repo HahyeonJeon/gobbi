@@ -43,11 +43,18 @@ evidence remains `NEEDS_CONTEXT`.
 2. Select every applicable `WEB-UX-SCENARIO-*`, including each family Good case and distinct triggered
    external-dependency, identity, failure/recovery, irreversible, privacy, accessibility/locale, change, and
    counterfactual measurement cases. Record inspected reasons for plausible inapplicable triggers.
-3. Copy each named `WEB-UX-CHECK-*` plus any directly applicable check into `## Stage 1 Additions` of the active
-   checklist, preserving wording and ID. Keep generic UX and root web checks independently active.
-4. Execute the copied checks with fresh live-journey, authoritative-effect, direct-user, and measurement
-   evidence at their respective owners. Do not let one evidence class close another.
-5. Walk all seven perspectives and Overall. Findings name the child rule, scenario/check, exact entry/context/
+3. Select every named operational `WEB-UX-CHECK-*` plus any directly applicable source item. Preserve its ID,
+   criticality, claim, applicability, pass condition, evidence, on-fail route, and source wording. Keep generic
+   UX and root web checks independently active.
+4. Copy each selection into `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
+   `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
+   operational pause points.
+5. Resolve every evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>` and named
+   inspected evidence. Operational-only `recorded-open` and `waived/exception-authorized` terminals are invalid
+   in the evaluation copy and never become `PASS`; an applicable unmet obligation opens a finding and resolves
+   `FAIL:<finding-id>`. Use fresh live-journey, authoritative-effect, direct-user, and measurement evidence at
+   their respective owners; one evidence class cannot close another.
+6. Walk all seven perspectives and Overall. Findings name the child rule, scenario/check, exact entry/context/
    state, reproducible evidence, affected people/outcome, correction, and owner-correct verification.
 
 ## Perspectives
@@ -118,17 +125,22 @@ entries and contexts?
 resolve correlation, event version changes metric meaning, or experiment/control journeys measure different
 outcomes.
 
-### Security
+### Risk
 
-**Lens:** Does the experience make actor/authority, session/context, data purpose, consent/permission, external
-domain, cost/irreversibility, and security-sensitive instruction legible while preventing leakage, replay,
-phishing-conditioning, coercion, and client-side authority assumptions?
+Write this seventh perspective to `risk.md`.
 
-**Activate:** `WEB-UX-FAMILY-01`, `-03`, `-04`, `-06`, `-08`; checks `02`, `04`, `05`, `07`, `08`, `10`.
+**Lens:** Does the experience control security and non-security blast radius: actor/authority, session/context,
+data purpose and integrity, consent/permission, external domain/provider failure, cost/irreversibility,
+security-sensitive instruction, retry or telemetry resource runaway, partial rollout state, and reversible
+recovery without leakage, replay, phishing-conditioning, coercion, or client-side authority assumptions?
+
+**Activate:** `WEB-UX-FAMILY-01`, `-03`, `-04`, `-06`, `-08`, `-09`; checks `02`, `04`, `05`, `07`, `08`,
+`10`, `11`.
 
 **Watch for:** secrets or protected state in URL/analytics/support, open redirect or ambiguous provider, stale
-session/account context, telemetry ignoring consent, repeated irreversible action, or interface wording that
-asks people to bypass browser security signals.
+session/account context, telemetry ignoring consent, repeated irreversible action, retry or event amplification,
+provider failure without a safe route, old/new journeys that disagree during release, or rollback that loses
+intent, receipts, disputes, data integrity, or support context.
 
 ## Evidence and verification matrix
 

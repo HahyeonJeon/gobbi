@@ -7,20 +7,24 @@ research/prototype cases remain with [`../../ux`](../../ux/scenarios.md).
 
 Scale: nine families and 24 cases. Sensitive research and telemetry evidence is referenced, not copied.
 
+Family primary and secondary-category values, and case primary and coverage-role values, use the canonical
+taxonomies owned by [`scenario`](../../scenario/SKILL.md). `Secondary/domain tags` add subject routing only;
+they never discharge a case-type minimum.
+
 ## Coverage register
 
 | # | Scenario category | Disposition | Carrier |
 |---|---|---|---|
 | 1 | Purpose / outcomes / scope | selected | `WEB-UX-FAMILY-02`, `-08`, `-09` |
-| 2 | Actors / stakeholders / use-context | selected | `WEB-UX-FAMILY-03`, `-07` |
-| 3 | Behavior / state / data | selected | `WEB-UX-FAMILY-01`, `-03`, `-04`, `-08` |
+| 2 | Actors / stakeholders / use-context | selected | `WEB-UX-FAMILY-02`, `-03`, `-05`, `-07` |
+| 3 | Behavior / state / data | selected | `WEB-UX-FAMILY-01`–`-06`, `-08` |
 | 4 | Interfaces / dependencies / structure | selected | `WEB-UX-FAMILY-01`, `-06`, `-09` |
 | 5 | Quality attributes / resource economics | selected | `WEB-UX-FAMILY-04`, `-07`, `-08` |
-| 6 | Failure / recovery / operations | selected | `WEB-UX-FAMILY-03`–`-05` |
-| 7 | Trust / harm / governance | selected | `WEB-UX-FAMILY-06`, `-08` |
+| 6 | Failure / recovery / operations | selected | `WEB-UX-FAMILY-01`, `-03`–`-06`, `-09` |
+| 7 | Trust / harm / governance | selected | `WEB-UX-FAMILY-01`, `-03`, `-04`, `-06`, `-08` |
 | 8 | Inclusion / locale | selected | `WEB-UX-FAMILY-02`, `-07` |
-| 9 | Change / compatibility / reversibility | selected | `WEB-UX-FAMILY-01`, `-06`, `-09` |
-| 10 | Evidence / traceability / clarity | selected | `WEB-UX-FAMILY-07`, `-08` |
+| 9 | Change / compatibility / reversibility | selected | `WEB-UX-FAMILY-01`, `-03`, `-06`, `-09` |
+| 10 | Evidence / traceability / clarity | selected | `WEB-UX-FAMILY-02`, `-05`, `-07`–`-09` |
 
 Every family includes a Good case and an adversarial face. External handoff, identity/session, interruption,
 irreversible effect, privacy, representative-context, change, and counterfactual measurement triggers have
@@ -55,6 +59,10 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-01 — Entry, URL, history, and return
 
+- **Primary category:** 4 Interfaces / dependencies / structure — URL, history, and browser-return contracts
+  are the defining discrimination.
+- **Secondary-category tags:** 3 Behavior / state / data; 6 Failure / recovery / operations; 7 Trust / harm /
+  governance; 9 Change / compatibility / reversibility.
 - **Source:** WEB-UX-R01, WEB-UX-R02; P2/P6.
 - **Actor/outcome:** a person can enter and return through browser-native paths without stale, lost, or leaked
   context.
@@ -62,7 +70,8 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-01 — Browser navigation preserves journey meaning
 
-- **Primary type / role:** Good / {Good}; navigation floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary browser navigation defines this case.
+- **Secondary/domain tags:** URL, history, orientation, authoritative effect.
 - **Given/When/Then:** Given direct/deep/internal entry, refresh, back/forward, and applicable bookmark/share,
   when the journey is operated, then URL/history meaning, orientation, safe state, and the next action remain
   consistent with the accepted experience and authoritative effect.
@@ -73,7 +82,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-02 — Stale or shared link poses as current authority
 
-- **Primary type / role:** Adversarial / {Adversarial, Change}; URL state outlives permission or data.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Change/regression}; stale URL state intentionally
+  attempts to outlive changed permission or data.
+- **Secondary/domain tags:** trust, authorization, sensitive URLs, recovery.
 - **Given/When/Then:** Given a bookmarked/shared link is expired, revoked, account-bound, or points to changed
   state, when opened directly or in another account, then protected context is not exposed, false validity is
   not shown, and an explanatory recovery/reauthentication route preserves only safe intent.
@@ -83,7 +94,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-03 — Multiple tabs and external return race history
 
-- **Primary type / role:** Failure/recovery / {Boundary, Failure/recovery}; concurrent browser contexts.
+- **Primary type / coverage-role:** Failure/recovery / {Boundary, Failure/recovery}; an interleaved tab/provider
+  return at the state transition defines this case.
+- **Secondary/domain tags:** browser history, external provider, duplicate effect.
 - **Given/When/Then:** Given the journey is open in two tabs or leaves for an external provider, when one
   context changes state and another returns late, then the feature reconciles authoritative state, avoids
   duplicate effect, explains mismatch, and offers the smallest safe continuation.
@@ -93,13 +106,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-02 — Orientation, content, and decisions
 
+- **Primary category:** 1 Purpose / outcomes / scope — each state serving the right informed next outcome
+  defines the family.
+- **Secondary-category tags:** 2 Actors / stakeholders / use-context; 3 Behavior / state / data; 8 Inclusion /
+  locale; 10 Evidence / traceability / clarity.
 - **Source:** WEB-UX-R01, WEB-UX-R03; P2/P6.
 - **Actor/outcome:** each state is understandable without remembered hidden context.
 - **Applicability:** every journey state.
 
 ### WEB-UX-SCENARIO-04 — Each state supports the next informed decision
 
-- **Primary type / role:** Good / {Good}; content/orientation floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary self-sufficient orientation defines this
+  case.
+- **Secondary/domain tags:** content, plain language, informed decision.
 - **Given/When/Then:** Given any selected entry or state, when the person encounters it without prior-screen
   memory, then location, reason, current status, relevant consequence, primary/alternative action, and support
   are clear in plain project language.
@@ -109,7 +128,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-05 — Linear happy path hides contextless recovery
 
-- **Primary type / role:** Adversarial / {Adversarial}; prototype sequence supplies missing context.
+- **Primary type / coverage-role:** Adversarial / {Adversarial}; a linear presentation intentionally supplies
+  context that the direct-entry journey lacks.
+- **Secondary/domain tags:** content, orientation, direct entry, recovery.
 - **Given/When/Then:** Given a prototype or test always starts at step one, when a later step is entered directly,
   refreshed, resumed, or reached after failure, then it must still orient the person and expose a valid next
   action without relying on the earlier narration.
@@ -119,13 +140,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-03 — Identity, session, and context continuity
 
+- **Primary category:** 6 Failure / recovery / operations — safe continuity and recovery across identity and
+  session transitions define the family.
+- **Secondary-category tags:** 2 Actors / stakeholders / use-context; 3 Behavior / state / data; 7 Trust / harm /
+  governance; 9 Change / compatibility / reversibility.
 - **Source:** WEB-UX-R04, WEB-UX-R06; P3/P6.
 - **Actor/outcome:** safe intent survives identity changes while protected context does not.
 - **Applicability:** when authentication, authorization, account/tenant/role, or session exists.
 
 ### WEB-UX-SCENARIO-06 — Reauthentication resumes permissible intent
 
-- **Primary type / role:** Good / {Good}; identity-continuity floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary same-context reauthentication and resumption
+  define this case.
+- **Secondary/domain tags:** identity, session, retained intent, privacy.
 - **Given/When/Then:** Given a session expires during a non-terminal journey, when reauthentication succeeds
   under the same authorized context, then safe inputs/intent and orientation resume at the smallest valid step,
   while sensitive credentials and stale authority do not persist.
@@ -135,7 +162,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-07 — Expiry after action leaves ambiguous outcome
 
-- **Primary type / role:** Failure/recovery / {Failure/recovery, Counterfactual}; authentication and effect race.
+- **Primary type / coverage-role:** Failure/recovery / {Failure/recovery, Counterfactual}; authentication expiry
+  races the premise that the effect is known.
+- **Secondary/domain tags:** identity, session, authoritative effect, duplicate action.
 - **Given/When/Then:** Given the session expires near submission, when the response is lost or reauth occurs,
   then the journey determines authoritative effect before inviting retry and explains whether completion,
   resumption, or safe repetition applies.
@@ -145,7 +174,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-08 — Account or role switch reuses stale context
 
-- **Primary type / role:** Adversarial / {Adversarial, Trust}; context confusion.
+- **Primary type / coverage-role:** Adversarial / {Adversarial}; a context switch intentionally attempts to reuse
+  stale actor/resource authority.
+- **Secondary/domain tags:** trust, authorization, account, tenant, role.
 - **Given/When/Then:** Given another tab, account/tenant switch, or permission change alters authority, when the
   original journey resumes, then it validates the new actor/resource relationship, discards unsafe state,
   explains the change, and routes to a permitted outcome or support.
@@ -155,13 +186,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-04 — Time, interruption, stale state, and retry
 
+- **Primary category:** 6 Failure / recovery / operations — interruption, containment, and safe resumption
+  define the family.
+- **Secondary-category tags:** 3 Behavior / state / data; 5 Quality attributes / resource economics; 7 Trust /
+  harm / governance.
 - **Source:** WEB-UX-R05, WEB-UX-R06; P3/P6.
 - **Actor/outcome:** waiting and interruption retain truthful status and safe control.
 - **Applicability:** select each triggered latency/network/suspension/duplicate state.
 
 ### WEB-UX-SCENARIO-09 — Interrupted journey resumes without repeated work
 
-- **Primary type / role:** Good / {Good}; continuity floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary interruption and safe return define this
+  case.
+- **Secondary/domain tags:** latency, offline, retained work, authoritative effect.
 - **Given/When/Then:** Given slow work, navigation away, refresh, tab suspension, poor network, or offline state,
   when the person returns, then status distinguishes waiting/failed/completed, safe work and intent persist,
   cancellation/retry/resume are available as applicable, and authoritative state is reconciled first.
@@ -171,7 +208,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-10 — Offline retry receives a late original result
 
-- **Primary type / role:** Failure/recovery / {Boundary, Failure/recovery}; late-result race.
+- **Primary type / coverage-role:** Failure/recovery / {Boundary, Failure/recovery}; out-of-order original and
+  retry results define the recovery boundary.
+- **Secondary/domain tags:** offline, retry, duplicate effect, late result.
 - **Given/When/Then:** Given a request appears lost and the person retries after reconnecting, when the original
   and retry resolve out of order, then one authoritative outcome is shown, duplicates are prevented or
   reconciled, and the person can inspect/recover without hidden repair.
@@ -181,7 +220,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-11 — “Try again” loops without diagnosis or exit
 
-- **Primary type / role:** Adversarial / {Adversarial, Failure/recovery}; generic retry trap.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Failure/recovery}; a generic retry loop
+  intentionally hides a non-retryable condition.
+- **Secondary/domain tags:** recovery, support, failure taxonomy.
 - **Given/When/Then:** Given permission, conflict, dependency, capacity, or unknown failure, when the interface
   emits one generic retry action, then each non-retryable or repeated condition must instead explain the safe
   next action, wait/alternate path, support/escalation, or ownership.
@@ -191,13 +232,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-05 — Failure, recovery, and support ownership
 
+- **Primary category:** 6 Failure / recovery / operations — actionable recovery and diagnosable support
+  ownership define the family.
+- **Secondary-category tags:** 2 Actors / stakeholders / use-context; 3 Behavior / state / data; 10 Evidence /
+  traceability / clarity.
 - **Source:** WEB-UX-R03, WEB-UX-R06; P3/P7.
 - **Actor/outcome:** failures are distinguishable enough to enable safe correction or escalation.
 - **Applicability:** every feature; exact failure classes are evidence-selected.
 
 ### WEB-UX-SCENARIO-12 — Failure class produces an actionable recovery
 
-- **Primary type / role:** Good / {Good}; recovery floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary handled failure and recovery define this
+  case.
+- **Secondary/domain tags:** failure taxonomy, retained work, support.
 - **Given/When/Then:** Given input, permission, session, conflict, dependency, capacity, unavailable, and unknown
   failures that apply, when each occurs, then the experience preserves safe work, communicates enough without
   harmful detail, offers the correct next action, and makes support ownership/resolvable diagnostics available.
@@ -207,7 +254,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-13 — Support receives no resolvable context
 
-- **Primary type / role:** Adversarial / {Adversarial, Operations}; handoff dead end.
+- **Primary type / coverage-role:** Adversarial / {Adversarial}; an unresolvable support handoff intentionally
+  defeats recovery.
+- **Secondary/domain tags:** operations, support, observability, privacy.
 - **Given/When/Then:** Given self-recovery cannot finish, when the person uses support/escalation, then a safe
   correlation reference, state, timing, and ownership route let support diagnose without asking for secrets or
   forcing the person to reconstruct hidden technical context.
@@ -217,13 +266,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-06 — Trust, privacy, and consequential action
 
+- **Primary category:** 7 Trust / harm / governance — informed authority, privacy, and consequential-action
+  safeguards define the family.
+- **Secondary-category tags:** 3 Behavior / state / data; 4 Interfaces / dependencies / structure; 6 Failure /
+  recovery / operations; 9 Change / compatibility / reversibility.
 - **Source:** WEB-UX-R07, WEB-UX-R08; P4/P6.
 - **Actor/outcome:** a person understands and controls meaningful consequence before commitment and after effect.
 - **Applicability:** trust boundary always; permission/consent/provider/irreversible cases when triggered.
 
 ### WEB-UX-SCENARIO-14 — Informed transaction supports correction and aftermath
 
-- **Primary type / role:** Good / {Good, Trust}; consequential-action floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary informed consequential action and aftermath
+  define this case.
+- **Secondary/domain tags:** trust, privacy, cost, irreversible action.
 - **Given/When/Then:** Given a legal, financial, destructive, permission, or data-sharing decision, when the
   person reviews and commits, then necessary data, identity/authority, cost/terms/purpose, consequence, optional
   choice, confirmation proportional to risk, receipt, and reversal/dispute/support are understandable and
@@ -234,7 +289,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-15 — External handoff trains unsafe trust
 
-- **Primary type / role:** Adversarial / {Adversarial, Trust, Change}; provider/domain confusion.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Change/regression}; a changed external-domain
+  context intentionally creates unsafe trust confusion.
+- **Secondary/domain tags:** trust, phishing resistance, external provider, URL.
 - **Given/When/Then:** Given the journey redirects to or embeds an identity/payment/provider domain, when the
   transition and return occur, then who acts, why, requested data/permission, expected domain, return status,
   cancellation, and suspicious mismatch are clear without asking the person to ignore browser security signals.
@@ -245,7 +302,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-16 — Consent is coerced or analytics ignores refusal
 
-- **Primary type / role:** Negative / {Negative, Trust}; optional choice is not real.
+- **Primary type / coverage-role:** Negative / {Negative}; refusal and withdrawal exercise safe rejection of
+  non-essential collection.
+- **Secondary/domain tags:** trust, privacy, consent, analytics.
 - **Given/When/Then:** Given non-essential collection or sharing requires choice, when the person refuses,
   withdraws, or uses privacy controls, then the core experience follows governing requirements, non-essential
   events stop, the choice persists appropriately, and no deceptive friction or repeated pressure appears.
@@ -255,7 +314,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-17 — Duplicate irreversible action lacks receipt or dispute
 
-- **Primary type / role:** Failure/recovery / {Boundary, Failure/recovery, Trust}; consequential duplicate.
+- **Primary type / coverage-role:** Failure/recovery / {Boundary, Failure/recovery}; repeated activation at the
+  irreversible-effect boundary defines this case.
+- **Secondary/domain tags:** trust, financial/legal harm, receipt, dispute.
 - **Given/When/Then:** Given repeated activation or ambiguous network result around an irreversible effect, when
   authoritative state is reconciled, then one effect, clear receipt/status, correction/reversal/dispute route,
   and support reference exist.
@@ -265,13 +326,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-07 — Representative web contexts
 
+- **Primary category:** 2 Actors / stakeholders / use-context — represented people and material web contexts
+  define the family.
+- **Secondary-category tags:** 5 Quality attributes / resource economics; 8 Inclusion / locale; 10 Evidence /
+  traceability / clarity.
 - **Source:** WEB-UX-R09; P1/P5/P7.
 - **Actor/outcome:** design claims remain bounded to direct evidence from materially relevant contexts.
 - **Applicability:** every design acceptance; gate.
 
 ### WEB-UX-SCENARIO-18 — Accepted evidence covers material web contexts
 
-- **Primary type / role:** Good / {Good, Accessibility, Locale}; evidence-context floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary direct evidence across material contexts
+  defines this case.
+- **Secondary/domain tags:** accessibility, locale, representative users, consent, accommodations.
 - **Given/When/Then:** Given the feature risk and population, when design acceptance is inspected, then direct
   representative-user evidence covers or explicitly limits material device/browser, input/assistive, locale,
   network, auth, interruption, privacy, and consequential contexts under valid consent/accommodation conditions.
@@ -281,7 +348,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-19 — Green lab journey masks missing people and conditions
 
-- **Primary type / role:** Adversarial / {Adversarial, Counterfactual}; implementation evidence games design.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Counterfactual}; technical success intentionally
+  stands in for absent representative evidence.
+- **Secondary/domain tags:** representative users, consent, accommodations, context limits.
 - **Given/When/Then:** Given automated journeys and internal demos succeed, when representative-user evidence,
   consent, accommodations, or material web contexts are absent, then design acceptance remains
   `NEEDS_CONTEXT` and root release readiness stays blocked.
@@ -291,13 +360,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-08 — Measurement validity and privacy
 
+- **Primary category:** 10 Evidence / traceability / clarity — falsifiable, reconcilable outcome proof defines
+  the family.
+- **Secondary-category tags:** 1 Purpose / outcomes / scope; 3 Behavior / state / data; 5 Quality attributes /
+  resource economics; 7 Trust / harm / governance.
 - **Source:** WEB-UX-R10, WEB-UX-R11; P5/P7.
 - **Actor/outcome:** outcome claims are defined, privacy-conscious, reconcilable, and falsifiable.
 - **Applicability:** every feature; production outcome remains pending before live data.
 
 ### WEB-UX-SCENARIO-20 — Measurement model distinguishes the outcome chain
 
-- **Primary type / role:** Good / {Good}; measurement floor.
+- **Primary type / coverage-role:** Positive / {Positive}; ordinary resolvable outcome measurement defines this
+  case.
+- **Secondary/domain tags:** measurement, privacy, data quality, authoritative outcome.
 - **Given/When/Then:** Given population/exposure/attempt/progress/visible and authoritative completion/failure/
   recovery/abandonment/escalation/harm/downstream outcomes, when the plan is inspected, then definitions,
   denominator, window, segments, exclusions, baseline, owners, versions, privacy, joins, deduplication, data-
@@ -308,7 +383,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-21 — Client completion disagrees with authoritative effect
 
-- **Primary type / role:** Counterfactual / {Counterfactual, Adversarial}; favorable telemetry is false.
+- **Primary type / coverage-role:** Counterfactual / {Counterfactual, Adversarial}; the premise that favorable
+  client telemetry equals authoritative effect is inverted.
+- **Secondary/domain tags:** measurement, authoritative effect, data quality.
 - **Given/When/Then:** Given the browser emits completion but the server/data/provider effect is absent, reversed,
   duplicated, or belongs to another context, when metrics reconcile, then authoritative completion fails,
   instrumentation is corrected, and the user-facing discrepancy is investigated.
@@ -318,7 +395,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-22 — Missing or blocked analytics is labeled abandonment
 
-- **Primary type / role:** Adversarial / {Adversarial, Boundary}; observability selection bias.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Boundary}; missingness at the observation boundary
+  intentionally games the denominator.
+- **Secondary/domain tags:** analytics, privacy, data quality, observability.
 - **Given/When/Then:** Given consent refusal, blocking, offline state, event delay/duplication, version skew, or
   join failure, when the metric is computed, then missingness/data quality is separated from user abandonment,
   privacy choice is honored, and uncertainty limits the claim.
@@ -328,13 +407,19 @@ discrimination receives a new ID.
 
 ## WEB-UX-FAMILY-09 — Production and framework-owner boundary
 
+- **Primary category:** 9 Change / compatibility / reversibility — production and framework integration must
+  preserve the accepted journey across change.
+- **Secondary-category tags:** 1 Purpose / outcomes / scope; 4 Interfaces / dependencies / structure; 6 Failure
+  / recovery / operations; 10 Evidence / traceability / clarity.
 - **Source:** WEB-UX-R01, WEB-UX-R12; P6/P8.
 - **Actor/outcome:** production routes, content, state, support, and measurement preserve accepted experience.
 - **Applicability:** every implementation; framework case when present.
 
 ### WEB-UX-SCENARIO-23 — Production journey and handoff are complete
 
-- **Primary type / role:** Good / {Good, Change}; production floor.
+- **Primary type / coverage-role:** Positive / {Positive, Change/regression}; ordinary production integration
+  across change defines this case.
+- **Secondary/domain tags:** production completeness, framework ownership, measurement handoff.
 - **Given/When/Then:** Given accepted experience clauses and applicable framework owners, when the feature is
   handed to root web evaluation, then all affected routes, entries, content, identity/session, recovery/support,
   instrumentation, tests/docs/diagnostics, context limits, and post-deployment validation plan are complete,
@@ -345,7 +430,9 @@ discrimination receives a new ID.
 
 ### WEB-UX-SCENARIO-24 — Router convention breaks history or intent
 
-- **Primary type / role:** Adversarial / {Adversarial, Change}; framework authority games experience.
+- **Primary type / coverage-role:** Adversarial / {Adversarial, Change/regression}; a router convention
+  intentionally attempts to waive browser journey outcomes during change.
+- **Secondary/domain tags:** framework ownership, URL, history, sensitive state, measurement.
 - **Given/When/Then:** Given a framework router/state convention is standard, when it loses deep-link intent,
   makes back repeat an effect, stores sensitive state in a URL, resets recovery, or distorts measurement, then
   the experience fails and the framework owner must correct integration without narrowing this contract.

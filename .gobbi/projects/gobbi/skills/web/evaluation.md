@@ -54,11 +54,17 @@ new rule.
 2. Select every applicable `WEB-SCENARIO-*`. Include each family's Good case and every triggered minimum:
    external dependency, security/trust, irreversible effect, performance/resource, change/regression,
    accessibility/locale, and claim-integrity cases. Record a concrete reason for a plausible inapplicable case.
-3. Copy every check named by selected scenarios into the active checklist's `## Stage 1 Additions`. Also copy
-   any directly applicable check even if no selected scenario is a close fit. Keep IDs and wording unchanged.
-4. Execute each copied item as read → do → record. Mark only `PASS`, `FAIL:<finding-id>`, or
-   `n/a:<property>`, each with named inspected evidence. A missing design precondition is not `n/a`.
-5. Walk all seven perspectives and Overall even when a lens produces zero findings. Findings point to the
+3. Select every operational source item named by the scenarios, plus any directly applicable item even when no
+   selected scenario is a close fit. Keep its ID, criticality, claim, applicability, pass condition, evidence,
+   on-fail route, and source wording unchanged.
+4. Copy each selection into the active checklist's `## Stage 1 Additions` as an evaluator-owned coverage row.
+   Set the evaluation-copy use-style to `do-confirm`; retain the operational pause-point ID only as trace
+   metadata, because an evaluation copy has no operational pause point.
+5. Resolve each evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, each backed by
+   named inspected evidence. Operational-only `recorded-open` and `waived/exception-authorized` terminals are
+   invalid in the evaluation copy and never become `PASS`; an applicable unmet obligation opens a finding and
+   resolves `FAIL:<finding-id>`. A missing design precondition is not `n/a`.
+6. Walk all seven perspectives and Overall even when a lens produces zero findings. Findings point to the
    earliest owning WEB rule and include concrete evidence, impact, correction, and verification.
 
 ## Evidence classes and claim boundaries
@@ -123,13 +129,15 @@ tests, docs, telemetry, support, and rollout/rollback moved together while exist
 deliberate. Activate `WEB-FAMILY-03`, `-04`, `-09`, `-10` and checks `04`–`06`, `11`–`14`. Look for stale
 contracts, mixed versions, a mock on the production path, or claims that disagree across layers.
 
-### Security
+### Risk
 
-Judge input validation, authentication/session, actor-resource authorization, consent, privacy, retention,
-secrets, abuse, third parties, data integrity, auditability, and safe failure from the actual threat model and
-selected versioned requirements. Activate `WEB-FAMILY-06`, `-07`, `-09` and checks `07`–`10`, `12`. Exercise
-direct server requests, replay/duplicates, stale sessions, partial effects, and least authority; UI hiding is
-not enforcement.
+Write this seventh perspective to `risk.md`. Judge security and non-security blast radius together: input
+validation, authentication/session, actor-resource authorization, consent, privacy, retention, secrets, abuse,
+third parties, data integrity, auditability, cost/resource runaway, provider failure, partial rollout or effect,
+rollback/reversibility, and safe failure from the actual threat model and selected versioned requirements.
+Activate `WEB-FAMILY-05`–`-07`, `-09` and checks `07`–`12`. Exercise direct server requests,
+replay/duplicates, stale sessions, provider failure, retry amplification, partial effects and release states,
+least authority, stop conditions, and rollback/forward-fix; UI hiding is not enforcement.
 
 ## Recommended verification
 

@@ -1,32 +1,46 @@
 # Web UX Operational Checklist
 
-**Mode:** evaluation coverage register. **Owner:** `web/ux`. **Consumers:** executor self-review and active
-evaluation. **Run use-style:** `do-confirm`. Keep this versioned source unchecked; a filled copy identifies the
-source commit and run and resolves each box only as `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, citing
-named inspected evidence. Coverage closes when every copied item is terminal; acceptance requires every
-applicable gate and required item to be `PASS`. Generic UX acceptance and root web gates remain independent.
+**Mode:** operational. **Owner:** `web/ux`. **Consumers:** the browser-experience executor and parent web
+handoff owner. Keep this versioned source unchecked. Each operational run works a fresh filled copy, identifies
+the source commit and run, uses each copied box as its resolution slot, and declares the use-style shown for
+each pause point.
+
+| Pause point | When work stops | Use-style | Continue only when |
+|---|---|---|---|
+| `WEB-UX-PAUSE-1` — Journey lock | Before P6 builds the production journey skeleton | `read-do` | Items `01`–`04` close and every applicable gate/required item is accepted |
+| `WEB-UX-PAUSE-2` — Experience proof | Before P7 runs whole-journey and measurement verification | `do-confirm` | Items `05`–`08` close and every applicable gate/required item is accepted |
+| `WEB-UX-PAUSE-3` — Parent handoff | Before P8 hands experience realization to root web | `do-confirm` | Items `09`–`11` close and every applicable gate/required item is accepted |
+
+An operational filled copy resolves each applicable item with `PASS`, `FAIL:<finding/action-id>`,
+`n/a:<property>`, or `recorded-open:<owner+resolution-method>`. A gate/killer alone may use
+`waived/exception-authorized:<authority+rationale>` when cited authority explicitly covers that item's named
+consequence and stop action. Every terminal cites named inspected evidence; `n/a` requires evidence that the
+predicate is false. `FAIL` takes the item's on-fail route and blocks the pause point. `recorded-open` closes
+coverage but never acceptance. Coverage closes when every gate/required item is terminal; acceptance requires
+every applicable gate/required item to be `PASS`, except the one bounded authorized-killer waiver. Generic UX
+acceptance and root web gates remain independent.
 
 ## Outcome, navigation, and continuity gates
 
-- [ ] `WEB-UX-CHECK-01` — **[required · do-confirm · unconditional].** PASS if every production entry, step, message, decision, recovery,
+- [ ] `WEB-UX-CHECK-01` — **[required · `WEB-UX-PAUSE-1` · read-do · unconditional].** PASS if every production entry, step, message, decision, recovery,
   trust cue, support path, and measurement traces to an accepted generic UX clause and parent outcome, with
   browser conflicts reopened at the owner; FAIL if implementation, copy, analytics, or a framework silently
   redesigns or narrows the accepted experience. **Evidence:** accepted-clause-to-journey trace and inspected
   conflict log. **On FAIL:** open a finding and return to P1 and the earliest owner. **Source:**
   WEB-UX-R01. **Seeds:** `WEB-UX-SCENARIO-01`, `-04`, `-23`.
-- [ ] `WEB-UX-CHECK-02` — **[required · do-confirm · unconditional].** PASS if live journeys give direct/deep/internal entry, canonical
+- [ ] `WEB-UX-CHECK-02` — **[required · `WEB-UX-PAUSE-1` · read-do · unconditional].** PASS if live journeys give direct/deep/internal entry, canonical
   URL, allowed bookmark/share, refresh, back/forward, history, multiple tabs, external return, and restore the
   intentional safe meaning selected by the project, with stale/sensitive state rejected and recoverable; FAIL
   if browser-native navigation leaks context, loses intent, repeats effect, or dead-ends. **Evidence:** operated
   URL/history/tab/return matrix reconciled to authoritative state. **On FAIL:** open a finding and return to
   P2/P6. **Source:** WEB-UX-R02. **Seeds:** `WEB-UX-SCENARIO-01`–`-03`, `-05`, `-15`, `-24`.
-- [ ] `WEB-UX-CHECK-03` — **[required · do-confirm · unconditional].** PASS if every selected entry/state independently communicates
+- [ ] `WEB-UX-CHECK-03` — **[required · `WEB-UX-PAUSE-1` · read-do · unconditional].** PASS if every selected entry/state independently communicates
   location, reason, current status, relevant consequence, primary and alternative actions, and recovery/support
   in plain project language without relying on prior-screen memory; FAIL if a contextless, jargon-heavy,
   ambiguous, or unexplained state prevents an informed next action. **On FAIL:** return to P2/P3/P6.
   **Evidence:** content/state walkthrough plus accepted representative-task trace. **Source:** WEB-UX-R03.
   **Seeds:** `WEB-UX-SCENARIO-01`, `-04`, `-05`, `-12`.
-- [ ] `WEB-UX-CHECK-04` — **[gate/killer · do-confirm · conditional: identity, session, account, tenant, or role context exists].** PASS if sign-in/out,
+- [ ] `WEB-UX-CHECK-04` — **[gate/killer · `WEB-UX-PAUSE-1` · read-do · conditional: identity, session, account, tenant, or role context exists].** PASS if sign-in/out,
   reauthentication, session expiry, authorization/role change, account/tenant switch, another tab, and external
   return retain only permissible intent/work, discard protected or stale context, explain the transition, and
   resume at the smallest safe step; FAIL if authority or data crosses contexts, or avoidable work is lost without
@@ -37,7 +51,7 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
 
 ## Time, recovery, and consequential-action gates
 
-- [ ] `WEB-UX-CHECK-05` — **[gate/killer · do-confirm · conditional: one listed time, interruption, or duplicate trigger applies].** PASS if latency, progress, cancel, navigation away,
+- [ ] `WEB-UX-CHECK-05` — **[gate/killer · `WEB-UX-PAUSE-2` · do-confirm · conditional: one listed time, interruption, or duplicate trigger applies].** PASS if latency, progress, cancel, navigation away,
   offline/poor network, stale/partial state, suspension, retry, duplicate action, late result, multi-context
   return, and promised resumption keep truthful status, safe work/intent, and one reconciled authoritative effect;
   FAIL if waiting looks complete, work vanishes, retries repeat harm, or conflicting results strand the person.
@@ -45,14 +59,14 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
   trigger map. **On FAIL:** lost work or duplicate/false effect can harm users; stop release, open a blocking
   finding, and return to P3/P6. **Source:** WEB-UX-R05. **Seeds:** `WEB-UX-SCENARIO-03`, `-06`, `-07`,
   `-09`–`-11`, `-15`, `-17`, `-24`.
-- [ ] `WEB-UX-CHECK-06` — **[required · do-confirm · unconditional].** PASS if every applicable input, permission, session, conflict,
+- [ ] `WEB-UX-CHECK-06` — **[required · `WEB-UX-PAUSE-2` · do-confirm · unconditional].** PASS if every applicable input, permission, session, conflict,
   dependency, rate/capacity, unavailable, and unknown failure preserves safe work, explains enough without
   harmful detail or blame, offers the correct correction/retry/wait/alternate/escalation path, and gives support
   resolvable safe context; FAIL if failures collapse into a generic loop, dead end, secret request, or hidden
   repair. **Evidence:** per-class failure/recovery/support operation and resolvable diagnostic reference.
   **On FAIL:** open a finding and return to P3/P6. **Source:** WEB-UX-R06. **Seeds:**
   `WEB-UX-SCENARIO-07`, `-09`–`-13`.
-- [ ] `WEB-UX-CHECK-07` — **[gate/killer · do-confirm · conditional: the feature has a legal, financial, destructive, permission, data-sharing, or other irreversible consequence].** PASS if the journey requests only
+- [ ] `WEB-UX-CHECK-07` — **[gate/killer · `WEB-UX-PAUSE-2` · do-confirm · conditional: the feature has a legal, financial, destructive, permission, data-sharing, or other irreversible consequence].** PASS if the journey requests only
   necessary data at the right time, supports safe defaults/autofill and review/correction, exposes cost/terms/
   consequence, applies confirmation/reauthentication proportional to risk, and provides authoritative receipt,
   reversal/dispute/support where applicable; FAIL if reduced clicks or conversion obscures informed choice,
@@ -61,7 +75,7 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
   or unrecoverable commitment can cause material harm; stop release, open a blocking finding, and return to
   P4/P6. **Source:** WEB-UX-R07.
   **Seeds:** `WEB-UX-SCENARIO-14`, `-17`.
-- [ ] `WEB-UX-CHECK-08` — **[gate/killer · do-confirm · unconditional].** PASS if identity/authority, data purpose/retention/sharing,
+- [ ] `WEB-UX-CHECK-08` — **[gate/killer · `WEB-UX-PAUSE-2` · do-confirm · unconditional].** PASS if identity/authority, data purpose/retention/sharing,
   optional consent, permission, external domain/provider, return state, security instruction, and irreversible
   consequence are understandable at decision time, refusal/withdrawal works where required, and no deceptive
   urgency/coercion/phishing-conditioning exists; FAIL if trust relies on hidden terms, ambiguous branding,
@@ -72,7 +86,7 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
 
 ## Evidence, measurement, and production gates
 
-- [ ] `WEB-UX-CHECK-09` — **[gate/killer · do-confirm · conditional: generic UX is applicable].** PASS if generic UX reports acceptance
+- [ ] `WEB-UX-CHECK-09` — **[gate/killer · `WEB-UX-PAUSE-3` · do-confirm · conditional: generic UX is applicable].** PASS if generic UX reports acceptance
   from valid direct representative-user evidence covering or explicitly limiting material devices/browsers,
   input/assistive modes, locales, networks, auth states, interruptions, privacy, and consequential contexts,
   with consent and accommodations satisfied; FAIL if technical/internal evidence substitutes, or missing people
@@ -81,7 +95,7 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
   **On FAIL:** unsupported experience claims can exclude or harm users; stop production acceptance and release,
   open a blocking finding, and return to generic UX/P5. **Source:** WEB-UX-R09.
   **Seeds:** `WEB-UX-SCENARIO-18`, `-19`.
-- [ ] `WEB-UX-CHECK-10` — **[required · do-confirm · unconditional].** PASS if a versioned, privacy-conscious model defines
+- [ ] `WEB-UX-CHECK-10` — **[required · `WEB-UX-PAUSE-3` · do-confirm · unconditional].** PASS if a versioned, privacy-conscious model defines
   eligibility, exposure, entry, attempt, progress, visible and authoritative completion, failure, recovery,
   abandonment, escalation, harm, and downstream outcome with baseline, denominator, window, segments,
   exclusions, owners, client/server/provider sources, identity joins, deduplication, consent, missingness/data-
@@ -89,7 +103,7 @@ applicable gate and required item to be `PASS`. Generic UX acceptance and root w
   event equals outcome or missing telemetry equals behavior. **On FAIL:** return to P5/P7. **Source:**
   WEB-UX-R10, WEB-UX-R11. **Evidence:** metric/event dictionary plus sample client/server/provider reconciliation,
   consent, deduplication, and missingness tests. **Seeds:** `WEB-UX-SCENARIO-13`, `-16`, `-20`–`-22`, `-24`.
-- [ ] `WEB-UX-CHECK-11` — **[required · do-confirm · unconditional].** PASS if all affected production routes, entries,
+- [ ] `WEB-UX-CHECK-11` — **[required · `WEB-UX-PAUSE-3` · do-confirm · unconditional].** PASS if all affected production routes, entries,
   content, states, auth/session behavior, recovery/support, instrumentation, authorized experiment surfaces,
   tests, docs, and diagnostics are complete; framework idioms remain with their owner; and accepted UX,
   implementation, release, deployment, and live outcome claims remain separate with post-deployment validation
