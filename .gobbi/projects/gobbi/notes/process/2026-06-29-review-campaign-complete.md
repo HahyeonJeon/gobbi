@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [adversarial-review, handoff, charter-complete, fix-campaign, dual-system, review-only]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [review-campaign-complete]
 ---
 
@@ -50,8 +50,11 @@ remediation, cross-system divergence) and a per-dimension fix-backlog under `bac
 
 Nothing in this note's own right beyond the capstone record. This session's D6 deliverables are the
 review artifact `reviews/adversarial-review/2026-06-29-gobbi-adversarial-review-d6.md`, the fix queue
-`backlogs/evaluation/fix-d6-review-findings.md`, and the journal
+`archive/backlogs/evaluation/2026-07-21-fix-d6-review-findings.md`, and the journal
 `notes/evaluation/2026-06-29-d6-adversarial-review-executed.md`.
+
+The queue path above reflects its 2026-07-21 lifecycle close. Its surviving D6-006 policy question is
+`backlogs/tooling/plugin-version-cadence-policy.md`.
 
 ## The next phase is FIX, not review — the fix-backlogs are the queue
 

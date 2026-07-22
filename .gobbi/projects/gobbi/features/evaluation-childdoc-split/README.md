@@ -1,6 +1,6 @@
 ---
 name: README
-description: Splits each workflow loop skill's evaluation.md into evaluation.md + scenario.md + checklist.md, certified complete by a class-predicate build-time gate.
+description: Historical child-doc split plus the current single-report-per-system evaluation package and owner boundaries.
 type: features
 scope: feature
 feature: evaluation-childdoc-split
@@ -10,19 +10,31 @@ session: 39f3dfb0-49df-44d4-a6bd-d2e4743b36e3
 tags: []
 keywords: [scenario-md, checklist-md, class-predicate, completeness-gate, three-way-split]
 author: claude
-value_proposition: A future reader of any loop's evaluation procedure gets three focused docs instead of one conflated file — the procedure, the per-perspective Good/Bad/Adversarial framing, and the per-check pass/fail bookkeeping — with a build-time gate that proves every co-touch surface was repointed, not a hand-list that silently misses one.
-subsystems: [skills/ideation, skills/planning, skills/execution, skills/wrap-up, skills/evaluation, skills/skill-writing, skills/orchestration/scripts]
+value_proposition: Step-specific evaluation references stay focused while one Evaluation owner defines the complete fresh dual-system report and validator.
+subsystems: [skills/ideation, skills/planning, skills/execution, skills/wrap-up, skills/evaluation, skills/evaluation/scripts/validate-evaluation-report.sh]
 ---
 
 # Evaluation Child-Doc Split
 
 ## Overview
 
-Each of the 4 current workflow-loop skills (`ideation`, `planning`, `execution`, `wrap-up`) carries three sibling evaluation files: `evaluation.md` (procedure), `scenario.md` (framing), and `checklist.md` (checks). Checklist coverage is a real 9th output file per evaluation run, certified complete by a build-time class-predicate gate (`check-eval-childdocs.sh`) rather than a hand-maintained co-touch list. The former Preparation bundle was retired in v0.5.3; readiness coverage now belongs to Planning's entry gate and Planning's evaluation bundle.
+The productive-step skills may keep focused `evaluation.md`, `scenarios.md`, and `checklists.md` references for their own obligations. Those child docs are inputs to the Evaluation owner, not separate runtime report files and not another evaluation procedure.
 
-## Status
+## Current contract (2026-07-20)
 
-**Current contract (v0.5.3):** the guard and bundle inventory cover four productive loops. Preparation-specific paths in the historical session account below describe the pre-v0.5.3 implementation and are not current execution guidance.
+- Ideation, Planning, Execution, and Wrap-up all use `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning owns its readiness entry gate; there is no standalone Preparation step.
+- Each EVALUATION dispatches fresh independent Claude and Codex evaluators. Each returns one schema-valid report at `evaluation/iteration-{n}/{system}.md`.
+- Each system report contains Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, Overall, eight finding ledgers, a completed checklist, and verdicts derived pessimistically from the findings.
+- The Evaluation-owned validator rejects missing or duplicate perspectives, contradictory section/report verdicts, bad provenance, dangling checklist findings, and stale identity. Pair validation aggregates the two systems with `FAIL > REVISE > PASS` while preserving provenance.
+- The evaluator package is no longer a nine-file perspective bundle. The former `check-eval-childdocs.sh` gate is retired; `skills/evaluation/scripts/validate-evaluation-report.sh` is the Evaluation command in the ten-command set.
+- `state.json` version 3 routes the evaluation stage and iteration. `session.json` version 5 records only final durable outcomes and exact approved waivers, not evaluation telemetry or history.
+- Findings are presented once to the user for disposition. Material revision creates a full new dual-system WORK and fresh dual-system EVALUATION iteration.
+
+## Historical status
+
+The dated session account below describes the earlier child-doc and nine-file implementation. It is not the current runtime artifact shape.
+
+**Former v0.5.3 contract:** the guard and bundle inventory covered four productive loops. Preparation-specific paths in the session account describe the still earlier implementation.
 
 **Session `39f3dfb0-49df-44d4-a6bd-d2e4743b36e3` (2026-07-07 → 2026-07-10):** shipped complete. Ideation (6 iterations, dual-system PASS on iter6) locked the design and 4 user decisions. Planning (2 iterations, dual-system PASS on iter2) produced a 10-task guard-first-then-atomic-flip-last plan. Execution shipped all 10 tasks: task 01 built `check-eval-childdocs.sh` (8 evaluation iterations); tasks 02-04 proved the `execution/` 3-file bundle prototype; task 05 landed the prototype-safe shared docs (`evaluation/SKILL.md`, `skill-writing/SKILL.md`); tasks 06-09 split the remaining 4 loop bundles (ideation, preparation, planning, wrap-up); task 10 landed the atomic parent-contract flip (8→9 file count, Stage-0 hard-require, full Family-9 co-touch set) as a single commit, gated by `--enforce-inclusion`. Every task passed dual-system (Claude + Codex) evaluation. 24 commits total.
 
@@ -49,7 +61,14 @@ No deferred work remains in this feature's own scope — the original session-si
 | 2026-07-08 | 39f3dfb0-49df-44d4-a6bd-d2e4743b36e3 | Planning: 10-task plan locked (iter2 PASS), dual-system-integrated from a Codex proposal |
 | 2026-07-07 | 39f3dfb0-49df-44d4-a6bd-d2e4743b36e3 | Ideation: design + 4 user decisions locked (iter6 PASS) |
 
-## Open items
+## Current open work
+
+- Finish the ownership review proving step child docs point to Evaluation rather than restating its report mechanics.
+- Run the evaluation validator's single-report and pair fixtures plus the complete fresh dual-system Execution review.
+
+## Historical backlog references
+
+The entries below are preserved from the former child-doc gate and are not current work instructions.
 
 - `backlogs/evaluation/illustrative-d5-omissions.md` — confirm the guard's actual first-run classification against 3 known smoke-test surfaces
 - `.gobbi/projects/gobbi/backlogs/process/coding-skill-evaluation-childdoc-split.md` — project-level follow-up: apply this split to the `coding` skill

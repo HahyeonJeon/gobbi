@@ -11,8 +11,8 @@ tags: [evaluation, docs-sync, process]
 keywords: [python-skill, compaction, pr-349, dual-system, band-exception, interface-narrowness, handoff]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [python-coding-interface-narrowness-principle, python-compaction-band-exception, stamp-coupling-example-must-show-unused-fields, union-diff-must-reach-named-primitive-granularity, producer-must-write-blind-draft-before-reading-codex-proposal, compaction-brief-must-not-list-example-primitives-absent-from-source, codex-eval-overall-md-can-contradict-perspective-verdicts, union-diff-occurrence-vs-distinct-primitive, codex-lean-density-is-often-union-incomplete-not-a-safe-floor, dual-system-caught-broken-teaching-example]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
+shipped: [python-coding-interface-narrowness-principle, python-compaction-band-exception, stamp-coupling-example-must-show-unused-fields, union-diff-must-reach-named-primitive-granularity, independent-drafts-must-freeze-before-cross-system-read, compaction-brief-must-not-list-example-primitives-absent-from-source, codex-eval-overall-md-can-contradict-perspective-verdicts, union-diff-occurrence-vs-distinct-primitive, codex-lean-density-is-often-union-incomplete-not-a-safe-floor, dual-system-caught-broken-teaching-example]
 ---
 
 # Python-skill compaction COMPLETE — T4–T8 + interface-narrowness principle shipped (PR #349)
@@ -45,7 +45,7 @@ Commits span `a5843581` → `09cad177` (~22 commits) on the same branch.
   ([[stamp-coupling-example-must-show-unused-fields]],
   [[union-diff-must-reach-named-primitive-granularity]],
   [[compaction-brief-must-not-list-example-primitives-absent-from-source]] under
-  `mistakes/docs-sync/`; [[producer-must-write-blind-draft-before-reading-codex-proposal]] under
+  `mistakes/docs-sync/`; [[independent-drafts-must-freeze-before-cross-system-read]] under
   `mistakes/codex/`; [[codex-eval-overall-md-can-contradict-perspective-verdicts]],
   [[union-diff-occurrence-vs-distinct-primitive]] under `mistakes/verification/`).
 

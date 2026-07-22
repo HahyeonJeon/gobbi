@@ -1,6 +1,6 @@
 ---
 name: task-02-skill-load-checklist-gap
-description: Task 02 executor report should include the exact SKILLS LOADED checklist for load-directive auditability.
+description: A specialist report must expose exact skill loads and the manager must complete the report, idle, and artifact handshake.
 type: checklists
 scope: feature
 feature: workflow
@@ -11,35 +11,30 @@ tags: [verification]
 keywords: [execution, load-directives, skills-loaded, task-02]
 author: codex
 scenario: workflow-artifact-fidelity-audit
-item_status: pending
+item_status: implemented
 anchor: COD-CONS-02-001
-implemented_in: null
+implemented_in: subagents-skip-load-directives-no-enforcement
 ---
 
 # Task 02 skill-load checklist gap
 
-> **v0.5.3 lifecycle note:** the `4-execution/` links below identify the originating historical
-> session. Current Execution evidence uses `3-execution/`; the generic load-audit requirement remains.
-
 ## What
 
-Task 02's executor report should include the exact `SKILLS LOADED` checklist when the work draft asserts that mandatory load-directive files were read. The checklist should list every loaded path in order, matching the delegation contract.
+A specialist report includes an exact `SKILLS LOADED:` list in assignment order. The manager compares it with the brief, confirms the structured status and stable assignment, verifies idle/addressability, and rereads the promised artifact or commit before accepting completion or sending a follow-up.
 
 ## Why
 
-Gobbi has a known process failure mode where a subagent can skip required load directives while still producing plausible work. The exact `SKILLS LOADED` checklist is the self-report half of that audit gate. Without it, the Task 02 work draft states load compliance but does not make the loaded path set reviewable from the WORK artifact.
+Gobbi has a known process failure mode where a specialist can skip required loads while still producing plausible work. A self-report alone is also insufficient: the manager must compare the exact path set and verify the handoff evidence.
 
 ## Verification
 
-For future records with this claim, verify that the report contains a `SKILLS LOADED:` section and that the section enumerates each required Load-Directives path in order. Load the current Gobbi owner `.gobbi/projects/gobbi/skills/orchestration/delegation.md` before checking the wire contract. If the intended proof surface is transcript verification instead, cite the transcript-verification artifact directly.
+For each assignment, verify that the report contains `SKILLS LOADED:` with every required path in order; manager comparison finds no omission; the report names the stable assignment and status; idle/addressability is confirmed; and the manager rereads the exact promised artifact or commit. Load `.gobbi/projects/gobbi/skills/orchestration/delegation.md` before checking the contract. Runtime-private context is not an evidence fallback.
 
 ## Status notes
 
-`COD-CONS-02-001` remains open and pending. It does not revise Task 02. RECORD staged it as a checklist gap for Wrap-up promotion while preserving the Codex PASS verdict.
+The original checklist gap is addressed by the shared delegation skeleton and manager acceptance handshake. The historical finding identity remains provenance only.
 
 ## Related
 
-- `4-execution/task-02-workflow-artifact-fidelity-audit/working/draft-iter1.md`
-- `4-execution/task-02-workflow-artifact-fidelity-audit/evaluation/iter1/codex/consistency.md`
-- `4-execution/task-02-workflow-artifact-fidelity-audit/evaluation/iter1/codex/overall.md`
 - `.gobbi/projects/gobbi/skills/orchestration/delegation.md`
+- `skills/orchestration/mistakes.md#subagents-skip-load-directives-no-enforcement`

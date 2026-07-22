@@ -1,528 +1,206 @@
 ---
 name: codex
-description: Use for native Codex Gobbi work or Claude Code to Codex bridge. Covers entry points, plugin packaging, identity, and `codex exec`.
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+description: Use for native Codex entry surfaces or a structured read-only Codex/Claude peer process.
+allowed-tools: Read, Grep, Glob, Bash
+skill-type: tool
 ---
 
 # Codex
 
-This skill defines how Gobbi works with Codex. It covers two different cases:
+Use this skill to locate Gobbi in native Codex or to invoke one opposite-system command-line peer for a draft, cross-review, or evaluation report. It documents the installed Codex and Claude non-interactive surfaces and the validation boundary around them.
 
-- **Native Codex runtime** — Gobbi is running inside Codex. Use repo-local `.agents/skills` and `.codex/agents`.
-- **Claude Code bridge to Codex** — Gobbi is running inside Claude Code and starts Codex with `codex exec` for an independent review or rescue task.
+Gobbi workflow order, specialist authority, artifact schemas, and finding policy remain with their own skills. This tool never chooses scope, a waiver, a finding disposition, a model, or a workflow route.
 
-Keep those cases separate. A rule about Claude Code spawning Codex is not automatically a rule about native Codex sessions.
+## Principles
 
-Detailed Claude-wrapper-to-Codex prompt-file delegation lives in [`delegation.md`](delegation.md). This `SKILL.md` owns runtime selection, entry points, invocation posture, and high-level use cases; the child doc owns the precise prompt-file lifecycle, wrapper verification gates, and failure behavior.
+### Keep Gobbi identity separate from runtime identity
 
----
+The Gobbi-owned UUID names the session, branch, and worktree. A Codex thread ID or peer-process identity is runtime evidence only. A context boundary may attach a newly observed runtime ID without changing the Gobbi session ID.
 
-## Runtime Matrix
+### Give every peer a complete neutral input
 
-| Surface | Claude Code | Codex |
+Each peer operation starts a new process. Its prompt contains the complete artifact contract and complete input contents. It does not rely on earlier process context, private runtime state, or follow-up questions.
+
+### Keep the peer read-only and the wrapper accountable
+
+The peer returns one structured JSON value and never writes the session tree. The active-runtime assistant validates the response, renders it through the record command, and then runs the applicable owner validator.
+
+### Treat failure as a visible pause
+
+An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, schema failure, identity mismatch, digest mismatch, renderer failure, or validator failure blocks the operation. The wrapper never authors replacement content under the missing system's label.
+
+## Rules
+
+### Must follow
+
+- **C-1 — Use canonical Gobbi sources.** Load skills from `.gobbi/projects/gobbi/skills/`. Treat `.agents/skills/` and `plugins/gobbi/skills/` as discovery or package views, not alternate owners.
+- **C-2 — Use repo-local specialists in native Codex.** Role wrappers live under `.codex/agents/` and point to the protected canonical role documents.
+- **C-3 — Resolve settings through their owners.** The session manifest owns resolved role models. Repo-local Codex configuration and role wrappers own runtime defaults. Do not duplicate or change those values here.
+- **C-4 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
+- **C-5 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
+- **C-6 — Require one schema-valid JSON value.** Reject empty output, multiple top-level values, prose wrappers, code fences, unknown fields, and any value that fails the selected artifact schema.
+- **C-7 — Bind output to the invocation.** Before storage, match kind, system, step, iteration, assignment, runtime identity, neutral-contract digest, and the operation-specific frozen subject digest.
+- **C-8 — Store only through the record owner.** Pass the validated JSON to `session-record.sh write-artifact`. A peer process cannot write or repair Markdown directly.
+- **C-9 — Validate the stored boundary.** Run the dual-system WORK validator when its full package exists, or the evaluation validator for an evaluation report. Reread the stored artifact before accepting the operation.
+- **C-10 — Surface exact failures.** Preserve the prior target bytes, report the command status and immediate diagnostic, and return control to orchestration for retry, user decision, or abort.
+
+### Must not follow
+
+- Do not use a persistent or resumed peer session.
+- Do not give an opposite-system process a write-capable sandbox, write tool, shell tool, or session-tree output path.
+- Do not let one independent draft operation read the other draft before both freeze.
+- Do not let an evaluator read another evaluator report or reuse a prior evaluator context.
+- Do not accept a wrapper summary, reconstructed response, partial value, stale response, or reused runtime identity as peer output.
+- Do not add a second renderer, artifact schema, adapter executable, or storage path.
+- Do not infer a missing-system waiver. Waiver authority remains with orchestration and the user.
+
+## Manual
+
+### Native Codex entry surfaces
+
+| Need | Surface | Owner consequence |
 |---|---|---|
-| Session id | `CLAUDE_CODE_SESSION_ID` | `CODEX_THREAD_ID` |
-| Transcript / audit source | `CLAUDE_TRANSCRIPT_PATH` JSONL | Codex rollout path from `~/.codex/state_5.sqlite` when available |
-| Repo skills | `.claude/skills` symlinks to canonical skills | `.agents/skills` symlinks to canonical skills |
-| Custom agents | `.claude/agents` role prompts | `.codex/agents/*.toml` wrappers that point at canonical role prompts |
-| User decisions | `AskUserQuestion` | parent-thread question or `request_user_input` when available |
-| Subagent spawn | `Task` / `Agent` tool | Codex subagent workflow with project custom agents |
-| Plugin env | `CLAUDE_PLUGIN_ROOT`, `CLAUDE_PLUGIN_DATA` | `PLUGIN_ROOT`, `PLUGIN_DATA`; Codex also sets Claude-compatible plugin vars |
-| Hook status | Gobbi hook scripts actively update Claude session metadata | Gobbi hook scripts are Codex-safe but do not yet provide full Codex metadata parity |
+| Canonical skill | `.gobbi/projects/gobbi/skills/{skill}/SKILL.md` | Read this source; do not edit a discovery view |
+| Skill discovery | `.agents/skills/{skill}/` | Resolves to the canonical skill directory |
+| Repo-local specialist | `.codex/agents/{role}.toml` | Loads the matching protected role document |
+| Shared plugin package | `plugins/gobbi/` | Package topology is verified by the root sync and smoke commands |
+| Session identity and settings | `session.json` version 5 | Record and orchestration own attachment and validation |
+| Active workflow cursor | `state.json` version 3 | Orchestration owns transitions; native task lists are projections |
 
-Native Codex sessions MUST NOT fail only because Claude Code variables are absent. Claude Code sessions MUST keep the existing Claude-specific checks.
+When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and checkpoints it through the record owner. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
 
----
+For role selection and model values, read the validated session settings and the repo-local Codex configuration named by the runtime entry documents. This skill adds no model override. For package setup, topology, and installed-cache checks, follow the root runtime instructions rather than copying their commands here.
 
-## Native Codex
+### Peer operation selection
 
-Use this section when the current Gobbi session is already running in Codex.
+Use an opposite-system peer only through the orchestration-owned WORK or EVALUATION contract:
 
-### Entry Points
-
-- Load Gobbi skills from `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`.
-- Spawn or request custom agents from `.codex/agents/{manager,leader,executor,evaluator,assistant}.toml`.
-- Read canonical role prompts from `.gobbi/projects/gobbi/agents/{role}.md`.
-- Read canonical skill sources from `.gobbi/projects/gobbi/skills/{skill-name}/SKILL.md`.
-
-Codex custom agents are project-scoped TOML files. They are not currently packaged as top-level plugin components in Gobbi. The Codex plugin package distributes skills and hooks; repo-local custom agents remain under `.codex/agents`.
-
-### Session Identity
-
-Use `CODEX_THREAD_ID` as the Codex session id. If it is missing, warn the user that the Codex runtime did not expose a thread id and continue only after the user acknowledges the degraded audit trail.
-
-When a rollout path is needed, look it up read-only:
-
-```bash
-sqlite3 -noheader ~/.codex/state_5.sqlite \
-  "select rollout_path from threads where id = '$CODEX_THREAD_ID'"
-```
-
-If the database or row is missing, leave `session.json.transcriptPath` null and record the warning. Do not block the workflow when `CODEX_THREAD_ID` is present but rollout lookup fails.
-
-### Subagents
-
-Codex supports project custom agents from `.codex/agents`. When Gobbi asks for specialist work:
-
-- Use `leader` for ideation, research, and planning.
-- Use `executor` for implementation.
-- Use `evaluator` for adversarial review; keep it read-only.
-- Use `assistant` for narrow lookup and RECORD support.
-
-Fresh Codex subagents still need explicit load directives. They do not inherit skills the manager already read.
-
-### Models and Sandbox
-
-Gobbi's current Codex policy pins the repository default and every repo-local role wrapper to
-`model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`. Keep those values aligned across
-`.codex/config.toml` and all five `.codex/agents/*.toml` wrappers. A user may explicitly request a
-per-run override without changing Gobbi's current default policy.
-
-Subagents inherit the parent sandbox policy. Use `sandbox_mode = "read-only"` only for agents that must never write, such as `evaluator`.
-
-### Plugin Packaging
-
-Gobbi keeps the source plugin package symlinked:
-
-- `plugins/gobbi/.codex-plugin/plugin.json`
-- `plugins/gobbi/skills/` -> `.gobbi/projects/gobbi/skills/`
-- `plugins/gobbi/hooks/` -> `.gobbi/projects/gobbi/hooks/`
-- `plugins/gobbi/agents/` -> `.gobbi/projects/gobbi/agents/` (informational for the package; native Codex custom agents stay repo-local under `.codex/agents`)
-
-The Codex plugin package exposes skills and hooks. It does not install custom agents as plugin components; native Codex discovers Gobbi role wrappers from repo-local `.codex/agents`.
-
-Codex source-package support and installed-cache behavior are separate. Do not assume an installed Codex plugin cache dereferences every symlinked component directory. Verify that behavior in an isolated Codex home:
-
-```bash
-bash scripts/sync-plugin-package.sh --check
-bash scripts/check-codex-plugin-smoke.sh
-```
-
-For a real local install, register the repository root as the marketplace source, then add the Gobbi plugin and start a new thread:
-
-```bash
-codex plugin marketplace add <repo-root>
-codex plugin add gobbi@gobbi-workspace
-```
-
-If the smoke check reports missing installed-cache skills or hooks, document that as a Codex plugin-install limitation. Do not materialize `plugins/gobbi/{skills,agents,hooks}` to work around it unless the user explicitly changes the symlink decision.
-
----
-
-## Claude Code Bridge
-
-Use this section when Gobbi is running in Claude Code and needs an independent Codex process.
-
-### `codex exec`
-
-The reliable bridge is foreground `codex exec` through Bash:
-
-```bash
-prompt_file="<absolute-session-path>/codex-prompt.md"
-
-timeout 600 codex exec \
-  -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="xhigh"' \
-  --sandbox workspace-write \
-  --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id} \
-  - < "$prompt_file"
-```
-
-Rules:
-
-- Use `read-only` for evaluation-only work.
-- Use `workspace-write` only when Codex must write files.
-- Pass `--cd <main-tree>` when a worktree is active and output paths live in the main tree.
-- Pass `--add-dir <session-path>` for cross-tree session writes.
-- Wrap every bridge call with `timeout 600`, unless the user explicitly approves a different cap. Note: `600` sits AT the Claude Code Bash foreground cap (~600s) — foreground is safe only for SHORT bridge calls; background the call per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if it may approach the cap.
-- Keep the exact model and reasoning option pair shown above on every bridge call. A user-requested
-  per-run override may replace the relevant value and must be documented with that run.
-- For full Gobbi prompt files, use official stdin transport: `codex exec ... - < "$prompt_file"`. Do not standardize `@prompt-file` as the bridge contract unless the local Codex version explicitly documents and verifies it.
-- For prompt-file construction, required sections, wrapper checks, and failure behavior, read [`delegation.md`](delegation.md).
-
-### `codex exec` launch runtime matrix
-
-`codex exec` launch mode is not one-size-fits-all — it depends on the host runtime's per-call wall-clock cap and on whether the call may exceed it. This matrix is the single authority for HOW every `codex exec` run is launched; § Dual-System Evaluation, § Dual-System Production, [`orchestration/workflow/production.md`](../orchestration/workflow/production.md), and [`orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) all defer here for launch mode and never restate it.
-
-| Runtime / workload | Launch mode | Completion signal |
+| Active runtime | Opposite-system process | Structured-output owner |
 |---|---|---|
-| Native Codex shell, under the host cap | foreground `timeout <cap>` | process exit + file validation |
-| Claude Code Bash, fits under ~540s | foreground, `timeout` under ~540s | validate output files before reporting |
-| Claude Code Bash, may exceed ~540s | **background** (`run_in_background`), explicit PID, deterministic stdin EOF (`- < "$prompt_file"` for standard prompt-file runs; `/dev/null` only for verified prompt-argument exceptions) | poll the output file for its closing marker; ignore the detached exit code |
-| Assistant wrapper | ONLY if it blocks/polls until the contracted output files pass validation | files-as-truth, never "started" |
+| Claude Code | `codex exec` | `--output-schema` receives the artifact schema file |
+| Native Codex | `claude -p` | `--json-schema` receives the compact schema contents |
 
-**The binding foreground limit in Claude Code is the Bash tool cap, not the `timeout` flag.** The Claude Code Bash tool caps a single foreground call at ~600s (10 min) — its documented max. Background any `codex exec` that may exceed ~540s (9 min) — a ~60s margin below the ~600s (10-min) Bash cap. A `timeout 1200` only governs a run that is ALREADY backgrounded in Claude Code (once detached, the `timeout` flag — not the Bash cap — is the binding limit), or a native-Codex context where the host grants that budget. A foreground `timeout 1200` in Claude Code is dead past ~600s: the harness kills the call first (recorded mistake `codex-exec-timeout-exceeds-bash-cap.md`).
+The applicable JSON Schema is one of the record-owned draft, cross-review, or evaluation-report schemas. The active-runtime assistant chooses it from the assigned artifact kind. It does not weaken or extend the schema for a single call.
 
-**Re-verify the cap before relying on the number.** The ~600s foreground cap is a harness value that can change — confirm the current Claude Code Bash foreground cap before trusting the 600s figure.
+### Common invocation envelope
 
-### Dual-System Evaluation
+Before launch, render a neutral prompt in a runtime temporary directory outside the session tree. The prompt includes:
 
-For Claude Code dual-system evaluation, use the assistant-wrapper pattern:
+- operation kind: draft, cross-review, or evaluation report;
+- expected output system, step, iteration, stable assignment, and fresh runtime identity;
+- one unique invocation identity for replay detection;
+- the exact artifact schema contract and output-only-JSON rule;
+- the neutral contract plus its lowercase SHA-256 digest;
+- every binding input as complete inline content, with its source label and digest;
+- exact in-scope and out-of-scope boundaries;
+- independence restrictions for the operation;
+- the operation-specific frozen subject and expected digest; and
+- the exact failure contract: stop without substitute output when required context is absent.
 
-1. Manager spawns two assistant subagents in parallel.
-2. Claude-side assistant evaluates directly with read/search tools.
-3. Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) — foreground when the eval fits under the ~600s Claude Code Bash cap, background otherwise.
-4. Codex-side assistant verifies output files and required content before reporting `DONE`.
-5. Manager reads the actual per-perspective files before acting on findings.
+Paths may identify evidence, but they do not replace the complete contents. The wrapper freezes and hashes the prompt inputs before launch. A retry receives the same frozen envelope and a new invocation and runtime identity.
 
-Do not use `codex:codex-rescue` for required evaluator output. It has a documented fire-and-forget failure mode.
+### Claude Code to Codex
 
-### Dual-System Production
-
-The proposer analogue of § Dual-System Evaluation. A Codex co-worker independently produces a **proposal** in parallel with the Claude producer (leader / executor / assistant), so the canonical artifact is shaped by a second model family at creation time, not only at review. The manager orchestrates this through [`orchestration/workflow/production.md`](../orchestration/workflow/production.md); this section owns the `codex exec` wrapper discipline.
-
-The Codex proposer NEVER writes the canonical `working/draft-iter{n}.md`. It writes only its proposal at `working/proposals/codex/draft-iter{n}.md` (Execution, per task: `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`). The Claude producer reads the frozen proposal and selectively integrates it; Codex proposes, Claude writes.
-
-1. Manager spawns the Claude producer and a Codex-side proposer assistant in parallel (parallel-independent — neither sees the other while generating).
-2. The Codex-side assistant writes the proposer prompt to a file in a **foreground** step and verifies it on disk (`test -s`) BEFORE invoking codex — never a heredoc embedded in the same backgrounded command that runs Codex.
-3. The Codex-side assistant runs `codex exec` per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). A full proposer workload (large skill reads + a complete draft) routinely exceeds the ~600s Claude Code Bash foreground cap, so in Claude Code it launches as a **background** command (`run_in_background`) with deterministic prompt-file stdin (`- < "$prompt_file"`) — NOT foreground-blocking. Only a native-Codex host that grants the budget runs it foreground `timeout <cap>`.
-4. Cap the proposer run with `timeout 1200`. Once a Claude Code run is detached, the `timeout` flag (not the Bash foreground cap) is the binding limit. `timeout 600` (the evaluation-bridge default) is too short for a full proposer workload; the proposer cap is `1200`. This `1200` governs a backgrounded run in Claude Code or a native-Codex context — never a Claude Code foreground call (the harness kills a foreground call at ~600s, per the matrix).
-5. To clean up a hung proposer run, kill by explicit **PID** (`ps` / captured `$!`), never `pkill -f '<pattern>'` — a `-f` pattern that is a substring of the cleanup command kills the issuing shell.
-6. Validate the proposal **structurally** before reporting `DONE`: the file exists, is > 0 bytes, and carries a `PROPOSAL:` header. Do NOT gate on a content-vocabulary grep — a valid proposal can lawfully omit any given token, so a vocab grep false-blocks a clean proposal.
-7. Follow [`delegation.md`](delegation.md) for the full proposer prompt-file contract and failure table.
-
-> **Superseded (runtime-matrix):** the earlier guidance to run the proposer **foreground-blocking with `timeout ≥ 1200s`** is superseded by the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix). In Claude Code the proposer runs **background** — its workload exceeds the ~600s foreground cap — and `timeout 1200` is the detached-run cap, not a foreground budget. Foreground `timeout <cap>` applies only in a native-Codex host that grants the budget.
-
-**Proposer `codex exec` invocation — the proposer is NOT read-only; do NOT reuse the evaluator example.** The proposer MUST write its proposal file, so it runs with `--sandbox workspace-write` — never the `read-only` sandbox the § `codex exec` bridge rule reserves for evaluation-only work. A manager who copies a `read-only` evaluation invocation gets a proposer that cannot write its draft: every loop silently degrades to Claude-only and the feature appears to run while never invoking Codex. The proposer adds the session proposals dir to the writable set via `--add-dir` and writes its draft to `working/proposals/codex/draft-iter{n}.md`. Per-loop form (Ideation / Planning / Wrap-up), **background-launched in Claude Code** per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix):
+Use the installed non-interactive surface:
 
 ```bash
-prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex/proposer-prompt.md"
-
-timeout 1200 codex exec \
-  -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="xhigh"' \
-  --sandbox workspace-write \
-  --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/working/proposals/codex \
-  - < "$prompt_file"
+timeout "$peer_timeout" codex exec \
+  -C "$trusted_read_root" \
+  --ephemeral \
+  --sandbox read-only \
+  --output-schema "$schema_file" \
+  - < "$prompt_file" > "$response_file" 2> "$stderr_file"
 ```
 
-**Execution per-task variant.** The Execution quartet lives under the task dir, so swap the `--add-dir` writable set and the prompt path to the task's `working/proposals/codex` (draft → `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md`):
+The load-bearing command is `codex exec -C "$trusted_read_root" --ephemeral --sandbox read-only --output-schema "$schema_file" -`. The final `-` reads the complete prompt from standard input. `--ephemeral` prevents session persistence. `--sandbox read-only` prevents model-generated writes. `--output-schema` validates the final response shape through the installed Codex interface.
+
+Do not add `--add-dir`, a write-capable sandbox, or a session output path. The parent wrapper owns stdin, stdout, and the immediate stderr diagnostic. These temporary files stay outside the session record.
+
+### Native Codex to Claude
+
+Set the parent process working directory to the trusted read root, then use the installed print surface:
 
 ```bash
-prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex/proposer-prompt.md"
-
-timeout 1200 codex exec \
-  -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="xhigh"' \
-  --sandbox workspace-write \
-  --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/working/proposals/codex \
-  - < "$prompt_file"
+timeout "$peer_timeout" claude \
+  -p \
+  --permission-mode plan \
+  --no-session-persistence \
+  --safe-mode \
+  --tools "Read,Grep,Glob" \
+  --json-schema "$(jq -c . "$schema_file")" \
+  < "$prompt_file" > "$response_file" 2> "$stderr_file"
 ```
 
-Deltas from the evaluator example, all load-bearing: `--sandbox workspace-write` (the proposer writes; the evaluator is `read-only`), the `--add-dir` points at the session `working/proposals/codex/` dir (not an evaluation staging dir), and `timeout 1200` as the detached-run cap (per step 4 — the binding limit once backgrounded, not the `600` evaluation-bridge foreground default). Keep `--cd <main-tree>` so codex anchors on the main-tree root — the worktree CWD is NOT the write root — launch the run per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix): **background** in Claude Code (steps 3–4) with prompt-file stdin (`- < "$prompt_file"`), foreground only in a native-Codex host under the cap, with the explicit-PID kill discipline (step 5), and keep the exact model/reasoning option pair unless the user requested a documented per-run override.
+`-p` makes the call non-interactive. `--permission-mode plan` blocks an edit-oriented permission path. `--no-session-persistence` prevents later resume. `--safe-mode` disables project and user customizations for the call. `--tools "Read,Grep,Glob"` removes write and shell capabilities. `--json-schema` accepts the compact JSON Schema contents, not the schema path.
 
-**Stdin hardening.** The standard bridge uses `- < "$prompt_file"` so stdin is the verified prompt file and reaches EOF. Do not run `codex exec` with no prompt argument and inherited open stdin. Do not combine prompt-file creation and `codex exec` in one backgrounded heredoc command. If an exceptional prompt-argument run is backgrounded, redirect stdin from `/dev/null`; kill a hung run by explicit PID (step 5), never `pkill -f`.
+The wrapper must not pass `"$schema_file"` itself to `--json-schema`. It must compact and pass the file contents exactly as shown.
 
-**Degraded mode (CRITICAL).** If the Codex proposal is empty, times out, or errors:
+### Draft input
 
-- The Codex-side wrapper reports `STATUS: BLOCKED` with the exact failure. It **never self-authors a proposal** to cover for the absent Codex output — a wrapper-authored proposal is a Claude-family draft wearing a Codex label, which defeats the cross-family independence the feature exists for.
-- The producer proceeds **Claude-only** and stamps a durable label in the canonical artifact's frontmatter: `production_mode: claude-only` plus `codex_proposal_absent_reason: <timeout|empty|error>`. RECORD preserves these fields into the loop `outputs/` (see [`record/SKILL.md` § Artifact frontmatter schema](../record/SKILL.md)), so a degraded artifact can never look dual-system-produced.
-- A missing Codex **proposer** is NOT a safety gate (production degrades silently to Claude-only with the label); contrast a missing Codex **evaluator**, which IS a safety gate.
+Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, digest, summary, or hint from the other draft. Its response must match `draft.schema.json`, echo the assigned runtime identity, and carry the exact `contractSha256`.
 
-### User-Only Slash Commands
+Freeze and store both rendered drafts before either cross-review prompt is constructed. A response from an earlier invocation, step, iteration, or assignment is stale even when its content appears useful.
 
-If deep Codex adversarial review requires `/codex:adversarial-review`, ask the user to type it. Do not try to invoke user-only slash commands programmatically.
+### Cross-review input
 
----
+The reviewer receives the complete original neutral contract plus the complete frozen rendered draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper supplies:
 
-## Metadata Lookup
+- the expected opposite `subjectSystem`;
+- the SHA-256 of the exact rendered subject file as `subjectSha256`; and
+- the same `contractSha256` used by both drafts.
 
-Codex local metadata is observational, not a stable public API. Use it read-only and tolerate missing fields.
+The response must match `cross-review.schema.json`. Claude reviews Codex and Codex reviews Claude. Same-system or same-subject labeling blocks storage.
 
-Preferred token and transcript sources:
+### Evaluation input
 
-1. `codex exec --json` `turn.completed.usage`, for direct bridge calls.
-2. Rollout JSONL `event_msg` token-count payload.
-3. SQLite `threads.tokens_used`, as an aggregate fallback.
+Each evaluator receives the complete frozen evaluation bundle required by the evaluation owner: canonical synthesis or actual tree, both drafts, both cross-reviews, resolved decisions, applicable waiver, locked scope, upstream artifacts, scenarios, checklist source, plan, and verification evidence. It never receives the other evaluator report or a prior evaluator session.
 
-Lookup current thread metadata:
+The wrapper hashes the exact evaluated subject and expects it as `subjectSha256`. The response must match `evaluation-report.schema.json`, including the ordered seven perspectives, Overall, ledger, completed checklist, and derived verdict.
 
-```bash
-sqlite3 -header -json ~/.codex/state_5.sqlite \
-  "select id, cwd, rollout_path, model, reasoning_effort, tokens_used from threads where id = '$CODEX_THREAD_ID'"
-```
+### Pre-storage validation
 
-Treat rollout JSONL like Claude Code transcripts. Do not paste long excerpts into reports.
+The active-runtime assistant performs these checks in order:
 
----
+1. Confirm the peer binary and required local dependencies exist before launch.
+2. Launch once with a bounded timeout. Capture the exact exit status before inspecting content.
+3. Treat status `124` as timeout and every other nonzero status as failure. Read the immediate stderr diagnostic; do not store it as a session artifact.
+4. Require a non-empty regular response file. Parse with a strict JSON reader. `jq -e -s 'length == 1'` rejects multiple top-level values; a second check requires the one value to be an object. Prose, wrappers, and code fences fail parsing.
+5. Validate the response against the selected record-owned schema with `jsonschema`.
+6. Compare kind, system, step, iteration, assignment, and runtime identity with the frozen invocation envelope.
+7. Compare `contractSha256`, `subjectSystem`, and `subjectSha256` where the selected schema requires them. Recompute the frozen file digests rather than trusting prompt prose.
+8. Reject a runtime identity or invocation response already used by an earlier peer operation. Confirm the target is the current canonical system-labeled path and is not an already frozen artifact from another operation.
+9. Call `session-record.sh write-artifact` with the exact expected kind, system, step, iteration, assignment, input, and canonical root-relative target.
+10. Reread the rendered artifact. When the complete WORK package exists, run `validate-dual-system-work.sh`. For an evaluation report, run `validate-evaluation-report.sh one`; after both reports validate independently, the manager may run its pair mode.
 
-## Anti-Patterns
+No later check compensates for a failed earlier check. A storage or validator failure leaves the prior valid artifact bytes authoritative and pauses the workflow.
 
-- Blocking a native Codex Gobbi bootstrap because `CLAUDE_CODE_SESSION_ID` or `CLAUDE_TRANSCRIPT_PATH` is unset.
-- Telling Codex users to load skills from `.claude/skills`.
-- Assuming plugin-distributed custom-agent TOMLs exist when Codex currently discovers project custom agents from `.codex/agents`.
-- Relying on symlinked plugin component directories for installed-cache behavior.
-- Running `codex exec` without a timeout.
-- Letting Codex write session files from a worktree-relative or `pwd`-derived path.
-- Trusting Codex stdout or broker state instead of verifying contracted output files.
-- Removing or changing Gobbi's pinned Codex model/effort policy without explicit user direction.
-- Using `danger-full-access` as a default sandbox.
+### Failure diagnosis
 
----
+| Symptom | Classification | Required response |
+|---|---|---|
+| Peer binary missing or unavailable | availability failure | Pause and name the binary and lookup failure |
+| Exit status `124` | timeout | Pause and report the configured bound |
+| Any other nonzero status | process failure | Pause with status and immediate stderr diagnostic |
+| Empty response | empty output | Pause; do not synthesize missing content |
+| Multiple values, prose, fence, or parse error | malformed output | Pause with the parser result |
+| JSON Schema failure | contract failure | Pause with the failing schema path and validator result |
+| Metadata or runtime identity mismatch | stale or mislabeled output | Pause and show expected versus observed identity |
+| Frozen digest mismatch | wrong input or replay | Pause and show the named digest mismatch |
+| Record renderer or owner validator failure | storage boundary failure | Preserve prior bytes and report the exact failing command |
 
-## Operational discipline
+Only the manager may offer retry, a bounded input repair, an explicit one-system waiver, return to DISCUSSION, or abort. This tool does not create the decision or mutate the workflow cursor.
 
-### CWD inheritance
+## References
 
-`codex exec` inherits the CWD from the calling shell. In Claude Code, each Bash tool call gets its CWD reset to the session start directory (typically the worktree root when running in a worktree context). This means:
-
-- Relative paths inside the prompt resolve against the worktree root, not the main-tree root.
-- Codex auto-detects the "project root" based on git context, which may be the worktree root rather than the main repository root.
-
-This session (Planning iter1 attempt 2) observed a concrete failure: codex auto-detected the worktree root as the project boundary and rejected absolute session paths as "writing outside of the project". The workaround: `--cd <main-tree>` forces codex to anchor on the main-tree root.
-
-### Absolute-path mandate
-
-From recorded mistake `codex-eval-session-write-path-nested-in-worktree.md`:
-
-> The Codex evaluator's delegation prompt did not include an explicit, concrete reminder that session writes must use the **main-tree absolute path** (`<main-tree>/.gobbi/projects/<project-name>/sessions/...`), not a path relative to the current working directory or the worktree root. The evaluator's CWD was inside the worktree, so a relative or `pwd`-derived path construction produced the worktree-nested path.
-
-Corrected approach from that mistake:
-
-> Every evaluator delegation prompt that involves session writes must carry an explicit line: "All session writes MUST use the absolute main-tree path `<main-tree>/.gobbi/projects/<project-name>/sessions/{session-id}/...`. Do NOT use relative paths or `pwd`-derived paths. The worktree CWD is NOT the session-write root."
-
-This is mandatory. Inline the full absolute main-tree session path in every prompt that involves writes. Do not rely on the evaluator to construct it correctly from its CWD.
-
-### Cross-tree writes
-
-When the task requires both workspace writes (worktree) and session writes (main-tree), use `--add-dir` to extend the writable set beyond the `--cd` root:
-
-```bash
-timeout 600 codex exec \
-  -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="xhigh"' \
-  --sandbox workspace-write \
-  --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging \
-  - < "$prompt_file"
-```
-
-The `timeout 600` here is a foreground bridge cap that sits AT the ~600s Claude Code Bash foreground limit — background per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) if the call may approach the cap.
-
-### Post-eval sanity check
-
-After any Codex evaluator completes, verify output files landed at the correct main-tree absolute path before advancing:
-
-```bash
-find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/staging -type f -newer <marker-file>
-```
-
-If no files appear under the main-tree path, check for worktree-nested residue and apply manager-proxy write fallback.
-
-### Manager-proxy write fallback
-
-If the Codex sandbox prevents writing to the main-tree path (e.g., the `--add-dir` flag was omitted or incorrectly specified), the manager writes the files directly rather than accepting worktree-nested outputs. The manager returns the output content from the Codex stdout and writes it to the contracted session path using the Write tool.
-
----
-
-## Hang + timeout discipline
-
-### Foreground vs background tradeoff
-
-This section is the **notification-timing** tradeoff, NOT the launch-cap decision — the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix) owns WHEN a run must be backgrounded. Foreground below is the default only for runs that fit under the ~600s Claude Code Bash cap; a run that may exceed it must be backgrounded per the matrix.
-
-**Foreground** (default recommendation, for runs under the cap):
-- Bash blocks synchronously until codex exits.
-- No notification timing issue — the calling agent knows immediately when codex finishes.
-- The agent can read stdout and verify output files before reporting done.
-- Downside: no parallelism at the manager level if the manager is doing the calling directly.
-
-**Background** (`run_in_background: true` on the Bash call):
-- Codex runs in parallel with other manager work.
-- The Claude Code harness delivers completion notifications lazily — batched on the manager's next tool call. If the manager goes fully idle, the notification is delayed indefinitely.
-- Stdout is not directly available; validation requires reading output files.
-- Downside: notification timing class; manager cannot verify output without a separate tool call.
-
-The assistant-wrapper pattern (Section 2(d)) resolves this tradeoff: the manager spawns assistants in background (parallelism at the manager level), but each assistant runs its own codex exec foreground (synchronous from the assistant's perspective) — **only for a run that fits under the cap**. An assistant's Bash carries the SAME ~600s foreground cap, so a run that may exceed it must be BACKGROUNDED even inside the assistant (or the assistant polls the output file for its closing marker), per the matrix. The manager gets verified DONE via the assistant's Agent completion notification.
-
-For longer-running codex jobs that span multiple worktree-bound tool calls, see [`git/SKILL.md` § Worktree CWD discipline](../git/SKILL.md#worktree-cwd-discipline) — codex inherits CWD from the calling shell, and worktree-bound CWD applies to both file reads/writes and `--cd` defaults.
-
-### Companion plugin controls
-
-For jobs running via the codex companion runtime (not `codex exec` direct):
-- `/codex:status` — surfaces the companion's view of the running job.
-- `/codex:cancel` — cancels the running job. Both are user-invocable slash commands; the manager must ASK the user to type them.
-
-These controls do NOT apply to direct `codex exec` invocations. For direct exec, `timeout(1)` and Bash job control (`kill $!`) are the controls.
-
-### Files-as-truth completion signal
-
-**The DONE invariant.** The entity that reports `DONE` MUST have read + validated the contracted output files in the SAME turn. A missing Codex proposer/evaluator is not itself a failure (the proposer degrades to Claude-only; the evaluator is a safety gate) — but an UNVALIDATED completion reported as `DONE` IS a process failure.
-
-Never treat stdout parsing or broker.json polling as the completion signal. After codex finishes, verify by:
-
-1. File existence — check all contracted output files exist at the expected absolute paths.
-2. Content grep — verify key content is present (verdict lines, perspective markers, required vocabulary).
-3. Report BLOCKED if either check fails — do not silently report DONE on missing or malformed output.
-
-```bash
-# After the Codex process exits (per-loop, codex system dir):
-test -f <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: overall.md"
-grep -q "VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/{N}-{loop}/evaluation/iter{n}/codex/overall.md || echo "MISSING: verdict line"
-```
-
----
-
-## Use cases
-
-### (a) Dual-system evaluator spawn
-
-The recommended pattern for running Claude + Codex evaluations in parallel. Produced from three empirical failure modes observed this session (documented in decision-record `sessions/2026-05-23-7ea62d36-e826-4ce6-9e90-9e948007b068/planning/staging/decisions/codex-skill-assistant-wrapper-pattern-for-dual-system-eval.md`).
-
-**Topology:**
-
-```
-manager
-  ├── Agent(assistant, background) ─ prompt: "Claude perspective: run evaluation via Read/Grep/Bash, write to <session-path>/{N}-{loop}/evaluation/iter{n}/claude/{perspective}.md, report DONE after file verified"
-  └── Agent(assistant, background) ─ prompt: "Codex perspective: run codex exec foreground, write to <session-path>/{N}-{loop}/evaluation/iter{n}/codex/{perspective}.md, verify file + content, report DONE"
-       ↑ manager waits for both completion notifications, then aggregates
-```
-
-**Worked example — Codex-side assistant delegation prompt sketch.** The prompt first supplies
-the required loads, identity, task, and a Step 1 instruction to run this command. The launch mode
-still follows the runtime matrix: background if the run may exceed ~540s, and foreground only when
-it fits under the ~600s cap.
-
-```bash
-prompt_file="<main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging/codex-eval-prompt.md"
-
-timeout 600 codex exec \
-  -m gpt-5.6-sol \
-  -c 'model_reasoning_effort="xhigh"' \
-  --sandbox workspace-write \
-  --cd <main-tree> \
-  --add-dir <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging \
-  - < "$prompt_file"
-```
-
-The prompt then requires Step 2 through Step 4:
-
-```text
-Step 2. Verify output files landed at the absolute main-tree path:
-
-  # Must be 9 evaluator output files (7 per-perspective + overall + the filled checklist):
-  ls <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/ | wc -l  # must be 9
-  test -s <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MISSING/EMPTY: checklist.md"; exit 1; }
-  if grep -qE '^- \[ \]' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md; then echo "INCOMPLETE: unresolved checklist item"; exit 1; fi
-  # Every ticked box carries EXACTLY ONE outcome marker (PASS: / FAIL:{id} / n/a:{reason}) — 0 or 2+ is malformed:
-  awk '/^- \[x\]/{ n=gsub(/PASS:|FAIL:|n\/a:/,"&"); if (n!=1){ print "MALFORMED("n"): " $0; bad=1 } } END{ exit bad?1:0 }' <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/checklist.md || { echo "MALFORMED: a [x] row lacks exactly one PASS/FAIL:{id}/n-a:{reason} marker"; exit 1; }
-
-  # Each output file must be non-empty (9 files: 7 per-perspective + overall + the filled checklist):
-  find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex -type f -size +0c | wc -l  # must be 9
-
-  # 5-Type vocabulary is checked only in the 8 finding-bearing files; checklist.md is excluded (coverage artifact, carries no finding vocab):
-  grep -E "scenario_gap|checklist_gap|design_flaw|assumption_risk|general" \
-    <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/{project,structure,performance,aesthetics,usage,consistency,risk,overall}.md | wc -l  # >= 1 hit per file (finding files only)
-
-  # Verdict line must be present in overall.md:
-  grep "^VERDICT:" <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/evaluation/iter{n}/codex/overall.md  # verdict line present
-
-  # Finding vocabulary checks are advisory only; a clean PASS can validly contain no typed findings.
-
-  # If any check fails: STATUS: BLOCKED, do not silent DONE.
-
-Step 3. If any check fails, report BLOCKED with the specific failure. Do NOT report DONE if files are missing or malformed.
-Step 4. If all checks pass, report DONE.
-
-Session writes MUST use the absolute main-tree path above.
-Do NOT use relative paths or pwd-derived paths.
-The worktree CWD is NOT the session-write root.
-```
-
-The sketch's `timeout 600 codex exec` is a foreground evaluator call at the ~600s Claude Code Bash cap; if the evaluation may exceed it, launch background per the [§ `codex exec` launch runtime matrix](#codex-exec-launch-runtime-matrix).
-
-After both assistants return DONE, run the post-eval sanity check:
-
-```bash
-find <main-tree>/.gobbi/projects/<project-name>/sessions/{date}-{session-id}/3-execution/task-{NN}-{slug}/staging -type f | sort
-```
-
-Aggregate findings by reading the per-perspective output files directly. Do not rely on assistant-reported summaries alone.
-
-### (b) Codex-rescue for stuck Claude work
-
-When Claude is looping, mis-applying a pattern, or self-confirming without progress, the manager can spawn `codex:codex-rescue` for a fresh perspective:
-
-```
-Agent(subagent_type="codex:codex-rescue", ...)
-```
-
-**Caveat:** this pattern has a documented fire-and-forget behavior (empirical witness, this session's Planning iter1 attempt 1). The plugin agent forwards the task to the companion runtime and returns immediately with a placeholder. Files may never be written. Use this pattern for ad-hoc unstick attempts where the fire-and-forget risk is tolerable, not for evaluator-perspective work where output files must land reliably.
-
-If reliability matters, use the assistant-wrapper pattern (Section 2(d)) instead.
-
-### (c) User-initiated `/codex:adversarial-review`
-
-For deep adversarial review via the Codex companion, the manager must surface the request to the user. The `/codex:adversarial-review` slash command has `disable-model-invocation: true` — it cannot be triggered programmatically.
-
-At evaluation gates where adversarial review is warranted, the manager surfaces:
-
-> "To run the full Codex adversarial review, please type `/codex:adversarial-review` in the chat."
-
-Do not attempt to invoke this via Bash or the Agent tool. The manager's role is to ask the user at the right moment, not to bypass the user-only restriction.
-
----
-
-## Cost + sandbox budget awareness
-
-Codex and Claude consume tokens at different rates and from different budget pools. Use the right tool for the right task:
-
-| Situation | Preferred tool |
-|---|---|
-| Primary implementation or planning work where session record continuity matters | Claude (executor / leader) |
-| Adversarial review, fresh-perspective evaluation, "second opinion" on Claude's output | Codex — independent context, different confirmation bias surface |
-| Claude looping or self-confirming without progress | Codex-rescue for unstick attempt |
-
-### Effort level
-
-There is no standalone `--effort` flag. Gobbi bridge calls set reasoning effort with
-`-c 'model_reasoning_effort="xhigh"'`, matching the repository config and every role wrapper.
-Higher effort increases token use, so a user-requested per-run change must be explicit.
-
-Native Gobbi custom agents use the same `model_reasoning_effort = "xhigh"` policy for all five
-role wrappers.
-
-### Model selection
-
-Every current Gobbi bridge command passes `-m gpt-5.6-sol`, matching the repository config and
-all five role wrappers. A user may request a documented per-run `-m` override; otherwise keep the
-current policy exact.
-
-### First-use precondition
-
-`/codex:setup` is the first-use precondition for the Codex companion. Gobbi does not install Codex itself. If Codex is not set up, surface `/codex:setup` to the user before attempting any Codex invocation.
-
----
-
-### Codex-specific anti-patterns
-
-These extend the top-of-section Anti-Patterns list with the `codex:codex-rescue`, provenance, and entry-point pitfalls not covered above.
-
-- **Spawning `codex:codex-rescue` from a non-manager role.** Leader, executor, evaluator, and assistant lack the `Agent` tool; the call fails immediately. Use `codex exec` via Bash instead (see § Claude Code Bridge).
-
-- **Using `codex:codex-rescue` for evaluator-perspective work.** The plugin agent has documented fire-and-forget behavior — it returns immediately with a placeholder and files may never be written. For reliable per-perspective output, use the assistant-wrapper pattern (§ Use cases (a)).
-
-- **Running `codex exec` via `Bash(run_in_background: true)` then going idle.** The Claude Code harness delivers background-task completion notifications lazily — batched on the manager's next tool call. If the manager goes fully idle, the notification is delayed indefinitely. Use the assistant-wrapper pattern to get synchronous validation inside the subagent, or run codex foreground.
-
-- **Manager reading its own summary of codex eval results instead of the actual per-perspective files.** A summarized handoff from an assistant may drop findings or compress nuance. After evaluation, the manager MUST read the actual output files at the contracted paths before acting on findings.
-
-- **Using `Co-Authored-By:` instead of `AI-Provenance-Record:` in commits that include codex-spawned work.** Codex work is provenance-tracked with `AI-Provenance-Record:` footer, not `Co-Authored-By:`. Pairing the wrong footer misattributes the contribution type.
-
-- **Missing `.agents/skills/codex` directory symlink**: a codex skill that codex itself cannot load is a contradiction. If you create the codex skill at `.gobbi/projects/<project-name>/skills/codex/SKILL.md` and a Claude-facing `.claude/skills/codex/SKILL.md` symlink but DON'T also create the directory-level `.agents/skills/codex -> ../../.gobbi/projects/<project-name>/skills/codex`, then codex CLI (running under `.codex` repo-local entry points per `.codex/AGENTS.md`) cannot find this skill. Verify with `ls -la <main-tree>/.agents/skills/codex` — should resolve to a directory symlink.
-
----
-
-## Constraints
-
-- MUST load this skill before any Gobbi task that invokes Codex, changes Codex entry points, changes Codex plugin packaging, or interprets Codex metadata.
-- MUST choose the correct runtime column before applying any rule.
-- MUST use `CODEX_THREAD_ID` as the native Codex session id.
-- MUST leave `session.json.transcriptPath` null, with a warning, when Codex rollout lookup fails.
-- MUST keep `.agents/skills` as the repo-local Codex skill entry point.
-- MUST keep `.codex/agents` as the repo-local Codex custom-agent entry point.
-- MUST keep `plugins/gobbi/{skills,agents,hooks}` as symlinks unless the user explicitly changes that packaging decision.
-- MUST verify the Codex plugin path with an isolated `CODEX_HOME` smoke check before claiming installed-plugin readiness.
-- MUST keep Claude Code bridge rules isolated from native Codex rules.
+- [Peer adapter command and validation lookup](peer-adapters.md)
+- [Dual-system WORK owner](../orchestration/workflow/dual-system-work.md)
+- [EVALUATION manager adapter](../orchestration/workflow/evaluation.md)
+- [Evaluation method](../evaluation/SKILL.md)
+- [Record method](../record/SKILL.md) and [record command map](../record/record-map.md)
+- [Draft schema](../record/schemas/draft.schema.json), [cross-review schema](../record/schemas/cross-review.schema.json), and [evaluation-report schema](../record/schemas/evaluation-report.schema.json)
+- [Record renderer](../record/scripts/session-record.sh)
+- [Dual-system WORK validator](../orchestration/scripts/validate-dual-system-work.sh)
+- [Evaluation report validator](../evaluation/scripts/validate-evaluation-report.sh)
+- [Specialist delegation owner](../orchestration/delegation.md)
+- [Codex-specific mistakes](mistakes.md)
+- [Repository runtime entry contract](../../../../../AGENTS.md)

@@ -11,7 +11,7 @@ tags: [evaluation, process, docs-sync]
 keywords: [python-skill, compaction, pr-349, dual-system, word-band, handoff]
 author: claude
 features_touched: []
-loops_completed: [ideation, wrap-up]
+steps_completed: [ideation, wrap-up]
 shipped: [fork-decisions-locked, gate-c-structural-mapping-is-not-semantic-union-preservation, consolidating-per-perspective-verification-tables-narrows-the-union, reharden-edit-blast-radius-miss, dual-system-catches-union-narrowing-in-compaction, cited-process-mistake-not-applied-to-own-artifact]
 ---
 

@@ -1,60 +1,65 @@
 # CLAUDE.md
 
-Gobbi is an open-source ClaudeX (Claude Experience) tool for Claude Code.
+Gobbi is an open-source ClaudeX workflow for Claude Code and Codex.
 
-MUST load this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST reload skills `/gobbi`
+Read this file at session start and every context boundary. Load the canonical Gobbi skills from `.gobbi/projects/gobbi/skills/`. Before agent work, load `principles`, the applicable project rules, and `mistake`; then load the skills for the current workflow step.
 
----
+## Workflow contract
 
-## Core Principles
+Every Gobbi session follows one mandatory workflow:
 
-> **The logic of good work: Configuration → Ideation → Planning → Execution → Wrap-up.**
+`Configuration → Ideation → Planning → Execution → Wrap-up`
 
-Every session runs this 5-step state machine — Configuration plus four productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION → WORK → EVALUATION → **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the [gobbi skill Glossary](skills/gobbi/SKILL.md). This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json` (one file per session). Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.) — no per-project database or summary JSON.
+Each productive step follows one loop:
 
-**Configuration** — Session start: settings, memory check, workflow configuration. Not a loop.
+`DISCUSSION → WORK → EVALUATION → RECORD`
 
-**Ideation** — Explore what to do. PI agents (innovative + best stances) investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
+`state.json` is the active workflow router. `session.json` is the low-frequency lifecycle manifest. Runtime tasks are scheduling projections only. Use `step`, `stage`, and `iteration` as the canonical routing vocabulary.
 
-**Planning** — Begin DISCUSSION with a readiness gate over locked Ideation, memory, skills, authority, and staging; then decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Non-skippable; optional evaluation.
+Configuration performs read-only preflight, resolves settings with the user, creates one isolated worktree and branch, and initializes the session record. Ideation locks what and why. Planning creates ordered tasks. Execution completes, verifies, and commits those tasks through one writer chain. Wrap-up evaluates the actual post-promotion tree and handoff, records the durable outcome, and performs only the configured Git finalization.
 
-**Execution** — Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
+## Dual-system quality contract
 
-**Wrap-up** — Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Promotion ends with a dormant memory-compaction sub-step (Stage-2c) that consolidates over-cap memory areas before the validation gate. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The [Glossary](skills/gobbi/SKILL.md) holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
+Every WORK stage requires independent Claude and Codex drafts from the same neutral contract, frozen drafts, reciprocal cross-reviews, active-runtime synthesis, and user resolution of every material open decision before EVALUATION.
 
-> **Dual-system production and evaluation are core to the gobbi workflow.**
+Every EVALUATION requires two fresh independent evaluators. Each covers Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall, and returns a complete finding ledger, checklist, and verdict. Never apply a finding before the user approves its disposition. Every material revision receives another complete dual-system WORK and EVALUATION iteration. Never reduce dual-system creation, Ideation, or evaluation rigor to save tokens.
 
-The dual-system model pairs an independent Claude run with an independent Codex run at both creation and review, so the anti-groupthink signal the user trusts at review also exists at creation. **Production** is the creation-time half: by default (`propose.mode: dual`, the per-loop default for all four productive steps) the WORK sub-phase has two independent generators — a Claude producer and a Codex proposer — that never see each other while generating; a loop can be set to `propose.mode: single` for a deliberate Claude-only run. The Claude producer is the sole author of the canonical artifact; it selectively integrates the frozen Codex proposal — selecting the stronger element, never synthesizing a blend, and never letting Codex write the canonical draft. Under `dual`, a missing or failed Codex proposal is not a safety gate: production falls back to Claude-only and stamps a durable degraded-mode label. A `single`-mode loop is a deliberate Claude-only run and carries no degraded-mode label. The producer/proposer integration discipline lives in `orchestration/workflow/production.md`.
+If either system is unavailable or returns invalid output, pause and show the exact failure. Continue with one system only after the user explicitly waives the named system for that step and iteration.
 
-Evaluation runs inside Ideation, Planning, and Execution — mandatory after Execution, optional at the earlier steps. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, the manager reconciles the two verdicts and never auto-applies a finding the user must decide on. **In Chat mode** the manager discusses findings with the user before improving — the user decides what to address, defer, or disagree with. **In Auto mode** the manager auto-iterates on REVISE up to maxIterations and the user reviews the full finding set at Wrap-up; only Always-Ask findings and the named dual-system safety gates interrupt mid-loop. See `orchestration/auto-mode.md` and `orchestration/chat-mode.md`. The producer/evaluator separation discipline (who evaluates whom, perspective separation) lives in `evaluation/SKILL.md`.
+## Agent Teams
 
-> **MUST load [principles](skills/principles/SKILL.md) at session start, resume, /clear, and /compact.**
+Claude Code may lazily retain stable leader, executor, and assistant teammates while their identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. The manager alone assigns tasks, changes scope, makes user decisions, accepts work, and authorizes destructive actions. Parallelize independent read-only analysis; keep all worktree writes in one ordered writer chain.
 
-The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle. Subagent briefings MUST include the load instruction in their prompt — fresh subagents do not inherit the parent's loaded skills. (A *continued* teammate retains its own loaded context across turns, so it gets a delta-brief, not the full Load Directives block again — see `orchestration/delegation.md` § Continue vs Fresh.)
+Use the shared assignment skeleton in `orchestration/delegation.md`. After a teammate reports, reread its promised artifact or commit and confirm it is idle and addressable before assigning more work. At a context boundary, verify durable state and teammate identity; replace and reprime any teammate that cannot be confirmed.
 
-| # | Principle |
+## Plugin topology
+
+`plugins/gobbi/` is the bounded Claude Code and Codex package. It distributes canonical `skills` and `agents` and carries both runtime manifests. The package has no lifecycle-hook component. Keep Agent Teams enabled in `.claude/settings.json`.
+
+Use `scripts/sync-plugin-package.sh --check` for read-only source-topology validation, `scripts/test-sync-plugin-package.sh` for fixture tests, and `scripts/check-codex-plugin-smoke.sh` for isolated Codex installed-cache behavior. Do not materialize the symlinked source package to compensate for an installed-cache limitation.
+
+## Principles
+
+The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
+
+1. Think and study before acting.
+2. Build foundations before dependent work.
+3. Design with the user and prior art.
+4. Refine what, why, and how with the user.
+5. Treat scope as a contract.
+6. Start and finish with current documents.
+7. Write plainly, briefly, and literally.
+8. Fix root causes.
+9. Check CRUD and 5W1H before editing.
+10. Finish all agreed in-scope work.
+
+## Navigate deeper
+
+| Document | Owns |
 |---|---|
-| 1 | Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST. |
-| 2 | Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME. |
-| 3 | Design With the User, Based on References: NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 4 | Refine the Task With the User: A PROMPT IS A TRIGGER, NOT A SPEC — ASK FOR WHAT / WHY / HOW UNTIL THE TASK IS CONCRETE. |
-| 5 | Scope Is a Contract With the User: OUT-OF-SCOPE WORK WITHOUT THE USER'S DECISION IS A BREACH OF CONTRACT. |
-| 6 | Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT. |
-| 7 | Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR. |
-| 8 | Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS. |
-| 9 | Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES. |
-| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK. |
-
-> **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
-
-Every agent MUST load the `mistake` skill before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes each staged candidate to one of two homes (Always-Ask routing): a **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the orchestration delegation Load-Directives companion path; a **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{name}/mistakes/`), loaded at session start. Promotion does not cause context reload. A correction not recorded is a correction repeated across sessions. Mistakes are the highest-value knowledge in this system.
-
----
-
-**Navigate deeper from here:**
-
-| Document | Covers |
-|----------|--------|
-| [gobbi skill](skills/gobbi/SKILL.md) | Entry point, session setup questions, skill map |
-| [claude skill](skills/claude/SKILL.md) | Documentation standard for `.claude/` authoring |
-| [principles](skills/principles/SKILL.md) | 10 behavioral principles every agent must follow — MUST load at session start; load the skill for the full rationale and detail |
+| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, glossary, and skill routing |
+| `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Manager authority, Configuration, and global invariants |
+| `.gobbi/projects/gobbi/skills/orchestration/workflow/` | Thin step adapters and dual-system WORK mechanics |
+| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation and finding disposition |
+| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-record mechanics and PASS-only artifacts |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Promotion, evaluated handoff, and Git finalization |

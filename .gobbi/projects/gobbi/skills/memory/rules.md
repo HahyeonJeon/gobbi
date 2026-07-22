@@ -4,7 +4,7 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 >
 > **Scope boundary.** This standard governs memory files only. It does **NOT** govern the non-memory surfaces that also live under `.gobbi/projects/{project-name}/` — `skills/`, `agents/`, or session-runtime files (`sessions/`). Those follow their own authoring conventions, not this memory standard.
 >
-> **Mistakes have a second, skill-surface home (the hybrid model).** A skill-owned trap lives as a `## ` section in `skills/{skill}/mistakes.md` instead of the project `mistakes/` tier. Because it lives under `skills/`, it is OUT of this standard's scope (the Scope boundary above already excludes `skills/`) and OUT of [`validate-frontmatter.sh`](scripts/validate-frontmatter.sh) coverage (which prunes `skills/`, § 4.5). The skill-surface `mistakes.md` is governed by its own conformance guard, `check-skill-mistakes.sh`, NOT by this standard. The cross-cutting / no-owner traps that DO stay in `mistakes/{area}/{slug}.md` keep the full memory machinery this doc defines. See [`mistake/SKILL.md` § Memory Access Matrix](../mistake/SKILL.md) for the two-home routing.
+> **Mistakes have a second, skill-surface home (the hybrid model).** A skill-owned trap lives as a `## ` section in `skills/{skill}/mistakes.md` instead of the project `mistakes/` tier. Because it lives under `skills/`, it is OUT of this standard's scope (the Scope boundary above already excludes `skills/`) and OUT of [`validate-frontmatter.sh`](scripts/validate-frontmatter.sh) coverage (which prunes `skills/`, § 4.5). The skill-surface `mistakes.md` is governed by its own conformance guard, `skills/mistake/scripts/validate-skill-mistakes.sh`, NOT by this standard. The cross-cutting / no-owner traps that DO stay in `mistakes/{area}/{slug}.md` keep the full memory machinery this doc defines. See [`mistake/SKILL.md` § Memory Access Matrix](../mistake/SKILL.md) for the two-home routing.
 
 > **CRITICAL disambiguation — three different "rules" things. Future agents MUST NOT conflate them.**
 >
@@ -18,9 +18,9 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 
 > **The `rules/` tier is lazily created; an absent or empty `rules/` is the valid "no
 > project rules yet" state.** Like every lazily-created memory tier (`rules/`, `design/`,
-> …), the project `rules/` directory does NOT exist until Wrap-up promotes the first
-> project rule (rules are rare and load-bearing — §3). An absent — or present-but-empty
-> (zero `.md` files) — `rules/` is not an error. Any agent or phase directed to read
+> …), the project `rules/` directory does not need to exist when the active workflow has
+> no authorized typed rule source (rules are rare and load-bearing — §3). An absent — or present-but-empty
+> (zero `.md` files) — `rules/` is not an error. Any agent directed to read
 > project rules MUST resolve to exactly ONE explicit audit state:
 >
 > - **`RULES_PRESENT`** — `.gobbi/projects/{project-name}/rules/` exists and holds ≥1
@@ -42,8 +42,11 @@ The consolidated standard for **how gobbi's memory system works** — the naming
 > the `NO_PROJECT_RULES` token; it is never a silent read-nothing. Do NOT create a `rules/`
 > skeleton to make a read succeed: empty dirs are not durable in git, and a placeholder
 > file would be a second structural exception to the `rules/{area}/{slug}.md` shape (§1.5).
-> New rule files are written by Wrap-up, or by the startup skill's startup-close
-> promotion; in both cases only after explicit user confirmation.
+> The current Record staging vocabulary has no `staging/rules/` source, so the active
+> workflow has no rule-creation path. A future route must first add an authorized typed
+> source across Record, Memory, Wrap-up, and their validators. Durable writes would then
+> occur only through Wrap-up WORK's frozen promotion manifest. Productive-step agents,
+> Startup, CLI commands, and RECORD never write the durable rules tree directly.
 
 ---
 
@@ -54,7 +57,7 @@ The naming convention keeps every memory file at a **stable, atomic, controlled-
 ### 1.1 Naming rules
 
 1. **Directory = category.** The type directory IS the first controlled-vocabulary facet, and a second one nests under it: every by-area type adds an **area sub-dir** (`{type}/{area}/` — see §1.5). So "directory = category" is two levels, not one: type, then area. Never repeat either facet in the filename (e.g., a file in `decisions/` is not named `decision-...`).
-2. **Filename = atomic concept slug.** kebab-case, lowercase, hyphens only, **≤6 words, ≤~35 chars**. ONE record = ONE concept — no bundle files. The ONE sanctioned exception is a compaction-produced consolidated (Map-of-Content) file — see the carve-out in §5.1.
+2. **Filename = atomic concept slug.** kebab-case, lowercase, hyphens only, **≤6 words, ≤~35 chars**. ONE record = ONE concept — no bundle files.
 3. **Length proportional to sibling count, inverse to path specificity** — a narrow directory tolerates a shorter slug.
 4. **Status / lifecycle never in the filename** — it lives in frontmatter, so a transition never forces a rename.
 5. **Stable address ≠ mutable description** — once created, a slug is not renamed for wording polish; supersede via frontmatter + a new file instead.
@@ -81,11 +84,11 @@ A slug is a **stable address that names the concept**. The test: *could a reader
 | Positional / sequence index | `task-01`, `tasks-07-08`, `d-1`, `d-3-2`, `item-1-2`, `step-2-5` | "task 01 of what plan?" — the number is an address in a vanished session, not a subject | name the work: `worktree-create-row-insertion`, `shared-executor-context-continuity` |
 | Cryptic internal reference | `row-5-5`, `decimal-row-numbering-55`, `1-3`, `4-1`, `t1g`, `t1j` | table coordinates / checkpoint IDs / task codes mean nothing without the session's working state | name the topic: `state-init-before-worktree`, `direct-mode-opt-out-doc-home` |
 | Uninformative generic | `main`, `misc-`, `common-`, `notes.md`, `helper-` | tells the reader nothing about the subject; "main" is a branch/file convention, not a concept | name the deliverable: `orch-workflow-improvements` |
-| Loop / phase prefix (non-descriptive) | `ideation-decisions.md`, `planning-` | the workflow phase is in frontmatter; the prefix adds noise without subject | one file per concept, concept slug |
+| Workflow-cursor prefix (non-descriptive) | `ideation-decisions.md`, `planning-` | the session record already carries the step; the prefix adds noise without subject | one file per concept, concept slug |
 | Restating the parent dir | `gobbi-install-…` inside `features/gobbi-install/` | the directory already carries the facet (§1.1 rule 1) | drop the prefix |
 | Status / version words | `final-`, `locked-`, `approved-`, `v2-`, `schema-v5-` | lifecycle / version belong in frontmatter; a transition would force a rename (§1.1 rules 4–5) | status/version → frontmatter |
 | Wording excerpt of a finding | `concern-3-coverage-ownership-cell-text` | quotes the finding instead of naming its subject | name the concept |
-| Bundled scope (many topics, one file) | `iter1-user-redirects.md` | violates one-record-one-concept (§3) | split per topic — the sole exception is a compaction-produced consolidated/MoC file (§5.1) |
+| Bundled scope (many topics, one file) | `iter1-user-redirects.md` | violates one-record-one-concept (§3) | split per topic |
 | Person / author names · opaque auto-IDs | — | not a subject; not human-readable | omit / add a human component |
 
 **Good vs bad — real before/after (from this project's history):**
@@ -103,9 +106,9 @@ The fix is never "delete the date" or "delete a content word" — it is "replace
 
 ### 1.4 Ordered-step-dir carve-out (the `{N}-` prefix is exempt)
 
-The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{session-id}/` — `1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the loop's fixed, meaningful position in the workflow (`1`=ideation … `4`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk loop dirs so a reader sees the workflow sequence at a glance.
+The no-positional-index rule (§1.3) governs **memory file slugs**. It does **NOT** apply to the **session step-dir names** under `sessions/{date}-{gobbi-session-id}/` — `1-ideation`, `2-planning`, `3-execution`, `4-wrap-up`, and the per-task `task-{NN}-{slug}` dirs. The leading `{N}-` ordinal on these dirs is a **carve-out**, the directory analog of the date-prefix exemption in §1.2: the number is the step's fixed, meaningful position in the workflow (`1`=ideation … `4`=wrap-up), not a non-descriptive index into a vanished session. It orders the on-disk step dirs so a reader sees the workflow sequence at a glance.
 
-This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step-dirs are runtime working dirs whose shape is owned by [`../record/record-map.md`](../record/record-map.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. (Note SEAM-3: the prefix lives on the **dir** only; the `workflow.{loop}` keys in `session.json` stay **bare**.)
+This carve-out is a direct consequence of the **Scope boundary** at the top of this doc: this standard governs **memory files**, not the `sessions/` runtime tree. The session step dirs are runtime working dirs whose shape is owned by [`../record/record-map.md`](../record/record-map.md) (the single source of truth), not by §1.3. The `{N}-` prefix is mandatory on disk and must never be read as a §1.3 positional-index smell. The router stores the bare step name at `state.json.current.step`; stage, iteration, and task are the other canonical cursor fields.
 
 ---
 
@@ -182,13 +185,18 @@ An area is split / merged / renamed by `git mv`-ing the files and running this p
 3. **Skill-name refs** — `required-skills`, `Load Directives`, `Skill()` permission arrays.
 4. **Inventory / list refs** — manifests, capability lists, feature-value tables.
 5. **Wrapper-description refs** — agent prompt blocks that name the area / path.
-6. **Pipeline-label refs** — hook scripts, sub-phase labels, comment strings.
+6. **Runtime-label refs** — stage labels, command names, and comment strings.
 
 PLUS the two label-rename classes — **in-fence example paths** (paths inside ```` ```markdown ```` example blocks) and **cross-doc** mentions — AND the inbound **`required-mistakes:` PATH refs** (a path-ref sub-class; these are PATH references, NOT plain slugs — §2.4's plain-slug set is only `supersedes` / `superseded_by` / `related` — so they DO break on a move and must be repointed). A moved record's OWN slug identity (`name`, body `[[slug]]` links, the `supersedes` / `superseded_by` / `related` slug-link fields) is rename-robust and needs no repointing.
 
-Run both guards to zero before declaring the refactor done: [`../orchestration/scripts/check-markdown-links.sh`](../orchestration/scripts/check-markdown-links.sh) (zero new broken links) + [`../orchestration/scripts/check-residual-vocab.sh`](../orchestration/scripts/check-residual-vocab.sh) (zero residual old paths).
+Before declaring the refactor done, run the root-owned `scripts/check-markdown-links.sh` over every changed Markdown file, run [`scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh) over every moved memory record, and use an exhaustive scoped `rg` sweep for every old path and label identified by the reference-class inventory. When skill-owned mistake companions move or change, also run [`../mistake/scripts/validate-skill-mistakes.sh`](../mistake/scripts/validate-skill-mistakes.sh) over those files.
 
-**Active-mistake-move carve-out (USER-APPROVED 2026-06-21).** [`../mistake/SKILL.md`](../mistake/SKILL.md) states "active mistakes never move" — that rule governs NORMAL operation (only a supersession moves a file, to `archive/`). A **namespace refactor is a distinct, sanctioned operation class** that MAY move an active mistake between areas, BECAUSE: (a) the mistake's OWN slug identity is preserved (still findable by slug and by the recursive consumer read-glob); (b) the move is procedured — it runs the full reference-repoint sweep above INCLUDING the inbound `required-mistakes:` PATH refs, so no inbound citation is left dangling; (c) both guards run to zero.
+This is a **live namespace refactor**, not a terminal archive move. Every changed Markdown file remains
+inside the link-resolution gate, including each moved live record and active reference carrier. The
+terminal-archive body exclusion in [§2.7](#27-strict-archive-form) does not apply to a live namespace
+move.
+
+**Active-mistake-move carve-out (USER-APPROVED 2026-06-21).** [`../mistake/SKILL.md`](../mistake/SKILL.md) states "active mistakes never move" — that rule governs NORMAL operation (only a supersession moves a file, to `archive/`). A **namespace refactor is a distinct, sanctioned operation class** that MAY move an active mistake between areas, BECAUSE: (a) the mistake's OWN slug identity is preserved (still findable by slug and by the recursive consumer read-glob); (b) the move is procedured — it runs the full reference-repoint sweep above INCLUDING the inbound `required-mistakes:` PATH refs, so no inbound citation is left dangling; (c) every owner check and retired-reference sweep above runs to zero.
 
 ---
 
@@ -211,11 +219,11 @@ scope: project | feature
 feature: {feature slug when scope=feature (a feature README self-references its own slug); null when scope=project}
 status: {the type's allowed status value — see §2.2}
 created: YYYY-MM-DD
-session: {session-id that created this}
+session: {Gobbi-owned UUID of the session that created this}
 tags: [{...}]         # each tag ∈ the controlled vocabulary (§2.5); may be empty []
 keywords: [{...}]      # REQUIRED — freeform, uncontrolled escape-hatch tags; may be empty []
 author: claude | codex | user   # REQUIRED — coarse provider tag (the runtime that authored the file)
-supersedes: {slug | list[slug] | null}      # OPTIONAL (global) — slug(s) this file supersedes; list = consolidation-merge (many→one), one→one stays scalar; §2.4
+supersedes: {slug | null}       # OPTIONAL (global) — the single slug this file supersedes; §2.4
 superseded_by: {slug | null}   # OPTIONAL (global) — the slug that supersedes this file; §2.4
 related: [{slug}]              # OPTIONAL (global) — related slugs; absent or [] is fine; §2.4
 ---
@@ -230,21 +238,21 @@ related: [{slug}]              # OPTIONAL (global) — related slugs; absent or 
 | `feature` | string \| null | yes | feature slug when `scope: feature`; `null` when `scope: project` |
 | `status` | enum | yes | the type's allowed status set (§2.2) |
 | `created` | date `YYYY-MM-DD` | yes | creation date |
-| `session` | string | yes | session-id that created it |
+| `session` | string | yes | Gobbi-owned session UUID that created it |
 | `tags` | list[string] | yes | each tag ∈ the controlled vocabulary (§2.5); may be empty `[]` |
 | `keywords` | list[string] | yes | freeform, uncontrolled escape-hatch tags; may be empty `[]` |
 | `author` | enum | yes | `claude` \| `codex` \| `user` — the runtime/system that authored the file |
-| `supersedes` | string \| list[slug] \| null | **no (optional, global)** | plain slug(s) this file supersedes; list = consolidation-merge (many→one), one→one stays scalar; `null` / absent when none (§2.4) |
+| `supersedes` | string \| null | **no (optional, global)** | plain slug this file supersedes; `null` / absent when none (§2.4) |
 | `superseded_by` | string \| null | **no (optional, global)** | plain slug that supersedes this file; `null` / absent when none (§2.4) |
 | `related` | list[slug] | **no (optional, global)** | plain slugs of related files; absent or `[]` is fine (§2.4) |
 
 **`keywords` is required-may-be-empty.** Parallel to `tags`: the field must be present, but `[]` is a valid value. It is the freeform overflow for tags outside the §2.5 controlled vocabulary.
 
-**`author` is a coarse provider tag.** It names the runtime/system that authored the file, stable across model versions: `claude` for Claude Code agents, `codex` for Codex agents, `user` for a human who directly authored or edited it. Wrap-up auto-stamps it at promotion from `session.json.system` (`claude-code` → `claude`, `codex` → `codex`); a human hand-edit sets `author: user`.
+**`author` is a coarse provider tag.** It names the runtime/system that authored the file, stable across model versions: `claude` for Claude Code agents, `codex` for Codex agents, `user` for a human who directly authored or edited it. Wrap-up WORK stamps it during promotion from `session.json.runtime.system` (`claude-code` → `claude`, `codex` → `codex`); a human hand-edit sets `author: user`.
 
 **`feature` is conditionally required by `scope`.** `scope: feature` ⇒ `feature` is a non-null slug. `scope: project` ⇒ `feature: null`. The validator (§2.6) enforces this conditional.
 
-**Slug-link fields are global-optional.** `supersedes`, `superseded_by`, and `related` are **global optional base fields** — any type may carry them, because supersession and relation are universal lifecycle concepts (a mistake supersedes a mistake, a design supersedes a design, a note may relate to a decision). `supersedes` accepts either a single slug or a `list[slug]`: the list form is for a consolidation-merge (many→one), while a one→one supersession stays a scalar slug; `superseded_by` stays scalar and `related` is always a `list[slug]`. They are documented once here, NOT repeated as per-type extensions in §2.2. Their value form (plain slugs, never paths or `[[ ]]`) is defined in §2.4.
+**Slug-link fields are global-optional.** `supersedes`, `superseded_by`, and `related` are **global optional base fields** — any type may carry them, because supersession and relation are universal lifecycle concepts (a mistake supersedes a mistake, a design supersedes a design, a note may relate to a decision). `supersedes` and `superseded_by` each carry one scalar slug; `related` is always a `list[slug]`. They are documented once here, NOT repeated as per-type extensions in §2.2. Their value form (plain slugs, never paths or `[[ ]]`) is defined in §2.4.
 
 ### 2.2 Per-type extension fields + the status model
 
@@ -257,23 +265,23 @@ The `status` enum is per-type — each type allows only the values in its row. T
 | Type | `status` enum (unified) | Extensions on top of base (non-link only) |
 |---|---|---|
 | features (README) | `active` \| `retired` | `value_proposition`, `subsystems` (list) |
-| notes | `active` | `features_touched` (list) (plus `loops_completed`, `shipped` — see note) |
+| notes | `active` | `features_touched` (list) (plus `steps_completed`, `shipped` — see note) |
 | decisions | `proposed` \| `accepted` \| `superseded` | (none) |
-| design | `active` \| `superseded` | (none) |
+| design | `active` \| `superseded` \| `retired` | (none) |
 | mistakes | `active` \| `superseded` | `priority` **(required)**, `domain` **(required)** |
 | rules | `active` \| `superseded` | `priority`, `established` (date) |
 | learnings | `active` \| `superseded` | (none) |
 | backlogs | `open` \| `deferred` \| `closed` | `priority` **(required)**, `project-scope` (bool) **(required)**, `shipped_in` (slug\|null) |
 | references | `active` \| `superseded` | `title` **(required)**, `source` **(required)**, `accessed` (date), `ref_type` **(required)** |
-| plans | `active` \| `superseded` | `task`, `task_count` (number) |
+| plans | `active` \| `superseded` \| `completed` \| `abandoned` | `task`, `task_count` (number) |
 | reviews | `active` | `review_kind` **(required)**, `subject`, `verdict` |
 | reports | `active` | `report_type` **(required)**, `related_reports` (list[slug]) (plus `generated_by`, `subject`, `related_reviews`, `related_decisions`) |
 | changelogs | `active` | `shipped_in` (slug) |
 | discussions | `active` | `outcome` |
 | scenarios | `active` | (none) |
-| checklists | `active` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
+| checklists | `active` \| `retired` | `scenario` (slug), `item_status` (enum), `anchor` (slug \| `novel`), `implemented_in` (slug \| null) |
 
-> **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `loops_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
+> **Note — `notes` and `reports` keep the richer extension set.** `notes` keeps `steps_completed` and `shipped` alongside `features_touched` — they are useful session → memory links. `reports` keeps `generated_by`, `subject`, `related_reviews`, and `related_decisions` alongside `report_type` and `related_reports`. The validator's per-type allowlist must include these. (`reports`'s `related_reports` / `related_reviews` / `related_decisions` are distinct per-type fields, NOT the global `related` slug-link.)
 
 **Extension-field enums:**
 
@@ -283,6 +291,18 @@ The `status` enum is per-type — each type allows only the values in its row. T
 - `verdict` = `pass` \| `revise` \| `fail` \| `needs-attention` \| `n/a`
 - `report_type` = `status` \| `post-mortem` \| `analytics` \| `other`
 - `item_status` = `pending` \| `implemented` \| `deferred`
+
+**Terminal status semantics are distinct.** `superseded` means one true successor replaces the record.
+It requires a non-null plain-slug `superseded_by`, and the successor carries the reciprocal
+`supersedes`. The non-successor terminal states do not invent that relationship:
+
+- `design: retired` means the design is intentionally withdrawn without a replacement;
+- `plans: completed` means every accepted task outcome closed;
+- `plans: abandoned` means the plan stopped without completion and without a replacement; and
+- `checklists: retired` means the checklist no longer governs future work.
+
+For those non-successor states, `superseded_by` is absent or `null`. A non-null value is invalid.
+There are no compatibility aliases or migration statuses: a new record uses exactly the enum above.
 
 ### 2.3 The complete `type` enum — 16 first-class types
 
@@ -299,7 +319,7 @@ references | plans | reviews | reports | changelogs | discussions | scenarios | 
 
 - `scenarios` / `checklists` / `changelogs` / `discussions` live **only** under `features/{f}/` (always `scope: feature`).
 - `notes` is **project-only**.
-- `plans` is **feature-level on the loop path** (a project-level `plans/` may exist for maintainer roadmaps, but is never loop-written).
+- `plans` is **feature-level on the productive-step path** (a project-level `plans/` may exist for separately authorized maintainer roadmaps, but is never written by the workflow).
 - The rest (`features`, `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`) live at **both** levels, defaulting to feature-level and promoting up to project when the content is cross-feature.
 
 The enum says only WHAT a file is; `scope` and the directory say WHERE it lives. (See §3 for the full per-scope placement rules.)
@@ -308,7 +328,10 @@ The enum says only WHAT a file is; `scope` and the directory say WHERE it lives.
 
 Memory files link to each other in two distinct ways. Keep them separate.
 
-**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: grep-absence-claim-needs-exact-pattern`, `superseded_by: null`. A `related:` field is a `list[slug]`. `supersedes` may itself be a `list[slug]` — each element a plain slug — when one file consolidates several (the consolidation-merge form, many→one); a one→one supersession stays a single scalar slug.
+**Lifecycle pointers in frontmatter = plain slugs.** The frontmatter fields `supersedes`, `superseded_by`, and `related` carry **plain slugs** — the target file's `name` (= filename stem), with no path and no `[[ ]]`. Plain slugs are rename-robust and machine-queryable; a path would break on a move, and Obsidian does not rename-update links inside YAML. Example: `supersedes: grep-absence-claim-needs-exact-pattern`, `superseded_by: null`. `supersedes` and `superseded_by` are scalar-or-null lifecycle pointers. A `related:` field is a `list[slug]`.
+
+`superseded_by` is a successor pointer, not a generic terminal explanation. A `status: superseded`
+record requires one non-null plain slug. Every other status permits only absent or `null`.
 
 **Navigable graph links in the body = `[[slug]]`.** Human- and graph-navigable links live in the BODY, in a `## Related` section near the doc's end — one bullet per link in `[[slug]]` identifier-link form. Foam / Obsidian derive the graph and backlinks from these. Format:
 
@@ -333,15 +356,80 @@ When a tag outside its type's pool is genuinely needed, use the required-may-be-
 
 ### 2.6 Staging-field stripping on promotion
 
-Staging-only fields exist during the session and MUST be stripped when Wrap-up promotes a staged file to memory:
+Staging-only fields exist during the session and MUST be stripped when Wrap-up WORK promotes a typed staged file to memory:
 
 - **`mistake-candidate: true`** — stripped on promotion; its *presence* is what routes the file to `mistakes/`, after which it has done its job.
 - **`area:`** — an optional write/stage-time override input that selects the destination area (§1.5 selection rule, step 1). Stripped on promotion: once the file lands under `{type}/{area}/`, the directory encodes the resolved area, so a promoted file carries NO `area:`. Because `area:` never reaches a promoted file, it is NOT a §2.2 type extension and the validator's area checks derive the area from the PATH, not from frontmatter.
 - **`finding-id`, eval-routing `disposition`, `promoted-from`, `promoted-at`** — session-routing and session-provenance. `git log` + the base `session` field already carry provenance; the extra keys are redundant ad-hoc drift. Fold any durable provenance into base `session` + `created`; strip the rest.
 
-**Mechanism.** Wrap-up's promotion step reads the staging frontmatter, applies the routing modifier, then writes the destination file with ONLY base + that type's extension fields (a per-type frontmatter allowlist). See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+**Mechanism.** Wrap-up WORK reads the typed staging frontmatter, applies the routing modifier, then writes the destination file through the frozen manifest with ONLY base + that type's extension fields (a per-type frontmatter allowlist). No other step or stage writes durable memory. See [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) for the promotion routing.
+
+**Empty staging is valid.** A clean result may leave every authorized typed staging directory empty. Wrap-up WORK records the empty inventory and creates no filler memory record.
 
 **Enforcement.** A promoted file carrying a stray staging-only key is caught by the bash validator's **no-stray-keys** check (§2 lead note) — the validator's per-type allowlist is exactly base (§2.1) + that type's extensions (§2.2), so any key outside it is reported.
+
+### 2.7 Strict archive form
+
+Archive is one project-root-only destination:
+
+```text
+.gobbi/projects/{project-name}/archive/{type}/{area}/{YYYY-MM-DD}-{slug}.md
+```
+
+The move preserves the record's original `type`, `scope`, `feature`, base fields, type extensions, and
+complete body. A feature-scoped record still lives in the project-root archive and keeps its non-null
+`feature`; there is no `features/{feature}/archive/` tier. The path type must equal frontmatter `type`,
+and `{area}` must be allowed for that source type. For a retired `features` identity record, the
+structural-exception area is its preserved `feature` slug. `archive` is never a frontmatter type.
+
+Two fields are required only on an archived record:
+
+```yaml
+archived_at: YYYY-MM-DD
+archive_reason: shipped | closed | completed | addressed | superseded | retired | dropped | abandoned
+```
+
+`archived_at` equals the filename's leading date. Live records reject either archive field. The
+status/reason compatibility matrix is fail-closed:
+
+| Source type and terminal status | Allowed `archive_reason` |
+|---|---|
+| Any type whose status is `superseded` | `superseded` |
+| `design: retired` | `retired` |
+| `plans: completed` | `completed` |
+| `plans: abandoned` | `abandoned` |
+| `checklists: retired` | `addressed` \| `dropped` \| `retired` |
+| `backlogs: closed` | `shipped` \| `closed` \| `addressed` \| `dropped` |
+| `features: retired` | `retired` |
+
+No other pair is valid. A superseded archive requires the reciprocal successor pointer described in
+§2.2. Retired, completed, abandoned, addressed, dropped, closed, and shipped outcomes do not invent a
+successor.
+
+**Archive-body and link-scope contract.** A terminal archive move freezes the complete body: every byte
+after the closing frontmatter delimiter is preserved verbatim from the active preimage, including the
+exact text of historical outbound relative links. Do not normalize, repair, or rewrite those body
+links after the move. Because their text is historical evidence and their new directory can make them
+intentionally unresolved, project-root `archive/` bodies are excluded from scoped Markdown-link
+resolution. An unresolved outbound relative link inside that frozen body is therefore not, by itself,
+a failed terminal move.
+
+The exclusion is body-local, not path-wide. Every active Markdown carrier that pointed to the old
+active path must be repointed to the new archive path and remains an input to the root-owned
+`scripts/check-markdown-links.sh` gate. A stale or unresolved active inbound path fails. A live
+namespace split, merge, or rename remains subject to the full changed-Markdown gate in §1.5 and cannot
+borrow this archive-only exclusion.
+
+Every newly rendered archive still must pass all of the following independent proofs:
+
+- a byte-for-byte body comparison against the frozen active preimage;
+- explicit strict Memory validation of the exact new archive path;
+- exact path, terminal status, compatible reason, matching date, and successor-semantics checks;
+- scoped link validation of every changed active Markdown file, including inbound carriers; and
+- actual-tree review proving the archive result and every carrier match the frozen mutation set.
+
+No one proof substitutes for another. In particular, strict archive validation does not prove body
+identity or active inbound-link health, and the archive-body link exclusion does not weaken either.
 
 ---
 
@@ -351,12 +439,12 @@ The structure rules thread through the 16 per-type specs in [`memory-map.md`](me
 
 - **Directory-as-category.** The type directory is the first controlled-vocabulary facet (§1.1 rule 1). The directory name carries the type; the filename carries the concept. A record's *type* is never re-encoded in its slug.
 - **Area sub-namespace.** Every by-area type nests one area level under the type dir (`{type}/{area}/`); the area is resolved by the §1.5 selection rule (explicit `area:` > priority-ordered tag→area map > user-decision on no-match), eager and symmetric on both tiers. `features/{f}/README.md` is the sole structural exception — the feature dir is itself the area axis, so the README is not by-area.
-- **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept. **The one sanctioned exception is a compaction-produced consolidated (Map-of-Content) file (§5.1)** — it is permitted precisely because it preserves per-item granularity (per-section lifecycle + stable section anchors + split-on-retire, §5.2–§5.3), the property this rule protects.
+- **One record, one concept (atomicity).** Every file holds exactly one concept — one decision, one mistake, one design topic. Bundle files (`ideation-decisions.md`, `iter1-user-redirects.md`) are forbidden because supersede / archive / promotion then operate at the wrong granularity. Split bundles into one file per concept.
 - **Declared scope + promote-up.** Each type declares its scope:
   - **`features/` is its own tier.** A `features/{slug}/` directory is a durable capability dir — not a project-scoped nor feature-tagged content type like the rest of this list. Its `README.md` is the feature's identity document: it carries base frontmatter with `name: README` (the fixed filename stem, NOT the feature slug — §2.4), `scope: feature`, and `feature: {own-slug}` (the `feature` field is self-referential — it names the README's own feature). New feature dirs are created only by user-ratified value-feature addition, never by a sprint.
   - **Project-only** types: `notes` (and `archive` as a destination). These live only at the project root; there is no `features/{f}/` tier for them.
-  - **Feature-only (loop path)** types: `plans` — the loop path writes plans only to `features/{f}/plans/`. (A project-level `plans/` may exist for maintainer-authored cross-feature roadmaps, but it is never loop-written.)
-  - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`. Most default to feature-level and **promote up** to the project root only when the content sets a project-wide convention / cross-feature architecture (user-confirmed through the active runtime's user-decision primitive at Wrap-up). `learnings` / `reviews` / `reports` are **default-feature** like `decisions` / `design`: a feature-scoped one lives in `features/{f}/{type}/`, promoting up to project when cross-feature. `rules` are rare and load-bearing: a project-wide rule lives in `rules/`, a feature-specific rule in `features/{f}/rules/`; either tier is user-confirmed at Wrap-up.
+  - **Feature-only (productive-step path)** types: `plans` — Planning stages plans only for `features/{f}/plans/`. (A project-level `plans/` may exist for separately authorized maintainer roadmaps, but the workflow never writes it.)
+  - **Both** types: `decisions`, `design`, `mistakes`, `backlogs`, `references`, `learnings`, `reviews`, `reports`, `rules`. Types with an authorized typed source default to feature-level and **promote up** to the project root only when the content sets a project-wide convention or cross-feature architecture, with user confirmation during Wrap-up. `learnings` / `reviews` / `reports` are **default-feature** like `decisions` / `design`: a feature-scoped one lives in `features/{f}/{type}/`, promoting up to project when cross-feature. `rules` are rare and load-bearing, but the current Record vocabulary has no rules source; their durable locations do not create a write route.
   - The four feature-subdir-only types (`changelogs`, `discussions`, `scenarios`, `checklists`) exist ONLY as `features/{f}/` subdirs.
 
 For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, see [`memory-map.md`](memory-map.md).
@@ -365,7 +453,7 @@ For the authoritative per-type purpose / hard-boundary / scope / CRUD detail, se
 
 ## 4. Dev-document quality standard
 
-§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap. Memory-template bodies additionally follow [`memory/SKILL.md` § Authoring style](SKILL.md#authoring-style).
+§1-3 govern a file's *address* (naming), its *machine-readable header* (frontmatter), and its *placement* (structure). §4 governs the **prose quality of the body itself** — what a memory doc must read like to be worth keeping. A file can pass §1-3 (correct slug, valid frontmatter, right directory) and still be a bad memory doc if its body only makes sense to someone who sat in the session that wrote it. §4 is the positive bar that closes that gap. Memory-template bodies additionally follow [`memory/SKILL.md` § Author the typed candidate](SKILL.md#5-author-the-typed-candidate).
 
 ### 4.1 What a good dev-doc looks like (the positive bar)
 
@@ -434,17 +522,16 @@ grep -rnE 'T[0-9]+-|iter[0-9]|draft-iter|COD-[0-9]|row-[0-9]' \
 | promotion provenance (time) | `promoted-at` | `promoted_at` |
 | finding-disposition provenance | `addressed-by` | `addressed_by` |
 
-**Session-routing residue** — session-internal coordinates that identify a file's position within a session (which loop iteration or evaluation round produced it). These coordinates have no meaning to a future reader; provenance is already carried by `session` + `created` in base frontmatter and by `git log`. Both spellings must be caught:
+**Session-routing residue** — session-internal coordinates that identify a file's cursor within a session. The durable record keeps the Gobbi UUID in `session`; `step`, `stage`, `iteration`, and Execution assignment identity remain in session evidence. These coordinates have no meaning to a future reader and must be stripped. Both hyphen and underscore spellings must be caught:
 
 | Concept | Hyphen spelling | Underscore spelling |
 |---|---|---|
-| workflow loop phase | `loop` | `loop` (same) |
-| iteration counter | `iter` | `iter` (same) |
+| workflow step | `step` | `step` (same) |
+| workflow stage | `stage` | `stage` (same) |
+| iteration counter | `iteration` | `iteration` (same) |
 | slug duplicate | `slug` | `slug` (same) |
 | finding source label | `finding-source` | `finding_source` |
-| workflow phase coordinate | `phase` | `phase` (same) |
-| loop iteration counter | `loop-iter` | `loop_iter` |
-| sub-step coordinate | `sub-step` | `sub_step` |
+| workflow task duplicate | `workflow-task` | `workflow_task` |
 | session-id (redundant with base `session`) | `session-id` | `session_id` |
 
 > **`task` and `scenario` are NOT residue — they are §2.2 type extensions.** `task` is a `plans` extension and `scenario` is a `checklists` extension (§2.2), so on those types they are legitimate keys, not session-routing residue. They are deliberately absent from the residue table above. The validator's per-type allowlist is the authority: it accepts `task` on `plans/` and `scenario` on `checklists/`, and reports either as a stray key on any OTHER type. Listing them as residue here (or in the §4.5 advisory grep) would wrongly flag every live `plans/` / `checklists/` file that uses its own extension.
@@ -467,7 +554,12 @@ There is no second, broader keep-list. The old pre-standard keep-list enumerated
 
 ### 4.5 The conformance gate — the bash validator
 
-The canonical conformance gate is the bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh). It is a **strict superset** of the old `find | xargs grep` leak-scan: rather than matching a hand-maintained list of leak keys, it validates every frontmatter key against the per-type allowlist (base §2.1 + that type's extensions §2.2) and also checks required fields, the 16-type enum (§2.3), the per-type `status` enum (§2.2), `scope` + the `feature` conditional (§2.1), extension enums, `name == filename stem`, and slug uniqueness. The no-stray-keys check subsumes the old leak-scan: any key outside the per-type allowlist — including session-routing residue and the removed `decision_status` / `disposition` — is reported. The validator is **archive-safe** by construction: its `P_live` prune excludes `archive/` / `sessions/` / `skills/` / `agents/` / `tmp/` / `worktrees/` (the §4.6 archive-exclusion), so a sweep never touches frozen history.
+The canonical conformance gate is the bash validator at [`skills/memory/scripts/validate-frontmatter.sh`](scripts/validate-frontmatter.sh). It is a **strict superset** of the old `find | xargs grep` leak-scan: rather than matching a hand-maintained list of leak keys, it validates every frontmatter key against the per-type allowlist (base §2.1 + that type's extensions §2.2) and also checks required fields, the 16-type enum (§2.3), the per-type `status` enum (§2.2), `scope` + the `feature` conditional (§2.1), extension enums, `name == filename stem`, successor-link semantics, and live slug uniqueness. The no-stray-keys check subsumes the old leak-scan: any key outside the per-type allowlist — including session-routing residue and the removed `decision_status` / `disposition` — is reported.
+
+No arguments select only `P_live`; the default prune excludes `archive/` / `sessions/` / `skills/` /
+`agents/` / `tmp/` / `worktrees/`. An explicitly named file under the canonical project-root
+`archive/` enters strict archive mode and must satisfy §2.7. An explicitly named feature-local archive
+path fails the exact-shape check. Archive files never enter the live-only slug uniqueness set.
 
 Run it over the whole live tree, or pass paths to scope it:
 
@@ -477,6 +569,9 @@ skills/memory/scripts/validate-frontmatter.sh
 
 # Validate specific files:
 skills/memory/scripts/validate-frontmatter.sh path/to/file.md ...
+
+# Validate one archived file strictly:
+skills/memory/scripts/validate-frontmatter.sh archive/design/workflow/2026-07-21-old-design.md
 ```
 
 **Fast advisory pre-check (optional).** The old one-liner below is no longer the gate — the validator is authoritative — but it remains a quick, archive-safe, underscore-aware scan for the most common staging-routing leaks when the full validator is not at hand:
@@ -495,70 +590,22 @@ find .gobbi/projects/gobbi -name '*.md' \
 # type extensions (plans / checklists), not residue; matching them here would
 # false-positive on every live plans/ / checklists/ file. The authoritative gate
 # (the validator) accepts them per-type; this advisory scan must not contradict it.
-| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|loop|iter|slug|finding[-_]source|phase|loop[-_]iter|sub[-_]step|session[-_]id|decision_status):' \
+| xargs -0 grep -lE '^(mistake[-_]candidate|finding[-_]id|confidence|severity|surfaced[-_]by|promoted[-_]from|promoted[-_]at|addressed[-_]by|step|stage|iteration|slug|finding[-_]source|workflow[-_]task|session[-_]id|decision_status):' \
   2>/dev/null
 ```
 
 A clean validator run reports no violations; any reported file is a doc to normalize so it carries only base + its type's extensions (§4.4). Note: `disposition` is no longer a backlogs extension — it folded into `status` (§2.2) — so it is now a stray key wherever it appears; the validator flags it like any other.
 
-### 4.6 Scope edge — `archive/` is excluded
+### 4.6 Scope edge — default scans exclude `archive/`
 
-Frozen `archive/` docs are excluded from this standard, from any retrofit pass, and from the gate. An archived file is terminal history; it is not normalized or re-prosed. Every command and predicate in §4 carries the `archive/` exclusion (`-not -path '*/archive/*'` / "NOT under `archive/`") so a sweep never touches frozen history.
-
----
-
-## 5. Memory compaction (the consolidated / Map-of-Content carve-out)
-
-Active memory has no size bound of its own: a `{type}/{area}/` directory (§1.5 — the scannable unit) keeps accreting records until it is no longer scannable. **Compaction** is the bounded-memory mechanism that holds each area under a cap. At Wrap-up, when an area is over cap, related records are folded — losslessly — into ONE consolidated **Map-of-Content (MoC)** file, and the originals are `git mv`'d to `archive/`. Compaction never hard-deletes. The compaction sub-procedure **always counts** every post-promotion `{type}/{area}/`, independent of `settings.compaction.enabled`; the flag gates only whether an eligible merge runs automatically, never the count, terminal archival, the `hardCap` check, or the Always-Ask decision.
-
-This section is the **standard** — what a consolidated file is, what it must preserve, and how it lifecycle-manages each merged item. The **procedure** — the always-count / terminal-archive / re-count order, the hard-cap decision, the merge manifest, and the repoint sweep — lives in [`wrap-up/compaction.md`](../wrap-up/compaction.md); the **runnable verification** is the [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) gate. Those are referenced here, not restated.
-
-### 5.1 The consolidated / MoC carve-out (the sanctioned exception to atomicity)
-
-The one-record-one-concept rule forbids bundle files in three places — §1.1 rule 2, the §1.3 "bundled scope" anti-pattern, and the §3 atomicity rule. A **compaction-produced consolidated (MoC) file is the ONE sanctioned exception** to that prohibition.
-
-It is allowed because it does NOT carry the defect the prohibition guards against. §3 states the reason bundles are forbidden: they make "supersede / archive / promotion operate at the wrong granularity." A consolidated file keeps that granularity per-item:
-
-- **Atomic-section preservation + stable anchor (§5.2)** — each source survives as its own `## ` section, full structure verbatim, addressable by a stable anchor.
-- **Per-section lifecycle (§5.2)** — each section carries its own status marker, so an individual item keeps its own lifecycle.
-- **Split-on-retire (§5.3)** — when one item terminates, its section is split back out (or its archive entry reconciled), so supersede / archive still act per item.
-
-The carve-out is therefore narrow. A consolidated file is permitted ONLY when compaction produced it AND it preserves §5.2 + §5.3. A hand-authored file that merely lumps several topics together is still a forbidden bundle (§1.1 / §1.3 / §3).
-
-### 5.2 Atomic-section preservation, per-section lifecycle, and the stable section anchor  `[LOAD-BEARING]`
-
-A consolidated file is a Map *of* its sources, not a summary *of* them. It MUST preserve every source as a first-class, individually addressable section:
-
-- **One `## ` section per source.** Each merged source becomes exactly one `## ` section. Never blend two sources into one section, and never summarize a source down — copy its full type-required structure **verbatim** (a merged `mistakes` source keeps all four elements: What happened / Why it happens / Correct approach / How to detect).
-- **Stable section anchor == the source's own slug.** Each section is anchored by the source record's original slug, so an inbound reference resolves to `moc-slug#source-slug`. The anchor is **stable** — identical to the slug the source carried as a standalone file, and unchanged when the consolidated file grows or another section is split out — so a later split-on-retire (§5.3) carries the same identity back out.
-- **Per-section lifecycle marker.** Each section carries its own lifecycle status, so items that retire at different times coexist (a still-open backlog item and a shipped one are two sections with different markers).
-
-This stable-anchor rule is **load-bearing for verification**: it is the documented basis for the merge manifest's `source_anchor` field and for the compaction repoint target `moc-slug#source-anchor`. The [`check-merge-ref-integrity.sh`](../orchestration/scripts/check-merge-ref-integrity.sh) gate's Family 1b resolves every `moc-slug#anchor` reference against the sections actually present, so the anchor MUST stay equal to the source slug for the repoint to verify.
-
-### 5.3 Split-on-retire (per-item terminal lifecycle inside a consolidated file)
-
-A consolidated file holds items that reach a terminal state at different times. When ONE merged item terminates (a consolidated `backlogs` item ships; a merged `mistakes` source is superseded), it is handled by **split-on-retire** — NOT by archiving the whole file:
-
-1. **Extract the section to an atomic file.** Remove the item's `## ` section from the consolidated body, and drop its slug from the consolidated `supersedes:` list and the `## Sources` list. The extracted section keeps the **same stable anchor (= source slug)** — its identity carries out unchanged (§5.2).
-2. **Set the item's terminal status.**
-3. **Reconcile the SINGLE merge-time archive entry — write NO second archive file.** Each source was already moved to `archive/` at merge time, its full body frozen there with `archive_reason: merged` (§5.5). Split-on-retire reconciles **that existing entry** to the new terminal state: flip `status` (e.g. `superseded` → `closed`), set `shipped_in`, and change `archive_reason` from `merged` to the terminal reason. The result is exactly **one archive file per slug** — no duplicate, no contradictory second entry.
-4. **Re-run the gate.** The split is recorded in the gate's split-manifest (`{split_out_anchor, consolidated_slug, new_home_path}`). A live reference still pointing at the now-removed `moc-slug#anchor` is the **dead-anchor edge**, caught by the gate's Family 1b as `STALE-ANCHOR`; the reference must follow the section to its new home.
-
-When **every** section in a consolidated file has reached a terminal state, archive the whole consolidated file (move-on-terminal, [`templates/archive.md`](templates/archive.md)). Bringing a split-out item back live uses the `archive.md` Recovery path.
-
-### 5.4 Caps and the Always-Ask safety tier
-
-- **Where the caps live.** The per-`{type}/{area}/` cap is project config, not prose: [`memory-vocabulary.json`](memory-vocabulary.json) holds `compaction.softCap` and `compaction.hardCap` (gobbi's instance: **softCap 12 / hardCap 15**), with an optional per-type `types.{type}.compaction.{softCap,hardCap}` cap-number override. Compaction runs ONE uniform strategy for every type — there is **no `mode` field** and no archive-only exemption. The merge loop stops when the area is back to `live_count ≤ softCap`.
-- **Counting and the hard-cap decision are always on.** Wrap-up **counts every `{type}/{area}/` area post-promotion on every session, unconditionally**, recording each area's `live_count` and effective caps. An area above `softCap` runs terminal archival and re-count regardless of `settings.compaction.enabled`. After re-count, an area whose `live_count` still exceeds `hardCap` **cannot silently PASS** or advance to the memory-validation gate — it routes to an **Always-Ask** decision (merge a related cluster / raise the cap / archive an oldest-terminal item / accept the over-`hardCap` count with explicit acknowledgement for this wrap-up). An explicit accept records the exception; it does not change the configured cap. A dormant switch once let `mistakes/verification/` reach 44 records against a `hardCap` of 15 unnoticed; always-count closes that hole.
-- **`enabled` gates automatic merging only.** `settings.compaction.enabled` (ships `false`, dormant) suppresses ONLY the automatic-merge branch — it does NOT suppress counting, terminal archival, re-count, the `hardCap` check, the Always-Ask decision, or the standing post-promotion guards. When `enabled` is `true`, an eligible area above `softCap` but not above `hardCap` may merge automatically within `settings.compaction.maxAutoActions`; exhausting that budget never lets an over-`hardCap` area pass.
-- **The Always-Ask safety tier — a hard rule, not a config knob.** **`mistakes` and `rules` merges are Always-Ask**: the merge surfaces through the manager's user-decision primitive before it runs. Every other type's merge is **auto within the session's `maxAutoActions` budget**. This split is a hard rule of this standard; it is deliberately NOT a per-type config knob, so it cannot be silently disabled.
-- **Never force a junk merge.** Compaction never merges unrelated records to hit a number. When an area is over hardCap but holds no related cluster, that is Always-Ask too (option set: merge a cluster / leave over-cap / raise the cap / archive an oldest-terminal item) — never an invented merge.
-
-### 5.5 Consolidation is a documented subtype of supersession
-
-A consolidation-merge is a **subtype of supersession**, not a separate lifecycle. Each merged source is set `status: superseded` + `superseded_by: <consolidated-slug>`, and is archived with **`archive_reason: merged`** — the distinct enum value (defined in [`templates/archive.md`](templates/archive.md)) that records *why* the source was superseded: folded into a consolidation, not overridden by a newer understanding. The consolidated file points back with the list form `supersedes: [<all source slugs>]` (§2.4).
-
-Consolidation therefore stays inside the existing supersede-and-move-on-terminal model: a reader meets a normal `superseded` source whose `archive_reason: merged` says it lives on as a section of the consolidated file. The supersession linkage — the consolidated `supersedes:` set equals its source set, and each source's `superseded_by:` names the consolidated file — is what the gate's Family 2 confirms.
+Frozen `archive/` docs are excluded from default collection and every retrofit or re-prose pass. An
+archived file is terminal history and is never normalized merely because the current schema changed.
+Explicit validation is different: naming one project-root archive file asks the gate to validate its
+complete current bytes strictly without mutating them. This preserves no-argument archive pruning while
+giving Wrap-up a fail-closed check for each newly rendered archive candidate. The complete archive-body,
+active-carrier, and live-namespace link boundary is owned by [§2.7](#27-strict-archive-form); default
+scan pruning must not be misread as permission to skip its explicit archive proofs or active-file link
+gate.
 
 ---
 
@@ -567,4 +614,5 @@ Consolidation therefore stays inside the existing supersede-and-move-on-terminal
 - Path-and-type semantics (which directory holds what, who writes it, when, which template stamps it) → [`memory-map.md`](memory-map.md)
 - The assistant's RECORD procedure and memory-tier access matrix → [`SKILL.md`](../record/SKILL.md)
 - Staging → memory promotion routing (including the frontmatter allowlist on promotion) → [`wrap-up/SKILL.md`](../wrap-up/SKILL.md)
-- Slug + collision policy for staging files → [`evaluation/SKILL.md` § Slug + collision policy](../evaluation/SKILL.md#slug--collision-policy)
+- Slug formation and collision policy for staging files → [§1.1 Naming rules](#11-naming-rules) and
+  [§2.4 Cross-references and the doc graph](#24-cross-references-and-the-doc-graph)

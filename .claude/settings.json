@@ -31,39 +31,5 @@
   },
   "enabledPlugins": {
     "codex@openai-codex": true
-  },
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "startup|resume|clear|compact",
-        "hooks": [
-          { "type": "command", "command": ".claude/hooks/session-start.sh" }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Task|Agent",
-        "hooks": [
-          { "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }
-        ]
-      }
-    ],
-    "PostToolUseFailure": [
-      {
-        "matcher": "Task|Agent",
-        "hooks": [
-          { "type": "command", "command": ".claude/hooks/post-tool-use-agents.sh" }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "matcher": "*",
-        "hooks": [
-          { "type": "command", "command": ".claude/hooks/session-end.sh" }
-        ]
-      }
-    ]
   }
 }

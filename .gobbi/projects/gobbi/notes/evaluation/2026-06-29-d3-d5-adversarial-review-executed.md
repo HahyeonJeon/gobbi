@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, cycle-2, d3, d5, dual-system, harness-comparison, text-polish, review-only]
 author: claude
 features_touched: []
-loops_completed: [execution, wrap-up]
+steps_completed: [execution, wrap-up]
 shipped: [gobbi-adversarial-review-d3-d5, fix-d3-d5-review-findings, review-handoff-d2-d4-d6]
 ---
 

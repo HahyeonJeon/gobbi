@@ -12,12 +12,13 @@ An unanchored item, or a status with no verification behind it, makes the design
 
 | Field | Value |
 |---|---|
-| When | Ideation RECORD (Sub-step D Design enumeration); EVALUATION's `checklist_gap` finding (append the missing item); Execution RECORD (flip item status `pending` → `implemented` when the work ships). |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/checklists/{slug}.md` |
+| When | A productive step's RECORD after the user approves the candidate or the disposition of an evaluation finding. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/checklists/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/checklists/{area}/` — feature-subdir-only ([rules §3](../rules.md)) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | Bare-slug, evergreen. Per-scenario file: `{scenario-slug}.md` (mirrors `scenarios/{scenario-slug}.md`; recommended default). Per-checklist file: `{checklist-slug}.md` (one file per item; use for heavyweight items). |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,9 +33,9 @@ description: {one-line — implementation checklist for this scenario}
 type: checklists
 scope: feature
 feature: {feature-name}
-status: active
+status: active | retired
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -72,9 +73,9 @@ description: {one-line — the implementation point}
 type: checklists
 scope: feature
 feature: {feature-name}
-status: active
+status: active | retired
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -106,5 +107,14 @@ implemented_in: {changelog path} | null
 
 ## Notes
 
-- **Every item needs an anchor.** Either a reference insight slug from `references/` or the literal string `novel`. Unanchored items become noise; Ideation Step 4 enforces this, and the assistant carries it through RECORD.
-- **`item_status` (per-checklist file) tracks per-item progress** — distinct from base `status`, which stays `active`: `pending` (added, not yet implemented; Execution is expected to address it) · `implemented` (work shipped; cross-reference the changelog) · `deferred` (intentionally skipped this round; cross-reference the backlog entry or decision explaining why).
+- **Every item needs an anchor.** Either a reference insight slug from `references/` or the literal string `novel`. Unanchored items become noise; Ideation WORK establishes this, and RECORD carries it into typed staging only after acceptance.
+- **`item_status` (per-checklist file) tracks per-item progress** — distinct from base `status`:
+  `pending` (added, not yet implemented; Execution is expected to address it) · `implemented` (work
+  shipped; cross-reference the changelog) · `deferred` (intentionally skipped this round;
+  cross-reference the backlog entry or decision explaining why).
+- **Base `status` governs the checklist record.** `active` means it still governs future work. `retired`
+  means it no longer does. A retired checklist has no successor unless a true replacement exists; this
+  lifecycle uses no non-null `superseded_by` and archives with `addressed`, `dropped`, or `retired` as
+  the evidence-supported reason.
+- **`item_status` remains per-item progress.** It does not substitute for base retirement and does not
+  authorize an archive move by itself.

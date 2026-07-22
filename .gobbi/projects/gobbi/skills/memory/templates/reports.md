@@ -20,7 +20,7 @@ One `reports/` directory holds these kinds, set by the `report_type` frontmatter
 |---|---|---|
 | **`status`** | Periodic / event-driven summary aggregating across sessions | Weekly status, sprint summary, release report, milestone health |
 | **`post-mortem`** | Incident write-up, deep-dive investigation, root-cause analysis | Production incident, "why did iter cap exhaust without convergence?", design retrospective |
-| **`analytics`** | Numerical / measurement output for trend tracking | Session-count stats, iteration-distribution, cost / token tracking, benchmark results |
+| **`analytics`** | Numerical or measurement output for durable product and engineering trends | Benchmark, reliability, quality, and performance results |
 | **`other`** | The kind catch-all — a durable report that fits none of the above | Use sparingly; prefer a named kind when one fits |
 
 A report is **exactly one** `report_type`. A multi-facet artifact picks the dominant type and links companions via `related_reports`.
@@ -29,12 +29,13 @@ A report is **exactly one** `report_type`. A multi-facet artifact picks the domi
 
 | Field | Value |
 |---|---|
-| When | A loop's RECORD on an in-session deep-dive worth preserving (`post-mortem`); or Wrap-up RECORD at a periodic boundary (`status`, direct write); or an out-of-band CLI run (`analytics`). Bar = scale + durability, not a routine observation. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reports/{slug}.md` |
+| When | A productive step's RECORD when accepted evidence supports a durable report. An out-of-band result must first enter an authorized productive-step typed staging source; there is no CLI-to-memory path. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/reports/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/reports/{area}/` (default) · `reports/{area}/` (project, cross-feature) — `{area}` is the **kind axis**: it resolves directly from the REQUIRED `report_type` value (the area set == the kind enum), per the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) step 1 (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (generation date, not the reported-on period); slug names the subject (`2026-05-11-iter-cap-exhaustion-investigation.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -49,7 +50,7 @@ scope: feature
 feature: {feature-name}
 status: active
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [process, evaluation]          # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it

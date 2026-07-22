@@ -11,7 +11,7 @@ tags: [design, docs-sync, process]
 keywords: [workflow-compaction, two-doc-kind, deepen-ideation, hoist-then-point, drift-guard, planning-handoff]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, wrap-up]
+steps_completed: [ideation, wrap-up]
 shipped: [workflow-compaction-two-doc-kind, two-doc-kind-compaction-model, point-dont-restate-guard-rule-home, compaction-prototype-scope-parameters, workflow-doc-generalization-unproven, verify-ssot-and-metrics-by-location-not-intent]
 ---
 

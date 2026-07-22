@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, d4, dual-system, background-codex, review-only, term-consistency, count-drift]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [2026-06-29-gobbi-adversarial-review-d4, fix-d4-review-findings, 2026-06-29-review-handoff-d6]
 ---
 

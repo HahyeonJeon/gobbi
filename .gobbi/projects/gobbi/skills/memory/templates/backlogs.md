@@ -1,6 +1,6 @@
 # `backlogs/`
 
-> Deferred work — features (project-level) or tasks (feature-level) that came out of decomposition but were not picked up. A future session can pick up an entry, frame it as its own problem, and run a fresh Ideation Loop on it.
+> Deferred work — features (project-level) or tasks (feature-level) that came out of decomposition but were not picked up. A future session can pick up an entry, frame it as its own problem, and run a fresh Ideation step on it.
 
 ## Core principles
 
@@ -12,12 +12,13 @@ An item a future reader cannot resume without re-deriving why it was deferred is
 
 | Field | Value |
 |---|---|
-| When | Ideation Step 2 Lock Scope — every non-chosen candidate; or a loop's RECORD when a deferred eval finding or deferred scope-violating work surfaces. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/backlogs/{feature,project}/{slug}.md` |
+| When | A productive step's RECORD when an approved deferred item is durable. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/backlogs/{feature,project}/{slug}.md` |
 | Promotes to | `features/{f}/backlogs/{area}/` (deferred task) · `backlogs/{area}/` (project, deferred feature) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words, no date prefix (evergreen-until-closed); no positional prefix (`password-reset-flow.md`, `search-system.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,7 +33,7 @@ scope: project | feature
 feature: {feature-name} | null   # null when this is a deferred feature itself
 status: open | deferred | closed
 created: YYYY-MM-DD
-session: {session-id where this was decomposed}
+session: {Gobbi-owned UUID of the session where this was decomposed}
 tags: [planning, process]            # this type's controlled pool (§2.5)
 keywords: [search-system]            # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -67,4 +68,4 @@ shipped_in: {changelog / PR / commit on close} | null
 ## Notes
 
 - **Lifecycle:** **created** at Lock Scope decomposition; **picked up** when a future session sets it as that session's `task`/`feature` in `session.json`; **closed** when the work ships — the file moves to `archive/backlogs/{area}/{date}-{slug}.md` ([`archive.md`](archive.md)) and a changelog records the completion.
-- **Prune stale entries at Wrap-up.** A backlog not picked up in months with no clear "when to pick up" trigger is dead weight; flag it to the user — keep, archive, or drop (move to `archive/backlogs/{area}/` with `archive_reason: dropped`). Deletion is never an option — no-delete is a hard invariant.
+- **Review stale entries during Wrap-up DISCUSSION.** A backlog not picked up in months with no clear "when to pick up" trigger is dead weight; ask the user to keep, archive, or drop it. An authorized terminal move is applied only in Wrap-up WORK's frozen manifest. Deletion is never an option.

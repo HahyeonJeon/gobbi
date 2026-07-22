@@ -1,108 +1,95 @@
 # AGENTS.md
 
-Gobbi is an open-source ClaudeX (Claude Experience) tool. In this repository, Gobbi is exposed to Codex through the official repo-local Codex paths:
+Gobbi is an open-source ClaudeX workflow for Claude Code and Codex. In this repository, Codex uses these repo-local entry points:
 
 - Skills: `.agents/skills/<skill-name>/SKILL.md`
 - Custom agents: `.codex/agents/<role>.toml`
 - Shared plugin package: `plugins/gobbi/`
 - Codex plugin manifest: `plugins/gobbi/.codex-plugin/plugin.json`
 - Claude Code plugin manifest: `plugins/gobbi/.claude-plugin/plugin.json`
-- Canonical plugin skill sources: `.gobbi/projects/gobbi/skills/<skill-name>/SKILL.md`
-- Canonical Gobbi sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
+- Canonical sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
 
-MUST read this at session start, resume, `/clear`, and compaction. MUST follow the core principles below. MUST load Gobbi skills from the repo-local canonical source `.gobbi/projects/gobbi/skills/` (the single source of truth for both runtimes; the Codex discovery symlink points to it, per § Codex Entry Points), not user-level skill locations.
+Read this file at session start and every context boundary. Load Gobbi skills from the repo-local canonical source, never from a user-level copy. Before agent work, load `principles`, the applicable project rules, and `mistake`; then load the skills for the current workflow step.
 
-The repo also exposes Gobbi as a local Claude Code and Codex plugin through one bounded package at `plugins/gobbi/`. The package carries both manifests: `plugins/gobbi/.claude-plugin/plugin.json` for Claude Code and `plugins/gobbi/.codex-plugin/plugin.json` for Codex. `.claude-plugin/marketplace.json` and `.agents/plugins/marketplace.json` both point at `./plugins/gobbi`, using their ecosystem-specific marketplace schemas.
+## Workflow contract
 
----
+Every Gobbi session follows one mandatory workflow:
 
-## Codex Entry Points
+`Configuration → Ideation → Planning → Execution → Wrap-up`
 
-`.agents/skills` contains symlinked skill folders pointing to `.gobbi/projects/gobbi/skills/`.
+Each productive step follows one loop:
 
-`plugins/gobbi/skills`, `plugins/gobbi/agents`, and `plugins/gobbi/hooks` are symlinks to the canonical Gobbi directories at `.gobbi/projects/gobbi/{skills,agents,hooks}`. The development hook scripts under `.claude/hooks/` are also symlinks to the canonical hook directory. Run `scripts/sync-plugin-package.sh` to restore the symlink topology, and `scripts/sync-plugin-package.sh --check` to verify it.
+`DISCUSSION → WORK → EVALUATION → RECORD`
 
-Codex source-package support and Codex installed-cache support are separate. This repository keeps the source package symlinked. Use `scripts/check-codex-plugin-smoke.sh` to register the repo root in an isolated Codex home, add `gobbi@gobbi-workspace`, and report whether the installed cache includes symlinked skills and hooks. If the installed cache omits symlinked component directories, treat that as a Codex plugin-install limitation; do not materialize the repo package to work around it.
+`state.json` is the active router. `session.json` is the low-frequency lifecycle manifest. Runtime todo and task lists are projections, not another source of truth. Use `step`, `stage`, and `iteration` as the canonical routing vocabulary.
 
-`plugins/gobbi/.codex-plugin/plugin.json` is the Gobbi Codex plugin manifest for local plugin installation from this workspace. It declares plugin-distributed skills and Codex-safe hooks. Native Codex custom agents remain repo-local under `.codex/agents/*.toml`; they are not installed as Codex plugin components.
+Configuration performs read-only preflight, resolves settings with the user, creates one session worktree and branch, and initializes the session record. Resume only from an explicit session in the current worktree. A resumed session reuses its resolved settings unless the user requests a change.
 
-`plugins/gobbi/.claude-plugin/plugin.json` is the Gobbi Claude Code plugin manifest for local plugin installation from this workspace.
+Ideation locks what and why. Planning turns that scope into ordered tasks. Execution completes, verifies, and commits one task at a time in the isolated worktree. Wrap-up evaluates promotion and handoff work, records the durable outcome, and performs only the configured Git finalization.
 
-For a real local Codex plugin install, run `codex plugin marketplace add <repo-root>`, then `codex plugin add gobbi@gobbi-workspace`, then start a new Codex thread. The project must be trusted before project config, hooks, and rules are loaded.
+## Dual-system quality contract
 
-`.codex/agents` contains symlinked TOML custom-agent wrappers pointing to `.gobbi/projects/gobbi/agents/*.toml`. Each wrapper instructs the spawned Codex agent to read the corresponding canonical Markdown role prompt in the same directory.
+Every WORK stage uses the same dual-system protocol:
 
-Available role prompts:
+1. Claude and Codex independently create system-labeled drafts from the same neutral contract.
+2. Freeze and validate both drafts before either system sees the other.
+3. Claude reviews the Codex draft and Codex reviews the Claude draft.
+4. The active runtime specialist synthesizes the canonical candidate.
+5. Record and resolve every material open decision with the user before EVALUATION.
 
-| Custom agent | Codex wrapper | Canonical prompt |
-|--------------|---------------|------------------|
-| `manager` | `.gobbi/projects/gobbi/agents/manager.toml` | `.gobbi/projects/gobbi/agents/manager.md` |
-| `leader` | `.gobbi/projects/gobbi/agents/leader.toml` | `.gobbi/projects/gobbi/agents/leader.md` |
-| `executor` | `.gobbi/projects/gobbi/agents/executor.toml` | `.gobbi/projects/gobbi/agents/executor.md` |
-| `evaluator` | `.gobbi/projects/gobbi/agents/evaluator.toml` | `.gobbi/projects/gobbi/agents/evaluator.md` |
-| `assistant` | `.gobbi/projects/gobbi/agents/assistant.toml` | `.gobbi/projects/gobbi/agents/assistant.md` |
+Every EVALUATION uses two fresh independent evaluators, one Claude and one Codex. Each report covers Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall, with a complete finding ledger, checklist, and `PASS`, `REVISE`, or `FAIL` verdict. The aggregate uses the more severe verdict. Never apply a finding before the user approves its disposition. A material revision receives another complete dual-system WORK and EVALUATION iteration. Never reduce dual-system creation, Ideation, or evaluation rigor to save tokens.
 
-When Codex subagents are explicitly authorized by the user, use these custom agents by role and include explicit load directives for `principles`, project rules, `mistake`, and any phase-specific skills. Fresh subagents do not inherit loaded skills.
+If either system is unavailable or returns invalid output, pause and show the exact failure. A single-system continuation requires the user's explicit waiver for that named step and iteration.
 
----
+## Delegation contract
 
-## Core Principles
+The manager alone changes scope, makes user decisions, assigns runtime tasks, accepts work, and authorizes destructive actions. Use the shared assignment skeleton in `orchestration/delegation.md` as the sole assignment shape.
 
-> **The logic of good work: Configuration -> Ideation -> Planning -> Execution -> Wrap-up.**
+Claude Code may keep stable leader, executor, and assistant teammates when identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. Codex uses its native specialist mechanism. All worktree writes stay in one ordered writer chain; parallel work is limited to independent read-only analysis.
 
-Every session runs this 5-step state machine — Configuration plus four productive steps — governed by the `orchestration` skill and its per-step `workflow/` sub-documents (markdown-driven, no CLI). Each productive step runs as a 4-sub-phase **loop**: DISCUSSION -> WORK -> EVALUATION -> **RECORD**. RECORD is the per-loop capture sub-phase — it stages findings, decisions, and mistake-candidates to the worktree-local session record; it never writes durable memory. Durable promotion happens in **Wrap-up**, whose 5-stage pipeline includes the **promotion** stage (stage 2 — promote the session record into memory) and the **handoff** stage (stage 4 — the next-session summary). The canonical loop / sub-phase / stage vocabulary — including the stage names — lives in one place: the gobbi skill Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md`. This top-block defers to it rather than restating the enum. Per-session telemetry lives in `<sessionDir>/session.json`. Cross-session durable memory lives directly under `.gobbi/projects/<name>/` as plain markdown trees (`features/{f}/...`, `mistakes/`, `rules/`, `design/`, `notes/`, `backlogs/`, etc.).
+After a teammate report, reread the promised artifact or commit and confirm the teammate is idle and addressable before sending another assignment. Do not infer completion from an idle notice or a lagging runtime task status.
 
-**Configuration** - Session start: settings, memory check, workflow configuration. Not a loop.
+When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Every fresh brief must include explicit load directives because fresh agents do not inherit loaded skills.
 
-**Ideation** - Explore what to do. PI agents investigate the problem space with the user. Discuss until the approach is concrete enough to plan against. Optional evaluation.
+| Role | Codex wrapper | Canonical prompt |
+|---|---|---|
+| `manager` | `.codex/agents/manager.toml` | `.gobbi/projects/gobbi/agents/manager.md` |
+| `leader` | `.codex/agents/leader.toml` | `.gobbi/projects/gobbi/agents/leader.md` |
+| `executor` | `.codex/agents/executor.toml` | `.gobbi/projects/gobbi/agents/executor.md` |
+| `evaluator` | `.codex/agents/evaluator.toml` | `.gobbi/projects/gobbi/agents/evaluator.md` |
+| `assistant` | `.codex/agents/assistant.toml` | `.gobbi/projects/gobbi/agents/assistant.md` |
 
-**Planning** - Begin DISCUSSION with a readiness gate over locked Ideation, memory, skills, authority, and staging; then decompose the chosen approach into narrow, specific, ordered tasks with clear scope and verification criteria. Non-skippable; optional evaluation.
+## Plugin topology
 
-**Execution** - Implement one task at a time. Complete, verify, then move to the next. Scope is bounded by the plan; no improvisation. Mandatory evaluation.
+The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks. It carries both runtime manifests. `.agents/plugins/marketplace.json` and `.claude-plugin/marketplace.json` point to `./plugins/gobbi` using their runtime-specific schemas. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin components.
 
-**Wrap-up** - Consolidate the session through a 5-stage pipeline: session-record validation, **promotion** (write the session record into memory), memory validation (the dual-system evaluation gate), **handoff** (the next-session summary), then git finalization. Emits `workflow.finish` and closes the session. Mandatory evaluation. (The Glossary at `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` holds the canonical name for each stage; this top-block uses plain descriptive words and defers to the Glossary.)
+Run `scripts/sync-plugin-package.sh --check` to validate canonical topology without mutation. Run `scripts/sync-plugin-package.sh` only when intentionally repairing discovery mirrors. Run `scripts/test-sync-plugin-package.sh` for fixture coverage and `scripts/check-codex-plugin-smoke.sh` for isolated installed-cache behavior. The package has no lifecycle-hook component.
 
-> **Evaluation is a mandatory sub-phase in the Gobbi workflow.**
+Codex source-package behavior and installed-cache behavior are separate. If the installed cache omits a symlinked component directory, report the Codex installation limitation; do not materialize the source package to work around it.
 
-Evaluation runs inside Ideation, Planning, and Execution. The orchestrator spawns exactly two evaluators in parallel — one per system (Claude + Codex) — and each covers all seven perspectives + Overall; cross-system divergence is the anti-groupthink signal. After evaluation, discuss findings with the user before improving. Never auto-apply evaluation findings. Producer/evaluator separation and perspective discipline live in `.gobbi/projects/gobbi/skills/evaluation/SKILL.md`.
+## Principles
 
-> **MUST load `.gobbi/projects/gobbi/skills/principles/SKILL.md` at session start, resume, /clear, and /compact.**
+The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`. Its enforceable summary is:
 
-The 10 principles below are the enforceable behavioral discipline for every agent. The principle table is the always-visible summary; load the skill for the full rationale and detail behind each principle.
+1. Think and study before acting.
+2. Build foundations before dependent work.
+3. Design with the user and prior art.
+4. Refine the task until what, why, and how are concrete.
+5. Treat scope as a contract with the user.
+6. Start with documents and finish with current documents.
+7. Write plainly, briefly, and literally.
+8. Fix root causes, not symptoms.
+9. Check CRUD and 5W1H before editing.
+10. Finish all agreed in-scope work.
 
-| # | Principle |
+## Navigate deeper
+
+| Document | Owns |
 |---|---|
-| 1 | Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST. |
-| 2 | Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME. |
-| 3 | Design With the User, Based on References: NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT. |
-| 4 | Refine the Task With the User: A PROMPT IS A TRIGGER, NOT A SPEC — ASK FOR WHAT / WHY / HOW UNTIL THE TASK IS CONCRETE. |
-| 5 | Scope Is a Contract With the User: OUT-OF-SCOPE WORK WITHOUT THE USER'S DECISION IS A BREACH OF CONTRACT. |
-| 6 | Start With Docs, Finish With Docs — Documents Are the Team's Memory: PLAN DOC WORK WITH A SPEC AND A CRUD PLAN, AND KEEP IT CURRENT. |
-| 7 | Say/Write Plainly, Briefly, and Literally: SIMPLE WORDS, SHORT SENTENCES, NO FILLER, NO METAPHOR. |
-| 8 | Fix the Root Cause, Not the Symptom: KEEP ASKING WHY UNTIL YOU REACH THE ROOT; A FIX YOU CAN'T EXPLAIN IS A GUESS. |
-| 9 | Think CRUD-and-5W1H Before Editing: NO EDIT WITHOUT CHECKING ITS CRUD AND 5W1H ACROSS TARGET AND AFFECTED FILES. |
-| 10 | Finish In-Scope Work — Do Not Defer It: COMPLETE EVERYTHING WITHIN THE AGREED SCOPE; DO NOT DEFER IN-SCOPE WORK. |
-
-> **Gobbi-specific tooling: the `mistake` skill and Wrap-up-phase promotion.**
-
-Every agent MUST load `.gobbi/projects/gobbi/skills/mistake/SKILL.md` before starting work. When the user corrects any approach, immediately record it as a mistake-candidate in session staging. During the Wrap-up phase, the Wrap-up assistant promotes each staged candidate to one of two homes (Always-Ask routing): a **skill-owned** trap becomes a `## ` section in `skills/{skill}/mistakes.md`, loaded in that skill's context via the delegation Load-Directives companion path; a **cross-cutting / no-owner** trap stays in the project `mistakes/` tier (`.gobbi/projects/{name}/mistakes/`), loaded at session start. No CLI command. Promotion does not cause context reload.
-
----
-
-## Navigate Deeper
-
-| Document | Covers |
-|----------|--------|
-| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry point, session setup questions, skill map |
-| `plugins/gobbi/.codex-plugin/plugin.json` | Local Gobbi Codex plugin manifest |
-| `plugins/gobbi/.claude-plugin/plugin.json` | Local Gobbi Claude Code plugin manifest |
-| `plugins/gobbi/` | Shared bounded plugin package |
-| `.gobbi/projects/gobbi/skills/` | Canonical Gobbi skills directory |
-| `.gobbi/projects/gobbi/skills/principles/SKILL.md` | 10 behavioral principles every agent must follow |
-| `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Workflow state machine and delegation contracts |
-| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Evaluation perspectives, finding metadata, verdict rules |
-| `.codex/agents/manager.toml` | Root session manager custom-agent wrapper |
-| `.codex/agents/leader.toml` | Ideation, research, and planning custom-agent wrapper |
-| `.codex/agents/executor.toml` | Scoped implementation custom-agent wrapper |
-| `.codex/agents/evaluator.toml` | Independent adversarial evaluation custom-agent wrapper |
-| `.codex/agents/assistant.toml` | Narrow lookup and RECORD support custom-agent wrapper |
+| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, glossary, and skill routing |
+| `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Manager authority, Configuration, and global invariants |
+| `.gobbi/projects/gobbi/skills/orchestration/workflow/` | Thin step adapters and dual-system WORK mechanics |
+| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation and finding disposition |
+| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-record mechanics and PASS-only artifacts |
+| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Typed staging and durable promotion |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Promotion, handoff, and finalization |

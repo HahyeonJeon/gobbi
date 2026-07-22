@@ -11,7 +11,7 @@ tags: [memory, schema, docs-sync, validation]
 keywords: [area-namespace, schema-first, migration-deferred, write-vs-ref, branch-b]
 author: claude
 features_touched: [memory]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [memory-namespace-schema, area-frontmatter-stray-key, cited-process-mistake-not-applied-to-own-artifact, edit-tool-silent-write-failure-on-worktree, namespace-sweep-needs-write-vs-ref-enumeration-not-pattern-grep, memory-namespace-migration, memory-renamespace-helper]
 ---
 

@@ -16,12 +16,13 @@ A reader opening it cold next session gets the durable design, not a work-log th
 
 | Field | Value |
 |---|---|
-| When | Ideation RECORD when the leader produces a new design (Step 5 output); or Planning RECORD when a design substantially evolves (append a follow-on anchored to the original). |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/design/{slug}.md` |
+| When | Ideation or Planning RECORD after the canonical artifact passes and the design is durable. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task: null`. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/design/{slug}.md` |
 | Promotes to | `features/{f}/design/{area}/` (bounded to one feature, typical) · `design/{area}/` (project, cross-cutting) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, hyphenated, descriptive, no date prefix (durable/evergreen; use `decisions/` for time-stamped records) (`cache-invalidation.md`, `auth-middleware.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -34,13 +35,13 @@ description: {one-line what this design covers}
 type: design
 scope: project | feature
 feature: {feature-name} | null
-status: active | superseded
+status: active | superseded | retired
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [design, schema]               # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
-supersedes: {prior-design-slug} | list[slug] | null     # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior-design-slug} | null         # one plain slug, not a path
 superseded_by: {new-design-slug} | null     # plain slug, not a path
 related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug] — plain slugs, not paths
 ---
@@ -48,7 +49,7 @@ related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug]
 # {Title}
 
 ## Problem
-{The framed problem this design addresses. Carries over from the Ideation Step 1 framing.}
+{The framed problem this design addresses. Carries over from the accepted Ideation artifact.}
 
 ## Scope
 {In-scope / out-of-scope from the locked Scope Contract.}
@@ -73,3 +74,11 @@ related: [cache-invalidation, 2026-05-11-use-redis-not-memcached]   # list[slug]
 
 - [[2026-05-11-use-redis-not-memcached]] — the decision this design implements
 ```
+
+## Lifecycle notes
+
+- Use `superseded` only when one new design replaces this design. Both plain-slug lifecycle pointers are
+  required and reciprocal.
+- Use `retired` when the design is intentionally withdrawn without a successor. Leave
+  `superseded_by` absent or `null`; archive it with `archive_reason: retired`.
+- A status outside the declared enum is invalid. There is no compatibility or migration status.

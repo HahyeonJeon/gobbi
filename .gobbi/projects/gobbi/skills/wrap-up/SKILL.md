@@ -1,172 +1,186 @@
 ---
 name: wrap-up
-description: "MUST load for Wrap-up. Promotes session staging to durable memory, validates it through the non-skippable dual-system gate, writes the handoff, and closes the session."
+description: MUST load for Wrap-up. Promotes typed session staging, produces the evaluated handoff, and proves the session is ready for manager-owned Git finalization.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+skill-type: operation
 ---
 
 # Wrap-up
 
-Skill for the **Wrap-up Loop** — the session's closing pass. Wrap-up consolidates a whole session's scattered staging output across every prior loop into durable memory (routing, superseding, and archiving each record to one home), then validates that consolidation through a non-skippable dual-system gate before the manager finalizes git. Load it when running Wrap-up.
+Use this skill after all planned Execution tasks pass. The assistant accounts for typed staging, freezes and applies a complete promotion manifest inside the session worktree, writes one evidence-backed handoff body in session and durable memory, and proves the result ready for finalization.
 
----
+Wrap-up is the final productive step. It uses DISCUSSION → WORK → EVALUATION → RECORD like every other productive step. It is not a separate closeout sequence. The manager alone performs Git finalization after PASS RECORD.
 
 ## Principles
 
-> **Wrap-up is the session's single consolidation gate.**
+### Promotion begins only from typed staging
 
-One loop, one promotion pass, is the only writer that turns scattered staging into durable memory. If any loop wrote memory directly, promotions would scatter and drift and no reader could tell which session produced which record; a single consolidation point keeps durable memory coherent across sessions.
+Typed staging is the complete source set. Scratch, discussion history, WORK artifacts, evaluator reports, outputs, and ad hoc direct candidates are not promotion sources. Empty staging is a valid result and must not be filled with invented material.
 
-> **The session record is evidence; durable memory is the curated result.**
+### Plan the complete mutation before writing
 
-The session record preserves what happened, for future audits. Wrap-up derives durable memory from it without rewriting the evidence — the two surfaces have different jobs, and mutating the evidence to fix the result destroys the audit trail.
+Inventory every source, route, destination, preimage, lifecycle update, archive move, and reference change before the first durable-memory write. One invalid row blocks the complete apply.
 
-> **Every record has one contract-defined home.**
+### Prior evidence is immutable
 
-A record routed to a single deterministic destination is findable next session and keeps the promotion idempotent and re-runnable; an improvised destination is unfindable and quietly reshapes the schema. Where the contract resolves no home, the honest move is to surface the decision rather than guess.
+Earlier staging, creation artifacts, and evaluation reports are read-only evidence. Normalize only in a Wrap-up-owned candidate. Never repair an authoritative source in place.
 
-> **Memory is append-only history.**
+### The next session receives facts, not recollection
 
-A deletion leaves a vacuum a future reader cannot recover; keeping the full superseded record under `archive/` makes memory an auditable history rather than a lossy cache. Supersession and archival, not removal, are how a record leaves active memory.
-
-> **Consolidation is trusted only after independent evaluation.**
-
-Promotion creates claims future sessions will trust, and a wrong wrap-up poisons every session that loads it. An independent gate must establish the claims before the one irreversible action publishes them — paid once, versus a miss that compounds — which is why the evaluation gates publication.
-
----
+Every completion claim cites an artifact, verification result, or commit. The evaluated handoff body is identical in its session output and durable note. Git facts created after evaluation belong only in the finalization receipt.
 
 ## Rules
 
-### Must-Follow
+### Must follow
 
-- **MUST be the sole writer to durable memory for cross-loop session artifacts** — only the named startup-close promotion exception writes memory earlier, so a stray writer scatters promotion authority. Project-specific skills are source artifacts authored and committed by their ordered Execution task, not Wrap-up promotions.
-- **MUST leave the session scratch tree (`{N}-{loop}/working/`, `staging/`, `evaluation/`) intact after Wrap-up** — the scratch is the audit trail the promotion is verified against.
-- **MUST preserve every prior-loop staging source as read-only evidence** — mutating the evidence to fix the result destroys the audit trail.
-- **MUST build and validate one complete promotion manifest (all candidate files plus destination preimages) before the first durable-memory mutation** — a half-finished multi-write has no recovery boundary.
-- **MUST account for every expected staging source and every staged file** (promote / backlog / documented drop); `startup/` is excluded — an unaccounted staging file is silent lost work.
-- **MUST route only to a declared destination, carrying the authorizing user decision for every judgment fork** — an improvised destination is unfindable and reshapes the schema.
-- **MUST key idempotence by stable source identity `{session-id, source-relative-path}` plus the frozen manifest mapping** — a staging-only field stripped at promotion cannot identify the destination on re-run.
-- **MUST preserve bidirectional supersession, archival history, and inbound-reference integrity** — a one-directional link leaves two authoritative-looking records.
-- **MUST run the non-skippable dual-system gate on every Wrap-up, keeping durable memory and the handoff frozen during it** — an evaluator racing a still-writing producer evaluates a moving target.
-- **MUST leave git finalization to the manager and gate it on Stage-3 `PASS`** — git is the one irreversible action; it must not outrun its gate.
-- **MUST count every `{type}/{area}` post-promotion and route an over-`hardCap` area to an Always-Ask decision** — a dormant switch let an area reach 44 records against a 15 cap unnoticed.
-- **MUST cite a verifiable artifact for every handoff claim** — an unbacked "shipped X" is a phantom the next session acts on.
-- **MUST stamp every promotion from its type's template** — a freeform write drifts from the schema.
-- **MUST treat DISCUSSION as read-only on memory** — substantive memory promotion is confined to WORK Stage 2; RECORD may only seal the evaluated result and performs no new promotion.
+- **W-1 — Use the universal loop.** DISCUSSION locks closure inputs; dual-system WORK creates and applies the promotion and handoff; two fresh evaluators inspect the actual result; RECORD seals PASS artifacts.
+- **W-2 — Inventory typed staging only.** Recursively account for every file in every expected step-level and Execution-task staging directory. Each source has one outcome: promote, explicit defer, explicit drop, or already promoted.
+- **W-3 — Accept empty staging.** Record that the inventory is empty and continue. Do not create a note, finding, rule, or mistake merely to make staging non-empty.
+- **W-4 — Freeze all mutations and preimages.** The manifest covers the entire source set and every destination or related lifecycle mutation before apply. Capture whole-file preimages for shared destinations.
+- **W-5 — Write only inside the isolated worktree.** Resolve every durable target from the validated session worktree and prove it is not the main checkout or another worktree.
+- **W-6 — Apply idempotently.** Stable source identity plus the frozen mapping selects the destination. Equal bytes are a no-op; preimage drift halts and rebuilds the complete manifest.
+- **W-7 — Close with the right lifecycle, archive, and never delete.** A true one-record supersession is
+  reciprocal. Retirement, completion, and abandonment do not invent successors. Move every complete
+  terminal record to the sole project-root typed archive with its exact compatible reason. Preserve the
+  frozen body verbatim under Memory's archive-body contract, then repoint active inbound path references.
+- **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest,
+  prove prior staging is unchanged, and run the applicable memory, link, mistake, vocabulary, and
+  topology guards. Apply Memory's link scope exactly: archive bodies stay outside relative-link
+  resolution, while every changed active carrier and every live namespace move remains link-gated.
+- **W-9 — Produce one nine-section handoff body.** The session output and durable note bodies match. Every claim and next action has direct evidence.
+- **W-10 — Keep finalization manager-owned.** The assistant does not push, merge, remove a worktree, delete a branch, or claim that a planned Git action succeeded.
+- **W-11 — Repeat full review after material change.** A change to the manifest, promoted tree, or handoff starts another complete iteration with dual-system WORK and two fresh evaluations.
 
-### Must-Not-Follow
+### Must not follow
 
-- **NEVER rewrite prior-loop staging as "auto-backfill."** Fix: normalize only the promoted destination through a correction overlay under `4-wrap-up/working/`; never touch the source file.
-- **NEVER promote from `working/`, `outputs/`, `evaluation/`, or `transcripts/`.** Fix: promote from `staging/` — plus the two Wrap-up-authored non-staging sources the current contract defines (a session-surfaced rule candidate and the per-session journal, both user-confirmed and manifest-recorded).
-- **NEVER re-promote `startup/`.** Fix: verify its startup-close destinations and record zero manifest rows.
-- **NEVER use a stripped staging-only field (e.g. `finding-id`) as the durable rerun identity.** Fix: key on `{session-id, source-relative-path}` plus the frozen manifest.
-- **NEVER improvise an area, type, destination, or schema extension.** Fix: return the no-match as a user-decision before freezing the manifest.
-- **NEVER hard-delete an active or archived memory record.** Fix: supersede it, then `git mv` the full file to `archive/`.
-- **NEVER treat a conditional guard subset as the complete post-promotion guard set.** Fix: re-run every applicable standing guard over the post-promotion tree.
-- **NEVER let Stage-3 certify Stage-5 (git) outcomes that cannot exist before finalization.** Fix: Stage-3 checks "no premature finalization plus a valid plan" only.
-- **NEVER use `git status` as proof of the gitignored session tree's contents.** Fix: use filesystem enumeration or content hashes.
-- **NEVER let an over-`hardCap` area reach `PASS` silently.** Fix: route it to the Always-Ask decision.
-
----
+- Do not promote from working, evaluation, outputs, runtime history, or an ad hoc direct input.
+- Do not mutate prior staging to make it validate.
+- Do not apply a partial valid prefix before the complete batch validates.
+- Do not invent a destination type, area, schema field, scope, or collision policy.
+- Do not delete a durable record or session evidence.
+- Do not finalize Git before PASS RECORD.
 
 ## Procedure
 
-Wrap-up runs the four loop phases as a five-stage gated pipeline. The stages are ordered on the `PASS` path across three owners, with verdict-dependent re-entry: a Stage-3 `REVISE` returns to Stage 1 and re-runs source inventory, validation, and the E6 complete-preimage preflight before re-promotion. The one irreversible action — git — is last. The Stage-1/2 detail (routing, area resolution, the frontmatter strip allowlist, collision policy, archive routing, the compliance scan, the session-subdir cleanup, and the post-promotion green-check) lives in [`promotion.md`](promotion.md); the compaction sub-procedure lives in [`compaction.md`](compaction.md).
+### 1. Confirm closure inputs in DISCUSSION
 
-### Loop and pipeline map
+Read every canonical step artifact, approved finding disposition, user decision, waiver, task commit, verification result, current branch and worktree state, and configured Git policy. Enumerate all expected staging directories from the locked task list and record owner.
 
-| Loop phase | Pipeline stage | Top-level action |
-|---|---|---|
-| DISCUSSION | Pre-stage | Confirm closure readiness; name the expected loops / slices; capture final user-added items. |
-| WORK | Stage 1 — Validate & plan | Inventory the immutable session sources; validate them (compliance scan); build the complete manifest plus candidates, collision decisions, and destination preimages. No memory mutation. |
-| WORK | Stage 2 — Promotion & consolidate | Recheck preimages; apply the frozen manifest; write the journal; supersede and archive; run the compaction sub-procedure; draft the handoff. |
-| EVALUATION | Stage 3 — Validate memory & handoff | Both systems evaluate the frozen inventory / manifest / delta / guards / handoff. Each verdict advances to RECORD first. `REVISE` → Stage 1; `FAIL` → escalate; neither permits Stage 5. |
-| RECORD | Stage 4 — Seal closure evidence | On `PASS`, seal the evaluated working handoff draft to `outputs/handoff.md` with the memory-reads audit and resolution log; on every verdict, seal iter state. No new promotion. |
-| Manager exit | Stage 5 — Finalize & close | Manager runs git finalization after `PASS`, presents the handoff and result, emits `workflow.finish`, cleans the worktree. |
+Present omissions, conflicts, final material additions, deferred work, risks, and publication intent to the user. Any final durable material must first be written to the correct typed Wrap-up staging directory under the normal RECORD rules. Do not create a special direct-input path.
 
-### Child docs
+Evidence: a user-approved closure contract and exact expected-source register.
 
-- Read [`promotion.md`](promotion.md) when running WORK Stages 1–2 — it owns the promotion procedure, the [Staging → Memory routing](promotion.md#staging--memory-routing) table, area resolution, the frontmatter strip / preserve allowlist, the collision and idempotency policy, archive routing, the prior-loop compliance scan, the session-subdir cleanup, and the post-promotion standing-guard green-check.
-- Read [`compaction.md`](compaction.md) when Stage 2 reaches the compaction sub-procedure — it owns the always-count, the over-`hardCap` Always-Ask gate, cluster / merge / repoint / verify, the merged-file (MoC) mechanics, and the merge-manifest fields.
+### 2. Inventory immutable staging
 
-### Memory Access Matrix
+Recursively enumerate each expected typed staging directory at step and Execution-task altitude. Record path relative to the session root, type, size, hash, and source identity. Include empty directories in the accounting. Exclude every non-staging path.
 
-The assistant owns Wrap-up's WORK and has broader write privileges than any other loop — this is the documented loop exception.
+Hash prior staging before further work. A missing expected staging directory is a record-shape failure. An existing empty directory is valid.
 
-| Memory tier | Path root | Access |
-|---|---|---|
-| Session record — own loop | `sessions/{date}-{session-id}/4-wrap-up/{working,outputs}/` | READ + WRITE — manifest, inventory, snapshot, reconciliation log, handoff |
-| Session record — all prior loops | `sessions/{date}-{session-id}/{1-ideation..3-execution}/` (plus the Chat per-slice trees) | READ-ONLY — the immutable promotion sources and evidence |
-| Session record — `session.json` | `sessions/{date}-{session-id}/session.json` | READ triplet; UPSERT own `workflow.wrap-up.iterations[]` |
-| Feature memory | `.gobbi/projects/{project-name}/features/{feature-name}/` | WRITE + UPSERT — bootstrapped lazily on first write per sub-directory |
-| Memory | `.gobbi/projects/{project-name}/{mistakes,rules,design,notes,backlogs,references,decisions,plans,reviews,reports,learnings,archive,skills}/` | WRITE + UPSERT — project-scope promotions |
+Evidence: a stable, sorted inventory whose row count reconciles to the filesystem.
 
-Wrap-up NEVER deletes: supersede via frontmatter, then `git mv` the terminal file to `archive/{type}/{area}/`. Re-running Wrap-up on the same session produces identical memory (deterministic targets; stable-identity collision keys). A write outside these WRITE rows is a violation — return `NEEDS_CONTEXT`.
+### 3. Run the neutral WORK contract
 
-### DISCUSSION — Pre-stage (manager + user, direct)
+Freeze the closure contract, staging inventory, routing owners, current durable preimages, prior artifacts, commits, verification, finalization policy, and handoff requirements as identical inputs to the orchestration-owned dual-system WORK procedure.
 
-The leader is not spawned; the design is locked across the prior loops. The manager reads every prior loop's PASS-iter `outputs/` and builds a short outcome summary (what shipped, what was deferred, evaluator verdicts) plus an explicit expected-source register — naming each completed loop, Execution task, and Chat slice, not inferred only from the directories that happen to exist. The manager then runs the active runtime's user-decision primitive: is anything deferred, open, or observed to log before close — a rule discovered mid-session, a mistake candidate, a backlog candidate, a supersession decision? Additions are captured in `4-wrap-up/working/discussion-log.md`. The manager constructs the assistant delegation prompt and verifies it has zero unfilled slots.
+Both systems independently design the promotion manifest and the complete nine-section handoff body. Cross-reviews challenge omission, routing, idempotency, evidence, wrong-tree risk, supersession, and resume usability. Route every material conflict to the user before apply.
 
-### WORK — Stages 1–2 (delegated to `assistant`)
+After synthesis and user decisions, write the durable handoff candidate through the notes template into the current Wrap-up typed staging directory. Recompute and freeze the complete staging inventory, now including that candidate. Derive the session handoff candidate from the same body. No other WORK artifact becomes a promotion source.
 
-The substantive memory promotion happens in WORK Stage 2. RECORD is the uniquely permitted memory-writing RECORD across loops, but it only seals the evaluated result and performs no new promotion; Stage 4 does not promote. The assistant runs the [`promotion.md`](promotion.md) procedure in order; the summary below maps its two WORK stages.
+Evidence: a validated dual-system package, one decision-complete handoff body, and a final typed-source inventory.
 
-**Stage 1 — Validate & plan (no memory mutation).** Snapshot the pre-Wrap-up `.gobbi/projects/{project-name}/` state as the evaluation baseline. Inventory `staging/` across every expected prior loop — and every Chat per-slice `staging/` in a Chat session — and ONLY `staging/`; never `working/`, `outputs/`, `evaluation/`, or `transcripts/`, and never the `startup/` surface (startup owns its startup-close promotion). Run the prior-loop compliance scan (read-only: a mechanical gap normalizes only into the promoted candidate through a correction overlay, never into the source; a judgment gap escalates via `NEEDS_CONTEXT`). Resolve every route, render every candidate, and freeze one complete manifest plus destination preimages before any write.
+### 4. Render and validate every candidate
 
-**Stage 2 — Promotion & consolidate.** Recheck the preimages, then apply the frozen manifest: bootstrap each destination lazily, stamp its type template, write each promoted file, and for a terminal collision supersede plus `git mv` the old file to `archive/`. Write the one per-session journal entry at `notes/{area}/{date}-{slug}.md` (the durable cross-session handoff). Run the compaction sub-procedure ([`compaction.md`](compaction.md)) as Stage 2's final sub-step, so the non-skippable Stage-3 gate validates its writes. Draft the handoff at `4-wrap-up/working/handoff-draft.md`; Stage 3 evaluates that working draft, and Stage 4 seals it to `4-wrap-up/outputs/handoff.md` only on `PASS`. When `propose.mode: dual`, integrate the frozen Codex proposal per [`production.md`](../orchestration/workflow/production.md) and log deltas to `reconciliation-iter{n}.md`; a missing proposal is not a gate — degraded mode stamps `production_mode: claude-only`.
+For each staged file, ask the owning memory rules for its legal destination, durable frontmatter, scope, area, and lifecycle behavior. Read routing fields before stripping them from the candidate. Use user decisions only where the owner declares a material routing fork.
 
-### EVALUATION — Stage 3 (the non-skippable dual-system gate)
+Render candidates in Wrap-up working space. Mechanical normalization changes only the candidate and records the source hash plus delta. Semantic gaps return NEEDS_CONTEXT. Validate every candidate and every shared-file result before continuing.
 
-This phase IS pipeline Stage 3 — memory validation — and it is NON-SKIPPABLE: no setting removes it, and it always gates the irreversible git Stage 5. Two independent systems (Claude Code + Codex) evaluate the frozen working handoff draft, promotion manifest, staging inventory, original pre-Wrap-up snapshot, and the post-promotion project delta across all seven perspectives plus Overall; the manager reconciles them to one `PASS` / `REVISE` / `FAIL` verdict. Stage 3 verifies only "no premature finalization plus a valid manager plan / ownership" — it never certifies a Stage-5 git outcome that cannot exist before finalization. The post-promotion standing-guard green-check that gates `PASS` re-runs every standing guard — `validate-frontmatter.sh`, `check-markdown-links.sh`, `check-residual-vocab.sh`, `check-skill-mistakes.sh`, and `check-workflow-mirror-consistency.sh` — over the post-promotion tree per [`promotion.md`](promotion.md#post-promotion-standing-guard-green-check); the compaction sub-procedure adds `check-merge-ref-integrity.sh` when it runs a merge. `REVISE` returns to Stage 1; `FAIL` escalates through the user-decision primitive; neither lets Stage 5 run.
+Evidence: one validated candidate or explicit no-write outcome for every inventory row.
 
-### RECORD — Stage 4 (seal closure evidence)
+### 5. Freeze the promotion manifest and preimages
 
-RECORD runs after every EVALUATION (any verdict) and seals — it performs no new promotion. On every verdict, it upserts `session.json` and preserves the transcript. On `PASS`, it copies the evaluated `4-wrap-up/working/handoff-draft.md` to the PASS-only `4-wrap-up/outputs/handoff.md`, stamps the handoff frontmatter, and writes the `memory-reads` and `resolution-log` audits, per [`record/SKILL.md`](../record/SKILL.md). Any new promotable finding from Wrap-up's own EVALUATION routes through the promotion contract — RECORD improvises no destination.
+Create one source-accounting row per staged source and one mutation row per path the apply may change.
+Include creates, replacements, shared-file appends, reciprocal true-supersession edits, non-successor
+terminal stamps, project-root archive moves, inbound-reference repoints, and any required index update.
 
-### EXIT — Stage 5 (manager-owned; runs LAST)
+Capture absent or exact hashed preimages for every target, move source, move destination, and reference carrier. Freeze the complete manifest and its hash only after all rows and candidates validate. If any row is invalid, make zero durable writes.
 
-Stage 5 is the manager's and runs ONLY after Stage-3 `PASS`. The gitignored `sessions/` tree is never committed; Stage 5 commits the Stage-2 memory promotion writes (under `features/`, `mistakes/`, `rules/`, `notes/`, …) with the `AI-Provenance-Record:` trailer, then pushes and opens or reuses the PR ([`git/SKILL.md`](../git/SKILL.md) § P4), merges and cleans up the worktree ([`git/SKILL.md`](../git/SKILL.md) § P5), and emits `workflow.finish`. A blocked push defers the PR; the commit still lands. The assistant performs no Stage-5 action; a `REVISE` or `FAIL` at Stage 3 means Stage 5 does not run.
+### 6. Recheck and apply inside the worktree
 
-### Output paths
+Immediately re-read every frozen preimage. On any difference, make zero writes and rebuild the complete manifest against fresh state. When all match, apply only the frozen rows in stable order inside session.json.git.worktreePath.
 
-Session writes are scoped to `4-wrap-up/`; memory writes follow the [Staging → Memory routing](promotion.md#staging--memory-routing) table. `{date}` = session start date; `{session-id}` = the manager-supplied parent session id; `{project-name}` / `{feature-name}` from `session.json`; `{n}` = the manager-supplied iter.
+After each mutation, verify the expected bytes or move state. Stop at the exact failed row on I/O error and preserve the manifest for recovery. On rerun, equal candidate bytes at the same frozen target are a no-op; never allocate a suffix for the same stable source.
 
-| Path | Written by |
-|---|---|
-| `4-wrap-up/working/{pre-wrap-up-snapshot.txt, snapshot-iter{n}.txt, staging-inventory.md, promotion-manifest.md, reconciliation-iter{n}.md, discussion-log.md, handoff-draft.md}` | assistant (WORK) / manager (DISCUSSION) |
-| `4-wrap-up/working/proposals/codex/draft-iter{n}.md` | Codex proposer — frozen before integration |
-| `4-wrap-up/outputs/{handoff.md, memory-reads.md, resolution-log.md}` | assistant (RECORD) — PASS only |
-| `4-wrap-up/evaluation/iter{n}/{claude,codex}/{perspective}.md` + `checklist.md` | evaluator (EVALUATION) |
-| memory promotions per the routing table, plus the `notes/{area}/{date}-{slug}.md` journal | assistant (WORK Stage 2) |
-| `session.json` (`workflow.wrap-up` upsert) | assistant (RECORD) |
-| `workflow.finish` | manager (Stage 5) |
+### 7. Complete supersession and archive moves
 
----
+For each authorized true one-record supersession, write the new record and add reciprocal lifecycle
+links. For each authorized design retirement, plan completion/abandonment, or checklist retirement,
+keep `superseded_by` absent or null. Stamp the status-compatible archive reason and matching date, move
+the complete record to project-root `archive/{type}/{area}/`, and repoint every inbound path reference
+as one frozen mutation set. Preserve original type, scope, feature, and every body byte, including
+historical outbound relative-link text. A feature-local archive destination is invalid. The exact
+archive-body, active-carrier, and live-namespace link boundary remains owned by
+[`memory/rules.md` §2.7](../memory/rules.md#27-strict-archive-form); do not invent or narrow it here.
+
+Never delete or reduce the old record to a tombstone. If the source and new candidate conflict without authorized supersession, halt for a user decision.
+
+### 8. Verify the post-promotion project tree
+
+Diff the actual durable project tree against the frozen preimages. Every changed path must map to exactly one mutation row, and every mutation row must have the expected result. Re-hash prior staging and prove paths and bytes are unchanged.
+
+Run all applicable post-promotion validators from their current owners. Run Memory validation with no
+arguments for the live tree, then explicitly validate every newly rendered project-root archive path in
+strict mode. Prove each new archive body byte-identical to its frozen active preimage. Run the root
+Markdown-link validator over every changed active Markdown file, including inbound carriers, but do not
+submit frozen archive bodies to relative-link resolution. A stale active inbound path fails, and a live
+namespace move receives the complete changed-Markdown gate with no archive exception. Resolve a
+legitimate new guard carrier through a new complete iteration; do not patch it outside the manifest.
+Freeze final tree hashes and guard evidence for EVALUATION.
+
+### 9. Reconcile the handoff with the actual result
+
+The synthesized handoff body has these sections in this order:
+
+1. Outcome and agreed scope.
+2. Completed or shipped work, with artifact and verification evidence.
+3. Dual-system evaluation result, approved finding dispositions, and any waiver.
+4. Decisions to respect.
+5. Durable memory promoted or superseded.
+6. Pre-finalization Git state and authorized finalization plan.
+7. Unresolved, blocked, or deferred items with explicit reasons.
+8. Known risks and accepted exceptions.
+9. Exact next-session start point: objective, required reads, branch and worktree state, and first action.
+
+Use durable repository-relative paths for continuation. Each completion claim cites a commit and verification evidence. Each unresolved item has a runnable next action. Do not claim a commit, push, pull request, merge, or cleanup result that has not occurred.
+
+Compare every promotion and Git claim with the actual post-promotion tree and current Git state. If any material claim differs, do not edit the promoted note or session candidate in place. Start a complete new iteration, rebuild the handoff candidate and manifest from typed staging, and repeat dual-system WORK.
+
+### 10. Store one matching body in two locations
+
+The session candidate is destined for 4-wrap-up/outputs/handoff.md on PASS. The durable candidate originated in typed staging and was promoted to notes/{area}/{YYYY-MM-DD}-{slug}.md with the required notes frontmatter. Compare the body bytes, excluding only the durable frontmatter wrapper. They must match.
+
+Include both candidates and their hashes in the evaluated subject. The session output remains absent until PASS RECORD; the durable note is already part of the applied and verified promotion manifest.
+
+### 11. Submit the actual result to EVALUATION
+
+Give both fresh evaluators the complete creation package, frozen manifest, source inventory, all preimages, actual post-promotion tree, applied-delta comparison, prior-staging hashes, guard results, handoff candidates, and authorized Git plan. Neither evaluator sees the other's report.
+
+The evaluated subject is the actual tree, not the intended manifest alone. A material correction repeats the complete WORK and EVALUATION stages.
+
+### 12. Seal PASS artifacts and hand off finalization
+
+After dual PASS and the approved disposition batch, RECORD seals the session handoff, canonical promotion evidence, and durable pointers. Confirm the final handoff body still matches the evaluated durable note and the record verifies.
+
+Return control to the manager. The manager creates verified local commits and performs only configured, authorized publication or merge actions. The manager appends a factual finalization receipt after displaying the complete evaluated handoff; the evaluated body is not mutated to add those later facts.
+
+Completion evidence: complete staging accounting, frozen and idempotently applied manifest, unchanged prior evidence, green post-promotion tree, matching handoff bodies, dual PASS, PASS-only session outputs, and a manager-owned finalization plan.
 
 ## References
 
-One owner per borrowed claim, drawn from the design's claim-owner ledger. Guard scripts are named as code-spans, not `../` links, because a repo-root climb resolves from the canonical path but breaks through the runtime mirror; sibling-skill and same-directory owners keep a resolvable link.
-
-| Borrowed claim | Owner |
-|---|---|
-| Area resolution and the area allowlist rule | [`memory/rules.md`](../memory/rules.md) § 1.5 |
-| Frontmatter base plus per-type extensions and staging-field stripping | [`memory/rules.md`](../memory/rules.md) § 2 |
-| Compaction standard (MoC, caps, split-on-retire) | [`memory/rules.md`](../memory/rules.md) § 5 |
-| Area allowlist and cap VALUES | [`memory-vocabulary.json`](../memory/memory-vocabulary.json) |
-| Promotion inventory sources and session-tree facts | [`record/record-map.md`](../record/record-map.md) § Wrap-up promotion-inventory rule |
-| RECORD-versus-promotion distinction; the capture side | [`record/SKILL.md`](../record/SKILL.md) § RECORD Phase |
-| The dual-system gate, seven perspectives, and finding routing | [`evaluation/SKILL.md`](../evaluation/SKILL.md) |
-| Proposer freeze and selective integration | [`production.md`](../orchestration/workflow/production.md) |
-| Git finalization — push / open PR | [`git/SKILL.md`](../git/SKILL.md) § P4 |
-| Git finalization — land PR / merge / cleanup | [`git/SKILL.md`](../git/SKILL.md) § P5 |
-| Archive move-on-terminal file form | [`memory/templates/archive.md`](../memory/templates/archive.md) |
-| Per-type templates stamped on promotion | [`memory/templates/`](../memory/templates/) |
-| Always-Ask decision classification | [`discussion/SKILL.md`](../discussion/SKILL.md) § Decision Classification |
-| Manager spawn / orchestration and the commit boundary | [`orchestration/workflow/wrap-up.md`](../orchestration/workflow/wrap-up.md) |
-| Routing / promotion child-doc contract | [`promotion.md`](promotion.md) |
-| Compaction child-doc contract | [`compaction.md`](compaction.md) |
-| Frontmatter well-formedness guard | `validate-frontmatter.sh` |
-| Relative-link resolution guard | `check-markdown-links.sh` |
-| Residual stale-vocabulary guard | `check-residual-vocab.sh` |
-| Skill-surface `mistakes.md` conformance guard | `check-skill-mistakes.sh` |
-| Runtime-doc mirror guard | `check-workflow-mirror-consistency.sh` |
-| Merge ref-integrity gate (compaction only) | `check-merge-ref-integrity.sh` |
+- [Orchestration Wrap-up adapter](../orchestration/workflow/wrap-up.md) owns entry, user gates, evaluator dispatch, transitions, and finalization handoff.
+- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent creation and reciprocal review mechanics.
+- [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
+- [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
+- [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
+  non-successor terminal states, strict archive behavior, and archive/link validation scope.
+- [Evaluation](../evaluation/SKILL.md) owns fresh dual reports, finding dispositions, and repeat-review rules.
+- [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.

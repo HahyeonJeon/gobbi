@@ -1,6 +1,6 @@
 ---
 name: resume-agent-id-duplicate-dispatch
-description: Resume without a recorded in-flight agent id caused a duplicate executor dispatch
+description: Resume without reconciling state.activeDispatches caused a duplicate executor assignment and writer risk.
 type: mistakes
 scope: project
 feature: null
@@ -8,7 +8,7 @@ status: active
 created: 2026-07-06
 session: 019f283d-e961-7442-9c22-319f26798141
 tags: [process, verification, codex]
-keywords: [compaction, resume, subagent, duplicate-dispatch]
+keywords: [context-boundary, resume, active-dispatches, duplicate-assignment, runtime-id]
 author: codex
 priority: high
 domain: codex
@@ -17,24 +17,26 @@ superseded_by: null
 related: [manager-locked-decision-without-audit-trail-sync]
 ---
 
-# Preserve in-flight agent ids across resume
+# Reconcile active dispatches before replacement or redispatch
 
 ## What happened
 
-During Execution Task 03, the manager had already dispatched executor Pascal before compaction. After resume, the manager no longer had a reliable in-memory record of that agent id. The task directory still showed only `working/discussion-log.md`, so the manager spawned a second executor for the same task. Pascal's delayed completion then arrived with the contracted artifacts, and the duplicate executor had to be closed to prevent overlapping writes.
+During a historical Execution task, the manager resumed without a reliable record of the already assigned executor. Sparse task artifacts were mistaken for absence, so a second executor received the same task. The first executor later reported, creating a duplicate-writer risk.
 
 ## Why it happens
 
-Compaction preserves summarized session context, but it can drop volatile in-flight subagent ids and pending notification state. The manager then treats missing local artifacts as evidence that no agent is still working, even though a slow subagent may still complete.
+A context boundary can end or detach runtime-native agents while durable workflow state remains. Missing output, an idle notice, or a lagging native task list does not establish whether the recorded assignment survived or was lost.
 
 ## Correct approach
 
-Before re-dispatching after compaction, resume, or `/clear`, reconcile active subagents and delayed notifications. Record the active agent id in session state or in the discussion log as soon as a subagent is spawned. If the id is missing on resume, inspect active agent listings and task timestamps, then either wait for the pending agent or explicitly close it before starting a replacement.
+At a context boundary, append the newly observed runtime ID to `session.json.runtime.ids` through an atomic checkpoint without changing the Gobbi session ID. Then read `state.json`, especially `current` and `activeDispatches`, and inspect the runtime task list as a projection.
+
+Continue only when the same runtime identity, stable assignment, and idle/addressable state are confirmed. Otherwise replace the specialist and fully reprime it from durable session artifacts. Update `activeDispatches` atomically before visible reassignment. Never create a second assignment merely because an output file is absent, and never use a global active-session pointer or automatic all-worktree scan.
 
 ## How to detect
 
-A session resumes during a delegated task, the task directory has partial or no output, and the manager cannot name the active subagent id that owns the task. Dispatching another agent to the same role and task at that point risks duplicate writers.
+The session resumes with an `activeDispatches` row whose identity or status has not been reconciled, yet the manager is about to assign the same stable task ID again. Another signal is a runtime task-list status being used to override verified state and artifacts.
 
 ## Related
 
-- [[manager-locked-decision-without-audit-trail-sync]] — manager-only state must be reflected in the session record when it affects later workflow choices.
+- [[manager-locked-decision-without-audit-trail-sync]] — durable creation evidence must stay consistent with manager-visible decisions.

@@ -12,12 +12,13 @@ A rule without its reason is obeyed blindly or discarded; a rule without its sco
 
 | Field | Value |
 |---|---|
-| When | Wrap-up identifies an invariant the team wants enforced going forward (naming conventions, layering constraints, banned patterns). Promotion **requires explicit user confirmation** through the active runtime's user-decision primitive — Wrap-up never promotes a rule unilaterally. |
-| Written by | Wrap-up RECORD (direct write — no staging). There is no `staging/rules/` subdir and no `rule-candidate:` upstream flag; loop RECORD never writes here. |
-| Promotes to | `rules/{area}/` (project-wide) · `features/{f}/rules/{area}/` (feature-specific — the canonical home; the retired `decisions/` + `precedent: true` workaround is superseded) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
+| Current source | None. Record defines no typed `staging/rules/` source, so the active workflow cannot create a durable rule. |
+| Required source identity | Any future route must first define a typed staging source carrying the Gobbi-owned UUID and exact `step` / `stage` / `iteration` / `task` cursor. |
+| Durable writer | Wrap-up WORK only, through a frozen manifest after the Record, Memory-map, validator, and Wrap-up owners explicitly add that typed route. No direct, Startup, CLI, or RECORD durable write exists. |
+| Durable home | If a typed route is added later: `rules/{area}/` for a project-wide rule or `features/{f}/rules/{area}/` for a feature-specific rule. `{area}` follows the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type). |
 | Filename | `{slug}.md` — bare-slug (evergreen, no date prefix); short, imperative, names the rule (`evaluator-read-only-boundary.md`) |
 
-Wrap-up writes directly to memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+[`memory-map.md`](../memory-map.md) intentionally lists no typed rule source. Adding ordinary rule promotion requires a prior user-approved change to the Record staging vocabulary, validators, Memory map, and Wrap-up contract; this template cannot create that route.
 
 ## Frontmatter + body
 
@@ -32,13 +33,13 @@ scope: project
 feature: null
 status: active
 created: YYYY-MM-DD
-session: {session-id that established the rule}
+session: {Gobbi-owned UUID of the session that established the rule}
 tags: [process, docs-sync]           # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 established: YYYY-MM-DD
-supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | null   # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior rule slug if this replaces an existing rule} | null   # one plain slug, not a path
 ---
 
 # {Rule title}
@@ -64,5 +65,6 @@ supersedes: {prior rule slug if this replaces an existing rule} | list[slug] | n
 
 ## Notes
 
-- **Promotion contract.** Wrap-up is the only writer to `rules/` among the workflow loops — no loop RECORD writes directly; the one pre-Wrap-up exception is the startup skill's startup-close promotion, which writes its user-approved baseline to `rules/` before any loop runs. New rules require user confirmation through the active runtime's user-decision primitive ("Promote this session's recurring invariant to project rules as `{slug}`?").
-- **Update by supersede, never delete.** Updating an existing rule uses the `supersedes:` frontmatter field; the prior file is preserved for audit. When the superseded rule reaches a terminal state (`status: superseded`), Wrap-up moves the full file (`git mv`) to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` per the move-on-terminal model — never deleted.
+- **Typed-source boundary.** Wrap-up WORK accepts typed staging only. It does not turn a decision, finding, working file, CLI result, Startup result, or user comment into a rule, and it has no direct-write exception.
+- **No current creation route.** This template documents the durable shape but does not authorize a write. Adding rules requires a prior contract change across Record, Memory, Wrap-up, and their validators.
+- **Update by supersede, never delete.** A separately authorized rule-maintenance change uses the global `supersedes:` field and preserves the prior complete file. A terminal superseded rule moves whole to `archive/rules/{area}/{YYYY-MM-DD}-{slug}.md` under the Memory lifecycle owner.

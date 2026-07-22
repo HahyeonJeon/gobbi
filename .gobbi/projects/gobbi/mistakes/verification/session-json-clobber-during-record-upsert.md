@@ -1,6 +1,6 @@
 ---
 name: session-json-clobber-during-record-upsert
-description: RECORD assistant clobbered session.json during an invalid jq update before reconstructing it
+description: Direct shell redirection truncated session.json before validation; lifecycle changes require patch-file atomic replacement.
 type: mistakes
 scope: project
 feature: null
@@ -8,7 +8,7 @@ status: active
 created: 2026-07-06
 session: 019f283d-e961-7442-9c22-319f26798141
 tags: [process, verification]
-keywords: [session-json, jq, record, upsert, clobber]
+keywords: [session-json-v5, patch-file, checkpoint, atomic-replacement, byte-preservation]
 author: codex
 priority: high
 domain: verification
@@ -17,23 +17,25 @@ superseded_by: null
 related: [edit-write-tool-success-without-disk-persistence, verify-state-from-authoritative-source-not-proxy, manager-locked-decision-without-audit-trail-sync]
 ---
 
-# Protect session.json during RECORD upserts
+# Update session.json only through validated patch-file checkpoints
 
 ## What happened
 
-During Execution Task 04 RECORD, an assistant ran an invalid intermediate `jq` command that truncated `session.json` to zero bytes before reconstructing and rewriting a valid JSON file. The final file parsed and contained the known Task 04 telemetry, but byte-level preservation of every unknown pre-existing field could not be proven after the clobber.
+During a historical Execution RECORD stage, an invalid `jq` command redirected directly into `session.json` and truncated it before the transform succeeded. A later reconstruction parsed, but preservation of the original manifest could not be proven.
 
 ## Why it happens
 
-Shell redirection opened the authoritative state file for writing before the JSON transform had produced and validated a replacement. When the transform failed, the target file was already truncated.
+Shell redirection mutated the authoritative file before parsing, schema validation, and lifecycle invariants passed. The operation also treated arbitrary JSON transformation as an allowed manifest update instead of separating lifecycle fields from router state.
 
 ## Correct approach
 
-Never write transformed JSON directly back to `session.json`. Write to a temporary file in the same directory, run `jq empty` on that temporary file, verify required invariants, then atomically move it over `session.json` under the session lock. If any step fails, leave the original `session.json` untouched and report the failure.
+Use `session-record.sh checkpoint --root ABS --patch FILE`. The patch file may change only authorized version-5 lifecycle fields. The command creates a same-directory candidate, applies unambiguous merge-patch semantics, validates the complete candidate against the schema and invariants, and atomically replaces the manifest only after every check passes.
+
+Any parse, schema, path, immutable-field, runtime-order, or replacement failure must leave the previous bytes unchanged. There is no session lock file. Routing changes belong only to `session-record.sh transition --patch FILE` and `state.json` version 3; a checkpoint cannot mutate the router, and a transition cannot mutate settings.
 
 ## How to detect
 
-An agent is about to update `session.json` with a command shaped like `jq ... > session.json`, or any direct write path that does not first create and validate a separate temporary file. A later report that says `session.json` was reconstructed is evidence that the safe-update invariant already failed.
+An agent is about to redirect, overwrite, or edit `session.json` directly; passes JSON inline through shell interpolation; or mixes a router change into a manifest checkpoint. Another signal is a failure test that does not compare the manifest bytes before and after the rejected operation.
 
 ## Related
 

@@ -11,7 +11,7 @@ tags: [codex, process]
 keywords: [runtime-matrix, codex-exec, production, evaluation, c-high-4, source-read-only-gate, dual-system]
 author: claude
 features_touched: []
-loops_completed: [execution, wrap-up]
+steps_completed: [execution, wrap-up]
 shipped: [git-gate-blind-to-gitignored-writes]
 ---
 

@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/orchestration/scripts/check-workflow-mirror-consistency.sh

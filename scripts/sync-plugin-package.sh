@@ -15,14 +15,11 @@ fi
 
 expected_plugin_skills='../../.gobbi/projects/gobbi/skills'
 expected_plugin_agents='../../.gobbi/projects/gobbi/agents'
-expected_plugin_hooks='../../.gobbi/projects/gobbi/hooks'
-
-expected_dev_session_start='../../.gobbi/projects/gobbi/hooks/session-start.sh'
-expected_dev_post_tool_use='../../.gobbi/projects/gobbi/hooks/post-tool-use-agents.sh'
-expected_dev_session_end='../../.gobbi/projects/gobbi/hooks/session-end.sh'
 
 canonical_skills_root="$repo_root/.gobbi/projects/gobbi/skills"
 claude_skills_drift=0
+source_topology_failures=0
+roles=(manager leader executor evaluator assistant)
 
 # Normal sync is intentionally a single-writer operation. Callers must not mutate the
 # canonical skill tree or .claude/skills while this script is running. The reconciler
@@ -84,6 +81,147 @@ ensure_link() {
 
   mkdir -p "$(dirname "$link_path")"
   ln -s "$expected_target" "$link_path"
+}
+
+topology_fail() {
+  printf 'source topology: %s\n' "$1" >&2
+  source_topology_failures=$((source_topology_failures + 1))
+}
+
+require_file() {
+  local path="$1"
+  [[ -f "$path" ]] || topology_fail "${path#"$repo_root"/} is missing"
+}
+
+require_link() {
+  local path="$1" expected_target="$2" actual_target
+  if [[ ! -L "$path" ]]; then
+    topology_fail "${path#"$repo_root"/} is not a symlink"
+    return
+  fi
+  actual_target="$(readlink "$path")"
+  if [[ "$actual_target" != "$expected_target" ]]; then
+    topology_fail "${path#"$repo_root"/} points to $actual_target; expected $expected_target"
+  elif [[ ! -e "$path" ]]; then
+    topology_fail "${path#"$repo_root"/} points to a missing target"
+  fi
+}
+
+require_empty_or_absent_dir() {
+  local path="$1" first_entry
+  if [[ -L "$path" || -f "$path" ]]; then
+    topology_fail "${path#"$repo_root"/} is a forbidden hook component"
+    return
+  fi
+  if [[ -d "$path" ]]; then
+    first_entry="$(find "$path" -mindepth 1 -print -quit)"
+    [[ -z "$first_entry" ]] || topology_fail "${path#"$repo_root"/} contains a forbidden hook component"
+  fi
+}
+
+require_json_contract() {
+  local path="$1" expression="$2" label="$3"
+  if ! jq -e "$expression" "$path" >/dev/null 2>&1; then
+    topology_fail "$label"
+  fi
+}
+
+validate_source_topology() {
+  local role codex_version claude_version marketplace_version skill_name mirror_entry mirror_name
+
+  if ! command -v jq >/dev/null 2>&1; then
+    topology_fail 'jq is required to validate plugin manifests and marketplaces'
+    return 1
+  fi
+
+  for path in \
+    "$package_root/.codex-plugin/plugin.json" \
+    "$package_root/.claude-plugin/plugin.json" \
+    "$repo_root/.agents/plugins/marketplace.json" \
+    "$repo_root/.claude-plugin/marketplace.json" \
+    "$repo_root/.codex/AGENTS.md" \
+    "$repo_root/.claude/CLAUDE.md" \
+    "$repo_root/.claude/settings.json"; do
+    require_file "$path"
+  done
+
+  if [[ -f "$package_root/.codex-plugin/plugin.json" ]]; then
+    require_json_contract "$package_root/.codex-plugin/plugin.json" \
+      '.name == "gobbi" and .skills == "./skills/" and (has("hooks") | not) and (has("agents") | not)' \
+      'Codex manifest must declare only the canonical skills component and no hook or agent component'
+  fi
+  if [[ -f "$package_root/.claude-plugin/plugin.json" ]]; then
+    require_json_contract "$package_root/.claude-plugin/plugin.json" \
+      '.name == "gobbi" and (has("skills") | not) and (has("agents") | not) and (has("hooks") | not)' \
+      'Claude manifest must remain metadata-only'
+  fi
+  if [[ -f "$repo_root/.agents/plugins/marketplace.json" ]]; then
+    require_json_contract "$repo_root/.agents/plugins/marketplace.json" \
+      '.name == "gobbi-workspace" and ([.plugins[] | select(.name == "gobbi" and .source.source == "local" and .source.path == "./plugins/gobbi")] | length) == 1' \
+      'Codex marketplace must contain one local gobbi entry pointing at ./plugins/gobbi'
+  fi
+  if [[ -f "$repo_root/.claude-plugin/marketplace.json" ]]; then
+    require_json_contract "$repo_root/.claude-plugin/marketplace.json" \
+      '([.plugins[] | select(.name == "gobbi" and .source == "./plugins/gobbi")] | length) == 1' \
+      'Claude marketplace must contain one gobbi entry pointing at ./plugins/gobbi'
+  fi
+  if [[ -f "$repo_root/.claude/settings.json" ]]; then
+    require_json_contract "$repo_root/.claude/settings.json" \
+      '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == "1" and .teammateMode == "in-process" and (has("hooks") | not)' \
+      'Claude settings must keep in-process Agent Teams enabled and contain no hooks block'
+  fi
+
+  if [[ -f "$package_root/.codex-plugin/plugin.json" && -f "$package_root/.claude-plugin/plugin.json" && -f "$repo_root/.claude-plugin/marketplace.json" ]]; then
+    codex_version="$(jq -r '.version // empty' "$package_root/.codex-plugin/plugin.json")"
+    claude_version="$(jq -r '.version // empty' "$package_root/.claude-plugin/plugin.json")"
+    marketplace_version="$(jq -r '.plugins[] | select(.name == "gobbi") | .version // empty' "$repo_root/.claude-plugin/marketplace.json")"
+    if [[ -z "$codex_version" || "$codex_version" != "$claude_version" || "$claude_version" != "$marketplace_version" ]]; then
+      topology_fail 'Codex manifest, Claude manifest, and Claude marketplace versions must be non-empty and equal'
+    fi
+  fi
+
+  require_link "$repo_root/AGENTS.md" '.codex/AGENTS.md'
+  if [[ -f "$repo_root/.codex/AGENTS.md" ]]; then
+    grep -Fq 'Configuration' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the Configuration-first workflow'
+    grep -Fq 'DISCUSSION' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the productive-step stage loop'
+  fi
+  if [[ -f "$repo_root/.claude/CLAUDE.md" ]]; then
+    grep -Fq 'Configuration' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the Configuration-first workflow'
+    grep -Fq 'DISCUSSION' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the productive-step stage loop'
+  fi
+
+  for role in "${roles[@]}"; do
+    require_file "$repo_root/.gobbi/projects/gobbi/agents/$role.md"
+    require_file "$repo_root/.gobbi/projects/gobbi/agents/$role.toml"
+    require_link "$repo_root/.claude/agents/$role.md" "../../.gobbi/projects/gobbi/agents/$role.md"
+    require_link "$repo_root/.codex/agents/$role.toml" "../../.gobbi/projects/gobbi/agents/$role.toml"
+  done
+
+  require_empty_or_absent_dir "$repo_root/.gobbi/projects/gobbi/hooks"
+  require_empty_or_absent_dir "$repo_root/.claude/hooks"
+  if [[ -e "$package_root/hooks" || -L "$package_root/hooks" ]]; then
+    topology_fail 'plugins/gobbi/hooks is a forbidden package component'
+  fi
+
+  [[ "$source_topology_failures" -eq 0 ]]
+}
+
+check_agents_skill_mirror() {
+  local skill_name mirror_entry mirror_name
+  while IFS= read -r skill_name; do
+    check_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
+  done < <(for_each_canonical_skill)
+
+  if [[ -d "$repo_root/.agents/skills" ]]; then
+    for mirror_entry in "$repo_root"/.agents/skills/*; do
+      [[ -e "$mirror_entry" || -L "$mirror_entry" ]] || continue
+      mirror_name="${mirror_entry##*/}"
+      if [[ ! -d "$canonical_skills_root/$mirror_name" ]]; then
+        printf '.agents/skills/%s has no canonical skill (stale discovery link)\n' "$mirror_name" >&2
+        return 1
+      fi
+    done
+  fi
 }
 
 for_each_canonical_skill() {
@@ -429,7 +567,7 @@ check_claude_skills_mirror() {
 
   mirror="$(claude_skill_mirror_files "$skill_name")"
 
-  # comm must use the SAME collation as the LC_ALL=C sort in the producers above,
+  # comm must use the SAME collation as the LC_ALL=C sort in the enumerators above,
   # else it both warns "not in sorted order" and computes the set difference wrongly.
   missing="$(LC_ALL=C comm -23 <(printf '%s\n' "$canonical") <(printf '%s\n' "$mirror"))"
   stale="$(LC_ALL=C comm -13 <(printf '%s\n' "$canonical") <(printf '%s\n' "$mirror"))"
@@ -471,7 +609,7 @@ check_claude_skills_mirror() {
     fi
   done <<< "$canonical"
 
-  # Explicit guard for the A3 #1-forbidden case (integrated from the Codex proposal):
+  # Explicit guard for the A3 #1-forbidden case:
   # a mirror entry that is a symlink resolving to a DIRECTORY. Claude Code skill
   # discovery does not resolve a symlinked directory, so a dir symlink silently
   # un-discovers the skill. The set-difference above already FAILS on this, but the
@@ -485,7 +623,7 @@ check_claude_skills_mirror() {
     fi
   done < <(find "$mirror_dir" -type l)
 
-  # Bidirectional DIRECTORY parity (integrated from the Codex proposal). The file-only
+  # Bidirectional DIRECTORY parity. The file-only
   # comparison cannot see an EMPTY stale subdir — it has no leaf to flag — so a stale
   # support subdir (e.g. a renamed canonical scripts/ dir) would otherwise be invisible.
   canon_dirs="$(agent_exposed_dirs "$skill_name")"
@@ -502,19 +640,16 @@ check_claude_skills_mirror() {
   return 0
 }
 
+if ! validate_source_topology; then
+  printf '%d source-topology check(s) failed\n' "$source_topology_failures" >&2
+  exit 1
+fi
+
 if $check_mode; then
-  while IFS= read -r skill_name; do
-    check_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
-  done < <(for_each_canonical_skill)
+  check_agents_skill_mirror
 
   check_link "$package_root/skills" "$expected_plugin_skills"
   check_link "$package_root/agents" "$expected_plugin_agents"
-  check_link "$package_root/hooks" "$expected_plugin_hooks"
-  check_link "$repo_root/.claude/hooks/session-start.sh" "$expected_dev_session_start"
-  check_link "$repo_root/.claude/hooks/post-tool-use-agents.sh" "$expected_dev_post_tool_use"
-  check_link "$repo_root/.claude/hooks/session-end.sh" "$expected_dev_session_end"
-  test -f "$package_root/.codex-plugin/plugin.json"
-  test -f "$package_root/.claude-plugin/plugin.json"
 
   # .claude/skills mirror — per-skill bidirectional parity, derived from the canonical
   # tree (no hardcoded skill/file list, no magic count). Catches a missing child, a
@@ -541,7 +676,7 @@ if $check_mode; then
     exit 1
   fi
 
-  printf 'Codex skill, plugins/gobbi, .claude/skills, and .claude hook symlinks are intact\n'
+  printf 'Gobbi manifests, marketplaces, entrypoints, roles, and hookless skill/package topology are intact\n'
   exit 0
 fi
 
@@ -556,9 +691,5 @@ done
 
 ensure_link "$package_root/skills" "$expected_plugin_skills"
 ensure_link "$package_root/agents" "$expected_plugin_agents"
-ensure_link "$package_root/hooks" "$expected_plugin_hooks"
-ensure_link "$repo_root/.claude/hooks/session-start.sh" "$expected_dev_session_start"
-ensure_link "$repo_root/.claude/hooks/post-tool-use-agents.sh" "$expected_dev_post_tool_use"
-ensure_link "$repo_root/.claude/hooks/session-end.sh" "$expected_dev_session_end"
 
-printf 'synchronized Codex skill, plugins/gobbi, .claude/skills, and .claude hook symlinks\n'
+printf 'synchronized Codex skill discovery, plugins/gobbi skills and agents, and .claude/skills\n'

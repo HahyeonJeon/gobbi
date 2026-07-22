@@ -11,7 +11,7 @@ tags: [memory, refactor, rename-sweep, verification, docs-sync]
 keywords: [area-namespace-migration, two-family-guard, archive-not-delete, validator-zero, single-session, layer2-source]
 author: claude
 features_touched: [memory]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [memory-migration-curation-campaign, migration-execution-plan, family-a-allowlist-completeness, guard-revises-twice-means-scope-model-wrong, codex-eval-wrapper-vocab-grep-false-blocks-clean-pass, readiness-scan-must-disposition-out-of-worktree-writes, delegation-briefs-reference-nonexistent-rules-dir, verification-gate-must-be-runnable-not-placeholder, whole-file-allowlist-false-passes-same-file-residual, recurring-guard-root-closure-criterion, git-skill-move-attribution-docs-sync, no-match-area-resolution, reconcile-shared-described-as-current-in-active-carriers, strip-contract-dropped-required-extension-field]
 ---
 

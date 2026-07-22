@@ -2,7 +2,7 @@
 
 > Recurring failure patterns — things that look like they should work but reliably break. Each records the failure mode plus the correct approach so future sessions skip past it without re-failing.
 
-**Two homes for a trap.** A trap lives in exactly one of two homes. A **cross-cutting / no-owner** trap is a FILE in the project `mistakes/` tier — the naming, frontmatter, and body schema documented in the sections immediately below. A **skill-owned** trap is a `## ` SECTION inside its owning skill's `skills/{skill}/mistakes.md` — the skill-surface schema documented in the **Skill-surface schema** section at the end of this doc. The two schemas differ: the memory-tier file carries the full 11-field memory base frontmatter and is validated by `validate-frontmatter.sh`; the skill-surface file carries a light header plus a per-section metadata strip and is validated by `check-skill-mistakes.sh`. The rest of this doc (Core principles → Notes) governs the **memory-tier** home; the skill-surface schema is the last section.
+**Two homes for a trap.** A trap lives in exactly one of two homes. A **cross-cutting / no-owner** trap is a FILE in the project `mistakes/` tier — the naming, frontmatter, and body schema documented in the sections immediately below. A **skill-owned** trap is a `## ` SECTION inside its owning skill's `skills/{skill}/mistakes.md` — the skill-surface schema documented in the **Skill-surface schema** section at the end of this doc. The two schemas differ: the memory-tier file carries the full 11-field memory base frontmatter and is validated by `validate-frontmatter.sh`; the skill-surface file carries a light header plus a per-section metadata strip and is validated by `validate-skill-mistakes.sh`. The rest of this doc (Core principles → Notes) governs the **memory-tier** home; the skill-surface schema is the last section.
 
 ## Core principles
 
@@ -14,12 +14,13 @@ A mistake missing the early-warning signal records history instead of preventing
 
 | Field | Value |
 |---|---|
-| When | Immediately during any loop's RECORD when the user corrected an approach or the loop hit a non-obvious failure mode; or during Wrap-up RECORD when cross-loop patterns reveal a recurring trap. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/decisions/{slug}.md` **with `mistake-candidate: true`** — mistakes route through `staging/decisions/` with the flag, not a dedicated subdir; the flag tells Wrap-up to promote to `mistakes/` instead of `decisions/`. |
+| When | A productive step's RECORD after a user correction or accepted finding establishes a recurring trap. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/decisions/{slug}.md` **with `mistake-candidate: true`**; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/mistakes/{area}/` (feature-specific trap) · `mistakes/{area}/` (project, the common case) — `{area}` from the curated trap-class allowlist, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, names the trap in ≤6 words (`bun-write-no-append.md`); no date or finding-ID prefix |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that reads the routing flag and promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -34,13 +35,13 @@ scope: project | feature
 feature: {feature-name} | null
 status: active | superseded
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [process, verification]        # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
 priority: critical | high | medium | low
 domain: {e.g. process, hooks, docs-sync}
-supersedes: {prior mistake slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior mistake slug} | null        # one plain slug, not a path
 superseded_by: {newer mistake slug} | null    # plain slug, not a path
 ---
 
@@ -74,7 +75,7 @@ superseded_by: {newer mistake slug} | null    # plain slug, not a path
 
 ## Skill-surface schema — `skills/{skill}/mistakes.md`
 
-A **skill-owned** trap does not live in the memory tree. It lives as ONE `## ` section inside its owning skill's `skills/{skill}/mistakes.md`. That file is a skill-surface doc: the memory frontmatter standard ([`../rules.md`](../rules.md), scope boundary) does NOT govern it, and `validate-frontmatter.sh` never sees it. Its conformance gate is [`../../orchestration/scripts/check-skill-mistakes.sh`](../../orchestration/scripts/check-skill-mistakes.sh), which restores the structural validation and additionally resolves the `[[slug]]` + backtick bare-path references that the markdown-link guard cannot see.
+A **skill-owned** trap does not live in the memory tree. It lives as ONE `## ` section inside its owning skill's `skills/{skill}/mistakes.md`. That file is a skill-surface doc: the memory frontmatter standard ([`../rules.md`](../rules.md), scope boundary) does NOT govern it, and `validate-frontmatter.sh` never sees it. Its conformance gate is [`../../mistake/scripts/validate-skill-mistakes.sh`](../../mistake/scripts/validate-skill-mistakes.sh), which restores the structural validation and additionally resolves the `[[slug]]` + backtick bare-path references that the markdown-link guard cannot see.
 
 **File header** (light skill-surface frontmatter, NOT the 11-field memory base):
 
@@ -87,7 +88,7 @@ updated: YYYY-MM-DD
 ---
 ```
 
-**Body** — one `## ` section per trap. The heading slugifies to the trap's stable anchor, so an inbound reference resolves to `skills/{skill}/mistakes.md#{anchor}` (the Map-of-Content section-anchor model, [`../rules.md`](../rules.md) §5.2). Each ACTIVE section carries a one-line metadata strip, then the 4 mandatory elements, then an OPTIONAL `**User feedback**` line, then an optional `### Related` `[[slug]]` list. Retired sections move under a single `## Archived` heading at the file bottom and are NOT active:
+**Body** — one `## ` section per trap. The heading slugifies to the trap's stable anchor, so an inbound reference resolves to `skills/{skill}/mistakes.md#{anchor}`. Each ACTIVE section carries a one-line metadata strip, then the 4 mandatory elements, then an OPTIONAL `**User feedback**` line, then an optional `### Related` `[[slug]]` list. Retired sections move under a single `## Archived` heading at the file bottom and are NOT active:
 
 ```markdown
 # {Skill} — Mistakes
@@ -119,9 +120,9 @@ updated: YYYY-MM-DD
 
 **The 4 mandatory elements** are the same four the memory-tier body carries (`What happened` / `Why it happens` / `How to detect` / `Correct approach`), written as bold inline labels rather than `## ` sub-headings so each trap stays one scannable `## ` section. `**User feedback**` is optional — kept because the memory-tier body carries `## User feedback`, optional because not every trap has a user quote.
 
-**The metadata strip** is the one-line `priority:` · `domain:` · `added:` · `status:` · `tags:` row directly under the heading. `check-skill-mistakes.sh` requires all five keys on an active section's strip.
+**The metadata strip** is the one-line `priority:` · `domain:` · `added:` · `status:` · `tags:` row directly under the heading. `validate-skill-mistakes.sh` requires all five keys on an active section's strip.
 
-**The `## Archived` convention (skill-tier supersession).** The skill surface has no `archive/` directory and no `git mv`-to-archive lifecycle. When a skill-owned trap is superseded, flip its section's metadata `status:` to `superseded`, then move the whole `## ` section under the single `## Archived` heading at the file bottom (or remove it when it has no historical value). A reader — and `check-skill-mistakes.sh` — treats every `## ` section at or below `## Archived` as NON-active: it is EXEMPT from the 4-element + strip checks, but its anchor still participates in the uniqueness check and its references are still resolved. This is the co-located analog of the Map-of-Content split-on-retire rule ([`../rules.md`](../rules.md) §5.3).
+**The `## Archived` convention (skill-tier supersession).** The skill surface has no separate `archive/` directory and no `git mv` lifecycle. When a skill-owned trap is superseded, flip its section's metadata `status:` to `superseded`, then move the complete `## ` section under the single `## Archived` heading at the file bottom. A reader — and `validate-skill-mistakes.sh` — treats every `## ` section at or below `## Archived` as NON-active: it is EXEMPT from the 4-element + strip checks, but its anchor still participates in the uniqueness check and its references are still resolved. Preserve the full section so the trap's history and reciprocal supersession reference remain auditable.
 
 **Migration is copy-the-elements, not a verbatim file copy.** When a memory-tier mistake file becomes a skill-owned section, copy its 4 elements (+ optional `User feedback`) into a `## ` section and DROP every memory-only piece — the 11-field frontmatter, and any obsolete `## Layer-2 candidate` section or `layer:` / `layer2-source:` frontmatter. The skill-surface section carries only the light strip + the elements.
 

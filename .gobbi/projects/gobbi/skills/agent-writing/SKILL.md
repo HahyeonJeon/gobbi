@@ -36,11 +36,10 @@ running the role must act correctly from the spec alone — not from the session
 
 > **Point to the one canonical owner; never restate it.**
 
-The `.md` is the role's behavioral contract; the delegation TEMPLATE
-([`orchestration/templates/{role}.md`](../orchestration/templates/)) is how the manager briefs that
-role per task. They are different files with different jobs — the role spec does not duplicate
-the template, and a new role's template is authored in `orchestration/templates/`, not inlined
-here. Cite the owner; do not copy it.
+The `.md` is the role's behavioral contract; the shared assignment skeleton and role overlays in
+[`orchestration/delegation.md`](../orchestration/delegation.md) govern how the manager briefs a role
+per task. They have different jobs. The role spec does not duplicate the assignment skeleton, and
+agent-writing does not create a second assignment surface. Cite the owner; do not copy it.
 
 > **Verify every wiring claim by reading the owner — never assert it.**
 
@@ -178,9 +177,8 @@ the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
 The role taxonomy is a **closed set of five**: `manager` / `leader` / `executor` / `evaluator`
 / `assistant` (verified — the Agent Taxonomy table in `gobbi/SKILL.md` and the 5 `.md` files).
-Each role has a `orchestration/templates/{role}.md` EXCEPT `manager` (verified — `templates/`
-holds leader / executor / evaluator / assistant only; the manager is the root session agent,
-not a Task-spawned specialist, so it needs no delegation template).
+All specialist assignments use one shared skeleton in `orchestration/delegation.md`. Its role map
+and overlays distinguish leader, executor, evaluator, and assistant through that one owner.
 
 **The common case is editing an existing role**, not adding one. To refine a role, edit its
 `agents/{role}.md` (and the `.toml` only if a min-load or guardrail changed). No new wiring.
@@ -190,22 +188,24 @@ the user's explicit decision. Its FULL wiring set is:
 
 1. The canonical pair: `agents/{role}.md` + `agents/{role}.toml` (P1 / P2 / P3).
 2. Both mirror symlinks: `.claude/agents/{role}.md` and `.codex/agents/{role}.toml` (P5).
-3. An `Agent({role})` permission in `.claude/settings.json` (the existing 5 entries are at
-   `:25-29`; verify the exact lines at edit time).
+3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
+   time; do not rely on a stored line number).
 4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
-5. A `orchestration/templates/{role}.md` (authored in the `orchestration` skill's `templates/`).
+5. A matching role-map and overlay decision in `orchestration/delegation.md`; the shared skeleton
+   remains the sole assignment shape.
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
-cannot be spawned in Claude Code; without a delegation template the manager has no brief shape.
+cannot be spawned in Claude Code; without the shared assignment skeleton and a matching role
+overlay the manager has no bounded brief shape.
 
 ### P5 — Wiring a role (HAND-OWNED mirrors; verify each)
 
 **The agent mirrors are HAND-CREATED — the sync script does NOT manage them.** Read
-`scripts/sync-plugin-package.sh` to confirm: it manages `.agents/skills/{name}`, the three
-`plugins/gobbi/{skills,agents,hooks}` whole-dir symlinks, and `.claude/hooks/*.sh` — it has
-NO line for `.claude/agents/` or `.codex/agents/`. So running the sync script refreshes only
-the plugin's whole-dir `agents` symlink; the two per-role runtime mirrors are yours to create
-by hand. (This is the OPPOSITE of the skill case, where `.agents/skills/{name}` IS
+`scripts/sync-plugin-package.sh` to confirm: it manages `.agents/skills/{name}`, the two
+`plugins/gobbi/{skills,agents}` whole-dir symlinks, and the per-file `.claude/skills` mirror.
+It verifies but does not create `.claude/agents/` or `.codex/agents/`. So running the sync script
+refreshes only the plugin's whole-dir `agents` symlink; the two per-role runtime mirrors are yours
+to create by hand. (This is the OPPOSITE of the skill case, where `.agents/skills/{name}` IS
 script-owned — do not assume the agent wiring parallels it.)
 
 Wire a role in this order, each step with its verify command. From the worktree root:
@@ -228,16 +228,15 @@ Wire a role in this order, each step with its verify command. From the worktree 
    bash scripts/sync-plugin-package.sh && bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
    ```
    The `--check` must exit 0.
-5. **For a NEW role only** — add the four taxonomy surfaces from P4 (steps 3-5): the
-   `Agent({role})` perm in `.claude/settings.json`, the Agent Taxonomy row in `gobbi/SKILL.md`,
-   and the `orchestration/templates/{role}.md`. Verify each:
-   `grep -n 'Agent({role})' .claude/settings.json` ; `grep -n '{role}' .gobbi/projects/gobbi/skills/gobbi/SKILL.md` ;
-   `test -f .gobbi/projects/gobbi/skills/orchestration/templates/{role}.md`.
+5. **For a NEW role only** — add the taxonomy surfaces from P4: the `Agent({role})` permission
+   in `.claude/settings.json`, the Agent Taxonomy row in `gobbi/SKILL.md`, and the role map/overlay
+   decision in `orchestration/delegation.md`. Verify each by reading the final owners and running
+   the source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
 ```bash
-bash .gobbi/projects/gobbi/skills/orchestration/scripts/check-markdown-links.sh \
+bash scripts/check-markdown-links.sh \
   .gobbi/projects/gobbi/agents/{role}.md
 ```
 A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
@@ -259,7 +258,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - **MUST set the Codex wrapper policy exactly** — every role uses
   `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`.
 - **MUST point to the one canonical owner, not restate it** — the role spec cites the
-  delegation template; it does not copy it.
+  shared assignment skeleton and its role overlay; it does not copy them.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read
   `.claude/settings.json`, read the sync script — never assert a mirror or permission exists.
 - **MUST verify loadability empirically** before declaring a role done — both `readlink`
@@ -287,22 +286,22 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)
   is exactly this. Verify a MECHANISM by reading its owner, not the end-state.
 
-- **Duplicating the delegation template inside the role spec.** Inlining the per-task brief
-  shape into `agents/{role}.md`. The `.md` is the behavioral contract; the per-task brief lives
-  in `orchestration/templates/{role}.md`. Keep them separate and cross-link.
+- **Duplicating the shared assignment skeleton inside the role spec.** Inlining the per-task brief
+  shape into `agents/{role}.md`. The `.md` is the behavioral contract; the manager brief shape lives
+  in `orchestration/delegation.md`. Keep them separate and cross-link.
 
 - **Adding a role when an edit would do.** Creating a sixth role for work an existing role
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
   `.md`. A new role needs the full P4 wiring set AND the user's explicit decision.
 
 - **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` perm,
-  the taxonomy row, or the delegation template. A new role is loadable only when ALL of P4 is
-  in place; a missing piece leaves it unspawnable or un-briefable.
+  the taxonomy row, or the matching role overlay. A new role is loadable only when ALL of P4
+  is in place; a missing piece leaves it unspawnable or un-briefable.
 
 ## Cross-references
 
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
-- Per-role delegation templates + the brief scaffold → [`orchestration/delegation.md`](../orchestration/delegation.md)
+- Shared delegation skeleton and role overlays → [`orchestration/delegation.md`](../orchestration/delegation.md)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
 - The verify-before-asserting trap → [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)

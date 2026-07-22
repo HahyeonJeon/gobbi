@@ -1,6 +1,6 @@
 ---
 name: manager-locked-decision-without-audit-trail-sync
-description: The manager folded a user decision into the deliverable artifact but did not sync the discussion-log and the Integration-Log disposition — two session artifacts then contradict on the load-bearing fact
+description: A user decision changed the synthesis while its open-decision record stayed unresolved, leaving contradictory evidence.
 type: mistakes
 scope: project
 feature: null
@@ -8,58 +8,35 @@ status: active
 created: 2026-06-26
 session: babc6f3b-e845-4ed3-9625-c14ea9237fd8
 tags: [verification, process, evaluation]
-keywords: [discussion-log, audit-trail, locked-decision, integration-log, CONSIST-1, principle-9]
+keywords: [open-decisions, audit-trail, locked-decision, synthesis, principle-9]
 author: claude
 priority: critical
 domain: process
 ---
 
-# Manager locked a user decision into an artifact without syncing the audit trail
+# A resolved user decision must update synthesis and open decisions together
 
 ## What happened
 
-The manager asked the user the D1 topology decision via the user-decision primitive, got the answer
-(keep Option A; defer consult), and had the producer fold "DECIDED by the user / LOCKED" into the
-canonical draft — but did NOT (a) write the canonical `working/discussion-log.md` entry recording the
-decision, and (b) update the contemporaneous Integration Log row #13 whose disposition still read
-`escalated` ("neither system decides"). The dual-system evaluation (Claude CONSIST-1 Critical/100 and
-Codex COD-CONS-1) caught the resulting contradiction: two session artifacts disagree on the single
-most load-bearing fact, and the user-decision audit artifact is absent. The loop verdict was FAIL.
+In a historical design loop, the user resolved a material topology question and the canonical candidate was updated. The records that had surfaced the conflict still described it as unresolved. The evaluation package therefore contradicted itself on a load-bearing decision.
 
 ## Why it happens
 
-The manager assumed that recording a decision in the deliverable artifact is sufficient, and that the
-discussion-log / Integration-Log disposition are bookkeeping that can lag. In gobbi the
-`discussion-log.md` IS the canonical user-decision audit trail (`record-map.md`); an artifact claim
-of "user decided" is unevaluable — and a Consistency defect — unless the contemporaneous record
-evidences it. This is Principle 9 (everything that must change together must change together) applied
-to a decision: draft + discussion-log + Integration-Log disposition are one change set.
+The manager treated the canonical candidate as the only authoritative surface. But a material conflict has two coupled records: the decision row that explains why user input was required and the synthesis that implements the answer. Updating only one makes the creation evidence internally inconsistent.
 
 ## Correct approach
 
-Maintain `working/discussion-log.md` INCREMENTALLY — write the entry at the moment of each
-user-decision call (class + question + answer), not retroactively. When folding a resolved escalation
-into an artifact, update the same change set atomically: (1) the artifact's decision state, (2) the
-discussion-log entry, (3) the disposition of the record that surfaced the gap (Integration Log row /
-eval finding). Treat the three as one Principle-9 co-edit.
+Record material draft and cross-review conflicts in `working/iteration-{n}/open-decisions.md`. Pause for the user on design, scope, destructive, or otherwise material conflicts. After the answer, update the synthesis and mark each affected decision resolved with the chosen disposition and rationale. Validate the complete package before EVALUATION.
+
+Evaluation findings use a separate batch disposition gate. Do not rewrite creation decisions as finding dispositions or apply a finding before the user approves the batch. Treat each owner-coupled update as one Principle-9 change.
 
 ## How to detect
 
-Any time the manager resolves an Always-Ask escalation (Design / Scope / Destructive) and folds the
-answer into an artifact: if there is no `working/discussion-log.md` entry for that user-decision call
-AND the upstream record that surfaced the gap (the Integration Log row, the eval finding disposition)
-still says "open / escalated", the audit trail is out of sync — that is the trap firing.
+The synthesis says a material question is decided while `open-decisions.md` still marks it open, or the decision file says resolved without the synthesis reflecting the answer. Another signal is an EVALUATION transition while any material decision remains unresolved.
 
-- **Recurred 2026-07-05 (GEN-D2-001 / D3-005 fix session, Ideation exit):** the same trap fired
-  through a different surface — the manager recorded a locked scope change by PREPENDING an
-  authoritative "AMENDMENT (supersedes below)" block to the draft instead of reconciling the body.
-  Five+ body sections (the Scope Contract, the escalated-fork section, the Implementation Checklist,
-  the Decisions Log) still read "escalated / deferred / do NOT edit" for a decision the amendment
-  locked in-scope; both dual-system evaluators flagged the self-contradiction. Trigger to catch:
-  adding a top-level "this supersedes the sections below" note in place of editing every restatement
-  is this same audit-trail-desync trap — a superseding header is not a reconciliation.
+**Historical recurrence, 2026-07-05:** a locked scope change was prepended as an amendment while several body sections retained the old direction. The lesson remains: a superseding header does not propagate through every material restatement.
 
 ## Related
 
-- [[freeze-producer-artifact-before-evaluating]] — sibling verification-discipline trap
+- `skills/evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating` — sibling verification-discipline trap
 - [[dual-eval-caught-managers-own-audit-gap]] — the learning this mistake demonstrates

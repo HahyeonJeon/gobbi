@@ -11,7 +11,7 @@ tags: [process]
 keywords: [skill-writing, agent-writing, meta-skill, verify-dont-assert, dual-system-eval, layer-2]
 author: claude
 features_touched: [agents]
-loops_completed: [ideation, execution, wrap-up]
+steps_completed: [ideation, execution, wrap-up]
 shipped:
   - verify-dont-assert-taught-facts
   - skill-loadability-and-map-placement
@@ -40,8 +40,9 @@ The `executor-wrote-to-main-tree-not-worktree` mistake recurred TWICE this sessi
 - `features/agents/README.md` — feature bootstrap (this Wrap-up)
 - `archive/decisions/process/2026-07-19-skill-loadability-and-map-placement.md` — historical DD-1/DD-5/DD-3 contract, superseded on 2026-07-19
 - `mistakes/verification/verify-dont-assert-taught-facts.md` — promoted mistake, Layer-2 candidate (this Wrap-up)
-- `backlogs/docs/claude-doc-authoring-standard.md` — deferred backlog (this Wrap-up)
-- `backlogs/tooling/claude-skills-mirror-gap.md` — deferred backlog (this Wrap-up)
+- `archive/backlogs/docs/2026-07-21-claude-doc-authoring-standard.md` — historical deferred backlog,
+  closed after the redesign removed its dangling inbound references
+- `archive/backlogs/tooling/2026-07-20-claude-skills-mirror-gap.md` — deferred backlog (this Wrap-up)
 
 ## What got stuck
 
@@ -62,8 +63,10 @@ Nothing blocked. Both skills shipped cleanly after two rounds of evaluation reme
 
 ## Next session
 
-- Pick up `backlogs/docs/claude-doc-authoring-standard.md` (medium priority) if `.claude/` doc conventions need to be unified.
-- Pick up `backlogs/tooling/claude-skills-mirror-gap.md` (low) during the next mirror audit.
+- No pickup remains for
+  `archive/backlogs/docs/2026-07-21-claude-doc-authoring-standard.md`; its missing-skill premise was
+  addressed when the active inbound references were removed.
+- Pick up `archive/backlogs/tooling/2026-07-20-claude-skills-mirror-gap.md` (low) during the next mirror audit.
 - The `verify-dont-assert-taught-facts` mistake recurred twice in one session; the next session writing a skill must treat it as `critical` for that task's domain.
 
 ## Related

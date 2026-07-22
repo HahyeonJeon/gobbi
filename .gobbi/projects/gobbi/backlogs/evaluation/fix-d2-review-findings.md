@@ -200,8 +200,8 @@ Preparation was inserted into the lifecycle; several enumerations were never upd
 
 ## Note on overlap with existing backlogs
 
-- **D2-037** overlaps `backlogs/memory/preexisting-broken-markdown-links.md` (L32-34, L61-65 already track both `memory/rules.md` broken links). The fix session should close D2-037 through that existing backlog rather than re-filing — this is the substance of Always-Ask #5.
-- The **D2 confirmed seeds** are tracked from cycle 1: the `skills/claude/SKILL.md` dangling reference overlaps `backlogs/process/claude-skill-dangling-ref.md` (↔ prior D1-006); the `delegation/SKILL.md` wrong-path link overlaps `backlogs/process/wrapup-workflow-doc-broken-delegation-link.md` (↔ prior D1-007). D2's broken-link cluster (D2-017/022/023/024/025) and dead-end cluster are SIBLINGS of those seeds — reconcile the consolidated fix against the narrow entries (close/supersede once the consolidated fix lands) rather than fixing the same surface twice.
+- **D2-037** overlaps `archive/backlogs/memory/2026-07-20-preexisting-broken-markdown-links.md` (L32-34, L61-65 already track both `memory/rules.md` broken links). The fix session should close D2-037 through that existing backlog rather than re-filing — this is the substance of Always-Ask #5.
+- The **D2 confirmed seeds** are tracked from cycle 1: the `skills/claude/SKILL.md` dangling reference overlaps `archive/backlogs/process/2026-07-21-claude-skill-dangling-ref.md` (↔ prior D1-006; closed after the active inbound reference was removed); the `delegation/SKILL.md` wrong-path link overlaps `archive/backlogs/process/2026-07-20-wrapup-workflow-doc-broken-delegation-link.md` (↔ prior D1-007). D2's broken-link cluster (D2-017/022/023/024/025) and dead-end cluster are SIBLINGS of those seeds — reconcile the consolidated fix against the narrow entries rather than fixing the same surface twice.
 - A future fix campaign should reconcile this queue against the cycle-1 (`fix-d7-d1-review-findings`) and cycle-2 (`fix-d3-d5-review-findings`) backlogs — the Preparation-omission pattern, the staleness machinery, and the doc-density/duplication items recur across cycles.
 
 ## Suggested approach

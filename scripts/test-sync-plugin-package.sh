@@ -30,21 +30,46 @@ assert_file_contains() {
 }
 
 make_fixture() {
-  local root="$1"
+  local root="$1" role
   mkdir -p \
     "$root/.gobbi/projects/gobbi/skills" \
     "$root/.gobbi/projects/gobbi/agents" \
-    "$root/.gobbi/projects/gobbi/hooks" \
     "$root/.agents/skills" \
+    "$root/.agents/plugins" \
     "$root/.claude/skills" \
-    "$root/.claude/hooks" \
+    "$root/.claude/agents" \
+    "$root/.codex/agents" \
     "$root/plugins/gobbi/.codex-plugin" \
-    "$root/plugins/gobbi/.claude-plugin"
-  printf '{}\n' > "$root/plugins/gobbi/.codex-plugin/plugin.json"
-  printf '{}\n' > "$root/plugins/gobbi/.claude-plugin/plugin.json"
-  printf '#!/usr/bin/env bash\n' > "$root/.gobbi/projects/gobbi/hooks/session-start.sh"
-  printf '#!/usr/bin/env bash\n' > "$root/.gobbi/projects/gobbi/hooks/post-tool-use-agents.sh"
-  printf '#!/usr/bin/env bash\n' > "$root/.gobbi/projects/gobbi/hooks/session-end.sh"
+    "$root/plugins/gobbi/.claude-plugin" \
+    "$root/.claude-plugin"
+
+  printf '%s\n' \
+    '{"name":"gobbi","version":"1.0.0","description":"fixture","skills":"./skills/"}' \
+    > "$root/plugins/gobbi/.codex-plugin/plugin.json"
+  printf '%s\n' \
+    '{"name":"gobbi","version":"1.0.0","description":"fixture"}' \
+    > "$root/plugins/gobbi/.claude-plugin/plugin.json"
+  printf '%s\n' \
+    '{"name":"gobbi-workspace","plugins":[{"name":"gobbi","source":{"source":"local","path":"./plugins/gobbi"}}]}' \
+    > "$root/.agents/plugins/marketplace.json"
+  printf '%s\n' \
+    '{"name":"fixture","plugins":[{"name":"gobbi","version":"1.0.0","source":"./plugins/gobbi"}]}' \
+    > "$root/.claude-plugin/marketplace.json"
+  printf '%s\n' \
+    '{"env":{"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS":"1"},"teammateMode":"in-process"}' \
+    > "$root/.claude/settings.json"
+  printf '%s\n' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
+    > "$root/.codex/AGENTS.md"
+  printf '%s\n' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
+    > "$root/.claude/CLAUDE.md"
+  ln -s '.codex/AGENTS.md' "$root/AGENTS.md"
+
+  for role in manager leader executor evaluator assistant; do
+    printf '# %s\n' "$role" > "$root/.gobbi/projects/gobbi/agents/$role.md"
+    printf 'name = "%s"\n' "$role" > "$root/.gobbi/projects/gobbi/agents/$role.toml"
+    ln -s "../../.gobbi/projects/gobbi/agents/$role.md" "$root/.claude/agents/$role.md"
+    ln -s "../../.gobbi/projects/gobbi/agents/$role.toml" "$root/.codex/agents/$role.toml"
+  done
 }
 
 write_skill_file() {
@@ -220,24 +245,24 @@ test_forward_and_back_rollback() {
   local root="$tmp_root/rollback" initial="$tmp_root/rollback.initial" restored="$tmp_root/rollback.restored"
   make_fixture "$root"
   write_skill_file "$root" delegation SKILL.md '# Delegation'
-  write_skill_file "$root" delegation templates/producer.md '# Producer'
+  write_skill_file "$root" delegation templates/shared.md '# Shared'
   write_skill_file "$root" orchestration SKILL.md '# Orchestration'
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   snapshot_mirror "$root" "$initial"
 
   mkdir -p "$root/.gobbi/projects/gobbi/skills/orchestration/templates"
-  mv "$root/.gobbi/projects/gobbi/skills/delegation/templates/producer.md" \
-    "$root/.gobbi/projects/gobbi/skills/orchestration/templates/producer.md"
+  mv "$root/.gobbi/projects/gobbi/skills/delegation/templates/shared.md" \
+    "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md"
   rmdir "$root/.gobbi/projects/gobbi/skills/delegation/templates"
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   [[ ! -e "$root/.claude/skills/delegation/templates" ]] || fail 'forward owner move left the old mirror path'
-  [[ -L "$root/.claude/skills/orchestration/templates/producer.md" ]] || fail 'forward owner move did not create the new mirror path'
+  [[ -L "$root/.claude/skills/orchestration/templates/shared.md" ]] || fail 'forward owner move did not create the new mirror path'
 
   mkdir -p "$root/.gobbi/projects/gobbi/skills/delegation/templates"
-  mv "$root/.gobbi/projects/gobbi/skills/orchestration/templates/producer.md" \
-    "$root/.gobbi/projects/gobbi/skills/delegation/templates/producer.md"
+  mv "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md" \
+    "$root/.gobbi/projects/gobbi/skills/delegation/templates/shared.md"
   rmdir "$root/.gobbi/projects/gobbi/skills/orchestration/templates"
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
@@ -280,6 +305,69 @@ test_bounded_walks() {
   pass 'whole-tree walks stay constant and doubled input grows inspected entries proportionally'
 }
 
+test_hook_component_rejection() {
+  local root="$tmp_root/hook-component" log="$tmp_root/hook-component.log"
+  make_fixture "$root"
+  write_skill_file "$root" alpha SKILL.md '# Alpha'
+  mkdir -p "$root/.gobbi/projects/gobbi/hooks"
+  printf '#!/usr/bin/env bash\n' > "$root/.gobbi/projects/gobbi/hooks/injected.sh"
+
+  if run_sync "$root" > "$log" 2>&1; then
+    fail 'normal sync accepted an injected canonical hook component'
+  fi
+  assert_file_contains "$log" '.gobbi/projects/gobbi/hooks contains a forbidden hook component'
+  [[ ! -e "$root/plugins/gobbi/hooks" && ! -L "$root/plugins/gobbi/hooks" ]] || fail 'failed sync recreated plugins/gobbi/hooks'
+  [[ ! -e "$root/.claude/hooks" ]] || fail 'failed sync recreated .claude/hooks'
+
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted an injected canonical hook component'
+  fi
+  assert_file_contains "$log" '.gobbi/projects/gobbi/hooks contains a forbidden hook component'
+  pass 'normal sync and --check reject injected hooks before mutation'
+}
+
+test_manifest_hook_rejection() {
+  local root="$tmp_root/manifest-hook" manifest temp log="$tmp_root/manifest-hook.log"
+  prepare_synced_fixture "$root"
+  manifest="$root/plugins/gobbi/.codex-plugin/plugin.json"
+  temp="$manifest.tmp"
+  jq '.hooks = "./hooks/injected.json"' "$manifest" > "$temp"
+  mv "$temp" "$manifest"
+
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted a Codex hooks manifest field'
+  fi
+  assert_file_contains "$log" 'Codex manifest must declare only the canonical skills component and no hook or agent component'
+  [[ ! -e "$root/plugins/gobbi/hooks" && ! -L "$root/plugins/gobbi/hooks" ]] || fail 'manifest rejection recreated plugins/gobbi/hooks'
+  pass 'sync rejects a manifest-declared hook component'
+}
+
+test_marketplace_and_role_contracts() {
+  local market_root="$tmp_root/wrong-marketplace" role_root="$tmp_root/missing-role" temp log
+
+  make_fixture "$market_root"
+  write_skill_file "$market_root" alpha SKILL.md '# Alpha'
+  temp="$market_root/.agents/plugins/marketplace.json.tmp"
+  jq '(.plugins[] | select(.name == "gobbi") | .source.path) = "./wrong"' \
+    "$market_root/.agents/plugins/marketplace.json" > "$temp"
+  mv "$temp" "$market_root/.agents/plugins/marketplace.json"
+  log="$tmp_root/wrong-marketplace.log"
+  if run_sync "$market_root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted the wrong Codex marketplace source path'
+  fi
+  assert_file_contains "$log" 'Codex marketplace must contain one local gobbi entry pointing at ./plugins/gobbi'
+
+  make_fixture "$role_root"
+  write_skill_file "$role_root" alpha SKILL.md '# Alpha'
+  rm -f "$role_root/.codex/agents/evaluator.toml"
+  log="$tmp_root/missing-role.log"
+  if run_sync "$role_root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted a missing Codex evaluator wrapper'
+  fi
+  assert_file_contains "$log" '.codex/agents/evaluator.toml is not a symlink'
+  pass 'sync source topology rejects marketplace and role-wrapper drift'
+}
+
 test_static_deletion_guards() {
   if grep -Eq 'rm[[:space:]]+-[^[:space:]]*r[^[:space:]]*f|rm[[:space:]]+-[^[:space:]]*f[^[:space:]]*r' "$sync_script"; then
     fail 'sync script contains recursive forced deletion'
@@ -300,5 +388,8 @@ test_unsafe_path_escape
 test_mixed_safe_and_unsafe
 test_forward_and_back_rollback
 test_bounded_walks
+test_hook_component_rejection
+test_manifest_hook_rejection
+test_marketplace_and_role_contracts
 
 printf 'PASS: %d sync reconciliation tests completed\n' "$tests_run"

@@ -1,6 +1,6 @@
 ---
 name: README
-description: "The gobbi fix campaign's deployment-readiness cluster — plugin mirror integrity, manifest/version/install-validation hygiene (G1 done; G2/G3 pending)."
+description: Current plugin topology, manifest, marketplace, sync, and isolated installed-cache verification for both runtimes.
 type: features
 scope: feature
 feature: deployment-hygiene
@@ -10,8 +10,8 @@ session: 0dc5cf75-54c5-4b52-82fa-b18750bdaade
 tags: []
 keywords: [deployment, plugin, install-runtime, fix-campaign]
 author: claude
-value_proposition: Deployment-readiness hygiene for Gobbi's plugin and runtime release surfaces.
-subsystems: [plugins/gobbi, .claude/skills, .agents/skills, hooks]
+value_proposition: One bounded hook-free plugin package whose canonical topology and installed behavior are verified without changing the release version.
+subsystems: [plugins/gobbi, scripts/sync-plugin-package.sh, scripts/test-sync-plugin-package.sh, scripts/check-codex-plugin-smoke.sh]
 ---
 
 # deployment-hygiene
@@ -19,7 +19,20 @@ subsystems: [plugins/gobbi, .claude/skills, .agents/skills, hooks]
 Deployment-readiness work from the adversarial-review fix campaign. Folds under the
 `install-runtime` value-feature (the per-session runtime + plugin-package contract).
 
-## G1 — SHIPPED 2026-06-30 (PR off develop, session 0dc5cf75)
+## Current contract (2026-07-20)
+
+- `plugins/gobbi/` is the bounded shared package. It distributes canonical skills and agents and carries Claude Code and Codex manifests without a hooks component.
+- The plugin version remains unchanged for this breaking workflow redesign. Manifest and marketplace structure change without an automatic version bump.
+- `scripts/sync-plugin-package.sh --check` owns canonical source topology, manifests, marketplaces, runtime entry points, symlink topology, and agent-wrapper presence.
+- `scripts/test-sync-plugin-package.sh` owns sync fixture coverage. `scripts/check-codex-plugin-smoke.sh` owns isolated installed-cache behavior. These are the three package commands in the ten-command workflow set.
+- Source-package symlink behavior and installed-cache behavior are separate. An installed-cache limitation is reported; the source package is not materialized to hide it.
+- Gobbi sessions use `session.json` version 5 and `state.json` version 3. Plugin checks do not create a second router, capture transcripts, or register operational telemetry.
+- The final repository gate includes fresh dual-system EVALUATION of the actual implementation and plugin behavior.
+
+## Historical G1 — shipped 2026-06-30
+
+This dated account preserves the earlier package implementation. Its hook and version-cadence details are not current instructions.
+
 The first fix cluster: the `.claude/skills` mirror root cause (C1) + manifest/version/install hygiene (C7).
 
 **A3 (USER-DECIDED 2026-06-29) — `.claude/skills` mirror mechanism:** per-file real dirs, **tool-owned** by `sync-plugin-package.sh`, mirroring docs AND support dirs (`scripts/`/`templates/`/`workflow/`) with the inventory **DERIVED per skill** from the canonical tree. Whole-dir symlinks rejected (Claude Code skill discovery does not resolve symlinked directories). Position S over docs-only.
@@ -30,6 +43,7 @@ The first fix cluster: the `.claude/skills` mirror root cause (C1) + manifest/ve
 
 **Closed findings:** D2-015/010/030/031/032 + D6-002/003/004/006/007 + D6-007.
 
-## Remaining
-- **G2** (doc consistency: C2 links + C3 terms/counts + C6 stale CLI refs) and **G3** (structural: C4 dead-end-handoff + C5 staging-ownership) — see the fix-phase handoff plan.
-- See `backlogs/evaluation/g1-eval-low-followups.md` for the 3 Low eval follow-ups.
+## Current open work
+
+- Run sync check, sync fixtures, and isolated Codex smoke as part of the complete final gate.
+- Review any surviving G2/G3 backlog claim against the current hook-free package before treating it as actionable; stale hook or old CLI work is superseded.

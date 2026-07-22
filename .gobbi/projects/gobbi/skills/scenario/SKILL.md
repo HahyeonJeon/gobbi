@@ -342,10 +342,13 @@ Challenge the draft in this order and revise on any failed probe:
 ### P9 — Stabilize and hand off
 
 Replace placeholder IDs, preserve existing IDs, publish the coverage gaps and decisions, and resolve the
-final traces. In evaluation mode, freeze the source set before recording results. When naming evaluation
-outputs, read `evaluation/SKILL.md` § Perspectives, § Finding Metadata, § Scoring, and § Evaluation
-child-doc bundle — those sections own the seven filenames and order, the finding schema, the verdict
-rules, and the copy-then-tick nine-output contract. Apply SR-4, SR-6, SR-8, SR-9, SR-14.
+final traces. In evaluation mode, freeze the source set before recording results. Before handing the set
+to evaluation, read the Evaluation [rules](../evaluation/SKILL.md#rules),
+[finding procedure](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema),
+[checklist procedure](../evaluation/SKILL.md#13-complete-the-evaluation-checklist), and
+[verdict procedure](../evaluation/SKILL.md#14-derive-perspective-and-report-verdicts). Those sections own
+the fixed perspective order, finding schema, completed-checklist contract, and verdict rules. Apply SR-4,
+SR-6, SR-8, SR-9, SR-14.
 
 ---
 
@@ -354,16 +357,16 @@ rules, and the copy-then-tick nine-output contract. Apply SR-4, SR-6, SR-8, SR-9
 One owner per borrowed fact; this skill owns the design-category → perspective map (a new fact, stated in
 § Procedure) and the generic category / family / case model, so those have no external owner.
 
-- [`../evaluation/SKILL.md` § Perspectives](../evaluation/SKILL.md#perspectives) validates the seven
-  perspective filenames and their fixed order that the design-category map assigns to.
-- [`../evaluation/SKILL.md` § Coverage Ownership Matrix](../evaluation/SKILL.md#coverage-ownership-matrix)
-  validates the routing of the nine cross-cutting concerns to perspectives.
-- [`../evaluation/SKILL.md` § Finding Metadata](../evaluation/SKILL.md#finding-metadata-type--domain--disposition--confidence--severity)
+- [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
+  their fixed order that the design-category map assigns to.
+- [`../evaluation/SKILL.md` § Build the evaluation frame](../evaluation/SKILL.md#3-build-the-evaluation-frame)
+  validates how evaluators select the applicable scenario and checklist coverage.
+- [`../evaluation/SKILL.md` § Write findings](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema)
   validates the finding schema an evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Scoring](../evaluation/SKILL.md#scoring) validates the verdict rules an
-  evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Evaluation child-doc bundle](../evaluation/SKILL.md#evaluation-child-doc-bundle-and-the-copy-then-tick-checklist)
-  validates the copy-then-tick mechanics and the nine-output contract an evaluation-mode handoff (P9) names.
+- [`../evaluation/SKILL.md` § Derive verdicts](../evaluation/SKILL.md#14-derive-perspective-and-report-verdicts)
+  validates the verdict rules an evaluation-mode handoff (P9) names.
+- [`../evaluation/SKILL.md` § Complete the evaluation checklist](../evaluation/SKILL.md#13-complete-the-evaluation-checklist)
+  validates the evidence-bearing completed checklist an evaluation-mode handoff (P9) supplies.
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the `Check` definition and the two-gate /
   acceptance mechanics (coverage ≠ acceptance) that this skill points to but does not own.
 - [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the

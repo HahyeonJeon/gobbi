@@ -11,8 +11,8 @@ tags: [docs-sync, verification]
 keywords: [2026-07-01-adversarial-review, gen-d3-001, gen-d3-002, gen-d1-002, review-fix-campaign, option-s]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
-shipped: [d3-001-route-both-step6-bullets-through-mode-dispatch, d3-002-manager-refs-specialist-phase-loads-column-split, d1-002-canonical-pointer-replaces-drifted-routing-table, evaluator-spawn-without-producer-done-handshake]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
+shipped: [d3-001-route-both-step6-bullets-through-mode-dispatch, d3-002-manager-refs-specialist-phase-loads-column-split, d1-002-canonical-pointer-replaces-drifted-routing-table, evaluator-dispatch-before-work-handoff-complete]
 ---
 
 # 3-High workflow-doc-routing bundle shipped (GEN-D3-001 / GEN-D3-002 / GEN-D1-002)
@@ -55,7 +55,7 @@ guard baseline, with dual-system EVALUATION PASS (Claude + Codex, all 7 perspect
   git finalization).
 - Memory promoted: 8 decisions, 3 design docs, 5 checklists, 2 discussions, 1 backlog cross-ref
   (`features/workflow/backlogs/process/d5-012-ideation-skill-md-stale-routing-copy.md`), 1 project-tier
-  mistake (`mistakes/assumption/evaluator-spawn-without-producer-done-handshake.md`).
+  mistake (`mistakes/assumption/evaluator-dispatch-before-work-handoff-complete.md`).
 
 ## What got stuck
 
@@ -65,8 +65,8 @@ manager spawned the dual evaluators before the producer (ideation-leader) had re
 the producer-owned draft to apply lock markers while the leader independently resumed cleanup edits (two
 writers racing one file). The racing edits were cosmetic (stale fork-prose); the locked design content
 never changed, so the evaluation stayed valid — but the freeze-before-evaluate invariant was violated and
-is recorded as a trap (`mistakes/assumption/evaluator-spawn-without-producer-done-handshake.md`), related
-to but distinct from the existing skill-owned trap `evaluation/mistakes.md#freeze-producer-artifact-before-evaluating`.
+is recorded as a trap (`mistakes/assumption/evaluator-dispatch-before-work-handoff-complete.md`), related
+to but distinct from the existing skill-owned trap `evaluation/mistakes.md#freeze-canonical-candidate-before-evaluating`.
 
 ## What shifted
 
@@ -109,5 +109,5 @@ dedicated gobbi memory file — carried forward as manager/session context only.
 - [[d3-001-route-both-step6-bullets-through-mode-dispatch]] — design shipped this session
 - [[d3-002-manager-refs-specialist-phase-loads-column-split]] — design shipped this session
 - [[d1-002-canonical-pointer-replaces-drifted-routing-table]] — design shipped this session
-- [[evaluator-spawn-without-producer-done-handshake]] — mistake promoted this session
+- [[evaluator-dispatch-before-work-handoff-complete]] — mistake promoted this session
 - [[d5-012-ideation-skill-md-stale-routing-copy]] — backlog cross-ref promoted this session

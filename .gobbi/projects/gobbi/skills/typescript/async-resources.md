@@ -25,7 +25,7 @@ compiler does not check.
 
 1. [Promise idioms and no floating promises](#1-promise-idioms-and-no-floating-promises)
 2. [Cancellation with `AbortSignal`](#2-cancellation-with-abortsignal)
-3. [Combinators: `all` / `allSettled` / `race` / `any`](#3-combinators-all-allsettled-race-any)
+3. [Combinators: `all` / `allSettled` / `race` / `any`](#3-combinators-all--allsettled--race--any)
 4. [Async iterators and `for await`](#4-async-iterators-and-for-await)
 5. [Error propagation across `await`](#5-error-propagation-across-await)
 6. [Deterministic disposal: `using` and `await using`](#6-deterministic-disposal-using-and-await-using)

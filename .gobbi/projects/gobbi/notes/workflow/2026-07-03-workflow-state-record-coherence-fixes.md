@@ -11,7 +11,7 @@ tags: [process]
 keywords: [cluster-1, GEN-D1-001, GEN-D1-003, GEN-D7-001, GEN-D7-002, review-fix-campaign, dual-system]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: true
 ---
 
@@ -112,7 +112,7 @@ draft it replaced.
 3 of the original 2026-07-01 review's Highs remain open outside this session's locked Cluster-1
 scope (GEN-D1-002, GEN-D2-001, GEN-D3-001/002, GEN-D4-003) — see the review files under
 `features/workflow/reviews/` (if promoted in a prior session) for the full finding set. This
-session's own follow-ups are `backlogs/process/d7-004-chat-tasks-scaffold-and-drift-gate.md`
+session's own follow-ups are `archive/backlogs/process/2026-07-20-d7-004-chat-tasks-scaffold-and-drift-gate.md`
 (high priority) and `backlogs/workflow/fresh-resume-predicate-strict-complement.md` (low priority).
 A PR for this session's 7 commits is pending manager finalization at Wrap-up stage 5 (after this
 promotion's dual-system memory-validation gate passes).

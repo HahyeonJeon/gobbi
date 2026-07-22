@@ -11,20 +11,20 @@ tags: [planning, verification]
 keywords: [task-handoff, literal-name, inputs, outputs]
 author: codex
 scenario: enumerate-every-live-policy-site
-item_status: pending
+item_status: implemented
 anchor: novel
-implemented_in: null
+implemented_in: deterministic-codex-model-policy
 ---
 
 # Resolve task handoffs literally
 
 ## What
 
-Use `native-defaults-and-settings-state`, `current-policy-and-validator-state`, and `compatibility-self-test-interface` unchanged between producer outputs and consumer inputs.
+Use `native-defaults-and-settings-state`, `current-policy-and-validator-state`, and `compatibility-self-test-interface` unchanged between upstream task outputs and downstream task inputs.
 
 ## Why
 
-Iter1 used paraphrased state descriptions. A fresh executor could not mechanically match producers to consumers.
+The first plan iteration used paraphrased state descriptions. A fresh executor could not mechanically match upstream artifacts to downstream inputs.
 
 ## Verification
 
@@ -32,7 +32,7 @@ Compare every upstream `outputs` value with downstream `inputs`; each handoff na
 
 ## Status notes
 
-This root combines Claude `F-CONS-1`, Codex `CDEX-PLAN-I1-CONS-001`, and the handoff portion of `CDEX-PLAN-I1-OVERALL-005`. Both systems confirm it remains addressed in iter3.
+This root combines Claude `F-CONS-1`, Codex `CDEX-PLAN-I1-CONS-001`, and the handoff portion of `CDEX-PLAN-I1-OVERALL-005`. Both systems found it addressed in the accepted third iteration, so the current checklist state is implemented.
 
 ## Related
 

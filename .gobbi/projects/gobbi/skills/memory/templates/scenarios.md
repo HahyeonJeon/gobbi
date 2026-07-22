@@ -12,16 +12,17 @@ An expected behavior that is implied, or written as implementation steps, is a s
 
 | Field | Value |
 |---|---|
-| When | Ideation RECORD (append new scenarios from Sub-step D enumeration); or EVALUATION's `scenario_gap` finding routing (append the missing scenario the evaluator surfaced). This is the persistent set; each session's `1-ideation/working/` holds only that session's diff. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/scenarios/{slug}.md` |
+| When | A productive step's RECORD after the user approves the candidate or the disposition of an evaluation finding. This is the persistent set; each iteration's working directory holds only that iteration's creation evidence. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/scenarios/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/scenarios/{area}/` (feature-only — scenarios are always bounded to a feature; cross-feature scenarios belong in project `design/`) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{scenario-slug}.md` — bare-slug (evergreen; date lives in frontmatter); one file per scenario, short and action-oriented (`cold-start-cache-miss.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Base frontmatter ONLY (no scenarios extension row); `scope: feature` always (feature-subdir-only). The scenario `Category` and `Coverage` state live in the **body** (below), not frontmatter, so Wrap-up's allowlist strip cannot drop them; base `status` stays `active` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
+Base frontmatter ONLY (no scenarios extension row); `scope: feature` always (feature-subdir-only). The scenario `Category` and `Coverage` state live in the **body** (below), not frontmatter, so Wrap-up WORK's allowlist strip cannot drop them; base `status` stays `active` ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)).
 
 ```markdown
 ---
@@ -32,7 +33,7 @@ scope: feature
 feature: {feature-name}
 status: active
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [execution, verification]      # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it

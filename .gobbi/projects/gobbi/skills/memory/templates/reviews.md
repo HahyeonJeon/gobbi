@@ -16,16 +16,17 @@ A review is the substrate other memory types are extracted from; a finding witho
 
 | Field | Value |
 |---|---|
-| When | A loop's RECORD when the loop's own work *was* a review activity; or Wrap-up RECORD when a session ran a review / audit / evaluation worth preserving. Bar = activity-shaped + durability, not curated highlights. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/reviews/{slug}.md` |
+| When | A productive step's RECORD when an accepted review, audit, or evaluation is durable. Bar = activity-shaped + durability, not curated highlights. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/reviews/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/reviews/{area}/` (default) · `reviews/{area}/` (project, cross-feature) — `{area}` is the **kind axis**: it resolves directly from the REQUIRED `review_kind` value (the area set == the kind enum), per the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) step 1 (date-prefixed: `{area}/{YYYY-MM-DD}-{slug}.md`) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (review activity date); slug names the subject + kind (`2026-05-11-ultrareview-orchestration-redesign.md`, `2026-05-11-code-review-pr-257.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
-Base frontmatter + reviews extensions (`verdict`, `review_kind`, `subject`) — `review_kind` and `verdict` are closed enums ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). **`review_kind` is REQUIRED** (L16): it is the kind axis, so the area resolves directly from it (`reviews/{review_kind}/`) — it is never optional and never tag-derived. Reviews carry **base + `verdict` / `review_kind` / `subject` only**; the reviewer identity, perspective set, and cross-references live in the **body** sections, not frontmatter, so Wrap-up's allowlist strip cannot drop them.
+Base frontmatter + reviews extensions (`verdict`, `review_kind`, `subject`) — `review_kind` and `verdict` are closed enums ([rules §2.2](../rules.md#22-per-type-extension-fields--the-status-model)). **`review_kind` is REQUIRED** (L16): it is the kind axis, so the area resolves directly from it (`reviews/{review_kind}/`) — it is never optional and never tag-derived. Reviews carry **base + `verdict` / `review_kind` / `subject` only**; the reviewer identity, perspective set, and cross-references live in the **body** sections, not frontmatter, so Wrap-up WORK's allowlist strip cannot drop them.
 
 ```markdown
 ---
@@ -36,7 +37,7 @@ scope: feature
 feature: {feature-name}
 status: active
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [evaluation, security]         # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it

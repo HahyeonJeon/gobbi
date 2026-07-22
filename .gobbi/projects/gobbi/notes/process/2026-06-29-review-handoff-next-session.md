@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [handoff, adversarial-review, charter, d2-d6, staleness, dual-system]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: []
 ---
 
@@ -20,7 +20,7 @@ shipped: []
 ## What happened
 
 This session executed the **D7 + D1** slice of the adversarial-review charter
-(`plans/workflow/2026-06-29-adversarial-review-charter.md`), dual-system, review-only. It produced
+(`archive/plans/workflow/2026-07-20-adversarial-review-charter.md`), dual-system, review-only. It produced
 40 findings and queued them; it changed no source. This note is the forward-looking handoff for
 whoever picks up the charter next.
 
@@ -60,7 +60,7 @@ Pick the next charter dimension (D2 recommended next — it also absorbs the cod
 **Reuse the method that worked this session:** independent Claude reviewer + background `codex exec`
 reviewer per pass, manager reconciles by pessimistic union (divergence preserved). When launching the
 background Codex run, validate the `-o` output file, not the exit code
-(`mistakes/codex/codex-background-exec-exit-code-unreliable.md`).
+(`mistakes/codex/peer-cli-completion-requires-validated-structured-output.md`).
 
 ## Related
 

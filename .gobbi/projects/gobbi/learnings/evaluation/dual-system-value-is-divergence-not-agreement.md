@@ -10,7 +10,7 @@ session: f87055a2-08b2-4605-b33b-c01c47416830
 tags: [evaluation, codex, process]
 keywords: [dual-system, divergence, anti-groupthink, python-skill, production, evaluation]
 author: claude
-related: [dual-eval-divergence-caught-two-distinct-defects, dual-production-codex-added-real-coverage]
+related: [dual-eval-divergence-caught-two-distinct-defects, dual-system-work-added-real-coverage]
 ---
 
 # Dual-system value is the divergence, not the agreement
@@ -75,5 +75,5 @@ pass, not just one.
 
 - [[dual-eval-divergence-caught-two-distinct-defects]] — the earlier Execution-eval
   instance of this same pattern (two evaluators, two distinct High defects)
-- [[dual-production-codex-added-real-coverage]] — the earlier production-side instance
+- [[dual-system-work-added-real-coverage]] — the earlier production-side instance
   of this same pattern (a blind Codex proposal adding real, attributable coverage)

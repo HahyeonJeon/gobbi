@@ -11,7 +11,7 @@ tags: [memory, refactor, schema]
 keywords: [area-namespace, tag-vocabulary, config-as-data, jq, migration-manifest, harness-generality]
 author: claude
 features_touched: [memory]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [project-defined-vocab-config-as-data, universal-base-layer, tag-area-map-combined-config, mistakes-trap-class-axis, config-format-json-jq, dehardcode-area-tag-vocab, area-tag-dehardcoding, area-tag-migration-manifest, execute-area-tag-migration-114-files, git-skill-find-empty-delete-too-broad, worktree-empty-dir-sweep-deletes-live-session-scaffold]
 ---
 
@@ -82,7 +82,7 @@ execution spec for that deferred move.
 
 Pick up [[execute-area-tag-migration-114-files]] — the deferred bulk move of all 114 flat
 by-area files (both tiers) into namespaced paths, driven by the row-level manifest at
-`features/memory/plans/memory/2026-06-23-area-tag-migration-manifest.md`. Repoint every
+`archive/plans/memory/2026-07-20-area-tag-migration-manifest.md`. Repoint every
 inbound reference and run both guards to zero. Separately, fix the git skill P5/P8
 empty-parent sweep ([[git-skill-find-empty-delete-too-broad]]) to scope the
 `find -type d -empty -delete` to the removed worktree only.

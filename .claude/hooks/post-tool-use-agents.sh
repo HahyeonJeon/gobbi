@@ -1,1 +1,0 @@
-../../.gobbi/projects/gobbi/hooks/post-tool-use-agents.sh

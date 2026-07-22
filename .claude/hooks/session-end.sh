@@ -1,1 +1,0 @@
-../../.gobbi/projects/gobbi/hooks/session-end.sh

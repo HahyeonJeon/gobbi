@@ -1,59 +1,133 @@
 # Migration guide
 
-## Upgrading to Gobbi 0.5.3
+The current Gobbi redesign is a breaking, new-session-only contract. The plugin
+manifest version deliberately remains `0.5.3`; an unchanged package version
+does not make session records from different Gobbi revisions compatible.
 
-Gobbi 0.5.3 removes the standalone Preparation phase and makes a deliberate, new-session-only schema break. Existing in-progress sessions are not rewritten.
+Use the live [session schema](.gobbi/projects/gobbi/skills/record/schemas/session.schema.json),
+[state schema](.gobbi/projects/gobbi/skills/record/schemas/state.schema.json),
+and [Record map](.gobbi/projects/gobbi/skills/record/record-map.md) as the
+authorities for sessions created from this source tree.
 
-### Workflow mapping
+## Compatibility boundary
 
-| Before 0.5.3 | 0.5.3 and later |
+- New sessions created by the current source use `session.json` version 5 and
+  `state.json` version 3.
+- Existing unfinished sessions remain owned by the exact Gobbi revision that
+  created them. The current source does not rewrite or adopt them.
+- Completed historical sessions and archived records remain unchanged.
+- There is no converter, dual-write path, or open-ended legacy reader.
+
+Do not edit version fields or reshape an existing session by hand. Matching the
+current numbers would not recreate the invariants, directory shape, frozen
+artifacts, or transition history required by the current schemas.
+
+## Current workflow contract
+
+All new sessions follow one workflow:
+
+`Configuration → Ideation → Planning → Execution → Wrap-up`
+
+Every productive step follows one complete loop:
+
+`DISCUSSION → WORK → EVALUATION → RECORD`
+
+Every task uses this workflow. A `REVISE` verdict starts another complete WORK
+and EVALUATION iteration. A `FAIL` verdict halts for a user decision.
+Iteration-cap changes are explicit settings decisions recorded before an
+additional iteration is scaffolded.
+
+## Record changes for new sessions
+
+| File | Current responsibility |
 |---|---|
-| Configuration | Configuration |
-| Ideation (`1-ideation`) | Ideation (`1-ideation`) |
-| Preparation (`2-preparation`) | Planning readiness entry gate (`2-planning/working/readiness-gate-iter{n}.md`) |
-| Planning (`3-planning`) | Planning (`2-planning`) |
-| Execution (`4-execution`) | Execution (`3-execution`) |
-| Wrap-up (`5-wrap-up`) | Wrap-up (`4-wrap-up`) |
+| `session.json` version 5 | Gobbi identity, ordered runtime identities, Git identity, resolved settings, and durable final outcome |
+| `state.json` version 3 | Active status, the `step`/`stage`/`iteration`/task cursor, completed work, last verdict, and active dispatches |
 
-The readiness gate is the first operation inside Planning DISCUSSION. It is not a state, loop, iteration, RECORD run, or evaluation phase. Planning remains one loop and is non-skippable.
+Resolved workflow, model, and Git settings now live only under
+`session.json.settings`. State does not duplicate those settings or lifecycle
+metadata. State transitions and manifest checkpoints validate complete
+candidate files before atomic replacement.
 
-### Schema versions
+Configuration eagerly creates the predictable session tree and every
+authorized iteration directory. Planning later scaffolds the locked Execution
+tasks. Output directories may exist in advance, but canonical output files are
+written only after PASS. Empty typed staging is valid when there is nothing
+durable to promote.
 
-- `session.json`: schema 4
-- `state.json`: schema 2
-- `settings.json`: schema 2
+## Quality changes for new sessions
 
-Schema 4 removes `workflow.preparation`. State and settings schema 2 remove the corresponding Preparation records and controls. New sessions contain exactly the four productive-loop records: `ideation`, `planning`, `execution`, and `wrap-up`.
+Every WORK stage requires independent Claude and Codex drafts, reciprocal
+cross-reviews, active-runtime synthesis, and user resolution of material open
+decisions. Every EVALUATION requires fresh Claude and Codex reports covering
+all seven perspectives plus Overall.
 
-### Existing sessions
+The most severe evaluator verdict controls the loop. Findings are presented as
+one disposition batch and are not applied before user approval. Every material
+revision receives another complete dual-system creation and evaluation pass.
+Token cost is never a reason to narrow Ideation, creation, or evaluation.
 
-Gobbi 0.5.3 does not migrate legacy sessions and does not accept both layouts. Session initialization and record-map repair validate all three metadata schemas before creating or modifying any session path. If any metadata file uses an older schema or includes the retired Preparation shape, the operation stops without mutation.
+An unavailable or invalid system pauses the workflow with its exact failure.
+Single-system continuation is valid only after the user grants a waiver for
+the named system, step, and iteration; the final outcome links that decision.
 
-To finish an in-progress pre-0.5.3 session:
+## Runtime and package changes
 
-1. Keep the session and its working tree unchanged.
-2. Open a separate worktree pinned to the Gobbi revision that created that session.
-3. Resume and finish the session with that pinned version.
-4. Start the next session with Gobbi 0.5.3 or later.
+Gobbi owns a stable session UUID independently of Claude Code or Codex runtime
+identity. A context boundary appends a newly observed runtime identity while
+preserving the session, branch, worktree, settings, and persisted cursor.
 
-Do not rename old loop directories, delete `workflow.preparation`, or hand-edit schema numbers. Those changes would break the old version's audit trail without producing a valid 0.5.3 session.
+The shared package is hookless. Claude Code uses the package's conventional
+skill and agent surfaces. The Codex plugin declares skills, while native Codex
+role wrappers remain repo-local under `.codex/agents/`. The current lifecycle
+advances through explicit manager decisions and validated record transitions.
 
-### Readiness behavior
+Local worktree isolation and verified commits are mandatory. Issues, pushes,
+and pull requests remain optional settings. Merge always requires explicit
+user authority and current green checks, completed tasks, and a clean worktree.
 
-Planning now writes `2-planning/working/readiness-gate-iter{n}.md` before task decomposition. The artifact inventories locked Ideation scope and outputs, recursive memory/rules/mistakes, candidate skills and their existence, external-write dispositions, gaps and routing, user decisions, and one result:
+Both plugin manifests and the Claude marketplace entry remain at version
+`0.5.3` by deliberate user decision:
 
-- `READY`: the scan is clean or every material gap has a binding resolution; Planning continues.
-- `RE-IDEATE`: locked Ideation omitted an upstream requirement, including required staging. Planning stays Pending, Ideation becomes Revising, the gate evidence is preserved, and Planning's iteration does not increment.
-- `NEEDS_CONTEXT`: required workspace/domain knowledge, authority, access evidence, or another non-Ideation prerequisite is unavailable.
+- [Claude Code manifest](plugins/gobbi/.claude-plugin/plugin.json)
+- [Codex manifest](plugins/gobbi/.codex-plugin/plugin.json)
+- [Claude marketplace](.claude-plugin/marketplace.json)
 
-Planning cannot repair or accept an upstream Ideation omission. After re-Ideation passes, Planning reruns the readiness gate from current evidence.
+Start a new Claude Code or Codex context after enabling or updating the package
+so runtime discovery reads the current contract.
 
-### Skills and external writes
+## Finish an existing unfinished session
 
-A missing project-specific skill becomes the first ordered Execution task. That task must author the complete skill, wire its runtime discovery surfaces, run conformance checks, and commit it before dependent tasks start. A missing workspace or domain skill returns `NEEDS_CONTEXT` because it cannot be safely fabricated from project context.
+1. Preserve the session directory, branch, and working tree exactly as they
+   are.
+2. Identify the exact Gobbi revision that created the session from its existing
+   repository and worktree evidence. Do not guess when that evidence is
+   missing.
+3. Open a separate worktree pinned to that revision and resume the unfinished
+   session only with its matching Gobbi sources.
+4. Finish and verify that session in the pinned worktree.
+5. Start the next session in a new runtime context with the current Gobbi
+   source.
 
-Every planned external write must name the actual writer or owner, exact write surface, read-only evidence that the real context and access exist, reversibility, and the go/no-go decision. Planning revalidates these facts and all required skills against the concrete task map before its plan can pass.
+Do not point current record tooling at the unfinished session, rename its
+directories, or copy current schemas into it. If the creating revision cannot
+be proven, stop and preserve the session for explicit recovery instead of
+attempting an in-place conversion.
 
-### Plugin update
+## Verify the current package
 
-Both Gobbi plugin manifests and the Claude marketplace entry use version `0.5.3`. After updating a local plugin installation, start a new Codex or Claude Code thread so skill discovery and session bootstrap use the new workflow contract.
+Run the repository-owned source, fixture, installed-cache, and documentation
+checks from the repository root:
+
+```bash
+bash scripts/sync-plugin-package.sh --check
+bash scripts/test-sync-plugin-package.sh
+bash scripts/check-codex-plugin-smoke.sh
+bash scripts/check-markdown-links.sh README.md MIGRATION.md
+```
+
+When Claude Code is installed, also run:
+
+```bash
+claude plugin validate --strict plugins/gobbi
+```

@@ -18,16 +18,16 @@ author: codex
 **Coverage:** covered
 
 ## Situation
-A repository search finds `codex exec` in incident evidence, metadata documentation, or a pointer that is not a live proposer or evaluator invocation.
+A repository search finds `codex exec` or `claude -p` in immutable incident evidence, dated historical narrative, lifecycle-obsolete carriers, or current opposite-system peer guidance.
 
 ## Inputs
-Every search hit and its document purpose, including `codex/mistakes.md`, `codex/task-metadata.md`, and workflow pointers.
+Every tracked search hit and its document purpose, with the applicable immutable, lifecycle-pending, protected-role, or current-owner boundary.
 
 ## Expected behavior
-Each hit is classified by meaning. Historical evidence remains unchanged, while every live invocation receives the locked model and effort overrides.
+Each hit is classified by meaning and claim tense. Immutable historical evidence remains unchanged. Every current peer operation uses the symmetric fresh, ephemeral, read-only, complete-input, schema-valid JSON contract and Record-owned storage boundary.
 
 ## Verification
-Review every residual hit after the edit and confirm that each exclusion has a written semantic reason.
+Review every residual hit after the edit. Confirm each exclusion has a line-level semantic reason and every mutable current hit points to the Codex, dual-WORK, evaluation, and Record owners.
 
 ## Related
 - [[historical-isolation]] — the user decision that preserves old evidence.

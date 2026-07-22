@@ -11,7 +11,7 @@ tags: [refactor, docs-sync]
 keywords: [startup, interview-removal, session-shape, bootstrap]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [reuse-target-must-be-invocable-at-needed-granularity, asserted-file-absent-from-a-mislisted-dir-used-proxy, removal-must-reclassify-active-design-docs-and-open-backlogs, workflow-compaction-doc-broken-links, startup-session-shape-and-promotion, sweep-must-grep-synonymous-phrasings-not-just-primary, validity-signal-must-be-written-after-its-validation-gate]
 ---
 
@@ -50,7 +50,7 @@ self-contained promotion procedure that follows the memory rules by reference in
 - Three mistakes promoted this Wrap-up: `[[reuse-target-must-be-invocable-at-needed-granularity]]`,
   `[[asserted-file-absent-from-a-mislisted-dir-used-proxy]]`,
   `[[removal-must-reclassify-active-design-docs-and-open-backlogs]]`.
-- `backlogs/workflow/workflow-compaction-doc-broken-links.md` — a pre-existing (PR #339)
+- `archive/backlogs/workflow/2026-07-20-workflow-compaction-doc-broken-links.md` — a pre-existing (PR #339)
   broken-links backlog surfaced (not caused) by this session's audit.
 
 ## What got stuck
@@ -85,7 +85,7 @@ pass.
 
 ## Next session
 
-- Pick up `backlogs/workflow/workflow-compaction-doc-broken-links.md` whenever a
+- Pick up `archive/backlogs/workflow/2026-07-20-workflow-compaction-doc-broken-links.md` whenever a
   doc-consistency sweep is convenient — 23 broken relative links (verified this session,
   not the ~32 first estimated), pre-existing from PR #339, unrelated to this session's work.
 - The develop-divergence noted at session start (5 unpushed Codex commits) remains

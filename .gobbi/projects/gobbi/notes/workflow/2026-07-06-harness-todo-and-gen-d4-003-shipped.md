@@ -11,7 +11,7 @@ tags: [process, docs-sync, verification]
 keywords: [gen-d4-003, harness-todo, dual-system, producer-mislabel, workflow-doc]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [harness-todo-workflow-mirror, read-model-projection, single-source-of-truth-ui, mirror-topology-needs-inode-not-md5, finding-location-understates-blast-radius, gobbi-worktree-git-pathspec-omits-memory-tree-prefix]
 ---
 
@@ -49,7 +49,7 @@ Three commits on branch `claude-2026-07-06-fe6cbcd3-…` off develop `bb5fac20`:
 PR: **pending — manager-opened to develop** (git finalization is the manager's stage 5).
 
 ## What shipped to memory (this Wrap-up promotion)
-- `features/workflow/backlogs/process/harness-todo-workflow-mirror.md` — the Unit A
+- `archive/backlogs/process/2026-07-20-harness-todo-workflow-mirror.md` — the Unit A
   follow-on backlog (doc shipped; open for design follow-on).
 - `references/workflow/read-model-projection.md` + `references/workflow/single-source-of-truth-ui.md`
   — the CQRS read-model + Redux/React prior art behind the state.json-authoritative
@@ -60,7 +60,7 @@ PR: **pending — manager-opened to develop** (git finalization is the manager's
 - `mistakes/verification/gobbi-worktree-git-pathspec-omits-memory-tree-prefix.md` — NEW
   trap: a worktree-root-relative git pathspec that omits `.gobbi/projects/gobbi/`
   false-passes a diff-gate.
-- `backlogs/codex/native-codex-proposer-symmetry.md` — appended the RI-1 render-time-gate
+- `archive/backlogs/codex/2026-07-20-native-codex-proposer-symmetry.md` — appended the RI-1 render-time-gate
   follow-up note.
 
 ## What got stuck

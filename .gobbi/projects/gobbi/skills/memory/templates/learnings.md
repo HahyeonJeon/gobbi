@@ -16,12 +16,13 @@ A technique with no stated boundary gets over-generalized and applied where it b
 
 | Field | Value |
 |---|---|
-| When | A loop's RECORD when the loop produced a durable insight — a pattern that worked better than expected, a technique that should become a convention, a platform/library behavior discovered through use; or Wrap-up RECORD when a cross-loop pattern surfaces only at session close. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/learnings/{slug}.md` |
+| When | A productive step's RECORD when accepted evidence supports a durable insight. |
+| Source cursor | Gobbi-owned session UUID plus the current `state.json` `step`, `stage: RECORD`, `iteration`, and `task`; `task` is `null` outside Execution. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/{N}-{step}/staging/learnings/{slug}.md`; Execution task candidates use the task's own staging root |
 | Promotes to | `features/{f}/learnings/{area}/` (default) · `learnings/{area}/` (project, cross-cutting) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{slug}.md` — bare-slug, ≤6 words (`markdown-link-relativization.md`); no date or finding-ID prefix |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -36,11 +37,11 @@ scope: feature
 feature: {feature-name}
 status: active | superseded
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [process, verification]        # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
-supersedes: {prior learning slug} | list[slug] | null      # plain slug; list[slug] = consolidation-merge (many→one), one→one stays scalar
+supersedes: {prior learning slug} | null        # one plain slug, not a path
 superseded_by: {newer learning slug} | null    # plain slug, not a path
 related: [{related learning slugs}]            # list[slug] — plain slugs, not paths
 ---

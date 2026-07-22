@@ -11,7 +11,7 @@ tags: [evaluation, process, docs-sync]
 keywords: [orchestration, chat-mode, compaction, adversarial-review, agent-teams, review-only]
 author: claude
 features_touched: []
-loops_completed: [ideation, wrap-up]
+steps_completed: [ideation, wrap-up]
 shipped: [blast-radius-map-from-named-files-not-exhaustive-grep, teammate-finalize-brief-crosses-with-in-progress-turn, clean-verdict-unreliable-without-edge-case-stress]
 ---
 

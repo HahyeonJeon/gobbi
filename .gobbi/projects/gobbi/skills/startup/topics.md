@@ -1,33 +1,33 @@
 # Startup Topics
 
-The lookup tree for startup's full first-run conversation. It is ordered by **dependency**, not by
-document destination: problem space → boundary → solution space (product shape before system shape) →
-guardrails. One question per turn. The full traversal, checkpoint, and mandatory-coverage rules are at the
-end of this file.
+The lookup tree for Startup's optional evidence-led question operation. It is ordered by dependency:
+problem space → boundary → solution space (product shape before system shape) → guardrails. One question
+per turn. The tree feeds ordinary Ideation DISCUSSION; it is not a storage schema or separate lifecycle.
 
 ## Contents
 
 - [How to traverse the tree](#how-to-traverse-the-tree)
   - [Anti-sycophancy contract](#anti-sycophancy-contract)
   - [Worked pushback exemplars](#worked-pushback-exemplars)
-- [Phase I — Problem space](#phase-i--problem-space)
+- [Baseline-quality tests](#baseline-quality-tests)
+- [Group I — Problem space](#group-i--problem-space)
   - [Topic 1 — Existing Reality & Intent](#topic-1--existing-reality--intent)
   - [Topic 2 — Problem, Vision & Success](#topic-2--problem-vision--success)
   - [Topic 3 — Users, Jobs, Alternatives & Value](#topic-3--users-jobs-alternatives--value)
-- [Phase II — Boundary](#phase-ii--boundary)
+- [Group II — Boundary](#group-ii--boundary)
   - [Topic 4 — Scope, Boundaries & Non-goals](#topic-4--scope-boundaries--non-goals)
   - [Problem-before-solution premise gate](#problem-before-solution-premise-gate)
-- [Phase III — Solution space (product shape before system shape)](#phase-iii--solution-space-product-shape-before-system-shape)
+- [Group III — Solution space (product shape before system shape)](#group-iii--solution-space-product-shape-before-system-shape)
   - [Topic 5 — Features & User Journeys](#topic-5--features--user-journeys)
   - [Topic 6 — Experience & Product Design](#topic-6--experience--product-design)
   - [Topic 7 — Architecture, System Context & Data](#topic-7--architecture-system-context--data)
   - [Topic 8 — Tech Stack, Delivery & Operations](#topic-8--tech-stack-delivery--operations)
-- [Phase IV — Guardrails](#phase-iv--guardrails)
+- [Group IV — Guardrails](#group-iv--guardrails)
   - [Topic 9 — Conventions, Constraints & Quality bar](#topic-9--conventions-constraints--quality-bar)
   - [Topic 10 — Risks, Unknowns & Roadmap](#topic-10--risks-unknowns--roadmap)
   - [Topic 11 — Idioms, Rules & Recurring Mistakes](#topic-11--idioms-rules--recurring-mistakes)
-- [Level-1 checkpoints](#level-1-checkpoints)
-- [Traversal, mandatory coverage & resume rules](#traversal-mandatory-coverage--resume-rules)
+- [Topic summaries](#topic-summaries)
+- [Traversal and mandatory coverage](#traversal-and-mandatory-coverage)
 
 ## How to traverse the tree
 
@@ -35,23 +35,23 @@ end of this file.
 2. Each bullet under a branch is a **prompt bank**, not a single question. When a bullet bundles several
    decision axes (e.g. 1.4 license/governance, 8.2 build/deploy/observe/rollback, 10.1 likelihood/impact/
    warning/mitigation), ask **one axis per turn**; a single answer event may still fill several
-   already-explicit ledger fields. Choose two to four prompts from a branch's bank as needed; do not
+   already-explicit coverage fields. Choose two to four prompts from a branch's bank as needed; do not
    recite the whole bank once the branch is already evidenced.
 3. Before asking, inspect the relevant project docs and repo evidence. If a fact is verified, show it
    first and ask the user to confirm or correct it — a shown fact shortens the answer. **Prefer
    past-behavior and repository evidence over opinion or hypothetical, and never lead the answer** — ask
    what actually happened, not what the user supposes would happen.
 4. **When a branch reaches a design-bearing choice** (marked under the heading below), do not close it
-   from the user's initial preference. Run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop)
+   from the user's initial preference. Run the [study, recommend, and resolve procedure](SKILL.md#7-study-recommend-and-resolve-design-directions)
    before closing it. Capture-only branches trigger it only when they expose a choice.
 5. If an answer is vague, probe with a concrete example, a past-behavior question, or a counterexample.
    If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
    § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
-   `recorded-open` with an owner and resolution method rather than accepting a vague answer or pushing
+   `open` with an owner and resolution method rather than accepting a vague answer or pushing
    indefinitely. Do not probe when the first answer is already concrete and evidenced.
-6. Mark each answer `confirmed` / `assumption` / `open` / `contradicted` in the answer ledger, and record
-   each Level-2 branch's own closure state in the ledger's `Branch closure` field
-   ([`recording.md`](recording.md) §2 owns the schema).
+6. Classify each answer in transient working context as `confirmed`, `assumption`, `open`, or
+   `contradicted`, and account for every Level-2 branch as `confirmed`, `proven-irrelevant` with a reason,
+   or `open` with an owner. The returned packet preserves these distinctions.
 7. Smart-skip a branch only when existing evidence fully answers it AND the user confirms; record the
    evidence and the confirmation.
 8. Re-open an earlier branch when a later answer contradicts it. Architecture must not silently redefine
@@ -61,7 +61,7 @@ end of this file.
 The core design cluster is **Topics 6–9**, plus the always-design-bearing capability and journey branches
 **5.1–5.2**; a conditional set (**4.4, 5.3, 5.4, 7.1, 8.4, 9.4, 10.4, 11.1, 11.2**) fires the same
 micro-loop only when the branch selects or changes a direction rather than inventorying current state.
-The markers below are the authoritative set; see the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop).
+The markers below are authoritative; see [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions).
 
 ### Anti-sycophancy contract
 
@@ -73,7 +73,7 @@ Hold this posture through every turn:
 - After each answer, state the read explicitly: "My read: [evidence status] because [specific evidence or
   gap]; this changes if [observable evidence]."
 - When disagreeing, cite the contradiction, the source, or the missing signal — not a feeling.
-- Push a vague or contradicted answer at most twice, then `recorded-open`.
+- Push a vague or contradicted answer at most twice, then mark it `open` with an owner.
 - A user decision can lock intent, but it cannot convert a contradicted external fact into evidence.
 
 ### Worked pushback exemplars
@@ -91,7 +91,32 @@ Use these BAD → GOOD rewrites on the design-bearing and problem/user branches:
 
 ---
 
-## Phase I — Problem space
+## Baseline-quality tests
+
+The read-only classifier applies all eleven tests. `Sufficient` means downstream Ideation can use the
+baseline without guessing; it does not mean every risk is solved.
+
+1. **Coverage:** all eleven topic groups are substantively represented or explicitly irrelevant.
+2. **User and job:** at least one first user, concrete job, and role boundary are identifiable.
+3. **Behavioral evidence:** load-bearing problem claims trace to an event, behavior, commitment, or
+   directly verified fact—not praise or an untested forecast.
+4. **Bounded shape:** scope, non-goals, critical journeys, and rough product direction agree.
+5. **Feasibility:** material build, dependency, operational, recovery, and maintenance constraints are
+   visible.
+6. **Authority:** decision owners and boundaries of user, project, legal, and operational authority are
+   clear.
+7. **License and governance:** applicable license, distribution, ownership, contribution, and data-use
+   constraints are recorded or explicitly open.
+8. **Downstream usability:** a reader can begin Ideation without recovering essential context from an
+   unstored conversation.
+9. **Contradictions:** load-bearing conflicts are resolved or clearly surfaced with an owner.
+10. **Secrecy:** the baseline exposes no secret, credential, or user-marked sensitive value.
+11. **Load-bearing evidence:** assumptions that determine problem reality, feasibility, safety, or scope
+    are supported or explicitly open; branch coverage alone does not turn them into evidence.
+
+---
+
+## Group I — Problem space
 
 ### Topic 1 — Existing Reality & Intent
 
@@ -183,7 +208,7 @@ fabricate a license, and never skip the branch silently.
 
 ---
 
-## Phase II — Boundary
+## Group II — Boundary
 
 ### Topic 4 — Scope, Boundaries & Non-goals
 
@@ -205,7 +230,7 @@ fabricate a license, and never skip the branch silently.
 
 #### 4.4 Decision tests
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What test decides whether a proposed capability belongs in the current scope?
 - Which past scope decision has already been reversed or expanded, and what evidence drove it? Then,
@@ -214,7 +239,7 @@ fabricate a license, and never skip the branch silently.
 
 ### Problem-before-solution premise gate
 
-After Topic 4 and before Topic 5, run an explicit confirmed checkpoint. Show these premises one by one
+After Topic 4 and before Topic 5, show these premises one by one
 for agree / disagree:
 
 1. the recurring problem + its last-instance evidence;
@@ -229,7 +254,7 @@ commercial premise is graded here.
 
 ---
 
-## Phase III — Solution space (product shape before system shape)
+## Group III — Solution space (product shape before system shape)
 
 Establish and confirm product shape (Topics 5–6) before system shape (Topics 7–8). Do not use an
 architecture or stack choice to narrow Topics 2–5 after the fact.
@@ -238,7 +263,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.1 Durable capabilities
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which durable capabilities deliver the in-scope outcome?
 - Which candidates are user-value features, and which are internal mechanisms or one-time tasks?
@@ -246,7 +271,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.2 Critical journeys
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Walk the primary journey from trigger to outcome in the user's own terms.
 - Where does the user decide, provide data, wait, recover, or hand work to someone else?
@@ -254,7 +279,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.3 States & dependencies
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which capabilities already exist, are in progress, are planned, or were abandoned?
 - What must be true before each planned capability can work?
@@ -262,7 +287,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 5.4 Edge & failure journeys
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What happens on invalid input, partial state, unavailable dependencies, or interrupted work?
 - How does the user recover without hidden manual repair?
@@ -272,7 +297,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.1 Interaction model
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which interface does each user need — CLI, API, UI, library, automation, or a mix?
 - What is the first meaningful action and the first clear success signal?
@@ -280,7 +305,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.2 Information & content model
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which objects and concepts does the user think in, and what names do they use?
 - What information must be shown together to support a sound decision?
@@ -288,7 +313,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.3 Accessibility, trust & failure experience
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which accessibility and internationalization needs belong in the first quality bar?
 - What must the project explain before a user can trust an action or result?
@@ -296,7 +321,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 6.4 Design references
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which existing product or interface do you already rely on as a positive reference, and for what exact,
   concrete property?
@@ -308,7 +333,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.1 System context
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which people and external systems exchange information with the project?
 - What crosses each trust boundary, and in which direction?
@@ -316,7 +341,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.2 Building blocks & responsibilities
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - What are the major deployable units or containers, and what single responsibility does each own?
 - Which boundaries should stay stable while their internals change?
@@ -324,7 +349,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.3 Runtime & lifecycle
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Walk the main runtime path from a user action to its result.
 - Which background, async, scheduled, startup, shutdown, or recovery paths also matter?
@@ -332,7 +357,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.4 Data & state
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - What data is created, read, updated, deleted, retained, and exported?
 - Which data is authoritative, derived, cached, sensitive, personal, or regulated?
@@ -340,7 +365,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 7.5 Architecture decisions & alternatives
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which architecture choices are already fixed, by whom, and for what reason?
 - What credible alternative exists for each expensive or hard-to-reverse choice?
@@ -350,7 +375,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.1 Stack choices
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - What does the repository use today — languages, frameworks, runtimes, data stores, build tools — and
   which concrete version or constraint has made a current choice succeed or fail?
@@ -360,7 +385,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.2 Environments & deployment
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Where does the project run in dev, test, staging, and production?
 - How is it built, configured, deployed, observed, rolled back, and recovered?
@@ -368,7 +393,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.3 Integrations & dependencies
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which external dependency is essential to the user value?
 - What happens if that dependency changes, fails, becomes expensive, or disappears?
@@ -376,7 +401,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 #### 8.4 Ownership & support
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Who maintains each subsystem and responds when it fails?
 - Which operational task must remain possible without the original author?
@@ -384,7 +409,7 @@ architecture or stack choice to narrow Topics 2–5 after the fact.
 
 ---
 
-## Phase IV — Guardrails
+## Group IV — Guardrails
 
 Guardrails reference the confirmed problem, boundary, product shape, and system shape. They come last so
 they constrain a known project rather than invent one.
@@ -393,7 +418,7 @@ they constrain a known project rather than invent one.
 
 #### 9.1 Engineering conventions
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which directory, module, naming, interface, error, and documentation patterns are intentional?
 - Which live files are the best examples of those patterns?
@@ -401,7 +426,7 @@ they constrain a known project rather than invent one.
 
 #### 9.2 Quality attributes
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which qualities dominate trade-offs — correctness, security, latency, availability, usability,
   maintainability, or another?
@@ -410,7 +435,7 @@ they constrain a known project rather than invent one.
 
 #### 9.3 Verification & review bar
 
-*Design-decision trigger: run the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) when this branch selects or changes a direction.*
+*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
 
 - Which unit, integration, end-to-end, security, and operational checks prove a change safe?
 - What must every change request or release include before acceptance?
@@ -418,7 +443,7 @@ they constrain a known project rather than invent one.
 
 #### 9.4 External & internal constraints
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which legal, regulatory, security, budget, schedule, compatibility, or organizational constraints bind
   the project?
@@ -445,7 +470,7 @@ they constrain a known project rather than invent one.
 
 #### 10.4 Roadmap & stop conditions
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What belongs in now, next, and later, and which dependency explains that order?
 - What milestone proves enough value to justify the next investment?
@@ -456,7 +481,7 @@ they constrain a known project rather than invent one.
 
 #### 11.1 Intentional idioms
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - What looks unusual here but is intentional and should be preserved?
 - Which live example shows the idiom, and what problem does it solve?
@@ -464,7 +489,7 @@ they constrain a known project rather than invent one.
 
 #### 11.2 Binding rules
 
-*Conditionally design-bearing — triggers the [P3 design-decision micro-loop](SKILL.md#p3-design-decision-micro-loop) only when the branch selects or changes a direction, not when inventorying current state.*
+*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
 
 - Which conventions are mandatory rather than preferred?
 - What concrete failure or cost does each rule prevent, and where does it apply?
@@ -480,65 +505,63 @@ they constrain a known project rather than invent one.
 #### 11.4 Hidden knowledge & decay
 - What critical project knowledge lives in only one person's head?
 - Which baseline claim is most likely to go stale first?
-- What event should trigger a startup rerun or a focused topic review?
+- What event should trigger an explicit baseline reset or focused topic review?
 
 ---
 
-## Level-1 checkpoints
+## Topic summaries
 
-At the close of each Level-1 topic, show the user a checkpoint with exactly these categories:
+At the close of each Level-1 topic, show the user a transient summary with exactly these categories:
 
 - **Confirmed facts** and their evidence.
 - **Assumptions** still needing evidence.
 - **Open questions**, each with an owner and a resolution method.
 - **Contradictions** that were resolved or that remain open.
 - **Binding decisions** made in this topic.
-- **Proposed durable doc effects**, split into atomic candidate records (one concept each).
+- **Potential downstream record effects**, clearly labeled as uncommitted.
 
-Ask the user whether the checkpoint is accurate. On confirmation, append a resumable marker to the answer
-ledger holding the Level-1 topic number and a confirmation timestamp. On correction, update the ledger
-first, regenerate the affected staged drafts from the ledger, then present the checkpoint again.
+Ask whether the summary is accurate. On correction, update the transient coverage frame and present the
+affected summary again. The ordinary Ideation cursor and artifacts—not Startup—provide continuity.
 
 ---
 
-## Traversal, mandatory coverage & resume rules
+## Traversal and mandatory coverage
 
 - **One question per turn**, following the topic and branch order above. Show any verified repo fact first
   to shorten the answer.
-- **Mandatory coverage (first run):** a first run covers all 11 Level-1 topics and every Level-2 branch.
+- **Mandatory coverage:** the accepted guided operation accounts for all 11 Level-1 topics and every Level-2 branch.
   There is no quick or core tier.
-- **Answer status vs branch closure are separate, and closure is tracked per-branch.** An answer's
-  `Status` is `confirmed` / `assumption` / `open` / `contradicted` (evidence strength). A branch's
-  closure is a distinct axis, recorded for every Level-2 branch — not only at the Level-1 checkpoint — in
-  the answer ledger's `Branch closure` field. [`recording.md`](recording.md) §2 owns that schema
-  (`confirmed` / `proven-irrelevant:{reason}` / `recorded-open:{owner}`).
-- **Validity gate:** the baseline is valid only after every required branch has a recorded closure state
-  in the ledger. An unresolved branch without an owner blocks completion.
+- **Answer status and branch closure are separate.** An answer's evidence status is `confirmed`,
+  `assumption`, `open`, or `contradicted`. A branch is `confirmed`, `proven-irrelevant` with a reason, or
+  `open` with an owner. The returned Startup packet preserves both axes.
+- **Coverage gate:** every required branch needs a closure state. An unresolved branch without an owner
+  blocks a readiness claim, but may be returned explicitly for ordinary Ideation to resolve.
 - **Smart-skip shortens, it does not drop.** Existing docs/repo evidence may close a branch when the user
   confirms — but coverage stays mandatory; smart-skip removes redundant questions, never required branches.
 - **Probe up to twice, then record open.** Probe a vague answer with a concrete example, past-behavior
   question, or counterexample. If the re-answer is still vague, probe a second time (the
   [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is still vague after the
-  second probe, close the branch `recorded-open` with an owner and resolution method rather than accepting
+  second probe, close the branch `open` with an owner and resolution method rather than accepting
   a vague answer or pushing indefinitely. Do not probe when the first answer is already concrete and
   evidenced.
 - **Re-open on contradiction.** When a later answer contradicts an earlier branch, re-open the earlier
-  branch and resolve it in the ledger — do not paper over it. Architecture must not silently redefine
+  branch and resolve it in the coverage frame — do not paper over it. Architecture must not silently redefine
   scope; roadmap must not silently redefine the quality bar.
-- **Pause only at a confirmed checkpoint.** A run may pause only at a confirmed Level-1 checkpoint. On
-  resume, reload the ledger, re-show each confirmed Level-1 summary for a quick re-confirm, regenerate the
-  staged drafts from the ledger (idempotent), and continue from the first unconfirmed checkpoint.
-- **Abandon-before-promote is safe.** If the user abandons an in-progress run before promotion, the
-  session-local working and staging material can be dropped or ignored with no durable-memory cleanup.
-- **Depth override.** After the first real problem event, run the [P3 riskiest-assumption-first depth override](SKILL.md#p3-riskiest-assumption-first-depth-override).
+- **Ordinary cursor continuity.** If the conversation pauses, `state.json` remains at Ideation
+  DISCUSSION. The manager reconstructs working context from accepted Ideation evidence and asks the next
+  unresolved question; Startup creates no private resume marker.
+- **Safe decline or stop.** A decline or interruption causes no Startup-owned cleanup because this
+  operation writes no session or durable files.
+- **Depth override.** After the first real problem event, score assumptions by uncertainty × reversibility
+  × magnitude and give the riskiest claim the first disconfirming probe.
 - **JTBD switching forces are user / problem understanding.** In 3.2 and 3.3, probe the four forces —
   push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
   the last real switch, to close the gap where a real problem still fails to produce a change in behavior.
   This is user / problem understanding, not competitive positioning.
-- **Synthesis-in-sections before promotion.** Before synthesizing staged drafts, present the design back
+- **Synthesis-in-sections before handoff.** Before returning the input packet, present the direction back
   in small coherent sections (problem / evidence → first user → boundary → product shape → feasibility →
   guardrails), ask whether each interpretation is accurate, and allow backward movement on a new
   constraint. (A ~200–300-word-per-section heuristic, not a hard check.)
 
-The full capture model, staging→destination contract, and startup-close promotion procedure that consume
-these answers live in [`recording.md`](recording.md).
+The manager returns the resulting evidence packet to ordinary Ideation. Ideation, Record, and Wrap-up own
+canonical artifacts, session storage, typed staging, and any later durable promotion.

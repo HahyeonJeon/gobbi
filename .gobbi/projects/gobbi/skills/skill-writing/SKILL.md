@@ -141,8 +141,8 @@ it. The named optional allowlist is:
 - the rare official `license`, `compatibility`, or `metadata` keys only with a stated, verified need.
 
 User-visible and model-loadable are the invocation defaults, so omit both invocation keys when those defaults
-are intended. Plain `type`, memory fields, and workflow provenance such as `production_mode`, `session`,
-`status`, or `iter` are not skill frontmatter.
+are intended. Plain `type`, memory fields, and workflow provenance such as `session`, `stage`, `status`, or
+`iteration` are not skill frontmatter.
 
 ### P3 — Study evidence and pass the user design gate
 
@@ -193,7 +193,8 @@ Use [`scenarios.md`](scenarios.md) to activate the cases that match the target. 
 closure separately from acceptance. A failed gate returns to its owning P-step.
 
 For independent review, the evaluator enters through [`evaluation.md`](evaluation.md), which loads the
-scenario and checklist sources and extends the active phase evaluation without changing its output schema.
+scenario and checklist sources and extends the productive step's EVALUATION without changing its report
+schema.
 
 ### P7 — Wire and prove cold use
 
@@ -208,7 +209,39 @@ scenario and checklist sources and extends the active phase evaluation without c
 7. Give a fresh agent only the normal load context and verify it can perform the capability and complete the
    applicable checklist evidence.
 
-P7 passes only when structural checks, runtime loading, and fresh-agent use all pass.
+The fresh agent writes one `cold-load-result` record for each target runtime. P7 is the sole owner of this
+record and its field contract. The record contains exactly these fields and no others:
+
+```yaml
+runtime: claude-code | codex
+canonical_path: .gobbi/projects/<project>/skills/<skill>/SKILL.md
+selected_skill_type: preference | tool | operation
+selected_type_child: preference-skill.md | tool-skill.md | operation-skill.md
+loaded_type_children:
+  - <the selected_type_child value>
+fixture: <bounded cold-use input>
+output: <produced result or artifact pointer>
+checks:
+  - id: <stable check ID>
+    status: PASS | FAIL
+    evidence: <inspected evidence>
+no_extra_type_child_proof:
+  loaded_child_count: 1
+  unexpected_children: []
+  evidence: <proof of the loaded child set>
+```
+
+`runtime` names the target runtime. `canonical_path` names the skill source. `selected_skill_type` and
+`selected_type_child` record the classification and its matching child. `loaded_type_children` contains
+exactly that selected child. `fixture` is the bounded cold-use input. `output` is the produced result or its
+artifact pointer. `checks` records each stable check, its `PASS` or `FAIL` status, and inspected evidence.
+`no_extra_type_child_proof` proves the exact-one-child boundary with `loaded_child_count: 1`, an empty
+`unexpected_children` list, and direct evidence.
+
+P7 passes only when structural checks, runtime loading, and fresh-agent use all pass. Reject the run when a
+required record or field is missing, an unknown field is present, `loaded_type_children` omits the selected
+child or contains another type child, `no_extra_type_child_proof` does not prove exactly one loaded child, or
+any applicable check is `FAIL`.
 
 ---
 
@@ -219,4 +252,4 @@ P7 passes only when structural checks, runtime loading, and fresh-agent use all 
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the operational checklist, evidence, coverage
   closure, and acceptance mechanics used by `checklists.md`.
 - [`../evaluation/SKILL.md`](../evaluation/SKILL.md) validates the evaluator lenses, finding schema, scoring,
-  and active-phase extension used by `evaluation.md`.
+  and productive-step extension used by `evaluation.md`.

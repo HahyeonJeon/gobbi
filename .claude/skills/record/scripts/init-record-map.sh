@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/record/scripts/init-record-map.sh

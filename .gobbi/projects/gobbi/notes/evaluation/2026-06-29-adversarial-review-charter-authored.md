@@ -11,7 +11,7 @@ tags: [evaluation, process]
 keywords: [adversarial-review, charter, dual-system, dogfooding, by-dimension, seven-dimensions]
 author: claude
 features_touched: [review]
-loops_completed: [ideation, execution, wrap-up]
+steps_completed: [ideation, execution, wrap-up]
 shipped: [adversarial-review-charter, agent-os-layered-standards, claude-flow-swarm-memory, claude-task-master-dependency-tasks, superpowers-skill-harness, fix-confirmed-seed-findings, run-deep-adversarial-review, automated-cross-layer-drift-validator, codex-exec-timeout-exceeds-bash-cap, research-ideation-reference-staging-conflict, find-misses-symlinked-mirror-dirs]
 supersedes: null
 superseded_by: null
@@ -47,7 +47,7 @@ deliverable needed no readiness gaps and no decomposition. Execution ran single-
 final adversarial gate was consolidated into this Wrap-up's memory-validation (Codex).
 
 ## What shipped
-- `plans/workflow/2026-06-29-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
+- `archive/plans/workflow/2026-07-20-adversarial-review-charter.md` — the charter (the deliverable; 7 dimensions D1–D7, 7 scenarios S1–S7, by-dimension methodology, severity/priority/confidence reusing gobbi's enums, seed-finding register, verification-commands appendix).
 - 4 references → `references/memory/` (the harness baselines above).
 - 2 feature backlogs → `backlogs/` (`run-deep-adversarial-review`, `fix-confirmed-seed-findings`).
 - 1 project backlog → `backlogs/process/automated-cross-layer-drift-validator.md` (issue #258 class).

@@ -65,6 +65,6 @@ is a circular predicate.
 
 ## Related
 
-- [[chat-record-staging-is-entangled-with-d7-004-scaffold]] — the sibling design-flaw fix from the
+- [[documented-session-path-must-be-scaffolded-and-verified]] — the sibling design-flaw fix from the
   same Execution loop's iter1→iter2 correction cycle
 - [[d7-001-split-fresh-init-resume-rehydration-shipped]] — the design this circular-predicate fix corrected

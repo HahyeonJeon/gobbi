@@ -11,7 +11,7 @@ tags: [docs-sync, refactor]
 keywords: [genre-a, workflow-doc-compaction, hoist-then-point, pointer-drift-guard, handoff]
 author: claude
 features_touched: [workflow]
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [point-dont-restate-workflow-docs, genre-a-compaction-foundation, eval-review-scope-to-merge-base]
 ---
 

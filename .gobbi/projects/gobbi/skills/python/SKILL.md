@@ -307,7 +307,7 @@ test seam is concrete; and no behavior body exists.
 Run the design-with-user gate on the Python **design packet** — the module tree, function and earned-class
 choices, relationships, sketched interfaces and annotations, names, the data/failure/effect/lifetime/ownership
 models, the verification seams, and the P3 runner-up. Record approval, or cite an already-explicit decision;
-in the gobbi workflow this rides the DISCUSSION sub-phase. **Author mode only:** in review mode, reconstruct
+in the Gobbi workflow this rides the DISCUSSION stage. **Author mode only:** in review mode, reconstruct
 and grade the existing packet without editing.
 
 **P4 is complete when** the author-mode surface is approved (or a prior decision cited), or the review-mode

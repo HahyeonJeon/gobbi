@@ -81,8 +81,8 @@ should-vs-must), D1-030 (ITER/EXIT 5th-phase clarification), D1-032 (plugin coun
 the three already-Medium-clustered Preparation items appear in their sweep above.
 
 **Note on overlap with existing backlogs.** Some findings overlap pre-existing project backlog
-entries (e.g. `backlogs/process/claude-skill-dangling-ref.md` ↔ D1-006;
-`backlogs/process/wrapup-workflow-doc-broken-delegation-link.md` ↔ D1-007;
+entries (e.g. `archive/backlogs/process/2026-07-21-claude-skill-dangling-ref.md` ↔ D1-006;
+`archive/backlogs/process/2026-07-20-wrapup-workflow-doc-broken-delegation-link.md` ↔ D1-007;
 `backlogs/process/layer2-references-stale-after-system-dropped.md` is a D1-001/002 witness). A future
 fix session should reconcile this consolidated queue against those entries (close or supersede the
 narrow ones once the consolidated fix lands) rather than fixing the same surface twice.

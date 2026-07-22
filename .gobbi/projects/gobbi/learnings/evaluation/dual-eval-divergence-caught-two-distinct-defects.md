@@ -65,4 +65,4 @@ the defect space. Treating the verdict as the union (pessimistic merge) is what 
 ## Related
 
 - [[dual-eval-caught-managers-own-audit-gap]] — the Ideation-eval complement (both systems agreed on one defect)
-- [[dual-production-codex-added-real-coverage]] — the production-side complement
+- [[dual-system-work-added-real-coverage]] — the production-side complement

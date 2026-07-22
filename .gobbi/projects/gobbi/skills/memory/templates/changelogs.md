@@ -1,6 +1,6 @@
 # `changelogs/`
 
-> Time-stamped records of what shipped. Each entry summarizes the outcome of an Execution Loop's task, so a future reader can find when a specific capability landed.
+> Time-stamped records of what shipped. Each entry summarizes the outcome of an Execution task, so a future reader can find when a specific capability landed.
 
 ## Core principles
 
@@ -12,12 +12,13 @@ A changelog a reader cannot trace to a concrete artifact and an actual verificat
 
 | Field | Value |
 |---|---|
-| When | Execution RECORD at the end of each task; and Wrap-up RECORD appends a feature-level entry to each value-feature the session touched. |
-| Stage to | `sessions/{date}-{session-id}/{N}-{loop}/staging/changelogs/{slug}.md` |
+| When | Execution RECORD after an accepted task produces a durable shipped result. |
+| Source cursor | Gobbi-owned session UUID plus `step: execution`, `stage: RECORD`, the current `iteration`, and the exact `task` identity. |
+| Stage to | `sessions/{date}-{gobbi-session-id}/3-execution/task-{NN}-{slug}/staging/changelogs/{slug}.md` or the authorized Execution step staging root |
 | Promotes to | `features/{f}/changelogs/{area}/` — feature-subdir-only; there is NO project-level `changelogs/` (design §2.14; [rules §3](../rules.md)) — `{area}` from this type's area list, resolved by the [§1.5 selection rule](../rules.md#15-area-namespace-the-second-category-axis-under-each-type) |
 | Filename | `{YYYY-MM-DD}-{slug}.md` — date-prefixed (time-indexed); slug describes the shipped unit (`2026-05-11-login-ui-shipped.md`) |
 
-Loop RECORD stages; Wrap-up promotes ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
+RECORD writes only the typed staging source. Wrap-up WORK is the only stage that promotes it to durable memory ([routing](../../wrap-up/promotion.md#staging--memory-routing)).
 
 ## Frontmatter + body
 
@@ -32,7 +33,7 @@ scope: feature
 feature: {feature-name}
 status: active
 created: YYYY-MM-DD
-session: {session-id}
+session: {Gobbi-owned session UUID}
 tags: [execution, docs-sync]         # this type's controlled pool (§2.5)
 keywords: []                         # freeform escape-hatch tags (required; may be [])
 author: claude                       # claude | codex | user — the runtime that authored it
@@ -64,4 +65,4 @@ shipped_in: {PR / commit / plan path}
 ## Notes
 
 - **One changelog per task at feature level.** Do not combine multiple tasks into one entry — granularity lets a future reader find when a specific capability shipped.
-- **A session-wide roll-up is NOT a changelog.** It is the per-session development-journal entry Wrap-up writes to `notes/{area}/{date}-{slug}.md` (see [`wrap-up/SKILL.md`](../../wrap-up/SKILL.md)).
+- **A session-wide roll-up is NOT a changelog.** It is the evaluated handoff defined by [`notes.md`](notes.md): one typed staging source that Wrap-up WORK promotes to `notes/{area}/{date}-{slug}.md`.

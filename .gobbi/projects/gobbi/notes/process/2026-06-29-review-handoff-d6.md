@@ -11,7 +11,7 @@ tags: [process, evaluation]
 keywords: [adversarial-review, handoff, d6, charter, dual-system, background-codex]
 author: claude
 features_touched: []
-loops_completed: [ideation, preparation, planning, execution, wrap-up]
+steps_completed: [ideation, preparation, planning, execution, wrap-up]
 shipped: [review-handoff-d6]
 ---
 

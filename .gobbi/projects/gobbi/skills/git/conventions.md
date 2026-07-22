@@ -1,383 +1,266 @@
 # Git Conventions
 
-Deterministic rules for branch naming, commit grammar, footer trailers, PR template, label registry, sub-issues, worktree path formula, and base branch. Every rule is expressed as a regex, a table, or a literal template so agents can self-validate before pushing.
+Deterministic mappings for Gobbi session branches, worktree paths, focused commits, provenance trailers, optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the lifecycle, authority gates, failure handling, and cleanup order.
 
-Formats align with:
-- [Conventional Commits v1.0.0](https://www.conventionalcommits.org/en/v1.0.0/) — commit grammar
-- [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow) — branch / PR lifecycle
-- [Linux kernel `submitting-patches.html`](https://docs.kernel.org/process/submitting-patches.html) — commit message size + voice
-- [`git worktree(1)`](https://git-scm.com/docs/git-worktree) — worktree semantics
+The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
----
+## Session branch naming
 
-## Branch Naming
+A Gobbi session branch is derived once from the active runtime system, session start date, and Gobbi-owned UUID:
 
-### Validator (two-step)
-
-Branch name validation for **non-session feature branches** is a two-step procedure (session-worktree branches use the dedicated rule in § Session-Worktree Branches below):
-
-**Step 1 — Shape check (regex):**
-
-```regex
-^(feat|fix|hotfix|chore|docs|refactor|test|ci|perf|build|style)/(\d+-)?([a-z0-9]+(-[a-z0-9]+)*)$
+```text
+<runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
 ```
 
-The agent runs this regex against the proposed branch name before `git worktree add -b`. A mismatch is a precondition violation — surface to the user and re-derive.
-
-**Step 2 — 3-50 character length check on the description slug:**
-
-After the shape check passes, extract the description slug — everything after `<type>/` and after the optional issue number prefix (`\d+-`). Check that the slug length is between 3 and 50 characters (inclusive). A slug shorter than 3 chars is too terse to be meaningful; longer than 50 chars makes the branch name unwieldy in tooling.
-
-```
-description-slug = branch-name after stripping "<type>/" and optional "<issue-num>-"
-e.g., "feat/42-oauth-login"  → slug = "oauth-login"     (10 chars — PASS)
-      "feat/42-x"            → slug = "x"               (1 char  — FAIL: too short)
-      "feat/42-{60+ chars}"  → slug = "{60+ chars}"     (60 chars — FAIL: too long)
-```
-
-Both steps must pass. A branch name that passes the regex but fails the length check is still invalid.
-
-### Type prefixes
-
-| Prefix | Purpose | Example |
-|---|---|---|
-| `feat/` | New feature | `feat/42-oauth-login` |
-| `fix/` | Bug fix | `fix/123-null-pointer` |
-| `hotfix/` | Urgent production fix | `hotfix/critical-auth-leak` |
-| `chore/` | Maintenance, dependencies | `chore/bump-bun-1.2` |
-| `docs/` | Documentation only | `docs/api-reference` |
-| `refactor/` | Code restructuring, no behavior change | `refactor/extract-logger` |
-| `test/` | Test additions or modifications | `test/89-edge-cases` |
-| `ci/` | CI / CD configuration | `ci/cache-bun-deps` |
-| `perf/` | Performance improvement | `perf/cache-hot-path` |
-| `build/` | Build system changes | `build/migrate-vite` |
-| `style/` | Code style only (formatting, no logic change) | `style/format-cli` |
-
-### Rules
-
-These rules govern **non-session feature branches**; session-worktree branches use the dedicated rule in § Session-Worktree Branches below.
-
-| Rule | Pattern | Example pass | Example fail |
-|---|---|---|---|
-| Type prefix from registry above | `^(feat\|fix\|...)/...` | `feat/oauth` | `feature/oauth` |
-| Issue number when issue exists | `...\d+-...` | `feat/42-oauth-login` | `feat/oauth-login` (when issue #42 exists) |
-| All lowercase | character class `[a-z0-9]` | `feat/42-oauth-login` | `feat/42-OAuth-Login` |
-| Hyphens as separator | no underscores, no spaces | `feat/42-oauth-login` | `feat/42_oauth_login` |
-| Description length 3–50 chars (post-`/`) | leaf portion length | `feat/42-oauth-login` | `feat/42-x` (too short); `feat/42-{60+ chars}` (too long) |
-| No trailing slash, no `..` segments | path-safety | `feat/42-oauth-login` | `feat/42-x/` or `feat/../x` |
-
-### Session-Worktree Branches
-
-Per-session worktree branches created at Configuration Step 1 (orchestration/SKILL.md row 1) do **not** use the type-prefix grammar or the 3–50-char slug rule above — those govern non-session feature branches. Session-worktree branches use a fixed, machine-generated shape keyed to the running system and the session UUID:
+The complete validator is:
 
 ```regex
 ^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
 ```
 
-- `claude` for the `claude-code` system; `codex` for the `codex` system.
-- `\d{4}-\d{2}-\d{2}` — session-start date `YYYY-MM-DD`.
-- The trailing group is the full lowercase runtime session id resolved by Gobbi bootstrap: `CLAUDE_CODE_SESSION_ID` for Claude Code, `CODEX_THREAD_ID` for native Codex.
+| `session.json.runtime.system` | Prefix |
+|---|---|
+| `claude-code` | `claude` |
+| `codex` | `codex` |
 
 Examples:
-- `claude-2026-06-05-06668274-cee3-4bc0-9125-91a327467cd2` — PASS
-- `codex-2026-06-05-06668274-cee3-4bc0-9125-91a327467cd2` — PASS
-- `chore/session-2026-06-05-06668274` — old convention, no longer generated (existing branches are not renamed)
 
-The shape-check regex and the 3–50-char slug rule in **§ Branch Naming → Validator** apply to **non-session** branches only. The session-worktree validator above is the sole shape check for Step-1 worktree branches.
+- `claude-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+- `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 
----
+The UUID portion is `session.json.sessionId`. It is not `CLAUDE_CODE_SESSION_ID`, `CODEX_THREAD_ID`, an issue number, a pull-request number, or a task slug. A runtime context boundary does not rename the session branch.
 
-## Commit Messages
+### Non-session branches
 
-Conventional Commits v1.0.0 grammar with Linux-kernel-derived size limits.
+When a separately scoped operation needs a non-session branch, use:
 
-### Subject regex
+```regex
+^(feat|fix|hotfix|chore|docs|refactor|test|ci|perf|build|style)/(\d+-)?([a-z0-9]+(-[a-z0-9]+)*)$
+```
+
+The description slug after the optional issue number is 3–50 characters. An issue number is included only when an issue actually exists; it is never required by shape alone.
+
+| Prefix | Purpose | Example |
+|---|---|---|
+| `feat/` | New behavior | `feat/42-oauth-login` |
+| `fix/` | Defect correction | `fix/null-pointer` |
+| `hotfix/` | Urgent deployed-system correction | `hotfix/auth-leak` |
+| `chore/` | Maintenance | `chore/bump-bun` |
+| `docs/` | Documentation only | `docs/api-reference` |
+| `refactor/` | Structure without intended behavior change | `refactor/extract-logger` |
+| `test/` | Test-only change | `test/89-edge-cases` |
+| `ci/` | Continuous integration configuration | `ci/cache-deps` |
+| `perf/` | Measured performance improvement | `perf/cache-hot-path` |
+| `build/` | Build system change | `build/migrate-vite` |
+| `style/` | Formatting with no logic change | `style/format-cli` |
+
+## Worktree path
+
+The session worktree path is:
+
+```text
+<repo-root>/.gobbi/projects/<project>/worktrees/<session-branch>/
+```
+
+For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`:
+
+```text
+<repo-root>/.gobbi/projects/gobbi/worktrees/codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/
+```
+
+| Property | Mapping |
+|---|---|
+| Worktree root | `.gobbi/projects/<project>/worktrees/` |
+| Leaf | exact session branch |
+| Manifest field | absolute normalized path in `session.json.git.worktreePath` |
+| Ignore check | `git check-ignore -q .gobbi/projects/<project>/worktrees/` |
+| Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
+
+## Base branch
+
+The base is `session.json.git.baseBranch`. It is project-specific and never inferred from `main`, `master`, `develop`, the current checkout, or a remote default.
+
+The same value is used for session branch creation, pull-request base, merge verification, and post-merge synchronization. A settings change is not a Git convention edit; it follows the manifest and user-authority owners.
+
+## Publication mapping
+
+`session.json.settings.git` maps to Git actions without hidden coupling:
+
+| Settings | Required result |
+|---|---|
+| `publication: local` | verified local commits; branch and worktree retained |
+| `publication: push` | local result plus session-branch push; no pull request |
+| `publication: pull-request` | local result plus push and open/reused pull request |
+| `createIssue: false` | no issue action |
+| `createIssue: true` | create/reuse an issue independently of publication |
+| `draftPullRequest: false` | create a new configured pull request ready for review |
+| `draftPullRequest: true` | create a new configured pull request as draft |
+
+`draftPullRequest` does not change an already existing pull request automatically. Issue absence never changes the branch shape, commit trailer, publication path, or pull-request validity.
+
+## Commit messages
+
+Use Conventional Commits grammar:
 
 ```regex
 ^(feat|fix|hotfix|chore|docs|refactor|test|ci|perf|build|style)(\([a-z0-9-]+\))?!?: [a-z].{1,67}[^.]$
 ```
 
-Constraints:
-- **Total subject length ≤ 72 chars** (Linux kernel says 70-75; we pick 72 as the round Conventional-Commits-friendly number)
-- **Imperative present-tense** ("add", not "added" or "adds")
-- **Lowercase first letter after `: `**
-- **No trailing period**
-- **Type from the same registry as branch prefixes** (`feat` / `fix` / `hotfix` / `chore` / `docs` / `refactor` / `test` / `ci` / `perf` / `build` / `style`)
-- **Optional scope**: lowercase + hyphen-separated noun in parens — `feat(parser):`, `fix(auth-flow):`
-- **Breaking change**: append `!` before the colon — `feat(auth)!: drop password fallback`. Also requires a `BREAKING CHANGE:` footer.
+### Subject rules
+
+- total length is at most 72 characters;
+- use imperative present tense;
+- start the description with a lowercase letter;
+- omit a trailing period;
+- use an optional lowercase hyphenated scope only when it improves discrimination; and
+- add `!` only for a deliberate breaking contract that also has a `BREAKING CHANGE:` trailer.
 
 ### Body rules
 
-| Rule | Value |
+| Property | Convention |
 |---|---|
-| Body wrap | 75 columns hard wrap (per Linux kernel) |
-| Body explains | **why** the change was made (the diff shows **what**) |
-| Body separator | One blank line between subject and body |
+| Separation | one blank line after the subject |
+| Line width | 75 columns where prose wrapping is practical |
+| Content | explain why and any non-obvious consequence; do not narrate the diff |
+| Focus | one planned task or one separately justified finalization change |
 
-### Scope discipline
+One task may need more than one commit only when the commits are independently reviewable and the locked plan permits the split. Unrelated areas never share a commit.
 
-The commit type and scope match the task's domain stated in the delegation prompt. A subagent working on `feat/42-oauth-login` should not produce `docs:` or `chore:` commits unless the delegation explicitly includes that work.
+## Commit trailers
 
-### Timing rule
+Every agent-authored commit has this exact trailer shape:
 
-Commit only after the executor's Verify phase passes (per [`execution/SKILL.md`](../execution/SKILL.md)). Never commit unverified work.
-
-### Per-task discipline
-
-One focused commit per subtask. If a task naturally produces multiple logical changes, commit them separately. A commit touching unrelated areas will be difficult to review, revert, or bisect.
-
----
-
-## Commit Trailers
-
-Required and optional footer trailers. Trailers go in the commit body after a blank line, in the order specified.
-
-### Required trailers
-
-| Trailer | Required when | Format | Example |
-|---|---|---|---|
-| `AI-Provenance-Record:` | Every agent-authored commit | `AI-Provenance-Record: gobbi://session/{session-id}/task/{task-id}` | `AI-Provenance-Record: gobbi://session/2026-05-20-abc123/task/03-add-cache-layer` |
-
-The `AI-Provenance-Record:` trailer is the canonical AI provenance marker for gobbi. It points back to the session and task that produced the commit, making the agent's work auditable without conflating the agent with a human collaborator. **Do NOT use `Co-Authored-By:` for agents** — that footer implies collaborator consent and was repudiated by the wider community (see GitHub Copilot Co-authored-by controversy, April-May 2026, where Microsoft reversed automatic Co-Authored-By insertion).
-
-### Conditional trailers
-
-| Trailer | Required when | Format |
-|---|---|---|
-| `BREAKING CHANGE:` | Commit breaks an API or contract | `BREAKING CHANGE: <one-line description of the break + migration hint>` |
-| `Fixes:` | Commit fixes a specific past bug commit | `Fixes: <12+ char SHA> ("<commit subject>")` (per Linux kernel format) |
-| `Closes #<num>` | PR body closes a default-branch issue | `Closes #42` |
-| `Refs #<num>` | Related issue, not closing | `Refs #42` |
-| `Signed-off-by:` | Project enables DCO (Developer Certificate of Origin) | `Signed-off-by: <name> <email>` |
-
-### Trailer order (when multiple apply)
-
-1. `BREAKING CHANGE:` (if any)
-2. `Fixes:` (if any)
-3. `Refs:` / `Closes:` (if any)
-4. `AI-Provenance-Record:` (marks the agent boundary — last UNLESS DCO is enabled)
-5. `Signed-off-by:` (if DCO — legal/human attestation always goes last; human attestation has highest precedence over AI-provenance markers)
-
-**Rule:** `AI-Provenance-Record:` is last for agent commits EXCEPT when DCO is enabled. When `Signed-off-by:` is present (project enables DCO), it comes after `AI-Provenance-Record:` — legal/human attestation has higher precedence and must be the final trailer.
-
-### Full commit example
-
-```
-feat(auth)!: drop password fallback in favor of OAuth-only flow
-
-The password fallback is removed because the OAuth path has been
-production-validated for 90 days with zero auth failures. Keeping
-both paths doubles the auth surface area without measurable benefit.
-
-Operators upgrading must run `gobbi auth migrate` to convert
-remaining password-based sessions. See migration guide for details.
-
-BREAKING CHANGE: removes the `/api/auth/password` endpoint. Existing
-password-only users must complete the OAuth setup before the next
-release.
-
-Fixes: a1b2c3d4e5f6 ("auth: tolerate password fallback")
-
-Refs #42
-
-AI-Provenance-Record: gobbi://session/2026-05-20-abc123/task/03-drop-password-fallback
+```text
+AI-Provenance-Record: gobbi://session/<gobbi-session-uuid>/task/<stable-task-id>
 ```
 
----
+Example:
 
-## Pull Request Format
+```text
+AI-Provenance-Record: gobbi://session/37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/task/05d-git-owner
+```
+
+The session segment uses `session.json.sessionId`. The task segment uses the stable plan or manager assignment ID. Do not use a runtime ID, branch name, issue number, filename, role, or Wrap-up label as a substitute.
+
+### Trailer order
+
+1. `BREAKING CHANGE:` when applicable.
+2. `Fixes:` when the change repairs a named prior commit.
+3. `Refs:` or `Closes:` when an issue actually exists.
+4. `AI-Provenance-Record:` for every agent-authored commit.
+5. `Signed-off-by:` only when the project has an explicit Developer Certificate of Origin requirement.
+
+Do not use `Co-Authored-By:` for an agent. The provenance trailer records the agent boundary without asserting human collaborator consent.
+
+### Example
+
+```text
+docs(git): align local-first session finalization
+
+Make issue and remote publication optional while preserving one isolated
+session worktree and focused verified local commits.
+
+AI-Provenance-Record: gobbi://session/37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/task/05d-git-owner
+```
+
+## Pull-request format
 
 ### Title
 
-Same regex + grammar as the commit subject (Conventional Commits). For squash-merged PRs, the title becomes the squashed commit's subject, so the same constraints apply.
+Use the commit subject grammar. Under squash merge, this becomes the base-branch commit subject.
 
-### Body — required template
-
-The PR body has **four required sections** in this order. Stamp the template; do not improvise structure.
+### Required body
 
 ```markdown
 ## Summary
-<2-4 bullets describing what changed and why, at the feature level (not file level)>
+- <outcome and reason>
 
 ## Changes
-<file-or-area-grouped bullets — what areas of the code were touched and why>
+- <area and observable change>
 
-## Test plan
-- [ ] <concrete verification step the reviewer can run>
-- [ ] <…>
+## Verification
+- [ ] <exact command or evidence>
 
+## Gobbi session
+- Session: `<gobbi-session-uuid>`
+- Branch: `<session-branch>`
+- Handoff: `<durable-repository-relative-path>`
+```
+
+When an issue exists, append this optional section:
+
+```markdown
 ## Linked issues
-Closes #<num>   <!-- only on default-branch PRs -->
-Refs #<num>     <!-- otherwise -->
+Refs #<number>
 ```
 
-### Issue linking — non-default branch caveat
+Use `Closes #<number>` only when the target branch and repository behavior will actually close the issue. For a non-default target, close a finished issue explicitly after confirmed merge when that issue action is authorized. A missing issue section is valid.
 
-Closing keywords (`Closes #X`, `Fixes #X`, `Resolves #X`) only auto-close the linked issue when the PR targets the repository's **default branch**. If the PR targets a non-default branch (such as `develop`), the manager must explicitly close the issue after the merge reaches the default branch:
+### New versus existing pull request
 
-```bash
-gh issue close <num> -c "Closed by PR #<pr-num>"
+| State | Action |
+|---|---|
+| One open request with exact head and base | reuse it; verify its current head after push |
+| No matching open request | create one from the template |
+| Multiple or mismatched requests | stop and surface the ambiguity |
+| `draftPullRequest: true` on new request | include the CLI draft option |
+| Existing request plus `draftPullRequest: true` | preserve its existing state unless the user separately authorizes a state change |
+
+## Merge format
+
+Gobbi's supported default is squash merge:
+
+```text
+gh pr merge <number> --squash
 ```
 
-This is a GitHub platform behavior, not a configuration option.
+Do not add automatic branch deletion to the merge command. [`SKILL.md`](SKILL.md) owns the user gate and post-merge cleanup order.
 
-### Merge strategy
+A squash merge creates a new base-branch commit without making the source tip an ancestor. Therefore `git branch -d` may reject the local session branch. The only matching force-delete format is:
 
-**Squash merge** is the only merge strategy:
-
-```bash
-gh pr merge <num> --squash
+```text
+git branch -D <session-branch>
 ```
 
-All PR commits collapse into one commit on the target branch (preserving the linear history of the base). The squashed commit's subject is the PR title; the squashed commit's body is the PR body's `## Summary` section.
+It is valid only after the Git operation directly proves the exact branch was the head of the confirmed merged pull request. This format mapping does not relax that proof or authorize the action.
 
-Branch deletion is NOT part of the merge command. Do not pass `--delete-branch` — it runs while the worktree still holds the branch and the delete fails ("branch used by worktree"). Branch cleanup happens in the reordered finalization sequence: the worktree is removed first, then `git push origin --delete <branch>` deletes the remote branch and the sanctioned `git branch -D <branch>` deletes the local branch after PR-association confirms the squash-merge. See [`git/SKILL.md` § P5 — Land PR](SKILL.md#p5--land-pr) for the full sequence; do not duplicate it here.
+## Optional issue format
 
-A squash merge produces a NEW commit with no history overlap with the source branch, so `git branch -d` will NOT recognize the source branch as merged. The local branch must be force-deleted via the sanctioned `-D` path (P5 step 5 / the Forbidden Operations `-D` carve-out in `git/SKILL.md`), conditioned on PR-association merge-confirmation — never left to `git branch -d`, which fails on a squash-merged branch.
+Issue creation is used only when `createIssue: true`.
 
----
-
-## Issue Format
-
-Issues are the contract between ideation and execution.
-
-### When creating an issue
-
-| Field | Rule |
+| Field | Convention |
 |---|---|
-| Title | Imperative present-tense, descriptive, ≤ 80 chars (same voice as branch descriptions) |
-| Body | Problem statement + proposed approach + acceptance criteria |
-| Labels | At least one type label from the Label Registry below |
+| Title | imperative, descriptive, at most 80 characters |
+| Body | problem, proposed outcome, acceptance evidence |
+| Label | one applicable type label when the repository supports it |
+| Session link | include the Gobbi session UUID when useful for recovery |
 
-### When picking up an existing issue
+When three or more independently trackable remote deliverables exist and the user wants GitHub tracking, one parent issue plus sub-issues may be used. This is optional project organization, never a prerequisite for the session branch or Execution tasks.
 
-- Read the full issue body and all comments for context before starting work.
-- The issue number drives the branch name and PR linkage — extract it before Procedure P2.
+## Label registry
 
----
+Labels are optional repository metadata. The manager applies them only when the configured GitHub action uses them.
 
-## Sub-issues
-
-When a feature decomposes into **three or more independent tasks**, use the parent / sub-issue model. The parent issue captures the overall feature; each sub-issue is scoped to one deliverable.
-
-### Rules
-
-| Rule | Value |
-|---|---|
-| Trigger threshold | ≥ 3 independent tasks |
-| Naming | Sub-issues follow the same regex as regular issues |
-| Branch per sub-issue | Branch name uses the sub-issue number: `feat/{sub-issue-number}-<description>` |
-| Parent close | Manager closes the parent manually after all sub-issues are closed — GitHub does not auto-close parents |
-| API | The `gh issue` CLI does not have native sub-issue support; use GitHub's parent-child issue API directly |
-
-Sub-issues are guidance for multi-task features, not a mandate. Simple tasks continue to use a single issue.
-
----
-
-## Label Registry
-
-GitHub does not auto-create labels. On a fresh repository, the manager creates any needed labels before applying them via `gh label create <name> --color <hex>`. Re-creating an existing label has no effect, so the manager can safely attempt creation on first use without checking.
-
-### Type labels (mirror branch prefixes)
-
-| Label | Color (hex) |
-|---|---|
-| `feat` | `#a2eeef` |
-| `fix` | `#d73a4a` |
-| `hotfix` | `#b60205` |
-| `chore` | `#e4e669` |
-| `docs` | `#0075ca` |
-| `refactor` | `#5319e7` |
-| `test` | `#bfd4f2` |
-| `ci` | `#fbca04` |
-| `perf` | `#fef2c0` |
-| `build` | `#c5def5` |
-| `style` | `#f9d0c4` |
-
-### Status labels (optional, lifecycle-driven)
-
-| Label | Color | When applied | When removed |
-|---|---|---|---|
-| `in-progress` | `#fbca04` | Worktree created, delegation started | Replaced by `ready-for-review` |
-| `ready-for-review` | `#0075ca` | PR created | Removed at PR merge (issue close clears all status labels) |
-
-Status labels are optional — apply them when the project uses a label-based status system. Not every project benefits from this overhead.
-
-### Label ownership
-
-The manager applies and modifies labels. Subagents never touch labels. This is consistent with the role boundary that reserves all issue and PR management for the manager.
-
----
-
-## Worktree Path Formula
-
-### Path template
-
-```
-<repo-root>/.gobbi/projects/<project-name>/worktrees/<branch-name>/
-```
-
-Examples:
-- Branch `feat/42-oauth-login` → `<repo-root>/.gobbi/projects/gobbi/worktrees/feat/42-oauth-login/`
-- Branch `fix/123-null-pointer` → `<repo-root>/.gobbi/projects/gobbi/worktrees/fix/123-null-pointer/`
-
-### Rules
-
-| Rule | Value |
-|---|---|
-| Worktree root | `.gobbi/projects/<project-name>/worktrees/` (project-scoped under `.gobbi/`, not co-located with `.claude/`) |
-| Directory name preserves branch name | Including slashes — `feat/42-oauth-login` becomes a nested path |
-| Naming collisions | Prevented because each branch name is unique (branch-exclusivity rule below) |
-| `.gitignore` requirement | The `.gobbi/projects/*/worktrees/` glob MUST be in `.gitignore` to prevent worktree contents from appearing in the main repo's `git status` |
-| Verification | Pre-create check: `git check-ignore -q .gobbi/projects/<project-name>/worktrees/` (per Procedure P1) |
-
-### Branch exclusivity
-
-Git enforces that a branch can only be checked out in one worktree at a time. If branch creation fails during worktree setup, the branch may already be active in another worktree from a concurrent or crashed session — recover via Procedure P6.
-
-### Cleanup of empty parent directories
-
-Nested branch names that use slashes (e.g., `feat/42-oauth-login`) create intermediate directories under `worktrees/`. `git worktree remove` only removes the leaf directory. Run this after worktree removal:
-
-```bash
-# Scope to the REMOVED worktree's own parent chain — NEVER `find worktrees/ ...` over the
-# shared root, which deletes a concurrent live session's just-scaffolded empty dirs.
-rmdir -p "$(dirname .gobbi/projects/<project-name>/worktrees/<branch-name>)" 2>/dev/null || true
-```
-
----
-
-## Base Branch
-
-The base branch — what feature branches are created from and what PRs target — is **project-specific** and never hardcoded in this skill.
-
-### Rules
-
-| Rule | Value |
-|---|---|
-| Hardcoding forbidden | Skill must not assume `main`, `master`, `develop`, or any other branch name |
-| Source of truth | User selects at session setup (Question 2 of `/gobbi` bootstrap); answer is stored as session-level configuration |
-| Resolution | All branch creation (`git worktree add -b ... <base>`) and PR targeting (`gh pr create --base <base>`) use this configured value |
-
-### Common patterns
-
-| Pattern | Base branch |
-|---|---|
-| Trunk-based development | `main` (or `master` on older repos) |
-| GitFlow | `develop` for features; `main` for releases |
-| Custom branching | Project-specified (e.g., `next`, `staging`) |
-
----
-
-## Runtime git posture — where it is configured
-
-The *runtime git posture* — which git ops run on their own, which prompt for approval, and which are blocked — is described in [`SKILL.md` § Runtime git environment](SKILL.md#runtime-git-environment). This note is the canonical pointer to **where** that posture is set per runtime. It does not restate the model; read the SKILL.md section for the behavior.
-
-| Surface | Sets | Notes |
+| Label | Color | Meaning |
 |---|---|---|
-| `.codex/config.toml` | Codex sandbox mode, approval policy, and network access | Worktree HEAD ships **no** sandbox-loosening default — no `network_access = true`, no broad allow-list (D2 safe-by-default). The default Codex posture (`workspace-write` + `on-request`, network off) is the runtime's own default, not a gobbi override. |
-| `.codex/agents/*.toml` | Per-runtime git discipline for each Codex custom agent | Thin wrappers carry the role's Codex model and effort defaults plus the git-posture pointer; the canonical `agents/{role}.md` remains the behavioral and git-policy contract. |
-| `agents/manager.md`, `agents/executor.md` (role prompts) | Per-role git posture (manager remediation-vs-defer; executor commit-only, manager-handles-push) | The role prompts are the canonical role contract on both runtimes; the `.codex/agents/*.toml` wrappers point back to them. |
-| Claude Code settings (`allowedDomains`, `excludedCommands`) | Claude Code network + sandbox posture | Same safe-by-default rule: gobbi ships no network enablement; the remediation menu OFFERS it, the user decides. |
+| `feat` | `#a2eeef` | new behavior |
+| `fix` | `#d73a4a` | defect correction |
+| `hotfix` | `#b60205` | urgent deployed-system correction |
+| `chore` | `#e4e669` | maintenance |
+| `docs` | `#0075ca` | documentation |
+| `refactor` | `#5319e7` | structural change |
+| `test` | `#bfd4f2` | tests |
+| `ci` | `#fbca04` | continuous integration |
+| `perf` | `#fef2c0` | performance |
+| `build` | `#c5def5` | build system |
+| `style` | `#f9d0c4` | formatting only |
 
-**Hooks are NOT a git-posture surface (INT-4).** The gobbi hooks (`hooks/session-end.sh`, `hooks/post-tool-use-agents.sh`) are **token reconcilers**, not git-metadata or git-lifecycle hooks. A change to runtime git posture is a change to `.codex/config.toml` / `.codex/agents/*.toml` / the role prompts — never to the hooks.
+Do not create a label merely because it appears in this registry. Repository label creation is an external mutation and follows the configured issue or pull-request action.
+
+## Release metadata
+
+Git finalization never changes a plugin or package version as a side effect. A version changes only when the locked implementation task explicitly includes that file and value. For the current Gobbi workflow redesign, the plugin manifest version remains unchanged.
+
+## Runtime git posture
+
+[`SKILL.md` § Runtime git environment](SKILL.md#runtime-git-environment) owns how runtime sandbox, network, and approval state affect Git actions. [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) is the read-only probe. This conventions document owns no runtime configuration and authorizes no edit to `.codex/config.toml`, Claude settings, `.git/config`, or user Git configuration.

@@ -11,8 +11,8 @@ tags: [process, codex, docs-sync]
 keywords: [delegation-skill, ssot, skill-load-path, hook-routing, dual-system-eval]
 author: claude
 features_touched: []
-loops_completed: [ideation, planning, execution, wrap-up]
-shipped: [skill-prose-template-drift, documented-trap-not-gated, template-embeds-unnamed-exception, session-header-dual-writer, delegation-brief-cited-nonexistent-skill-path, compaction-line-savings-overestimate, ssot-wording-borderline-lines, ssot-class-a-grep-guard-gap]
+steps_completed: [ideation, planning, execution, wrap-up]
+shipped: [skill-prose-template-drift, documented-trap-not-gated, template-embeds-unnamed-exception, duplicate-lifecycle-writers-drift, delegation-brief-cited-nonexistent-skill-path, compaction-line-savings-overestimate, ssot-wording-borderline-lines, ssot-class-a-grep-guard-gap]
 ---
 
 # Delegation Overhaul + `.gobbi` SSOT Reconciliation Shipped
@@ -57,7 +57,7 @@ Commits `26ff349d`..`a19be2ca` (11 commits, 23 files changed, 411 insertions / 2
 - **This session's Wrap-up promotion** (commit `62ed5153`): 3 skill-owned traps appended to
   `skills/delegation/mistakes.md` (`skill-prose-template-drift`, `documented-trap-not-gated`,
   `template-embeds-unnamed-exception`); 1 project mistake
-  (`mistakes/verification/session-header-dual-writer.md`); 2 learnings
+  (`mistakes/verification/duplicate-lifecycle-writers-drift.md`); 2 learnings
   (`learnings/process/delegation-brief-cited-nonexistent-skill-path.md`,
   `learnings/process/compaction-line-savings-overestimate.md`); 2 backlog follow-ups
   (`backlogs/codex/ssot-wording-borderline-lines.md`, `backlogs/codex/ssot-class-a-grep-guard-gap.md`).
@@ -89,7 +89,7 @@ Nothing is stuck — every in-scope finding was fixed and verified within this s
   See `skills/delegation/mistakes.md#use-runtime-skill-surface-in-load-directives` (reversed 2026-07-08).
 - Any new structured `Your <field>:` header MUST be added to both `hooks/post-tool-use-agents.sh`'s
   `extract_header` set and `.claude/scripts/reconstruct-agents.sh`'s equivalent builder in the same
-  change — see `mistakes/verification/session-header-dual-writer.md`.
+  change — see `mistakes/verification/duplicate-lifecycle-writers-drift.md`.
 - A skill shipping both a policy doc (`SKILL.md`) and fill templates is one coupled artifact — a rule
   added to the prose is not "shipped" until the templates that operationalize it carry the matching
   slot. See `skills/delegation/mistakes.md#skill-prose-template-drift` and its two named instances.
@@ -111,7 +111,7 @@ time; no hard prerequisite blocks them.
 
 ## Related
 
-- [[session-header-dual-writer]] — the project mistake shipped this session
+- [[duplicate-lifecycle-writers-drift]] — the project mistake shipped this session
 - [[delegation-brief-cited-nonexistent-skill-path]] — the learning shipped this session
 - [[compaction-line-savings-overestimate]] — the learning shipped this session
 - [[ssot-wording-borderline-lines]] — the backlog follow-up shipped this session

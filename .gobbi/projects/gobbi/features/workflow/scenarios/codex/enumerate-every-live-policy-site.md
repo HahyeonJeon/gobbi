@@ -15,19 +15,19 @@ author: codex
 # Enumerate every live policy site
 
 **Category:** failure-mode
-**Coverage:** partial
+**Coverage:** covered
 
 ## Situation
 A policy appears in several prose blocks and role tables inside the same current file, while a plan names only the file.
 
 ## Inputs
-The seven current policy documents, their semantic equivalents, and the validator strings coupled to them.
+The named owner documents, their current consumers, all semantic equivalents, and the validator or schema boundaries coupled to them.
 
 ## Expected behavior
-Planning and Execution use a form-covering per-site inventory. No live policy statement or table is omitted because its file was already named once.
+Planning and Execution start from the owner map, then use scoped tracked searches over every mutable current surface. Each hit is classified line by line as owner, consumer, protected exception, immutable history, lifecycle-pending carrier, or defect. A file-level allowlist cannot hide another stale line in the same file.
 
 ## Verification
-Run the scoped semantic searches, reconcile every hit with the locked inventory, and require the final compatibility check to pass.
+Run the scoped tracked semantic searches, compare the union with the owner-and-consumer inventory, and require each owner-specific validator plus the final topology and link checks to pass.
 
 ## Related
 - [[deterministic-codex-policy-authorities]] — the design whose authorities require complete coverage.
