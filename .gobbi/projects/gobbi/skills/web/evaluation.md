@@ -56,8 +56,8 @@ new rule.
    accessibility/locale, and claim-integrity cases. Record a concrete reason for a plausible inapplicable case.
 3. Copy every check named by selected scenarios into the active checklist's `## Stage 1 Additions`. Also copy
    any directly applicable check even if no selected scenario is a close fit. Keep IDs and wording unchanged.
-4. Execute each copied item as read → do → record. Mark only `PASS`, `FAIL`, or
-   `NOT_APPLICABLE: <inspected evidence>`. A missing design precondition is not `n/a`.
+4. Execute each copied item as read → do → record. Mark only `PASS`, `FAIL:<finding-id>`, or
+   `n/a:<property>`, each with named inspected evidence. A missing design precondition is not `n/a`.
 5. Walk all seven perspectives and Overall even when a lens produces zero findings. Findings point to the
    earliest owning WEB rule and include concrete evidence, impact, correction, and verification.
 
