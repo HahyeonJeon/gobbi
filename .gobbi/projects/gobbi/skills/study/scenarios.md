@@ -1,4 +1,4 @@
-# Research Scenarios
+# Study Scenarios
 
 These scenarios exercise the read-only evidence operation in [`SKILL.md`](SKILL.md). The caller owns
 scope and workflow state; the active runtime/Record seam owns storage.
@@ -20,21 +20,21 @@ scope and workflow state; the active runtime/Record seam owns storage.
 
 - **Given:** the caller supplies an absolute Gobbi root, `planning/WORK/2`, a stable slug, question,
   decision, scope, exclusions, and evidence requirements.
-- **When:** Research validates the assignment.
+- **When:** Study validates the assignment.
 - **Then:** it retains that identity unchanged and computes the Planning iteration-2 target.
 - **Failure oracle:** it substitutes current directory, runtime identity, or another cursor.
 
 ### RS-SCN-01-B — Complete Execution envelope
 
 - **Given:** the caller supplies `execution/WORK/1` and `task-03-session-record`.
-- **When:** Research resolves the target.
+- **When:** Study resolves the target.
 - **Then:** the path includes the exact task directory before `working/iteration-1/research/`.
 - **Failure oracle:** task scope is omitted or placed in a non-Execution layout.
 
 ### RS-SCN-01-C — Missing cursor blocks
 
 - **Given:** the question and root exist but stage or task identity is absent.
-- **When:** Research validates the envelope.
+- **When:** Study validates the envelope.
 - **Then:** it returns the exact missing field and performs no search or write.
 - **Failure oracle:** a cursor is inferred from filenames, environment, or state mutation.
 
@@ -61,7 +61,7 @@ scope and workflow state; the active runtime/Record seam owns storage.
 
 - **Given:** the slug contains `../` or a separator.
 - **When:** path normalization runs.
-- **Then:** Research rejects the assignment before gathering evidence.
+- **Then:** Study rejects the assignment before gathering evidence.
 - **Failure oracle:** the normalized path escapes or is silently rewritten.
 
 ## RS-SCN-03 — Internal evidence
@@ -69,7 +69,7 @@ scope and workflow state; the active runtime/Record seam owns storage.
 ### RS-SCN-03-A — Code, tests, memory, and history agree
 
 - **Given:** all applicable internal classes describe the same behavior.
-- **When:** Research synthesizes the result.
+- **When:** Study synthesizes the result.
 - **Then:** it cites exact paths/lines or commits and labels the behavior verified.
 - **Failure oracle:** keyword snippets replace definition/call-site study.
 
@@ -83,7 +83,7 @@ scope and workflow state; the active runtime/Record seam owns storage.
 ### RS-SCN-03-C — Negative search stays scoped
 
 - **Given:** a bounded search finds no use of a mechanism.
-- **When:** Research reports the result.
+- **When:** Study reports the result.
 - **Then:** it names searched paths/patterns and says “not found in this scope,” not “does not exist.”
 - **Failure oracle:** scoped absence becomes a universal claim.
 
@@ -92,14 +92,14 @@ scope and workflow state; the active runtime/Record seam owns storage.
 ### RS-SCN-04-A — Official version-specific contract
 
 - **Given:** an official source documents behavior for the relevant current version.
-- **When:** Research cites it.
+- **When:** Study cites it.
 - **Then:** the report records the direct URL, version/date applicability, insight, relevance, and limits.
 - **Failure oracle:** a search-result snippet or secondary summary substitutes for the source.
 
 ### RS-SCN-04-B — Sources disagree
 
 - **Given:** a standard and a vendor guide use incompatible definitions.
-- **When:** Research compares them.
+- **When:** Study compares them.
 - **Then:** it explains authority and applicability, preserves both, and keeps the conclusion calibrated.
 - **Failure oracle:** votes are counted or conflict is averaged away.
 
@@ -115,7 +115,7 @@ scope and workflow state; the active runtime/Record seam owns storage.
 ### RS-SCN-05-A — Decision-focused evidence report
 
 - **Given:** several internal and external sources bear on one bounded decision.
-- **When:** Research returns its report.
+- **When:** Study returns its report.
 - **Then:** every item has Source, Insight, Why, applicability, and limitations; contradictions,
   uncertainty, recommendation, evidence-to-change, open questions, and repeatable verification appear.
 - **Failure oracle:** a link dump, unrelated stockpile, hidden uncertainty, or decision without evidence.
@@ -123,17 +123,17 @@ scope and workflow state; the active runtime/Record seam owns storage.
 ### RS-SCN-05-B — Evidence does not make the user decision
 
 - **Given:** two materially different directions remain defensible.
-- **When:** Research recommends one.
+- **When:** Study recommends one.
 - **Then:** it states the tradeoff and evidence-to-change, then returns the material choice to Discussion.
-- **Failure oracle:** Research changes scope or records the choice as final.
+- **Failure oracle:** Study changes scope or records the choice as final.
 
 ## RS-SCN-06 — Storage and memory seam
 
 ### RS-SCN-06-A — Assistant stores validated report
 
-- **Given:** Research returns a valid report and envelope.
+- **Given:** Study returns a valid report and envelope.
 - **When:** the active runtime assistant validates root, cursor, sections, and citations.
-- **Then:** the assistant stores Markdown at the exact Record-owned research path; Research itself writes
+- **Then:** the assistant stores Markdown at the exact Record-owned storage path; Study itself writes
   nothing.
 - **Failure oracle:** direct peer/researcher write, wrong iteration, or unvalidated storage.
 
@@ -148,5 +148,5 @@ scope and workflow state; the active runtime/Record seam owns storage.
 
 - **Given:** a report contains evidence useful beyond the session.
 - **When:** the current step reaches RECORD.
-- **Then:** Record may derive a typed reference candidate in staging; Research does not stage or promote it.
-- **Failure oracle:** direct `references/` or memory write, or a fake candidate for clean/non-durable research.
+- **Then:** Record may derive a typed reference candidate in staging; Study does not stage or promote it.
+- **Failure oracle:** direct `references/` or memory write, or a fake candidate for clean/non-durable study.

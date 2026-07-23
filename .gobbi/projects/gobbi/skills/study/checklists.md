@@ -1,4 +1,4 @@
-# Research Checklists
+# Study Checklists
 
 Copy applicable items into the caller's ordinary checklist. This source remains unchecked. `N/A`
 requires an explicit applicability reason and evidence.
@@ -55,7 +55,7 @@ requires an explicit applicability reason and evidence.
   recommendation, evidence-to-change, owned open questions, and repeatable verification.
   - **Scenarios:** RS-SCN-05-A.
   - **Evidence:** required report sections.
-- [ ] **RS-CHK-SYN-04** `[gate/killer, read-do]` Research does not change scope, make a material user
+- [ ] **RS-CHK-SYN-04** `[gate/killer, read-do]` Study does not change scope, make a material user
   choice, accept work, or substitute popularity for applicability.
   - **Scenarios:** RS-SCN-04-B, RS-SCN-05-B.
   - **Evidence:** recommendation language and Discussion handoff.
@@ -66,7 +66,7 @@ requires an explicit applicability reason and evidence.
 
 ## Write-boundary gate
 
-- [ ] **RS-CHK-WR-01** `[gate/killer, read-do]` Research returns Markdown and its envelope but performs
+- [ ] **RS-CHK-WR-01** `[gate/killer, read-do]` Study returns Markdown and its envelope but performs
   no repository, worktree, session, staging, cache, or durable-memory write.
   - **Scenarios:** RS-SCN-06-A through RS-SCN-06-C.
   - **Evidence:** pre/post changed-path inventory and status report.
@@ -79,7 +79,7 @@ requires an explicit applicability reason and evidence.
   - **Scenarios:** RS-SCN-06-B.
   - **Evidence:** before/after digest and exact error.
 - [ ] **RS-CHK-WR-04** `[required, read-do]` Durable evidence reaches memory only through a RECORD-derived
-  typed staging candidate and later Wrap-up promotion; clean/non-durable research may leave staging empty.
+  typed staging candidate and later Wrap-up promotion; clean/non-durable study may leave staging empty.
   - **Scenarios:** RS-SCN-06-C.
   - **Evidence:** staging provenance or explicit no-candidate disposition.
 

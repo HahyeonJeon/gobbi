@@ -44,7 +44,7 @@ Mandatory load:
 Load when relevant:
 
 - Project skill — when the question is about project conventions or architecture.
-- The specific domain skill — `git`, `research`, `evaluation`, `delegation`, `discussion`, `record`, etc. — if the question touches that domain. When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
+- The specific domain skill — `git`, `study`, `evaluation`, `delegation`, `discussion`, `record`, etc. — if the question touches that domain. When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
 
 You almost never need workflow phase docs. If the manager asks you to read one, do; otherwise skip.
 

@@ -112,7 +112,7 @@ artifact, or verdict path.
 ### ST-SCN-05-A — Minimal and ideal options receive equal scrutiny
 
 - **Given:** a design-bearing branch needs a direction.
-- **When:** Research returns applicable evidence from tried-and-true, new-and-popular, and
+- **When:** Study returns applicable evidence from tried-and-true, new-and-popular, and
   first-principles sources.
 - **Then:** Startup presents distinct minimal and ideal options with effort, risk, reuse, feasibility, a
   recommendation, and evidence-to-change; the user decides.

@@ -62,7 +62,7 @@ write completion marks into this source file. `N/A` requires a reason and eviden
 - [ ] **ST-CHK-DIR-02** `[required, read-do]` Every design-bearing branch uses applicable internal and
   external research across the three evidence layers.
   - **Scenarios:** ST-SCN-05-A.
-  - **Evidence:** Research reports and source/applicability ledger.
+  - **Evidence:** Study reports and source/applicability ledger.
 - [ ] **ST-CHK-DIR-03** `[required, read-do]` Distinct minimal and ideal directions receive equal detail,
   with effort, risk, reuse, feasibility, recommendation, and evidence-to-change.
   - **Scenarios:** ST-SCN-05-A.

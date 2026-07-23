@@ -1,10 +1,10 @@
-# Research Evaluation Extension
+# Study Evaluation Extension
 
-Use this companion inside the ordinary evaluation of an artifact that materially relies on a Research
+Use this companion inside the ordinary evaluation of an artifact that materially relies on a Study
 report. It adds evidence-quality questions to the seven perspectives plus Overall; it does not create a
-Research verdict, report, evaluator, or output path.
+Study verdict, report, evaluator, or output path.
 
-Both fresh evaluators receive the relied-upon Research report and its stored identity envelope alongside
+Both fresh evaluators receive the relied-upon Study report and its stored identity envelope alongside
 the complete ordinary creation evidence. Neither sees the other evaluator's report.
 
 ## Perspective extensions
@@ -26,7 +26,7 @@ constraints? Are benchmark conditions, versions, workloads, and uncertainty visi
 
 ### Aesthetics
 
-For research that informs experience or visual direction, are references applicable and analyzed for
+For study that informs experience or visual direction, are references applicable and analyzed for
 specific transferable properties rather than copied by popularity? Is the evidence precise enough to
 guide design without pretending to be the design itself?
 
@@ -68,7 +68,7 @@ read-only/storage boundary.
 
 ## Verdict effect
 
-A material Research defect affects the ordinary artifact verdict:
+A material Study defect affects the ordinary artifact verdict:
 
 - **PASS:** decisive claims are supported by applicable, verifiable evidence; limits and contradictions
   are explicit; identity and write boundaries hold.
@@ -79,4 +79,4 @@ A material Research defect affects the ordinary artifact verdict:
   decision.
 
 The ordinary aggregator, finding ledger, user disposition gate, and full-iteration revision rules remain
-owned by Evaluation and Orchestration. Research never applies a finding or launches a retry.
+owned by Evaluation and Orchestration. Study never applies a finding or launches a retry.
