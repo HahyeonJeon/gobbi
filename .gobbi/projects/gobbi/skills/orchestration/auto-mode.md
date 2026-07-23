@@ -112,7 +112,7 @@ The EVALUATION phase (row 3) in every step follows [§7 — Evaluation disciplin
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | `discuss.mode = "agent"` in Auto default — manager constructs delegation prompt without per-step user gate; Always-Ask categories still fire per §3. | manager orchestration: [discussion](../discussion/SKILL.md), [delegation](delegation.md); specialist phase load: — | manager |
-| 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | manager orchestration: [planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
+| 2 | `PLAN_DRAFT` | Spawn `leader` subagent(s). Collect the draft Plan. | manager orchestration: [workflow/planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode`. | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Full PASS path. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | manager orchestration: —; specialist phase load: — | manager |
@@ -187,7 +187,7 @@ Always-Ask overrides `discuss.mode` unconditionally.
 
 When the Planning leader's research-backed analysis substantively disagrees with the user's stated
 Ideation direction, the manager escalates via the USER CHALLENGE primitive in
-[`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md). The 5-field card
+[`orchestration/workflow/planning.md § USER CHALLENGE`](workflow/planning.md#user-challenge). The 5-field card
 (What the user said / What the leader recommends / Why / What we might be missing / If we're
 wrong, the cost is) fires through the active runtime's user-decision primitive. USER CHALLENGE is **never auto-decided**.
 The user's original direction is the default; the leader's recommendation only wins if the user
@@ -392,7 +392,7 @@ Scan this at any production-integration boundary:
   Always-Ask matrix (Design / Scope / Destructive categories, full table with examples and
   why-always-ask rationale). §3 of this doc references and restates it; `discussion/SKILL.md`
   is the single source of truth.
-- [`planning/SKILL.md § Core Principles § USER CHALLENGE`](../planning/SKILL.md) — 5-field
+- [`orchestration/workflow/planning.md § USER CHALLENGE`](workflow/planning.md#user-challenge) — 5-field
   escalation card for leader-user disagreement. Referenced in §3.4.
 - [`record/SKILL.md`](../record/SKILL.md) — the unmodified base RECORD
   procedure. Auto Mode runs this base procedure in full (no local override).

@@ -210,7 +210,7 @@ created-at: <ISO-8601 timestamp>
 - <item-1> — pointer (e.g., #258, backlog/foo.md)
 ```
 
-Consuming skills: `research/SKILL.md`, `ideation/evaluation.md`, `orchestration/workflow/evaluation.md`, `planning/SKILL.md`, `planning/evaluation.md` — each references this section as the canonical schema. Do not define Scope Contract fields elsewhere.
+Consuming skills: `research/SKILL.md`, `ideation/evaluation.md`, `orchestration/workflow/evaluation.md`, `orchestration/workflow/planning.md`, `planning/evaluation.md` — each references this section as the canonical schema. Do not define Scope Contract fields elsewhere.
 
 ---
 

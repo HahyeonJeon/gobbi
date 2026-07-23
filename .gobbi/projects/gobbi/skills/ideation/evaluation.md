@@ -115,7 +115,7 @@ Scope Contract schema canonical at `evaluation/SKILL.md` § Scope Contract Schem
 
 | Tool | Use for |
 |---|---|
-| Read the project's Planning skill's input requirements | Confirm the draft contains everything Planning expects |
+| Read `orchestration/workflow/planning.md` input requirements | Confirm the draft contains everything Planning expects |
 | Test the "3am test" by reading only the artifact | Identify what context is missing without the leader's session |
 
 ### Perspective-specific anti-patterns

@@ -171,7 +171,7 @@ Status enum across all spawned agents: `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CO
 |---|---|
 | [`ideation`](../ideation/SKILL.md) | Ideation Loop — leader's four sub-step procedure (Frame / Lock Scope / Research / Design). |
 | [`preparation`](../preparation/SKILL.md) | Preparation Loop — leader's readiness check (Read Ideation / Design+Memory / Execution Skills / Gap Resolution). |
-| [`planning`](../planning/SKILL.md) | Planning Loop — leader's task decomposition with file map, dependency graph, agent assignment, self-review (Sub-steps A-E). |
+| [`orchestration/workflow/planning.md`](../orchestration/workflow/planning.md) | Planning Loop — leader's task decomposition with file map, dependency graph, agent assignment, self-review (Sub-steps A-E). The generic `planning` skill is the on-demand, workflow-agnostic planning SOP the loop reaches for craft. |
 | [`execution`](../execution/SKILL.md) | Execution Loop — per-task implementation; executor's 5-phase WORK lifecycle (Study → Plan → Execute → Verify → Commit). |
 | [`wrap-up`](../wrap-up/SKILL.md) | Wrap-up Loop — assistant's session consolidation + memory promotion (sole writer to memory among the workflow loops). |
 

@@ -178,7 +178,7 @@ slice's worth of work.
 | # | Phase | Action | Refs | Agent |
 |---|---|---|---|---|
 | 1 | `DISCUSSION` | Forced user-driven per §9. Manager + user agree on decomposition shape. | manager orchestration: [discussion](../discussion/SKILL.md); specialist phase load: — | manager |
-| 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | manager orchestration: [planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
+| 2 | `WORK` | Spawn the `leader` subagent for light decomposition. Output = ordered sub-step list with success criteria. | manager orchestration: [workflow/planning.md](workflow/planning.md); specialist phase load: [../planning/SKILL.md](../planning/SKILL.md) | leader |
 | 3 | `EVALUATION` | Run per `workflow.planning.evaluate.mode` (default `always`). | manager orchestration: [evaluation.md](workflow/evaluation.md); specialist phase load: [../evaluation/SKILL.md](../evaluation/SKILL.md) | evaluator |
 | 4 | `RECORD` | Runs the unmodified base `record/SKILL.md` procedure per §4. | manager orchestration: [record.md](workflow/record.md); specialist phase load: [../record/SKILL.md](../record/SKILL.md) (+ [../memory/memory-map.md](../memory/memory-map.md)) | assistant |
 | 5 | `ITER / EXIT` | Same exit semantics as Step 2. | manager orchestration: —; specialist phase load: — | manager |

@@ -149,9 +149,9 @@ Three categories where the manager MUST ask the user regardless of how confident
 
 When a decision touches an Always-Ask category, the manager uses the active runtime's user-decision primitive with the full question card. The user's answer is binding.
 
-### User Challenge (separate tier — already locked in `planning/SKILL.md`)
+### User Challenge (separate tier — already locked in `orchestration/workflow/planning.md`)
 
-When the leader's research-backed analysis substantively disagrees with the user's stated direction (typically surfaced during Planning), the manager runs a USER CHALLENGE escalation using the 5-field card defined in [`planning/SKILL.md` § Core Principles](../planning/SKILL.md#core-principles): `What the user said / What the leader recommends / Why / What we might be missing / If we're wrong, the cost is`. The user's original direction is the default — the leader's recommendation only wins if the user explicitly accepts.
+When the leader's research-backed analysis substantively disagrees with the user's stated direction (typically surfaced during Planning), the manager runs a USER CHALLENGE escalation using the 5-field card defined in [`orchestration/workflow/planning.md` § USER CHALLENGE](../orchestration/workflow/planning.md#user-challenge): `What the user said / What the leader recommends / Why / What we might be missing / If we're wrong, the cost is`. The user's original direction is the default — the leader's recommendation only wins if the user explicitly accepts.
 
 USER CHALLENGE is **never auto-decided**. It is the manager's tool for surfacing leader-user friction with structure.
 

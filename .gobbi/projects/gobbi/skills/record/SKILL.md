@@ -254,7 +254,7 @@ Every iteration:
 - [ ] `session.json.workflow.{loop}.iterations[]` includes this iter's `{iter, verdict, finishedAt, evaluation_dir: "evaluation/iter{n}/"}` (full schema; do not omit `evaluation_dir`)
 - [ ] No writes to feature memory or memory
 
-> **Per-loop exit-checklists inherit this runtime-aware gate.** The "transcript copied" exit gate is restated near-verbatim in each loop's RECORD exit checklist (`ideation/SKILL.md`, `planning/SKILL.md`, `preparation/SKILL.md`, `execution/SKILL.md`). Each of those RECORD sections carries an explicit "Canonical procedure: `record/SKILL.md` … do not re-derive the shared procedure here" deferral, so they INHERIT this runtime-aware branch (Codex-null = degraded-pass; Claude-null = loud failure) with NO independent edit.
+> **Per-loop exit-checklists inherit this runtime-aware gate.** The "transcript copied" exit gate is restated near-verbatim in each loop's RECORD exit checklist (`ideation/SKILL.md`, `orchestration/workflow/planning.md`, `preparation/SKILL.md`, `execution/SKILL.md`). Each of those RECORD sections carries an explicit "Canonical procedure: `record/SKILL.md` … do not re-derive the shared procedure here" deferral, so they INHERIT this runtime-aware branch (Codex-null = degraded-pass; Claude-null = loud failure) with NO independent edit.
 
 `PASS` iteration additionally:
 - [ ] `outputs/` directory contains one or more files, each carrying valid frontmatter per [Artifact frontmatter schema](#artifact-frontmatter-schema)
