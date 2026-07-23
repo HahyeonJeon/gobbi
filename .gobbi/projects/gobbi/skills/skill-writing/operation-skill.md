@@ -112,7 +112,7 @@ may not repair a missing parent requirement.
 
 ### S8 — Load scenario and write `scenarios.md`
 
-Load [`../scenario/SKILL.md`](../scenario/SKILL.md) completely. Derive scenario families from the parent flow,
+Load [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) completely. Derive scenario families from the parent flow,
 disposition the full coverage frame, and include ordinary, alternative-valid, boundary, failure/recovery,
 adversarial, change, and counterfactual cases when their triggers apply.
 
@@ -122,7 +122,7 @@ case.
 
 ### S9 — Load checklist and write `checklists.md`
 
-Load [`../checklist/SKILL.md`](../checklist/SKILL.md) completely. Convert every scenario obligation into one or
+Load [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) completely. Convert every scenario obligation into one or
 more atomic binary checks. Declare operational mode, keep the source unchecked, identify real pause points,
 and give every gate or required item a pass condition, evidence method, and on-fail route.
 

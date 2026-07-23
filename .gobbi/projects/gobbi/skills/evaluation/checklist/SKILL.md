@@ -275,7 +275,7 @@ category model. Apply CR-3, CR-5, CR-6.
 
 Freeze the source version, resolve each run on a filled copy, record coverage-closure and acceptance
 separately, and in evaluation mode load the causal finding, coverage, verdict, and handoff requirements from
-`../evaluation/SKILL.md`. Apply CR-1, CR-3, CR-4, CR-6.
+`../SKILL.md`. Apply CR-1, CR-3, CR-4, CR-6.
 
 ---
 
@@ -288,11 +288,11 @@ external owner.
 - [`../scenario/SKILL.md`](../scenario/SKILL.md) validates the scenario set this skill reads as a P3
   input, and the consumer relationship in which a scenario set references this skill's `Check` definition
   and two-gate / acceptance machinery.
-- [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
+- [`../SKILL.md` § Rules](../SKILL.md#rules) validates the seven perspectives and
   fixed order an evaluation-register grouping and its filled copy align to.
-- [`../evaluation/SKILL.md` § Close coverage](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results)
+- [`../SKILL.md` § Close coverage](../SKILL.md#6-close-coverage-and-challenge-the-results)
   validates the evidence-bearing completed checklist that an evaluation-mode filled copy supplies.
-- [`../evaluation/SKILL.md` § Perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives)
+- [`../SKILL.md` § Perspective investigation](../SKILL.md#5-investigate-the-subject-across-perspectives)
   validates the causal finding content a failed checklist row cites.
-- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
+- [`../../skill-writing/SKILL.md`](../../skill-writing/SKILL.md) validates the shared authoring gates and the
   type-specific section contract that will apply when this legacy skill is substantively revised.
