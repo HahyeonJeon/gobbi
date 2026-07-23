@@ -134,7 +134,8 @@ After creating or changing a skill-owned `skills/{skill}/mistakes.md` home, run 
 
 ## Output paths
 
-RECORD writes follow the routing defined in `evaluation/SKILL.md` § Finding Metadata → Domain `process`.
+The active Record and workflow contracts own these Gobbi-specific output paths. The general Evaluation skill
+does not route or store mistake candidates.
 
 | Path | Written by | Written |
 |---|---|---|

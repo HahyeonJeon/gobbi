@@ -1,10 +1,11 @@
 # UI Design — Evaluation Entry
 
-Evaluator entrypoint for grading one complete UI design run. It extends the active Gobbi phase evaluation with
-the UI scenario and checklist sources. It does not replace the active phase's four stages, seven-perspective
-order, finding metadata, scoring, verdict thresholds, output paths, or nine-output contract.
+Evaluator entrypoint for grading one complete UI design run. It extends the general Evaluation method with the
+UI scenario and checklist sources. It does not replace the eight-step method, perspectives, causal finding
+content, completed checks, or declared verdict derivation. When Gobbi calls it, the active workflow adapter
+continues to own its stages, finding metadata, scoring, output paths, and report contract.
 
-At Stage 0, load and read the complete UI bundle:
+Load and read the complete UI bundle before building the evaluation frame. In Gobbi, this happens at Stage 0:
 
 1. [`SKILL.md`](SKILL.md) — sole UI policy owner.
 2. [`ideation.md`](ideation.md) — user-decision procedure and gate trace.
@@ -12,10 +13,11 @@ At Stage 0, load and read the complete UI bundle:
 4. [`checklists.md`](checklists.md) — unchecked operational evidence source.
 5. This `evaluation.md` entry — selection, UI perspective lenses, verification, and Overall anchors.
 
-Also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md` bundle. At Stage 1, reconcile
+When used inside Gobbi, also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md`
+bundle. At Stage 1, reconcile
 its seed frame with the applicable UI cases and copy selected `UI-CHECK-*` items into the active evaluator's
 filled checklist under `## Stage 1 Additions`. Never edit or tick the shipped UI source. Record findings only
-through the active Gobbi schema and destinations.
+through the active Gobbi adapter's schema and destinations.
 
 ## Parent-clause crosswalk
 

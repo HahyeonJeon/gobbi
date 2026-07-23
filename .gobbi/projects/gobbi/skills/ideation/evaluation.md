@@ -1,6 +1,8 @@
 # Ideation Evaluation Entry
 
-Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It adds Ideation-specific lenses to the one complete evaluator report. It creates no extra output and changes no central finding, checklist, or verdict rule.
+Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It adds Ideation-specific lenses to one
+complete evaluation result. It creates no extra result and changes no causal finding, checklist, or verdict
+rule. A calling workflow owns output mechanics.
 
 ## Required inputs
 

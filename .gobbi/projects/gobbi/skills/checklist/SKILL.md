@@ -13,7 +13,7 @@ checklist, or to rewrite one, for operational execution, design obligations, or 
 A checklist declares its mode and use-style up front, protects a few critical items at each pause
 point, and resolves every item through one closed state machine. It reads a scenario set's obligations
 when one exists; it does not replace a procedure, a scenario narrative, a test suite, or the evaluation
-finding schema.
+finding ledger.
 
 ---
 
@@ -274,8 +274,8 @@ category model. Apply CR-3, CR-5, CR-6.
 ### P9 — Freeze the source and resolve the filled copies
 
 Freeze the source version, resolve each run on a filled copy, record coverage-closure and acceptance
-separately, and in evaluation mode load the handoff contract from `../evaluation/SKILL.md` (copy-then-tick
-plus the nine-output). Apply CR-1, CR-3, CR-4, CR-6.
+separately, and in evaluation mode load the causal finding, coverage, verdict, and handoff requirements from
+`../evaluation/SKILL.md`. Apply CR-1, CR-3, CR-4, CR-6.
 
 ---
 
@@ -290,9 +290,9 @@ external owner.
   and two-gate / acceptance machinery.
 - [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
   fixed order an evaluation-register grouping and its filled copy align to.
-- [`../evaluation/SKILL.md` § Complete the evaluation checklist](../evaluation/SKILL.md#13-complete-the-evaluation-checklist)
+- [`../evaluation/SKILL.md` § Close coverage](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results)
   validates the evidence-bearing completed checklist that an evaluation-mode filled copy supplies.
-- [`../evaluation/SKILL.md` § Write findings](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema)
-  validates the finding schema a failed checklist row cites.
+- [`../evaluation/SKILL.md` § Perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives)
+  validates the causal finding content a failed checklist row cites.
 - [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
   type-specific section contract that will apply when this legacy skill is substantively revised.

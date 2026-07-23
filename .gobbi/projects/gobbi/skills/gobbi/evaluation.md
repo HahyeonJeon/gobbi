@@ -1,6 +1,9 @@
 # Evaluating the Gobbi Bootstrap
 
-This is the evaluation entrypoint for the Gobbi bootstrap operation. It adds bootstrap-specific scenarios, checks, perspective lenses, and verification routes to the active productive-step evaluation. It does not replace [`../evaluation/SKILL.md`](../evaluation/SKILL.md), alter its finding schema or verdict rules, or create another evaluator output.
+This is the evaluation entrypoint for the Gobbi bootstrap operation. It adds bootstrap-specific scenarios,
+checks, perspective lenses, and verification routes to the general
+[`../evaluation/SKILL.md`](../evaluation/SKILL.md) method. It does not replace that method's causal findings,
+completed checks, or verdict derivation. The active Gobbi workflow owns its schema and output.
 
 ## Entry
 

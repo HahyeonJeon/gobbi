@@ -1,8 +1,9 @@
 # Skill Writing — Evaluation Entry
 
-Evaluator entrypoint for grading a skill-writing result. It extends a productive step's EVALUATION with the
-skill-writing scenario and checklist sources. One fresh independent system report still contains the seven
-perspectives, Overall, the finding ledger, the completed checklist, and its evidence-derived verdict.
+Evaluator entrypoint for grading a skill-writing result. It extends the general Evaluation method with the
+skill-writing scenario and checklist sources. One independent evaluation result still contains the seven
+perspectives, Overall, the causal finding ledger, the completed checklist, and its evidence-derived verdict.
+A calling workflow may add its own identity, schema, validation, and storage requirements.
 
 Load [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and the target skill's complete canonical
 directory. For an operation target, include all direct children and its plural verification bundle.

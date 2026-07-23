@@ -1,6 +1,10 @@
 # EVALUATION Manager Adapter
 
-[`evaluation/SKILL.md`](../../evaluation/SKILL.md) owns the evaluator method, seven perspective methods, Overall, finding schema, checklist completion, confidence, severity, and dispositions. Its schema and report validator own mechanical report validity. This adapter owns fresh dispatch, independence, aggregation, the user disposition gate, and transition evidence.
+[`evaluation/SKILL.md`](../../evaluation/SKILL.md) owns the general evaluator method, seven perspectives plus
+Overall, causal finding content, checklist completion, and declared verdict derivation. This adapter applies
+Gobbi's fresh dual-system dispatch, identity and independence constraints, exact finding metadata, confidence
+and severity scales, dispositions, Record-owned JSON schema, report rendering and validation, aggregation, user
+disposition gate, storage, and transition evidence.
 
 ## Entry
 

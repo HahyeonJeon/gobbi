@@ -2,7 +2,7 @@
 
 A code review protects the health of the codebase. It catches defects before they ship and keeps the code something the next person can change safely. This doc is the reviewer's playbook: the concrete points a reviewer checks, and the procedure by which a review is conducted. It is a sibling of `coding/SKILL.md` — where the skill states what good code *is*, this doc states what a reviewer *looks for* and *does*. It is usable in a normal pull-request review, in an executor's preflight self-review, and before or outside a formal gate. The detailed relationship to the other coding docs is stated in the next section, up front, so a reader knows which doc to open.
 
-The taxonomy traces each point to a `coding/SKILL.md` principle by number — written `coding P8` and so on — so the review activity is grounded in the same principle set the author wrote against, never restating the principle body. The procedure reuses gobbi's existing evaluation vocabulary — the seven perspectives, the finding schema, the dispositions, and the UPPERCASE verdicts — rather than inventing a parallel one.
+The taxonomy traces each point to a `coding/SKILL.md` principle by number — written `coding P8` and so on — so the review activity is grounded in the same principle set the author wrote against, never restating the principle body. The procedure reuses the general evaluation perspectives, causal finding content, and UPPERCASE verdicts rather than inventing a parallel review method. A Gobbi caller may add its own finding metadata, dispositions, and output shape.
 
 ---
 
@@ -15,7 +15,7 @@ Three coding docs and one built-in command share the review space. They overlap 
 | `coding/SKILL.md` | **Write-side principles** — what good code *is* | the author, while writing | 17 principles, each Why / Practice / Anti-pattern |
 | `coding/review.md` (this doc) | **Review-side playbook** — the points a reviewer *checks* and how a review is *conducted* | the reviewer (human or agent), standalone or as the substance behind `/code-review` | a taxonomy by review theme + a conduct-a-review procedure |
 | `coding/evaluation.md` | **Evaluator's executable frame** — the per-perspective scenario/checklist machinery used to grade a change-set against the 17 principles | the gobbi evaluator agent, at evaluation Stage 0–3 | the 7 evaluation perspectives × seed scenarios + attached checklists, keyed to `(P1)…(P17)` |
-| `evaluation/SKILL.md` | **The gobbi evaluation contract** — the 7 perspectives, the finding schema, the scoring thresholds | the evaluator and the manager | stage procedure + finding metadata + scoring |
+| `evaluation/SKILL.md` | **The general evaluation method** — the 7 perspectives plus Overall, causal findings, completed checks, and declared verdict derivation | any independent evaluator | context + evidence + coverage + findings + verdict + handoff |
 
 The `/code-review` built-in command is a generic review trigger with no gobbi-aware substance of its own; this playbook is the substance a reviewer applies when running it.
 
@@ -35,7 +35,7 @@ A review ends in one of three outcomes — the canonical gobbi verdicts, always 
 - **REVISE** — a High-severity finding with Confidence ≥ 50 stands; the change returns to its author with the findings that drove the verdict.
 - **FAIL** — a Critical-severity finding with Confidence ≥ 75 stands; the change is blocked until the defect is repaired.
 
-The exact thresholds and the qualitative bar live in Phase 5. The Severity and Confidence scales are gobbi's canonical scales from `evaluation/SKILL.md`.
+This playbook declares its exact thresholds and qualitative bar in Phase 5. A caller may impose a compatible formal scale before the review begins.
 
 ---
 
@@ -51,7 +51,7 @@ Thirteen review points, broadest first. Each point uses one shape:
 
 Points 3 and 6 each carry two first-class sub-checks, both at full depth.
 
-**Craft findings and the Domain rule.** Some points below — naming, imports, file and directory placement, and other style craft — have no dedicated Domain in `evaluation/SKILL.md`'s canonical set. Map such a finding this way, and never any other: when it actively misleads a reader or caller, record it as `design_flaw` (or `assumption_risk`) with Domain `general` — for a non-`general` Type the Domain is a frontmatter tag, which is valid. A finding whose Type and Domain are **both** `general` violates the `evaluation/SKILL.md` metadata contract — never emit one. When a craft issue is only cosmetic preference or something the linter already catches, do not manufacture a `general`/`general` finding: drop it under the Style-preference or Linter-catchable false-positive category, or escalate the taxonomy gap.
+**Craft findings and the Domain rule.** Some points below — naming, imports, file and directory placement, and other style craft — have no dedicated Domain in this playbook's Gobbi-compatible set. When a craft issue actively misleads a reader or caller, record it as `design_flaw` or `assumption_risk` with Domain `general`. Do not use both Type `general` and Domain `general`. When the issue is only cosmetic preference or something the linter already catches, do not manufacture a finding: drop it under the Style-preference or Linter-catchable false-positive category, or surface the taxonomy gap to the caller.
 
 ### 1. Scope & requirement fit
 
@@ -385,7 +385,9 @@ A defect found at the top of this list often dissolves the items below it — th
 
 ### Phase 4 — Write findings
 
-Each finding carries gobbi's **canonical** schema from `evaluation/SKILL.md`, and no other fields:
+For standalone use, record the same causal content in readable prose. For a formal Gobbi handoff, use this
+Gobbi-compatible finding record; the active workflow adapter owns its machine serialization and may require
+additional provenance fields:
 
 - `finding-id` — the stable idempotency key, set on first creation.
 - **Type** — one of `scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`.
@@ -396,7 +398,8 @@ Each finding carries gobbi's **canonical** schema from `evaluation/SKILL.md`, an
 - **location** — the file and line.
 - The body: Issue / Evidence / Why-it-matters / Change-needed.
 
-There is **no** `blocking` field — it is not a canonical finding field. Inline review comments may use Conventional-Comments labels and a decoration, and the decoration **maps onto** Severity and Disposition rather than being stored:
+This playbook does not add a `blocking` field. Inline review comments may use Conventional-Comments labels and
+a decoration, and the decoration maps onto Severity and Disposition rather than being stored:
 
 | Conventional-Comments element | Maps onto |
 |---|---|
@@ -419,7 +422,8 @@ Compute the verdict from the mechanical thresholds, using the canonical UPPERCAS
 - **REVISE** — a High-severity finding with Confidence ≥ 50.
 - **PASS** — otherwise; only Medium or Low findings remain.
 
-Only open, disputed, or newly-surfaced findings drive the verdict — a finding already addressed in this change does not count against it, consistent with `evaluation/SKILL.md`.
+Only open, disputed, or newly surfaced findings drive this playbook's verdict. A finding already addressed in
+the reviewed version does not count against it.
 
 Apply the qualitative bar on top of the thresholds: approve once the change **improves the overall health of the codebase**, even when it is not perfect; decide by principle and data, not by personal preference; and do not hold a change hostage for days over nits — mark a non-required polish item non-blocking and let it ship. The handoff package is the verdict, the findings that drove it, the lower-severity findings recorded for context, and a **Preserve-list** — what the change got right, so a REVISE iteration does not undo it.
 
@@ -427,7 +431,9 @@ Apply the qualitative bar on top of the thresholds: approve once the change **im
 
 ## Gobbi Integration
 
-A review run under this playbook is **expressible in gobbi's existing evaluation vocabulary** — the same seven perspectives, the same finding schema, the same UPPERCASE verdicts — so a standalone review and a formal gobbi EVALUATION speak one language. The taxonomy points map onto the perspectives like this:
+A review run under this playbook is expressible in the general Evaluation method's seven perspectives plus
+Overall, causal findings, and UPPERCASE verdicts. A Gobbi workflow adapter can add its formal metadata and
+output shape without changing the substantive review. The taxonomy points map onto the perspectives like this:
 
 | Taxonomy point | Owning evaluation perspective(s) |
 |---|---|
@@ -445,13 +451,15 @@ A review run under this playbook is **expressible in gobbi's existing evaluation
 | 12 Consistency & blast radius | Consistency |
 | 13 Review communication | (meta — governs how findings are written) |
 
-Every finding this playbook produces uses the canonical Type / Domain / Disposition / Confidence / Severity schema, so it drops into a gobbi per-perspective file without translation.
+Every formal Gobbi finding this playbook produces uses its compatible Type, Domain, Disposition, Confidence,
+and Severity record. Standalone findings may express the same content narratively.
 
 **This integration is described as intent, not as wiring that already runs.** Standalone, manual, and preflight use is available now. Automatic use inside the formal EVALUATION sub-phase — and the RECORD-phase capture of review findings into the session record — is **deferred until the wiring ships**: the Load Directives entry, the runtime mirrors (`.claude/`, `.codex/`, `plugins/gobbi/`), the evaluation-phase integration, and the reverse back-links from `coding/evaluation.md` and `coding/SKILL.md`. That wiring is tracked in the backlog and is not part of this doc's current contract.
 
 If that wiring is built later, it must preserve these invariants:
 
-- the canonical finding fields from `evaluation/SKILL.md`, unchanged;
+- the causal finding content and perspective ownership from `evaluation/SKILL.md`;
+- the active Gobbi workflow's required finding metadata and output contract;
 - the UPPERCASE verdicts PASS / REVISE / FAIL;
 - the REVISE trigger as a High-severity finding with Confidence ≥ 50;
 - no `blocking` finding field;
@@ -485,7 +493,8 @@ Six common change types, with the taxonomy points each one leads with and the ou
 A reviewer self-check, run on a completed review before handing off the verdict:
 
 - Every changed surface was checked against the taxonomy points that apply to it — the broadest-first order was walked, not skipped.
-- Every finding carries the full canonical schema (Type, Domain, Severity, Confidence, Disposition, location, body) and no `blocking` field.
+- Every finding carries the complete causal content plus the active caller's required metadata, and this
+  playbook adds no `blocking` field.
 - The verdict follows the mechanical thresholds, and a PASS is defensible — the review actively tried to break the change, not merely confirm it.
 - The Preserve-list is non-empty, or it states explicitly that nothing should be preserved.
 - Each comment is located, evidence-backed, and marks a preference as non-blocking rather than as a mandate.
@@ -498,7 +507,8 @@ Internal gobbi docs this playbook builds on:
 
 - `coding/SKILL.md` — the 17 language-agnostic principles; the single authoritative source every taxonomy trace resolves to.
 - `coding/evaluation.md` — the evaluator's executable frame; the framing-distinct sibling this doc cites one-way.
-- `evaluation/SKILL.md` — the canonical seven perspectives, finding schema, dispositions, and verdict thresholds the procedure reuses.
+- `evaluation/SKILL.md` — the general perspectives, causal finding content, checklist completion, and declared
+  verdict derivation the procedure reuses.
 - `principles/SKILL.md` — the 10 behavioral principles; point 13 traces `principles/SKILL.md` P7 (Say/Write Plainly).
 
 External references the taxonomy and procedure fuse:

@@ -138,5 +138,6 @@ Completion evidence: a task-scoped commit, fresh final-tree checks, complete dua
 - [Delegation](../orchestration/delegation.md) owns the executor brief, authority boundary, and status contract.
 - [Git](../git/SKILL.md) owns worktree safety, commit procedure, publication, and cleanup.
 - [Coding](../coding/SKILL.md) owns language-agnostic construction quality; language skills add concrete idioms.
-- [Evaluation](../evaluation/SKILL.md) owns independent review and finding disposition rules.
+- [Evaluation](../evaluation/SKILL.md) owns the independent review method, causal findings, and verdict
+  derivation. The active workflow adapter owns finding dispositions.
 - [Record](../record/SKILL.md) owns task evidence, typed staging, and PASS-only artifacts.

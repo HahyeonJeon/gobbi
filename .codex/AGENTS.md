@@ -89,7 +89,7 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`. Its en
 | `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, glossary, and skill routing |
 | `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Manager authority, Configuration, and global invariants |
 | `.gobbi/projects/gobbi/skills/orchestration/workflow/` | Thin step adapters and dual-system WORK mechanics |
-| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation and finding disposition |
+| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | General independent evaluation method and evidence-derived verdict |
 | `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-record mechanics and PASS-only artifacts |
 | `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Typed staging and durable promotion |
 | `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Promotion, handoff, and finalization |
