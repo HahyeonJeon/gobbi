@@ -1,13 +1,13 @@
 ---
-name: research
-description: "Use for bounded internal or external research that returns source-grounded evidence to a caller at an exact Gobbi workflow cursor."
+name: study
+description: "Use for bounded internal or external study that returns source-grounded evidence to a caller at an exact Gobbi workflow cursor."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: operation
 ---
 
-# Research
+# Study
 
-Research is a read-only evidence operation. It studies a bounded question, distinguishes what the
+Study is a read-only evidence operation. It studies a bounded question, distinguishes what the
 evidence supports from what remains uncertain, and returns a structured report to the caller. It does
 not own scope, product decisions, a workflow transition, a session-tree writer, RECORD staging, or
 durable memory.
@@ -24,7 +24,7 @@ durable memory.
    says, why it applies, and where the analogy stops.
 5. **Expose contradiction and uncertainty.** Conflicting evidence, missing evidence, scope limits, and
    open questions are part of the result, not defects to hide.
-6. **Evidence informs judgment.** Research narrows uncertainty; it never makes a user decision, changes
+6. **Evidence informs judgment.** Study narrows uncertainty; it never makes a user decision, changes
    scope, or substitutes a popularity count for applicability.
 
 ## Rules
@@ -54,7 +54,7 @@ durable memory.
   but leave scope changes, material tradeoffs, user-owned choices, and step-by-step implementation plans
   to their owning workflow specialists.
 - **RS-12 — Use only the Record-owned destination.** The active runtime assistant validates and stores
-  the returned Markdown at the cursor-derived research path. Research itself never writes that path.
+  the returned Markdown at the cursor-derived storage path. Study itself never writes that path.
 
 ## Procedure
 
@@ -68,12 +68,12 @@ Require all of the following:
 - positive `iteration`;
 - Execution task directory identity when `step` is `execution`;
 - stable kebab-case report slug;
-- research question, decision it informs, in-scope and out-of-scope boundaries;
+- study question, decision it informs, in-scope and out-of-scope boundaries;
 - required internal and external evidence classes; and
 - time, access, or source constraints.
 
 Reject a missing or contradictory envelope. Do not guess the session, cursor, task, or destination.
-The caller verifies the supplied cursor against `state.json`; Research treats that verified envelope as
+The caller verifies the supplied cursor against `state.json`; Study treats that verified envelope as
 the authority and does not mutate state.
 
 ### 2. Resolve the Record-owned target
@@ -87,7 +87,7 @@ Compute one target relative to the supplied Gobbi session root:
 
 `N` is the fixed productive-step ordinal: `1` Ideation, `2` Planning, `3` Execution, `4` Wrap-up.
 Normalize the joined path and require it to remain beneath the supplied root. This calculation is part
-of the returned envelope; it does not authorize Research to write the file.
+of the returned envelope; it does not authorize Study to write the file.
 
 ### 3. Frame the evidence test
 
@@ -137,20 +137,20 @@ Do not include hidden reasoning, credentials, raw transcript capture, or unrelat
 Return the report plus the supplied identity envelope and computed relative target. The active runtime
 assistant checks the root, cursor identity, slug, required sections, and citations, then stores the
 rendered Markdown through the Record-owned path. A validation or containment failure stores nothing and
-returns the exact error. Research does not retry by choosing another path.
+returns the exact error. Study does not retry by choosing another path.
 
 ### 9. Hand evidence to the owning workflow step
 
-The caller reads the stored report and decides how it informs the current canonical artifact. Research
+The caller reads the stored report and decides how it informs the current canonical artifact. Study
 does not update synthesis, resolve material choices, stage a reference candidate, or mark work complete.
 During RECORD, the Record owner may derive a typed reference candidate from evidence that proves durable;
-clean or non-durable research may leave staging empty. Wrap-up alone may promote an approved candidate.
+clean or non-durable study may leave staging empty. Wrap-up alone may promote an approved candidate.
 
 ## Output contract
 
 The operation returns one structured Markdown evidence report and its identity envelope. The expected
 storage path is Record-owned, cursor-derived, and relative to the caller-supplied absolute Gobbi root.
-There is no Research-owned file, staging record, or durable-memory output.
+There is no Study-owned file, staging record, or durable-memory output.
 
 ## Failure contract
 

@@ -302,7 +302,7 @@ version and repeat every applicable step with current evidence. Prior results re
 - [Scenario](../scenario/SKILL.md) owns scenario coverage, failability, and design obligations.
 - [Checklist](../checklist/SKILL.md) owns checklist construction, resolution semantics, coverage closure, and
   acceptance.
-- [Research](../research/SKILL.md) owns bounded internal and external evidence study.
+- [Study](../study/SKILL.md) owns bounded internal and external evidence study.
 - [Startup](../startup/SKILL.md) owns sparse-baseline classification.
 - [UI](../ui/SKILL.md) and [UX](../ux/SKILL.md) own specialized interface and experience evidence.
 - [Coding](../coding/SKILL.md) owns language-agnostic software review criteria.

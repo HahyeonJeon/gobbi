@@ -93,7 +93,7 @@ Derive the criteria for later choices from the approved outcome, constraints, ri
 
 ### 4. Build the evidence and governing foundation
 
-Study current project behavior, implementation patterns, prior decisions, existing design or architecture material, relevant configuration, direct evidence from representative users or affected people when applicable, and trustworthy external prior art. Use [Research](../research/SKILL.md) when a material question needs a bounded internal or external evidence operation.
+Study current project behavior, implementation patterns, prior decisions, existing design or architecture material, relevant configuration, direct evidence from representative users or affected people when applicable, and trustworthy external prior art. Use [Study](../study/SKILL.md) when a material question needs a bounded internal or external evidence operation.
 
 Assess every material source for authority, relevance, currency, applicability, and licensing. Treat a `DESIGN.md`, brand guide, design system, architecture record, runtime configuration, compiler configuration, API specification, or maintained standard as governing only when it exists and has authority over the current scope. Never require one universal filename, design tool, framework, or programming language. Record useful negative results and keep facts separate from assumptions and secondary leads.
 
@@ -167,7 +167,7 @@ Confirm that the artifact contains no ordered implementation task list, implemen
 
 - [Discussion](../discussion/SKILL.md) owns the structure and quality of user-facing questions and decisions.
 - [Startup](../startup/SKILL.md) owns read-only baseline classification and the optional sparse-baseline input packet.
-- [Research](../research/SKILL.md) owns the detailed internal and external evidence operation.
+- [Study](../study/SKILL.md) owns the detailed internal and external evidence operation.
 - [UI](../ui/SKILL.md) owns specialized interface design, prototype, direct-user testing, and interface handoff.
 - [UX](../ux/SKILL.md) owns specialized user-outcome research, experience design, prototype evaluation, and measurement handoff.
 - [Coding](../coding/SKILL.md) owns language-agnostic software design and construction principles.
