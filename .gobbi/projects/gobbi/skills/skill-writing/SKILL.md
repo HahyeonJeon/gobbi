@@ -247,9 +247,9 @@ any applicable check is `FAIL`.
 
 ## References
 
-- [`../scenario/SKILL.md`](../scenario/SKILL.md) validates the scenario-set procedure used to author an
+- [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) validates the scenario-set procedure used to author an
   operation skill's `scenarios.md` and this skill's own scenario source.
-- [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the operational checklist, evidence, coverage
+- [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) validates the operational checklist, evidence, coverage
   closure, and acceptance mechanics used by `checklists.md`.
 - [`../evaluation/SKILL.md`](../evaluation/SKILL.md) validates the evaluator perspectives, causal findings,
   completed checks, verdict derivation, and operation extension used by `evaluation.md`.

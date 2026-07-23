@@ -343,11 +343,11 @@ Challenge the draft in this order and revise on any failed probe:
 
 Replace placeholder IDs, preserve existing IDs, publish the coverage gaps and decisions, and resolve the
 final traces. In evaluation mode, freeze the source set before recording results. Before handing the set
-to evaluation, read the Evaluation [rules](../evaluation/SKILL.md#rules),
-[frame procedure](../evaluation/SKILL.md#3-build-the-scenario-and-checklist-frame),
-[perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives),
-[coverage procedure](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results), and
-[verdict procedure](../evaluation/SKILL.md#7-derive-the-perspective-and-overall-verdicts). Those sections own
+to evaluation, read the Evaluation [rules](../SKILL.md#rules),
+[frame procedure](../SKILL.md#3-build-the-scenario-and-checklist-frame),
+[perspective investigation](../SKILL.md#5-investigate-the-subject-across-perspectives),
+[coverage procedure](../SKILL.md#6-close-coverage-and-challenge-the-results), and
+[verdict procedure](../SKILL.md#7-derive-the-perspective-and-overall-verdicts). Those sections own
 the fixed perspectives, causal finding content, completed-checklist use, and evidence-derived verdict. Apply
 SR-4, SR-6, SR-8, SR-9, SR-14.
 
@@ -358,17 +358,17 @@ SR-4, SR-6, SR-8, SR-9, SR-14.
 One owner per borrowed fact; this skill owns the design-category → perspective map (a new fact, stated in
 § Procedure) and the generic category / family / case model, so those have no external owner.
 
-- [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
+- [`../SKILL.md` § Rules](../SKILL.md#rules) validates the seven perspectives and
   their fixed order that the design-category map assigns to.
-- [`../evaluation/SKILL.md` § Build the evaluation frame](../evaluation/SKILL.md#3-build-the-scenario-and-checklist-frame)
+- [`../SKILL.md` § Build the evaluation frame](../SKILL.md#3-build-the-scenario-and-checklist-frame)
   validates how evaluators select the applicable scenario and checklist coverage.
-- [`../evaluation/SKILL.md` § Perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives)
+- [`../SKILL.md` § Perspective investigation](../SKILL.md#5-investigate-the-subject-across-perspectives)
   validates the causal finding content an evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Derive verdicts](../evaluation/SKILL.md#7-derive-the-perspective-and-overall-verdicts)
+- [`../SKILL.md` § Derive verdicts](../SKILL.md#7-derive-the-perspective-and-overall-verdicts)
   validates the verdict rules an evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Close coverage](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results)
+- [`../SKILL.md` § Close coverage](../SKILL.md#6-close-coverage-and-challenge-the-results)
   validates the evidence-bearing completed checklist an evaluation-mode handoff (P9) supplies.
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the `Check` definition and the two-gate /
   acceptance mechanics (coverage ≠ acceptance) that this skill points to but does not own.
-- [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) validates the shared authoring gates and the
+- [`../../skill-writing/SKILL.md`](../../skill-writing/SKILL.md) validates the shared authoring gates and the
   type-specific section contract that will apply when this legacy skill is substantively revised.

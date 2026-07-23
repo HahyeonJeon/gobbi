@@ -299,8 +299,8 @@ version and repeat every applicable step with current evidence. Prior results re
 
 ## References
 
-- [Scenario](../scenario/SKILL.md) owns scenario coverage, failability, and design obligations.
-- [Checklist](../checklist/SKILL.md) owns checklist construction, resolution semantics, coverage closure, and
+- [Scenario](scenario/SKILL.md) owns scenario coverage, failability, and design obligations.
+- [Checklist](checklist/SKILL.md) owns checklist construction, resolution semantics, coverage closure, and
   acceptance.
 - [Study](../study/SKILL.md) owns bounded internal and external evidence study.
 - [Startup](../startup/SKILL.md) owns sparse-baseline classification.
