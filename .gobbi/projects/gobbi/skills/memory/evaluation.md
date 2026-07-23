@@ -1,6 +1,8 @@
 # Memory Evaluation Entrypoint
 
-Use this entrypoint to evaluate the [Memory operation](SKILL.md). It extends the active [Evaluation](../evaluation/SKILL.md) with Memory-specific scenarios, checks, lenses, and trace requirements. It creates no separate report shape or output path.
+Use this entrypoint to evaluate the [Memory operation](SKILL.md). It extends the general
+[Evaluation](../evaluation/SKILL.md) method with Memory-specific scenarios, checks, lenses, and trace
+requirements. A calling workflow owns any report shape or output path.
 
 ## Inputs
 
@@ -99,7 +101,9 @@ Open a finding when direct evidence shows:
 - protected payload entered durable memory; or
 - a completion claim lacks final-tree evidence.
 
-Use the finding schema, confidence, severity, provenance, checklist result, and verdict rules from [Evaluation](../evaluation/SKILL.md). The Memory companion adds subject-specific coverage only.
+Use the causal finding content, checklist completion, perspectives, and declared verdict derivation from
+[Evaluation](../evaluation/SKILL.md). When a workflow requires exact metadata, confidence or severity scales,
+provenance, or serialization, use its active adapter. The Memory companion adds subject-specific coverage only.
 
 ## Anti-patterns
 

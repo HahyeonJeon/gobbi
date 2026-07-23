@@ -58,7 +58,7 @@ verdict: pass | revise | fail | needs-attention | n/a
 {How the review was performed. The procedure followed, the criteria applied, the tools used. This is what makes the review reproducible — a future reader should be able to re-run the review and get comparable output.}
 
 ## Findings
-{The review's output — the substantive findings. Each finding with severity / confidence / evidence / proposed remediation. For evaluator-driven reviews, this section mirrors the structure of evaluation/SKILL.md's finding metadata. For human-authored reviews, the same fields apply but the form is narrative.}
+{The review's output — the substantive findings. Each finding states severity / confidence / evidence / proposed remediation. For evaluator-driven reviews, this section mirrors the causal finding content in evaluation/SKILL.md. For human-authored reviews, the same content applies but the form is narrative.}
 
 ### {Finding title}
 - **Severity**: Critical / High / Medium / Low

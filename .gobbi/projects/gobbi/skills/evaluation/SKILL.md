@@ -7,185 +7,304 @@ skill-type: operation
 
 # Evaluation
 
-Use this skill for every productive step's EVALUATION stage. One fresh evaluator independently reviews the complete frozen creation package, writes all seven perspectives plus Overall, completes the checklist, and returns one schema-valid report with an evidence-derived verdict.
-
-Run the operation once for Claude and once for Codex. Orchestration owns fresh dispatch, evaluator isolation, pair aggregation, and the user disposition gate. This skill owns the evaluator method, perspective lenses, finding schema, confidence and severity, checklist completion, report verdict, and repeat-review standard.
+Use this skill whenever a design, plan, implementation, document, interface, process, or other work needs an independent, evidence-based judgment. Evaluation compares the work and the evidence behind it with its intended outcome, governing requirements, and applicable checks across Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall. It ends with a complete finding ledger, a checklist resolved from inspected evidence, and a verdict that explains what passes, what must change, what fails, and why.
 
 ## Principles
 
-### Review the claim and the process that produced it
+### Use an independent evaluator
 
-The synthesis alone can hide dropped alternatives, weak evidence, unresolved conflict, or process shortcuts. Review both drafts, both cross-reviews, resolved decisions, scope, applicable upstream artifacts, and verification evidence.
+Use an evaluator who did not design, author, or implement the subject and has no stake in defending it.
+Creators may self-check their work, but they cannot issue its independent acceptance verdict. Disclose any
+conflict or limitation that could bias the judgment.
 
-### Every perspective must discriminate
+### Evaluate known obligations through scenarios and checks
 
-A section is complete only when it uses scenarios and checks that could fail the subject. “Looks good” is not a result. Direct evidence outranks proxy evidence, and an inspected not-applicable predicate outranks assumption.
+Turn known outcomes, requirements, decisions, risks, prior failures, and standards into concrete scenarios and
+atomic checks. Cover normal and alternative paths, invalid and boundary conditions, failure and recovery,
+harmful use, regressions, and load-bearing assumptions when relevant. Define observable failure and required
+evidence for each case. Run every applicable case before the verdict; missing evidence is a gap, not a pass.
 
-### Findings explain a root cause
+### Search beyond the prepared evaluation frame
 
-A finding states the observable symptom, the cause that produced it, exact evidence, a false-positive check, and a correction that addresses the cause. Findings with the same symptom but different root-cause hypotheses remain distinct.
+Prepared scenarios and checks cover expected risks, not every important condition. After completing them,
+inspect the whole subject across purpose, structure, performance, presentation, use, consistency, risk, and
+their interactions. Look for missing actors, states, dependencies, assumptions, harms, failure modes, and
+regressions. Evaluate each material gap and add it to the frame.
 
-### Revision resets the review
+### Find the root cause
 
-A materially changed canonical artifact is a new subject. It receives two new complete reports. Earlier reports remain evidence but cannot satisfy any perspective or checklist item for the new subject.
+State what was expected, what happened, why it matters, and what caused it. Test other plausible explanations
+before naming the cause. If evidence is incomplete, record the leading hypothesis, uncertainty, and missing
+evidence. Recommend a correction that prevents recurrence instead of hiding the symptom or weakening the check.
+
+### Make the result reproducible
+
+Record the exact subject and version, scope, evaluator independence, methods, scenarios, checks, evidence,
+results, findings, strengths, limits, uncertainties, and verdict reasoning. Make each finding locate the
+condition and explain its impact, cause, and corrective direction. Write enough for another qualified evaluator
+to reproduce, challenge, and use the judgment; detail serves traceability, not length.
 
 ## Rules
 
-### Must follow
+Evaluation applies from the moment the subject, scope, and evaluation question are fixed through a documented
+verdict. It owns the review frame, evidence standard, findings, completed checks, and reasoned verdict.
+Decisions and corrections after the verdict remain outside evaluation.
 
-- **E-1 — Be fresh and independent.** The evaluator is not a creator, persistent teammate, prior evaluator session, or the other system's evaluator. It never sees the other report before freezing its own.
-- **E-2 — Freeze the complete subject.** Bind the report to one subject digest and exact step, iteration, assignment, scope, creation package, decisions, scenarios, checks, and verification evidence.
-- **E-3 — Cover every required lens once.** The ordered perspectives are Project, Structure, Performance, Aesthetics, Usage, Consistency, and Risk, followed by Overall.
-- **E-4 — Use the strongest available evidence.** Inspect artifacts and run safe read-only checks. Name uncertainty or unevaluable claims instead of inferring a pass.
-- **E-5 — Complete the scenario and checklist frame.** Load the current step's plural companions plus [scenarios.md](scenarios.md) and [checklists.md](checklists.md). Add target-specific cases when a material property is not covered.
-- **E-6 — Use the finding schema exactly.** Every finding has unique ID, fingerprint, perspective, type, domain, disposition, confidence, severity, symptom, root cause, evidence, false-positive check, recommendation, and one-system provenance.
-- **E-7 — Keep provenance intact.** The report's system, runtime identity, and finding ID match each finding's provenance. Do not merge or rewrite another system's finding inside an independent report.
-- **E-8 — Derive verdicts from findings.** Apply the scoring rules exactly at each perspective, Overall, and report level. Do not choose a verdict from intuition.
-- **E-9 — Complete every checklist item.** Each item is PASS, FAIL, or N/A with inspected evidence. FAIL cites one or more findings; PASS and N/A cite none.
-- **E-10 — Preserve low-confidence evidence in the ledger.** Confidence changes force, not visibility. Do not hide a supported concern because it is non-blocking.
-- **E-11 — Never apply a finding.** Evaluators recommend corrections but do not edit the subject, choose user dispositions, or authorize revision.
-- **E-12 — Require fresh full rereview after material change.** All seven perspectives, Overall, the ledger, and checklist repeat for the new subject digest.
-- **E-13 — Treat an invalid report as no report.** Missing sections, duplicate perspectives, malformed fields, inconsistent verdicts, stale identity, incomplete checklist, or schema failure blocks aggregation.
-- **E-14 — Do not narrow rigor for cost.** Token or runtime cost cannot remove a perspective, a system, creation evidence, scenarios, checks, or repeat review.
+### Must-Follow
 
-### Must not follow
+- **MUST evaluate one stable, defined subject.** Identify its exact version, intended outcome, scope,
+  requirements, exclusions, and acceptance criteria before review. Stop and bind the evaluation to the new
+  version if the subject changes.
+- **MUST use an independent evaluator.** The evaluator did not design, author, or implement the subject and has
+  no stake in defending it. Record the independent judgment before reading another evaluator's conclusions,
+  and disclose any conflict or limitation that could bias the result.
+- **MUST build the known evaluation frame.** Turn intended outcomes, requirements, decisions, risks, prior
+  failures, and applicable standards into scenarios and checks. Cover normal and alternative paths, invalid and
+  boundary conditions, failure and recovery, harmful use, change, and load-bearing assumptions when relevant.
+- **MUST complete every applicable scenario and check.** Give each scenario an observable failure condition and
+  each check an atomic pass condition with named evidence. Resolve each applicable check as `PASS`,
+  `FAIL:<finding-id>`, or `n/a:<property>` from inspected evidence; missing or unevaluable evidence is a gap,
+  not a pass.
+- **MUST search beyond the prepared frame.** Inspect Project, Structure, Performance, Aesthetics, Usage,
+  Consistency, Risk, and Overall, including their interactions. Add and evaluate a target-specific scenario or
+  check for every material condition the prepared frame missed.
+- **MUST use the strongest available evidence.** Inspect the actual subject and supporting artifacts, run safe
+  checks when useful, prefer direct evidence over proxies, record exact sources and methods, and state every
+  material limitation or uncertainty.
+- **MUST write complete causal findings.** State what was expected, what was observed, why it matters, the
+  supported root cause or leading hypothesis, the evidence, the alternative explanation tested, and the
+  corrective direction. Keep findings separate when their cause hypotheses differ.
+- **MUST preserve the full finding ledger.** Record supported concerns and confirmed strengths even when they
+  are low-confidence or non-blocking. Confidence and severity change force, not visibility; preserve finding
+  authorship and provenance when more than one evaluator contributes.
+- **MUST derive every result and verdict.** Resolve checks from evidence and calculate each perspective and
+  Overall result from declared criteria and thresholds. Never substitute intuition, convenience, or the ease of
+  correction for the derivation.
+- **MUST make the result reproducible.** Record the exact subject and version, scope, evaluator independence,
+  methods, scenarios, checks, evidence, results, findings, strengths, limitations, uncertainties, and verdict
+  reasoning so another qualified evaluator can reproduce and challenge the judgment.
+- **MUST keep evaluation separate from correction.** The evaluator may recommend a corrective direction but
+  does not edit the subject, implement a correction, change the acceptance criteria, or make a decision reserved
+  for the subject's owner.
+- **MUST repeat the full applicable evaluation after material change.** Bind the result to the new version and
+  repeat every required perspective, scenario, check, finding, and verdict with current evidence. Prior results
+  remain history, not proof for the changed subject.
+- **MUST treat an incomplete or invalid result as no result.** A missing perspective, malformed finding,
+  unresolved check, stale evidence or provenance, or inconsistent verdict blocks acceptance until the complete
+  evaluation is rerun or repaired.
+- **MUST preserve required rigor under constraints.** Time, cost, or subject size may change the evaluation
+  method, but cannot remove required evidence, perspectives, scenarios, checks, or repeat review.
 
-- Do not communicate with a creator to negotiate a finding during independent review.
-- Do not read another evaluator's report before freezing this one.
-- Do not evaluate only the synthesis when creation evidence is available.
-- Do not treat file existence, a green proxy, or a creator report as proof of a semantic claim.
-- Do not combine findings solely because their text sounds similar.
-- Do not mark a prior accepted finding addressed without fresh evidence from the current subject.
-- Do not repair the subject or start revision before the manager obtains the user's disposition decision.
+### Must-Not-Follow
+
+- **NEVER treat self-review as independent evaluation.** A creator may inspect their own work, but their judgment
+  cannot supply the independent verdict.
+- **NEVER present a partial, substituted, or changing subject as a complete evaluation.** Evaluate the defined
+  subject and its applicable supporting evidence, or state exactly why the evaluation cannot proceed.
+- **NEVER infer a pass from missing or proxy evidence.** File existence, a green summary, a creator's claim, or
+  an expected result does not prove the underlying property.
+- **NEVER let prepared scenarios or checks limit the search.** Use them as the known coverage floor, then look
+  for material actors, states, dependencies, assumptions, interactions, harms, and failure modes they missed.
+- **NEVER present a symptom or unsupported assumption as the root cause.** Test plausible alternatives, state
+  uncertainty when the cause is not proven, and reject corrections that only hide the symptom or weaken a check.
+- **NEVER combine findings only because their wording or symptoms are similar.** Preserve distinct cause
+  hypotheses, evidence, authorship, and provenance.
+- **NEVER hide or soften a supported finding to reach a preferred verdict.** Low confidence, low severity, an
+  easy correction, cost pressure, or disagreement changes neither the evidence nor its visibility.
+- **NEVER apply findings or make owner decisions during evaluation.** Preserve the evaluated subject and hand
+  off findings, recommendations, limitations, and the verdict for the authorized next decision.
+- **NEVER reuse acceptance evidence after a material change.** Evaluate the changed subject with current
+  evidence instead of carrying forward prior passes, resolved checks, or addressed findings.
 
 ## Procedure
 
-### 1. Verify independence and identity
+### 1. Establish the evaluation context and needed expertise
 
-Confirm the assignment names one system, one fresh runtime identity, one step, one iteration, one stable assignment, and one frozen subject digest. Confirm the evaluator did not create the subject, is not a persistent teammate, has not evaluated an earlier iteration in the same runtime context, and cannot access the other report.
+Read the evaluation request, current subject, intended outcome, governing requirements, prior decisions,
+relevant history, and available evidence. Identify who will use the result and what decision it must support.
+Define the evaluation question, scope, exclusions, constraints, and exact subject version.
 
-If any condition fails, return BLOCKED with the identity conflict. Do not produce a nominal report.
+Identify the subject areas, expertise, standards, methods, and evidence sources needed for the evaluation. Use
+only guidance relevant to the subject and evaluation question. Specialized guidance may refine the criteria,
+scenarios, checks, and evidence methods, but it does not replace this procedure. If no specialized guidance
+applies, use this base method directly.
 
-### 2. Inventory and freeze the evidence bundle
+**Evidence:** an evaluation brief and context record with the question, intended use, subject and version,
+outcome, scope, exclusions, requirements, constraints, needed expertise, relevant guidance, and open context
+gaps.
 
-Read the canonical synthesis, Claude draft, Codex draft, both reciprocal reviews, resolved open decisions, locked scope, applicable upstream artifacts, plan or task contract, verification results, user-approved waivers, scenarios, checklist source, and process evidence. For Execution, inspect the actual diff and final tree. For Wrap-up, inspect the actual post-promotion tree, frozen manifest, preimages, applied delta, guard evidence, and handoff.
+**Next:** if the subject or evaluation question cannot be bounded, obtain the missing context before review. If
+the needed expertise or relevant guidance changes later, update the context record before evaluating the
+affected concern.
 
-Record exact paths and digests. Missing required evidence is a finding or an unevaluable stop, not permission to assume the artifact is sound.
+### 2. Define the criteria, verdict rules, and evidence plan
 
-### 3. Build the evaluation frame
+Turn intended outcomes, requirements, decisions, standards, constraints, risks, prior failures, and owner
+commitments into acceptance criteria. Before recording results, declare what `PASS`, `REVISE`, and `FAIL` mean,
+the thresholds between them, and how perspective results combine into the final verdict. Use an applicable
+governing or domain contract when it already defines these rules; otherwise define them for this evaluation.
 
-Load the current step's evaluation.md, scenarios.md, and checklists.md. Then use this skill's own companions to test the evaluation operation. Select every applicable seeded case and check. Add a target-specific case when the subject has a material actor, boundary, failure, dependency, trust surface, compatibility event, cost, locale, or evidence obligation not covered by the seed.
+Map each material claim to the strongest suitable evidence method. Methods may include test, analysis,
+inspection, demonstration, direct-user observation, static analysis, runtime evidence, measurement, telemetry,
+or document trace. Choose complete coverage when practical. When sampling is necessary, define the population,
+selection method, representative classes, complete processes, and limits.
 
-Freeze the frame before recording results. Each selected scenario must have an observable failure oracle and checklist coverage.
+Use bounded internal or external research when a material criterion, standard, prior-art claim, or evidence
+method needs further study.
 
-### 4. Review Project
+**Evidence:** a criteria and evidence plan that links each claim to its decision rule, method, source, expected
+signal, and known limitation, plus the sampling rationale when applicable.
 
-Ask whether the subject serves the right outcome, whole agreed scope, and only that scope. Check the trigger, root cause, success criteria, user decisions, obligation coverage, deferred work, and completion claims against direct evidence.
+**Next:** if a criterion has no credible evidence method or the selected sample cannot support the intended
+claim, improve the design or narrow the claim before continuing. Keep any unavoidable limit explicit.
 
-Typical failures: solving a symptom, dropped requirement, scope expansion, phantom completion, or an artifact that cannot achieve the stated outcome.
+### 3. Build the scenario and checklist frame
 
-### 5. Review Structure
+Use applicable scenario sources and target-specific risks to select the known cases. Cover normal and
+alternative paths, invalid and boundary conditions, failure and recovery, harmful or adversarial use, change
+and regression, compatibility events, and load-bearing assumptions when relevant. Give every selected scenario
+an observable failure condition and a named evidence method.
 
-Check decomposition, ownership, interfaces, dependencies, data or state transitions, task graph, schema alignment, test seams, and maintainability. Prefer established project patterns unless deviation is justified. Look for cycles, shared-state hubs, premature abstraction, orphaned exports, and misplaced ownership.
+Use applicable checklist sources to select atomic checks. Give every check a pass condition, applicability
+predicate, named evidence, and on-fail route. Freeze the selected frame before recording results. Treat it as
+the known coverage floor, not the limit of the evaluation.
 
-### 6. Review Performance
+**Evidence:** a selected scenario and checklist frame with source traces, applicability decisions, failure
+oracles, pass conditions, evidence methods, and stated coverage gaps.
 
-Check latency, throughput, capacity, external-call count, batching, timeouts, retries, cache behavior, memory and disk use, recurring cost, and measurement evidence where applicable. A design-stage subject must commit to measurement; an implementation-stage subject must provide actual measurements when the scope requires them.
+**Next:** if a material requirement, actor, state, boundary, dependency, risk, or quality obligation has no
+case or check, add one before evaluating it. Otherwise continue to step 4.
 
-### 7. Review Aesthetics
+### 4. Evaluate the known frame
 
-Check whether the artifact is self-evident, concise, convention-matched, accurately named, free of placeholders, and reviewable. For code, inspect naming, comments, formatting, and diff shape. For documents, inspect hierarchy, stable terms, first-page clarity, and filler.
+Run or inspect every applicable scenario and check using the evidence methods selected in step 2. Inspect the
+actual subject and supporting artifacts. Record observations, exact sources, commands or methods, expected and
+observed signals, and limitations as the work proceeds.
 
-A convention or ambiguity defect is not dismissed as personal taste.
+Prefer direct evidence over summaries, file existence, creator claims, or expected results. When direct
+evidence is unsafe or unavailable, use the strongest safe alternative and state what it cannot prove. Missing,
+stale, malformed, contradictory, or unevaluable evidence is a gap, not a pass.
 
-### 8. Review Usage
+**Evidence:** a result for every applicable known scenario and check, with exact inspected evidence and visible
+gaps.
 
-Read as the next real consumer: user, planner, executor, caller, operator, maintainer, or next session. Check that interfaces, instructions, errors, next actions, paths, and preconditions are usable without private context. Cover accessibility, locale, keyboard and assistive use, and actionable failure messages when applicable.
+**Next:** if the method cannot discriminate success from failure, return to step 2 or 3. If evidence is missing,
+obtain it or keep the affected claim unevaluable. Otherwise continue to step 5.
 
-### 9. Review Consistency
+### 5. Investigate the subject across perspectives
 
-Compare every surface that must agree: scope and design; obligations and tasks; task inputs and outputs; code, tests, types, docs, examples, schemas, validators, manifests, migrations, runtime references, commits, and handoff claims. Search for old names, stale paths, dangling references, one-sided lifecycle links, contradictory status, and dropped creation evidence.
+Investigate the whole subject one perspective at a time. Do not separate perspective review from causal
+analysis. Apply this cycle within every perspective, using relevant specialized guidance to refine the lens and
+its evidence:
 
-### 10. Review Risk
+1. Bring together the applicable criteria, scenario and checklist results, requirements, decisions, expected
+   behavior, and known risks.
+2. Inspect the actual subject, its evidence, and the interactions among its parts. Compare expected and observed
+   conditions while searching for actors, states, dependencies, assumptions, harms, failure modes, and
+   regressions outside the prepared frame.
+3. Trace each supported concern from its observed effect through plausible causes. Test the strongest
+   alternative explanation. Name a root cause only when evidence supports it; otherwise record the leading
+   hypothesis, uncertainty, and missing evidence.
+4. Add every material missed condition to the scenario or checklist frame, evaluate it, and revisit every
+   perspective it affects.
+5. Record the perspective's evidence-backed strengths and preserve conditions. Record each concern separately
+   with a stable finding ID, expected and observed conditions, impact, cause or hypothesis, evidence, tested
+   alternative, uncertainty, severity, confidence, and corrective direction. Preserve authorship and provenance,
+   and recommend prevention rather than symptom masking or a weaker check.
 
-Ask what breaks if the subject is wrong. Inspect security and authorization order, input trust, privacy and retention, destructive or one-way actions, concurrency, rollback, dependency and license risk, blast radius, publication authority, sensitive data, cost runaway, and recovery. Challenge unsafe defaults and proxy evidence.
+Apply the cycle through all eight lenses:
 
-Critical irreversible, trust-boundary, data-loss, or wrong-tree claims need direct evidence.
+- **Project:** test the trigger, problem root cause, intended outcome, success criteria, agreed scope,
+  requirements, decisions, obligations, deferred work, and completion claims.
+- **Structure:** test decomposition, ownership, interfaces, dependencies, data and state transitions, task or
+  process graph, schema alignment, test seams, and maintainability. Look for cycles, shared-state hubs, premature
+  abstraction, orphaned parts, and misplaced ownership.
+- **Performance:** test latency, throughput, capacity, external-call count, batching, timeouts, retries, cache
+  behavior, reliability, memory, disk, recurring cost, and measurement evidence.
+- **Aesthetics:** test self-evidence, concision, accurate naming, presentation, convention fit, hierarchy,
+  placeholders, formatting, comments, and reviewable change shape where applicable.
+- **Usage:** test the experience of each real user, planner, executor, caller, operator, maintainer, or other
+  consumer. Inspect interfaces, instructions, errors, paths, preconditions, next actions, accessibility, locale,
+  keyboard and assistive use, and recovery.
+- **Consistency:** test agreement among scope, design, obligations, tasks, behavior, code, tests, types,
+  documentation, examples, schemas, validators, manifests, migrations, runtime references, commits, evidence,
+  status, and handoff claims. Look for stale names, dangling references, one-sided lifecycle links,
+  contradictions, and dropped evidence.
+- **Risk:** test security and authorization order, input trust, privacy and retention, safety, destructive or
+  one-way actions, concurrency, rollback, dependencies and licenses, publication authority, sensitive data,
+  compliance, cost runaway, blast radius, and recovery. Require direct evidence for irreversible,
+  trust-boundary, data-loss, and wrong-target claims.
+- **Overall:** integrate cross-perspective effects, inherited assumptions, unnecessary complexity, hidden
+  orthogonal work, mechanism used in place of an outcome contract, process-result contradictions, integrated
+  behavior, and strengths that later work must preserve.
 
-### 11. Review Overall
+**Evidence:** one complete investigation record per perspective, the expanded frame and its results, a causal
+finding ledger, and a preserve list. Each entry is understandable without a closed machine schema or private
+context.
 
-Integrate cross-perspective effects without replacing the seven sections. Challenge:
+**Next:** return to steps 3 and 4 when the investigation expands the frame, then repeat the affected perspective
+cycle. Continue only when all eight perspectives have been investigated, every added condition has been
+evaluated, and every supported concern has a causal account or explicit uncertainty.
 
-- wrong assumptions that multiple sections inherited;
-- overcomplexity that satisfies no obligation;
-- orthogonal work hidden inside an otherwise valid artifact;
-- imperative mechanism where the contract should state an outcome;
-- contradictions between creation process and synthesis; and
-- material strengths that later revision must preserve.
+### 6. Close coverage and challenge the results
 
-Overall findings use perspective Overall. The preserve list names concrete verified strengths, not praise.
+Resolve every applicable checklist row from inspected evidence as `PASS`, `FAIL:<finding-id>`, or
+`n/a:<property>`. Reconcile scenarios, checks, perspectives, findings, strengths, evidence gaps, contradictions,
+and sample coverage. Confirm that each fail names its supporting finding and each not-applicable result proves
+its predicate false.
 
-### 12. Write findings with the closed schema
+Challenge false positives, false negatives, proxy evidence, alternative explanations, cosmetic compliance,
+unrepresentative sampling, and missing interactions. A completed checklist proves coverage closure, not
+acceptance.
 
-For each supported issue, record:
+**Evidence:** a completed checklist, closed coverage trace, sampling assessment, and challenge record that
+another qualified evaluator can reproduce.
 
-| Field | Contract |
-|---|---|
-| id | Unique uppercase identifier within this report |
-| fingerprint | SHA-256 of canonical sorted JSON containing symptom and rootCause |
-| perspective | One required perspective or Overall |
-| type | scenario_gap, checklist_gap, design_flaw, assumption_risk, or general |
-| domain | security, performance, test, observability, privacy, compliance, dependency, docs-sync, cost, accessibility, i18n, unevaluable, step-mismatch, regression, process, or general |
-| disposition | open for a new supported issue; addressed, disputed, deferred, or superseded only when current evidence and an existing approved disposition justify it |
-| confidence | 0, 25, 50, 75, or 100 |
-| severity | Critical, High, Medium, or Low |
-| symptom | Observable violation |
-| rootCause | Cause that produced the symptom |
-| evidence | Exact inspected evidence and consequence |
-| falsePositiveCheck | Alternate explanation tested and result |
-| recommendation | Root-cause correction, without applying it |
-| provenance | This report's system, runtime identity, and finding ID |
+**Next:** return to the earliest affected step when a challenge exposes incomplete criteria, coverage, evidence,
+or causal reasoning. Stop without a verdict while any acceptance-bearing check or material evidence gap remains
+unresolved.
 
-Do not use both type general and domain general on the same finding. Keep two findings when root-cause hypotheses differ. No finding is valid without a false-positive check.
+### 7. Derive the perspective and overall verdicts
 
-### 13. Complete the evaluation checklist
+Apply the criteria, thresholds, and aggregation method declared in step 2 to Project, Structure, Performance,
+Aesthetics, Usage, Consistency, Risk, and Overall. Keep every supported finding visible even when it does not
+change the result. Do not soften a verdict because a correction appears easy.
 
-Create at least one check for each perspective and Overall. Preserve selected operation-specific checklist IDs. Resolve every row:
+Use `PASS` when the declared acceptance conditions hold, `REVISE` when material correctable findings prevent
+acceptance, and `FAIL` when the declared failure condition holds. If a governing domain or caller contract uses
+more exact thresholds, apply the version fixed in step 2 without changing it after seeing the evidence.
 
-- PASS: direct evidence proves the claim; findingIds is empty.
-- FAIL: evidence disproves the claim; findingIds names every supporting finding.
-- N/A: inspected evidence proves the applicability predicate false; findingIds is empty.
+**Evidence:** perspective results and one final verdict with a traceable derivation from criteria, checks,
+findings, and evidence.
 
-No unchecked or advisory row belongs in the report. A completed checklist is evidence coverage, not a substitute for the finding ledger.
+**Next:** if the calculation cannot be reproduced or conflicts with a resolved check, return to step 6. Do not
+issue a nominal verdict for an incomplete or invalid evaluation.
 
-### 14. Derive perspective and report verdicts
+### 8. Consolidate and hand off the evaluation
 
-For each perspective and Overall, consider findings whose disposition is open or disputed:
+Produce one self-contained result with the subject and version, scope, evaluation question, intended use,
+independence statement, needed expertise, relevant guidance, criteria, methods, coverage, evidence, scenario
+and checklist results, findings, strengths, limitations, uncertainties, perspective results, final verdict,
+reasoning, corrective directions, and reopen conditions. Document outcomes throughout the evaluation, then
+consolidate the current result here so a cold reader can reproduce, challenge, and use it.
 
-- any Critical finding with confidence at least 75 yields FAIL;
-- otherwise any High finding with confidence at least 50 yields REVISE;
-- otherwise the section yields PASS.
+Hand the result to the caller or subject owner without editing the subject, applying a finding, changing the
+criteria, or deciding a reserved disposition. A caller or workflow adapter may add identity, machine shape,
+rendering, validation, aggregation, storage, or transition mechanics without changing this method.
 
-The report verdict is the most severe section result: FAIL over REVISE over PASS. Medium and Low findings remain visible even when the report passes. The evaluator does not soften the verdict because a correction seems easy.
+**Completion evidence:** one complete, reproducible evaluation result and an unchanged evaluated subject.
 
-### 15. Render and validate one report
-
-Return JSON matching [evaluation-report.schema.json](../record/schemas/evaluation-report.schema.json). The active-runtime record command renders it at the canonical system-labeled evaluation path. Run the evaluation validator in single-report form with expected system, step, iteration, assignment, and subject digest.
-
-The report is complete only when the schema, human section shape, machine JSON, fingerprints, provenance, checklist, and derived verdict all validate.
-
-### 16. Hand off without applying findings
-
-Return the evaluator status contract, report path, verdict, findings, evidence gaps, and preserve list. Do not inspect the other report or aggregate results. The manager validates both reports, aggregates them by severity, preserves provenance during deduplication, and presents one disposition batch to the user.
-
-No creator may begin correction until the user approves or edits the complete batch. A material correction creates a new subject digest and repeats this entire procedure in two fresh systems.
+**Failure:** if the subject changes materially before or after handoff, bind the next evaluation to the new
+version and repeat every applicable step with current evidence. Prior results remain history, not proof.
 
 ## References
 
-- [EVALUATION manager adapter](../orchestration/workflow/evaluation.md) owns fresh dispatch, pair aggregation, waivers, the user disposition gate, and transitions.
-- [Evaluation report schema](../record/schemas/evaluation-report.schema.json) owns the executable report shape.
-- [Evaluation report validator](scripts/validate-evaluation-report.sh) owns single and pair mechanical validation and provenance-preserving aggregation output.
-- [Record command](../record/scripts/session-record.sh) owns deterministic report rendering and atomic storage.
-- [Scenario](../scenario/SKILL.md) owns scenario coverage and failability.
-- [Checklist](../checklist/SKILL.md) owns evidence-bearing checklist construction and source semantics.
-- Step-specific evaluation entrypoints: [Ideation](../ideation/evaluation.md), [Planning](../planning/evaluation.md), [Execution](../execution/evaluation.md), and [Wrap-up](../wrap-up/evaluation.md).
+- [Scenario](../scenario/SKILL.md) owns scenario coverage, failability, and design obligations.
+- [Checklist](../checklist/SKILL.md) owns checklist construction, resolution semantics, coverage closure, and
+  acceptance.
+- [Research](../research/SKILL.md) owns bounded internal and external evidence study.
+- [Startup](../startup/SKILL.md) owns sparse-baseline classification.
+- [UI](../ui/SKILL.md) and [UX](../ux/SKILL.md) own specialized interface and experience evidence.
+- [Coding](../coding/SKILL.md) owns language-agnostic software review criteria.
+- [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific review
+  criteria and verification methods.

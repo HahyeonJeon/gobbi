@@ -137,8 +137,9 @@ loads the two sibling sources, selects applicable cases and checks, and contribu
 evaluation.
 
 Define operation-specific perspective lenses, recommended verifications, anti-patterns, Overall anchors, and a
-rule-key crosswalk back to `SKILL.md`. Reuse the active phase's finding schema, verdicts, and output paths. The
-plural bundle adds no extra evaluator output and does not replace the phase's singular evaluation bundle.
+rule-key crosswalk back to `SKILL.md`. Reuse the general Evaluation method's perspectives, causal finding
+content, completed checks, and verdicts. The caller owns any machine shape, output path, or storage mechanics;
+the plural bundle adds no extra result and does not replace the caller's evaluation contract.
 
 ### S11 — Close traceability and run the operation
 

@@ -266,10 +266,10 @@ A family's primary perspective is the row of its **declared** primary category. 
 | 9 Change / compatibility / reversibility | Consistency | Risk |
 | 10 Evidence / traceability / clarity | Consistency | Aesthetics |
 
-The seven perspective filenames and their fixed order are owned by `evaluation/SKILL.md` § Perspectives;
-this map only assigns design categories to them. Route each cross-cutting concern that has no obvious
-single owner per `evaluation/SKILL.md` § Coverage Ownership Matrix — the owner of the concern list and
-its assignments; read it when a family touches one, and do not re-list the concerns here.
+The seven perspectives plus Overall are owned by `evaluation/SKILL.md` Rules and Procedure step 5; this map
+only assigns design categories to them. Route each cross-cutting concern through the applicable domain owner
+and Evaluation's whole-subject perspective investigation. Do not re-list another skill's specialized concerns
+here.
 
 ### Reference data — a well-formed scenario set (field lists)
 
@@ -344,11 +344,12 @@ Challenge the draft in this order and revise on any failed probe:
 Replace placeholder IDs, preserve existing IDs, publish the coverage gaps and decisions, and resolve the
 final traces. In evaluation mode, freeze the source set before recording results. Before handing the set
 to evaluation, read the Evaluation [rules](../evaluation/SKILL.md#rules),
-[finding procedure](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema),
-[checklist procedure](../evaluation/SKILL.md#13-complete-the-evaluation-checklist), and
-[verdict procedure](../evaluation/SKILL.md#14-derive-perspective-and-report-verdicts). Those sections own
-the fixed perspective order, finding schema, completed-checklist contract, and verdict rules. Apply SR-4,
-SR-6, SR-8, SR-9, SR-14.
+[frame procedure](../evaluation/SKILL.md#3-build-the-scenario-and-checklist-frame),
+[perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives),
+[coverage procedure](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results), and
+[verdict procedure](../evaluation/SKILL.md#7-derive-the-perspective-and-overall-verdicts). Those sections own
+the fixed perspectives, causal finding content, completed-checklist use, and evidence-derived verdict. Apply
+SR-4, SR-6, SR-8, SR-9, SR-14.
 
 ---
 
@@ -359,13 +360,13 @@ One owner per borrowed fact; this skill owns the design-category → perspective
 
 - [`../evaluation/SKILL.md` § Rules](../evaluation/SKILL.md#rules) validates the seven perspectives and
   their fixed order that the design-category map assigns to.
-- [`../evaluation/SKILL.md` § Build the evaluation frame](../evaluation/SKILL.md#3-build-the-evaluation-frame)
+- [`../evaluation/SKILL.md` § Build the evaluation frame](../evaluation/SKILL.md#3-build-the-scenario-and-checklist-frame)
   validates how evaluators select the applicable scenario and checklist coverage.
-- [`../evaluation/SKILL.md` § Write findings](../evaluation/SKILL.md#12-write-findings-with-the-closed-schema)
-  validates the finding schema an evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Derive verdicts](../evaluation/SKILL.md#14-derive-perspective-and-report-verdicts)
+- [`../evaluation/SKILL.md` § Perspective investigation](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives)
+  validates the causal finding content an evaluation-mode handoff (P9) names.
+- [`../evaluation/SKILL.md` § Derive verdicts](../evaluation/SKILL.md#7-derive-the-perspective-and-overall-verdicts)
   validates the verdict rules an evaluation-mode handoff (P9) names.
-- [`../evaluation/SKILL.md` § Complete the evaluation checklist](../evaluation/SKILL.md#13-complete-the-evaluation-checklist)
+- [`../evaluation/SKILL.md` § Close coverage](../evaluation/SKILL.md#6-close-coverage-and-challenge-the-results)
   validates the evidence-bearing completed checklist an evaluation-mode handoff (P9) supplies.
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the `Check` definition and the two-gate /
   acceptance mechanics (coverage ≠ acceptance) that this skill points to but does not own.

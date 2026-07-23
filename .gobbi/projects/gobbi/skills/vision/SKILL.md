@@ -392,5 +392,5 @@ and acceptance; unresolved critical evidence stops the report from being represe
   `scenarios.md`.
 - [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the operational checklist state machine and gates
   used by `checklists.md`.
-- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns the shared evaluator perspectives, finding schema,
-  scoring, and active-phase output contract extended by `evaluation.md`.
+- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns the shared evaluator method, perspectives, causal
+  finding content, completed checks, and declared verdict derivation extended by `evaluation.md`.

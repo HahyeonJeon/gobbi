@@ -1,6 +1,8 @@
 # Execution Evaluation Entry
 
-Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies task-specific lenses for the one complete report. Language and framework evaluation companions may add cases and checks but cannot replace this frame or the central schema.
+Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies task-specific lenses for one
+complete evaluation result. Language and framework companions may add cases and checks but cannot replace the
+general method. A calling workflow owns its schema and output mechanics.
 
 ## Required inputs
 

@@ -139,8 +139,10 @@ claude plugin validate --strict plugins/gobbi
   Configuration, manager authority, and routing.
 - [Dual-system WORK](.gobbi/projects/gobbi/skills/orchestration/workflow/dual-system-work.md)
   owns independent drafts, reciprocal review, synthesis, and open decisions.
-- [Evaluation](.gobbi/projects/gobbi/skills/evaluation/SKILL.md) owns the two
-  independent reviews and finding disposition gate.
+- [Evaluation](.gobbi/projects/gobbi/skills/evaluation/SKILL.md) owns the general
+  independent review method, causal findings, completed checks, and verdict derivation.
+- [EVALUATION manager adapter](.gobbi/projects/gobbi/skills/orchestration/workflow/evaluation.md)
+  owns Gobbi's dual review dispatch, report mechanics, aggregation, and finding disposition gate.
 - [Record](.gobbi/projects/gobbi/skills/record/SKILL.md) owns schemas, session
   evidence, typed staging, and PASS-only outputs.
 - [Git](.gobbi/projects/gobbi/skills/git/SKILL.md) owns worktree isolation,
