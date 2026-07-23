@@ -9,8 +9,9 @@
 #   ASCII, the no-commit git mechanics, the dual-production paragraph, the
 #   perspective table) with ONE typed owner pointer. This guard prevents a later
 #   edit from silently RE-introducing the duplicated block. It implements checks
-#   1-7 of the design's Part 2 "Drift prevention" ONLY; the DEFERRED
-#   "Gate-protection" machinery (gate IDs / gate-manifest / snapshots) is NOT built.
+#   1-7 of the design's Part 2 "Drift prevention" plus the D2 Option-D
+#   invariant-(iii) authorization check (#8); the DEFERRED "Gate-protection"
+#   machinery (gate IDs / gate-manifest / snapshots) is NOT built.
 #
 # Baseline lives in a reviewed data file, not in the script:
 #   The doc set, each doc's expected doc-kind, and each doc's role flags come from
@@ -18,7 +19,10 @@
 #   Per mistakes/verification/hardcoded-baseline-guard-*, an in-script expected list
 #   is a hidden third copy of the spec; the external manifest is the reviewed
 #   baseline instead. The guard hardcodes NO doc name — every doc-specific role is a
-#   manifest flag (compacted / nocommit-owner / no-perspective-table).
+#   manifest flag (compacted / tree-free / nocommit-owner / no-perspective-table /
+#   local-procedure). The local-procedure AUTHORIZATION also lives in the manifest,
+#   not in the script — #8 reads the flag, so which doc may hold a local procedure is
+#   a reviewed manifest edit, never a hardcoded doc name.
 #
 # Check scope (partial-migration aware, to stay committable mid-migration):
 #   #1 doc-kind marker          — EVERY manifest doc (exact-line match).
@@ -29,6 +33,12 @@
 #                                 line-scoped with a pointer-block allowlist).
 #   #5 no Dual-system heading   — every loop-orchestration doc (BROAD).
 #   #6 no 7-perspective table   — each no-perspective-table doc.
+#   #8 local-procedure (D2)     — EVERY doc: (c) an annex marker (`**Local procedure`)
+#                                 without the manifest `local-procedure` flag fails
+#                                 CLOSED (no sibling self-authorizes); (b) an
+#                                 authorized doc that copies a generic-SOP section
+#                                 heading (## Principles|Rules|Procedure|References)
+#                                 fails — general craft stays SOP-owned, pointer-only.
 #   A doc that is neither compacted nor tree-free legitimately still carries its
 #   ASCII tree / long procedure, so #3/#7 does NOT run on it. #2 (all-5 pointers)
 #   runs only on COMPACTED loop docs — a tree-free doc has had its tree removed but
@@ -45,7 +55,9 @@
 #   - NO `\b` ERE anywhere (BSD/macOS grep incompatibility).
 #   - context-aware, not body-wide literal grep: the tree check flags only a line
 #     INSIDE a code fence with a box-drawing char AND a session-dir segment; the
-#     no-commit check allowlists pointer-block / negative mentions
+#     no-commit check allowlists pointer-block / negative mentions; #8's marker and
+#     generic-heading patterns are line-anchored (STRUCTURAL), so prose mentions of
+#     "local procedure" or "principles" never false-fail
 #     (mistakes/verification/literal-grep-gate-false-fails-legitimate-usage).
 #   - gitignore-safe: scans the tracked canonical workflow/*.md only, never sessions/
 #     (mistakes/verification/gitignore-aware-residual-gate).
@@ -98,6 +110,16 @@ DOC_FLAGS=()
 PERSPECTIVE_SLUGS='project structure performance aesthetics usage consistency risk'
 POINTER_LABELS='Procedure Production Evaluation Record Path'
 
+# Invariant-(iii) — Option-D local-procedure authorization (#8, D2). The annex
+# marker is the line-anchored mechanical signature of local operational ownership;
+# the forbidden signature is the generic planning SOP's own D1-locked section
+# headings (Principles / Rules / Procedure / References — the four-section skill
+# shape task 01 rewrites the SOP into). Both patterns are STRUCTURAL (line-anchored),
+# never a body-wide substring, so prose mentions of "local procedure" or "principles"
+# do not false-fail (mistakes/verification/literal-grep-gate-false-fails-legitimate-usage).
+LOCAL_PROC_MARKER_RE='^[[:space:]]*\*\*Local procedure'
+GENERIC_SOP_HEADING_RE='^## (Principles|Rules|Procedure|References)$'
+
 # ===========================================================================
 # Manifest helpers.
 # ===========================================================================
@@ -125,7 +147,7 @@ valid_flags() {
     old_ifs=$IFS; IFS=','; set -- $flags; IFS=$old_ifs
     for flag in "$@"; do
         case "$flag" in
-            compacted|tree-free|nocommit-owner|no-perspective-table) ;;
+            compacted|tree-free|nocommit-owner|no-perspective-table|local-procedure) ;;
             *) return 1 ;;
         esac
     done
@@ -345,6 +367,40 @@ check_perspective_table() {
     ' "$path"
 }
 
+# #8 — Option-D local-procedure authorization (invariant-(iii), D2). Two teeth:
+#   (c) FAIL-CLOSED authorization — a doc carrying the `**Local procedure` annex
+#       marker MUST hold the manifest `local-procedure` flag. An unauthorized doc
+#       (any sibling without the flag) claiming the annex fails: the flag is the
+#       single reviewed grant, so an unlisted sibling can never self-authorize.
+#   (b) NO GENERIC-CRAFT RESTATEMENT — an authorized doc may carry its own local
+#       operations, but MUST NOT copy a generic-SOP section heading. The generic
+#       planning craft stays sole-owned by planning/SKILL.md and is reached by one
+#       typed pointer; reproducing its section shape here is a restatement.
+# A valid authorized doc (marker + flag, no generic-SOP heading) passes.
+check_local_procedure() {
+    local path="$1" name="$2" flags="$3"
+    local has_marker=0 authorized=0 failed=0
+
+    grep -Eq "$LOCAL_PROC_MARKER_RE" "$path" && has_marker=1
+    has_flag "$flags" "local-procedure" && authorized=1
+
+    # (c) an annex marker without the manifest authorization flag — fail closed.
+    if [ "$has_marker" -eq 1 ] && [ "$authorized" -eq 0 ]; then
+        printf 'VIOLATION [#8] %s: local-procedure annex marker present without the manifest `local-procedure` authorization flag (unlisted sibling claims local procedure)\n' "$name"
+        failed=1
+    fi
+
+    # (b) an authorized doc that copies a generic-SOP section heading — restatement.
+    if [ "$authorized" -eq 1 ]; then
+        grep -nE "$GENERIC_SOP_HEADING_RE" "$path" | while IFS= read -r hit; do
+            printf 'VIOLATION [#8] %s:%s: authorized local-procedure doc copies a generic-SOP section heading (general craft stays SOP-owned, point don'\''t restate)\n' "$name" "$hit"
+        done
+        grep -qE "$GENERIC_SOP_HEADING_RE" "$path" && failed=1
+    fi
+
+    return "$failed"
+}
+
 # ===========================================================================
 # run_check <manifest> <workflow-dir> : the full gate. 0 clean / 1 violation /
 # 2 bad structure.
@@ -391,6 +447,11 @@ run_check() {
         if has_flag "$flags" "no-perspective-table"; then
             check_perspective_table "$path" "$name" || violations=1
         fi
+
+        # #8 — Option-D local-procedure authorization (invariant-(iii)), EVERY doc:
+        # fail-closed on an unauthorized annex claim, and on generic-craft restatement
+        # by an authorized doc.
+        check_local_procedure "$path" "$name" "$flags" || violations=1
     done
 
     if [ "$violations" -ne 0 ]; then
@@ -668,6 +729,35 @@ DOC
         printf '%s\n' '```'
     } >> "$tmp/O/wf/preparation.md"
     assert_exit 1 "CATCH: tree-free doc with a re-added session-tree (#3)" "$tmp/O/wf" "$tmp/O/manifest2.txt"
+
+    # === D2 validation triple — Option-D local-procedure invariant-(iii) (#8) =====
+    # The three binding cases from the D2 gate decision: a valid authorized planning
+    # local procedure PASSES; a copied generic-SOP heading and an unauthorized sibling
+    # annex both FAIL. `authorize_planning` flags planning.md `local-procedure` and
+    # gives it the `**Local procedure` annex marker (no generic-craft heading yet).
+    authorize_planning() {
+        printf '\n**Local procedure (D2 Option D):** this loop-orchestration doc is manifest-authorized to carry a locally-owned operational Planning procedure — the Gobbi-specific operations only. General craft stays SOP-owned and is referenced by one typed pointer, never restated.\n' >> "$1/wf/planning.md"
+        sed 's/^doc|planning.md|loop-orchestration|-$/doc|planning.md|loop-orchestration|local-procedure/' \
+            "$1/manifest.txt" > "$1/manifest2.txt"
+    }
+
+    # === P: D2 valid planning local procedure (authorized marker, no craft heading) — exit 0 =
+    build_clean_tree "$tmp/P"
+    authorize_planning "$tmp/P"
+    assert_exit 0 "D2 valid planning local procedure (authorized, no craft heading)" "$tmp/P/wf" "$tmp/P/manifest2.txt"
+
+    # === Q: D2 CATCH: planning copies generic SOP heading — exit 1 (=#8 tooth b) =====
+    build_clean_tree "$tmp/Q"
+    authorize_planning "$tmp/Q"
+    printf '\n## Principles\n\nRestated generic craft the SOP owns.\n' >> "$tmp/Q/wf/planning.md"
+    assert_exit 1 "D2 CATCH: planning copies generic SOP heading" "$tmp/Q/wf" "$tmp/Q/manifest2.txt"
+
+    # === R: D2 CATCH: unlisted sibling claims local procedure — exit 1 (=#8 tooth c) =
+    # A sibling (execution.md) carries the annex marker but its manifest row holds NO
+    # `local-procedure` flag, so it fails closed — no sibling self-authorizes.
+    build_clean_tree "$tmp/R"
+    printf '\n**Local procedure:** locally-owned operational procedure claimed without the manifest authorization flag.\n' >> "$tmp/R/wf/execution.md"
+    assert_exit 1 "D2 CATCH: unlisted sibling claims local procedure" "$tmp/R/wf" "$tmp/R/manifest.txt"
 
     printf '\n%s --self-test: %d/%d scenarios passed\n' "$SELF" "$((total - fails))" "$total" >&2
     [ "$fails" -eq 0 ]

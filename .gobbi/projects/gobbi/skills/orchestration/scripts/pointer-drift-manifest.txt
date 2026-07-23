@@ -32,18 +32,29 @@
 #                             (every OTHER doc must point at the owner, never restate).
 #       no-perspective-table  the doc must NEVER carry a horizontal seven-perspective
 #                             table (#6) — it points at the perspective list instead.
+#       local-procedure       the doc is AUTHORIZED (D2 Option D) to carry its own
+#                             locally-owned operational procedure — the Gobbi-specific
+#                             operations of that loop only. This flag is the fail-closed
+#                             authorization for invariant-(iii) (#8): a doc carrying the
+#                             `**Local procedure` annex marker WITHOUT this flag fails
+#                             closed, and an authorized doc that copies a generic-SOP
+#                             section heading (`## Principles|Rules|Procedure|References`)
+#                             still fails — general craft stays SOP-owned, peer mechanisms
+#                             stay pointer-only. Only Planning holds this flag.
 #
 # Fail-closed: a malformed row, a bad kind, an unknown flag, a duplicate doc, a
 # manifest doc missing on disk, OR an on-disk workflow/*.md not listed here all
 # exit 2. Partial migration: ideation.md is `compacted`; preparation / planning /
 # execution / wrap-up are `tree-free` (redrawn tree removed, not yet fully
-# compacted); the three gate docs (evaluation / production / record) are
+# compacted); planning.md ALSO carries `local-procedure` (D2 Option D — the sole
+# doc authorized to hold a locally-owned operational procedure); the three gate
+# docs (evaluation / production / record) are
 # un-migrated. The four reference docs hold split-out top-level sections and are
 # part of the closed workflow doc set, but they do not run loop/gate-only checks.
 
 doc|ideation.md|loop-orchestration|compacted
 doc|preparation.md|loop-orchestration|tree-free
-doc|planning.md|loop-orchestration|tree-free
+doc|planning.md|loop-orchestration|tree-free,local-procedure
 doc|execution.md|loop-orchestration|tree-free
 doc|wrap-up.md|loop-orchestration|tree-free
 doc|evaluation.md|gate-orchestration|no-perspective-table

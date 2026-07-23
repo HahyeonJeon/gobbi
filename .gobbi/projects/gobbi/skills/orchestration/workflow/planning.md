@@ -7,6 +7,8 @@ the leader / assistant procedures. **Planning focuses on Who / When / Where:** I
 concentrated on What / Why / How; Planning takes the locked idea and decides who implements
 what, in what order, where in the codebase.
 
+**Local procedure (D2 Option D):** this `loop-orchestration` doc is manifest-authorized — via the `local-procedure` flag in `pointer-drift-manifest.txt` — to additionally carry its own locally-owned operational Planning procedure: the Gobbi-specific operations of this loop only. General planning craft stays sole-owned by the planning SOP and is reached by one typed pointer, never restated; each peer-owned shared mechanism keeps its single typed owner pointer. The `check-workflow-pointer-drift.sh` invariant-(iii) check (#8) enforces this fail-closed: an unauthorized doc claiming the annex, or an authorized doc copying a generic-SOP section heading, fails. The normative rule is `point-dont-restate-workflow-docs.md`.
+
 ---
 
 ## DISCUSSION Orchestration
