@@ -10,7 +10,7 @@ Startup is the manager-run project-baseline conversation. Load it for a new proj
 memory is empty or sparse, or for an explicit baseline reset. Configuration runs it before the productive
 loops; it can also run standalone.
 
-The talk walks a fixed, dependency-ordered topic tree — one question per turn — and turns the
+The talk walks a fixed, dependency-ordered topic tree and turns the
 user-confirmed answers into the project's durable reference: a root index plus atomic typed records for
 vision, users, features, experience, architecture, conventions, quality, risks, and idioms. The outcome
 is a baseline the same session's later loops, and every later session, can read as the current project
@@ -110,8 +110,6 @@ enforced directly by the pre-Topic-5 premise-gate check (`STARTUP-PROJ-SCENARIO-
 
 ### Must-Follow
 
-- **MUST ask one question per turn** — a single decision axis per turn keeps each answer clear enough to
-  classify and record without conflating two concepts.
 - **MUST close every Level-1 topic with a user-confirmed checkpoint and a resumable marker** — an
   interrupted run needs a precise, trusted point to restart from.
 - **MUST tag every answer `confirmed` / `assumption` / `open` / `contradicted`** — evidence strength must
@@ -192,7 +190,7 @@ user gates; neither substitutes for the other.
 
 **P2 — Establish current reality.** Traverse Topic 1 in [`topics.md`](topics.md) (including 1.4 license/distribution/governance). Separate verified repo facts from claims, assumptions, and unknowns, and append every answer to the ledger. The user confirms the current-state summary before P3 opens. Exit with the evidence register and initial doc effects.
 
-**P3 — Traverse the tree.** Walk Topics 2–11 in [`topics.md`](topics.md) order, one question per turn, evidence-led smart-skip, under the [`topics.md` anti-sycophancy contract](topics.md#anti-sycophancy-contract) and using its coverage rules, design-bearing markers, and Level-1 checkpoints. Write a resumable checkpoint at each Level-1 close; the user confirms every Level-1 checkpoint and decides every design-bearing direction.
+**P3 — Traverse the tree.** Walk Topics 2–11 in [`topics.md`](topics.md) order, evidence-led smart-skip, under the [`topics.md` anti-sycophancy contract](topics.md#anti-sycophancy-contract) and using its coverage rules, design-bearing markers, and Level-1 checkpoints. Write a resumable checkpoint at each Level-1 close; the user confirms every Level-1 checkpoint and decides every design-bearing direction.
 
 <a id="p3-riskiest-assumption-first-depth-override"></a>
 **Riskiest-assumption-first depth override.** After the first real problem event, stack the design's riskiest assumptions and probe the top one first: (1) the claim whose falsity means there is no real problem or user, (2) the claim whose falsity makes the project infeasible or unsafe to build, then (3) the claim whose falsity makes the product shape wrong or unusable. The top claim gets the first disconfirming probe before normal traversal continues. This changes DEPTH only — never required coverage or the macro topic order — and every required branch still closes. Re-score the stack when a later answer changes the root problem.

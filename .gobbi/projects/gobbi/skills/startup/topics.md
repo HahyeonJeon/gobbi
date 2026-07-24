@@ -2,7 +2,7 @@
 
 The lookup tree for startup's full first-run conversation. It is ordered by **dependency**, not by
 document destination: problem space → boundary → solution space (product shape before system shape) →
-guardrails. One question per turn. The full traversal, checkpoint, and mandatory-coverage rules are at the
+guardrails. The full traversal, checkpoint, and mandatory-coverage rules are at the
 end of this file.
 
 ## Contents
@@ -31,12 +31,12 @@ end of this file.
 
 ## How to traverse the tree
 
-1. Follow the topics and Level-2 branches in order. Ask **one question per turn**.
+1. Follow the topics and Level-2 branches in order.
 2. Each bullet under a branch is a **prompt bank**, not a single question. When a bullet bundles several
    decision axes (e.g. 1.4 license/governance, 8.2 build/deploy/observe/rollback, 10.1 likelihood/impact/
-   warning/mitigation), ask **one axis per turn**; a single answer event may still fill several
-   already-explicit ledger fields. Choose two to four prompts from a branch's bank as needed; do not
-   recite the whole bank once the branch is already evidenced.
+   warning/mitigation), **classify each axis as its own ledger event** — a single answer may supply
+   several axes at once, and each still records as its own event. Draw as many prompts from a branch's
+   bank as the evidence needs; do not recite the whole bank once the branch is already evidenced.
 3. Before asking, inspect the relevant project docs and repo evidence. If a fact is verified, show it
    first and ask the user to confirm or correct it — a shown fact shortens the answer. **Prefer
    past-behavior and repository evidence over opinion or hypothetical, and never lead the answer** — ask
@@ -131,7 +131,7 @@ fabricate a license, and never skip the branch silently.
 - Why does the problem persist, and what evidence would show the stated problem is only a symptom of a
   deeper cause?
 - What recently changed that makes now the time to solve it?
-- Which single claim, if false, would make this project pointless or wrong? (Ask one axis per turn.)
+- Which single claim, if false, would make this project pointless or wrong? (Record each axis as its own ledger event.)
 
 #### 2.3 Vision & durable outcome
 - What have you already seen that makes a better outcome believable? Then, tagged `intent`: if the
@@ -503,7 +503,7 @@ first, regenerate the affected staged drafts from the ledger, then present the c
 
 ## Traversal, mandatory coverage & resume rules
 
-- **One question per turn**, following the topic and branch order above. Show any verified repo fact first
+- Ask **following the topic and branch order above**. Show any verified repo fact first
   to shorten the answer.
 - **Mandatory coverage (first run):** a first run covers all 11 Level-1 topics and every Level-2 branch.
   There is no quick or core tier.
