@@ -1,10 +1,10 @@
-# Orchestration Scenarios
+# Workflow Scenarios
 
 ## Set contract
 
 - **Purpose:** exercise the manager workflow so a cosmetically correct document set cannot hide an unsafe or unroutable session.
-- **Target:** [`SKILL.md`](SKILL.md) and its orchestration-owned children.
-- **Consumer:** the orchestration checklist and the two fresh evaluators reviewing an orchestration change.
+- **Target:** [`SKILL.md`](SKILL.md) and its workflow-owned children.
+- **Consumer:** the workflow checklist and the two fresh evaluators reviewing a workflow change.
 - **Lifecycle:** design obligations; freeze this source before an evaluation run.
 - **Scope:** Configuration, routing, dual-system WORK, dual-system EVALUATION, delegation, persistent specialists, RECORD gates, Wrap-up exit, and local Git recovery.
 - **Non-goals:** specialist-owned authoring methods, record schemas and directory implementation, evaluator finding fields, peer adapter implementation, and protected role-prompt wording.
@@ -17,13 +17,13 @@
 | Clause | Owner | Load-bearing obligation |
 |---|---|---|
 | ORCH-P01 | [`SKILL.md § Procedure`](SKILL.md#procedure) | Fresh preflight, defaults decision, Gobbi UUID, isolated initialization, and resume identity |
-| ORCH-P02 | [`workflow/state-machine.md`](workflow/state-machine.md) | One cursor, legal stage order, verdict routing, cap behavior, return, halt, and projection |
-| ORCH-P03 | [`workflow/dual-system-work.md`](workflow/dual-system-work.md) | Independent drafts, freeze, reciprocal review, synthesis, decisions, validation, and narrow waiver |
-| ORCH-P04 | [`workflow/evaluation.md`](workflow/evaluation.md) | Two fresh complete reports, severe verdict aggregation, provenance, user disposition, and repeat review |
+| ORCH-P02 | [`steps/state-machine.md`](steps/state-machine.md) | One cursor, legal stage order, verdict routing, cap behavior, return, halt, and projection |
+| ORCH-P03 | [`steps/dual-system-work.md`](steps/dual-system-work.md) | Independent drafts, freeze, reciprocal review, synthesis, decisions, validation, and narrow waiver |
+| ORCH-P04 | [`steps/evaluation.md`](steps/evaluation.md) | Two fresh complete reports, severe verdict aggregation, provenance, user disposition, and repeat review |
 | ORCH-P05 | [`delegation.md`](delegation.md) | Shared brief, role authority, independence, write root, status report, and manager acceptance |
 | ORCH-P06 | [`agent-teams.md`](agent-teams.md) | Lazy roster, bounded concurrency and messages, handshake, continuation, replacement, and recovery |
-| ORCH-P07 | [`workflow/record.md`](workflow/record.md) | Artifact reread, record verification, PASS-only canonical output, empty staging, and transition gate |
-| ORCH-P08 | [`workflow/wrap-up.md`](workflow/wrap-up.md) | Staging-only close, actual post-promotion review, handoff identity, and final outcome |
+| ORCH-P07 | [`steps/record.md`](steps/record.md) | Artifact reread, record verification, PASS-only canonical output, empty staging, and transition gate |
+| ORCH-P08 | [`steps/wrap-up.md`](steps/wrap-up.md) | Staging-only close, actual post-promotion review, handoff identity, and final outcome |
 | ORCH-P09 | [`SKILL.md § Close through Wrap-up`](SKILL.md#8-close-through-wrap-up) | Verified local commits, configured publication, explicit merge authority, safe cleanup, and recovery path |
 | ORCH-P10 | [`SKILL.md § References`](SKILL.md#references) | One owner per concern, thin adapters, live links, operation companions, and protected-role exclusion |
 
@@ -469,7 +469,7 @@ No family has an adversarial exemption. Every triggered minimum has a dedicated 
 
 ## ORCH-SCN-08 — Ownership, links, and cold use
 
-**Primary:** Evidence / traceability / clarity, because a cold manager must find one authoritative clause. **Actor/outcome:** changed orchestration docs route to live owners without duplication or protected-role mutation. **Sources:** ORCH-P10. **Priority:** required.
+**Primary:** Evidence / traceability / clarity, because a cold manager must find one authoritative clause. **Actor/outcome:** changed workflow docs route to live owners without duplication or protected-role mutation. **Sources:** ORCH-P10. **Priority:** required.
 
 ### ORCH-SCN-08-A — One-owner cold trace
 
@@ -494,7 +494,7 @@ No family has an adversarial exemption. Every triggered minimum has a dedicated 
 ### ORCH-SCN-08-C — Deleted-source references
 
 - **Primary type / coverage-role:** Negative / negative safe rejection.
-- **Given:** active orchestration docs refer to a deleted child or role-specific template.
+- **Given:** active workflow docs refer to a deleted child or role-specific template.
 - **When:** scoped link validation runs.
 - **Then:** validation fails and the reference is replaced by the current owner; protected role docs are excluded by explicit accepted scope.
 - **Failure oracle:** active broken link passes or protected role wording is edited to silence it.
@@ -515,7 +515,7 @@ No family has an adversarial exemption. Every triggered minimum has a dedicated 
 
 - **Primary type / coverage-role:** Change / change.
 - **Given:** the record or evaluator schema evolves under its owning skill.
-- **When:** orchestration is reread without rewriting thin adapters.
+- **When:** workflow is reread without rewriting thin adapters.
 - **Then:** adapters remain correct through owner links and only their true dispatch inputs require review.
 - **Failure oracle:** copied schema becomes stale or two files claim ownership.
 - **Evidence tuple:** owner-link trace and duplication search by direct inspection; no copied contract confirms.

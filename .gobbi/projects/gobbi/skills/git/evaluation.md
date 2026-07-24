@@ -9,7 +9,7 @@ Read and freeze:
 1. [Git](SKILL.md), [conventions](conventions.md), [scenarios](scenarios.md), [checklists](checklists.md), [recorded traps](mistakes.md), and the retained [posture probe](scripts/git-posture-probe.sh).
 2. The version 5 session manifest, version 3 state, evaluated handoff, authorized finalization plan, task list, commits, verification evidence, and prior finalization receipt when resuming.
 3. Current local repository, branch, worktree registration and status, configured base, remote refs, issue, pull request, checks, merge association, and cleanup state that apply to the subject.
-4. The governing [Orchestration](../orchestration/SKILL.md), [Execution](../execution/SKILL.md), [Wrap-up](../wrap-up/SKILL.md), [Discussion](../discussion/SKILL.md), and [session schema](../record/schemas/session.schema.json).
+4. The governing [Workflow](../workflow/SKILL.md), [Execution](../execution/SKILL.md), [Wrap-up](../wrap-up/SKILL.md), [Discussion](../discussion/SKILL.md), and [session schema](../record/schemas/session.schema.json).
 
 Bind the review to the exact subject digest, system identity, branch head, and worktree path required by the Evaluation owner. Do not mutate the session or Git objects while constructing evidence.
 

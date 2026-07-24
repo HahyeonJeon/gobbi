@@ -1,13 +1,13 @@
-# Evaluating Orchestration
+# Evaluating Workflow
 
-This is the evaluation entrypoint for the orchestration operation. It adds orchestration-specific scenarios, checks, lenses, and verifications to the active productive-step evaluation. It does not replace [`evaluation/SKILL.md`](../evaluation/SKILL.md), change its finding schema or verdict rules, or create another output.
+This is the evaluation entrypoint for the workflow operation. It adds workflow-specific scenarios, checks, lenses, and verifications to the active productive-step evaluation. It does not replace [`evaluation/SKILL.md`](../evaluation/SKILL.md), change its finding schema or verdict rules, or create another output.
 
 ## Entry
 
-Before reviewing an orchestration artifact:
+Before reviewing a workflow artifact:
 
 1. Read [`SKILL.md`](SKILL.md), [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) completely.
-2. Read the changed orchestration children and every external owner they claim to use.
+2. Read the changed workflow children and every external owner they claim to use.
 3. Select every scenario whose Given conditions can occur in the target and every checklist item at its triggered pause point. A selection omission requires an explicit `n/a:<property>` backed by inspected evidence.
 4. Add the selected cases and checks to the evaluator's locked frame. Fill a run-specific copy of the checklist source; do not edit the source.
 5. Run all seven perspectives plus Overall under the active evaluation procedure.
@@ -100,7 +100,7 @@ Compare `SKILL.md`, every workflow child, delegation, team policy, version 5 man
 
 Challenge identity confusion, path escape, unauthorized scope, destructive Git cleanup, peer write access, same-author evidence, evaluator contamination, silent missing-system continuation, stale teammate reuse, and fake task completion. Require exact authority and recovery evidence at every killer check.
 
-Privacy and retention review is limited to the low-frequency lifecycle fields and durable artifacts owned outside this operation; flag any orchestration addition that stores unrelated runtime detail. Licensing and dependency-supply-chain checks apply only if the change introduces a dependency or copied external content; inspect the diff before using `n/a`.
+Privacy and retention review is limited to the low-frequency lifecycle fields and durable artifacts owned outside this operation; flag any workflow addition that stores unrelated runtime detail. Licensing and dependency-supply-chain checks apply only if the change introduces a dependency or copied external content; inspect the diff before using `n/a`.
 
 **Recommended evidence:** negative record fixtures, absolute-path containment checks, process invocation arguments, identity/digest checks, waiver artifact, user authority, Git pre/post state, and byte-preservation failures.
 
@@ -137,4 +137,4 @@ The Overall verdict cannot be PASS when any applicable killer or required item i
 
 ## Completion
 
-The orchestration-specific review is complete when every applicable scenario and checklist item is present in the locked frame, both source-to-check and check-to-source traces close, all seven perspectives and Overall have inspected their assigned evidence, the normal evaluation report validates, and any non-PASS check has a finding or authorized resolution permitted by the checklist owner. No extra evaluator artifact is created.
+The workflow-specific review is complete when every applicable scenario and checklist item is present in the locked frame, both source-to-check and check-to-source traces close, all seven perspectives and Overall have inspected their assigned evidence, the normal evaluation report validates, and any non-PASS check has a finding or authorized resolution permitted by the checklist owner. No extra evaluator artifact is created.

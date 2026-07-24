@@ -158,7 +158,7 @@ RECORD is complete only when the evidence is sealed, placement matches the verdi
 
 ## References
 
-- [RECORD manager adapter](../orchestration/workflow/record.md) owns dispatch, manager gates, and verdict routing.
+- [RECORD manager adapter](../workflow/steps/record.md) owns dispatch, manager gates, and verdict routing.
 - [Record map](record-map.md) owns the v5/v3 tree, eager scaffolding, typed staging vocabulary, command contract, containment, and atomic semantics.
 - [Session manifest schema](schemas/session.schema.json) and [state schema](schemas/state.schema.json) own executable JSON shapes.
 - [Draft schema](schemas/draft.schema.json), [cross-review schema](schemas/cross-review.schema.json), and [evaluation report schema](schemas/evaluation-report.schema.json) own peer artifact JSON.

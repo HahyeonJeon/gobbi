@@ -17,7 +17,7 @@ The manager uses exactly these command surfaces:
 
 `transition` and `checkpoint` receive patch files. The manager never passes interpolated JSON, edits either JSON file in place, or moves routing data through a lifecycle checkpoint. The command validates the complete candidate before same-directory atomic replacement; a failure must leave the prior file byte-for-byte unchanged.
 
-## Orchestration gates
+## Workflow gates
 
 Before any command, resolve the absolute session root from the validated manifest worktree and require root containment for every target. Before advancing a stage, reread the file the command wrote and run `verify` at the level required by the current cursor.
 

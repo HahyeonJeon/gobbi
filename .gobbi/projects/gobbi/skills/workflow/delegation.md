@@ -146,7 +146,7 @@ Keep the objective narrow. State whether it is read-only research, record suppor
 ## References
 
 - Persistent teammate lifecycle and handshake: [`agent-teams.md`](agent-teams.md)
-- Active routing and completion transitions: [`workflow/state-machine.md`](workflow/state-machine.md)
-- Dual-system WORK order: [`workflow/dual-system-work.md`](workflow/dual-system-work.md)
-- Record command boundary: [`workflow/session-record.md`](workflow/session-record.md)
+- Active routing and completion transitions: [`steps/state-machine.md`](steps/state-machine.md)
+- Dual-system WORK order: [`steps/dual-system-work.md`](steps/dual-system-work.md)
+- Record command boundary: [`steps/session-record.md`](steps/session-record.md)
 - Canonical role prompts: [`.gobbi/projects/gobbi/agents/`](../../agents/)

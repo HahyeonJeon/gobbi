@@ -98,7 +98,7 @@ End the report with:
 ## Status Contract
 
 Your final response MUST begin with `STATUS: <value>` as its first line and follow
-[`skills/orchestration/delegation.md` § The Status Contract](../skills/orchestration/delegation.md#the-status-contract).
+[`skills/workflow/delegation.md` § The Status Contract](../skills/workflow/delegation.md#the-status-contract).
 Put `VERDICT: <PASS|REVISE|FAIL>` immediately after it. The role-specific meanings below remain binding.
 
 End your work with **exactly one** status:

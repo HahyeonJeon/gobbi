@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/orchestration/workflow/wrap-up.md

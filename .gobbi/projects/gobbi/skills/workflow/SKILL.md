@@ -1,11 +1,11 @@
 ---
-name: orchestration
-description: How a manager orchestrates specialists through one durable Gobbi workflow.
+name: workflow
+description: How a manager runs one durable Gobbi workflow — start, resume, route, and close a session across Configuration to Wrap-up.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
 
-# Orchestration
+# Workflow
 
 Use this skill when a manager starts, resumes, routes, or closes a Gobbi session. The outcome is one isolated, recoverable session that follows Configuration → Ideation → Planning → Execution → Wrap-up and leaves verified local commits plus a durable handoff.
 
@@ -94,7 +94,7 @@ After the defaults decision:
 4. Invoke [`record/scripts/session-record.sh`](../record/scripts/session-record.sh) `init` with the absolute session root, UUID, project, runtime system and ID, timestamp, branch, absolute worktree, repository data, and optional resolved-settings file.
 5. Run the command's `verify` operation and reread `session.json` and `state.json`.
 
-Initialization eagerly creates the configured iteration skeleton. Planning later supplies the locked task list to `scaffold-tasks`. The record skill and command own all schemas, directory mechanics, rendering, root containment, and atomic replacement; orchestration does not reproduce them.
+Initialization eagerly creates the configured iteration skeleton. Planning later supplies the locked task list to `scaffold-tasks`. The record skill and command own all schemas, directory mechanics, rendering, root containment, and atomic replacement; workflow does not reproduce them.
 
 ### 4. Enter Ideation
 
@@ -109,20 +109,20 @@ Project the same cursor into the runtime-native task list. The projection cannot
 Load the step adapter and run its four stages in order:
 
 1. DISCUSSION locks the inputs, decisions, scope, and specialist contract for the iteration.
-2. WORK follows [`workflow/dual-system-work.md`](workflow/dual-system-work.md).
-3. EVALUATION follows [`workflow/evaluation.md`](workflow/evaluation.md).
-4. RECORD follows [`workflow/record.md`](workflow/record.md).
+2. WORK follows [`steps/dual-system-work.md`](steps/dual-system-work.md).
+3. EVALUATION follows [`steps/evaluation.md`](steps/evaluation.md).
+4. RECORD follows [`steps/record.md`](steps/record.md).
 
 The step adapters are:
 
 | Step | Manager adapter | Specialist owner |
 |---|---|---|
-| Ideation | [`workflow/ideation.md`](workflow/ideation.md) | [`ideation/SKILL.md`](../ideation/SKILL.md) |
-| Planning | [`workflow/planning.md`](workflow/planning.md) | [`planning/SKILL.md`](../planning/SKILL.md) |
-| Execution | [`workflow/execution.md`](workflow/execution.md) | [`execution/SKILL.md`](../execution/SKILL.md) |
-| Wrap-up | [`workflow/wrap-up.md`](workflow/wrap-up.md) | [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) |
+| Ideation | [`steps/ideation.md`](steps/ideation.md) | [`ideation/SKILL.md`](../ideation/SKILL.md) |
+| Planning | [`steps/planning.md`](steps/planning.md) | [`planning/SKILL.md`](../planning/SKILL.md) |
+| Execution | [`steps/execution.md`](steps/execution.md) | [`execution/SKILL.md`](../execution/SKILL.md) |
+| Wrap-up | [`steps/wrap-up.md`](steps/wrap-up.md) | [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) |
 
-Use [`workflow/state-machine.md`](workflow/state-machine.md) for every verdict branch, iteration-cap branch, halt, return, and cursor advance. Update state before every visible transition.
+Use [`steps/state-machine.md`](steps/state-machine.md) for every verdict branch, iteration-cap branch, halt, return, and cursor advance. Update state before every visible transition.
 
 ### 6. Coordinate specialists
 
@@ -163,11 +163,11 @@ Before declaring the session complete:
 
 ## References
 
-- Transition rules and recovery: [`workflow/state-machine.md`](workflow/state-machine.md)
-- Session command boundary: [`workflow/session-record.md`](workflow/session-record.md)
-- Dual-system WORK contract: [`workflow/dual-system-work.md`](workflow/dual-system-work.md)
-- Evaluation gate: [`workflow/evaluation.md`](workflow/evaluation.md)
-- RECORD gate: [`workflow/record.md`](workflow/record.md)
+- Transition rules and recovery: [`steps/state-machine.md`](steps/state-machine.md)
+- Session command boundary: [`steps/session-record.md`](steps/session-record.md)
+- Dual-system WORK contract: [`steps/dual-system-work.md`](steps/dual-system-work.md)
+- Evaluation gate: [`steps/evaluation.md`](steps/evaluation.md)
+- RECORD gate: [`steps/record.md`](steps/record.md)
 - Delegation contract: [`delegation.md`](delegation.md)
 - Persistent-team contract: [`agent-teams.md`](agent-teams.md)
 - Git isolation and finalization: [`git/SKILL.md`](../git/SKILL.md)

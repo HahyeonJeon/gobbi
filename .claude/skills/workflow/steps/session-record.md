@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/workflow/steps/session-record.md

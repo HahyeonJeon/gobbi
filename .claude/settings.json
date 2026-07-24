@@ -6,7 +6,7 @@
   "permissions": {
     "allow": [
       "Skill(gobbi)",
-      "Skill(orchestration)",
+      "Skill(workflow)",
       "Skill(git)",
       "Skill(principles)",
       "Skill(mistake)",

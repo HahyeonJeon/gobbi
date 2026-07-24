@@ -79,4 +79,4 @@ A material Research defect affects the ordinary artifact verdict:
   decision.
 
 The ordinary aggregator, finding ledger, user disposition gate, and full-iteration revision rules remain
-owned by Evaluation and Orchestration. Research never applies a finding or launches a retry.
+owned by Evaluation and Workflow. Research never applies a finding or launches a retry.

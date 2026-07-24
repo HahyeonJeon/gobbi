@@ -1,6 +1,6 @@
 # Evaluation Scenarios
 
-This source exercises [SKILL.md](SKILL.md). It tests whether one evaluator produced a fresh, independent, complete, evidence-derived report. It does not add perspective, finding, verdict, or orchestration policy.
+This source exercises [SKILL.md](SKILL.md). It tests whether one evaluator produced a fresh, independent, complete, evidence-derived report. It does not add perspective, finding, verdict, or workflow policy.
 
 ## Coverage register
 

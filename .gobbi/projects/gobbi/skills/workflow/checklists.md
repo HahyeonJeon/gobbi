@@ -1,9 +1,9 @@
-# Orchestration Operational Checklist
+# Workflow Operational Checklist
 
 ## Source contract
 
-- **Purpose:** prevent unsafe omission while a manager operates or accepts the orchestration workflow.
-- **Owner:** orchestration skill.
+- **Purpose:** prevent unsafe omission while a manager operates or accepts the workflow.
+- **Owner:** workflow skill.
 - **Consumer:** manager for operational gates; evaluator as scenario-derived acceptance evidence.
 - **Mode:** operational.
 - **Source version:** `orch-v1`; this file is the unchecked source and is never filled in place.
@@ -410,12 +410,12 @@
   - **On fail:** consequence — recovery path is lost or misleading; halt session completion until factual state is restored/reported.
   - **Resolution:** ______
 
-## Pause point H — Before orchestration documentation handoff
+## Pause point H — Before workflow documentation handoff
 
 **Run use style:** `do-confirm`.
 
-- [ ] **ORCH-CHK-DOC-01** `[gate/killer, do-confirm]` Every link in active changed orchestration docs resolves within its explicit scope, with protected role docs excluded from mutation and link enforcement.
-  - **Applicability:** conditional — orchestration documentation changed.
+- [ ] **ORCH-CHK-DOC-01** `[gate/killer, do-confirm]` Every link in active changed workflow docs resolves within its explicit scope, with protected role docs excluded from mutation and link enforcement.
+  - **Applicability:** conditional — workflow documentation changed.
   - **Source:** ORCH-P10; ORCH-SCN-08-A, ORCH-SCN-08-C.
   - **Pass condition:** scoped validator passes; no active reference targets a deleted child/template; protected-role diff is empty.
   - **Evidence:** link validator result and protected path Git diff.
@@ -423,7 +423,7 @@
   - **Resolution:** ______
 
 - [ ] **ORCH-CHK-DOC-02** `[gate/killer, do-confirm]` Each concern has one semantic owner and thin adapters do not restate schemas, specialist methods, paths, or transition mechanics.
-  - **Applicability:** conditional — orchestration documentation changed.
+  - **Applicability:** conditional — workflow documentation changed.
   - **Source:** ORCH-P10; ORCH-SCN-08-A, ORCH-SCN-08-D, ORCH-SCN-08-E.
   - **Pass condition:** claim-owner map is unique; semantic review and scoped search find no contradictory active route or copied owner contract.
   - **Evidence:** claim-owner map, changed-doc reread, and scoped search results.
@@ -431,7 +431,7 @@
   - **Resolution:** ______
 
 - [ ] **ORCH-CHK-DOC-03** `[required, do-confirm]` Cold readers can locate decisions, stop conditions, and owner links through literal headings and compact mappings.
-  - **Applicability:** conditional — orchestration documentation changed.
+  - **Applicability:** conditional — workflow documentation changed.
   - **Source:** ORCH-P10; ORCH-SCN-08-B.
   - **Pass condition:** heading/link inventory reaches every load-bearing rule; sequential actions use ordered prose rather than sequential tables in `SKILL.md`.
   - **Evidence:** cold-read trace, heading inventory, and table classification.
@@ -447,7 +447,7 @@
   - **Resolution:** ______
 
 - [ ] **ORCH-CHK-DOC-05** `[required, do-confirm]` The active changed sources contain no retired alternate workflow mechanics or role-specific delegation files.
-  - **Applicability:** conditional — orchestration documentation changed.
+  - **Applicability:** conditional — workflow documentation changed.
   - **Source:** ORCH-P10; ORCH-SCN-08-D.
   - **Pass condition:** semantic reread and scoped vocabulary/path search confirm one workflow, one router, one shared skeleton, and only live children.
   - **Evidence:** changed-path inventory, scoped search, and full reread.

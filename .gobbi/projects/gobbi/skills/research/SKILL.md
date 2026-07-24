@@ -165,7 +165,7 @@ web result, runtime-derived path, or direct write.
   exercise this operation without adding policy.
 - [`../record/SKILL.md`](../record/SKILL.md) and [`../record/record-map.md`](../record/record-map.md) own
   session-tree paths, containment, storage, staging, and artifact placement.
-- [`../orchestration/workflow/state-machine.md`](../orchestration/workflow/state-machine.md) owns the
+- [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns the
   exact v3 cursor vocabulary.
 - [`../discussion/SKILL.md`](../discussion/SKILL.md) owns material user decisions.
 - [`../memory/SKILL.md`](../memory/SKILL.md) and [`../wrap-up/SKILL.md`](../wrap-up/SKILL.md) own durable
