@@ -77,7 +77,7 @@ questions.
 
 | Field | Meaning |
 |---|---|
-| **Answer ID** | Stable idempotency key for this answer event (kebab slug or ordinal). Regeneration and resume/rerun key off it, NOT off row position. |
+| **Answer ID** | Stable idempotency key for this answer event (kebab slug or ordinal); an evidence-led follow-up probe uses the derived per-parent form defined in "Follow-up probe events" below. Regeneration and resume/rerun key off it, NOT off row position. |
 | **Topic ID** | Stable Level-1/Level-2 node (e.g. `7.4 Data & state`). |
 | **Question** | The exact question asked. |
 | **Answer** | The user's answer, summarized without changing its meaning. |
@@ -112,6 +112,17 @@ answer.
 per-branch coverage. A Level-2 branch closes only as `confirmed`, `proven-irrelevant` (with a recorded
 reason), or `recorded-open` (with an owner and resolution method). At each confirmed Level-1 close, append
 a checkpoint marker to the ledger holding the topic number and confirmation timestamp.
+
+**Follow-up probe events (evidence-led depth).** An evidence-led Level-3+ follow-up probe off a concrete
+answer (the [`topics.md`](topics.md) "follow the evidence down" traversal rule) is its own append-only
+ledger event, keyed by a derived `Answer ID` of the form `{branch}.p{n}`: `{branch}` is the parent
+Level-2 branch's own `Answer ID`, and `p{n}` is a per-parent probe counter that is flat (a probe on a
+probe still counts up under the SAME parent branch — never `{branch}.p1.p1`), monotonic, and never
+reused (a superseded probe keeps its number; its replacement takes the next `n`). Every probe event
+names its parent explicitly and INHERITS that parent's Level-2 `Branch closure`; a follow-up carries no
+closure of its own, because `Branch closure` stays a Level-2-branch axis. Follow-ups DEEPEN a branch's
+evidence and never add required coverage — the mandatory-coverage gate over all 11 Level-1 topics and
+every required Level-2 branch is unchanged whether a branch has zero follow-ups or many.
 
 ## 3. Startup session shape
 

@@ -48,7 +48,10 @@ end of this file.
    If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
    § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
    `recorded-open` with an owner and resolution method rather than accepting a vague answer or pushing
-   indefinitely. Do not probe when the first answer is already concrete and evidenced.
+   indefinitely. This ≤2-repair cap governs a STILL-VAGUE or contradicted answer only; do not re-ask a
+   repair probe merely to restate an answer that already landed concrete. A concrete, evidenced answer is
+   not a stop signal — when it exposes a new in-scope claim, dependency, contradiction, or untested
+   assumption, open an evidence-advancing follow-up under rule 9.
 6. Mark each answer `confirmed` / `assumption` / `open` / `contradicted` in the answer ledger, and record
    each Level-2 branch's own closure state in the ledger's `Branch closure` field
    ([`recording.md`](recording.md) §2 owns the schema).
@@ -56,6 +59,19 @@ end of this file.
    evidence and the confirmation.
 8. Re-open an earlier branch when a later answer contradicts it. Architecture must not silently redefine
    scope; roadmap must not silently redefine the quality bar.
+9. **Follow the evidence down as far as it keeps moving.** A concrete, evidenced answer may open a new
+   parent-scoped Level-3+ follow-up when it exposes a new in-scope claim, dependency, contradiction, or
+   untested assumption AND the follow-up can produce new evidence. Keep descending that chain while each
+   probe still advances the evidence within the parent branch's topic scope; there is no probe count and
+   no turn cap. Stop only when the next probe would not move the evidence, when it would leave topic
+   scope, or when the branch is settled. This is DEPTH, distinct from the rule-5 vague-repair cap: the cap
+   bounds re-asking a still-vague answer, this rule pursues evidence off a concrete one. It is the
+   mechanism the [`SKILL.md`](SKILL.md#a6-follow-the-evidence-down) A6 axiom, the [A4 riskiest-assumption
+   axiom](SKILL.md#a4-riskiest-assumption), and the [P3 riskiest-assumption-first depth
+   override](SKILL.md#p3-riskiest-assumption-first-depth-override) use: each selects the claim to attack,
+   then produces its next disconfirming probe through this rule. Each follow-up records as a
+   `{branch}.p{n}` event that inherits its parent's Level-2 closure ([`recording.md`](recording.md) §2);
+   follow-ups deepen a branch and never add a required branch.
 
 **Design-bearing markers.** Branches that settle a direction carry an inline marker under their heading.
 The core design cluster is **Topics 6–9**, plus the always-design-bearing capability and journey branches
@@ -516,12 +532,16 @@ first, regenerate the affected staged drafts from the ledger, then present the c
   in the ledger. An unresolved branch without an owner blocks completion.
 - **Smart-skip shortens, it does not drop.** Existing docs/repo evidence may close a branch when the user
   confirms — but coverage stays mandatory; smart-skip removes redundant questions, never required branches.
-- **Probe up to twice, then record open.** Probe a vague answer with a concrete example, past-behavior
-  question, or counterexample. If the re-answer is still vague, probe a second time (the
-  [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is still vague after the
-  second probe, close the branch `recorded-open` with an owner and resolution method rather than accepting
-  a vague answer or pushing indefinitely. Do not probe when the first answer is already concrete and
-  evidenced.
+- **Probe up to twice, then record open — a still-vague answer only.** Probe a vague answer with a
+  concrete example, past-behavior question, or counterexample. If the re-answer is still vague, probe a
+  second time (the [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is
+  still vague after the second probe, close the branch `recorded-open` with an owner and resolution
+  method rather than accepting a vague answer or pushing indefinitely. This ≤2-repair cap governs a
+  STILL-VAGUE or contradicted answer only; do not re-ask a repair probe merely to restate an answer that
+  already landed concrete. A concrete, evidenced answer is not a stop signal — when it exposes a new
+  in-scope claim, dependency, contradiction, or untested assumption, open an evidence-advancing follow-up
+  ([How to traverse the tree](#how-to-traverse-the-tree) rule 9); evidence-led depth has no probe count
+  or turn cap and stops only when the next probe would not move the evidence.
 - **Re-open on contradiction.** When a later answer contradicts an earlier branch, re-open the earlier
   branch and resolve it in the ledger — do not paper over it. Architecture must not silently redefine
   scope; roadmap must not silently redefine the quality bar.

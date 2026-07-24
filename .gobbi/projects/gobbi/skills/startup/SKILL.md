@@ -48,11 +48,15 @@ feature-requests as prompts to investigate, not as validation. After the answer,
 and what would change it — never hide behind soft neutrality. Push a vague or contradicted answer at most
 twice, then record it open.
 
+<a id="a4-riskiest-assumption"></a>
 > **A4 — Attack the riskiest assumption first, and seek the evidence that would kill it.**
 
 Name the claim most likely to make the project pointless, infeasible, or wrong, and spend the first
 disconfirming probe there; allocate depth by uncertainty × reversibility × magnitude — fast on two-way
-doors, slow on one-way — while still closing every required branch.
+doors, slow on one-way — while still closing every required branch. Once that first probe lands, follow
+its evidence down as far as it keeps moving ([A6](#a6-follow-the-evidence-down)): the riskiest-assumption
+selection names the claim to attack, then produces each next disconfirming probe through the evidence-led
+follow-up rule.
 
 > **A5 — Name one first user and their switch.**
 
@@ -60,6 +64,22 @@ Ground the project in one first user or segment and a concrete job; identify the
 what pushes and pulls them toward change, and the anxiety of the new and habit of the old that block it.
 Where a project has distinct roles, separate the person who acts from the one who operates, approves, or
 is affected — as user / problem understanding, not a purchasing chain.
+
+<a id="a6-follow-the-evidence-down"></a>
+> **A6 — Follow the evidence down as far as it keeps moving.**
+
+When an answer — however concrete or well-evidenced — exposes a new in-scope claim, dependency,
+contradiction, or untested assumption, ask the follow-up that can produce new evidence, and keep
+descending that chain while each probe still advances the evidence within the branch's topic scope.
+There is no probe count and no turn cap; the chain stops only when the next probe would not move the
+evidence, when it would leave topic scope, or when the branch is settled. This is DEPTH, and it is
+distinct from vague-repair: the ≤2-repair cap in A3 bounds re-asking a STILL-VAGUE or contradicted
+answer and never fires on a concrete one, so a concrete answer is a launch point for depth, not a stop
+signal. A4's riskiest-assumption selection and the [P3 riskiest-assumption-first depth
+override](#p3-riskiest-assumption-first-depth-override) both drive their disconfirming probes through
+this rule. [`topics.md`](topics.md#how-to-traverse-the-tree) rule 9 states the traversal-side form, and
+[`recording.md`](recording.md) §2 records each follow-up as its own parent-scoped event that inherits
+its parent's Level-2 closure and adds no required coverage.
 
 ### Group B — Design Craft
 
@@ -193,7 +213,7 @@ user gates; neither substitutes for the other.
 **P3 — Traverse the tree.** Walk Topics 2–11 in [`topics.md`](topics.md) order, evidence-led smart-skip, under the [`topics.md` anti-sycophancy contract](topics.md#anti-sycophancy-contract) and using its coverage rules, design-bearing markers, and Level-1 checkpoints. Write a resumable checkpoint at each Level-1 close; the user confirms every Level-1 checkpoint and decides every design-bearing direction.
 
 <a id="p3-riskiest-assumption-first-depth-override"></a>
-**Riskiest-assumption-first depth override.** After the first real problem event, stack the design's riskiest assumptions and probe the top one first: (1) the claim whose falsity means there is no real problem or user, (2) the claim whose falsity makes the project infeasible or unsafe to build, then (3) the claim whose falsity makes the product shape wrong or unusable. The top claim gets the first disconfirming probe before normal traversal continues. This changes DEPTH only — never required coverage or the macro topic order — and every required branch still closes. Re-score the stack when a later answer changes the root problem.
+**Riskiest-assumption-first depth override.** After the first real problem event, stack the design's riskiest assumptions and probe the top one first: (1) the claim whose falsity means there is no real problem or user, (2) the claim whose falsity makes the project infeasible or unsafe to build, then (3) the claim whose falsity makes the product shape wrong or unusable. The top claim gets the first disconfirming probe before normal traversal continues, and that probe continues as an [A6](#a6-follow-the-evidence-down) evidence-led follow-up chain — each next disconfirming probe produced by the follow-up rule — until the evidence stops moving. This changes DEPTH only — never required coverage or the macro topic order — and every required branch still closes. Re-score the stack when a later answer changes the root problem.
 
 After Topic 4, run the [`topics.md` problem-before-solution premise gate](topics.md#problem-before-solution-premise-gate). Do not enter Topic 5 until it passes; a failed premise reopens its earliest owning branch.
 
