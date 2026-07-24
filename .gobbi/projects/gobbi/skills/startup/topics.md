@@ -555,10 +555,15 @@ first, regenerate the affected staged drafts from the ledger, then present the c
   push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
   the last real switch, to close the gap where a real problem still fails to produce a change in behavior.
   This is user / problem understanding, not competitive positioning.
-- **Synthesis-in-sections before promotion.** Before synthesizing staged drafts, present the design back
-  in small coherent sections (problem / evidence → first user → boundary → product shape → feasibility →
-  guardrails), ask whether each interpretation is accurate, and allow backward movement on a new
-  constraint. (A ~200–300-word-per-section heuristic, not a hard check.)
+- **Phase-close readout hooks.** The four phases each close with a confirmed readout instead of one
+  end-of-talk recap. At the Phase I (Topic 3) close, the Phase II (Topic 4 premise gate) close, the
+  Phase III (Topic 8) close, and the Phase IV (Topic 11) close, produce that phase's
+  `working/phase-results/{phase}.md` readout — a section-coherent synthesis of the phase's confirmed
+  claims — and take its separate user agree/disagree confirmation before the next unit starts; the next
+  unit stays blocked until it is confirmed, and a disagreement reopens the earliest owning branch
+  (backward movement on a new constraint). These four hooks REPLACE the former single end-of-talk recap.
+  [`recording.md`](recording.md) §1 owns the readout contract and [`SKILL.md`](SKILL.md) wires the gate
+  placement and the P4 consumption.
 
 The full capture model, staging→destination contract, and startup-close promotion procedure that consume
 these answers live in [`recording.md`](recording.md).

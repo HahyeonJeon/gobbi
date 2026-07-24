@@ -217,6 +217,23 @@ user gates; neither substitutes for the other.
 
 After Topic 4, run the [`topics.md` problem-before-solution premise gate](topics.md#problem-before-solution-premise-gate). Do not enter Topic 5 until it passes; a failed premise reopens its earliest owning branch.
 
+<a id="p3-phase-close-readout-gates"></a>
+**Phase-close readout gates.** The topic tree runs in four phases ([`topics.md`](topics.md)). At each phase
+close, produce that phase's readout under `working/phase-results/` and take its separate user confirmation
+before the next unit starts. The four gates, and what each blocks:
+
+1. **Phase I — Problem space**, at the **Topic 3** close → `working/phase-results/phase-i.md`; blocks Topic 4.
+2. **Phase II — Boundary**, at the **Topic 4 premise gate** → `working/phase-results/phase-ii.md`; blocks Topic 5.
+3. **Phase III — Solution space**, at the **Topic 8** close → `working/phase-results/phase-iii.md`; blocks Topic 9.
+4. **Phase IV — Guardrails**, at the **Topic 11** close → `working/phase-results/phase-iv.md`; blocks the P4 synthesis step.
+
+Each readout is written from the phase's COMPLETE event set and takes a SEPARATE agree/disagree confirmation;
+the next unit stays BLOCKED until that readout's gate state is `confirmed`, and a disagreement runs the
+correction / earliest-owner-reopen / idempotent-regeneration loop before the gate closes.
+[`recording.md`](recording.md) §1 is the single owner of the readout's schema, body, source register,
+confirmation teeth, disagreement, and resume rules — this step wires only WHERE each phase closes and POINTS
+there for WHAT the document is (I8).
+
 <a id="p3-design-decision-micro-loop"></a>
 **Design-decision micro-loop.** For every branch [`topics.md`](topics.md) marks design-bearing, run this loop before recording the direction:
 
@@ -228,7 +245,7 @@ This loop sets reference-informed DIRECTION only — which architecture style, s
 
 Exit P3 only when every required branch is `confirmed`, `proven-irrelevant` with a reason, or `recorded-open` with an owner, and every design direction carries its references + rejected alternatives.
 
-**P4 — Synthesize staged docs.** Follow [`recording.md`](recording.md) §§4–6: turn confirmed answers into atomic, template-stamped typed drafts in the startup staging tree. Surface gaps; never fill them by inference; write no durable memory. Route mistake-candidates per [`recording.md`](recording.md) §5: startup may promote only a cross-cutting project/feature trap to `mistakes/`; a skill-owned trap becomes a decision/backlog handoff, and startup never writes `skills/{skill}/mistakes.md`. Exit with a complete session-local staging set.
+**P4 — Synthesize staged docs.** Do not start until all four phase-result readouts are `confirmed` (the Phase IV gate above). Follow [`recording.md`](recording.md) §§4–6: consume the four confirmed `working/phase-results/` readouts (Phase I–IV) as the synthesis inputs, resolving each claim through the readout's source register back to its ledger events and design brief, then turn the confirmed answers into atomic, template-stamped typed drafts in the startup staging tree. Folding the four readouts, this step MUST NOT infer a claim they do not carry, strengthen a claim beyond its recorded status, omit a recorded contradiction, treat a readout's synthesized prose as independent evidence in place of its source register, stage or promote any phase-result doc (they stay record-level P4 inputs, never promoted), or rerun a fifth recap pass — the four confirmed readouts REPLACE the former single end-of-talk recap, so P4 adds no new recap. Surface gaps; never fill them by inference; write no durable memory. Route mistake-candidates per [`recording.md`](recording.md) §5: startup may promote only a cross-cutting project/feature trap to `mistakes/`; a skill-owned trap becomes a decision/backlog handoff, and startup never writes `skills/{skill}/mistakes.md`. Exit with a complete session-local staging set.
 
 **P5 — Reconcile, challenge & pre-write validate.** Follow [`recording.md`](recording.md) §7 + §9 step 1: run the cross-topic contradiction pass and a jargon-free final challenge, build the promotion manifest with a restorable per-path preimage, create the draft startup summary (`baseline_valid: false`), run the automated + manual secret-scan, and validate the whole set — destinations, collisions, supersessions, archive moves — dry-run, no durable write. The user confirms the corrections and the complete manifest — this is pre-write gate 1; no durable write has occurred. Exit with one approved, whole-set-valid promotion plan.
 
@@ -248,9 +265,10 @@ claim here and follow the single owner link.
 - [`topics.md`](topics.md) § How to traverse the tree + § Anti-sycophancy contract + § Problem-before-solution
   premise gate + § Design-bearing markers — validates: P3 traversal order, the anti-sycophancy posture, the
   Topic 4→5 premise gate, and the authoritative design-bearing trigger classification.
-- [`recording.md`](recording.md) §§1, 3, 5, 9, 11–13 — validates: the record/memory boundary, the startup
+- [`recording.md`](recording.md) §§1, 3, 5, 9, 11–13 — validates: the record/memory boundary and the four
+  phase-result readouts (§1) that the P3 phase-close gates produce and P4 consumes, the startup
   session shape, mistake routing, startup-close promotion and recovery, rerun/resume classification, and the
-  close lifecycle used by P1 and P4–P7.
+  close lifecycle used by P1, P3, and P4–P7.
 - [`discussion/SKILL.md`](../discussion/SKILL.md) § Question Card Structure + § Decision Classification —
   validates: the active-runtime question-card form and the Always-Ask handling used at every startup user
   gate (P1–P7; the inline P3 design-decision micro-loop's recommendation + gate; the promotion Always-Ask
