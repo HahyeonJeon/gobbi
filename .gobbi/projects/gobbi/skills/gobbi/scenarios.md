@@ -2,47 +2,56 @@
 
 ## Set contract
 
-- **Purpose:** prove that a cold manager reaches one valid Gobbi cursor without recreating retired behavior or bypassing an owner.
+- **Purpose:** prove that a cold manager rebuilds the five-skill floor, presents the skill-map index, and routes by session kind — for a general or a full-workflow session — without recreating retired behavior, forcing the workflow owner, or writing from the entry.
 - **Target:** [`SKILL.md`](SKILL.md) and only the bootstrap edges it owns.
 - **Consumer:** the Gobbi operational checklist and both fresh evaluators of a Gobbi-entry change.
 - **Lifecycle:** design obligations; freeze this source before an evaluation run.
-- **Scope:** start, fresh classification, exact resume, runtime context boundaries, conditional owner loads, Startup gating, handoff, and runtime entry views.
-- **Non-goals:** state transitions, record bytes, question-card rendering, delegation formats, Git commands, peer commands, plugin repair, and productive-step methods.
-- **Scale:** eight families and thirty-four cases. The author thresholds are twelve families and eighty distinct category/case-type cells. Split by bootstrap concern if either threshold is exceeded.
+- **Scope:** entry-boundary read-only setup, the floor of exactly five, conditional owner loads, the skill-map index, resume identity across runtime boundaries, session-kind routing, the read-only handoff to the workflow owner, retired-machinery absence, and canonical/runtime entry views.
+- **Non-goals:** fresh/resume classification cardinality, fresh initialization, Configuration mechanics, state transitions, record bytes, question-card rendering, delegation formats, Git commands, peer commands, plugin repair, and productive-step methods — all owned by the indexed `workflow` skill or another current owner, not by the entry.
+- **Scale:** seven families and twenty-eight cases. The author thresholds are twelve families and eighty distinct category/case-type cells. Split by bootstrap concern if either threshold is exceeded.
 - **Stable IDs:** `GOBBI-SCN-<family>-<case>`; wording changes do not renumber an ID.
 - **Evidence policy:** cite inspected paths, manifests, state, commands, and runtime views. Never embed runtime secrets or private conversation data.
 
+## Realignment note (dropped families map to removed parent clauses)
+
+This set is realigned to the rewritten `SKILL.md` rule set (GB-1..GB-7 plus the Skill map and Must-not blocks). Three earlier families are dropped because the parent clauses they traced to were removed, not because the situations stopped mattering — the trace stays closed and no orphan case remains:
+
+- The **session-classification cardinality** family (zero / one / multiple unfinished sessions) is dropped: GB-5 moves fresh/resume classification to the indexed `workflow` owner; the entry no longer classifies.
+- The **fresh defaults + initialization** family (defaults/customize, UUID, branch/worktree, Record init) is dropped: the "Keep the entry read-only" principle and GB-5 move all creation to the `workflow` owner's Configuration; the entry writes nothing. The read-only property is retained as GOBBI-SCN-06-C.
+- The **fresh-session startup-classifier gate** family is dropped: the Must-not rules retire the gate; `startup` is only an indexed skill (GOBBI-SCN-09), and the retired-gate absence is guarded by GOBBI-SCN-07-D.
+
+The **mandatory one-cursor handoff** obligation is reshaped, not kept: GB-6 makes the handoff conditional on the session being a workflow session (GOBBI-SCN-06-A), so the entry hands off only for a workflow session.
+
 ## Source register
+
+Every source is a live clause in the rewritten `SKILL.md`.
 
 | Source | Parent clause | Obligation |
 |---|---|---|
-| GB-P01 | GB-1, Procedure 1 | Run at every entry/context boundary and establish the canonical source without writing. |
-| GB-P02 | GB-2, Procedure 2 | Read the complete manager floor in the declared order. |
-| GB-P03 | GB-3, Procedure 3 | Load Discussion, Git, Codex, and delegation only before their triggered actions. |
-| GB-P04 | GB-4, Procedure 7 | Preserve Gobbi identity and cursor while attaching a distinct runtime identity. |
-| GB-P05 | GB-5, Procedure 4 | Classify zero, exactly one, multiple, and explicit-path cases only in the permitted scope. |
-| GB-P06 | GB-6, Procedure 5 | Keep fresh preflight read-only and store settings only in the manifest. |
-| GB-P07 | GB-7, Procedure 7 | Reuse resumed settings without reopening Configuration choices. |
-| GB-P08 | GB-8, Procedure 6 | Use Startup's classifier and user choice only on the fresh trigger or explicit reset. |
-| GB-P09 | GB-9, Procedure 8 | Hand exactly one durable cursor to Orchestration and never dispatch a productive specialist directly. |
-| GB-P10 | GB-10, Rules | Current owners outrank cosmetic legacy and protected stale workflow text without mutating protected sources. |
-| GB-P11 | GB-11, Procedure 1 | Prove the active runtime entry resolves the canonical four-file bundle and route repair to its owner. |
-| GB-P12 | Must-not rules | Absence of retired modes, settings files, hooks, capture, telemetry, and memory merging is valid operation. |
+| GB-1 | GB-1, Procedure 1 | Run at every entry/context boundary and establish the canonical source without writing. |
+| GB-2 | GB-2, Procedure 2 | Rebuild the floor of exactly five in the declared order, then the applicable rules and the canonical manager role; admit no sixth skill. |
+| GB-3 | GB-3, Procedure 3 | Load a conditional owner (`codex`; the workflow assignment skeleton) only before its triggered action; the floor already covers `discussion` and `git`. |
+| GB-4 | GB-4, Procedure 4 | Preserve the Gobbi UUID and version 3 cursor across a boundary, let the workflow owner and Record append a distinct runtime identity, and reuse settings without reconfiguring. |
+| GB-5 | GB-5, Procedure 5, Principle "Keep the entry read-only" | Point classification, the read-only preflight, session-tree/manifest creation, and settings placement at the indexed `workflow` owner; the entry itself writes nothing. |
+| GB-6 | GB-6, Procedure 5, Principle "Route on demand" | Route by session kind: a general session runs on the floor; a workflow session enters the `workflow` owner at the validated cursor; never dispatch a productive specialist directly; a blocked handoff reports the exact invalid artifact. |
+| GB-7 | GB-7, Procedure 1, References | Current owners govern; a cosmetic legacy heading or protected role text cannot reactivate retired behavior; the entry resolves the canonical four-file bundle and its mirror views; route mirror repair to the sync owner. |
+| GB-MAP | `## Skill map` section, Principle "Route on demand" | Index every non-floor skill once (name + one-line description + neutral relevance note); the index is not a load-when gate; the `mistake` entry records it stays mandatory for non-trivial work and at position 4 of every subagent Load Directives. |
+| GB-MN | Rules § Must not follow | Bootstrap needs no interaction-mode question or alternate route, no forced workflow load or startup/baseline-classifier gate, no separate settings file, no hook/transcript/rollout/ledger/telemetry dependency, and no durable-memory merge, threshold, cap, or compaction; the absence of retired machinery is valid operation. |
 
 ## Coverage register
 
 | # | Category | Disposition | Positive and stress carriers |
 |---|---|---|---|
-| 1 | Purpose / outcomes / scope | selected | GOBBI-SCN-01-A, GOBBI-SCN-06-A |
-| 2 | Actors / stakeholders / use-context | selected | GOBBI-SCN-01-A, GOBBI-SCN-05-B, GOBBI-SCN-06-B |
-| 3 | Behavior / state / data | selected | GOBBI-SCN-02-A..C, GOBBI-SCN-04-A |
-| 4 | Interfaces / dependencies / structure | selected | GOBBI-SCN-01-B, GOBBI-SCN-06-A, GOBBI-SCN-08-A..D |
-| 5 | Quality attributes / resource economics | selected | GOBBI-SCN-02-D; classification stays local and bounded |
-| 6 | Failure / recovery / operations | selected | GOBBI-SCN-03-D, GOBBI-SCN-04-D, GOBBI-SCN-08-D |
-| 7 | Trust / harm / governance | selected | GOBBI-SCN-03-C, GOBBI-SCN-05-B, GOBBI-SCN-06-B |
+| 1 | Purpose / outcomes / scope | selected | GOBBI-SCN-10-A, GOBBI-SCN-01-A |
+| 2 | Actors / stakeholders / use-context | selected | GOBBI-SCN-01-A, GOBBI-SCN-10-A..B |
+| 3 | Behavior / state / data | selected | GOBBI-SCN-04-A..B, GOBBI-SCN-06-A |
+| 4 | Interfaces / dependencies / structure | selected | GOBBI-SCN-06-A..E, GOBBI-SCN-08-A..F, GOBBI-SCN-09-A..C |
+| 5 | Quality attributes / resource economics | selected | GOBBI-SCN-04-B, GOBBI-SCN-09-C; entry loading stays lazy and bounded |
+| 6 | Failure / recovery / operations | selected | GOBBI-SCN-06-D, GOBBI-SCN-08-D |
+| 7 | Trust / harm / governance | selected | GOBBI-SCN-06-C, GOBBI-SCN-07-B, GOBBI-SCN-01-D |
 | 8 | Inclusion / locale | selected | GOBBI-SCN-08-B..C; both runtime entry environments reach the same literal operation |
-| 9 | Change / compatibility / reversibility | selected | GOBBI-SCN-04-A..C, GOBBI-SCN-05-D, GOBBI-SCN-07-C |
-| 10 | Evidence / traceability / clarity | selected | GOBBI-SCN-01-A..D, GOBBI-SCN-08-A..D |
+| 9 | Change / compatibility / reversibility | selected | GOBBI-SCN-04-A, GOBBI-SCN-07-C, GOBBI-SCN-08-F |
+| 10 | Evidence / traceability / clarity | selected | GOBBI-SCN-01-A..D, GOBBI-SCN-08-A..F, GOBBI-SCN-09-A |
 
 All ten categories are exercised here. Applicable case types are positive, alternative-valid, negative, boundary, failure/recovery, adversarial, change/regression, and counterfactual. Every family has a dedicated adversarial face. No inseparability record is used.
 
@@ -50,158 +59,69 @@ All ten categories are exercised here. Applicable case types are positive, alter
 
 | Family | Declared primary category and reason | Secondary categories | Cases |
 |---|---|---|---|
-| 01 Manager floor | 10, because a cold reader's complete owner trace is the discrimination | 1, 2, 4, 7 | positive, alternative-valid, adversarial, change |
-| 02 Session classification | 3, because unfinished-session cardinality determines the branch | 4, 5, 6, 10 | positive, alternative-valid, boundary, adversarial |
-| 03 Fresh initialization | 7, because user authority must precede mutation | 1, 3, 4, 6 | positive, alternative-valid, adversarial, failure |
-| 04 Context-boundary resume | 9, because identity and context change while durable state remains | 3, 6, 10 | positive, boundary, adversarial, failure |
-| 05 Startup gate | 1, because baseline validity affects the session's project context | 2, 3, 7, 9 | positive, alternative-valid, change, adversarial |
-| 06 One-cursor handoff | 4, because the Gobbi-to-Orchestration seam defines the family | 1, 2, 3, 7, 10 | positive, adversarial, failure, counterfactual |
+| 01 Manager floor and skill map | 10, because a cold reader's complete owner trace is the discrimination | 1, 2, 4, 7 | positive, alternative-valid, adversarial, change |
+| 04 Resume and runtime boundary | 9, because identity and context change while durable state remains | 3, 5, 7 | positive, boundary, adversarial |
+| 06 Session-kind routing and read-only handoff | 4, because the entry-to-workflow-owner seam defines the family | 1, 6, 7, 10 | positive, adversarial, adversarial, failure, counterfactual |
 | 07 Retired-system absence | 9, because the operation must remain valid after removed dependencies | 3, 6, 7, 10 | positive, adversarial, change, negative |
-| 08 Canonical and runtime views | 10, because source identity and followable wiring prove cold use | 4, 6, 8, 9 | positive, alternative-valid, boundary, failure, adversarial |
+| 08 Canonical and runtime views | 10, because source identity and followable wiring prove cold use | 4, 6, 8, 9 | positive, alternative-valid, boundary, failure, adversarial, change |
+| 09 Skill-map index | 4, because the index is the routing structure that points at every non-floor owner | 1, 5, 10 | positive, alternative-valid, adversarial |
+| 10 General versus workflow routing | 1, because the dual-purpose light entry serving both session kinds is the outcome | 2, 4 | positive, alternative-valid, adversarial |
 
-## GOBBI-SCN-01 — Complete manager floor
+## GOBBI-SCN-01 — Complete manager floor and skill map
 
-**Actor/outcome:** a cold manager knows its authority and next owner before any decision or mutation. **Sources:** GB-P01, GB-P02, GB-P03, GB-P10. **Priority:** killer.
+**Actor/outcome:** a cold manager knows its authority and can find every non-floor owner before any decision or mutation. **Sources:** GB-1, GB-2, GB-3, GB-7. **Priority:** killer.
 
-### GOBBI-SCN-01-A — Cold entry reads the floor
+### GOBBI-SCN-01-A — Cold entry reads the floor and presents the index
 
 - **Primary type / coverage-role:** Positive / positive.
 - **Given:** a manager enters with no retained skill context.
-- **When:** it follows `Session Bootstrap Order` through the complete floor.
-- **Then:** Principles, applicable rules, the canonical manager role, Mistake and applicable mistakes, and Orchestration plus its mistake companion are read in order before acting.
-- **Failure oracle:** any required owner is unread, read after action, or replaced by a runtime summary.
-- **Evidence tuple:** ordered file-read register plus first-action trace; direct inspection confirms.
-- **Obligation / checks:** the parent must be cold-load sufficient and ordered. GOBBI-CHK-FLOOR-01, GOBBI-CHK-FLOOR-02.
+- **When:** it follows `Session Bootstrap Order` through the floor.
+- **Then:** exactly the five floor skills — `principles`, `delegation`, `discussion`, `ideation`, `git` — are read in that order, then the applicable rules and the canonical manager role, and the skill map is available before any action; nothing is written.
+- **Failure oracle:** a required floor skill is unread or read after action, a sixth skill is read as floor, the manager role is skipped, or the entry writes before acting.
+- **Evidence tuple:** ordered file-read register with exactly five floor entries plus first-action trace; direct inspection confirms.
+- **Obligation / checks:** the parent must be cold-load sufficient, ordered, and read-only. GOBBI-CHK-FLOOR-01, GOBBI-CHK-FLOOR-02.
 
 ### GOBBI-SCN-01-B — Conditional owner loading
 
 - **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** one run needs a user question and Git mutation, while another needs a Codex peer and a specialist brief.
+- **Given:** one run reaches a native Codex peer surface, and a workflow-session run reaches specialist-brief authoring.
 - **When:** the manager approaches each boundary.
-- **Then:** Discussion and Git load before the first run's governed actions; Codex and Orchestration delegation load before the second run's actions. Untriggered owners need not load early.
-- **Failure oracle:** governed action precedes its owner, or Gobbi copies the owner's mechanics.
+- **Then:** `codex` loads before the Codex-peer action, and the workflow assignment skeleton loads before the brief; `discussion` and `git` are already floor and are not re-loaded as conditional owners.
+- **Failure oracle:** a governed action precedes its owner, `discussion`/`git` are treated as conditional, or the entry copies the owner's mechanics.
 - **Evidence tuple:** load/action ordering and owner-link trace; direct inspection confirms.
 - **Obligation / checks:** conditional owners load just in time without policy duplication. GOBBI-CHK-FLOOR-03.
 
-### GOBBI-SCN-01-C — Cosmetic legacy tries to route work
+### GOBBI-SCN-01-C — Cosmetic legacy or a sixth floor skill
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** an active surrounding document still contains a familiar old heading or a plausible alternate route.
-- **When:** a manager considers following it instead of the current owner.
-- **Then:** the manager follows the current canonical owner and reports the stale consumer for its owning task.
-- **Failure oracle:** a cosmetic heading reactivates an alternate workflow, mode, or deleted child.
-- **Evidence tuple:** owner precedence trace and actual dispatched path; current owner confirms.
-- **Obligation / checks:** semantics, not familiar labels, choose the route. GOBBI-CHK-OWN-01.
+- **Given:** an active surrounding document carries a familiar old heading, a plausible alternate route, or an always-load list naming a sixth skill (for example `mistake` or the workflow owner) as floor.
+- **When:** a manager considers following it instead of the current parent.
+- **Then:** the floor stays exactly the five, the extra skill is reached through the skill map on demand, and the manager follows the current canonical owner while reporting the stale consumer for its owning task.
+- **Failure oracle:** a cosmetic heading reactivates an alternate route, or a sixth skill silently joins the floor.
+- **Evidence tuple:** floor read register, owner-precedence trace, and actual dispatched path; current owner confirms.
+- **Obligation / checks:** semantics and the literal count, not familiar labels, choose the floor and route. GOBBI-CHK-FLOOR-02, GOBBI-CHK-OWN-01.
 
 ### GOBBI-SCN-01-D — Protected role document contains obsolete workflow text
 
 - **Primary type / coverage-role:** Change / change plus adversarial.
-- **Given:** the protected manager role still names retired creation wording or a deleted child.
+- **Given:** the protected manager role still names retired creation wording, a mandatory workflow-load, or a deleted child.
 - **When:** the manager reads it as required role context.
-- **Then:** role authority remains loaded, the protected file remains byte-identical, and current workflow owners govern routing.
-- **Failure oracle:** bootstrap edits the protected role, follows its obsolete child, or suppresses the contradiction.
+- **Then:** role authority remains loaded, the protected file remains byte-identical, and current owners govern routing; the accepted role inconsistency does not restate the floor.
+- **Failure oracle:** bootstrap edits the protected role, follows its obsolete child, or lets it override the floor of five.
 - **Evidence tuple:** protected hash, current owner links, and dispatch trace; all three confirm.
 - **Obligation / checks:** accepted protected inconsistency cannot regain routing authority. GOBBI-CHK-OWN-02.
 
-## GOBBI-SCN-02 — Current-worktree session classification
-
-**Actor/outcome:** a manager selects fresh or resume without global inference. **Sources:** GB-P05. **Priority:** killer.
-
-### GOBBI-SCN-02-A — Zero unfinished sessions
-
-- **Primary type / coverage-role:** Positive / positive.
-- **Given:** the current worktree contains zero unfinished Gobbi sessions.
-- **When:** Orchestration classifies the entry.
-- **Then:** the result is fresh; no other worktree is scanned.
-- **Failure oracle:** a hidden global pointer or another worktree supplies the session.
-- **Evidence tuple:** current-worktree inventory and accessed-path trace; zero local candidates confirms.
-- **Obligation / checks:** zero is the exact fresh boundary. GOBBI-CHK-CLASS-01.
-
-### GOBBI-SCN-02-B — Exactly one unfinished session
-
-- **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** the current worktree contains exactly one schema-valid unfinished Gobbi session.
-- **When:** classification runs without an explicit path.
-- **Then:** that session resumes automatically after its manifest, router, branch, and worktree validate.
-- **Failure oracle:** defaults are asked again, a new worktree is created, or a different session is chosen.
-- **Evidence tuple:** local inventory, validation results, and selected root; direct inspection confirms.
-- **Obligation / checks:** exactly one is the automatic-resume boundary. GOBBI-CHK-CLASS-02.
-
-### GOBBI-SCN-02-C — Multiple unfinished sessions
-
-- **Primary type / coverage-role:** Boundary / boundary at two or more.
-- **Given:** the current worktree contains two unfinished Gobbi sessions.
-- **When:** classification runs.
-- **Then:** the manager asks for an explicit session path or a fresh start and selects neither automatically.
-- **Failure oracle:** newest-file, first-match, task-list, or lexical ordering chooses one.
-- **Evidence tuple:** two-candidate fixture plus unchanged selection state; direct inspection confirms.
-- **Obligation / checks:** ambiguity remains user-owned. GOBBI-CHK-CLASS-03.
-
-### GOBBI-SCN-02-D — Global-scan shortcut
-
-- **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** many worktrees exist and a global pointer names a plausible session.
-- **When:** a manager tries to improve convenience by scanning all of them.
-- **Then:** the scan is rejected; only current-worktree evidence or an explicit path is used.
-- **Failure oracle:** runtime cost and ambiguity grow with unrelated worktrees or a remote candidate is resumed.
-- **Evidence tuple:** accessed-path trace and candidate set; bounded local inspection confirms.
-- **Obligation / checks:** classification stays local, deterministic, and bounded. GOBBI-CHK-CLASS-04.
-
-## GOBBI-SCN-03 — Fresh defaults and initialization
-
-**Actor/outcome:** the user resolves settings before any persistent session object exists. **Sources:** GB-P06, Procedure 5. **Priority:** killer.
-
-### GOBBI-SCN-03-A — Fresh defaults accepted
-
-- **Primary type / coverage-role:** Positive / positive.
-- **Given:** classification is fresh and defaults have not been shown.
-- **When:** Orchestration shows them once and the user chooses “use defaults.”
-- **Then:** the Gobbi UUID is generated, Git creates one branch/worktree, and Record creates valid version 5/version 3 files with default settings.
-- **Failure oracle:** mutation precedes the decision, settings live separately, or runtime ID becomes session ID.
-- **Evidence tuple:** no-write preimage, decision timestamp, UUID/Git order, and record verification.
-- **Obligation / checks:** the authorized default path initializes once. GOBBI-CHK-FRESH-01, GOBBI-CHK-FRESH-03.
-
-### GOBBI-SCN-03-B — Fresh settings customized
-
-- **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** the user chooses “customize” and changes iteration or Git settings.
-- **When:** every changed value is resolved.
-- **Then:** no filesystem mutation occurs until resolution; the initialized manifest contains the resolved settings and no separate settings file.
-- **Failure oracle:** partial settings are persisted early or a mode field appears.
-- **Evidence tuple:** write trace, resolved settings object, manifest schema result, and root inventory.
-- **Obligation / checks:** custom settings obey the same authority and storage boundary. GOBBI-CHK-FRESH-02, GOBBI-CHK-FRESH-03.
-
-### GOBBI-SCN-03-C — Early-mutation gaming
-
-- **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** a manager wants a branch or session directory ready before asking the defaults question.
-- **When:** it attempts the mutation.
-- **Then:** bootstrap blocks it and leaves the repository/session preimage unchanged.
-- **Failure oracle:** an empty directory, branch, worktree, manifest, or state file appears before authority.
-- **Evidence tuple:** before/after path and ref inventory; byte/object equality confirms.
-- **Obligation / checks:** “empty” setup still counts as mutation. GOBBI-CHK-FRESH-01.
-
-### GOBBI-SCN-03-D — Required identity or record initialization fails
-
-- **Primary type / coverage-role:** Failure/recovery / failure-recovery.
-- **Given:** runtime identity is unavailable or Record rejects an initialization candidate.
-- **When:** fresh initialization reaches that owner.
-- **Then:** the manager surfaces the exact missing identity or validation error and creates no fallback record.
-- **Failure oracle:** guessed identity, weakened schema, or partial session tree.
-- **Evidence tuple:** owner error, pre/post inventory, and candidate bytes; unchanged state confirms.
-- **Obligation / checks:** fresh failure preserves the preimage and owner authority. GOBBI-CHK-FRESH-04.
-
 ## GOBBI-SCN-04 — Resume and runtime context boundary
 
-**Actor/outcome:** a valid session survives lost runtime context without identity or setting drift. **Sources:** GB-P04, GB-P07. **Priority:** killer.
+**Actor/outcome:** a valid session survives lost runtime context without identity or setting drift. **Sources:** GB-4. **Priority:** killer.
 
 ### GOBBI-SCN-04-A — New runtime identity attaches
 
 - **Primary type / coverage-role:** Positive / positive plus change.
 - **Given:** an exact unfinished session resumes after `/clear`, rewind, or runtime compaction with a newly observed runtime ID.
-- **When:** the manifest owner checkpoints the context boundary.
-- **Then:** the Gobbi UUID, settings, branch, worktree, and v3 cursor stay unchanged; the new runtime ID appends once.
-- **Failure oracle:** new session, reset cursor, settings prompt, reordered IDs, or duplicated ID.
+- **When:** the workflow owner and Record checkpoint the context boundary.
+- **Then:** the Gobbi UUID, settings, branch, worktree, and version 3 cursor stay unchanged; the new runtime ID appends once.
+- **Failure oracle:** new session, reset cursor, settings prompt, reordered IDs, or a duplicated ID.
 - **Evidence tuple:** before/after manifest and state plus schema verification; direct comparison confirms.
 - **Obligation / checks:** context loss changes only append-only runtime identity. GOBBI-CHK-RESUME-01, GOBBI-CHK-RESUME-02.
 
@@ -215,149 +135,91 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Evidence tuple:** manifest digest before/after and schema result; equal digest confirms.
 - **Obligation / checks:** attachment is idempotent. GOBBI-CHK-RESUME-02.
 
-### GOBBI-SCN-04-C — Resume tries to reopen defaults or Startup
+### GOBBI-SCN-04-C — Resume tries to reconfigure settings
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** a valid resumed session has saved settings and earlier Startup disposition.
-- **When:** a manager treats context loss as a fresh conversation.
-- **Then:** Gobbi rejects the rerun and resumes the stored cursor. Only explicit reconfiguration or baseline reset can reopen those choices.
-- **Failure oracle:** repeated defaults question, implicit setting change, or automatic Startup questioning.
-- **Evidence tuple:** manifest settings, earlier decision evidence, and question trace; absence confirms.
-- **Obligation / checks:** runtime boundaries are not project/session resets. GOBBI-CHK-RESUME-01, GOBBI-CHK-START-04.
+- **Given:** a valid resumed session has saved settings and a persisted cursor.
+- **When:** a manager treats context loss as a fresh conversation and tries to reopen the defaults decision.
+- **Then:** the entry rejects the rerun, reuses the stored settings, and resumes the persisted cursor; only explicit reconfiguration through the workflow owner can reopen those choices.
+- **Failure oracle:** a repeated defaults question or an implicit setting change on context loss.
+- **Evidence tuple:** manifest settings, prior decision evidence, and question trace; absence confirms.
+- **Obligation / checks:** a runtime boundary is not a settings reset. GOBBI-CHK-RESUME-01.
 
-### GOBBI-SCN-04-D — Durable resume evidence is invalid
+## GOBBI-SCN-06 — Session-kind routing and read-only handoff
 
-- **Primary type / coverage-role:** Failure/recovery / failure-recovery.
-- **Given:** the sole unfinished session has a schema, worktree, branch, or cursor mismatch.
-- **When:** validation runs.
-- **Then:** handoff stops at the owning recovery path and prior bytes remain authoritative.
-- **Failure oracle:** artifact filenames or runtime task state are used to guess a route.
-- **Evidence tuple:** exact validator error, state bytes, and no-transition trace; direct inspection confirms.
-- **Obligation / checks:** invalid durable evidence fails closed. GOBBI-CHK-RESUME-03.
+**Actor/outcome:** the entry writes nothing and hands one validated cursor to the `workflow` owner only for a workflow session. **Sources:** GB-5, GB-6. **Priority:** killer.
 
-## GOBBI-SCN-05 — Fresh-session Startup classifier
-
-**Actor/outcome:** the manager gets a read-only baseline classification and a user-owned Ideation input disposition without an obsolete presence heuristic or surprise rerun. **Sources:** GB-P08. **Priority:** required.
-
-### GOBBI-SCN-05-A — Rich valid baseline
+### GOBBI-SCN-06-A — Workflow session enters the workflow owner
 
 - **Primary type / coverage-role:** Positive / positive.
-- **Given:** a fresh initialized session targets a project whose baseline passes Startup's classifier.
-- **When:** the pre-Ideation Startup gate runs.
-- **Then:** no guided question operation opens and bootstrap proceeds to the cursor handoff.
-- **Failure oracle:** a hard-coded directory check overrides classifier PASS.
-- **Evidence tuple:** Startup classifier result and absence of Startup write/question; direct inspection confirms.
-- **Obligation / checks:** rich baseline avoids redundant user attention. GOBBI-CHK-START-01.
-
-### GOBBI-SCN-05-B — Missing baseline, user accepts Startup
-
-- **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** Startup classifies the fresh baseline `sparse`, `absent`, or `contradictory`.
-- **When:** Discussion presents the user-owned choice and the user accepts Startup.
-- **Then:** bootstrap preserves an accepted Startup input directive, hands the Configuration cursor to
-  Orchestration once, and Orchestration invokes Startup inside ordinary Ideation DISCUSSION to return a
-  structured packet without writing files.
-- **Failure oracle:** Gobbi writes baseline files, creates a Startup cursor, invokes questions before the
-  ordinary Ideation transition, or skips the user gate.
-- **Evidence tuple:** classifier, user decision, unchanged tree, cursor transition, and returned input packet.
-- **Obligation / checks:** Startup is a read-only Ideation input operation. GOBBI-CHK-START-02.
-
-### GOBBI-SCN-05-C — Missing baseline, user declines Startup
-
-- **Primary type / coverage-role:** Alternative-valid / alternative-valid.
-- **Given:** the same `sparse`, `absent`, or `contradictory` classifier result.
-- **When:** the user chooses to proceed without Startup.
-- **Then:** bootstrap proceeds without a fabricated baseline; the choice is recorded only if the record owner requires it.
-- **Failure oracle:** decline is ignored, facts are invented, or an empty baseline is created for appearances.
-- **Evidence tuple:** user decision, unchanged baseline tree, and next cursor; direct inspection confirms.
-- **Obligation / checks:** Startup remains a user-owned fresh-session gate. GOBBI-CHK-START-03.
-
-### GOBBI-SCN-05-D — Resume and explicit reset are distinct
-
-- **Primary type / coverage-role:** Change / change.
-- **Given:** one run is a normal resume and another carries an explicit baseline-reset request.
-- **When:** both pass bootstrap.
-- **Then:** normal resume does not invoke Startup; explicit reset runs its read-only classifier on demand,
-  with any accepted questioning routed to ordinary Ideation DISCUSSION.
-- **Failure oracle:** all resumes rerun baseline review or explicit reset is ignored.
-- **Evidence tuple:** triggers, load trace, and owner route; direct comparison confirms.
-- **Obligation / checks:** reset is explicit, not inferred from context loss. GOBBI-CHK-START-04.
-
-### GOBBI-SCN-05-E — Sparse-directory heuristic is cosmetically satisfied
-
-- **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** placeholder `README.md`, `design/`, and `features/` paths exist but Startup considers the baseline invalid.
-- **When:** the pre-Ideation gate runs.
-- **Then:** the classifier result opens the user choice; path presence cannot force `sufficient`.
-- **Failure oracle:** three path-existence checks suppress the gate.
-- **Evidence tuple:** placeholder fixture and Startup result; disagreement proves the old heuristic unsafe.
-- **Obligation / checks:** classifier semantics defeat cosmetic baseline shape. GOBBI-CHK-START-01.
-
-## GOBBI-SCN-06 — One durable cursor handoff
-
-**Actor/outcome:** Orchestration receives one verified cursor and becomes the sole workflow router. **Sources:** GB-P09, GB-P10. **Priority:** killer.
-
-### GOBBI-SCN-06-A — Fresh or resumed cursor enters Orchestration
-
-- **Primary type / coverage-role:** Positive / positive.
-- **Given:** classification, required identity attachment, record verification, and any Startup disposition are complete.
-- **When:** bootstrap hands off.
-- **Then:** Orchestration accepts `state.json.current` and selects all later adapters and transitions.
-- **Failure oracle:** Gobbi invents a stage, task, iteration, or second route.
-- **Evidence tuple:** persisted cursor, Orchestration entry trace, and projected runtime view; direct comparison confirms.
-- **Obligation / checks:** handoff is singular and durable. GOBBI-CHK-HAND-01.
+- **Given:** the manager judges the task a workflow session and the durable cursor validates.
+- **When:** the entry routes by session kind.
+- **Then:** it loads the indexed `workflow` owner and enters it at exactly one validated `state.json.current` cursor; the `workflow` owner then holds classification, Configuration, and every productive step. The entry creates nothing.
+- **Failure oracle:** the entry invents a stage/task/iteration, forces a second route, or performs Configuration itself.
+- **Evidence tuple:** persisted cursor, workflow-owner entry trace, and projected runtime view; direct comparison confirms.
+- **Obligation / checks:** the workflow handoff is conditional, singular, and durable. GOBBI-CHK-HAND-01.
 
 ### GOBBI-SCN-06-B — Direct productive-specialist dispatch
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
 - **Given:** the cursor appears to indicate Ideation, Planning, Execution, or Wrap-up.
-- **When:** Gobbi considers loading that specialist directly.
-- **Then:** it rejects the shortcut and enters Orchestration, which owns adapter selection and dispatch.
-- **Failure oracle:** a productive skill or specialist is loaded from Gobbi as the route.
+- **When:** the entry considers loading that specialist directly.
+- **Then:** it rejects the shortcut and enters the `workflow` owner, which owns specialist dispatch.
+- **Failure oracle:** a productive skill or specialist is loaded from the entry as the route.
 - **Evidence tuple:** load/dispatch trace and delegation owner; absence of direct dispatch confirms.
-- **Obligation / checks:** productive routes cannot bypass manager gates. GOBBI-CHK-HAND-02.
+- **Obligation / checks:** productive routes cannot bypass the workflow owner. GOBBI-CHK-HAND-02.
 
-### GOBBI-SCN-06-C — Required owner artifact is missing
+### GOBBI-SCN-06-C — Entry attempts a mutation before the workflow owner
+
+- **Primary type / coverage-role:** Adversarial / adversarial.
+- **Given:** a candidate entry wants a branch, worktree, session tree, or manifest ready before loading the `workflow` owner.
+- **When:** it attempts the creation.
+- **Then:** the entry blocks it and leaves the repository/session preimage unchanged; branch, worktree, session-tree, and manifest creation belong to the `workflow` owner's Configuration.
+- **Failure oracle:** an empty directory, branch, worktree, manifest, or state file appears from the entry before the workflow owner runs.
+- **Evidence tuple:** before/after path and ref inventory; byte/object equality confirms.
+- **Obligation / checks:** the entry writes nothing; "empty" setup still counts as a write. GOBBI-CHK-ROUTE-02.
+
+### GOBBI-SCN-06-D — Blocked handoff on a missing or invalid owner artifact
 
 - **Primary type / coverage-role:** Failure/recovery / failure-recovery.
-- **Given:** state, manifest, or an owner needed for the next boundary cannot be read or validated.
-- **When:** handoff is attempted.
-- **Then:** the manager reports the exact artifact and preserves the last valid state.
+- **Given:** state, manifest, an owner artifact, or the authority needed for the next boundary cannot be read or validated.
+- **When:** the handoff is attempted.
+- **Then:** the manager reports the exact artifact, identity, or missing authority and preserves the last valid durable state; no fallback route is invented.
 - **Failure oracle:** guessed cursor, default route, or silent downgrade.
 - **Evidence tuple:** missing-path/error report and no-transition digest; direct inspection confirms.
 - **Obligation / checks:** a blocked seam remains blocked and recoverable. GOBBI-CHK-HAND-03.
 
-### GOBBI-SCN-06-D — Runtime task view as counterfactual router
+### GOBBI-SCN-06-E — Runtime task view as counterfactual router
 
 - **Primary type / coverage-role:** Counterfactual / counterfactual plus adversarial.
 - **Given:** the runtime task view disagrees with the persisted cursor.
-- **When:** bootstrap asks which one controls the next step.
+- **When:** the entry asks which one controls the next step.
 - **Then:** the persisted cursor wins and the runtime view is rebuilt as a projection.
-- **Failure oracle:** runtime display changes durable routing.
+- **Failure oracle:** a runtime display changes durable routing.
 - **Evidence tuple:** mismatched fixture, state digest, and rebuilt view; direct inspection confirms.
 - **Obligation / checks:** a projection cannot become authority. GOBBI-CHK-HAND-04.
 
-## GOBBI-SCN-07 — Retired dependency absence
+## GOBBI-SCN-07 — Retired dependency and retired-mode absence
 
-**Actor/outcome:** bootstrap works with no removed mode, capture, hook, or memory-merging subsystem. **Sources:** GB-P12. **Priority:** killer.
+**Actor/outcome:** bootstrap works with no removed mode, capture, hook, or memory-merging subsystem. **Sources:** GB-MN. **Priority:** killer.
 
 ### GOBBI-SCN-07-A — No hook or transcript surface exists
 
 - **Primary type / coverage-role:** Positive / positive.
 - **Given:** Claude or Codex starts without Gobbi hook exports, transcript path, rollout path, or agent ledger.
 - **When:** bootstrap runs.
-- **Then:** classification and owner loading proceed from explicit runtime and durable session inputs.
-- **Failure oracle:** missing capture machinery blocks or degrades the workflow.
-- **Evidence tuple:** absent-path/config inventory and successful handoff; direct inspection confirms.
+- **Then:** floor loading and routing proceed from explicit runtime and durable session inputs.
+- **Failure oracle:** missing capture machinery blocks or degrades the entry.
+- **Evidence tuple:** absent-path/config inventory and successful routing; direct inspection confirms.
 - **Obligation / checks:** retired capture absence is normal. GOBBI-CHK-RET-01.
 
 ### GOBBI-SCN-07-B — Stale environment values attempt to override durable identity
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
 - **Given:** an environment variable or old transcript metadata names a different session.
-- **When:** bootstrap classifies and resumes.
-- **Then:** validated manifest and current-worktree evidence govern; stale capture is ignored.
-- **Failure oracle:** environment or transcript value replaces Gobbi UUID or cursor.
+- **When:** bootstrap resumes.
+- **Then:** the validated manifest and current durable evidence govern; stale capture is ignored.
+- **Failure oracle:** an environment or transcript value replaces the Gobbi UUID or cursor.
 - **Evidence tuple:** conflicting fixture and selected durable identity; direct comparison confirms.
 - **Obligation / checks:** removed observational state has no authority. GOBBI-CHK-RET-02.
 
@@ -365,25 +227,25 @@ All ten categories are exercised here. Applicable case types are positive, alter
 
 - **Primary type / coverage-role:** Change / change.
 - **Given:** context is compacted while durable memory contains ordinary records.
-- **When:** Gobbi reloads.
-- **Then:** it reloads the manager floor and attaches runtime identity if distinct; it does not count, merge, move, or cap memory records.
+- **When:** the entry reloads.
+- **Then:** it reloads the floor and attaches runtime identity if distinct; it does not count, merge, move, or cap memory records.
 - **Failure oracle:** context compaction triggers durable-memory maintenance.
-- **Evidence tuple:** read/write trace over memory and manifest; only authorized runtime checkpoint may change.
-- **Obligation / checks:** runtime and retired memory compaction remain disjoint. GOBBI-CHK-RET-03.
+- **Evidence tuple:** read/write trace over memory and manifest; only an authorized runtime checkpoint may change.
+- **Obligation / checks:** runtime and retired durable-memory compaction remain disjoint. GOBBI-CHK-RET-03.
 
-### GOBBI-SCN-07-D — Separate settings or mode field appears
+### GOBBI-SCN-07-D — A separate settings file, mode question, or retired gate appears
 
 - **Primary type / coverage-role:** Negative / negative plus adversarial.
-- **Given:** a candidate bootstrap tries to read `settings.json`, ask a mode, or route by a mode field.
+- **Given:** a candidate bootstrap tries to read a separate `settings.json`, force-load the workflow owner on entry, run a startup or baseline-classifier gate, or route by a mode field.
 - **When:** the operation is checked.
-- **Then:** the candidate fails and follows manifest settings plus the single workflow owner.
-- **Failure oracle:** any separate settings or alternate mode affects routing.
+- **Then:** the candidate fails and follows manifest settings, the floor, and the on-demand skill map.
+- **Failure oracle:** any separate settings file, forced workflow load, retired gate, or alternate mode affects routing.
 - **Evidence tuple:** root/config inventory and question/route trace; zero active dependency confirms.
-- **Obligation / checks:** retired configuration surfaces cannot be compatibility inputs. GOBBI-CHK-RET-04.
+- **Obligation / checks:** retired configuration and gate surfaces cannot be compatibility inputs. GOBBI-CHK-RET-04.
 
 ## GOBBI-SCN-08 — Canonical bundle and runtime views
 
-**Actor/outcome:** each supported entry surface exposes the same cold-load-sufficient operation. **Sources:** GB-P11. **Priority:** required.
+**Actor/outcome:** each supported entry surface exposes the same cold-load-sufficient operation, and the renamed views resolve. **Sources:** GB-7. **Priority:** required.
 
 ### GOBBI-SCN-08-A — Canonical source contains the full bundle
 
@@ -418,9 +280,9 @@ All ten categories are exercised here. Applicable case types are positive, alter
 ### GOBBI-SCN-08-D — Runtime view is partial or broken
 
 - **Primary type / coverage-role:** Failure/recovery / failure-recovery plus boundary.
-- **Given:** a runtime view exposes only part of the four-file bundle, as may occur before the later topology task updates per-file links.
+- **Given:** a runtime view exposes only part of the four-file bundle.
 - **When:** cold-entry proof runs.
-- **Then:** the mismatch is reported with exact missing files and routed to the sync/topology owner; this task does not hand-create view files or weaken the canonical bundle.
+- **Then:** the mismatch is reported with exact missing files and routed to the sync/topology owner; this operation does not hand-create view files or weaken the canonical bundle.
 - **Failure oracle:** a partial view is called complete, or the canonical package is narrowed to match it.
 - **Evidence tuple:** expected/actual file sets and unchanged view diff; direct inspection confirms.
 - **Obligation / checks:** wiring drift stays visible and owner-routed. GOBBI-CHK-VIEW-04.
@@ -435,21 +297,96 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Evidence tuple:** canonical paths and content digests for source and view; mismatch confirms.
 - **Obligation / checks:** cosmetic bundle shape cannot replace canonical-source identity. GOBBI-CHK-VIEW-05.
 
+### GOBBI-SCN-08-F — Renamed mirror resolves and no stale look-alike survives
+
+- **Primary type / coverage-role:** Change / change plus adversarial.
+- **Given:** the workflow owner was renamed and the runtime mirrors regenerated through the sync owner.
+- **When:** cold-entry proof canonicalizes the runtime skill views.
+- **Then:** `.claude/skills/workflow/` (with its `steps/` subdirectory) and `.agents/skills/workflow` resolve to the canonical `workflow` directory, and zero UNCLASSIFIED old-skill-path mirror directory survives — every residual old-path hit is a documented leave, never a live look-alike view.
+- **Failure oracle:** the renamed mirror does not resolve, or a stale pre-rename look-alike mirror directory survives and could be cold-loaded as a canonical view.
+- **Evidence tuple:** realpath of the renamed mirror plus a scoped residual sweep of the mirror trees classifying every hit as repointed or documented-leave; direct inspection confirms.
+- **Obligation / checks:** the rename leaves resolving views and no unclassified stale look-alike. GOBBI-CHK-VIEW-06.
+
+## GOBBI-SCN-09 — Skill-map index
+
+**Actor/outcome:** a cold manager finds every non-floor owner through one indexed entry that points but copies no mechanics, and loads it only on task-need. **Sources:** GB-MAP, GB-2, GB-3. **Priority:** required.
+
+### GOBBI-SCN-09-A — A non-floor skill is indexed once, on demand
+
+- **Primary type / coverage-role:** Positive / positive.
+- **Given:** a non-floor skill (for example `memory`, `planning`, or `coding`).
+- **When:** a cold reader consults the skill map.
+- **Then:** the skill appears exactly once with a name, a one-line description, and a neutral relevance note; the entry points to its owner, copies no mechanics, and the skill is loaded only when the task needs it.
+- **Failure oracle:** an indexed entry restates the owner's mechanics, a non-floor skill is missing or duplicated in the index, or an entry reads as a mandatory-load command.
+- **Evidence tuple:** skill-map inventory and per-entry field scan; direct inspection confirms.
+- **Obligation / checks:** the index orients without copying policy or gating a load. GOBBI-CHK-MAP-01.
+
+### GOBBI-SCN-09-B — The `mistake` entry stays mandatory though lazy-loaded
+
+- **Primary type / coverage-role:** Alternative-valid / alternative-valid plus adversarial.
+- **Given:** `mistake` is not in the floor of five and is reached through the skill map.
+- **When:** a reader inspects the `mistake` index entry.
+- **Then:** the entry's relevance note records that `mistake` stays mandatory for non-trivial work and sits at position 4 of every subagent's delegation Load Directives; the index lazy-loads it but does not weaken it.
+- **Failure oracle:** the note reads as a removal, or omits the still-mandatory clause, so a reader treats `mistake` as optional.
+- **Evidence tuple:** the `mistake` index entry text and its cross-owner citation; direct inspection confirms.
+- **Obligation / checks:** demotion to the index is a lazy-load, not a removal. GOBBI-CHK-MAP-02.
+
+### GOBBI-SCN-09-C — Index entry treated as a load-when gate
+
+- **Primary type / coverage-role:** Adversarial / adversarial.
+- **Given:** a manager reads an index relevance note as a command to load eagerly.
+- **When:** it considers force-loading the `workflow` owner or `startup` on entry.
+- **Then:** it rejects the eager load; indexed owners load only on task-need, and the floor stays exactly the five.
+- **Failure oracle:** an indexed skill is force-loaded on entry, or the index is read as a mandatory-load catalog that swells the floor.
+- **Evidence tuple:** entry load register and the triggered-load trace; a floor of exactly five with no eager index load confirms.
+- **Obligation / checks:** the index is a bounded on-demand router, not an eager-load gate. GOBBI-CHK-MAP-03.
+
+## GOBBI-SCN-10 — General versus workflow routing
+
+**Actor/outcome:** the same light entry serves a general session and a workflow session, split by routine judgment and never by a mode prompt. **Sources:** GB-6, GB-5, GB-MN. **Priority:** killer.
+
+### GOBBI-SCN-10-A — General session proceeds on the floor
+
+- **Primary type / coverage-role:** Positive / positive.
+- **Given:** the manager judges the task a general (non-workflow) session.
+- **When:** it routes by session kind.
+- **Then:** it works from the floor (`principles`, `delegation`, `discussion`, `ideation`, `git`) and loads any indexed skill the task needs; the `workflow` owner is never loaded; there is no Configuration, session tree, or dual-system machinery.
+- **Failure oracle:** a general session cannot proceed without loading the `workflow` owner — the index-not-load split did not lighten the entry.
+- **Evidence tuple:** floor load register plus the absence of a `workflow`-owner load and any session-tree write; direct inspection confirms.
+- **Obligation / checks:** a general session runs on the floor alone. GOBBI-CHK-ROUTE-01.
+
+### GOBBI-SCN-10-B — Workflow session reaches the workflow owner from the same entry
+
+- **Primary type / coverage-role:** Alternative-valid / alternative-valid.
+- **Given:** the manager judges the same entry a workflow session.
+- **When:** it routes by session kind.
+- **Then:** it loads the indexed `workflow` owner and enters the full workflow; the two flows share one light entry and differ only by the routine routing judgment.
+- **Failure oracle:** the workflow path becomes unreachable from the light entry, or reaching it requires a distinct second entrypoint.
+- **Evidence tuple:** the recorded session kind and the `workflow`-owner load register; direct inspection confirms.
+- **Obligation / checks:** the same entry reaches the workflow lazily. GOBBI-CHK-ROUTE-01.
+
+### GOBBI-SCN-10-C — Retired interaction-mode question is reintroduced
+
+- **Primary type / coverage-role:** Adversarial / adversarial.
+- **Given:** a candidate entry adds a user-facing "which mode?" question or an alternate workflow route to pick the session kind.
+- **When:** the operation is checked.
+- **Then:** it fails; the general-versus-workflow split is the manager's routine judgment from the task, and the retired interaction-mode question stays retired.
+- **Failure oracle:** a user-facing interaction-mode prompt or an alternate workflow route reappears in the entry.
+- **Evidence tuple:** question/route trace over the entry; zero interaction-mode prompt confirms.
+- **Obligation / checks:** session kind is judged, never asked as a mode. GOBBI-CHK-ROUTE-01.
+
 ## Trace closure
 
 | Parent source | Scenario carriers | Checklist carriers |
 |---|---|---|
-| GB-P01 | GOBBI-SCN-01-A, GOBBI-SCN-08-A | FLOOR-01, VIEW-01 |
-| GB-P02 | GOBBI-SCN-01-A, GOBBI-SCN-01-D | FLOOR-01, FLOOR-02, OWN-02 |
-| GB-P03 | GOBBI-SCN-01-B | FLOOR-03 |
-| GB-P04 | GOBBI-SCN-04-A..B | RESUME-01, RESUME-02 |
-| GB-P05 | GOBBI-SCN-02-A..D | CLASS-01..04 |
-| GB-P06 | GOBBI-SCN-03-A..D | FRESH-01..04 |
-| GB-P07 | GOBBI-SCN-04-A..C | RESUME-01, START-04 |
-| GB-P08 | GOBBI-SCN-05-A..E | START-01..04 |
-| GB-P09 | GOBBI-SCN-06-A..D | HAND-01..04 |
-| GB-P10 | GOBBI-SCN-01-C..D | OWN-01, OWN-02 |
-| GB-P11 | GOBBI-SCN-08-A..E | VIEW-01..05 |
-| GB-P12 | GOBBI-SCN-07-A..D | RET-01..04 |
+| GB-1 | GOBBI-SCN-01-A | FLOOR-01 |
+| GB-2 | GOBBI-SCN-01-A, GOBBI-SCN-01-C | FLOOR-02 |
+| GB-3 | GOBBI-SCN-01-B | FLOOR-03 |
+| GB-4 | GOBBI-SCN-04-A..C | RESUME-01, RESUME-02 |
+| GB-5 | GOBBI-SCN-06-C | ROUTE-02 |
+| GB-6 | GOBBI-SCN-06-A, -B, -D, -E, GOBBI-SCN-10-A..C | HAND-01, HAND-02, HAND-03, HAND-04, ROUTE-01 |
+| GB-7 | GOBBI-SCN-01-C, -D, GOBBI-SCN-08-A..F | OWN-01, OWN-02, VIEW-01..06 |
+| GB-MAP | GOBBI-SCN-09-A..C | MAP-01, MAP-02, MAP-03 |
+| GB-MN | GOBBI-SCN-07-A..D, GOBBI-SCN-10-C | RET-01, RET-02, RET-03, RET-04 |
 
-Every non-exploratory scenario produces an obligation and a checklist reference. There are no orphan scenarios, uncovered parent clauses, or exploratory cases.
+Every non-exploratory scenario produces an obligation and a checklist reference. There are no orphan scenarios, uncovered parent clauses, or exploratory cases. Every source row maps to at least one scenario and at least one checklist item; every listed checklist ID is defined in [`checklists.md`](checklists.md).
