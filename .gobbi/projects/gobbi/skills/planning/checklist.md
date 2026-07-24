@@ -1,197 +1,155 @@
 # Planning Loop — Evaluation Checklist
 
-> **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the
-> evaluator COPIES this file to
-> `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/checklist.md`. The
-> filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective
+Evidence-anchored coverage register for evaluating a **Planning working draft**. It conforms to the
+in-tree Checklist SOP — see [the Checklist SOP § Rules](../checklist/SKILL.md#rules) for the modes,
+the five item dimensions, the closed resolution state machine, and the two-gate acceptance rule.
+The scenario families and their cases live 1:1 in the sibling `scenario.md`; the per-perspective
+procedure lives in `evaluation.md`. The heading tree below (SOP / WF / SEAM groups and their
+families) is 1:1 with `scenario.md`.
+
+**Mode:** evaluation coverage register — gate and required items only, no advisory item. Every row
+closes to exactly one of `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`.
+
+> **Copy-then-tick — this file is the source; the evaluator copies it.** At Stage 0 the evaluator
+> COPIES this file to `sessions/{date}-{session-id}/3-planning/evaluation/iter{n}/{system}/checklist.md`.
+> The filled copy is a real **9th evaluation-output file**, alongside the seven per-perspective
 > files + `overall.md`. The source here ships with every box UNCHECKED.
 >
-> **A ticked box = VERIFIED, not "done".** `- [x]` means the evaluator VERIFIED the check
-> against the Planning draft with the strongest verification the check admits (close-read the
-> task list / diff the Ideation checklist against the task list / `grep` a `traces-to:` against
-> the Ideation artifact / compare `inputs:`/`outputs:` across hand-offs) — never that work merely
-> happened.
+> **A ticked box = VERIFIED, not "done".** `[x]` means the evaluator inspected the named evidence
+> against the Planning draft with the strongest verification the check admits (close-read the task
+> list / diff the Ideation checklist against the task list / `grep` a `traces-to:` against the
+> Ideation artifact / compare `inputs:`/`outputs:` across hand-offs) — never that work merely
+> happened, an owner was assigned, or a label matched.
 >
 > **Fill procedure.** Stage 0: copy (boxes unchecked). Stage 1: append a `## Stage 1 Additions`
-> section for any scenario or check the Frame added that is not seeded here. Stage 2: tick each
-> box `[x]` and annotate its outcome — `PASS:` (verified satisfied), `FAIL: {finding-id}`
-> (verified violated, cite the finding), or `n/a: {reason}` (not applicable to this plan). The
-> completeness gate requires every box resolved to exactly one of the three.
+> section for any scenario or check the Frame added that is not seeded here. Stage 2: tick each box
+> and annotate its resolution — `PASS:` (verified satisfied), `FAIL:<finding-id>` (verified
+> violated, cite the finding), or `n/a:<property>` (the applicability predicate is false, name the
+> property). The coverage-closure gate requires every applicable box resolved to exactly one of the
+> three.
 >
-> **Legend.** `- [ ]` unresolved · `- [x] … PASS:` verified satisfied · `- [x] … FAIL: {finding-id}`
-> verified violated · `- [x] … n/a: {reason}` not applicable. Record per-perspective counts
-> (PASS / FAIL / n/a / total) in the filled copy's compact per-scenario results table.
+> **Run-level use-style:** `do-confirm` (the whole register is read back to confirm work; an
+> evaluation register has no runtime pause points, so it declares one run-level use-style).
+> **Applicability default:** unconditional, unless a check declares `applies-if:` or resolves
+> `n/a:<property>`.
 
-The scenario families, their lenses, and the adversarial cases these checks discriminate live
-in the sibling `scenario.md`; the evaluation procedure lives in `evaluation.md`. The heading
-tree below is 1:1 with `scenario.md`.
+**Legend.** `- [ ]` unresolved (non-terminal) · `- [x] … PASS:` verified satisfied ·
+`- [x] … FAIL:<finding-id>` verified violated · `- [x] … n/a:<property>` applicability predicate
+false. Record per-perspective counts (PASS / FAIL / n/a / total) in the filled copy.
 
----
+**Two gates — coverage-closure vs acceptance.** These are separate outcomes.
 
-## Project
+- **Coverage-closure** — every applicable gate and required item has reached a terminal resolution
+  (`PASS` / `FAIL:<finding-id>` / `n/a:<property>`). A `FAIL` closes coverage; it does not accept.
+- **Acceptance** — a single positive condition: **every applicable gate and required item resolves
+  `PASS`**. A `FAIL:<finding-id>` or an `n/a:<property>` is coverage-closed but NOT accepted.
+  Ownership, a filed finding, or a pointer closes coverage, never acceptance — coverage-closure is
+  computed separately from acceptance, and no coverage property is folded into the acceptance
+  predicate. (An evaluation register has no operational waiver.)
 
-### PLAN-PROJ-SCENARIO-01 — Every task traces to Ideation and every Ideation item is covered
-- [ ] PLAN-PROJ-SCENARIO-01-CHECK-01 — Each task carries a `traces-to:` field pointing to the Ideation checklist item(s) it implements.
-- [ ] PLAN-PROJ-SCENARIO-01-CHECK-02 — Every `traces-to:` reference resolves to an Ideation checklist item that exists verbatim.
-- [ ] PLAN-PROJ-SCENARIO-01-CHECK-03 — No Ideation checklist item is left unaddressed by the task list.
-- [ ] PLAN-PROJ-SCENARIO-01-CHECK-04 — Backlog routing exists for any Ideation item the plan defers.
-
-### PLAN-PROJ-SCENARIO-02 — The plan stays inside the Scope Contract and reaches the success criteria
-- [ ] PLAN-PROJ-SCENARIO-02-CHECK-01 — The Ideation Scope Contract is copied verbatim, not paraphrased or expanded.
-- [ ] PLAN-PROJ-SCENARIO-02-CHECK-02 — No task introduces a new requirement not present in Ideation.
-- [ ] PLAN-PROJ-SCENARIO-02-CHECK-03 — After the last task runs, every Ideation success criterion is satisfied.
-- [ ] PLAN-PROJ-SCENARIO-02-CHECK-04 — No Ideation success criterion is silently dropped.
-
-### PLAN-PROJ-SCENARIO-03 — No "while we're here" task slips into the plan
-- [ ] PLAN-PROJ-SCENARIO-03-CHECK-01 — Each task is scrutinized for adjacent-improvement creep.
-- [ ] PLAN-PROJ-SCENARIO-03-CHECK-02 — A task that improves neighboring work unrelated to the idea is flagged and re-routed to backlog, not included in the plan.
-
----
-
-## Structure
-
-### PLAN-STRUCT-SCENARIO-01 — Tasks are narrow and effort is sized honestly
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-01 — No task spans more than roughly 5-8 files.
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-02 — No task introduces more than roughly 2 new modules / components.
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-03 — Each task title is imperative-form, short, and specific.
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-04 — Effort per task is inferable from `files:` count plus `verifies:` complexity (an evaluator-internal heuristic — `effort` is not a task-schema field and does not appear in the canonical task YAML).
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-05 — A task with a multi-step `verifies:` touching more than three files is treated as large regardless of how it is described.
-- [ ] PLAN-STRUCT-SCENARIO-01-CHECK-06 — Total plan effort is sanity-checked against the Ideation Scope Contract size.
-
-### PLAN-STRUCT-SCENARIO-02 — Task dependencies form a DAG with explicit ordering
-- [ ] PLAN-STRUCT-SCENARIO-02-CHECK-01 — Dependencies are explicit — each task names which prior task(s) must complete first.
-- [ ] PLAN-STRUCT-SCENARIO-02-CHECK-02 — The `requires:` graph is acyclic (no cycles).
-- [ ] PLAN-STRUCT-SCENARIO-02-CHECK-03 — A topological sort over the `requires:` fields reproduces the documented task order.
-
-### PLAN-STRUCT-SCENARIO-03 — Each task has concrete verification and bounded file-touch
-- [ ] PLAN-STRUCT-SCENARIO-03-CHECK-01 — Each task has a `verifies:` field with a runnable command or file-existence check.
-- [ ] PLAN-STRUCT-SCENARIO-03-CHECK-02 — Each task's verification produces a clean pass/fail without further interpretation.
-- [ ] PLAN-STRUCT-SCENARIO-03-CHECK-03 — A `files:` field enumerates the modified paths per task.
-- [ ] PLAN-STRUCT-SCENARIO-03-CHECK-04 — No task modifies a file outside its declared `files:` set.
-
-### PLAN-STRUCT-SCENARIO-04 — Agent-type and capability fit the work
-- [ ] PLAN-STRUCT-SCENARIO-04-CHECK-01 — Each task's agent-type assignment is justified by the work's nature (executor / leader / evaluator / assistant).
-- [ ] PLAN-STRUCT-SCENARIO-04-CHECK-02 — No agent-type assignment contradicts the delegation conventions.
-- [ ] PLAN-STRUCT-SCENARIO-04-CHECK-03 — The assigned agent's tool surface (file writes, network, subprocess) matches the task's needs.
-- [ ] PLAN-STRUCT-SCENARIO-04-CHECK-04 — The assigned agent's context window matches the artifact size the task must hold.
-- [ ] PLAN-STRUCT-SCENARIO-04-CHECK-05 — The task's required skill-load fits the agent's loaded-skill budget (no unexplained 12-skill task).
-
-### PLAN-STRUCT-SCENARIO-05 — Parallel-safety accounts for files and shared resources
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-01 — Tasks with no file overlap and no dependency are marked parallel-safe.
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-02 — Where the docs-cleanup-parallelism rule applies, the plan prefers a single sequential pass.
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-03 — Parallel-safe tasks do not contend on shared resources beyond files (shared data stores, ports, worktree directories, rate limits, paid-service quotas).
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-04 — Sequential user-decision dependencies block parallelism even when files do not overlap.
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-05 — Shared build / dependency-manifest lock contention is considered before marking tasks parallel.
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-06 — File-touch sets are compared across tasks, and any overlap is sequenced or the tasks are merged.
-- [ ] PLAN-STRUCT-SCENARIO-05-CHECK-07 — No "task N+1 expects task N's edits" hand-off exists without an explicit dependency.
+**Item fields.** Each check carries: a stable CHECK ID, its family group, one criticality
+(`GATE` = a load-bearing acceptance / trust-boundary / data-loss check whose miss opens a blocking
+finding; `REQ` = required otherwise), one atomic binary claim, its pass condition, a named evidence
+method, an on-fail route, a `source:` trace (its scenario case plus one stable SOP/WF heading — never
+a line number), and one resolution slot. Source headings resolve to
+[the generic planning SOP](SKILL.md#rules) and the folded workflow doc
+`orchestration/workflow/planning.md`.
 
 ---
 
-## Performance
+## SOP-* — generic plan-quality
 
-### PLAN-PERF-SCENARIO-01 — Perf-sensitive tasks are isolated with measurement-based verification
-- [ ] PLAN-PERF-SCENARIO-01-CHECK-01 — Tasks touching perf budgets identified by Ideation have explicit measurement steps in their `verifies:` field.
-- [ ] PLAN-PERF-SCENARIO-01-CHECK-02 — No existing measurement / load check is silently removed.
-- [ ] PLAN-PERF-SCENARIO-01-CHECK-03 — Perf-sensitive changes are isolated tasks with isolated verification.
-- [ ] PLAN-PERF-SCENARIO-01-CHECK-04 — No mixed-concern task exists where a perf check might mask a non-perf change.
+### SOP-COVERAGE — decomposition equals approved scope
+- [ ] SOP-COVERAGE-CHECK-01 [REQ] Every approved Ideation outcome maps to exactly one accountable task; pass: the source→deliverable ledger has one owner per outcome; evidence: diff Ideation outcome list vs task `traces-to:` union; on-fail: FAIL:<finding-id>; source: SOP-COVERAGE-CASE-01, SOP § Rules.
+- [ ] SOP-COVERAGE-CHECK-02 [REQ] Every task maps back to an approved outcome; pass: no task has a blank source; evidence: read each task `traces-to:`; on-fail: FAIL:<finding-id>; source: SOP-COVERAGE-CASE-01, SOP § Rules.
+- [ ] SOP-COVERAGE-CHECK-03 [GATE] No approved outcome is silently uncovered behind a full-looking list; pass: the set-difference of Ideation outcomes minus covered outcomes is empty; evidence: grep each outcome against the task list, compute the difference; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-COVERAGE-CASE-02, SOP § Rules.
 
-### PLAN-PERF-SCENARIO-02 — External-call tasks name their handling and plan-time cost is estimated
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-01 — Each new external-call task names its batching behavior where repeated work matters.
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-02 — Each new external-call task names its caching / reuse behavior where repeated work matters.
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-03 — Each new external-call task names how the plan behaves when the call is slow or fails.
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-04 — Defaults inherited from project conventions are explicitly cited, not silently assumed.
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-05 — Verification scaffolding is checked for hidden per-item external calls.
-- [ ] PLAN-PERF-SCENARIO-02-CHECK-06 — Plan-time call counts are estimated where downstream throughput matters.
+### SOP-SLICE — outcome-sliced, bounded packages
+- [ ] SOP-SLICE-CHECK-01 [REQ] Each leaf is an end-to-end observable outcome (or names an unavoidable enabler); pass: each task's outcome is independently inspectable; evidence: read each task outcome + `files:`; on-fail: FAIL:<finding-id>; source: SOP-SLICE-CASE-01, SOP § Procedure.
+- [ ] SOP-SLICE-CHECK-02 [REQ] A task with a multi-step `verifies:` over more than three files is treated as large regardless of its label; pass: the size judgment sits at the exact file/step limit; evidence: count `files:` and `verifies:` steps; on-fail: FAIL:<finding-id>; source: SOP-SLICE-CASE-02, SOP § Rules.
+- [ ] SOP-SLICE-CHECK-03 [GATE] No mega-task hides behind an implicitly-small description; pass: every task's measured span matches its described size; evidence: measure span, compare to the limit; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-SLICE-CASE-03, SOP § Rules.
 
----
+### SOP-DAG — DAG order and genuine parallel lanes
+- [ ] SOP-DAG-CHECK-01 [REQ] A topological sort over `requires:` reproduces the documented task order; pass: the sort equals the documented order; evidence: build the graph from `requires:`, topologically sort; on-fail: FAIL:<finding-id>; source: SOP-DAG-CASE-01, SOP § Procedure.
+- [ ] SOP-DAG-CHECK-02 [GATE] The `requires:` graph is acyclic; pass: no cycle (direct or transitive); evidence: cycle-detect the graph; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-DAG-CASE-02, SOP § Rules.
+- [ ] SOP-DAG-CHECK-03 [GATE] No parallel-marked lane shares a mutated file or a dependency path; pass: every parallel lane pair has an empty `files:` intersection and no path; evidence: intersect the lanes' `files:` sets; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-DAG-CASE-03, SOP § Rules.
 
-## Aesthetics
+### SOP-CONTRACT — complete contract, pre-anchored acceptance
+- [ ] SOP-CONTRACT-CHECK-01 [REQ] Each task's acceptance is a binary pass/fail claim naming its deciding evidence before execution; pass: the acceptance admits a single yes/no answer; evidence: read each acceptance condition; on-fail: FAIL:<finding-id>; source: SOP-CONTRACT-CASE-01, SOP § Rules.
+- [ ] SOP-CONTRACT-CHECK-02 [GATE] A cosmetically-conformant plan fails the acceptance gates (no vague "works"/"tests pass", no placeholder token in a runnable gate); pass: no gate can be passed by relabeling or a placeholder; evidence: attempt a cosmetic pass, scan for placeholder tokens; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-CONTRACT-CASE-02, SOP § Rules.
 
-### PLAN-AESTH-SCENARIO-01 — Titles, ordering, and template conform
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-01 — Task titles are imperative-form, short, and specific.
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-02 — No duplicate task IDs.
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-03 — Tasks are listed in execution order.
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-04 — Forward-referenced dependencies point downward, not upward.
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-05 — Section headings match the project's standard Planning template.
-- [ ] PLAN-AESTH-SCENARIO-01-CHECK-06 — The field set is consistent across all tasks.
+### SOP-FORECAST — signposts, named responses, honest estimates
+- [ ] SOP-FORECAST-CHECK-01 [REQ] Each load-bearing assumption carries an observable signpost and a continue/revise/stop/escalate response; pass: every assumption has a signpost + response; evidence: read each assumption; on-fail: FAIL:<finding-id>; source: SOP-FORECAST-CASE-01, SOP § Rules.
+- [ ] SOP-FORECAST-CHECK-02 [GATE] No re-plan trigger is judgment-only ("re-plan if needed"); pass: every trigger names an observable signpost and threshold; evidence: grep for judgment-only trigger phrasings; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-FORECAST-CASE-02, SOP § Rules.
+- [ ] SOP-FORECAST-CHECK-03 [REQ] Each estimate is grounded in a reference class or marked low-confidence; pass: every estimate cites a reference class or an explicit low-confidence disposition; evidence: read each estimate; on-fail: FAIL:<finding-id>; source: SOP-FORECAST-CASE-01, SOP § Procedure.
+- [ ] SOP-FORECAST-CHECK-04 [REQ] Each load-bearing assumption names a disconfirmation response for the case it is wrong; pass: inverting each assumption finds a named re-plan response; evidence: list load-bearing assumptions, invert each; on-fail: FAIL:<finding-id>; source: SOP-FORECAST-CASE-03, SOP § Rules.
 
-### PLAN-AESTH-SCENARIO-02 — No placeholders or empty tasks
-- [ ] PLAN-AESTH-SCENARIO-02-CHECK-01 — No `TBD` / `TODO` / `???` remains in any task field.
-- [ ] PLAN-AESTH-SCENARIO-02-CHECK-02 — No task has an empty `verifies:` or `outputs:` field.
-- [ ] PLAN-AESTH-SCENARIO-02-CHECK-03 — Every task has at least one `outputs:` entry and one `verifies:` entry.
-- [ ] PLAN-AESTH-SCENARIO-02-CHECK-04 — No task consists only of a "(see Ideation)" cross-reference.
+### SOP-REVERSIBILITY — rollback boundaries, isolated high-blast changes
+- [ ] SOP-REVERSIBILITY-CHECK-01 [REQ] Each task is independently revertible (atomic commit per task or a concrete `rollback:` step); pass: a single-task revert needs no unwinding of unrelated work; evidence: read the commit boundary per task; on-fail: FAIL:<finding-id>; source: SOP-REVERSIBILITY-CASE-01, SOP § Rules.
+- [ ] SOP-REVERSIBILITY-CHECK-02 [GATE] Every inter-task pause, including on a high-blast change, leaves a coherent recoverable state; pass: each stop-after-task-N snapshot is a valid state; evidence: enumerate each inter-task snapshot, test validity at the migration boundary; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-REVERSIBILITY-CASE-02, SOP § Rules.
+- [ ] SOP-REVERSIBILITY-CHECK-03 [GATE] Each high-blast change (migration / dependency upgrade / public-interface change) is an isolated task with a go/no-go step; pass: no high-blast change is bundled with ordinary work and each has a gate; evidence: scan tasks for a bundled high-blast change; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-REVERSIBILITY-CASE-03, SOP § Rules.
 
----
+### SOP-PERF — measured perf work, bounded cost
+- [ ] SOP-PERF-CHECK-01 [REQ] Every Ideation perf budget has a measurement step in some task's `verifies:`; pass: each budget maps to a measurement step; evidence: map each budget to a task's `verifies:`; on-fail: FAIL:<finding-id>; source: SOP-PERF-CASE-01, SOP § Rules.
+- [ ] SOP-PERF-CHECK-02 [REQ] Each new external-call task names batching / caching and its slow-or-failed behaviour, citing any inherited default; pass: every external-call task states all three; evidence: read each external-call task; on-fail: FAIL:<finding-id>; source: SOP-PERF-CASE-01, SOP § Rules.
+- [ ] SOP-PERF-CHECK-03 [GATE] Cumulative plan cost is bounded, not only per-task cost (Coverage: Cost); pass: a plan-total ceiling exists where multiple tasks issue paid calls; evidence: count paid-call tasks, multiply by per-task cost; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-PERF-CASE-02, SOP § Rules.
 
-## Usage
-
-### PLAN-USAGE-SCENARIO-01 — A fresh Executor can start task N from the task alone
-- [ ] PLAN-USAGE-SCENARIO-01-CHECK-01 — Every task can be spawned to a fresh subagent whose task-alone context is its `inputs:`, `outputs:`, and `verifies:` fields (what it consumes, what it must produce, and how to self-check), executed without parent-session context.
-- [ ] PLAN-USAGE-SCENARIO-01-CHECK-02 — Each task specifies file paths and, where relevant, function / section anchors.
-- [ ] PLAN-USAGE-SCENARIO-01-CHECK-03 — Verification and test commands are concrete (not "run the tests"), not placeholders.
-- [ ] PLAN-USAGE-SCENARIO-01-CHECK-04 — Verification commands are runnable as-is, with no `<your test path here>`-style placeholders.
-
-### PLAN-USAGE-SCENARIO-02 — Failure modes and prerequisites are named, with no surprise dependencies
-- [ ] PLAN-USAGE-SCENARIO-02-CHECK-01 — Known failure modes are listed in the task spec or its preconditions.
-- [ ] PLAN-USAGE-SCENARIO-02-CHECK-02 — Every prerequisite is named in `requires:` or `inputs:` — there are no surprise dependencies.
-
-### PLAN-USAGE-SCENARIO-03 — Inter-task handoff is explicit and terms are defined
-- [ ] PLAN-USAGE-SCENARIO-03-CHECK-01 — The inter-task handoff is explicit — task N's output is task N+1's input.
-- [ ] PLAN-USAGE-SCENARIO-03-CHECK-02 — If a task requires user input mid-execution, that is named explicitly (and the plan questions whether the task should be split).
-- [ ] PLAN-USAGE-SCENARIO-03-CHECK-03 — Any term not in the project glossary is defined inline in the task spec, and acronyms expand on first use within each task.
+### SOP-CLARITY — readable, placeholder-free, scannable
+- [ ] SOP-CLARITY-CHECK-01 [REQ] Task titles are imperative and specific with no duplicate IDs, headings match the template, and the field set is uniform across tasks; pass: titles/IDs/headings/fields conform; evidence: read titles + IDs + headings, diff field names across tasks; on-fail: FAIL:<finding-id>; source: SOP-CLARITY-CASE-01, WF § required-sections template.
+- [ ] SOP-CLARITY-CHECK-02 [GATE] No `TBD` / `TODO` / `???` placeholder remains in any task field; pass: a placeholder grep returns nothing; evidence: grep placeholder strings across the draft; on-fail: FAIL:<finding-id>, open a blocking finding; source: SOP-CLARITY-CASE-01, SOP § Procedure.
+- [ ] SOP-CLARITY-CHECK-03 [REQ] No task is effectively empty (a bare "(see Ideation)" cross-reference with empty `outputs:` / `verifies:`); pass: every task has a non-empty `outputs:` and `verifies:`; evidence: read each task's `outputs:` / `verifies:`; on-fail: FAIL:<finding-id>; source: SOP-CLARITY-CASE-02, WF § required-sections template.
+- [ ] SOP-CLARITY-CHECK-04 [REQ] The plan's heading structure is skimmable so a fresh executor can navigate it (Coverage: Accessibility); pass: sections are scannable with descriptive headings; evidence: skim the heading tree; on-fail: FAIL:<finding-id>; source: SOP-CLARITY-CASE-01, WF § required-sections template.
 
 ---
 
-## Consistency
+## WF-* — gobbi workflow-compliance
 
-### PLAN-CONS-SCENARIO-01 — Hand-off fields name-match and traces resolve
-- [ ] PLAN-CONS-SCENARIO-01-CHECK-01 — The `outputs:` of task N literally name-match the `inputs:` of every downstream consuming task (name match, not paraphrase).
-- [ ] PLAN-CONS-SCENARIO-01-CHECK-02 — No field is silently renamed across a hand-off boundary.
-- [ ] PLAN-CONS-SCENARIO-01-CHECK-03 — Each `traces-to:` grepped against the Ideation artifact finds an exact match.
-- [ ] PLAN-CONS-SCENARIO-01-CHECK-04 — Dangling traces (referencing items the Ideation does not have) are flagged.
+### WF-TRACE — anchored tasks, scope stays bound
+- [ ] WF-TRACE-CHECK-01 [REQ] Every task carries a `traces-to:` that resolves to a verbatim Ideation item; pass: each `traces-to:` finds an exact Ideation match and no task is anchorless; evidence: grep each `traces-to:` against Ideation; on-fail: FAIL:<finding-id>; source: WF-TRACE-CASE-01, WF § Operating principles.
+- [ ] WF-TRACE-CHECK-02 [GATE] No task introduces a requirement absent from Ideation / the Scope Contract; pass: every task requirement has a Scope-Contract or Ideation source; evidence: diff task requirements vs the Scope Contract; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-TRACE-CASE-02, WF § Operating principles.
 
-### PLAN-CONS-SCENARIO-02 — Task field schema and tooling are uniform
-- [ ] PLAN-CONS-SCENARIO-02-CHECK-01 — Every task has the same set of fields (no `verifies:` present in some and missing in others).
-- [ ] PLAN-CONS-SCENARIO-02-CHECK-02 — Field names use consistent casing and punctuation across tasks.
-- [ ] PLAN-CONS-SCENARIO-02-CHECK-03 — The command / tool surface is uniform across tasks unless a switch is explicit.
-- [ ] PLAN-CONS-SCENARIO-02-CHECK-04 — Path conventions (absolute vs repo-relative) are consistent across tasks.
+### WF-SCHEMA — canonical record, what not how
+- [ ] WF-SCHEMA-CHECK-01 [REQ] Every task is the canonical record `{id, what, traces-to, requires, files, inputs, outputs, verifies}`; pass: every schema field is present per task; evidence: check each task's field set; on-fail: FAIL:<finding-id>; source: WF-SCHEMA-CASE-01, WF § Tasks schema.
+- [ ] WF-SCHEMA-CHECK-02 [GATE] No task embeds implementation code or a step-by-step recipe in `what:`; pass: each `what:` states a verifiable goal, not a mechanism; evidence: read `what:` for an embedded diff / command recipe; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-SCHEMA-CASE-02, WF § Operating principles.
 
-### PLAN-CONS-SCENARIO-03 — No task contradicts a sibling's assumption or relies on a later task
-- [ ] PLAN-CONS-SCENARIO-03-CHECK-01 — Task ordering preserves invariants (a task assuming file X exists is sequenced after the task that creates X).
-- [ ] PLAN-CONS-SCENARIO-03-CHECK-02 — Renames done by one task are reflected in subsequent tasks' `inputs:` fields.
-- [ ] PLAN-CONS-SCENARIO-03-CHECK-03 — Forward dependencies (a later task influencing an earlier task's setup) are detected and flagged as plan-order bugs.
-- [ ] PLAN-CONS-SCENARIO-03-CHECK-04 — Implicit "we'll add this in task N" assumptions are surfaced.
+### WF-ASSIGN — fitted, justified assignments
+- [ ] WF-ASSIGN-CHECK-01 [REQ] Each task's agent type is justified and lists `principles` plus the domain skills for the files it touches; pass: every non-default type is justified and the skill list matches the files; evidence: read each assignment vs the files touched; on-fail: FAIL:<finding-id>; source: WF-ASSIGN-CASE-01, WF § Agent assignment.
+- [ ] WF-ASSIGN-CHECK-02 [REQ] Each task names its domain-filtered required mistakes; pass: every task touching a domain lists that domain's mistakes; evidence: read each assignment's required-mistakes list; on-fail: FAIL:<finding-id>; source: WF-ASSIGN-CASE-01, WF § Agent assignment.
+- [ ] WF-ASSIGN-CHECK-03 [GATE] No task exceeds its assigned agent's context or tool budget; pass: each task's size and tool needs fit the assigned agent; evidence: compare task size to the agent's context / tool surface; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-ASSIGN-CASE-02, WF § Agent assignment.
+
+### WF-FRESH-EXEC — task-alone executability
+- [ ] WF-FRESH-EXEC-CHECK-01 [REQ] Every task is executable from its own `inputs:` / `outputs:` / `verifies:` without parent-session context; pass: one task read in isolation yields its full action; evidence: read one task in isolation, derive the action; on-fail: FAIL:<finding-id>; source: WF-FRESH-EXEC-CASE-01, WF § WORK discipline.
+- [ ] WF-FRESH-EXEC-CHECK-02 [GATE] No `verifies:` is a non-runnable placeholder and no prerequisite is unnamed in `requires:` / `inputs:`; pass: every gate runs verbatim and every dependency is named; evidence: attempt each `verifies:` as-is, trace dependencies; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-FRESH-EXEC-CASE-02, WF § WORK discipline.
+
+### WF-GOVERNANCE — authority and cross-task governance
+- [ ] WF-GOVERNANCE-CHECK-01 [REQ] PII / data-flow, license, and new-dependency surfaces are labelled and manifest changes are sequenced first (Coverage: Privacy / Licensing / Supply-chain); pass: each such task carries its label and dependency-manifest tasks precede consumers; evidence: scan tasks for PII / dependency / license surfaces; on-fail: FAIL:<finding-id>; source: WF-GOVERNANCE-CASE-01, WF § Constraints.
+- [ ] WF-GOVERNANCE-CHECK-02 [REQ] The plan is observable mid-execution and long-running tasks emit intermediate signals (Coverage: Observability); pass: a stuck task is identifiable and long tasks are not all-or-nothing; evidence: read the plan's progress-signal surfaces; on-fail: FAIL:<finding-id>; source: WF-GOVERNANCE-CASE-01, WF § Constraints.
+- [ ] WF-GOVERNANCE-CHECK-03 [GATE] No task authors a test framework (verification is anchored, not authored); pass: no task slices test-writing as its deliverable; evidence: scan task deliverables for test-authoring; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-GOVERNANCE-CASE-01, WF § Constraints.
+- [ ] WF-GOVERNANCE-CHECK-04 [GATE] A substantive disagreement with the user's locked direction is raised through USER CHALLENGE, not silently compromised; pass: any plan departure from the locked direction has a USER CHALLENGE record; evidence: diff plan direction vs locked Ideation direction, check the discussion log; on-fail: FAIL:<finding-id>, open a blocking finding; source: WF-GOVERNANCE-CASE-02, WF § USER CHALLENGE.
 
 ---
 
-## Risk
+## SEAM-* — SOP↔WF boundary
 
-### PLAN-RISK-SCENARIO-01 — Rollback boundary and interruption-safety are clear
-- [ ] PLAN-RISK-SCENARIO-01-CHECK-01 — Each task can be reverted independently (an atomic commit per task, or a `rollback:` field with concrete steps).
-- [ ] PLAN-RISK-SCENARIO-01-CHECK-02 — A failure between tasks leaves the project in a coherent state.
-- [ ] PLAN-RISK-SCENARIO-01-CHECK-03 — Pausing after any task N leaves the project in a coherent state.
-- [ ] PLAN-RISK-SCENARIO-01-CHECK-04 — The "stop-after-task-N" snapshot is a valid intermediate state.
+### SEAM-TRACES — one gobbi `traces-to` per package
+- [ ] SEAM-TRACES-CHECK-01 [REQ] Each package's generic anchor obligation is realized by exactly one `traces-to:`; pass: one-to-one mapping from generic anchor to `traces-to:`; evidence: map the generic anchor-obligation to `traces-to:`; on-fail: FAIL:<finding-id>; source: SEAM-TRACES-CASE-01, SOP § Rules.
+- [ ] SEAM-TRACES-CHECK-02 [GATE] A dangling `traces-to:` is detected, not accepted as an anchor; pass: every `traces-to:` resolves to an existing Ideation item; evidence: grep `traces-to:` against Ideation for resolution; on-fail: FAIL:<finding-id>, open a blocking finding; source: SEAM-TRACES-CASE-02, WF § Operating principles.
 
-### PLAN-RISK-SCENARIO-02 — Shared-infra, public-interface, and high-blast tasks are isolated and gated
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-01 — Tasks touching CI / build / config are sequenced first, so subsequent tasks build on a known-good baseline.
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-02 — A failure in a shared-infra task does not poison parallel work.
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-03 — Tasks touching public interfaces are isolated and carry explicit consumer-side migration tasks.
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-04 — No task silently widens a prior task's outputs at a public-interface boundary.
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-05 — Migrations, public-interface changes, and dependency upgrades are isolated tasks.
-- [ ] PLAN-RISK-SCENARIO-02-CHECK-06 — Each high-blast task has an explicit go/no-go decision step.
+### SEAM-SCHEMA-FIT — generic fields fit the schema, hand-offs match
+- [ ] SEAM-SCHEMA-FIT-CHECK-01 [REQ] Every generic contract field (outcome / boundary / inputs / outputs / assumptions / acceptance / evidence / estimate) has a task-schema home; pass: no generic field is dropped for lack of a schema slot; evidence: map generic fields to schema fields; on-fail: FAIL:<finding-id>; source: SEAM-SCHEMA-FIT-CASE-01, WF § Tasks schema.
+- [ ] SEAM-SCHEMA-FIT-CHECK-02 [REQ] The `requires:` edges reproduce the rendered dependency table; pass: `requires:` and the dependency table agree; evidence: diff `requires:` vs the dependency table; on-fail: FAIL:<finding-id>; source: SEAM-SCHEMA-FIT-CASE-01, WF § Tasks schema.
+- [ ] SEAM-SCHEMA-FIT-CHECK-03 [GATE] Each task's `outputs:` literally name-match the consuming task's `inputs:` (no silent rename); pass: every hand-off is a literal name match; evidence: diff `outputs:` vs downstream `inputs:`; on-fail: FAIL:<finding-id>, open a blocking finding; source: SEAM-SCHEMA-FIT-CASE-02, WF § Tasks schema.
 
-### PLAN-RISK-SCENARIO-03 — Cumulative scope matches Ideation and no task widens a prior task's outputs
-- [ ] PLAN-RISK-SCENARIO-03-CHECK-01 — Cumulative files-touched across the plan is comparable to the Ideation Scope Contract's stated scope.
-- [ ] PLAN-RISK-SCENARIO-03-CHECK-02 — A scope explosion (for example roughly three times the expected file count) is flagged.
-- [ ] PLAN-RISK-SCENARIO-03-CHECK-03 — Output fields are checked for monotonic addition against prior task definitions.
-- [ ] PLAN-RISK-SCENARIO-03-CHECK-04 — No "task 2 produces X and Y" exists where task 1 already promised X.
+### SEAM-TRIGGER-MAP — signposts map to gobbi responses
+- [ ] SEAM-TRIGGER-MAP-CHECK-01 [REQ] Each assumption signpost maps to a concrete gobbi response (REVISE / USER CHALLENGE / re-enter Ideation); pass: every signpost names a gobbi route; evidence: map each signpost's generic response to a gobbi response; on-fail: FAIL:<finding-id>; source: SEAM-TRIGGER-MAP-CASE-01, WF § USER CHALLENGE.
+- [ ] SEAM-TRIGGER-MAP-CHECK-02 [GATE] No signpost is left without a gobbi response route; pass: every observable signpost has a REVISE / USER-CHALLENGE / re-entry mapping; evidence: enumerate signposts, check each for a gobbi route; on-fail: FAIL:<finding-id>, open a blocking finding; source: SEAM-TRIGGER-MAP-CASE-02, WF § USER CHALLENGE.
 
-### PLAN-RISK-SCENARIO-04 — Cost, privacy, observability, and supply-chain continuity across tasks
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-01 — Tasks that issue paid-service / cloud calls during verification name their token / cost ceilings (Coverage: Cost).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-02 — No silent multiplication of cost across tasks (e.g. many tasks each running a paid evaluation) is left unbounded (Coverage: Cost).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-03 — Tasks that touch PII or regulated data carry that label so Execution can prioritize verification (Coverage: Privacy).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-04 — Data-flow boundaries from Ideation are preserved across the task decomposition (Coverage: Privacy).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-05 — The plan is observable mid-execution — a stuck task is identifiable from session telemetry (Coverage: Observability).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-06 — Long-running tasks emit intermediate signals, not an all-or-nothing report (Coverage: Observability).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-07 — Tasks introducing new dependencies are flagged with a `dep-impact:` field (Coverage: Supply-chain).
-- [ ] PLAN-RISK-SCENARIO-04-CHECK-08 — Dependency-manifest / vendor changes are sequenced first so subsequent tasks build on a stable dependency graph (Coverage: Supply-chain).
+---
+
+## Completion
+
+- **Coverage-closure:** every applicable gate and required check above (plus any `## Stage 1
+  Additions`) resolves to exactly one of `PASS` / `FAIL:<finding-id>` / `n/a:<property>`.
+- **Acceptance:** every applicable gate and required check resolves `PASS`. A `FAIL:<finding-id>` or
+  an `n/a:<property>` closes coverage but not acceptance.
+- Record per-perspective counts (PASS / FAIL / n/a / total) in the filled copy.

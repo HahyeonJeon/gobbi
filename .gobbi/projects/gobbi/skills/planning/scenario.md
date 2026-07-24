@@ -1,235 +1,718 @@
 # Planning Loop — Evaluation Scenarios
 
-Per-perspective GOOD / BAD / ADVERSARIAL discrimination scenarios for a Planning Loop's task
-decomposition. The evaluator loads this file at Stage 1 (Scenario-Checklist Frame Build) as
-seed scenarios for the seven perspectives.
+Coverage-framed scenario set for evaluating a **Planning working draft**. The evaluator loads
+this file at Stage 1 (Scenario-Checklist Frame Build) as the per-perspective seed scenarios for
+the seven perspectives. It conforms to the in-tree Scenario SOP — see
+[the Scenario SOP § Rules](../scenario/SKILL.md#rules) for the category-and-case taxonomy, the
+coverage frame, and the failability teeth this set is built to.
 
-The evaluation **procedure** — the per-perspective lens definitions, recommended
-verifications, perspective anti-patterns, and Overall (Stage 3) anchors — lives in the
-sibling `evaluation.md`. The concrete yes/no **checks** each scenario references live 1:1 in
-the sibling `checklist.md`, whose heading tree mirrors this file exactly.
+**Target.** The Planning working draft at
+`sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`: the locked Scope Contract
+inherited from Ideation, the ordered task list (each task the canonical YAML record), the
+dependency graph, and the per-task agent assignment. A plan is judged against the idea it
+implements — the Ideation working draft is a required input.
 
-The artifact under evaluation is **the Planning working draft**
-(`sessions/{date}-{session-id}/3-planning/working/draft-iter{n}.md`): the locked Scope Contract
-inherited from Ideation, the ordered task list, per-task scope + `inputs:` + `outputs:` +
-`verifies:`, the dependency graph, and the agent-type assignment per task. A plan is **judged
-against the idea it implements** — the Ideation working draft is required input. Planning is a
-**process loop** — the artifact is a plan, not code — so every family below judges **plan
-quality**: does every task trace to Ideation, is the decomposition narrow and correctly ordered,
-is each task's verification concrete, and can a fresh Executor run any task from the task alone.
-Each family carries a `### {ID}` heading, a **Category**, the **Situation** it arises in, the
-**Good** outcome, the **Bad / failure** outcome, one **Adversarial** case a real evaluator would
-probe, and the **Checklist IDs** whose joint satisfaction proves the scenario handled. Scenario
-IDs follow `PLAN-{PERSPECTIVE}-SCENARIO-{NN}`; each check follows `{scenario-id}-CHECK-{NN}` and
-lives in `checklist.md`.
+**Consumer.** The Planning-loop evaluator (Claude + Codex), and, second-hand, the manager who
+reconciles the two verdicts.
 
----
+**Lifecycle mode.** Evaluation coverage. This set names its coverage axes up front, derives
+families and cases from them, turns each case into a design obligation the plan-under-review must
+satisfy, and states what it does not cover. It stops at design obligations; the concrete yes/no
+checks live 1:1 in the sibling `checklist.md`, and the per-perspective procedure lives in the
+sibling `evaluation.md`.
 
-## Project
-_Lens (see `evaluation.md`):_ does the plan implement the **right idea**, the whole idea, and **only** the idea?
+**The SOP / WF / SEAM family model.** Families carry one of three prefixes — a label, not a new
+method:
 
-### PLAN-PROJ-SCENARIO-01 — Every task traces to Ideation and every Ideation item is covered
-**Category:** golden-path
-**Situation:** the task list claims to implement the Ideation checklist.
-**Good:** each task carries a `traces-to:` field pointing to the Ideation checklist item(s) it implements, and every reference resolves to an item that exists verbatim; no Ideation checklist item is left unaddressed, and any item the plan defers has an explicit backlog routing.
-**Bad / failure:** a task has no `traces-to:`, or an Ideation item the plan should cover has no task.
-**Adversarial:** an Ideation checklist item is silently left uncovered while the plan still reads as a complete implementation, so a dropped requirement hides behind a full-looking task list.
-**Checklist IDs:** `PLAN-PROJ-SCENARIO-01-CHECK-*`
+- **`SOP-*`** — generic plan-quality: whether the draft is a good plan by the workflow-agnostic
+  craft the [generic planning SOP § Rules](SKILL.md#rules) owns (coverage without gaps,
+  outcome-slicing, bounded packages, DAG order, forecast-with-triggers, pre-anchored acceptance).
+- **`WF-*`** — gobbi workflow-compliance: whether the draft follows the Gobbi Planning mechanics
+  the folded workflow doc `orchestration/workflow/planning.md` owns (the canonical task schema,
+  anchor-every-task, agent assignment, USER CHALLENGE, no test-writing task).
+- **`SEAM-*`** — the SOP↔WF boundary: whether the generic craft and the gobbi mechanics agree
+  (one gobbi `traces-to` per package; every generic contract field representable in the task
+  schema; `requires:` edges matching the rendered DAG; assumption signposts mapped to the gobbi
+  re-plan responses).
 
-### PLAN-PROJ-SCENARIO-02 — The plan stays inside the Scope Contract and reaches the success criteria
-**Category:** golden-path
-**Situation:** the plan inherits the Ideation Scope Contract and success criteria.
-**Good:** the Scope Contract is copied verbatim (not paraphrased or expanded); no task introduces a requirement not in Ideation; after the last task runs, every Ideation success criterion is satisfied and none is silently dropped.
-**Bad / failure:** a success criterion has no task that would satisfy it, or the Scope Contract is reworded in a way that shifts the boundary.
-**Adversarial:** a task introduces a new requirement not present in Ideation, expanding scope through the task spec rather than through a user decision.
-**Checklist IDs:** `PLAN-PROJ-SCENARIO-02-CHECK-*`
-
-### PLAN-PROJ-SCENARIO-03 — No "while we're here" task slips into the plan
-**Category:** failure-mode
-**Situation:** the decomposition may pick up adjacent improvements.
-**Good:** each task is scrutinized for adjacent-improvement creep; a task that improves neighboring work unrelated to the idea is flagged and re-routed to backlog, not included.
-**Bad / failure:** a task bundles an unrelated cleanup with in-scope work.
-**Adversarial:** a "while we're here" task that improves adjacent, unrelated work slips into the plan as if it were part of the idea.
-**Checklist IDs:** `PLAN-PROJ-SCENARIO-03-CHECK-*`
+Each family declares its own primary coverage category, so it routes to an evaluation perspective
+through the Scenario SOP's design-category → perspective map; the § Per-perspective seed index
+below is the reverse lookup the evaluator uses at Stage 1.
 
 ---
 
-## Structure
-_Lens (see `evaluation.md`):_ is the **task decomposition** sound? Are dependencies ordered correctly, task sizes bounded, and agent-type assignments right?
+## Set-level frame
 
-### PLAN-STRUCT-SCENARIO-01 — Tasks are narrow and effort is sized honestly
-**Category:** golden-path
-**Situation:** the plan breaks the idea into tasks a fresh Executor must grasp in one read.
-**Good:** no task spans more than roughly 5-8 files or introduces more than roughly 2 new modules / components; each task title is imperative-form, short, and specific; effort is inferable from `files:` count plus `verifies:` complexity (an evaluator-internal heuristic — there is no `effort:` field in the canonical task YAML), and total plan effort is sanity-checked against the Ideation Scope Contract size.
-**Bad / failure:** a task is too broad to grasp in one read, or its title is vague.
-**Adversarial:** a mega-task hides behind implicitly small scope — a multi-step `verifies:` over more than three files — while being described as trivial, so its true size never gets flagged.
-**Checklist IDs:** `PLAN-STRUCT-SCENARIO-01-CHECK-*`
+### Author-declared primary category
 
-### PLAN-STRUCT-SCENARIO-02 — Task dependencies form a DAG with explicit ordering
-**Category:** golden-path
-**Situation:** tasks depend on one another and must run in an order.
-**Good:** dependencies are explicit — each task names which prior task(s) must complete first; the `requires:` graph is acyclic (no cycles); and a topological sort over the `requires:` fields reproduces the documented task order.
-**Bad / failure:** the order is stated but no `requires:` fields back it, so the ordering is unverifiable.
-**Adversarial:** the task order relies on implicit ordering a reader must infer from context, with no `requires:` fields, so a topological sort does not reproduce the intended order.
-**Checklist IDs:** `PLAN-STRUCT-SCENARIO-02-CHECK-*`
+Each family declares **one** primary category with a one-line justification (per
+[the Scenario SOP § Rules](../scenario/SKILL.md#rules) SR-4). The author-declared primary is used
+only for stable IDs, grouping, and primary-perspective routing — it **never** discharges
+coverage. No mechanical order chooses it; the declared primary names the family's defining
+discrimination, and the higher-order matches become secondary tags. Completeness is carried
+independently, by the coverage register plus the per-family triggered minimums — never by the
+primary label.
 
-### PLAN-STRUCT-SCENARIO-03 — Each task has concrete verification and bounded file-touch
-**Category:** failure-mode
-**Situation:** each task declares how it will be verified and which files it modifies.
-**Good:** each task has a `verifies:` field with a runnable command or file-existence check that yields a clean pass/fail without further interpretation; a `files:` field enumerates the modified paths.
-**Bad / failure:** a task's verification needs interpretation to call pass/fail, or its `files:` set is missing.
-**Adversarial:** a task secretly modifies a file outside its declared `files:` set, so the real blast radius exceeds what the plan enumerates.
-**Checklist IDs:** `PLAN-STRUCT-SCENARIO-03-CHECK-*`
+### Coverage register (SR-1 — all ten categories dispositioned)
 
-### PLAN-STRUCT-SCENARIO-04 — Agent-type and capability fit the work
-**Category:** failure-mode
-**Situation:** each task is assigned to an agent type that must be able to do the work.
-**Good:** the agent-type assignment is justified by the work's nature and does not contradict the delegation conventions; the assigned agent's tool surface matches the task's needs, its context window matches the artifact size, and its skill-load fits the loaded-skill budget.
-**Bad / failure:** a task is assigned an agent type whose permissions or context budget the work exceeds.
-**Adversarial:** a very large task is assigned to a smaller-tier agent whose context window or tool surface cannot hold the work, so the assignment reads plausible but the agent cannot actually complete the task.
-**Checklist IDs:** `PLAN-STRUCT-SCENARIO-04-CHECK-*`
+Every one of the ten coverage categories is given exactly one disposition. A category matched only
+as a secondary tag is still `selected`; its families are the tag-carriers.
 
-### PLAN-STRUCT-SCENARIO-05 — Parallel-safety accounts for files and shared resources
-**Category:** failure-mode
-**Situation:** some tasks are marked parallel-safe.
-**Good:** tasks with no file overlap and no dependency are marked parallel-safe; where the docs-cleanup-parallelism rule applies the plan prefers a single sequential pass; parallel-safe tasks also do not contend on shared resources beyond files (shared data stores, ports, worktree directories, rate limits, paid-service quotas), sequential user-decision dependencies block parallelism even when files do not overlap, and shared build / dependency-manifest lock contention is considered.
-**Bad / failure:** two parallel-marked tasks contend on a shared resource the plan did not check.
-**Adversarial:** two tasks silently modify the same file with conflicting intent — the file-touch sets were never compared, so an overlap runs in parallel with no sequencing or dependency.
-**Checklist IDs:** `PLAN-STRUCT-SCENARIO-05-CHECK-*`
+| # | Category | Disposition | Where covered |
+|---|---|---|---|
+| 1 | `Purpose / outcomes / scope` | selected | SOP-COVERAGE, WF-TRACE (Project) |
+| 2 | `Actors / stakeholders / use-context` | selected | WF-ASSIGN, WF-FRESH-EXEC (Usage) |
+| 3 | `Behavior / state / data` | selected | secondary tag on SEAM-SCHEMA-FIT, SEAM-TRACES — the plan's inter-task `inputs:`/`outputs:` data-lifecycle and task-state ordering |
+| 4 | `Interfaces / dependencies / structure` | selected | SOP-SLICE, SOP-DAG, WF-SCHEMA, SEAM-SCHEMA-FIT (Structure) |
+| 5 | `Quality attributes / resource economics` | selected | SOP-PERF (Performance) |
+| 6 | `Failure / recovery / operations` | selected | SOP-FORECAST, SOP-REVERSIBILITY, SEAM-TRIGGER-MAP (Risk) |
+| 7 | `Trust / harm / governance` | selected | WF-GOVERNANCE (Risk) |
+| 8 | `Inclusion / locale` | selected | secondary tag on SOP-CLARITY — a plan skip-friendly and scannable for a fresh executor (accessibility); i18n is `not-applicable` (see § Coverage-ownership matrix mapping) |
+| 9 | `Change / compatibility / reversibility` | selected | secondary tag on SOP-REVERSIBILITY — isolating migrations / dependency upgrades / public-interface changes, and the whole change set being git-revertible |
+| 10 | `Evidence / traceability / clarity` | selected | SOP-CONTRACT, SOP-CLARITY, SEAM-TRACES (Consistency / Aesthetics) |
 
----
+No category is `covered-elsewhere`; every concern that can affect a plan is covered by this set's
+own families.
 
-## Performance
-_Lens (see `evaluation.md`):_ does the plan **preserve** the Ideation performance commitments, and does the plan's own execution scale?
+### Per-perspective seed index
 
-### PLAN-PERF-SCENARIO-01 — Perf-sensitive tasks are isolated with measurement-based verification
-**Category:** golden-path
-**Situation:** some tasks touch paths with Ideation performance budgets.
-**Good:** tasks touching perf budgets identified by Ideation have explicit measurement steps in their `verifies:` field, no existing measurement / load check is silently removed, and perf-sensitive changes are isolated tasks with isolated verification.
-**Bad / failure:** a perf budget from Ideation has no measurement step in any task's `verifies:`.
-**Adversarial:** a perf-sensitive change is bundled into a mixed-concern task, so its verification could pass while masking a non-perf change riding along.
-**Checklist IDs:** `PLAN-PERF-SCENARIO-01-CHECK-*`
+At Stage 1 the evaluator filters families to a perspective by this reverse lookup (primary and
+secondary perspective, per the Scenario SOP's design-category → perspective map). Every one of the
+seven perspectives has at least one seed family.
 
-### PLAN-PERF-SCENARIO-02 — External-call tasks name their handling and plan-time cost is estimated
-**Category:** failure-mode
-**Situation:** some tasks introduce external calls (network, data-store, disk) during their work or verification.
-**Good:** each new external-call task names its batching, its caching, and how it behaves when a call fails or is slow, and cites any defaults inherited from project conventions rather than assuming them silently; verification scaffolding is checked for per-item external calls, and plan-time call counts are estimated where downstream throughput matters.
-**Bad / failure:** a new external-call task leaves its batching, caching, or failure / slow-call handling unstated, or inherits a default without citing it.
-**Adversarial:** a reasonable-looking task hides a per-item external call in its verification setup that plan-time call-count estimation would have caught.
-**Checklist IDs:** `PLAN-PERF-SCENARIO-02-CHECK-*`
+| Perspective | Seed families |
+|---|---|
+| Project | SOP-COVERAGE, WF-TRACE |
+| Structure | SOP-SLICE, SOP-DAG, WF-SCHEMA, SEAM-SCHEMA-FIT (+ SOP-REVERSIBILITY, secondary) |
+| Performance | SOP-PERF |
+| Aesthetics | SOP-CLARITY (secondary), SOP-CONTRACT (secondary), SEAM-TRACES (secondary) |
+| Usage | WF-ASSIGN, WF-FRESH-EXEC, SOP-CLARITY (secondary, accessibility) |
+| Consistency | SOP-CONTRACT, SOP-CLARITY, SEAM-TRACES, SEAM-SCHEMA-FIT (secondary), SEAM-TRIGGER-MAP (secondary), WF-GOVERNANCE (secondary) |
+| Risk | SOP-FORECAST, SOP-REVERSIBILITY, WF-GOVERNANCE, SEAM-TRIGGER-MAP, SOP-PERF (secondary) |
 
----
+### Coverage-ownership matrix mapping
 
-## Aesthetics
-_Lens (see `evaluation.md`):_ is the **plan document itself** readable, consistent, and free of placeholders?
+Each cross-cutting concern the evaluation skill assigns to a perspective gets a seed here, or an
+explicit `not-applicable`.
 
-### PLAN-AESTH-SCENARIO-01 — Titles, ordering, and template conform
-**Category:** golden-path
-**Situation:** the plan document is written to the project's Planning template.
-**Good:** task titles are imperative-form, short, and specific with no duplicate task IDs; tasks are listed in execution order and any forward-referenced dependency points downward; section headings match the project's standard Planning template and the field set is consistent across all tasks.
-**Bad / failure:** task IDs collide, or the plan diverges from the project's Planning template.
-**Adversarial:** a dependency is forward-referenced pointing upward — a later task referenced by an earlier one — so the reader must scroll back to follow the order.
-**Checklist IDs:** `PLAN-AESTH-SCENARIO-01-CHECK-*`
+| Concern | Owning perspective(s) | Seed |
+|---|---|---|
+| Accessibility | Usage | SOP-CLARITY — the plan is scannable / skip-friendly so a fresh executor can navigate it |
+| Internationalization / localization | Usage | `not-applicable`: the plan is an internal English working document for a single solo user; there is no locale, sort-order, or input-method variation to serve |
+| Privacy / data retention | Risk + Consistency | WF-GOVERNANCE — PII / data-flow boundaries from Ideation preserved across the decomposition |
+| Licensing / IP | Risk + Consistency | WF-GOVERNANCE — new-dependency tasks name their license / IP surface |
+| Dependency supply chain | Risk + Structure | WF-GOVERNANCE — new-dependency tasks flagged; dependency-manifest changes sequenced first |
+| Observability / telemetry | Structure + Usage | WF-GOVERNANCE — the plan is observable mid-execution; long-running tasks emit intermediate signals |
+| Cost / budget impact | Performance + Risk | SOP-PERF (per-task ceilings) + WF-GOVERNANCE (cross-task cost multiplication) |
+| Error budget impact | Performance + Risk | SOP-PERF — where a task touches a runtime SLO path; `not-applicable` for pure-doc tasks with no runtime path |
 
-### PLAN-AESTH-SCENARIO-02 — No placeholders or empty tasks
-**Category:** failure-mode
-**Situation:** the plan is ready for review.
-**Good:** no `TBD` / `TODO` / `???` remains in any task field; no task has an empty `verifies:` or `outputs:` field; every task has at least one `outputs:` entry and one `verifies:` entry.
-**Bad / failure:** a task field is a placeholder, or a task is missing its `verifies:` / `outputs:`.
-**Adversarial:** the plan looks complete but a careful reader spots an effectively empty task — one that consists only of a "(see Ideation)" cross-reference with no `outputs:` or `verifies:`.
-**Checklist IDs:** `PLAN-AESTH-SCENARIO-02-CHECK-*`
+### Stable-ID policy
 
----
+Family IDs are `{SOP|WF|SEAM}-{NAME}`; case IDs are `{family-id}-CASE-{NN}`; check IDs are
+`{family-id}-CHECK-{NN}` and live in `checklist.md`. IDs are stable across iterations — the
+evaluator preserves an existing ID and never renumbers a surviving family.
 
-## Usage
-_Lens (see `evaluation.md`):_ can the **Executor** use this plan without coming back to the user or the Leader?
+### Set scale (SR-8)
 
-### PLAN-USAGE-SCENARIO-01 — A fresh Executor can start task N from the task alone
-**Category:** golden-path
-**Situation:** a fresh Executor is given one task with no other context.
-**Good:** every task can be spawned to a fresh subagent — its task-alone context is its `inputs:`, `outputs:`, and `verifies:` fields (what it consumes, what it must produce, and how to self-check) — and executed without parent-session context; each task specifies file paths and, where relevant, function / section anchors; verification and test commands are concrete and runnable as-is.
-**Bad / failure:** a task cannot be executed from its own spec without the parent session.
-**Adversarial:** a verification command carries a placeholder ("run the tests", `<your test path here>`), so a fresh Executor cannot run it as-is.
-**Checklist IDs:** `PLAN-USAGE-SCENARIO-01-CHECK-*`
+Sixteen families across three groups, each exercising a small, bounded set of case types. The author
+tunes the split thresholds for this evaluation register to **≤ 18 families / ≤ 60 cells** — higher
+than the SOP default because one coverage register spans seven perspectives plus the
+coverage-ownership matrix. This set's family count and its distinct (category, case-type) cell count
+are both within the tuned thresholds, so it is not split under a parent index.
 
-### PLAN-USAGE-SCENARIO-02 — Failure modes and prerequisites are named, with no surprise dependencies
-**Category:** failure-mode
-**Situation:** each task may hit failure modes and prerequisites the Executor must know up front.
-**Good:** known failure modes are listed in the task spec or its preconditions; every prerequisite is named in `requires:` or `inputs:` — there are no surprise dependencies.
-**Bad / failure:** a task hits a failure mode the spec never mentioned.
-**Adversarial:** a task has a surprise prerequisite — a dependency named in neither `requires:` nor `inputs:` — that a fresh Executor discovers only at runtime.
-**Checklist IDs:** `PLAN-USAGE-SCENARIO-02-CHECK-*`
+### Source register
 
-### PLAN-USAGE-SCENARIO-03 — Inter-task handoff is explicit and terms are defined
-**Category:** failure-mode
-**Situation:** tasks hand off outputs and use domain terms.
-**Good:** the inter-task handoff is explicit — task N's output is task N+1's input — and if a task requires user input mid-execution that is named explicitly (and the plan questions whether the task should be split); any term not in the project glossary is defined inline in the task spec, and acronyms expand on first use within each task.
-**Bad / failure:** a mid-execution user-input requirement is unstated, or a domain term is left undefined.
-**Adversarial:** a task uses a term not in the project glossary and never defines it inline, so the Executor has to stop and ask "what does X mean here".
-**Checklist IDs:** `PLAN-USAGE-SCENARIO-03-CHECK-*`
+- The generic planning SOP — [§ Rules](SKILL.md#rules) (11 Must-Follow + 10 Must-Not-Follow) and
+  [§ Procedure](SKILL.md#procedure) (P1–P8). The SOP-* families derive from these.
+- The folded workflow doc `orchestration/workflow/planning.md` — its
+  [§ Operating principles](../orchestration/workflow/planning.md#operating-principles),
+  [§ USER CHALLENGE](../orchestration/workflow/planning.md#user-challenge), the canonical task
+  schema, and the agent-assignment sub-step. The WF-* families derive from these.
+- The D3 minimum seam coverage (S8): one gobbi `traces-to` per package; every generic contract
+  field representable in the task schema; `requires:` edges match the rendered DAG; assumption /
+  signpost triggers map to REVISE / USER-CHALLENGE / re-entry. The SEAM-* families derive from
+  these.
+- The evaluation skill's Coverage Ownership Matrix (accessibility / i18n / privacy / licensing /
+  supply-chain / observability / cost / error-budget).
+
+Evidence is referenced by pointer, never inlined; a Planning draft carries no sensitive data, so
+no redaction applies (SR-9).
 
 ---
 
-## Consistency
-_Lens (see `evaluation.md`):_ do task hand-offs match, do task fields mutually agree, and does the plan trace coherently back to Ideation?
+## SOP-* — generic plan-quality families
 
-### PLAN-CONS-SCENARIO-01 — Hand-off fields name-match and traces resolve
-**Category:** golden-path
-**Situation:** tasks hand off via `outputs:` / `inputs:` and cite Ideation via `traces-to:`.
-**Good:** the `outputs:` of task N literally name-match the `inputs:` of every downstream consuming task (no paraphrase, no silent rename across the hand-off boundary); each `traces-to:` grepped against the Ideation artifact finds an exact match, and dangling traces are flagged.
-**Bad / failure:** a `traces-to:` references an Ideation item that does not exist.
-**Adversarial:** a hand-off silently renames a field — task N outputs `schema` while task N+1 inputs `migrated-schema` — so the match cannot be verified mechanically.
-**Checklist IDs:** `PLAN-CONS-SCENARIO-01-CHECK-*`
+### SOP-COVERAGE — the decomposition equals the approved scope, with no gap, overlap, or extra
+**Primary category:** 1 `Purpose / outcomes / scope` — the defining discrimination is whether the
+task set covers the right and whole and only scope. **Secondary tags:** 10 (traceability of the
+coverage ledger). **Primary perspective:** Project.
+**Source:** SOP § Rules (bidirectional source-to-deliverable ledger) + WF § Operating principles
+(stay in scope).
+**Situation / actor / outcome:** the leader claims the task list implements the locked Ideation
+Scope Contract; the outcome is a two-way coverage ledger where every approved outcome maps to ≥1
+task and every task maps back to an approved outcome.
+**Triggered minimums:** adversarial **triggered** (trust of a full-looking list); boundary
+`n/a: no quantity/ordering edge`; failure/recovery `n/a: no dependency/persistence surface`;
+change/regression `n/a: no version event`; counterfactual `n/a: no premise inversion distinct from
+the coverage-completeness adversarial probe`.
+**Cases:**
+- **SOP-COVERAGE-CASE-01 (Positive / Good; coverage-role {positive}).** Given the Scope Contract's
+  outcome list and the task list. When each outcome is matched to its owning task and each task to
+  its outcome. Then every outcome has exactly one accountable owner and no task is unanchored.
+  *Failure oracle:* a coverage-ledger row with a blank owner or a task with a blank source.
+  *Observable discrimination:* a correct plan produces a complete two-way ledger; a broken one
+  leaves ≥1 blank cell. *Evidence tuple:* (diff Ideation outcome list vs task `traces-to:` set /
+  set-difference of the two / an empty symmetric difference confirms it). *Design obligation:* the
+  plan MUST carry a bidirectional coverage ledger with one accountable task per outcome.
+- **SOP-COVERAGE-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a task list that reads
+  as a complete implementation. When one Ideation outcome is silently left with no task. Then the
+  dropped requirement hides behind a full-looking list. *Failure oracle:* an Ideation outcome absent
+  from the union of all `traces-to:`. *Observable discrimination:* the adversarial reader recomputes
+  the set-difference rather than trusting the list's apparent completeness. *Evidence tuple:*
+  (grep each Ideation outcome against the task list / set-difference / a non-empty difference is the
+  drop). *Design obligation:* the plan MUST make an uncovered outcome visible, not hideable behind a
+  tidy list.
+**Checklist IDs:** `SOP-COVERAGE-CHECK-*`
 
-### PLAN-CONS-SCENARIO-02 — Task field schema and tooling are uniform
-**Category:** golden-path
-**Situation:** every task carries the same field schema and command surface.
-**Good:** every task has the same set of fields (no `verifies:` present in some and missing in others) with consistent casing and punctuation; the command / tool surface is uniform across tasks unless a switch is explicit, and path conventions (absolute vs repo-relative) are consistent.
-**Bad / failure:** the field set differs between tasks, or tasks mix tool surfaces without explanation.
-**Adversarial:** one task uses a different command / tool surface (or path convention) than its siblings with no explicit switch, so the Executor silently mixes conventions.
-**Checklist IDs:** `PLAN-CONS-SCENARIO-02-CHECK-*`
+### SOP-SLICE — packages are outcome-sliced and bounded enough to execute as one unit
+**Primary category:** 4 `Interfaces / dependencies / structure` — the defining discrimination is
+the decomposition's structural soundness. **Secondary tags:** 1 (scope). **Primary perspective:**
+Structure.
+**Source:** SOP § Rules (slice by observable outcome; the work-package stop rule) + SOP § Procedure
+P3.
+**Situation / actor / outcome:** the leader slices the file map into tasks; the outcome is each
+leaf being an end-to-end observable increment, directly executable / assignable / estimable /
+completable / verifiable as one unit.
+**Triggered minimums:** boundary **triggered** (the size limit); adversarial **triggered** (a
+mega-task disguised as trivial); failure/recovery `n/a: not a runtime failure surface`;
+change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **SOP-SLICE-CASE-01 (Positive / Good; coverage-role {positive}).** Given the file map. When each
+  task is checked against the stop rule. Then every leaf is an observable outcome a consumer can
+  inspect, sized by readiness rather than by a fixed file count. *Failure oracle:* a leaf that is a
+  pure layer slice with no independently inspectable result. *Observable discrimination:* a good
+  slice accepts on its own; a layer slice looks done while nothing works end to end. *Evidence
+  tuple:* (read each task's outcome + `files:` / judge independent observability / a
+  consumer-visible result confirms it). *Design obligation:* each package MUST be an end-to-end
+  observable outcome unless a named enabler makes it unavoidable.
+- **SOP-SLICE-CASE-02 (Boundary; coverage-role {boundary}).** Given a task whose `verifies:` is
+  multi-step over more than three files. When its size is judged at the exact stop-rule limit. Then
+  it is treated as large regardless of how it is described. *Failure oracle:* a task at or above the
+  size limit still labelled trivial. *Observable discrimination:* the judgment sits at the exact
+  file-count / step-count edge, not near it. *Evidence tuple:* (count `files:` and `verifies:`
+  steps / arithmetic at the limit / a count over the limit confirms oversize). *Design obligation:*
+  the plan MUST size a package by its executable-and-verifiable readiness, not by a convenient
+  label.
+- **SOP-SLICE-CASE-03 (Adversarial; coverage-role {adversarial}).** Given a mega-task described as
+  trivial with an implicitly small scope. When its real `verifies:` span and file-touch are
+  measured. Then the disguised size surfaces. *Failure oracle:* a "trivial" task whose measured span
+  exceeds the limit. *Observable discrimination:* the reader measures rather than trusting the
+  "trivial" label. *Evidence tuple:* (measure span / compare to the limit / an over-limit measure is
+  the disguise). *Design obligation:* the plan MUST NOT let a mega-task hide behind an
+  implicitly-small description.
+**Checklist IDs:** `SOP-SLICE-CHECK-*`
 
-### PLAN-CONS-SCENARIO-03 — No task contradicts a sibling's assumption or relies on a later task
-**Category:** failure-mode
-**Situation:** tasks share invariants and must not depend backwards.
-**Good:** task ordering preserves invariants (a task assuming file X exists is sequenced after the task that creates X); renames done by one task are reflected in subsequent tasks' `inputs:` fields; implicit "we'll add this in task N" assumptions are surfaced.
-**Bad / failure:** a task assumes a state a sibling has not yet produced.
-**Adversarial:** a task implicitly relies on a shape introduced by a later task — a forward dependency — which is a plan-order bug the ordering hides.
-**Checklist IDs:** `PLAN-CONS-SCENARIO-03-CHECK-*`
+### SOP-DAG — dependencies form a DAG and order is derived from it, with genuine parallel lanes
+**Primary category:** 4 `Interfaces / dependencies / structure` — the defining discrimination is
+the dependency structure. **Secondary tags:** 6 (ordering as an operational risk). **Primary
+perspective:** Structure.
+**Source:** SOP § Rules (dependencies determine order; prove a parallel lane has no path or shared
+mutation) + SOP § Procedure P5.
+**Situation / actor / outcome:** the leader records `requires:` edges and parallel lanes; the
+outcome is an acyclic graph whose topological order reproduces the documented order, and lanes with
+neither a dependency path nor a shared mutation.
+**Triggered minimums:** boundary **triggered** (a cycle / a self-edge); adversarial **triggered**
+(false parallelism); failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **SOP-DAG-CASE-01 (Positive / Good; coverage-role {positive}).** Given the `requires:` fields.
+  When a topological sort is run over them. Then the sort is defined (no cycle) and reproduces the
+  documented task order. *Failure oracle:* a documented order that a topological sort cannot
+  reproduce. *Observable discrimination:* a correct graph sorts to the stated order; a broken one
+  contradicts it. *Evidence tuple:* (build the graph from `requires:` / topological sort / the sort
+  equals the documented order). *Design obligation:* the plan MUST derive order from the dependency
+  graph, not from list position.
+- **SOP-DAG-CASE-02 (Boundary; coverage-role {boundary}).** Given the `requires:` edges. When the
+  graph is checked for a cycle at the exact point two tasks require each other. Then any cycle is
+  rejected as having no valid start order. *Failure oracle:* a cycle (direct or transitive) in
+  `requires:`. *Observable discrimination:* the check sits at the exact edge where the graph stops
+  being acyclic. *Evidence tuple:* (cycle-detect the graph / a detected back-edge / a cycle is the
+  failure). *Design obligation:* the plan MUST reject a dependency cycle before execution.
+- **SOP-DAG-CASE-03 (Adversarial; coverage-role {adversarial}).** Given two tasks in different lanes
+  that touch the same file. When the lanes are called parallel-safe without comparing file-touch
+  sets. Then a conflicting shared mutation runs in parallel. *Failure oracle:* two parallel-marked
+  tasks whose `files:` sets intersect. *Observable discrimination:* the reader intersects the
+  file-touch sets rather than trusting the parallel label. *Evidence tuple:* (intersect the lanes'
+  `files:` / a non-empty intersection / the overlap is the false parallelism). *Design obligation:*
+  the plan MUST prove a lane free of dependency paths and shared mutation before calling it
+  parallel.
+**Checklist IDs:** `SOP-DAG-CHECK-*`
+
+### SOP-CONTRACT — every package has a complete contract and a pre-anchored objective acceptance
+**Primary category:** 10 `Evidence / traceability / clarity` — the defining discrimination is
+whether each package's acceptance is provable by named evidence. **Secondary tags:** 4 (contract
+completeness). **Primary perspective:** Consistency. **Secondary perspective:** Aesthetics.
+**Source:** SOP § Rules (complete package contract; acceptance as an observable pass/fail claim with
+deciding evidence named before execution) + SOP § Procedure P4.
+**Situation / actor / outcome:** the leader writes each task's contract; the outcome is every
+package carrying its full field set and an acceptance condition stated as a binary claim with its
+deciding evidence named before execution.
+**Triggered minimums:** adversarial **triggered** (a gameable acceptance gate); boundary `n/a`;
+failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a: no premise inversion distinct
+from the cosmetic-gaming adversarial probe`.
+**Cases:**
+- **SOP-CONTRACT-CASE-01 (Positive / Good; coverage-role {positive}).** Given a task. When its
+  acceptance condition is read. Then it is a binary pass/fail claim naming its deciding evidence and
+  method before execution. *Failure oracle:* an acceptance criterion that needs interpretation to
+  call pass/fail. *Observable discrimination:* a good acceptance can only pass one way; a vague one
+  ("works", "tests pass") can be declared passed by anyone. *Evidence tuple:* (read the acceptance /
+  test whether it admits a single yes/no / an interpretation-free claim confirms it). *Design
+  obligation:* each package MUST state acceptance as an observable pass/fail claim with pre-named
+  evidence.
+- **SOP-CONTRACT-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a plan whose gates read
+  as strict. When a cosmetically-conformant plan supplies vague or placeholder acceptance ("run the
+  tests", `<path>`). Then it satisfies the gate's words without its intent. *Failure oracle:* an
+  acceptance line that a plan can satisfy by relabeling, or a placeholder token in a runnable gate.
+  *Observable discrimination:* the reader tries to pass the gate cosmetically; a real gate resists,
+  a decorative one yields. *Evidence tuple:* (attempt a cosmetic pass / inspect for a placeholder or
+  relabel / a cosmetic pass is the gap). *Design obligation:* the plan MUST make a cosmetically
+  conformant draft fail its acceptance gates.
+**Checklist IDs:** `SOP-CONTRACT-CHECK-*`
+
+### SOP-FORECAST — the plan is a forecast with observable signposts, named responses, and honest estimates
+**Primary category:** 6 `Failure / recovery / operations` — the defining discrimination is whether
+re-planning is controlled by observable triggers. **Secondary tags:** 5 (estimate economics).
+**Primary perspective:** Risk.
+**Source:** SOP § Rules (a plan is a forecast; pair every assumption with a signpost and a named
+response; estimate from reference classes) + SOP § Procedure P6–P7.
+**Situation / actor / outcome:** the leader records the elaboration horizon and the load-bearing
+assumptions; the outcome is each assumption paired with an observable signpost and a named
+continue / revise / stop / escalate response, and each estimate grounded in a reference class or
+marked low-confidence.
+**Triggered minimums:** counterfactual **triggered** (every load-bearing assumption); adversarial
+**triggered** (a judgment-only trigger); boundary `n/a`; failure/recovery **triggered** (re-plan as
+the recovery path); change/regression `n/a`.
+**Cases:**
+- **SOP-FORECAST-CASE-01 (Positive / Good; coverage-role {positive, failure/recovery}).** Given a
+  load-bearing assumption. When its trigger is read. Then it names an observable signpost and a
+  continue / revise / stop / escalate response. *Failure oracle:* an assumption with no observable
+  signpost. *Observable discrimination:* a controlled forecast changes at explicit triggers; an
+  uncontrolled one drifts. *Evidence tuple:* (read each assumption / check for a signpost + response
+  / a named observable trigger confirms it). *Design obligation:* each load-bearing assumption MUST
+  carry an observable signpost and a named response.
+- **SOP-FORECAST-CASE-02 (Adversarial; coverage-role {adversarial}).** Given the re-plan triggers.
+  When one is written as "re-plan if needed" or another judgment-only trigger dressed up as control.
+  Then re-planning is uncontrollable because the trigger is not observable. *Failure oracle:* a
+  trigger with no named signpost / threshold. *Observable discrimination:* the reader tries to fire
+  the trigger from an observation — a judgment-only trigger has no observable to fire on. *Evidence
+  tuple:* (grep for judgment-only trigger phrasings / check each for a threshold / a bare "if needed"
+  is the defect). *Design obligation:* the plan MUST NOT rely on a judgment-only re-plan trigger.
+- **SOP-FORECAST-CASE-03 (Counterfactual; coverage-role {counterfactual}).** Given a load-bearing
+  assumption the plan depends on. When the assumption is inverted (assume it is false). Then the plan
+  names a disconfirmation response — a signpost that would reveal the assumption is wrong and the
+  re-plan action to take. *Failure oracle:* a load-bearing assumption with no named disconfirmation
+  response. *Observable discrimination:* invert each premise and check for a named response; a plan
+  that assumes-and-forgets has none. *Evidence tuple:* (list load-bearing assumptions / invert each /
+  a missing disconfirmation response is the defect). *Design obligation:* every load-bearing
+  assumption MUST carry a named disconfirmation response for the case it is wrong.
+**Checklist IDs:** `SOP-FORECAST-CHECK-*`
+
+### SOP-REVERSIBILITY — rollback boundaries are clear and high-blast changes are isolated
+**Primary category:** 6 `Failure / recovery / operations` — the defining discrimination is whether a
+failed or paused plan leaves a coherent state. **Secondary tags:** 9 (planned change events).
+**Primary perspective:** Risk. **Secondary perspective:** Structure.
+**Source:** SOP § Rules (a work package is completable and verifiable as one unit) + WF § Operating
+principles (stay in scope); the D7 reversibility contract.
+**Situation / actor / outcome:** the plan may fail a task mid-run or pause between tasks; the
+outcome is each task independently revertible, every inter-task pause a coherent intermediate
+state, and each high-blast change (migration / dependency upgrade / public-interface change) an
+isolated task with a go/no-go step.
+**Triggered minimums:** boundary **triggered** (the stop-after-task-N snapshot); failure/recovery
+**triggered** (revert on failure, exercised by the positive discrimination in CASE-01); adversarial
+**triggered** (a high-blast change bundled with ordinary work); change/regression `n/a: high-blast
+change isolation is exercised by the adversarial case, with no separate before/after version
+comparison`; counterfactual `n/a`.
+**Cases:**
+- **SOP-REVERSIBILITY-CASE-01 (Positive / Good; coverage-role {positive}).** Given the task
+  sequence. When a failure is injected between two tasks. Then the project is left in a coherent,
+  revertible state (an atomic commit per task or a concrete `rollback:` step). *Failure oracle:* a
+  failed task that cannot be reverted without unwinding unrelated work. *Observable discrimination:*
+  a well-bounded plan reverts one task cleanly; a coupled one drags in siblings. *Evidence tuple:*
+  (read the commit boundary per task / test a single-task revert / a clean independent revert
+  confirms it). *Design obligation:* each task MUST be independently revertible.
+- **SOP-REVERSIBILITY-CASE-02 (Boundary; coverage-role {boundary}).** Given the plan paused at the
+  exact stop-after-task-N snapshot. When the intermediate state is inspected at that precise
+  inter-task boundary. Then it is a valid, coherent state. *Failure oracle:* a stop-after-N snapshot
+  that is not a valid state. *Observable discrimination:* the check sits at the exact inter-task
+  boundary (after task N, before task N+1), not merely near it. *Evidence tuple:* (enumerate each
+  inter-task snapshot / test validity at each boundary / an incoherent snapshot is the defect).
+  *Design obligation:* every inter-task pause MUST leave a coherent, recoverable state.
+- **SOP-REVERSIBILITY-CASE-03 (Adversarial; coverage-role {adversarial}).** Given a high-blast task
+  (migration / dependency upgrade / public-interface change). When it is bundled with ordinary work
+  and carries no go/no-go gate. Then a large blast radius rides in unguarded. *Failure oracle:* a
+  high-blast change sharing a task with unrelated ordinary work. *Observable discrimination:* the
+  reader isolates the high-blast change; a good plan already isolated it with a gate. *Evidence
+  tuple:* (scan tasks for a high-blast change bundled with other work / check for a go/no-go step / a
+  bundled ungated change is the risk). *Design obligation:* the plan MUST isolate each high-blast
+  change into its own task with an explicit go/no-go step.
+**Checklist IDs:** `SOP-REVERSIBILITY-CHECK-*`
+
+### SOP-PERF — perf-sensitive work is isolated with measurement, and plan-time cost is bounded
+**Primary category:** 5 `Quality attributes / resource economics` — the defining discrimination is a
+latency / capacity / cost bound. **Secondary tags:** 6 (external-call failure handling). **Primary
+perspective:** Performance. **Secondary perspective:** Risk.
+**Source:** SOP § Rules (ground estimates in comparable work) + the evaluation Coverage Ownership
+Matrix (Cost / Error-budget).
+**Situation / actor / outcome:** some tasks touch Ideation performance budgets or introduce
+external calls; the outcome is perf-sensitive changes isolated with measurement-based `verifies:`,
+external-call tasks naming batching / caching / failure handling, and plan-time cost bounded.
+**Triggered minimums:** adversarial **triggered** (hidden per-item external call); boundary `n/a`;
+failure/recovery **triggered** (slow / failed external call); change/regression `n/a`;
+counterfactual `n/a`.
+**Cases:**
+- **SOP-PERF-CASE-01 (Positive / Good; coverage-role {positive, failure/recovery}).** Given a task
+  touching an Ideation perf budget. When its `verifies:` is read. Then it carries an explicit
+  measurement step, is isolated from non-perf work, and (for an external call) names batching /
+  caching and its slow-or-failed behaviour with any inherited default cited. *Failure oracle:* a
+  perf budget with no measurement step in any task's `verifies:`. *Observable discrimination:* a
+  measured plan can fail a budget; an unmeasured one leaves the budget as fiction. *Evidence tuple:*
+  (map each Ideation budget to a task's `verifies:` / check for a measurement step / an unmeasured
+  budget is the gap). *Design obligation:* every Ideation perf budget MUST have a measurement step in
+  some task's acceptance.
+- **SOP-PERF-CASE-02 (Adversarial; coverage-role {adversarial}).** Given twenty tasks each running a
+  paid evaluation during verification. When no per-task or plan-total cost ceiling is stated. Then
+  cost multiplies twenty-fold on a path no single task flagged. *Failure oracle:* a plan-total cost
+  with no ceiling where multiple tasks each issue a paid call. *Observable discrimination:* the
+  reader sums the plan-wide call count rather than judging each task in isolation. *Evidence tuple:*
+  (count tasks issuing paid calls / multiply by per-task cost / an unbounded product is the risk).
+  *Design obligation:* the plan MUST bound cumulative cost, not only per-task cost.
+**Checklist IDs:** `SOP-PERF-CHECK-*`
+
+### SOP-CLARITY — the plan document is readable, placeholder-free, and scannable
+**Primary category:** 10 `Evidence / traceability / clarity` — the defining discrimination is
+whether a cold reader can follow the plan. **Secondary tags:** 8 (accessibility of the document
+structure). **Primary perspective:** Consistency. **Secondary perspectives:** Aesthetics, Usage.
+**Source:** WF § required-sections template + SOP § Procedure P8 self-review + the evaluation
+Coverage Ownership Matrix (Accessibility).
+**Situation / actor / outcome:** the leader writes the draft to the required-sections template; the
+outcome is imperative task titles, no duplicate IDs, template-conformant headings, a uniform field
+schema, zero placeholders, and a heading structure a fresh executor can skim.
+**Triggered minimums:** adversarial **triggered** (an effectively-empty task that looks complete);
+boundary `n/a`; failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **SOP-CLARITY-CASE-01 (Positive / Good; coverage-role {positive}).** Given the draft. When its
+  titles, IDs, headings, and fields are read. Then titles are imperative and specific, IDs are
+  unique, headings match the template, the field set is uniform across tasks, and the structure is
+  skimmable. *Failure oracle:* a `TBD` / `TODO` / `???` in any field, a duplicate task ID, or a
+  divergent field schema. *Observable discrimination:* a clean document reads top-to-bottom; a
+  drifting one forces a re-scan. *Evidence tuple:* (grep placeholder strings + diff field names
+  across tasks / mechanical scan / a placeholder or schema drift is the defect). *Design
+  obligation:* the plan document MUST be placeholder-free with a uniform, template-conformant
+  structure.
+- **SOP-CLARITY-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a plan that looks
+  complete. When a task turns out to be only a "(see Ideation)" cross-reference with no `outputs:` /
+  `verifies:`. Then an effectively-empty task passes as real. *Failure oracle:* a task whose body is
+  a bare cross-reference with empty `outputs:` / `verifies:`. *Observable discrimination:* the reader
+  opens each task rather than trusting the count; an empty one has no content. *Evidence tuple:*
+  (read each task's `outputs:` / `verifies:` / flag any empty pair / an empty task is the defect).
+  *Design obligation:* the plan MUST NOT carry an effectively-empty task behind a full-looking list.
+**Checklist IDs:** `SOP-CLARITY-CHECK-*`
 
 ---
 
-## Risk
-_Lens (see `evaluation.md`):_ what breaks if **the plan itself** is wrong? Order risk, dependency risk, integration risk, rollback granularity, cross-task cost and continuity.
+## WF-* — gobbi workflow-compliance families
 
-### PLAN-RISK-SCENARIO-01 — Rollback boundary and interruption-safety are clear
-**Category:** golden-path
-**Situation:** a mid-plan task may fail verification, or the plan may pause partway.
-**Good:** each task can be reverted independently (an atomic commit per task, or a `rollback:` field with concrete steps); a failure between tasks leaves the project in a coherent state; pausing after any task N leaves a valid intermediate state.
-**Bad / failure:** a failed task cannot be reverted without unwinding unrelated work.
-**Adversarial:** pausing after some task N leaves the project in an incoherent intermediate state — the "stop-after-task-N" snapshot is not a valid state.
-**Checklist IDs:** `PLAN-RISK-SCENARIO-01-CHECK-*`
+### WF-TRACE — every task anchors to Ideation and the plan stays inside the Scope Contract
+**Primary category:** 1 `Purpose / outcomes / scope` — the defining discrimination is whether each
+task is authorized by the locked idea. **Secondary tags:** 10 (trace resolvability). **Primary
+perspective:** Project.
+**Source:** WF § Operating principles (anchor every task; stay in scope) + WF
+[§ USER CHALLENGE](../orchestration/workflow/planning.md#user-challenge).
+**Situation / actor / outcome:** the leader anchors each task to an Ideation scenario / checklist
+item; the outcome is every task carrying a resolving `traces-to:` and no task introducing a
+requirement absent from Ideation.
+**Triggered minimums:** adversarial **triggered** (scope creep through a task spec); boundary `n/a`;
+failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **WF-TRACE-CASE-01 (Positive / Good; coverage-role {positive}).** Given the task list. When each
+  `traces-to:` is grepped against the Ideation artifact. Then every reference resolves to an item
+  that exists verbatim and no task is anchorless. *Failure oracle:* a task with no `traces-to:`, or a
+  `traces-to:` with no matching Ideation item. *Observable discrimination:* an anchored plan resolves
+  every trace; a drifting one leaves a dangling or missing anchor. *Evidence tuple:* (grep each
+  `traces-to:` against Ideation / exact-match check / a non-resolving trace is the defect). *Design
+  obligation:* every task MUST anchor to a resolving Ideation item.
+- **WF-TRACE-CASE-02 (Adversarial; coverage-role {adversarial}).** Given the Scope Contract. When a
+  task introduces a requirement not present in Ideation through its own spec. Then scope expands
+  without a user decision. *Failure oracle:* a task requirement with no Scope-Contract or Ideation
+  source. *Observable discrimination:* the reader checks each task requirement against the contract;
+  a smuggled one has no source. *Evidence tuple:* (diff task requirements vs Scope Contract / find
+  the unsourced requirement / an unsourced requirement is the creep). *Design obligation:* the plan
+  MUST NOT expand scope through a task spec; out-of-scope items route to backlog.
+**Checklist IDs:** `WF-TRACE-CHECK-*`
 
-### PLAN-RISK-SCENARIO-02 — Shared-infra, public-interface, and high-blast tasks are isolated and gated
-**Category:** failure-mode
-**Situation:** some tasks touch shared infrastructure, public interfaces, or high-blast-radius changes.
-**Good:** tasks touching CI / build / config are sequenced first so later tasks build on a known-good baseline, and a failure there does not poison parallel work; tasks touching public interfaces are isolated and carry explicit consumer-side migration tasks with no silent widening of a prior task's outputs; migrations, public-interface changes, and dependency upgrades are isolated tasks, each with an explicit go/no-go decision step.
-**Bad / failure:** a shared-infra or public-interface change is bundled with ordinary work.
-**Adversarial:** a high-blast task (a migration, a public-interface change, or a dependency upgrade) is bundled with ordinary work and carries no go/no-go gate.
-**Checklist IDs:** `PLAN-RISK-SCENARIO-02-CHECK-*`
+### WF-SCHEMA — every task is the canonical YAML record and states what, not how
+**Primary category:** 4 `Interfaces / dependencies / structure` — the defining discrimination is
+the task record's contract shape. **Secondary tags:** 10 (schema uniformity). **Primary
+perspective:** Structure.
+**Source:** WF § Operating principles (the plan tells specialists what, not how; every task is
+`{id, what, traces-to, requires, files, inputs, outputs, verifies}`).
+**Situation / actor / outcome:** the leader records each task in the canonical schema; the outcome
+is every task carrying the full field set with no embedded implementation code or step-by-step
+recipe.
+**Triggered minimums:** adversarial **triggered** (a task prescribes the diff); boundary `n/a`;
+failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **WF-SCHEMA-CASE-01 (Positive / Good; coverage-role {positive}).** Given a task record. When its
+  fields are read. Then it carries `{id, what, traces-to, requires, files, inputs, outputs,
+  verifies}` and describes what to achieve, not how to code it. *Failure oracle:* a missing schema
+  field, or embedded implementation code. *Observable discrimination:* a schema-conformant task
+  leaves the how to the executor; a leaky one prescribes it. *Evidence tuple:* (check each task's
+  field set / scan `what:` for embedded code / a missing field or embedded recipe is the defect).
+  *Design obligation:* every task MUST be the canonical schema record without an embedded recipe.
+- **WF-SCHEMA-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a task. When its `what:`
+  embeds the exact diff or a step-by-step command recipe. Then it robs the executor of judgment
+  (imperative-over-declarative). *Failure oracle:* a `what:` field containing a literal diff or a
+  numbered command recipe. *Observable discrimination:* the reader distinguishes a stated goal from a
+  prescribed mechanism. *Evidence tuple:* (read `what:` for prescribed mechanism / judge
+  goal-vs-recipe / an embedded recipe is the defect). *Design obligation:* the plan MUST state the
+  verifiable goal, not the mechanism.
+**Checklist IDs:** `WF-SCHEMA-CHECK-*`
 
-### PLAN-RISK-SCENARIO-03 — Cumulative scope matches Ideation and no task widens a prior task's outputs
-**Category:** failure-mode
-**Situation:** the plan's cumulative file-touch and per-task outputs must stay bounded.
-**Good:** the cumulative files-touched across the plan is comparable to the Ideation Scope Contract's stated scope, and a scope explosion (for example roughly three times the expected file count) is flagged; output fields are checked for monotonic addition against prior task definitions.
-**Bad / failure:** the plan's total file-touch far exceeds Ideation's stated scope with no explanation.
-**Adversarial:** a task silently widens a prior task's scope by adding to its outputs — "task 2 produces X and Y" where task 1 already promised X — so the same output is claimed twice with drift.
-**Checklist IDs:** `PLAN-RISK-SCENARIO-03-CHECK-*`
+### WF-ASSIGN — agent type, skills, and required mistakes fit the work and are justified
+**Primary category:** 2 `Actors / stakeholders / use-context` — the defining discrimination is who
+executes and with what loaded context. **Secondary tags:** 4 (capability structure). **Primary
+perspective:** Usage. **Secondary perspective:** Project.
+**Source:** WF [§ Agent assignment sub-step](../orchestration/workflow/planning.md#discussion-phase)
++ WF § Constraints (list required skills and required mistakes; justify any non-default).
+**Situation / actor / outcome:** the leader assigns each task an agent type, required skills, and
+required mistakes; the outcome is each assignment justified, `principles` always present, and the
+skill / mistake set matching the files the task touches.
+**Triggered minimums:** adversarial **triggered** (an under-capacity agent for a large task);
+boundary `n/a`; failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **WF-ASSIGN-CASE-01 (Positive / Good; coverage-role {positive}).** Given a task. When its agent
+  assignment is read. Then the agent type is justified by the work's nature, `principles` plus the
+  domain skills for the files touched are listed, and the domain-filtered required mistakes are
+  named. *Failure oracle:* a non-default agent type with no justification, or a task touching a
+  domain whose skill / mistakes are unlisted. *Observable discrimination:* a fitted assignment names
+  why; a mismatched one is asserted. *Evidence tuple:* (read each assignment vs the files touched /
+  check the skill / mistake list / a missing skill or unjustified type is the defect). *Design
+  obligation:* every task MUST carry a justified agent type with the required skills and mistakes for
+  its domain.
+- **WF-ASSIGN-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a very large task. When it
+  is assigned to a smaller-tier agent whose context window or tool surface cannot hold the work.
+  Then the assignment reads plausible but the agent cannot complete it. *Failure oracle:* an
+  artifact-size or tool need exceeding the assigned agent's budget. *Observable discrimination:* the
+  reader sizes the work against the agent's budget rather than trusting the label. *Evidence tuple:*
+  (compare task size to the agent's context / tool surface / an over-budget assignment is the
+  defect). *Design obligation:* the plan MUST match each agent's capability to its task's size and
+  tool needs.
+**Checklist IDs:** `WF-ASSIGN-CHECK-*`
 
-### PLAN-RISK-SCENARIO-04 — Cost, privacy, observability, and supply-chain continuity across tasks
-**Category:** coverage-matrix
-**Situation:** the plan spans many tasks that may each carry cost, sensitive data, or new dependencies.
-**Good:** tasks that issue paid-service or cloud calls during verification name their token / cost ceilings and no silent cost multiplication is left unbounded (Coverage: Cost); tasks touching PII or regulated data carry that label and the Ideation data-flow boundaries are preserved across the decomposition (Coverage: Privacy); the plan is observable mid-execution — a stuck task is identifiable from session telemetry — and long-running tasks emit intermediate signals (Coverage: Observability); tasks introducing new dependencies are flagged with a `dep-impact:` field and dependency-manifest changes are sequenced first (Coverage: Supply-chain).
-**Bad / failure:** a paid-service task has no cost ceiling, or a PII-touching task is unlabeled.
-**Adversarial:** twenty tasks each run a paid evaluation during verification with no per-task or plan-total cost ceiling, so cost multiplies twenty-fold on a path no single task flagged.
-**Checklist IDs:** `PLAN-RISK-SCENARIO-04-CHECK-*`
+### WF-FRESH-EXEC — a fresh executor can run any task from the task alone
+**Primary category:** 2 `Actors / stakeholders / use-context` — the defining discrimination is the
+fresh-executor use-context. **Secondary tags:** 10 (self-contained clarity). **Primary
+perspective:** Usage.
+**Source:** WF § WORK discipline (anchor everything; each task self-contained) + WF § Operating
+principles (no `Similar to Task N`).
+**Situation / actor / outcome:** each task is spawned to a fresh subagent whose only context is its
+own `inputs:` / `outputs:` / `verifies:`; the outcome is every task executable without the parent
+session, with concrete runnable verification and no surprise prerequisite.
+**Triggered minimums:** adversarial **triggered** (a placeholder verification / a surprise
+dependency); boundary `n/a`; failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **WF-FRESH-EXEC-CASE-01 (Positive / Good; coverage-role {positive}).** Given one task in
+  isolation. When it is read as a fresh executor would. Then its file paths, `inputs:`, `outputs:`,
+  and runnable `verifies:` are enough to execute it, and every prerequisite is named in `requires:`
+  or `inputs:`. *Failure oracle:* a task that cannot be executed from its own spec. *Observable
+  discrimination:* a self-contained task runs alone; a dependent one stalls without parent context.
+  *Evidence tuple:* (read one task in isolation / attempt to derive the full action / a missing
+  input is the gap). *Design obligation:* every task MUST be executable from its own spec alone.
+- **WF-FRESH-EXEC-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a task with a
+  verification command. When the command is a placeholder ("run the tests", `<your test path>`) or
+  the task has a prerequisite named in neither `requires:` nor `inputs:`. Then a fresh executor
+  cannot run it as-is or discovers the dependency only at runtime. *Failure oracle:* a non-runnable
+  `verifies:` token, or a prerequisite absent from `requires:`/`inputs:`. *Observable
+  discrimination:* the reader tries to run the gate verbatim and to trace every dependency; a
+  placeholder or a surprise dependency breaks it. *Evidence tuple:* (attempt the `verifies:` as-is +
+  trace dependencies / find the placeholder or unnamed prerequisite / either is the defect). *Design
+  obligation:* the plan MUST NOT leave a placeholder verification or an unnamed prerequisite.
+**Checklist IDs:** `WF-FRESH-EXEC-CHECK-*`
+
+### WF-GOVERNANCE — authority, cross-task governance, and no test-writing task
+**Primary category:** 7 `Trust / harm / governance` — the defining discrimination is authority and
+cross-task governance of cost / privacy / dependencies. **Secondary tags:** 5 (cost), 6
+(observability). **Primary perspective:** Risk. **Secondary perspective:** Consistency.
+**Source:** WF [§ USER CHALLENGE](../orchestration/workflow/planning.md#user-challenge) + WF
+§ Constraints (no test-writing task; disagree when you disagree) + the evaluation Coverage
+Ownership Matrix (Privacy / Licensing / Supply-chain / Observability / Cost).
+**Situation / actor / outcome:** the plan spans many tasks that may each carry cost, sensitive
+data, or new dependencies, and the leader may disagree with the user's Ideation direction; the
+outcome is USER CHALLENGE used for substantive disagreement, no task that authors tests, and the
+cross-cutting governance concerns carried across the decomposition.
+**Triggered minimums:** adversarial **triggered** (a compromise silently planned instead of
+escalated); counterfactual `n/a`; boundary `n/a`; failure/recovery `n/a`; change/regression `n/a`.
+**Cases:**
+- **WF-GOVERNANCE-CASE-01 (Positive / Good; coverage-role {positive}).** Given the plan. When its
+  governance surfaces are read. Then a substantive disagreement with the user's direction is raised
+  through the USER CHALLENGE card (not silently compromised); no task authors tests; PII / data-flow
+  boundaries and license / dependency surfaces are labelled and manifest changes sequenced first;
+  and the plan is observable mid-execution. *Failure oracle:* a PII-touching or new-dependency task
+  with no label, or a task that authors a test framework. *Observable discrimination:* a governed
+  plan carries each label and escalates disagreement; an ungoverned one omits them. *Evidence tuple:*
+  (scan tasks for PII / dependency / test-authoring / check labels and the challenge log / a missing
+  label or a test task is the defect). *Design obligation:* the plan MUST carry the cross-task
+  governance labels and MUST NOT slice a test-writing task.
+- **WF-GOVERNANCE-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a leader whose
+  analysis contradicts the user's stated Ideation direction. When the leader silently plans a
+  compromise instead of escalating. Then a substantive disagreement is buried. *Failure oracle:* a
+  plan decision that departs from the locked user direction with no USER CHALLENGE record.
+  *Observable discrimination:* the reader diffs the plan's direction against the locked Ideation
+  direction; a silent compromise has no challenge record. *Evidence tuple:* (diff plan direction vs
+  locked direction / check the discussion log for a challenge / a silent departure is the defect).
+  *Design obligation:* the plan MUST escalate a substantive disagreement through USER CHALLENGE, not
+  bury it in a compromise.
+**Checklist IDs:** `WF-GOVERNANCE-CHECK-*`
+
+---
+
+## SEAM-* — SOP↔WF boundary families
+
+### SEAM-TRACES — one gobbi `traces-to` per package realizes the generic anchor obligation
+**Primary category:** 10 `Evidence / traceability / clarity` — the defining discrimination is
+whether the generic "anchor every package" obligation is realized by the gobbi `traces-to:` field.
+**Secondary tags:** 1 (scope), 3 (the trace as data). **Primary perspective:** Consistency.
+**Secondary perspective:** Aesthetics.
+**Source:** SOP § Rules (every package traces to an approved outcome) ↔ WF § Operating principles
+(anchor every task); D3 seam minimum (one gobbi `traces-to` per package).
+**Situation / actor / outcome:** the generic craft says anchor every package; gobbi realizes it as
+the `traces-to:` field; the outcome is exactly one resolving `traces-to:` per package, with dangling
+traces detected.
+**Triggered minimums:** adversarial **triggered** (a dangling trace passes as an anchor); boundary
+`n/a`; failure/recovery `n/a`; change/regression `n/a`; counterfactual `n/a`.
+**Cases:**
+- **SEAM-TRACES-CASE-01 (Positive / Good; coverage-role {positive}).** Given a package. When its
+  generic anchor obligation is mapped to the gobbi schema. Then it is realized by exactly one
+  resolving `traces-to:` field. *Failure oracle:* a package whose generic anchor has no `traces-to:`
+  realization. *Observable discrimination:* a consistent seam maps every generic anchor to a schema
+  field; a broken one leaves the obligation unrepresented. *Evidence tuple:* (map generic
+  anchor-obligation to `traces-to:` / check one-to-one / an unrealized anchor is the gap). *Design
+  obligation:* every package's generic anchor MUST be realized by exactly one gobbi `traces-to:`.
+- **SEAM-TRACES-CASE-02 (Adversarial; coverage-role {adversarial}).** Given a `traces-to:` present
+  in the schema. When it references an Ideation item that does not exist. Then a dangling trace
+  passes as a satisfied anchor. *Failure oracle:* a `traces-to:` with no matching Ideation item.
+  *Observable discrimination:* the reader resolves the trace rather than counting its presence.
+  *Evidence tuple:* (grep `traces-to:` against Ideation / resolution check / a dangling trace is the
+  defect). *Design obligation:* the seam MUST detect a dangling `traces-to:`, not accept its mere
+  presence.
+**Checklist IDs:** `SEAM-TRACES-CHECK-*`
+
+### SEAM-SCHEMA-FIT — every generic contract field is representable in the task schema, and hand-offs match
+**Primary category:** 4 `Interfaces / dependencies / structure` — the defining discrimination is
+whether the generic contract fields fit the gobbi task schema without loss. **Secondary tags:** 3
+(hand-off data), 10 (representation clarity). **Primary perspective:** Structure. **Secondary
+perspective:** Consistency.
+**Source:** SOP § Rules (complete package contract; `requires:` graph; outputs match downstream
+inputs) ↔ WF § Tasks schema; D3 seam minimum (every generic field representable in the task schema;
+`requires:` edges match the rendered DAG).
+**Situation / actor / outcome:** the generic contract fields (outcome / boundary / inputs / outputs
+/ assumptions / acceptance / evidence / estimate) must each map onto the gobbi schema (`what` /
+`files` / `inputs` / `outputs` / `verifies` / `requires` / `traces-to`); the outcome is no generic
+field silently dropped, `requires:` edges matching the rendered dependency table, and `outputs:` →
+`inputs:` name-matching across hand-offs.
+**Triggered minimums:** adversarial **triggered** (a silent field rename across a hand-off);
+boundary `n/a`; failure/recovery `n/a`; change/regression `n/a: the rename is exercised as the
+adversarial probe, with no separate before/after version case`; counterfactual `n/a`.
+**Cases:**
+- **SEAM-SCHEMA-FIT-CASE-01 (Positive / Good; coverage-role {positive}).** Given the generic
+  contract fields and the gobbi task schema. When each generic field is mapped to a schema field.
+  Then every generic field has a schema home, the `requires:` edges reproduce the dependency table,
+  and each task's `outputs:` literally name-match the consuming task's `inputs:`. *Failure oracle:* a
+  generic contract field (for example the estimate or the assumptions) with no schema home. *Observable
+  discrimination:* a fitted seam represents every field; a lossy one drops one. *Evidence tuple:*
+  (map generic fields to schema fields + diff `requires:` vs the dependency table / check coverage
+  and name-match / a dropped field or a mismatched edge is the defect). *Design obligation:* every
+  generic contract field MUST be representable in the task schema, and `requires:` MUST match the
+  rendered DAG.
+- **SEAM-SCHEMA-FIT-CASE-02 (Adversarial; coverage-role {adversarial}).**
+  Given a hand-off where task N outputs `schema`. When task N+1 inputs `migrated-schema` under a
+  silent rename. Then the match cannot be verified mechanically. *Failure oracle:* an `outputs:`
+  name with no literal `inputs:` match downstream. *Observable discrimination:* the reader compares
+  the literal field names before and after the rename; a paraphrase breaks the match. *Evidence
+  tuple:* (diff `outputs:` vs downstream `inputs:` / literal name comparison / a paraphrased hand-off
+  is the defect). *Design obligation:* the seam MUST force a literal `outputs:` → `inputs:`
+  name-match across every hand-off.
+**Checklist IDs:** `SEAM-SCHEMA-FIT-CHECK-*`
+
+### SEAM-TRIGGER-MAP — assumption signposts map to the gobbi re-plan responses
+**Primary category:** 6 `Failure / recovery / operations` — the defining discrimination is whether
+the generic signpost responses map onto the gobbi re-plan machinery. **Secondary tags:** 9
+(re-entry as a lifecycle change). **Primary perspective:** Risk. **Secondary perspective:**
+Consistency.
+**Source:** SOP § Rules (pair every assumption with a signpost and a named response) ↔ WF
+[§ USER CHALLENGE](../orchestration/workflow/planning.md#user-challenge) and the ITER/EXIT
+responses; D3 seam minimum (assumption / signpost triggers map to REVISE / USER-CHALLENGE /
+re-entry).
+**Situation / actor / outcome:** the generic craft says each assumption carries a
+continue / revise / stop / escalate response; gobbi realizes those as REVISE / USER CHALLENGE /
+re-enter-Ideation; the outcome is every load-bearing assumption's signpost routed to a concrete
+gobbi response.
+**Triggered minimums:** adversarial **triggered** (a signpost with no gobbi response route);
+failure/recovery **triggered** (re-plan as recovery, exercised by the positive discrimination in
+CASE-01); boundary `n/a`; change/regression `n/a`; counterfactual `n/a: assumption inversion is
+owned by SOP-FORECAST; this seam family judges the signpost→response mapping, not the assumption`.
+**Cases:**
+- **SEAM-TRIGGER-MAP-CASE-01 (Positive / Good; coverage-role {positive, failure/recovery}).** Given
+  a load-bearing assumption with an observable signpost. When its response is mapped to the gobbi
+  machinery. Then the signpost routes to a concrete REVISE, USER CHALLENGE, or re-enter-Ideation
+  response. *Failure oracle:* a signpost with a generic response but no gobbi route. *Observable
+  discrimination:* a mapped seam names the gobbi response; an unmapped one leaves the generic
+  response abstract. *Evidence tuple:* (map each signpost's generic response to a gobbi response /
+  check for a concrete route / an unrouted signpost is the gap). *Design obligation:* every
+  assumption signpost MUST map to a concrete gobbi re-plan response.
+- **SEAM-TRIGGER-MAP-CASE-02 (Adversarial; coverage-role {adversarial}).** Given the assumption
+  triggers. When one carries an observable signpost but no gobbi response route. Then a tripped
+  signpost has no defined effect. *Failure oracle:* a signpost present with no REVISE / USER-CHALLENGE
+  / re-entry mapping. *Observable discrimination:* the reader walks each signpost to its gobbi route;
+  an unrouted signpost dead-ends. *Evidence tuple:* (enumerate signposts / check each for a gobbi
+  route / an unrouted signpost is the defect). *Design obligation:* the seam MUST NOT leave a
+  signpost without a gobbi response route.
+**Checklist IDs:** `SEAM-TRIGGER-MAP-CHECK-*`
+
+---
+
+## Traceability and gaps
+
+### Source → set omission sweep (SR-14)
+
+Every load-bearing source obligation maps to ≥1 family; the reverse sweep confirms no family lacks a
+source. No uncovered obligation remains open.
+
+| Source obligation | Family |
+|---|---|
+| SOP: coverage without gaps or double ownership | SOP-COVERAGE |
+| SOP: slice by observable outcome; work-package stop rule | SOP-SLICE |
+| SOP: dependencies determine order; genuine parallel lanes | SOP-DAG |
+| SOP: complete contract; pre-anchored objective acceptance | SOP-CONTRACT |
+| SOP: a plan is a forecast; signpost + named response; reference-class estimate | SOP-FORECAST |
+| SOP: package completable/verifiable as one unit (rollback) + D7 reversibility | SOP-REVERSIBILITY |
+| SOP: reference-class estimate economics + Coverage Matrix (Cost / Error-budget) | SOP-PERF |
+| SOP P8 self-review + WF template + Coverage Matrix (Accessibility) | SOP-CLARITY |
+| WF: anchor every task; stay in scope | WF-TRACE |
+| WF: canonical task schema; what-not-how | WF-SCHEMA |
+| WF: agent assignment; required skills + required mistakes | WF-ASSIGN |
+| WF: task self-contained for a fresh executor | WF-FRESH-EXEC |
+| WF: USER CHALLENGE; no test-writing task + Coverage Matrix (Privacy / Licensing / Supply-chain / Observability) | WF-GOVERNANCE |
+| D3 seam: one gobbi `traces-to` per package | SEAM-TRACES |
+| D3 seam: every generic field representable in the schema; `requires:` matches the DAG | SEAM-SCHEMA-FIT |
+| D3 seam: assumption signposts map to REVISE / USER-CHALLENGE / re-entry | SEAM-TRIGGER-MAP |
+
+Every family traces forward to ≥1 design obligation (each case names its obligation) and back to a
+source; the scenario→obligation and source→scenario links are orphan-swept both ways.
+
+### Coverage gaps and decisions
+
+- **i18n** — declared `not-applicable`: the plan is an internal English working document for a
+  single solo user; there is no locale, sort-order, or input-method variation to serve.
+- **Error budget** — covered by SOP-PERF only where a task touches a runtime SLO path;
+  `not-applicable` for pure-doc tasks with no runtime path.
+- No exploratory scenarios: every family traces to an approved obligation.
