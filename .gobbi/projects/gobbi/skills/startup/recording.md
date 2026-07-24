@@ -12,7 +12,7 @@ that obeys them.
 
 ## Contents
 
-- [1. Four-layer capture](#1-four-layer-capture)
+- [1. Five-layer capture](#1-five-layer-capture)
 - [2. Answer-ledger schema](#2-answer-ledger-schema)
 - [3. Startup session shape](#3-startup-session-shape)
 - [4. Topic → durable-output effects](#4-topic--durable-output-effects)
@@ -29,9 +29,9 @@ that obeys them.
 
 ---
 
-## 1. Four-layer capture
+## 1. Five-layer capture
 
-Keep four layers separate. Only the last is durable project reference.
+Keep five layers separate. Only the last is durable project reference.
 
 > **Level invariant — path determines authority.** This is the single owner of startup's two write
 > tiers; `SKILL.md` cites it. Two write tiers, one boundary:
@@ -52,13 +52,14 @@ Keep four layers separate. Only the last is durable project reference.
 > it to an approved memory destination (typed records at P6, living indexes at P7).
 
 ```
-raw conversation audit  →  structured answer ledger  →  synthesized staged docs  →  user-approved promoted reference
+raw conversation audit  →  structured answer ledger  →  confirmed phase-result readouts  →  synthesized staged docs  →  user-approved promoted reference
 ```
 
 | Layer | Level | Purpose | Durable? |
 |---|---|---|---|
 | **Raw discussion log** | record-level | Verbatim or near-verbatim audit of the manager–user conversation. | No. Never promoted. |
 | **Answer ledger** | record-level | Structured interpretation with evidence, status, decisions, affected outputs, and follow-ups visible (schema §2). | No. Never promoted. |
+| **Phase-result readouts** | record-level | Four per-phase synthesized readouts (Phase I–IV) that connect the phase's confirmed ledger claims, each with a source register and a SEPARATE user confirmation (contract below). | No. Never staged, never promoted. |
 | **Synthesized staged docs** | record-level | Atomic typed drafts, each stamped from its matching memory template, in session staging. | No. Session-local until promotion. |
 | **Promoted reference** | memory-level | The user-approved typed records and living indexes written by startup-close promotion (§9). | Yes. |
 
@@ -66,6 +67,80 @@ raw conversation audit  →  structured answer ledger  →  synthesized staged d
 record-level under `sessions/` (gitignored). A run abandoned at any point before promotion leaves ZERO
 partial durable state — no memory cleanup is needed. Only a mid-promotion failure needs the recovery path
 (§9 step 5).
+
+### The phase-result readout — record-level contract (the fifth layer)
+
+The **phase-result readout** is the record-level synthesis layer the five-layer table adds between the
+answer ledger / Level-1 checkpoints and the synthesized staged drafts. There is one readout per interview
+phase, written at that phase's close and separately confirmed by the user before the next phase starts.
+This section is the SINGLE OWNER of the readout's schema, body, confirmation, and cross-phase rules;
+[`SKILL.md`](SKILL.md) wires WHERE each phase closes and consumes the confirmed readouts at P4, and POINTS
+here for WHAT the document is — it never restates these field definitions (I8). `record-map.md` delegates
+the whole `startup/working/` interior to §3, so this new layer needs no `record-map.md` change.
+
+**Home and the four documents.** Each readout is `working/phase-results/{phase}.md` (§3) — four files, one
+per phase-close gate: `phase-i.md` (Phase I — Problem space, at the Topic 3 close), `phase-ii.md`
+(Phase II — Boundary, at the Topic 4 problem-before-solution premise gate), `phase-iii.md`
+(Phase III — Solution space, at the Topic 8 close), and `phase-iv.md` (Phase IV — Guardrails, at the
+Topic 11 close). The phase→topic partition and the phase names are owned by [`topics.md`](topics.md); the
+gate placement and the P4 consumption are wired in [`SKILL.md`](SKILL.md).
+
+**Frontmatter schema (record-level, lightweight — NOT memory frontmatter).** Exactly three fields; the full
+provenance lives in the body source register, not here. A readout is record-level and never promoted, so it
+carries NONE of the shared memory base fields (§10):
+
+| Field | Meaning |
+|---|---|
+| **phase identity** | Which phase this readout covers — `Phase I` … `Phase IV` + the phase name + its closing gate. Distinguishes the four documents and is the idempotency key regeneration and resume key off. |
+| **gate state** | The confirmation lifecycle: `draft` (written, not yet confirmed) / `confirmed` / `disagreed` (a correction cycle is open) / `stale` (invalidated by a later correction or a cross-phase reopen, awaiting regeneration). The next phase stays blocked unless this is `confirmed`. |
+| **confirmation_ref** | A marker resolving to the SEPARATE user agree/disagree exchange in `working/discussion-log.md` (below). Absent while `draft`. Confirmation is verifiable ONLY through this ref — never inferred. |
+
+**Body — a synthesized readout, never a raw-log copy.** The body is a cold-readable narrative that connects
+the claims made across the phase's topics into one account a zero-context reader can follow. It is NOT a
+verbatim or reordered copy of `discussion-log.md` or the ledger. It MUST:
+- connect claims ACROSS the phase's topics (not a per-answer transcript), and preserve each cited claim's
+  ledger `Status` and `Claim kind` (§2) so a `forecast` is never read as an `observed-fact`;
+- for **Phase II**, state the passed problem-before-solution premise-gate result (the premises confirmed at
+  the Topic 4 gate);
+- carry a **source register** — every readout claim resolves to its exact sources: the phase's Level-1
+  checkpoint markers plus the exact ledger `Answer ID`s, `{branch}.p{n}` probe IDs, and correction
+  (superseding) event IDs it rests on. Every source ID MUST resolve to a real event AND belong to THIS
+  phase; a source ID from another phase is a defect. The register is what makes the synthesis auditable back
+  to the ledger without copying it.
+
+**When and who — at phase close, from the COMPLETE phase event set.** Each readout is written at its phase
+close from the COMPLETE current-phase event set — every ledger event, checkpoint marker, probe, and
+correction the phase produced up to its gate (Phase II after the premise gate passes). A readout built from
+a partial event set is invalid.
+
+**Separate real confirmation (the confirmation teeth).** After the readout is written, the manager asks the
+user a SEPARATE agree/disagree question about THAT readout and records the response in
+`working/discussion-log.md`; `confirmation_ref` points to it. This confirmation is NEVER inferable from a
+Level-1 topic checkpoint, the premise-gate pass, silence, or a later approval of a downstream artifact —
+only an explicit agree/disagree response to the readout itself confirms it. A `confirmation_ref` that
+resolves to a topic checkpoint, the premise gate, silence, or a later approval FAILS the confirmation
+oracle. The next interview phase — and, after Phase IV, the P4 synthesis step — does not start until this
+readout's `gate state` is `confirmed`.
+
+**On disagreement — correct the ledger and regenerate, never patch prose.** When the user disagrees: leave
+the draft in place (do not delete it); append the correction as new superseding ledger event(s) (§2, never
+an in-place edit); reopen the EARLIEST owning Level-2 branch / checkpoint the correction touches (not merely
+the phase where it surfaced); regenerate the readout idempotently from the current event set keyed by
+`Answer ID` (same events → the same document, no drift, no double-count); invalidate every DOWNSTREAM
+readout that rested on the corrected claim (set its `gate state` to `stale`); then re-ask for a fresh
+separate confirmation. Patching the stale readout prose instead of regenerating from the corrected ledger is
+a contract violation.
+
+**Resume re-derives validity, never trusts a stored flag.** On resume (§12) a session re-derives each
+readout's validity from the CURRENT ledger: a readout whose cited source events are all still current and
+whose `gate state` is `confirmed` stays valid; a readout with a superseded/corrected source event, or one
+downstream of a reopened phase, is `stale` and is regenerated + re-confirmed before its phase gate re-closes.
+
+**Never staged, never promoted.** The four readouts are record-level working files (§1, §3). They are NEVER
+copied into `staging/`, NEVER entered into the §7 promotion manifest, and NEVER promoted by §9 startup-close
+(the same-session Wrap-up inventory already excludes the whole `startup/` tree — §3). They are P4 synthesis
+INPUTS consumed through their source registers, not promotable records; a readout copied into staging or a
+promotion manifest is a record/memory-boundary violation.
 
 ## 2. Answer-ledger schema
 
@@ -134,6 +209,7 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 ├── working/
 │   ├── discussion-log.md         # raw audit
 │   ├── answer-ledger.md          # append-only ledger (schema §2) — carries the resumable checkpoint markers
+│   ├── phase-results/            # 4 confirmed phase-readout docs — phase-{i,ii,iii,iv}.md, the five-layer synthesis layer (§1); record-level, never staged, never promoted
 │   ├── research/                 # prior-art study per design-bearing branch: {slug}.md, Source/Insight/Why (M3)
 │   ├── promotion-manifest.md     # per-file CRUD + per-touched-path preimage + supersede/archive plan (§7)
 │   ├── preimages/                # restorable original bytes of each pre-existing edited/moved path (§7, §9 step 5)
@@ -155,10 +231,13 @@ sessions/{date}-{session-id}/startup/          # the entire tree is RECORD-LEVEL
 ```
 
 `working/`, `staging/`, and `outputs/` are all parts of the record-level startup record (§1); none is
-durable memory. They are gitignored session surfaces. The raw log, ledger, manifest, staged drafts, index
-candidates, and startup summary are never promoted as records — promotion COPIES an approved staged source
-to its memory destination (§9). A later same-session Wrap-up promotion inventory EXCLUDES the entire
-`startup/` tree, because startup has already promoted its approved set (§9 step 5).
+durable memory. They are gitignored session surfaces. The raw log, ledger, the four phase readouts
+(`working/phase-results/`), manifest, staged drafts, index candidates, and startup summary are never
+promoted as records — promotion COPIES an approved staged source to its memory destination (§9). A later
+same-session Wrap-up promotion inventory EXCLUDES the entire `startup/` tree, because startup has already
+promoted its approved set (§9 step 5). `record-map.md` delegates the interior shape of `startup/working/`
+to this section and already names the whole `startup/` tree a Wrap-up promotion exclusion, so adding
+`phase-results/` here needs NO `record-map.md` change (I2).
 
 **Staging tree covers every type the topic map produces.** The `staging/learnings/` path, the
 `staging/indexes/` + per-feature `README.md` index candidates, and the full
@@ -292,10 +371,31 @@ After every required Level-2 branch closes:
    schedule/capacity; binding rules vs actual codebase examples. Re-open the contradicting branch and
    resolve it in the ledger; do not hide a conflict in synthesis.
 
-3. **Final jargon-free challenge** over purpose, evidence, alternatives, risks, cost, time, and success.
+3. **Cross-phase readout contradiction pass (D11).** Beyond the cross-TOPIC pass above, compare EVERY
+   confirmed phase readout (§1) against three references: (a) the COMPLETE current-phase event/topic set it
+   claims to summarize; (b) every relevant EARLIER confirmed readout; and (c) each LATER confirmed readout
+   once it exists — so the comparison is re-run as each new phase confirms, and once more in full here. On
+   ANY contradiction — a readout claim that conflicts with its underlying ledger events, or two confirmed
+   readouts that disagree — apply the full consequence chain, not a report:
+   1. reopen the EARLIEST owning phase (the earliest phase whose branch/checkpoint produced the conflicting
+      claim), not merely the phase where the conflict surfaced;
+   2. correct the underlying ledger by appending superseding events (§2) — never edit prose around the
+      conflict;
+   3. invalidate every DOWNSTREAM phase document AND the P4 synthesis consumer that rested on the corrected
+      claim (set each `gate state` to `stale`);
+   4. regenerate each affected readout idempotently from the current ledger events keyed by `Answer ID`;
+   5. obtain a NEW separate real-user confirmation (§1 confirmation teeth) for each regenerated readout.
+   This must FULLY resolve — every readout re-confirmed, no `stale`/`disagreed` gate state left — BEFORE the
+   promotion manifest gets its §9 Always-Ask pre-write baseline-write approval. A readout set whose members are each
+   internally self-consistent but collectively incomplete or mutually contradictory does NOT pass. A §7 pass
+   that merely REPORTS a contradiction, or a bare heading/pointer/generic "cross-phase check" sentence
+   WITHOUT the reopen + ledger-correction + downstream-invalidation + idempotent-regeneration +
+   new-confirmation consequences, FAILS this contract.
+
+4. **Final jargon-free challenge** over purpose, evidence, alternatives, risks, cost, time, and success.
    This challenges the current baseline; it is not a new architecture-design phase.
 
-4. **Stamp every typed staging file** from its matching `memory/templates/{type}.md`. Free-form typed
+5. **Stamp every typed staging file** from its matching `memory/templates/{type}.md`. Free-form typed
    drafts do not enter promotion.
 
 ## 8. Root README — the living index
@@ -519,7 +619,7 @@ memory (to detect completion) and resolves ONE state — it writes nothing:
 |---|---|---|
 | `fresh` | No `startup/` dir. | First run — full 11-topic traversal. |
 | `restart-safe` | `startup/` dir + `working/answer-ledger.md` present, but **0 confirmed Level-1 checkpoint markers** (interrupted before the first checkpoint). | No trusted resume point and nothing durable was written (§1). Re-confirm scope with the user, then **restart from Topic 1**; the prior gitignored ledger/staging is discarded or ignored. |
-| `in-progress-resumable` | `working/answer-ledger.md` exists with ≥ 1 confirmed Level-1 checkpoint marker AND no completion marker. | Ask resume vs restart. On resume: reload the ledger + confirmed checkpoints; re-show each confirmed Level-1 summary for a quick re-confirm; regenerate staged drafts from the current ledger events keyed by `Answer ID` (idempotent, §2); continue from the first unconfirmed checkpoint. |
+| `in-progress-resumable` | `working/answer-ledger.md` exists with ≥ 1 confirmed Level-1 checkpoint marker AND no completion marker. | Ask resume vs restart. On resume: reload the ledger + confirmed checkpoints; re-show each confirmed Level-1 summary for a quick re-confirm; regenerate staged drafts from the current ledger events keyed by `Answer ID` (idempotent, §2); **re-derive each phase readout's validity from the current ledger (§1)** — a readout whose cited source events are all still current and whose `gate state` is `confirmed` stays valid; a readout with a superseded/corrected source event, or one downstream of a reopened phase, is `stale` and is regenerated + re-confirmed before its phase gate re-closes; continue from the first unconfirmed checkpoint. |
 | `abandoned` | A stale in-progress dir the user chooses to discard. | SAFE discard — nothing durable was written (§1), so no memory cleanup; drop or ignore the gitignored session working/staging. |
 | `completed` | **Durable memory present** — the root index (`README.md`) + the ratified feature indexes exist under `.gobbi/projects/{project-name}/` alongside the required durable typed records. The root/feature living index is the **completion predicate**: it is written only at P7 after the P6.5 gate PASSES (§9 step 6), so its presence is trustworthy proof the baseline was evaluated and cleared. Read this from durable memory, NOT the gitignored session summary a later session cannot read (§13, D2). Promoted typed records WITHOUT a root/feature index (a P6.5 REVISE/FAIL then abandoned) are NOT `completed` — that state re-runs or resumes, never presenting as a complete baseline. | This is a rerun — go to the §11 baseline-review path. |
 
