@@ -29,6 +29,18 @@ Order follows predecessor-to-consumer needs, user decisions, and shared write su
 
 Each task has fresh, runnable, task-local evidence. A plausible command, a generic “run tests,” or a check that the task can weaken does not prove the obligation.
 
+### Slice by outcome, not by layer
+
+A task should deliver an end-to-end result a consumer can inspect. A slice drawn along a technical layer looks done while nothing works end to end, so unfinished value hides until integration.
+
+### Estimate from the outside view
+
+An estimate anchored to comparable completed work resists the systematic optimism of sizing from a fresh decomposition. When no reference class exists, the honest output is a stated uncertainty, not a confident point value.
+
+### Plan precisely near, coarsely far
+
+Commit imminent work as full task contracts and route distant work to an explicit user-approved deferral — not a committed task — until it is close enough to plan against evidence. Every load-bearing assumption carries an observable signpost and a named response, so the plan changes at explicit triggers rather than drifting.
+
 ## Rules
 
 ### Must follow
@@ -36,7 +48,7 @@ Each task has fresh, runnable, task-local evidence. A plausible command, a gener
 - **P-1 — Run the readiness gate first.** Inventory all required Ideation outputs, decisions, evaluation dispositions, staging obligations, authority, skills, repository state, and external-write needs before decomposition.
 - **P-2 — Route upstream gaps upstream.** A material Ideation omission returns to Ideation or aborts. Planning does not reframe the problem or choose a new design.
 - **P-3 — Trace both directions.** Every task points to one or more Ideation obligations, and every in-scope obligation maps to at least one task or an explicit user-approved deferral.
-- **P-4 — Use one task contract.** Each task has stable ID, imperative title, objective, traces-to, requires, files, inputs, outputs, verifies, required skills, role, authority, in/out scope, failure routes, and commit boundary.
+- **P-4 — Use one task contract.** Each task has stable ID, imperative title, objective, traces-to, requires, files, inputs, outputs, verifies, required skills, role, authority, in/out scope, failure routes, estimate, any load-bearing assumptions with their triggers, and commit boundary.
 - **P-5 — Keep tasks narrow.** Split independent concerns, high-blast changes, public interfaces, migrations, dependencies, shared infrastructure, and user decision points at reviewable boundaries.
 - **P-6 — Make the graph explicit.** Requires edges form an acyclic graph whose topological order matches the listed order. Every handoff uses literal matching output and input names.
 - **P-7 — Protect one writer chain.** Read-only analysis may be parallel. Tasks that overlap files, shared state, external services, decision order, manifests, or locks must be ordered.
@@ -44,6 +56,9 @@ Each task has fresh, runnable, task-local evidence. A plausible command, a gener
 - **P-9 — Make every intermediate state coherent.** After any completed task, the tree is valid, verified, and locally committed. Rollback or reversal is concrete for risky tasks.
 - **P-10 — Preserve source-before-delete.** A move, split, merge, or deletion task reads the full source set, maps its semantic union, inventories inbound consumers, and proves the destination before removing the source.
 - **P-11 — Recheck the complete plan.** Names, types, paths, dependencies, outputs, verification, role assignments, and scope traces agree across every task.
+- **P-12 — Slice to observable outcomes.** Each task delivers an end-to-end result a consumer can inspect, unless a named dependency makes an enabling task unavoidable. Splitting by architectural layer with no independently observable task is a decomposition defect.
+- **P-13 — Ground estimates in a reference class.** Size each task — in relative effort against a comparable completed task, not an absolute time unit — when a reference class exists, and state the uncertainty when it does not. The task contract carries this estimate; a point value with no basis is not one.
+- **P-14 — Elaborate by horizon and name every re-plan trigger.** Commit near work as full closed-contract tasks and route far work to an explicit user-approved deferral — never a coarse committed task — until it moves near and is elaborated. Pair every load-bearing assumption with an observable signpost and a named continue, revise, stop, or escalate response.
 
 ### Must not follow
 
@@ -53,6 +68,9 @@ Each task has fresh, runnable, task-local evidence. A plausible command, a gener
 - Do not hide a dependency in prose or task order.
 - Do not assign implementation discovery that changes scope to an executor.
 - Do not use a test, link check, or file-existence proxy for a semantic obligation it cannot prove.
+- Do not split primarily by architectural layer when no resulting task is independently observable.
+- Do not estimate only from the inside view when comparable completed work exists.
+- Do not write a judgment-only re-plan trigger such as “re-plan if needed”; name the assumption, its signpost, and the response.
 
 ## Procedure
 
@@ -84,9 +102,9 @@ Evidence: a bidirectional Ideation-to-plan coverage ledger.
 
 ### 4. Lay out task boundaries
 
-Group work by one observable outcome and one coherent writer boundary. Start with foundation and shared-interface tasks. Isolate migrations, public surfaces, dependency changes, shared infrastructure, and destructive or irreversible operations. Keep documentation synchronized with the behavior it describes.
+Group work by one observable outcome and one coherent writer boundary. Prefer vertical slices that each produce an inspectable outcome over horizontal layer slices that defer working value; when an enabling task is unavoidable, name it and the outcome it unlocks. Start with foundation and shared-interface tasks. Isolate migrations, public surfaces, dependency changes, shared infrastructure, and destructive or irreversible operations. Keep documentation synchronized with the behavior it describes.
 
-Prefer tasks a fresh executor can understand in one read. Size is evidence-driven; a broad file set or multi-part verification is a signal to split, not a rigid numeric rule.
+Prefer tasks a fresh executor can understand in one read. Size is evidence-driven; a broad file set or multi-part verification is a signal to split, not a rigid numeric rule. Commit near tasks as full contracts and route far work to an explicit user-approved deferral, not a committed coarse task, until it is close enough to elaborate.
 
 Evidence: a complete task skeleton with no prose-only mega-task.
 
@@ -100,6 +118,8 @@ For every task, write:
 - immutable inputs and expected outputs, using literal handoff names;
 - required role, skills, rules, mistakes, and authority;
 - ordered implementation constraints and user decision points;
+- a size estimate anchored to a comparable reference class, or a stated uncertainty when none exists;
+- each load-bearing assumption with its observable signpost and named continue, revise, stop, or escalate response;
 - runnable verification commands plus semantic evidence;
 - failure, rollback, and escalation routes; and
 - a focused local commit boundary.
