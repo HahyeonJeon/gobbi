@@ -105,6 +105,7 @@ explicit `not-applicable`.
 | Observability / telemetry | Structure + Usage | WF-GOVERNANCE — the plan is observable mid-execution; long-running tasks emit intermediate signals |
 | Cost / budget impact | Performance + Risk | SOP-PERF (per-task ceilings) + WF-GOVERNANCE (cross-task cost multiplication) |
 | Error budget impact | Performance + Risk | SOP-PERF — where a task touches a runtime SLO path; `not-applicable` for pure-doc tasks with no runtime path |
+| RECORD staging shape + naming | Consistency + Aesthetics | `not-applicable`: this concern governs the evaluation loop's OWN finding-output hygiene — the per-finding staging files, their 5-Type frontmatter vocabulary, and the Domain routing — which `evaluation/SKILL.md` § Finding Metadata and the `record` skill enforce directly on every loop's output. It is not a property of the Planning working draft under review, so no family in this set exercises it |
 
 ### Stable-ID policy
 
@@ -133,7 +134,8 @@ are both within the tuned thresholds, so it is not split under a parent index.
   signpost triggers map to REVISE / USER-CHALLENGE / re-entry. The SEAM-* families derive from
   these.
 - The evaluation skill's Coverage Ownership Matrix (accessibility / i18n / privacy / licensing /
-  supply-chain / observability / cost / error-budget).
+  supply-chain / observability / cost / error-budget / record-staging-shape) — all nine
+  cross-cutting concerns, each dispositioned in the § Coverage-ownership matrix mapping.
 
 Evidence is referenced by pointer, never inlined; a Planning draft carries no sensitive data, so
 no redaction applies (SR-9).
@@ -715,4 +717,8 @@ source; the scenario→obligation and source→scenario links are orphan-swept b
   single solo user; there is no locale, sort-order, or input-method variation to serve.
 - **Error budget** — covered by SOP-PERF only where a task touches a runtime SLO path;
   `not-applicable` for pure-doc tasks with no runtime path.
+- **RECORD staging shape + naming** — declared `not-applicable`: this concern governs the
+  evaluation loop's own finding-output hygiene (the per-finding staging files and their
+  frontmatter), enforced directly by `evaluation/SKILL.md` § Finding Metadata and the `record`
+  skill, not a property of the Planning working draft under review.
 - No exploratory scenarios: every family traces to an approved obligation.
