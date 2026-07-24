@@ -6,15 +6,15 @@ This source exercises [SKILL.md](SKILL.md). It adds no Planning policy. Use targ
 
 | Category | Disposition | Seed |
 |---|---|---|
-| 1 Purpose / outcomes / scope | selected | PLAN-SC-01 |
+| 1 Purpose / outcomes / scope | selected | PLAN-SC-01, PLAN-SC-11 |
 | 2 Actors / stakeholders / use-context | selected | PLAN-SC-02 |
 | 3 Behavior / state / data | selected | PLAN-SC-03 |
 | 4 Interfaces / dependencies / structure | selected | PLAN-SC-04 |
-| 5 Quality attributes / resource economics | selected | PLAN-SC-05 |
+| 5 Quality attributes / resource economics | selected | PLAN-SC-05, PLAN-SC-12 |
 | 6 Failure / recovery / operations | selected | PLAN-SC-06 |
 | 7 Trust / harm / governance | selected | PLAN-SC-07 |
 | 8 Inclusion / locale | selected | PLAN-SC-08 |
-| 9 Change / compatibility / reversibility | selected | PLAN-SC-09 |
+| 9 Change / compatibility / reversibility | selected | PLAN-SC-09, PLAN-SC-13 |
 | 10 Evidence / traceability / clarity | selected | PLAN-SC-10 |
 
 Scale threshold: split above 12 families or 40 selected category-by-type cells.
@@ -158,6 +158,48 @@ Scale threshold: split above 12 families or 40 selected category-by-type cells.
 - Adversarial face: a present file passes verification although its semantic content is wrong.
 - Obligation: every task must be self-contained, traceable, and self-failing.
 - Checklist: PLAN-CK-10.
+
+## PLAN-SC-11 — Every task is an inspectable end-to-end outcome
+
+- Primary category: 1. Primary type: Positive. Secondary: Adversarial.
+- Coverage role: positive outcome slice; adversarial hidden-layer slice.
+- Source: P-12, Procedure 4.
+- Given: a decomposition of the approved outcomes into tasks.
+- When: each task is checked for an independently inspectable result, and any enabling task names the outcome it unlocks.
+- Then: every task delivers an observable end-to-end outcome or is a named enabler for one.
+- Failure oracle: a task is a pure technical layer with no independently observable result and no named unlocked outcome.
+- Evidence: task-to-outcome map.
+- Adversarial face: a “backend only” task is accepted as complete though nothing works end to end and no unlocked outcome is named.
+- Obligation: decomposition must yield observable outcomes, not hidden layers.
+- Checklist: PLAN-CK-11.
+
+## PLAN-SC-12 — Each task estimate is anchored to a reference class
+
+- Primary category: 5. Primary type: Positive. Secondary: Counterfactual.
+- Coverage role: positive outside-view estimate; counterfactual inside-view optimism; stated uncertainty when no class exists.
+- Source: P-13, Procedure 5.
+- Given: candidate tasks and any comparable completed work.
+- When: each estimate is checked for a named reference class or an explicit uncertainty.
+- Then: estimates cite comparable work where it exists and state uncertainty where it does not.
+- Failure oracle: a confident point estimate from a fresh decomposition while a matching reference class is ignored.
+- Evidence: estimate field with its reference class or stated uncertainty.
+- Adversarial face: an optimistic inside-view estimate is presented as precise though analogous completed work is available.
+- Obligation: estimates must use the outside view where one exists.
+- Checklist: PLAN-CK-12.
+
+## PLAN-SC-13 — Load-bearing assumptions carry observable re-plan triggers
+
+- Primary category: 9. Primary type: Change/regression/compat. Secondary: Adversarial.
+- Coverage role: positive signpost and response; near-commit vs deferred-far elaboration; adversarial judgment-only trigger.
+- Source: P-14, Procedure 4–5.
+- Given: a plan whose far work depends on load-bearing assumptions.
+- When: each assumption is checked for an observable signpost and a named continue/revise/stop/escalate response, and near/far elaboration is inspected.
+- Then: near work is committed as full tasks, far work is an explicit user-approved deferral, and every load-bearing assumption has an observable trigger and response.
+- Failure oracle: an assumption has only “re-plan if needed” or an unobservable trigger, or far work is committed as detailed tasks instead of deferred.
+- Evidence: assumption-signpost-response register.
+- Adversarial face: a judgment-only “revisit later” stands in for an observable signpost.
+- Obligation: re-planning must be driven by observable triggers, not drift.
+- Checklist: PLAN-CK-13.
 
 ## Omission sweep
 
