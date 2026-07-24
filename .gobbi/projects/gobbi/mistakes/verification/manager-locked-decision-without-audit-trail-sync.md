@@ -58,6 +58,14 @@ still says "open / escalated", the audit trail is out of sync — that is the tr
   locked in-scope; both dual-system evaluators flagged the self-contradiction. Trigger to catch:
   adding a top-level "this supersedes the sections below" note in place of editing every restatement
   is this same audit-trail-desync trap — a superseding header is not a reconciliation.
+- **Recurred 2026-07-23 (install-runtime Planning loop, startup-skill 3-improvements session):** during
+  Planning, the manager adjudicated an escalated `Always-Ask` task-decomposition decision (kept a
+  9-task spine over an alternative 8-task re-slice, closed 2026-07-18) and the canonical draft was
+  updated to reflect it — but the separately-read Integration Log's audit-trail row for that same
+  escalation still said "pending the manager's call," so the two session artifacts contradicted each
+  other on the single most load-bearing structural decision in the plan. Same root cause: an
+  adjudicated decision was folded into the primary deliverable without the SAME atomic change set also
+  updating every other artifact (here, the Integration Log) that had recorded the decision as open.
 
 ## Related
 
