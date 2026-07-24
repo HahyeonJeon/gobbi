@@ -1,33 +1,33 @@
 ---
 name: gobbi
-description: MUST load at session start, resume, /clear, and runtime compaction. Rebuilds the manager floor and hands one validated durable cursor to orchestration.
+description: MUST load at session start, resume, /clear, and runtime compaction. Rebuilds the five-skill manager floor and presents the on-demand skill-map index for both general and full-workflow sessions.
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
 
 # Gobbi
 
-Use this skill as the cold entrypoint for a Gobbi manager. It rebuilds the minimum manager context after a session start or runtime context boundary, classifies the session through the orchestration owner, applies the Startup baseline gate only when triggered, and hands one validated cursor to orchestration.
+Use this skill as the cold entrypoint for a Gobbi manager. It rebuilds a small always-load floor after a session start or runtime context boundary, then presents a skill-map index that routes to every other owner on demand. The same light entry serves a general (non-workflow) session and a full Gobbi workflow session.
 
-Gobbi owns bootstrap edges only. It does not own workflow routing, record mutation, user-card formats, specialist assignment formats, Git mechanics, peer commands, plugin topology, or a productive-step method.
+Gobbi owns bootstrap edges and the skill-routing index only. It does not own workflow routing, record mutation, user-card formats, specialist assignment formats, Git mechanics, peer commands, plugin topology, or a productive-step method. It force-loads no workflow owner and runs no startup gate.
 
 ## Principles
 
 ### Bootstrap from durable owners
 
-A cold manager reads the behavioral floor, role authority, applicable mistakes, and current workflow owner before acting. Runtime memory, a task-list view, or a stale entry document cannot replace those sources.
+A cold manager reads the always-load floor, the applicable project rules, and the manager role from their durable sources before acting, then reaches every other owner through the skill-map index. Runtime memory, a task-list view, or a stale entry document cannot replace those sources.
 
 ### Preserve session identity across runtime contexts
 
 The Gobbi session UUID and version 3 cursor survive resume, `/clear`, rewind, and runtime compaction. A newly observed runtime identity is attached to the existing manifest by its owner; it never becomes a new Gobbi session identity.
 
-### Decide before creating
+### Keep the entry read-only
 
-A fresh start remains read-only until orchestration shows the defaults and resolves “use defaults or customize?” Branch, worktree, session tree, and manifest creation follow that decision.
+Gobbi's entry writes nothing. Fresh/resume classification, the defaults decision, and any branch, worktree, session-tree, or manifest creation live inside the indexed `workflow` owner's Configuration, not in the entrypoint.
 
-### Bootstrap once, then follow one cursor
+### Route on demand, do not force the workflow
 
-The entrypoint does not invent a second route. After session classification and any triggered Startup choice, the manager enters orchestration at the persisted cursor and loads productive-step specialists only when orchestration dispatches them.
+The entrypoint invents no second route. After rebuilding the floor and presenting the skill map, a general session works from the floor and loads only the indexed skills its task needs; a workflow session loads the indexed `workflow` owner and enters it at the persisted cursor. The workflow owner is loaded only when the session is a workflow session.
 
 ### Treat missing retired machinery as success
 
@@ -38,26 +38,40 @@ Gobbi does not depend on hooks, environment-variable passthrough, transcripts, r
 ### Must follow
 
 - **GB-1 — Run on every entry boundary.** Run this operation at session start, resume, `/clear`, rewind, runtime compaction, and any other boundary that discards or may stale manager context. Runtime compaction means a context boundary; it is unrelated to durable-memory maintenance.
-- **GB-2 — Read the manager floor in order.** Read Principles, applicable project rules, the canonical manager role, Mistake plus applicable project and skill-owned mistakes, then Orchestration plus its mistake companion. Read each source completely before using it.
-- **GB-3 — Load conditional owners before their action.** Load Discussion before any user decision, Git before any Configuration Git mutation, and Codex when native Codex or a Codex peer surface is used. Before authoring any specialist brief, load Orchestration's delegation child on demand.
-- **GB-4 — Use durable identity and routing.** Preserve the Gobbi UUID and persisted version 3 cursor. On a runtime context boundary, let Orchestration and Record append a distinct observed runtime ID to the version 5 manifest before work continues.
-- **GB-5 — Classify only the current worktree.** Resume automatically only when the current worktree contains exactly one unfinished Gobbi session. Zero means fresh classification. More than one requires an explicit session path or a fresh start. An explicit path is validated directly. Never use a global pointer or search other worktrees for a candidate.
-- **GB-6 — Keep fresh preflight read-only.** On a fresh path, no branch, worktree, session directory, manifest, state file, or settings artifact may be created before Orchestration resolves the defaults/customize decision. Resolved settings live only in `session.json.settings`.
-- **GB-7 — Reuse resumed settings.** A resumed, cleared, rewound, or runtime-compacted session validates and reuses its existing settings. Reconfiguration occurs only on explicit user request or an owner-defined decision at an exhausted iteration cap.
-- **GB-8 — Gate Startup through its classifier.** After a fresh session is initialized and before its first Ideation transition, run Startup's read-only baseline classifier. A sparse, absent, or contradictory baseline opens a user-owned choice to run guided questioning or proceed without it. Acceptance becomes an input directive for ordinary Ideation DISCUSSION; Startup never creates or repairs the baseline itself. A sufficient baseline proceeds. Resume and other context boundaries do not reopen Startup automatically; an explicit baseline reset remains on demand.
-- **GB-9 — Hand off exactly once.** After classification, runtime attachment, and the Startup disposition, enter Orchestration at the validated durable cursor. Do not load or dispatch Ideation, Planning, Execution, or Wrap-up directly from Gobbi. Orchestration owns the Ideation transition and any accepted Startup input-building invocation there.
-- **GB-10 — Respect owner and protected-source boundaries.** Current orchestration, record, discussion, Git, Startup, and Codex owners govern their facts. A cosmetic legacy heading, stale runtime overview, or obsolete statement in a protected role document does not reactivate retired behavior. Bootstrap never edits a protected role source to hide that accepted inconsistency.
-- **GB-11 — Prove cold entry.** The active runtime entrypoint must resolve this canonical four-file operation bundle. A cold reader must be able to find every action owner from `SKILL.md` alone. Route entrypoint repair to the repository sync owner; do not hand-edit a generated or symlinked view.
+- **GB-2 — Rebuild the floor of exactly five.** The always-load floor is exactly these five skills and no others: `principles`, `delegation`, `discussion`, `ideation`, and `git`. Read them in order, then the applicable project rules and the canonical manager role. Read each source completely before using it. No other skill — `mistake`, `workflow`, `startup`, or any language skill — belongs in the floor; each is reached through the skill map on demand.
+- **GB-3 — Load a conditional owner before its action.** Load `codex` when the active runtime is native Codex or an operation uses a Codex peer surface. Before authoring a specialist brief in a workflow session, load the Gobbi assignment skeleton at [`../workflow/delegation.md`](../workflow/delegation.md). The floor already covers `discussion` and `git`, so they are not conditionally loaded here.
+- **GB-4 — Preserve durable identity and reuse settings.** Preserve the Gobbi UUID and the persisted version 3 cursor across every boundary. On a runtime context boundary, let the indexed `workflow` owner and Record append a distinct observed runtime ID to the version 5 manifest before work continues. A resumed, cleared, rewound, or runtime-compacted session validates and reuses its existing settings; it never reconfigures merely because context was discarded.
+- **GB-5 — Point classification and creation at the workflow owner.** Fresh/resume classification, the read-only defaults preflight, session-tree and manifest creation, and settings placement are owned by the indexed `workflow` skill. Gobbi neither restates their mechanics nor performs them; it loads that owner for a workflow session.
+- **GB-6 — Route by session kind; hand off only for a workflow session.** A general session proceeds on the floor without loading the workflow owner. A workflow session enters [`../workflow/SKILL.md`](../workflow/SKILL.md) at the validated durable cursor. Gobbi never loads or dispatches Ideation, Planning, Execution, or Wrap-up specialists directly; the workflow owner dispatches them.
+- **GB-7 — Respect owner boundaries and prove cold entry.** Current `workflow`, record, discussion, Git, startup, and Codex owners govern their facts; a cosmetic legacy heading or obsolete statement in a protected role document does not reactivate retired behavior. The active runtime entrypoint must resolve this canonical four-file operation bundle, and a cold reader must find every action owner from `SKILL.md` alone. Route entrypoint or mirror repair to the repository sync owner; never hand-edit a generated or symlinked view.
 
 ### Must not follow
 
 - Do not ask for an interaction mode or route to any alternate workflow.
+- Do not force-load the workflow owner on entry, and do not run a startup or baseline-classifier gate. The workflow owner and `startup` are indexed skills, loaded only when the session needs them.
 - Do not read or create a separate `settings.json`.
 - Do not depend on a hook, transcript path, rollout path, environment-export script, agent ledger, token count, cache count, integration counter, or iteration event log.
 - Do not run durable-memory merge, threshold, hard-cap, or compaction behavior. Runtime compaction only reloads context and attaches runtime identity when distinct.
-- Do not use retired creation vocabulary or a deleted creation child to decide WORK behavior. Follow Orchestration's dual-system WORK owner.
+- Do not use retired creation vocabulary or a deleted creation child to decide WORK behavior. Follow the `workflow` owner's dual-system WORK.
 - Do not restate state transitions, session-tree mechanics, user cards, delegation fields, peer command syntax, Git procedures, plugin layout, or productive-step methods here.
-- Do not let a stale root/runtime overview or protected role prompt override a current single owner.
+- Do not let a stale root or runtime overview, or a protected role prompt, override a current single owner.
+
+## Skill map
+
+Every skill outside the floor is indexed here once — a name, a one-line description, and a neutral relevance note. The index orients the manager to owners; it is not a load-when gate. Each entry points to its owner and copies no mechanics.
+
+| Skill | Description | Relevance note |
+|---|---|---|
+| [`mistake`](../mistake/SKILL.md) | Known-pitfall corpus; check before acting, stage a candidate after a correction. | Stays mandatory for non-trivial work and sits at position 4 of every subagent's delegation Load Directives. The index lazy-loads it; it does not weaken it. |
+| [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Relevant when reading or writing durable project memory. |
+| [`workflow`](../workflow/SKILL.md) | The full DISCUSSION→WORK→EVALUATION→RECORD owner: fresh/resume classification, Configuration, routing, dual-system, and finalization. | Load it for a full Gobbi workflow session; it owns session classification, the read-only Configuration preflight, and the cursor handoff. |
+| [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project; loaded when the manager judges it relevant. Gobbi adds no gate around it. |
+| [`planning`](../planning/SKILL.md) | The Planning-step method: ordered, dependency-aware task decomposition. | Dispatched by `workflow` at the Planning step, not loaded directly from Gobbi. |
+| [`execution`](../execution/SKILL.md) | The Execution-step method: one locked task through study, bounded change, verification, and a focused commit. | Dispatched by `workflow` at the Execution step. |
+| [`wrap-up`](../wrap-up/SKILL.md) | The Wrap-up method: promotion, evaluated handoff, and Git finalization. | Dispatched by `workflow` at the Wrap-up step. |
+| [`coding`](../coding/SKILL.md) | Language-agnostic construction quality. | Relevant whenever the task writes or changes code. |
+| [`python`](../python/SKILL.md) / [`typescript`](../typescript/SKILL.md) | Language method skills. | Relevant when the task enters that language. |
+| [`codex`](../codex/SKILL.md) | Native Codex and Codex-peer invocation surfaces. | Relevant when the active runtime is Codex or an operation uses a Codex peer. |
 
 ## Procedure
 
@@ -67,92 +81,59 @@ Gobbi does not depend on hooks, environment-variable passthrough, transcripts, r
 
 Confirm the repository or project governance source that selected this skill, the active runtime system, and the entry trigger. Resolve this canonical skill directory through the active entrypoint. If the entrypoint does not resolve to the canonical source, stop and route repair to the repository sync owner; do not edit the view.
 
-Evidence: canonical source path, runtime system, and trigger. The operation has not written anything.
+Evidence: canonical source path, runtime system, and trigger. The operation has written nothing.
 
-#### 2. Read the complete manager floor
+#### 2. Rebuild the floor of exactly five
 
 Read these sources in order:
 
 1. [`../principles/SKILL.md`](../principles/SKILL.md).
-2. Every applicable file under [`../../rules/`](../../rules/) and any governing repository instructions.
-3. The canonical [`manager` role](../../agents/manager.md).
-4. [`../mistake/SKILL.md`](../mistake/SKILL.md), applicable project mistakes, and each applicable skill-owned mistake companion.
-5. [`../orchestration/SKILL.md`](../orchestration/SKILL.md) and [`../orchestration/mistakes.md`](../orchestration/mistakes.md).
+2. [`../delegation/SKILL.md`](../delegation/SKILL.md).
+3. [`../discussion/SKILL.md`](../discussion/SKILL.md).
+4. [`../ideation/SKILL.md`](../ideation/SKILL.md).
+5. [`../git/SKILL.md`](../git/SKILL.md).
 
-Do not treat a missing optional rules tier as permission to skip the repository's declared empty-state rule. Do not follow a protected role document into a deleted workflow child; current owners in this list govern the active workflow.
+Then read every applicable file under [`../../rules/`](../../rules/) and any governing repository instructions, and the canonical [`manager` role](../../agents/manager.md). The floor is exactly these five skills; no sixth skill joins it. Do not treat a missing optional rules tier as permission to skip the repository's declared empty-state rule, and do not follow a protected role document into a deleted workflow child.
 
-Evidence: an ordered load register with exact paths.
+Evidence: an ordered load register with exact paths and exactly the five floor skills.
 
 #### 3. Load the owner needed for the next boundary
 
-Before the first user-owned question, read [`../discussion/SKILL.md`](../discussion/SKILL.md). Before branch, worktree, commit, publication, merge, or cleanup work, read [`../git/SKILL.md`](../git/SKILL.md) and its mistake companion. When the active runtime is Codex or any operation uses a Codex peer, read [`../codex/SKILL.md`](../codex/SKILL.md). Before a specialist assignment, read [`../orchestration/delegation.md`](../orchestration/delegation.md).
+Consult the skill map and load only the indexed owner whose trigger applies. Read [`../codex/SKILL.md`](../codex/SKILL.md) when the active runtime is Codex or any operation uses a Codex peer. Read [`../workflow/delegation.md`](../workflow/delegation.md) before authoring a specialist brief in a workflow session. Load `mistake` before any non-trivial work, and a language skill when the task enters its domain. These sources define their own mechanics; Gobbi does not copy them.
 
-Load only the owner whose trigger applies. These sources define their mechanics; Gobbi does not copy them.
+Evidence: each conditional owner is in the load register before its first governed action.
 
-Evidence: the conditional owner is in the load register before its first governed action.
+#### 4. Preserve durable identity across the boundary
 
-#### 4. Let Orchestration classify the session
+Preserve the Gobbi UUID and the persisted version 3 cursor. If the active runtime identity is newly observed, let the indexed `workflow` owner use Record's manifest checkpoint to append it uniquely and in order. Validate and reuse the existing settings. Do not rerun any defaults gate, recreate the worktree, or reconfigure merely because context was cleared, rewound, resumed, or compacted.
 
-Invoke Orchestration's read-only fresh/resume classifier. It inspects unfinished sessions only in the current worktree unless the user already supplied an explicit session path.
+Evidence: before/after manifest identity, ordered runtime IDs, unchanged settings, and the persisted cursor.
 
-- Exactly one unfinished session enters the resume path.
-- Zero unfinished sessions enters the fresh path.
-- More than one pauses for an explicit session path or fresh-start decision.
-- An explicit session path is validated directly and never inferred from a global pointer.
+#### 5. Route by session kind
 
-If manifest, router, branch, worktree, or cursor evidence is invalid, stop at the Orchestration or Record recovery path. Do not infer state from artifact names or a runtime task list.
+The split is the manager's routine judgment from the task, not a user-facing mode question.
 
-Evidence: the classifier result and the exact inspected worktree or explicit path.
-
-#### 5. Complete the fresh path without early mutation
-
-For a fresh classification, keep preflight read-only while Orchestration displays the defaults once and asks “use defaults or customize?” After the user resolves every customized value, let Git create the session branch and worktree and let Record initialize the version 5 manifest, version 3 router, and eager session skeleton.
-
-The Gobbi UUID is generated before the branch and worktree. Resolved settings are stored under the manifest. Reread and validate the resulting record before the first productive transition.
-
-Evidence: no-write preimage, defaults decision, UUID creation order, Git isolation evidence, and Record verification.
-
-#### 6. Apply the fresh-session Startup gate
-
-After fresh initialization and before entering Ideation, load [`../startup/SKILL.md`](../startup/SKILL.md) and run its read-only baseline classifier.
-
-- A `sufficient` baseline proceeds without guided questions.
-- A `sparse`, `absent`, or `contradictory` baseline opens one user-owned choice through Discussion: use
-  Startup's guided question operation in Ideation DISCUSSION or proceed with the named gaps.
-- Acceptance records only that input directive. After the single handoff, Orchestration enters Ideation
-  DISCUSSION and invokes Startup there; Startup returns a structured input packet and writes nothing.
-- Decline preserves the classifier and disposition for the handoff and proceeds without inventing facts.
-
-Do not use a fixed `README.md`, `design/`, or `features/` presence heuristic. Startup owns baseline validity. An explicit baseline-reset request may rerun the read-only classifier later; accepted questioning still runs only at an ordinary Ideation DISCUSSION cursor.
-
-Evidence: classifier result, any user decision, unchanged baseline tree, and the Ideation input directive when accepted.
-
-#### 7. Complete the resume or context-boundary path
-
-For an exact resume or other context boundary, validate the existing settings and durable cursor. Preserve them automatically. If the active runtime identity is newly observed, let Orchestration use Record's manifest checkpoint to append it uniquely and in order. Preserve the Gobbi UUID.
-
-Do not rerun the fresh defaults gate, recreate the worktree, or reopen Startup merely because context was cleared, rewound, resumed, or compacted.
-
-Evidence: before/after manifest identity, ordered runtime IDs, unchanged settings, and persisted cursor.
-
-#### 8. Hand one cursor to Orchestration
-
-Enter [`../orchestration/SKILL.md`](../orchestration/SKILL.md) at the validated `state.json.current` cursor. Orchestration selects the step adapter, user gates, dual-system WORK, EVALUATION, RECORD, iteration handling, and finalization path.
-
-Gobbi does not load a productive-step specialist directly. It is complete when Orchestration has accepted one durable cursor and the runtime task view, when present, is a projection of that cursor.
+- **General (non-workflow) session:** work from the floor (`principles`, `delegation`, `discussion`, `ideation`, `git`) and load any indexed skill the task needs — `mistake` for a non-trivial decision, a language skill for code. The `workflow` owner is never loaded. There is no Configuration, no session tree, and no dual-system machinery.
+- **Workflow session:** load the indexed [`../workflow/SKILL.md`](../workflow/SKILL.md) and enter it at the validated `state.json.current` cursor. The workflow owner then holds fresh/resume classification, the read-only Configuration preflight, the Ideation transition, and every productive step. Gobbi creates nothing and dispatches no productive specialist directly.
 
 On a blocked handoff, report the exact invalid owner artifact, identity, or missing authority. Preserve the prior durable state and do not invent a fallback route.
 
+Evidence: the recorded session kind, the floor load register, and — for a workflow session — the validated cursor handed to the workflow owner.
+
 ## References
 
-- [`../orchestration/SKILL.md`](../orchestration/SKILL.md) owns fresh/resume classification, Configuration, workflow routing, dual-system guarantees, runtime attachment, and the handoff cursor.
-- [`../orchestration/workflow/state-machine.md`](../orchestration/workflow/state-machine.md) owns legal cursor transitions, iteration routing, halt, and resume behavior.
-- [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
+- [`../principles/SKILL.md`](../principles/SKILL.md) owns the ten behavioral laws every session obeys.
+- [`../delegation/SKILL.md`](../delegation/SKILL.md) owns the generic bounded-delegation contract for any session.
 - [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user question cards, decision classification, challenge, and finding-disposition exchange.
+- [`../ideation/SKILL.md`](../ideation/SKILL.md) owns the refine-what/why/how discipline before acting.
 - [`../git/SKILL.md`](../git/SKILL.md) owns branch, worktree, local commit, publication, merge, cleanup, and recovery mechanics.
+- [`../workflow/SKILL.md`](../workflow/SKILL.md) owns fresh/resume classification, Configuration, workflow routing, dual-system guarantees, runtime attachment, and the handoff cursor.
+- [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns legal cursor transitions, iteration routing, halt, and resume behavior.
+- [`../workflow/delegation.md`](../workflow/delegation.md) owns the Gobbi specialist brief construction and status handling.
+- [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
 - [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional Ideation input-building operation, baseline validity, and explicit reset.
+- [`../mistake/SKILL.md`](../mistake/SKILL.md) owns the mistake corpus, staging, and Wrap-up promotion.
 - [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
-- [`../orchestration/delegation.md`](../orchestration/delegation.md) owns specialist brief construction and status handling.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.
 - [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns repository entrypoint and plugin-source topology checks.
 - [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and [`evaluation.md`](evaluation.md) exercise this operation without adding policy.
