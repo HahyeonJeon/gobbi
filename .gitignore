@@ -40,3 +40,12 @@ packages/cli/.gobbi/
 # this by name; these lines are explicit + scoped for the harness surface.)
 examples/typescript/node_modules/
 examples/typescript/.bun/
+
+# Electron example-verification harness (examples/electron/). Same contract as
+# the TypeScript harness above: local devDeps (`typescript`, `electron`,
+# `@types/node`) type-check the skill's fenced ts examples once per process
+# target. `electron` declares no scripts key, so nothing downloads a binary.
+# The derived per-process `electron` views under examples/electron/generated/
+# are ignored by that directory's own .gitignore.
+examples/electron/node_modules/
+examples/electron/.bun/
