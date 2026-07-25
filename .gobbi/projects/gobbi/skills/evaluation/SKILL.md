@@ -308,3 +308,5 @@ version and repeat every applicable step with current evidence. Prior results re
 - [Coding](../coding/SKILL.md) owns language-agnostic software review criteria.
 - [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific review
   criteria and verification methods.
+- [EVALUATION manager adapter](../workflow/steps/evaluation.md) owns Gobbi's fresh dual-system dispatch, machine
+  report shape, validation, aggregation, the user disposition gate, storage, and transitions.

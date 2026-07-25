@@ -61,3 +61,11 @@ Discussion applies whenever an agent clarifies a request, asks the user for inpu
 - **NEVER revise an evaluated artifact before the user approves or edits the complete finding-disposition batch.** Preserve the evaluated artifact until that decision is explicit.
 
 ## References
+
+- [`../workflow/SKILL.md`](../workflow/SKILL.md) owns manager authority, productive-step routing, dual-system requirements, and the requirement for one user-approved finding-disposition batch.
+- [`../workflow/steps/evaluation.md`](../workflow/steps/evaluation.md) owns report aggregation, allowed finding dispositions, and the disposition gate's workflow mechanics.
+- [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns iteration-cap, return, halt, abort, and transition mechanics.
+- [`../workflow/delegation.md`](../workflow/delegation.md) owns specialist authority, the `NEEDS_CONTEXT` contract, and manager report handling.
+- [`../record/SKILL.md`](../record/SKILL.md) owns durable decision evidence and the prohibition on retaining conversation exhaust.
+
+This skill owns Question Card semantics, anti-sycophancy, User Challenge, twice-probe, Smart-skip, and material contract restatement.

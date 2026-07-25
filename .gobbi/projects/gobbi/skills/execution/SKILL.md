@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this skill for one ordered Execution task at a time. The executor studies the locked task and live tree, applies only the resolved change, proves it on the final tree, and creates one focused local commit.
 
-This skill owns the executor method. The plan is the scope contract; the repository is the current implementation truth. Orchestration owns shared dual-system WORK mechanics, evaluator dispatch, record routing, and cursor transitions.
+This skill owns the executor method. The plan is the scope contract; the repository is the current implementation truth. Workflow owns shared dual-system WORK mechanics, evaluator dispatch, record routing, and cursor transitions.
 
 ## Principles
 
@@ -81,7 +81,7 @@ Evidence: a before-state failure or explicit preimage mismatch.
 
 ### 4. Prepare the neutral WORK contract
 
-Freeze the task contract, worktree preimage, affected-file map, applicable references, checks, and constraints as identical inputs to the orchestration-owned dual-system WORK procedure. Both systems analyze the same task independently. Peer processes remain read-only.
+Freeze the task contract, worktree preimage, affected-file map, applicable references, checks, and constraints as identical inputs to the workflow-owned dual-system WORK procedure. Both systems analyze the same task independently. Peer processes remain read-only.
 
 The active-runtime executor synthesizes the implementation approach after both drafts and cross-reviews freeze. Record material design, scope, destructive, dependency, or authority disagreements and route them to the user before editing.
 
@@ -133,9 +133,9 @@ Completion evidence: a task-scoped commit, fresh final-tree checks, complete dua
 
 ## References
 
-- [Orchestration Execution adapter](../orchestration/workflow/execution.md) owns per-task entry, user gates, and task transitions.
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent drafts, reciprocal reviews, decision handling, and package validation.
-- [Delegation](../orchestration/delegation.md) owns the executor brief, authority boundary, and status contract.
+- [Workflow Execution adapter](../workflow/steps/execution.md) owns per-task entry, user gates, and task transitions.
+- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent drafts, reciprocal reviews, decision handling, and package validation.
+- [Delegation](../workflow/delegation.md) owns the executor brief, authority boundary, and status contract.
 - [Git](../git/SKILL.md) owns worktree safety, commit procedure, publication, and cleanup.
 - [Coding](../coding/SKILL.md) owns language-agnostic construction quality; language skills add concrete idioms.
 - [Evaluation](../evaluation/SKILL.md) owns the independent review method, causal findings, and verdict

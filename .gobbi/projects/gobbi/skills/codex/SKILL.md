@@ -42,7 +42,7 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, sc
 - **C-7 — Bind output to the invocation.** Before storage, match kind, system, step, iteration, assignment, runtime identity, neutral-contract digest, and the operation-specific frozen subject digest.
 - **C-8 — Store only through the record owner.** Pass the validated JSON to `session-record.sh write-artifact`. A peer process cannot write or repair Markdown directly.
 - **C-9 — Validate the stored boundary.** Run the dual-system WORK validator when its full package exists, or the evaluation validator for an evaluation report. Reread the stored artifact before accepting the operation.
-- **C-10 — Surface exact failures.** Preserve the prior target bytes, report the command status and immediate diagnostic, and return control to orchestration for retry, user decision, or abort.
+- **C-10 — Surface exact failures.** Preserve the prior target bytes, report the command status and immediate diagnostic, and return control to workflow for retry, user decision, or abort.
 
 ### Must not follow
 
@@ -52,7 +52,7 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, sc
 - Do not let an evaluator read another evaluator report or reuse a prior evaluator context.
 - Do not accept a wrapper summary, reconstructed response, partial value, stale response, or reused runtime identity as peer output.
 - Do not add a second renderer, artifact schema, adapter executable, or storage path.
-- Do not infer a missing-system waiver. Waiver authority remains with orchestration and the user.
+- Do not infer a missing-system waiver. Waiver authority remains with workflow and the user.
 
 ## Manual
 
@@ -64,8 +64,8 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, sc
 | Skill discovery | `.agents/skills/{skill}/` | Resolves to the canonical skill directory |
 | Repo-local specialist | `.codex/agents/{role}.toml` | Loads the matching protected role document |
 | Shared plugin package | `plugins/gobbi/` | Package topology is verified by the root sync and smoke commands |
-| Session identity and settings | `session.json` version 5 | Record and orchestration own attachment and validation |
-| Active workflow cursor | `state.json` version 3 | Orchestration owns transitions; native task lists are projections |
+| Session identity and settings | `session.json` version 5 | Record and workflow own attachment and validation |
+| Active workflow cursor | `state.json` version 3 | Workflow owns transitions; native task lists are projections |
 
 When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and checkpoints it through the record owner. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
 
@@ -73,7 +73,7 @@ For role selection and model values, read the validated session settings and the
 
 ### Peer operation selection
 
-Use an opposite-system peer only through the orchestration-owned WORK or EVALUATION contract:
+Use an opposite-system peer only through the workflow-owned WORK or EVALUATION contract:
 
 | Active runtime | Opposite-system process | Structured-output owner |
 |---|---|---|
@@ -193,14 +193,14 @@ Only the manager may offer retry, a bounded input repair, an explicit one-system
 ## References
 
 - [Peer adapter command and validation lookup](peer-adapters.md)
-- [Dual-system WORK owner](../orchestration/workflow/dual-system-work.md)
-- [EVALUATION manager adapter](../orchestration/workflow/evaluation.md)
+- [Dual-system WORK owner](../workflow/steps/dual-system-work.md)
+- [EVALUATION manager adapter](../workflow/steps/evaluation.md)
 - [Evaluation method](../evaluation/SKILL.md)
 - [Record method](../record/SKILL.md) and [record command map](../record/record-map.md)
 - [Draft schema](../record/schemas/draft.schema.json), [cross-review schema](../record/schemas/cross-review.schema.json), and [evaluation-report schema](../record/schemas/evaluation-report.schema.json)
 - [Record renderer](../record/scripts/session-record.sh)
-- [Dual-system WORK validator](../orchestration/scripts/validate-dual-system-work.sh)
+- [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
 - [Evaluation report validator](../evaluation/scripts/validate-evaluation-report.sh)
-- [Specialist delegation owner](../orchestration/delegation.md)
+- [Specialist delegation owner](../workflow/delegation.md)
 - [Codex-specific mistakes](mistakes.md)
 - [Repository runtime entry contract](../../../../../AGENTS.md)

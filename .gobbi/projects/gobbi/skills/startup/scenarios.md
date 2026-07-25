@@ -47,7 +47,7 @@ artifact, or verdict path.
 
 - **Given:** the fresh classifier is insufficient and Discussion presents the choice.
 - **When:** the user accepts.
-- **Then:** Orchestration first enters Ideation DISCUSSION; Startup then builds a bounded input packet at
+- **Then:** Workflow first enters Ideation DISCUSSION; Startup then builds a bounded input packet at
   that cursor.
 - **Failure oracle:** a separate Startup cursor, directory, mode, or completion predicate appears.
 

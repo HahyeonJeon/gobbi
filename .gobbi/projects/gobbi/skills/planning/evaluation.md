@@ -59,5 +59,6 @@ Use direct reads and safe commands: diff Ideation obligations against task trace
 | P-7, P-8, P-9 | Structure, Risk |
 | P-10 | Consistency, Risk |
 | P-11 | All perspectives and completed checklist |
+| P-12, P-13, P-14 | Structure, Performance, Risk |
 
 Every applicable PLAN-CK item appears in the report checklist. A material plan revision receives a complete new report from a fresh evaluator.

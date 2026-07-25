@@ -80,7 +80,7 @@ Evidence: a stable, sorted inventory whose row count reconciles to the filesyste
 
 ### 3. Run the neutral WORK contract
 
-Freeze the closure contract, staging inventory, routing owners, current durable preimages, prior artifacts, commits, verification, finalization policy, and handoff requirements as identical inputs to the orchestration-owned dual-system WORK procedure.
+Freeze the closure contract, staging inventory, routing owners, current durable preimages, prior artifacts, commits, verification, finalization policy, and handoff requirements as identical inputs to the workflow-owned dual-system WORK procedure.
 
 Both systems independently design the promotion manifest and the complete nine-section handoff body. Cross-reviews challenge omission, routing, idempotency, evidence, wrong-tree risk, supersession, and resume usability. Route every material conflict to the user before apply.
 
@@ -176,8 +176,8 @@ Completion evidence: complete staging accounting, frozen and idempotently applie
 
 ## References
 
-- [Orchestration Wrap-up adapter](../orchestration/workflow/wrap-up.md) owns entry, user gates, evaluator dispatch, transitions, and finalization handoff.
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent creation and reciprocal review mechanics.
+- [Workflow Wrap-up adapter](../workflow/steps/wrap-up.md) owns entry, user gates, evaluator dispatch, transitions, and finalization handoff.
+- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent creation and reciprocal review mechanics.
 - [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
 - [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
 - [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,

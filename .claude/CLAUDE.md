@@ -30,7 +30,7 @@ If either system is unavailable or returns invalid output, pause and show the ex
 
 Claude Code may lazily retain stable leader, executor, and assistant teammates while their identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. The manager alone assigns tasks, changes scope, makes user decisions, accepts work, and authorizes destructive actions. Parallelize independent read-only analysis; keep all worktree writes in one ordered writer chain.
 
-Use the shared assignment skeleton in `orchestration/delegation.md`. After a teammate reports, reread its promised artifact or commit and confirm it is idle and addressable before assigning more work. At a context boundary, verify durable state and teammate identity; replace and reprime any teammate that cannot be confirmed.
+Use the shared assignment skeleton in `workflow/delegation.md`. After a teammate reports, reread its promised artifact or commit and confirm it is idle and addressable before assigning more work. At a context boundary, verify durable state and teammate identity; replace and reprime any teammate that cannot be confirmed.
 
 ## Plugin topology
 
@@ -58,8 +58,8 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 | Document | Owns |
 |---|---|
 | `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, glossary, and skill routing |
-| `.gobbi/projects/gobbi/skills/orchestration/SKILL.md` | Manager authority, Configuration, and global invariants |
-| `.gobbi/projects/gobbi/skills/orchestration/workflow/` | Thin step adapters and dual-system WORK mechanics |
+| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Manager authority, Configuration, and global invariants |
+| `.gobbi/projects/gobbi/skills/workflow/steps/` | Thin step adapters and dual-system WORK mechanics |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | General independent evaluation method and evidence-derived verdict |
 | `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-record mechanics and PASS-only artifacts |
 | `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Promotion, evaluated handoff, and Git finalization |

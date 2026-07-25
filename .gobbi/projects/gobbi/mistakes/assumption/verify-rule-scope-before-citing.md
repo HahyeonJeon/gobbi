@@ -21,7 +21,7 @@ domain: process
 During this session's dual-system evaluation of the `python` skill's `design.md` and
 `convention.md` child docs, the manager's delegation and evaluation briefs cited
 `rules/docs/point-dont-restate-workflow-docs.md` as the governing rule for the
-deepen-not-restate check. That rule is explicitly scoped to `orchestration/workflow/*.md`
+deepen-not-restate check. That rule is explicitly scoped to `workflow/steps/*.md`
 and does not govern skill child docs such as the `python` skill's. Both the Claude and
 Codex evaluators flagged the mis-citation.
 
@@ -45,7 +45,7 @@ citation was wrong.
 
 An evaluation or delegation brief names a specific project rule as "the governing rule"
 for a document that lies outside that rule's own stated scope (e.g., a rule scoped to
-`orchestration/workflow/*.md` cited for a `skills/{skill}/*.md` file). Cross-check the
+`workflow/steps/*.md` cited for a `skills/{skill}/*.md` file). Cross-check the
 rule's scope line against the target document's path before trusting the citation. An
 evaluator flagging a scope mismatch on a cited rule is the downstream signal this mistake
 produces — a mis-cited authority is benign only when the underlying discipline is also

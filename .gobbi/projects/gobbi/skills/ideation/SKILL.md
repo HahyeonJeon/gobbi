@@ -173,8 +173,8 @@ Confirm that the artifact contains no ordered implementation task list, implemen
 - [Coding](../coding/SKILL.md) owns language-agnostic software design and construction principles.
 - [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific design contracts and idioms.
 - [Planning](../planning/SKILL.md) owns ordered implementation decomposition after Ideation readiness.
-- [Orchestration Ideation adapter](../orchestration/workflow/ideation.md) owns manager entry, user gates, and transitions.
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
+- [Workflow Ideation adapter](../workflow/steps/ideation.md) owns manager entry, user gates, and transitions.
+- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
 - [Evaluation](../evaluation/SKILL.md) owns the seven perspectives, Overall, findings, checklist completion, verdicts, and repeat review.
 - [Record](../record/SKILL.md) owns typed staging, PASS-only canonical artifacts, and session-record validation.
 - [Scenario](../evaluation/scenario/SKILL.md) owns the ten-category coverage frame and scenario construction rules.

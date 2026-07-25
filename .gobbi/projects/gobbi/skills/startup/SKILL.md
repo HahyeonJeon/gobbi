@@ -24,8 +24,12 @@ explicitly requests a baseline reset. A normal resume or runtime context boundar
    stronger evidence than compliments, surveys, or promises.
 3. **Ask neutrally, then take a position.** Do not pitch inside a question. State the evidence read and
    what evidence would change it. Push a vague or contradicted answer at most twice, then leave it open.
-4. **Attack the riskiest assumption first.** Spend depth according to uncertainty × reversibility ×
-   magnitude, while still accounting for every required topic.
+4. **Attack the riskiest assumption first, then follow the evidence down.** Spend depth according to
+   uncertainty × reversibility × magnitude, while still accounting for every required topic. A concrete,
+   evidenced answer is a launch point for depth, not a stop signal: when it exposes a new in-scope claim,
+   dependency, contradiction, or untested assumption, ask the next disconfirming probe and keep descending
+   while each probe still moves the evidence within the branch's scope. This depth is distinct from the
+   at-most-twice vague-repair cap in principle 3, which only bounds re-asking a still-vague answer.
 5. **Name one first user and their switch.** Separate actors, operators, approvers, and affected people;
    identify their job, current alternative, push, pull, anxiety, and habit.
 
@@ -77,7 +81,7 @@ explicitly requests a baseline reset. A normal resume or runtime context boundar
 
 The manager supplies one trigger: `fresh-project`, `sparse-baseline`, or `explicit-reset`. Confirm the
 project root and the existing project-memory root. During Configuration, run only the classifier in
-steps 2–3. If the user accepts guided questioning, Orchestration first enters Ideation DISCUSSION and
+steps 2–3. If the user accepts guided questioning, Workflow first enters Ideation DISCUSSION and
 then invokes steps 4–9 as a bounded input-building operation at that ordinary cursor.
 
 Do not create a Startup cursor, directory, record, mode, checklist run, or completion predicate.
@@ -165,7 +169,7 @@ it never fabricates missing project facts.
 ## Boundaries
 
 - Discussion owns user questions and decisions.
-- Orchestration owns Configuration, the v3 cursor, productive-step transitions, and iteration policy.
+- Workflow owns Configuration, the v3 cursor, productive-step transitions, and iteration policy.
 - Ideation owns the first productive artifact and its full DISCUSSION → WORK → EVALUATION → RECORD loop.
 - Study owns read-only evidence gathering for design-bearing questions.
 - Record owns all session-tree writes and typed staging.
@@ -178,7 +182,7 @@ it never fabricates missing project facts.
 - [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and [`evaluation.md`](evaluation.md)
   exercise this operation without creating another lifecycle or output.
 - [`../gobbi/SKILL.md`](../gobbi/SKILL.md) owns the Configuration trigger and read-only classifier gate.
-- [`../orchestration/SKILL.md`](../orchestration/SKILL.md) owns the workflow and cursor.
+- [`../workflow/SKILL.md`](../workflow/SKILL.md) owns the workflow and cursor.
 - [`../ideation/SKILL.md`](../ideation/SKILL.md) owns accepted input and productive artifacts.
 - [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user-decision mechanics.
 - [`../record/SKILL.md`](../record/SKILL.md) owns session records and staging.

@@ -10,7 +10,7 @@ Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 
 Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
 At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
-`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, `.gobbi/projects/gobbi/skills/orchestration/SKILL.md`,
+`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, `.gobbi/projects/gobbi/skills/workflow/SKILL.md`,
 and `.gobbi/projects/gobbi/skills/execution/SKILL.md` before implementation work. Load
 additional phase or domain skills when the parent prompt asks for them.
 

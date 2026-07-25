@@ -31,9 +31,9 @@ Mandatory load — every fresh subagent:
 
 Load per phase:
 
-- **Ideation** → `orchestration/workflow/ideation.md`, `ideation` skill.
+- **Ideation** → `workflow/steps/ideation.md`, `ideation` skill.
 - **Study** → `study` skill (loaded by ideation Sub-step C, or whenever the brief calls for it).
-- **Planning** → `orchestration/workflow/planning.md`, `planning` skill.
+- **Planning** → `workflow/steps/planning.md`, `planning` skill.
 
 Load when relevant: `startup` (when ideation or planning finds that the manager needs structured project-baseline elicitation). When the work touches runtime docs, agents, or rules, read the active surfaces directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated skill exists for those domains in this tree.
 
@@ -84,7 +84,7 @@ Refine, study, or decompose — per the phase brief.
 **Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal at `working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
 - Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
-- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/production.md`](../skills/orchestration/workflow/production.md).
+- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/steps/production.md`](../skills/workflow/steps/production.md).
 
 ### Verify
 
@@ -106,7 +106,7 @@ Capture what was learned before returning to the manager.
 
 ## Continuation discipline
 
-The manager may **continue** you across sub-phases (Ideation Sub-step A→B→C→D→WORK, or across loops) instead of re-spawning a fresh leader. The decision rule, the saturation cap, and the delta-brief shape live in [`orchestration/delegation.md` § Continue vs Fresh](../skills/orchestration/delegation.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you across sub-phases (Ideation Sub-step A→B→C→D→WORK, or across loops) instead of re-spawning a fresh leader. The decision rule, the saturation cap, and the delta-brief shape live in [`workflow/delegation.md` § Continue vs Fresh](../skills/workflow/delegation.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative `Write` path strays to the main tree even after you re-`cd`. Never use a relative write path.
