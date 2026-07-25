@@ -51,7 +51,7 @@ The five roles listed above replace v0.4.x agent roles. The mappings are one-to-
 | v0.4.x role | v0.5.0 role | Notes |
 |---|---|---|
 | `pi` (innovative + best stances) | `leader` | Dual-stance retired; single leader per dispatch. Cross-pollination now comes from dual-system evaluation — see `workflow/delegation.md` § Anti-trust Block. |
-| `researcher` | `leader` | Research depth merged into leader's investigation phase (Sub-step C of Ideation, or standalone Research dispatch). |
+| `researcher` | `leader` | Study depth merged into leader's investigation phase (Sub-step C of Ideation, or standalone Study dispatch). |
 | `gobbi-agent` | `manager` | Plugin-distributed orchestrator role; renamed to manager for clarity. |
 | `agent-evaluator` / `project-evaluator` / `skills-evaluator` | `evaluator` | Consolidated into a single evaluator role; perspective specialization is provided by the 7-perspective + Overall procedure in `evaluation/SKILL.md`. |
 | (no v0.4.x equivalent) | `executor` | Implementation role explicitly extracted; was implicit in v0.4.x gobbi-agent. |

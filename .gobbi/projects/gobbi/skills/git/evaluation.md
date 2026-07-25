@@ -1,6 +1,8 @@
 # Git Evaluation Entrypoint
 
-Use this entrypoint to evaluate the [Git operation](SKILL.md). It extends the active [Evaluation](../evaluation/SKILL.md) with Git-specific scenarios, checks, lenses, and direct-object evidence. It creates no separate report shape or output path.
+Use this entrypoint to evaluate the [Git operation](SKILL.md). It extends the general
+[Evaluation](../evaluation/SKILL.md) method with Git-specific scenarios, checks, lenses, and direct-object
+evidence. A calling workflow owns any report shape or output path.
 
 ## Inputs
 
@@ -114,4 +116,7 @@ Direct evidence shows an unauthorized merge or destructive action, wrong-tree mu
 
 ## Output
 
-Write one report through the active [Evaluation contract](../evaluation/SKILL.md). Cover Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall exactly once. Use the standard finding ledger, completed checklist, scoring, and verdict. Preserve the exact Git subject identity and do not run mutating Git or GitHub actions during evaluation.
+Write one result through the active [Evaluation method](../evaluation/SKILL.md). Cover Project, Structure,
+Performance, Aesthetics, Usage, Consistency, Risk, and Overall exactly once. Use its causal finding ledger,
+completed checklist, declared scoring, and verdict. Preserve the exact Git subject identity and do not run
+mutating Git or GitHub actions during evaluation. Let the caller serialize or store the result.

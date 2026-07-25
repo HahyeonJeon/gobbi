@@ -1,10 +1,11 @@
 # UX Design — Evaluation Entry
 
-Evaluator entrypoint for grading one UX design run. It extends the active Gobbi phase evaluation with the UX
-scenario and checklist sources. It does not replace the active phase's four stages, seven-perspective order,
-finding schema, scoring, verdict thresholds, output tree, or nine-output contract.
+Evaluator entrypoint for grading one UX design run. It extends the general Evaluation method with the UX
+scenario and checklist sources. It does not replace the eight-step method, perspectives, causal finding content,
+completed checks, or declared verdict derivation. When Gobbi calls it, the active workflow adapter continues to
+own its stages, finding metadata, scoring, output tree, and report contract.
 
-At Stage 0, load and read the complete UX bundle:
+Load and read the complete UX bundle before building the evaluation frame. In Gobbi, this happens at Stage 0:
 
 1. [`SKILL.md`](SKILL.md) — sole policy owner.
 2. [`ideation.md`](ideation.md) — user-decision procedure and gate trace.
@@ -12,9 +13,10 @@ At Stage 0, load and read the complete UX bundle:
 4. [`checklists.md`](checklists.md) — unchecked operational evidence source.
 5. This `evaluation.md` entry — selection, perspective lenses, verification, and Overall anchors.
 
-Also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md` bundle. UX additions are
+When used inside Gobbi, also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md`
+bundle. UX additions are
 copied into the active evaluator's filled checklist under `## Stage 1 Additions`; the shipped UX source remains
-unchecked. Findings use only the active Gobbi metadata and destinations.
+unchecked. Findings use only the active Gobbi adapter's metadata and destinations.
 
 ## Parent-clause crosswalk
 

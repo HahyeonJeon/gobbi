@@ -66,7 +66,7 @@ explicitly requests a baseline reset. A normal resume or runtime context boundar
 - **ST-8 — Pass the problem-before-solution gate.** Do not enter product-shape questions until the
   problem event, first user and job, current alternative, root cause, why-now, fatal assumption, boundary,
   and non-goals have been shown to the user for agreement or correction.
-- **ST-9 — Research design-bearing directions.** Use the Research operation for internal and external
+- **ST-9 — Study design-bearing directions.** Use the Study operation for internal and external
   evidence. Never fabricate a source or close a design choice from an unexamined preference.
 - **ST-10 — Stay at direction altitude.** Do not design signatures, schemas, algorithms, module
   internals, migrations, or task breakdowns.
@@ -129,7 +129,7 @@ problem or user after the fact.
 
 ### 7. Study, recommend, and resolve design directions
 
-For each design-bearing branch, call [`../research/SKILL.md`](../research/SKILL.md) with the exact
+For each design-bearing branch, call [`../study/SKILL.md`](../study/SKILL.md) with the exact
 Ideation cursor. Compare tried-and-true, new-and-popular, and first-principles evidence. Present at least
 two distinct directions—one minimal and one ideal—with effort, risk, reuse, feasibility, a recommendation,
 and evidence-to-change. Discussion owns the user decision. Record rejected directions in the returned
@@ -171,7 +171,7 @@ it never fabricates missing project facts.
 - Discussion owns user questions and decisions.
 - Workflow owns Configuration, the v3 cursor, productive-step transitions, and iteration policy.
 - Ideation owns the first productive artifact and its full DISCUSSION → WORK → EVALUATION → RECORD loop.
-- Research owns read-only evidence gathering for design-bearing questions.
+- Study owns read-only evidence gathering for design-bearing questions.
 - Record owns all session-tree writes and typed staging.
 - Wrap-up owns durable promotion.
 - Evaluation owns the seven perspectives, dual-system reports, verdict aggregation, and finding gate.

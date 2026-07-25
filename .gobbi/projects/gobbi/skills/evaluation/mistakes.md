@@ -15,21 +15,21 @@ updated: 2026-07-21
 
 **What happened** — Evaluators were dispatched while the WORK writer could still change the canonical candidate, so the reports reviewed different bytes from the later declared subject.
 **Why it happens** — An idle notification or partial handoff was mistaken for completed, frozen creation evidence.
-**How to detect** — The assigned writer has not returned its structured report, idle/addressability is unconfirmed, a promised artifact has not been reread, the package validator has not passed, or the subject digest can still change.
-**Correct approach** — Require the writer's explicit report, confirm idle/addressability, reread the canonical synthesis and complete dual-WORK package, validate the package, resolve every material open decision, and compute the subject digest. Stop sending writer deltas. Dispatch two fresh evaluators only after that freeze. If any subject byte changes later, create a new complete iteration and evaluate again.
+**How to detect** — A promised artifact has not been reread, a required creation check is incomplete, the subject version can still change, or a calling workflow's writer has not completed its handoff.
+**Correct approach** — Freeze one stable subject and its required supporting evidence before independent evaluation. Stop writer changes during the review. If the subject changes, bind a new complete evaluation to the new version. In Gobbi, its workflow adapter additionally proves the writer handoff, validates the dual-WORK package, resolves material decisions, computes the digest, and dispatches both fresh evaluators.
 
 ### Related
 
 - [[evaluator-dispatch-before-work-handoff-complete]] — the manager-side assignment handshake for the same immutable-subject boundary.
 
-## One Peer Response Becomes One System Report
+## A Gobbi Peer Response Becomes One System Report
 
 `priority: high` · `domain: evaluation` · `added: 2026-07-03` · `status: active` · `tags: [evaluation, process]`
 
-**What happened** — An evaluator returned findings in conversation or wrote several perspective files directly, leaving the canonical report incomplete or mixed across attempts.
-**Why it happens** — The seven lenses were confused with seven storage artifacts, and peer authorship was confused with Record-owned persistence.
-**How to detect** — A system's evaluation is spread across per-perspective files, inline response prose substitutes for the report, or no single `{system}.md` contains all seven perspectives, Overall, ledger, checklist, machine JSON, and verdict.
-**Correct approach** — Require one schema-valid JSON response from each fresh evaluator. The active-runtime assistant validates it and passes it to `session-record.sh write-artifact`, which atomically renders one `evaluation/iteration-{n}/{system}.md`. Reread that report and run the evaluation validator before aggregation.
+**What happened** — In a Gobbi run, an evaluator returned findings in conversation or wrote several perspective files directly, leaving the workflow's canonical report incomplete or mixed across attempts.
+**Why it happens** — The seven lenses were confused with seven storage artifacts, and evaluator authorship was confused with Record-owned persistence.
+**How to detect** — A Gobbi system evaluation is spread across per-perspective files, inline response prose substitutes for the adapter-required report, or no single system artifact contains its required perspectives, Overall, ledger, checklist, machine JSON, and verdict.
+**Correct approach** — The general Evaluation method produces one self-contained semantic result without prescribing storage. In Gobbi, require one schema-valid JSON response from each fresh evaluator. The active-runtime assistant validates it and passes it to `session-record.sh write-artifact`, which atomically renders one `evaluation/iteration-{n}/{system}.md`. Reread that report and run the workflow's evaluation validator before aggregation.
 
 ## Skill Surface Wording Must Pass Its Own Guard
 
@@ -71,14 +71,14 @@ updated: 2026-07-21
 **How to detect** — A report passes a command-dependent claim but cites only an author report, prose, or static file reading.
 **Correct approach** — Keep the capability limit visible and use fixed-target read-only executable evidence from an independent capable system. Attribute the proof to the system that ran it, not to the shellless evaluator.
 
-## Evaluator Retry Must Preserve The Last Complete Report
+## A Gobbi Evaluator Retry Must Preserve The Last Complete Report
 
 `priority: high` · `domain: process` · `added: 2026-07-11` · `status: active` · `tags: [process, evaluation, verification]`
 
-**What happened** — A retry wrote directly over canonical evaluation evidence and failed partway, leaving mixed bytes from separate attempts.
-**Why it happens** — The canonical target was used as incremental scratch space rather than an atomic publication boundary.
-**How to detect** — A retry targets an existing `evaluation/iteration-{n}/{system}.md`, writes before full schema validation, or can replace only a prefix before timeout or failure.
-**Correct approach** — Capture retry JSON outside the canonical target. Validate the complete response, identity, schema, perspectives, Overall, ledger, checklist, fingerprints, and derived verdict first. Then use the Record owner to atomically replace the single system report. A failed retry leaves the prior report byte-for-byte unchanged.
+**What happened** — A Gobbi retry wrote directly over canonical evaluation evidence and failed partway, leaving mixed bytes from separate attempts.
+**Why it happens** — The workflow's canonical target was used as incremental scratch space rather than an atomic publication boundary.
+**How to detect** — A Gobbi retry targets an existing `evaluation/iteration-{n}/{system}.md`, writes before full adapter validation, or can replace only a prefix before timeout or failure.
+**Correct approach** — Keep the general evaluation result self-contained. In Gobbi, capture retry JSON outside the canonical target. Validate the complete response, identity, schema, perspectives, Overall, ledger, checklist, fingerprints, and derived verdict first. Then use the Record owner to atomically replace the single system report. A failed retry leaves the prior report byte-for-byte unchanged.
 
 ### Related
 

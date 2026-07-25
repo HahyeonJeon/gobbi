@@ -1,6 +1,9 @@
 # Evaluating Workflow
 
-This is the evaluation entrypoint for the workflow operation. It adds workflow-specific scenarios, checks, lenses, and verifications to the active productive-step evaluation. It does not replace [`evaluation/SKILL.md`](../evaluation/SKILL.md), change its finding schema or verdict rules, or create another output.
+This is the evaluation entrypoint for the workflow operation. It adds workflow-specific scenarios,
+checks, lenses, and verifications to the general [`evaluation/SKILL.md`](../evaluation/SKILL.md) method. It does
+not replace that method's causal findings, completed checks, or verdict derivation. The Gobbi workflow adapter
+owns its schema, validation, aggregation, and output.
 
 ## Entry
 

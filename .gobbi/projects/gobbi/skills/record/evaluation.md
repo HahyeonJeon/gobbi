@@ -1,6 +1,8 @@
 # Record Evaluation Entry
 
-Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies RECORD-specific lenses for the one complete report. Step companions and schema fixtures may add cases and checks but cannot replace this frame or the central report contract.
+Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies Record-specific lenses for
+one complete evaluation result. Step companions may add cases and checks but cannot replace the general method.
+Record-owned schemas and fixtures validate only the calling workflow's report contract.
 
 ## Required inputs
 

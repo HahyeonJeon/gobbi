@@ -1,6 +1,7 @@
 # Planning Evaluation Entry
 
-Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies Planning-specific lenses for the single complete report and adds no output or verdict rule.
+Use this entrypoint with [evaluation/SKILL.md](../evaluation/SKILL.md). It supplies Planning-specific lenses for
+one complete evaluation result and adds no output or verdict rule. A calling workflow owns output mechanics.
 
 ## Required inputs
 

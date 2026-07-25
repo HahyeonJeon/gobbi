@@ -7,7 +7,7 @@ iteration, output path, or finding workflow.
 
 Both fresh independent evaluators receive the same complete Ideation evidence package: canonical
 candidate, both drafts, both cross-reviews, resolved decisions, Startup classifier and packet when
-applicable, Research reports, scenario/checklist evidence, and relevant process proof. Neither evaluator
+applicable, Study reports, scenario/checklist evidence, and relevant process proof. Neither evaluator
 sees the other's report.
 
 ## Selection

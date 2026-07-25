@@ -182,5 +182,6 @@ Completion evidence: complete staging accounting, frozen and idempotently applie
 - [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
 - [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
   non-successor terminal states, strict archive behavior, and archive/link validation scope.
-- [Evaluation](../evaluation/SKILL.md) owns fresh dual reports, finding dispositions, and repeat-review rules.
+- [Evaluation](../evaluation/SKILL.md) owns the independent review method, causal findings, verdict derivation,
+  and repeat review. The active workflow adapter owns dual reports and finding dispositions.
 - [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.

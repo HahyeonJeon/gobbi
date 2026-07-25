@@ -193,8 +193,8 @@ Use [`scenarios.md`](scenarios.md) to activate the cases that match the target. 
 closure separately from acceptance. A failed gate returns to its owning P-step.
 
 For independent review, the evaluator enters through [`evaluation.md`](evaluation.md), which loads the
-scenario and checklist sources and extends the productive step's EVALUATION without changing its report
-schema.
+scenario and checklist sources and extends the general evaluation method without changing it or the
+caller-owned output contract.
 
 ### P7 — Wire and prove cold use
 
@@ -247,9 +247,9 @@ any applicable check is `FAIL`.
 
 ## References
 
-- [`../scenario/SKILL.md`](../scenario/SKILL.md) validates the scenario-set procedure used to author an
+- [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) validates the scenario-set procedure used to author an
   operation skill's `scenarios.md` and this skill's own scenario source.
-- [`../checklist/SKILL.md`](../checklist/SKILL.md) validates the operational checklist, evidence, coverage
+- [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) validates the operational checklist, evidence, coverage
   closure, and acceptance mechanics used by `checklists.md`.
-- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) validates the evaluator lenses, finding schema, scoring,
-  and productive-step extension used by `evaluation.md`.
+- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) validates the evaluator perspectives, causal findings,
+  completed checks, verdict derivation, and operation extension used by `evaluation.md`.

@@ -1,12 +1,14 @@
 # Vision Evaluation Extension
 
 Evaluator entrypoint for reviewing the `vision` skill bundle or a report produced by it. This file extends the
-active Gobbi evaluation; it does not replace the active phase's three-file bundle, four stages, seven-perspective
-order, finding metadata, scoring, verdict thresholds, reconciliation, or nine-output contract.
+general Evaluation method with vision-specific scenarios, checks, lenses, and evidence. It does not replace the
+eight-step method, perspectives, causal finding content, completed checks, or declared verdict derivation. When
+Gobbi calls it, the active workflow adapter owns its stages, metadata, scoring, reconciliation, and output
+contract.
 
 ## Evaluation Entry
 
-At Stage 0, load in this order:
+When used inside Gobbi, follow its active Stage 0 load order:
 
 1. the shared [`../evaluation/SKILL.md`](../evaluation/SKILL.md) and the active phase's required scenario,
    checklist, and evaluation bundle;
@@ -207,5 +209,5 @@ coverage gap; it is never inferred from another runtime or adjacent source.
   source remains unchecked.
 - [`image.md`](image.md), [`ui.md`](ui.md), [`slides.md`](slides.md), [`video.md`](video.md), and
   [`chart.md`](chart.md) supply only type-specific procedure evidence for selected artifact types.
-- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns evaluator separation, the four stages, seven
-  perspectives plus Overall, finding metadata, scoring, verdicts, reconciliation, and nine-output contract.
+- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns evaluator independence, the eight-step method, seven
+  perspectives plus Overall, causal finding content, completed checks, and declared verdict derivation.
