@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this skill when Ideation starts or repeats. The leader turns the user's trigger into one plan-ready canonical artifact: the right problem, the reason to solve it, the locked boundary, and a concrete reference-backed direction.
 
-This skill owns the Ideation specialist method. Orchestration owns the shared DISCUSSION, dual-system WORK, EVALUATION, RECORD, dispatch, and state-transition mechanics.
+This skill owns the Ideation specialist method. Workflow owns the shared DISCUSSION, dual-system WORK, EVALUATION, RECORD, dispatch, and state-transition mechanics.
 
 ## Principles
 
@@ -113,13 +113,13 @@ Evidence: no orphaned source clause, scenario, obligation, or check.
 
 Freeze the approved scope, research set, decisions, assumptions, design obligations, expected canonical sections, and acceptance criteria. Phrase the contract so Claude and Codex receive the same task without steering either toward the other's answer.
 
-Hand this contract to the orchestration-owned dual-system WORK procedure. The specialist's content obligation is a complete plan-ready What, Why, and How.
+Hand this contract to the workflow-owned dual-system WORK procedure. The specialist's content obligation is a complete plan-ready What, Why, and How.
 
 Evidence: one stable contract digest and no unresolved material input.
 
 ### 9. Synthesize without losing useful disagreement
 
-When orchestration returns both drafts and both cross-reviews, create the canonical candidate from their evidence. Preserve stronger details and explicit disagreements. Do not introduce new scope. Put every unresolved material conflict into the open-decisions artifact and pause for the user.
+When workflow returns both drafts and both cross-reviews, create the canonical candidate from their evidence. Preserve stronger details and explicit disagreements. Do not introduce new scope. Put every unresolved material conflict into the open-decisions artifact and pause for the user.
 
 Update the candidate only from recorded decisions. EVALUATION cannot begin while a material decision remains open.
 
@@ -135,8 +135,8 @@ Completion evidence: a validated dual-system package, resolved decisions, an art
 
 ## References
 
-- [Orchestration Ideation adapter](../orchestration/workflow/ideation.md) owns manager entry, user gates, and transitions.
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
+- [Workflow Ideation adapter](../workflow/steps/ideation.md) owns manager entry, user gates, and transitions.
+- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
 - [Evaluation](../evaluation/SKILL.md) owns the seven perspectives, Overall, findings, checklist completion, verdicts, and repeat review.
 - [Record](../record/SKILL.md) owns typed staging, PASS-only canonical artifacts, and session-record validation.
 - [Scenario](../scenario/SKILL.md) owns the ten-category coverage frame and scenario construction rules.

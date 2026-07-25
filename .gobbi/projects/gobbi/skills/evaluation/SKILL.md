@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this skill for every productive step's EVALUATION stage. One fresh evaluator independently reviews the complete frozen creation package, writes all seven perspectives plus Overall, completes the checklist, and returns one schema-valid report with an evidence-derived verdict.
 
-Run the operation once for Claude and once for Codex. Orchestration owns fresh dispatch, evaluator isolation, pair aggregation, and the user disposition gate. This skill owns the evaluator method, perspective lenses, finding schema, confidence and severity, checklist completion, report verdict, and repeat-review standard.
+Run the operation once for Claude and once for Codex. Workflow owns fresh dispatch, evaluator isolation, pair aggregation, and the user disposition gate. This skill owns the evaluator method, perspective lenses, finding schema, confidence and severity, checklist completion, report verdict, and repeat-review standard.
 
 ## Principles
 
@@ -182,7 +182,7 @@ No creator may begin correction until the user approves or edits the complete ba
 
 ## References
 
-- [EVALUATION manager adapter](../orchestration/workflow/evaluation.md) owns fresh dispatch, pair aggregation, waivers, the user disposition gate, and transitions.
+- [EVALUATION manager adapter](../workflow/steps/evaluation.md) owns fresh dispatch, pair aggregation, waivers, the user disposition gate, and transitions.
 - [Evaluation report schema](../record/schemas/evaluation-report.schema.json) owns the executable report shape.
 - [Evaluation report validator](scripts/validate-evaluation-report.sh) owns single and pair mechanical validation and provenance-preserving aggregation output.
 - [Record command](../record/scripts/session-record.sh) owns deterministic report rendering and atomic storage.

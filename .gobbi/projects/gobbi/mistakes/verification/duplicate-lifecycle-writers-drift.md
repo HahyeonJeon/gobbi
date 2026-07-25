@@ -53,4 +53,4 @@ writer that validates only the fields it touches instead of the complete candida
 ## Related
 
 - [`skills/record/SKILL.md`](../../skills/record/SKILL.md) — sole lifecycle file writer and atomic update owner
-- [`skills/orchestration/mistakes.md#skill-prose-template-drift`](../../skills/orchestration/mistakes.md#skill-prose-template-drift) — the general owner/consumer drift pattern
+- [`skills/workflow/mistakes.md#skill-prose-template-drift`](../../skills/workflow/mistakes.md#skill-prose-template-drift) — the general owner/consumer drift pattern

@@ -135,9 +135,9 @@ claude plugin validate --strict plugins/gobbi
 
 - [Gobbi entry](.gobbi/projects/gobbi/skills/gobbi/SKILL.md) owns cold start
   and context-boundary bootstrap.
-- [Orchestration](.gobbi/projects/gobbi/skills/orchestration/SKILL.md) owns
+- [Workflow](.gobbi/projects/gobbi/skills/workflow/SKILL.md) owns
   Configuration, manager authority, and routing.
-- [Dual-system WORK](.gobbi/projects/gobbi/skills/orchestration/workflow/dual-system-work.md)
+- [Dual-system WORK](.gobbi/projects/gobbi/skills/workflow/steps/dual-system-work.md)
   owns independent drafts, reciprocal review, synthesis, and open decisions.
 - [Evaluation](.gobbi/projects/gobbi/skills/evaluation/SKILL.md) owns the two
   independent reviews and finding disposition gate.

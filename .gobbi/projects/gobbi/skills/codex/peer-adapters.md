@@ -165,7 +165,7 @@ Reread the rendered target and verify its machine JSON matches the validated inp
 Complete WORK package:
 
 ```bash
-.gobbi/projects/gobbi/skills/orchestration/scripts/validate-dual-system-work.sh \
+.gobbi/projects/gobbi/skills/workflow/scripts/validate-dual-system-work.sh \
   --root "$session_root" \
   --step "$expected_step" \
   --iteration "$expected_iteration" \
@@ -209,11 +209,11 @@ The active-runtime assistant reports the failure. It does not generate substitut
 ## References
 
 - [Codex tool skill](SKILL.md)
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md)
+- [Dual-system WORK](../workflow/steps/dual-system-work.md)
 - [Evaluation method](../evaluation/SKILL.md)
 - [Record command map](../record/record-map.md)
 - [Draft schema](../record/schemas/draft.schema.json)
 - [Cross-review schema](../record/schemas/cross-review.schema.json)
 - [Evaluation-report schema](../record/schemas/evaluation-report.schema.json)
-- [Dual-system WORK validator](../orchestration/scripts/validate-dual-system-work.sh)
+- [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
 - [Evaluation report validator](../evaluation/scripts/validate-evaluation-report.sh)

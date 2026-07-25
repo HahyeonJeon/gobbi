@@ -287,7 +287,7 @@ Completion evidence is one verified local history plus either an exact retained 
 
 - [Git conventions](conventions.md) owns deterministic branch, path, commit, trailer, optional issue, pull-request, label, and merge-format mappings.
 - [Git scenarios](scenarios.md), [checklist](checklists.md), and [evaluation entrypoint](evaluation.md) exercise this operation without adding policy.
-- [Orchestration](../orchestration/SKILL.md) owns Configuration, workflow routing, user authority, and the post-Wrap-up finalization boundary.
+- [Workflow](../workflow/SKILL.md) owns Configuration, workflow routing, user authority, and the post-Wrap-up finalization boundary.
 - [Execution](../execution/SKILL.md) owns task implementation and final-tree verification before commit.
 - [Wrap-up](../wrap-up/SKILL.md) owns the evaluated handoff and pre-finalization plan.
 - [Discussion](../discussion/SKILL.md) owns user decision cards and merge-authority questioning.

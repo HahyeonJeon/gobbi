@@ -7,7 +7,7 @@ skill-type: preference
 
 # Discussion
 
-Use this skill whenever the manager needs user evidence, a user-owned choice, explicit authority, a challenge to prior direction, or a finding-disposition decision. Any productive step may invoke it. Discussion governs the quality of that exchange; orchestration owns when work advances.
+Use this skill whenever the manager needs user evidence, a user-owned choice, explicit authority, a challenge to prior direction, or a finding-disposition decision. Any productive step may invoke it. Discussion governs the quality of that exchange; workflow owns when work advances.
 
 The manager is the sole user-dialogue actor. Specialists investigate and advise within their assignments, but route user-owned ambiguity to the manager with `NEEDS_CONTEXT`. They may decide only routine matters that are clearly inside delegated authority.
 
@@ -159,10 +159,10 @@ Specialists never initiate user dialogue. When user-owned ambiguity blocks the a
 
 ## References
 
-- [`../orchestration/SKILL.md`](../orchestration/SKILL.md) owns manager authority, productive-step routing, dual-system requirements, and the requirement for one user-approved finding-disposition batch.
-- [`../orchestration/workflow/evaluation.md`](../orchestration/workflow/evaluation.md) owns report aggregation, allowed finding dispositions, and the disposition gate's workflow mechanics.
-- [`../orchestration/workflow/state-machine.md`](../orchestration/workflow/state-machine.md) owns iteration-cap, return, halt, abort, and transition mechanics.
-- [`../orchestration/delegation.md`](../orchestration/delegation.md) owns specialist authority, the `NEEDS_CONTEXT` contract, and manager report handling.
+- [`../workflow/SKILL.md`](../workflow/SKILL.md) owns manager authority, productive-step routing, dual-system requirements, and the requirement for one user-approved finding-disposition batch.
+- [`../workflow/steps/evaluation.md`](../workflow/steps/evaluation.md) owns report aggregation, allowed finding dispositions, and the disposition gate's workflow mechanics.
+- [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns iteration-cap, return, halt, abort, and transition mechanics.
+- [`../workflow/delegation.md`](../workflow/delegation.md) owns specialist authority, the `NEEDS_CONTEXT` contract, and manager report handling.
 - [`../record/SKILL.md`](../record/SKILL.md) owns durable decision evidence and the prohibition on retaining conversation exhaust.
 
 This skill owns Question Card semantics, anti-sycophancy, decision classification, User Challenge, twice-probe, Smart-skip, material contract restatement, and specialist muting.

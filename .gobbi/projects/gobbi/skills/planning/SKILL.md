@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this skill when Planning starts or repeats. The leader proves that locked Ideation evidence is ready, then turns it into one complete ordered task plan. A fresh executor must be able to run each task from its bounded brief.
 
-This skill owns readiness and the Who, When, and Where decomposition. It does not repair Ideation or implement the plan. Orchestration owns the shared loop, dual-system WORK, review routing, record routing, and state transitions.
+This skill owns readiness and the Who, When, and Where decomposition. It does not repair Ideation or implement the plan. Workflow owns the shared loop, dual-system WORK, review routing, record routing, and state transitions.
 
 ## Principles
 
@@ -154,7 +154,7 @@ Run [scenarios.md](scenarios.md) and a fresh copy of [checklists.md](checklists.
 
 ### 10. Prepare the neutral WORK contract and synthesize
 
-Freeze the readiness evidence, obligation ledger, task skeleton, graph, scope, authority, and acceptance criteria as identical inputs to the orchestration-owned dual-system WORK procedure. The specialist output is one complete ordered plan, not implementation.
+Freeze the readiness evidence, obligation ledger, task skeleton, graph, scope, authority, and acceptance criteria as identical inputs to the workflow-owned dual-system WORK procedure. The specialist output is one complete ordered plan, not implementation.
 
 Synthesize both drafts and both cross-reviews without silently dropping a task, obligation, or disagreement. Route material task boundaries, ordering, authority, or verification disputes to the user and resolve them before EVALUATION.
 
@@ -168,10 +168,10 @@ Completion evidence: READY input status, full trace closure, an acyclic ordered 
 
 ## References
 
-- [Orchestration Planning adapter](../orchestration/workflow/planning.md) owns manager entry, user gates, task scaffolding, and transitions.
-- [Dual-system WORK](../orchestration/workflow/dual-system-work.md) owns shared creation mechanics and package validation.
-- [State machine](../orchestration/workflow/state-machine.md) owns return-to-Ideation, verdict, and cap transitions.
-- [Delegation](../orchestration/delegation.md) owns the specialist brief and status contract.
+- [Workflow Planning adapter](../workflow/steps/planning.md) owns manager entry, user gates, task scaffolding, and transitions.
+- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns shared creation mechanics and package validation.
+- [State machine](../workflow/steps/state-machine.md) owns return-to-Ideation, verdict, and cap transitions.
+- [Delegation](../workflow/delegation.md) owns the specialist brief and status contract.
 - [Evaluation](../evaluation/SKILL.md) owns fresh reports, findings, checklist completion, and verdict rules.
 - [Record](../record/SKILL.md) owns task scaffolding, typed staging, and PASS-only artifacts.
 - [Scenario](../scenario/SKILL.md) and [Checklist](../checklist/SKILL.md) own the companion construction standards.

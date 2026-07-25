@@ -37,7 +37,7 @@ running the role must act correctly from the spec alone — not from the session
 > **Point to the one canonical owner; never restate it.**
 
 The `.md` is the role's behavioral contract; the shared assignment skeleton and role overlays in
-[`orchestration/delegation.md`](../orchestration/delegation.md) govern how the manager briefs a role
+[`workflow/delegation.md`](../workflow/delegation.md) govern how the manager briefs a role
 per task. They have different jobs. The role spec does not duplicate the assignment skeleton, and
 agent-writing does not create a second assignment surface. Cite the owner; do not copy it.
 
@@ -177,7 +177,7 @@ the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
 The role taxonomy is a **closed set of five**: `manager` / `leader` / `executor` / `evaluator`
 / `assistant` (verified — the Agent Taxonomy table in `gobbi/SKILL.md` and the 5 `.md` files).
-All specialist assignments use one shared skeleton in `orchestration/delegation.md`. Its role map
+All specialist assignments use one shared skeleton in `workflow/delegation.md`. Its role map
 and overlays distinguish leader, executor, evaluator, and assistant through that one owner.
 
 **The common case is editing an existing role**, not adding one. To refine a role, edit its
@@ -191,7 +191,7 @@ the user's explicit decision. Its FULL wiring set is:
 3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
    time; do not rely on a stored line number).
 4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
-5. A matching role-map and overlay decision in `orchestration/delegation.md`; the shared skeleton
+5. A matching role-map and overlay decision in `workflow/delegation.md`; the shared skeleton
    remains the sole assignment shape.
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
@@ -230,7 +230,7 @@ Wire a role in this order, each step with its verify command. From the worktree 
    The `--check` must exit 0.
 5. **For a NEW role only** — add the taxonomy surfaces from P4: the `Agent({role})` permission
    in `.claude/settings.json`, the Agent Taxonomy row in `gobbi/SKILL.md`, and the role map/overlay
-   decision in `orchestration/delegation.md`. Verify each by reading the final owners and running
+   decision in `workflow/delegation.md`. Verify each by reading the final owners and running
    the source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
@@ -288,7 +288,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 - **Duplicating the shared assignment skeleton inside the role spec.** Inlining the per-task brief
   shape into `agents/{role}.md`. The `.md` is the behavioral contract; the manager brief shape lives
-  in `orchestration/delegation.md`. Keep them separate and cross-link.
+  in `workflow/delegation.md`. Keep them separate and cross-link.
 
 - **Adding a role when an edit would do.** Creating a sixth role for work an existing role
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
@@ -301,7 +301,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 ## Cross-references
 
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
-- Shared delegation skeleton and role overlays → [`orchestration/delegation.md`](../orchestration/delegation.md)
+- Shared delegation skeleton and role overlays → [`workflow/delegation.md`](../workflow/delegation.md)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
 - The verify-before-asserting trap → [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)

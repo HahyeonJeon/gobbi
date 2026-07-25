@@ -19,7 +19,7 @@ domain: process
 ## What happened
 
 GEN-D7-001's fix split fresh-session initialization from resume-rehydration in
-`orchestration/SKILL.md`'s Configuration procedure (row 4 fresh / row 4R resume). The resume signal
+`workflow/SKILL.md`'s Configuration procedure (row 4 fresh / row 4R resume). The resume signal
 this fix used required `session.json.previousSessionId` to be non-null. But `previousSessionId` is
 stamped at row 5 — after the row 4 / row 4R branch has already been chosen — and the session
 template seeds it as `null`. A session's FIRST resume (after startup / `/clear` / compaction) has

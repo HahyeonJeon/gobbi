@@ -29,7 +29,7 @@ Mandatory load:
 1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
 3. **`mistake` skill** — past pitfalls.
-4. **`orchestration/workflow/execution.md`** + **`execution` skill** — implementation and verification principles.
+4. **`workflow/steps/execution.md`** + **`execution` skill** — implementation and verification principles.
 5. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
@@ -74,7 +74,7 @@ Implement focused, minimal changes.
 **Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal for THIS task at `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
 - Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `task-{NN}-{slug}/working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
-- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/production.md`](../skills/orchestration/workflow/production.md).
+- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/steps/production.md`](../skills/workflow/steps/production.md).
 
 ### Verify
 
@@ -100,7 +100,7 @@ Capture what surprised you for future sessions.
 
 ## Continuation discipline
 
-The manager may **continue** you from task NN to NN+1 (shared subsystem, under the saturation cap) instead of re-spawning a fresh executor. The decision rule, the F1 predicate, the saturation cap, and the delta-brief shape live in [`orchestration/delegation.md` § Continue vs Fresh](../skills/orchestration/delegation.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you from task NN to NN+1 (shared subsystem, under the saturation cap) instead of re-spawning a fresh executor. The decision rule, the F1 predicate, the saturation cap, and the delta-brief shape live in [`workflow/delegation.md` § Continue vs Fresh](../skills/workflow/delegation.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
