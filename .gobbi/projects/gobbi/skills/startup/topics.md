@@ -48,7 +48,10 @@ per turn. The tree feeds ordinary Ideation DISCUSSION; it is not a storage schem
    If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
    § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
    `open` with an owner and resolution method rather than accepting a vague answer or pushing
-   indefinitely. Do not probe when the first answer is already concrete and evidenced.
+   indefinitely. This at-most-twice cap governs a still-vague or contradicted answer only; do not re-ask
+   merely to restate an answer that already landed concrete. A concrete, evidenced answer is not a stop
+   signal — when it exposes a new in-scope claim, dependency, contradiction, or untested assumption, open
+   an evidence-advancing follow-up under rule 9.
 6. Classify each answer in transient working context as `confirmed`, `assumption`, `open`, or
    `contradicted`, and account for every Level-2 branch as `confirmed`, `proven-irrelevant` with a reason,
    or `open` with an owner. The returned packet preserves these distinctions.
@@ -56,6 +59,15 @@ per turn. The tree feeds ordinary Ideation DISCUSSION; it is not a storage schem
    evidence and the confirmation.
 8. Re-open an earlier branch when a later answer contradicts it. Architecture must not silently redefine
    scope; roadmap must not silently redefine the quality bar.
+9. **Follow the evidence down as far as it keeps moving.** A concrete, evidenced answer may open a deeper
+   follow-up under the same branch when it exposes a new in-scope claim, dependency, contradiction, or
+   untested assumption AND the follow-up can produce new evidence. Keep descending that chain while each
+   probe still advances the evidence within the branch's topic scope. Each probe is still one question per
+   turn (rule 1); the chain simply continues across turns and stops only when the next probe would not move
+   the evidence, when it would leave topic scope, or when the branch is settled. This is DEPTH, distinct
+   from the rule-5 vague-repair cap: the cap bounds re-asking a still-vague answer, this rule pursues
+   evidence off a concrete one. A follow-up deepens its parent branch, inherits that branch's closure
+   state, and never adds a required branch.
 
 **Design-bearing markers.** Branches that settle a direction carry an inline marker under their heading.
 The core design cluster is **Topics 6–9**, plus the always-design-bearing capability and journey branches
@@ -538,12 +550,14 @@ affected summary again. The ordinary Ideation cursor and artifacts—not Startup
   blocks a readiness claim, but may be returned explicitly for ordinary Ideation to resolve.
 - **Smart-skip shortens, it does not drop.** Existing docs/repo evidence may close a branch when the user
   confirms — but coverage stays mandatory; smart-skip removes redundant questions, never required branches.
-- **Probe up to twice, then record open.** Probe a vague answer with a concrete example, past-behavior
-  question, or counterexample. If the re-answer is still vague, probe a second time (the
-  [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is still vague after the
-  second probe, close the branch `open` with an owner and resolution method rather than accepting
-  a vague answer or pushing indefinitely. Do not probe when the first answer is already concrete and
-  evidenced.
+- **Probe up to twice, then record open — a still-vague answer only.** Probe a vague answer with a
+  concrete example, past-behavior question, or counterexample. If the re-answer is still vague, probe a
+  second time (the [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is still
+  vague after the second probe, close the branch `open` with an owner and resolution method rather than
+  accepting a vague answer or pushing indefinitely. This at-most-twice cap governs a still-vague or
+  contradicted answer only; a concrete, evidenced answer is not a stop signal — when it exposes a new
+  in-scope claim, dependency, contradiction, or untested assumption, open an evidence-advancing follow-up
+  ([How to traverse the tree](#how-to-traverse-the-tree) rule 9), still one question per turn.
 - **Re-open on contradiction.** When a later answer contradicts an earlier branch, re-open the earlier
   branch and resolve it in the coverage frame — do not paper over it. Architecture must not silently redefine
   scope; roadmap must not silently redefine the quality bar.
@@ -553,7 +567,8 @@ affected summary again. The ordinary Ideation cursor and artifacts—not Startup
 - **Safe decline or stop.** A decline or interruption causes no Startup-owned cleanup because this
   operation writes no session or durable files.
 - **Depth override.** After the first real problem event, score assumptions by uncertainty × reversibility
-  × magnitude and give the riskiest claim the first disconfirming probe.
+  × magnitude and give the riskiest claim the first disconfirming probe, then follow that probe down as an
+  evidence-led chain (rule 9) until the evidence stops moving.
 - **JTBD switching forces are user / problem understanding.** In 3.2 and 3.3, probe the four forces —
   push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
   the last real switch, to close the gap where a real problem still fails to produce a change in behavior.

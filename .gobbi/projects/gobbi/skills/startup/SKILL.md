@@ -24,8 +24,12 @@ explicitly requests a baseline reset. A normal resume or runtime context boundar
    stronger evidence than compliments, surveys, or promises.
 3. **Ask neutrally, then take a position.** Do not pitch inside a question. State the evidence read and
    what evidence would change it. Push a vague or contradicted answer at most twice, then leave it open.
-4. **Attack the riskiest assumption first.** Spend depth according to uncertainty × reversibility ×
-   magnitude, while still accounting for every required topic.
+4. **Attack the riskiest assumption first, then follow the evidence down.** Spend depth according to
+   uncertainty × reversibility × magnitude, while still accounting for every required topic. A concrete,
+   evidenced answer is a launch point for depth, not a stop signal: when it exposes a new in-scope claim,
+   dependency, contradiction, or untested assumption, ask the next disconfirming probe and keep descending
+   while each probe still moves the evidence within the branch's scope. This depth is distinct from the
+   at-most-twice vague-repair cap in principle 3, which only bounds re-asking a still-vague answer.
 5. **Name one first user and their switch.** Separate actors, operators, approvers, and affected people;
    identify their job, current alternative, push, pull, anxiety, and habit.
 
