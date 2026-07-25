@@ -119,7 +119,8 @@ across revisions.
 - **`DESK-R06` — MUST make a rung's resolution recorded and substantiated, because an unresolved rung fails
   the run.** A rung with no recorded resolution, or a resolution whose inspected evidence does not satisfy
   that resolution kind's own conditions, is a silent skip and blocks acceptance. The acceptance predicate and
-  its per-kind conditions are [the rung-acceptance predicate](#the-rung-acceptance-predicate) below.
+  its per-kind conditions are [the rung-closing decision rule](#the-rung-closing-decision-rule), stated in Procedure at
+  the point it governs.
 - **`DESK-R07` — MUST treat fidelity as three independent axes.** Interactivity, visuals, and content and
   navigation vary separately; an artifact may legitimately be high in one and low in another, so no single
   low-to-high dial may govern the progression.
@@ -311,134 +312,6 @@ from both trace directions.
 - **`DESK-N12` — NEVER name a deferred nested bundle as an existing owner, load target, or link
   destination.** Fix: state in prose that it is planned and absent, with no path and no link. *Positive
   counterpart:* `DESK-R31`.
-
-### The rung-acceptance predicate
-
-`DESK-R06`'s predicate. It is stated **positively and substantively** — each condition is about what the
-inspection *found*, not about whether an inspection happened, because a procedural condition ("the pointer
-was inspected") is satisfied by an empty file at a valid path.
-
-> A rung is **accepted** when **both** of exactly two conditions hold: (1) its register row carries one of
-> the three resolution kinds, and (2) that resolution is **substantiated** — what the inspection of the named
-> evidence found satisfies every condition this rung's own question and this resolution kind impose. Nothing
-> else accepts a rung.
-
-**Arity, stated once and only here: exactly two conditions, conjoined, on the acceptance side.** Both are
-necessary, and the truth table below is the four combinations of the two. Conjoining on the *acceptance* side
-narrows what is accepted, which is the safe direction; the escape-hatch defect this guards against was an AND
-on a *failure* condition, where each extra conjunct shrinks the set that fails. Condition (2) is itself the
-conjunction of that kind's own conditions, each individually necessary.
-
-**The coverage-only exclusion, stated as an exclusion.** A named owner, a recorded plan to answer the rung
-later, a scheduled study, a stakeholder's approval, a sign-off, or an artifact at a higher rung closes
-*coverage* of the run's own bookkeeping and **never** acceptance. None of these may appear as a **disjunct**
-anywhere in this predicate, in any check that implements it, or in any evaluation replay of it.
-
-#### The three resolution kinds
-
-One row per rung in the rung register, nine rows.
-
-| Resolution kind | Recorded value |
-|---|---|
-| Answered by producing the artifact | `answered:<pointer to the artifact produced in this run>` |
-| Answered by citing an existing answer | `answered-by-citation:<pointer + scope statement>` |
-| Proved inapplicable | `n-a:<the property proved false + the inspected evidence that proves it>` |
-
-#### Substantive conditions per resolution kind
-
-**`answered:` — answered by producing the artifact in this run.**
-
-- **A1 — the named artifact resolves to substantive content.** The pointer opens, and what it opens is not
-  empty, not a heading-only outline, and not a placeholder. A valid file can still be the wrong content.
-- **A2 — the content answers this rung's own question text**, not the rung's topic.
-- **A3 — the rung's `Done-condition` holds, read off the inspected artifact** rather than off a claim that it
-  holds.
-- **A4 — the rung's own `Closing evidence` exists and was inspected**, and where that evidence involves a
-  person, `DESK-FLOOR-03`'s conditions held for that activity at the time it ran.
-- **A5 — chronology, with sanctioned re-entry distinguished from a back-fill.** The condition rejects an
-  artifact produced after a later rung's artifact **and left unreconciled**. It does not reject a revision
-  reached through the re-entry the ladder itself mandates. Precisely:
-  - **Rejected** — the row's artifact post-dates a later rung's artifact, the row records **no** re-entry,
-    and no downstream rung that depended on the earlier answer carries a re-check. That is the back-fill this
-    condition exists to catch: an answer produced late to make the register look complete.
-  - **Accepted** — the row's artifact post-dates a later rung's artifact **because** a later rung's answer
-    invalidated it and the run re-entered the earliest affected rung, the row records the re-entry and what
-    triggered it, and every downstream rung that depended on the earlier answer carries a re-check against
-    the revision. Re-entry is normal; leaving the downstream rungs unreconciled is not.
-
-  Both ends are load-bearing. The ladder is explicitly re-enterable and `P3` and `P4` mandate returning to
-  the earliest affected rung, so a bare "not produced after a later rung's artifact" would forbid the exact
-  state the procedure requires.
-
-**`answered-by-citation:` — a citation closes a rung only when all five conditions hold.** These five are not
-advice adjacent to the predicate; they **are** its `answered-by-citation` branch.
-
-1. **It addresses this rung's own question.** A citation is checked against the rung's question text, not
-   against the rung's topic. A content inventory does not close the navigation rung; a task analysis does not
-   close the information-architecture rung.
-2. **It resolves to an inspectable artifact whose inspected content is substantive**, per A1's standard. The
-   pointer names a path, a document and section, a prior session record, or another artifact a reader can
-   open. A remembered decision, a conversation, or an assertion that the answer exists somewhere is not a
-   citation.
-3. **It states why it is still valid for this outcome.** The row records what has not changed since the cited
-   answer was produced. A cited answer whose subject has since changed does not close the rung.
-4. **It states what it does not cover.** A citation that answers part of the rung's question closes only that
-   part; the remainder stays open and is answered or proved inapplicable in its own right. This is the clause
-   that stops a partially-covering citation from silently closing a whole rung.
-5. **It does not point forward or at itself.** A citation may not name an artifact produced later in this
-   run, and may not name the rung's own output. This is the chronology condition, and it is unchanged by A5:
-   a re-entered rung is re-*answered*, not closed by a forward-pointing citation.
-
-**`n-a:` — proved inapplicable.**
-
-- **N1 — it names a property, not a reason.** The row names the specific property of *this* outcome that
-  makes the rung's question unanswerable or moot. "Small project," "no budget," "not needed here," and "the
-  team already knows this" are reasons, not properties, and none of them closes a rung.
-- **N2 — the property is proved from inspected evidence about this run's own outcome.** The inspection found
-  the property; a plausible written account of why the rung does not apply is not a proof.
-- **N3 — it is falsifiable.** The row names the observation that would make the rung applicable again.
-- **N4 — it does not rest on a coverage property.** An owner, a plan, a schedule, or a sign-off cannot make a
-  rung inapplicable.
-
-#### Truth table
-
-| Resolution kind recorded | Resolution substantiated | Rung accepted? | Coverage closed? |
-|---|---|---|---|
-| yes | yes | yes | yes |
-| yes | no | **no** | yes — the row exists, so the bookkeeping is closed; acceptance is not |
-| no | yes | **no** — a resolution kind is required, and evidence with no recorded resolution is not a resolution | no |
-| no | no | **no** | no |
-
-#### The disjunct escape-hatch probe
-
-The recorded defect this probe exists to catch is an acceptance predicate that admitted a coverage property
-as a **disjunct**. Probe it directly, and note that the *conjunct* form of this question is vacuous: adding a
-conjunct only shrinks an accepted set, so it passes a defective predicate. Only the disjunct form fails one.
-
-| Step | What is done | Expected result |
-|---|---|---|
-| 1 | Construct the three-term form `accepted ⇔ (kind recorded ∧ substantiated) ∨ owned` and evaluate it on the case *(kind recorded, **not** substantiated, owner named)* | the three-term form returns **accepted** — the escape hatch is real and reachable |
-| 2 | Evaluate the shipped two-condition predicate on the same case | the shipped predicate returns **not accepted** |
-| 3 | Search the shipped predicate text, every check that implements it, and every evaluation replay of it for `owned`, `recorded-open`, `planned`, `scheduled`, or `signed-off` in a disjunctive position | zero occurrences |
-
-The probe **passes** when step 1 reproduces the hatch, step 2 rejects the same case, and step 3 returns zero.
-Any step failing means the predicate has the hatch, and the repair belongs to this predicate, never to the
-check that implements it.
-
-#### The five adversarial counterexamples — four rejected, one accepted
-
-| # | Counterexample | Disposition | Why |
-|---|---|---|---|
-| C1 | **Back-filled chronology** — a rung answered by an artifact produced after a later rung's artifact, with no recorded re-entry and no downstream re-check | **reject** | `answered` A5's reject end, or citation condition 5; the chronology condition is inside the predicate, not adjacent to it |
-| C2 | **Wrong-target citation** — a rung closed by citing a real, inspectable, current artifact that answers a *different* rung's question | **reject** | citation condition 1; the citation branch's conditions are the predicate's conditions, so the question-versus-topic test is a condition of acceptance |
-| C3 | **Uninspected inapplicability** — a rung marked inapplicable with a plausible written reason and no inspected evidence that the property is false | **reject** | `n-a` N1 **and** N2: a reason is not a property, and no inspection found the property |
-| C4 | **Hollow pointer** — all nine rows present, every resolution kind recorded, one row's pointer resolving to an empty or placeholder artifact | **reject** | `answered` A1, and A2 and A3 in turn; the condition is what the inspection *found*, so an inspected empty file fails A1 outright |
-| C5 | **Sanctioned re-entry** — a rung-8 round shows the taxonomy is wrong; the run re-enters rung 2, the row records the re-entry and its trigger, and rungs 3, 4, and 5 each carry a re-check against the revised taxonomy | **accept** | A5's accept end holds. A predicate that rejects this case forbids the state `P3` and `P4` mandate, and is unsound in the opposite direction from C1 |
-
-A predicate that admits any of C1–C4, that rejects C5, or that fails any step of the probe above is unsound,
-and the repair belongs here rather than to a check. Each counterexample is constructed as a disposable
-fixture, run, proved rejected or accepted, and discarded; the recorded proof is the disposition and the
-condition that produced it, never a summary of it.
 
 ### The four protected floors
 
@@ -765,6 +638,136 @@ missing governing source is recorded as a gap, never filled in; otherwise `P3`.
 > vendor's prescriptive design guidance cannot be retrieved (`DESK-R21`), so no menu-ordering claim is made;
 > and the three-target compilation split is recorded with its `INFERRED` marking from `DESK-R17` rather than
 > as a documented fact.
+
+### The rung-closing decision rule
+
+`DESK-R05` and `DESK-R06` make the nine rungs binding; this is the decision rule that closes one, and it
+governs every rung resolution recorded in `P3` and `P4` below. It is stated **positively and
+substantively** — each condition is about what the inspection *found*, not about whether an inspection
+happened, because a procedural condition ("the pointer was inspected") is satisfied by an empty file at a
+valid path.
+
+> A rung is **accepted** when **both** of exactly two conditions hold: (1) its register row carries one of
+> the three resolution kinds, and (2) that resolution is **substantiated** — what the inspection of the named
+> evidence found satisfies every condition this rung's own question and this resolution kind impose. Nothing
+> else accepts a rung.
+
+**Arity, stated once and only here: exactly two conditions, conjoined, on the acceptance side.** Both are
+necessary, and the truth table below is the four combinations of the two. Conjoining on the *acceptance* side
+narrows what is accepted, which is the safe direction; the escape-hatch defect this guards against was an AND
+on a *failure* condition, where each extra conjunct shrinks the set that fails. Condition (2) is itself the
+conjunction of that kind's own conditions, each individually necessary.
+
+**The coverage-only exclusion, stated as an exclusion.** A named owner, a recorded plan to answer the rung
+later, a scheduled study, a stakeholder's approval, a sign-off, or an artifact at a higher rung closes
+*coverage* of the run's own bookkeeping and **never** acceptance. None of these may appear as a **disjunct**
+anywhere in this predicate, in any check that implements it, or in any evaluation replay of it.
+
+#### The three resolution kinds
+
+One row per rung in the rung register, nine rows.
+
+| Resolution kind | Recorded value |
+|---|---|
+| Answered by producing the artifact | `answered:<pointer to the artifact produced in this run>` |
+| Answered by citing an existing answer | `answered-by-citation:<pointer + scope statement>` |
+| Proved inapplicable | `n-a:<the property proved false + the inspected evidence that proves it>` |
+
+#### Substantive conditions per resolution kind
+
+**`answered:` — answered by producing the artifact in this run.**
+
+- **A1 — the named artifact resolves to substantive content.** The pointer opens, and what it opens is not
+  empty, not a heading-only outline, and not a placeholder. A valid file can still be the wrong content.
+- **A2 — the content answers this rung's own question text**, not the rung's topic.
+- **A3 — the rung's `Done-condition` holds, read off the inspected artifact** rather than off a claim that it
+  holds.
+- **A4 — the rung's own `Closing evidence` exists and was inspected**, and where that evidence involves a
+  person, `DESK-FLOOR-03`'s conditions held for that activity at the time it ran.
+- **A5 — chronology, with sanctioned re-entry distinguished from a back-fill.** The condition rejects an
+  artifact produced after a later rung's artifact **and left unreconciled**. It does not reject a revision
+  reached through the re-entry the ladder itself mandates. Precisely:
+  - **Rejected** — the row's artifact post-dates a later rung's artifact, the row records **no** re-entry,
+    and no downstream rung that depended on the earlier answer carries a re-check. That is the back-fill this
+    condition exists to catch: an answer produced late to make the register look complete.
+  - **Accepted** — the row's artifact post-dates a later rung's artifact **because** a later rung's answer
+    invalidated it and the run re-entered the earliest affected rung, the row records the re-entry and what
+    triggered it, and every downstream rung that depended on the earlier answer carries a re-check against
+    the revision. Re-entry is normal; leaving the downstream rungs unreconciled is not.
+
+  Both ends are load-bearing. The ladder is explicitly re-enterable and `P3` and `P4` mandate returning to
+  the earliest affected rung, so a bare "not produced after a later rung's artifact" would forbid the exact
+  state the procedure requires.
+
+**`answered-by-citation:` — a citation closes a rung only when all five conditions hold.** These five are not
+advice adjacent to the predicate; they **are** its `answered-by-citation` branch.
+
+1. **It addresses this rung's own question.** A citation is checked against the rung's question text, not
+   against the rung's topic. A content inventory does not close the navigation rung; a task analysis does not
+   close the information-architecture rung.
+2. **It resolves to an inspectable artifact whose inspected content is substantive**, per A1's standard. The
+   pointer names a path, a document and section, a prior session record, or another artifact a reader can
+   open. A remembered decision, a conversation, or an assertion that the answer exists somewhere is not a
+   citation.
+3. **It states why it is still valid for this outcome.** The row records what has not changed since the cited
+   answer was produced. A cited answer whose subject has since changed does not close the rung.
+4. **It states what it does not cover.** A citation that answers part of the rung's question closes only that
+   part; the remainder stays open and is answered or proved inapplicable in its own right. This is the clause
+   that stops a partially-covering citation from silently closing a whole rung.
+5. **It does not point forward or at itself.** A citation may not name an artifact produced later in this
+   run, and may not name the rung's own output. This is the chronology condition, and it is unchanged by A5:
+   a re-entered rung is re-*answered*, not closed by a forward-pointing citation.
+
+**`n-a:` — proved inapplicable.**
+
+- **N1 — it names a property, not a reason.** The row names the specific property of *this* outcome that
+  makes the rung's question unanswerable or moot. "Small project," "no budget," "not needed here," and "the
+  team already knows this" are reasons, not properties, and none of them closes a rung.
+- **N2 — the property is proved from inspected evidence about this run's own outcome.** The inspection found
+  the property; a plausible written account of why the rung does not apply is not a proof.
+- **N3 — it is falsifiable.** The row names the observation that would make the rung applicable again.
+- **N4 — it does not rest on a coverage property.** An owner, a plan, a schedule, or a sign-off cannot make a
+  rung inapplicable.
+
+#### Truth table
+
+| Resolution kind recorded | Resolution substantiated | Rung accepted? | Coverage closed? |
+|---|---|---|---|
+| yes | yes | yes | yes |
+| yes | no | **no** | yes — the row exists, so the bookkeeping is closed; acceptance is not |
+| no | yes | **no** — a resolution kind is required, and evidence with no recorded resolution is not a resolution | no |
+| no | no | **no** | no |
+
+#### The disjunct escape-hatch probe
+
+The recorded defect this probe exists to catch is an acceptance predicate that admitted a coverage property
+as a **disjunct**. Probe it directly, and note that the *conjunct* form of this question is vacuous: adding a
+conjunct only shrinks an accepted set, so it passes a defective predicate. Only the disjunct form fails one.
+
+| Step | What is done | Expected result |
+|---|---|---|
+| 1 | Construct the three-term form `accepted ⇔ (kind recorded ∧ substantiated) ∨ owned` and evaluate it on the case *(kind recorded, **not** substantiated, owner named)* | the three-term form returns **accepted** — the escape hatch is real and reachable |
+| 2 | Evaluate the shipped two-condition predicate on the same case | the shipped predicate returns **not accepted** |
+| 3 | Search the shipped predicate text, every check that implements it, and every evaluation replay of it for `owned`, `recorded-open`, `planned`, `scheduled`, or `signed-off` in a disjunctive position | zero occurrences |
+
+The probe **passes** when step 1 reproduces the hatch, step 2 rejects the same case, and step 3 returns zero.
+Any step failing means the predicate has the hatch, and the repair belongs to this predicate, never to the
+check that implements it.
+
+#### The five adversarial counterexamples — four rejected, one accepted
+
+| # | Counterexample | Disposition | Why |
+|---|---|---|---|
+| C1 | **Back-filled chronology** — a rung answered by an artifact produced after a later rung's artifact, with no recorded re-entry and no downstream re-check | **reject** | `answered` A5's reject end, or citation condition 5; the chronology condition is inside the predicate, not adjacent to it |
+| C2 | **Wrong-target citation** — a rung closed by citing a real, inspectable, current artifact that answers a *different* rung's question | **reject** | citation condition 1; the citation branch's conditions are the predicate's conditions, so the question-versus-topic test is a condition of acceptance |
+| C3 | **Uninspected inapplicability** — a rung marked inapplicable with a plausible written reason and no inspected evidence that the property is false | **reject** | `n-a` N1 **and** N2: a reason is not a property, and no inspection found the property |
+| C4 | **Hollow pointer** — all nine rows present, every resolution kind recorded, one row's pointer resolving to an empty or placeholder artifact | **reject** | `answered` A1, and A2 and A3 in turn; the condition is what the inspection *found*, so an inspected empty file fails A1 outright |
+| C5 | **Sanctioned re-entry** — a rung-8 round shows the taxonomy is wrong; the run re-enters rung 2, the row records the re-entry and its trigger, and rungs 3, 4, and 5 each carry a re-check against the revised taxonomy | **accept** | A5's accept end holds. A predicate that rejects this case forbids the state `P3` and `P4` mandate, and is unsound in the opposite direction from C1 |
+
+A predicate that admits any of C1–C4, that rejects C5, or that fails any step of the probe above is unsound,
+and the repair belongs here rather than to a check. Each counterexample is constructed as a disposable
+fixture, run, proved rejected or accepted, and discarded; the recorded proof is the disposition and the
+condition that produced it, never a summary of it.
 
 ### `P3` — Walk ladder rungs 0 through 4
 
