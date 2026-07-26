@@ -248,10 +248,15 @@ a caller might reasonably want to handle. Those are errors, and errors are retur
   returns, at the point where the function that deferred it returns.
 - **Unverified:** the standard statement that `recover` only stops a panic in **the same goroutine** as
   the one that panicked. The fact is standard and this skill treats it as true, but no primary sentence
-  was found for it in this pass, so it is written here without a quotation and without an owner. The
-  specification's *Handling panics* section, read at the pinned toolchain tag, would resolve it. Until
-  then: a goroutine that panics takes the program down regardless of any `recover` on another
-  goroutine — so every goroutine that can panic needs its own recovery boundary, or must not panic.
+  has been found for it in either pass, so it is written here without a quotation and without an owner
+  — and it must stay that way rather than acquire a plausible-looking one. **What would resolve it:**
+  the specification's § *Handling panics*, read at the pinned `go1.26.5` tag. That is a narrow, reached
+  gap rather than an open question: a later pass pulled `doc/go_spec.html` at that exact tag for
+  § *Defer statements* and § *Exported identifiers* (both now quoted in
+  [`convention.md`](convention.md) §§3 and 6), so the file is known-reachable and only this section of
+  it is unread. Until then: a goroutine that panics takes the program down regardless of any `recover`
+  on another goroutine — so every goroutine that can panic needs its own recovery boundary, or must not
+  panic.
 
 **Where a recovery boundary belongs:** at a process boundary that must survive one bad unit — a request
 handler, a worker loop, a user-supplied callback. Recover there, convert the panic into an error or a

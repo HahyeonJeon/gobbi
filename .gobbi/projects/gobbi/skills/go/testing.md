@@ -83,10 +83,13 @@ And the per-iteration guarantee applies only because the loop *declares* `tc` wi
 `for _, tc = range tests` over a pre-declared variable still shares one variable, which a parallel
 subtest (§2) will then read after it has moved on (H12 again).
 
-**Unverified:** the table-driven framing itself. This pass fetched no owner sentence recommending
-tables as the standard form for subtests — `go.dev/wiki/TableDrivenTests` would resolve it. The
-sourced part above is the `t.Run` mechanism; the table is this skill's stated house form for using it,
-and a reader is free to write the same cases as separate `t.Run` calls.
+**Unverified:** the table-driven framing itself. Two passes have now fetched no owner sentence
+recommending tables as the standard form for subtests. **What would resolve it:**
+`go.dev/wiki/TableDrivenTests` — and note in advance what that resolution would be worth. `go.dev/wiki`
+is a community wiki: pages there carry Go-team involvement but not Go-team doc authority, so a hit
+would license "the wiki recommends it", never "the Go team mandates it". Until then the sourced part
+above is the `t.Run` mechanism; the table is this skill's stated house form for using it, and a reader
+is free to write the same cases as separate `t.Run` calls.
 
 ## 2. `t.Parallel`: what it owns and what it does not
 
@@ -95,18 +98,39 @@ makes parallel subtests work. It does not document that ordering — §1's two q
 come from the package documentation and `T.Run`. Attributing the ordering to `T.Parallel` cites a
 page that does not contain the claim.
 
-**What `T.Parallel`'s own documentation covers** is two things: a clause about pausing until all
-non-parallel tests have finished, and a rule about `-test.count` and `-test.cpu`.
+**What `T.Parallel`'s own documentation covers is two sentences, and this is all of them:**
 
-> **Read that first clause at the tag you build with.** "and pauses until all non-parallel tests have
-> finished" is present in `src/testing/testing.go` on `master` (tip) and is **not** in the file at the
-> released **`go1.26.5`** tag; `pkg.go.dev` renders the released text. *(Both checked 2026-07-26.)*
-> This is the pin-the-tag rule of [`modules-tooling.md`](modules-tooling.md) §8 with a live instance
-> attached: two surfaces disagreeing is a version difference until you have read both at one version.
+> "Parallel signals that this test is to be run in parallel with (and only with) other parallel tests.
+> When a test is run multiple times due to use of -test.count or -test.cpu, multiple instances of a
+> single test never run in parallel with each other."
+>
+> *(Verbatim from `src/testing/testing.go` § `func (t *T) Parallel()` at the released **`go1.26.5`**
+> tag, verified 2026-07-26.)*
 
-**Unverified:** the exact wording and effect of the `-test.count` / `-test.cpu` clause. It was seen but
-not transcribed at the pinned tag in this pass; reading `src/testing/testing.go` § `func (t *T)
-Parallel()` at `go1.26.5` would resolve it. Do not paraphrase it from memory.
+So the `-test.count` / `-test.cpu` clause is narrower than it is usually read: it bounds a single test
+against **its own repeats**, and says nothing about that test running beside a *different* parallel
+test. Repeating a suite does not serialize it.
+
+> **There is no pause clause at the released tag — do not teach one.** "and pauses until all
+> non-parallel tests have finished" is present in `src/testing/testing.go` on `master` (tip) and is
+> **not** in the file at `go1.26.5`; the two sentences quoted above are the complete comment there.
+> *(Both checked 2026-07-26.)* This is the pin-the-tag rule of
+> [`modules-tooling.md`](modules-tooling.md) §8 with a live instance attached, and it is the reason
+> the quotation above names a tag rather than a page: two surfaces disagreeing is a version difference
+> until you have read both at one version, and quoting the pause clause today is quoting unreleased
+> tip.
+
+**The `t.Setenv` / `t.Chdir` conflict is not in this comment either.** `T.Parallel` does not document
+it. The restriction is enforced in the test binary, and its message is a constant in the same file:
+
+```go
+const parallelConflict = "testing: test using t.Setenv, t.Chdir, or cryptotest.SetGlobalRandom can not use t.Parallel"
+```
+
+*(`src/testing/testing.go` @ `go1.26.5`, read 2026-07-26. Both methods reach it through
+`t.checkParallel()`.)* So the conflict is caught when the test runs, not by the compiler and not by a
+lint — but teach the rule from `Setenv`'s and `Chdir`'s own comments (§3), which do state it, and never
+from `T.Parallel`'s.
 
 **The idiom that follows from §1, not from `T.Parallel`.** A parallel subtest returns from `t.Run`
 immediately and resumes when its parent's function body returns. So a group of parallel subtests
@@ -164,10 +188,17 @@ test above it in the `t.Run` chain called `t.Parallel`, `Setenv` is unavailable 
 restriction is a property of the whole ancestry, which is why environment-dependent tests and parallel
 tests tend to be a design decision made once per package rather than per test.
 
-**Unverified:** whether `T.Chdir` carries the same parallel restriction. The working directory is
-process-wide in the same way the environment is, so the restriction is very likely identical — but
-"very likely" is not a citation, and no sentence was fetched for it in this pass. Reading
-`pkg.go.dev/testing#T.Chdir` at the pinned tag would resolve it.
+**`T.Chdir` carries the same restriction, in the same words:**
+
+> "Because Chdir affects the whole process, it cannot be used in parallel tests or tests with parallel
+> ancestors."
+>
+> *(Verbatim from `T.Chdir`'s doc comment, `src/testing/testing.go` @ `go1.26.5`, verified
+> 2026-07-26.)*
+
+Both methods enforce it through the same `t.checkParallel()` call and the same `parallelConflict`
+message quoted in §2, so treat the two as one decision: a test that sets the environment **or** the
+working directory is a serial test, and so is every test below it.
 
 ## 4. `testing/synctest`: time-dependent tests
 
@@ -202,10 +233,20 @@ cannot see.
 the bubble fails the test rather than hanging the run — which is the property that makes the package
 worth the constraint: a missed wakeup becomes a test failure instead of a flake.
 
-**Unverified:** the package's entry-point symbols and their exact signatures. The semantics above were
-read; the API surface was not transcribed in this pass, so no call is reproduced here — reading
-`pkg.go.dev/testing/synctest` at the pinned tag would resolve it. Writing the call from memory is the
-failure H10 exists to stop.
+**The whole exported API is two functions**, which is why the package is a self-contained
+sub-procedure rather than a framework:
+
+```go
+func Test(t *testing.T, f func(*testing.T))
+func Wait()
+```
+
+*(Both signatures read from `testing/synctest` @ `go1.26.5`, verified 2026-07-26 — the package exports
+nothing else.)*
+
+`Test` is the entry point: it runs `f` as the bubble. Only the two signatures were transcribed, so
+this file states no semantics for `Wait` beyond them — read `pkg.go.dev/testing/synctest` before using
+it. What a reader has to hold is the durability list above, not the API.
 
 ## 5. Benchmarks: `b.Loop()`
 
@@ -257,18 +298,54 @@ once per target rather than written once for all of them; `-run '^$'` keeps the 
 the fuzzing run; and **without `-fuzztime` the run never ends**, which in a gate chain means every gate
 below it never runs.
 
-**Unverified:** the `testing.F` API (`F.Add` for seeds, `F.Fuzz` for the target function), and the
-`testdata/fuzz/` corpus convention — including the claim that a failing input is written there and
-re-run by a plain `go test` afterwards. None of it was fetched in this pass. Reading
-`pkg.go.dev/testing#F` and `go.dev/security/fuzz/` at the pinned toolchain would resolve all of it.
-Until then this file teaches the gate, which is sourced, and not the target, which is not.
+**The target itself.** `F.Add` supplies the seed corpus — *"Add will add the arguments to the seed
+corpus for the fuzz test"* — and the argument types it accepts are a closed list:
+
+> "[]byte, string, bool, byte, rune, float32, float64, int, int8, int16, int32, int64, uint, uint8,
+> uint16, uint32, uint64."
+
+A type outside that list cannot be fuzzed directly; fuzz the bytes and build the value inside the
+target. Inside the `F.Fuzz` function the `*F` is nearly closed too:
+
+> "The only [*F] methods that are allowed in the F.Fuzz function are [F.Failed] and [F.Name]."
+
+**The corpus is on disk, and that is what makes fuzzing a regression tool rather than a one-off run.**
+Both sentences are quoted in a code block because the directory name they contain is a literal
+placeholder:
+
+```
+the fuzzing engine writes the inputs that caused the failure to a file in the directory
+testdata/fuzz/<Name> within the package directory. This file later serves as a seed input.
+
+When fuzzing is disabled, the fuzz target is called with the seed inputs registered with [F.Add]
+and seed inputs from testdata/fuzz/<Name>. In this mode, the fuzz test acts much like a regular
+test.
+```
+
+*(All five quotations in this section are verbatim from the `testing` package documentation,
+§§ `F.Add`, `F.Fuzz`, and Fuzzing, at `go1.26.5`, verified 2026-07-26.)*
+
+So the failing input is **committed**, and every later `go test ./...` replays it without `-fuzz`.
+Deleting a file under `testdata/fuzz/` deletes a regression test.
 
 ## 7. Coverage
 
-**Unverified:** the coverage flags and their semantics — `go test -cover` and `-coverprofile`, and the
-`go build -cover` plus `GOCOVERDIR` form for collecting coverage from an integration binary. No owner
-page was read for any of them in this pass, so no flag is taught here. `go help testflag` and
-`go.dev/doc/build-cover` at the pinned toolchain would resolve them.
+**The flags, and the one distinction that trips people.** `go test` takes `-cover`,
+`-covermode` (`set`, `count`, `atomic` — the default is `set`, and `-race` makes it `atomic`), and
+`-coverprofile`. `go build` takes `-cover`, `-covermode`, and `-coverpkg` — **but not
+`-coverprofile`.** A built binary writes its counters to a directory instead:
+
+> `GOCOVERDIR`: "Directory into which to write code coverage data files generated by running a
+> \"go build -cover\" binary."
+
+*(Flags read from `go help testflag` and `go help build`; `GOCOVERDIR` verbatim from `go help
+environment`; the split is stated in the go command's own source — "We add -cover{mode,pkg} to the
+build command and only -coverprofile to the test command" — all at `go1.26.5`, verified 2026-07-26.
+Narrative owner: `go.dev/doc/build-cover`.)*
+
+Two consequences for an integration test that runs the real binary: reach for `go build -cover` plus
+`GOCOVERDIR`, not `-coverprofile`, and remember that `go build -cover` instruments only the main
+module's packages unless `-coverpkg` widens it.
 
 What needs no fetch is what a coverage number is. H9 already states the shape of this argument for the
 race detector — it "only finds races that happen at runtime, so it can't find races in code paths that
@@ -332,9 +409,18 @@ was found in this pass**. That last one is a negative claim from one session's r
 absence — do not build a rule on it, and do not present the stance as consensus. It is this skill's
 choice, taken with the split in view.
 
-**Unverified:** the got-before-want failure-message format the examples above follow — the shape
-`Parse(in) = <got>, want <want>`, with the actual value first. `go.dev/wiki/TestComments` would
-resolve its owner; no sentence was fetched for it in this pass.
+**The got-before-want format the examples above follow has an owner, at the same tier as the rule
+above it** — Google's Style **Decisions**, normative and **not** canonical:
+
+> "A standard format for printing test outputs is `YourFunc(%v) = %v, want %v`. Where you would write
+> 'actual' and 'expected', prefer using the words 'got' and 'want', respectively."
+>
+> *(Verbatim from `google.github.io/styleguide/go/decisions`, verified 2026-07-26.)*
+
+Two things follow. The call that produced the value goes in the message, so a failure names the input
+without the reader opening the test; and **the actual value comes first**, which is worth stating
+because it is the opposite order from several assertion libraries. Mark the tier whenever you cite
+this: it is Google's convention, not a Go-team one.
 
 **This file makes no claim about any specific assertion library's behavior.** Two such claims were
 carried in the design — an argument-order inconsistency between two `testify` functions, and a

@@ -59,10 +59,12 @@ platform API with no Go binding — write the reason down at the boundary, and k
 one package so the rest of the module stays ordinary Go.
 
 **Unverified:** the pointer-passing rules between Go and C (what may be stored where, and for how
-long), the calling-overhead cost, and the build-time cost. All three are commonly asserted and none was
-fetched in this pass. Reading `cmd/cgo` § *Passing pointers* at the pinned toolchain tag would resolve
-the first; the other two need a measurement, not a citation (`performance.md` owns measure-before-you-
-claim).
+long), the calling-overhead cost, and the build-time cost. All three are commonly asserted and none has
+been fetched in either pass. **What would resolve each:** the first is a citation — `cmd/cgo`
+§ *Passing pointers*, read at the pinned toolchain tag, where the rules are stated as a closed set. The
+other two are **not** citations and must not be written as if a page could supply them: a calling
+overhead and a build-time cost are measurements on your toolchain and target
+([`performance.md`](performance.md) §1 owns measure-before-you-claim).
 
 ## 2. `unsafe`
 
@@ -84,9 +86,11 @@ Consequences to apply when the reason is earned:
   measure first, and prefer the plain form (`performance.md`).
 
 **Unverified:** the specific set of valid `unsafe.Pointer` conversion patterns and the rule that any
-other conversion is invalid. The package documents a closed pattern set, but this pass did not fetch
-it, so no pattern is reproduced here. Read `pkg.go.dev/unsafe` § *Pointer* before writing any
-conversion — reproducing the patterns from memory is exactly the failure H10 exists to stop.
+other conversion is invalid. The package documents a closed pattern set; neither pass fetched it, so no
+pattern is reproduced here. **What would resolve it:** `pkg.go.dev/unsafe` § *Pointer*, read at the
+pinned tag and transcribed in full — a partial transcription is worse than none, because the value of
+the set is that it is closed. Read it before writing any conversion; reproducing the patterns from
+memory is exactly the failure H10 exists to stop.
 
 ## 3. Reflection
 
@@ -102,6 +106,15 @@ introduction closes with the position:
 
 The proverbs put the same judgment more bluntly — "Reflection is never clear" — as rhetoric, not as a
 rule *(`go-proverbs.github.io`, read 2026-07-25)*.
+
+> **Note which cost that is, and which cost has no owner.** Both sentences above are about **care and
+> clarity**. **"Reflection is slow" is not a Go-team claim** — neither *The Laws of Reflection* nor
+> `pkg.go.dev/reflect` states a performance cost, and the one Go-team performance sentence on the
+> subject is in `go.dev/blog/gob`, which compares reflection to `unsafe`-based field access *inside a
+> single encoder* and then records that `gob` dropped `unsafe` in Go 1.4 "with a modest performance
+> drop" *(read 2026-07-26)*. So do not cite an owner for the speed claim. If reflection's cost matters
+> to a decision, it is a benchmark ([`performance.md`](performance.md) §1), and the argument this file
+> actually makes is the one below: reflection moves checking from compile time to run time.
 
 **What reflection costs, concretely:** a type error that the compiler would have refused becomes a
 run-time panic on a path a test may not execute; a rename that the compiler would have propagated
@@ -169,9 +182,12 @@ The rules that follow:
   output is evidence, not a design decision.
 
 **Unverified:** the exact conventional header line that marks a file as generated, and the tooling that
-recognizes it. The convention exists and is widely honored, but no owner page for its exact wording was
-fetched in this pass, so it is not reproduced here. Reading `go help generate` at the pinned toolchain,
-and the go.dev page on generated-code comments, would resolve it.
+recognizes it. The convention exists and is widely honored, but no owner page for its exact wording has
+been fetched in either pass, so it is not reproduced here — and the wording is the whole point, since a
+line that differs by a character is not recognized. **What would resolve it:** `go help generate` at
+the pinned toolchain, and the go.dev page on generated-code comments — find that page from `go.dev`
+rather than guessing its URL, because a plausible-looking citation is the defect this file is guarding
+against. Copy the line from whichever of those you reach, never from another repository's file.
 
 ## 6. Subprocesses with `os/exec`
 

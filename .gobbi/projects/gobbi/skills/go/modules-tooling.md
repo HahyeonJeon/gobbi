@@ -79,10 +79,11 @@ copy the number out of this file; read what `go mod init` actually wrote. Raise 
 named feature, with `go get go@<version>`, which the same note names as the follow-up command.
 
 **Unverified:** the `toolchain` directive's selection and upgrade rules, and `go.work` workspace
-semantics. Both topics are covered by the Go Modules Reference (`go.dev/ref/mod`), which this pass
-**did** read — for the selection facts in §4 — but not for these two sections. So this is an
-unresearched gap, not an unsourceable one: the owner is known, reachable, and one read away. Until
-someone makes that read, this file states nothing about either beyond the floor facts above.
+semantics. **What would resolve it:** the Go Modules Reference (`go.dev/ref/mod`) §§ *Go toolchains*
+and *Workspaces*. Both passes read that page — for the selection facts in §4 — and neither read those
+two sections, so this is an unresearched gap, not an unsourceable one: the owner is known, reachable,
+and one read away. Until someone makes that read, this file states nothing about either beyond the
+floor facts above.
 
 ## 3. GODEBUG: the compatibility dial
 
@@ -141,10 +142,12 @@ only.)* So a package that needs cgo needs a toolchain decision, not a flag flip.
 depth, including what `unsafe` and cgo cost you, lives in the interop child.
 
 **Unverified:** the `//go:build` expression syntax, the `_GOOS` / `_GOARCH` filename-suffix rule, and
-the exact `GOOS` / `GOARCH` value sets. No owner page for these was fetched in this pass, and Go facts
-written from memory are what H10 exists to stop. Running `go help buildconstraint` and
-`go help environment` on the pinned toolchain would resolve all three. Do not reach for
-`go tool dist list` here — it was not verified either.
+the exact `GOOS` / `GOARCH` value sets. No owner page for these has been fetched in either pass, and Go
+facts written from memory are what H10 exists to stop. **What would resolve it:** `go help
+buildconstraint` for the first two and `go help environment` for the third, both run on the pinned
+toolchain — these are `go help` topics rather than web pages, so a fetch cannot answer them and a
+rendered page must not be substituted (§8). Do not reach for `go tool dist list` here either; it has
+not been verified.
 
 ## 7. The verification tools
 
@@ -204,7 +207,25 @@ each learned by a fetch that returned a confident wrong answer.
   the released `go1.26.5` tag, and `pkg.go.dev` renders identically to the released tag. The finding
   was a **tip source read against a released rendering** — the exact comparison the pin-the-tag rule
   above forbids, committed while applying it. A wording difference between two surfaces is not
-  evidence that one dropped something until both are read at the same version.
+  evidence that one dropped something until both are read at the same version. Re-confirmed
+  2026-07-26: the comment at `go1.26.5` is two sentences and carries no pause clause, which is what
+  [`testing.md`](testing.md) §2 now quotes.
+- **Treat a rendered-page summary as a lead, not a citation — it can manufacture the support you are
+  checking for.** A 2026-07-26 fetch of `pkg.go.dev/net/http/pprof` returned a confident, formatted
+  **"Security Warning: never expose on a public or internet-facing interface."** That text does not
+  exist: a grep of `src/net/http/pprof/pprof.go` at `go1.26.5` for `public`, `internet`, `security`,
+  `untrusted`, `expose`, and `sensitive` matches only an unrelated internal comment. A verification
+  sweep that fetches rendered pages can therefore confirm a citation that was never written. **Verify
+  wording against source or raw docs**, and see [`performance.md`](performance.md) §1 for how the
+  claim is stated once the owner turns out not to carry it.
+- **A rendered package page can also advertise what a stock build does not have.** `runtime/pprof`'s
+  documentation lists the `goroutineleak` profile unconditionally, while the code registers it only
+  under `if goexperiment.GoroutineLeakProfile` — so presence on `pkg.go.dev` is not availability.
+  Check the registration, not the prose, before teaching a symbol as usable.
+- **A plausible URL is not an existing URL.** `pkg.go.dev/cmd/goimports` returns **HTTP 404**;
+  `goimports` is not in the Go distribution, and its real path is `golang.org/x/tools/cmd/goimports`.
+  Fetch a citation's URL before writing it down — inventing the path a tool "should" live at is the
+  same failure as inventing its content. *(Checked 2026-07-26.)*
 - **Never take a date from a rendered releases listing.** Two of eleven verification fetches returned
   wrong years from rendered GitHub `/releases` pages; the raw `CHANGELOG.md` and the module proxy
   agreed with each other against them. Dates in §9 come from the proxy or a raw changelog.
@@ -219,9 +240,11 @@ each learned by a fetch that returned a confident wrong answer.
 ## 9. The Version Currency Register
 
 Every version number this skill asserts resolves to a row here. Other files point at this table rather
-than restating a number. All rows were read **2026-07-25**. Dates come from the module proxy or a raw
-changelog, never from a rendered releases page (§8). §10's table is part of this register: each row
-there names its introducing version, and the release notes for that version are its owner.
+than restating a number. Each row carries its own verification date in the last column — most are
+**2026-07-25**, and a second pass added or re-read the rows dated **2026-07-26**. Dates in the value
+column come from the module proxy or a raw changelog, never from a rendered releases page (§8). §10's
+table is part of this register: each row there names its introducing version, and the release notes for
+that version are its owner.
 
 | Claim | Value | Owner | Verified |
 |---|---|---|---|
@@ -249,6 +272,7 @@ there names its introducing version, and the release notes for that version are 
 | `testing/synctest` | **go1.25.0** | `pkg.go.dev/testing/synctest` | 2026-07-25 |
 | `wg.Go(f)`; container-aware `GOMAXPROCS` | 1.25 | `go.dev/doc/go1.25` | 2026-07-25 |
 | `errors.AsType` | **go1.26.0 — above the `go 1.25.0` floor** | `go.dev/doc/go1.26`, `pkg.go.dev/errors` | 2026-07-25 |
+| `goroutineleak` profile | **Go 1.26, and an EXPERIMENT** — requires `GOEXPERIMENT=goroutineleakprofile` at build time; the notes aim to enable it by default in 1.27 | `go.dev/doc/go1.26` | 2026-07-26 |
 | `go fix` as the modernizer home; `go doc` as the surviving doc command | **toolchain 1.26**, not floor-gated | `go.dev/doc/go1.26` | 2026-07-25 |
 
 ## 10. Obsolete forms, floor-checked
@@ -270,7 +294,7 @@ defect twice.
 | `rand.Seed(time.Now()…)` | `math/rand/v2`, randomly seeded | 1.22 | **Available** |
 | hand-rolled `filepath.Clean` + prefix checks | `os.Root` / `os.OpenRoot` | 1.24 | **Available** |
 | `// +build` | `//go:build` | 1.17 | **Available** |
-| `ioutil.*` | `os` / `io` | 1.16 (**Unverified:** this version alone was not fetched; the obsolescence is not in doubt, the numeral is — a `pkg.go.dev/io/ioutil` deprecation note would resolve it) | **Available** |
+| `ioutil.*` | `os` / `io` | 1.16 (**Unverified:** the numeral alone, unfetched in both passes; the obsolescence is not in doubt. **What would resolve it:** the per-symbol deprecation notes on `pkg.go.dev/io/ioutil`, which is the owner §8's cite-a-per-symbol-"added in" rule points at) | **Available** |
 | `go.uber.org/atomic` as the default | standard-library typed atomics | 1.19 | **Available** |
 | `automaxprocs` cgroup shims on Linux | nothing — the runtime is container-aware | 1.25 | **Available exactly at the floor** |
 | `cmd/doc` / `go tool doc` | `go doc`, the surviving command | deleted in **toolchain 1.26** | **Toolchain fact, not a floor fact.** A 1.25 toolchain still accepts the old spelling; a 1.26 one does not |

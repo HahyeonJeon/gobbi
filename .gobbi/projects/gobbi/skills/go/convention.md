@@ -54,10 +54,18 @@ type that repeats it produces `http.HTTPServer` at every use.
 **No `Get` prefix on a getter** — write `user.Name()`, not `user.GetName()`. This is **Google's
 position**, and Google's guidance has three tiers that must not be flattened: the Style **Guide** is
 normative *and* canonical for Google, **Decisions** is normative and *not* canonical, and **Best
-Practices** is neither. **Unverified:** which of those pages carries the getter rule. The attribution
-to Google is sourced; the subpage is not, so read the page before quoting a sentence from it — citing
-two tiers at one URL and one strength is the error [`modules-tooling.md`](modules-tooling.md) §8 exists
-to prevent.
+Practices** is neither. The rule is on **Decisions** — the middle tier, *"normative but not canonical,
+and…subordinate to the core style guide"* — and not on the Guide:
+
+> "Function and method names should not use a `Get` or `get` prefix, unless the underlying concept
+> uses the word 'get'… Prefer starting the name with the noun directly, for example use `Counts` over
+> `GetCounts`."
+>
+> *(Verbatim from `google.github.io/styleguide/go/decisions`, verified 2026-07-26.)*
+
+Read the exception, because it is the half people drop: a domain that genuinely says "get" — an HTTP
+`GET`, a cache `Get` — keeps the word. Cite the tier every time. Citing two tiers at one URL and one
+strength is the error [`modules-tooling.md`](modules-tooling.md) §8 exists to prevent.
 
 ## 2. Package layout
 
@@ -86,29 +94,48 @@ migration path under which `pkg/` becomes correct here.
 
 ## 3. Identifiers, receivers, and file names
 
-**What this file states, and why so little of it.** Package naming (§1) and the no-`Get`-prefix rule
-are sourced. General identifier naming and file naming are **not**, in any material read for this
-skill, so they take the stated fallback and are dropped rather than written from memory. That is a
+**What this file states, and why so little of it.** Package naming (§1), the no-`Get`-prefix rule,
+exported-identifier form, and receiver naming and type are sourced below. **General** identifier naming
+and file naming are **not**, in any material read for this skill, so they take the stated fallback and
+are dropped rather than written from memory. That is a
 deliberate omission, not an oversight: Google's Style Guide and `go.dev/doc/effective_go` § *Names*
 are the two places to read, and a later pass that reads either can add the section with a citation.
 Effective Go is admissible **for naming specifically** — H15 bars it for modules, generics, iterators,
 errors, and tooling, and naming is none of those — but it announces in its own header that it is not
 current, so cite it for the unchanged concept and cross-check anything else.
 
-One fact needs no fetch because the whole skill already rests on it: **an identifier is exported if and
-only if its first character is upper case.** That is the entire access-control mechanism — there is no
-`private`, no `public`, and no per-consumer visibility. So a capital letter is an API decision, and the
-review question at every new exported name is whether you are prepared to keep it. *(The
-specification § Exported identifiers owns this; it was not re-read at the pinned `go1.26.5` tag in
-this pass.)*
+One fact the whole skill already rests on, and the specification states it exactly:
 
-**Unverified:** receiver naming and the receiver-type decision, both of which the P2 router sends here
-— that a receiver is a short abbreviation of its type rather than `this` or `self`, that a type's
-methods should not mix value and pointer receivers, and the "when in doubt, use a pointer receiver"
-default. No owner sentence was fetched for any of the three in this pass; `go.dev/wiki/CodeReviewComments`
-§ *Receiver Names* and § *Receiver Type* would resolve all of them. One adjacent rule **is** already
-sourced and stands on its own: a struct holding a `sync` type must use pointer receivers throughout,
-because a value receiver copies the lock on every call (H13).
+> "An identifier is exported if both: the first character of the identifier's name is a Unicode
+> uppercase letter (Unicode character category Lu); and the identifier is declared in the package block
+> or it is a field name or method name."
+>
+> *(Verbatim from the specification § Exported identifiers, `doc/go_spec.html` @ `go1.26.5`, verified
+> 2026-07-26.)*
+
+Read both halves of the conjunction. The case rule is the entire access-control mechanism — there is
+no `private`, no `public`, and no per-consumer visibility — and the **second** clause is why a capital
+letter inside a function body exports nothing: a local declaration is not in the package block. So a
+capital letter at package scope, on a field, or on a method is an API decision, and the review question
+at every new exported name is whether you are prepared to keep it.
+
+**Receiver naming and the receiver-type decision** — both routed here by P2 — are **Google's Style
+Decisions**, the middle tier (§1): normative, not canonical. Neither is on the Style Guide, and no
+Go-team page was found for either.
+
+- **Receiver names** are *"Short (usually one or two letters in length) / Abbreviations for the type
+  itself / Applied consistently to every receiver for that type / Not an underscore; omit the name if
+  it is unused."* So `c`, not `this`, not `self`, and not a different letter on the next method.
+- **Receiver type** leads with a priority rather than a default: *"**Correctness wins over speed or
+  simplicity.**… pick pointers for large types or as future-proofing… and use values for simple [plain
+  old data]."*
+
+*(Both verbatim from `google.github.io/styleguide/go/decisions`, verified 2026-07-26.)*
+
+Note what that second quotation is **not**: it is not a blanket "when in doubt, use a pointer
+receiver". It ranks correctness first and then splits on the type. One adjacent rule is sourced
+elsewhere and decides the case it covers outright: a struct holding a `sync` type must use pointer
+receivers throughout, because a value receiver copies the lock on every call (H13).
 
 ## 4. Doc comments and comment style
 
@@ -122,12 +149,26 @@ no reader can infer it, and the caller's correctness depends on it. Apply the sa
 else a caller must know and cannot see — what a returned value aliases, what a `Context` cancels, and
 which goroutine a callback runs on.
 
-**Unverified — the form itself.** The conventions for writing doc comments (the sentence that begins
-with the name of the thing being documented, the list and heading syntax, the linking syntax) are owned
-by `go.dev/doc/comment`, "Go Doc Comments", which was not fetched in this pass. No form rule is stated
-here, and the same applies to general comment style: this file adds no comment-style policy the parent
-does not have, because it has no source for one. Read the owner page before writing a house rule for
-either.
+**The form, with the attribution kept straight — this is two owners at two strengths, not one rule.**
+
+- **`go.dev/doc/comment`, "Go Doc Comments", is the owner page**, and its actual wording is softer than
+  the rule people quote: doc comments for types and functions *"start with complete sentences naming
+  the declared symbol"*, and *"For a package comment, that means the first sentence begins with
+  'Package '."*
+- **The blunt form — *"Comments should begin with the name of the thing being described and end in a
+  period"* — is on `go.dev/wiki/CodeReviewComments`, not on `doc/comment`.** That page describes itself
+  as *"a laundry list of common style issues, not a comprehensive style guide"*, so it is **weaker**
+  authority than the owner page. Quote it as the sharper phrasing of the owner's rule, never as the
+  owner's own sentence.
+
+*(Both pages verified 2026-07-26.)*
+
+One further convention read across that pair is worth applying because it is mechanical: *"Doc comments
+typically use the phrase 'reports whether' to describe functions that return a boolean. The phrase 'or
+not' is unnecessary."* The sentence was transcribed without recording which of the two pages carries
+it, so cite it as "the doc-comment guidance" and confirm the page before attributing it to either.
+
+Beyond those, this file adds no comment-style policy the parent does not have.
 
 What is mechanical rather than conventional is already settled elsewhere: `gofmt` normalizes comment
 formatting as part of formatting the file, and H3 makes every file `gofmt`-clean.
@@ -139,20 +180,35 @@ stated fix and the reason the import block is not usually a decision anyone make
 wraps it as `test -z "$(goimports -l .)"`, because — like `gofmt -l` — it reports offending files on
 stdout and still exits `0`, so the bare command can never fail a chain.
 
-**Unverified:** the grouping convention itself — the widely used split of standard-library imports from
-everything else, separated by a blank line — and whether `goimports` produces that split or merely
-preserves one it finds. No owner was read for either claim in this pass;
-`pkg.go.dev/golang.org/x/tools/cmd/goimports` would resolve the tool's behavior, and Google's Style
-Guide is the likely owner of the convention. Follow whatever grouping the package already uses, and let
-the tool keep the block sorted.
+**The grouping convention has a Go-team owner, and what it actually fixes is the first group:**
+
+> "Imports are organized in groups, with blank lines between them. The standard library packages are
+> always in the first group."
+>
+> *(Verbatim from `go.dev/wiki/CodeReviewComments`, verified 2026-07-26.)*
+
+Two qualifications, both worth carrying:
+
+- **It is not the tool's rule.** `goimports`' own documentation says **nothing** about grouping — it
+  documents the `-local` flag and nothing else on the subject — so the convention is a convention, and
+  the tool preserves and sorts rather than mandates. *(Read at `golang.org/x/tools/cmd/goimports`,
+  2026-07-26. Note the URL: `pkg.go.dev/cmd/goimports` is an **HTTP 404** — `goimports` is not in the
+  Go distribution, and a citation pointing there is citing a page that does not exist.)*
+- **Stricter variants exist at lower tiers.** `gofumpt` enforces its own rule that standard-library
+  imports be in a separate group at the top, and Google's Style Decisions extends the split to four
+  groups. Neither overrides the sentence above; both are what a specific tool or house adds to it.
+
+So: follow whatever grouping the package already uses, keep the standard library first when you are
+choosing, and let the tool keep the block sorted.
 
 ## 6. `defer`, in full
 
 **`defer` runs at *function* return — not at the end of the enclosing block. Go has no scope-bound
 release.** There is no destructor, no `using`, no `with`, and no block-scoped RAII of any kind. The
 function boundary is the only release boundary the language gives you. *(The specification owns
-`defer`'s accumulation to function return; `SKILL.md` P3 design act 6 carries the same clause, verified
-2026-07-25.)*
+`defer`'s accumulation to function return — "invoked immediately before the surrounding function
+returns" — and is quoted in full below at `go1.26.5`, verified 2026-07-26; `SKILL.md` P3 design act 6
+carries the same clause.)*
 
 **The consequence that bites is a `defer` inside a loop:** it accumulates. A loop that opens a
 resource per iteration and defers its release holds every one of them until the whole function returns
@@ -195,11 +251,38 @@ returns. Written as two, each one closes at the end of its own iteration. Nothin
   set them. This is the mechanism behind converting a recovered panic into a returned error;
   [`errors.md`](errors.md) §8 owns the `panic` / `recover` boundary itself.
 
-> **Unverified:** all three clauses immediately above, plus the timing of the panic when the deferred
-> value is nil. The specification § *Defer statements* is the owner of every one of them, and it was
-> **not** read at the pinned `go1.26.5` tag in this pass — only the accumulation-to-function-return
-> clause above carries an owner and a date, through `SKILL.md`. Read `doc/go_spec.html` at that tag
-> before quoting any of the four, and do not reproduce the specification's own example from memory.
+**All three are the specification's, read at the pinned tag.** § *Defer statements* states them in
+these words:
+
+> "Each time a 'defer' statement executes, the function value and parameters to the call are evaluated
+> as usual and saved anew but the actual function is not invoked. Instead, deferred functions are
+> invoked immediately before the surrounding function returns, in the reverse order they were deferred.
+> That is, if the surrounding function returns through an explicit return statement, deferred functions
+> are executed after any result parameters are set by that return statement but before the function
+> returns to its caller."
+>
+> "the deferred function may access and modify the result parameters before they are returned. If the
+> deferred function has any return values, they are discarded."
+>
+> *(Verbatim from the specification § Defer statements, `doc/go_spec.html` @ `go1.26.5`, verified
+> 2026-07-26.)*
+
+Three readings the bullets above depend on: *"evaluated as usual and saved anew"* is the
+argument-evaluation timing; *"in the reverse order they were deferred"* is the last-added-first-called
+order; and *"after any result parameters are set…but before the function returns to its caller"* is the
+window in which a deferred function can still change a named result. The final sentence closes a
+common misreading — **a deferred function's own return values are discarded**, so a `defer` cannot
+report anything by returning it.
+
+**A fourth clause decides when a nil deferred value panics:**
+
+> "If a deferred function value evaluates to nil, execution panics when the function is invoked, not
+> when the 'defer' statement is executed."
+>
+> *(Same section, same tag, verified 2026-07-26.)*
+
+So `defer f()` with a nil `f` registers cleanly and blows up at return — the failure surfaces at the
+function boundary, far from the line that caused it.
 
 ## 7. What this file points at
 

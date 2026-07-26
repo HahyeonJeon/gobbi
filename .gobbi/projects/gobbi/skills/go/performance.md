@@ -47,16 +47,46 @@ switched on with `runtime.SetBlockProfileRate` and `runtime.SetMutexProfileFract
 one, the corresponding profile is empty — and an empty block profile reads exactly like "no
 contention" when it means "not measured". *(Owner: `go.dev/doc/diagnostics`, read 2026-07-25.)*
 
-**The two profile lists disagree, so neither is a complete index.** `runtime/pprof`'s registry carries
-`allocs` and a `goroutineleak` profile that the diagnostics page does not list; the diagnostics page
-lists `cpu`, which goes through `StartCPUProfile` rather than through the `Profile` registry, and omits
-`allocs`. Read the page for the toolchain you are on rather than reciting a list from either.
+**The two profile lists disagree, so neither is a complete index.** `runtime/pprof` names seven —
+`goroutine`, `goroutineleak`, `allocs`, `heap`, `threadcreate`, `block`, `mutex` — and says of the
+missing one: *"The CPU profile is not available as a Profile. It has a special API, the
+StartCPUProfile and StopCPUProfile functions."* The diagnostics page names six — `cpu`, `heap`,
+`threadcreate`, `goroutine`, `block`, `mutex` — with **no `allocs` and no `goroutineleak`**. *(Both
+read 2026-07-26.)* Read the page for the toolchain you are on rather than reciting a list from either.
 
-**Unverified:** which Go release introduced the `goroutineleak` profile. It is present in the
-`runtime/pprof` registry as read on 2026-07-25 and absent from the diagnostics page, and no
-introduction version was found. **Do not teach it, and do not gate it on a guessed version** — the
-release notes for the release that added it would resolve this, and until then the honest statement is
-that it exists in the registry and its floor is unknown (H19).
+**`goroutineleak` is a Go 1.26 experiment, and it is off unless you build for it:**
+
+> "A new profile type that reports leaked goroutines is now available as an experiment… named
+> `goroutineleak` in the `runtime/pprof` package, may be enabled by setting
+> `GOEXPERIMENT=goroutineleakprofile` at build time."
+>
+> *(Verbatim from `go.dev/doc/go1.26` § runtime, verified 2026-07-26. The same notes add: "We aim to
+> enable goroutine leak profiles by default in Go 1.27." The version resolves to
+> [`modules-tooling.md`](modules-tooling.md) §9, and 1.26 is **above** the `go 1.25.0` floor — H19.)*
+
+> **The trap is that the package documentation says none of that.** `runtime/pprof`'s own doc lists
+> `goroutineleak` **unconditionally**, while the code registers it only under
+> `if goexperiment.GoroutineLeakProfile`. So `pkg.go.dev` advertises a profile that a stock build never
+> puts in the registry. *(Both read at `go1.26.5`, 2026-07-26.)* Never infer availability from a
+> rendered package page — the general form of that rule is
+> [`modules-tooling.md`](modules-tooling.md) §8.
+
+**`net/http/pprof` exposes the profiles over HTTP, and what it documents is only the wiring:**
+
+> "The package is typically only imported for the side effect of registering its HTTP handlers. The
+> handled paths all begin with /debug/pprof/. As of Go 1.22, all the paths must be requested with GET."
+>
+> *(Verbatim from `pkg.go.dev/net/http/pprof`, verified 2026-07-26. It also states: "If you are not
+> using DefaultServeMux, you will have to register handlers with the mux you are using.")*
+
+> **The exposure risk is this skill's own operational judgment, and is marked as such deliberately.**
+> The package documentation contains **no security warning of any kind** — a grep of
+> `src/net/http/pprof/pprof.go` @ `go1.26.5` for `public`, `internet`, `security`, `untrusted`,
+> `expose`, and `sensitive` matches only an unrelated internal comment *(2026-07-26)*. An earlier fetch
+> of the rendered page returned a confident "Security Warning" that **does not exist in the source**;
+> it must not be reintroduced. The judgment still stands on its own terms — a blank-import in `main`
+> puts profiling endpoints on whatever mux the process already serves, so bind them to an internal
+> listener or put them behind authentication — but state it as a house rule, never as the package's.
 
 **The discipline the whole file rests on.** `coding` P14 owns the language-agnostic property; the Go
 delta is that the tooling makes the excuse unavailable. A profile is one command away, so an
@@ -71,19 +101,39 @@ and both are cheap:
 
 ## 2. Allocation and escape
 
-**Unverified — the whole mechanism half of this topic.** Whether a value lives on the stack or the heap
-is decided by the compiler's escape analysis, and this pass fetched no owner for any of it: not the
-`-gcflags=-m` flag that prints the decision, and not the FAQ entry on stack-versus-heap placement.
-`pkg.go.dev/cmd/compile` for the flag and `go.dev/doc/faq` § *stack or heap* would resolve both. No
-escape rule is stated here, because a plausible-sounding escape rule written from memory is exactly
-what H10 exists to stop.
+**Whether a value lives on the stack or the heap is decided by the compiler's escape analysis, and you
+ask the compiler rather than reason about it.** The owner is the GC guide, and the invocation it gives
+is not the bare `-m`:
 
-What survives without a citation is the discipline rather than the mechanism, and it is the useful
-half anyway: **the placement is not visible in a signature.** Two functions with identical signatures
-can differ, the same function can differ between compiler releases, and no reviewer can read it off the
-page. So every allocation claim — in a review comment, in a code comment, or in this skill — is a
-**measurement** (§1) or it is nothing. "This escapes to the heap" is a profile result, never an
-observation.
+> `$ go build -gcflags=-m=3 [package]`
+>
+> *(Verbatim from `go.dev/doc/gc-guide` § Escape analysis, verified 2026-07-26.)*
+
+**Cite that page and not the two that get cited instead.** `pkg.go.dev/cmd/compile` documents `-m` only
+as *"Print optimization decisions"* and never uses the phrase "escape analysis", so it cannot carry the
+claim; and `go.dev/doc/faq`'s stack-versus-heap entry leads with *"From a correctness standpoint, you
+don't need to know"* — which is guidance not to reason about placement, not a description of how it
+works. *(Both read 2026-07-26.)*
+
+**No escape rule is stated here, and that is the point of the flag.** "A pointer returned from a
+function escapes" and its relatives are compiler behavior, not language rules: **the placement is not
+visible in a signature.** Two functions with identical signatures can differ, the same function can
+differ between compiler releases, and no reviewer can read it off the page. So every allocation claim —
+in a review comment, in a code comment, or in this skill — is either `-gcflags=-m=3` output or a
+**measurement** (§1). "This escapes to the heap" is a tool result, never an observation.
+
+**Struct field order changes a struct's size, and this file states that as its own claim.** The
+specification guarantees *minimum* alignment only, and `unsafe.Sizeof`'s documentation goes no further
+than admitting *"the size includes any padding introduced by field alignment"*. **No Go-team document
+read for this skill recommends ordering fields large-to-small** — a negative from two passes rather than
+a proven absence, which is exactly why the advice must not be presented as documented practice or
+attributed to the specification. *(Both pages read at `go1.26.5`, 2026-07-26.)*
+
+What is real is that the size is **measurable**: `unsafe.Sizeof(v)` before and after gives the actual
+number for your toolchain and target instead of a rule of thumb. Two limits on that. H17 is not
+softened by it — a one-off `unsafe.Sizeof` in a test or a scratch program is the named earned reason,
+and it licenses nothing else from `unsafe` in the code under measurement. And a smaller struct is a
+performance claim like any other here: measured, or not made.
 
 ## 3. Slice capacity and preallocation
 
@@ -108,10 +158,28 @@ from the array being shared while the slice header is copied.
 The rule these serve is H8's: **copy at a boundary you do not own**, and say in the doc comment whether
 a returned slice is shared or owned.
 
-**Unverified — the performance half.** `make([]T, 0, n)` as the remedy for repeated `append` growth is
-not stated by any owner read in this pass, and neither is `append`'s growth behavior itself.
-`go.dev/ref/spec` § *Appending to and copying slices* and `pkg.go.dev/builtin` § `append` would resolve
-it. Until then, treat preallocation as a change to be measured (§1) rather than as a rule.
+**The performance half — the mechanism is sourced, the advice is this skill's own.** The specification
+states what `append` does when it runs out of room:
+
+> "If the capacity of `s` is not large enough… `append` allocates a new, sufficiently large underlying
+> array."
+>
+> *(Verbatim from the specification § Appending to and copying slices, `doc/go_spec.html` @ `go1.26.5`,
+> verified 2026-07-26.)*
+
+**"Preallocate when you know the size" is not stated by any owner**, and this skill does not attribute
+it to one. `go.dev/blog/slices-intro` says only that you *can* control growth; it prescribes nothing.
+If you want a symbol whose own documentation carries the intent, it is not `make` — it is
+`slices.Grow`:
+
+> "Grow increases the slice's capacity, if necessary, to guarantee space for another n elements."
+>
+> *(Verbatim from `pkg.go.dev/slices#Grow`, verified 2026-07-26. `slices` resolves to
+> [`modules-tooling.md`](modules-tooling.md) §9 at Go 1.21, below the floor.)*
+
+So: `slices.Grow` when you are growing an existing slice and can name `n`, `make([]T, 0, n)` when you
+are building a new one. Both are cheap and neither needs defending. What needs defending is the
+*claim* that either one made the code faster — that is a number (§1), not a rule.
 
 **Keep the two reasons apart, because only one of them needs a benchmark.** Setting a capacity for
 **aliasing control** is a correctness decision, sourced above, and it holds whether or not it is
@@ -144,10 +212,21 @@ are clearer and the difference is not worth a name. Anyone who wants the cost ar
 measure it (§1) — that is the honest position when the mechanism is sourced and the causal advice is
 not.
 
-**Unverified:** the cost of converting between `string` and `[]byte`, which the P2 router also sends
-here. Whether a conversion copies, and when the compiler elides the copy, was not fetched in this pass;
-`go.dev/ref/spec` § *Conversions* at the pinned tag would resolve the language half. The topic is named
-rather than silently dropped so that the router does not point at an answer this file never gives.
+**Converting between `string` and `[]byte`** is the other topic the P2 router sends here, and the
+honest answer is that **no Go-team document states a cost for it.** The specification § *Conversions*
+was read in full at `go1.26.5` on 2026-07-26: it specifies **semantics only**, and the word "copy" does
+not appear in the conversion rules at all. It leaves room in the other direction as well —
+*"The capacity of the resulting slice is implementation-specific and may be larger than the slice
+length."* `strings` documents nothing on the subject either.
+
+**So this file states it as its own claim, with the tier attached.** A conversion is a distinct value
+of a distinct type, so treat it as one you pay for, and keep conversions out of hot loops by choosing
+one representation for the path. The familiar list of cases the compiler is said to optimize —
+`m[string(b)]`, `for range []byte(s)`, `string(a) == string(b)` — comes from
+`go.dev/wiki/CompilerOptimizations`, a **community wiki page, not a Go-team document** *(read
+2026-07-26)*. Cite it as that if you cite it, never as the specification, and never as a guarantee: an
+optimization the language does not promise can be absent in the next release, on the next architecture,
+or in a build with different flags. If the conversion cost matters to a decision, measure it (§1).
 
 ## 5. `sync.Pool`
 
@@ -174,9 +253,21 @@ allocation cost, never assumed. It adds a lifetime question to every object that
 what state a reused object carries, and who resets it — and that cost is paid whether or not the
 allocation was ever the bottleneck.
 
-**Unverified:** the rest of `Pool`'s contract — when the runtime may drop pooled items, and the role of
-the `New` field. Neither was transcribed in this pass; `pkg.go.dev/sync#Pool` would resolve both. Do
-not assume an item put into a `Pool` is still there.
+**One more clause is sourced, and it is the one that makes a `Pool` safe to hand between goroutines:**
+
+> "a call to Put(x) 'synchronizes before' a call to Pool.Get returning that same value x."
+>
+> *(Verbatim from `pkg.go.dev/sync#Pool`, verified 2026-07-26.)*
+
+That is a memory-model guarantee in the memory model's own vocabulary: whatever the putting goroutine
+wrote to `x` before `Put` is visible to the goroutine that later `Get`s it. It covers the handoff and
+nothing else — it says nothing about the object's *contents* being reset, which is still your job.
+
+**Unverified:** two parts of `Pool`'s contract remain untranscribed after two passes — **when the
+runtime may drop pooled items**, and **the role of the `New` field** (whether `Get` can return nil when
+`New` is unset). **What would resolve it:** `pkg.go.dev/sync#Pool`, read in full rather than for the
+two clauses quoted here; both sentences are on that one page, so this is an unread gap and not an
+unsourceable one. Until then, do not assume an item put into a `Pool` is still there.
 
 ## 6. Container-aware `GOMAXPROCS`
 
@@ -196,8 +287,33 @@ The practical check for an existing service: an `automaxprocs` import in a modul
 now dead weight, and removing it is a dependency change like any other — one that
 [`modules-tooling.md`](modules-tooling.md) §10 already sanctions.
 
-**Unverified:** the mechanism's details — which cgroup limit the runtime reads, whether it re-reads the
-limit while the process runs, and the behavior on non-Linux platforms. `go.dev/doc/go1.25` § *runtime*
-would resolve all three, and it is the same owner the register row already names. Until then, state the
-availability fact above and measure the resulting `GOMAXPROCS` in the target environment rather than
-predicting it.
+**Which limit it reads, and the one that it does not.** The 1.25 release notes are the owner:
+
+> "On Linux, the runtime considers the CPU bandwidth limit of the cgroup containing the process… In
+> container runtime systems like Kubernetes, cgroup CPU bandwidth limits generally correspond to the
+> 'CPU limit' option. **The Go runtime does not consider the 'CPU requests' option.**"
+>
+> "On all OSes, the runtime periodically updates `GOMAXPROCS` if the number of logical CPUs available
+> or the cgroup CPU bandwidth limit change."
+>
+> *(Both verbatim from `go.dev/doc/go1.25` § runtime, verified 2026-07-26.)*
+
+Read the emphasized sentence against how Kubernetes manifests are actually written. A pod with a CPU
+*request* and no *limit* gets no container-aware sizing at all — the runtime falls back to the logical
+CPU count of the node, which is the same over-sizing the `automaxprocs` shim existed to fix. Setting a
+request is not setting a limit.
+
+Two more mechanics from the same notes. The behavior is **disabled** by setting `GOMAXPROCS` manually,
+or with the `containermaxprocs=0` and `updatemaxprocs=0` settings the notes name; and
+`runtime.SetDefaultGOMAXPROCS` restores the default sizing after a manual set. Re-reading is periodic,
+not one-shot — the second quotation is the whole of what 1.25 promises about timing.
+
+> **Do not attribute the CPU-affinity clause to 1.25.** The current `runtime#GOMAXPROCS`
+> documentation at `go1.26.5` adds that the runtime also considers the process's CPU affinity mask,
+> never sets `GOMAXPROCS` below 2 unless the CPU or affinity count is itself below 2, rounds a
+> fractional cgroup limit **up**, and updates at most **once per second**. **None of that is in the
+> 1.25 release notes** *(both read 2026-07-26)*. Cite the runtime documentation at the toolchain you
+> build with for those four, and the 1.25 notes only for the two quotations above.
+
+The standing advice is unchanged by any of this: measure the resulting `GOMAXPROCS` in the target
+environment rather than predicting it.
