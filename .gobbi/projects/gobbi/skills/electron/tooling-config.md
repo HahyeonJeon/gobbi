@@ -187,6 +187,27 @@ base which leaves `electron` resolving to the vendor's un-scoped typings run thr
 guards, and pass every wrong-process `electron` import. Three green passes are not evidence; three green
 passes **with a per-target `paths` mapping** are.
 
+### Values are imported; types are not
+
+Every view keeps the vendor's own split between the two, and the split catches people. **Electron's
+type-only symbols live in the ambient `Electron` namespace and are not re-exported from the module.** Values
+— `app`, `ipcMain`, `contextBridge`, `MessageChannelMain` — import normally. Types — `WebContents`,
+`IpcMainInvokeEvent`, `MessagePortMain` — are written `Electron.X` and imported from nowhere. Importing one
+as a value is `TS2305`, the same code a wrong-process import produces, so the failure reads like a boundary
+violation when it is a namespace mistake.
+
+```ts main
+import { ipcMain } from 'electron';
+
+declare function saveFor(contents: Electron.WebContents): void;
+
+// `import { WebContents } from 'electron'` would be TS2305: it is a type in the
+// ambient namespace, not an export of the module.
+ipcMain.handle('doc:save', (event: Electron.IpcMainInvokeEvent): void => {
+  saveFor(event.sender);
+});
+```
+
 ## 5. `skipLibCheck: true` is required, and the comment is part of the requirement
 
 `electron.d.ts` carries both main-process and renderer types in one file, and it references DOM types —
