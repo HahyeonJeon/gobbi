@@ -416,9 +416,11 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 - [ ] **REACT-CHECK-27** · required · conditional — applies when the change adds an ARIA role, state, or
   property
   - **Claim.** Each addition records which of the rule's stated exceptions justifies it.
-  - **Pass when.** For each addition, the change names the reason no native element carries the
-    semantics: the native element is not implemented, lacks accessibility support, or is ruled out by a
-    stated visual design constraint.
+  - **Pass when.** For each addition, the change names which of the rule's three circumstances applies:
+    the native element is not implemented or lacks accessibility support; it is ruled out by a stated
+    visual design constraint; or HTML has no element or attribute for the feature at all. The third is
+    the one that fits a state such as marking the current item in a set, and naming a different one to
+    make the item resolve does not pass.
   - **Evidence.** The recorded justification, read against the native element it replaces.
   - **On fail.** Required item: open a finding.
   - **`n/a` form.** `n/a: the change adds no ARIA role, state, or property` — cited by the diff.

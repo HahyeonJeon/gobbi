@@ -172,11 +172,13 @@ exception needs; it never introduces an exception this file does not state.
   provides it, and move focus deliberately when a dialog opens and closes.** In React every `aria-*`
   attribute is written exactly as in HTML, so this is a component's output contract, not a separate
   concern. When a dialog opens, focus moves to an element inside it; when it closes, focus returns to the
-  element that invoked it. Exceptions, taken verbatim from the First Rule of ARIA Use: an ARIA role,
-  state, or property is warranted where the native element exists but is not implemented or lacks
-  accessibility support, or where a visual design constraint rules out the element that carries the
-  semantics. Source: W3C Using ARIA §2.1; W3C WAI-ARIA Authoring Practices, modal dialog pattern;
-  react.dev common component props.
+  element that invoked it. Exceptions — the three circumstances the First Rule of ARIA Use names, and no
+  others: (a) the feature is available in HTML but is not implemented, or is implemented without
+  accessibility support; (b) a visual design constraint rules out the native element, because it cannot
+  be styled as required; (c) the feature is not currently available in HTML at all — which is the case
+  for a state no native element expresses, such as marking which item in a set is the current one. Source:
+  W3C Using ARIA §2.1; W3C WAI-ARIA Authoring Practices, modal dialog pattern; react.dev common component
+  props. Depth: `design.md`.
 - **H10 — MUST prove behavior through the user-visible surface.** Find elements by role and accessible
   name, interact the way a user would, and import `act` from `react`. A test that reads component state,
   instances, or tree structure asserts the implementation, so it fails on a correct refactor and passes
@@ -301,6 +303,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `state.md` | Placing a datum — which rung of the ladder owns it, when it is promoted, whether it should be stored at all, and what a client copy of server-owned data has to carry |
 | `async.md` | Deciding whether an Effect is needed at all, cleaning one up, choosing between cancelling and ignoring in-flight work, or reaching for Suspense, `use`, or an external store |
 | `typing.md` | Typing a props surface, `children`, an event, a hook's type argument, a ref, or the style prop — **only when the source is TypeScript**; the file does not apply on a plain-JavaScript codebase |
+| `design.md` | Deciding whether a component or a hook is earned, shaping a prop surface, composing rather than configuring, placing an error boundary, or working out the markup, ARIA, focus, and identifier mechanics an interface owes |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
