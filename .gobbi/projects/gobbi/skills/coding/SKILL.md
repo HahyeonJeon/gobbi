@@ -290,7 +290,7 @@ Good code minimizes the complexity the next person must hold in their head to ch
 
 ## Scope — Language-Agnostic
 
-These principles state the language-agnostic *property* of good code; language-specific *idioms* live in the future `python` / `typescript` skills. The rule of thumb: if the advice changes when you switch languages, it is not a `coding` principle. This skill says "pick the data structure that fits the access pattern" and "design a seam that can be tested"; the language skill says "in this language, that is this concrete type / this test framework". So concrete naming conventions, type-system idioms, language error idioms, runtime performance specifics, and tooling all defer to the per-language skills — `coding` carries only the property they all share.
+These principles state the language-agnostic *property* of good code; language-specific *idioms* live in the `python` / `typescript` skills, and platform-specific idioms in the `electron` skill. The rule of thumb: if the advice changes when you switch languages, it is not a `coding` principle. This skill says "pick the data structure that fits the access pattern" and "design a seam that can be tested"; the language skill says "in this language, that is this concrete type / this test framework". So concrete naming conventions, type-system idioms, language error idioms, runtime performance specifics, and tooling all defer to the per-language skills — `coding` carries only the property they all share.
 
 ---
 
