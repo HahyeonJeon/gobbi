@@ -15,8 +15,17 @@ Read this before writing any statement whose truth can expire.
 Every value here is owned here. A sibling needing one states the property and points at this section rather
 than copying the literal.
 
-**Verified against the platform's own release feed and release-timeline documentation on 2026-07-25.** The
+**Verified against the platform's own release feed and release-timeline documentation on 2026-07-25**, and the
+per-feature availability rows below against its published breaking-changes record on 2026-07-26. The
 claim-to-source register with retrieval identifiers is kept with the design record, not reproduced here.
+
+**Three rows in this document were wrong on first authoring and were corrected against that primary source.**
+The whole-module-across-the-bridge row named the wrong module; the dialog default-path row was two majors
+early; and the clipboard-removal row was one major early and stated as shipped when it has not shipped. All
+three had been written from recollection rather than from the evidence register, and none was traceable to it
+— which is how they were caught. The lesson is recorded here because this document is the family's sole owner
+of version literals: a wrong value here is wrong everywhere that points at it, and pointing is exactly what
+every sibling is required to do.
 
 | Value class | Current value |
 |---|---|
@@ -93,13 +102,18 @@ sentence, so a statement that goes stale identifies itself rather than failing s
 | Renderer sandbox on by default | 20.0.0 |
 | Module syntax support in the main process | 28.0.0 |
 | Direct renderer-to-renderer messaging removed | 28.0.0 |
-| Whole message-port module across the bridge yields an empty object | 29.0.0 |
+| Whole `ipcRenderer` module sent across the bridge yields an empty object | 29.0.0 |
 | File-path property removed from dropped files | 32.0.0 |
 | Clipboard access from the renderer deprecated | 40.0.0 |
-| Dialog default path resolves to the downloads directory | 41.0.0 |
-| Clipboard access from the renderer unavailable | 43.0.0 |
+| Dialog default path resolves to the downloads directory | 43.0.0 |
 | Main process boots from an embedded startup snapshot | 43.0.0 |
 | Framework bundles and preload scripts cached as compiled bytecode | 43.0.0 |
+| Clipboard module no longer exposed to renderers | **44.0 — announced, not yet shipped** |
+
+**The last row is the only forward-looking one.** The current platform version is 43.2.0, so that removal has
+not landed. A run on a supported major still has renderer clipboard access, deprecated. Treat it as a
+migration deadline rather than as current behaviour, and re-check it at the next major — it is the clearest
+case of a statement that is true now and will be wrong without warning.
 
 **A startup measurement is meaningless without its platform version.** The 43.0.0 rows changed the startup
 baseline, so any performance number a run records names the version it was measured on.
