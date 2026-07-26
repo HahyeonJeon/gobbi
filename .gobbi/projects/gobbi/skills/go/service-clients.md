@@ -20,9 +20,12 @@ one exactly once; `%w` is a commitment), **H5** (`ctx` first, named `ctx`, never
 It is the P2 router destination for *any call to a cloud, container, orchestration, or observability
 API*, including one with no child of its own.
 
-**Version numbers.** This file teaches none — every version token in this skill resolves to the
-Version Currency Register in [`modules-tooling.md`](modules-tooling.md) §9. One numeral appears in
-§12, marked there as evidence of a trap rather than a currency claim.
+**Version numbers.** This file teaches none. Every **Go and Go-toolchain** figure in this skill
+resolves to the Version Currency Register in [`modules-tooling.md`](modules-tooling.md) §9; every
+**per-tool SDK, module, or wire-API** figure resolves instead to the owning tool child's own dated
+`**Version / support status:**` header line, which is that figure's single owner (the register states
+the split and why). One numeral appears in §12, marked there as evidence of a trap rather than a
+currency claim.
 
 **Read order — the gate.** Read §1–§12 **before acting on any per-tool child's `## Hazard-class
 deltas` table**. A delta is meaningless without the class it is a delta from. **Exception:** a child's

@@ -52,8 +52,11 @@ citation**. `[gate]` marks a killer — its miss is the costly or silent one; `[
   on the owning loop. *(`H12`)*
 - [ ] `GO-CHECK-03` **[gate]** — PASS if `go vet ./...` ran as its own gate, separate from `go test`, on
   fresh output. FAIL if the vet claim rests on a `go test` run, or on stale output.
-  *Evidence:* the recorded command line and exit status. *On fail:* `copylocks` and `lostcancel` defects ship
-  unseen — halt the handoff and run the full vet. *(`H2`, `P7`)*
+  *Evidence:* the recorded command line and exit status, **dated, against the timestamp of the last
+  change in the diff** — a command line and an exit status alone cannot distinguish a fresh run from a
+  replayed one, so the run must be shown to postdate the code it claims to cover. *On fail:*
+  `copylocks` and `lostcancel` defects ship unseen — halt the handoff and run the full vet.
+  *(`H2`, `P7`)*
 - [ ] `GO-CHECK-04` **[gate]** — PASS if every error-returning path declares its variable as `error` and
   returns a literal `nil` on success. FAIL if a concrete pointer type reaches an `error` result.
   *Evidence:* read each function returning a custom error type; `rg 'var \w+ \*\w*Err'` over the diff. *On
@@ -62,7 +65,9 @@ citation**. `[gate]` marks a killer — its miss is the costly or silent one; `[
 - [ ] `GO-CHECK-05` **[gate]** — PASS if every slice or map crossing a boundary this change does not own is
   copied — `slices.Clone`, the three-index form, or `slices.Clip` — and each returned slice or map says in
   its doc comment whether it is shared or owned. FAIL if `append` can write into a caller's array, a
-  sub-slice pins a large backing array, or a map assignment is treated as a copy.
+  sub-slice pins a large backing array, a map assignment is treated as a copy, **or a `slices.Clone` of
+  a slice of pointers, slices, or maps is treated as a deep copy** — `Clone` copies one level only
+  (`H8`), so a cloned `[]*T` is a new slice over the caller's pointees and the boundary is not closed.
   *Evidence:* read every exported signature taking or returning a slice or map. *On fail:* caller memory is
   mutated invisibly — open a blocking finding. *(`H8`, `Principle 7`)*
 - [ ] `GO-CHECK-06` **[gate]** — PASS if every goroutine the change starts has a named owner, a stop signal,
@@ -189,19 +194,38 @@ ordinary Go source they resolve `n/a: the change-set contains no skills/go file`
   *Evidence:* the block count, the adjacent-`Source:` count, and the exemption list, recorded together. *On
   fail:* an uncited example is the one fact-check a reader has, missing — halt and cite or remove the block.
   *(`H10`)* — sweep `V1`.
-- [ ] `GO-CHECK-28` **[req]** — PASS if every hit of the `V2` retired-vocabulary pattern set sits inside an
-  explicitly-marked obsolete table, a forbidding sentence, or the `V2` allowlist. FAIL if any hit appears in
-  prescriptive prose.
+- [ ] `GO-CHECK-28` **[req]** — PASS if every hit of the `V2` retired-vocabulary pattern set sits inside one
+  of four declared homes: an explicitly-marked obsolete table, a forbidding sentence, an explicitly-labelled
+  bad-case field in [`scenarios.md`](scenarios.md) (`**Situation:**`, `**Bad handling:**`,
+  `**Adversarial probe:**`), or the `V2` allowlist below. FAIL if any hit appears in prescriptive prose.
   *Evidence:* the anchored `rg` run with its per-hit disposition. *On fail:* open a finding on the hit's
-  sentence. *(`H15`, `H12`)* — sweep `V2`.
-- [ ] `GO-CHECK-29` **[req]** — PASS if every `go1.NN`, `vN.N.N`, and `N.NN` token in the tree resolves to a
-  Version Currency Register row in `modules-tooling.md`. FAIL if any version token is orphaned.
-  *Evidence:* the extracted token list against the register. *On fail:* add the register row or remove the
-  claim. *(`H10`)* — sweep `V3`.
-- [ ] `GO-CHECK-30` **[req]** — PASS if every `1.27` occurrence sits in a sentence containing "draft" or "not
-  yet released". FAIL if any presents unreleased behavior as current.
-  *Evidence:* `rg -n '1\.27'` with each hit's sentence. *On fail:* open a finding on the sentence. *(`H19`)*
-  — sweep `V4`.
+  sentence.
+  **Scoring unit:** the sentence, with wrapped lines joined first — except that a table row is scored as a
+  whole row and a `scenarios.md` field as a whole field, because in both the marking sits in the row's or
+  field's label rather than in every sentence under it. **The fourth home is a completion, not a
+  loosening:** the bad-case field labels are literal, machine-checkable markers, and a case whose whole job
+  is to exhibit a retired form is the strongest forbidding frame in the tree — rewording five of them to
+  insert the word "never" would damage the cases to satisfy a scorer. *(`H15`, `H12`)* — sweep `V2`.
+- [ ] `GO-CHECK-29` **[req]** — PASS if every `go1.NN`, `vN.N(.N)`, and `N.NN` **version token** in the
+  tree resolves to its declared owner: a **Go or Go-toolchain** figure to a Version Currency Register
+  row in `modules-tooling.md` §9 or §10; a **per-tool SDK, module, or wire-API** figure to the owning
+  tool child's own dated `**Version / support status:**` header line (`modules-tooling.md` §9 states
+  the split and its reason). FAIL if any version token resolves to neither.
+  *Evidence:* the extracted token list, each token marked Go-figure or tool-figure, against the register
+  and the five child header lines. *On fail:* add the register row, add the child header line, or remove
+  the claim.
+  **Population:** a *version token* is a numeral the prose asserts as a version. A numeral inside a URL
+  or a file path (`go.dev/blog/go1.13-errors`), and a numeral that is not a version (`DefaultQPS
+  float32 = 5.0`), are not version tokens and are out of population — that is what the sweep measures,
+  not an exemption from it. *(`H10`)* — sweep `V3`.
+- [ ] `GO-CHECK-30` **[req]** — PASS if every `\b1\.27` occurrence sits in a sentence containing "draft"
+  or "not yet released". FAIL if any presents unreleased behavior as current.
+  *Evidence:* `rg -n '\b1\.27'` with each hit's sentence. *On fail:* open a finding on the sentence.
+  **The leading `\b` is load-bearing and is a narrowing, not a loophole:** the population is the next
+  Go release, whose notes are still a draft, and `\b1\.27` excludes a third-party module version whose
+  minor happens to be 27 — `smithy-go`'s, which `aws.md`'s header owns — while still matching that
+  numeral in every bare, prose, and backticked form. A Go-version hit still fails without the "draft"
+  or "not yet released" qualifier. *(`H19`)* — sweep `V4`.
 - [ ] `GO-CHECK-31` **[gate]** — PASS if a dated `**Verified:** YYYY-MM-DD against <URL>` header line exists
   in exactly these seven files: `aws.md`, `docker.md`, `grpc.md`, `kubernetes.md`, `observability.md`,
   `service-clients.md`, `modules-tooling.md`. FAIL if a stamp is missing, undated, or present in a file
@@ -218,14 +242,29 @@ ordinary Go source they resolve `n/a: the change-set contains no skills/go file`
   below, and no single-owner item from the ownership table appears in two children. FAIL if a hit lands
   outside a declared fragment — including padding inside a cell the sweep already expects to match.
   *Evidence:* the twelve phrase greps with each hit located against its triple. *On fail:* a child has taken
-  rationale the base owns — halt and delete the restatement from the child. *(`P2`, `H10`)* — sweep `V7`.
+  rationale the base owns — halt and delete the restatement from the child.
+  **Population:** a tool child's `## Hazard-class deltas` table and its `## Tool facts the shared base
+  cannot carry` section. The header block and the `## Read the owner instead of this file` section are
+  out of population, because `service-clients.md`'s read-order gate already declares those two blocks
+  answerable without reading §1–§12 — they carry an import path, a version, and owner URLs, and cannot
+  carry class rationale by construction.
+  **Scoring unit:** the sentence. A hit passes only if the sentence containing it also contains one of
+  the `/`-separated fragment tokens declared for that `(file, class)` pair.
+  **Stated residual, which this item does not claim away:** rationale padding that reuses none of the
+  twelve phrases is invisible to any token sweep. `V7` bounds the drift it can see; the delta test at
+  review carries the rest. *(`P2`, `H10`)* — sweep `V7`.
 - [ ] `GO-CHECK-34` **[gate]** — PASS if every taught form in the tree — every symbol, directive, command,
-  option, and example construct the tree instructs a reader to use or to stop using — is classified as
-  available at the floor, needing a named raised floor, or toolchain-gated. FAIL if any taught form carries
-  none of the three, including a form named with no version at all.
-  *Evidence:* the enumerated form list with its per-form classification and owner. *On fail:* a form named
-  without a version reads as unconditionally available — halt and classify it. *(`H19`, `H10`)* — sweep
-  `V11`.
+  option, and example construct the tree instructs a reader to use or to stop using — has been classified
+  as available at the `go 1.25.0` floor, needing a named raised floor, or toolchain-gated; **and** every
+  form in the second and third classes carries that qualifier, or a pointer to the file that states it,
+  beside the place the tree teaches it. FAIL if a form cannot be classified, or if a raised-floor or
+  toolchain-gated form is taught with no qualifier and no pointer.
+  *Evidence:* the enumerated form list with its per-form classification and owner. **The population is
+  every taught form, with or without a stated version** — a form named with no version is the defect's
+  most common shape, and classification is the sweep's output, never its input filter. A form that
+  classifies as available at the floor needs no qualifier; it still has to appear in the enumeration.
+  *On fail:* a raised-floor form named without its floor reads as unconditionally available — halt and
+  qualify it. *(`H19`, `H10`)* — sweep `V11`.
 - [ ] `GO-CHECK-35` **[gate]** — PASS if, for each sampled taught claim, the cited owner was read as source
   or raw document at a pinned tag and contains the claim — its key term located and its quoted sentence
   copied from what was read. FAIL if the cited page does not contain the claim's key term, the quoted
@@ -241,8 +280,8 @@ ordinary Go source they resolve `n/a: the change-set contains no skills/go file`
 
 ## Sweep data this file owns
 
-Both lists are frozen sweep inputs. Neither changes during a run: a change is an explicit edit to this file,
-made before the sweep runs.
+All three lists are frozen sweep inputs. None changes during a run: a change is an explicit edit to this
+file, made before the sweep runs.
 
 ### `V1` — the pre-declared exemption list
 
@@ -252,37 +291,68 @@ obsolete or forbidden table; **(ii)** a block whose adjacent line reads exactly
 
 **Declared exemptions: none.** The list is empty. Every fenced ` ```go ` block in the tree must carry an
 adjacent `Source:` line. An author who needs an exemption adds the row here first, with the file, the
-approximate line, and the class — and only then runs the sweep.
+approximate line, and the class — and only then runs the sweep. **The list stayed empty through the
+2026-07-26 whole-tree run:** ten uncited blocks were found and all ten were resolved by citing an
+owner, none by exemption. Widening this list to clear a `V1` failure is the failure `V1` exists to
+prevent.
+
+### `V2` — the retired-vocabulary allowlist
+
+`GO-CHECK-28` names this list; here it is. A hit at one of these exact strings is expected and passes
+without sitting in an obsolete table or a forbidding sentence. Nothing else does.
+
+| Allowlisted string | Why it is expected |
+|---|---|
+| `pkg/lint/lintersdb/builder_linter.go` | The golangci-lint source path the default-linter count is read from — a required citation, and the `(^\|[^/])\bpkg/` pattern matches it. `modules-tooling.md` §7 and §9 |
+| any `pkg.go.dev` URL | The `(^\|[^/])\bpkg/` pattern matches the host name. `service-clients.md`'s header stamp is the live instance |
+
+The allowlist is part of the sweep definition, not a per-run judgment call. A retired token anywhere
+else — including a sweep-data table in this file — must sit in an explicitly-marked obsolete table or a
+forbidding sentence, which is why the `docker.md` §12 row in the triple table below names the symbol as
+one the child forbids.
 
 ### `V7` — the allowlisted `(file, class, fragment)` triples
 
 A hit passes only if it falls inside the declared fragment's sentence. A pair-level match is not enough: the
 defect this triple form exists to catch is a child padding an already-expected cell with class rationale.
+A fragment cell is a `/`-separated list of literal tokens; a hit passes if its sentence contains any one
+of them.
 
 | File | Class | Declared delta fragment |
 |---|---|---|
-| `aws.md` | §3 | `retry.Standard` / `3 attempts` |
-| `aws.md` | §5 | `NewListObjectsV2Paginator` / `HasMorePages` |
-| `aws.md` | §6 | `smithy.OperationError` |
-| `aws.md` | §7 | `ClientLogMode` / `LogRequestWithBody` |
+| `aws.md` | §3 | `aws.Config.Retryer` / `Retryer` / `RetryMaxAttempts` |
+| `aws.md` | §5 | `NewListObjectsV2Paginator` / `HasMorePages` / `StopOnDuplicateToken` |
+| `aws.md` | §6 | `smithy.APIError` / `smithy.OperationError` |
+| `aws.md` | §7 | `ClientLogMode` / `LogRequestWithBody` / `LogRetries` |
 | `kubernetes.md` | §3 | `RetryOnConflict` |
-| `kubernetes.md` | §4 | `DefaultQPS` / `DefaultBurst` |
-| `kubernetes.md` | §9 | `fake clientset` / `envtest` |
-| `kubernetes.md` | §11 | `resourceVersion` |
-| `docker.md` | §12 | `WithAPIVersionNegotiation` |
+| `kubernetes.md` | §5 | `no paginator object` / `ListOptions.Limit` / `ListMeta.Continue` |
+| `kubernetes.md` | §6 | `apierrors` |
+| `kubernetes.md` | §8 | `SharedInformerFactory` / `StartWithContext` / `Shutdown` |
+| `kubernetes.md` | §11 | `resourceVersion` / `apierrors.IsConflict` |
+| `docker.md` | §12 | `WithAPIVersionNegotiation` — **the no-op option `docker.md` forbids writing into new code** — / `WithAPIVersion` / `Negotiation only ever` / `MaxAPIVersion` |
+| `grpc.md` | — | none declared |
 | `observability.md` | — | none declared |
 
-**Dropped row.** `grpc.md` §2 *"new TCP connection per dial"* was declared and is dead:
-`service-clients.md` absorbed that sentence and the child correctly omits it, so the row can never match.
-It is removed rather than carried.
+**Dropped rows — three, all dead against the tree.** A dead triple is removed rather than carried,
+because a row that can never match hides the fact that the class it names is unclaimed.
 
-**Pre-run reconciliation required — read before the next `V7` run.** Reading the tree on 2026-07-26 found
-four further discrepancies between this frozen list and the files. They are recorded, not silently edited,
-because the list changes only by an explicit edit: `aws.md` §3's delta is `aws.Config.Retryer` /
-`RetryMaxAttempts`, not `retry.Standard` / `3 attempts`; `kubernetes.md` has no §4 and no §9 row, so both
-those triples are dead like the `grpc.md` one; and `kubernetes.md` carries §5 and §8 rows that no triple
-covers, so a legitimate hit there scores FAIL. Resolve all four by an explicit edit to the table above
-before the sweep is scored.
+- `grpc.md` §2 *"new TCP connection per dial"* — `service-clients.md` §2 absorbed that sentence and the
+  child correctly omits it. `grpc.md` produces **zero** hits on all twelve phrases, which is why its row
+  now reads *none declared* rather than naming a fragment.
+- `kubernetes.md` §4 `DefaultQPS` / `DefaultBurst` — the child has no §4 row; `service-clients.md` §4
+  owns those two constants outright.
+- `kubernetes.md` §9 `fake clientset` / `envtest` — the child has no §9 row; `service-clients.md` §9
+  owns the official-fake class and quotes both notices.
+
+**Reconciliation of 2026-07-26, made as an explicit edit before the run that scored it.** Reading the
+tree found the frozen list disagreed with the files in six places, and every one was resolved here
+first: `aws.md` §3's delta is `aws.Config.Retryer` / `RetryMaxAttempts` and not `retry.Standard` /
+`3 attempts` — the latter is `service-clients.md` §3's own content, so the old triple pointed the sweep
+at the base's text; three dead rows were dropped as above; and `kubernetes.md` §5, §6 and §8 carried
+legitimate delta rows that no triple covered, so a real hit in any of them scored FAIL. Scored against
+the un-reconciled list the tree failed **10 of 16** hits; against this list it fails **0 of 16**, and
+the ten were mis-declared triples rather than restatements in the children. Nothing in a tool child was
+edited to make `V7` pass.
 
 ## Reverse-trace table
 

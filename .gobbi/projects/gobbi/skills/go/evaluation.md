@@ -205,7 +205,7 @@ generated code, `go.mod`, and, for a document change, the register rows, stamps,
 | Anti-pattern | Correction |
 |---|---|
 | **A tool child restating the base's class rationale** | Keep the rationale in `service-clients.md` §1–§12; a child owns only its delta |
-| **A version numeral with no register row** | Resolve every version token to the Version Currency Register; an orphan numeral rots invisibly |
+| **A version numeral with no declared owner** | Resolve every Go or Go-toolchain figure to the Version Currency Register, and every per-tool SDK figure to that child's own dated header line; an orphan numeral rots invisibly |
 | **A stale caller or generated file** | Move the whole affected set in the same slice; the diff is not the change |
 
 ### Risk
@@ -238,7 +238,7 @@ invent a parent rule for them.
 |---|---|---|
 | `V1` | Citation presence: `cited_blocks + declared_exemptions == total_blocks`, exemptions from the frozen list only (`H10`) | `GO-CHECK-27` |
 | `V2` | Retired vocabulary: every anchored hit sits in an obsolete table, a forbidding sentence, or the allowlist (`H15`, `H12`) | `GO-CHECK-28` |
-| `V3` | Version-claim closure: every version token resolves to a Version Currency Register row (`H10`) | `GO-CHECK-29` |
+| `V3` | Version-claim closure: every version token resolves to its declared owner — the Version Currency Register for a Go figure, the tool child's own dated header line for an SDK figure (`H10`) | `GO-CHECK-29` |
 | `V4` | Draft guard: every `1.27` hit says "draft" or "not yet released" (`H19`) | `GO-CHECK-30` |
 | `V5` | Staleness stamps: seven dated `**Verified:**` headers, checked by count **and** composition (`H10`) | `GO-CHECK-31` |
 | `V6` | Link integrity: every link resolves, every intra-skill link is sibling, zero `messaging.md` references (`P2`) | `GO-CHECK-32` |

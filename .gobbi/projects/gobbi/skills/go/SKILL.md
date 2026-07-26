@@ -120,7 +120,8 @@ constraints on the Go you write.
   commands and `go fix` analyzers exist. The rule is the robust part: let `go mod init` choose, because
   Go 1.26 states that running it on a toolchain of version `1.N.X` "will create a `go.mod` file
   specifying the Go version `go 1.(N-1).0`". The numeral follows from your toolchain, so it moves: on a
-  1.26.x toolchain that is `go 1.25.0`, and a 1.27 toolchain will write `go 1.26.0`. Never hard-code
+  1.26.x toolchain that is `go 1.25.0`, and a 1.27 toolchain — 1.27 is **not yet released** and its
+  notes are a draft — will write `go 1.26.0`. Never hard-code
   the number from this page — read what `go mod init` actually wrote. Fix: raise the floor only for a
   named feature, with `go get go@<version>`, and never teach a symbol newer than the floor without
   saying which floor it needs.
@@ -301,13 +302,13 @@ checklist material at P8 before handoff (an evaluator enters through `evaluation
 
 | Read | When the change involves |
 |---|---|
-| `convention.md` | naming a package, file, receiver, or error string; `defer` ordering; a map or nil-map access; a build tag; doc comments; the formatter stance |
-| `design.md` | a package boundary or layout choice, an interface placement, embedding, the zero value, a channels-versus-mutex decision, or a proposed type parameter |
+| `convention.md` | naming a package, receiver, or error string; `defer` ordering; a build tag; doc comments; the formatter stance. Two more land here as **recorded gaps, not answers** — *file naming* (§3) and *a map or nil-map access* (§7): the file names the owner to read and states nothing from memory |
+| `design.md` | a package boundary or layout choice, an interface placement, embedding, the zero value, or a proposed type parameter. A **channels-versus-mutex** decision is [`concurrency.md`](concurrency.md) §3's, which owns it alone; `design.md` §7 only redirects |
 | `errors.md` | creating, wrapping, matching, or classifying an error; a sentinel-versus-type choice; error-string form; `panic` or `recover` |
 | `concurrency.md` | starting a goroutine, a channel, a `sync` primitive, `context` cancellation, `errgroup`, or any shared mutable state |
 | `modules-tooling.md` | `go.mod` or `go.work`, the `go` / `toolchain` / `godebug` lines, dependency selection, vendoring, the linter configuration, `go fix`, `govulncheck`, or any version claim |
-| `testing.md` | writing or reviewing tests, benchmarks, fuzz targets, parallel subtests, time-dependent tests (`testing/synctest`), or coverage |
-| `performance.md` | allocation or escape behavior, slice capacity, string and `[]byte` conversion, benchmarking, profiling, or `GOMAXPROCS` |
+| `testing.md` | writing or reviewing tests, fuzz targets, parallel subtests, time-dependent tests (`testing/synctest`), or coverage — and **writing a benchmark**: `b.Loop()`, the timer, and the `b.N` hazard are §5's |
+| `performance.md` | allocation or escape behavior, slice capacity, profiling, or `GOMAXPROCS` — and **reading a benchmark**: what to measure and what a number licenses you to claim. Also *string and `[]byte` conversion*, which §4 answers by stating that no Go-team document gives it a cost, and gives the house rule at that strength |
 | `interop.md` | `cgo`, `unsafe`, reflection, build constraints and cross-compilation, generated code, serialization, or a filesystem path boundary |
 | `service-clients.md` | **any** call to a cloud, container, orchestration, or observability API — read its twelve hazard classes **before** acting on any tool child's delta table. This row is also the route for a service API that has no child of its own, including messaging: the twelve classes plus the owner's own documentation are then the whole answer |
 | `docker.md` | the Docker Engine API from Go |

@@ -77,6 +77,12 @@ func TestParse(t *testing.T) {
 }
 ```
 
+`Source: https://pkg.go.dev/testing#T.Run (verified 2026-07-25) for the t.Run mechanism quoted above,
+and https://google.github.io/styleguide/go/decisions (verified 2026-07-26) for the
+"YourFunc(%v) = %v, want %v" message form the two failure calls follow (§9, Google's position,
+normative and not canonical). The table arrangement around them is this skill's house form, and the
+note below says so.`
+
 Two rules the parent already carries apply directly to that loop. **Do not write `tc := tc`** — loop
 variables are per-iteration since Go 1.22, so the shadow is dead code that misleads the reader (H12).
 And the per-iteration guarantee applies only because the loop *declares* `tc` with `:=`; a loop written
@@ -124,11 +130,12 @@ test. Repeating a suite does not serialize it.
 it. The restriction is enforced in the test binary, and its message is a constant in the same file:
 
 ```go
-const parallelConflict = "testing: test using t.Setenv, t.Chdir, or cryptotest.SetGlobalRandom can not use t.Parallel"
+const parallelConflict = `testing: test using t.Setenv, t.Chdir, or cryptotest.SetGlobalRandom can not use t.Parallel`
 ```
 
-*(`src/testing/testing.go` @ `go1.26.5`, read 2026-07-26. Both methods reach it through
-`t.checkParallel()`.)* So the conflict is caught when the test runs, not by the compiler and not by a
+`Source: src/testing/testing.go line 1752 @ go1.26.5 (read 2026-07-26) — transcribed verbatim,
+including its raw-string delimiters. Both t.Setenv (line 1852) and t.Chdir (line 1863) reach it through
+t.checkParallel().` So the conflict is caught when the test runs, not by the compiler and not by a
 lint — but teach the rule from `Setenv`'s and `Chdir`'s own comments (§3), which do state it, and never
 from `T.Parallel`'s.
 
@@ -153,6 +160,11 @@ t.Run("group", func(t *testing.T) {   // NOT parallel
 })
 // every parallel subtest above has completed here
 ```
+
+`Source: the testing package documentation § Subtests, https://pkg.go.dev/testing (verified
+2026-07-25) — "Run does not return until parallel subtests have completed, providing a way to clean up
+after a group of parallel tests", quoted above. The nesting shown is this file's idiom built from that
+one sentence.`
 
 **The hazard that survives the Go 1.22 loop-variable fix.** Per-iteration variables removed one class
 of parallel-subtest bug and not the other. Anything the closure captures from *outside* the loop — a
@@ -218,7 +230,9 @@ or near-verbatim from `pkg.go.dev/testing/synctest`, verified 2026-07-25.
 
 **What is durably blocking** — a send or receive on a bubble channel; a `select` where **every** case
 is a bubble channel; `sync.Cond.Wait`; `sync.WaitGroup.Wait` when the matching `Add` happened in the
-bubble; `time.Sleep`.
+bubble; and `time.Sleep` **called inside the bubble**, where the fake clock advances through it — which
+is why the obsolete row at [`modules-tooling.md`](modules-tooling.md) §10 is a `time.Sleep` wait
+*outside* a bubble and never the call itself, the same call being the current form under `synctest`.
 
 **What is NOT durably blocking — this is the sharp edge** — locking a `sync.Mutex` or `sync.RWMutex`;
 blocking on I/O; system calls. A goroutine parked on any of these is blocked but *not durably* blocked,
@@ -241,8 +255,9 @@ func Test(t *testing.T, f func(*testing.T))
 func Wait()
 ```
 
-*(Both signatures read from `testing/synctest` @ `go1.26.5`, verified 2026-07-26 — the package exports
-nothing else.)*
+`Source: src/testing/synctest/synctest.go @ go1.26.5 (read 2026-07-26) — Test at line 288 and Wait at
+line 309. Those are the only two exported functions in the file; everything else it declares is
+unexported.`
 
 `Test` is the entry point: it runs `f` as the bubble. Only the two signatures were transcribed, so
 this file states no semantics for `Wait` beyond them — read `pkg.go.dev/testing/synctest` before using
@@ -265,7 +280,13 @@ func BenchmarkParse(b *testing.B) {
 }
 ```
 
-What `B.Loop` gives you over `for range b.N`:
+`Source: https://pkg.go.dev/testing#B.Loop (verified 2026-07-25) for the timer and setup guarantees
+listed below, and the "New benchmarks should prefer using [B.Loop]" sentence quoted above. B.Loop
+resolves to modules-tooling.md §9 at Go 1.24, below the go 1.25.0 floor. The surrounding function body
+is this file's shape.`
+
+What `B.Loop` gives you over the obsolete `for range b.N` loop it replaced
+([`modules-tooling.md`](modules-tooling.md) §10):
 
 - **It manages the timer itself** — it resets the timer on its first call and stops it when it returns
   false, so setup before the loop and cleanup after it are outside the measurement.
@@ -391,6 +412,10 @@ if got != want {
 }
 ```
 
+`Source: https://google.github.io/styleguide/go/decisions (verified 2026-07-26) — the
+"YourFunc(%v) = %v, want %v" format and the got-before-want order, both quoted below. Google's
+position, normative and NOT canonical; mark the tier wherever this shape is cited.`
+
 **Google's position, at its own tier.** Google's Go Style **Decisions** page — **normative but not
 canonical**, and subordinate to the Style Guide — states it twice:
 
@@ -446,6 +471,6 @@ That gives the whole design in three moves:
    real caller can do, to serve one caller that is not real.
 
 The same rule decides where a fake belongs: in the package that consumes the dependency, beside the
-interface declaration it satisfies. When `service-clients.md` is written it points here for
-test-double design rather than restating it — that is a forward obligation on the author of that file,
-not a description of a file that exists today.
+interface declaration it satisfies. [`service-clients.md`](service-clients.md) §9 points here for
+test-double design rather than restating it, and owns the separate question of what an SDK's *official*
+fake proves and does not.

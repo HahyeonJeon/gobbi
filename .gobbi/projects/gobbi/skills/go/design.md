@@ -106,10 +106,15 @@ blank variable rather than by changing the return type:
 var _ http.Handler = (*Handler)(nil)
 ```
 
+`Source: the specification § Assignability, doc/go_spec.html @ go1.26.5, read 2026-07-26 — a value is
+assignable to a variable of an interface type when "T is an interface type, but not a type parameter,
+and x implements T", which is the rule that makes the declaration a compile-time check.`
+
 The assignment is checked at compile time, so a missing or misspelled method fails the build instead of
 failing at the first call site. `SKILL.md` P3 design act 3 already prescribes this over an interface
-return; the concrete form above is this file's stated idiom and no owner sentence for it was fetched, so
-do not present the *form* as a Go-team mandate.
+return; the **mechanism** above is the specification's, but the **idiom** — a blank variable at the
+implementor rather than a test — is this file's own, and no owner sentence prescribing it was fetched.
+Do not present the form as a Go-team mandate.
 
 ## 3. The useful zero value
 
@@ -228,6 +233,11 @@ func (s *Server) Info(msg string, args ...any) {   // delegate only what you mea
 }
 ```
 
+`Source: the specification § Struct types, doc/go_spec.html @ go1.26.5, read 2026-07-26 — "A field
+declared with a type but no explicit field name is called an embedded field... The unqualified type
+name acts as the field name." A field declared WITH a name, as above, is not embedded and promotes
+nothing. The delegation shape is this file's own.`
+
 Three or four lines buy you a surface that is yours: you choose which methods exist, their names do not
 change when the dependency's do, and replacing `*slog.Logger` later is an internal edit.
 
@@ -266,20 +276,39 @@ an anticipated second type, not a shape that "could be generic" — repeated cod
 misuse:**
 
 ```go
-func ReadSome(r io.Reader) ([]byte, error)      // good
+func ReadSome(r io.Reader) ([]byte, error)      // the interface version
 
-func ReadSome[T io.Reader](r T) ([]byte, error) // "Don't do this"
+func ReadSome[T io.Reader](r T) ([]byte, error) // the type-parameter version
 ```
 
-The page's reason is short: *"Performance will be essentially the same, and the code is simpler."*
-*(Both verbatim from the same page and date.)* So **a type parameter is not earned by replacing an
-interface type** — H17 states that as a rule, and this is where it comes from. When a value is only ever
-used through its methods, the interface is already the abstraction, and the type parameter adds
-inference, constraint syntax, and error messages for nothing.
+`Source: https://go.dev/blog/when-generics, Ian Lance Taylor, 2022-04-12, re-read 2026-07-26 — both
+signatures are transcribed from the page's § "Don't replace interface types with type parameters",
+which introduces them as "it might be tempting to change the first function signature here, which uses
+just an interface type, into the second version, which uses a type parameter."`
 
-**The page closes with the ordering rule for the whole decision:**
+The page's verdict on that change is two sentences:
 
-> "Write Go programs by writing code, not by defining types. Start by writing functions."
+> "Don't make that kind of change. Omitting the type parameter makes the function easier to write,
+> easier to read, and the execution time will likely be the same."
+>
+> *(Verbatim from the same page and date.)*
+
+Read the cost claim at its stated strength: the page says the execution time will **likely** be the
+same, not that performance is identical. So **a type parameter is not earned by replacing an interface
+type** — H17 states that as a rule, and this is where it comes from. When a value is only ever used
+through its methods, the interface is already the abstraction, and the type parameter adds inference,
+constraint syntax, and error messages for nothing.
+
+**The page opens with the ordering rule for the whole decision**, under its § *Write code* — it is the
+first guideline on the page, not its conclusion:
+
+> "write Go programs by writing code, not by defining types"
+>
+> and, two sentences later: "Start by writing functions."
+>
+> *(Verbatim from the same page and date. The two sentences are separated by one intervening sentence
+> and are quoted separately for that reason. The page's **closing** guideline is the earning condition
+> quoted above, under its § "One simple guideline".)*
 
 **So the procedure is:** write the concrete version; write the second one when a second type actually
 appears; then, if the two bodies are identical apart from the type, replace them with one type

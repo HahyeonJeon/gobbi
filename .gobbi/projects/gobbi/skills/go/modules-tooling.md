@@ -239,8 +239,29 @@ each learned by a fetch that returned a confident wrong answer.
 
 ## 9. The Version Currency Register
 
-Every version number this skill asserts resolves to a row here. Other files point at this table rather
-than restating a number. Each row carries its own verification date in the last column — most are
+**Scope — what this register owns, and what it deliberately does not.** This register holds every
+**Go and Go-toolchain** figure the skill asserts: Go release versions and dates, module-floor numerals,
+the pinned toolchain tag, the version that introduced a standard-library symbol or a `go` subcommand,
+and the versions of the Go-toolchain-adjacent tools this skill names (`golangci-lint`, `staticcheck`,
+`gofumpt`, `testify`). Other files point at this table rather than restating any of those numbers.
+
+**A per-tool SDK, module, or wire-API version belongs to its tool child, not here.** Each of the five
+tool children carries its own dated `**Version / support status:**` header line with an owner URL, and
+that line is the single owner of every version figure inside that file — `aws-sdk-go-v2` and
+`smithy-go`, `moby/moby` `client` and `api` (including `MinAPIVersion` and `MaxAPIVersion`),
+`grpc-go`, `client-go` and `controller-runtime`, `client_golang` and `opentelemetry-go`. **The reason
+is that those five move on five independent clocks:** centralising them here would create one file that
+is stale five different ways, and would put the number a reader needs one hop away from the delta it
+qualifies. Sweep `V3` reads a tool child's own header line as the resolution for that file's SDK
+figures, and this table as the resolution for everything else.
+
+**One numeral sits outside both** and is named here so it is not an orphan: the proxy answer for the
+**deprecated, do-not-start-new-code-on-it** `github.com/docker/docker` module, quoted in
+[`service-clients.md`](service-clients.md) §12. That
+file carries its own dated `**Verified:**` stamp against exactly that module page, which is the
+numeral's owner, and §12 marks it as evidence of a trap rather than a version this skill teaches.
+
+Each row carries its own verification date in the last column — most are
 **2026-07-25**, and a second pass added or re-read the rows dated **2026-07-26**. Dates in the value
 column come from the module proxy or a raw changelog, never from a rendered releases page (§8). §10's
 table is part of this register: each row there names its introducing version, and the release notes for
@@ -260,6 +281,9 @@ that version are its owner.
 | staticcheck | v0.7.0 / 2026.1 (2026-02-13) | module proxy | 2026-07-25 |
 | gofumpt | v0.10.0 (2026-05-04) | module proxy | 2026-07-25 |
 | testify | v1.11.1 (2025-08-27) | module proxy | 2026-07-25 |
+| `gob` stopped using `unsafe` | Go 1.4 — "As of Go 1.4, package unsafe is no longer use by the gob package, with a modest performance drop" | `go.dev/blog/gob` | 2026-07-26 |
+| `errors.Is`, `errors.As`, `Unwrap`, and the `%w` verb | Go 1.13 — the release the *Working with Errors* post is named for; absent at `go1.12.17`, present at `go1.13`. Far below the floor, so all four are safe unqualified | `go.dev/doc/go1.13`, `src/errors/wrap.go` @ `go1.13` | 2026-07-26 |
+| Automatic vendoring when a `vendor/` directory exists | `go 1.14` or higher — "At `go 1.14` or higher, automatic vendoring may be enabled" | `go.dev/ref/mod` | 2026-07-26 |
 | `-mod=readonly` as the default | 1.16 | `go.dev/ref/mod` | 2026-07-25 |
 | `//go:build` constraint form | 1.17 | `go.dev/doc/go1.17` | 2026-07-25 |
 | Typed `sync/atomic` values (`atomic.Int64`, `atomic.Bool`, `atomic.Pointer`) | **Go 1.19** — below the floor, safe to teach unqualified | `pkg.go.dev/sync/atomic` per-symbol badges | 2026-07-25 |
@@ -272,7 +296,7 @@ that version are its owner.
 | `testing/synctest` | **go1.25.0** | `pkg.go.dev/testing/synctest` | 2026-07-25 |
 | `wg.Go(f)`; container-aware `GOMAXPROCS` | 1.25 | `go.dev/doc/go1.25` | 2026-07-25 |
 | `errors.AsType` | **go1.26.0 — above the `go 1.25.0` floor** | `go.dev/doc/go1.26`, `pkg.go.dev/errors` | 2026-07-25 |
-| `goroutineleak` profile | **Go 1.26, and an EXPERIMENT** — requires `GOEXPERIMENT=goroutineleakprofile` at build time; the notes aim to enable it by default in 1.27 | `go.dev/doc/go1.26` | 2026-07-26 |
+| `goroutineleak` profile | **Go 1.26, and an EXPERIMENT** — requires `GOEXPERIMENT=goroutineleakprofile` at build time; the notes aim to enable it by default in 1.27, which is **not yet released** and whose notes are a draft | `go.dev/doc/go1.26` | 2026-07-26 |
 | `go fix` as the modernizer home; `go doc` as the surviving doc command | **toolchain 1.26**, not floor-gated | `go.dev/doc/go1.26` | 2026-07-25 |
 
 ## 10. Obsolete forms, floor-checked

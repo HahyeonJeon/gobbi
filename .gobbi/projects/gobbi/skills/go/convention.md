@@ -237,6 +237,11 @@ func scanOne(p string) error {
 }
 ```
 
+`Source: the specification § Defer statements, doc/go_spec.html @ go1.26.5, verified 2026-07-26 —
+"deferred functions are invoked immediately before the surrounding function returns", quoted in full
+below. That one clause is what makes the two-function split the fix; the shape of the split is this
+file's own.`
+
 Written as a single function with the `defer` inside the loop, every handle stays open until `scanAll`
 returns. Written as two, each one closes at the end of its own iteration. Nothing else changed.
 
@@ -294,11 +299,17 @@ reader who followed the router arrives at an answer rather than at a silence.
 | **Error-string form** — capitalization, trailing punctuation, and their exceptions | [`errors.md`](errors.md) §5, which owns it **alone**. This file states no part of the rule, not even in summary |
 | A build tag — `//go:build` and the retired `// +build` | [`modules-tooling.md`](modules-tooling.md) §6, with the version in §9 |
 | The formatter stance — `gofmt` versus `gofumpt`, and where the mandate comes from | [`modules-tooling.md`](modules-tooling.md) §7 for the tools; H3 and P7 gates 1–2 for the mandate and how it fails a chain |
-| Interface placement, embedding, and the useful zero value | `design.md`, when it is written |
+| Interface placement, embedding, and the useful zero value | [`design.md`](design.md) §§2, 3, 5 |
 
-**One routed topic has no owner yet, and this file will not invent one.** The router also sends *a map
-or nil-map access* here. Two items were specified for it — that map iteration order is unspecified and
-varies between runs, and the asymmetry between reading from a nil map and writing to one — and
-**neither was fetched in this pass, so neither is stated.** `go.dev/ref/spec` § *Map types* at the
-pinned tag would resolve both, and the aliasing property of map values is separately owned by
-`SKILL.md` H8, which quotes the specification directly.
+**Two routed topics have no owner in this tree, and this file will not invent one.** Both are recorded
+here so the P2 router lands on a stated gap rather than on a silence, and the router row names them as
+open.
+
+- **A map or nil-map access.** Two items were specified for it — that map iteration order is
+  unspecified and varies between runs, and the asymmetry between reading from a nil map and writing to
+  one — and **neither was fetched in this pass, so neither is stated.** `go.dev/ref/spec` § *Map types*
+  at the pinned tag would resolve both, and the aliasing property of map values is separately owned by
+  [`SKILL.md`](SKILL.md) H8, which quotes the specification directly.
+- **File naming.** §3 states why: no material read for this skill sources it, so it takes the stated
+  fallback and is dropped rather than written from memory. Google's Style Guide and
+  `go.dev/doc/effective_go` § *Names* are the two places to read.

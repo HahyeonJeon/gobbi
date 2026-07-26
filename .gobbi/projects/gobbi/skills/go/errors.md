@@ -152,9 +152,8 @@ that no compatibility promise covers, and it breaks the first time a wrap layer 
 
 ## 5. Error-string form
 
-**This file owns error-string form.** When `convention.md` is written it must point here rather than
-restate the rule — that is a forward obligation on the author of that file, not a description of a file
-that exists today.
+**This file owns error-string form.** [`convention.md`](convention.md) §7 points here and states no
+part of the rule, not even in summary.
 
 The owner states the rule and both of its exceptions in one sentence:
 

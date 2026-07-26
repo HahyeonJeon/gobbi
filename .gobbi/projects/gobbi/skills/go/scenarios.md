@@ -259,8 +259,9 @@ operation**.
 - **Good handling:** the canonical import path, the current constructor, and the inverted negotiation option
   are read from the owner's own notice; the document states that module metadata carries no deprecation state,
   so a frozen module renders as current forever, and names the live instance; a default-branch HTTP 200 is
-  never taken as a currency guarantee; every version token resolves to the Version Currency Register row, and
-  all seven stamped files carry a dated stamp.
+  never taken as a currency guarantee; every version token resolves to its declared owner — a Go or
+  Go-toolchain figure to the Version Currency Register, a per-tool SDK figure to that child's own dated
+  header line — and all seven stamped files carry a dated stamp.
 - **Bad handling:** the deprecated constructor and the no-op option ship because two mechanical checks agreed
   with them; a version numeral floats free of the register; a stamp count is right and its composition wrong.
 - **Adversarial probe:** read the same doc path at the released tag and diff it against the default-branch

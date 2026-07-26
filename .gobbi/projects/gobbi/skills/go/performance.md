@@ -50,7 +50,8 @@ contention" when it means "not measured". *(Owner: `go.dev/doc/diagnostics`, rea
 **The two profile lists disagree, so neither is a complete index.** `runtime/pprof` names seven —
 `goroutine`, `goroutineleak`, `allocs`, `heap`, `threadcreate`, `block`, `mutex` — and says of the
 missing one: *"The CPU profile is not available as a Profile. It has a special API, the
-StartCPUProfile and StopCPUProfile functions."* The diagnostics page names six — `cpu`, `heap`,
+StartCPUProfile and StopCPUProfile functions, because it streams output to a writer during
+profiling."* The diagnostics page names six — `cpu`, `heap`,
 `threadcreate`, `goroutine`, `block`, `mutex` — with **no `allocs` and no `goroutineleak`**. *(Both
 read 2026-07-26.)* Read the page for the toolchain you are on rather than reciting a list from either.
 
@@ -60,9 +61,11 @@ read 2026-07-26.)* Read the page for the toolchain you are on rather than reciti
 > `goroutineleak` in the `runtime/pprof` package, may be enabled by setting
 > `GOEXPERIMENT=goroutineleakprofile` at build time."
 >
-> *(Verbatim from `go.dev/doc/go1.26` § runtime, verified 2026-07-26. The same notes add: "We aim to
-> enable goroutine leak profiles by default in Go 1.27." The version resolves to
-> [`modules-tooling.md`](modules-tooling.md) §9, and 1.26 is **above** the `go 1.25.0` floor — H19.)*
+> *(Verbatim from `go.dev/doc/go1.26` § runtime, verified 2026-07-26. The same notes add a stated aim
+> for the next release — which is **not yet released**, and whose notes are a **draft** that can still
+> change, so read it as an aim and not as a fact: "We aim to enable goroutine leak profiles by default
+> in Go 1.27." The versions resolve to [`modules-tooling.md`](modules-tooling.md) §9, and 1.26 is
+> **above** the `go 1.25.0` floor — H19.)*
 
 > **The trap is that the package documentation says none of that.** `runtime/pprof`'s own doc lists
 > `goroutineleak` **unconditionally**, while the code registers it only under
@@ -271,10 +274,9 @@ unsourceable one. Until then, do not assume an item put into a `Pool` is still t
 
 ## 6. Container-aware `GOMAXPROCS`
 
-**This file owns container-aware `GOMAXPROCS` alone.** When `concurrency.md` is written it points here
-rather than restating it, and the `automaxprocs`-is-obsolete row stays in
-[`modules-tooling.md`](modules-tooling.md) §10 — both are forward obligations on the authors of those
-files, not descriptions of files that exist today.
+**This file owns container-aware `GOMAXPROCS` alone.** [`concurrency.md`](concurrency.md) §9 points
+here rather than restating it, and the `automaxprocs`-is-obsolete row lives in
+[`modules-tooling.md`](modules-tooling.md) §10 with its floor qualifier.
 
 **Since Go 1.25 the runtime is container-aware on Linux**, so the third-party `automaxprocs` cgroup
 shim is no longer needed there. That shim existed because the runtime did not read the container's CPU
@@ -300,7 +302,8 @@ now dead weight, and removing it is a dependency change like any other — one t
 
 Read the emphasized sentence against how Kubernetes manifests are actually written. A pod with a CPU
 *request* and no *limit* gets no container-aware sizing at all — the runtime falls back to the logical
-CPU count of the node, which is the same over-sizing the `automaxprocs` shim existed to fix. Setting a
+CPU count of the node, which is the same over-sizing the now-obsolete `automaxprocs` shim existed to
+fix. Setting a
 request is not setting a limit.
 
 Two more mechanics from the same notes. The behavior is **disabled** by setting `GOMAXPROCS` manually,
