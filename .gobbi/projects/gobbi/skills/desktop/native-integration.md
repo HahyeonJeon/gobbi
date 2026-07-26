@@ -38,6 +38,57 @@ language, the behavior approximately right, and the localization not at all.
 > which menus a particular application ought to have — that question stays open, and filling it in from a
 > search summary is the specific failure `DESK-N09` prohibits.
 
+## Tray, menu-bar residency, and the dock
+
+An application whose primary surface is a status-area icon rather than a window is built from the tray
+interface, and on macOS from the dock property as well. This section states those mechanisms.
+[`runtime-deltas.md`](runtime-deltas.md) owns the per-system divergences and records them under *Tray and
+dock*; they are large enough here that a run claiming three systems for a tray-resident product is claiming
+three different behaviors.
+
+**The cross-platform mechanism.** A tray icon is created from an image and given a context menu. **To change an
+individual menu item, call the set-context-menu method again.** Mutating a menu item in place does not apply —
+the field changes and the menu the person opens does not. There is no error to follow; the symptom is a menu
+that never updates.
+
+Three of the divergences decide whether a design is buildable at all, so the mechanism each one applies to is
+named here:
+
+- **The activation gesture cannot be promised on Linux.** The tray goes through `StatusNotifierItem` by
+  default, and falls back to `GtkStatusIcon` where the person's desktop environment does not provide it. The
+  `click` event fires on activation, but **the `StatusNotifierItem` specification leaves which gesture
+  activates to the environment** — single left click in some, double left click in others. A run may state that
+  activation is handled. It may not state which gesture the person will use, and writing "click the icon" into
+  an instruction for that system is a claim about an environment nobody read.
+- **macOS icons are Template Images, and the naming is the mechanism.** The image filename must end in
+  `Template`, and the `@2x` image carries the same filename as the standard image at 144dpi. 16×16 at 72dpi
+  plus 32×32@2x at 144dpi work for most icons. `setTitle()` — text beside the icon, with ANSI colour support —
+  is macOS-only.
+- **Several tray events exist on one system only.** Right-click, double-click, drag-and-drop, and the mouse
+  events (up, down, enter, leave, move) are **macOS-only**, and **`mouse-up` is not emitted at all when a
+  context menu is set on the tray** — so a design that both sets a context menu and handles `mouse-up` has a
+  handler that never runs. Balloon notifications are **Windows-only**: the balloon show, click, and closed
+  events and the display-balloon, remove-balloon, and focus methods exist on Windows alone. Windows also
+  recommends ICO format for the icon.
+
+**The dock, and the limit stated honestly.** `app.dock` is documented as a dock property that is **present on
+macOS and undefined on every other platform**. Hiding the dock icon is the macOS mechanism for an application
+that lives in the menu bar rather than in the dock, and it is macOS-only: on the other two systems there is no
+dock to hide and the property is not there to call.
+
+> **UNVERIFIED — the dock interface's own operations were not read.** The hide, show, and activation-policy
+> operations live on a separate documentation page this skill did not retrieve, so **it states nothing about
+> their behavior** — not what each does, not when it takes effect, and not what an activation policy changes.
+> `SKILL.md`'s gap register carries the item with its closing condition: a read of that page. Design the
+> residency decision against the property that *is* verified — the dock exists on one system only — and take
+> the operations to their own documentation before writing code against them.
+
+**What a stack-fit inspection reads here.** `DESK-R03` criterion 5 asks whether deep native integration or a
+platform-exclusive interface is the point. For a tray-resident product the material to inspect is this section:
+the tray mechanism the platform exposes on all three systems, the divergences it does not paper over, and the
+dock's single-system presence. A product whose value depends on a gesture this skill cannot promise, or on the
+dock operations above, has a positive criterion and a `DESK-G1` decision rather than a careful plan.
+
 ## Shortcuts and the three scopes
 
 Accelerators join modifiers and key codes with `+` and are case-insensitive. Use `CommandOrControl` (or its

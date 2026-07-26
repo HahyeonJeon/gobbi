@@ -124,7 +124,16 @@ bound outcome; this inventory is where a run enumerates them against real mechan
 | Activation with no window | the macOS `activate` event | a live process with no window, on the system whose convention permits that state |
 | A file handed over by the system | `open-file` on macOS, registered before the ready event | possibly no window yet, and possibly no ready event yet |
 | A deep link | `open-url` on macOS; `second-instance` elsewhere | either a cold start or a live process, and the handler cannot assume which |
-| Automatic start at login | the operating system's own login mechanism | a cold start with no person watching it happen |
+| A status-area icon | a tray icon and its context menu — [`native-integration.md`](native-integration.md) owns the mechanism and the per-system divergences | a live process that may hold no window at all, and whose activation gesture is not promisable on every claimed system |
+| Automatic start at login | the platform's own login-item registration, on **macOS and Windows only** | a cold start with no person watching it happen |
+
+**Two rows carry a per-system limit that does not fit in a cell.** The login-item mechanism exists on two of
+the three systems, not three: the third has no platform login-item interface, so automatic start at login there
+is the run's own mechanism carrying its own evidence, and a three-system auto-start claim made from one
+interface is wrong on one of them. And from the macOS version [`runtime-deltas.md`](runtime-deltas.md) records
+under *Login-item service types*, the registration additionally takes a service type — the main application, an
+agent, a daemon, or a login item — so a run that registers one names which it registers. That file owns both
+divergences and the version.
 
 **Every mode in the inventory reaches the outcome or is proved out of scope.** A mode that reaches a broken
 state is a `DESK-N01` failure — the outcome is not finished — and a mode nobody enumerated is a mode nobody

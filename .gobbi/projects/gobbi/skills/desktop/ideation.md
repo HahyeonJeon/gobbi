@@ -264,8 +264,10 @@ a sender rule per channel, and any candidate dependency.
 
 - Which per-operating-system behaviours does this outcome touch, and what is the named mechanism for each?
 - Does window state need to survive a restart, and if so, how?
-- Which native integrations are in scope — menus, shortcuts, notifications, dialogs, drag-and-drop, chrome,
-  theming, file associations?
+- Which native integrations are in scope — menus, the tray and the dock, shortcuts, notifications, dialogs,
+  drag-and-drop, chrome, theming, file associations?
+- If the outcome is tray-resident, which system's activation gesture is being assumed, and does that system's
+  own specification fix one?
 - What is written locally, where, in what format, and what happens when a write is interrupted?
 - Does a schema exist, and what is its migration path in **both** directions?
 

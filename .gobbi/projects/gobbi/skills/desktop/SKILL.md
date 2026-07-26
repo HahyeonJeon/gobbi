@@ -217,8 +217,10 @@ across revisions.
   `commandLine` parsed by matching and never by position; the deep-link route per operating system
   (`open-url` on macOS; `second-instance` with the link as the **last** element on Windows and Linux); a
   three-state theme driven by `nativeTheme.themeSource` (`'system' | 'dark' | 'light'`) with its `updated`
-  event handled live; and one shortcut map per platform using `CommandOrControl`, excluding system-reserved
-  combinations.
+  event handled live; one shortcut map per platform using `CommandOrControl`, excluding system-reserved
+  combinations; and, where the outcome is entered from or resident in a status-area icon, the tray mechanism —
+  an icon with a context menu, re-set rather than mutated in place to change an item — with no activation
+  gesture promised on a system whose own specification leaves the gesture to the environment.
 
 **Release**
 
@@ -1013,8 +1015,9 @@ Every borrowed fact has one owner. This section names the owner; it never restat
   ASAR fuses, what ASAR is not, and the supply-chain scanner gap.
 - [`windows-lifecycle.md`](windows-lifecycle.md) owns creation and first paint, state restoration, per-OS
   quit and activation, single-instance and argument handling, deep links, and the entry-mode inventory.
-- [`native-integration.md`](native-integration.md) owns menus, shortcuts, notifications, dialogs, clipboard,
-  drag-and-drop, custom window chrome, theming, and file associations.
+- [`native-integration.md`](native-integration.md) owns menus, the tray and menu-bar residency, the macOS dock
+  property, shortcuts, notifications, dialogs, clipboard, drag-and-drop, custom window chrome, theming, and
+  file associations.
 - [`filesystem-data.md`](filesystem-data.md) owns user-data locations, durable writes, schema migration
   including the downgrade path, at-rest secret handling, and the never-write list.
 - [`packaging-distribution.md`](packaging-distribution.md) owns per-OS targets, the build-tool selection
@@ -1053,7 +1056,7 @@ Every borrowed fact has one owner. This section names the owner; it never restat
 
 ### Gap register
 
-Thirteen items this skill carries as gaps rather than as facts. Each keeps its marking word at its point of
+Fourteen items this skill carries as gaps rather than as facts. Each keeps its marking word at its point of
 use, and each row below names what would close it, so a later session can close one without re-deriving the
 search. This register is the skill's own; it is not the per-run unknown and gap register that `DESK-R29`
 requires inside the design record.
@@ -1077,6 +1080,7 @@ need no closing condition, and items 16 and 17 are reader-owned decisions rather
 | 13 | **UNVERIFIED** | information density and dense professional layouts, and offline-first desktop behavior — no authoritative source found, and the platform's own calm-design principle pulls against density | an authoritative source on either is found | research |
 | 14 | **UNVERIFIED** | a rationale for the removal of the former remote module — the process-model document gives none | a maintainer statement on the removal rationale is found | retrieval |
 | 15 | **UNVERIFIED** | end-to-end typed IPC guidance — no official guidance exists and no community library is canonical, so every such library is a new production dependency and therefore a `DESK-G7` decision, never a default | official guidance appears, or one library becomes canonical | retrieval |
+| 18 | **UNVERIFIED** | the dock interface's own hide, show, and activation-policy operations — the property's per-system presence is documented, but the operations live on a separate page that was not retrieved, so nothing about their behaviour is stated | that page is read, or another authoritative source covers those operations | retrieval |
 
 Two further items are **not** gaps and are not listed above, because they are decisions the reader owns
 rather than facts to close: which build tool is the default, which `DESK-R27` routes to `DESK-G6` as a stated

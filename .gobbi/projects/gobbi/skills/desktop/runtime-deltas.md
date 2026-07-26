@@ -16,7 +16,10 @@ Every value here is owned here. A sibling needing one states the property and po
 than copying the literal.
 
 **Verified against the platform's own release feed and release-timeline documentation on 2026-07-25**, and the
-per-feature availability rows below against its published breaking-changes record on 2026-07-26. The
+per-feature availability rows below against its published breaking-changes record on 2026-07-26. The tray, dock
+and login-item rows — the login-item service-type row above and the *Tray and dock* block below — were verified
+against the platform's own tray, dock and login-item API documentation on 2026-07-26; the cells that block
+marks **Not read** or **None recorded** were not retrieved and are stated as such rather than filled in. The
 claim-to-source register with retrieval identifiers is kept with the design record, not reproduced here.
 
 **Three rows in this document were wrong on first authoring and were corrected against that primary source.**
@@ -37,6 +40,7 @@ every sibling is required to do.
 | 32-bit and older-ARM end of life | The **43.x** series is the last shipping prebuilt binaries for 32-bit Windows and older 32-bit ARM Linux. Support ends **January 2027** |
 | Platform-certificate policy date | The platform **states that** Microsoft has required extended-validation signing for Windows software **since June 2023** |
 | Archive-integrity minimums | macOS from **16.0.0**; Windows from **30.0.0**; **no Linux support** |
+| Login-item service types | The login-item registration takes a service type from **macOS 13** onward |
 
 **On the certificate-policy row.** It is written as what the platform *states*, not as a vendor fact, because
 the evidence on hand is the platform's report of another vendor's policy rather than that vendor's own
@@ -69,6 +73,26 @@ something the platform does not provide, and the direct-evidence floor's per-tar
 | Deep links before packaging | **Do not work** — testing unpackaged gives a false negative | Work | Work |
 | Global accelerators | Known failure on non-QWERTY keyboard layouts | No equivalent limitation recorded | No equivalent limitation recorded |
 | Notification prerequisites | Signing required; body text truncated beyond a documented byte limit | A start-menu shortcut carrying an application identity and its activator identifier | A desktop notification service |
+| Login-item registration | **Present** | **Present** | **No platform interface** — automatic start at login is the run's own mechanism and its own evidence |
+
+### Tray and dock
+
+A menu-bar-resident design reads this block before it claims a system.
+[`native-integration.md`](native-integration.md) names the mechanism each row applies to.
+
+| Concern | macOS | Windows | Linux |
+|---|---|---|---|
+| Tray activation gesture | **Not read** — no gesture statement was retrieved for this system | **Not read** — no gesture statement was retrieved for this system | **Unspecified by the underlying specification** — the activation event fires, but which gesture activates is left to the desktop environment |
+| Underlying tray interface | The system's own status area | The system's own notification area | A status-notifier interface by default, falling back to an older status-icon interface where the desktop environment lacks it |
+| Icon format expectation | A template image, named by the documented filename suffix, with a matching higher-density image | An icon-format file is recommended | **None recorded** |
+| Right-click, double-click, drag-and-drop, and tray mouse events | **Present** | Not present | Not present |
+| Title text beside the tray icon | **Present** | Not present | Not present |
+| Balloon notifications and their focus control | Not present | **Present** | Not present |
+| Dock property | **Present** | **Undefined** | **Undefined** |
+
+The activation-gesture row is the one that changes a design rather than a detail. A run cannot promise the
+person a specific gesture on a system whose specification does not fix one; it states that activation is
+handled and leaves the gesture unstated.
 
 ### Assistive technology
 
