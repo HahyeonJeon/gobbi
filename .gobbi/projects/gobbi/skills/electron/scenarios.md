@@ -256,7 +256,7 @@ events that carry the frames at risk. **Secondary** — 4, 6.
 **Exercises** — EL-R-05, EL-R-06 · depth
 [`security.md` § 6](security.md#6-item-13-the-navigation-event-surface),
 [`security.md` § 7](security.md#7-items-14-and-15-opening-windows-and-opening-urls) ·
-**check slots** `EL-CHECK-07a` to `EL-CHECK-07d`.
+**check slots** `EL-CHECK-07a` to `EL-CHECK-07f`.
 
 | Case | Type · roles | Probe — given / when / then | Failure oracle → design obligation |
 |---|---|---|---|
@@ -264,6 +264,7 @@ events that carry the frames at risk. **Secondary** — 4, 6.
 | **EL-SC-07b** the flawless allowlist on the wrong event | adversarial · adversarial | Given an `origin` allowlist with no defect in it, attached to the main-frame navigation event alone — the shape of the vendor's own sample — when a subframe navigates off the allowlist, then it is admitted and the guard was never called | Oracle: navigate a subframe and observe the load; every test that drives the main frame passes. → the design MUST make event coverage part of the check, not only the comparison |
 | **EL-SC-07c** the window created after startup | boundary · boundary | Given a deny-by-default window-open handler registered on the first window, when the app creates a second window or a `WebContentsView` later, then that `webContents` has no handler and opens anything | Oracle: open a non-allowlisted URL from the second surface; the single-window test is green. → the design MUST register the handler on every `webContents` the app creates, when it is created |
 | **EL-SC-07d** the parse failure that allows | negative · negative | Given an allowlist check that parses with `new URL` and returns allow from its `catch`, when a malformed or relative URL arrives, then it is admitted | Oracle: drive a malformed URL and expect deny; the check parses, compares `.origin`, and reads as correct. → the design MUST make every parse-failure path deny |
+| **EL-SC-07e** the custom-scheme `"null"` allowlist | adversarial · adversarial | Given the packaged entry `app://bundle/index.html`, when a guard derives its allowlist from `new URL(PACKAGED_ENTRY).origin`, then the legitimate sender and `file:`, `data:`, and `about:` inputs all present the same `"null"` value | Oracle: the packaged entry allows, while each opaque-origin non-`app:` input denies; a set containing `"null"` either denies the app when compared with `'app://bundle'` or admits every opaque origin when derived. → the design MUST match a non-special custom scheme by an exact parsed `.protocol` + `.host` pair and MUST never allowlist `"null"` |
 
 #### EL-SC-08 — The `webPreferences` posture
 
@@ -368,7 +369,7 @@ conformant artifact it must reject; none is satisfied by the absence of a guard.
 | 1 | `EL-SC-03b` | one tsconfig whose `lib` and `types` cover every process; the project type-checks green | the same input under three per-target passes, and a stated pass count of three |
 | 2 | `EL-SC-04c` | a preload that exposes the renderer IPC module wholesale; nothing throws at exposure time | each exposed key asserted to be a function of the expected arity |
 | 3 | `EL-SC-06b` | a permission handler whose default branch denies, whose twin is registered, and which passes every disallowed-permission test | an allowed permission requested from a disallowed origin, denied |
-| 4 | `EL-SC-07b` | a defect-free parsed-`origin` allowlist, attached to the main-frame navigation event alone | a subframe navigation and a redirect, each reaching the guard |
+| 4 | `EL-SC-07b`, `EL-SC-07e` | a defect-free parsed-`origin` allowlist, attached to the main-frame navigation event alone; or the packaged custom scheme represented by its opaque `"null"` origin | a subframe navigation and a redirect, each reaching the guard; and an exact `.protocol` + `.host` match that admits the packaged entry while rejecting other opaque origins |
 | 5 | `EL-SC-05b` | a sender guard that null-checks the frame and compares its origin against a literal allowlist | a non-null frame with `detached === true` and an allowlisted URL, denied |
 | 6 | `EL-SC-02c` | a `main`-tagged module importing the renderer-side IPC module; three passes run and all are green | `TS2305` from the main target's own generated `electron` view |
 

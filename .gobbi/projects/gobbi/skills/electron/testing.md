@@ -145,6 +145,7 @@ decision, so the decision is testable even when the frame state is not producibl
 
 ```ts main
 export type SenderFacts = { readonly url: string; readonly detached: boolean } | null;
+export type SenderUrlPolicy = (url: URL) => boolean;
 
 /** Reads the frame's facts. Call this synchronously, before the handler's first `await`. */
 export function senderFacts(frame: Electron.WebFrameMain | null): SenderFacts {
@@ -152,12 +153,12 @@ export function senderFacts(frame: Electron.WebFrameMain | null): SenderFacts {
 }
 
 /** The whole verdict, as a pure function of the facts. This is what the tests drive. */
-export function senderIsTrusted(facts: SenderFacts, allowed: ReadonlySet<string>): boolean {
+export function senderIsTrusted(facts: SenderFacts, allows: SenderUrlPolicy): boolean {
   if (facts === null || facts.detached) {
     return false;
   }
   try {
-    return allowed.has(new URL(facts.url).origin);
+    return allows(new URL(facts.url));
   } catch {
     return false;
   }
@@ -174,6 +175,13 @@ are plain objects:
 | `{ url: <allowed origin>, detached: true }` | deny | the detached frame — non-null, allowlisted `.url`, and the one a careful null check still admits |
 | `{ url: 'https://evil.example/x', detached: false }` | deny | an allowlist compared against `.host`, or against a string prefix |
 | `{ url: 'not a url', detached: false }` | deny | a `catch` that returns `true`, or one that lets the parse error escape |
+
+For an `https:` sender, the policy compares `.origin` to a literal. For the packaged non-special `app:`
+scheme, it compares the exact `.protocol` + `.host` pair. Add a fifth input for that policy:
+`app://bundle/index.html` must allow, while `file:///etc/passwd`, `data:text/html,x`,
+`about:blank`, and `app://bundle.attacker/index.html` must all deny. If the policy instead derives
+`new URL(PACKAGED_ENTRY).origin`, all four opaque-origin inputs collapse to `"null"` and the test exposes
+the fail-open allowlist.
 
 **The static conjunct is not a test.** No runner can see whether the `senderFacts` call is lexically before the
 first `await` — the null outcome only appears when a real navigation races the read, which a test does not

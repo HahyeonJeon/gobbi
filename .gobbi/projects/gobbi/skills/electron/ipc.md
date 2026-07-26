@@ -282,8 +282,10 @@ is what guarantees it.
 and `validateSender` immediately dereferences `frame.url` — so a null frame **throws** instead of denying, and
 a detached frame is **accepted**. Copied verbatim into an `async` handler it fails both ways. The safe form is
 the guarded handler in SKILL.md's P6; this file states why each branch is there. That sample also compares
-`(new URL(frame.url)).host`, which drops the scheme and the port; this skill compares `.origin` everywhere
-(EL-R-05, sourced in [`security.md`](security.md)).
+`(new URL(frame.url)).host`, which drops the scheme and the port. For tuple-origin schemes this skill compares
+`.origin`; for the non-special packaged `app:` scheme it compares the exact parsed `.protocol` + `.host` pair
+and never allowlists the opaque-origin sentinel `"null"` (EL-R-05, sourced in
+[`security.md`](security.md)).
 
 Here is the shape to recognize in review, which type-checks and is wrong twice over:
 

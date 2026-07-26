@@ -328,14 +328,39 @@ export function guardNavigation(contents: Electron.WebContents): void {
 }
 ```
 
-### Compare a parsed origin, never a string prefix
+### Compare the parsed security identity, never a string prefix
 
 The comparison is `new URL(url).origin` against a literal allowlist. The security document makes the
 prefix failure explicit at `security.md@v43.2.0:622`: `startsWith('https://example.com')` admits
 `https://example.com.attacker.com`. `.includes(...)` and `.host.endsWith(...)` are evadable the same way
 — and `.host` additionally drops the scheme and the port, so an `http://` peer on the same host passes a
-host comparison. This skill teaches `.origin` everywhere, including where the vendor's item-17 sample
-compares `.host` (`DERIVED`, stated in SKILL.md EL-R-05; depth in [`ipc.md`](ipc.md)).
+host comparison. For tuple-origin schemes such as `https:`, this skill therefore teaches `.origin`,
+including where the vendor's item-17 sample compares `.host` (`DERIVED`, stated in SKILL.md EL-R-05;
+depth in [`ipc.md`](ipc.md)).
+
+That rule has one security-critical boundary: a non-special custom scheme such as the packaged
+`app://bundle/index.html` has an opaque origin, and `new URL(...).origin` serializes it as `"null"`.
+Never put `"null"` in an allowlist. `file:`, `data:`, and `about:` URLs serialize opaque origins to the
+same sentinel, so a derived `Set([new URL(PACKAGED_ENTRY).origin])` admits all of them. Match an explicitly
+allowed custom scheme by its exact parsed `.protocol` and `.host` instead, adding a path check when the
+application grants authority more narrowly than the whole custom-protocol host:
+
+```ts main
+const ALLOWED_APP_AUTHORITIES = [
+  { protocol: 'app:', host: 'bundle' },
+] as const;
+
+function packagedAppUrlIsAllowed(raw: string): boolean {
+  try {
+    const parsed = new URL(raw);
+    return ALLOWED_APP_AUTHORITIES.some(
+      (allowed) => parsed.protocol === allowed.protocol && parsed.host === allowed.host,
+    );
+  } catch {
+    return false;
+  }
+}
+```
 
 The parse-failure path **denies**. `catch { return true }` is the shape that passes a reviewer reading
 for "parses with `new URL`, compares `.origin`, has an allowlist" and admits every malformed URL.
@@ -516,6 +541,9 @@ source that validates it. Each is `verified-against that source on 2026-07-25`.
   programmatic-navigation exclusions (lines 271 and 302), and `will-redirect` (line 336).
 - `docs/api/session.md@v43.2.0:951` — the premise behind § 5's `DERIVED` permission pair: *"Most web
   APIs do a permission check and then make a permission request if the check is denied."*
+- [WHATWG URL Standard § 4.7](https://url.spec.whatwg.org/#origin), verified 2026-07-26 — tuple origins
+  for the special network schemes and opaque origins for other schemes; the latter serialize through the
+  URL API as `"null"`.
 - `lib/renderer/security-warnings.ts@v43.2.0` — the eight-item warning coverage, the dev-build-only
   condition, the three "currently missing" comments with their exact scopes, and § 2's numbering offset.
 - [`@electron/fuses`](https://github.com/electron/fuses) — the fuse flags and the

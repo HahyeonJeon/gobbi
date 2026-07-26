@@ -156,20 +156,26 @@ satisfied by restatement.
   points to the same capability, so registering one leaves the other at its default path. Depth:
   [`security.md`](security.md).
 - **EL-R-05 — MUST attach the navigation guard to the event that covers the frames at risk, and decide
-  by comparing a parsed `origin` against a closed allowlist, denying on parse failure.** *Check:* the
-  guard is registered on **`will-frame-navigate`**, and on `will-redirect` for redirect coverage; it
-  parses with `new URL(...)`, compares `.origin` against a literal allowlist, and its parse-failure path
-  **denies**. *Defeater:* a flawless `.origin` allowlist attached to **`will-navigate` alone** —
+  from a parsed URL identity against a closed allowlist, denying on parse failure.** *Check:* the guard
+  is registered on **`will-frame-navigate`**, and on `will-redirect` for redirect coverage; it parses
+  with `new URL(...)`; it compares `.origin` against a literal allowlist for tuple-origin schemes such
+  as `https:`, or compares a literal `.protocol` + `.host` pair for an explicitly allowed non-special
+  custom scheme; and its parse-failure path **denies**. It never allowlists the serialized opaque-origin
+  sentinel `"null"`. *Defeater:* a flawless `.origin` allowlist attached to **`will-navigate` alone** —
   `will-navigate` fires for the main frame only, so every subframe navigation is admitted, and this is
   the shape of the vendor's own item-13 sample. A second:
   `try { return ALLOW.has(new URL(u).origin) } catch { return true }` — it parses with `new URL`,
   compares `.origin` against a literal allowlist, and returns *allow* for every malformed or relative
-  URL. *Residue:* neither event emits for programmatic navigation (`webContents.loadURL`, `back`) or for
-  in-page navigation; that hole is not closable by event choice, so the paired obligation is that
-  main-process code never passes an untrusted URL to `loadURL` / `loadFile`. *`DERIVED` — `.origin` over
-  `.host`:* the docs prescribe `origin` for navigation while the item-17 sender sample compares `.host`;
-  `.host` drops the scheme and the port, so an `http://` peer passes it. This skill teaches `.origin` in
-  both places and is deliberately stricter than that sample. Depth: [`security.md`](security.md).
+  URL. A third derives an allowlist from `new URL('app://bundle/index.html').origin`: the value is
+  `"null"`, so the resulting set also admits opaque-origin `file:`, `data:`, and `about:` URLs. *Residue:*
+  neither event emits for programmatic navigation (`webContents.loadURL`, `back`) or for in-page
+  navigation; that hole is not closable by event choice, so the paired obligation is that main-process
+  code never passes an untrusted URL to `loadURL` / `loadFile`. *`DERIVED` — preserve scheme and
+  authority:* the docs prescribe `origin` for navigation while the item-17 sender sample compares
+  `.host`; `.host` drops the scheme and the port, so an `http://` peer passes it. A tuple `.origin`
+  preserves those fields for special schemes. A non-special custom scheme has an opaque origin instead,
+  so its safe equivalent is an exact `.protocol` + `.host` pair, never `"null"`. Depth:
+  [`security.md`](security.md).
 - **EL-R-06 — MUST default `setWindowOpenHandler` to `{ action: 'deny' }`, on every `webContents` that
   can open a window.** *Check:* the handler's fall-through branch denies, a test opens a non-allowlisted
   URL and observes the denial, **and every `webContents` the app creates — including child windows and
@@ -510,14 +516,22 @@ import { ipcMain } from 'electron';
 
 declare function readProjectFile(name: string): Promise<string>;
 
-const ALLOWED_ORIGINS: ReadonlySet<string> = new Set(['app://bundle']);
+const ALLOWED_APP_AUTHORITIES = [
+  { protocol: 'app:', host: 'bundle' },
+] as const;
 
 function senderIsTrusted(frame: Electron.WebFrameMain | null): frame is Electron.WebFrameMain {
   if (frame === null || frame.detached) {
     return false;
   }
   try {
-    return ALLOWED_ORIGINS.has(new URL(frame.url).origin);
+    const parsed = new URL(frame.url);
+    // `app:` is non-special, so `parsed.origin` is the opaque-origin sentinel
+    // "null". Never put that sentinel in an allowlist: file:, data:, and
+    // about: URLs serialize to the same value.
+    return ALLOWED_APP_AUTHORITIES.some(
+      (allowed) => parsed.protocol === allowed.protocol && parsed.host === allowed.host,
+    );
   } catch {
     return false;
   }

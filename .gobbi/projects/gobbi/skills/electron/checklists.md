@@ -308,6 +308,15 @@ Subject: the change-set. Families 04 to 08.
   `loadURL` and `loadFile` call-site inventory, each argument traced to its source. *On fail:* the navigation
   that neither event emits for is performed by main itself — halt the handoff and return to
   [`security.md` § 6](security.md#6-item-13-the-navigation-event-surface). *(EL-R-05 residue · `EL-SC-07a`)*
+- [ ] `EL-CHECK-07f` **[GATE]** — PASS if a packaged non-special custom-scheme URL is matched by an exact
+  parsed `.protocol` + `.host` pair, the legitimate packaged entry is admitted, and `file:`, `data:`,
+  `about:`, and a lookalike custom host are all denied; FAIL if the guard compares the custom URL's
+  `.origin`, derives an allowlist containing `"null"`, or admits any other opaque-origin scheme.
+  *Evidence:* the allowed packaged entry plus the four denied adversarial URLs. *On fail:* distinct opaque
+  origins collapse to the same serialized sentinel and the allowlist either denies the app or fails open —
+  halt the handoff and return to
+  [`security.md` § 6](security.md#compare-the-parsed-security-identity-never-a-string-prefix).
+  *(EL-R-05 · `EL-SC-07e`)*
 - [ ] `EL-CHECK-08a` **[GATE]** — PASS if every key present in each `webPreferences` object is compared
   against its documented default and each deviation carries a recorded justification; FAIL if the compared set
   is smaller than the object's own key set, or a deviation ships with no justification. *Evidence:* the
@@ -495,7 +504,7 @@ cases are owned by [`scenarios.md` § 7](scenarios.md#7-the-six-cosmetic-conform
 | 1 | one tsconfig whose `lib` and `types` cover every process; the project type-checks green | `EL-CHECK-03b` | a per-target pass count, which this evidence cannot state |
 | 2 | a preload that hands the whole renderer IPC module across the bridge; nothing throws at exposure | `EL-CHECK-04c` | each key of the object **the renderer receives** asserted to be a function of the expected arity |
 | 3 | a permission handler whose default branch denies, whose twin is registered, and which passes every disallowed-permission test | `EL-CHECK-06b` | an **allowed** capability driven from a **disallowed origin**, denied |
-| 4 | a defect-free parsed-`origin` allowlist attached to the main-frame navigation event alone | `EL-CHECK-07b` | an off-allowlist navigation from a **subframe**, denied |
+| 4 | a defect-free parsed-`origin` allowlist attached to the main-frame navigation event alone, or a packaged custom scheme represented by its opaque `"null"` origin | `EL-CHECK-07b`, `EL-CHECK-07f` | an off-allowlist navigation from a **subframe**, denied; and an exact custom-scheme `.protocol` + `.host` match that rejects every other opaque origin |
 | 5 | a sender guard that null-checks the frame and compares its origin against a literal allowlist | `EL-CHECK-05b` | a non-null frame with `detached === true` and an allowlisted `.url`, denied |
 | 6 | a `main`-tagged module importing the renderer-side IPC module; three passes run and all are green | `EL-CHECK-02c` | `TS2305` from the main target's **own** generated `electron` view |
 
@@ -511,8 +520,9 @@ No row traces to a clause this skill does not teach.
 **Case to row.** Every case `EL-SC-NNx` in [`scenarios.md` § 6](scenarios.md#6-the-twelve-families) resolves
 to `EL-CHECK-NNx`, the slot it reserved. Three cases carry a second row, because their obligation held two
 independently falsifiable clauses: `EL-SC-07a` also owns `EL-CHECK-07e`, `EL-SC-09f` also owns
-`EL-CHECK-09h`, and `EL-SC-12a` also owns `EL-CHECK-12e`. No reserved slot points at a different case and no
-case is unreached: 53 cases, 56 rows.
+`EL-CHECK-09h`, and `EL-SC-12a` also owns `EL-CHECK-12e`. One later case uses the next free row because
+`EL-CHECK-07e` was already reserved: `EL-SC-07e` owns `EL-CHECK-07f`. No case is unreached: 54 cases,
+57 rows.
 
 **Clause to row.** Every hard rule and every prohibition reaches at least one row.
 
@@ -522,7 +532,7 @@ case is unreached: 53 cases, 56 rows.
 | EL-R-02 | `EL-CHECK-02c`, `EL-CHECK-03a`, `EL-CHECK-03b`, `EL-CHECK-03c`, `EL-CHECK-03d` |
 | EL-R-03 | `EL-CHECK-08a`, `EL-CHECK-08b` |
 | EL-R-04 | `EL-CHECK-06a`, `EL-CHECK-06b`, `EL-CHECK-06c` |
-| EL-R-05 | `EL-CHECK-07a`, `EL-CHECK-07b`, `EL-CHECK-07d`, `EL-CHECK-07e` |
+| EL-R-05 | `EL-CHECK-07a`, `EL-CHECK-07b`, `EL-CHECK-07d`, `EL-CHECK-07e`, `EL-CHECK-07f` |
 | EL-R-06 | `EL-CHECK-07c` |
 | EL-R-07 | `EL-CHECK-04a`, `EL-CHECK-04b`, `EL-CHECK-04c` |
 | EL-R-08 | `EL-CHECK-04d` |

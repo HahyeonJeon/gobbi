@@ -248,6 +248,10 @@ import { app, BrowserWindow } from 'electron';
 
 const PACKAGED_ENTRY = 'app://bundle/index.html';
 
+// `app:` is a non-special scheme: `new URL(PACKAGED_ENTRY).origin` is "null".
+// A sender or navigation guard for this entry compares the exact parsed
+// protocol + host pair; it never allowlists the "null" sentinel. See security.md.
+
 function devServerUrl(): string {
   // The variable name is the build tool's; read it from that tool's own
   // configuration docs. What matters here is that the URL arrives from the

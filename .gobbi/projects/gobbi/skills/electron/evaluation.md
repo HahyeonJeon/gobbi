@@ -175,7 +175,7 @@ procedure only tells that step which Electron cases and rows to take.
 | 04 the bridge surface | changes an exposed key, a listener wrapper, or a value that crosses | `EL-CHECK-04a`–`-04f` |
 | 05 the sender contract | adds or changes an `ipcMain` handler | `EL-CHECK-05a`–`-05e` |
 | 06 the nine code-only items | touches a window, a session, or a permission posture | `EL-CHECK-06a`–`-06c` |
-| 07 navigation and window-open | touches navigation, redirects, window-open, or `openExternal` | `EL-CHECK-07a`–`-07e` |
+| 07 navigation and window-open | touches navigation, redirects, window-open, `openExternal`, or a custom-protocol URL identity | `EL-CHECK-07a`–`-07f` |
 | 08 the `webPreferences` posture | constructs a window or edits a `webPreferences` object | `EL-CHECK-08a`–`-08c` |
 | 09 development versus the artifact | changes the load path, packaging, fuses, deep links, or a renderer asset path | `EL-CHECK-09a`–`-09h` |
 | 10 secrets and native returns | handles a secret, or calls a native capability whose failure returns | `EL-CHECK-10a`–`-10c` |
@@ -284,14 +284,15 @@ config actually produces?
 **Lens**: which **Electron footgun** leaves the machine reachable from a frame nobody wrote — a guard that
 denies the wrong thing, a handler that fails open, a posture that ships unflipped, or a secret on disk?
 
-**Activated**: `EL-SC-04d`, `EL-SC-05a`–`-05e`, `EL-SC-06a`–`-06c`, `EL-SC-07a`–`-07d`, `EL-SC-08a`, `-08c`,
+**Activated**: `EL-SC-04d`, `EL-SC-05a`–`-05e`, `EL-SC-06a`–`-06c`, `EL-SC-07a`–`-07e`, `EL-SC-08a`, `-08c`,
 `EL-SC-09c`, `-09d`, `-09e`, `EL-SC-10a`–`-10c`, `EL-SC-11b`, `-11d` · `EL-CHECK-04d`, `-05a`–`-05e`,
-`-06a`–`-06c`, `-07a`–`-07e`, `-08a`, `-08c`, `-09c`, `-09d`, `-09e`, `-10a`–`-10c`, `-11b`, `-11d`.
+`-06a`–`-06c`, `-07a`–`-07f`, `-08a`, `-08c`, `-09c`, `-09d`, `-09e`, `-10a`–`-10c`, `-11b`, `-11d`.
 
 | Anti-pattern | Correction |
 |---|---|
 | **A guard that denies the unknown and grants the known to anyone** | Drive an allowed input from a disallowed origin through every origin-sensitive item and observe the denial (`EL-R-04`) |
 | **A flawless allowlist on the wrong event** | Cover the frames at risk, and drive a subframe and a redirect through the guard — a main-frame test cannot tell the events apart (`EL-R-05`) |
+| **A custom-scheme allowlist containing `"null"`** | Admit the exact packaged `.protocol` + `.host` pair, then reject `file:`, `data:`, `about:`, and a lookalike custom host (`EL-R-05`) |
 | **A sender read that moved past the first `await`** | Read each handler for the read's lexical position; the behavioral suite passes the same handler, because no runner can stage the race (`EL-R-09`) |
 
 ---
@@ -335,7 +336,7 @@ add the Electron-idiom verifications below. Each names the rows it produces evid
 | Read the object passed to `exposeInMainWorld` key by key, diff the exposed key set across the change, then assert in the renderer that every received key is a function of the expected arity | `EL-R-07`, `EL-R-08`, `EL-N-03` (`EL-CHECK-04a`–`-04d`) |
 | Per handler, drive a null frame, a detached frame, an off-allowlist origin, and a malformed payload; separately, read each handler for the sender read's lexical position | `EL-R-09`, both conjuncts (`EL-CHECK-05a`–`-05e`) |
 | Per origin-sensitive security item, drive an **allowed** input from a **disallowed** origin | `EL-R-04` (`EL-CHECK-06a`–`-06c`) |
-| Navigate a subframe and a redirect through the guard, drive a malformed URL, and trace every main-process `loadURL` / `loadFile` argument to its source | `EL-R-05` (`EL-CHECK-07a`, `-07b`, `-07d`, `-07e`) |
+| Navigate a subframe and a redirect through the guard, drive a malformed URL, prove a custom-scheme packaged entry does not share authority with other opaque origins, and trace every main-process `loadURL` / `loadFile` argument to its source | `EL-R-05` (`EL-CHECK-07a`, `-07b`, `-07d`–`-07f`) |
 | Inventory every `webContents` the app creates and the window-open registration at each creation site | `EL-R-06` (`EL-CHECK-07c`) |
 | Diff every key present in each `webPreferences` object against the default its owning document records | `EL-R-03`, `EL-N-02` (`EL-CHECK-08a`–`-08c`) |
 | Search the packaged artifact for the development server's URL literal | `EL-R-11` (`EL-CHECK-09d`) |
