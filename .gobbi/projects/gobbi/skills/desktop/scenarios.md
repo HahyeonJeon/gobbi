@@ -4,15 +4,17 @@ Be the authoritative scenario source and the authoritative case-to-check relatio
 outcome. Policy lives in [`SKILL.md`](SKILL.md). Its consumers are [`checklists.md`](checklists.md) and
 [`evaluation.md`](evaluation.md). It exercises the parent contract and adds no policy.
 
-**Purpose:** ten coverage families and **fifty-five cases** that a desktop run must handle, each with an
+**Purpose:** ten coverage families and **sixty cases** that a desktop run must handle, each with an
 observable outcome a wrong run would produce differently, and each converted into the design obligation it
 proves. **Target:** one bounded desktop application outcome as `SKILL.md` defines it. **Consumer:** the run
 itself while designing, and an evaluator afterward. **Lifecycle mode:** design obligations, consumed in
 evaluation.
 
-**Scale, and the thresholds this set records.** Ten families, fifty-five cases, and **51 populated cells**,
+**Scale, and the thresholds this set records.** Ten families, sixty cases, and **51 populated cells**,
 where a cell is one distinct `(category, triggered case type)` pair. Every figure here is reproduced by
-scanning this file rather than carried from a plan.
+scanning this file rather than carried from a plan. The cell figure did not move when the case count did: every
+case added after the first authoring landed in a cell that was already populated, and a second case in a
+populated cell is not a new cell.
 
 The generic defaults are roughly twelve families and forty cells, and this set **records its own cell
 threshold as 55**. Two reasons, and the first is the load-bearing one. The family count is not this author's
@@ -61,7 +63,7 @@ Abbreviations: **Pos** positive · **Alt** alternative-valid · **Neg** negative
 |---|---|---|---|---|---|---|---|---|
 | `01` Purpose | 01 | 02 | 03 | `n/a: the outcome contract has no quantity, ordering, or time-window property to sit at a limit of` | `n/a: a scope contract is a written agreement, not a runtime component that can fail partway` | 04 | `n/a: this family fixes the contract before any version of it exists to change` | 05 |
 | `02` Actors | 06, 54 | 07 | 08 | 09 | 10 | 11 | `n/a: participant conditions are re-established per activity, so there is no before/after version of them to compare` | `n/a: the participant floor's premise is fail-closed by construction, leaving no load-bearing premise to invert` |
-| `03` Behavior | 12 | `n/a: the state machine's valid entry paths are enumerated by DESK-FAMILY-01's entry-mode inventory, so a second valid class here would duplicate that family's coverage` | 13 | 14 | 15 | 16 | 17 | `n/a: this family asserts no premise beyond the platform mechanisms its siblings verify at their owners` |
+| `03` Behavior | 12, 56 | `n/a: the state machine's valid entry paths are enumerated by DESK-FAMILY-01's entry-mode inventory, so a second valid class here would duplicate that family's coverage` | 13, 58 | 14, 57 | 15 | 16, 59, 60 | 17 | `n/a: this family asserts no premise beyond the platform mechanisms its siblings verify at their owners` |
 | `04` Interfaces | 18 | `n/a: the four execution contexts are one enumerated set, not alternative valid routes through one contract` | 19 | `n/a: the crossable-type set is a membership question, not a limit with an adjacent value` | 20 | 21 | 22 | `n/a: the boundary's premise — that a declared type does not validate — is exercised directly by case 21 rather than inverted` |
 | `05` Quality | 23 | `n/a: a measurement has one valid method here; a second would vary the subject, not the class` | `n/a: an invalid measurement is an unsourced claim, which DESK-FAMILY-10 owns as an evidence defect` | 24 | `n/a: a resource bound that is exceeded is this family's boundary case, not a separate injected failure` | 25 | `n/a: a cross-version comparison of a measurement is exactly what case 24's version-naming obligation exists to make possible, and is covered there` | 26 |
 | `06` Failure | 27 | `n/a: recovery has one correct path per failure here; a second valid route would be a different failure` | `n/a: rejecting an invalid input is DESK-FAMILY-04's crossing validation, not a recovery concern` | 28 | 29 | 30 | `n/a: a failed update's version change is exercised by DESK-FAMILY-09, which owns the version axis` | `n/a: this family's premise — that interruption is ordinary — is asserted by the safety floor and not inverted here` |
@@ -77,11 +79,12 @@ prohibition, a `DESK-FLOOR` floor with its property check, a `DESK-G` gate, or a
 children supply the concrete mechanism each case exercises. No case derives from a source outside the
 family, and no case introduces a mechanism its owning child does not state.
 
-**Stable-ID policy.** `DESK-FAMILY-01`–`10` and `DESK-SCENARIO-01`–`55` are permanent — fifty-five cases,
-numbered without gaps, reproduced by scan. The last two identifiers were allocated after a coverage sweep
-found two reserved checks with no seeding case, so they sit at the end of the sequence rather than inside
-their families' runs; identifiers are allocation-ordered and never renumbered. Renaming a title
-never changes an identifier. A case whose *discrimination* changes — it now tests something different — gets
+**Stable-ID policy.** `DESK-FAMILY-01`–`10` and `DESK-SCENARIO-01`–`60` are permanent — sixty cases,
+numbered without gaps, reproduced by scan. The last seven identifiers were allocated after later coverage
+sweeps — two after a sweep found two reserved checks with no seeding case, and five after the per-system
+behavior check was split into one claim per item and five of its claims proved to have no case of their own —
+so they sit at the end of the sequence rather than inside their families' runs; identifiers are
+allocation-ordered and never renumbered. Renaming a title never changes an identifier. A case whose *discrimination* changes — it now tests something different — gets
 a new identifier rather than reusing the old one, so a finding stays resolvable across revisions. A retired
 identifier is never reallocated.
 
@@ -358,7 +361,7 @@ one indicates only one of the two mechanisms is in place.
 paint.
 *Obligation:* the design MUST create the window hidden and show it on the ready-to-show event **and** set a
 background color, because each mechanism alone leaves one bad case.
-*Trace:* `DESK-CHECK-23`
+*Trace:* `DESK-CHECK-37`
 
 #### `DESK-SCENARIO-13` — A downgrade rewrites newer data into an older shape
 
@@ -389,7 +392,7 @@ unreachable without editing state by hand.
 focusable on an attached display.
 *Obligation:* the design MUST validate restored window bounds against the currently attached displays and
 fall back to a visible position when they do not intersect one.
-*Trace:* `DESK-CHECK-23`
+*Trace:* `DESK-CHECK-38`
 
 #### `DESK-SCENARIO-15` — A local write is interrupted
 
@@ -435,6 +438,97 @@ supported-old-version window states which older versions this obligation covers.
 *Obligation:* the design MUST state which older versions its data contract supports, and MUST prove the data
 round trip across that stated window rather than only forward.
 *Trace:* `DESK-CHECK-24`, `DESK-CHECK-31`
+
+#### `DESK-SCENARIO-56` — Closing the last surface, and coming back to one
+
+*Primary type:* **Positive** — the ordinary valid path of leaving the application with no surface open and
+returning to it. *Coverage-role:* `positive` (exercises the no-surface state and the return from it).
+*Given* an application whose last surface is closed on each claimed system. *When* the person closes it and
+later reactivates the application. *Then* the system whose convention keeps an application alive with no
+surface open keeps running and opens one on its own activation event, the systems whose convention exits do
+exit, and the handler used is the one that fires on reactivation rather than the one that fires on every switch
+into the application.
+*Failure oracle:* identical behaviour on every claimed system — an application that exits where the convention
+says it persists, or persists where the convention says it exits; or a new surface appearing on every switch
+into the application, which is the wrong activation event.
+*Evidence:* close the last surface on each claimed system and observe the process; reactivate and confirm
+exactly one surface appears; then switch away and back repeatedly and confirm none is created.
+*Obligation:* the design MUST satisfy each claimed system's own closing-the-last-surface and activation
+convention with its named mechanism, and MUST NOT use the every-activation event where the reactivation event
+is meant.
+*Trace:* `DESK-CHECK-39`
+
+#### `DESK-SCENARIO-57` — A deep link proved in a development run
+
+*Primary type:* **Boundary** — it sits at the exact packaging transition where the feature starts working on
+one system. *Coverage-role:* `boundary` (exercises the unpackaged-to-packaged transition).
+*Given* a protocol registration and a link that opens correctly when the application is launched from the
+development command. *When* the run cites that result as evidence the deep link works. *Then* the citation is
+refused on the system whose own documentation states the feature does not work unpackaged, the claim is
+re-proved against the packaged artifact, and each claimed system's delivery route is the one that system
+documents rather than one route assumed for all of them.
+*Failure oracle:* a deep-link claim whose only evidence is an unpackaged run on the system that documents a
+false negative there; or one delivery route implemented and several systems claimed.
+*Evidence:* open the link against the packaged, installed artifact on each claimed system, and read the
+implemented delivery route for each against the route that system documents.
+*Obligation:* the design MUST implement each claimed system's own deep-link delivery route, and MUST prove a
+deep-link claim on the packaged artifact wherever the platform states the unpackaged result is a false
+negative.
+*Trace:* `DESK-CHECK-40`
+
+#### `DESK-SCENARIO-58` — A two-state light and dark toggle offered as the theme contract
+
+*Primary type:* **Negative** — an invalid theming contract expecting rejection.
+*Coverage-role:* `negative` (exercises rejection of the missing third state).
+*Given* a theme source that takes exactly three values and an application offering the person two of them.
+*When* the person's system changes appearance on its own schedule. *Then* the application is in the wrong
+appearance until the person corrects it by hand — which is why follow-the-system is a required third state
+rather than a convenience — and the theme interface's own update event is handled live rather than read once
+at startup.
+*Failure oracle:* a two-option appearance control; or a three-option control whose follow-the-system value is
+read at startup and never updated, so a mid-session change leaves the application behind.
+*Evidence:* read the mapping between the person-facing control and the theme source's three values; then
+change the system appearance while the application is running and observe whether it follows.
+*Obligation:* the design MUST map the person-facing appearance control onto all three values of the theme
+source and MUST handle that interface's update event live.
+*Trace:* `DESK-CHECK-41`
+
+#### `DESK-SCENARIO-59` — A shortcut map that works in its author's own window
+
+*Primary type:* **Adversarial** — a configuration that behaves correctly where it was written and is dead or
+hostile everywhere else. *Coverage-role:* `adversarial` (attacks the shortcut contract through the author's own
+environment).
+*Given* accelerators written with one platform's own modifier, and one binding that takes a combination the
+platform's desktop guidance names as reserved for the system. *When* the application runs on the other claimed
+systems, and beside other applications on the same one. *Then* the modifier-specific accelerators are silently
+dead on the systems that do not have that modifier, and the reserved binding takes a system combination away
+from every other application the person uses — so one shortcut map exists per claimed platform, written with
+the portable modifier and excluding the reserved set.
+*Failure oracle:* every accelerator behaving correctly in the author's own foreground window while a claimed
+system has no working accelerator at all; or a binding on a combination the platform's own guidance names as
+reserved.
+*Evidence:* exercise each accelerator on each claimed system, and compare the bound set against that system's
+own reserved list.
+*Obligation:* the design MUST carry one shortcut map per claimed platform, written with the portable modifier
+rather than one platform's own, and MUST NOT bind a system-reserved combination.
+*Trace:* `DESK-CHECK-42`
+
+#### `DESK-SCENARIO-60` — A platform convention filled in from a plausible summary
+
+*Primary type:* **Adversarial** — a confident, well-formed conformance claim with no readable authority behind
+it. *Coverage-role:* `adversarial` (attacks the honesty rule exactly where the answer is unavailable).
+*Given* a vendor design-guidance surface this skill records as unreadable, and a run that needs a menu ordering
+from it. *When* the run takes the ordering from a search summary, or softens it into a hedge about what the
+vendor probably requires. *Then* both are rejected: an unverifiable convention is neither asserted nor hedged,
+the gap is marked, what would close it is named, and the design is written so it does not depend on the answer.
+*Failure oracle:* a menu ordering, a minimum menu set, or a document-ordering convention stated as fact or as a
+hedge, with no readable owner document behind it.
+*Evidence:* take each stated platform convention to the owner document that would establish it; a convention
+with no readable owner fails whether it was asserted or hedged.
+*Obligation:* the design MUST NOT state an unverified platform convention as fact and MUST NOT hedge it into a
+claim about what has not been read; it MUST mark the gap, name its closing condition, and write the rule so it
+does not depend on the answer.
+*Trace:* `DESK-CHECK-43`
 
 ### `DESK-FAMILY-04` — The privilege boundary, the channel inventory, and the three targets
 
@@ -1078,22 +1172,27 @@ Every case's obligation and the check identifier it reserves. This table is the 
 trace — policy and case to check — and it is generated from the `Trace:` fields above rather than maintained
 beside them, so the two cannot drift apart.
 
-**No case in this set is exploratory**, so all fifty-five carry an obligation and appear here. An exploratory
+**No case in this set is exploratory**, so all sixty carry an obligation and appear here. An exploratory
 case would be exempt from the obligation trace only while explicitly marked as one, and the exemption would
 end the moment it became an approved constraint.
 
-**The reserved ranges, and the extension this set required.** The design fixes four pause points and reserves
-thirty-four check slots across them. This set reserves **thirty-six**, because the four protected floors each
-need a member check *and* a property check — eight slots where the original allocation left room for fewer —
-and the protected-waiver table needs its own. The extension follows the rule the design states: the range
-grows at its own pause point's tail and every later range shifts. [`checklists.md`](checklists.md) records
-the final ranges once, as their owner.
+**The reserved ranges, and the two extensions this set required.** The design fixes four pause points and
+reserves thirty-four check slots across them. This set reserves **forty-three**. The first extension took it to
+thirty-six, because the four protected floors each need a member check *and* a property check — eight slots
+where the original allocation left room for fewer — and the protected-waiver table needs its own; it followed
+the rule the design states, growing a range at its own pause point's tail and shifting every later range. The
+second extension took it to forty-three and could not follow that rule: splitting the per-system behavior check
+into one atomic claim per item needed seven further slots at `DESK-PAUSE-3`, and growing that range in place
+would have renumbered every later identifier, which the stable-ID policy above forbids. Those seven are
+therefore **allocated at the tail of the sequence and placed in their pause point's own list**, exactly as
+`DESK-SCENARIO-54` and `DESK-SCENARIO-55` sit inside their families with tail numbers.
+[`checklists.md`](checklists.md) records the final ranges once, as their owner.
 
 | Pause point | Reserved range | Confirms |
 |---|---|---|
 | `DESK-PAUSE-1` — stack and outcome lock | `01`–`05` | outcome, boundary, stack-fit result, ownership statement, gate-authority map |
 | `DESK-PAUSE-2` — design acceptance | `06`–`17`, with **`06` reserved for the structural-approval check** | the structural-approval decision, the rung register, and all four floors on both their member and property checks |
-| `DESK-PAUSE-3` — implementation completion | `18`–`26` | the privilege boundary, security posture, platform obligations, local data, and in-scope paths |
+| `DESK-PAUSE-3` — implementation completion | `18`–`26` and `37`–`43` | the privilege boundary, security posture, platform obligations one claim at a time, local data, and in-scope paths |
 | `DESK-PAUSE-4` — release-readiness handoff | `27`–`36` | every applicable release gate per claimed system, the design record, and the trace and verifier proofs |
 
 `DESK-CHECK-06` is pinned by the design rather than chosen here: the restored structural-approval gate
@@ -1116,9 +1215,9 @@ one check cluster.
 | `DESK-SCENARIO-10` | A required participant condition is missing | `DESK-CHECK-13` | `DESK-PAUSE-2` |
 | `DESK-SCENARIO-11` | An unlisted participant activity whose observations are cited | `DESK-CHECK-14` | `DESK-PAUSE-2` |
 | `DESK-SCENARIO-54` | The ladder's own method order, and three axes stated per visual artifact | `DESK-CHECK-08` | `DESK-PAUSE-2` |
-| `DESK-SCENARIO-12` | First paint uses both mechanisms | `DESK-CHECK-23` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-12` | First paint uses both mechanisms | `DESK-CHECK-37` | `DESK-PAUSE-3` |
 | `DESK-SCENARIO-13` | A downgrade rewrites newer data into an older shape | `DESK-CHECK-24` | `DESK-PAUSE-3` |
-| `DESK-SCENARIO-14` | A monitor disappears between sessions | `DESK-CHECK-23` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-14` | A monitor disappears between sessions | `DESK-CHECK-38` | `DESK-PAUSE-3` |
 | `DESK-SCENARIO-15` | A local write is interrupted | `DESK-CHECK-24` | `DESK-PAUSE-3` |
 | `DESK-SCENARIO-16` | A second instance's arguments are read by position | `DESK-CHECK-23`, `DESK-CHECK-11` | `DESK-PAUSE-2`, `DESK-PAUSE-3` |
 | `DESK-SCENARIO-17` | A schema change ships and the previous version is still installed | `DESK-CHECK-24`, `DESK-CHECK-31` | `DESK-PAUSE-3`, `DESK-PAUSE-4` |
@@ -1159,3 +1258,8 @@ one check cluster.
 | `DESK-SCENARIO-52` | Nine claims merged into one release status | `DESK-CHECK-32` | `DESK-PAUSE-4` |
 | `DESK-SCENARIO-53` | A green relation test offered as a complete trace proof | `DESK-CHECK-34` | `DESK-PAUSE-4` |
 | `DESK-SCENARIO-55` | A human-outcome claim with no participant record behind it | `DESK-CHECK-16` | `DESK-PAUSE-2` |
+| `DESK-SCENARIO-56` | Closing the last surface, and coming back to one | `DESK-CHECK-39` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-57` | A deep link proved in a development run | `DESK-CHECK-40` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-58` | A two-state light and dark toggle offered as the theme contract | `DESK-CHECK-41` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-59` | A shortcut map that works in its author's own window | `DESK-CHECK-42` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-60` | A platform convention filled in from a plausible summary | `DESK-CHECK-43` | `DESK-PAUSE-3` |

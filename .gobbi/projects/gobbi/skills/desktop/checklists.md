@@ -11,7 +11,7 @@ Be the unchecked operational gate source with the protected-waiver truth table. 
 | **Source state** | **unchecked** — every box below is unticked, and it stays that way |
 | **Run state** | each run works a **fresh filled copy** naming this source's version and the run's identity |
 | **Use-style** | declared per pause point below, per run |
-| **Items** | 36, across four pause points |
+| **Items** | 43, across four pause points |
 | **Provenance** | each item's `Source` names its parent clause; each item's `Seeds` names the cases that reserved it |
 
 **The source is never worked and never ticked.** A run copies it, fills the copy, and records the copy's
@@ -27,30 +27,36 @@ acceptance-bearing. An advisory row here would be a mandatory obligation quietly
 |---|---|---|---|---|
 | `DESK-PAUSE-1` — stack and outcome lock | before rung 0 begins | `read-do` | `01`–`05` | the outcome, boundary, stack-fit result, ownership statement, and gate-authority map are accepted |
 | `DESK-PAUSE-2` — design acceptance | before `P5` locks the application contract | `do-confirm` | `06`–`17` | the structural-approval decision is confirmed with no visual rung preceding it, the rung register is complete and substantiated, and all four floors are accepted on **both** their member check and their property check |
-| `DESK-PAUSE-3` — implementation completion | before `P9` treats the grown slices as complete | `do-confirm` | `18`–`26` | the privilege boundary, security posture, platform obligations, local data contract, and in-scope paths are accepted |
+| `DESK-PAUSE-3` — implementation completion | before `P9` treats the grown slices as complete | `do-confirm` | `18`–`26`, `37`–`43` | the privilege boundary, security posture, every per-system platform obligation on its own item, local data contract, and in-scope paths are accepted |
 | `DESK-PAUSE-4` — release-readiness handoff | before `P10` publishes readiness or any external release is requested | `do-confirm` | `27`–`36` | every applicable release gate per claimed operating system is accepted, the design record is complete, and the trace and verifier proofs have both run |
 
-**The reserved ranges were extended, and this is the single place that records it.** The design reserved
-thirty-four slots; this source authors **thirty-six**. The extension follows the design's own rule — a range
-grows at its own pause point's tail and every later range shifts:
+**The reserved ranges were extended twice, and this is the single place that records it.** The design reserved
+thirty-four slots; this source authors **forty-three**:
 
 | Pause point | Reserved by the design | Authored here | Why |
 |---|---|---|---|
 | `DESK-PAUSE-1` | `01`–`05` | `01`–`05` | unchanged |
 | `DESK-PAUSE-2` | `06`–`15` | `06`–`17` | the four non-waivable floors each need a **member** check and a **property** check — eight acceptance-bearing items — plus the structural-approval gate, the rung register, the ladder method, and the protected-waiver discipline |
-| `DESK-PAUSE-3` | `16`–`24` | `18`–`26` | shifted by two; the item count is unchanged |
+| `DESK-PAUSE-3` | `16`–`24` | `18`–`26`, `37`–`43` | shifted by two by the first extension; the second extension added seven at the tail of the sequence when `DESK-CHECK-23` was split into one atomic claim per item |
 | `DESK-PAUSE-4` | `25`–`34` | `27`–`36` | shifted by two; the item count is unchanged |
 
-`DESK-CHECK-06` keeps its pinned position at the head of `DESK-PAUSE-2` regardless of the shift, because the
-design pins that one identifier and this source may not move it.
+The first extension followed the design's own rule — a range grows at its own pause point's tail and every
+later range shifts. **The second could not, and the departure is deliberate.** Growing `DESK-PAUSE-3`'s range
+in place would have renumbered every `DESK-PAUSE-4` identifier, which breaks a finding's resolvability across
+revisions; the identifiers are therefore allocated at the tail of the sequence and placed in the pause point
+they belong to. A range here is a set of identifiers, not a contiguous interval.
 
-**Item counts per pause point, and the two that exceed the generic guidance.** The generic guidance is
-roughly five to nine gate-or-required items per operational pause point. `DESK-PAUSE-1` carries 5 and
-`DESK-PAUSE-3` carries 9, both inside it. `DESK-PAUSE-4` carries 10 and `DESK-PAUSE-2` carries 12, both
-outside it. The deviation is recorded rather than resolved by trimming, for a structural reason: the pause
-points are fixed by the design and may not be split here, and eight of `DESK-PAUSE-2`'s twelve items are the
-four non-waivable floors' mandatory member-and-property pairs. Dropping one would remove an
-acceptance-bearing item that a floor requires.
+`DESK-CHECK-06` keeps its pinned position at the head of `DESK-PAUSE-2` regardless of either extension, because
+the design pins that one identifier and this source may not move it.
+
+**Item counts per pause point, and the three that exceed the generic guidance.** The generic guidance is
+roughly five to nine gate-or-required items per operational pause point. `DESK-PAUSE-1` carries 5, inside it.
+`DESK-PAUSE-4` carries 10, `DESK-PAUSE-2` carries 12, and `DESK-PAUSE-3` carries 16, all outside it. The
+deviation is recorded rather than resolved by trimming, for a structural reason: the pause points are fixed by
+the design and may not be split here; eight of `DESK-PAUSE-2`'s twelve items are the four non-waivable floors'
+mandatory member-and-property pairs; and `DESK-PAUSE-3`'s count is what atomicity costs — seven of its items
+are the per-system behavior obligations that one conjoined item used to hide. Dropping one would either remove
+an acceptance-bearing item a floor requires, or put two claims back under one `PASS`.
 
 ## Terminal value set
 
@@ -107,7 +113,7 @@ is one of those floors' own checks. That is the parent discipline's item-scope t
 to any applicable item whose claim or pass condition bears on the protected property, not only to the items
 named after a floor.
 
-Applying that test to this source yields **fourteen** protected items:
+Applying that test to this source yields **fifteen** protected items:
 
 | Item | Why the test selects it |
 |---|---|
@@ -119,19 +125,28 @@ Applying that test to this source yields **fourteen** protected items:
 | `DESK-CHECK-20` | its pass condition bears on the update install ending the process mid-write, a named safety member |
 | `DESK-CHECK-23` | its pass condition bears on positional argument handling, a named safety member |
 | `DESK-CHECK-24` | its pass condition bears on the interrupted write and the migration downgrade path, two named safety members |
+| `DESK-CHECK-38` | its pass condition bears on a window restored where nothing can reach it — a consequence an ordinary relaunch produces and the person cannot foresee, refuse, or recover from. The test selects it through the safety floor's **property and residual clause**, not through a named member, which is what the item-scope test is for |
 | `DESK-CHECK-30` | its pass condition bears on an update install racing live state, a named safety member |
 | `DESK-CHECK-31` | its pass condition bears on release irreversibility, a named safety member |
 
-**Why this set is wider than the eight floor checks.** Five items — `20`, `23`, `24`, `30`, and `31` — are
-not floor checks and are protected anyway, because each one's pass condition carries a condition the safety
-floor names as a member. Protecting only the items titled after a floor would leave a waiver available on the
-migration downgrade path and on the update-install race, which are exactly the consequences the floor exists
-to make unwaivable.
+**Why this set is wider than the eight floor checks.** Six items — `20`, `23`, `24`, `30`, `31`, and `38` — are
+not floor checks and are protected anyway, because each one's pass condition carries a consequence the safety
+floor governs: the first five through a named member, and `38` through the floor's property and residual
+clause. Protecting only the items titled after a floor would leave a waiver available on the migration
+downgrade path, on the update-install race, and on an unreachable restored window, which are exactly the
+consequences the floor exists to make unwaivable.
 
 **Items whose subject is security rather than safety are not selected by this test.**
 `DESK-CHECK-19`, `DESK-CHECK-21`, and `DESK-CHECK-22` bear on trust and harm, which the root treats as a
 concern distinct from the safety floor's foreseeable-refusable-recoverable property. They remain gates; they
 are simply not waiver-immune by this test.
+
+**The other items split out of `DESK-CHECK-23` are not selected either, and the test was applied to each.**
+`DESK-CHECK-37`, `39`, `40`, `41`, `42`, and `43` bear on conformance, discoverability, and honesty: a flash on
+launch, an application that exits where its system's convention persists, a link that never fires, an
+appearance left behind, a dead accelerator, and a conformance claim nobody can check. Each is a defect the
+person can see and the run can correct forward; none reaches a consequence the person cannot foresee, refuse,
+or recover from, and none bears on the accessibility floor's availability property. They remain gates.
 
 **The table.** Six rows. Each adversarial row holds every other applicable item at `PASS`, so the row
 isolates one attempted resolution. Coverage closure and acceptance are evaluated separately in every row.
@@ -461,24 +476,17 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   *Obligation conditions owned:* the two archive fuses set as a pair · both horns named with their
   consequences · the user deciding · the chosen horn's consequence carried as a stated verification limit.
 
-- [ ] **`DESK-CHECK-23`** `[GATE, PROTECTED]` · *Applicability:* unconditional — every per-operating-system
-  behavior obligation the outcome touches is satisfied by its named mechanism.
-  *Pass:* first paint uses the hidden-window-plus-ready-event mechanism **and** a background color; window
-  state restoration validates saved bounds against the currently attached displays with a visible fallback;
-  quit and activation semantics match each claimed system; the second-instance argument list is parsed by
-  matching and never by position; the deep-link route is per system; theming is a three-state machine; one
-  shortcut map exists per platform excluding system-reserved combinations; and no unverified platform
-  convention is asserted.
-  *Evidence:* direct behavioral test per claimed system, including a launch recording and a detached-display
-  relaunch.
+- [ ] **`DESK-CHECK-23`** `[GATE, PROTECTED]` · *Applicability:* unconditional — the second-instance argument
+  list is parsed by matching.
+  *Pass:* every read of the second-instance argument list resolves its target by matching what the argument is,
+  and no read indexes a fixed position.
+  *Evidence:* launch a second instance with additional arguments present and in varied order, per claimed
+  system, and confirm the intended target resolves under every ordering.
   *On fail:* halt; open a finding against the owning obligation.
-  *Consequence:* a second launch acting on a target the person did not choose, or a window restored where
-  nothing can reach it.
-  *Source:* `DESK-R21`, `DESK-R22`, `DESK-N09` · *Seeds:* `DESK-SCENARIO-12`, `DESK-SCENARIO-14`,
-  `DESK-SCENARIO-16`
-  *Obligation conditions owned:* both first-paint mechanisms rather than either · restored bounds validated
-  against attached displays with a visible fallback · the argument list parsed by matching · no unverified
-  platform convention asserted.
+  *Consequence:* a second launch acting on a target the person did not choose.
+  *Source:* `DESK-R22` — its argument-handling leg · *Seeds:* `DESK-SCENARIO-16`
+  *Obligation conditions owned:* the argument list parsed by matching · the positional read treated as a safety
+  defect rather than a correctness preference.
 
 - [ ] **`DESK-CHECK-24`** `[GATE, PROTECTED]` · *Applicability:* unconditional — the local data contract holds
   in both directions.
@@ -518,6 +526,105 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   `DESK-SCENARIO-25`
   *Obligation conditions owned:* the version named in the same statement · no cross-version attribution ·
   blocking work kept off the privileged process's thread.
+
+**The remaining items of this pause point carry tail identifiers, and this is why.** `DESK-CHECK-23` once
+conjoined eight distinct per-operating-system obligations under one `PASS`, which the legend's atomicity rule
+forbids: a run correct on seven of the eight could not record that, and a `FAIL` localised nothing. Splitting
+it needed seven further slots here. Growing this pause point's range in place would have renumbered every
+identifier at `DESK-PAUSE-4`, breaking a finding's resolvability across revisions, so the seven were allocated
+at the tail of the sequence and placed here, in the pause point they belong to. `DESK-CHECK-23` keeps its own
+identifier and its protected designation because it keeps the claim that earned them — the argument-matching
+claim its protected-item row already cites.
+
+- [ ] **`DESK-CHECK-37`** `[GATE]` · *Applicability:* unconditional — first paint uses both mechanisms.
+  *Pass:* the initial window is created hidden and shown on the ready-to-show event, **and** a background color
+  is set anyway; a run implementing one of the two fails this item.
+  *Evidence:* a launch recording per claimed system, inspected for a flash on show and for a gap between
+  process start and the first visible window.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a white flash on launch, or an application that appears not to have launched at all.
+  *Source:* `DESK-R22` — its first-paint leg · *Seeds:* `DESK-SCENARIO-12`
+  *Obligation conditions owned:* the window created hidden and shown on the ready event · the background color
+  set anyway · both mechanisms rather than either.
+
+- [ ] **`DESK-CHECK-38`** `[GATE, PROTECTED]` · *Applicability:* unconditional — restored window bounds are
+  validated against the displays currently attached.
+  *Pass:* restoration compares the saved bounds against the currently attached displays and falls back to a
+  visible position when they do not intersect one.
+  *Evidence:* set bounds on a second display, detach it, relaunch, and confirm the window is visible and
+  focusable on an attached display.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* an ordinary relaunch puts the window where nothing can reach it, recoverable only by editing
+  state by hand.
+  *Source:* `DESK-R22` — its state-restoration leg · *Seeds:* `DESK-SCENARIO-14`
+  *Obligation conditions owned:* restored bounds validated against the currently attached displays · a visible
+  fallback when they intersect none.
+
+- [ ] **`DESK-CHECK-39`** `[GATE]` · *Applicability:* unconditional — quit and activation semantics match each
+  claimed system's own convention.
+  *Pass:* closing the last surface produces that system's documented outcome on every claimed system, and the
+  handler that opens a surface on return is the reactivation event rather than the event that fires on every
+  switch into the application.
+  *Evidence:* close the last surface on each claimed system and observe the process; reactivate and confirm
+  exactly one surface appears; switch away and back repeatedly and confirm none is created.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* an application that exits where its system's convention says it persists, or a surface created
+  on every application switch.
+  *Source:* `DESK-R22` — its quit-and-activation leg · *Seeds:* `DESK-SCENARIO-56`
+  *Obligation conditions owned:* each claimed system's own closing-the-last-surface convention · its own
+  activation convention · the reactivation event rather than the every-activation event.
+
+- [ ] **`DESK-CHECK-40`** `[GATE]` · *Applicability:* conditional — applies when the outcome registers a
+  protocol or claims a deep link. An `n/a:<property>` requires the inspected finding that it registers none and
+  claims none.
+  *Pass:* each claimed system's delivery route is the route that system's own documentation names, and any
+  deep-link claim on the system that documents an unpackaged false negative rests on the packaged artifact.
+  *Evidence:* open the link against the packaged, installed artifact per claimed system, and read the
+  implemented route for each against the route that system documents.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a shipped association that never fires, behind a development run that appeared to prove it.
+  *Source:* `DESK-R22` — its deep-link leg · *Seeds:* `DESK-SCENARIO-57`
+  *Obligation conditions owned:* one delivery route per claimed system, each the route that system documents ·
+  the packaged artifact as the evidence wherever the platform documents an unpackaged false negative.
+
+- [ ] **`DESK-CHECK-41`** `[GATE]` · *Applicability:* unconditional — theming is a three-state machine handled
+  live.
+  *Pass:* the person-facing appearance control maps onto all three values of the theme source, and that
+  interface's update event is handled while the application runs rather than read once at startup.
+  *Evidence:* read the mapping between the control and the three values; then change the system appearance
+  while the application is running and observe whether it follows.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* an application in the wrong appearance until the person corrects it by hand.
+  *Source:* `DESK-R22` — its theming leg · *Seeds:* `DESK-SCENARIO-58`
+  *Obligation conditions owned:* all three values of the theme source reachable from the person-facing control ·
+  the update event handled live.
+
+- [ ] **`DESK-CHECK-42`** `[GATE]` · *Applicability:* unconditional — one shortcut map exists per claimed
+  platform, and none binds a reserved combination.
+  *Pass:* each claimed platform has its own map, written with the portable modifier rather than one platform's
+  own, and no binding takes a combination that platform's own guidance names as reserved for the system.
+  *Evidence:* exercise each accelerator on each claimed system, and compare the bound set against that system's
+  own reserved list.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a claimed system with no working accelerator at all, or a system combination taken away from
+  every other application the person uses.
+  *Source:* `DESK-R22` — its shortcut-map leg · *Seeds:* `DESK-SCENARIO-59`
+  *Obligation conditions owned:* one map per claimed platform · the portable modifier rather than one
+  platform's own · no system-reserved combination bound.
+
+- [ ] **`DESK-CHECK-43`** `[GATE]` · *Applicability:* unconditional — no unverified platform convention is
+  asserted, and none is hedged.
+  *Pass:* every stated platform convention reaches an owner document a reader can open; a convention with no
+  readable owner appears neither as a fact nor as a hedge about what the vendor probably requires, and instead
+  carries its marking and its closing condition.
+  *Evidence:* take each stated platform convention to the owner document that would establish it, and read
+  every unverifiable one for a marking rather than a softened assertion.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a conformance claim nobody can check, which reads as authority and can be false in exactly the
+  way the assertion would have been.
+  *Source:* `DESK-R21` — its no-unverified-convention leg, `DESK-N09` · *Seeds:* `DESK-SCENARIO-60`
+  *Obligation conditions owned:* no unverified platform convention asserted · none hedged into a claim about
+  what has not been read · the gap marked with its closing condition.
 
 ### `DESK-PAUSE-4` — release-readiness handoff · `do-confirm`
 
@@ -682,7 +789,7 @@ in [`scenarios.md`](scenarios.md), verifiable independently of each item's own `
 | `DESK-CHECK-20` | `DESK-SCENARIO-20`, `DESK-SCENARIO-30` | `DESK-PAUSE-3` |
 | `DESK-CHECK-21` | `DESK-SCENARIO-31`, `DESK-SCENARIO-34` | `DESK-PAUSE-3` |
 | `DESK-CHECK-22` | `DESK-SCENARIO-33`, `DESK-SCENARIO-36` | `DESK-PAUSE-3` |
-| `DESK-CHECK-23` | `DESK-SCENARIO-12`, `DESK-SCENARIO-14`, `DESK-SCENARIO-16` | `DESK-PAUSE-3` |
+| `DESK-CHECK-23` | `DESK-SCENARIO-16` | `DESK-PAUSE-3` |
 | `DESK-CHECK-24` | `DESK-SCENARIO-13`, `DESK-SCENARIO-15`, `DESK-SCENARIO-17`, `DESK-SCENARIO-28` | `DESK-PAUSE-3` |
 | `DESK-CHECK-25` | `DESK-SCENARIO-02`, `DESK-SCENARIO-03` | `DESK-PAUSE-3` |
 | `DESK-CHECK-26` | `DESK-SCENARIO-23`, `DESK-SCENARIO-24`, `DESK-SCENARIO-25` | `DESK-PAUSE-3` |
@@ -696,6 +803,13 @@ in [`scenarios.md`](scenarios.md), verifiable independently of each item's own `
 | `DESK-CHECK-34` | `DESK-SCENARIO-53` | `DESK-PAUSE-4` |
 | `DESK-CHECK-35` | `DESK-SCENARIO-43` | `DESK-PAUSE-4` |
 | `DESK-CHECK-36` | `DESK-SCENARIO-04` | `DESK-PAUSE-4` |
+| `DESK-CHECK-37` | `DESK-SCENARIO-12` | `DESK-PAUSE-3` |
+| `DESK-CHECK-38` | `DESK-SCENARIO-14` | `DESK-PAUSE-3` |
+| `DESK-CHECK-39` | `DESK-SCENARIO-56` | `DESK-PAUSE-3` |
+| `DESK-CHECK-40` | `DESK-SCENARIO-57` | `DESK-PAUSE-3` |
+| `DESK-CHECK-41` | `DESK-SCENARIO-58` | `DESK-PAUSE-3` |
+| `DESK-CHECK-42` | `DESK-SCENARIO-59` | `DESK-PAUSE-3` |
+| `DESK-CHECK-43` | `DESK-SCENARIO-60` | `DESK-PAUSE-3` |
 
 ## Check-to-obligation union audit
 
@@ -744,7 +858,7 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-20` | `DESK-SCENARIO-20`, `DESK-SCENARIO-30` | 3 | | |
 | `DESK-CHECK-21` | `DESK-SCENARIO-31`, `DESK-SCENARIO-34` | 4 | | |
 | `DESK-CHECK-22` | `DESK-SCENARIO-33`, `DESK-SCENARIO-36` | 4 | | |
-| `DESK-CHECK-23` | `DESK-SCENARIO-12`, `DESK-SCENARIO-14`, `DESK-SCENARIO-16` | 4 | | |
+| `DESK-CHECK-23` | `DESK-SCENARIO-16` | 2 | | |
 | `DESK-CHECK-24` | `DESK-SCENARIO-13`, `DESK-SCENARIO-15`, `DESK-SCENARIO-17`, `DESK-SCENARIO-28` | 5 | | |
 | `DESK-CHECK-25` | `DESK-SCENARIO-02`, `DESK-SCENARIO-03` | 3 | | |
 | `DESK-CHECK-26` | `DESK-SCENARIO-23`, `DESK-SCENARIO-24`, `DESK-SCENARIO-25` | 4 | | |
@@ -758,3 +872,10 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-34` | `DESK-SCENARIO-53` | 4 | | |
 | `DESK-CHECK-35` | `DESK-SCENARIO-43` | 3 | | |
 | `DESK-CHECK-36` | `DESK-SCENARIO-04` | 3 | | |
+| `DESK-CHECK-37` | `DESK-SCENARIO-12` | 3 | | |
+| `DESK-CHECK-38` | `DESK-SCENARIO-14` | 2 | | |
+| `DESK-CHECK-39` | `DESK-SCENARIO-56` | 3 | | |
+| `DESK-CHECK-40` | `DESK-SCENARIO-57` | 2 | | |
+| `DESK-CHECK-41` | `DESK-SCENARIO-58` | 2 | | |
+| `DESK-CHECK-42` | `DESK-SCENARIO-59` | 3 | | |
+| `DESK-CHECK-43` | `DESK-SCENARIO-60` | 3 | | |
