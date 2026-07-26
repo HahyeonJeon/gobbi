@@ -351,8 +351,10 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Boundary:** exactly at submission — the moment the draft stops being client state and the server value
   becomes authoritative again.
 - **Adversarial probe:** the copy refreshes on mount, so divergence appears only when a second client or a
-  background job changes the server value. **Cosmetic form:** the store slice is renamed "cache" without
-  gaining invalidation, so the label satisfies review and the behavior is unchanged.
+  background job changes the server value; and the copy that has no store at all — the fetched list held
+  in the component's own state, on a surface that stays open all day — survives a review that only looked
+  for a store or a context. **Cosmetic form:** the store slice is renamed "cache" without gaining
+  invalidation, so the label satisfies review and the behavior is unchanged.
 - **Minimums:** boundary see above · adversarial see above · failure/recovery `n/a: the failure is
   divergence, not an injected dependency failure` · change `n/a: no version or lifecycle event` ·
   counterfactual `n/a: no load-bearing premise to invert`.

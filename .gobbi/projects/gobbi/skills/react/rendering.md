@@ -29,7 +29,7 @@ measurable.
 |---|---|
 | **Trigger** | Something asks for a render: the initial render of the app, or a state update through a `set` function. |
 | **Render** | React *calls* your components. On the initial render it calls the root component; on a re-render it calls the component whose state update triggered it. The process is recursive: whatever a component returns is rendered next, and so on down. |
-| **Commit** | React modifies the DOM — and only where it must: *"React does not touch the DOM if the rendering result is the same as last time."* |
+| **Commit** | React modifies the DOM — and only where it must: *"React does not touch the DOM if the rendering result is the same as last time"* |
 | *Epilogue* | The browser repaints. react.dev calls this "painting" to keep it distinct from React's own rendering. |
 
 The word "render" therefore means *calling a function*, not writing to the DOM. A re-render that produces
@@ -50,7 +50,7 @@ The last two rows are the ones that surprise readers.
 
 - The child cascade is the default, not an accident: *"when a component's state changes, React will
   re-render that component and all of its children — unless you have applied some form of manual
-  memoization with `useMemo()`, `useCallback()`, or `React.memo`."* This single sentence is why §6 exists
+  memoization with `useMemo()`, `useCallback()`, or `React.memo`"*. This single sentence is why §6 exists
   at all: with no compiler and no manual memoization, one state update at the top re-renders everything
   beneath it.
 - `memo` does not stand between a component and its context: *"Skipping re-renders with `memo` does not
@@ -274,7 +274,7 @@ Two consequences for a decision:
 
 React has no first-party windowing or virtualization API. react.dev discusses it only as something that
 does not exist yet — *"if React adds built-in support for virtualized lists in the future, it would make
-sense to throw away the cache for items that scroll out of the virtualized table."*
+sense to throw away the cache for items that scroll out of the virtualized table"*.
 
 *Ecosystem convention*: rendering only the visible slice of a very long list is a library choice, and this
 skill names no library and pins no version — the ecosystem moves faster than a skill can track, so read the

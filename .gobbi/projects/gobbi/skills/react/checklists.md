@@ -339,20 +339,22 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **On fail.** Required item: open a finding.
   - **Source.** `REACT-SCENARIO-08` · `P3` · `Procedure P3`.
 
-- [ ] **REACT-CHECK-16** · required · conditional — applies when the change holds server-owned data in a
-  client store or in context
+- [ ] **REACT-CHECK-16** · required · conditional — applies when the change holds server-owned data
+  anywhere on the client: a client store, context, or a component's own state
   - **Claim.** After the server value changes out of band, every screen reading it converges on the new
     value.
   - **Pass when.** With the record mutated from a second client or an equivalent out-of-band write, each
     reading screen shows the new value once its recorded invalidation trigger fires, without a manual
     reload. A form draft held for local editing is client state and is outside this item until it is
-    submitted.
+    submitted. Holding the data in a component's own state does not remove the obligation — it relocates
+    it, so the trigger has to be somewhere in that component's own code.
   - **Evidence.** The two-client observation, or the recorded invalidation trigger exercised and the
     re-read value compared.
   - **On fail.** Required item: open a finding **against this skill's house default**, stating that
     `H15` is ecosystem convention.
-  - **`n/a` form.** `n/a: the change holds no server-owned data in a client store or context` — cited by
-    the ownership record from `REACT-CHECK-15`.
+  - **`n/a` form.** `n/a: the change holds no server-owned data on the client in any slot` — cited by the
+    ownership record from `REACT-CHECK-15`. Local state is a slot: absence of a store or a context is not
+    evidence for this `n/a`.
   - **Source.** `REACT-SCENARIO-08` · `H15`.
 
 - [ ] **REACT-CHECK-26** · required · conditional — applies when a client copy of server-owned data

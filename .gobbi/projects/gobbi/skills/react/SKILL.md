@@ -207,12 +207,16 @@ exception needs; it never introduces an exception this file does not state.
   the old identity. Fix: leave existing memoization in place, or remove it behind test coverage that
   would show the difference. Exception: removal is allowed once tests that exercise the affected tree
   pass with it gone. Source: react.dev React Compiler 1.0.
-- **H15 — NEVER hold server-owned data in a client store or in Context as if it were client state.**
-  Server-owned data needs invalidation, refetching, and staleness handling that a client store does not
-  provide, so the copy silently diverges from the source of truth. Fix: keep it in a server cache and let
-  client state hold only what the client owns. Exception: a snapshot deliberately copied for local
-  editing — a form draft — is client state, and it is client state until it is submitted. *Ecosystem
-  convention*: no React-team position states this rule; it is this skill's house default.
+- **H15 — NEVER hold server-owned data on the client without a named trigger that refreshes or discards
+  it.** Server-owned data goes stale on its own, so a client copy silently diverges from the source of
+  truth the moment anything else writes it — and that is true wherever the copy sits: a client store,
+  Context, or a component's own state. Fix: put it in a server cache, which is the layer whose job is
+  invalidation, refetching, and staleness. Where no such layer exists, the obligation does not disappear
+  with it: name the trigger that refreshes or discards the copy, make sure that trigger is in the code,
+  and keep the fetch and the trigger together in one unit so the policy has an owner and can be replaced
+  later. Exception: a snapshot deliberately copied for local editing — a form draft — is client state, and
+  it is client state until it is submitted. *Ecosystem convention*: no React-team position states this
+  rule; it is this skill's house default. Depth: `state.md`.
 - **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
   enabled or context isolation disabled.** Exposing a raw IPC surface gives page content access to the
   whole event system, and without context isolation a single content-injection bug becomes code
@@ -288,6 +292,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
 | `server-client.md` | Designing any value that crosses the server/client boundary, choosing or reading a directive, building on Server Functions and the Actions family, or working on streaming server rendering and hydration |
 | `runtime.md` | Establishing the host at P1, moving code between hosts, or answering what a browser application, a framework server, and a desktop renderer each do and do not support |
+| `state.md` | Placing a datum — which rung of the ladder owns it, when it is promoted, whether it should be stored at all, and what a client copy of server-owned data has to carry |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |

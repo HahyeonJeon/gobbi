@@ -60,7 +60,7 @@ always carry the word `Procedure`.
 - `H12` — Resolves to "NEVER use an array index, or a value generated during render, as a key in a list that can reorder, insert, or delete." — state follows the key.
 - `H13` — Resolves to "NEVER chain Effects where each one sets state the next one watches." — compute the cascade in the handler.
 - `H14` — Resolves to "NEVER strip existing manual memoization while adopting the compiler without testing the result." — removal can change compilation output.
-- `H15` — Resolves to "NEVER hold server-owned data in a client store or in Context as if it were client state." — **ecosystem convention**, the one rule here with no primary source.
+- `H15` — Resolves to "NEVER hold server-owned data on the client without a named trigger that refreshes or discards it." — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
 - `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled or context isolation disabled." — a content bug must not become execution.
 - `H17` — Resolves to "NEVER assume a server tier exists." — the server-dependent features need a host that implements them.
 - `H18` — Resolves to "MUST treat every Server Function argument as untrusted input and authorize the mutation on the server side." — marking a function `'use server'` publishes an endpoint.
