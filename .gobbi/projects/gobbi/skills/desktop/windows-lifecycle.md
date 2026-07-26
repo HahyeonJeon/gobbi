@@ -127,10 +127,10 @@ bound outcome; this inventory is where a run enumerates them against real mechan
 | A status-area icon | a tray icon and its context menu — [`native-integration.md`](native-integration.md) owns the mechanism and the per-system divergences | a live process that may hold no window at all, and whose activation gesture is not promisable on every claimed system |
 | Automatic start at login | the platform's own login-item registration, on **macOS and Windows only** | a cold start with no person watching it happen |
 
-**Two rows carry a per-system limit that does not fit in a cell.** The login-item mechanism exists on two of
-the three systems, not three: the third has no platform login-item interface, so automatic start at login there
-is the run's own mechanism carrying its own evidence, and a three-system auto-start claim made from one
-interface is wrong on one of them. And from the macOS version [`runtime-deltas.md`](runtime-deltas.md) records
+**The login-item row carries two per-system limits that do not fit in its cell.** The mechanism exists on two
+of the three systems, not three: the third has no platform login-item interface, so automatic start at login
+there is the run's own mechanism carrying its own evidence, and a three-system auto-start claim made from that
+one interface is wrong on one of them. And from the macOS version [`runtime-deltas.md`](runtime-deltas.md) records
 under *Login-item service types*, the registration additionally takes a service type — the main application, an
 agent, a daemon, or a login item — so a run that registers one names which it registers. That file owns both
 divergences and the version.

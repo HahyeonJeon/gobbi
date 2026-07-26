@@ -17,10 +17,11 @@ than copying the literal.
 
 **Verified against the platform's own release feed and release-timeline documentation on 2026-07-25**, and the
 per-feature availability rows below against its published breaking-changes record on 2026-07-26. The tray, dock
-and login-item rows — the login-item service-type row above and the *Tray and dock* block below — were verified
-against the platform's own tray, dock and login-item API documentation on 2026-07-26; the cells that block
-marks **Not read** or **None recorded** were not retrieved and are stated as such rather than filled in. The
-claim-to-source register with retrieval identifiers is kept with the design record, not reproduced here.
+and login-item rows — the login-item service-type row in the table below, the login-item registration row in
+the interaction matrix, and the *Tray and dock* block — were verified against the platform's own tray, dock and
+login-item API documentation on 2026-07-26; the cells that block marks **Not read** or **None recorded** were
+not retrieved and are stated as such rather than filled in. The claim-to-source register with retrieval
+identifiers is kept with the design record, not reproduced here.
 
 **Three rows in this document were wrong on first authoring and were corrected against that primary source.**
 The whole-module-across-the-bridge row named the wrong module; the dialog default-path row was two majors
