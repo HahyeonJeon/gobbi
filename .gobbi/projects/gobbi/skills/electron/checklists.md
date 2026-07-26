@@ -20,6 +20,7 @@ no policy: every row traces to a live [`SKILL.md`](SKILL.md) clause and to at le
 | The perspectives a filled copy aligns to, and the finding a `FAIL` cites | [`evaluation.md`](evaluation.md) |
 | The Electron depth behind each row | the nine content children, named per row |
 | The Electron major each version-sensitive behavior is qualified against | [`migration.md`](migration.md) |
+| The standing-skill obligations § 6's conformance block reads — the file set, the frontmatter contract, the wiring and its guards, and the cold-load record | [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) |
 
 ## Contents
 
@@ -429,7 +430,9 @@ Subject: the change-set and what it packages. Families 09 to 11.
 ## 6. Group D — the skill itself
 
 Subject: `skills/electron/`, not a change-set. These five rows bind whoever maintains this skill, and
-correspond to the three maintainer rules in [`SKILL.md`](SKILL.md#rules-for-this-skills-maintainer).
+correspond to the three maintainer rules in [`SKILL.md`](SKILL.md#rules-for-this-skills-maintainer). Five
+further standing properties — the file set, the frontmatter, the enumeration sites, the guards, and the
+cold-load record — sit in the conformance block below the rows, outside the `EL-CHECK-*` set.
 
 - [ ] `EL-CHECK-12a` **[GATE]** — PASS if the behavior-claim register is walked in both directions, so every
   register entry resolves to a qualified claim in the file it names **and** every version-sensitive behavior
@@ -456,6 +459,29 @@ correspond to the three maintainer rules in [`SKILL.md`](SKILL.md#rules-for-this
   register row in the same change; FAIL if the claim ships and its row is left for later. *Evidence:* the
   change's diff, with each added claim matched to an added row. *On fail:* return to
   [`migration.md` § 4](migration.md#4-the-behavior-claim-register). *(EL-R-14 · `EL-SC-12a`)*
+
+### The standing-skill conformance block
+
+The five rows above read the skill's **content**. Five further properties hold of it as a **file set and a
+wired artifact**, and no content row can reach them. They are entries here rather than `EL-CHECK-*` rows for
+two reasons: their policy owner is [`../skill-writing/SKILL.md`](../skill-writing/SKILL.md) and not a
+[`SKILL.md`](SKILL.md) clause, and they reserve no case in [`scenarios.md`](scenarios.md), so they close
+through no slot. Work them whenever the file set, the frontmatter, or the wiring changes. Each is read from a
+command or a named artifact, never from recollection.
+
+| # | The standing property | Evidence that reads it | Its owner |
+|---|---|---|---|
+| 1 | The directory holds exactly the twelve files [`SKILL.md` P2](SKILL.md#p2--route-to-the-child-docs-for-the-forks-in-play) routes to, plus `SKILL.md` — thirteen, with no subdirectory | `ls -1` over the skill directory read against the P2 router table, and a `find -mindepth 1 -type d` that returns nothing | P4's altitude decision, which keeps every child one hop from `SKILL.md` |
+| 2 | `SKILL.md` carries the four required frontmatter keys in order — `name`, `description`, `allowed-tools`, `skill-type` — with `skill-type` reading `operation`, and no key outside the named allowlist | the frontmatter block itself, read key by key | P2's frontmatter contract |
+| 3 | Every site in this project that enumerates its skills names `electron`, and no site still calls a shipped skill "future" | a sweep across the skills tree scoped to exclude this directory, with every hit read rather than counted | P7 step 4, the index-placement convention |
+| 4 | The project sync mechanism and the guard scripts run and exit 0, and no runtime mirror was built by hand | `scripts/sync-plugin-package.sh --check`, `scripts/test-sync-plugin-package.sh`, `scripts/check-codex-plugin-smoke.sh`, and `scripts/check-markdown-links.sh` over this directory — each exit code recorded with its run | P7 steps 1 to 3 |
+| 5 | One cold-load record exists for each target runtime, carrying exactly P7's field set and no other field | the records themselves, one per runtime, read field by field | P7's record contract |
+
+**Entry 5 is the one that degrades quietly.** A runtime with no record reads the same as a runtime that was
+never a target. Name every target runtime first, then match a record to each; a runtime left without one is an
+unmet obligation and is reported as one, not dropped from the list. Entry 3 has the same shape in reverse: a
+count of enumeration sites proves nothing unless each site was read, because a site that never mentioned any
+skill is indistinguishable from one that mentions the wrong set.
 
 ## 7. The six cosmetic-conformance probes
 
@@ -550,7 +576,10 @@ same gap left as a soft row that always passes is the defect.
 5. **Inclusion and locale have no row.** No live clause covers an access need, an input method, or a locale,
    which is why that category is dispositioned `n/a` in
    [`scenarios.md` § 2](scenarios.md#2-coverage-register). It becomes coverable when a clause exists.
-6. **Obligations on how this skill's own file set was assembled are outside this register's subject.** A row
-   reads a change-set or the standing skill; it cannot read an authoring decision. The standing subset of
-   those obligations is carried by the three maintainer rules and group D above; the rest belong to whoever
-   changes the file set.
+6. **The authoring *reasoning* behind this skill's file set is outside this register's subject.** A row reads
+   a change-set or the standing skill; it cannot read why a child was split out or a section placed where it
+   is. The standing properties that reasoning produced — the thirteen-file set, the frontmatter contract, the
+   enumeration sites, the guard runs and the cold-load record — are read by
+   [§ 6's conformance block](#the-standing-skill-conformance-block), whose owner is `skill-writing` rather
+   than a [`SKILL.md`](SKILL.md) clause, which is why they are entries there and not rows. What stays
+   uncovered is the judgment itself, and it belongs to whoever changes the file set.

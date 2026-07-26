@@ -392,10 +392,13 @@ export function encryptSecret(secret: string): Buffer | null {
 
 ### macOS notifications are the one that tells you
 
-`docs/api/notification.md@v43.2.0`: *"On MacOS, notifications use the UNNotification API as their underlying
-framework. This API requires an application to be code-signed in order for notifications to appear. Unsigned
-binaries will emit a `failed` event when notifications are called."* That event is the signal the other three
-do not have — and it is only observed if a handler is attached.
+**Since 42.** macOS notifications moved to the `UNNotification` framework in Electron 42, and the code-signing
+requirement arrived with it; the row is in
+[`migration.md`](migration.md#4-the-behavior-claim-register). `docs/api/notification.md@v43.2.0`: *"On MacOS,
+notifications use the UNNotification API as their underlying framework. This API requires an application to be
+code-signed in order for notifications to appear. Unsigned binaries will emit a `failed` event when
+notifications are called."* That event is the signal the other three do not have — and it is only observed if
+a handler is attached.
 
 ```ts main
 import { Notification } from 'electron';
@@ -447,4 +450,5 @@ source that validates it. Each is `verified-against that source on 2026-07-26`.
   `docs/api/notification.md@v43.2.0` (the UNNotification signing requirement and the `failed` event).
 - [`SKILL.md`](SKILL.md) — EL-R-13 and the `BrowserWindow` judgment default, which this doc deepens and does
   not restate. The supported-majors window every version claim above is read against lives there, and the
-  `BrowserView`-deprecated-in-30 claim is registered in [`migration.md`](migration.md).
+  `BrowserView`-deprecated-in-30 and macOS-notifications-since-42 claims are registered in
+  [`migration.md`](migration.md).
