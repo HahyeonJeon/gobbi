@@ -890,7 +890,7 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-02` | `DESK-SCENARIO-05`, `DESK-SCENARIO-26` | 3 | | |
 | `DESK-CHECK-03` | `DESK-SCENARIO-01` | 2 | | |
 | `DESK-CHECK-04` | `DESK-SCENARIO-04` | 2 | | |
-| `DESK-CHECK-05` | `DESK-SCENARIO-23`, `DESK-SCENARIO-25` | 4 | | |
+| `DESK-CHECK-05` | `DESK-SCENARIO-23`, `DESK-SCENARIO-25` | 3 | | |
 | `DESK-CHECK-06` | `DESK-SCENARIO-09` | 3 | | |
 | `DESK-CHECK-07` | `DESK-SCENARIO-07`, `DESK-SCENARIO-48`, `DESK-SCENARIO-49` | 5 | | |
 | `DESK-CHECK-08` | `DESK-SCENARIO-54` | 5 | | |
@@ -902,7 +902,7 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-14` | `DESK-SCENARIO-11` | 2 | | |
 | `DESK-CHECK-15` | `DESK-SCENARIO-08` | 4 | | |
 | `DESK-CHECK-16` | `DESK-SCENARIO-55` | 4 | | |
-| `DESK-CHECK-17` | `DESK-SCENARIO-51` | 3 | | |
+| `DESK-CHECK-17` | `DESK-SCENARIO-51` | 2 | | |
 | `DESK-CHECK-18` | `DESK-SCENARIO-18`, `DESK-SCENARIO-19`, `DESK-SCENARIO-21`, `DESK-SCENARIO-22` | 6 | | |
 | `DESK-CHECK-19` | `DESK-SCENARIO-18`, `DESK-SCENARIO-21`, `DESK-SCENARIO-32` | 5 | | |
 | `DESK-CHECK-20` | `DESK-SCENARIO-20`, `DESK-SCENARIO-30` | 3 | | |
@@ -911,7 +911,7 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-23` | `DESK-SCENARIO-16` | 2 | | |
 | `DESK-CHECK-24` | `DESK-SCENARIO-13`, `DESK-SCENARIO-15`, `DESK-SCENARIO-17`, `DESK-SCENARIO-28` | 5 | | |
 | `DESK-CHECK-25` | `DESK-SCENARIO-02`, `DESK-SCENARIO-03` | 3 | | |
-| `DESK-CHECK-26` | `DESK-SCENARIO-23`, `DESK-SCENARIO-24`, `DESK-SCENARIO-25` | 4 | | |
+| `DESK-CHECK-26` | `DESK-SCENARIO-23`, `DESK-SCENARIO-24`, `DESK-SCENARIO-25` | 3 | | |
 | `DESK-CHECK-27` | `DESK-SCENARIO-42`, `DESK-SCENARIO-46` | 3 | | |
 | `DESK-CHECK-28` | `DESK-SCENARIO-42` | 2 | | |
 | `DESK-CHECK-29` | `DESK-SCENARIO-42`, `DESK-SCENARIO-45` | 3 | | |
