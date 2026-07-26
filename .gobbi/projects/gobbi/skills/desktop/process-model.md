@@ -49,10 +49,10 @@ a second `require`.
 **No rationale is written here for the removal of the former remote-access module.** The governing document
 gives none and no primary statement was found — **UNVERIFIED**, and the gap is recorded in `SKILL.md`'s gap
 register rather than filled with a plausible story. Two adjacent verified facts do the teaching work instead:
-passing the whole renderer-side messaging module across the bridge yields an **empty object** on the
-receiving side from the version [`runtime-deltas.md`](runtime-deltas.md) records under *Whole message-port
-module across the bridge yields an empty object*, and direct renderer-to-renderer messaging was removed at the
-version recorded under *Direct renderer-to-renderer messaging removed*.
+passing the whole `ipcRenderer` module across `contextBridge` yields an **empty object** on the receiving
+side from the version [`runtime-deltas.md`](runtime-deltas.md) records under *Whole message-port module across
+the bridge yields an empty object*, and `ipcRenderer.sendTo()` was removed at the version recorded under
+*Direct renderer-to-renderer messaging removed*.
 
 ## The IPC pattern table
 
@@ -66,8 +66,8 @@ version recorded under *Direct renderer-to-renderer messaging removed*.
 `ipcRenderer.sendSync` is cautioned against for performance reasons: it blocks the renderer that calls it.
 Reach for `invoke` instead, and treat a synchronous crossing as a decision that needs a reason.
 
-There is no direct renderer-to-renderer channel. The removed method that once provided one is gone as of the
-version [`runtime-deltas.md`](runtime-deltas.md) records under *Direct renderer-to-renderer messaging
+There is no direct renderer-to-renderer channel. `ipcRenderer.sendTo()`, which once provided one, is gone as
+of the version [`runtime-deltas.md`](runtime-deltas.md) records under *Direct renderer-to-renderer messaging
 removed*, so a design that assumes it is broken on every supported version.
 
 **Enumerate the channels.** The run's channel inventory names, per channel, its payload type, its runtime
@@ -118,11 +118,11 @@ What does **not** survive:
   arrives as data. Its methods do not arrive with it.
 - **`Error` properties may be lost**, because the error is thrown in a different context from the one that
   will catch it.
-- **The whole renderer-side messaging module** yields an empty object on the receiving side from the version
+- **The whole `ipcRenderer` module** yields an empty object on the receiving side from the version
   [`runtime-deltas.md`](runtime-deltas.md) records for it. Expose named methods, never the module.
 
-Isolated worlds are addressed by number, and `999` is the platform's own preload default. A custom world uses
-`1000` or above so it cannot collide with that default.
+`exposeInIsolatedWorld(worldId, …)` addresses isolated worlds by number, and `999` is the platform's own
+preload default. A custom world uses `1000` or above so it cannot collide with that default.
 
 ### Why this is the highest-value teaching point in the skill
 

@@ -19,16 +19,20 @@ Every version-dependent statement below names the behaviour whose availability v
 Eight items. Each is already correct in a current application. The work is an audit that confirms nothing in
 this outcome has switched one off, and a recorded reason wherever one has been.
 
-| # | Default | What breaking it costs |
-|---|---|---|
-| 2 | No runtime integration for remote content | remote content gains the privileged runtime's interfaces |
-| 3 | Context isolation on | the page's world and the preload's world merge, and the page can rewrite the bridge |
-| 4 | Renderer sandbox on | the renderer stops being a renderer and becomes another privileged process |
-| 6 | Web security left enabled | the origin model that separates content sources stops applying |
-| 8 | Insecure content not allowed to run | a secure page silently loads insecure subresources |
-| 9 | Experimental features off | unshipped engine behaviour reaches production users |
-| 10 | Engine feature flags not enabled | the same, at finer granularity |
-| 11 | Embedded-view popups not allowed | an embedded view opens a window outside the window-creation policy |
+| # | Default | Named setting | What breaking it costs |
+|---|---|---|---|
+| 2 | No Node integration for remote content | `nodeIntegration: false` | remote content gains the privileged runtime's interfaces |
+| 3 | Context isolation on | `contextIsolation: true` | the page's world and the preload's world merge, and the page can rewrite the bridge |
+| 4 | Renderer sandbox on | `sandbox: true` | the renderer stops being a renderer and becomes another privileged process |
+| 6 | Web security left enabled | `webSecurity` (do not disable) | the origin model that separates content sources stops applying |
+| 8 | Insecure content not allowed to run | `allowRunningInsecureContent` (leave off) | a secure page silently loads insecure subresources |
+| 9 | Experimental features off | `experimentalFeatures` (leave off) | unshipped engine behaviour reaches production users |
+| 10 | Engine feature flags not enabled | `enableBlinkFeatures` (leave unset) | the same, at finer granularity |
+| 11 | Embedded-view popups not allowed | `allowpopups` on `<webview>` (leave unset) | an embedded view opens a window outside the window-creation policy |
+
+The three defaults in rows 2, 3, and 4 are the ones whose values changed over time;
+[`runtime-deltas.md`](runtime-deltas.md) records the version each became the default, and
+[`process-model.md`](process-model.md) owns what they mean for the context split.
 
 The audit question is never "did we enable this?" — it is "did anything in this outcome disable it, and is
 there a recorded reason?" A default switched off without a recorded reason is a finding.
@@ -38,20 +42,20 @@ there a recorded reason?" A default switched off without a recorded reason is a 
 Twelve items. Each is a control that does not exist until it is written, and an application that has written
 none of them still passes every Group A check.
 
-| # | Control | Where it lives |
+| # | Control | Named mechanism |
 |---|---|---|
-| 1 | Load secure content only | the window's own loading path |
-| 5 | A session permission-request handler | the session, before any permission prompt can reach the user |
-| 7 | A Content Security Policy | delivered per the section below |
-| 12 | Verify embedded-view options as they attach | the attach event for embedded views |
-| 13 | Limit navigation | the navigation event, which fires on every attempt |
-| 14 | Limit window creation | the window-open handler, which decides rather than reacts |
-| 15 | Never hand untrusted content to the external-open interface | wherever a link becomes a shell action |
+| 1 | Load secure content only | the window's own loading path — no plain-HTTP resource in a shipped build |
+| 5 | A session permission-request handler | `session.setPermissionRequestHandler()`, set before any prompt can reach the person |
+| 7 | A Content Security Policy | `session.webRequest.onHeadersReceived`, per the section below |
+| 12 | Verify embedded-view options as they attach | the `will-attach-webview` event |
+| 13 | Limit navigation | the `will-navigate` event, which fires on every attempt |
+| 14 | Limit window creation | `setWindowOpenHandler`, which decides rather than reacts |
+| 15 | Never hand untrusted content to `shell.openExternal` | wherever a link becomes a shell action |
 | 16 | Stay on a supported platform version | the dependency manifest, checked against the supported-major set |
-| 17 | Validate the inter-process sender | every privileged handler — [`process-model.md`](process-model.md) owns the mechanics |
-| 18 | Avoid the local-file protocol for application content | the loading path, again |
+| 17 | Validate the inter-process sender | `event.senderFrame` in every privileged handler — [`process-model.md`](process-model.md) owns it |
+| 18 | Avoid `file://` for application content | the loading path, again |
 | 19 | Check the fuses | the build, per the fuse section below |
-| 20 | Never expose platform interfaces to untrusted content | the bridge surface |
+| 20 | Never expose platform interfaces to untrusted content | the `contextBridge` surface |
 
 Item 16 is a version-dependent control: falling outside the supported-major set is a security failure rather
 than a maintenance preference, and [`runtime-deltas.md`](runtime-deltas.md) owns both the current supported
@@ -62,16 +66,16 @@ inventory. Twelve rows, each naming the file and the line, is.
 
 ## Content Security Policy delivery
 
-**The preferred delivery mechanism is an HTTP header**, set through the session's response-header hook. That
-is the platform's own stated preference, and it applies to every application serving its own content over a
-protocol that carries headers.
+**The preferred delivery mechanism is an HTTP header**, set through
+`session.webRequest.onHeadersReceived`. That is the platform's own stated preference, and it applies to every
+application serving its own content over a protocol that carries headers.
 
-A document-level policy tag is the **fallback**, and it exists for the local-file protocol, where there are no
-headers to set. Reaching for the tag first is the common mistake, and it is a weaker mechanism.
+A `<meta>` tag is the **fallback**, and it exists for `file://`, where there are no headers to set. Reaching
+for the tag first is the common mistake, and it is a weaker mechanism.
 
 Note the interaction with Group B item 18: the fallback exists for exactly the protocol the checklist asks
-applications to avoid for their own content. An application that avoids the local-file protocol can use the
-header, which is the stronger path.
+applications to avoid for their own content. An application that avoids `file://` can use the header, which
+is the stronger path.
 
 ## Fuses and the paired ASAR fuses
 
@@ -132,7 +136,7 @@ Its own documentation justifies it as concealing source **from cursory inspectio
 Beyond it:
 
 - it is **read-only**;
-- it returns **guessed** file-status values rather than real ones;
+- it returns **guessed** `fs.stat` values rather than real ones;
 - **some interfaces silently extract to a temporary directory**, so a file a reader believes is sealed inside
   the archive can exist unpacked on disk.
 

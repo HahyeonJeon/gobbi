@@ -17,10 +17,11 @@ and every version literal. This file states the mechanism and points there.
 role, specify the role rather than reimplementing the behavior in a click handler. That is the platform's own
 explicit instruction, and it is the whole conformance mechanism this skill prescribes.
 
-The documented roles include the application, file, edit, view, window, help, and services menu roles; the
-recent-documents roles; the share-menu role; the standard edit and window operations; and the macOS extras
-for hiding, fronting, zooming, native tabs, and speech. Role strings are case-insensitive. On macOS, when a
-role is set, `label` and `accelerator` are the only options that affect the item.
+The documented roles include `appMenu`, `fileMenu`, `editMenu`, `viewMenu`, `windowMenu`, `help`, `services`,
+and `window`; `recentDocuments` and `clearRecentDocuments`; `shareMenu`; the standard edit and window
+operations; and the macOS extras `hide`, `hideOthers`, `unhide`, `front`, and `zoom`, plus the native-tab and
+speech roles. Role strings are case-insensitive. On macOS, when a role is set, `label` and `accelerator` are
+the only options that affect the item.
 
 **Why roles rather than a prescribed structure.** A role carries the platform's own structure, its own
 labels, and its own localization for free. Reimplementing the same item by hand gets the label in one
@@ -66,19 +67,19 @@ combination is a common event. Without undo, an accidental trigger is unrecovera
 
 ## Notifications per operating system
 
-Two interfaces exist: the web notification interface in the renderer, and the platform's own notification
+Two interfaces exist: the web `Notification` interface in the renderer, and the platform's own `Notification`
 module in the privileged process. Choose one deliberately — the second reaches the system's own presentation
 and the first does not always.
 
 Each system has its own precondition, and a notification that never appears is usually a missing
 precondition rather than a bug:
 
-- **Windows** needs a start-menu shortcut carrying an application identity and a matching activator
-  identifier. In development it may additionally need the application identity set explicitly at startup.
+- **Windows** needs a Start Menu shortcut carrying an `AppUserModelID` and a matching `ToastActivatorCLSID`.
+  In development it may additionally need `app.setAppUserModelId()` called at startup.
 - **macOS requires code signing.** Applications must be code-signed for notification events to function
-  properly; an unsigned binary emits a failure event instead. The notification body is also capped at **256
+  properly; an unsigned binary emits a `failed` event instead. The notification body is also capped at **256
   bytes**, so a message composed for the other two systems can arrive truncated here.
-- **Linux** goes through the system's own desktop notification service.
+- **Linux** goes through `libnotify`.
 
 The macOS precondition couples this file to the release chain: notifications cannot be proved on macOS
 against an unsigned development build, so the proof needs a signed artifact and
