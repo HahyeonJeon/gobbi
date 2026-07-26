@@ -67,7 +67,9 @@
 // Outputs, beside the unit directories:
 //   <out-units-dir>/manifest.txt   `key=value` counts the runner reports —
 //                                  units_{main,preload,renderer}, units_total,
-//                                  ts_blocks, tsx_uncompiled.
+//                                  ts_blocks, tsx_uncompiled, the eligible-code
+//                                  and allowlisted-non-code classes, all fences,
+//                                  and the by-language census.
 //
 // Exit codes:
 //   0  ok — >=1 unit written
@@ -142,6 +144,9 @@ function tagError(kind, file, line, message) {
 const blocks = []; // { process, category, key, source, file, line }
 let tsBlockCount = 0;
 let tsxUncompiledCount = 0;
+let allowlistedNonCodeFenceCount = 0;
+let totalFenceCount = 0;
+const fenceLanguageCounts = new Map();
 
 for (const file of mdFiles) {
   const lines = readFileSync(file, "utf8").split(/\r?\n/);
@@ -166,6 +171,9 @@ for (const file of mdFiles) {
     const tokens = info.split(/\s+/).filter(Boolean);
     const lang = (tokens[0] ?? "").toLowerCase();
     const rest = tokens.slice(1);
+    const censusLanguage = lang === "" ? "<untagged>" : lang;
+    totalFenceCount++;
+    fenceLanguageCounts.set(censusLanguage, (fenceLanguageCounts.get(censusLanguage) ?? 0) + 1);
 
     // Delta 6 restructures this dispatch. The origin file `continue`d on every
     // non-`ts` language before the block was recorded, which is why the `tsx`
@@ -249,6 +257,7 @@ for (const file of mdFiles) {
     } else if (NON_CODE_LANGS.has(lang)) {
       // Prose, config or a shell transcript: nothing to compile, and counted as
       // deliberately excluded rather than lost.
+      allowlistedNonCodeFenceCount++;
     } else {
       // Delta 6.
       tagError(
@@ -351,9 +360,23 @@ if (unitTotal === 0) {
   process.exit(3);
 }
 
-// The two counts EL-R-16 needs, in a form the runner can read without jq. It
-// lives at the root of the units directory, beside the per-process directories,
-// so no compile pass ever sees it.
+// EL-R-16's two equalities are recorded in a form the runner can read without
+// jq. A `ts` prelude and partial may combine into one compilation unit, so the
+// equality uses the extractor's `ts` fence count, not the emitted unit count.
+// The manifest lives beside the per-process directories, so no compile pass
+// ever sees it.
+const eligibleCodeFenceCount = tsBlockCount + tsxUncompiledCount;
+if (eligibleCodeFenceCount + allowlistedNonCodeFenceCount !== totalFenceCount) {
+  process.stderr.write(
+    "FAIL: internal fence census is incomplete — eligible code plus allowlisted non-code does not equal total\n"
+  );
+  process.exit(2);
+}
+const fenceLanguageCensus = [...fenceLanguageCounts.entries()]
+  .sort(([left], [right]) => left.localeCompare(right))
+  .map(([language, count]) => `${language}:${count}`)
+  .join(",");
+
 writeFileSync(
   join(outDir, "manifest.txt"),
   [
@@ -363,6 +386,10 @@ writeFileSync(
     `units_total=${unitTotal}`,
     `ts_blocks=${tsBlockCount}`,
     `tsx_uncompiled=${tsxUncompiledCount}`,
+    `fences_eligible_code=${eligibleCodeFenceCount}`,
+    `fences_allowlisted_non_code=${allowlistedNonCodeFenceCount}`,
+    `fences_total=${totalFenceCount}`,
+    `fence_languages=${fenceLanguageCensus}`,
     "",
   ].join("\n")
 );
@@ -372,4 +399,9 @@ process.stdout.write(
     `main=${unitCounts.main} preload=${unitCounts.preload} renderer=${unitCounts.renderer}\n`
 );
 process.stdout.write(`tsx blocks marked \`uncompiled\` (counted, never compiled): ${tsxUncompiledCount}\n`);
+process.stdout.write(
+  `fence census: total=${totalFenceCount} eligible-code=${eligibleCodeFenceCount} ` +
+    `(ts=${tsBlockCount}, tsx-uncompiled=${tsxUncompiledCount}) ` +
+    `allowlisted-non-code=${allowlistedNonCodeFenceCount}; languages=${fenceLanguageCensus}\n`
+);
 process.exit(0);

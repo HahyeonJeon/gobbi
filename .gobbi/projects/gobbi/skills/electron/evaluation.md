@@ -114,7 +114,7 @@ These three resolve only when the subject is `skills/electron/` itself.
 |---|---|
 | `EL-R-14` | "MUST state the Electron major each version-sensitive *behavior* claim was" verified against |
 | `EL-R-15` | "MUST stamp every doc-state and absence claim" |
-| `EL-R-16` | "MUST have every fenced code block in `skills/electron/` extracted" and type-checked |
+| `EL-R-16` | "MUST classify every fence in `skills/electron/`" and verify every eligible code fence |
 
 ### Principles and Procedure steps
 
@@ -188,7 +188,7 @@ procedure only tells that step which Electron cases and rows to take.
 
 Each lens is the general perspective — defined in
 [`../evaluation/SKILL.md` § 5](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives) — narrowed
-to what the desktop runtime adds. Every one of the 56 rows appears under exactly one lens: that lens is where
+to what the desktop runtime adds. Every one of the 58 rows appears under exactly one lens: that lens is where
 its finding is recorded, not a claim that no other lens may observe the condition. All seven are walked even
 when the change does not exercise one; that lens may record zero findings.
 
@@ -248,7 +248,7 @@ judgment defaults below. Whether a tag also *compiles* in its process is graded 
 |---|---|
 | **A tag no pass can discriminate** | Confirm the tag against the module's role by reading it; a unit touching neither an ambient global nor the `electron` module leaves all three signals silent (`EL-R-01`) |
 | **A caveat attached to the neighbouring subject** | Attach each caveat to the thing it qualifies, in the same paragraph as the recommendation — every required word can be present and still point at the wrong noun (`Judgment default`) |
-| **Examples the harness never compiles** | Keep taught examples in a fence the extractor compiles, and record the ratio rather than the count (`EL-R-16`) |
+| **Examples the harness never compiles** | Classify every fence, hard-fail unsupported languages, and record both eligible-code and all-fence equalities (`EL-R-16`) |
 
 ### Usage
 
@@ -347,7 +347,7 @@ add the Electron-idiom verifications below. Each names the rows it produces evid
 | Inspect the packed archive, the unpacked tree, and everything the app writes at runtime for recoverable secrets | `EL-N-06` (`EL-CHECK-10a`, `-10b`) |
 | Sweep the bundled dependency tree, not only the authored source, for the removed-API tells | `EL-N-05` (`EL-CHECK-11a`, `-11b`) |
 | Load every native module on a machine that did not build it | `EL-N-07` (`EL-CHECK-11d`) |
-| Run the example harness over `skills/electron/` and record extracted units, counted uncompiled blocks, and the fenced-block total | `EL-R-16` (`EL-CHECK-12b`) |
+| Run the example harness over `skills/electron/`; record its by-language fence census and both equalities: `ts + tsx-uncompiled = eligible-code`, then `eligible-code + allowlisted-non-code = total` | `EL-R-16` (`EL-CHECK-12b`) |
 | Walk the behavior-claim register in both directions, and re-derive the rotation date from the published schedule | `EL-R-14`, `EL-R-15` (`EL-CHECK-12a`, `-12c`–`-12e`) |
 
 ---

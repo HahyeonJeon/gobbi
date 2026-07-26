@@ -22,6 +22,7 @@
 #   - exit 0      every extracted example met its expected outcome
 #   - exit != 0   any example failed to type-check in its own pass (self-failing)
 #   - exit != 0   a fence-tagging violation                (extractor exit 4)
+#   - exit != 0   a canonical source declaration or behavior-register drift
 #   - exit != 0   zero ts blocks were found                (fail-closed — a
 #                 broken parser or a no-example input is NEVER a pass)
 #   - exit != 0   the local tsc / bun toolchain is missing, or the three
@@ -59,6 +60,25 @@ fi
 if ! command -v bun >/dev/null 2>&1; then
   echo "FAIL: bun not found on PATH (needed to run the extractor and the view generator)" >&2
   exit 2
+fi
+
+# A canonical skill-directory input activates the source consistency gate.
+# Physical paths make the same source reached through `.agents/skills/electron`
+# or the plugin-package symlink behave identically. Fixture files remain
+# independent, so an intentional negative extractor fixture cannot be masked by
+# an unrelated declaration drift in the canonical skill.
+canonical_skill_dir="$(cd -- "$script_dir/../../.gobbi/projects/gobbi/skills/electron" && pwd -P)"
+check_source_consistency=false
+for input_arg in "$@"; do
+  if [ -d "$input_arg" ]; then
+    input_dir="$(cd -- "$input_arg" && pwd -P)"
+    if [ "$input_dir" = "$canonical_skill_dir" ]; then
+      check_source_consistency=true
+    fi
+  fi
+done
+if [ "$check_source_consistency" = true ]; then
+  bun "$script_dir/check-skill-consistency.mjs" "$canonical_skill_dir"
 fi
 
 # Regenerate the three per-process `electron` views from the vendor typings
@@ -100,6 +120,30 @@ fi
 manifest_value() { sed -n "s/^$1=//p" "$manifest"; }
 tsx_uncompiled="$(manifest_value tsx_uncompiled)"
 ts_blocks="$(manifest_value ts_blocks)"
+eligible_code_fences="$(manifest_value fences_eligible_code)"
+allowlisted_non_code_fences="$(manifest_value fences_allowlisted_non_code)"
+total_fences="$(manifest_value fences_total)"
+fence_languages="$(manifest_value fence_languages)"
+
+for count_name in ts_blocks tsx_uncompiled eligible_code_fences allowlisted_non_code_fences total_fences; do
+  count_value="${!count_name}"
+  if ! [[ "$count_value" =~ ^[0-9]+$ ]]; then
+    echo "FAIL[fence-census]: manifest value '$count_name' is missing or not an integer: '$count_value'" >&2
+    exit 3
+  fi
+done
+if [ -z "$fence_languages" ]; then
+  echo "FAIL[fence-census]: manifest has no by-language census" >&2
+  exit 3
+fi
+if [ $(( ts_blocks + tsx_uncompiled )) -ne "$eligible_code_fences" ]; then
+  echo "FAIL[fence-census]: ts ($ts_blocks) + tsx-uncompiled ($tsx_uncompiled) != eligible-code ($eligible_code_fences)" >&2
+  exit 3
+fi
+if [ $(( eligible_code_fences + allowlisted_non_code_fences )) -ne "$total_fences" ]; then
+  echo "FAIL[fence-census]: eligible-code ($eligible_code_fences) + allowlisted-non-code ($allowlisted_non_code_fences) != total ($total_fences)" >&2
+  exit 3
+fi
 
 # Defense in depth: confirm units landed on disk, counted from the disk rather
 # than from the extractor's own report. The origin harness's `find -maxdepth 1`
@@ -157,11 +201,12 @@ for proc in "${PROCESSES[@]}"; do
   fi
 done
 
-# The two counts EL-R-16 needs, reported on every run, pass or fail: units
-# actually compiled per process, and `tsx uncompiled` blocks counted separately
-# because they are deliberately excluded from every pass.
+# EL-R-16's unit counts, by-language census, and two fence equalities are
+# reported on every run, pass or fail.
 echo "COUNTS: extracted units — main=${found_units[main]} preload=${found_units[preload]} renderer=${found_units[renderer]} total=$total_units (from $ts_blocks ts block(s))"
 echo "COUNTS: tsx blocks marked \`uncompiled\` — $tsx_uncompiled (counted, never compiled)"
+echo "COUNTS: fences — total=$total_fences eligible-code=$eligible_code_fences (ts=$ts_blocks + tsx-uncompiled=$tsx_uncompiled) allowlisted-non-code=$allowlisted_non_code_fences"
+echo "COUNTS: fence languages — $fence_languages"
 
 if [ "$overall_rc" -ne 0 ]; then
   echo "FAIL: at least one process pass did NOT type-check" >&2

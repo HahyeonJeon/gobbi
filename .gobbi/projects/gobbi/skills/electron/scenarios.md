@@ -49,7 +49,7 @@ through [`evaluation.md`](evaluation.md), which selects the applicable families.
 **Lifecycle mode** — evaluation coverage. Every case is an approved constraint, so none is exploratory and
 every one carries an obligation.
 
-**Scale** — twelve families, 53 cases, 37 filled cells, where a cell is one distinct
+**Scale** — twelve families, 55 cases, 37 filled cells, where a cell is one distinct
 (selected category, triggered case type) pair counted once. Both sit inside the recorded thresholds of ~12
 families and ~40 cells, so the set stays whole rather than splitting under a parent index. The cell count
 is close to its threshold: a thirteenth family is a split, not an addition.
@@ -354,7 +354,7 @@ followable to a source. **Secondary** — 9. Actor: the maintainer of `skills/el
 | Case | Type · roles | Probe — given / when / then | Failure oracle → design obligation |
 |---|---|---|---|
 | **EL-SC-12a** the claim that never reached the register | change / regression · change/regression (actor: the maintainer) | Given a version-sensitive behavior claim added to a child, when the register is walked outward from the register, then every entry checks out and the new claim sits unqualified | Oracle: walk from the text as well — every such claim in the skill has a row; a one-directional walk cannot see this. → the design MUST require both directions, and MUST make adding a claim include adding its row in the same change |
-| **EL-SC-12b** the examples the extractor discarded | adversarial · adversarial | Given examples transcribed from vendor samples into `js` fences, when the harness runs, then the few `ts` blocks keep the unit count non-zero and the run is green | Oracle: extracted units plus counted uncompiled blocks equal the fenced blocks in the skill, and an unsupported fence language is a hard error; a count with no denominator hides the loss. → the design MUST record the ratio, not the count |
+| **EL-SC-12b** the examples the extractor discarded | adversarial · adversarial | Given examples transcribed from vendor samples into `js` fences, when the harness runs, then the few `ts` blocks keep the unit count non-zero and the run is green | Oracle: compiled/extracted `ts` fences plus counted `tsx uncompiled` fences equal all eligible code fences; eligible code fences plus allowlisted non-code fences equal all fences; and an unsupported language is a hard error. A count with no classified denominator hides the loss. → the design MUST record both equalities, not one raw count |
 | **EL-SC-12c** the stamp that outlived its fetch | adversarial · adversarial | Given a rotation record naming every source and stamped with the date of the rotation, when no source was actually re-fetched, then the record and a real rotation produce the same observable | Oracle: each rotation entry carries the quoted sentence with its line number in the re-fetched source, which cannot be produced without the fetch. → the design MUST require a re-fetch artifact, not a self-report |
 | **EL-SC-12d** the window that expired quietly | boundary · boundary | Given a version window with a written next-rotation date, when that date passes, then nothing in the text changes and the window points at a rotation that already happened | Oracle: re-derive the rotation date from the published schedule rather than read it from the file; a date in the past is a review failure. → the design MUST derive the rotation date and MUST fail review once it has passed |
 

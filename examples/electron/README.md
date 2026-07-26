@@ -26,7 +26,18 @@ bash run-examples.sh <markdown-file-or-dir> [more...]
 
 Exit codes: `0` clean; `2` toolchain/IO error, an orphan partial, or a unit that
 failed to type-check; `3` fail-closed (zero `ts` blocks, or zero units); `4` a
-fence-tagging violation.
+fence-tagging violation; `5` a canonical skill declaration or behavior-register
+drift.
+
+When an input directory resolves to the canonical `skills/electron/` source,
+the runner first calls `check-skill-consistency.mjs`. The gate derives scenario
+and checklist identifiers from the current source, checks the totals a cold
+reader sees, closes the case-to-row trace, and follows the macOS-notification
+register qualifier to `windows-native.md`. It can also be run directly:
+
+```sh
+bun check-skill-consistency.mjs ../../.gobbi/projects/gobbi/skills/electron
+```
 
 ## Why three passes
 
@@ -66,6 +77,18 @@ Categories are `complete` (default), `partial`, `prelude`, `expect-error` and
 (no JSX runtime is installed here); those blocks are counted, never compiled. Any
 other fence language is an error unless it is `text`, `yaml`, `json`, `sh` or
 `console`.
+
+The extractor classifies every opening fence and writes a by-language census to
+its manifest. The runner fails unless both equations hold:
+
+```text
+compiled/extracted ts fences + counted tsx-uncompiled fences = eligible-code fences
+eligible-code fences + allowlisted-non-code fences = all fences
+```
+
+The emitted compilation-unit count stays separate. A keyed `prelude` and
+`partial` are two `ts` fences that intentionally form one unit, so unit count is
+not the eligible-fence denominator.
 
 `extract-blocks.mjs` is a copy of `examples/typescript/extract-blocks.mjs`; its
 header names the origin and all six deltas.

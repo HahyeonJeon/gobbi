@@ -375,15 +375,17 @@ These three bind whoever maintains `skills/electron/`, not the application autho
   *Defeater:* a rotation record naming all the sources with today's date and no quoted line; a
   self-reported "I re-fetched these" and an actual fetch produce the same observable, so the record alone
   cannot distinguish them, and the quoted line with its line number cannot be produced without the fetch.
-- **EL-R-16 (maintainer) — MUST have every fenced code block in `skills/electron/` extracted and
-  type-checked by `examples/electron/`.** *Check:* a run of `examples/electron/run-examples.sh` over the
-  skill directory exits 0 **and the extracted unit count equals the number of fenced code blocks in the
-  skill**, minus the `tsx` blocks carrying the `uncompiled` token, which are counted separately; both
-  numbers are recorded with the run. *Defeater:* a skill whose examples are written in `js` fences — the
-  vendor documentation this skill is built from writes its samples that way, so an author transcribing
-  them writes `js`, and a lenient extractor discards every non-`ts` fence silently while three token `ts`
-  blocks keep the count non-zero and the run green. The extractor makes an unsupported fence language a
-  hard error for that reason; the ratio makes the loss visible.
+- **EL-R-16 (maintainer) — MUST classify every fence in `skills/electron/` and verify every eligible code
+  fence with `examples/electron/`.** Eligible code fences are `ts`, which the extractor places in a
+  process-scoped compilation unit, and `tsx uncompiled`, which is counted but not compiled because the
+  harness has no JSX runtime. Allowlisted non-code fences are counted separately. *Check:* a run of
+  `examples/electron/run-examples.sh` over the skill directory exits 0 and reports both equalities:
+  **compiled/extracted `ts` fences + counted `tsx uncompiled` fences = eligible code fences**, and
+  **eligible code fences + allowlisted non-code fences = all fences**. *Defeater:* a skill whose examples
+  are written in `js` fences — the vendor documentation this skill is built from writes its samples that
+  way, so an author transcribing them writes `js`, and a lenient extractor discards every non-`ts` fence
+  silently while three token `ts` blocks keep the count non-zero and the run green. The extractor makes an
+  unsupported fence language a hard error for that reason; the two equalities make the loss visible.
 
 ---
 

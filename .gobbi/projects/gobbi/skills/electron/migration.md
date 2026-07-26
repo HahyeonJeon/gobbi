@@ -165,11 +165,10 @@ includes adding its row here, in the same change.
 | Windows code signing requires an EV or cloud-HSM certificate | since June 2023 | `packaging-distribution.md` |
 | The 44.0.0 removals — macOS 12, `win32-ia32`, `linux-armv7l`, renderer `clipboard` | lands 2026-08-25 | `migration.md` |
 
-**One open gap, recorded rather than hidden.** The macOS-notification row's owning file states the
-requirement with a `verified-against docs/api/notification.md@v43.2.0` stamp and no major qualifier; the
-`since 42` above comes from this file's own source. A both-directions walk should report that row as
-carrying its qualifier here and not in `windows-native.md`. Closing it is a one-line edit to that file,
-outside this file's ownership.
+**Register closure.** The macOS-notification row's `since 42` qualifier is live in both owning files.
+[`windows-native.md`](windows-native.md#macos-notifications-are-the-one-that-tells-you) starts the claim with
+**Since 42**, while this register carries the same qualifier and source. A both-directions walk therefore
+treats this row as closed.
 
 ---
 

@@ -457,12 +457,13 @@ cold-load record — sit in the conformance block below the rows, outside the `E
   walks, each recorded with what it examined. *On fail:* an unregistered claim sits unqualified while every
   row checks out — halt and open a blocking finding against
   [`migration.md` § 4](migration.md#4-the-behavior-claim-register). *(EL-R-14 · `EL-SC-12a`)*
-- [ ] `EL-CHECK-12b` **[GATE]** — PASS if the extracted unit count plus the counted `uncompiled` `tsx` blocks
-  equals the number of fenced code blocks in the skill, both numbers recorded with the run, and an unsupported
-  fence language is a hard error; FAIL if a unit count is recorded with no denominator, or a fence in another
-  language is discarded silently. *Evidence:* the harness run's two counts and the fenced-block total.
-  *On fail:* examples transcribed into another fence language are unverified and uncounted — halt and fix the
-  fences before the run is claimed. *(EL-R-16 · `EL-SC-12b`)*
+- [ ] `EL-CHECK-12b` **[GATE]** — PASS if the harness reports
+  compiled/extracted `ts` fences + counted `tsx uncompiled` fences = all eligible code fences, and eligible
+  code fences + allowlisted non-code fences = all fences; an unsupported fence language remains a hard error.
+  FAIL if either equality is absent or false, or a fence is discarded silently. *Evidence:* the harness run's
+  by-language census, eligible-code count, allowlisted-non-code count, and total. *On fail:* examples
+  transcribed into another fence language are unverified and uncounted — halt and fix the fences before the
+  run is claimed. *(EL-R-16 · `EL-SC-12b`)*
 - [ ] `EL-CHECK-12c` **[GATE]** — PASS if each rotation entry carries the quoted sentence with its current
   line number in the re-fetched source; FAIL if the entry names its sources and a date only. *Evidence:* the
   quoted line and its number, per entry. *On fail:* a self-report and a real rotation are indistinguishable —
