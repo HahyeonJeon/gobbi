@@ -4,13 +4,13 @@ Be the authoritative scenario source and the authoritative case-to-check relatio
 outcome. Policy lives in [`SKILL.md`](SKILL.md). Its consumers are [`checklists.md`](checklists.md) and
 [`evaluation.md`](evaluation.md). It exercises the parent contract and adds no policy.
 
-**Purpose:** ten coverage families and **sixty cases** that a desktop run must handle, each with an
+**Purpose:** ten coverage families and **sixty-three cases** that a desktop run must handle, each with an
 observable outcome a wrong run would produce differently, and each converted into the design obligation it
 proves. **Target:** one bounded desktop application outcome as `SKILL.md` defines it. **Consumer:** the run
 itself while designing, and an evaluator afterward. **Lifecycle mode:** design obligations, consumed in
 evaluation.
 
-**Scale, and the thresholds this set records.** Ten families, sixty cases, and **51 populated cells**,
+**Scale, and the thresholds this set records.** Ten families, sixty-three cases, and **51 populated cells**,
 where a cell is one distinct `(category, triggered case type)` pair. Every figure here is reproduced by
 scanning this file rather than carried from a plan. The cell figure did not move when the case count did: every
 case added after the first authoring landed in a cell that was already populated, and a second case in a
@@ -63,7 +63,7 @@ Abbreviations: **Pos** positive · **Alt** alternative-valid · **Neg** negative
 |---|---|---|---|---|---|---|---|---|
 | `01` Purpose | 01 | 02 | 03 | `n/a: the outcome contract has no quantity, ordering, or time-window property to sit at a limit of` | `n/a: a scope contract is a written agreement, not a runtime component that can fail partway` | 04 | `n/a: this family fixes the contract before any version of it exists to change` | 05 |
 | `02` Actors | 06, 54 | 07 | 08 | 09 | 10 | 11 | `n/a: participant conditions are re-established per activity, so there is no before/after version of them to compare` | `n/a: the participant floor's premise is fail-closed by construction, leaving no load-bearing premise to invert` |
-| `03` Behavior | 12, 56 | `n/a: the state machine's valid entry paths are enumerated by DESK-FAMILY-01's entry-mode inventory, so a second valid class here would duplicate that family's coverage` | 13, 58 | 14, 57 | 15 | 16, 59, 60 | 17 | `n/a: this family asserts no premise beyond the platform mechanisms its siblings verify at their owners` |
+| `03` Behavior | 12, 56, 61 | `n/a: the state machine's valid entry paths are enumerated by DESK-FAMILY-01's entry-mode inventory, so a second valid class here would duplicate that family's coverage` | 13, 58, 62 | 14, 57 | 15 | 16, 59, 60 | 17, 63 | `n/a: this family asserts no premise beyond the platform mechanisms its siblings verify at their owners` |
 | `04` Interfaces | 18 | `n/a: the four execution contexts are one enumerated set, not alternative valid routes through one contract` | 19 | `n/a: the crossable-type set is a membership question, not a limit with an adjacent value` | 20 | 21 | 22 | `n/a: the boundary's premise — that a declared type does not validate — is exercised directly by case 21 rather than inverted` |
 | `05` Quality | 23 | `n/a: a measurement has one valid method here; a second would vary the subject, not the class` | `n/a: an invalid measurement is an unsourced claim, which DESK-FAMILY-10 owns as an evidence defect` | 24 | `n/a: a resource bound that is exceeded is this family's boundary case, not a separate injected failure` | 25 | `n/a: a cross-version comparison of a measurement is exactly what case 24's version-naming obligation exists to make possible, and is covered there` | 26 |
 | `06` Failure | 27 | `n/a: recovery has one correct path per failure here; a second valid route would be a different failure` | `n/a: rejecting an invalid input is DESK-FAMILY-04's crossing validation, not a recovery concern` | 28 | 29 | 30 | `n/a: a failed update's version change is exercised by DESK-FAMILY-09, which owns the version axis` | `n/a: this family's premise — that interruption is ordinary — is asserted by the safety floor and not inverted here` |
@@ -79,10 +79,11 @@ prohibition, a `DESK-FLOOR` floor with its property check, a `DESK-G` gate, or a
 children supply the concrete mechanism each case exercises. No case derives from a source outside the
 family, and no case introduces a mechanism its owning child does not state.
 
-**Stable-ID policy.** `DESK-FAMILY-01`–`10` and `DESK-SCENARIO-01`–`60` are permanent — sixty cases,
-numbered without gaps, reproduced by scan. The last seven identifiers were allocated after later coverage
-sweeps — two after a sweep found two reserved checks with no seeding case, and five after the per-system
-behavior check was split into one claim per item and five of its claims proved to have no case of their own —
+**Stable-ID policy.** `DESK-FAMILY-01`–`10` and `DESK-SCENARIO-01`–`63` are permanent — sixty-three cases,
+numbered without gaps, reproduced by scan. The last ten identifiers were allocated after later coverage
+sweeps — two after a sweep found two reserved checks with no seeding case, five after the per-system behavior
+check was split into one claim per item and five of its claims proved to have no case of their own, and three
+for capabilities the mechanics children taught with no case behind them —
 so they sit at the end of the sequence rather than inside their families' runs; identifiers are
 allocation-ordered and never renumbered. Renaming a title never changes an identifier. A case whose *discrimination* changes — it now tests something different — gets
 a new identifier rather than reusing the old one, so a finding stays resolvable across revisions. A retired
@@ -529,6 +530,61 @@ with no readable owner fails whether it was asserted or hedged.
 claim about what has not been read; it MUST mark the gap, name its closing condition, and write the rule so it
 does not depend on the answer.
 *Trace:* `DESK-CHECK-43`
+
+#### `DESK-SCENARIO-61` — A tray-resident outcome, and the gesture it must not promise
+
+*Primary type:* **Positive** — the ordinary valid path of an outcome entered from a status-area icon.
+*Coverage-role:* `positive` (exercises tray residency end to end, including the state change its mechanism
+requires).
+*Given* an outcome whose primary entry mode is a status-area icon on every claimed system. *When* the run
+builds it, and later changes one item of its context menu. *Then* the icon carries a context menu; the changed
+item is applied by setting the context menu again rather than by mutating the item in place; the entry mode
+appears in the run's own entry-mode inventory; and nothing written for the person promises a specific
+activation gesture on a system whose own specification leaves the gesture to the environment.
+*Failure oracle:* a menu item whose field was changed and whose menu never updates, with no error anywhere; a
+tray entry mode absent from the inventory while the outcome is entered through it; or an instruction naming a
+gesture on the system that fixes none.
+*Evidence:* change one context-menu item at run time and open the menu on each claimed system; read the
+entry-mode inventory for the tray row; and read every person-facing instruction naming a gesture against that
+system's own specification.
+*Obligation:* the design MUST build a tray-resident entry mode from an icon and a context menu re-set rather
+than mutated in place, MUST carry that entry mode in its inventory, and MUST NOT promise an activation gesture
+on a system whose specification leaves it to the environment.
+*Trace:* `DESK-CHECK-44`
+
+#### `DESK-SCENARIO-62` — A standard menu item reimplemented in a click handler
+
+*Primary type:* **Negative** — an invalid menu construction expecting rejection.
+*Coverage-role:* `negative` (exercises rejection of a hand-built standard item).
+*Given* a menu whose items include ones matching documented standard roles. *When* the run implements them by
+hand, giving each a literal label and a click handler that approximates the behaviour. *Then* the construction
+is rejected: an item matching a standard role specifies that role, because the role carries the platform's own
+structure, its own labels, and its own localisation, while the hand-built item carries the label in one
+language and the localisation not at all.
+*Failure oracle:* a menu item whose behaviour matches a documented role while the item specifies no role; or a
+menu correct in its author's own language and unlocalised in every other.
+*Evidence:* enumerate the menu items from source and, for each whose behaviour matches a documented role,
+confirm the role is specified rather than reimplemented.
+*Obligation:* the design MUST specify the documented role for any menu item matching a standard role, rather
+than reimplementing that behaviour in a click handler.
+*Trace:* `DESK-CHECK-45`
+
+#### `DESK-SCENARIO-63` — A dropped file's path read through a property that was removed
+
+*Primary type:* **Change / regression** — it compares behaviour across the platform change that removed the
+property. *Coverage-role:* `change/regression` (exercises the removal against code written before it).
+*Given* an application that reads a dropped file's path from the file object's own path property — the form
+most published examples still show — and a target version at or after the removal the version baseline
+records. *When* a person drops a file on it. *Then* the property yields nothing. Not an error: an empty value,
+so the drop silently does nothing and the defect surfaces as a feature that does not work rather than as a
+failure with a stack trace. The path is obtained from the documented replacement helper instead.
+*Failure oracle:* any read of a dropped file's path from the removed property; or a drop path whose only
+evidence is that the code compiles and the handler is reached.
+*Evidence:* enumerate every read of a dropped file's path from source and confirm each goes through the
+replacement helper; then drop a real file and observe the path the handler actually receives.
+*Obligation:* the design MUST obtain a dropped file's path from the documented replacement helper and MUST NOT
+read the removed path property, whose failure is a silently empty value rather than an error.
+*Trace:* `DESK-CHECK-46`
 
 ### `DESK-FAMILY-04` — The privilege boundary, the channel inventory, and the three targets
 
@@ -1172,27 +1228,28 @@ Every case's obligation and the check identifier it reserves. This table is the 
 trace — policy and case to check — and it is generated from the `Trace:` fields above rather than maintained
 beside them, so the two cannot drift apart.
 
-**No case in this set is exploratory**, so all sixty carry an obligation and appear here. An exploratory
+**No case in this set is exploratory**, so all sixty-three carry an obligation and appear here. An exploratory
 case would be exempt from the obligation trace only while explicitly marked as one, and the exemption would
 end the moment it became an approved constraint.
 
 **The reserved ranges, and the two extensions this set required.** The design fixes four pause points and
-reserves thirty-four check slots across them. This set reserves **forty-three**. The first extension took it to
+reserves thirty-four check slots across them. This set reserves **forty-six**. The first extension took it to
 thirty-six, because the four protected floors each need a member check *and* a property check — eight slots
 where the original allocation left room for fewer — and the protected-waiver table needs its own; it followed
 the rule the design states, growing a range at its own pause point's tail and shifting every later range. The
-second extension took it to forty-three and could not follow that rule: splitting the per-system behavior check
-into one atomic claim per item needed seven further slots at `DESK-PAUSE-3`, and growing that range in place
-would have renumbered every later identifier, which the stable-ID policy above forbids. Those seven are
-therefore **allocated at the tail of the sequence and placed in their pause point's own list**, exactly as
-`DESK-SCENARIO-54` and `DESK-SCENARIO-55` sit inside their families with tail numbers.
+second extension took it to forty-six and could not follow that rule: splitting the per-system behavior check
+into one atomic claim per item needed seven further slots at `DESK-PAUSE-3`, and three taught capabilities with
+no check at all — tray residency, menus from roles, and the dropped-file path — needed three more. Growing that
+range in place would have renumbered every later identifier, which the stable-ID policy above forbids. Those
+ten are therefore **allocated at the tail of the sequence and placed in their pause point's own list**, exactly
+as `DESK-SCENARIO-54` and `DESK-SCENARIO-55` sit inside their families with tail numbers.
 [`checklists.md`](checklists.md) records the final ranges once, as their owner.
 
 | Pause point | Reserved range | Confirms |
 |---|---|---|
 | `DESK-PAUSE-1` — stack and outcome lock | `01`–`05` | outcome, boundary, stack-fit result, ownership statement, gate-authority map |
 | `DESK-PAUSE-2` — design acceptance | `06`–`17`, with **`06` reserved for the structural-approval check** | the structural-approval decision, the rung register, and all four floors on both their member and property checks |
-| `DESK-PAUSE-3` — implementation completion | `18`–`26` and `37`–`43` | the privilege boundary, security posture, platform obligations one claim at a time, local data, and in-scope paths |
+| `DESK-PAUSE-3` — implementation completion | `18`–`26` and `37`–`46` | the privilege boundary, security posture, platform obligations one claim at a time, local data, and in-scope paths |
 | `DESK-PAUSE-4` — release-readiness handoff | `27`–`36` | every applicable release gate per claimed system, the design record, and the trace and verifier proofs |
 
 `DESK-CHECK-06` is pinned by the design rather than chosen here: the restored structural-approval gate
@@ -1263,3 +1320,6 @@ one check cluster.
 | `DESK-SCENARIO-58` | A two-state light and dark toggle offered as the theme contract | `DESK-CHECK-41` | `DESK-PAUSE-3` |
 | `DESK-SCENARIO-59` | A shortcut map that works in its author's own window | `DESK-CHECK-42` | `DESK-PAUSE-3` |
 | `DESK-SCENARIO-60` | A platform convention filled in from a plausible summary | `DESK-CHECK-43` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-61` | A tray-resident outcome, and the gesture it must not promise | `DESK-CHECK-44` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-62` | A standard menu item reimplemented in a click handler | `DESK-CHECK-45` | `DESK-PAUSE-3` |
+| `DESK-SCENARIO-63` | A dropped file's path read through a property that was removed | `DESK-CHECK-46` | `DESK-PAUSE-3` |

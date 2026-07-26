@@ -59,10 +59,10 @@ reallocated.
 | `DESK-R15`, `DESK-N06` | `04`, `07` | crossing validation — `DESK-CHECK-19` |
 | `DESK-R18` | `03`, `04`, `06` | lifecycle disposal — `DESK-CHECK-20` |
 | `DESK-R19`, `DESK-R20`, `DESK-N08` | `07` | security posture and hardening — `DESK-CHECK-21`, `DESK-CHECK-22` |
-| `DESK-R21`, `DESK-R22`, `DESK-N09` | `03`, `08` | platform conformance, one claim per item — `DESK-CHECK-23`, `DESK-CHECK-37`, `DESK-CHECK-38`, `DESK-CHECK-39`, `DESK-CHECK-40`, `DESK-CHECK-41`, `DESK-CHECK-42`, `DESK-CHECK-43` |
+| `DESK-R21`, `DESK-R22`, `DESK-N09` | `03`, `08` | platform conformance, one claim per item — `DESK-CHECK-23`, `DESK-CHECK-37`, `DESK-CHECK-38`, `DESK-CHECK-39`, `DESK-CHECK-40`, `DESK-CHECK-41`, `DESK-CHECK-42`, `DESK-CHECK-43`, `DESK-CHECK-44`, `DESK-CHECK-45` |
 | `DESK-R23`, `DESK-R24` | `09`, `06` | release gates and irreversibility — `DESK-CHECK-27`, `DESK-CHECK-28`, `DESK-CHECK-29`, `DESK-CHECK-30`, `DESK-CHECK-31` |
 | `DESK-R25` | `10` | claim separation — `DESK-CHECK-32` |
-| `DESK-R26` | `05`, `09`, `10` | version pinning, claim-to-source register, and unknowns — `DESK-CHECK-05`, `DESK-CHECK-26` |
+| `DESK-R26` | `03`, `05`, `09`, `10` | version pinning, the claim-to-source register, unknowns, and mechanism verification at the owner — `DESK-CHECK-05`, `DESK-CHECK-26`, `DESK-CHECK-46` |
 | `DESK-R27`, `DESK-N10` | `01`, `10` | user-gate authority — `DESK-CHECK-04`, `DESK-CHECK-22`, `DESK-CHECK-36` |
 | `DESK-R27` — the `DESK-G3` structural-approval leg | `02`, `10` | structural-skeleton approval — `DESK-CHECK-06` |
 | `DESK-R28` | `10` | trace and verifier proof — `DESK-CHECK-34` |
@@ -71,7 +71,7 @@ reallocated.
 
 **Closure, in both directions.** Forward: every one of the thirty live rules and eleven live prohibitions
 appears above with at least one family and at least one check. Reverse: every family `01`–`10` and every check
-`01`–`43` appears in at least one row, so no case and no check is orphaned from a live clause. Both sweeps run
+`01`–`46` appears in at least one row, so no case and no check is orphaned from a live clause. Both sweeps run
 to **zero orphans**. A clause with no family or no check is a coverage gap in the scenario or checklist source
 rather than something a crosswalk row can paper over.
 
@@ -82,11 +82,12 @@ across all five is a test no correct bundle can pass. `Source` closes its own di
 
 ## Selecting cases and checks
 
-1. **Start from the whole set, then disposition.** All ten families and all forty-three checks are candidates.
+1. **Start from the whole set, then disposition.** All ten families and all forty-six checks are candidates.
    Select every case and check whose applicability predicate holds for this subject.
 2. **A non-selection needs an inspected property.** Record `n/a:<property>` with the inspection that found the
-   predicate false. The conditional checks — measurement, signing, update, deferred-capability — are the only
-   places a legitimate `n/a` normally arises, and even there the property is inspected rather than assumed.
+   predicate false. The conditional checks — measurement, deep link, tray residency, dropped files, signing,
+   update, deferred capability — are the only places a legitimate `n/a` normally arises, and even there the
+   property is inspected rather than assumed.
 3. **The four `-PROPERTY` checks are never deselected.** `DESK-CHECK-10`, `DESK-CHECK-12`, `DESK-CHECK-14`, and
    `DESK-CHECK-16` each declare `Applicability: unconditional` exactly once and never resolve `n/a`, because the
    property each claims holds of every desktop outcome.

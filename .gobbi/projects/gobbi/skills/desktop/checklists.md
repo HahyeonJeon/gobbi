@@ -11,7 +11,7 @@ Be the unchecked operational gate source with the protected-waiver truth table. 
 | **Source state** | **unchecked** — every box below is unticked, and it stays that way |
 | **Run state** | each run works a **fresh filled copy** naming this source's version and the run's identity |
 | **Use-style** | declared per pause point below, per run |
-| **Items** | 43, across four pause points |
+| **Items** | 46, across four pause points |
 | **Provenance** | each item's `Source` names its parent clause; each item's `Seeds` names the cases that reserved it |
 
 **The source is never worked and never ticked.** A run copies it, fills the copy, and records the copy's
@@ -27,17 +27,17 @@ acceptance-bearing. An advisory row here would be a mandatory obligation quietly
 |---|---|---|---|---|
 | `DESK-PAUSE-1` — stack and outcome lock | before rung 0 begins | `read-do` | `01`–`05` | the outcome, boundary, stack-fit result, ownership statement, and gate-authority map are accepted |
 | `DESK-PAUSE-2` — design acceptance | before `P5` locks the application contract | `do-confirm` | `06`–`17` | the structural-approval decision is confirmed with no visual rung preceding it, the rung register is complete and substantiated, and all four floors are accepted on **both** their member check and their property check |
-| `DESK-PAUSE-3` — implementation completion | before `P9` treats the grown slices as complete | `do-confirm` | `18`–`26`, `37`–`43` | the privilege boundary, security posture, every per-system platform obligation on its own item, local data contract, and in-scope paths are accepted |
+| `DESK-PAUSE-3` — implementation completion | before `P9` treats the grown slices as complete | `do-confirm` | `18`–`26`, `37`–`46` | the privilege boundary, security posture, every per-system platform obligation on its own item, local data contract, and in-scope paths are accepted |
 | `DESK-PAUSE-4` — release-readiness handoff | before `P10` publishes readiness or any external release is requested | `do-confirm` | `27`–`36` | every applicable release gate per claimed operating system is accepted, the design record is complete, and the trace and verifier proofs have both run |
 
 **The reserved ranges were extended twice, and this is the single place that records it.** The design reserved
-thirty-four slots; this source authors **forty-three**:
+thirty-four slots; this source authors **forty-six**:
 
 | Pause point | Reserved by the design | Authored here | Why |
 |---|---|---|---|
 | `DESK-PAUSE-1` | `01`–`05` | `01`–`05` | unchanged |
 | `DESK-PAUSE-2` | `06`–`15` | `06`–`17` | the four non-waivable floors each need a **member** check and a **property** check — eight acceptance-bearing items — plus the structural-approval gate, the rung register, the ladder method, and the protected-waiver discipline |
-| `DESK-PAUSE-3` | `16`–`24` | `18`–`26`, `37`–`43` | shifted by two by the first extension; the second extension added seven at the tail of the sequence when `DESK-CHECK-23` was split into one atomic claim per item |
+| `DESK-PAUSE-3` | `16`–`24` | `18`–`26`, `37`–`46` | shifted by two by the first extension; the second extension added ten at the tail of the sequence — seven when `DESK-CHECK-23` was split into one atomic claim per item, and three for taught capabilities that had no check at all |
 | `DESK-PAUSE-4` | `25`–`34` | `27`–`36` | shifted by two; the item count is unchanged |
 
 The first extension followed the design's own rule — a range grows at its own pause point's tail and every
@@ -51,12 +51,13 @@ the design pins that one identifier and this source may not move it.
 
 **Item counts per pause point, and the three that exceed the generic guidance.** The generic guidance is
 roughly five to nine gate-or-required items per operational pause point. `DESK-PAUSE-1` carries 5, inside it.
-`DESK-PAUSE-4` carries 10, `DESK-PAUSE-2` carries 12, and `DESK-PAUSE-3` carries 16, all outside it. The
+`DESK-PAUSE-4` carries 10, `DESK-PAUSE-2` carries 12, and `DESK-PAUSE-3` carries 19, all outside it. The
 deviation is recorded rather than resolved by trimming, for a structural reason: the pause points are fixed by
 the design and may not be split here; eight of `DESK-PAUSE-2`'s twelve items are the four non-waivable floors'
-mandatory member-and-property pairs; and `DESK-PAUSE-3`'s count is what atomicity costs — seven of its items
-are the per-system behavior obligations that one conjoined item used to hide. Dropping one would either remove
-an acceptance-bearing item a floor requires, or put two claims back under one `PASS`.
+mandatory member-and-property pairs; and `DESK-PAUSE-3`'s count is what atomicity and coverage cost — seven of its
+items are the per-system behavior obligations that one conjoined item used to hide, and three are capabilities
+the mechanics children taught with nothing gating them. Dropping one would either remove an acceptance-bearing
+item a floor requires, put two claims back under one `PASS`, or return a taught capability to having no check.
 
 ## Terminal value set
 
@@ -141,11 +142,13 @@ consequences the floor exists to make unwaivable.
 concern distinct from the safety floor's foreseeable-refusable-recoverable property. They remain gates; they
 are simply not waiver-immune by this test.
 
-**The other items split out of `DESK-CHECK-23` are not selected either, and the test was applied to each.**
-`DESK-CHECK-37`, `39`, `40`, `41`, `42`, and `43` bear on conformance, discoverability, and honesty: a flash on
+**The other new items are not selected either, and the test was applied to each.**
+`DESK-CHECK-37`, `39`, `40`, `41`, `42`, `43`, `44`, `45`, and `46` bear on conformance, discoverability, and
+honesty: a flash on
 launch, an application that exits where its system's convention persists, a link that never fires, an
-appearance left behind, a dead accelerator, and a conformance claim nobody can check. Each is a defect the
-person can see and the run can correct forward; none reaches a consequence the person cannot foresee, refuse,
+appearance left behind, a dead accelerator, a conformance claim nobody can check, a stale tray menu, an
+unlocalised menu item, and a drop that does nothing. Each is a defect the person can see and the run can
+correct forward; none reaches a consequence the person cannot foresee, refuse,
 or recover from, and none bears on the accessibility floor's availability property. They remain gates.
 
 **The table.** Six rows. Each adversarial row holds every other applicable item at `PASS`, so the row
@@ -626,6 +629,50 @@ claim its protected-item row already cites.
   *Obligation conditions owned:* no unverified platform convention asserted · none hedged into a claim about
   what has not been read · the gap marked with its closing condition.
 
+- [ ] **`DESK-CHECK-44`** `[GATE]` · *Applicability:* conditional — applies when the outcome is entered from or
+  resident in a status-area icon. An `n/a:<property>` requires the inspected finding that it is entered from
+  none.
+  *Pass:* the icon carries a context menu; every change to a menu item is applied by setting the context menu
+  again rather than by mutating the item in place; the tray entry mode appears in the run's own entry-mode
+  inventory; and nothing written for the person promises an activation gesture on a system whose own
+  specification leaves that gesture to the environment.
+  *Evidence:* change one context-menu item at run time and open the menu on each claimed system; read the
+  entry-mode inventory for its tray row; and read every person-facing instruction naming a gesture against that
+  system's own specification.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a menu that silently stops reflecting the application's own state, or a promise about a
+  gesture nobody can keep on that system.
+  *Source:* `DESK-R22` — its tray leg · *Seeds:* `DESK-SCENARIO-61`
+  *Obligation conditions owned:* the context menu re-set rather than the item mutated · the tray entry mode in
+  the inventory · no activation gesture promised where the specification fixes none.
+
+- [ ] **`DESK-CHECK-45`** `[GATE]` · *Applicability:* unconditional — every menu item matching a standard role
+  specifies that role.
+  *Pass:* the menu items enumerated from source contain no item whose behaviour matches a documented standard
+  role while the item reimplements that behaviour instead of specifying the role.
+  *Evidence:* enumerate the menu items from source and, for each whose behaviour matches a documented role,
+  read whether the role is specified or the behaviour is hand-written.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* the platform's own structure, labels, and localisation are lost, leaving an application
+  correct in one language and unlocalised in every other.
+  *Source:* `DESK-R21` — its role leg · *Seeds:* `DESK-SCENARIO-62`
+  *Obligation conditions owned:* the role specified for any item matching a standard role · the behaviour not
+  reimplemented in a click handler.
+
+- [ ] **`DESK-CHECK-46`** `[GATE]` · *Applicability:* conditional — applies when the outcome receives files
+  dropped onto it. An `n/a:<property>` requires the inspected finding that it receives none.
+  *Pass:* every read of a dropped file's path goes through the documented replacement helper, and no code path
+  reads the removed path property.
+  *Evidence:* enumerate every read of a dropped file's path from source; then drop a real file and observe the
+  path the handler actually receives, because the removed property's failure is an empty value rather than an
+  error and source reading alone will not surface a reachable one.
+  *On fail:* halt; open a finding against the owning obligation.
+  *Consequence:* a drop that silently does nothing, in code that compiles and whose handler is reached — the
+  form most published examples still show.
+  *Source:* `DESK-R26` — its verify-the-mechanism-at-its-owner leg · *Seeds:* `DESK-SCENARIO-63`
+  *Obligation conditions owned:* the path taken from the documented replacement helper · the removed property
+  read nowhere · the empty value treated as the failure rather than an error.
+
 ### `DESK-PAUSE-4` — release-readiness handoff · `do-confirm`
 
 - [ ] **`DESK-CHECK-27`** `[GATE]` · *Applicability:* unconditional — one installer target exists per claimed
@@ -810,6 +857,9 @@ in [`scenarios.md`](scenarios.md), verifiable independently of each item's own `
 | `DESK-CHECK-41` | `DESK-SCENARIO-58` | `DESK-PAUSE-3` |
 | `DESK-CHECK-42` | `DESK-SCENARIO-59` | `DESK-PAUSE-3` |
 | `DESK-CHECK-43` | `DESK-SCENARIO-60` | `DESK-PAUSE-3` |
+| `DESK-CHECK-44` | `DESK-SCENARIO-61` | `DESK-PAUSE-3` |
+| `DESK-CHECK-45` | `DESK-SCENARIO-62` | `DESK-PAUSE-3` |
+| `DESK-CHECK-46` | `DESK-SCENARIO-63` | `DESK-PAUSE-3` |
 
 ## Check-to-obligation union audit
 
@@ -879,3 +929,6 @@ in each item's `Obligation conditions owned` field above, and the reviewer reads
 | `DESK-CHECK-41` | `DESK-SCENARIO-58` | 2 | | |
 | `DESK-CHECK-42` | `DESK-SCENARIO-59` | 3 | | |
 | `DESK-CHECK-43` | `DESK-SCENARIO-60` | 3 | | |
+| `DESK-CHECK-44` | `DESK-SCENARIO-61` | 3 | | |
+| `DESK-CHECK-45` | `DESK-SCENARIO-62` | 2 | | |
+| `DESK-CHECK-46` | `DESK-SCENARIO-63` | 3 | | |
