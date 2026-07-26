@@ -139,7 +139,8 @@ exception needs; it never introduces an exception this file does not state.
   crosses.** The supported sets are not symmetric: what may be a Server Function argument is not the same
   set as what may be a Server Function return value or a Server-to-Client prop. Fix: check the direction
   first, then the value; pass an identifier and re-read on the other side when the value cannot cross. No
-  exception. Source: react.dev `use server` and `use client`.
+  exception. Source: react.dev `use server` and `use client`. Depth: `server-client.md`, which carries the
+  three sets themselves.
 - **H8 — MUST read the recorded compiler switch before memoizing, then follow the branch it selects and
   keep both branches inside H1 and H2.** The switch is recorded at Procedure P1, and the branches are
   different mechanisms rather than different degrees of caution. **Compiler enabled.** The React Compiler
@@ -276,6 +277,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | Read | When |
 |---|---|
 | `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
+| `server-client.md` | Designing any value that crosses the server/client boundary, choosing or reading a directive, building on Server Functions and the Actions family, or working on streaming server rendering and hydration |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
