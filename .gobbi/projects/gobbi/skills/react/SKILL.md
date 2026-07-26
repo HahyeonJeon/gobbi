@@ -300,6 +300,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `runtime.md` | Establishing the host at P1, moving code between hosts, or answering what a browser application, a framework server, and a desktop renderer each do and do not support |
 | `state.md` | Placing a datum — which rung of the ladder owns it, when it is promoted, whether it should be stored at all, and what a client copy of server-owned data has to carry |
 | `async.md` | Deciding whether an Effect is needed at all, cleaning one up, choosing between cancelling and ignoring in-flight work, or reaching for Suspense, `use`, or an external store |
+| `typing.md` | Typing a props surface, `children`, an event, a hook's type argument, a ref, or the style prop — **only when the source is TypeScript**; the file does not apply on a plain-JavaScript codebase |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
