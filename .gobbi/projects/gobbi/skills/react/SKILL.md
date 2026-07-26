@@ -131,9 +131,9 @@ exception needs; it never introduces an exception this file does not state.
   that caused it, or reset state with a `key`. No exception — the alternatives above are the mechanism,
   not a waiver. Source: react.dev, You Might Not Need an Effect.
 - **H6 — MUST clean up what an Effect starts, and stop or discard every async result the render no
-  longer needs.** Every subscription, timer, and listener gets a cleanup function, and every in-flight
-  request is either cancelled or has its result ignored when the render that started it is no longer
-  current. React states the pairing exactly: "connect" needs "disconnect", "subscribe" needs
+  longer needs.** Every connection, subscription, timer, and listener gets a cleanup function, and every
+  in-flight request is either cancelled or has its result ignored when the render that started it is no
+  longer current. React states the pairing exactly: "connect" needs "disconnect", "subscribe" needs
   "unsubscribe", and "fetch" needs either "cancel" or "ignore". The two are not interchangeable. Ignoring
   discards the answer and lets the work run to completion, which is fine while that work is cheap;
   cancelling stops the work, and is what a rapidly changing input, a long-lived surface, or an expensive
@@ -171,14 +171,28 @@ exception needs; it never introduces an exception this file does not state.
 - **H9 — MUST render the element that carries the meaning, add ARIA only where no native element
   provides it, and move focus deliberately when a dialog opens and closes.** In React every `aria-*`
   attribute is written exactly as in HTML, so this is a component's output contract, not a separate
-  concern. When a dialog opens, focus moves to an element inside it; when it closes, focus returns to the
-  element that invoked it. Exceptions — the three circumstances the First Rule of ARIA Use names, and no
-  others: (a) the feature is available in HTML but is not implemented, or is implemented without
-  accessibility support; (b) a visual design constraint rules out the native element, because it cannot
-  be styled as required; (c) the feature is not currently available in HTML at all — which is the case
-  for a state no native element expresses, such as marking which item in a set is the current one. Source:
-  W3C Using ARIA §2.1; W3C WAI-ARIA Authoring Practices, modal dialog pattern; react.dev common component
-  props. Depth: `design.md`.
+  concern. When a dialog opens, focus moves to an element inside it. When it closes, focus returns to the
+  element that invoked it — unless either of the two conditions its source states: the invoking element
+  no longer exists, in which case focus is set on another element that provides logical work flow; or the
+  work flow makes a different destination the more logical choice, which the source scopes to the case
+  where users are unlikely to need to re-invoke the dialog immediately and the task completed in it leads
+  directly into a subsequent step. Either way the destination is deliberate and recorded; what is
+  forbidden is leaving focus where the closing dialog dropped it.
+
+  Exceptions, governing ARIA use only — the three circumstances, and no others: (a) the feature is
+  available in HTML but is not implemented, or is implemented without accessibility support; (b) a visual
+  design constraint rules out the native element, because it cannot be styled as required; (c) the
+  feature is not currently available in HTML at all — which is the case for a state no native element
+  expresses, such as marking which item in a set is the current one.
+
+  Source: W3C WAI-ARIA Authoring Practices Guide, modal dialog pattern, for the focus obligation and both
+  of its conditions; react.dev common component props for the attribute-naming fact. The three ARIA
+  circumstances are the four-rules formulation from W3C's *Using ARIA*, which W3C **discontinued on
+  2026-02-24** — that document states the rules "are kept for historical purposes and for easier
+  reference" and that "it is inappropriate to cite this document as other than abandoned work", and it
+  points forward to the Authoring Practices Guide. The circumstances are therefore carried here as this
+  skill's house default, historically derived, and must not be presented as current W3C normative
+  authority. Depth: `design.md`.
 - **H10 — MUST prove behavior through the user-visible surface.** Find elements by role and accessible
   name, and interact the way a user would. A test that reads component state, instances, or tree
   structure asserts the implementation, so it fails on a correct refactor and passes on a broken rewrite.
@@ -228,9 +242,14 @@ exception needs; it never introduces an exception this file does not state.
   it is client state until it is submitted. *Ecosystem convention*: no React-team position states this
   rule; it is this skill's house default. Depth: `state.md`.
 - **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
-  enabled or context isolation disabled.** Exposing a raw IPC surface gives page content access to the
-  whole event system, and without context isolation a single content-injection bug becomes code
-  execution. Fix: expose a narrow, named API from the preload script and validate every message. No
+  enabled, context isolation disabled, or the sandbox off.** Exposing a raw IPC surface gives page
+  content access to the whole event system, and without context isolation a single content-injection bug
+  becomes code execution. The sandbox is a third, separate protection — "a Chromium feature that uses the
+  operating system to significantly limit what renderer processes have access to", and the source's
+  instruction is unconditional: "You should enable the sandbox in all renderers." It is listed separately
+  because the implication runs one way only: disabling context isolation also disables sandboxing, but
+  leaving context isolation on does not turn the sandbox on. Fix: expose a narrow, named API from the
+  preload script, validate every message, and confirm all three settings in the shipped configuration. No
   exception. Source: electronjs.org security checklist, items 2, 3, 4, and 20.
 - **H17 — NEVER assume a server tier exists.** Server Components, Server Functions, and streaming SSR
   require a framework or bundler that implements them; a plain browser SPA and a desktop renderer have no
@@ -244,6 +263,12 @@ the facts a stale model gets wrong and they move on a multi-year cadence. Runtim
 versions are deliberately not pinned anywhere in this skill: they move on a scale of weeks, so a number
 written here would be wrong within months and wrong in a way that reads authoritative. Point at the live
 release page instead.
+
+**What this skill's load costs, and the fact that it is unmeasured.** `SKILL.md` loads deterministically
+and the P2 router pulls a content child only when a decision needs it. Neither the cost of that load nor
+the cost of the whole child set has been measured — no token or latency figure exists for this skill, and
+no child owns measuring React runtime performance either. Both are stated here as known limitations
+rather than left for a reader to discover.
 
 **Rules this skill deliberately does not carry.** Typing discipline, assertion versus annotation, module
 and import mechanics, and strict-flag sets belong to `typescript`. Deep units, blast radius, naming, and
@@ -485,10 +510,15 @@ One owner per borrowed fact; the body states the fact and this register names it
 - [Common component props](https://react.dev/reference/react-dom/components/common) — in React, every
   ARIA attribute name is exactly the same as in HTML (H9).
 - [React versions](https://react.dev/versions) — the documented React line, currently 19.2.
-- [Using ARIA](https://www.w3.org/TR/using-aria/) — the First Rule of ARIA Use and its four exception
-  conditions (H9).
-- [WAI-ARIA Authoring Practices, modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
-  — focus moves into the dialog on open and returns to the invoking element on close (H9).
+- [ARIA Authoring Practices Guide, modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/)
+  — focus moves into the dialog on open, and on close returns to the invoking element unless the invoking
+  element no longer exists or the work flow makes a different destination more logical (H9). Current, and
+  the guide W3C points to for ARIA authoring guidance.
+- [Using ARIA](https://www.w3.org/TR/using-aria/) — **a W3C Discontinued Draft since 2026-02-24**, which
+  states that its four rules "are kept for historical purposes and for easier reference" and that "it is
+  inappropriate to cite this document as other than abandoned work". It is the historical origin of the
+  three circumstances in `H9`, and it is named here for provenance only — those circumstances are this
+  skill's house default, not a current W3C position (H9).
 - [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security) — Node
   integration disabled, context isolation and the sandbox enabled, and no raw Electron or IPC surface
   exposed to page content (H16).

@@ -144,17 +144,19 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 
 ### From REACT-SCENARIO-05 — cleanup and staleness
 
-- [ ] **REACT-CHECK-09** · gate · conditional — applies when an Effect in the change creates a
-  subscription, a timer, or a listener
-  - **Claim.** Every such Effect returns a cleanup that removes what it created.
-  - **Pass when.** For each created subscription, timer, and listener there is a matching removal in the
-    returned cleanup, and the cleanup performs that removal rather than returning an empty function.
-  - **Evidence.** Pair each creation with its removal by reading the Effect, then unmount the component
-    and confirm no listener or timer remains live.
-  - **Harm on fail.** A long-lived surface accumulates leaked subscriptions across mounts until memory
-    and duplicate handlers degrade the running application.
-  - **`n/a` form.** `n/a: no Effect in the change creates a subscription, timer, or listener` — cited by
-    the diff.
+- [ ] **REACT-CHECK-09** · gate · conditional — applies when an Effect in the change opens a connection
+  or creates a subscription, a timer, or a listener
+  - **Claim.** Every such Effect returns a cleanup that closes or removes what it created.
+  - **Pass when.** For each opened connection and each created subscription, timer, and listener there is
+    a matching close or removal in the returned cleanup, and the cleanup performs it rather than returning
+    an empty function. The rule's pairing is the test: a connect needs its disconnect exactly as a
+    subscribe needs its unsubscribe.
+  - **Evidence.** Pair each creation with its teardown by reading the Effect, then unmount the component
+    and confirm no connection, listener, or timer remains live.
+  - **Harm on fail.** A long-lived surface accumulates leaked connections and subscriptions across mounts
+    until memory, duplicate handlers, and open sockets degrade the running application.
+  - **`n/a` form.** `n/a: no Effect in the change opens a connection or creates a subscription, timer, or
+    listener` — cited by the diff.
   - **Source.** `REACT-SCENARIO-05` · `H6`.
 
 - [ ] **REACT-CHECK-10** · gate · conditional — applies when an Effect in the change awaits a result
@@ -258,12 +260,17 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 
 - [ ] **REACT-CHECK-28** · gate · conditional — applies when the change runs in a renderer that reaches a
   privileged process
-  - **Claim.** The shipped window configuration has Node integration off and context isolation on.
-  - **Pass when.** Both settings hold in the configuration the packaged application uses.
+  - **Claim.** The shipped window configuration has Node integration off, context isolation on, and the
+    sandbox on.
+  - **Pass when.** All three settings hold in the configuration the packaged application uses. Context
+    isolation being on is not evidence for the sandbox: the implication runs the other way, so the
+    sandbox is read as its own value.
   - **Evidence.** Read the shipped configuration, not the development one; confirm the packaged build
-    carries the same values.
+    carries the same three values.
   - **Harm on fail.** Without context isolation the bridge and the page share one world, so every other
-    protection on this surface becomes decorative.
+    protection on this surface becomes decorative — and without the sandbox the renderer keeps the
+    operating-system access the sandbox exists to remove, which the cited source forbids in every
+    renderer.
   - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
     host.
   - **Source.** `REACT-SCENARIO-10` · `H16`.
@@ -403,11 +410,16 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Source.** `REACT-SCENARIO-09` · `H9` · `P4`.
 
 - [ ] **REACT-CHECK-18** · gate · conditional — applies when the change adds or edits a dialog or overlay
-  - **Claim.** Focus moves into the dialog when it opens and returns to the invoking control when it
-    closes.
-  - **Pass when.** Immediately after open, the focused element is inside the dialog; immediately after
-    close, the focused element is the control that invoked it.
-  - **Evidence.** Read the focused element at both transitions while operating the flow by keyboard.
+  - **Claim.** Focus moves into the dialog when it opens, and on close lands on a destination the rule
+    sanctions.
+  - **Pass when.** Immediately after open, the focused element is inside the dialog. Immediately after
+    close, the focused element is the control that invoked it — or, where the rule's stated conditions
+    hold, the recorded alternative: another element providing logical work flow when the invoking element
+    no longer exists, or the next step's element where the work flow makes that the more logical choice.
+    An alternative destination passes only when the change records which condition applies; an unrecorded
+    one does not, and neither does focus left where the closing dialog dropped it.
+  - **Evidence.** Read the focused element at both transitions while operating the flow by keyboard, and
+    for an alternative destination read the recorded condition beside it.
   - **Harm on fail.** A keyboard or assistive-technology user is left in the page behind the dialog with
     no route into it, so the interaction cannot be completed at all.
   - **`n/a` form.** `n/a: the change adds and edits no dialog or overlay` — cited by the diff.
@@ -514,6 +526,20 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
     the change as proven.
   - **Source.** `REACT-SCENARIO-05`, `REACT-SCENARIO-07` · `Procedure P7`.
 
+- [ ] **REACT-CHECK-36** · gate · conditional — applies when the change fixes a reported defect
+  - **Claim.** The reproducer recorded at Procedure P1 no longer fires on the final tree.
+  - **Pass when.** The exact reproduction from P1 — the steps, input, or failing case the change was
+    opened against — is re-run last, after every other gate, and does not reproduce. A green suite is not
+    evidence for this item: a regression test added without first reproducing the original failure makes
+    the suite green while proving nothing about the defect.
+  - **Evidence.** The P1 reproducer re-run on the tree being accepted, with its output, beside the same
+    reproducer's recorded failure from before the change.
+  - **Harm on fail.** The change-set is accepted with the reported defect unproven-gone, which is the one
+    thing a bug fix exists to establish.
+  - **`n/a` form.** `n/a: the change fixes no reported defect` — cited by the change's own trigger, never
+    by the absence of a recorded reproducer, which is itself a Procedure P1 failure.
+  - **Source.** `REACT-SCENARIO-05` · `Procedure P1` · `Procedure P7`.
+
 ---
 
 ## Guaranteed coverage map
@@ -551,9 +577,9 @@ at least one scenario family. Both directions were swept for orphans.
 
 | Step | Items | Step | Items |
 |---|---|---|---|
-| `Procedure P1` | 25 | `Procedure P5` | 21 |
+| `Procedure P1` | 25, 36 | `Procedure P5` | 21 |
 | `Procedure P2` | none — see gaps | `Procedure P6` | 22 |
-| `Procedure P3` | 15 | `Procedure P7` | 31 |
+| `Procedure P3` | 15 | `Procedure P7` | 31, 36 |
 | `Procedure P4` | 30 | `Procedure P8` | 23, 24, 30 |
 
 ### Items to families
@@ -564,7 +590,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-02` | 03, 04 |
 | `REACT-SCENARIO-03` | 05, 06 |
 | `REACT-SCENARIO-04` | 07, 08 |
-| `REACT-SCENARIO-05` | 09, 10, 31, 35 |
+| `REACT-SCENARIO-05` | 09, 10, 31, 35, 36 |
 | `REACT-SCENARIO-06` | 11, 12, 34 |
 | `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33 |
 | `REACT-SCENARIO-08` | 15, 16, 26 |
@@ -575,12 +601,12 @@ at least one scenario family. Both directions were swept for orphans.
 
 ### Counts
 
-35 items — 20 gates and 15 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-35` were added where
+36 items — 21 gates and 15 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
+slots the scenario families reserved and keep their reserved family; `-25` through `-36` were added where
 a family carried more than two independently falsifiable obligations. An identifier is never reused or
 renumbered once published.
 
-Twenty-five items are conditional on a stated predicate. Three of those read the compiler switch and they
+Twenty-six items are conditional on a stated predicate. Three of those read the compiler switch and they
 partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
 therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
 `n/a` has not resolved `REACT-CHECK-25`.

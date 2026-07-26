@@ -61,7 +61,7 @@ always carry the word `Procedure`.
 - `H13` — Resolves to "NEVER chain Effects where each one sets state the next one watches." — compute the cascade in the handler.
 - `H14` — Resolves to "NEVER strip existing manual memoization while adopting the compiler without testing the result." — removal can change compilation output.
 - `H15` — Resolves to "NEVER hold server-owned data on the client without a named trigger that refreshes or discards it." — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
-- `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled or context isolation disabled." — a content bug must not become execution.
+- `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled, context isolation disabled, or the sandbox off." — a content bug must not become execution, and the three settings are independent.
 - `H17` — Resolves to "NEVER assume a server tier exists." — the server-dependent features need a host that implements them.
 - `H18` — Resolves to "MUST treat every Server Function argument as untrusted input and authorize the mutation on the server side." — marking a function `'use server'` publishes an endpoint.
 
@@ -95,7 +95,7 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Twenty-five of the thirty-five items are conditional on a stated
+2. **Read the recorded React contract first.** Twenty-six of the thirty-six items are conditional on a stated
    predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
    the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
@@ -217,7 +217,7 @@ moved together, an adoption event handled coherently, and every taught claim tra
 **Lens**: What can **fail, leak, or be reached** that the happy path hides — an outliving subscription, an
 out-of-order response, a divergent copy, an exposed privileged surface, or an unverified claim of verification?
 
-**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`, `-35`.
+**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`, `-35`, `-36`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -227,6 +227,7 @@ out-of-order response, a divergent copy, an exposed privileged surface, or an un
 | **A generic invoke-by-channel bridge** | Expose named operations and validate every message; one generic entry point re-exposes the whole surface |
 | **A Server Function guarded by its caller** | Validate and authorize inside the function; the endpoint is reachable without the component that calls it |
 | **Verification asserted, not run** | Require fresh output from the tree being accepted; an unverified claim of verification is worse than none |
+| **A bug fixed without re-running its reproducer** | Re-run the P1 reproduction last; a green suite proves the suite, not that the reported defect is gone |
 
 ---
 

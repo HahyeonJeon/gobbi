@@ -283,9 +283,10 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
   browser application, and into a desktop renderer that talks to a privileged process.
 - **Good handling:** the host is established at Procedure P1; where no server tier exists, data access is
   client-side; the renderer reaches the privileged side only through a narrow named API, with Node
-  integration off and context isolation on, and every message validated on arrival.
+  integration off, context isolation on and the sandbox on, and every message validated on arrival.
 - **Bad handling:** a server function or streaming render assumed where nothing implements it; a raw
-  bridge handed to page content; context isolation disabled to make an import resolve.
+  bridge handed to page content; context isolation disabled to make an import resolve; the sandbox left
+  off because context isolation is on.
 - **Failure/recovery:** the privileged call rejects or the channel drops; the renderer surfaces the
   failure instead of hanging on a promise that never settles.
 - **Counterfactual:** invert the premise that a server tier exists — the same feature must be designed

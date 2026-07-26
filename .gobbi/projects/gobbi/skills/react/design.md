@@ -117,6 +117,15 @@ The First Rule of ARIA Use asks whether a native element already carries the sem
 already built in, instead of re-purposing an element and adding an ARIA role, state or property to make
 it accessible, then do so."*
 
+**Read that quotation with its provenance.** W3C **discontinued** *Using ARIA* on 2026-02-24. The
+document now states that its four rules *"are kept for historical purposes and for easier reference"*,
+that *"it is inappropriate to cite this document as other than abandoned work"*, and that for current
+guidance *"see the ARIA Authoring Practices Guide (APG)"*. The formulation below is still the clearest
+articulation of the native-first test and `H9` keeps it — as this skill's house default with a
+historical origin, never as a current W3C position. No current W3C document restates the three
+circumstances: the APG covers authoring practice and *ARIA in HTML* covers which ARIA is permitted on
+which element, and neither reproduces this list.
+
 It then names when that is not possible, and there are **three** circumstances, all of which `H9` now
 carries:
 
@@ -141,7 +150,16 @@ the markup.
 ### Focus, and what is not a rule
 
 `H9` requires focus to move into a dialog when it opens and back to the invoking control when it closes,
-per the WAI-ARIA Authoring Practices modal dialog pattern.
+per the APG modal dialog pattern — and the pattern states two conditions under which the close
+destination legitimately differs: *"When a dialog closes, focus returns to the element that invoked the
+dialog unless either: The invoking element no longer exists. Then, focus is set on another element that
+provides logical work flow"*, or the work flow makes another element the more logical choice, which the
+pattern scopes to the case where *"it is very unlikely users need to immediately re-invoke the dialog"*
+and *"the task completed in the dialog is directly related to a subsequent step in the work flow"* — its
+own example being a dialog that adds grid rows, after which focus goes to the first new cell.
+
+A confirm-delete dialog that removes its own invoking row is the first condition, not a violation. What
+`H9` forbids is an undeliberate destination: focus left wherever the closing dialog dropped it.
 
 **Route-change focus management is not part of that rule.** Moving focus after a client-side navigation is
 widely practised and is *ecosystem convention* — no primary source in this skill's References states it,
@@ -175,7 +193,8 @@ rule-level citations.
 
 | Source | What it supports here |
 |---|---|
-| [Using ARIA](https://www.w3.org/TR/using-aria/) | §6 — the First Rule of ARIA Use and all three circumstances in which ARIA is warranted |
+| [Using ARIA](https://www.w3.org/TR/using-aria/) — **W3C Discontinued Draft, 2026-02-24** | §6 — the First Rule of ARIA Use and all three circumstances, carried for provenance; not a current W3C position, and the document itself points to the APG |
+| [ARIA Authoring Practices Guide, modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) | §6 — the focus obligation on open and close, and the two conditions under which the close destination may differ |
 | [`useId`](https://react.dev/reference/react/useId) | §6 — what `useId` is for, why hardcoded ids fail, the list-key prohibition, and the identical-tree requirement |
 | [`Component`](https://react.dev/reference/react/Component) | §5 — what implementing an Error Boundary requires, the granularity guidance and its messaging-app example, and the list of what boundaries do not catch |
 | [Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context) | §2 — extracting components and passing JSX as children · §4 — the endorsed context use cases |
