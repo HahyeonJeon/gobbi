@@ -304,6 +304,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `async.md` | Deciding whether an Effect is needed at all, cleaning one up, choosing between cancelling and ignoring in-flight work, or reaching for Suspense, `use`, or an external store |
 | `typing.md` | Typing a props surface, `children`, an event, a hook's type argument, a ref, or the style prop — **only when the source is TypeScript**; the file does not apply on a plain-JavaScript codebase |
 | `design.md` | Deciding whether a component or a hook is earned, shaping a prop surface, composing rather than configuring, placing an error boundary, or working out the markup, ARIA, focus, and identifier mechanics an interface owes |
+| `convention.md` | Naming a component or hook, deciding what a file exports and where a definition sits, grouping files, ordering imports, or settling JSX writing style — mostly house default, and labelled as such |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
