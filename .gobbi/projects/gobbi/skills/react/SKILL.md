@@ -180,11 +180,13 @@ exception needs; it never introduces an exception this file does not state.
   W3C Using ARIA §2.1; W3C WAI-ARIA Authoring Practices, modal dialog pattern; react.dev common component
   props. Depth: `design.md`.
 - **H10 — MUST prove behavior through the user-visible surface.** Find elements by role and accessible
-  name, interact the way a user would, and import `act` from `react`. A test that reads component state,
-  instances, or tree structure asserts the implementation, so it fails on a correct refactor and passes
-  on a broken rewrite. Exception: a unit whose entire contract is a pure computation may be tested
-  directly as a function. Source: react.dev `act`; the query-priority order is Testing Library's own
-  guidance, named here as its owner.
+  name, and interact the way a user would. A test that reads component state, instances, or tree
+  structure asserts the implementation, so it fails on a correct refactor and passes on a broken rewrite.
+  Assertions are made after React has applied its pending updates, which is what `act` is for, and `act`
+  is imported from `react` — that is not a second obligation but the precondition that makes an assertion
+  about the visible surface true. Exception: a unit whose entire contract is a pure computation may be
+  tested directly as a function. Source: react.dev `act`; the query-priority order is Testing Library's
+  own guidance, named here as its owner. Depth: `testing.md`.
 - **H18 — MUST treat every Server Function argument as untrusted input and authorize the mutation on the
   server side.** Marking a function `'use server'` publishes an endpoint: its arguments are fully
   client-controlled, so it can be called with values no component of yours ever produced, and by a caller
@@ -280,6 +282,9 @@ available at all:
   in context at all;
 - the lint preset in force;
 - the router, state-store, and server-cache libraries already present;
+- **the test renderer and query layer, if any** — this switch decides whether `H10`'s mechanism exists at
+  all, and "none" is a valid answer that makes the gap explicit instead of leaving it to be discovered at
+  P7;
 - the styling mechanism, and whether it is compatible with the rendering model in use.
 
 **Declare author or review mode.** For an edit, map the affected set — callers, tests, stories, types,
@@ -305,6 +310,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `typing.md` | Typing a props surface, `children`, an event, a hook's type argument, a ref, or the style prop — **only when the source is TypeScript**; the file does not apply on a plain-JavaScript codebase |
 | `design.md` | Deciding whether a component or a hook is earned, shaping a prop surface, composing rather than configuring, placing an error boundary, or working out the markup, ARIA, focus, and identifier mechanics an interface owes |
 | `convention.md` | Naming a component or hook, deciding what a file exports and where a definition sits, grouping files, ordering imports, or settling JSX writing style — mostly house default, and labelled as such |
+| `testing.md` | Writing or reviewing a React test: what `act` guarantees and where it is imported from, which testing APIs React removed or deprecated, how to query the way a user reaches the interface, and which layers React has no position on |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
