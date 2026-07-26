@@ -308,8 +308,6 @@ sample (`security.md@v43.2.0:595-641`) has exactly that shape.
   untrusted.
 
 ```ts main
-import type { WebContents } from 'electron';
-
 const ALLOWED_ORIGINS: ReadonlySet<string> = new Set(['https://app.example.com']);
 
 function navigationIsAllowed(url: string): boolean {
@@ -320,7 +318,7 @@ function navigationIsAllowed(url: string): boolean {
   }
 }
 
-export function guardNavigation(contents: WebContents): void {
+export function guardNavigation(contents: Electron.WebContents): void {
   contents.on('will-frame-navigate', (details) => {
     if (!navigationIsAllowed(details.url)) details.preventDefault();
   });

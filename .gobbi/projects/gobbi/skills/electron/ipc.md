@@ -62,15 +62,15 @@ renderer's whole event loop, including painting and input, stops until main answ
 Main holds one end of a channel and hands the other to a renderer:
 
 ```ts main
-import { MessageChannelMain, type WebContents } from 'electron';
+import { MessageChannelMain } from 'electron';
 
 // Main -> renderer push: addressed to one `webContents`, not broadcast to all.
-export function publishProgress(target: WebContents, percent: number): void {
+export function publishProgress(target: Electron.WebContents, percent: number): void {
   target.send('job:progress', percent);
 }
 
 // A streaming channel: main keeps `port1`, the renderer receives `port2`.
-export function openLogStream(target: WebContents): Electron.MessagePortMain {
+export function openLogStream(target: Electron.WebContents): Electron.MessagePortMain {
   const { port1, port2 } = new MessageChannelMain();
   target.postMessage('log:stream', null, [port2]);
   port1.start();
