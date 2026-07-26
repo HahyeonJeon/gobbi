@@ -113,6 +113,17 @@ The test compares edge sets and **exits non-zero on any symmetric difference**, 
 which side holds it. It never prints a count and calls that a result. It fails closed on an empty inventory, a
 missing file, and a missing section, because a gate that cannot see its subject must not pass it.
 
+Run the checked-in implementation from the repository root:
+
+```bash
+python3 -B .gobbi/projects/gobbi/skills/desktop/scripts/check_relation.py
+python3 -B .gobbi/projects/gobbi/skills/desktop/scripts/check_relation.py --self-test
+```
+
+Use `--scenarios PATH --checklists PATH` together for disposable copies. The success output names the shared
+non-zero edge count and states `relation_leg=script-proved obligation_leg=review-proved`; the count supports
+the result but exact edge-set equality is the acceptance condition.
+
 **The obligation test — review-proved, per case.** A named reviewer reads each selected case's `Obligation` and
 **every** mapped check's actual `Pass:` and `Evidence:` wording, and confirms the check's own wording owns
 every named primitive the obligation asserts, **in the obligation's sense** — asserted, not negated, not named

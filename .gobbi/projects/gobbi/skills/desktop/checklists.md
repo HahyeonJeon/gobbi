@@ -289,9 +289,15 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
 - [ ] **`DESK-CHECK-09`** `[GATE, PROTECTED]` · *Applicability:* unconditional — every required action, state,
   and meaning of the outcome is available through every applicable modality.
   *Pass:* the run's action, state, and meaning inventory is swept against the modality set its surfaces
-  actually require, with a direct behavioral result recorded per pairing, per claimed operating system.
-  *Evidence:* direct behavioral results per system — not a member-by-member roll-up, and not a captured
-  rendering.
+  actually require, with a direct behavioral result recorded per pairing, per claimed operating system; each
+  applicable input alternative preserves the intended focus flow and visible focus; the system with no
+  platform assistive-technology guidance states that gap and does not claim or imply parity; and reduced
+  motion is read in the renderer through its own media query, with the record stating that the theme interface
+  exposes no reduced-motion property and that this absence does not make the signal unavailable.
+  *Evidence:* direct behavioral results per system, including focus-order and focus-visibility exercise for
+  each applicable input alternative; the per-system assistive-technology rows inspected for the no-guidance
+  gap and absence of a parity claim; and source plus behavior showing the renderer media-query read and the
+  theme-interface absence statement — not a member-by-member roll-up, and not a captured rendering.
   *On fail:* halt; acceptance is blocked and the run returns to the owning rung.
   *Consequence:* a person cannot reach a required action at all.
   *Source:* `DESK-R10` · *Seeds:* `DESK-SCENARIO-37`, `DESK-SCENARIO-38`, `DESK-SCENARIO-39`,
@@ -305,8 +311,11 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   *Claim:* every required action, state, and meaning of this outcome is available through every applicable
   modality — the property itself.
   *Pass:* an inventory sweep with direct behavioral results. **Explicitly not satisfied by "members 1–16 all
-  passed."**
-  *Evidence:* the recorded sweep of the run's own action, state, and meaning inventory.
+  passed."** Its per-system assistive-technology result states the no-guidance gap where platform guidance is
+  absent and makes no parity claim for that system.
+  *Evidence:* the recorded sweep of the run's own action, state, and meaning inventory, including inspection
+  of every per-system assistive-technology row for an explicit no-guidance gap and for the absence of implied
+  parity.
   *On fail:* halt; block acceptance and return to the owning rung or phase.
   *Consequence:* a modality loss that no member names ships unnoticed.
   *Source:* the accessibility floor's property check · *Seeds:* `DESK-SCENARIO-39`, `DESK-SCENARIO-41`
@@ -414,9 +423,15 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   compilation targets are as specified.
   *Pass:* each unit states its execution context; the three targets exist with their own library, type, and
   module settings over one type-only shared layer; the renderer target excludes the runtime's ambient types;
-  the bridge contract carries only structured-cloneable values and plain asynchronous functions; and every
-  statement of the three-target split carries its derived marking.
-  *Evidence:* direct read of the three target configurations plus the bridge contract type.
+  the bridge contract carries only structured-cloneable values and plain asynchronous functions and is not
+  typed in terms of classes, constructors, or symbol-keyed members; every statement of the three-target split
+  carries its derived marking; and every channel-inventory entry
+  associates its channel identifier with its payload type, runtime validation, sender rule, and privileged
+  effect.
+  *Evidence:* direct read of the three target configurations and the source-of-truth bridge contract type,
+  inspecting the contract for the absence of classes, constructors, and symbol-keyed members; plus every
+  channel inventory row for all five associated values: channel identifier, payload type, runtime validation,
+  sender rule, and privileged effect.
   *On fail:* halt; return to the contract phase rather than patching a body.
   *Consequence:* a green type-check certifying code the sandbox rejects at run time.
   *Source:* `DESK-R14`, `DESK-R16`, `DESK-R17`, `DESK-N07` · *Seeds:* `DESK-SCENARIO-18`,
@@ -430,9 +445,11 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   its payload and its caller.
   *Pass:* every registered privileged handler runtime-validates its payload into a domain type and verifies
   the sending frame **in the handler** before any privileged effect, and the handler set enumerated from
-  source equals the channel inventory.
-  *Evidence:* caller trace plus a targeted test that sends from an unintended frame and observes the
-  privileged sink for any effect.
+  source equals the channel inventory; for every channel, the handler's payload type and validation, sender
+  rule, and privileged effect agree with the associations in that channel's inventory entry.
+  *Evidence:* inspect each channel inventory row against its handler for the channel identifier, payload type,
+  runtime validation, sender rule, and privileged effect; then follow the caller trace and run a targeted test
+  that sends from an unintended frame and observes the privileged sink for any effect.
   *On fail:* halt; open a security finding.
   *Consequence:* an unexpected frame reaches a privileged effect.
   *Source:* `DESK-R15`, `DESK-N06` · *Seeds:* `DESK-SCENARIO-18`, `DESK-SCENARIO-21`, `DESK-SCENARIO-32`
@@ -444,8 +461,11 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   names the lifecycle event that releases it.
   *Pass:* each privileged resource held on behalf of a renderer names a window or contents lifecycle event as
   its release point, with the last-resort terminal named and none keyed to scope exit; and the
-  pre-quit-for-update hook is handled so an install does not end the process mid-write.
-  *Evidence:* direct read plus a test under collection pressure confirming delivery survives.
+  pre-quit-for-update hook releases its owned resources before termination and makes unresolved unsaved work
+  an explicit stop to installation and quit, so an install does not end the process mid-write.
+  *Evidence:* direct read plus a test under collection pressure confirming delivery survives, and a
+  pre-quit/update-path test that observes resource release before termination and proves unresolved unsaved
+  work blocks both installation and quit.
   *On fail:* halt; return to the contract phase.
   *Consequence:* a channel that works under test and silently stops in the field, or work lost to an update.
   *Source:* `DESK-R18` · *Seeds:* `DESK-SCENARIO-20`, `DESK-SCENARIO-30`
@@ -456,8 +476,10 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
   complete.
   *Pass:* a twenty-row inventory where each of the eight defaults is confirmed unchanged, or carries a
   recorded reason, and each of the twelve applicable positive controls is confirmed **written**, naming the
-  file and line; and no secret is present in the shipped artifact.
-  *Evidence:* direct read of the inventory plus an unpack-and-search of the shipped artifact.
+  file and line; no secret is present in the shipped artifact; and the design explicitly rejects packaging,
+  minification, and the ASAR archive as security boundaries.
+  *Evidence:* direct read of the inventory and security-boundary statements to confirm that packaging,
+  minification, and ASAR are each rejected as a boundary, plus an unpack-and-search of the shipped artifact.
   *On fail:* halt; open a security finding.
   *Consequence:* an application that passes every default check while having written none of the controls.
   *Source:* `DESK-R19`, `DESK-N08` · *Seeds:* `DESK-SCENARIO-31`, `DESK-SCENARIO-34`
@@ -619,9 +641,12 @@ claim its protected-item row already cites.
   asserted, and none is hedged.
   *Pass:* every stated platform convention reaches an owner document a reader can open; a convention with no
   readable owner appears neither as a fact nor as a hedge about what the vendor probably requires, and instead
-  carries its marking and its closing condition.
+  carries its marking and its closing condition; every operative rule remains valid regardless of how that
+  unresolved convention is later answered.
   *Evidence:* take each stated platform convention to the owner document that would establish it, and read
-  every unverifiable one for a marking rather than a softened assertion.
+  every unverifiable one for a marking rather than a softened assertion; for every operative rule that refers
+  to the unresolved convention, inspect the rule under each possible later answer and require the same rule to
+  remain valid.
   *On fail:* halt; open a finding against the owning obligation.
   *Consequence:* a conformance claim nobody can check, which reads as authority and can be false in exactly the
   way the assertion would have been.
@@ -721,10 +746,12 @@ claim its protected-item row already cites.
   an update path. An `n/a:<property>` requires the inspected finding that the system has none and that
   updates go through its package manager.
   *Pass:* an update was rehearsed **from the previously released version** rather than from a fresh install;
-  live work survives the install through the pre-quit hook; and a failure partway leaves the installed
-  version working with the failure surfaced rather than retried silently.
+  the pre-quit hook flushes live work and releases every owned resource before updater-driven process
+  termination; unresolved unsaved work explicitly stops installation and quit; and a failure partway leaves
+  the installed version working with the failure surfaced rather than retried silently.
   *Evidence:* the rehearsal record naming its starting version, plus an interrupted-update test at the
-  download and install stages separately.
+  download and install stages separately, and a pre-quit/update-path trace proving resource release precedes
+  updater-driven termination and unresolved unsaved work blocks both installation and quit.
   *On fail:* halt the release.
   *Consequence:* an update that destroys work the person had open, or leaves a partially replaced
   application.
@@ -775,8 +802,9 @@ claim its protected-item row already cites.
   *Pass:* the relation test exits zero across all four projections; the verifier is proved at **both** ends,
   rejecting each planted fixture and accepting the real bundle; and the obligation test's result is recorded
   **per case**, with the reviewer's identity, across every mapped check for a case with more than one.
-  *Evidence:* the recorded exit statuses and messages for the script-proved legs, and the reviewer's recorded
-  per-case results for the review-proved leg.
+  *Evidence:* the recorded exit statuses and messages from
+  [`scripts/check_relation.py`](scripts/check_relation.py) for the script-proved legs, and the reviewer's
+  recorded per-case results for the review-proved leg.
   *On fail:* halt the handoff; the trace is unproved.
   *Consequence:* a correctly-routed check whose wording dropped a named primitive ships unnoticed behind a
   green relation test.

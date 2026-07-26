@@ -263,7 +263,9 @@ across revisions.
   four projections of the authoritative case-to-check relation agree exactly; and the verifier is proved at
   both ends and against every planted fixture before its result is cited. This rule is the parent owner of
   the trace obligation [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and
-  [`evaluation.md`](evaluation.md) implement.
+  [`evaluation.md`](evaluation.md) implement. Run the mechanical leg through
+  [`scripts/check_relation.py`](scripts/check_relation.py); its output distinguishes the script-proved
+  relation leg from the review-proved obligation leg.
 - **`DESK-R29` — MUST keep one design record for the run, whose location the active project owns.** The
   record carries the rung register, the three-axis statement for each artifact at rungs 6–8, the four floor
   resolutions with their union checks and property checks, the participant consent and accommodation records,
