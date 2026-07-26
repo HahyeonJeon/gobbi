@@ -51,7 +51,7 @@ always carry the word `Procedure`.
 - `H3` — Resolves to "MUST name every custom hook `use` followed by a capital letter." — enforcement, not style.
 - `H4` — Resolves to "MUST give every list item a key that is a stable identity from the data." — identity, not position.
 - `H5` — Resolves to "MUST use an Effect only to synchronize with a system outside React." — the escape hatch, not the mechanism.
-- `H6` — Resolves to "MUST clean up what an Effect starts, and guard every async result against a stale render." — cleanup plus a staleness discriminator.
+- `H6` — Resolves to "MUST clean up what an Effect starts, and stop or discard every async result the render no longer needs." — cleanup, plus cancel or ignore for work already in flight.
 - `H7` — Resolves to "MUST keep every value crossing the server/client boundary serializable in the direction it crosses." — the sets are not symmetric.
 - `H8` — Resolves to "MUST read the recorded compiler switch before memoizing, then follow the branch it selects and keep both branches inside H1 and H2." — the compiler is the baseline where it is enabled, and criteria-driven manual memoization is the mechanism where it is not.
 - `H9` — Resolves to "MUST render the element that carries the meaning, add ARIA only where no native element provides it, and move focus deliberately when a dialog opens and closes." — the markup is part of the contract.
@@ -95,7 +95,7 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Twenty-four of the thirty-four items are conditional on a stated
+2. **Read the recorded React contract first.** Twenty-five of the thirty-five items are conditional on a stated
    predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
    the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
@@ -217,12 +217,13 @@ moved together, an adoption event handled coherently, and every taught claim tra
 **Lens**: What can **fail, leak, or be reached** that the happy path hides — an outliving subscription, an
 out-of-order response, a divergent copy, an exposed privileged surface, or an unverified claim of verification?
 
-**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`.
+**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`, `-35`.
 
 | Anti-pattern | Correction |
 |---|---|
 | **A cleanup that returns an empty function** | Remove what the Effect created; the shape passing review is exactly how the leak survives |
 | **The last response wins** | Discard a result whose render is no longer current; the defect reproduces only on a slow network |
+| **Ignoring where cancelling was needed** | Ignoring answers the race and leaves the work running; on a rapidly changing input or a long-lived surface, cancel in the cleanup |
 | **A generic invoke-by-channel bridge** | Expose named operations and validate every message; one generic entry point re-exposes the whole surface |
 | **A Server Function guarded by its caller** | Validate and authorize inside the function; the endpoint is reachable without the component that calls it |
 | **Verification asserted, not run** | Require fresh output from the tree being accepted; an unverified claim of verification is worse than none |

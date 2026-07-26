@@ -158,15 +158,33 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Source.** `REACT-SCENARIO-05` · `H6`.
 
 - [ ] **REACT-CHECK-10** · gate · conditional — applies when an Effect in the change awaits a result
-  - **Claim.** Every awaited result is discarded when the render that requested it is no longer current.
-  - **Pass when.** Each async Effect carries a staleness discriminator that its cleanup sets, and the
-    result is applied only while the discriminator says the render is current.
+  - **Claim.** Every awaited result is stopped or discarded when the render that requested it is no
+    longer current.
+  - **Pass when.** Each async Effect either cancels the in-flight work in its cleanup or carries a
+    staleness discriminator that its cleanup sets, with the result applied only while the discriminator
+    says the render is current. Either mechanism satisfies this item; neither does not.
   - **Evidence.** Issue two requests whose responses resolve in inverted order and read the rendered
     result; the later request's result must be the one displayed.
   - **Harm on fail.** An earlier response overwrites a later one, so the user sees a result that answers
     a query they have already replaced — and it reproduces only on a slow network.
   - **`n/a` form.** `n/a: no Effect in the change awaits a result` — cited by the diff.
   - **Source.** `REACT-SCENARIO-05` · `H6`.
+
+- [ ] **REACT-CHECK-35** · required · conditional — applies when an Effect in the change starts
+  cancellable work on an input that can change again before it finishes
+  - **Claim.** The change records which of `cancel` and `ignore` it chose, and the choice matches what
+    the surface does to the work that is already running.
+  - **Pass when.** Where the work is left running deliberately, the change says so and the work is cheap
+    and bounded; where the input changes rapidly, the surface is long-lived, or the request is expensive,
+    the cleanup cancels it. Discarding the result while every superseded request runs to completion does
+    not pass on those three conditions — that is the case this item exists for.
+  - **Evidence.** Change the input several times in quick succession and observe the requests still in
+    flight; a cancelling implementation leaves at most the current one.
+  - **On fail.** Required item: open a finding. `REACT-CHECK-10` passing is not evidence for this item:
+    ignoring a result satisfies that item and leaves the work running, which is exactly the gap.
+  - **`n/a` form.** `n/a: no Effect in the change starts cancellable work, or the input cannot change
+    before the work finishes` — cited by the diff and the surface's lifetime.
+  - **Source.** `REACT-SCENARIO-05` · `H6` · `P2`.
 
 ### From REACT-SCENARIO-06 — the server and client boundary
 
@@ -361,7 +379,8 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   exists after the change
   - **Claim.** The copy records what invalidates it.
   - **Pass when.** The change names the trigger that refreshes or discards the copy, and that trigger
-    exists in the code.
+    exists in the code. `state.md` § 6 carries the trigger menu and the basis for choosing one; naming a
+    trigger that cannot fire while the surface stays mounted does not pass.
   - **Evidence.** The named trigger, located in the change.
   - **On fail.** Required item: open a finding against this skill's house default, as above.
   - **`n/a` form.** `n/a: no client copy of server-owned data exists after the change` — cited by the
@@ -509,7 +528,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `H3` | 04 | `H12` | 06 |
 | `H4` | 05 | `H13` | 08 |
 | `H5` | 07 | `H14` | 14 |
-| `H6` | 09, 10 | `H15` | 16, 26 |
+| `H6` | 09, 10, 35 | `H15` | 16, 26 |
 | `H7` | 11, 12 | `H16` | 20, 28 |
 | `H8` | 13, 32, 33 | `H17` | 19 |
 | `H9` | 17, 18, 27 | `H18` | 34 |
@@ -519,7 +538,7 @@ at least one scenario family. Both directions were swept for orphans.
 | Principle | Items |
 |---|---|
 | `P1` Study the React contract | 25 |
-| `P2` Render is pure; an Effect is an escape hatch | 01, 02, 07 |
+| `P2` Render is pure; an Effect is an escape hatch | 01, 02, 07, 35 |
 | `P3` One owner per piece of state | 08, 15 |
 | `P4` Compose, narrow props, markup is contract | 17 |
 | `P5` Memoize by the recorded compiler switch | 13, 32, 33 |
@@ -543,7 +562,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-02` | 03, 04 |
 | `REACT-SCENARIO-03` | 05, 06 |
 | `REACT-SCENARIO-04` | 07, 08 |
-| `REACT-SCENARIO-05` | 09, 10, 31 |
+| `REACT-SCENARIO-05` | 09, 10, 31, 35 |
 | `REACT-SCENARIO-06` | 11, 12, 34 |
 | `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33 |
 | `REACT-SCENARIO-08` | 15, 16, 26 |
@@ -554,12 +573,12 @@ at least one scenario family. Both directions were swept for orphans.
 
 ### Counts
 
-34 items — 20 gates and 14 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-34` were added where
+35 items — 20 gates and 15 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
+slots the scenario families reserved and keep their reserved family; `-25` through `-35` were added where
 a family carried more than two independently falsifiable obligations. An identifier is never reused or
 renumbered once published.
 
-Twenty-four items are conditional on a stated predicate. Three of those read the compiler switch and they
+Twenty-five items are conditional on a stated predicate. Three of those read the compiler switch and they
 partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
 therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
 `n/a` has not resolved `REACT-CHECK-25`.

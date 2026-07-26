@@ -231,8 +231,10 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Failure/recovery:** the request rejects or the socket drops mid-flight; cleanup still runs, nothing
   leaks, and the failure is surfaced rather than swallowed.
 - **Adversarial probe:** only the first request is delayed, so the naive implementation passes every fast
-  test and fails on a slow network. **Cosmetic form:** a cleanup function is returned but does nothing, so
-  the shape passes review while the subscription still leaks.
+  test and fails on a slow network; and the input changes ten times in quick succession, leaving ten
+  requests running to completion while every discarded result is correctly ignored. **Cosmetic form:** a
+  cleanup function is returned but does nothing, so the shape passes review while the subscription still
+  leaks.
 - **Minimums:** boundary see above · failure/recovery see above · adversarial see above · change `n/a: no
   version or lifecycle event` · counterfactual `n/a: no load-bearing premise to invert`.
 - **Oracle:** issue two requests with inverted resolution order and read the rendered result; correct code

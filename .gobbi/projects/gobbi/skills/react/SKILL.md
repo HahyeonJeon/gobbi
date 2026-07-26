@@ -130,11 +130,17 @@ exception needs; it never introduces an exception this file does not state.
   involved, the answer is not an Effect: derive the value during render, do the work in the event handler
   that caused it, or reset state with a `key`. No exception — the alternatives above are the mechanism,
   not a waiver. Source: react.dev, You Might Not Need an Effect.
-- **H6 — MUST clean up what an Effect starts, and guard every async result against a stale render.**
-  Every subscription, timer, and listener gets a cleanup function, and every awaited result is discarded
-  when its render is no longer current — the documented pattern is an `ignore` flag set in cleanup.
-  Without it, responses that arrive out of order overwrite newer state. No exception. Source: react.dev,
-  You Might Not Need an Effect.
+- **H6 — MUST clean up what an Effect starts, and stop or discard every async result the render no
+  longer needs.** Every subscription, timer, and listener gets a cleanup function, and every in-flight
+  request is either cancelled or has its result ignored when the render that started it is no longer
+  current. React states the pairing exactly: "connect" needs "disconnect", "subscribe" needs
+  "unsubscribe", and "fetch" needs either "cancel" or "ignore". The two are not interchangeable. Ignoring
+  discards the answer and lets the work run to completion, which is fine while that work is cheap;
+  cancelling stops the work, and is what a rapidly changing input, a long-lived surface, or an expensive
+  request needs — otherwise every change leaves another request running. Doing neither is the violation:
+  responses that arrive out of order overwrite newer state. No exception; choosing `cancel` or `ignore` is
+  a decision inside the rule, not a way out of it. Source: react.dev, Synchronizing with Effects and You
+  Might Not Need an Effect. Depth: `async.md`.
 - **H7 — MUST keep every value crossing the server/client boundary serializable in the direction it
   crosses.** The supported sets are not symmetric: what may be a Server Function argument is not the same
   set as what may be a Server Function return value or a Server-to-Client prop. Fix: check the direction
@@ -293,6 +299,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `server-client.md` | Designing any value that crosses the server/client boundary, choosing or reading a directive, building on Server Functions and the Actions family, or working on streaming server rendering and hydration |
 | `runtime.md` | Establishing the host at P1, moving code between hosts, or answering what a browser application, a framework server, and a desktop renderer each do and do not support |
 | `state.md` | Placing a datum — which rung of the ladder owns it, when it is promoted, whether it should be stored at all, and what a client copy of server-owned data has to carry |
+| `async.md` | Deciding whether an Effect is needed at all, cleaning one up, choosing between cancelling and ignoring in-flight work, or reaching for Suspense, `use`, or an external store |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
@@ -428,6 +435,8 @@ One owner per borrowed fact; the body states the fact and this register names it
 - [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect) — the Effect
   escape-hatch model, the catalogue of cases that need no Effect, the race condition and its `ignore`
   cleanup flag, and the chain-of-Effects anti-pattern (H5, H6, H13).
+- [Synchronizing with Effects](https://react.dev/learn/synchronizing-with-effects) — every Effect that
+  starts something states how to stop it, and a fetch needs either cancel or ignore (H6).
 - [Reusing Logic with Custom Hooks](https://react.dev/learn/reusing-logic-with-custom-hooks) — hook names
   must start with `use` followed by a capital letter, and the linter enforces it (H3).
 - [React Compiler 1.0](https://react.dev/blog/2025/10/07/react-compiler-1) — the first stable release,
