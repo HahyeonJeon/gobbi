@@ -526,12 +526,18 @@ moved past the first `await` passes `EL-CHECK-05a`, so `EL-CHECK-05c` carries th
 **Row to source.** Every row above ends in its trace: one or more `SKILL.md` clauses and the case it resolves.
 No row traces to a clause this skill does not teach.
 
-**Case to row.** Every case `EL-SC-NNx` in [`scenarios.md` § 6](scenarios.md#6-the-twelve-families) resolves
-to `EL-CHECK-NNx`, the slot it reserved. Three cases carry a second row, because their obligation held two
-independently falsifiable clauses: `EL-SC-07a` also owns `EL-CHECK-07e`, `EL-SC-09f` also owns
-`EL-CHECK-09h`, and `EL-SC-12a` also owns `EL-CHECK-12e`. One later case uses the next free row because
-`EL-CHECK-07e` was already reserved: `EL-SC-07e` owns `EL-CHECK-07f`. No case is unreached: 55 cases,
-58 rows.
+**Case to row.** The declarations below are the authoritative relationship set. `trace-default` applies to
+every live case unless a `trace-replacement` names that case; `trace-additional` adds a second edge without
+removing the default. The source-consistency gate derives these declarations and every row definition's
+single `EL-SC-*` trace independently, then compares the resulting edge sets exactly in both directions.
+
+- `trace-default: EL-SC-{slot} -> EL-CHECK-{slot}`
+- `trace-additional: EL-SC-07a -> EL-CHECK-07e`
+- `trace-additional: EL-SC-09f -> EL-CHECK-09h`
+- `trace-additional: EL-SC-12a -> EL-CHECK-12e`
+- `trace-replacement: EL-SC-07e -> EL-CHECK-07f`
+
+No case is unreached: 55 cases, 58 rows.
 
 **Clause to row.** Every hard rule and every prohibition reaches at least one row.
 

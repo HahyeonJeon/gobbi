@@ -32,8 +32,11 @@ drift.
 When an input directory resolves to the canonical `skills/electron/` source,
 the runner first calls `check-skill-consistency.mjs`. The gate derives scenario
 and checklist identifiers from the current source, checks the totals a cold
-reader sees, closes the case-to-row trace, and follows the macOS-notification
-register qualifier to `windows-native.md`. It can also be run directly:
+reader sees, derives declared and row-definition scenario-to-check edges, and
+compares those edge sets exactly in both directions. Missing, orphaned, stale,
+malformed, asymmetric, and equal-cardinality substituted relationships fail
+before the gate follows the macOS-notification register qualifier to
+`windows-native.md`. It can also be run directly:
 
 ```sh
 bun check-skill-consistency.mjs ../../.gobbi/projects/gobbi/skills/electron
