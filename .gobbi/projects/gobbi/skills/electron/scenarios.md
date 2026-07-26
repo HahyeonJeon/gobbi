@@ -183,7 +183,7 @@ process boundary; `EL-SC-02` owns the boundary itself. **Secondary** — 4, 9.
 [`tooling-config.md` § 3](tooling-config.md#3-the-three-target-tsconfig-split),
 [`tooling-config.md` § 4](tooling-config.md#4-per-process-electron-module-views),
 [`tooling-config.md` § 5](tooling-config.md#5-skiplibcheck-true-is-required-and-the-comment-is-part-of-the-requirement) ·
-**check slots** `EL-CHECK-03a` to `EL-CHECK-03e`.
+**check slots** `EL-CHECK-03a` to `EL-CHECK-03f`.
 
 | Case | Type · roles | Probe — given / when / then | Failure oracle → design obligation |
 |---|---|---|---|
@@ -192,6 +192,7 @@ process boundary; `EL-SC-02` owns the boundary itself. **Secondary** — 4, 9.
 | **EL-SC-03c** three passes, one module view | adversarial · adversarial | Given three per-target configs that all extend a shared base resolving `electron` to the vendor's un-scoped typings, when the build runs, then three passes run, the ambient guards fire, and every wrong-process `electron` import compiles | Oracle: each config's `paths` entry resolves to its own generated view; three identical entries fail even though three passes ran. → the design MUST scope the `electron` module view per config, not only the pass count |
 | **EL-SC-03d** the view generator matches nothing | failure / recovery · failure/recovery | Given a generator that derives the three views by substituting into the vendor declaration, when an upstream reshuffle makes its substitution match zero lines, then it can emit an unscoped view and the boundary silently stops being checked | Oracle: the generator exits non-zero unless its substitution matches exactly one line; a run that emits on a zero match fails. → the design MUST make the view generator fail loudly rather than emit a permissive view |
 | **EL-SC-03e** the block the compiler cannot see | counterfactual · counterfactual | Given the premise that the type-check sees every process violation, when a block touches neither an ambient global nor an `electron` import, then all three signals stay silent whatever process it is tagged with | Oracle: retag such a block to another process and observe that nothing changes; the disconfirmation response is a reviewer confirming the tag against the module's role. → the design MUST state this residue and name who covers it |
+| **EL-SC-03f** the scoped view drops the type side | negative · negative | Given a generated main or preload view that replaces the vendor export with a `const` typed as `typeof` the process namespaces, when correct code imports a process-local Electron type, then it raises the same `TS2305` as a wrong-process value import even though the value guard still works | Oracle: main and preload fixtures import correct types from their own bare `electron` view and compile, while the wrong-process value fixture still raises `TS2305`. → the design MUST export the process namespace itself and preserve Common-only members without reducing either namespace to `typeof` |
 
 ### Group B — the trust boundary
 

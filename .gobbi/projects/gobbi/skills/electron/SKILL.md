@@ -125,10 +125,13 @@ satisfied by restatement.
   module view, and `skipLibCheck: true`.** Main gets Node types and no DOM; renderer gets DOM and no
   Node types; preload gets DOM without Node types. *Check:* the build runs one `tsc` pass per declared
   target; each config sets `skipLibCheck: true` with a comment stating the reason, and maps `electron`
-  to its own generated view; the guard signals `TS2584`, `TS2591` and `TS2305` are each observed at
-  least once from a deliberate fixture. *Defeater:* a three-config set that passes all three targets
-  while every config leaves `electron` resolving to the vendor's un-scoped typings — the ambient guards
-  fire, the module boundary is unchecked, and the run looks green. Depth:
+  to its own generated view; correct process-local `import type` fixtures compile; and the guard signals
+  `TS2584`, `TS2591` and `TS2305` are each observed at least once from a deliberate fixture. *Defeater:*
+  a three-config set that passes all three targets while every config leaves `electron` resolving to the
+  vendor's un-scoped typings — the ambient guards fire, the module boundary is unchecked, and the run
+  looks green. A second generated view exports a `const` typed as `typeof Electron.Main`: wrong-process
+  values still fail, but the namespace's type side is gone and correct `import type` statements also raise
+  `TS2305`. Depth:
   [`tooling-config.md`](tooling-config.md).
 - **EL-R-03 — MUST leave every secure `webPreferences` default at its default.** The closed property:
   **no `webPreferences` key is set to a value less safe than its documented default.** *Check:* at every

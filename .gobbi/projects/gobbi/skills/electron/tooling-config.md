@@ -150,17 +150,23 @@ requires a per-process **module view** and not only a per-process `lib` and `typ
 not fall back to the ambient declaration ([`process-model.md`](process-model.md) § 2).
 
 **The mechanism.** Derive three views from the vendor declaration at install time and map the bare specifier
-to the matching one per target. Two mechanical substitutions produce a view:
+to the matching one per target. Three fail-closed transformations produce a view:
 
 ```text
-1. Inside `declare module 'electron'`, replace
-     export = Electron.CrossProcessExports;
-   with a const of the scoped surface:
-     main      -> typeof Electron.Main     & typeof Electron.Common
-     preload   -> typeof Electron.Renderer & typeof Electron.Common
-     renderer  -> a named empty interface
+1. Parse `Electron.Common` and the target's primary namespace. Reopen the
+   primary namespace with `export import` aliases for Common-only members:
+     main      -> Electron.Main     + Common-only aliases
+     preload   -> Electron.Renderer + Common-only aliases
+     renderer  -> no Electron namespace
 
-2. Strip the file's leading `/// <reference types="node" />`,
+2. Inside `declare module 'electron'`, replace
+     export = Electron.CrossProcessExports;
+   with the primary namespace itself:
+     main      -> export = Electron.Main
+     preload   -> export = Electron.Renderer
+     renderer  -> export = a const typed by a named empty interface
+
+3. Strip the file's leading `/// <reference types="node" />`,
    so each target controls its own `types`.
 
 Then, per target:
@@ -169,15 +175,20 @@ Then, per target:
 
 Application code keeps the ordinary bare `import … from 'electron'` — which is what real Electron code
 writes — and the views are regenerated from the vendor file on every install, so nothing is hand-maintained
-and nothing drifts on an Electron bump. Under this configuration a wrong-process import is `TS2305`, which
-joins `TS2584` and `TS2591` as the third guard signal. Behavior confirmed by running `tsc` against
-`typescript@5.9.3`, `electron@43.2.0` and `@types/node@24.10.1` on 2026-07-25:
+and the generator fails if the namespace or substitution anchors drift on an Electron bump. Exporting the
+namespace itself is load-bearing: `typeof Electron.Main` preserves values but drops namespace-only types.
+Under this configuration a wrong-process import is `TS2305`, while correct process-local value and type
+imports compile. That code joins `TS2584` and `TS2591` as the third guard signal only when a fixture proves
+both sides. Behavior confirmed by running `tsc` against `typescript@5.9.3`, `electron@43.2.0` and
+`@types/node@24.10.1` on 2026-07-26:
 
 | Unit | Import | Result |
 |---|---|---|
 | main | `app`, `ipcMain`, `shell`, `nativeImage` | pass |
+| main | `type IpcMainInvokeEvent`, `type WebContents` | pass |
 | main | `ipcRenderer`, `webFrame`, `contextBridge` | `TS2305` ×3 |
 | preload | the six sandboxed Electron modules | pass |
+| preload | `type Clipboard`, `type ContextBridge` | pass |
 | preload | `app`, `ipcMain` | `TS2305` ×2 |
 | preload | `node:fs` | `TS2307` |
 | renderer | any `electron` import | `TS2305` |
@@ -187,26 +198,26 @@ base which leaves `electron` resolving to the vendor's un-scoped typings run thr
 guards, and pass every wrong-process `electron` import. Three green passes are not evidence; three green
 passes **with a per-target `paths` mapping** are.
 
-### Values are imported; types are not
+### Values and types keep the process scope
 
-Every view keeps the vendor's own split between the two, and the split catches people. **Electron's
-type-only symbols live in the ambient `Electron` namespace and are not re-exported from the module.** Values
-— `app`, `ipcMain`, `contextBridge`, `MessageChannelMain` — import normally. Types — `WebContents`,
-`IpcMainInvokeEvent`, `MessagePortMain` — are written `Electron.X` and imported from nowhere. Importing one
-as a value is `TS2305`, the same code a wrong-process import produces, so the failure reads like a boundary
-violation when it is a namespace mistake.
+Each view must preserve both sides of the vendor namespace. Values — `app`, `ipcMain`, `contextBridge`,
+`MessageChannelMain` — import normally. Types — `WebContents`, `IpcMainInvokeEvent`, `MessagePortMain` —
+use `import type` from the same process-scoped `electron` view. A generated view that keeps only
+`typeof Electron.Main` or `typeof Electron.Renderer` drops that type side, so a correct type import fails
+with `TS2305` and becomes indistinguishable from a wrong-process value import.
 
 ```ts main
-import { ipcMain } from 'electron';
+import { ipcMain, type IpcMainInvokeEvent, type WebContents } from 'electron';
 
-declare function saveFor(contents: Electron.WebContents): void;
+declare function saveFor(contents: WebContents): void;
 
-// `import { WebContents } from 'electron'` would be TS2305: it is a type in the
-// ambient namespace, not an export of the module.
-ipcMain.handle('doc:save', (event: Electron.IpcMainInvokeEvent): void => {
+ipcMain.handle('doc:save', (event: IpcMainInvokeEvent): void => {
   saveFor(event.sender);
 });
 ```
+
+The renderer view stays empty, so any renderer import from `electron` still fails. Main and preload
+wrong-process **value** imports still fail with `TS2305`; correct process-local type imports do not.
 
 ## 5. `skipLibCheck: true` is required, and the comment is part of the requirement
 

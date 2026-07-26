@@ -171,7 +171,7 @@ procedure only tells that step which Electron cases and rows to take.
 |---|---|---|
 | 01 entry and route | is any Electron change — this family is unconditional | `EL-CHECK-01a`–`-01d` |
 | 02 process placement | adds or moves a unit, changes a preload, or offloads work | `EL-CHECK-02a`–`-02e` |
-| 03 the type-check as proof | touches a tsconfig, a module view, or the build's pass set | `EL-CHECK-03a`–`-03e` |
+| 03 the type-check as proof | touches a tsconfig, a module view, or the build's pass set | `EL-CHECK-03a`–`-03f` |
 | 04 the bridge surface | changes an exposed key, a listener wrapper, or a value that crosses | `EL-CHECK-04a`–`-04f` |
 | 05 the sender contract | adds or changes an `ipcMain` handler | `EL-CHECK-05a`–`-05e` |
 | 06 the nine code-only items | touches a window, a session, or a permission posture | `EL-CHECK-06a`–`-06c` |
@@ -212,12 +212,13 @@ routed to every fork it activates, and graded on all three axes rather than one?
 each unit on the side its work belongs to, each target checked against its own `electron` view, and the exposed
 surface written out rather than derived?
 
-**Activated**: `EL-SC-02a`, `-02c`, `-02d`, `EL-SC-03c`, `-03d`, `EL-SC-04a`, `-04b`, `EL-SC-09f` ·
-`EL-CHECK-02a`, `-02c`, `-02d`, `-03c`, `-03d`, `-04a`, `-04b`, `-09f`, `-09h`.
+**Activated**: `EL-SC-02a`, `-02c`, `-02d`, `EL-SC-03c`, `-03d`, `-03f`, `EL-SC-04a`, `-04b`, `EL-SC-09f` ·
+`EL-CHECK-02a`, `-02c`, `-02d`, `-03c`, `-03d`, `-03f`, `-04a`, `-04b`, `-09f`, `-09h`.
 
 | Anti-pattern | Correction |
 |---|---|
 | **One `electron` module view behind three configs** | Give each target its own generated view; three passes over one view certify every wrong-process import (`EL-R-02`, `EL-N-08`) |
+| **A scoped view that exports values but drops types** | Export the process namespace itself, merge Common-only members with namespace aliases, and run both the correct-type and wrong-process fixtures (`EL-R-02`) |
 | **A bridge that widens through data** | Write the exposed key set out; a manifest-driven surface widens with no line in the preload diff for a reviewer to see (`EL-R-07`) |
 | **A preload judged by its source imports** | Read the emitted bundle; a helper's import leaves the sandboxed surface while the preload's own source stays clean (`EL-R-10`) |
 
@@ -332,6 +333,7 @@ add the Electron-idiom verifications below. Each names the rows it produces evid
 |---|---|
 | Run one `tsc` per declared target, each against its own generated `electron` view, and record the pass count | `EL-R-02`, `EL-N-08` (`EL-CHECK-03b`, `-03c`) |
 | Drive a deliberate wrong-process fixture through each target and capture the guard signals | `EL-R-01`, `EL-R-02` (`EL-CHECK-02c`, `-03a`) |
+| Compile correct main and preload `import type` fixtures, then rerun the wrong-process value fixture | `EL-R-02` (`EL-CHECK-03f`) |
 | Read the emitted preload bundle — not the source import list — against the sandboxed module surface | `EL-R-10` (`EL-CHECK-02d`) |
 | Read the object passed to `exposeInMainWorld` key by key, diff the exposed key set across the change, then assert in the renderer that every received key is a function of the expected arity | `EL-R-07`, `EL-R-08`, `EL-N-03` (`EL-CHECK-04a`–`-04d`) |
 | Per handler, drive a null frame, a detached frame, an off-allowlist origin, and a malformed payload; separately, read each handler for the sender read's lexical position | `EL-R-09`, both conjuncts (`EL-CHECK-05a`–`-05e`) |

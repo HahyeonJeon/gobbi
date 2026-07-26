@@ -12,9 +12,9 @@
 # main-process module touching `document`, a renderer touching `process` —
 # compiles clean, so the harness certifies exactly the boundary violations the
 # skill exists to prevent. Split per process, `document` in main is TS2584,
-# `process` in renderer is TS2591, and a wrong-process `electron` import is
-# TS2305 (each per-process tsconfig maps the bare specifier `electron` to its
-# own generated view). Those three codes are the guard signals.
+# `process` in renderer is TS2591, and an Electron member absent from the
+# process view is TS2305. The fixtures make that last signal discriminating:
+# wrong-process values fail, while correct process-local type imports pass.
 #
 # Usage:  bash run-examples.sh <markdown-file-or-dir> [more...]
 #

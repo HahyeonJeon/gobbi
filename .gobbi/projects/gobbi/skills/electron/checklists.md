@@ -181,6 +181,14 @@ Subject: the change-set. Families 01 to 03 of [`scenarios.md` § 6](scenarios.md
   evidence does not cite the type-check for those units; FAIL if a green pass is offered as proof of such a
   unit's tag. *Evidence:* the reviewer's per-unit confirmation. *On fail:* return to P3 step 1.
   *(EL-R-01 residue · `EL-SC-03e`)*
+- [ ] `EL-CHECK-03f` **[GATE]** — PASS if main and preload fixtures import correct process-local Electron
+  types from their own bare `electron` view and compile, while the wrong-process value fixture still raises
+  `TS2305`; FAIL if a correct `import type` raises `TS2305`, or if preserving types widens a view enough to
+  admit a wrong-process value. *Evidence:* the correct-type fixture's exit 0 plus the wrong-process fixture's
+  `TS2305` output. *On fail:* the generated view either dropped the namespace's type side or lost its process
+  boundary — halt the handoff and return to
+  [`tooling-config.md` § 4](tooling-config.md#4-per-process-electron-module-views).
+  *(EL-R-02 · `EL-SC-03f`)*
 
 ## 4. Group B — the trust boundary
 
@@ -521,15 +529,15 @@ No row traces to a clause this skill does not teach.
 to `EL-CHECK-NNx`, the slot it reserved. Three cases carry a second row, because their obligation held two
 independently falsifiable clauses: `EL-SC-07a` also owns `EL-CHECK-07e`, `EL-SC-09f` also owns
 `EL-CHECK-09h`, and `EL-SC-12a` also owns `EL-CHECK-12e`. One later case uses the next free row because
-`EL-CHECK-07e` was already reserved: `EL-SC-07e` owns `EL-CHECK-07f`. No case is unreached: 54 cases,
-57 rows.
+`EL-CHECK-07e` was already reserved: `EL-SC-07e` owns `EL-CHECK-07f`. No case is unreached: 55 cases,
+58 rows.
 
 **Clause to row.** Every hard rule and every prohibition reaches at least one row.
 
 | Clause | Rows |
 |---|---|
 | EL-R-01 | `EL-CHECK-02a`, `EL-CHECK-02c`, `EL-CHECK-03e` |
-| EL-R-02 | `EL-CHECK-02c`, `EL-CHECK-03a`, `EL-CHECK-03b`, `EL-CHECK-03c`, `EL-CHECK-03d` |
+| EL-R-02 | `EL-CHECK-02c`, `EL-CHECK-03a`, `EL-CHECK-03b`, `EL-CHECK-03c`, `EL-CHECK-03d`, `EL-CHECK-03f` |
 | EL-R-03 | `EL-CHECK-08a`, `EL-CHECK-08b` |
 | EL-R-04 | `EL-CHECK-06a`, `EL-CHECK-06b`, `EL-CHECK-06c` |
 | EL-R-05 | `EL-CHECK-07a`, `EL-CHECK-07b`, `EL-CHECK-07d`, `EL-CHECK-07e`, `EL-CHECK-07f` |

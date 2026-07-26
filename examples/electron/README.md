@@ -40,12 +40,14 @@ signals fire instead:
 |---|---|
 | `TS2584` | a `main` example touches a DOM global |
 | `TS2591` | a `renderer` example touches a Node global |
-| `TS2305` | any example imports an `electron` module its process cannot reach |
+| `TS2305` | an example imports an Electron member absent from its process view |
 
 `TS2305` needs more than the `lib` / `types` split: `electron.d.ts` is one
 monolithic declaration carrying every process's API. `generate-electron-views.mjs`
-derives three scoped views of it at install time, and each tsconfig maps the bare
-specifier `electron` to its own view via `paths`.
+derives three scoped namespace views at install time, preserving both values and
+types, and each tsconfig maps the bare specifier `electron` to its own view via
+`paths`. The fixture set proves both directions: wrong-process values raise
+`TS2305`, while correct process-local `import type` statements compile.
 
 ## Fence tagging
 
@@ -70,14 +72,15 @@ header names the origin and all six deltas.
 
 ## Fixtures
 
-`fixtures/` proves the harness is self-failing. Four must pass or fail on
-content; five must fail on the tagging contract. Each is scored on **its own**
-error code or message — a fixture that goes red for the wrong reason is a false
-pass.
+`fixtures/` proves the harness is self-failing. Five exercise type content;
+five exercise extraction, tagging, and fail-closed behavior. Each is scored on
+**its own** exit code or message — a fixture that goes red for the wrong reason
+is a false pass.
 
 | Fixture | Expected |
 |---|---|
 | `good-complete.md` | exit 0 |
+| `correct-type-import.md` | exit 0 — main and preload keep process-local and Common-only type exports |
 | `categories.md` | exit 0 — every category, all three processes, one `tsx uncompiled` |
 | `bad-complete.md` | `TS2362` |
 | `empty.md` | exit 3, fail-closed |
