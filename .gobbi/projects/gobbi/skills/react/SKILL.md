@@ -1,6 +1,6 @@
 ---
 name: react
-description: "MUST load before writing or reviewing React code. The React-idiom layer above the language layer — purity and the render model, the compiler memoization baseline, state placement, the server/client boundary, host deltas, accessibility mechanics, and testing through the user-visible surface."
+description: "MUST load before writing or reviewing React code. The React-idiom layer above the language layer — purity and the render model, the compiler memoization baseline, state placement, the server/client boundary, runtime deltas, accessibility mechanics, and testing through the user-visible surface."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
@@ -27,10 +27,11 @@ Procedure step (P2) routes to a companion only when a decision needs depth this 
 
 The parent's Study First discipline (`coding` Principle 1) says read the code and the prior art. The
 React delta is that "the contract" is a set of concrete switches, not the abstract problem: the React
-version, whether the React Compiler is enabled, which host the code runs on, whether a server tier and
-RSC are real targets, whether the source is TypeScript or plain JavaScript, and which lint preset is in
-force. The same component is correct under one contract and wrong under another, so those switches —
-not intuition about React — decide which mechanism is even available.
+version, whether the React Compiler is enabled, which presentation surface renders the interface, which
+architecture produces the delivered artifacts, whether RSC is a real target, whether the source is
+TypeScript or plain JavaScript, and which lint preset is in force. The same component is correct under
+one contract and wrong under another, so those switches — not intuition about React — decide which
+mechanism is even available.
 
 > **2. Render is a pure function of props and state; an Effect is an escape hatch, not the mechanism.**
 
@@ -255,11 +256,15 @@ exception needs; it never introduces an exception this file does not state.
   leaving context isolation on does not turn the sandbox on. Fix: expose a narrow, named API from the
   preload script, validate every message, and confirm all three settings in the shipped configuration. No
   exception. Source: electronjs.org security checklist, items 2, 3, 4, and 20.
-- **H17 — NEVER assume a server tier exists.** Server Components, Server Functions, and streaming SSR
-  require a framework or bundler that implements them; a plain browser SPA and a desktop renderer have no
-  target for them at all. Fix: establish the host at P1, and use client-side data access where there is
-  no server. No exception. Source: react.dev Server Components. Depth: `runtime.md` for which hosts
-  implement them; `server-client.md` for what the boundary is.
+- **H17 — NEVER infer producer architecture from the presentation surface.** Classify two independent
+  axes at P1: browser page or Electron renderer for presentation, and client-only, build-time, or
+  request-time/remote for the producer. Server Components, Server Functions, and streaming SSR require an
+  identified framework or bundler that implements them. A client-only bundle has no target for those
+  features on either presentation surface; either surface may consume build-time or request-time/remote
+  producer output when that implementation exists. An Electron renderer consuming such output remains a
+  renderer and gains no Node privilege: `H16` still requires the isolated, sandboxed, finite preload
+  boundary. No exception. Source: react.dev Server Components and the Electron process model. Depth:
+  `runtime.md` for the six combinations; `server-client.md` for what the boundary is.
 
 **Version facts this skill pins, and the ones it does not.** React 19.2 as the documented line, and the
 React Compiler's first stable release on 2025-10-07, are pinned above and in References, because they are
@@ -305,8 +310,10 @@ available at all:
 
 - the React version;
 - whether the React Compiler is enabled, and with what configuration;
-- **which host** — a browser SPA, a framework server, or a desktop renderer — and therefore whether a
-  server tier, RSC, and streaming SSR are real targets;
+- **which presentation surface** — a browser page or an Electron renderer;
+- **which rendering and delivery producer** — client-only, build-time, or request-time/remote — including
+  the named framework or bundler, its output, its production timing, and whether matching initial HTML is
+  hydrated;
 - **whether the source is TypeScript or plain JavaScript** — this fork decides whether `typescript` is
   in context at all;
 - the lint preset in force;
@@ -323,10 +330,10 @@ and docs — with CRUD and 5W1H. For a bug, reproduce it before tracing it to th
 State the value you are proceeding on and what you inferred it from — an absent configuration file, a
 dependency that is not installed, the version a lockfile resolves, or this skill's own default. A
 recorded assumption is a valid answer; an unrecorded one is what leaves a later reader unable to tell a
-decision from an accident. Three switches are not eligible for this, because the codebase always answers
-them and `REACT-CHECK-25` requires them read rather than assumed: the host, whether the compiler is
-enabled, and whether the source is TypeScript or plain JavaScript. A missing compiler configuration is
-itself the answer "not enabled", not an unknown.
+decision from an accident. Four switches are not eligible for this, because the codebase always answers
+them and `REACT-CHECK-25` requires them read rather than assumed: the presentation surface, producer
+architecture, whether the compiler is enabled, and whether the source is TypeScript or plain JavaScript.
+A missing compiler configuration is itself the answer "not enabled", not an unknown.
 
 **P1 is complete when** scope and success are explicit or a scope contract is cited, every switch above
 has an answer or a recorded assumption, the mode is declared, and the affected set or the reproduced
@@ -343,7 +350,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 |---|---|
 | `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
 | `server-client.md` | Designing any value that crosses the server/client boundary, choosing or reading a directive, building on Server Functions and the Actions family, or working on streaming server rendering and hydration |
-| `runtime.md` | Establishing the host at P1, moving code between hosts, or answering what a browser application, a framework server, and a desktop renderer each do and do not support |
+| `runtime.md` | Classifying presentation surface and producer architecture at P1, changing either axis, or answering what each of their six combinations supports |
 | `state.md` | Placing a datum — which rung of the ladder owns it, when it is promoted, whether it should be stored at all, and what a client copy of server-owned data has to carry |
 | `async.md` | Deciding whether an Effect is needed at all, cleaning one up, choosing between cancelling and ignoring in-flight work, or reaching for Suspense, `use`, or an external store |
 | `typing.md` | Typing a props surface, `children`, an event, a hook's type argument, a ref, or the style prop — **only when the source is TypeScript**; the file does not apply on a plain-JavaScript codebase |
@@ -365,7 +372,8 @@ evaluation path is routed.
 Design as ordered acts, not one flat choice, and finish with no behavior body written:
 
 1. **Fix the region and its boundaries.** Which part of the tree changes, which side of the
-   server/client line it sits on, and which host it runs on.
+   server/client line it sits on, which presentation surface renders it, and which architecture produces
+   its delivered artifacts.
 2. **Place every datum and name its owner.** Local, lifted, context, client store, or server cache — and
    for each, the one thing that owns it. Anything derivable is computed, not stored.
 3. **Pick the unit shape.** A component when it renders, a custom hook when stateful logic is reused, a
@@ -386,8 +394,9 @@ one owner, the boundaries are placed, and no behavior exists yet.
 *Deepens `principles` Principle 3 — design with the user, from references.*
 
 Present the React **design packet**: the component-tree sketch, the prop and type surface, the
-state-placement table with owners, the boundary map (server/client and host), the error and loading
-boundary placement, and one credible alternative from P3. Record the approval, or cite an
+state-placement table with owners, the boundary map (server/client, presentation surface, and producer
+architecture), the error and loading boundary placement, and one credible alternative from P3. Record
+the approval, or cite an
 already-explicit decision.
 
 **Author mode only.** In review mode, reconstruct the existing packet and grade it without editing.

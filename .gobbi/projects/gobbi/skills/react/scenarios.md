@@ -275,32 +275,35 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Exercises:** H7, H18, P6, Procedure P1, Procedure P3.
 - **Checklist IDs:** `REACT-CHECK-11`, `REACT-CHECK-12`.
 
-### REACT-SCENARIO-10 — Host assumptions: the missing server tier and the renderer bridge
+### REACT-SCENARIO-10 — Producer assumptions across browser and renderer presentation
 - **Axis:** Hard invariant.
 - **Primary category:** 7 Trust / harm / governance — the defining discrimination is what page content can
   reach. **Secondary:** 4, 6.
-- **Situation:** Given code written against a framework-server example. When it is moved into a plain
-  browser application, and into a desktop renderer that talks to a privileged process.
-- **Good handling:** the host is established at Procedure P1; where no server tier exists, data access is
-  client-side; the renderer reaches the privileged side only through a narrow named API, with Node
+- **Situation:** Given one browser presentation and one Electron renderer presentation. When each is
+  paired in turn with a client-only, build-time, or request-time/remote producer.
+- **Good handling:** Procedure P1 records both axes independently. Each of the six combinations names the
+  producer, output, production timing, hydration behavior, and security boundary. Server-dependent
+  behavior has an identified framework or bundler; a client-only bundle uses client-side data access.
+  The Electron renderer reaches privileged local capability only through a finite named API, with Node
   integration off, context isolation on and the sandbox on, and every message validated on arrival.
-- **Bad handling:** a server function or streaming render assumed where nothing implements it; a raw
-  bridge handed to page content; context isolation disabled to make an import resolve; the sandbox left
-  off because context isolation is on.
+- **Bad handling:** the word browser or Electron is used to decide whether producer output is legal; a
+  server function or streaming render is assumed where nothing implements it; any bundler is credited as
+  an RSC implementation; producer output is treated as Node privilege; a raw bridge is handed to page
+  content; context isolation or the sandbox is disabled.
 - **Failure/recovery:** the privileged call rejects or the channel drops; the renderer surfaces the
   failure instead of hanging on a promise that never settles.
-- **Counterfactual:** invert the premise that a server tier exists — the same feature must be designed
-  with client-side data access, and the parts that assumed a server must be named.
+- **Counterfactual:** hold the presentation surface constant and swap only the producer architecture.
+  The client-only case must lose its server-dependent behavior without changing presentation or security.
 - **Adversarial probe:** injected page content calls the exposed surface directly; a narrow API bounds
   what it reaches, a raw bridge does not. **Cosmetic form:** the API is "narrowed" to a single generic
   invoke-by-channel function, which re-exposes the whole surface under one name.
 - **Minimums:** failure/recovery see above · counterfactual see above · adversarial see above · boundary
   `n/a: no quantity, ordering, or time-window property` · change `n/a: no version or lifecycle event`.
-- **Oracle:** call the exposed surface from page-context code and enumerate what it can reach; read the
-  window's Node-integration and context-isolation settings from the shipped configuration, not from the
-  development one.
-- **Obligation:** the design must name the host, and every privileged capability the renderer can reach
-  must be enumerable.
+- **Oracle:** inspect the six-row presentation/producer matrix; then call the exposed Electron surface
+  from page-context code and enumerate what it can reach, reading the shipped Node-integration,
+  context-isolation, and sandbox settings rather than development defaults.
+- **Obligation:** the design must name both axes and the output, timing, hydration, and security boundary
+  for all six combinations; every privileged capability the renderer can reach must remain enumerable.
 - **Exercises:** H16, H17, P1, P6, Procedure P1.
 - **Checklist IDs:** `REACT-CHECK-19`, `REACT-CHECK-20`.
 
@@ -474,5 +477,6 @@ Not written, and each with the reason it is held back rather than dropped:
   placement ladder; it earns its own family only if the ladder proves too coarse in use.
 - **Error and loading boundary placement** — Procedure P3 act 6 is exercised by family 11 structurally,
   but no family yet tests where a boundary is placed and what it catches.
-- **A second alternative-valid host** — family 10 inverts the server tier; a materially different valid
-  host pairing would strengthen category 2 beyond its current secondary-only standing.
+- **A second implementation within one producer class** — family 10 covers all six architecture classes;
+  a materially different valid framework/bundler implementation would strengthen category 2 beyond its
+  current secondary-only standing.

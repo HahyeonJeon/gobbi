@@ -1,84 +1,97 @@
-# React — Host Deltas
+# React — Presentation and Producer Deltas
 
-**Ownership** — what actually differs across the hosts this skill covers: a browser application, a
-framework server, and an Electron renderer. It owns the delta matrix, the per-host constraints, and the
-negative space — which web-React assumptions stop being true when the same components move.
+**Ownership** — what actually differs across the presentation surfaces and producer architectures this
+skill covers. Presentation is a browser page or an Electron renderer. Production is client-only,
+build-time, or request-time/remote. This file owns their six combinations, the surface-specific
+constraints, and the negative space — which web-React assumptions stop being true when the same
+components move.
 
 **Split criterion** — `skill-writing` P4, category *a long lookup reference*: a reader opens it at
-Procedure P1 to answer "what does my host support", or when moving code between hosts. P4's other three
+Procedure P1 to answer "what does this presentation/producer combination support", or when changing
+either axis. P4's other three
 categories do not describe it — it owns no artifact set, orchestrates no per-unit work, and is not a
 sub-procedure another consumer loads.
 
-**The testable line for what belongs here.** A fact that is identical on all three hosts is not a host
-delta and belongs to whichever child owns its topic. This file states a fact only where the answer changes
-by host.
+**The testable line for what belongs here.** A fact that is identical across both presentation surfaces
+and all three producer architectures is not a runtime delta and belongs to whichever child owns its
+topic. This file states a fact only where the answer changes by surface or producer.
 
 This doc **deepens, and does not restate,** `SKILL.md` Rules `H16` and `H17` and Principle 6, and the
 `runtime.md` row of the P2 router. What the server/client boundary *is* belongs to
-[`server-client.md`](server-client.md); this file says which hosts have one. Effect cleanup for a
+[`server-client.md`](server-client.md); this file says which producer combinations have one. Effect cleanup for a
 subscription is `H6`'s and is pointed at, not repeated. A claim with no primary source is labelled
 *ecosystem convention* where it is made; §6 lists every source and every open item.
 
-**Three hosts, and that is a decision.** React Native is out of scope. No successor covers it, this skill
+**Two presentation surfaces, and that is a decision.** React Native is out of scope. No successor covers it, this skill
 promises no future coverage of it, and its absence is a recorded decision rather than an omission — §5
 says so in full so that a reader does not read the gap as an oversight.
 
 ---
 
-## The delta matrix
+## The six-combination matrix
 
-| | Browser application | Framework server | Electron renderer |
-|---|---|---|---|
-| **Anything here implements RSC?** | No | Yes — that is what the framework or bundler provides | No |
-| **Server Components / Server Functions** | Not available | Available | Not available |
-| **Streaming server render and hydration** | Not available | Available | Not available |
-| **Where React renders** | The browser page | The client tree in the browser; Server Components render in the separate server environment | The renderer process only — never the main process |
-| **Data access** | `fetch` | Server Components and Server Functions, plus client fetching | The preload bridge (`invoke`), plus `fetch` for genuinely remote data |
-| **Routing** | History API | The framework's router | Hash or custom-protocol routing, not path routing against `file://` — *ecosystem convention* |
-| **Trust boundary that matters** | The browser origin model | The server boundary — `H18` lives here | The preload allowlist, with context isolation and the sandbox on |
-| **Build gate that catches host defects** | The production build | The framework's production build | The packaged build, not the dev server |
+The presentation surface does not decide the producer. Each row records the six fields required at
+Procedure P1.
 
-The first row is worded deliberately. The question is never "is there a server" — `server-client.md` §7
-shows the "server" in Server Components is a separate *environment* that can be a build step on a CI
-machine rather than a running web server. The question is whether anything in this host **implements**
-RSC, which is what `H17` requires when it says these features need a framework or bundler that implements
-them. react.dev's own framing is on the implementer's side rather than the application's — *"To support
-React Server Components as a bundler or framework, we recommend pinning to a specific React version, or
-using the Canary release"* — and `use-client` describes the mechanism: *"When a file marked with `'use
+| Presentation surface | Producer architecture | Output | Production timing | Hydration | Security boundary |
+|---|---|---|---|---|---|
+| Browser page | Client-only bundle | Client JavaScript and browser-rendered DOM | Application build, then browser execution | None: no producer-rendered initial HTML | Browser origin and every remote API boundary |
+| Browser page | Identified build-time framework or bundler | Generated HTML or RSC payload plus client assets | Build or CI | Required when producer-rendered HTML becomes the initial React tree; client-only islands attach normally | Browser origin plus the server/client serialization and trust boundaries |
+| Browser page | Identified request-time or remote framework/server | Per-request HTML or RSC payload, or remote data consumed by the client tree | Per request or remote call | Required when server-rendered HTML becomes the initial React tree; otherwise follow the payload's named integration | Browser origin plus the remote and server/client boundaries |
+| Electron renderer | Client-only bundle | Packaged client assets and renderer DOM | Package build, then renderer execution | None: no producer-rendered initial HTML | Finite preload API, Node integration off, context isolation on, sandbox on |
+| Electron renderer | Identified build-time framework or bundler | Generated HTML or RSC payload plus packaged client assets | Build or CI before packaging | Required when generated HTML becomes the initial React tree | The same finite isolated, sandboxed preload boundary; producer output grants no privilege |
+| Electron renderer | Identified request-time or remote framework/server | Remotely served HTML or RSC payload, or remote data consumed by the renderer | Per request or remote call | Required when server-rendered HTML becomes the initial React tree; otherwise follow the payload's named integration | Remote origin plus the same finite isolated, sandboxed preload boundary |
+
+The question is never "is there a server" — `server-client.md` §7 shows the "server" in Server
+Components is a separate *environment* that can be a build step on a CI machine rather than a running
+web server. The question is whether an identified producer **implements** RSC or streaming SSR.
+react.dev's own framing is on the implementer's side rather than the application's — *"To support React
+Server Components as a bundler or framework, we recommend pinning to a specific React version, or using
+the Canary release"* — and `use-client` describes the mechanism: *"When a file marked with `'use
 client'` is imported from a Server Component, compatible bundlers will treat the module import as a
-boundary between server-run and client-run code."* A browser application bundled without such a bundler
-has no target no matter how many servers the product operates.
+boundary between server-run and client-run code."* A client-only bundle has no target on either
+presentation surface, however many servers the product operates. Conversely, neither the word browser
+nor the word Electron forbids consuming output from a producer that actually implements the feature.
 
-## 1. Browser application
+## 1. Browser presentation
 
-The baseline the rest of this skill assumes. Everything in `SKILL.md` applies unchanged; there is nothing
-host-specific to learn except what is absent.
+Everything in `SKILL.md` applies unchanged. A browser page may receive any of the three producer
+architectures in the matrix; the page alone does not say which one exists.
 
-- **No RSC target** unless a framework or bundler that implements it is added — at which point the second
-  column applies instead. This is the same fact `H17` states, read from the host's side.
-- **Data access is `fetch`**, from an event handler or an Effect under `H5`, with `H6`'s cleanup and
-  staleness guard.
+- **A client-only bundle has no RSC target.** Data access is `fetch`, from an event handler or an Effect
+  under `H5`, with `H6`'s cleanup and staleness guard.
+- **Build-time and request-time/remote producers are separate architectures.** When an identified
+  framework or bundler implements them, the browser consumes their output under
+  [`server-client.md`](server-client.md)'s serialization and hydration contracts.
 - **Routing uses the History API**, which works because a server resolves an arbitrary path back to the
-  application shell. That assumption is exactly what fails in the third column.
+  application shell. That assumption is exactly what can fail in a packaged Electron presentation.
 
-## 2. Framework server
+## 2. Producer architectures
 
-The only host where the server-dependent surface exists, and it exists because the framework or bundler
-implements it, not because a server is running.
+Producer architecture answers who creates the delivered React artifacts and when. It is independent of
+whether the presentation surface is a browser page or an Electron renderer.
 
-- **RSC, Server Functions, and streaming SSR are available.** Their mechanics — the directives, the three
-  serialization sets, the Actions family, the hydration contract — are [`server-client.md`](server-client.md)'s
-  and are not repeated here.
-- **`H18` is a host-specific obligation in practice.** A Server Function is only reachable on this host, so
-  this is the column where "validate the arguments and authorize the mutation inside the function" has
-  something to guard.
+- **Client-only** means the delivered client bundle is the only React producer. RSC, Server Functions,
+  streaming server rendering, and hydration of producer-rendered HTML have no target.
+- **Build-time** means an identified framework or bundler runs the server environment during the build or
+  in CI and emits the artifacts the presentation surface consumes. There need not be a running web
+  server.
+- **Request-time or remote** means an identified framework or server produces output per request or
+  behind a remote boundary. The presentation surface consumes that output; it does not become the
+  producer.
+- **RSC, Server Functions, streaming SSR, and hydration apply only where their producer implements
+  them.** Their mechanics — the directives, the three serialization sets, the Actions family, and the
+  hydration contract — are [`server-client.md`](server-client.md)'s and are not repeated here.
+- **`H18` follows the Server Function endpoint, not the presentation surface.** Wherever such an endpoint
+  exists, validate its arguments and authorize the mutation inside the function.
 - **The framework owns more of the surface than React does.** Routing, caching, revalidation, and the
   transport of the rendered tree are the framework's, and react.dev does not publish the division — see
   `server-client.md` §7, where that gap is carried as an open item rather than guessed.
 
-## 3. Electron renderer
+## 3. Electron presentation
 
-Electron appears here as a host row, not as a chapter. The valuable material is what stops being true.
+Electron appears here as a presentation surface, not as a producer architecture. The valuable material
+is what stops being true.
 
 ### The process model, in the three facts React depends on
 
@@ -98,15 +111,23 @@ Electron appears here as a host row, not as a chapter. The valuable material is 
 So a React component in Electron is a React component in a browser tab that has been given one extra,
 narrow capability. Everything in `SKILL.md` still applies to it unchanged.
 
-### Nothing here implements RSC
+### The packaged client-only default
 
-A packaged renderer loads a built bundle. No framework or bundler in that path implements Server
-Components, no request-time server produces an RSC payload, and there is no server render to hydrate. By
-`H17` that settles it: Server Components, Server Functions, and streaming SSR have no target in this host.
+A typical packaged renderer loads a built client bundle. When no identified build-time,
+request-time, or remote framework/bundler produces server output, Server Components, Server Functions,
+streaming SSR, and hydration have no target. This is the default architecture, not a property of the
+renderer container.
 
-The migration consequence is worth stating once, because it is the expensive one: an application built
-around Server Components does not move into a renderer as-is. Every server component becomes a client
-component, and the work it was doing on the server moves into the main process behind a bridge call.
+An Electron renderer may instead consume build-time or request-time/remote output when an identified
+producer implements and delivers it. The renderer remains the presentation surface: Server Components
+still run in the producer's separate environment, and hydration attaches client behavior only when the
+producer supplies matching initial HTML. Delivery does not grant Node access, relax serialization, or
+weaken the bridge.
+
+The migration consequence follows the architecture rather than the word Electron. Moving a
+framework-backed application to a client-only packaged bundle requires replacing its server-dependent
+work. Moving the same presentation while retaining a compatible build-time or remote producer instead
+requires preserving that producer's output and boundary contracts.
 
 ### The bridge, and why its shape is not negotiable
 
@@ -140,8 +161,8 @@ mechanics behind it:
   loading-state patterns `SKILL.md` already governs. No new React idiom is needed.
 - **Push events** — the main process sends, and the preload exposes a named subscribe function. In a
   component that is a **subscription**, so it is `H6`'s territory: create it in an Effect and remove it in
-  the cleanup. The cleanup discipline is not restated here; what is host-specific is only that the
-  subscription exists at all.
+  the cleanup. The cleanup discipline is not restated here; what is presentation-specific is only that
+  the subscription exists at all.
 
 ### What may cross the bridge
 
@@ -168,7 +189,7 @@ What follows from it is not convention, and it is the reason `SKILL.md` Procedur
 build: a dev server resolves paths, a packaged renderer does not, so routing and asset resolution can be
 green in development and broken in the shipped application. Verify against the packaged build, early.
 
-### Two host-specific hygiene facts
+### Two presentation-specific hygiene facts
 
 Both are *ecosystem convention* — this skill's house defaults, with no Electron or React position behind
 them:
@@ -190,31 +211,34 @@ within a release or two and wrong in a way that reads authoritative. Read the cu
 Chromium and Node pairing, and the support window from Electron's own release and timeline pages at the
 moment you need them.
 
-## 4. What does not transfer
+## 4. What presentation changes, and what it does not
 
-The negative space, in one table. "No" means the assumption is false on that host, not merely unusual.
+The negative space is presentation-specific. Producer-dependent behavior stays in the six-row matrix.
 
-| Web-React assumption | Browser application | Framework server | Electron renderer |
-|---|---|---|---|
-| Server Components can render some of this tree | No | Yes | No |
-| A Server Function can be called from a component | No | Yes | No |
-| The initial HTML is server-rendered and hydrated | No | Yes | No |
-| An arbitrary path resolves to the application shell | Yes | Yes | No — *ecosystem convention* |
-| Privileged capability is unreachable from page code | Yes | Yes | Only while the bridge stays narrow |
-| Node APIs are unavailable to the rendered code | Yes | Yes, in the client tree | Yes, in the renderer |
-| The tab is short-lived, so a leak is masked | Usually | Usually | No |
-| The dev server and the shipped build behave alike | Mostly | Mostly | No — the packaged build is the gate |
+| Presentation property | Browser page | Electron renderer |
+|---|---|---|
+| Where React mounts | The browser DOM | The renderer DOM, never the main process |
+| Local privileged capability | None beyond browser APIs | Only through the finite preload API |
+| Node APIs in rendered code | Unavailable | Unavailable |
+| Arbitrary path resolves to the application shell | Normally, with server fallback | Not under packaged `file://`; use hash or custom-protocol routing — *ecosystem convention* |
+| Surface lifetime | Often a shorter-lived tab | Commonly a long-lived window — *ecosystem convention* |
+| Shipped-build gate | Production web build | Packaged build, not only the development server |
 
-Everything not in this table transfers unchanged, which is the larger truth about all three hosts: hooks,
-composition, context, purity, keys, state placement, and the whole of `SKILL.md`'s floor are identical
-everywhere. The deltas are a short list, and this is it.
+Server Components, Server Functions, streaming SSR, and hydration are absent on either surface under a
+client-only producer and available only to the extent an identified build-time or request-time/remote
+producer implements them. That producer choice does not change the presentation row above.
+
+Everything else transfers unchanged: hooks, composition, context, purity, keys, state placement, and the
+whole of `SKILL.md`'s floor are identical. Electron security is additive and independent of delivery
+architecture.
 
 ## 5. React Native
 
-**Out of scope, by decision.** This skill covers React on the three hosts above. React Native is not
+**Out of scope, by decision.** This skill covers React on the two presentation surfaces and three
+producer architectures above. React Native is not
 covered here, no other file in this skill covers it, and no future coverage is promised or scheduled. The
-gap is deliberate, not an oversight: the rules in `SKILL.md` were written and evidenced against the DOM
-hosts, and several of them — the markup contract in `H9`, the browser and renderer specifics in this file
+gap is deliberate, not an oversight: the rules in `SKILL.md` were written and evidenced against the two
+DOM surfaces, and several of them — the markup contract in `H9`, the browser and renderer specifics in this file
 — do not transfer to a native renderer without work this skill has not done. A reader targeting React
 Native should not read this skill's silence as approval of applying it there.
 
@@ -230,7 +254,7 @@ register owns the rule-level citations.
 | [Electron context isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation) | §3 — custom prototypes and symbols cannot cross the bridge |
 | [Electron IPC](https://www.electronjs.org/docs/latest/tutorial/ipc) | §3 — `invoke` paired with `handle`, and the return value arriving as a promise |
 | [Electron timelines](https://www.electronjs.org/docs/latest/tutorial/electron-timelines) | §3 — the eight-week major cadence and the latest-three support window |
-| [Server Components](https://react.dev/reference/rsc/server-components) | The matrix and §1–§3 — that RSC needs a bundler or framework implementing it, which is what makes the first matrix row an implementation question rather than a hosting question |
+| [Server Components](https://react.dev/reference/rsc/server-components) | The matrix and §1–§3 — that RSC needs a bundler or framework implementing it, and can run at build time or per request |
 
 **Ecosystem convention here**, named as such where it appears and never as a vendor position: the
 `file://` routing constraint and its hash-or-custom-protocol repair; the long-lived-renderer memory

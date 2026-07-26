@@ -62,12 +62,12 @@ always carry the word `Procedure`.
 - `H14` — Resolves to "NEVER strip existing manual memoization while adopting the compiler without testing the result." — removal can change compilation output.
 - `H15` — Resolves to "NEVER hold server-owned data on the client without a named trigger that refreshes or discards it." — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
 - `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled, context isolation disabled, or the sandbox off." — a content bug must not become execution, and the three settings are independent.
-- `H17` — Resolves to "NEVER assume a server tier exists." — the server-dependent features need a host that implements them.
+- `H17` — Resolves to "NEVER infer producer architecture from the presentation surface." — server-dependent features need an identified producer implementation, independently of browser or Electron presentation.
 - `H18` — Resolves to "MUST treat every Server Function argument as untrusted input and authorize the mutation on the server side." — marking a function `'use server'` publishes an endpoint.
 
 ### Principles (`P{n}` — the seven `## Principles`)
 
-- `P1` — Resolves to "Study the React contract before you design." — version, compiler, host, language, lint preset.
+- `P1` — Resolves to "Study the React contract before you design." — version, compiler, presentation surface, producer architecture, language, lint preset.
 - `P2` — Resolves to "Render is a pure function of props and state; an Effect is an escape hatch, not the mechanism."
 - `P3` — Resolves to "Give every piece of state exactly one owner, at the narrowest scope that serves it."
 - `P4` — Resolves to "Compose units, keep the prop surface narrow, and treat the rendered markup as part of the contract."
@@ -96,7 +96,7 @@ Run this after the target read and before the frame is locked.
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
 2. **Read the recorded React contract first.** Twenty-seven of the thirty-seven items are conditional on a stated
-   predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
+   predicate, and most of those predicates read the presentation surface, producer architecture, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
    the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
    partitions three of those items rather than gating one: `REACT-CHECK-13` on the enabled branch, `-32` and
@@ -104,7 +104,7 @@ Run this after the target read and before the frame is locked.
    was never read.
 3. **Map the diff to its React surfaces** — render paths and hook call sites; lists and their keys; Effects, their
    cleanups, and their awaited results; the server and client boundary; the compiler's enablement and any
-   memoization change; state placement; interactive markup and focus; the host and any privileged bridge; the
+   memoization change; state placement; interactive markup and focus; the presentation surface, producer architecture, and any privileged bridge; the
    build order and the tests.
 4. **Select the activated families and their items.** Take every applicable `REACT-SCENARIO-*` and the
    `REACT-CHECK-*` identifiers it reserves, plus any item whose `H{n}`, `P{n}`, or `Procedure P{n}` applies
@@ -130,15 +130,16 @@ section.
 
 ### Project
 
-**Lens**: Does the approach fit the **recorded React contract** — the host, the compiler's enablement, and the
-source language — rather than a contract the author assumed from an example?
+**Lens**: Does the approach fit the **recorded React contract** — the presentation surface, producer
+architecture, compiler enablement, and source language — rather than a contract the author assumed from
+an example?
 
 **Activated**: `REACT-SCENARIO-10`, `-11` · `REACT-CHECK-19`, `-21`, `-22`, `-25`.
 
 | Anti-pattern | Correction |
 |---|---|
-| **A framework example moved to a host that cannot run it** | Establish the host first; a server-dependent feature has no target in a plain browser application or a desktop renderer |
-| **The contract inferred from the diff** | Read the version, the compiler configuration, the host, and the source language from the codebase; the switches decide which mechanisms exist at all |
+| **Presentation used as producer evidence** | Record browser or Electron presentation separately from client-only, build-time, or request-time/remote production; require an identified implementer for server-dependent behavior |
+| **The contract inferred from the diff** | Read the version, compiler configuration, presentation surface, producer architecture, and source language from the codebase; the switches decide which mechanisms exist |
 | **The whole feature in one pass** | Build the skeleton, then grow verified slices; a structural mistake found after every body is written costs the whole pass |
 
 ### Structure
@@ -251,7 +252,7 @@ by `SKILL.md` Procedure step P7. Then add the React-specific verifications below
 | Operate the whole flow with the keyboard alone; read the focused element after a dialog opens and closes | Markup as contract (`H9`, `P4`) |
 | Query each control by role and accessible name; read the test queries and the `act` import | The user-visible seam (`H10`, `P7`) |
 | Enumerate the privileged surface from page-context code; read the shipped window configuration | Bridge containment (`H16`) — the packaged configuration, not the development one |
-| Read the recorded host against the server-dependent constructs the change uses | No assumed server tier (`H17`, `Procedure P1`) |
+| Hold the presentation surface constant and swap client-only, build-time, and request-time/remote producers | Orthogonal producer applicability (`H17`, `Procedure P1`) |
 | Inspect the pre-behavior state and the per-slice history, not only the final tree | Bottom-up construction (`Procedure P5`, `Procedure P6`); rejects a final-green-only claim |
 | For each taught example, locate the sentence in the named source that states what it shows | Taught-example fidelity (`Procedure P8`); no harness exists, so this is the only guard |
 
@@ -269,7 +270,7 @@ construction.
 | **Purity broken** | A mutation, a subscription, or a side effect during render, or a value mutated after being passed to JSX — the assumption the compiler's optimization rests on, violated silently |
 | **Effect as the mechanism** | An Effect deriving state, resetting state on a prop change, chaining into another Effect, or standing in for an event handler — extra render passes and causality nothing traces |
 | **State in the wrong slot** | Server-owned data held as client state, a widely-read fast-changing value in context, or a derived value stored instead of computed |
-| **Boundary assumed** | A server-dependent feature where no server tier exists, a value crossing in a direction that rejects it, or a renderer treated as an ordinary page with privileged reach |
+| **Boundary assumed** | A server-dependent feature with no identified producer, a presentation label used as producer evidence, a value crossing in a direction that rejects it, or a renderer treated as an ordinary page with privileged reach |
 
 **Preserve-list anchors specific to React idiom** — what a strong change already got right, which a revision must
 not undo: pure render paths with effects pushed to their proper homes; unconditional hook call sites and

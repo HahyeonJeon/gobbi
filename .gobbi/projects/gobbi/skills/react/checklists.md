@@ -232,16 +232,17 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **`n/a` form.** `n/a: the change adds and edits no Server Function` — cited by the diff.
   - **Source.** `REACT-SCENARIO-06` · `H18` · `P6`.
 
-### From REACT-SCENARIO-10 — host assumptions and the renderer bridge
+### From REACT-SCENARIO-10 — producer assumptions and the renderer bridge
 
 - [ ] **REACT-CHECK-19** · gate · unconditional
-  - **Claim.** The change uses no Server Component, Server Function, or streaming server render on a host
-    that has no implementation for it.
-  - **Pass when.** The recorded host either implements them, or the change uses none of them.
-  - **Evidence.** The host recorded at Procedure P1, read against the server-dependent constructs the
-    change actually uses.
+  - **Claim.** Every Server Component, Server Function, or streaming server render has an identified
+    producer implementation independent of its browser or Electron presentation surface.
+  - **Pass when.** Each presentation/producer combination records client-only and uses no server-dependent
+    feature, or names the framework or bundler that produces the feature's output.
+  - **Evidence.** The presentation surface and producer architecture recorded separately at Procedure P1,
+    read against the server-dependent constructs the change actually uses.
   - **Harm on fail.** The feature cannot work on its target at all, and the failure appears only when the
-    code runs on that host rather than at build time.
+    client consumes output the assumed producer never created.
   - **Source.** `REACT-SCENARIO-10` · `H17` · `P6`.
 
 - [ ] **REACT-CHECK-20** · gate · conditional — applies when the change runs in a renderer that reaches a
@@ -343,9 +344,10 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Source.** `REACT-SCENARIO-07` · `H14`.
 
 - [ ] **REACT-CHECK-25** · required · unconditional
-  - **Claim.** The change records the React contract it was written against: the host, whether the
-    compiler is enabled, and whether the source is TypeScript or plain JavaScript.
-  - **Pass when.** All three are recorded in the change's own materials, as facts read from the codebase
+  - **Claim.** The change records the React contract it was written against: the presentation surface,
+    producer architecture, whether the compiler is enabled, and whether the source is TypeScript or
+    plain JavaScript.
+  - **Pass when.** All four are recorded in the change's own materials, as facts read from the codebase
     rather than assumed.
   - **Evidence.** The recorded contract, compared against the configuration files it claims to describe.
   - **On fail.** Required item: open a finding. Several items in this register resolve their
@@ -523,7 +525,8 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
     boundary catches and where a loading state is revealed.
   - **Pass when.** The packet presented and approved at P4 contains each of its named elements — the
     component-tree sketch, the prop and type surface, the state-placement table with owners, the
-    server/client and host boundary map, the error and loading boundary placement, and one credible
+    server/client, presentation-surface, and producer-architecture boundary map, the error and loading
+    boundary placement, and one credible
     alternative — and each resolves to something in the change or to a stated reason it needed nothing. A
     packet that simply omits the error and loading boundary placement fails: silence is not a placement
     decision.
