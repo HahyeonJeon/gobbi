@@ -290,8 +290,18 @@ available at all:
 **Declare author or review mode.** For an edit, map the affected set — callers, tests, stories, types,
 and docs — with CRUD and 5W1H. For a bug, reproduce it before tracing it to the root.
 
+**Where a switch has no answer in the codebase, record an assumption rather than guessing silently.**
+State the value you are proceeding on and what you inferred it from — an absent configuration file, a
+dependency that is not installed, the version a lockfile resolves, or this skill's own default. A
+recorded assumption is a valid answer; an unrecorded one is what leaves a later reader unable to tell a
+decision from an accident. Three switches are not eligible for this, because the codebase always answers
+them and `REACT-CHECK-25` requires them read rather than assumed: the host, whether the compiler is
+enabled, and whether the source is TypeScript or plain JavaScript. A missing compiler configuration is
+itself the answer "not enabled", not an unknown.
+
 **P1 is complete when** scope and success are explicit or a scope contract is cited, every switch above
-has an answer, the mode is declared, and the affected set or the reproduced failure is recorded.
+has an answer or a recorded assumption, the mode is declared, and the affected set or the reproduced
+failure is recorded.
 
 ### P2 — Load the companion for the fork in play
 
@@ -311,6 +321,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 | `design.md` | Deciding whether a component or a hook is earned, shaping a prop surface, composing rather than configuring, placing an error boundary, or working out the markup, ARIA, focus, and identifier mechanics an interface owes |
 | `convention.md` | Naming a component or hook, deciding what a file exports and where a definition sits, grouping files, ordering imports, or settling JSX writing style — mostly house default, and labelled as such |
 | `testing.md` | Writing or reviewing a React test: what `act` guarantees and where it is imported from, which testing APIs React removed or deprecated, how to query the way a user reaches the interface, and which layers React has no position on |
+| `ecosystem.md` | Choosing what fills a slot this skill leaves open — a server cache, a client store, a headless component set, a test or build layer — and checking whether a package is still maintained. **The only file that names products, and every claim in it carries a resolution date and goes stale** |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
