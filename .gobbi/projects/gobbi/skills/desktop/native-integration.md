@@ -96,10 +96,10 @@ The default directory a file dialog opens in is one of the values that has chang
 [`runtime-deltas.md`](runtime-deltas.md) records it under *Dialog default path resolves to the downloads
 directory*. A run whose flow depends on where the dialog opens names that version.
 
-**Clipboard access is on its way out of the renderer.** It is deprecated from one version and is scheduled for
-removal at a version that has **not** shipped, both recorded in [`runtime-deltas.md`](runtime-deltas.md) under
-the clipboard rows — check that owner for which state applies to the version a run targets, because on every
-currently supported major the access still exists and is merely deprecated. The
+**Clipboard access is on its way out of the renderer.** The deprecation and the removal begin at two different
+versions, both recorded in [`runtime-deltas.md`](runtime-deltas.md) under the clipboard rows — check that owner
+for the version each state begins at and compare it against the version a run targets, because that
+comparison, and not a state restated here, is what tells a run which state it is in. The
 consequence is structural rather than cosmetic: clipboard work belongs to the privileged process, reached
 over a channel, which makes it one more entry in the channel inventory
 [`process-model.md`](process-model.md) governs — payload validated, sender verified, like every other

@@ -167,9 +167,12 @@ clauses, its `Seeds` cases, and the obligation conditions its pass condition mus
 - [ ] **`DESK-CHECK-01`** `[GATE]` · *Applicability:* unconditional — the run's outcome record binds one
   outcome with its actors, entry modes, claimed operating systems, visible and system completion evidence,
   and non-goals.
-  *Pass:* all six elements are present and mutually consistent, and the claimed-system set in the outcome
-  sentence equals the set the entry modes and non-goals assume.
-  *Evidence:* direct read of the design record's outcome section.
+  *Pass:* all six elements are present and mutually consistent; the claimed-system set in the outcome
+  sentence equals the set the entry modes and non-goals assume; and for a run inside an existing application
+  the record additionally names the behavior that must not change and the installed versions that constrain
+  reversibility.
+  *Evidence:* direct read of the design record's outcome section, including — for a run inside an existing
+  application — the unchanged-behavior list and the installed-version constraint.
   *On fail:* halt before rung 0; return to the framing phase.
   *Consequence:* a run that never bounded its outcome cannot tell completion from partial work.
   *Source:* `DESK-R01`, `DESK-R02`, `DESK-N01` · *Seeds:* `DESK-SCENARIO-01`, `DESK-SCENARIO-02`

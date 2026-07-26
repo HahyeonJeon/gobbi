@@ -50,8 +50,8 @@ a second `require`.
 gives none and no primary statement was found — **UNVERIFIED**, and the gap is recorded in `SKILL.md`'s gap
 register rather than filled with a plausible story. Two adjacent verified facts do the teaching work instead:
 passing the whole `ipcRenderer` module across `contextBridge` yields an **empty object** on the receiving
-side from the version [`runtime-deltas.md`](runtime-deltas.md) records under *Whole message-port module across
-the bridge yields an empty object*, and `ipcRenderer.sendTo()` was removed at the version recorded under
+side from the version [`runtime-deltas.md`](runtime-deltas.md) records under *Whole `ipcRenderer` module sent
+across the bridge yields an empty object*, and `ipcRenderer.sendTo()` was removed at the version recorded under
 *Direct renderer-to-renderer messaging removed*.
 
 ## The IPC pattern table
