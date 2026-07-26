@@ -177,6 +177,14 @@ exception needs; it never introduces an exception this file does not state.
   on a broken rewrite. Exception: a unit whose entire contract is a pure computation may be tested
   directly as a function. Source: react.dev `act`; the query-priority order is Testing Library's own
   guidance, named here as its owner.
+- **H18 — MUST treat every Server Function argument as untrusted input and authorize the mutation on the
+  server side.** Marking a function `'use server'` publishes an endpoint: its arguments are fully
+  client-controlled, so it can be called with values no component of yours ever produced, and by a caller
+  that never rendered your UI. Fix: validate each argument and check the caller's authority inside the
+  function body, before the mutation — a check in the component that calls it guards nothing, because an
+  attacker does not have to run that component, and a type annotation guards nothing either, because it is
+  erased before the call arrives. No exception. Source: react.dev `use server`, security considerations
+  and caveats. Depth: `server-client.md`.
 
 ### Must-Not-Follow
 
@@ -213,7 +221,8 @@ exception needs; it never introduces an exception this file does not state.
 - **H17 — NEVER assume a server tier exists.** Server Components, Server Functions, and streaming SSR
   require a framework or bundler that implements them; a plain browser SPA and a desktop renderer have no
   target for them at all. Fix: establish the host at P1, and use client-side data access where there is
-  no server. No exception. Source: react.dev Server Components.
+  no server. No exception. Source: react.dev Server Components. Depth: `runtime.md` for which hosts
+  implement them; `server-client.md` for what the boundary is.
 
 **Version facts this skill pins, and the ones it does not.** React 19.2 as the documented line, and the
 React Compiler's first stable release on 2025-10-07, are pinned above and in References, because they are
@@ -278,6 +287,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 |---|---|
 | `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
 | `server-client.md` | Designing any value that crosses the server/client boundary, choosing or reading a directive, building on Server Functions and the Actions family, or working on streaming server rendering and hydration |
+| `runtime.md` | Establishing the host at P1, moving code between hosts, or answering what a browser application, a framework server, and a desktop renderer each do and do not support |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
@@ -429,7 +439,9 @@ One owner per borrowed fact; the body states the fact and this register names it
 - [`useState`](https://react.dev/reference/react/useState) — the set function has a stable identity (H8).
 - [`use server`](https://react.dev/reference/rsc/use-server) and
   [`use client`](https://react.dev/reference/rsc/use-client) — the serializable-argument set, the
-  serializable-prop set, and the sentence that makes return values follow the prop set (H7).
+  serializable-prop set, and the sentence that makes return values follow the prop set (H7); and the
+  security considerations and caveats stating that Server Function arguments are fully client-controlled
+  and that mutations must be authorized (H18).
 - [Server Components](https://react.dev/reference/rsc/server-components) — Server Components render ahead
   of time in a separate environment, there is no directive for them, and they are implemented by a
   bundler or framework (H17).

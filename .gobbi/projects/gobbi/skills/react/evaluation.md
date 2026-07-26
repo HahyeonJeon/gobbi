@@ -31,7 +31,7 @@ It loads through `SKILL.md` Procedure step P2 and applies at Procedure step P8.
 
 ## Rule-key legend — the single crosswalk
 
-Every `scenarios.md` case and `checklists.md` item names its source by `H1`–`H17` (a `SKILL.md` Rule), `P1`–`P7`
+Every `scenarios.md` case and `checklists.md` item names its source by `H1`–`H18` (a `SKILL.md` Rule), `P1`–`P7`
 (a `SKILL.md` Principle), or `Procedure P1`–`Procedure P8` (a `SKILL.md` Procedure step). This legend resolves
 each one to the verbatim opening clause of the rule, principle, or step it names — the **sole crosswalk**, so a
 rule change propagates through one legend rather than three copies.
@@ -44,7 +44,7 @@ quotes.
 `Procedure P{n}` is a `SKILL.md` Procedure step. A bare `P{n}` never means a Procedure step; the Procedure keys
 always carry the word `Procedure`.
 
-### Rules (`H{n}` — Must-Follow `H1`–`H10`, Must-Not-Follow `H11`–`H17`)
+### Rules (`H{n}` — Must-Follow `H1`–`H10` and `H18`, Must-Not-Follow `H11`–`H17`)
 
 - `H1` — Resolves to "MUST keep every component and hook pure." — no effect, mutation, or subscription in render.
 - `H2` — Resolves to "MUST call hooks only at the top level of a component or another hook." — hook identity is positional.
@@ -63,6 +63,7 @@ always carry the word `Procedure`.
 - `H15` — Resolves to "NEVER hold server-owned data in a client store or in Context as if it were client state." — **ecosystem convention**, the one rule here with no primary source.
 - `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled or context isolation disabled." — a content bug must not become execution.
 - `H17` — Resolves to "NEVER assume a server tier exists." — the server-dependent features need a host that implements them.
+- `H18` — Resolves to "MUST treat every Server Function argument as untrusted input and authorize the mutation on the server side." — marking a function `'use server'` publishes an endpoint.
 
 ### Principles (`P{n}` — the seven `## Principles`)
 
@@ -94,7 +95,7 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Twenty-three of the thirty-three items are conditional on a stated
+2. **Read the recorded React contract first.** Twenty-four of the thirty-four items are conditional on a stated
    predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
    the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
@@ -216,13 +217,14 @@ moved together, an adoption event handled coherently, and every taught claim tra
 **Lens**: What can **fail, leak, or be reached** that the happy path hides — an outliving subscription, an
 out-of-order response, a divergent copy, an exposed privileged surface, or an unverified claim of verification?
 
-**Activated**: `REACT-SCENARIO-05`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`.
+**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`.
 
 | Anti-pattern | Correction |
 |---|---|
 | **A cleanup that returns an empty function** | Remove what the Effect created; the shape passing review is exactly how the leak survives |
 | **The last response wins** | Discard a result whose render is no longer current; the defect reproduces only on a slow network |
 | **A generic invoke-by-channel bridge** | Expose named operations and validate every message; one generic entry point re-exposes the whole surface |
+| **A Server Function guarded by its caller** | Validate and authorize inside the function; the endpoint is reachable without the component that calls it |
 | **Verification asserted, not run** | Require fresh output from the tree being accepted; an unverified claim of verification is worse than none |
 
 ---

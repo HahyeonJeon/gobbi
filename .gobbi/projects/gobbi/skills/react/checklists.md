@@ -197,6 +197,21 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
     the per-value direction check from `REACT-CHECK-11`.
   - **Source.** `REACT-SCENARIO-06` · `H7`.
 
+- [ ] **REACT-CHECK-34** · gate · conditional — applies when the change adds or edits a Server Function
+  - **Claim.** Every Server Function the change adds or edits validates its arguments and authorizes the
+    mutation inside its own body.
+  - **Pass when.** For each such function, the body checks the caller's authority before performing any
+    mutation, and checks each argument it uses rather than assuming the shape a component would have sent.
+    A check performed only in the calling component does not pass, and a type annotation on the parameter
+    does not pass — neither runs when the endpoint is called directly.
+  - **Evidence.** Read each added or edited Server Function body for the authority check and the argument
+    checks, then call the function directly with an argument no component would produce and confirm it
+    refuses before mutating.
+  - **Harm on fail.** The function is reachable by anything that can reach the endpoint, so an
+    unauthorized mutation needs no UI, no session in your application, and no bug in your components.
+  - **`n/a` form.** `n/a: the change adds and edits no Server Function` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-06` · `H18` · `P6`.
+
 ### From REACT-SCENARIO-10 — host assumptions and the renderer bridge
 
 - [ ] **REACT-CHECK-19** · gate · unconditional
@@ -495,7 +510,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `H6` | 09, 10 | `H15` | 16, 26 |
 | `H7` | 11, 12 | `H16` | 20, 28 |
 | `H8` | 13, 32, 33 | `H17` | 19 |
-| `H9` | 17, 18, 27 | | |
+| `H9` | 17, 18, 27 | `H18` | 34 |
 
 ### Principles
 
@@ -506,7 +521,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `P3` One owner per piece of state | 08, 15 |
 | `P4` Compose, narrow props, markup is contract | 17 |
 | `P5` Memoize by the recorded compiler switch | 13, 32, 33 |
-| `P6` Know the boundary | 11, 19, 20 |
+| `P6` Know the boundary | 11, 19, 20, 34 |
 | `P7` Prove behavior the way a user reaches it | 29 |
 
 ### Procedure steps
@@ -527,7 +542,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-03` | 05, 06 |
 | `REACT-SCENARIO-04` | 07, 08 |
 | `REACT-SCENARIO-05` | 09, 10, 31 |
-| `REACT-SCENARIO-06` | 11, 12 |
+| `REACT-SCENARIO-06` | 11, 12, 34 |
 | `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33 |
 | `REACT-SCENARIO-08` | 15, 16, 26 |
 | `REACT-SCENARIO-09` | 17, 18, 27 |
@@ -537,12 +552,12 @@ at least one scenario family. Both directions were swept for orphans.
 
 ### Counts
 
-33 items — 19 gates and 14 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-33` were added where
+34 items — 20 gates and 14 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
+slots the scenario families reserved and keep their reserved family; `-25` through `-34` were added where
 a family carried more than two independently falsifiable obligations. An identifier is never reused or
 renumbered once published.
 
-Twenty-three items are conditional on a stated predicate. Three of those read the compiler switch and they
+Twenty-four items are conditional on a stated predicate. Three of those read the compiler switch and they
 partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
 therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
 `n/a` has not resolved `REACT-CHECK-25`.

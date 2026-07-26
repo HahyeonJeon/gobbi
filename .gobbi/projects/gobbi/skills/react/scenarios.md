@@ -26,7 +26,7 @@ the decision it governs. No case is exploratory: every one traces to an obligati
 
 ### Scope and non-goals
 
-In scope: the seventeen Rules, the seven Principles, and the eight Procedure steps of `SKILL.md`.
+In scope: the eighteen Rules, the seven Principles, and the eight Procedure steps of `SKILL.md`.
 
 Not in scope, and deliberately so: constructing or reading verification checks, which `checklists.md`
 owns; teaching any React fact `SKILL.md` does not already state; UI and UX design craft; language,
@@ -78,7 +78,7 @@ families and 48 cells, so it stays single. A thirteenth family splits it.
 
 ### Source register
 
-`SKILL.md` is the only source: its Rules `H1`–`H17`, its Principles `1`–`7`, and its Procedure steps
+`SKILL.md` is the only source: its Rules `H1`–`H18`, its Principles `1`–`7`, and its Procedure steps
 `P1`–`P8`. No case introduces a fact from outside it, and no primary source is quoted here — the rules
 carry their own citations. No sensitive evidence is referenced or inlined by any case.
 
@@ -259,15 +259,18 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Failure/recovery:** the non-serializable value fails on the network hop rather than at the call site;
   the design must state where that surfaces and what the user sees.
 - **Adversarial probe:** the value serializes in development because the fixture is a plain object and
-  arrives as a class instance in production. **Cosmetic form:** the error is silenced by marking the
-  module as client code, which moves the boundary instead of fixing the value.
+  arrives as a class instance in production; and the Server Function is called directly, with arguments no
+  component would produce, by a caller that never rendered the form — the validation and the authority
+  check have to be inside the function to survive that. **Cosmetic form:** the error is silenced by
+  marking the module as client code, which moves the boundary instead of fixing the value.
 - **Minimums:** boundary see above · failure/recovery see above · adversarial see above · change `n/a: no
   version or lifecycle event` · counterfactual covered by family 10's no-server-tier inversion.
 - **Oracle:** pass the value across the real boundary in both directions and observe which direction
   rejects it and where the error surfaces.
 - **Obligation:** every value crossing the boundary must have its direction and its legality recorded at
-  design time.
-- **Exercises:** H7, P6, Procedure P1, Procedure P3.
+  design time, and every Server Function must validate its arguments and authorize its mutation in its own
+  body.
+- **Exercises:** H7, H18, P6, Procedure P1, Procedure P3.
 - **Checklist IDs:** `REACT-CHECK-11`, `REACT-CHECK-12`.
 
 ### REACT-SCENARIO-10 — Host assumptions: the missing server tier and the renderer bridge
