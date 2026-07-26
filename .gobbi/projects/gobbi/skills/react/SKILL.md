@@ -57,14 +57,16 @@ delta is that a component has two surfaces, not one: the props it accepts and th
 component that takes a whole record to read two fields is as defective as one that renders a clickable
 `div`. Both are contract failures, and only one of them is visible in the type.
 
-> **5. Let the compiler memoize; reach for a manual memo only with a named reason.**
+> **5. Memoize by the recorded compiler switch, not by habit.**
 
 The parent's Make It Efficient Enough (`coding` Principle 14) says optimize on evidence. The React delta
-is that the evidence bar moved: where the React Compiler is enabled, memoization is applied
-automatically and more precisely than hand-written memoization usually manages, so scattering
-`useMemo`, `useCallback`, and `memo` over new code is not caution, it is noise the compiler already
-handles. Where the compiler is not enabled, manual memoization is the mechanism — still applied on
-evidence, never reflexively.
+is that which mechanism applies is a fact about the codebase, read before the decision, not a matter of
+taste. Where the React Compiler is enabled it is the memoization baseline: memoization is applied
+automatically and, in most cases, as precisely as or more precisely than hand-written memoization
+manages, so scattering `useMemo`, `useCallback`, and `memo` over new code is not caution, it is noise the
+compiler already handles. Where the compiler is not enabled, manual memoization is the mechanism, and it
+carries criteria of its own that decide where it pays and where it is merely cost. The two are different
+mechanisms, not different degrees of caution, so the switch is read first.
 
 > **6. Know which boundary the code sits on, and what may cross it.**
 
@@ -138,16 +140,27 @@ exception needs; it never introduces an exception this file does not state.
   set as what may be a Server Function return value or a Server-to-Client prop. Fix: check the direction
   first, then the value; pass an identifier and re-read on the other side when the value cannot cross. No
   exception. Source: react.dev `use server` and `use client`.
-- **H8 — MUST treat the React Compiler as the memoization baseline wherever it is enabled, and keep the
-  code it compiles inside H1 and H2.** The compiler's optimization is sound only while components and
-  hooks obey the Rules of React; its lint layer, the `recommended` config of
-  `eslint-plugin-react-hooks`, is what enforces them. New code under an enabled compiler is written
-  without manual memoization. Exceptions, each requiring the named reason to be recorded at the call
-  site: (a) the memoized value is an Effect dependency whose identity must be held stable; (b) precise
-  control the compiler's analysis cannot express is genuinely needed; (c) the compiler is not enabled in
-  this codebase, in which case `useMemo`, `useCallback`, and `memo` are the mechanism — applied where a
-  component re-renders often with the same props and its render work is expensive, not by default.
-  Source: react.dev React Compiler 1.0, the compiler introduction, and `memo`.
+- **H8 — MUST read the recorded compiler switch before memoizing, then follow the branch it selects and
+  keep both branches inside H1 and H2.** The switch is recorded at Procedure P1, and the branches are
+  different mechanisms rather than different degrees of caution. **Compiler enabled.** The React Compiler
+  is the memoization baseline: it applies the equivalent of manual memoization automatically, so new code
+  is written without manual memoization. That optimization is sound only while components and hooks obey
+  the Rules of React, and its lint layer — the `recommended` config of `eslint-plugin-react-hooks` — is
+  what enforces them. Exceptions, each requiring the named reason to be recorded at the call site: (a) the
+  memoized value is an Effect dependency whose identity must be held stable; (b) precise control the
+  compiler's analysis cannot express is genuinely needed. **Compiler not enabled.** `useMemo`,
+  `useCallback`, and `memo` are the mechanism, applied on evidence and never by default: without them a
+  state change re-renders that component and all of its children. Three independent criteria select a
+  site. *Render cost* — `memo` is worth adding where a component re-renders often with the same props and
+  its render work is expensive. *Referential identity* — a `memo`'d child skips a render only while every
+  prop it receives keeps its identity, so an object or function created during render defeats it, and
+  `useCallback` or `useMemo` on that prop is what makes the `memo` real. *A held identity* — a value an
+  Effect depends on is memoized to stop the Effect re-firing on an identity change that means nothing,
+  which is exception (a) above applying on this branch too. Three consequences follow:
+  wrapping a function that is neither a prop of a `memo`'d component nor another hook's dependency buys
+  nothing; a `useState` setter already has a stable identity and never needs wrapping; and `memo` on a
+  child whose props differ on every render is cost with no benefit. Source: react.dev React Compiler 1.0,
+  the compiler introduction, `memo`, `useCallback`, and `useState`. Depth: `rendering.md`.
 - **H9 — MUST render the element that carries the meaning, add ARIA only where no native element
   provides it, and move focus deliberately when a dialog opens and closes.** In React every `aria-*`
   attribute is written exactly as in HTML, so this is a component's output contract, not a separate
@@ -262,6 +275,7 @@ An ordinary component needs no companion to be correct; the Rules above stay the
 
 | Read | When |
 |---|---|
+| `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
 | `scenarios.md` | Self-review before handoff, or the good, bad, and adversarial probes for the area being changed |
 | `checklists.md` | Answering the activated binary `REACT-CHECK-*` items at P8 |
 | `evaluation.md` | Grading the React idiom of a change-set — it routes an evaluator to the scenarios, the checks, and the verifications |
@@ -406,8 +420,11 @@ One owner per borrowed fact; the body states the fact and this register names it
   memoization as the equivalent of manual memoization, and the compiler's dependence on the Rules of
   React (H8).
 - [`memo`](https://react.dev/reference/react/memo) — memoization is a performance optimization and not a
-  guarantee; it is only valuable for frequent re-renders with the same props and expensive render work
-  (H8).
+  guarantee; it is only valuable for frequent re-renders with the same props and expensive render work,
+  and it is useless when the props are always different because a prop was created during render (H8).
+- [`useCallback`](https://react.dev/reference/react/useCallback) — caching a function is valuable only
+  when it is passed to a component wrapped in `memo` or used as another hook's dependency (H8).
+- [`useState`](https://react.dev/reference/react/useState) — the set function has a stable identity (H8).
 - [`use server`](https://react.dev/reference/rsc/use-server) and
   [`use client`](https://react.dev/reference/rsc/use-client) — the serializable-argument set, the
   serializable-prop set, and the sentence that makes return values follow the prop set (H7).

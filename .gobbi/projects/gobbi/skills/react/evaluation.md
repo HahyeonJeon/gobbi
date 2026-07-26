@@ -53,7 +53,7 @@ always carry the word `Procedure`.
 - `H5` — Resolves to "MUST use an Effect only to synchronize with a system outside React." — the escape hatch, not the mechanism.
 - `H6` — Resolves to "MUST clean up what an Effect starts, and guard every async result against a stale render." — cleanup plus a staleness discriminator.
 - `H7` — Resolves to "MUST keep every value crossing the server/client boundary serializable in the direction it crosses." — the sets are not symmetric.
-- `H8` — Resolves to "MUST treat the React Compiler as the memoization baseline wherever it is enabled, and keep the code it compiles inside H1 and H2." — the optimization is sound only while purity holds.
+- `H8` — Resolves to "MUST read the recorded compiler switch before memoizing, then follow the branch it selects and keep both branches inside H1 and H2." — the compiler is the baseline where it is enabled, and criteria-driven manual memoization is the mechanism where it is not.
 - `H9` — Resolves to "MUST render the element that carries the meaning, add ARIA only where no native element provides it, and move focus deliberately when a dialog opens and closes." — the markup is part of the contract.
 - `H10` — Resolves to "MUST prove behavior through the user-visible surface." — the seam a user and an assistive technology reach.
 - `H11` — Resolves to "NEVER mutate props, state, context values, hook arguments or return values, or a value already passed to JSX." — they are snapshots for their render.
@@ -70,7 +70,7 @@ always carry the word `Procedure`.
 - `P2` — Resolves to "Render is a pure function of props and state; an Effect is an escape hatch, not the mechanism."
 - `P3` — Resolves to "Give every piece of state exactly one owner, at the narrowest scope that serves it."
 - `P4` — Resolves to "Compose units, keep the prop surface narrow, and treat the rendered markup as part of the contract."
-- `P5` — Resolves to "Let the compiler memoize; reach for a manual memo only with a named reason."
+- `P5` — Resolves to "Memoize by the recorded compiler switch, not by habit." — which mechanism applies is a fact about the codebase, read before the decision.
 - `P6` — Resolves to "Know which boundary the code sits on, and what may cross it."
 - `P7` — Resolves to "Prove behavior the way a user reaches it."
 
@@ -94,10 +94,13 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Eighteen of the thirty-one items are conditional on a stated
+2. **Read the recorded React contract first.** Twenty-three of the thirty-three items are conditional on a stated
    predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
-   the contract is unrecorded, that is itself the finding — do not infer it from the diff.
+   the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
+   partitions three of those items rather than gating one: `REACT-CHECK-13` on the enabled branch, `-32` and
+   `-33` on the not-enabled branch, so `H8` is covered either way and all three resolving `n/a` means the switch
+   was never read.
 3. **Map the diff to its React surfaces** — render paths and hook call sites; lists and their keys; Effects, their
    cleanups, and their awaited results; the server and client boundary; the compiler's enablement and any
    memoization change; state placement; interactive markup and focus; the host and any privileged bridge; the
@@ -158,11 +161,12 @@ known?
 **Lens**: Is the change **efficient enough in idiomatic React** — the compiler trusted where it is enabled, manual
 memoization reasoned rather than reflexive, and no avoidable extra render passes?
 
-**Activated**: `REACT-SCENARIO-04`, `-07` · `REACT-CHECK-07`, `-08`, `-13`, `-14`.
+**Activated**: `REACT-SCENARIO-04`, `-07` · `REACT-CHECK-07`, `-08`, `-13`, `-14`, `-32`, `-33`.
 
 | Anti-pattern | Correction |
 |---|---|
 | **Memo hooks scattered "to be safe"** | Under an enabled compiler, write new code without manual memoization; keep a manual memo only with its reason at the call site |
+| **A `memo` whose child is fed a prop built during render** | With no compiler, give the prop a stable identity or drop the `memo`; the comparison runs, always fails, and the render happens anyway |
 | **Legacy memoization stripped during adoption** | Leave it, or remove it behind a test that observes the identity a downstream Effect depends on |
 | **An extra commit per user action** | Compute during render; each derived-state Effect adds a render pass and a frame of stale data |
 

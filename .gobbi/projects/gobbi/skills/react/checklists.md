@@ -251,7 +251,39 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Harm on fail.** Memoization written without a reason is noise the compiler already handles, and it
     accumulates as maintenance cost that later readers cannot distinguish from load-bearing code.
   - **`n/a` form.** `n/a: the recorded contract says the compiler is not enabled` — cited by the P1
-    record; manual memoization is then the mechanism, applied on evidence.
+    record. This item and `REACT-CHECK-32` split the compiler switch between them, so an `n/a` here
+    obliges `REACT-CHECK-32` instead; a run that resolves both `n/a` has not read the switch.
+  - **Source.** `REACT-SCENARIO-07` · `H8` · `P5`.
+
+- [ ] **REACT-CHECK-32** · gate · conditional — applies when the recorded contract says the React Compiler
+  is not enabled
+  - **Claim.** Every manual memoization the change adds names the criterion that selected it.
+  - **Pass when.** Each new `useMemo`, `useCallback`, or `memo` states which criterion earned it — render
+    cost, where the component re-renders often with the same props and its render work is expensive;
+    referential identity, where the value is a prop of a `memo`'d component or a dependency of another
+    hook; or an Effect dependency whose identity must be held stable. A `useCallback` wrapping a `useState`
+    setter does not pass: that identity is already stable, so no criterion can be named for it.
+  - **Evidence.** Read each added memoization site for its stated criterion, then read where the memoized
+    value is consumed and confirm the stated criterion is the one that actually holds there.
+  - **Harm on fail.** With no compiler, manual memoization is the mechanism, so an unreasoned memo is not
+    merely noise — it is indistinguishable from the load-bearing ones, and the next reader cannot tell
+    which removal is safe.
+  - **`n/a` form.** `n/a: the recorded contract says the compiler is enabled` — cited by the P1 record;
+    `REACT-CHECK-13` applies on that branch instead.
+  - **Source.** `REACT-SCENARIO-07` · `H8` · `P5`.
+
+- [ ] **REACT-CHECK-33** · required · conditional — applies when the recorded contract says the React
+  Compiler is not enabled and the change adds, edits, or passes props to a `memo`'d component
+  - **Claim.** Every prop that `memo`'d component receives keeps its identity across the parent's renders.
+  - **Pass when.** At each call site, no prop is an object, array, or function created during the parent's
+    render unless it is itself memoized or declared outside the component. A `useState` setter satisfies
+    this without wrapping.
+  - **Evidence.** Read every call site of the `memo`'d component and trace each non-primitive prop to where
+    it is created.
+  - **On fail.** Required item: open a finding. Repairing the prop's identity and dropping the `memo` are
+    both valid resolutions; keeping the `memo` beside a prop rebuilt every render is not.
+  - **`n/a` form.** `n/a: the compiler is enabled, or the change adds, edits, and calls no memo'd
+    component` — cited by the P1 record or the diff.
   - **Source.** `REACT-SCENARIO-07` · `H8` · `P5`.
 
 - [ ] **REACT-CHECK-14** · gate · conditional — applies when the change removes existing manual
@@ -462,7 +494,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `H5` | 07 | `H14` | 14 |
 | `H6` | 09, 10 | `H15` | 16, 26 |
 | `H7` | 11, 12 | `H16` | 20, 28 |
-| `H8` | 13 | `H17` | 19 |
+| `H8` | 13, 32, 33 | `H17` | 19 |
 | `H9` | 17, 18, 27 | | |
 
 ### Principles
@@ -473,7 +505,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `P2` Render is pure; an Effect is an escape hatch | 01, 02, 07 |
 | `P3` One owner per piece of state | 08, 15 |
 | `P4` Compose, narrow props, markup is contract | 17 |
-| `P5` Let the compiler memoize | 13 |
+| `P5` Memoize by the recorded compiler switch | 13, 32, 33 |
 | `P6` Know the boundary | 11, 19, 20 |
 | `P7` Prove behavior the way a user reaches it | 29 |
 
@@ -496,7 +528,7 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-04` | 07, 08 |
 | `REACT-SCENARIO-05` | 09, 10, 31 |
 | `REACT-SCENARIO-06` | 11, 12 |
-| `REACT-SCENARIO-07` | 13, 14, 25, 31 |
+| `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33 |
 | `REACT-SCENARIO-08` | 15, 16, 26 |
 | `REACT-SCENARIO-09` | 17, 18, 27 |
 | `REACT-SCENARIO-10` | 19, 20, 25, 28 |
@@ -505,10 +537,15 @@ at least one scenario family. Both directions were swept for orphans.
 
 ### Counts
 
-31 items — 18 gates and 13 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-31` were added where
+33 items — 19 gates and 14 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
+slots the scenario families reserved and keep their reserved family; `-25` through `-33` were added where
 a family carried more than two independently falsifiable obligations. An identifier is never reused or
 renumbered once published.
+
+Twenty-three items are conditional on a stated predicate. Three of those read the compiler switch and they
+partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
+therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
+`n/a` has not resolved `REACT-CHECK-25`.
 
 ---
 
