@@ -599,9 +599,12 @@ to be followed, not to be pointed at.
 *Input:* the user trigger, the live application if one exists, project rules, applicable mistakes, and the
 decision authority.
 
-*Action:* write the one-sentence outcome and expand it per `DESK-R01`; enumerate the claimed operating
-systems; run the six-criterion wrong-choice test per `DESK-R03`; state the ownership boundary per `DESK-R04`;
-open the design record per `DESK-R29`.
+*Action:* **load [`ideation.md`](ideation.md) first and keep it open through `P6`** — it is the run's decision
+tree, it fires every `DESK-R27` gate in interview order, and its `D5` establishes the participant conditions
+before any rung begins, so a run that reaches `P3` without it has already passed a fail-closed axis. Then write
+the one-sentence outcome and expand it per `DESK-R01`; enumerate the claimed operating systems; run the
+six-criterion wrong-choice test per `DESK-R03`; state the ownership boundary per `DESK-R04`; open the design
+record per `DESK-R29`.
 
 *Evidence:* the locked outcome and scope contract, the operating-system claim set, the wrong-choice result
 table with an inspected result per criterion, and the authority map naming every `DESK-R27` gate and who
@@ -777,7 +780,9 @@ condition that produced it, never a summary of it.
 
 *Action:* resolve the research, task-analysis, information-architecture, navigation, and user-flow rungs,
 each by its own question and validation method, in the generative-then-evaluative order per `DESK-R09`;
-record each rung's resolution and its substantiating evidence.
+record each rung's resolution and its substantiating evidence. Each rung's question, default artifact,
+done-condition, and closing evidence are [`fidelity-ladder.md`](fidelity-ladder.md)'s; the applicability
+decision for each was taken at [`ideation.md`](ideation.md)'s `D6`.
 
 *Evidence:* rung register rows 0–4, each with its resolution kind, artifact or citation pointer, and the
 inspected findings that satisfy that kind's conditions; the participant consent and accommodation record for
@@ -825,7 +830,8 @@ explicit approval or reopening before any visual rung begins; then resolve the w
 interactive-prototype rungs, stating each visual artifact's position on all three fidelity axes; run the
 round cadence per `DESK-R09`; hold the four floors per `DESK-R10`–`DESK-R13`, including each floor's property
 check and residual clause; present the complete design record at `DESK-G4`, the design acceptance gate, per
-`DESK-R27`.
+`DESK-R27`. The rung questions and the three axis definitions are [`fidelity-ladder.md`](fidelity-ladder.md)'s;
+the two gates run through [`ideation.md`](ideation.md)'s `D8` and `D9`.
 
 *Evidence:* rung register row 5 carrying the `DESK-G3` decision; rung register rows 6–8 with the
 per-visual-artifact three-axis statement; the direct representative-user records per claimed operating system
@@ -873,10 +879,14 @@ otherwise `P5`.
 
 *Input:* the accepted design record and the platform foundation.
 
-*Action:* fix the process split and the privileged surface; enumerate every inter-process channel with its
-payload type, its validation, and its sender rule; fix the window and lifecycle contract, the local data
-contract including the migration and downgrade path, the native integration set, the security posture as the
-two distinct kinds of work, and the per-operating-system deltas.
+*Action:* fix the process split and the privileged surface, and enumerate every inter-process channel with its
+payload type, its validation, and its sender rule ([`process-model.md`](process-model.md)); fix the window and
+lifecycle contract, including the entry-mode inventory
+([`windows-lifecycle.md`](windows-lifecycle.md)); the local data contract including the migration and downgrade
+path ([`filesystem-data.md`](filesystem-data.md)); the native integration set, tray and dock included
+([`native-integration.md`](native-integration.md)); the security posture as the two distinct kinds of work
+([`security.md`](security.md)); and the per-operating-system deltas
+([`runtime-deltas.md`](runtime-deltas.md)).
 
 *Evidence:* the approved application contract with a channel inventory, a lifecycle and window-state map, a
 data and migration map, and a per-operating-system delta matrix.
@@ -895,10 +905,12 @@ implementation; otherwise `P6`.
 
 *Input:* the locked application contract.
 
-*Action:* select the applicable scenario cases and checks; set the quality targets from a project owner or
-current evidence; decide the hardening-versus-testability build matrix as an explicit user decision at
-`DESK-G5`; apply the build-tool selection criterion at `DESK-G6`; plan the signing, notarization, update,
-channel, staged-rollout, and stop-condition controls.
+*Action:* select the applicable scenario cases ([`scenarios.md`](scenarios.md)) and checks
+([`checklists.md`](checklists.md)); set the quality targets from a project owner or current evidence; decide
+the hardening-versus-testability build matrix as an explicit user decision at `DESK-G5`; apply the build-tool
+selection criterion at `DESK-G6` ([`packaging-distribution.md`](packaging-distribution.md)); plan the signing,
+notarization, update, channel, staged-rollout, and stop-condition controls
+([`signing-updates.md`](signing-updates.md)).
 
 *Evidence:* the case and check register, the quality-target table with a source per target, the recorded
 build-matrix decision with both horns stated, and the release-control plan.
@@ -921,8 +933,9 @@ marked as needing its own authority; otherwise `P7`.
 phase's own record, because the three-target split is derived from the verified preload-context sentence and
 is not documented by any primary source, so the phase states it as derived wherever it states it — plus the
 shared contract type, the bridge surface, the channel signatures with stub handlers, the window creation
-path, and the instrumentation points; connect the smallest real path from a window through the bridge to a
-privileged effect and a truthful completion.
+path, and the instrumentation points ([`process-model.md`](process-model.md) owns the context split and the
+crossable-type boundary); connect the smallest real path from a window through the bridge to a privileged
+effect and a truthful completion.
 
 *Evidence:* a green type-check per target, an import and build check, and one end-to-end trace with the
 effect observed at its authoritative source.
@@ -941,8 +954,9 @@ body; otherwise `P8`.
 
 *Action:* add the ordinary path, then the alternative-valid classes, the exact boundaries, the failures and
 recovery, the adversarial behavior, the per-operating-system deltas, and the compatibility and migration
-behavior; move code, contract, data, configuration, documentation, tests, and instrumentation together in
-each slice and verify that slice before the next.
+behavior — the case classes are [`scenarios.md`](scenarios.md)'s and the deltas are
+[`runtime-deltas.md`](runtime-deltas.md)'s; move code, contract, data, configuration, documentation, tests,
+and instrumentation together in each slice and verify that slice before the next.
 
 *Evidence:* an ordered slice log, each entry carrying its own fresh focused verification and its updated
 affected-surface trace.
@@ -959,9 +973,11 @@ otherwise `P9`.
 *Input:* the grown implementation and the quality targets.
 
 *Action:* run the language-level order to build, then the four added gates per `DESK-R23` — package per
-operating system, install and smoke-test in a clean environment, verify signature and notarization on the
-real artifact, rehearse an update from the previously released version — and take each remaining claim to the
-evidence class that owns it per `DESK-R25`.
+operating system ([`packaging-distribution.md`](packaging-distribution.md)), install and smoke-test in a clean
+environment, verify signature and notarization on the real artifact, rehearse an update from the previously
+released version ([`signing-updates.md`](signing-updates.md)) — resolve the applicable items of
+[`checklists.md`](checklists.md)'s implementation pause point, and take each remaining claim to the evidence
+class that owns it per `DESK-R25`.
 
 *Evidence:* the claim-owner verification matrix naming the exact command or action, environment, version and
 configuration, fresh result, artifact pointer, and limitation for each claim; a per-operating-system row for
