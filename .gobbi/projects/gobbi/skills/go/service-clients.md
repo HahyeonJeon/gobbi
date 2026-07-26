@@ -228,12 +228,12 @@ to what you are transferring — invisible on a test object and severe on a real
 The rule: body logging is a switch you turn on for one investigation and off again, never a deployment
 default and never a flag a configuration file can set in production. Each child names its own switch.
 
-> **Unverified:** the AWS-specific form of this class — the exact log-mode flag names, the claim that
-> body logging costs memory equal to the payload size, and the wording about an access key ID
-> appearing in wire logs. Two verification passes carried the claim without transcribing an owner
-> sentence, and this class states it generally rather than attributing unsourced wording. **What would
-> resolve it:** the `ClientLogMode` documentation on `pkg.go.dev/github.com/aws/aws-sdk-go-v2/aws`,
-> read at a pinned module version and transcribed.
+> **Unverified:** two halves of the AWS-specific form of this class — that body logging costs memory
+> equal to the payload size, and the wording about an access key ID appearing in wire logs. Every
+> verification pass carried both without transcribing an owner sentence, so neither is stated as an
+> owner's claim anywhere in this skill. **What would resolve it:** `aws/logging.go` in
+> `github.com/aws/aws-sdk-go-v2`, read at a pinned module version, for a sentence carrying either
+> cost. The flag names themselves are sourced and are [`aws.md`](aws.md)'s delta.
 
 ## §8 — Watches, informers, and streams own goroutines that must be stopped
 
@@ -335,9 +335,15 @@ across a server upgrade.
 says so — *"API-version negotiation is now enabled by default and this options is now a no-op"* — and
 the older constructor is deprecated too: *"Deprecated: use [New]. This function will be removed in the
 next release."* Do not write `WithAPIVersionNegotiation` into new code, and do not keep
-`NewClientWithOpts` "for safety": both carry a `//go:fix inline` directive, so `go fix` rewrites them
-mechanically. Teach the fixer, not a hand migration ([`modules-tooling.md`](modules-tooling.md) §7
-owns `go fix`).
+`NewClientWithOpts` "for safety".
+
+**Run the fixer, then check what it left.** Some deprecated symbols carry a `//go:fix inline`
+directive and `go fix` rewrites them mechanically; others do not, and those are a hand deletion. Both
+kinds sit side by side here: `go fix` clears three of the four deprecated symbols in this client,
+**and `WithAPIVersionNegotiation` is not one of them** — it carries no directive and its body simply
+returns nil, so the fixer leaves it in place and silently correct-looking. A clean `go fix` run is
+therefore not evidence that a deprecation has been dealt with. [`docker.md`](docker.md) lists which
+symbol is which, and [`modules-tooling.md`](modules-tooling.md) §7 owns `go fix`.
 
 **And here is the durable half of this class: module metadata will not tell you when the answer
 changes.** Go carries no deprecation state in module metadata, so a frozen, abandoned module keeps
