@@ -298,11 +298,14 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 - [ ] **REACT-CHECK-32** · gate · conditional — applies when the recorded contract says the React Compiler
   is not enabled
   - **Claim.** Every manual memoization the change adds names the criterion that selected it.
-  - **Pass when.** Each new `useMemo`, `useCallback`, or `memo` states which criterion earned it — render
-    cost, where the component re-renders often with the same props and its render work is expensive;
-    referential identity, where the value is a prop of a `memo`'d component or a dependency of another
-    hook; or an Effect dependency whose identity must be held stable. A `useCallback` wrapping a `useState`
-    setter does not pass: that identity is already stable, so no criterion can be named for it.
+  - **Pass when.** Each new `useMemo`, `useCallback`, or `memo` states which criterion earned it —
+    calculation cost, where the wrapped calculation is measurably slow and its dependencies hold still
+    between renders; render cost, where the component re-renders often with the same props and its render
+    work is expensive; referential identity, where the value is a prop of a `memo`'d component or a
+    dependency of another hook; or an Effect dependency whose identity must be held stable. A
+    `useCallback` wrapping a `useState` setter does not pass: that identity is already stable, so no
+    criterion can be named for it. A calculation-cost claim asserted without a measurement does not pass
+    either — the criterion is that it was measured, not that it looked expensive.
   - **Evidence.** Read each added memoization site for its stated criterion, then read where the memoized
     value is consumed and confirm the stated criterion is the one that actually holds there.
   - **Harm on fail.** With no compiler, manual memoization is the mechanism, so an unreasoned memo is not
@@ -515,6 +518,23 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **On fail.** Required item: open a finding.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P4` · `Procedure P8`.
 
+- [ ] **REACT-CHECK-37** · required · conditional — applies in author mode, where a design packet exists
+  - **Claim.** The design packet carries every element Procedure P4 names, including where an error
+    boundary catches and where a loading state is revealed.
+  - **Pass when.** The packet presented and approved at P4 contains each of its named elements — the
+    component-tree sketch, the prop and type surface, the state-placement table with owners, the
+    server/client and host boundary map, the error and loading boundary placement, and one credible
+    alternative — and each resolves to something in the change or to a stated reason it needed nothing. A
+    packet that simply omits the error and loading boundary placement fails: silence is not a placement
+    decision.
+  - **Evidence.** The approved packet read against P4's list of elements, element by element.
+  - **On fail.** Required item: open a finding. This item asks whether the decision was made and recorded;
+    `REACT-CHECK-30` asks whether the recorded decisions reached the code, and neither substitutes for the
+    other.
+  - **`n/a` form.** `n/a: the run is review mode, which reconstructs a packet rather than presenting one`
+    — cited by the declared mode.
+  - **Source.** `REACT-SCENARIO-12` · `Procedure P3` · `Procedure P4`.
+
 - [ ] **REACT-CHECK-31** · gate · unconditional
   - **Claim.** Every applicable verification gate ran on the final tree and exited clean.
   - **Pass when.** Each gate in the parent's fixed order — format, lint including the hooks rules,
@@ -579,8 +599,8 @@ at least one scenario family. Both directions were swept for orphans.
 |---|---|---|---|
 | `Procedure P1` | 25, 36 | `Procedure P5` | 21 |
 | `Procedure P2` | none — see gaps | `Procedure P6` | 22 |
-| `Procedure P3` | 15 | `Procedure P7` | 31, 36 |
-| `Procedure P4` | 30 | `Procedure P8` | 23, 24, 30 |
+| `Procedure P3` | 15, 37 | `Procedure P7` | 31, 36 |
+| `Procedure P4` | 30, 37 | `Procedure P8` | 23, 24, 30 |
 
 ### Items to families
 
@@ -597,16 +617,16 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-09` | 17, 18, 27 |
 | `REACT-SCENARIO-10` | 19, 20, 25, 28 |
 | `REACT-SCENARIO-11` | 21, 22 |
-| `REACT-SCENARIO-12` | 23, 24, 29, 30 |
+| `REACT-SCENARIO-12` | 23, 24, 29, 30, 37 |
 
 ### Counts
 
-36 items — 21 gates and 15 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-36` were added where
+37 items — 21 gates and 16 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
+slots the scenario families reserved and keep their reserved family; `-25` through `-37` were added where
 a family carried more than two independently falsifiable obligations. An identifier is never reused or
 renumbered once published.
 
-Twenty-six items are conditional on a stated predicate. Three of those read the compiler switch and they
+Twenty-seven items are conditional on a stated predicate. Three of those read the compiler switch and they
 partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
 therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
 `n/a` has not resolved `REACT-CHECK-25`.
@@ -618,11 +638,15 @@ therefore covered whichever way the switch is recorded, and a run that resolves 
 - **Procedure P2, loading the companion for the fork in play, has no item.** Reading a document leaves no
   artifact an evaluator can inspect, so any check would resolve from the reader's assertion. Its effect is
   observable only through the items that depend on the depth it carries, and those are already here.
-- **Procedure P3 act 6 — error and loading boundary placement — has no item, deliberately.** No scenario
-  family turns on where a boundary is placed or what it catches; `REACT-SCENARIO-11` reaches the design
-  acts structurally, not this one. A check written here would have no case behind it and could not fail an
-  artifact that ignored boundary placement entirely. Recorded as a gap rather than filled: the scenario
-  set needs a family first.
+- **Procedure P3 act 6 — error and loading boundary placement — is now half covered, and the other half
+  is a recorded gap.** `REACT-CHECK-37` fails a change whose design packet is silent on the placement, so
+  omitting the decision is now detectable through `REACT-SCENARIO-12`'s traceability discrimination. What
+  is still uncovered is *behavior*: no item can fail a change that places a boundary at an unusable
+  granularity, or that relies on one for an error a boundary does not catch — an event handler, server
+  rendering, or ordinary asynchronous code. `design.md` §5 teaches all of that from the source, but
+  teaching is not a gate. Closing it needs a scenario family whose defining discrimination is render-time
+  failure and recovery, and adding a thirteenth family crosses this set's stated split threshold, so it is
+  a structural decision rather than a checklist edit.
 - **`REACT-CHECK-16` depends on a second client or an equivalent out-of-band write.** Where neither is
   available in the review environment, the item resolves from the recorded invalidation trigger being
   exercised — a weaker observation than the two-client one, and the run should say which it used.

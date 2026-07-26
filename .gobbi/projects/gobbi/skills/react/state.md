@@ -94,8 +94,16 @@ branches, updated often enough that context's re-render behavior is the problem,
 any particular tree. *Ecosystem convention* — the rung itself is a real architectural slot, but React
 publishes no position on external stores, and the libraries occupying this rung are not named here.
 
-What React does provide for reading one safely is a subscription primitive, and the subscription rules are
-`H6`'s: create it in an Effect, remove it in the cleanup.
+What React does provide for reading one safely is `useSyncExternalStore`, and its subscription lifecycle
+is the hook's rather than an Effect's: you call it at the top level and pass a subscribe function, and
+*"the subscribe function should subscribe to the store and return a function that unsubscribes."* Do not
+rebuild that as a `useState`-plus-Effect subscription — [`async.md`](async.md) §3 is why: that ad-hoc
+shape is what the primitive exists to replace, and it tears during concurrent rendering.
+
+`H6`'s create-and-clean-up model still governs an external subscription that has **no** React-consumable
+adapter — a push channel from a host process, for instance, which [`runtime.md`](runtime.md) §3 handles
+that way. The distinction is whether a subscribe/unsubscribe pair can be handed to the primitive, not
+whether the value lives outside React.
 
 ## 3. `useState` or `useReducer`
 
@@ -204,6 +212,7 @@ register owns the rule-level citations.
 | [Sharing State Between Components](https://react.dev/learn/sharing-state-between-components) | §2 — lifting removes state from both children and moves it to their closest common parent |
 | [Passing Data Deeply with Context](https://react.dev/learn/passing-data-deeply-with-context) | §2 — context's reach, the two alternatives to try first, and the endorsed tree-wide use cases |
 | [`useContext`](https://react.dev/reference/react/useContext) | §2 — `memo` does not stop a context update reaching its readers |
+| [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore) | §2 — the subscribe function subscribes to the store and returns the function that unsubscribes |
 | [Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer) | §3 — the four comparison axes and the closing "personal preference" |
 | [Referencing Values with Refs](https://react.dev/learn/referencing-values-with-refs) | §4 — changing a ref does not re-render, and refs are not read or written during rendering |
 | [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect) | §5 — the four difficulties a data layer solves, why frameworks provide one, and the custom-hook answer for a project with neither |

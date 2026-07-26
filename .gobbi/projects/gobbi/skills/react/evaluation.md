@@ -95,7 +95,7 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Twenty-six of the thirty-six items are conditional on a stated
+2. **Read the recorded React contract first.** Twenty-seven of the thirty-seven items are conditional on a stated
    predicate, and most of those predicates read the host, whether the compiler is enabled, and the source
    language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
    the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
@@ -148,7 +148,7 @@ identity-keyed lists, Effects only for external systems, one owner per datum, an
 known?
 
 **Activated**: `REACT-SCENARIO-01`, `-02`, `-03`, `-04`, `-06`, `-08` · `REACT-CHECK-01`, `-02`, `-03`, `-04`,
-`-05`, `-06`, `-07`, `-08`, `-11`, `-12`, `-15`.
+`-05`, `-06`, `-07`, `-08`, `-11`, `-12`, `-15`, `-37`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -211,6 +211,7 @@ moved together, an adoption event handled coherently, and every taught claim tra
 | **A taught example nobody can locate** | Hold the source, the exact location, and the sentence that states what the example shows; the examples here have no harness behind them |
 | **A client copy with no invalidation** | Name what refreshes or discards it, and confirm that trigger exists in the code |
 | **A design item with no implementation** | Trace every approved item to a unit, and every affected file to a change or a stated no-op |
+| **A packet silent on failure boundaries** | The placement is a named packet element; silence records no decision and `design.md` §5 states what a boundary does not catch |
 
 ### Risk
 

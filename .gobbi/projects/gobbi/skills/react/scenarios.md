@@ -437,9 +437,12 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Good handling:** the property axis, the language-idiom axis, and the React-idiom axis are graded
   separately and produce three verdicts; the activated binary items are answered with outcomes; every
   approved design item maps to an implemented unit and every affected-set file is updated or recorded as a
-  justified no-op; every taught example names the primary source that states what it shows.
+  justified no-op; the design packet itself carries every element the procedure names, so what was decided
+  is as traceable as what was built; every taught example names the primary source that states what it
+  shows.
 - **Bad handling:** one pass conflates the three axes, so a change that is fluent React but shallow as
-  software passes; an example reads plausibly and no source states it.
+  software passes; the packet is silent on where an error boundary catches, so nothing records that the
+  decision was ever made; an example reads plausibly and no source states it.
 - **Alternative-valid:** a plain-JavaScript codebase — the language-idiom axis is omitted and exactly two
   axes remain, which is a complete review rather than a reduced one.
 - **Change:** the affected set includes existing callers and tests, which move with the change rather than

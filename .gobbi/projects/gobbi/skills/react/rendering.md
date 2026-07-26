@@ -151,24 +151,33 @@ the decision.
 
 1. **Is anything re-rendering often enough to matter?** The default is no memoization. §2's cascade tells
    you what re-renders; measure or reason about frequency before optimizing.
-2. **Render cost.** *"Optimizing with `memo` is only valuable when your component re-renders often with the
+2. **Calculation cost — the case that needs no `memo`'d child at all.** *"By default, React will re-run
+   the entire body of your component every time that it re-renders"*, and *"usually, this isn't a problem
+   because most calculations are very fast. However, if you're filtering or transforming a large array, or
+   doing some expensive computation, you might want to skip doing it"* — which is what `useMemo` is for:
+   *"a React Hook that lets you cache the result of a calculation between re-renders."* The saving applies
+   only while the dependencies are unchanged, so a dependency that changes every render buys nothing.
+   **Measure rather than guess**: *"In general, unless you're creating or looping over thousands of
+   objects, it's probably not expensive"*, and the source's own method is to time it —
+   `console.time('filter array')` around the call, then perform the interaction and read the log.
+3. **Render cost.** *"Optimizing with `memo` is only valuable when your component re-renders often with the
    same exact props, and its re-rendering logic is expensive."* Both halves are required: frequent
    re-renders with cheap output are not worth a comparison, and expensive output that renders once is not
    worth caching.
-3. **Referential identity.** This is the criterion the render-cost sentence does not cover, and it is the
+4. **Referential identity.** This is the criterion the render-cost sentence does not cover, and it is the
    one most decisions actually turn on. A `memo`'d child compares its props, so it skips a render only
    while those props keep their identity: *"Keep in mind that `memo` is completely useless if the props
    passed to your component are always different, such as if you pass an object or a plain function defined
    during rendering."* The pairing is deliberate — *"this is why you will often need `useMemo` and
    `useCallback` together with `memo`."*
-4. **Where `useCallback` pays, and where it does not.** *"Caching a function with `useCallback` is only
+5. **Where `useCallback` pays, and where it does not.** *"Caching a function with `useCallback` is only
    valuable in a few cases: You pass it as a prop to a component wrapped in `memo` … The function you're
    passing is later used as a dependency of some Hook."* Outside those two, *"there is no benefit to
    wrapping a function in `useCallback`"*.
-5. **What is already stable.** *"The set function has a stable identity, so you will often see it omitted
+6. **What is already stable.** *"The set function has a stable identity, so you will often see it omitted
    from Effect dependencies, but including it will not cause the Effect to fire."* A `useState` setter
    passed down needs no `useCallback`, and listing one as a dependency changes nothing.
-6. **What memoization cannot reach.** A context value: see §2. Wrapping the reader does not stop it.
+7. **What memoization cannot reach.** A context value: see §2. Wrapping the reader does not stop it.
 
 ### The pair, defeated and repaired
 
@@ -225,6 +234,7 @@ about props crossing into a `memo`'d boundary, not about arrow functions in gene
 | A function is passed to an ordinary child, and no hook depends on it | Leave it alone |
 | A `useState` setter is passed down | Leave it alone — its identity is already stable |
 | A value is an Effect dependency whose identity must not churn | Memoize it; this is the exception `H8` names in both branches |
+| A calculation in this component's own body is measurably slow | `useMemo` it — and check the dependencies actually hold still, or it saves nothing |
 | A child re-renders often with the same props and its render is expensive | `memo` it |
 | A child's props are rebuilt on every render anyway | Fix the props first; `memo` alone changes nothing |
 | A component reads a fast-changing context | Memoization will not help; move the value, not the reader |
@@ -301,6 +311,7 @@ is made. The pages were re-read on 2026-07-26 and the quoted sentences located i
 | [React Compiler introduction](https://react.dev/learn/react-compiler/introduction) | §2 and §5–§6 — the child cascade unless manually memoized, automatic memoization "as precise, or moreso", the effect-dependency escape hatch, the legacy-removal warning, and the `onClick` example whose Note states the broken memoization |
 | [React Compiler 1.0](https://react.dev/blog/2025/10/07/react-compiler-1) | §5 — the first stable release and its date, the lint rules shipping in `eslint-plugin-react-hooks`'s `recommended` preset |
 | [`memo`](https://react.dev/reference/react/memo) | §6 — "only valuable when your component re-renders often with the same exact props, and its re-rendering logic is expensive"; "completely useless if the props … are always different" |
+| [`useMemo`](https://react.dev/reference/react/useMemo) | §6 — the whole-body re-run, what `useMemo` caches, the slow-calculation case, and how to measure whether a calculation is expensive |
 | [`useCallback`](https://react.dev/reference/react/useCallback) | §6 — the two cases where caching a function is valuable; §9 — virtualized lists named as a possible future React feature |
 | [`useState`](https://react.dev/reference/react/useState) | §6 — the set function's stable identity |
 | [`useContext`](https://react.dev/reference/react/useContext) | §2 — every reader re-renders from the provider that received a different value; `memo` does not stop fresh context values |

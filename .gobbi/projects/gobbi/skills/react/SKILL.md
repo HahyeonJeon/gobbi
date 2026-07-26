@@ -157,17 +157,21 @@ exception needs; it never introduces an exception this file does not state.
   memoized value is an Effect dependency whose identity must be held stable; (b) precise control the
   compiler's analysis cannot express is genuinely needed. **Compiler not enabled.** `useMemo`,
   `useCallback`, and `memo` are the mechanism, applied on evidence and never by default: without them a
-  state change re-renders that component and all of its children. Three independent criteria select a
-  site. *Render cost* — `memo` is worth adding where a component re-renders often with the same props and
-  its render work is expensive. *Referential identity* — a `memo`'d child skips a render only while every
-  prop it receives keeps its identity, so an object or function created during render defeats it, and
-  `useCallback` or `useMemo` on that prop is what makes the `memo` real. *A held identity* — a value an
-  Effect depends on is memoized to stop the Effect re-firing on an identity change that means nothing,
-  which is exception (a) above applying on this branch too. Three consequences follow:
+  state change re-renders that component and all of its children. Four independent criteria select a
+  site. *Calculation cost* — React "will re-run the entire body of your component every time that it
+  re-renders", so a calculation that is genuinely slow is wrapped in `useMemo`, which then skips it while
+  its dependencies are unchanged; the source's own test is measurement rather than intuition, and its own
+  rule of thumb is that "unless you're creating or looping over thousands of objects, it's probably not
+  expensive". *Render cost* — `memo` is worth adding where a component re-renders often with the same
+  props and its render work is expensive. *Referential identity* — a `memo`'d child skips a render only
+  while every prop it receives keeps its identity, so an object or function created during render defeats
+  it, and `useCallback` or `useMemo` on that prop is what makes the `memo` real. *A held identity* — a
+  value an Effect depends on is memoized to stop the Effect re-firing on an identity change that means
+  nothing, which is exception (a) above applying on this branch too. Three consequences follow:
   wrapping a function that is neither a prop of a `memo`'d component nor another hook's dependency buys
   nothing; a `useState` setter already has a stable identity and never needs wrapping; and `memo` on a
   child whose props differ on every render is cost with no benefit. Source: react.dev React Compiler 1.0,
-  the compiler introduction, `memo`, `useCallback`, and `useState`. Depth: `rendering.md`.
+  the compiler introduction, `memo`, `useMemo`, `useCallback`, and `useState`. Depth: `rendering.md`.
 - **H9 — MUST render the element that carries the meaning, add ARIA only where no native element
   provides it, and move focus deliberately when a dialog opens and closes.** In React every `aria-*`
   attribute is written exactly as in HTML, so this is a component's output contract, not a separate
@@ -495,6 +499,9 @@ One owner per borrowed fact; the body states the fact and this register names it
 - [`memo`](https://react.dev/reference/react/memo) — memoization is a performance optimization and not a
   guarantee; it is only valuable for frequent re-renders with the same props and expensive render work,
   and it is useless when the props are always different because a prop was created during render (H8).
+- [`useMemo`](https://react.dev/reference/react/useMemo) — caching the result of a calculation between
+  re-renders, the slow-calculation case it is for, and how to measure whether a calculation is expensive
+  (H8).
 - [`useCallback`](https://react.dev/reference/react/useCallback) — caching a function is valuable only
   when it is passed to a component wrapped in `memo` or used as another hook's dependency (H8).
 - [`useState`](https://react.dev/reference/react/useState) — the set function has a stable identity (H8).
