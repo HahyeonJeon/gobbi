@@ -59,7 +59,7 @@ and adversarial are present in every family by construction, so they are recorde
 |---|---|---|---|---|---|---|---|---|
 | 1 Purpose | 11 | 11 | 11 | 11 | — | 11 | — | — |
 | 2 Actors | 09 | 09 | 09 | — | — | 11, 12 | — | — |
-| 3 Behavior | 01–04, 08 | 01–04, 08 | 01–04, 08 | 01, 02, 03, 08 | — | — | — | 04 |
+| 3 Behavior | 01–04, 08 | 01–04, 08 | 01–04, 08 | 01, 02, 03, 08 | 01 | — | — | 04 |
 | 4 Interfaces | 06 | 06 | 06 | 06 | 06 | — | — | — |
 | 5 Quality | 07 | 07 | 07 | — | — | — | 07 | 07 |
 | 6 Failure | 05 | 05 | 05 | 05 | 05 | — | — | — |
@@ -68,13 +68,13 @@ and adversarial are present in every family by construction, so they are recorde
 | 9 Change | 07 | 07 | 07 | — | — | — | 07 | 07 |
 | 10 Evidence | 12 | 12 | 12 | — | — | 12 | 12 | — |
 
-Cells: 48 across 12 families. An empty cell means the category's families do not turn on that type's
+Cells: 49 across 12 families. An empty cell means the category's families do not turn on that type's
 trigger property; each family's `Minimums:` line names the property that makes it inapplicable.
 
 ### Set scale
 
 Thresholds for splitting this set under a parent index: 12 families or 50 cells. The set is at 12
-families and 48 cells, so it stays single. A thirteenth family splits it.
+families and 49 cells, so it stays single. A thirteenth family splits it.
 
 ### Source register
 
@@ -129,17 +129,21 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Boundary:** exactly two render attempts with identical props. Deterministic null-guard initialization
   produces the same component result and no external difference across replay. Each of the five negative
   ref cases fails independently.
+- **Failure/recovery:** instrument the I/O dependency constructor and attempt to call it inside the null
+  guard. Correct handling rejects the render-time path before invocation, with zero dependency calls and
+  zero live handles requiring cleanup. If any handle opens, the case fails because H1 forbids starting I/O
+  during render; closing it later earns no recovery credit.
 - **Adversarial probe:** the mutation is invisible in the fixture because the array is already sorted, so
   review passes and real data corrupts. **Cosmetic form:** the mutation is "made pure" by wrapping it in a
   `useMemo`, which still runs during render; or an I/O, time-based, random, or replay-dependent ref write
   is placed behind `ref.current === null` and presented as initialization.
-- **Minimums:** boundary see above · adversarial see above · failure/recovery `n/a: the I/O case is
-  rejected before any dependency call, not an injected dependency failure or partial mutation` · change
-  `n/a: no version or lifecycle event` · counterfactual `n/a: no load-bearing premise to invert`.
+- **Minimums:** boundary see above · failure/recovery see above · adversarial see above · change `n/a: no
+  version or lifecycle event` · counterfactual `n/a: no load-bearing premise to invert`.
 - **Oracle:** run six ref cases separately: deterministic null-guard construction passes; changing-ref
   JSX, every-render assignment, I/O construction, time or randomness, and replay-dependent construction
   each fail for their own reason. Render twice with the same props and compare the output and any external
-  state touched.
+  state touched. For the I/O case, observe the constructor call count and live-handle set; both must remain
+  zero, and an opened handle fails even if it is later closed.
 - **Obligation:** the design must place every mutation and subscription outside render except the complete
   deterministic null-guard initialization case, and must treat a value passed to JSX as frozen from that
   point.
