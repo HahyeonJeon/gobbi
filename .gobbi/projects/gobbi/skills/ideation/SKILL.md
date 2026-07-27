@@ -1,13 +1,13 @@
 ---
 name: ideation
-description: MUST load for Ideation. Turns a user trigger into a reference-backed, scope-locked, plan-ready What, Why, and How.
+description: MUST load for Ideation. Turns a user trigger into a reference-backed, scope-locked, user-approved What, Why, and How.
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Ideation
 
-Use this skill when Ideation starts or repeats to turn a user trigger into a concrete What, Why, and How. Ideation uses successive discussions that progress hierarchically from the problem, rationale, and scope boundaries to increasingly detailed, reference-backed design choices and material user decisions. It ends with one user-approved, plan-ready artifact that records the chosen design, decision rationale, supporting evidence, and constraints so Planning can decompose it without reconstructing missing context.
+Use this skill when Ideation starts or repeats to turn a user trigger into a concrete What, Why, and How. Ideation uses successive discussions that progress hierarchically from the problem, rationale, and scope boundaries to increasingly detailed, reference-backed design choices and material user decisions. It ends with one self-contained, user-approved artifact that records the chosen design, decision rationale, supporting evidence, constraints, risks, validation commitments, and traceability without relying on private context or another skill.
 
 ## Principles
 
@@ -27,37 +27,28 @@ A coherent design grows through successive discussions from the whole to its par
 
 At each material design level, first develop genuinely different alternatives, including doing nothing when it is credible. Define the decision criteria from the user outcome, scope, constraints, risks, cost, and success signals before comparing the alternatives. Present their concrete trade-offs with one recommendation, then obtain the user's decision for material scope or design choices. Record the selected option, rejected alternatives, decision rationale, and the evidence that would justify reopening the decision.
 
-### Write artifacts and prove readiness at checkpoints and phase transitions
+### Keep the artifact current and prove completion
 
-Discussion produces decisions, but written artifacts preserve and expose them. At each defined checkpoint and before each phase transition, update the canonical artifacts with the current problem, scope, evidence, decision criteria, alternatives, selected design, rationale, consequences, assumptions, constraints, unresolved questions, and known risks. Use the checkpoint to identify disagreement or missing evidence. Advance only when material decisions are resolved and the highest-risk assumptions have enough evidence for the next phase; otherwise remain in Ideation and return to the affected problem or design level.
+User discussion produces decisions, but a current artifact preserves and exposes them. At each defined checkpoint, update the artifact with the current problem, scope, evidence, decision criteria, alternatives, selected design, rationale, consequences, assumptions, constraints, unresolved questions, and known risks. Use each checkpoint to identify disagreement or missing evidence. Complete Ideation only when material decisions are resolved, high-risk assumptions have sufficient evidence or an explicit validation commitment, and a cold reader can understand the approved result without private context.
 
 ## Rules
 
-Ideation applies from the first problem framing through user approval of a plan-ready design. It uses [Discussion](../discussion/SKILL.md) for user-facing questions and decisions. Its base method owns the design discussion, material decisions, and plan-ready written artifacts. Applicable domain skills independently own their specialized procedures and outputs. Ideation owns What, Why, scope, evidence, material design decisions, and the directional How. Planning owns Who, When, Where, and ordered implementation tasks.
+Ideation begins with problem framing and ends with one completed, user-approved What, Why, and How artifact. It owns the problem, rationale, scope, evidence, material design decisions, directional design, validation commitments, and traceable result.
 
 ### Must-Follow
 
-- **MUST define the problem and boundaries before choosing a design.** State the user's outcome, current situation, trigger, affected people, root cause, success and falsification signals, in-scope work, out-of-scope work, deferred work, and hard and soft constraints. Record overlaps with active work and obtain the user's approval of material boundaries.
-- **MUST ground material claims and choices in sufficient evidence.** Study the project's current behavior, history, prior decisions, and patterns. Seek direct evidence from representative users or affected people, and study relevant prior art. Assess each source's authority, relevance, currency, and applicability. Distinguish facts, assumptions, and useful negative results. Cite adopted claims and prefer an established pattern unless evidence justifies a deviation.
-- **MUST develop the design from parent decisions to dependent details.** Resolve the intended outcome, overall direction, and major boundaries before refining components, interfaces, data flow, behavior, failure handling, and edge cases. Keep a dependent detail open while its parent decision is unresolved. Return to the parent decision when later evidence invalidates it.
-- **MUST compare genuine alternatives before seeking a material decision.** Define criteria from the user outcome, scope, constraints, risks, cost, and success signals. Include doing nothing when it is credible. Present concrete trade-offs with one recommendation and the evidence that would change it. The user decides material scope, success criteria, design direction, destructive implications, adoption of an external dependency or service, and whether a material assumption may constrain the design.
-- **MUST make every load-bearing assumption and risk falsifiable.** Record its evidence, what fails if it is wrong, the signal that would disconfirm it, and the evidence needed to resolve it.
-- **MUST design the complete observable outcome.** Cover each affected actor's normal use, alternative paths, exact boundaries, failure and recovery, abuse, compatibility change, and counterfactuals. Address performance, cost, privacy, security, accessibility, locale, observability, and rollback when applicable.
-- **MUST keep Ideation directional and traceable.** Name components, ownership, interfaces, data flow, dependencies, and verification seams. For each approved scenario, write a design obligation, a verification check, and its source. Stop before ordered implementation tasks; Planning owns their decomposition.
-- **MUST update the canonical artifacts at each checkpoint.** Record the current problem, scope, evidence, decision criteria, alternatives, selected design, rejected options, rationale, consequences, assumptions, constraints, unresolved questions, risks, obligations, and checks. Later work uses the latest written state instead of reconstructing discussion context.
-- **MUST prove readiness before a phase transition.** Resolve every material decision and collect enough evidence for the highest-risk assumptions. A fresh planner must be able to trace the problem, scope, sources, decisions, design, obligations, checks, and deferred work without private context. Otherwise, remain in Ideation and return to the affected level.
-- **MUST preserve approved decisions and constraints across revisions.** Replace a prior decision only with new evidence and the required user authority. Record what changed, why it changed, and its consequences. Never silently drop an accepted constraint.
+- **MUST define and approve the problem and boundaries before choosing a design.** State the user's outcome, current situation, trigger, affected people, root cause, success and falsification signals, in-scope work, out-of-scope work, deferred work, hard and soft constraints, and active-work overlaps. Obtain the user's approval of material boundaries.
+- **MUST ground material claims and load-bearing assumptions in sufficient evidence.** Study current behavior, history, prior decisions, representative users or affected people, trustworthy prior art, and useful negative results. Assess each source's authority, relevance, currency, and applicability. Distinguish facts from assumptions, cite adopted claims, and record for each load-bearing assumption what fails, its disconfirming signal, and the evidence needed to resolve it.
+- **MUST develop one complete observable design from parent decisions to dependent details.** Resolve the intended outcome, overall direction, and major boundaries before refining actors, components, ownership, interfaces, data flow, behavior, failure and recovery, exact edges, and applicable quality concerns. Keep dependent details open while a parent decision is unresolved, and return to the parent when later evidence invalidates it.
+- **MUST compare genuine alternatives and preserve material user authority.** Define criteria from the outcome, scope, constraints, risks, cost, and success signals. Include doing nothing when credible. Present concrete trade-offs, one recommendation, and reopen evidence. The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
+- **MUST complete Ideation from this operation and its owned companions.** Use project evidence and authoritative domain sources directly. Do not require another skill or outside procedure to supply a missing step, decision method, evidence method, completion rule, or evaluation method.
+- **MUST keep the canonical artifact current and traceable.** At each checkpoint record the current problem, scope, evidence, criteria, alternatives, selected and rejected options, rationale, consequences, assumptions, constraints, unresolved questions, risks, components, ownership, interfaces, flows, dependencies, obligations, checks, and sources. Preserve approved decisions and constraints across revisions; record every authorized replacement and its consequences.
+- **MUST complete Ideation only with a resolved, cold-readable result.** Resolve every material decision and collect sufficient evidence or an explicit validation commitment for each high-risk assumption. A cold reader must be able to trace the problem, scope, sources, decisions, design, obligations, checks, and deferred work without private context. The completed artifact contains no ordered implementation tasks, implementation diff, or produced prototype, code spike, screen, or other realization output.
 
 ### Must-Not-Follow
 
-- **NEVER treat a requested solution or visible symptom as the settled problem.** Test the framing against the root cause, the strongest case for doing nothing, and plausible reframes.
-- **NEVER leave scope open-ended or silently absorb adjacent work.** Replace words such as “etc.” and “related work” with explicit boundaries, a named destination for each deferred item, or an explicit drop decision.
-- **NEVER treat an assumption or weak source as authoritative evidence.** Secondary or unverified claims may guide further research, but they cannot settle a material design choice.
-- **NEVER lock a dependent detail while its parent decision is unresolved or disproven.** Return to the higher-level decision instead of forcing the detail to fit it.
-- **NEVER invent cosmetic alternatives or make a user-owned material choice.** Present meaningfully different options and preserve the user's authority over the decision.
-- **NEVER advance with an unresolved material decision, an under-evidenced high-risk assumption, or an in-scope design obligation deferred to a later phase.** Keep the work in Ideation until the gap is resolved or the user changes the scope.
-- **NEVER turn Ideation into an ordered task plan or implementation diff.** Planning owns implementation sequence and task decomposition.
-- **NEVER silently remove an accepted decision, constraint, or obligation during revision.** Make every replacement explicit and traceable.
+- **NEVER settle an unsupported framing, claim, choice, or detail.** A requested solution, visible symptom, weak source, unsupported assumption, cosmetic alternative, or dependent detail with an unresolved parent cannot settle the design.
+- **NEVER change the accepted contract silently.** Do not absorb adjacent work, leave scope open-ended, drop an accepted decision or constraint, or defer an in-scope design obligation. Give every deferred item a named destination or an explicit drop decision authorized by the user.
 
 ## Procedure
 
@@ -65,11 +56,11 @@ Ideation applies from the first problem framing through user approval of a plan-
 
 Read the user trigger, current project state, prior decisions, governing documents, relevant history, and any earlier valid design. Identify the intended consumer and the decisions the final artifact must enable. Classify material inputs as verified fact, user report, assumption, contradiction, decision, or open question.
 
-Select only the domain skills the work needs. Use [Startup](../startup/SKILL.md) when the project baseline is absent, sparse, contradictory, or explicitly being reset. Use [UI](../ui/SKILL.md) for observable interface design, [UX](../ux/SKILL.md) for user-outcome and experience design, [Coding](../coding/SKILL.md) for software design, [Python](../python/SKILL.md) or [TypeScript](../typescript/SKILL.md) for their language-specific contracts, and [Electron](../electron/SKILL.md) for the desktop-platform contract. A project or process design may need only this base method. Domain skills supplement this procedure; do not copy their detailed mechanics into it.
+Identify the applicable domain concerns, such as project structure, user experience, interfaces, software, language behavior, platform constraints, operations, or policy. Inspect the project evidence and authoritative domain sources that govern those concerns. When the baseline is absent, sparse, contradictory, or explicitly being reset, record the exact gap and obtain the missing project facts before using the baseline as evidence.
 
-**Evidence:** an input and routing register with the trigger, baseline, artifact consumer, applicable domains, authoritative inputs, contradictions, and open questions.
+**Evidence:** an input and domain register with the trigger, baseline, artifact consumer, applicable concerns, authoritative inputs, contradictions, and open questions.
 
-**Next:** if the baseline is unsafe or insufficient, obtain the Startup classifier or input packet before step 2. If the routing changes later, update the register and load the newly applicable owner before its decision.
+**Next:** if the baseline is unsafe or insufficient, obtain the exact missing project facts before step 2. If an applicable concern or governing source changes later, update the register before making the affected decision.
 
 ### 2. Define the problem, outcome, and reason to act
 
@@ -89,11 +80,11 @@ Derive the criteria for later choices from the approved outcome, constraints, ri
 
 **Evidence:** an approved scope contract and an ordered set of design-decision criteria.
 
-**Next:** if the scope remains open-ended, overlaps unresolved work, or hides an adjacent outcome, remain in Discussion. Otherwise continue to step 4.
+**Next:** if the scope remains open-ended, overlaps unresolved work, or hides an adjacent outcome, continue clarification until the boundary is explicit. Otherwise continue to step 4.
 
 ### 4. Build the evidence and governing foundation
 
-Study current project behavior, implementation patterns, prior decisions, existing design or architecture material, relevant configuration, direct evidence from representative users or affected people when applicable, and trustworthy external prior art. Use [Study](../study/SKILL.md) when a material question needs a bounded internal or external evidence operation.
+Study current project behavior, implementation patterns, prior decisions, existing design or architecture material, relevant configuration, direct evidence from representative users or affected people when applicable, and trustworthy external prior art. When a material question needs bounded internal or external research, define the exact question, source boundary, evidence standard, and stopping condition before collecting evidence.
 
 Assess every material source for authority, relevance, currency, applicability, and licensing. Treat a `DESIGN.md`, brand guide, design system, architecture record, runtime configuration, compiler configuration, API specification, or maintained standard as governing only when it exists and has authority over the current scope. Never require one universal filename, design tool, framework, or programming language. Record useful negative results and keep facts separate from assumptions and secondary leads.
 
@@ -115,7 +106,7 @@ Compare the directions with the approved criteria. Recommend one, explain why it
 
 Describe the complete outcome before refining local details. Establish the major actors, stages, responsibilities, components, journeys, information or data movement, dependencies, trust boundaries, lifecycle states, and completion evidence that apply to the domain.
 
-Name the parent decisions and the design areas that depend on them. Resolve ownership, direction, and major boundaries before discussing dependent details. Use the applicable domain skills to decide what counts as a component, interaction, journey, module, contract, process, document, or other specialized unit.
+Name the parent decisions and the design areas that depend on them. Resolve ownership, direction, and major boundaries before discussing dependent details. Use verified project conventions and authoritative domain evidence to decide what counts as a component, interaction, journey, module, contract, process, document, or other specialized unit.
 
 **Evidence:** an approved whole-design map with stable names, major boundaries, ownership, flow, and explicit parent-to-dependent decision relationships.
 
@@ -125,7 +116,7 @@ Name the parent decisions and the design areas that depend on them. Resolve owne
 
 Start with the smallest meaningful unit in each applicable domain and connect it toward the complete outcome. Discuss its purpose, inputs, outputs, state or information transitions, names, ownership, interfaces, dependencies, user-visible behavior, failure and recovery, and verification seams. Reconcile every new detail with the whole-design map and all earlier decisions.
 
-At each material level, define the decision and criteria, develop genuine alternatives, present concrete trade-offs and one recommendation, obtain the required user decision, and record the selection, rationale, consequences, rejected options, and reopen evidence. Domain skills own the specialized shapes and mechanics. This base method owns the consistency of their combined decisions.
+At each material level, define the decision and criteria, develop genuine alternatives, present concrete trade-offs and one recommendation, obtain the required user decision, and record the selection, rationale, consequences, rejected options, and reopen evidence. Derive specialized shapes and mechanics from verified project conventions and authoritative domain sources. Reconcile them through this one method.
 
 **Evidence:** an accumulated directional design whose details trace to approved parent decisions, evidence, and user choices.
 
@@ -135,13 +126,13 @@ At each material level, define the decision and criteria, develop genuine altern
 
 Inspect the design across every applicable actor, normal and alternative path, exact boundary, invalid state, failure, recovery, abuse, compatibility event, and counterfactual. Disposition performance, resource cost, privacy, security, trust, accessibility, locale, observability, operation, maintenance, migration, and rollback from inspected evidence. Use a precise not-applicable reason only after testing applicability.
 
-For each load-bearing assumption or material risk, record what fails if it is wrong, the evidence already available, and the evidence still needed. Discuss the best later validation method or artifact, such as a walkthrough, prototype, experiment, code spike, benchmark, or representative-user study. Record the question it would answer, suitable participants or environment, pass and fail signals, reopen condition, owner, and later phase.
+For each load-bearing assumption or material risk, record what fails if it is wrong, the evidence already available, and the evidence still needed. Discuss the best future validation method or artifact, such as a walkthrough, prototype, experiment, code spike, benchmark, or representative-user study. Record the question it would answer, suitable participants or environment, pass and fail signals, reopen condition, owner, and execution condition.
 
-The base Ideation procedure does not create or test prototypes, code spikes, screens, implementation, or other realization outputs. An applicable domain skill may independently require additional artifacts or evidence under its own procedure; that requirement does not become universal Ideation policy.
+Ideation records the validation commitment but does not create or test prototypes, code spikes, screens, implementation, or other realization outputs. A project-specific requirement may require additional evidence, but it becomes part of this operation only when an authoritative source makes it applicable to the current scope.
 
 **Evidence:** complete design-coverage dispositions and a risk-ordered validation plan that distinguishes current evidence from proposed future evidence.
 
-**Next:** unresolved material behavior returns to step 6 or 7. An under-evidenced high-risk assumption blocks handoff unless the user changes the design or scope. Otherwise continue to step 9.
+**Next:** unresolved material behavior returns to step 6 or 7. An under-evidenced high-risk assumption blocks completion unless the user changes the design or scope. Otherwise continue to step 9.
 
 ### 9. Consolidate the checkpoint artifact, scenarios, and checks
 
@@ -153,30 +144,14 @@ Use [scenarios.md](scenarios.md) as the Ideation scenario source. Convert every 
 
 **Next:** if a trace is missing, a decision disappeared, or a scenario exposes a material gap, return to its earliest owning step. Otherwise continue to step 10.
 
-### 10. Prove Planning readiness and hand off
+### 10. Complete and return the Ideation artifact
 
-Read the artifact as a fresh planner. Confirm that it states the problem, reason, actors, scope, constraints, sources, assumptions, selected and rejected alternatives, directional design, ownership, interfaces, flows, states, failures, recovery, quality obligations, validation decisions, checks, and deferred work. Confirm that all material decisions are resolved, references and paths resolve, terminology is stable, and Planning can decompose the design without private discussion context.
+Read the artifact as a cold reader. Confirm that it states the problem, reason, actors, scope, constraints, sources, assumptions, selected and rejected alternatives, directional design, ownership, interfaces, flows, states, failures, recovery, quality obligations, validation commitments, checks, and deferred work. Confirm that all material decisions are resolved, owned links and paths resolve, terminology is stable, and the approved What, Why, and How requires no private discussion context.
 
-Confirm that the artifact contains no ordered implementation task list, implementation diff, produced prototype, or hidden design decision delegated to Planning. Run the Ideation operation bundle. Hand the plan-ready content to the caller. The applicable orchestration or workflow layer independently owns drafts, review, evaluation, record storage, and transitions.
+Confirm that the artifact contains no ordered implementation task list, implementation diff, produced prototype, code spike, screen, or hidden design decision. Evaluate the artifact through [evaluation.md](evaluation.md) with the owned scenarios and checks. Return the completed, user-approved artifact and its evaluation result to the caller.
 
-**Completion evidence:** a plan-ready What, Why, and How artifact, resolved decision record, closed obligation and check trace, explicit later validation work, and no hidden implementation-task decision.
+**Completion evidence:** a user-approved What, Why, and How artifact, resolved decision record, closed obligation and check trace, explicit future validation commitments, complete evaluation result, and no hidden implementation-task decision.
 
-**Failure:** return to the earliest affected step. Do not hand off a cosmetically complete artifact with an unresolved material decision or unsupported readiness claim.
+**Failure:** return to the earliest affected step. Do not return a cosmetically complete artifact with an unresolved material decision, unsupported completion claim, broken trace, or external method dependency.
 
 ## References
-
-- [Discussion](../discussion/SKILL.md) owns the structure and quality of user-facing questions and decisions.
-- [Startup](../startup/SKILL.md) owns read-only baseline classification and the optional sparse-baseline input packet.
-- [Study](../study/SKILL.md) owns the detailed internal and external evidence operation.
-- [UI](../ui/SKILL.md) owns specialized interface design, prototype, direct-user testing, and interface handoff.
-- [UX](../ux/SKILL.md) owns specialized user-outcome research, experience design, prototype evaluation, and measurement handoff.
-- [Coding](../coding/SKILL.md) owns language-agnostic software design and construction principles.
-- [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific design contracts and idioms.
-- [Electron](../electron/SKILL.md) owns the desktop-platform design contract an Electron application adds on top of those.
-- [Planning](../planning/SKILL.md) owns ordered implementation decomposition after Ideation readiness.
-- [Workflow Ideation adapter](../workflow/steps/ideation.md) owns manager entry, user gates, and transitions.
-- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
-- [Evaluation](../evaluation/SKILL.md) owns the seven perspectives, Overall, findings, checklist completion, verdicts, and repeat review.
-- [Record](../record/SKILL.md) owns typed staging, PASS-only canonical artifacts, and session-record validation.
-- [Scenario](../evaluation/scenario/SKILL.md) owns the ten-category coverage frame and scenario construction rules.
-- [Checklist](../evaluation/checklist/SKILL.md) owns unchecked source checks, evidence semantics, and acceptance.
