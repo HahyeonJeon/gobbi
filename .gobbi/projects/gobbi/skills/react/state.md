@@ -131,7 +131,12 @@ comparison, a stored DOM node.
 
 The constraint that makes it a distinct rung rather than a cheaper `useState`: *"You shouldn't read (or
 write) the current value during rendering"*, and *"if some information is needed during rendering, use
-state instead."* A ref read during render is a purity violation under `H1`, not merely a style preference.
+state instead."* The one documented render-time exception is deterministic initialization:
+`if (ref.current === null) { ref.current = new StableValue(); }`. It is allowed only when the guard runs
+during initialization, construction is stable, replay produces the same result, and construction performs
+no I/O and has no user-visible or external side effect. Reading a changing ref into JSX, assigning on every
+render, constructing an I/O resource, using time or randomness, or depending on a replay-varying value is
+still a purity violation under `H1`, not merely a style preference.
 
 ## 5. Server-owned data — the rung you may not be able to reach
 
@@ -203,8 +208,9 @@ Two rules of thumb for using the table, both convention:
 
 ## 7. Sources and evidence classes
 
-Read on 2026-07-26; every quoted sentence located in these pages on that date. `SKILL.md`'s References
-register owns the rule-level citations.
+Sources other than `useRef` were read on 2026-07-26; `useRef` was read on 2026-07-27. Every quoted
+sentence was located in its page on that date. `SKILL.md`'s References register owns the rule-level
+citations.
 
 | Source | What it supports here |
 |---|---|
@@ -215,6 +221,7 @@ register owns the rule-level citations.
 | [`useSyncExternalStore`](https://react.dev/reference/react/useSyncExternalStore) | §2 — the subscribe function subscribes to the store and returns the function that unsubscribes |
 | [Extracting State Logic into a Reducer](https://react.dev/learn/extracting-state-logic-into-a-reducer) | §3 — the four comparison axes and the closing "personal preference" |
 | [Referencing Values with Refs](https://react.dev/learn/referencing-values-with-refs) | §4 — changing a ref does not re-render, and refs are not read or written during rendering |
+| [`useRef`](https://react.dev/reference/react/useRef) | §4 — the narrow predictable initialization exception guarded by `ref.current === null` |
 | [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect) | §5 — the four difficulties a data layer solves, why frameworks provide one, and the custom-hook answer for a project with neither |
 
 **Ecosystem convention in this file**, named where it appears and never as a React-team position: the

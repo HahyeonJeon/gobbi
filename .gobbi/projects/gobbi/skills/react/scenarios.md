@@ -115,26 +115,34 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
 - **Primary category:** 3 Behavior / state / data — the defining discrimination is what render itself
   does to state. **Secondary:** 10.
 - **Situation:** Given a component that computes its view from props and context. When it also sorts a
-  prop array in place, writes to a module-level cache, increments a counter, or subscribes, on the way to
-  returning JSX.
+  prop array in place, writes to a module-level cache, increments a counter, subscribes, or initializes a
+  ref on the way to returning JSX.
 - **Good handling:** render reads props, state, and context and returns; the sort works on a copy; the
   cache write moves to an event handler or an Effect; the subscription becomes an external-store
-  subscription or an Effect with cleanup; any value already passed to JSX is left alone.
+  subscription or an Effect with cleanup; any value already passed to JSX is left alone. The sole
+  render-time ref write tests `ref.current === null` and performs deterministic stable construction whose
+  result is the same across replay, with no I/O and no user-visible or external side effect.
 - **Bad handling:** `items.sort()` on the prop array; a counter or cache written in the component body; an
-  object mutated after it was handed to JSX so the committed tree disagrees with what was rendered.
-- **Boundary:** exactly two renders with identical props — a pure component produces identical output and
-  leaves no external difference between the first and the second.
+  object mutated after it was handed to JSX so the committed tree disagrees with what was rendered; a
+  changing ref read into JSX; a ref assigned on every render; an I/O resource created in the null guard;
+  initialization from time or randomness; or initialization from a replay-dependent value.
+- **Boundary:** exactly two render attempts with identical props. Deterministic null-guard initialization
+  produces the same component result and no external difference across replay. Each of the five negative
+  ref cases fails independently.
 - **Adversarial probe:** the mutation is invisible in the fixture because the array is already sorted, so
   review passes and real data corrupts. **Cosmetic form:** the mutation is "made pure" by wrapping it in a
-  `useMemo`, which still runs during render.
+  `useMemo`, which still runs during render; or an I/O, time-based, random, or replay-dependent ref write
+  is placed behind `ref.current === null` and presented as initialization.
 - **Minimums:** boundary see above · adversarial see above · failure/recovery `n/a: no external
   dependency, persistence, or partial mutation` · change `n/a: no version or lifecycle event` ·
   counterfactual `n/a: no load-bearing premise to invert`.
-- **Oracle:** render twice with the same props and compare the output and any external state touched; a
-  difference between the two renders is the defect, observed directly, and confirmed by the absence of an
-  external write.
-- **Obligation:** the design must place every mutation and subscription outside render, and must treat a
-  value passed to JSX as frozen from that point.
+- **Oracle:** run six ref cases separately: deterministic null-guard construction passes; changing-ref
+  JSX, every-render assignment, I/O construction, time or randomness, and replay-dependent construction
+  each fail for their own reason. Render twice with the same props and compare the output and any external
+  state touched.
+- **Obligation:** the design must place every mutation and subscription outside render except the complete
+  deterministic null-guard initialization case, and must treat a value passed to JSX as frozen from that
+  point.
 - **Exercises:** H1, H11, P2, Procedure P3.
 - **Checklist IDs:** `REACT-CHECK-01`, `REACT-CHECK-02`.
 

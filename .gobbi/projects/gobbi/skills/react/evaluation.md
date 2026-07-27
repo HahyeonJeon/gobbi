@@ -46,7 +46,9 @@ always carry the word `Procedure`.
 
 ### Rules (`H{n}` — Must-Follow `H1`–`H10` and `H18`, Must-Not-Follow `H11`–`H17`)
 
-- `H1` — Resolves to "MUST keep every component and hook pure." — no effect, mutation, or subscription in render.
+- `H1` — Resolves to "MUST keep every component and hook pure." — no effect, mutation, or subscription in
+  render outside deterministic one-time initialization guarded by `ref.current === null`; the
+  construction must be stable, replay-equivalent, free of I/O, and externally unobservable.
 - `H2` — Resolves to "MUST call hooks only at the top level of a component or another hook." — hook identity is positional.
 - `H3` — Resolves to "MUST name every custom hook `use` followed by a capital letter." — enforcement, not style.
 - `H4` — Resolves to "MUST give every list item a key that is a stable identity from the data." — identity, not position.
@@ -241,6 +243,7 @@ by `SKILL.md` Procedure step P7. Then add the React-specific verifications below
 | Capability | Confirms |
 |---|---|
 | Render a changed component twice with identical props; compare output and any external state it touched | Purity and idempotence (`H1`, `H11`, `P2`) |
+| Run the six ref cases separately: deterministic null guard, changing-ref JSX, every-render assignment, I/O construction, time or randomness, and replay-dependent construction | Only the complete initialization exception passes; each ordinary ref-purity violation fails independently (`H1`, `P2`) |
 | Walk each changed component through both sides of every early return and conditional branch | Unconditional hook call sites (`H2`); a positional failure appears only on the skipped branch |
 | List the functions in the diff that call a hook and read their names | Hook naming as enforcement (`H3`) |
 | Type into a row's input, reorder the list, and read where the value now sits | List identity (`H4`, `H12`); an index key moves state to the wrong row |
@@ -267,7 +270,7 @@ construction.
 
 | Mode | What it looks like in a React change-set |
 |---|---|
-| **Purity broken** | A mutation, a subscription, or a side effect during render, or a value mutated after being passed to JSX — the assumption the compiler's optimization rests on, violated silently |
+| **Purity broken** | A mutation, a subscription, or a side effect during render outside H1's deterministic null-guard initialization exception, or a value mutated after being passed to JSX — the assumption the compiler's optimization rests on, violated silently |
 | **Effect as the mechanism** | An Effect deriving state, resetting state on a prop change, chaining into another Effect, or standing in for an event handler — extra render passes and causality nothing traces |
 | **State in the wrong slot** | Server-owned data held as client state, a widely-read fast-changing value in context, or a derived value stored instead of computed |
 | **Boundary assumed** | A server-dependent feature with no identified producer, a presentation label used as producer evidence, a value crossing in a direction that rejects it, or a renderer treated as an ordinary page with privileged reach |

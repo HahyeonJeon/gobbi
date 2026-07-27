@@ -110,8 +110,11 @@ exception needs; it never introduces an exception this file does not state.
 - **H1 — MUST keep every component and hook pure.** Same output for the same props, state, and context,
   with no side effect, mutation, or subscription during render. React may render a component many times,
   interrupt a render, or discard its result, so an effect during render runs an unknown number of times.
-  Fix: move the effect to an event handler, to an Effect, or outside React entirely. No exception.
-  Source: react.dev Rules of React.
+  Fix: move the effect to an event handler, to an Effect, or outside React entirely. The only exception
+  is deterministic one-time ref initialization: render may test `ref.current === null` and assign the
+  ref inside that guard only when construction is stable, produces the same result across replay, performs
+  no I/O, and has no user-visible or external side effect. Reading or writing the ref during render for
+  any other reason remains forbidden. Source: react.dev Rules of React and `useRef`.
 - **H2 — MUST call hooks only at the top level of a component or another hook.** Never inside a loop, a
   condition, a nested function, or after an early return; hook identity is positional, so a conditional
   call shifts every later hook. Fix: hoist the call and make the condition part of its arguments or its
@@ -490,6 +493,9 @@ One owner per borrowed fact; the body states the fact and this register names it
 - [Rules of React](https://react.dev/reference/rules) — purity and idempotence, side effects outside
   render, the immutability of props, state, and values passed to JSX, and hooks only at the top level
   (H1, H2, H11).
+- [`useRef`](https://react.dev/reference/react/useRef) — render-time ref reads and writes are forbidden
+  except for predictable initialization whose result is always the same and whose guard runs only during
+  initialization (H1).
 - [Rendering Lists](https://react.dev/learn/rendering-lists) — keys must be stable, unique among
   siblings, and not generated during render; index keys fail when order changes (H4, H12).
 - [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect) — the Effect

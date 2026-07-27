@@ -48,12 +48,16 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 
 - [ ] **REACT-CHECK-01** · gate · unconditional
   - **Claim.** No component or hook changed by this change-set performs a side effect, a mutation, or a
-    subscription during render.
+    subscription during render outside H1's deterministic ref-initialization exception.
   - **Pass when.** For every changed component and hook, the render path contains no write to state
     outside its own local values, no subscription, and no call that mutates a prop, state, context value,
-    or hook argument — including inside a `useMemo`, which runs during render.
+    or hook argument — including inside a `useMemo`, which runs during render. A render-time ref write
+    passes only when it tests `ref.current === null`, performs deterministic stable construction, produces
+    the same result across replay, performs no I/O, and has no user-visible or external side effect.
   - **Evidence.** Read each changed render path directly, then render the component twice with identical
-    props and compare the output and any external state it touches.
+    props and compare the output and any external state it touches. Record six independent ref cases:
+    deterministic null-guard construction passes; changing-ref JSX, every-render assignment, I/O
+    construction, time or randomness, and replay-dependent construction each fail for the stated reason.
   - **Harm on fail.** The optimization the compiler applies is sound only while this holds, so a
     violation produces defects that appear as unexplained stale or duplicated values far from the cause.
   - **Source.** `REACT-SCENARIO-01` · `H1` · `P2`.
