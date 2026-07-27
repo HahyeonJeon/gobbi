@@ -25,19 +25,14 @@ When the user must choose, present distinct options that fit the request and dif
 
 ## Rules
 
-Discussion applies whenever an agent clarifies a request, asks the user for input, challenges a premise, or resolves a user-owned choice. The relevant role or workflow owns authority, routing, record layout, and state transitions.
-
 ### Must-Follow
 
 - **MUST write for quick understanding.** Expand each domain abbreviation on first use, briefly explain project-specific names, and cite evidence for numeric or project-specific claims.
 - **MUST preserve the user's accepted direction until the user explicitly changes it.** A challenge presents the contrary or missing evidence and its consequence; it does not change the task, scope, or design by itself.
-- **MUST probe an unclear answer no more than twice.** Probe first with a concrete measure, example, source, baseline, or counterexample. If the gap remains, probe once more from that gap. Then state exactly what remains unknown and route it to the relevant owner.
-- **MUST restate a materially changed contract.** When discussion changes direction, scope, success criteria, constraints, authority, or acceptance, restate the complete changed contract in plain language and obtain confirmation before work proceeds.
 
 ### Must-Not-Follow
 
 - **NEVER use empty praise or soft agreement instead of a position.** Avoid phrases such as “That's interesting,” “Great question,” “You might want to consider,” “There are many ways to think about this,” “That could work,” “I can see why you'd think that,” “Maybe we should,” and an unnamed “It depends.” State the conclusion and reason, or name the exact dependency that prevents one.
-- **NEVER revise an evaluated artifact before the user approves or edits the complete finding-disposition batch.** Preserve the evaluated artifact until that decision is explicit.
 
 ## Preferences
 
