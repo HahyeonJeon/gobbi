@@ -31,7 +31,7 @@ Use brief factual sentences and lists. Remove stories, commentary, and long desc
 
 ### Start from one base delegation prompt
 
-Prefer starting from this template. Replace its guidance with task facts and commands. Remove guidance the task does not need. Customize Metadata freely.
+Prefer starting from this template. Replace its guidance with task facts and commands. Remove guidance the task does not need. Customize Metadata freely. Add `###` subsections freely under any template section when the task needs more structure.
 
 ```markdown
 ## Metadata
