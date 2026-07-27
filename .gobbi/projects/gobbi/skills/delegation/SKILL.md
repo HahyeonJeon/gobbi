@@ -1,85 +1,113 @@
 ---
 name: delegation
-description: "Use when delegating bounded work to another agent — define the objective, preparation, boundaries, autonomy, evidence, and independent-judgment conditions."
+description: "MUST load when shaping or assessing bounded work for another agent. Delegation is a preference skill for balancing context, authority, autonomy, independence, and evidence."
 allowed-tools: Read, Grep, Glob, Bash
+skill-type: preference
 ---
 
 # Delegation
 
-Delegation turns a bounded outcome into a brief that another agent can execute and report against. Use it when transferring responsibility while retaining clear scope and evidence.
+Use this skill when deciding how to hand bounded work to another agent or how to judge the result it returns.
+It improves the sender's judgment about what the receiver needs, which decisions remain outside the
+delegation, how much autonomy to allow, when independence matters, and what evidence makes the result
+acceptable.
 
-Apply it before dispatch and again when deciding whether to accept or redirect the result.
+A strong delegation gives the receiver enough durable context to act without reconstructing the sender's
+private reasoning. It also keeps scope, authority, and acceptance visible to the sender. The receiver can then
+make useful in-scope choices, return exact evidence, and stop cleanly when the contract cannot be satisfied.
+
+This skill owns generic delegation judgment. It does not own runtime dispatch syntax, role selection,
+workflow state, or a fixed assignment template. An active orchestration owner may impose a specific brief
+shape or status contract in addition to these principles, rules, and preferences.
 
 ## Principles
 
-> **A delegation brief is self-contained for its receiver.**
+### Build the handoff for the receiver
 
-**WHY:** A receiver cannot act reliably when the objective, context, or limits exist only in the sender's private context.
+A delegation succeeds from the receiver's available context, not the sender's private understanding. The
+receiver needs a clear outcome, inspectable inputs, visible constraints, and enough preparation to begin
+without guessing what the sender meant.
 
-> **Preparation is explicit and checkable before work begins.**
+### Transfer a bounded outcome within explicit authority
 
-**WHY:** Named inputs and readiness checks prevent work from starting on missing, stale, or assumed context.
+Delegation transfers responsibility for an outcome, not control over every adjacent decision. A clear
+boundary lets the receiver act confidently inside the assignment while preserving user decisions, broader
+scope, destructive authority, and acceptance for their owners.
 
-> **Delegation defines a contract, not a vague request.**
+### Preserve useful judgment inside the contract
 
-**WHY:** An objective, boundary, evidence bar, and escape path make completion and non-completion observable.
+The brief should protect the outcome without dictating incidental methods. Capable receivers produce better
+work when they can choose how to satisfy the objective, evidence bar, and true invariants.
 
-> **Good direction steers without smothering.**
+### Protect independence before conclusions are formed
 
-**WHY:** Necessary constraints protect the outcome, while unnecessary method control blocks the receiver from using better judgment.
+Independent work is valuable only when the receiver can reach a conclusion without being steered toward the
+sender's answer or another agent's result. Neutral criteria and evidence preserve the separation that makes
+the judgment useful.
 
-> **Independent judgment is protected when independence matters.**
+### Judge the return by evidence
 
-**WHY:** A receiver cannot provide an independent assessment after being primed with the sender's preferred conclusion or another agent's answer.
+A confident report is not proof that the delegated outcome exists. Acceptance depends on the returned
+artifact, checks, and other direct evidence matching the objective, boundaries, and completion conditions.
 
 ## Rules
 
 ### Must-Follow
 
-- **MUST make the brief self-contained** by stating the objective, relevant context, inputs, boundaries, and expected result; this lets the receiver act without reconstructing the sender's private context.
-- **MUST make preparation checkable** by naming what must be read or inspected and how readiness is confirmed; this exposes missing or stale inputs before work begins.
-- **MUST define a complete delegation contract** with completion evidence and explicit escape paths; this makes success, missing context, and blocking conditions distinguishable.
-- **MUST constrain only what protects the outcome** and leave method choices open unless a method is itself part of the contract; this preserves useful receiver autonomy.
-- **MUST isolate independent work from conclusions that would bias it** and state the independence condition in the brief; this keeps the resulting judgment genuinely separate.
+- **MUST make every brief self-contained for its receiver.** Name the receiver, one observable objective,
+  relevant context, inspectable inputs, in-scope and out-of-scope work, authority boundaries, expected result,
+  completion evidence, and escape paths. Treat context the receiver cannot inspect as absent.
+- **MUST make every prerequisite checkable.** When preparation is required, name each source or inspection and
+  the evidence that proves it is ready, current, and reachable before work begins.
+- **MUST state mutation authority when the assignment can change state.** Name the allowed write or action
+  surface, protected targets, permitted external effects, and any destructive or user-owned decision that
+  still requires separate authority.
+- **MUST state and preserve every independence condition.** Give an independent receiver a neutral target,
+  criteria, and evidence. Withhold the sender's preferred conclusion and prior answers until the independent
+  result is complete.
+- **MUST inspect the rendered brief before dispatch.** Confirm that placeholders are resolved, required inputs
+  are reachable, constraints do not conflict, independence is intact, and the requested evidence can be
+  produced.
+- **MUST accept or redirect from inspected evidence.** Read the promised result or artifact, compare it with
+  the objective, scope, and completion conditions, and name the exact failed condition when redirecting.
 
 ### Must-Not-Follow
 
-- **NEVER rely on private or implied context** that the receiver cannot inspect, because hidden dependencies make the brief non-executable. **Fix:** state the missing fact or provide an inspectable input.
-- **NEVER describe preparation as a vague instruction** such as “review what is relevant,” because readiness cannot be checked. **Fix:** name the required material and the observable completion check.
-- **NEVER omit boundaries, evidence, or escape paths** from the contract, because the receiver cannot distinguish completion from partial progress. **Fix:** add each missing contract field before dispatch.
-- **NEVER prescribe incidental implementation choices** merely because the sender has a preference, because this suppresses better receiver judgment. **Fix:** retain only outcome-protecting constraints and mark true invariants explicitly.
-- **NEVER expose an independent receiver to a preferred conclusion or prior answer** before its work, because priming defeats independence. **Fix:** provide only the target, criteria, and neutral evidence needed for the independent task.
+- **NEVER prescribe an incidental method merely because the sender prefers it.** Constrain a method only when
+  it is required by safety, compatibility, an accepted design, or the completion evidence.
+- **NEVER transfer scope, user authority, destructive authority, publication, or acceptance by implication.**
+  The receiver stops and returns the missing decision when satisfying the assignment would cross one of
+  those boundaries.
 
-## Procedure
+## Preferences
 
-### 1. Decide the receiver and available context
+### Prefer one observable outcome
 
-Identify who will receive the work, what that receiver already retains, and what context must be supplied. Treat unknown retained context as absent.
+Prefer one end state that the receiver and sender can both recognize. Include why it matters and exclude
+adjacent outcomes. A brief may group several results when they share one boundary and acceptance condition;
+split them when they need different authority, evidence, or receivers.
 
-### 2. Define the objective
+### Assume less retained context
 
-State one observable end state. Add the reason the work matters and exclude adjacent outcomes that are not part of the delegation.
+Prefer treating unknown receiver context as absent and restating the current contract. A shorter continuation
+brief is appropriate when the same receiver remains addressable, the objective and subsystem are coherent,
+and the brief still states every changed input, boundary, and completion condition.
 
-### 3. Make preparation explicit and checkable
+### Order preparation by dependency
 
-List each required input or inspection in the order needed. Attach a concrete readiness check to every prerequisite so the receiver can prove preparation before acting.
+Prefer listing required sources and inspections in the order the receiver needs them. Omit a separate
+preparation block when the brief itself contains every required input and no readiness dependency exists.
 
-### 4. Set boundaries and autonomy
+### Match evidence to the consequence
 
-State allowed and forbidden write surfaces, decision boundaries, fixed invariants, and the choices the receiver may make without returning to the sender. Remove method constraints that do not protect the outcome.
+Prefer direct artifacts, checks, and observed state over a summary when the work changes something or informs
+a consequential decision. For an advisory task with no durable artifact, a reasoned answer with inspectable
+sources, assumptions, and limits can be sufficient evidence.
 
-### 5. Define completion evidence and escape paths
+### Keep return paths distinct
 
-Specify the artifacts, checks, and report fields that prove completion. Define distinct escape paths for missing context, a genuine blocker, and completed work that carries concerns; each path must state the evidence to return.
-
-### 6. Inspect the rendered brief
-
-Read the final brief as the receiver will see it. Confirm that all placeholders are resolved, required inputs are reachable, constraints do not conflict, independence conditions are preserved, and the requested evidence can be produced.
-
-### 7. Accept or redirect from evidence
-
-Compare the returned evidence with the objective and contract. Accept only when the evidence proves the end state; otherwise redirect with the exact failed condition, missing evidence, or authorized decision needed next.
+Prefer separate returns for missing context, a genuine blocker, successful completion, and completion with a
+non-blocking concern. Combine states only when the delegated task cannot produce a meaningful distinction
+between them.
 
 ## References
-
-This capability owns its guidance and borrows no external facts.

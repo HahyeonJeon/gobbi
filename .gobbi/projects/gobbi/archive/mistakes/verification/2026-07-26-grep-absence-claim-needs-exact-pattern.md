@@ -52,7 +52,8 @@ assert a count without running the exact pattern that produces it.
 
 ## Related
 
-- Reinforces `planning-asserted-skill-without-verifying.md` (assert only what you verified) and
+- Reinforces [`verify-dont-assert-taught-facts.md`](verify-dont-assert-taught-facts.md) (assert only
+  what you verified) and
   `plan-rename-must-enumerate-all-ref-classes.md` (a grep's pattern scope determines what it can
   prove). The discipline generalizes: a verification command's claim is only as strong as the exact
   command quoted next to it.
