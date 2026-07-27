@@ -4,7 +4,7 @@ description: A compaction union-diff that stops at condition/footgun granularity
 type: mistakes
 scope: project
 feature: null
-status: active
+status: superseded
 created: 2026-07-14
 session: 6a9e0963-2ca1-4d07-83d3-1889aa16bcf4
 tags: [docs-sync, verification]
@@ -13,7 +13,9 @@ author: claude
 priority: high
 domain: docs-sync
 supersedes: null
-superseded_by: null
+superseded_by: named-primitives-must-survive-generalization
+archived_at: 2026-07-26
+archive_reason: superseded
 related: [union-diff-occurrence-vs-distinct-primitive, gate-c-structural-mapping-is-not-semantic-union-preservation, consolidating-per-perspective-verification-tables-narrows-the-union]
 ---
 

@@ -4,7 +4,7 @@ description: A "feature X is absent" claim backed by a grep must quote the EXACT
 type: mistakes
 scope: project
 feature: null
-status: active
+status: superseded
 created: 2026-06-14
 session: 2026-06-14-f2732c8e-c37d-4ebf-8f25-575e8a17d87d
 tags: [process, verification]
@@ -13,7 +13,9 @@ author: claude
 priority: high
 domain: process
 supersedes: null
-superseded_by: null
+superseded_by: grep-scope-must-match-the-claim-being-tested
+archived_at: 2026-07-26
+archive_reason: superseded
 ---
 
 # A grep-backed absence claim must use the exact discriminating pattern

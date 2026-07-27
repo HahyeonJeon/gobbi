@@ -55,7 +55,7 @@ web-verified against primary sources.
 - `mistakes/docs-sync/sweep-every-occurrence-when-fixing-a-multi-surface-claim.md` — a claim fix must grep-sweep
   every surface (rule/child/scenario/checklist/crosswalk); a spot-fix leaves residuals that re-fail next round
   (A2, A4 each half-applied).
-- `mistakes/verification/adversarially-test-a-newly-authored-acceptance-predicate.md` — a new check/scenario is
+- `archive/mistakes/verification/2026-07-26-adversarially-test-a-newly-authored-acceptance-predicate.md` — a new check/scenario is
   an executable claim; compile the counterexample it must reject before shipping; frame acceptance as a
   property, not a list of "sufficient" constructs (the readonly check was unsound twice).
 

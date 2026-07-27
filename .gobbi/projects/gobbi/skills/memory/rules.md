@@ -121,7 +121,7 @@ This carve-out is a direct consequence of the **Scope boundary** at the top of t
 - **Bare-slug types** (§1.2): `{type}/{area}/{slug}.md`
 - **Date-prefixed types** (§1.2): `{type}/{area}/{YYYY-MM-DD}-{slug}.md` — the date stays inside the area, after it.
 
-Examples: `mistakes/verification/grep-absence-claim-needs-exact-pattern.md`, `decisions/memory/2026-06-21-{slug}.md`, `notes/workflow/2026-06-21-{slug}.md`.
+Examples: `archive/mistakes/verification/2026-07-26-grep-absence-claim-needs-exact-pattern.md`, `decisions/memory/2026-06-21-{slug}.md`, `notes/workflow/2026-06-21-{slug}.md`.
 
 **Eager + both-tiers-symmetric.** Every by-area record is namespaced from file 1 — there is no "flat until N files, then split" threshold. The feature tier uses the identical shape: `features/{f}/{type}/{area}/{slug}.md`. One rule, two tiers.
 
