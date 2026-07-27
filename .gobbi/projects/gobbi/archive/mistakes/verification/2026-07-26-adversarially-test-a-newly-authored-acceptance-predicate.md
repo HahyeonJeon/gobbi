@@ -4,7 +4,7 @@ description: A newly-authored checklist acceptance predicate named specific cons
 type: mistakes
 scope: project
 feature: null
-status: active
+status: superseded
 created: 2026-07-16
 session: 054f402b-a9ab-4af6-875d-078233778a0b
 tags: [process, verification, execution]
@@ -12,6 +12,10 @@ keywords: [acceptance-predicate, new-check, soundness, compile-proof, readonly-d
 author: claude
 priority: high
 domain: verification
+supersedes: null
+superseded_by: new-gate-needs-known-good-and-known-bad-witness
+archived_at: 2026-07-26
+archive_reason: superseded
 ---
 
 # A new acceptance check claimed constructs "sufficient" that a compiled probe falsified

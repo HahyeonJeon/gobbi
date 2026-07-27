@@ -2,7 +2,7 @@
 type: mistakes
 skill: workflow
 description: "Recorded traps for Gobbi delegation dispatch — load before manager dispatch work"
-updated: 2026-07-20
+updated: 2026-07-26
 ---
 
 # Workflow Delegation — Mistakes
@@ -93,3 +93,12 @@ updated: 2026-07-20
 
 ### Related
 - [[template-embeds-unnamed-exception]] — the general pattern this is one instance of: a deviation from a stated default/invariant needs an explicit, named justification at the point of deviation, or a reader (here, some executors) won't recognize it as authoritative
+
+## Freeze Must Be A Separate Round Trip From Work
+
+`priority: high` · `domain: process` · `added: 2026-07-26` · `status: active` · `tags: [process, verification]`
+
+**What happened** — A manager bundled a correction, a consistency check, and "then freeze" in one instruction. The producer reported after the correction, the manager treated that report as the freeze, and an evaluator was dispatched while the producer was still completing the check. The evaluated subject moved after dispatch.
+**Why it happens** — A multi-part instruction can span turns. The manager may treat the first report as the end state while the producer treats freeze as the end of the whole instruction.
+**How to detect** — One brief both asks for more work and says the artifact will be frozen afterward, but no separate stable fingerprint or explicit "nothing outstanding" acknowledgement exists before independent dispatch.
+**Correct approach** — Make freeze its own round trip: receive the completed work report, reread and fingerprint the artifact, ask for or record an explicit freeze with nothing outstanding, then dispatch the independent reader. If the fingerprint changes, discard the dispatch and start a new frozen subject.

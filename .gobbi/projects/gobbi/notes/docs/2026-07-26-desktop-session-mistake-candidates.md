@@ -7,7 +7,7 @@ feature: null
 status: active
 created: 2026-07-26
 session: bb2794ce-bc3d-422a-b011-f8b4750c6eed
-tags: [process, docs]
+tags: [process]
 keywords: [mistake-candidates, verification, single-owner, gates]
 author: claude
 steps_completed: [execution]

@@ -4,7 +4,7 @@ description: "An Agent-Teams teammate's idle_notification was treated as a failu
 type: mistakes
 scope: project
 feature: null
-status: active
+status: superseded
 priority: medium
 domain: process
 created: 2026-07-16
@@ -12,6 +12,10 @@ session: e5c0af1d-005d-4455-a58f-efe601ed342f
 tags: [tooling, process]
 keywords: [agent-teams, teammate, idle-notification, completion-signal, double-dispatch, fresh-background-executor, taskstop]
 author: claude
+supersedes: null
+superseded_by: idle-notification-carries-no-delivery-information
+archived_at: 2026-07-26
+archive_reason: superseded
 ---
 
 # An Agent-Teams idle_notification is not a completion signal
