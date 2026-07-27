@@ -43,13 +43,13 @@ Discussion applies whenever an agent clarifies a request, asks the user for inpu
 
 ### Must Use Question Template
 
-Prefer one Question Template per question. When relevant context or design material exists, show it immediately above the template. Use `Topic` to name the decision and `Description` to state what needs an answer and why. Add `Options` only for a real choice.
+Prefer one Question Template per question. When relevant context or design material exists, show it immediately above the template. Use `Topic` to name the decision or missing fact. Use `Description` to ask the literal question and explain why the answer is needed. For a real choice, also state the recommendation and its reason, then say what evidence or changed constraint would change it. Add `Options` only for a real choice.
 
 ```text
 <Relevant context or design material, such as class shapes, a schema, or a diagram, when applicable>
 
 Topic: <one short phrase naming the question>
-Description: <what needs an answer and why>
+Description: <the literal question and why its answer is needed; for a real choice, the recommendation and reason, then what would change it>
 
 Options:
   - Title: <option name; add "(Recommended)" to the recommended option>
@@ -57,14 +57,12 @@ Options:
     Pros: <specific benefits>
     Cons: <specific costs, risks, or limits>
 
----
-
   - Title: <next option>
     Description: <what the option means>
     Pros: <specific benefits>
     Cons: <specific costs, risks, or limits>
 ```
 
-When options apply, prefer the recommended option first and suffix its `Title` with `(Recommended)`. Explain why it is recommended and what would change the recommendation. Keep `Pros` and `Cons` concrete. Use separate templates for questions that could receive different answers. For a missing fact, omit `Options`. When the user interface cannot reproduce the fields or a literal divider, preserve the same information, order, and visual separation in native controls or compact prose.
+When options apply, prefer the recommended option first and suffix its `Title` with `(Recommended)`. Keep `Pros` and `Cons` concrete. Use separate templates for questions that could receive different answers. For a missing fact, omit `Options`. When the user interface cannot reproduce the fields, preserve the same information and order in native controls or compact prose.
 
 ## References
