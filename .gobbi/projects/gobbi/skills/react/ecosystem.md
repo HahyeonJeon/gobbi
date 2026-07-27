@@ -18,10 +18,10 @@ to whichever file owns that topic. Nothing here overrides `SKILL.md`.
 
 ## Read this before using anything below
 
-**The table was resolved on 2026-07-26 against the npm registry** — `registry.npmjs.org`, which is the
-same source a package manager reads. The Recoil row was re-resolved on 2026-07-27 with the corrected
-version-time method below. **Every one of these claims has a shelf life**, some of them measured in days:
-several packages below published a new release during the week this was written.
+**Every concrete npm entry was resolved at 2026-07-27T13:14:43Z against the npm registry** —
+`registry.npmjs.org`, which is the same source a package manager reads. **Every one of these claims has
+a shelf life**, some of them measured in days: several packages below published a new release during the
+week this was written.
 
 **How to re-resolve any row.** Query the exact latest version and the time map together:
 `npm view <package> version time --json`. Read `version` first, then use that exact value as the key in
@@ -66,22 +66,20 @@ rest is depth.
 
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
-| `babel-plugin-react-compiler` | 1.0 | 2026-05-08 | active |
-| `eslint-plugin-react-hooks` | 7.x | 2026-07-23 | active |
+| `babel-plugin-react-compiler` | 1.0 | 2025-10-07 | quiet |
+| `eslint-plugin-react-hooks` | 7.x | 2026-04-17 | quiet |
 
 Both are React-team packages, which is why `H8` can name the lint preset without this skill choosing a
-vendor. One date deserves separating from the other, because they are different facts: the compiler's
-**`1.0.0` release** is dated **2025-10-07**, which is the same compiler-stable fact `SKILL.md` pins — the
-registry and the announcement agree, which is a useful cross-check on both. The
-**latest-version publish** in the table is 2026-05-08, selected by the method above, which is what the
-status rule measures.
+vendor. The compiler's selected latest release is **`1.0.0`**, published **2025-10-07**, which is the
+same compiler-stable fact `SKILL.md` pins — the registry and the announcement agree. Its separate
+`time.modified` is 2026-05-08; that later metadata event does not make the release active.
 
 ## 3. Server cache — `H15`'s rung 5
 
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `@tanstack/react-query` | 5.x | 2026-07-21 | active |
-| `swr` | 2.x | 2026-07-15 | active |
+| `swr` | 2.x | 2026-06-22 | active |
 
 Both do what `H15` requires of the rung: they own fetching, invalidation, and staleness rather than
 leaving the copy to diverge. `H15`'s obligation is satisfied by either, and by neither if the trigger is
@@ -95,7 +93,7 @@ framework's rather than React's is the open item in [`server-client.md`](server-
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `zustand` | 5.x | 2026-05-28 | active |
-| `jotai` | 2.x | 2026-07-20 | active |
+| `jotai` | 2.x | 2026-07-14 | active |
 | `@reduxjs/toolkit` | 2.x | 2026-05-15 | active |
 | `mobx` | 6.x | 2026-06-08 | active |
 | `recoil` | **0.7.7** | **2023-03-01** | **dormant** — over three years without a publish |
@@ -104,7 +102,7 @@ The last row is the one this table exists for. Recoil still installs, still appe
 not shipped anything in more than three years. A model trained before 2023 will suggest it as a current
 option, which is exactly the staleness this file is here to catch.
 
-Recoil was resolved at `2026-07-27T12:15:42Z`: latest exact version `0.7.7`;
+Recoil was resolved at `2026-07-27T13:14:43Z`: latest exact version `0.7.7`;
 `time["0.7.7"]` `2023-03-01T21:37:53.979Z`; and the separate `time.modified`
 `2024-02-12T18:48:39.318Z`. The modified timestamp is not the publication time of `0.7.7` and must not
 replace the version-keyed value.
@@ -115,26 +113,31 @@ replace the version-keyed value.
 
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
-| `react-aria-components` | 1.x | 2026-07-25 | active |
-| `@radix-ui/react-*` (per-primitive packages) | 1.x | 2026-07-25 | active |
+| `react-aria-components` | 1.x | 2026-06-18 | active |
 | `@ariakit/react` | 0.4 | 2026-07-23 | active |
-| `@headlessui/react` | 2.x | 2026-04-13 | quiet |
+| `@headlessui/react` | 2.x | 2026-04-07 | quiet |
 
-All four supply keyboard behavior and focus management that `H9` requires and that a hand-rolled
-component usually gets wrong. Adopting one does not discharge `H9`: the markup it produces is still your
-output contract, and `REACT-CHECK-17` and `-18` still apply to what ships.
+The `@radix-ui/react-*` name is a family, not an npm package, so it has no aggregate version, date, or
+status. Resolve the concrete primitive before use. At the resolution time above,
+`@radix-ui/react-dialog` and `@radix-ui/react-popover` each resolved to `1.1.23`, published on
+2026-07-24, and were active. Those observations describe only those two selected primitives; they do not
+claim that every package in the family shares their metadata.
+
+All four product families supply keyboard behavior and focus management that `H9` requires and that a
+hand-rolled component usually gets wrong. Adopting one does not discharge `H9`: the markup it produces
+is still your output contract, and `REACT-CHECK-17` and `-18` still apply to what ships.
 
 ## 6. Testing — `testing.md`'s three open layers
 
 | Slot | Package | Line | Latest-version publish | Status |
 |---|---|---|---|---|
 | Component queries | `@testing-library/react` | 16.x | 2026-01-19 | quiet |
-| Runner | `vitest` | 4.x | 2026-07-24 | active |
+| Runner | `vitest` | 4.x | 2026-07-06 | active |
 | Runner | `jest` | 30.x | 2026-05-09 | active |
-| End-to-end | `@playwright/test` | 1.x | 2026-07-25 | active |
+| End-to-end | `@playwright/test` | 1.x | 2026-07-24 | active |
 | End-to-end | `cypress` | 15.x | 2026-07-21 | active |
 | End-to-end | `webdriverio` | 9.x | 2026-07-21 | active |
-| Visual | `storybook` | 10.x | 2026-07-24 | active |
+| Visual | `storybook` | 10.x | 2026-07-27 | active |
 | Network mocking | `msw` | 2.x | 2026-07-08 | active |
 
 Two entries that a stale answer gets wrong:
@@ -142,10 +145,11 @@ Two entries that a stale answer gets wrong:
 - **`enzyme` — 3.11, last published 2019-12-20, dormant for over six years.** It is still suggested by
   models trained on older material. It has no React 19 adapter and asserts on internals, which is what
   `H10` exists to prevent.
-- **`react-test-renderer` — published in lockstep with React (19.2, 2026-07-23) yet deprecated by the
-  React team.** This is the case where publishing activity is a *misleading* signal, and it is why the
-  status rule above is stated as a fact about publishing rather than a recommendation:
-  [`testing.md`](testing.md) §2 carries React's own reason for deprecating it.
+- **`react-test-renderer` — published in lockstep with React (19.2.8, 2026-07-21), active by the
+  publication threshold, yet deprecated by the React team.** This is the case where publishing activity
+  is a *misleading* signal, and it is why the status rule above is stated as a fact about publishing
+  rather than a recommendation: [`testing.md`](testing.md) §2 carries React's own reason for deprecating
+  it.
 
 The Electron end-to-end framework that [`testing.md`](testing.md) §4 says must not be recommended is
 **Spectron**, and the deprecation is the Electron team's own: *"Beginning in February 2022, Spectron will
@@ -159,9 +163,9 @@ suite is built on a surface its vendor labels experimental.
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `tailwindcss` | 4.x | 2026-07-16 | active |
-| `styled-components` | 6.x | 2026-07-19 | active |
-| `@vanilla-extract/css` | 1.x | 2026-06-30 | active |
-| `@pandacss/dev` | 1.x | 2026-07-24 | active |
+| `styled-components` | 6.x | 2026-07-18 | active |
+| `@vanilla-extract/css` | 1.x | 2026-07-27 | active |
+| `@pandacss/dev` | 1.x | 2026-07-22 | active |
 | `@stylexjs/stylex` | 0.19 | 2026-06-16 | active |
 
 **The constraint worth knowing before choosing**: a styling library that generates styles at runtime
@@ -177,14 +181,14 @@ but no React-team document prescribes a styling choice.
 | Slot | Package | Line | Latest-version publish | Status |
 |---|---|---|---|---|
 | Routing | `react-router` | **8.x** | 2026-07-22 | active |
-| Routing | `@tanstack/react-router` | 1.x | 2026-07-24 | active |
+| Routing | `@tanstack/react-router` | 1.x | 2026-07-13 | active |
 | Forms | `react-hook-form` | 7.x | 2026-07-25 | active |
 | Validation | `zod` | 4.x | 2026-05-04 | active |
 | Validation | `valibot` | 1.x | 2026-06-28 | active |
 | Bridge | `@hookform/resolvers` | 5.x | 2026-07-26 | active |
 
 `react-router`'s major line is bolded because it is a documented instance of this file's whole purpose:
-this session's own research recorded it as v7 and it resolved to **8.x** on 2026-07-26. A version written
+this session's own research recorded it as v7 and it resolved to **8.x** on 2026-07-27. A version written
 from memory was wrong within weeks.
 
 On a desktop host, the routing choice is constrained rather than free — [`runtime.md`](runtime.md) §3
@@ -194,9 +198,9 @@ owns that constraint, and it is a host fact rather than a library fact.
 
 | Package | Line | Latest-version publish | Status |
 |---|---|---|---|
-| `vite` | 8.x | 2026-07-22 | active |
+| `vite` | 8.x | 2026-07-16 | active |
 | `webpack` | 5.x | 2026-07-23 | active |
-| `electron-vite` | 5.0 | 2026-04-12 | quiet |
+| `electron-vite` | 5.0 | 2025-12-07 | quiet |
 
 Whether a bundler implements RSC is the question that matters for `H17`, and it is answered by the
 bundler's own documentation rather than by its release cadence.
@@ -214,15 +218,16 @@ bundler's own documentation rather than by its release cadence.
 
 ## 11. Source and method
 
-**Source:** the npm registry at `https://registry.npmjs.org/<package>`, read on **2026-07-26**, with
-Recoil re-read on **2026-07-27**. Resolve the current exact release from `dist-tags.latest` or the
-equivalent `npm view <package> version`, then select that exact key from the registry's `time` map. Record
+**Source:** the npm registry at `https://registry.npmjs.org/<package>`, read at
+**2026-07-27T13:14:43Z**. Resolve the current exact release from `dist-tags.latest` or the equivalent
+`npm view <package> version`, then select that exact key from the registry's `time` map. Record
 `time.modified` separately; do not use it as the release-publication selector.
 
-**Method:** the table was resolved in one pass on 2026-07-26; none was carried forward from earlier
-notes. Recoil was independently re-resolved on 2026-07-27 with the corrected selector order. That matters
-because the prior research for this skill recorded two entries that were already wrong when written —
-`react-router`'s major line, and Recoil's status — and re-resolution is what caught both.
+**Method:** every concrete npm entry in the tables and prose was resolved in one pass at that time; none
+was carried forward from earlier notes. The Radix wildcard was excluded from the concrete metric and two
+named primitives were resolved separately. This matters because the prior research for this skill
+recorded two entries that were already wrong when written — `react-router`'s major line, and Recoil's
+status — and re-resolution is what caught both.
 
 **Two non-registry sources**, both read on 2026-07-26: the Electron team's Spectron Deprecation Notice
 at `https://www.electronjs.org/blog/spectron-deprecation-notice`, and Playwright's Electron API page at
