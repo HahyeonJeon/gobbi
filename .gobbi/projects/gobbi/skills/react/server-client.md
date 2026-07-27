@@ -289,8 +289,9 @@ Two sanctioned escapes, and their limits:
 
 ## 7. Where the "server" actually is
 
-`H17` says never assume a server tier exists. The refinement that keeps a reader from over-reading it is
-that *"server"* names an environment, not a running host: *"This separate environment is the 'server' in
+`H17` says never infer producer architecture from the presentation surface. Classify the browser page or
+Electron renderer separately from the producer. The refinement that keeps a reader from over-reading the
+producer label is that *"server"* names an environment, not a running host: *"This separate environment is the 'server' in
 React Server Components."* That environment can be a build: *"Server components can run at build time to
 read from the filesystem or fetch static content, so a web server is not required"*, and they *"can run
 once at build time on your CI server, or they can be run for each request using a web server."*
@@ -302,8 +303,9 @@ React 19 are stable and will not break between minor versions, the underlying AP
 React Server Components bundler or framework do not follow semver and may break between minors in React
 19."*
 
-So the P1 question is not "is there a server" but "does anything here implement RSC". A plain browser
-application bundled without it has no target, however many servers the product has.
+So the P1 question is not "is there a server" but "is there an identified framework or bundler that
+implements RSC for this producer". A client-only bundle has no target on either presentation surface,
+however many servers the product has.
 
 **UNVERIFIED — the framework-versus-React split.** Which capabilities around RSC are React's and which are
 the framework's — routing, caching, revalidation, request deduplication, and the transport of the rendered
