@@ -29,6 +29,3 @@ The user instructed the manager to keep going without repeatedly gating contract
 
 ## Implication
 The manager applies a routine inference only when authoritative evidence resolves it inside accepted scope and trade-offs. Conflicting evidence or a change to design, scope, success criteria, destructive authority, publication, waiver, finding disposition, or another user-owned axis requires a user decision.
-
-## Related
-- [[contract-preserving-inference-was-over-gated]] — the correction staged from this exchange.
