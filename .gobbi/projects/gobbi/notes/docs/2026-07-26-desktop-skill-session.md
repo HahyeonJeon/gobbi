@@ -139,13 +139,14 @@ source/package topology check are stored under
 
 ## 6. Pre-finalization Git state and authorized finalization plan
 
-The pre-promotion branch is
-`claude-2026-07-25-bb2794ce-bc3d-422a-b011-f8b4750c6eed`, based on `develop` at
-`6f3066c152bcdb4ed21645a547fd1f7d75cfe6df`, with clean starting HEAD
-`3cf18f21466a365cf81effef41617d428434e995`. The absolute worktree is
+The focused promotion commit containing this note exists on branch
+`claude-2026-07-25-bb2794ce-bc3d-422a-b011-f8b4750c6eed`. Its parent is
+`3cf18f21466a365cf81effef41617d428434e995` and its subject is
+`docs(memory): promote desktop session findings`. Its exact self hash is intentionally not
+embedded because changing this note would change that hash. The absolute worktree is
 `/playinganalytics/git/gobbi/.gobbi/projects/gobbi/worktrees/claude-2026-07-25-bb2794ce-bc3d-422a-b011-f8b4750c6eed`.
-The Wrap-up promotion is one manifest-owned tracked delta with planned subject
-`docs(memory): promote desktop session findings` and the session provenance trailer.
+The next manager must re-probe the live HEAD, parent, subject, tree, status, and provenance trailer
+before any finalization action.
 
 After Wrap-up PASS RECORD, the manager is authorized to re-probe Git posture, push the exact
 session branch, and open or reuse one ready pull request whose head is that branch and whose base
@@ -154,7 +155,8 @@ checks, review state, mergeability, and exact head/base before asking for live s
 authority. Cleanup may remove only the exact clean worktree and exact session refs after the pull
 request is confirmed merged and the main checkout fast-forwards.
 
-No push, pull request, merge, branch deletion, worktree removal, or cleanup is claimed here.
+Push, pull-request creation, merge, branch deletion, worktree removal, and cleanup remain future
+manager actions after Wrap-up PASS RECORD. None is claimed here.
 
 ## 7. Unresolved, blocked, or deferred items with explicit reasons
 
