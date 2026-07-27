@@ -18,19 +18,21 @@ to whichever file owns that topic. Nothing here overrides `SKILL.md`.
 
 ## Read this before using anything below
 
-**Everything in this file was resolved on 2026-07-26 against the npm registry** — `registry.npmjs.org`,
-which is the same source a package manager reads — and every entry carries that date. **Every one of
-these claims has a shelf life**, some of them measured in days: several packages below published a new
-release during the week this was written.
+**The table was resolved on 2026-07-26 against the npm registry** — `registry.npmjs.org`, which is the
+same source a package manager reads. The Recoil row was re-resolved on 2026-07-27 with the corrected
+version-time method below. **Every one of these claims has a shelf life**, some of them measured in days:
+several packages below published a new release during the week this was written.
 
-**How to re-resolve any row.** `npm view <package> version` gives the current release, and
-`npm view <package> time.modified` gives the last publish date. The registry's JSON at
-`https://registry.npmjs.org/<package>` carries both. That is a thirty-second check, and it is the
-intended way to use this file: **treat every row as a starting point to verify, not as a fact to
-repeat.**
+**How to re-resolve any row.** Query the exact latest version and the time map together:
+`npm view <package> version time --json`. Read `version` first, then use that exact value as the key in
+`time`; `time[version]` is the selected release's publication timestamp. Record `time.modified`
+separately when it matters: it is a package-metadata modification timestamp, and it is not evidence of
+when the selected version was published. The registry's JSON at `https://registry.npmjs.org/<package>`
+carries the same selectors. This is a thirty-second check, and it is the intended way to use this file:
+**treat every row as a starting point to verify, not as a fact to repeat.**
 
 **How the status column is derived**, so the verdict is reproducible rather than an opinion. Measured
-from the resolution date against the package's most recent publish:
+from the resolution date against `time[version]` for the exact latest version:
 
 | Status | Rule |
 |---|---|
@@ -62,7 +64,7 @@ rest is depth.
 
 ## 2. Compiler and lint — the one slot React itself occupies
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `babel-plugin-react-compiler` | 1.0 | 2026-05-08 | active |
 | `eslint-plugin-react-hooks` | 7.x | 2026-07-23 | active |
@@ -70,12 +72,13 @@ rest is depth.
 Both are React-team packages, which is why `H8` can name the lint preset without this skill choosing a
 vendor. One date deserves separating from the other, because they are different facts: the compiler's
 **`1.0.0` release** is dated **2025-10-07**, which is the same compiler-stable fact `SKILL.md` pins — the
-registry and the announcement agree, which is a useful cross-check on both. The **last publish** in the
-table is 2026-05-08 and covers releases under any tag, which is what the status rule measures.
+registry and the announcement agree, which is a useful cross-check on both. The
+**latest-version publish** in the table is 2026-05-08, selected by the method above, which is what the
+status rule measures.
 
 ## 3. Server cache — `H15`'s rung 5
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `@tanstack/react-query` | 5.x | 2026-07-21 | active |
 | `swr` | 2.x | 2026-07-15 | active |
@@ -89,23 +92,28 @@ framework's rather than React's is the open item in [`server-client.md`](server-
 
 ## 4. Client store — `state.md`'s rung 4
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `zustand` | 5.x | 2026-05-28 | active |
 | `jotai` | 2.x | 2026-07-20 | active |
 | `@reduxjs/toolkit` | 2.x | 2026-05-15 | active |
 | `mobx` | 6.x | 2026-06-08 | active |
-| `recoil` | 0.7 | **2023-03-01** | **dormant** — over three years without a publish |
+| `recoil` | **0.7.7** | **2023-03-01** | **dormant** — over three years without a publish |
 
 The last row is the one this table exists for. Recoil still installs, still appears in tutorials, and has
 not shipped anything in more than three years. A model trained before 2023 will suggest it as a current
 option, which is exactly the staleness this file is here to catch.
 
+Recoil was resolved at `2026-07-27T12:15:42Z`: latest exact version `0.7.7`;
+`time["0.7.7"]` `2023-03-01T21:37:53.979Z`; and the separate `time.modified`
+`2024-02-12T18:48:39.318Z`. The modified timestamp is not the publication time of `0.7.7` and must not
+replace the version-keyed value.
+
 ## 5. Compound components and headless primitives — `design.md`'s slot
 
 `design.md` §2 describes the pattern and names nothing. These package it:
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `react-aria-components` | 1.x | 2026-07-25 | active |
 | `@radix-ui/react-*` (per-primitive packages) | 1.x | 2026-07-25 | active |
@@ -118,7 +126,7 @@ output contract, and `REACT-CHECK-17` and `-18` still apply to what ships.
 
 ## 6. Testing — `testing.md`'s three open layers
 
-| Slot | Package | Line | Last publish | Status |
+| Slot | Package | Line | Latest-version publish | Status |
 |---|---|---|---|---|
 | Component queries | `@testing-library/react` | 16.x | 2026-01-19 | quiet |
 | Runner | `vitest` | 4.x | 2026-07-24 | active |
@@ -148,7 +156,7 @@ suite is built on a surface its vendor labels experimental.
 
 ## 7. Styling, and the one incompatibility that is not a preference
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `tailwindcss` | 4.x | 2026-07-16 | active |
 | `styled-components` | 6.x | 2026-07-19 | active |
@@ -166,7 +174,7 @@ but no React-team document prescribes a styling choice.
 
 ## 8. Routing, forms, and validation
 
-| Slot | Package | Line | Last publish | Status |
+| Slot | Package | Line | Latest-version publish | Status |
 |---|---|---|---|---|
 | Routing | `react-router` | **8.x** | 2026-07-22 | active |
 | Routing | `@tanstack/react-router` | 1.x | 2026-07-24 | active |
@@ -184,7 +192,7 @@ owns that constraint, and it is a host fact rather than a library fact.
 
 ## 9. Build tooling
 
-| Package | Line | Last publish | Status |
+| Package | Line | Latest-version publish | Status |
 |---|---|---|---|
 | `vite` | 8.x | 2026-07-22 | active |
 | `webpack` | 5.x | 2026-07-23 | active |
@@ -206,20 +214,22 @@ bundler's own documentation rather than by its release cadence.
 
 ## 11. Source and method
 
-**Source:** the npm registry at `https://registry.npmjs.org/<package>`, read on **2026-07-26**. For each
-package the current release came from `dist-tags.latest` and the last-publish date from the registry's
-own `time` map — the same data `npm view` returns.
+**Source:** the npm registry at `https://registry.npmjs.org/<package>`, read on **2026-07-26**, with
+Recoil re-read on **2026-07-27**. Resolve the current exact release from `dist-tags.latest` or the
+equivalent `npm view <package> version`, then select that exact key from the registry's `time` map. Record
+`time.modified` separately; do not use it as the release-publication selector.
 
-**Method:** every package in this file was resolved in one pass on that date; none was carried forward
-from earlier notes. That matters because the prior research for this skill recorded two entries that were
-already wrong when written — `react-router`'s major line, and Recoil's status — and re-resolution is what
-caught both.
+**Method:** the table was resolved in one pass on 2026-07-26; none was carried forward from earlier
+notes. Recoil was independently re-resolved on 2026-07-27 with the corrected selector order. That matters
+because the prior research for this skill recorded two entries that were already wrong when written —
+`react-router`'s major line, and Recoil's status — and re-resolution is what caught both.
 
 **Two non-registry sources**, both read on 2026-07-26: the Electron team's Spectron Deprecation Notice
 at `https://www.electronjs.org/blog/spectron-deprecation-notice`, and Playwright's Electron API page at
 `https://playwright.dev/docs/api/class-electron`, which is where the experimental label comes from.
 
 **Evidence class:** every version and date above is a registry observation, reproducible by the command
-in the header. Every *grouping* — which package belongs in which slot — is *ecosystem convention*, and no
-React-team document assigns any of them. The one exception is §2, where both packages are published by
-the React team and `H8` already names the lint preset.
+in the header and the ordered `version` then `time[version]` selectors. `time.modified` is a separate
+registry observation and never version-publication evidence. Every *grouping* — which package belongs in
+which slot — is *ecosystem convention*, and no React-team document assigns any of them. The one exception
+is §2, where both packages are published by the React team and `H8` already names the lint preset.
