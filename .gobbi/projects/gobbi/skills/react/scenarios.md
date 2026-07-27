@@ -133,9 +133,9 @@ obligation. Scenario-to-check links are the reserved `Checklist IDs:` slots.
   review passes and real data corrupts. **Cosmetic form:** the mutation is "made pure" by wrapping it in a
   `useMemo`, which still runs during render; or an I/O, time-based, random, or replay-dependent ref write
   is placed behind `ref.current === null` and presented as initialization.
-- **Minimums:** boundary see above · adversarial see above · failure/recovery `n/a: no external
-  dependency, persistence, or partial mutation` · change `n/a: no version or lifecycle event` ·
-  counterfactual `n/a: no load-bearing premise to invert`.
+- **Minimums:** boundary see above · adversarial see above · failure/recovery `n/a: the I/O case is
+  rejected before any dependency call, not an injected dependency failure or partial mutation` · change
+  `n/a: no version or lifecycle event` · counterfactual `n/a: no load-bearing premise to invert`.
 - **Oracle:** run six ref cases separately: deterministic null-guard construction passes; changing-ref
   JSX, every-render assignment, I/O construction, time or randomness, and replay-dependent construction
   each fail for their own reason. Render twice with the same props and compare the output and any external
