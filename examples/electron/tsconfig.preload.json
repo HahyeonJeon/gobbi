@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "PRELOAD pass of the `electron` example-verification harness. One pass per process target; a single combined config is a FALSE-PASS harness that certifies exactly the boundary violations this skill exists to prevent. Consumed as the `extends` base by run-examples.sh over units/preload/; not run standalone.",
+  "//boundary": "A preload runs in the renderer process, so it KEEPS the DOM. It rejects every main-process Electron module (the generated preload view -> `app` is TS2305) and every Node built-in (`node:fs` is TS2307): a sandboxed preload's `require` reaches only electron, events, timers and url.",
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "moduleDetection": "force",
+    "target": "ES2023",
+
+    // WITH `DOM`. A preload runs in the renderer process and legitimately
+    // touches `document` — rejecting the DOM here would fail correct examples.
+    "lib": ["ES2023", "DOM"],
+    // NOT `["node"]`. A sandboxed preload gets a polyfilled subset of Node, not
+    // Node: `fs`, `path`, `child_process` and `__dirname` are absent at runtime,
+    // and @types/node would type all of them as available. The four globals the
+    // sandbox really does provide are declared by hand in ./types/ below.
+    "types": [],
+    // The bare specifier `electron` resolves to the PRELOAD view:
+    // `Electron.Renderer & Electron.Common` — exactly the six modules the
+    // sandboxed `require` reaches. Every main-process module is TS2305 here.
+    "paths": { "electron": ["./generated/electron-preload.d.ts"] },
+
+    // REQUIRED, not an inherited convenience. `electron.d.ts` is one monolithic
+    // declaration carrying both main and renderer types, and it references DOM
+    // types (HTMLElement, VideoFrame, MessagePort,
+    // EventListenerOrEventListenerObject). Under a DOM-free config it emits ~13
+    // errors INSIDE Electron's own typings before the compiler reaches a single
+    // example. The preload pass keeps the flag with the main pass so all three
+    // passes fail and pass for the same reasons.
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+
+    "verbatimModuleSyntax": true,
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true,
+
+    // Relaxed so a teaching snippet may declare a value only to show its type.
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "//files": "The hand-written sandboxed-globals declaration is listed under `files`, not `include`: the runner's temp tsconfig sets its own `include` (which overrides an inherited one) but no `files`, so this entry survives into every preload pass.",
+  "files": ["./types/sandboxed-preload-globals.d.ts"]
+}

@@ -469,7 +469,7 @@ If that wiring is built later, it must preserve these invariants:
 
 ## Scope — language-agnostic, illustrated in Python and TypeScript
 
-This doc states the language-agnostic *property* of each review point. Python and TypeScript appear only as illustrations inside the property-led signal tables — never as a section of their own. The rule of thumb mirrors `coding/SKILL.md` § Scope: if the check changes when you switch languages, it is an idiom, not a review point. The points here check the property ("the same concept gets the same name", "untrusted input is validated at the boundary"); the concrete idiom ("in this language, that boundary is this type, that test is this framework") defers to the future `python` and `typescript` skills.
+This doc states the language-agnostic *property* of each review point. Python and TypeScript appear only as illustrations inside the property-led signal tables — never as a section of their own. The rule of thumb mirrors `coding/SKILL.md` § Scope: if the check changes when you switch languages, it is an idiom, not a review point. The points here check the property ("the same concept gets the same name", "untrusted input is validated at the boundary"); the concrete idiom ("in this language, that boundary is this type, that test is this framework") defers to the `python` and `typescript` skills, and the platform idiom to the `electron` skill.
 
 Because the points are properties, they apply to a third language too. A reviewer reading a Go or Rust change applies the same thirteen points; the Python and TypeScript columns are examples to reason by, not gates the change must match.
 
