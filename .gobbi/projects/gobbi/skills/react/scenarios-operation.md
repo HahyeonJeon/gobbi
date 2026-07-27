@@ -9,7 +9,7 @@ evidence fidelity. Enter through the [`scenarios.md`](scenarios.md) parent.
 - **Target and consumers:** one React change-set; executors and evaluators selected by the parent.
 - **Lifecycle:** evaluation mode and read-only review mode.
 - **Scope:** bottom-up operation and evidence; React behavior and host boundaries live in sibling sets.
-- **Threshold:** at most 12 families and 50 cells. This set has 2 families and 20 cells.
+- **Threshold:** at most 12 families and 50 cells. This set has 2 families and 27 cells.
 - **Stable IDs:** families 11 and 12 retain their published identities.
 
 ## Scenario Rule 1 coverage register
@@ -27,16 +27,27 @@ evidence fidelity. Enter through the [`scenarios.md`](scenarios.md) parent.
 | 9 | Change / compatibility / reversibility | `selected` | `REACT-SCENARIO-12` |
 | 10 | Evidence / traceability / clarity | `selected` | `REACT-SCENARIO-12` |
 
-### Category carriers
+### Category by case type
 
-| Category | In-child families |
-|---|---|
-| 1 | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` |
-| 2 | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` |
-| 3 | `REACT-SCENARIO-11` |
-| 4 | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` |
-| 9 | `REACT-SCENARIO-12` |
-| 10 | `REACT-SCENARIO-12` |
+A cell is one distinct `(selected category, triggered case type)` pair, counted once. Family lists make
+the carrier set auditable without a second editable carrier table.
+
+| Category | Positive | Negative | Adversarial | Boundary | Failure/recovery | Alt-valid | Change | Counterfactual |
+|---|---|---|---|---|---|---|---|---|
+| 1 Purpose | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11` | — | `REACT-SCENARIO-11` | — | — |
+| 2 Actors | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | — | — | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | — | — |
+| 3 Behavior | `REACT-SCENARIO-11` | `REACT-SCENARIO-11` | `REACT-SCENARIO-11` | `REACT-SCENARIO-11` | — | — | — | — |
+| 4 Interfaces | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11`, `REACT-SCENARIO-12` | `REACT-SCENARIO-11` | — | — | `REACT-SCENARIO-12` | — |
+| 5 Quality | — | — | — | — | — | — | — | — |
+| 6 Failure | — | — | — | — | — | — | — | — |
+| 7 Trust | — | — | — | — | — | — | — | — |
+| 8 Inclusion | — | — | — | — | — | — | — | — |
+| 9 Change | `REACT-SCENARIO-12` | `REACT-SCENARIO-12` | `REACT-SCENARIO-12` | — | — | — | `REACT-SCENARIO-12` | — |
+| 10 Evidence | `REACT-SCENARIO-12` | `REACT-SCENARIO-12` | `REACT-SCENARIO-12` | — | — | `REACT-SCENARIO-12` | `REACT-SCENARIO-12` | — |
+
+Cells: 27 across 2 families. An em dash means the category's in-child families do not turn on that
+case-type property; each family's `Minimums:` line states why, and categories 5 through 8 resolve through
+their Scenario Rule 7 ledgers.
 
 ### Scenario Rule 7 covered-elsewhere ledger
 

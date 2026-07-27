@@ -65,23 +65,101 @@ register_rows() {
   ' "$child"
 }
 
-carrier_row() {
+matrix_rows() {
   local child="$1"
-  local category="$2"
-  awk -F'|' -v wanted="$category" '
-    /^### Category carriers$/ { in_carriers=1; next }
-    in_carriers && /^### / { exit }
-    in_carriers && $2 ~ /^[[:space:]]*[0-9]+[[:space:]]*$/ {
-      number=$2
-      gsub(/^[[:space:]]+|[[:space:]]+$/, "", number)
-      if (number == wanted) {
-        value=$3
+  awk -F'|' '
+    /^### Category by case type$/ { in_matrix=1; next }
+    in_matrix && /^### / { exit }
+    in_matrix && $2 ~ /^[[:space:]]*[0-9]+[[:space:]]/ {
+      label=$2
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", label)
+      split(label, parts, /[[:space:]]+/)
+      printf "%s", parts[1]
+      for (i=3; i<=10; i++) {
+        value=$i
         gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
-        print value
-        exit
+        printf "\t%s", value
       }
+      printf "\n"
     }
   ' "$child"
+}
+
+normalize_family_ids() {
+  {
+    rg -o 'REACT-SCENARIO-[0-9]{2}' || true
+  } | sort -u | paste -sd, -
+}
+
+matrix_carriers() {
+  local matrix_file="$1"
+  local category="$2"
+  awk -F'\t' -v wanted="$category" '$1 == wanted { for (i=2; i<=9; i++) print $i }' \
+    "$matrix_file" | normalize_family_ids
+}
+
+matrix_cell_count() {
+  local child="$1"
+  matrix_rows "$child" | awk -F'\t' '
+    {
+      for (i=2; i<=9; i++) {
+        if ($i != "—" && $i != "-") count++
+      }
+    }
+    END { print count+0 }
+  '
+}
+
+source_backed_carriers() {
+  local child="$1"
+  local category="$2"
+  local set_identity
+  # This executable oracle is resolved from the frozen pre-split category
+  # register plus Family 13's Error Boundary source. Keeping it outside the
+  # child register and matrix makes coordinated document edits self-failing.
+  set_identity="$(head -1 "$child")"
+  case "$set_identity:$category" in
+    '# React scenarios — Component behavior:1')
+      printf '%s\n' REACT-SCENARIO-04 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:2')
+      printf '%s\n' REACT-SCENARIO-09 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:3')
+      printf '%s\n' REACT-SCENARIO-01 REACT-SCENARIO-02 REACT-SCENARIO-03 \
+        REACT-SCENARIO-04 REACT-SCENARIO-05 REACT-SCENARIO-08 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:4')
+      printf '%s\n' REACT-SCENARIO-02 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:5')
+      printf '%s\n' REACT-SCENARIO-04 REACT-SCENARIO-07 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:6')
+      printf '%s\n' REACT-SCENARIO-05 REACT-SCENARIO-13 ;;
+    '# React scenarios — Component behavior:7') ;;
+    '# React scenarios — Component behavior:8')
+      printf '%s\n' REACT-SCENARIO-09 ;;
+    '# React scenarios — Component behavior:9')
+      printf '%s\n' REACT-SCENARIO-07 ;;
+    '# React scenarios — Component behavior:10')
+      printf '%s\n' REACT-SCENARIO-01 REACT-SCENARIO-02 REACT-SCENARIO-03 \
+        REACT-SCENARIO-04 REACT-SCENARIO-05 REACT-SCENARIO-07 \
+        REACT-SCENARIO-08 REACT-SCENARIO-09 REACT-SCENARIO-13 ;;
+    '# React scenarios — Boundaries and hosts:1'|'# React scenarios — Boundaries and hosts:2'|'# React scenarios — Boundaries and hosts:4'|'# React scenarios — Boundaries and hosts:6'|'# React scenarios — Boundaries and hosts:7'|'# React scenarios — Boundaries and hosts:10')
+      printf '%s\n' REACT-SCENARIO-06 REACT-SCENARIO-10 ;;
+    '# React scenarios — Boundaries and hosts:3')
+      printf '%s\n' REACT-SCENARIO-06 ;;
+    '# React scenarios — Boundaries and hosts:5')
+      printf '%s\n' REACT-SCENARIO-10 ;;
+    '# React scenarios — Boundaries and hosts:8'|'# React scenarios — Boundaries and hosts:9') ;;
+    '# React scenarios — Operation and evidence:1'|'# React scenarios — Operation and evidence:2'|'# React scenarios — Operation and evidence:4')
+      printf '%s\n' REACT-SCENARIO-11 REACT-SCENARIO-12 ;;
+    '# React scenarios — Operation and evidence:3')
+      printf '%s\n' REACT-SCENARIO-11 ;;
+    '# React scenarios — Operation and evidence:5'|'# React scenarios — Operation and evidence:6'|'# React scenarios — Operation and evidence:7'|'# React scenarios — Operation and evidence:8') ;;
+    '# React scenarios — Operation and evidence:9'|'# React scenarios — Operation and evidence:10')
+      printf '%s\n' REACT-SCENARIO-12 ;;
+    *)
+      fail "unknown child set or category for semantic carrier derivation: $set_identity category $category"
+      return 1
+      ;;
+  esac
 }
 
 ledger_row() {
@@ -109,24 +187,36 @@ scenario_validate() {
   local parent="$1"
   local child="$2"
   local rows_file="$3"
-  local diagnostics_file="$4"
+  local matrix_file="$4"
+  local diagnostics_file="$5"
   local mechanical="pass"
   local semantic="pass"
   local row_count
+  local matrix_row_count
+  local cell_count
   local number
   local disposition
   local reference
   local category
-  local carrier
+  local registered_carriers
+  local matrix_family_set
+  local source_family_set
   local family
   local ledger
   local ledger_data
 
   : >"$diagnostics_file"
   register_rows "$child" >"$rows_file"
+  matrix_rows "$child" >"$matrix_file"
   row_count="$(wc -l <"$rows_file" | tr -d ' ')"
   if [[ "$row_count" != "10" ]]; then
     printf 'mechanical: expected 10 register rows, observed %s\n' "$row_count" >>"$diagnostics_file"
+    mechanical="fail"
+  fi
+  matrix_row_count="$(wc -l <"$matrix_file" | tr -d ' ')"
+  if [[ "$matrix_row_count" != "10" ]]; then
+    printf 'mechanical: expected 10 category-by-case matrix rows, observed %s\n' \
+      "$matrix_row_count" >>"$diagnostics_file"
     mechanical="fail"
   fi
 
@@ -137,7 +227,76 @@ scenario_validate() {
       printf 'mechanical: category %s occurs %s times\n' "$number" "$observed" >>"$diagnostics_file"
       mechanical="fail"
     fi
+    observed="$(awk -F'\t' -v wanted="$number" '$1 == wanted { count++ } END { print count+0 }' "$matrix_file")"
+    if [[ "$observed" != "1" ]]; then
+      printf 'mechanical: matrix category %s occurs %s times\n' "$number" "$observed" >>"$diagnostics_file"
+      mechanical="fail"
+    fi
   done
+
+  cell_count="$(awk -F'\t' '
+    {
+      for (i=2; i<=9; i++) {
+        if ($i != "—" && $i != "-") count++
+      }
+    }
+    END { print count+0 }
+  ' "$matrix_file")"
+  local declared_metrics
+  local declared_families=""
+  local declared_cells=""
+  local actual_families
+  declared_metrics="$(rg -o 'This set has [0-9]+ families and [0-9]+ cells\.' "$child" | head -1 || true)"
+  if [[ -n "$declared_metrics" ]]; then
+    declared_families="$(awk '{ print $4 }' <<<"$declared_metrics")"
+    declared_cells="$(awk '{ print $7 }' <<<"$declared_metrics")"
+  fi
+  actual_families="$(rg -c '^### REACT-SCENARIO-[0-9]{2} — ' "$child" || true)"
+  if [[ -z "$declared_cells" || "$declared_cells" != "$cell_count" ]]; then
+    printf 'mechanical: declared child cell count %s differs from matrix-derived count %s\n' \
+      "${declared_cells:-missing}" "$cell_count" >>"$diagnostics_file"
+    mechanical="fail"
+  fi
+  if ((cell_count >= 50)); then
+    printf 'mechanical: matrix-derived cell count %s is not below 50\n' "$cell_count" >>"$diagnostics_file"
+    mechanical="fail"
+  fi
+  if [[ -z "$declared_families" || "$declared_families" != "$actual_families" ]]; then
+    printf 'mechanical: declared child family count %s differs from heading-derived count %s\n' \
+      "${declared_families:-missing}" "$actual_families" >>"$diagnostics_file"
+    mechanical="fail"
+  fi
+
+  local parent_metrics
+  local parent_families=""
+  local parent_cells=""
+  parent_metrics="$(awk -F'|' -v target="$(basename -- "$child")" '
+    index($0, "](" target ")") {
+      families=$5
+      cells=$6
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", families)
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", cells)
+      print families "\t" cells
+      exit
+    }
+  ' "$parent")"
+  if [[ -n "$parent_metrics" ]]; then
+    IFS=$'\t' read -r parent_families parent_cells <<<"$parent_metrics"
+  fi
+  if [[ "$parent_families" != "$actual_families" || "$parent_cells" != "$cell_count" ]]; then
+    printf 'mechanical: parent summary %s families/%s cells differs from derived %s/%s\n' \
+      "${parent_families:-missing}" "${parent_cells:-missing}" "$actual_families" "$cell_count" \
+      >>"$diagnostics_file"
+    mechanical="fail"
+  fi
+
+  while IFS= read -r family; do
+    [[ -n "$family" ]] || continue
+    if ! rg -q "^### ${family} — " "$child"; then
+      printf 'semantic: matrix names missing in-child family %s\n' "$family" >>"$diagnostics_file"
+      semantic="fail"
+    fi
+  done < <(normalize_family_ids <"$matrix_file" | tr ',' '\n')
 
   while IFS=$'\t' read -r number category disposition reference; do
     if [[ "$disposition" != '`selected`' &&
@@ -148,28 +307,31 @@ scenario_validate() {
       continue
     fi
 
-    carrier="$(carrier_row "$child" "$number")"
+    registered_carriers="$(printf '%s\n' "$reference" | normalize_family_ids)"
+    matrix_family_set="$(matrix_carriers "$matrix_file" "$number")"
+    source_family_set="$(source_backed_carriers "$child" "$number" | normalize_family_ids)"
     if [[ "$disposition" == '`selected`' ]]; then
-      if [[ -z "$carrier" ]]; then
-        printf 'semantic: selected category %s has no child-local carrier\n' "$number" >>"$diagnostics_file"
+      if [[ -z "$source_family_set" ]]; then
+        printf 'semantic: selected category %s has no source-backed in-child carrier\n' \
+          "$number" >>"$diagnostics_file"
         semantic="fail"
-      else
-        local carrier_found="false"
-        while IFS= read -r family; do
-          [[ -n "$family" ]] || continue
-          if rg -q "^### ${family} — " "$child"; then
-            carrier_found="true"
-          else
-            printf 'semantic: category %s names missing carrier %s\n' "$number" "$family" >>"$diagnostics_file"
-            semantic="fail"
-          fi
-        done < <(printf '%s\n' "$carrier" | rg -o 'REACT-SCENARIO-[0-9]{2}' | sort -u)
-        if [[ "$carrier_found" != "true" ]]; then
-          printf 'semantic: selected category %s has no resolvable family carrier\n' "$number" >>"$diagnostics_file"
-          semantic="fail"
-        fi
+      fi
+      if [[ "$registered_carriers" != "$source_family_set" ]]; then
+        printf 'semantic: category %s register carriers differ from source-backed expectation\n' \
+          "$number" >>"$diagnostics_file"
+        semantic="fail"
+      fi
+      if [[ "$matrix_family_set" != "$source_family_set" ]]; then
+        printf 'semantic: category %s matrix carriers differ from source-backed expectation\n' \
+          "$number" >>"$diagnostics_file"
+        semantic="fail"
       fi
     elif [[ "$disposition" == '`covered-elsewhere`:'* ]]; then
+      if [[ -n "$source_family_set" || -n "$matrix_family_set" ]]; then
+        printf 'semantic: category %s covered-elsewhere contradicts source-backed in-child carriers\n' \
+          "$number" >>"$diagnostics_file"
+        semantic="fail"
+      fi
       ledger="$(printf '%s\n' "$reference" | rg -o 'SR7-[0-9]+' | head -1 || true)"
       if [[ "$disposition" != *']('*')'* || -z "$ledger" ]]; then
         printf 'semantic: category %s has bare covered-elsewhere without pointer and ledger\n' "$number" >>"$diagnostics_file"
@@ -187,7 +349,7 @@ scenario_validate() {
         semantic="fail"
       fi
     else
-      if [[ -n "$carrier" ]]; then
+      if [[ -n "$source_family_set" || -n "$matrix_family_set" ]]; then
         printf 'semantic: category %s has a declared secondary or primary carrier but is mislabeled n/a\n' "$number" >>"$diagnostics_file"
         semantic="fail"
       fi
@@ -244,20 +406,26 @@ scenario_check() {
   require_absolute_evidence "$evidence" || return 1
 
   local rows_file
+  local matrix_file
   local diagnostics_file
   local result_file
   local status=0
   local mechanical
   local semantic
+  local derived_cells
+  local derived_families
   rows_file="$(mktemp)"
+  matrix_file="$(mktemp)"
   diagnostics_file="$(mktemp)"
   result_file="$(mktemp)"
-  if scenario_validate "$parent" "$child" "$rows_file" "$diagnostics_file" >"$result_file"; then
+  if scenario_validate "$parent" "$child" "$rows_file" "$matrix_file" "$diagnostics_file" >"$result_file"; then
     status=0
   else
     status=1
   fi
   IFS=$'\t' read -r mechanical semantic <"$result_file"
+  derived_cells="$(matrix_cell_count "$child")"
+  derived_families="$(rg -c '^### REACT-SCENARIO-[0-9]{2} — ' "$child" || true)"
   local payload
   payload="$(jq -n \
     --arg schema "$SCHEMA_VERSION" \
@@ -272,6 +440,8 @@ scenario_check() {
     --arg child_identity "$(basename -- "$child" .md)" \
     --arg mechanical "$mechanical" \
     --arg semantic "$semantic" \
+    --argjson derived_cells "$derived_cells" \
+    --argjson derived_families "$derived_families" \
     --arg diagnostics "$(cat "$diagnostics_file")" \
     --arg aggregate "$([[ "$status" == 0 ]] && printf pass || printf fail)" \
     '{
@@ -289,14 +459,18 @@ scenario_check() {
       probe_identities:[],
       expected_nested_status:null,
       observed_nested_status:null,
-      atomic_checks:[{id:"diagnostics",detail:$diagnostics}],
+      atomic_checks:[
+        {id:"category-by-case-matrix",derived_cells:$derived_cells,derived_families:$derived_families,result:$mechanical},
+        {id:"source-backed-family-category-semantics",result:$semantic},
+        {id:"diagnostics",detail:$diagnostics}
+      ],
       aggregate_result:$aggregate
     }')"
   write_json "$evidence" "$payload"
   if [[ "$status" != 0 ]]; then
     cat "$diagnostics_file" >&2
   fi
-  rm -f -- "$rows_file" "$diagnostics_file" "$result_file"
+  rm -f -- "$rows_file" "$matrix_file" "$diagnostics_file" "$result_file"
   return "$status"
 }
 
@@ -318,6 +492,49 @@ mutate_register() {
         changed=1
       }
       if (defect == "secondary-mislabeled-na" && number == 1) $4=" `n/a: planted false predicate` "
+    }
+    defect == "declared-cell-count-mismatch" && /This set has [0-9]+ families and [0-9]+ cells\./ {
+      sub(/[0-9]+ cells\.$/, "49 cells.")
+    }
+    { print }
+  ' "$source" >"$destination"
+}
+
+mutate_coordinated_semantics() {
+  local source="$1"
+  local destination="$2"
+  local defect="$3"
+  awk -F'|' -v OFS='|' -v defect="$defect" '
+    /^## Scenario Rule 1 coverage register$/ { in_register=1 }
+    in_register && /^### / { in_register=0 }
+    /^### Category by case type$/ { in_matrix=1 }
+    in_matrix && /^### / && $0 !~ /^### Category by case type$/ { in_matrix=0 }
+    in_register && $2 ~ /^[[:space:]]*[0-9]+[[:space:]]*$/ {
+      number=$2
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", number)
+      if (defect == "coordinated-category1-na-carrier-removal" && number == 1) {
+        $4=" `n/a: planted false category-1 predicate` "
+        $5=" coordinated fixture "
+      }
+      if (defect == "unrelated-category8-carrier" && number == 8) {
+        $5=" `REACT-SCENARIO-01` "
+      }
+    }
+    in_matrix && $2 ~ /^[[:space:]]*[0-9]+[[:space:]]/ {
+      label=$2
+      gsub(/^[[:space:]]+|[[:space:]]+$/, "", label)
+      split(label, parts, /[[:space:]]+/)
+      number=parts[1]
+      if (defect == "coordinated-category1-na-carrier-removal" && number == 1) {
+        for (i=3; i<=10; i++) $i=" — "
+      }
+      if (defect == "unrelated-category8-carrier" && number == 8) {
+        for (i=3; i<=10; i++) {
+          value=$i
+          gsub(/^[[:space:]]+|[[:space:]]+$/, "", value)
+          if (value != "—" && value != "-") $i=" `REACT-SCENARIO-01` "
+        }
+      }
     }
     { print }
   ' "$source" >"$destination"
@@ -353,7 +570,14 @@ scenario_probe() {
     invalid-disposition
     bare-covered-elsewhere
     secondary-mislabeled-na
+    declared-cell-count-mismatch
   )
+  if [[ "$(head -1 "$child")" == '# React scenarios — Component behavior' ]]; then
+    probes+=(
+      coordinated-category1-na-carrier-removal
+      unrelated-category8-carrier
+    )
+  fi
   local checks='[]'
   local probe
   local aggregate="pass"
@@ -364,7 +588,14 @@ scenario_probe() {
     local stderr_file="$fixture_root/$probe.stderr"
     local observed
     local expected_diagnosis
-    mutate_register "$child" "$fixture" "$probe"
+    case "$probe" in
+      coordinated-category1-na-carrier-removal|unrelated-category8-carrier)
+        mutate_coordinated_semantics "$child" "$fixture" "$probe"
+        ;;
+      *)
+        mutate_register "$child" "$fixture" "$probe"
+        ;;
+    esac
     sed "s/$(basename -- "$child")/$(basename -- "$fixture")/g" \
       "$fixture_root/parent.md" >"$fixture_parent"
     case "$probe" in
@@ -373,6 +604,15 @@ scenario_probe() {
       invalid-disposition) expected_diagnosis='category 1 has invalid disposition' ;;
       bare-covered-elsewhere) expected_diagnosis='bare covered-elsewhere without pointer and ledger' ;;
       secondary-mislabeled-na) expected_diagnosis='declared secondary or primary carrier but is mislabeled n/a' ;;
+      declared-cell-count-mismatch)
+        expected_diagnosis='declared child cell count 49 differs from matrix-derived count'
+        ;;
+      coordinated-category1-na-carrier-removal)
+        expected_diagnosis='declared secondary or primary carrier but is mislabeled n/a'
+        ;;
+      unrelated-category8-carrier)
+        expected_diagnosis='category 8 register carriers differ from source-backed expectation'
+        ;;
     esac
     set +e
     "$VALIDATOR_PATH" scenario-check \

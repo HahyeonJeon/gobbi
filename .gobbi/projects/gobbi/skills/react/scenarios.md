@@ -23,12 +23,13 @@ Principle, and `Procedure P{n}` for a procedure step. `Checklist IDs:` only rese
 
 | Child | Purpose | Stable family identities | Families | Cells |
 |---|---|---|---:|---:|
-| [`scenarios-components.md`](scenarios-components.md) | Component, hook, state, Effect, compiler, accessibility, and Error Boundary behavior | 01–05, 07–09, 13 | 9 | 45 |
-| [`scenarios-boundaries.md`](scenarios-boundaries.md) | Directional server/client values and browser/Electron presentation/producer hosts | 06, 10 | 2 | 24 |
-| [`scenarios-operation.md`](scenarios-operation.md) | Skeleton-first construction, affected-set completion, review, and evidence | 11, 12 | 2 | 20 |
+| [`scenarios-components.md`](scenarios-components.md) | Component, hook, state, Effect, compiler, accessibility, and Error Boundary behavior | 01–05, 07–09, 13 | 9 | 47 |
+| [`scenarios-boundaries.md`](scenarios-boundaries.md) | Directional server/client values and browser/Electron presentation/producer hosts | 06, 10 | 2 | 30 |
+| [`scenarios-operation.md`](scenarios-operation.md) | Skeleton-first construction, affected-set completion, review, and evidence | 11, 12 | 2 | 27 |
 
 Each child owns a complete Scenario Rule 1 register with category identities 1 through 10 exactly once.
-A parent aggregate cannot substitute for any child result.
+Each child also owns a category-by-case matrix whose nonempty cells mechanically derive the reported
+total. A parent aggregate cannot substitute for any child result.
 
 ## Aggregate family identity register
 

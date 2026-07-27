@@ -10,7 +10,7 @@ through the [`scenarios.md`](scenarios.md) parent.
 - **Target and consumers:** one React change-set; executors and evaluators selected by the parent.
 - **Lifecycle:** evaluation mode, with design-mode use at architecture classification.
 - **Scope:** server/client values, browser/Electron presentation, producers, and renderer privilege.
-- **Threshold:** at most 12 families and 50 cells. This set has 2 families and 24 cells.
+- **Threshold:** at most 12 families and 50 cells. This set has 2 families and 30 cells.
 - **Stable IDs:** families 06 and 10 retain their published identities.
 
 ## Scenario Rule 1 coverage register
@@ -26,20 +26,29 @@ through the [`scenarios.md`](scenarios.md) parent.
 | 7 | Trust / harm / governance | `selected` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
 | 8 | Inclusion / locale | `covered-elsewhere`: [rendered access mechanics](scenarios-components.md#react-scenario-09--the-rendered-markup-as-a-contract-semantics-aria-and-focus) | `SR7-8` |
 | 9 | Change / compatibility / reversibility | `covered-elsewhere`: [compiler adoption](scenarios-components.md#react-scenario-07--the-compiler-baseline-the-named-escape-hatch-and-legacy-memoization) | `SR7-9` |
-| 10 | Evidence / traceability / clarity | `selected` | both families through matrix/source/obligation evidence |
+| 10 | Evidence / traceability / clarity | `selected` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
 
-### Category carriers
+### Category by case type
 
-| Category | In-child families |
-|---|---|
-| 1 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
-| 2 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
-| 3 | `REACT-SCENARIO-06` |
-| 4 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
-| 5 | `REACT-SCENARIO-10` |
-| 6 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
-| 7 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
-| 10 | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` |
+A cell is one distinct `(selected category, triggered case type)` pair, counted once. Family lists make
+the carrier set auditable without a second editable carrier table.
+
+| Category | Positive | Negative | Adversarial | Boundary | Failure/recovery | Alt-valid | Change | Counterfactual |
+|---|---|---|---|---|---|---|---|---|
+| 1 Purpose | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | — | — | — | — | — |
+| 2 Actors | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | — | — | — | — | — |
+| 3 Behavior | `REACT-SCENARIO-06` | `REACT-SCENARIO-06` | `REACT-SCENARIO-06` | — | — | — | — | — |
+| 4 Interfaces | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06` | `REACT-SCENARIO-06` | — | — | — |
+| 5 Quality | `REACT-SCENARIO-10` | `REACT-SCENARIO-10` | `REACT-SCENARIO-10` | — | — | — | — | — |
+| 6 Failure | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | — | — | — |
+| 7 Trust | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | — | `REACT-SCENARIO-10` | — | — | `REACT-SCENARIO-10` |
+| 8 Inclusion | — | — | — | — | — | — | — | — |
+| 9 Change | — | — | — | — | — | — | — | — |
+| 10 Evidence | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | `REACT-SCENARIO-06`, `REACT-SCENARIO-10` | — | — | — | — | — |
+
+Cells: 30 across 2 families. An em dash means the category's in-child families do not turn on that
+case-type property; each family's `Minimums:` line states why, and categories 8 and 9 resolve through
+their Scenario Rule 7 ledgers.
 
 ### Scenario Rule 7 covered-elsewhere ledger
 

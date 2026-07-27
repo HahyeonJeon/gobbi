@@ -11,7 +11,7 @@ Error Boundary family 13.
 - **Target and consumers:** one React change-set; executors and evaluators selected by the parent.
 - **Lifecycle:** evaluation mode, with design-mode use before a component-shape decision.
 - **Scope:** components and hooks. Presentation/producer boundaries and workflow operation live in sibling sets.
-- **Threshold:** at most 12 families and 50 cells. This set has 9 families and 45 cells.
+- **Threshold:** at most 12 families and 50 cells. This set has 9 families and 47 cells.
 - **Stable IDs:** existing IDs remain fixed; family 13 is the next honest identity.
 
 ## Scenario Rule 1 coverage register
@@ -20,28 +20,37 @@ Error Boundary family 13.
 |---|---|---|---|
 | 1 | Purpose / outcomes / scope | `selected` | `REACT-SCENARIO-04`, `REACT-SCENARIO-13` |
 | 2 | Actors / stakeholders / use-context | `selected` | `REACT-SCENARIO-09`, `REACT-SCENARIO-13` |
-| 3 | Behavior / state / data | `selected` | `REACT-SCENARIO-01`–`05`, `08`, `13` |
+| 3 | Behavior / state / data | `selected` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` |
 | 4 | Interfaces / dependencies / structure | `selected` | `REACT-SCENARIO-02`, `REACT-SCENARIO-13` |
-| 5 | Quality attributes / resource economics | `selected` | `REACT-SCENARIO-04`, `07`, `13` |
+| 5 | Quality attributes / resource economics | `selected` | `REACT-SCENARIO-04`, `REACT-SCENARIO-07`, `REACT-SCENARIO-13` |
 | 6 | Failure / recovery / operations | `selected` | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` |
 | 7 | Trust / harm / governance | `covered-elsewhere`: [host trust boundary](scenarios-boundaries.md#react-scenario-10--producer-assumptions-across-browser-and-renderer-presentation) | `SR7-7` |
 | 8 | Inclusion / locale | `selected` | `REACT-SCENARIO-09` |
-| 9 | Change / compatibility / reversibility | `selected` | `REACT-SCENARIO-07`, `REACT-SCENARIO-13` |
-| 10 | Evidence / traceability / clarity | `selected` | all families through source and obligation fields |
+| 9 | Change / compatibility / reversibility | `selected` | `REACT-SCENARIO-07` |
+| 10 | Evidence / traceability / clarity | `selected` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-07`, `REACT-SCENARIO-08`, `REACT-SCENARIO-09`, `REACT-SCENARIO-13` |
 
-### Category carriers
+### Category by case type
 
-| Category | In-child families |
-|---|---|
-| 1 | `REACT-SCENARIO-04`, `REACT-SCENARIO-13` |
-| 2 | `REACT-SCENARIO-09`, `REACT-SCENARIO-13` |
-| 3 | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` |
-| 4 | `REACT-SCENARIO-02`, `REACT-SCENARIO-13` |
-| 5 | `REACT-SCENARIO-04`, `REACT-SCENARIO-07`, `REACT-SCENARIO-13` |
-| 6 | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` |
-| 8 | `REACT-SCENARIO-09` |
-| 9 | `REACT-SCENARIO-07`, `REACT-SCENARIO-13` |
-| 10 | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-07`, `REACT-SCENARIO-08`, `REACT-SCENARIO-09`, `REACT-SCENARIO-13` |
+A cell is one distinct `(selected category, triggered case type)` pair, counted once. Family lists make
+the carrier set auditable without a second editable carrier table.
+
+| Category | Positive | Negative | Adversarial | Boundary | Failure/recovery | Alt-valid | Change | Counterfactual |
+|---|---|---|---|---|---|---|---|---|
+| 1 Purpose | `REACT-SCENARIO-04`, `REACT-SCENARIO-13` | `REACT-SCENARIO-04`, `REACT-SCENARIO-13` | `REACT-SCENARIO-04`, `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | — | — |
+| 2 Actors | `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | — | `REACT-SCENARIO-13` | — | — | — |
+| 3 Behavior | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-08`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | `REACT-SCENARIO-04` |
+| 4 Interfaces | `REACT-SCENARIO-02`, `REACT-SCENARIO-13` | `REACT-SCENARIO-02`, `REACT-SCENARIO-13` | `REACT-SCENARIO-02`, `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | `REACT-SCENARIO-13` | — | — |
+| 5 Quality | `REACT-SCENARIO-04`, `REACT-SCENARIO-07`, `REACT-SCENARIO-13` | `REACT-SCENARIO-04`, `REACT-SCENARIO-07`, `REACT-SCENARIO-13` | `REACT-SCENARIO-04`, `REACT-SCENARIO-07`, `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | — | `REACT-SCENARIO-07` | `REACT-SCENARIO-07` |
+| 6 Failure | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-05`, `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | — |
+| 7 Trust | — | — | — | — | — | — | — | — |
+| 8 Inclusion | `REACT-SCENARIO-09` | `REACT-SCENARIO-09` | `REACT-SCENARIO-09` | `REACT-SCENARIO-09` | — | — | — | — |
+| 9 Change | `REACT-SCENARIO-07` | `REACT-SCENARIO-07` | `REACT-SCENARIO-07` | — | — | — | `REACT-SCENARIO-07` | `REACT-SCENARIO-07` |
+| 10 Evidence | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-07`, `REACT-SCENARIO-08`, `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-07`, `REACT-SCENARIO-08`, `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | `REACT-SCENARIO-01`, `REACT-SCENARIO-02`, `REACT-SCENARIO-03`, `REACT-SCENARIO-04`, `REACT-SCENARIO-05`, `REACT-SCENARIO-07`, `REACT-SCENARIO-08`, `REACT-SCENARIO-09`, `REACT-SCENARIO-13` | — | `REACT-SCENARIO-13` | `REACT-SCENARIO-13` | — | — |
+
+Cells: 47 across 9 families. An em dash means the category's in-child families do not turn on that
+case-type property; each family's `Minimums:` line states why, and category 7 resolves through its
+Scenario Rule 7 ledger. Family 07 is the sole category-9 carrier: Family 13's corrected-input retry is
+failure/recovery, not a version or lifecycle event.
 
 ### Scenario Rule 7 covered-elsewhere ledger
 
@@ -296,7 +305,7 @@ ends in an obligation. The parent maps every source to a child; this child has n
 - **Axis:** Component behavior.
 - **Primary category:** 6 Failure / recovery / operations — the defining discrimination is whether a
   descendant render failure is contained, surfaced through useful fallback UI, and recoverable.
-  **Secondary:** 1, 2, 3, 4, 5, 9, 10.
+  **Secondary:** 1, 2, 3, 4, 5, 10.
 - **Source:** `SKILL.md` Procedure P3 act 6 and
   [`design.md` §5](design.md#5-error-boundaries), including the documented class-component mechanism,
   useful-granularity guidance, unsupported error classes, and `startTransition` exception.
@@ -353,9 +362,9 @@ ends in an obligation. The parent maps every source to a child; this child has n
      boundary-shaped syntax.
 - **Adversarial face:** case 6. A boundary component exists but lacks fallback or recovery and must fail.
 - **Minimums:** failure/recovery cases 1–2 · boundary case 3 · negative case 4 · alternative-valid case 5 ·
-  adversarial case 6 · change/regression is exercised by retrying with corrected input and preserving
-  unaffected sibling state · counterfactual `n/a: no load-bearing premise beyond the independently tested
-  reach classes`.
+  adversarial case 6 · change/regression `n/a: corrected input is failure recovery, not a version or
+  lifecycle event` · counterfactual `n/a: no load-bearing premise beyond the independently tested reach
+  classes`.
 - **Oracle:** run cases 1–6 independently. A correct result distinguishes descendant render,
   `startTransition`, event, ordinary async, and server-render classes; shows fallback; recovers; preserves
   useful unaffected UI; and rejects the cosmetic component.
