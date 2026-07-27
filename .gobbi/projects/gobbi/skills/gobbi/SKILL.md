@@ -126,7 +126,7 @@ Evidence: the recorded session kind, the floor load register, and — for a work
 
 - [`../principles/SKILL.md`](../principles/SKILL.md) owns the ten behavioral laws every session obeys.
 - [`../delegation/SKILL.md`](../delegation/SKILL.md) owns the generic bounded-delegation contract for any session.
-- [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user question cards, decision classification, challenge, and finding-disposition exchange.
+- [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user question templates, decision classification, challenge, and finding-disposition exchange.
 - [`../ideation/SKILL.md`](../ideation/SKILL.md) owns the refine-what/why/how discipline before acting.
 - [`../git/SKILL.md`](../git/SKILL.md) owns branch, worktree, local commit, publication, merge, cleanup, and recovery mechanics.
 - [`../workflow/SKILL.md`](../workflow/SKILL.md) owns fresh/resume classification, Configuration, workflow routing, dual-system guarantees, runtime attachment, and the handoff cursor.

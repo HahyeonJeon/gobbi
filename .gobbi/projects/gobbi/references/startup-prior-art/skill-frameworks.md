@@ -37,8 +37,8 @@ How a good interview+design skill is structured; elicitation patterns; presentin
 
 ### A2 — One question per turn, STOP and wait, smart-skip what's already answered
 - **Source** — `[gstack:office-hours/SKILL.md]` "Ask these questions ONE AT A TIME via AskUserQuestion... STOP after each question. Wait for the response before asking the next"; "Smart-skip: if the user's answers to earlier questions already cover a later question, skip it." `[sp:.../brainstorming]` "Ask ONE question at a time... Prefer multiple choice when possible."
-- **Insight** — Identical to gobbi's `topics.md` "one question per turn" + evidence-led smart-skip. Superpowers adds **"prefer multiple choice when possible"** — a cheaper answer surface than open prose, which pairs with gobbi's Question Card.
-- **Why** — Confirms gobbi's traversal rule; the multiple-choice preference is a low-cost refinement to the Question Card usage.
+- **Insight** — Identical to gobbi's `topics.md` "one question per turn" + evidence-led smart-skip. Superpowers adds **"prefer multiple choice when possible"** — a cheaper answer surface than open prose, which pairs with gobbi's Question Template.
+- **Why** — Confirms gobbi's traversal rule; the multiple-choice preference is a low-cost refinement to the Question Template usage.
 
 ### A3 — Present the design in small SECTIONS and validate each before moving on (the pattern the user named)
 - **Source** — `[sp:skills/collaboration/brainstorming/SKILL.md]` Phase 3: "Present in 200-300 word sections. Cover: Architecture, components, data flow, error handling, testing. **Ask after each section: 'Does this look right so far?'**" Phase 2 first: "Propose 2-3 different approaches... Ask which approach resonates."
