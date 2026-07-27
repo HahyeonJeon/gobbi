@@ -46,7 +46,7 @@ agent-writing does not create a second assignment surface. Cite the owner; do no
 A claim about a mirror symlink, a permission, or which tool manages a surface MUST come from
 reading the owner directly — `readlink` the symlink, read `.claude/settings.json`, read the
 sync script's source. Do not assume the agent wiring parallels the skill wiring: it does NOT
-(P5). The recorded trap [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)
+(P5). The recorded [verify-before-asserting trap](../../mistakes/verification/verify-dont-assert-taught-facts.md)
 is exactly an asserted-not-verified path reaching a briefing. Verify a MECHANISM by reading
 its owner, not by guessing from the end-state.
 
@@ -283,7 +283,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - **Asserting a mirror or permission without verifying.** Writing "the role is mirrored to
   Codex" without `readlink`, or "the Agent() perm is at line 28" without reading
   `.claude/settings.json`. The recorded trap
-  [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)
+  [verify owner facts before asserting them](../../mistakes/verification/verify-dont-assert-taught-facts.md)
   is exactly this. Verify a MECHANISM by reading its owner, not the end-state.
 
 - **Duplicating the shared assignment skeleton inside the role spec.** Inlining the per-task brief
@@ -304,4 +304,4 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - Shared delegation skeleton and role overlays → [`workflow/delegation.md`](../workflow/delegation.md)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
-- The verify-before-asserting trap → [`skill-writing/mistakes.md#planning-asserted-skill-without-verifying`](../skill-writing/mistakes.md#planning-asserted-skill-without-verifying)
+- The verify-before-asserting trap → [verify owner facts before asserting them](../../mistakes/verification/verify-dont-assert-taught-facts.md)

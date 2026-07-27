@@ -1,24 +1,24 @@
 # Skill Writing — Scenario Source
 
-Scenario source for testing whether the skill-writing operation produces the right semantic type, correct body
-shape, complete operation evidence, and usable runtime wiring. Load for a pre-handoff self-check or through
-`evaluation.md` during independent review. Every case exercises a parent clause and names checklist IDs from
-`checklists.md`; this file introduces no skill-writing policy.
+Scenario source for testing whether the skill-writing operation produces the right semantic type, load
+contract, wireframe, skeleton, body shape, language, disciplined Rules, and complete operation evidence. Load
+for a pre-handoff self-check or through `evaluation.md` during independent review. Every case exercises a
+parent clause and names checklist IDs from `checklists.md`; this file introduces no skill-writing policy.
 
 ## Coverage register
 
 | Category | Disposition | Coverage |
 |---|---|---|
 | 1 Purpose / outcomes / scope | selected | Classification follows the capability and preserves one coherent outcome. |
-| 2 Actors / stakeholders / use-context | selected | Cold-loading authors, evaluators, and fresh runtime consumers are exercised. |
-| 3 Behavior / state / data | selected | Frontmatter, section shape, operation bundle, and reclassification transitions are exercised. |
-| 4 Interfaces / dependencies / structure | selected | Parent/child ownership, companion traceability, mirrors, and runtime entrypoints are exercised. |
-| 5 Quality attributes / resource economics | selected | One-child progressive disclosure prevents unnecessary type-manual context from entering a P5 run. |
-| 6 Failure / recovery / operations | selected | Wrong classification, missing companions, stale owners, failed guards, and failed cold loads are exercised. |
+| 2 Actors / stakeholders / use-context | selected | Skill authors, evaluators, and later readers are exercised. |
+| 3 Behavior / state / data | selected | Frontmatter, Intro, skeleton-first construction, section shape, Rules, operation bundle, and reclassification transitions are exercised. |
+| 4 Interfaces / dependencies / structure | selected | Parent/child ownership, operation-shaped type children, canonical editing, local References, and companion traceability are exercised. |
+| 5 Quality attributes / resource economics | selected | One-child disclosure, operation-shaped child SOPs, a visible skeleton, exact language, and bounded, non-duplicative Rules limit unnecessary reading. |
+| 6 Failure / recovery / operations | selected | Wrong classification, prose-first construction, missing companions, stale owners, failed guards, and rule overflow are exercised. |
 | 7 Trust / harm / governance | selected | Permission scope, unverified commands, and unauthorized state changes are exercised. |
 | 8 Inclusion / locale | `n/a: the skill emits repository markdown with no locale-dependent interaction` | — |
-| 9 Change / compatibility / reversibility | selected | Legacy untyped skills, substantive revision, deletion dependencies, and two-runtime compatibility are exercised. |
-| 10 Evidence / traceability / clarity | selected | Claim owners, scenario/check mappings, binary evidence, and fresh-agent proof are exercised. |
+| 9 Change / compatibility / reversibility | selected | Legacy untyped skills, substantive revision, deletion dependencies, and rule refactors are exercised. |
+| 10 Evidence / traceability / clarity | selected | Load descriptions, aligned Intros, literal language, inline claim owners, local References, scenario/check mappings, rule inventories, and binary evidence are exercised. |
 
 ## Family SW-SCENARIO-F1 — Capability-first classification
 
@@ -33,14 +33,16 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
   work outcome and no named-tool manual.
 - **When:** the author runs P1–P5.
 - **Then:** it is stamped `skill-type: preference` and uses Frontmatter → Intro → Principles → Rules →
-  References, with no Procedure or Manual.
-- **Failure oracle:** the author treats `MUST` as proof of operation type, adds a token Procedure, or forces
-  every preference into one rigid entry schema.
+  Preferences → References, with no Procedure or Manual. Rules are binding; Preferences are overridable
+  defaults and cannot override Rules.
+- **Failure oracle:** the author treats `MUST` as proof of operation type, adds a token Procedure, omits or
+  empties Preferences, leaves a contextual default in Rules, lets a Preference override a Rule, or forces every
+  preference into one rigid entry schema.
 - **Evidence:** frontmatter and heading inspection plus a normal/exception/conflict judgment probe.
 - **Obligation:** the design must classify by capability rather than statement force and keep the preference
   shape non-procedural.
-- **Exercises:** P2 classifier; preference child Boundary, S4–S7.
-- **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-05`, `SW-CHECK-06`, `SW-CHECK-07`.
+- **Exercises:** P2 classifier; preference child Intro, Rules, S4–S9.
+- **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-05`, `SW-CHECK-06`, `SW-CHECK-07`, `SW-CHECK-18`.
 
 ### SW-SCENARIO-02 — Named tool with a local sequence
 
@@ -55,7 +57,7 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
 - **Evidence:** boundary explanation, heading inspection, and capability/syntax/setup lookup probes.
 - **Obligation:** the design must permit capability-local sequences while rejecting broader normative
   workflows from tool skills.
-- **Exercises:** P2 classifier; tool child Boundary, S5–S7.
+- **Exercises:** P2 classifier; tool child Intro, Rules, S6–S9.
 - **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-05`, `SW-CHECK-06`, `SW-CHECK-08`.
 
 ### SW-SCENARIO-03 — Operation with supporting preferences and tools
@@ -71,7 +73,7 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
   material overwhelms the SOP.
 - **Evidence:** classifier record, heading inspection, Procedure-to-outcome trace, and supporting-content audit.
 - **Obligation:** operation precedence and subordinate supporting content must hold for mixed skills.
-- **Exercises:** P2 classifier; operation child Boundary, S4–S6.
+- **Exercises:** P2 classifier; operation child Intro, Rules, S4–S6.
 - **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-06`, `SW-CHECK-09`, `SW-CHECK-10`.
 
 ## Family SW-SCENARIO-F2 — Reclassification boundaries
@@ -90,7 +92,7 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
 - **Failure oracle:** the author keeps `skill-type: preference` because that was the initial decision.
 - **Evidence:** before/after capability frame and heading/frontmatter comparison.
 - **Obligation:** a type decision must be revisited when the dominant capability changes.
-- **Exercises:** P5 reclassification rule; preference child S7.
+- **Exercises:** P5 reclassification rule; preference child S9.
 - **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-06`.
 
 ### SW-SCENARIO-05 — Tool manual grows a broader workflow
@@ -104,7 +106,7 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
 - **Failure oracle:** the broader workflow remains buried in Manual under `skill-type: tool`.
 - **Evidence:** outcome statement, command-to-workflow boundary analysis, and final heading inspection.
 - **Obligation:** tool-to-operation boundary changes must result in explicit reclassification.
-- **Exercises:** P5 reclassification rule; tool child S5–S7; operation child S6.
+- **Exercises:** P5 reclassification rule; tool child S6–S9; operation child S6.
 - **Checklist IDs:** `SW-CHECK-02`, `SW-CHECK-06`, `SW-CHECK-08`, `SW-CHECK-10`.
 
 ### SW-SCENARIO-06 — Classification by topic instead of capability
@@ -118,14 +120,14 @@ skill owns. **Secondary:** 3 Behavior / state / data, 10 Evidence / traceability
 - **Failure oracle:** topic words are accepted as type evidence.
 - **Evidence:** compare the actor/outcome/non-goal frame with the selected type contract.
 - **Obligation:** cosmetic topic labels must not satisfy classification.
-- **Exercises:** Rules Must-Not-Follow classification rule; P2.
+- **Exercises:** P2 ordered capability classifier.
 - **Checklist IDs:** `SW-CHECK-01`, `SW-CHECK-02`.
 
-## Family SW-SCENARIO-F3 — Frontmatter and runtime compatibility
+## Family SW-SCENARIO-F3 — Schema and Rules boundaries
 
-**Primary category:** 9 Change / compatibility / reversibility — the field is a staged schema change across
-legacy and two runtime consumers. **Secondary:** 3 Behavior / state / data, 4 Interfaces / dependencies /
-structure, 10 Evidence / traceability / clarity.
+**Primary category:** 3 Behavior / state / data — frontmatter schema and Rules constraints are exact,
+observable boundaries. **Secondary:** 5 Quality attributes / resource economics, 9 Change / compatibility /
+reversibility, 10 Evidence / traceability / clarity.
 
 ### SW-SCENARIO-07 — Required type field, optional allowlist, and exact order
 
@@ -144,7 +146,7 @@ structure, 10 Evidence / traceability / clarity.
   stated-reason record for every optional key.
 - **Obligation:** typed skill frontmatter must preserve its required prefix and permit only evidenced
   non-default behavior from the named optional allowlist.
-- **Exercises:** P2 schema and optional allowlist; Rules first two Must-Follow items.
+- **Exercises:** P2 schema and optional allowlist; frontmatter Must-Follow rule.
 - **Checklist IDs:** `SW-CHECK-05`.
 
 ### SW-SCENARIO-08 — Legacy skill remains untouched
@@ -160,19 +162,22 @@ structure, 10 Evidence / traceability / clarity.
 - **Exercises:** Intro legacy exception; P1 non-goals.
 - **Checklist IDs:** `SW-CHECK-19`.
 
-### SW-SCENARIO-09 — One runtime rejects the Gobbi extension
+### SW-SCENARIO-09 — Rules exceed the semantic-item limit
 
-- **Primary type:** Failure / recovery.
-- **Coverage role:** failure/recovery.
-- **Given:** the canonical skill passes markdown checks but one target runtime rejects top-level `skill-type`.
-- **When:** P7 cold loading runs.
-- **Then:** completion blocks and returns to a user design decision; the implementer does not silently move the
-  field, suppress the failure, or declare single-runtime success.
-- **Failure oracle:** structural success is treated as runtime compatibility.
-- **Evidence:** one P7 `cold-load-result` per target runtime, with successful runtime loading in `checks`.
-- **Obligation:** the extension must be proven in every target runtime and fail closed on incompatibility.
-- **Exercises:** P7; final Must-Follow rule.
-- **Checklist IDs:** `SW-CHECK-17`, `SW-CHECK-18`.
+- **Primary type:** Boundary / edge.
+- **Coverage role:** boundary, failure/recovery.
+- **Given:** a draft Rules section contains ten independent normative constraints across its positive and
+  negative subsections.
+- **When:** the author inventories semantic rule items during P5.
+- **Then:** the draft fails the limit. Rationale, defaults, steps, and lookup facts move to their owning
+  sections; unrelated constraints are not merged and no condition is dropped merely to reach nine.
+- **Failure oracle:** the author counts only bullets, merges unrelated constraints, or deletes behavior to
+  satisfy the number.
+- **Evidence:** before/after semantic-item inventory and a condition-preservation map.
+- **Obligation:** the complete Rules section must contain no more than nine semantic rule items without losing
+  the original capability contract.
+- **Exercises:** Rules count Must-Follow item; P5 type procedures; P6.
+- **Checklist IDs:** `SW-CHECK-16`, `SW-CHECK-22`.
 
 ## Family SW-SCENARIO-F4 — Operation verification bundle
 
@@ -205,7 +210,7 @@ contract. **Secondary:** 6 Failure / recovery / operations, 10 Evidence / tracea
 - **Failure oracle:** a companion is accepted as an independent policy owner.
 - **Evidence:** reverse trace from every scenario obligation and checklist item to a live parent clause.
 - **Obligation:** cosmetic file presence cannot substitute for sole-parent policy ownership.
-- **Exercises:** Rules no-new-policy prohibition; operation child S11.
+- **Exercises:** P6 companion reverse trace; operation child parent-ownership contract and S11.
 - **Checklist IDs:** `SW-CHECK-12`, `SW-CHECK-13`, `SW-CHECK-14`, `SW-CHECK-15`.
 
 ### SW-SCENARIO-12 — Missing recovery and cosmetic SOP compliance
@@ -222,10 +227,10 @@ contract. **Secondary:** 6 Failure / recovery / operations, 10 Evidence / tracea
 - **Exercises:** operation child S1–S5, S11.
 - **Checklist IDs:** `SW-CHECK-09`, `SW-CHECK-11`, `SW-CHECK-12`.
 
-## Family SW-SCENARIO-F5 — Ownership, deletion, and cold use
+## Family SW-SCENARIO-F5 — Ownership, deletion, and rule discipline
 
-**Primary category:** 6 Failure / recovery / operations — authoring must stop or recover when owners, mirrors,
-or consumers disagree. **Secondary:** 4 Interfaces / dependencies / structure, 7 Trust / harm / governance,
+**Primary category:** 6 Failure / recovery / operations — authoring must stop or recover when owners or
+consumers disagree. **Secondary:** 4 Interfaces / dependencies / structure, 7 Trust / harm / governance,
 9 Change / compatibility / reversibility.
 
 ### SW-SCENARIO-13 — Dependent artifact owner is being removed
@@ -244,25 +249,26 @@ or consumers disagree. **Secondary:** 4 Interfaces / dependencies / structure, 7
 - **Exercises:** P3 owner mechanisms; P4 affected-file map.
 - **Checklist IDs:** `SW-CHECK-03`, `SW-CHECK-04`.
 
-### SW-SCENARIO-14 — Structural guards pass but the fresh agent cannot use the skill
+### SW-SCENARIO-14 — A Rule duplicates a Principle
 
-- **Primary type:** Failure / recovery.
-- **Coverage role:** failure/recovery.
-- **Given:** links, frontmatter, and mirrors pass their mechanical checks.
-- **When:** a fresh agent loads the skill through the normal runtime entrypoint.
-- **Then:** it must classify and author the intended capability without hidden session context; otherwise P7
-  fails and returns to the owning authoring step.
-- **Failure oracle:** mechanical green is accepted as proof of usable behavior.
-- **Evidence:** each runtime's P7 `cold-load-result`, including its bounded `fixture`, produced `output`, and
-  completed `checks`.
-- **Obligation:** structural checks and behavioral proof must both pass.
-- **Exercises:** P6–P7.
-- **Checklist IDs:** `SW-CHECK-16`, `SW-CHECK-17`, `SW-CHECK-18`.
+- **Primary type:** Adversarial / abuse / gaming.
+- **Coverage role:** adversarial, change/regression.
+- **Given:** a Principle and a Rule express the same semantic claim, with no additional observable boundary in
+  the Rule.
+- **When:** the author compares the principle and rule claim sets.
+- **Then:** the duplicate is removed or rewritten so the Principle carries the durable rationale and the Rule
+  adds a distinct binding pass/fail condition. Any retained condition remains traceable.
+- **Failure oracle:** wording changes while the two claims remain semantically identical, or the duplicate is
+  deleted together with a unique condition.
+- **Evidence:** Principle-to-Rule claim map and before/after condition trace.
+- **Obligation:** Rules must not duplicate Principles, and deduplication must preserve unique constraints.
+- **Exercises:** Rule-quality Must-Follow item; P5 type procedures; P6.
+- **Checklist IDs:** `SW-CHECK-17`, `SW-CHECK-22`.
 
-## Family SW-SCENARIO-F6 — Type-child dispatch integrity
+## Family SW-SCENARIO-F6 — Verification and type-child integrity
 
-**Primary category:** 4 Interfaces / dependencies / structure — the selected type child is the only detailed
-writing contract a P5 run may consume. **Secondary:** 5 Quality attributes / resource economics, 6 Failure /
+**Primary category:** 4 Interfaces / dependencies / structure — the selected type child and the artifact guards
+define exact verification boundaries. **Secondary:** 5 Quality attributes / resource economics, 6 Failure /
 recovery / operations, 10 Evidence / traceability / clarity.
 
 ### SW-SCENARIO-15 — Multiple type children are loaded before synthesis
@@ -276,12 +282,160 @@ recovery / operations, 10 Evidence / traceability / clarity.
   clean agent context with only the recorded child.
 - **Failure oracle:** final headings or prose quality are accepted without inspecting the type-child load
   record, or a multiple-child synthesis reaches P6.
-- **Evidence:** P2 classification record plus the P7 `cold-load-result` fields `selected_type_child`,
-  `loaded_type_children`, and `no_extra_type_child_proof` from the original and restarted runs.
+- **Evidence:** P2 classification record plus the P5 load registers from the original and restarted runs.
 - **Obligation:** progressive disclosure and the anti-synthesis boundary require exactly one selected type
   child per P5 run.
 - **Exercises:** Rules one-child Must-Follow item; P5 selected-child record and invalid-run recovery.
 - **Checklist IDs:** `SW-CHECK-20`.
+
+### SW-SCENARIO-16 — Nine bullets hide more than nine Rules
+
+- **Primary type:** Adversarial / abuse / gaming.
+- **Coverage role:** adversarial, failure/recovery.
+- **Given:** a Rules section contains nine bullets, but one bullet combines three unrelated normative
+  constraints.
+- **When:** P6 verifies the artifact.
+- **Then:** the semantic inventory counts eleven Rules and blocks acceptance. The author must restructure the
+  content without hiding independent constraints inside compound prose.
+- **Failure oracle:** a nine-bullet count is accepted without inspecting independent normative clauses.
+- **Evidence:** clause-level rule inventory and the failed P6 checklist result.
+- **Obligation:** the limit applies to semantic rule items rather than formatting.
+- **Exercises:** Rules count Must-Follow item; P6.
+- **Checklist IDs:** `SW-CHECK-16`.
+
+### SW-SCENARIO-17 — An artifact guard fails
+
+- **Primary type:** Failure / recovery.
+- **Coverage role:** failure/recovery.
+- **Given:** the skill passes its semantic writing checks, but a structural, link, reference, compatibility, or
+  retired-vocabulary guard fails.
+- **When:** P6 verifies the artifact.
+- **Then:** acceptance blocks and returns to the owning P-step with the exact failed guard.
+- **Failure oracle:** a semantically plausible skill is accepted despite a failed artifact guard.
+- **Evidence:** exact guard output and its owning clause.
+- **Obligation:** every applicable artifact guard must pass before the skill is accepted.
+- **Exercises:** P6.
+- **Checklist IDs:** `SW-CHECK-21`.
+
+### SW-SCENARIO-18 — References links outside the skill
+
+- **Primary type:** Boundary / edge.
+- **Coverage role:** boundary, adversarial, change/regression.
+- **Given:** a skill's References section links one local child document, a sibling skill, a repository
+  document, a script, and a web source.
+- **When:** the author resolves every target against the directory containing the target `SKILL.md`.
+- **Then:** only the Markdown child document remains in References. Outside owners move beside the claims they
+  validate. If no child document or child-skill entrypoint remains, the required heading stays empty.
+- **Failure oracle:** an authoritative or useful target is accepted merely because it resolves, a parent path
+  or URL escapes the skill directory, an internal non-document file is accepted, or the empty heading is
+  removed.
+- **Evidence:** extracted References links, normalized targets, target file types, and the inline owner-citation
+  audit.
+- **Obligation:** References is local navigation for child documents and child skills, never an outside-owner
+  or related-reading list.
+- **Exercises:** References-locality Must-Follow rule; P4; selected type child's References step; P6.
+- **Checklist IDs:** `SW-CHECK-23`.
+
+## Family SW-SCENARIO-F7 — Orientation, construction, and language
+
+**Primary category:** 10 Evidence / traceability / clarity — a cold reader must recover when to load the skill,
+what it is, and how its force is expressed. **Secondary:** 3 Behavior / state / data, 4 Interfaces /
+dependencies / structure, 5 Quality attributes / resource economics.
+
+### SW-SCENARIO-19 — Description and Intro obscure the load contract
+
+- **Primary type:** Boundary / edge.
+- **Coverage role:** boundary, change/regression.
+- **Given:** a substantively revised skill whose description begins `Use when`, uses a sentence fragment,
+  lists features without naming its type or capability, or whose Intro merely repeats the description or adds
+  policy absent from the body.
+- **When:** the orientation surfaces are compared with the completed skill.
+- **Then:** the description begins `MUST load`, states the exact load condition, and identifies what the skill
+  is. The Intro expands that description with the actor, boundary, outcome or judgment, and content model
+  supported by the finished body.
+- **Failure oracle:** an optional-sounding load phrase, topic label, feature list, duplicated one-line Intro, or
+  Intro-only contract is accepted.
+- **Evidence:** frontmatter parse and a description-to-Intro-to-body claim map.
+- **Obligation:** orientation must make loading and identity unambiguous without becoming a second policy
+  owner.
+- **Exercises:** P1; P5; selected type child's Frontmatter and Intro step.
+- **Checklist IDs:** `SW-CHECK-24`.
+
+### SW-SCENARIO-20 — Polished prose precedes the skill skeleton
+
+- **Primary type:** Adversarial / abuse / gaming.
+- **Coverage role:** adversarial, failure/recovery.
+- **Given:** an author drafts complete paragraphs, then retrofits frontmatter, headings, children, and
+  companions around them.
+- **When:** the P4 skill wireframe and P5 authoring record are inspected.
+- **Then:** the run fails and restarts from a top-down skill wireframe plus a complete frontmatter, heading,
+  direct-child, and applicable operation-sibling skeleton. Substantive units are then built upward, and
+  orientation is finished from the real body.
+- **Failure oracle:** a cosmetically correct final heading tree is accepted without evidence that the skeleton
+  preceded substantive prose.
+- **Evidence:** skill wireframe, initial skeleton, authoring sequence, and final reconciliation record.
+- **Obligation:** the wireframe and skeleton must expose the design before prose can conceal its weaknesses.
+- **Exercises:** skeleton Must-Follow Rule; P4–P5; selected type child's skeleton step.
+- **Checklist IDs:** `SW-CHECK-25`.
+
+### SW-SCENARIO-21 — Mandatory guidance and language require interpretation
+
+- **Primary type:** Adversarial / abuse / gaming.
+- **Coverage role:** adversarial, change/regression.
+- **Given:** an artifact-level pass/fail invariant appears only in Intro, Principles, Preferences, Manual, or
+  Procedure; its force is implied by tone; and the document uses crowded sentences, unexplained
+  abbreviations, or shifting names for the same concept.
+- **When:** a cold reader and the semantic Rules inventory interpret the skill.
+- **Then:** every artifact-level mandatory boundary appears as a Rule with a bold normative lead, while
+  rationale, defaults, lookup content, and ordered actions remain in their sections. The whole document uses
+  stable, literal, type-appropriate language.
+- **Failure oracle:** a reviewer must infer whether a statement is binding, expand private shorthand, split
+  several claims mentally, or guess whether two terms mean the same thing.
+- **Evidence:** section-ownership inventory and a sentence-level language pass.
+- **Obligation:** force and meaning must be visible in the document rather than reconstructed from style or
+  author context.
+- **Exercises:** Rule-quality and language Must-Follow Rules; selected type child's language pass.
+- **Checklist IDs:** `SW-CHECK-18`, `SW-CHECK-26`.
+
+### SW-SCENARIO-22 — A discovery or runtime view is edited as the source
+
+- **Primary type:** Failure / recovery.
+- **Coverage role:** failure/recovery, change/regression.
+- **Given:** the repository exposes a generated, discovery, plugin, or runtime view of the target skill.
+- **When:** the author prepares the affected-file map and change set.
+- **Then:** authored changes stay in the canonical project skill directory and the other surfaces remain
+  read-only propagation evidence.
+- **Failure oracle:** a mirror is hand-edited to make a check pass while the canonical owner remains stale.
+- **Evidence:** affected-file map, owner mechanism, and merge-base diff by surface class.
+- **Obligation:** the canonical owner must remain the only authored source.
+- **Exercises:** P4 canonical-editing clause.
+- **Checklist IDs:** `SW-CHECK-27`.
+
+## Family SW-SCENARIO-F8 — Type-child SOP structure
+
+**Primary category:** 4 Interfaces / dependencies / structure — each type child is itself an authoring SOP
+while producing a target with a different type-owned shape. **Secondary:** 5 Quality attributes / resource
+economics, 10 Evidence / traceability / clarity.
+
+### SW-SCENARIO-23 — A type child is not shaped as an authoring SOP
+
+- **Primary type:** Change / regression / compat.
+- **Coverage role:** change/regression, boundary.
+- **Given:** one type child still uses peer Boundary, Required shape, or Completion checks sections, lacks
+  Principles or Rules, or presents its target shape as though it were the child document's own shape.
+- **When:** the three direct type-child heading trees and semantics are inspected.
+- **Then:** the child fails until it uses Intro → Principles → Rules → Procedure → References, keeps Procedure
+  dominant, expresses type-specific invariants in no more than nine valid Rules, and clearly distinguishes the
+  authoring SOP from the target artifact it produces.
+- **Failure oracle:** an instruction list is accepted as an operation-shaped child merely because it contains
+  numbered steps, or the child receives skill frontmatter and an independent companion bundle despite
+  remaining a parent-owned direct document.
+- **Evidence:** heading trees, semantic Rule inventories, Intro ownership statements, and target-shape traces
+  for all three type children.
+- **Obligation:** every type child must be an operation-shaped direct SOP without becoming a separately loaded
+  nested skill.
+- **Exercises:** P5 child-SOP contract; all three child Intros, Principles, Rules, Procedures, and References.
+- **Checklist IDs:** `SW-CHECK-28`.
 
 ## Guaranteed coverage map
 

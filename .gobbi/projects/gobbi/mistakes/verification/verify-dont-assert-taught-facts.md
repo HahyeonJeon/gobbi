@@ -12,7 +12,7 @@ keywords: [wiring, taught-facts, verify-command, embedded-count, worked-example]
 author: claude
 priority: high
 domain: process
-related: [planning-asserted-skill-without-verifying]
+related: []
 ---
 
 # Verify the source, not the output — "VERIFIED" requires reading the owner
@@ -56,8 +56,4 @@ The `skill-writing` skill must carry a hard rule: verify every wiring mechanism 
 - A taught fact includes "exactly N" (files, keys, lines) without a matching live count in the research notes.
 - A worked example command is written without being run first.
 - A mechanism claim contradicts another section of the same artifact (a self-contradiction is always a sign the mechanism was inferred, not verified).
-- The mistake `planning-asserted-skill-without-verifying` is already loaded but the session is writing a skill that teaches skills — the domain match is the highest-risk signal.
-
-## Related
-
-- [[planning-asserted-skill-without-verifying]] — earlier instance of the same trap; this mistake recurred even with that one loaded
+- The session is writing a skill that teaches other skills; the domain match is the highest-risk signal.
