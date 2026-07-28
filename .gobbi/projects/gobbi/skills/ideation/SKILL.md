@@ -72,27 +72,23 @@ Add the lifecycle notice: approval freezes the whole file; later corrections bel
 
 #### 2.1 Study internal materials
 
-After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Identify the constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design details needed to specify the frozen target, scope, and rough result.
+Study the project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results that can clarify the frozen target, scope, and rough result. Judge each material while reading it: record its stable location, authority, relevance, currency, applicability, and licensing when reuse may be affected; then capture the lesson as a candidate, an inapplicable rejection, or an uncertainty. Compare related materials to expose contradictions and use negative results to identify constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design dimensions that Phase 3 may need to determine. Do not target a fixed number of internal materials; stop when the relevant project context and open design dimensions have an adequate internal foundation.
 
 #### 2.2 Study external materials
 
-Inspect trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that bear on the frozen requirements. Do not generate the topic hierarchy until both internal and external study have been performed.
+Study trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that can clarify the frozen target, scope, rough result, and internally identified design dimensions. Judge each source while reading it: record its link or stable location, authority, relevance, currency, applicability, and licensing when reuse may be affected; then capture the lesson as a candidate, an inapplicable rejection, or an uncertainty. Compare sources and internal findings to expose contradictions, trade-offs, counterexamples, and missing alternatives without selecting a design direction. Do not target a fixed number of external materials; stop when the open design dimensions have an adequate external foundation, and do not prepare topics until both internal and external study are complete.
 
-#### 2.3 Assess the study materials
-
-For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Classify its lessons as candidate, rejected as inapplicable, or uncertain, and record contradictions and useful negative results without selecting a design direction. Use no source-count target; continue study until the target and scope have an adequate foundation for topic preparation.
-
-#### 2.4 Specify the design-decision topics
+#### 2.3 Specify the design-decision topics
 
 From the frozen target, scope, rough result, and studied materials, specify every constraint, preference, convention, quality, behavior, interface, data and state concern, operational need, failure path, and other open detail that Phase 3 must determine. For each topic, state the question, why it matters to the target, scope, or rough result, the source basis, genuine alternatives, affected actors, dependencies, decision owner, and completion condition. Do not choose an alternative in Phase 2.
 
-#### 2.5 Build and audit the topic hierarchy
+#### 2.4 Build and audit the topic hierarchy
 
 Create `topics.md` from [the topics template](templates/topics.md). Derive a project-specific hierarchy from the frozen requirements and studied materials rather than importing a fixed taxonomy. Render one ASCII `text` tree and matching Markdown headings; for each topic, record its purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
 
 Order the discussion parent-first and expose dependencies and cross-topic conflicts. Audit the hierarchy for every applicable concern across actors; boundaries and interfaces; state and data; resource use; failure and recovery; trust and governance; inclusion and locale; compatibility and reversal; and evidence, risk, and validation. Record an inspected not-applicable reason for each concern that does not belong, and continue study or topic preparation while any material source conflict or coverage gap remains.
 
-#### 2.6 Approve and freeze `topics.md`
+#### 2.5 Approve and freeze `topics.md`
 
 Add the lifecycle notice: `topics.md` is a discussion agenda rather than a live tracker; approval freezes the whole file; later sources, corrected requirements, and emergent topics belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 3 until the frozen topic agenda independently explains its study foundation and complete discussion tree.
 
