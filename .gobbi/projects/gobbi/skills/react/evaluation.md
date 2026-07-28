@@ -29,16 +29,40 @@ It loads through `SKILL.md` Procedure step P2 and applies at Procedure step P8.
 
 ---
 
+## Derived source frame
+
+Derive this frame from the live companion sources before selecting a case or check. Do not preserve a count,
+identifier, or result merely because this file states it.
+
+| Source | Live derived result |
+|---|---|
+| [`scenarios-components.md`](scenarios-components.md) | categories 1–10 exactly once; 47 selected cells; 9 families |
+| [`scenarios-boundaries.md`](scenarios-boundaries.md) | categories 1–10 exactly once; 30 selected cells; 2 families |
+| [`scenarios-operation.md`](scenarios-operation.md) | categories 1–10 exactly once; 27 selected cells; 2 families |
+| [`checklists.md`](checklists.md) | 65 items: 36 gates, 29 required; 51 conditional, 14 unconditional; 13 family rows |
+
+The three child registers contain 23 `selected` and 7 complete `covered-elsewhere` dispositions. Their
+selected family union is `REACT-SCENARIO-01` through `REACT-SCENARIO-13`. The Activated lines in the seven
+perspectives below must select that complete scenario union and `REACT-CHECK-01` through `REACT-CHECK-65`.
+An absent identifier, a second occurrence in a source register, a false `n/a`, a bare pointer, a stale input
+digest, or a mismatch between a claimed count and its live source blocks selection.
+
+`REACT-CHECK-30` and `REACT-CHECK-37` retain separate Consistency and Structure routes. The four
+non-assumable contract switches retain separate owners: `REACT-CHECK-25`, `-49`, `-50`, and `-51`.
+
+---
+
 ## Rule-key legend — the single crosswalk
 
 Every `scenarios.md` case and `checklists.md` item names its source by `H1`–`H18` (a `SKILL.md` Rule), `P1`–`P7`
 (a `SKILL.md` Principle), or `Procedure P1`–`Procedure P8` (a `SKILL.md` Procedure step). This legend resolves
-each one to the verbatim opening clause of the rule, principle, or step it names — the **sole crosswalk**, so a
+each one to the verbatim opening of the rule, principle, or step it names — the **sole crosswalk**, so a
 rule change propagates through one legend rather than three copies.
 
 `SKILL.md` **stamps** these identifiers; this legend **resolves** them and never renumbers them. Every "Resolves
-to" clause below is a live substring of `SKILL.md`. Edit this legend in the same change that edits the clause it
-quotes.
+to" clause below is a live substring of `SKILL.md`. Each bold H-rule span below is copied byte-for-byte from
+the bold source heading, including its source line wrapping. Edit this legend in the same change that edits the
+heading it quotes.
 
 **Disambiguation:** `P{n}` is a `SKILL.md` Principle — one of the seven `## Principles` blockquotes.
 `Procedure P{n}` is a `SKILL.md` Procedure step. A bare `P{n}` never means a Procedure step; the Procedure keys
@@ -46,26 +70,39 @@ always carry the word `Procedure`.
 
 ### Rules (`H{n}` — Must-Follow `H1`–`H10` and `H18`, Must-Not-Follow `H11`–`H17`)
 
-- `H1` — Resolves to "MUST keep every component and hook pure." — no effect, mutation, or subscription in
+- **H1 — MUST keep every component and hook pure.** — no effect, mutation, or subscription in
   render outside deterministic one-time initialization guarded by `ref.current === null`; the
   construction must be stable, replay-equivalent, free of I/O, and externally unobservable.
-- `H2` — Resolves to "MUST call hooks only at the top level of a component or another hook." — hook identity is positional.
-- `H3` — Resolves to "MUST name every custom hook `use` followed by a capital letter." — enforcement, not style.
-- `H4` — Resolves to "MUST give every list item a key that is a stable identity from the data." — identity, not position.
-- `H5` — Resolves to "MUST use an Effect only to synchronize with a system outside React." — the escape hatch, not the mechanism.
-- `H6` — Resolves to "MUST clean up what an Effect starts, and stop or discard every async result the render no longer needs." — cleanup, plus cancel or ignore for work already in flight.
-- `H7` — Resolves to "MUST keep every value crossing the server/client boundary serializable in the direction it crosses." — the sets are not symmetric.
-- `H8` — Resolves to "MUST read the recorded compiler switch before memoizing, then follow the branch it selects and keep both branches inside H1 and H2." — the compiler is the baseline where it is enabled, and criteria-driven manual memoization is the mechanism where it is not.
-- `H9` — Resolves to "MUST render the element that carries the meaning, add ARIA only where no native element provides it, and move focus deliberately when a dialog opens and closes." — the markup is part of the contract.
-- `H10` — Resolves to "MUST prove behavior through the user-visible surface." — the seam a user and an assistive technology reach.
-- `H11` — Resolves to "NEVER mutate props, state, context values, hook arguments or return values, or a value already passed to JSX." — they are snapshots for their render.
-- `H12` — Resolves to "NEVER use an array index, or a value generated during render, as a key in a list that can reorder, insert, or delete." — state follows the key.
-- `H13` — Resolves to "NEVER chain Effects where each one sets state the next one watches." — compute the cascade in the handler.
-- `H14` — Resolves to "NEVER strip existing manual memoization while adopting the compiler without testing the result." — removal can change compilation output.
-- `H15` — Resolves to "NEVER hold server-owned data on the client without a named trigger that refreshes or discards it." — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
-- `H16` — Resolves to "NEVER expose a raw process bridge to a renderer, and never run one with Node integration enabled, context isolation disabled, or the sandbox off." — a content bug must not become execution, and the three settings are independent.
-- `H17` — Resolves to "NEVER infer producer architecture from the presentation surface." — server-dependent features need an identified producer implementation, independently of browser or Electron presentation.
-- `H18` — Resolves to "MUST treat every Server Function argument as untrusted input and authorize the mutation on the server side." — marking a function `'use server'` publishes an endpoint.
+- **H2 — MUST call hooks only at the top level of a component or another hook.** — hook identity is positional.
+- **H3 — MUST name every custom hook `use` followed by a capital letter.** — enforcement, not style.
+- **H4 — MUST give every list item a key that is a stable identity from the data.** — identity, not position.
+- **H5 — MUST use an Effect only to synchronize with a system outside React.** — the escape hatch, not the mechanism.
+- **H6 — MUST clean up what an Effect starts, and stop or discard every async result the render no
+  longer needs.** — cleanup, plus cancel or ignore for work already in flight.
+- **H7 — MUST keep every value crossing the server/client boundary serializable in the direction it
+  crosses.** — the sets are not symmetric.
+- **H8 — MUST read the recorded compiler switch before memoizing, then follow the branch it selects and
+  keep both branches inside H1 and H2.** — the compiler is the baseline where it is enabled, and
+  criteria-driven manual memoization is the mechanism where it is not.
+- **H9 — MUST render the element that carries the meaning, add ARIA only where no native element
+  provides it, and move focus deliberately when a dialog opens and closes.** — the markup is part of the contract.
+- **H10 — MUST prove behavior through the user-visible surface.** — the seam a user and an assistive technology reach.
+- **H11 — NEVER mutate props, state, context values, hook arguments or return values, or a value already
+  passed to JSX.** — they are snapshots for their render.
+- **H12 — NEVER use an array index, or a value generated during render, as a key in a list that can
+  reorder, insert, or delete.** — state follows the key.
+- **H13 — NEVER chain Effects where each one sets state the next one watches.** — compute the cascade in the handler.
+- **H14 — NEVER strip existing manual memoization while adopting the compiler without testing the
+  result.** — removal can change compilation output.
+- **H15 — NEVER hold server-owned data on the client without a named trigger that refreshes or discards
+  it.** — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
+- **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
+  enabled, context isolation disabled, or the sandbox off.** — a content bug must not become execution, and the
+  three settings are independent.
+- **H17 — NEVER infer producer architecture from the presentation surface.** — server-dependent features need an
+  identified producer implementation, independently of browser or Electron presentation.
+- **H18 — MUST treat every Server Function argument as untrusted input and authorize the mutation on the
+  server side.** — marking a function `'use server'` publishes an endpoint.
 
 ### Principles (`P{n}` — the seven `## Principles`)
 
@@ -90,14 +127,59 @@ always carry the word `Procedure`.
 
 ---
 
+## Two independent source gates
+
+Both gates are mandatory before an evaluation can use this frame. They prove different properties.
+
+### Gate A — semantic full-scope cited-owner comparison
+
+Re-open every current source named by `SKILL.md`. Build one row for every H rule with the rule ID, source URL
+and version or retrieval date, every compared source clause, the complete current rule policy, its exception
+and applicability result, every dependent scenario/check/evaluation surface, and PASS or the exact mismatch.
+Compare the whole rule, not its opening. Fail a narrowing, broadening, missing or added exception, false
+applicability, stale dependent, or unsupported source claim. Record `H15` as an ecosystem convention with no
+primary-source claim. Record `H9`'s discontinued Using ARIA material as provenance for a house default, not a
+current W3C position.
+
+This is a freshness gate: a prior ledger is an input, not a result. Re-open the cited owner and bind the accepted
+row to the current source and dependent digests. A changed source or rule invalidates the row until the complete
+comparison is repeated.
+
+### Gate B — literal legend-opening comparison
+
+Parse the raw bold H headings from `SKILL.md` and from this legend. Require IDs H1 through H18 exactly once in
+each parsed heading set, byte-equal heading spans for each ID, no untracked H heading in the legend, and zero
+missing, duplicate, or nonliteral openings. Preserve source line endings and Markdown when comparing; whitespace
+normalization is not evidence. Principle and Procedure quotations remain direct live substrings and keep their
+distinct key namespaces.
+
+### Independence probes
+
+| Controlled defect | Semantic gate | Literal gate |
+|---|---|---|
+| Keep an H heading byte-identical but narrow a later policy or exception in a temporary `SKILL.md` copy | must FAIL | must PASS |
+| Keep `SKILL.md` and the semantic ledger unchanged but paraphrase one H heading in a temporary legend copy | must PASS | must FAIL |
+
+If both probes do not produce those opposite results, the gates are coupled or cosmetic and this frame is not
+accepted. Neither PASS can mask the other's failure.
+
+---
+
 ## Selecting cases and checks
 
 Run this after the target read and before the frame is locked.
 
-1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
-   plus [`../coding/evaluation.md`](../coding/evaluation.md), and
+1. **Validate the three child registers first.** Resolve the accepted components, boundaries, and operation
+   identities and digests through their predecessor handoffs, then independently check categories 1–10,
+   dispositions, covered-elsewhere ledgers, exact case-type labels, source-backed carriers, cell counts, and
+   family counts against the current files. Reject stale, parent-only, mechanically incomplete, or semantically
+   false evidence before deriving any selector, count, crosswalk, or metric.
+2. **Load all evaluation sources** — this file, [`scenarios.md`](scenarios.md), its three child sets, and
+   [`checklists.md`](checklists.md) — plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Fifty-one of the sixty-five items are conditional on a
+3. **Run both source gates.** Complete the fresh full-scope cited-owner ledger and the raw literal-opening
+   comparison. Run both independence probes. Stop on either failure.
+4. **Read the recorded React contract first.** Fifty-one of the sixty-five items are conditional on a
    stated predicate. Most predicates read the presentation surface, producer architecture, compiler
    switch, source language, or the claimed failure boundary. Resolve `REACT-CHECK-25`, `-49`, `-50`, and
    `-51` before the items that depend on those four independent contract facts. If any required fact is
@@ -105,24 +187,24 @@ Run this after the target read and before the frame is locked.
    partitions three of those items rather than gating one: `REACT-CHECK-13` on the enabled branch, `-32` and
    `-33` on the not-enabled branch, so `H8` is covered either way and all three resolving `n/a` means the switch
    was never read.
-3. **Map the diff to its React surfaces** — render paths and hook call sites; lists and their keys; Effects, their
+5. **Map the diff to its React surfaces** — render paths and hook call sites; lists and their keys; Effects, their
    cleanups, and their awaited results; the server and client boundary; the compiler's enablement and any
    memoization change; state placement; interactive markup and focus; the presentation surface, producer architecture, and any privileged bridge; the
    build order and the tests.
-4. **Select the activated families and their items.** Take every applicable `REACT-SCENARIO-*` and the
+6. **Select the activated families and their items.** Take every applicable `REACT-SCENARIO-*` and the
    `REACT-CHECK-*` identifiers it reserves, plus any item whose `H{n}`, `P{n}`, or `Procedure P{n}` applies
    directly with no close family match. For a conditional item the surface could plausibly activate, record the
    `n/a:<property>` form with the inspected evidence that its predicate is false — never omit it silently, and
    never relabel an applicable item `n/a` to avoid resolving it.
-5. **Stage, do not copy prose.** Carry the selected identifiers and their wording as `checklists.md` states them,
+7. **Stage, do not copy prose.** Carry the selected identifiers and their wording as `checklists.md` states them,
    editing neither source. Walk all seven perspectives even where the change exercises few of them; a walked
    perspective may legitimately record zero findings.
-6. **Demand direct evidence for the operation items.** One green final run proves final state only.
+8. **Demand direct evidence for the operation items.** One green final run proves final state only.
    `REACT-CHECK-21`, `-45`, `-46`, and `-47` need the pre-behavior state itself,
    `REACT-CHECK-22` needs the per-slice history, and
    `REACT-CHECK-31` needs fresh output from the tree being accepted. Evidence that first appears after a
    whole-feature pass fails those items.
-7. **Report a finding against `H15` as a house default.** It is the one rule with no primary source, labelled
+9. **Report a finding against `H15` as a house default.** It is the one rule with no primary source, labelled
    ecosystem convention in `SKILL.md`. State that in the finding; never present it as a React-team position.
 
 ---
