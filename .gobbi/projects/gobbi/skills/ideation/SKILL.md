@@ -23,10 +23,6 @@ A coherent design grows through successive discussions from the whole to its par
 
 At each material design level, first develop genuinely different alternatives, including doing nothing when it is credible. Define the decision criteria from the user outcome, scope, constraints, risks, cost, and success signals before comparing the alternatives. Present their concrete trade-offs with one recommendation, then obtain the user's decision for material scope or design choices. Record the selected option, rejected alternatives, decision rationale, and the evidence that would justify reopening the decision.
 
-### Keep the artifact current and prove completion
-
-User discussion produces decisions, but a current artifact preserves and exposes them. At each defined checkpoint, update the artifact with the current problem, scope, evidence, decision criteria, alternatives, selected design, rationale, consequences, assumptions, constraints, unresolved questions, and known risks. Use each checkpoint to identify disagreement or missing evidence. Complete Ideation only when material decisions are resolved, high-risk assumptions have sufficient evidence or an explicit validation commitment, and a cold reader can understand the approved result without private context.
-
 ## Rules
 
 Ideation begins with problem framing and ends with one completed, user-approved What, Why, and How artifact. It owns the problem, rationale, scope, evidence, material design decisions, directional design, validation commitments, and traceable result.
