@@ -92,9 +92,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen target, scope, and rough result.
 - Generate provisional topics from the questions and design dimensions uncovered while studying the internal materials.
-- Annotate each topic with any internal answer established by a governing project rule, accepted prior decision, or established convention, and cite the material that establishes it.
-- Mark each topic's internal-answer status as binding, revisitable, disputed, or missing so later study and discussion know whether to preserve, challenge, or complete it.
-- Keep contradictions visible and leave every topic without a binding internal answer open for external study and Phase 3.
+- Annotate **only topics whose internal answer is already established** by a governing project rule, accepted prior decision, or established convention, and cite the material that establishes the answer.
 
 #### 2.2 Update draft topic by studying external materials
 
