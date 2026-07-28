@@ -88,18 +88,25 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ### Phase 2 — Study Materials and Prepare Topics
 
-#### 2.1 Draft topic by studying internal materials
+#### 2.1 Draft top-level topics from Phase 1 results
 
-- Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen target, scope, and rough result.
-- Generate provisional topics from the questions and design dimensions uncovered while studying the internal materials.
+- Review the frozen target, purpose, problem, scope, and rough result in `requirements.md`.
+- Identify the top-level questions that must be answered to turn the rough result into a coherent design.
+- Draft one provisional top-level topic for each distinct decision area without choosing an answer or importing a fixed taxonomy.
+
+#### 2.2 Update topic by studying internal materials
+
+- Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen Phase 1 results and provisional top-level topics.
+- Update and refine the topics from the questions and design dimensions uncovered while studying the internal materials.
+- Add each newly discovered detail beneath the top-level topic whose decision it informs.
 - Annotate an internal answer only when a governing project rule, accepted prior decision, or established convention already determines it, and cite the material that establishes the answer.
 
-#### 2.2 Update draft topic by studying external materials
+#### 2.3 Update topic by studying external materials
 
 - Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics.
-- Update the provisional topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
+- Update and refine the topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
 
-#### 2.3 Build and audit the topic hierarchy
+#### 2.4 Build and audit the topic hierarchy
 
 - Create `topics.md` from [the topics template](templates/topics.md).
 - Organize the provisional inventory into a project-specific hierarchy derived from the frozen requirements and studied materials rather than a fixed taxonomy.
@@ -110,7 +117,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Record an inspected not-applicable reason for every concern that does not belong.
 - Continue study and topic preparation while any material source conflict or coverage gap remains.
 
-#### 2.4 Approve and freeze `topics.md`
+#### 2.5 Approve and freeze `topics.md`
 
 - Add a lifecycle notice stating that `topics.md` is a discussion agenda rather than a live tracker.
 - State that approval freezes the whole file, later sources and corrections belong only in `ideation.md`, and final approval of `ideation.md` automatically supersedes this supporting draft.
