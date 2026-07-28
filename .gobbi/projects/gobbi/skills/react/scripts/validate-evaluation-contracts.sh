@@ -85,6 +85,83 @@ matrix_rows() {
   ' "$child"
 }
 
+validate_matrix_header() {
+  local child="$1"
+  awk -F'|' '
+    BEGIN {
+      expected[1]="Category"
+      expected[2]="Positive"
+      expected[3]="Negative"
+      expected[4]="Adversarial"
+      expected[5]="Boundary"
+      expected[6]="Failure/recovery"
+      expected[7]="Alt-valid"
+      expected[8]="Change"
+      expected[9]="Counterfactual"
+    }
+    /^### Category by case type$/ { in_matrix=1; next }
+    in_matrix && /^### / { exit }
+    in_matrix && $2 ~ /^[[:space:]]*Category[[:space:]]*$/ {
+      header_count++
+      header_cell_count=NF-2
+      for (i=1; i<=9; i++) {
+        actual[i]=$(i+1)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", actual[i])
+      }
+    }
+    END {
+      if (header_count != 1) {
+        printf "mechanical: expected exactly one category-by-case matrix header, observed %d\n", header_count
+        exit 1
+      }
+
+      failed=0
+      if (header_cell_count != 9) {
+        printf "mechanical: matrix header expected 9 cells, observed %d\n", header_cell_count
+        failed=1
+      }
+      for (i=1; i<=9; i++) {
+        if (actual[i] == "") {
+          printf "mechanical: matrix header has missing label at column %d\n", i
+          failed=1
+        }
+      }
+      if (failed) exit 1
+
+      for (i=1; i<=9; i++) {
+        for (j=i+1; j<=9; j++) {
+          if (actual[i] == actual[j]) {
+            printf "mechanical: matrix header has duplicate label %s\n", actual[i]
+            failed=1
+          }
+        }
+      }
+      if (failed) exit 1
+
+      for (i=1; i<=9; i++) {
+        known=0
+        for (j=1; j<=9; j++) {
+          if (actual[i] == expected[j]) known=1
+        }
+        if (!known) {
+          printf "mechanical: matrix header has unknown label %s\n", actual[i]
+          failed=1
+        }
+      }
+      if (failed) exit 1
+
+      for (i=1; i<=9; i++) {
+        if (actual[i] != expected[i]) {
+          printf "mechanical: matrix header labels are out of order at column %d: expected %s, observed %s\n", \
+            i, expected[i], actual[i]
+          failed=1
+        }
+      }
+      exit failed
+    }
+  ' "$child"
+}
+
 normalize_family_ids() {
   {
     rg -o 'REACT-SCENARIO-[0-9]{2}' || true
@@ -99,15 +176,15 @@ matrix_carriers() {
 }
 
 matrix_cell_count() {
-  local child="$1"
-  matrix_rows "$child" | awk -F'\t' '
+  local matrix_file="$1"
+  awk -F'\t' '
     {
       for (i=2; i<=9; i++) {
         if ($i != "—" && $i != "-") count++
       }
     }
     END { print count+0 }
-  '
+  ' "$matrix_file"
 }
 
 matrix_pair_contents() {
@@ -360,23 +437,33 @@ scenario_validate() {
   local family
   local ledger
   local ledger_data
+  local header_diagnostics
 
   : >"$diagnostics_file"
   register_rows "$child" >"$rows_file"
-  matrix_rows "$child" >"$matrix_file"
+  if header_diagnostics="$(validate_matrix_header "$child")"; then
+    matrix_rows "$child" >"$matrix_file"
+  else
+    printf '%s\n' "$header_diagnostics" >>"$diagnostics_file"
+    mechanical="fail"
+    semantic="fail"
+    : >"$matrix_file"
+  fi
   observed_pairs_file="$(mktemp)"
   expected_pairs_file="$(mktemp)"
-  matrix_pair_contents "$matrix_file" >"$observed_pairs_file"
-  if source_backed_matrix_pairs "$child" | sort >"$expected_pairs_file"; then
-    if ! cmp -s "$expected_pairs_file" "$observed_pairs_file"; then
-      printf 'semantic: exact category-by-case family pairs differ from source-backed expectation\n' \
+  if [[ "$mechanical" == "pass" ]]; then
+    matrix_pair_contents "$matrix_file" >"$observed_pairs_file"
+    if source_backed_matrix_pairs "$child" | sort >"$expected_pairs_file"; then
+      if ! cmp -s "$expected_pairs_file" "$observed_pairs_file"; then
+        printf 'semantic: exact category-by-case family pairs differ from source-backed expectation\n' \
+          >>"$diagnostics_file"
+        semantic="fail"
+      fi
+    else
+      printf 'semantic: exact category-by-case family expectation is unavailable\n' \
         >>"$diagnostics_file"
       semantic="fail"
     fi
-  else
-    printf 'semantic: exact category-by-case family expectation is unavailable\n' \
-      >>"$diagnostics_file"
-    semantic="fail"
   fi
   row_count="$(wc -l <"$rows_file" | tr -d ' ')"
   if [[ "$row_count" != "10" ]]; then
@@ -595,7 +682,7 @@ scenario_check() {
     status=1
   fi
   IFS=$'\t' read -r mechanical semantic <"$result_file"
-  derived_cells="$(matrix_cell_count "$child")"
+  derived_cells="$(matrix_cell_count "$matrix_file")"
   derived_families="$(rg -c '^### REACT-SCENARIO-[0-9]{2} — ' "$child" || true)"
   local payload
   payload="$(jq -n \
@@ -717,6 +804,27 @@ mutate_coordinated_semantics() {
   ' "$source" >"$destination"
 }
 
+mutate_matrix_header() {
+  local source="$1"
+  local destination="$2"
+  local defect="$3"
+  awk -F'|' -v OFS='|' -v defect="$defect" '
+    /^### Category by case type$/ { in_matrix=1; print; next }
+    in_matrix && /^### / { in_matrix=0 }
+    in_matrix && $2 ~ /^[[:space:]]*Category[[:space:]]*$/ {
+      if (defect == "header-labels-swapped") {
+        temporary=$9
+        $9=$10
+        $10=temporary
+      }
+      if (defect == "header-label-duplicated") $10=$9
+      if (defect == "header-label-unknown") $10=" Unknown "
+      if (defect == "header-label-missing") $10=" "
+    }
+    { print }
+  ' "$source" >"$destination"
+}
+
 scenario_probe() {
   local parent=""
   local child=""
@@ -748,6 +856,10 @@ scenario_probe() {
     bare-covered-elsewhere
     secondary-mislabeled-na
     declared-cell-count-mismatch
+    header-labels-swapped
+    header-label-duplicated
+    header-label-unknown
+    header-label-missing
   )
   if [[ "$(head -1 "$child")" == '# React scenarios — Component behavior' ]]; then
     probes+=(
@@ -770,6 +882,9 @@ scenario_probe() {
       coordinated-category1-na-carrier-removal|unrelated-category8-carrier|family04-counterfactual-to-change)
         mutate_coordinated_semantics "$child" "$fixture" "$probe"
         ;;
+      header-labels-swapped|header-label-duplicated|header-label-unknown|header-label-missing)
+        mutate_matrix_header "$child" "$fixture" "$probe"
+        ;;
       *)
         mutate_register "$child" "$fixture" "$probe"
         ;;
@@ -784,6 +899,18 @@ scenario_probe() {
       secondary-mislabeled-na) expected_diagnosis='declared secondary or primary carrier but is mislabeled n/a' ;;
       declared-cell-count-mismatch)
         expected_diagnosis='declared child cell count 49 differs from matrix-derived count'
+        ;;
+      header-labels-swapped)
+        expected_diagnosis='matrix header labels are out of order'
+        ;;
+      header-label-duplicated)
+        expected_diagnosis='matrix header has duplicate label'
+        ;;
+      header-label-unknown)
+        expected_diagnosis='matrix header has unknown label'
+        ;;
+      header-label-missing)
+        expected_diagnosis='matrix header has missing label'
         ;;
       coordinated-category1-na-carrier-removal)
         expected_diagnosis='declared secondary or primary carrier but is mislabeled n/a'
