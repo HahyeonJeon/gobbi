@@ -1,6 +1,6 @@
 ---
 name: ideation
-description: MUST load for Ideation. Turns a user trigger into a reference-backed, scope-locked, user-approved What, Why, and How.
+description: "MUST load when discussing a problem and exploring how to address it with the user. Ideation is an operation skill for understanding the problem, defining its boundaries, and developing an evidence-backed design through discussion."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
