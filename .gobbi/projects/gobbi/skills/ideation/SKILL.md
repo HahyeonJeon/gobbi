@@ -91,12 +91,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 2.1 Draft topic by studying internal materials
 
 - Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen target, scope, and rough result.
-- Record each material's location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and contradictions.
-- Turn applicable lessons, contradictions, and gaps into provisional topics for constraints, preferences, conventions, qualities, behaviors, interfaces, data and state, operations, failures, and other details.
-- Give each topic a question, relevance, source basis, alternatives, actors, dependencies, owner, and completion condition.
-- Merge duplicate topics, preserve conflicting evidence, and select no answer.
-- Use no fixed source count.
-- Stop when every project-grounded design dimension has a topic or an inspected not-applicable reason.
+- Generate provisional topics from the questions and design dimensions uncovered while studying the internal materials.
+- Annotate each topic with any internal answer established by a governing project rule, accepted prior decision, or established convention, and cite the material that establishes it.
+- Mark each topic's internal-answer status as binding, revisitable, disputed, or missing so later study and discussion know whether to preserve, challenge, or complete it.
+- Keep contradictions visible and leave every topic without a binding internal answer open for external study and Phase 3.
 
 #### 2.2 Update draft topic by studying external materials
 
