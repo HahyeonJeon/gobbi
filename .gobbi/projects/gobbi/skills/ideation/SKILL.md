@@ -15,9 +15,9 @@ Use this skill when Ideation starts or repeats to turn a user trigger into a con
 
 Study the project's current behavior, prior decisions, patterns, and constraints. Seek direct evidence from representative users or people affected by the design, because project conventions and external examples cannot prove what users need. Use prior art to support a design choice only when its authority, relevance, currency, and applicability can be verified. Prefer direct project evidence, primary sources, official documentation, maintained standards, and established implementations. Treat secondary or unverified claims as leads, separate facts from assumptions, and justify any deviation from the best-supported pattern.
 
-### Develop the design from high-level structure to detail
+### Discuss the design through a hierarchy of topics
 
-A coherent design grows through successive discussions from the whole to its parts. Settle the intended outcome, overall direction, and major boundaries before refining components, ownership, interfaces, data flow, user-visible behavior, failure and recovery, edge cases, and applicable constraints. Each lower-level choice must follow the decisions above it, while an unresolved higher-level choice keeps dependent details open. The hierarchy remains revisable: if detailed evidence invalidates a parent decision, return to that decision instead of forcing the details to fit it.
+Study internal project materials and trustworthy external references to identify the design topics, their boundaries, and their dependencies. Arrange the topics as a tree rooted in the user's problem and desired outcome: major design areas form the first branches, and each branch expands into smaller dependent topics. Conduct successive discussions from the highest unresolved topic downward, resolving a parent before its children and reconciling sibling branches before moving deeper. If new evidence changes a parent or reveals a missing topic, revise the tree and reopen the affected branches instead of forcing lower-level choices to fit.
 
 ### Compare alternatives before making material decisions with the user
 
