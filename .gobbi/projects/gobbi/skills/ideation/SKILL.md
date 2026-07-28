@@ -93,28 +93,28 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Review the frozen target, purpose, problem, scope, and rough result in `requirements.md`.
 - Identify the top-level questions that must be answered to turn the rough result into a coherent design.
 - Draft one provisional top-level topic for each distinct decision area without choosing an answer or importing a fixed taxonomy.
-- Write the complete initial topic draft to `topics.initial.tmp.md` for the following study steps.
+- Write the complete initial topic draft to `topics.tmp.md`.
 
 #### 2.2 Update topic by studying internal materials
 
-- Read `topics.initial.tmp.md` as the topic draft to update.
+- Read `topics.tmp.md` as the topic draft to update.
 - Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen Phase 1 results and provisional top-level topics.
 - Update and refine the topics from the questions and design dimensions uncovered while studying the internal materials.
 - Add each newly discovered detail beneath the top-level topic whose decision it informs.
 - Annotate an internal answer only when a governing project rule, accepted prior decision, or established convention already determines it, and cite the material that establishes the answer.
-- Write the complete internally updated topic draft to `topics.internal.tmp.md` without overwriting `topics.initial.tmp.md`.
+- Write the complete internally updated topic draft back to `topics.tmp.md`.
 
 #### 2.3 Update topic by studying external materials
 
-- Read `topics.internal.tmp.md` as the topic draft to update.
+- Read `topics.tmp.md` as the topic draft to update.
 - Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics.
 - Update and refine the topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
-- Write the complete externally updated topic draft to `topics.external.tmp.md` without overwriting either earlier temporary file.
+- Write the complete externally updated topic draft back to `topics.tmp.md`.
 
 #### 2.4 Build and audit the topic hierarchy
 
-- Read `topics.initial.tmp.md`, `topics.internal.tmp.md`, and `topics.external.tmp.md` in order and verify that each update is traceable to its Phase 1, internal, or external basis.
-- Create `topics.md` from [the topics template](templates/topics.md) using `topics.external.tmp.md` as the current inventory and the earlier temporary files as change history.
+- Read `topics.tmp.md` and verify that every topic is traceable to its Phase 1, internal, or external basis.
+- Create `topics.md` from [the topics template](templates/topics.md) using `topics.tmp.md` as the current inventory.
 - Organize the current inventory into a project-specific hierarchy derived from the frozen requirements and studied materials rather than a fixed taxonomy.
 - Render one ASCII `text` tree with matching Markdown headings.
 - Record each topic's purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
@@ -129,7 +129,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - State that approval freezes the whole file, later sources and corrections belong only in `ideation.md`, and final approval of `ideation.md` automatically supersedes this supporting draft.
 - Obtain the user's explicit approval.
 - Freeze the entire file without adding an approval stamp or making any later byte change.
-- Delete `topics.initial.tmp.md`, `topics.internal.tmp.md`, and `topics.external.tmp.md` only after the frozen `topics.md` has been verified.
+- Delete `topics.tmp.md` only after the frozen `topics.md` has been verified.
 - Do not start Phase 3 until the frozen topic agenda independently explains its study foundation and complete discussion tree.
 
 ### Phase 3 — Discuss the Topics Hierarchically
