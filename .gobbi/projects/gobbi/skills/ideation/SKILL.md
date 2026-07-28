@@ -13,19 +13,19 @@ Use this skill when Ideation starts or repeats to turn a user trigger into a con
 
 ### Question the user without hesitation until the idea is complete
 
-Treat every vague, partial, contradictory, or assumed part of the idea as an open topic. Ask direct, specific follow-up questions about the problem, desired outcome, affected people, boundaries, evidence, constraints, alternatives, risks, and success conditions until each gap is answered, explicitly deferred, or removed from scope. When an answer reveals another gap or weak premise, show it plainly and continue questioning instead of filling it by assumption. Persistent questioning serves completeness; keep it relevant, evidence-backed, and respectful.
+An incomplete idea is a set of open topics, not a specification to fill by assumption. Question the user directly until every material gap or contradiction is answered, explicitly deferred, or removed from scope. Persistent questioning should remain relevant, evidence-backed, and respectful.
 
 ### Study trustworthy prior art before designing
 
-Study how the same or similar problems have already been solved well before designing from scratch. Start with established patterns in the current project, then examine primary sources, official documentation, maintained standards, and proven external implementations. Check each reference's authority, relevance, currency, and applicability before adopting it. Use the strongest applicable pattern as the baseline, combine useful lessons from multiple references when needed, and deviate only when the current problem or constraints require a different approach.
+Good ideas begin with proven solutions, not a blank page. Study established project patterns and trustworthy external prior art, judge each reference by its authority, relevance, currency, and applicability, and use the strongest fit as the baseline. Combine lessons or deviate only when the current problem or constraints require it.
 
 ### Discuss the design through a hierarchy of topics
 
-Study internal project materials and trustworthy external references to identify the design topics, their boundaries, and their dependencies. Arrange the topics as a tree rooted in the user's problem and desired outcome: major design areas form the first branches, and each branch expands into smaller dependent topics. Conduct successive discussions from the highest unresolved topic downward, resolving a parent before its children and reconciling sibling branches before moving deeper. If new evidence changes a parent or reveals a missing topic, revise the tree and reopen the affected branches instead of forcing lower-level choices to fit.
+A design discussion is a tree of topics rooted in the user's problem and desired outcome. Derive the tree from internal materials and trustworthy external references, then resolve parent topics before their children and reconcile sibling branches before moving deeper. When new learning changes the hierarchy, revise the tree and reopen the affected branches.
 
 ### Find the best idea by comparing reference-backed alternatives
 
-Treat the first idea as a candidate, not the answer. For each material topic, study internal project patterns and trustworthy external references to find genuinely different ways to address it, including doing nothing when credible. Compare each alternative's concrete pros and cons against the user's outcome, constraints, supporting evidence, risks, cost, reversibility, and long-term consequences. Use the comparison to improve the leading idea or replace it with a stronger one, then present the best-supported idea, why it is better, and what evidence would change the recommendation.
+The first idea is a candidate, not the answer. Compare it with genuinely different, reference-backed alternatives by their pros, cons, and fit with the user's outcome and constraints. Use the comparison to improve or replace the leading idea, then explain why the best-supported idea wins and what would change the recommendation.
 
 ## Rules
 
