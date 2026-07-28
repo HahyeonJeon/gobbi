@@ -19,9 +19,9 @@ Study the project's current behavior, prior decisions, patterns, and constraints
 
 Study internal project materials and trustworthy external references to identify the design topics, their boundaries, and their dependencies. Arrange the topics as a tree rooted in the user's problem and desired outcome: major design areas form the first branches, and each branch expands into smaller dependent topics. Conduct successive discussions from the highest unresolved topic downward, resolving a parent before its children and reconciling sibling branches before moving deeper. If new evidence changes a parent or reveals a missing topic, revise the tree and reopen the affected branches instead of forcing lower-level choices to fit.
 
-### Compare alternatives before making material decisions with the user
+### Find the best idea by comparing reference-backed alternatives
 
-At each material design level, first develop genuinely different alternatives, including doing nothing when it is credible. Define the decision criteria from the user outcome, scope, constraints, risks, cost, and success signals before comparing the alternatives. Present their concrete trade-offs with one recommendation, then obtain the user's decision for material scope or design choices. Record the selected option, rejected alternatives, decision rationale, and the evidence that would justify reopening the decision.
+Treat the first idea as a candidate, not the answer. For each material topic, study internal project patterns and trustworthy external references to find genuinely different ways to address it, including doing nothing when credible. Compare each alternative's concrete pros and cons against the user's outcome, constraints, supporting evidence, risks, cost, reversibility, and long-term consequences. Use the comparison to improve the leading idea or replace it with a stronger one, then present the best-supported idea, why it is better, and what evidence would change the recommendation.
 
 ## Rules
 
