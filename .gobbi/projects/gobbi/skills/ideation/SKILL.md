@@ -1,13 +1,13 @@
 ---
 name: ideation
 description: "MUST load when discussing a problem and exploring how to address it with the user. Ideation is an operation skill for understanding the problem, defining its boundaries, and developing an evidence-backed design through discussion."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Ideation
 
-Use this skill when Ideation starts or repeats to turn a user trigger into a concrete What, Why, and How. Ideation uses successive discussions that progress hierarchically from the problem, rationale, and scope boundaries to increasingly detailed, reference-backed design choices and material user decisions. It ends with one self-contained, user-approved artifact that records the chosen design, decision rationale, supporting evidence, constraints, risks, validation commitments, and traceability without relying on private context or another skill.
+Use this skill to turn a user trigger into a complete, evidence-backed design through three phases: define and freeze the problem and requirements in `requirements.md`, study internal and external materials and freeze a project-specific discussion tree in `topics.md`, then resolve that tree with the user in `ideation.md`. The first two documents are immutable supporting drafts after approval; the approved `ideation.md` is the final authority, supersedes both drafts, and returns with them as one independently readable Ideation result.
 
 ## Principles
 
@@ -21,7 +21,7 @@ Good ideas begin with proven solutions, not a blank page. Study established proj
 
 ### Discuss the design through a hierarchy of topics
 
-A design discussion is a tree of topics rooted in the user's problem and desired outcome. Derive the tree from internal materials and trustworthy external references, then resolve parent topics before their children and reconcile sibling branches before moving deeper. When new learning changes the hierarchy, revise the tree and reopen the affected branches.
+A design discussion is a tree of topics rooted in the user's problem and desired outcome. Derive the tree from internal materials and trustworthy external references, then resolve parent topics before their children and reconcile sibling branches before moving deeper. When later learning changes the hierarchy, update the final tree in `ideation.md` and reopen the affected branches without editing the frozen `topics.md`.
 
 ### Find the best idea by comparing reference-backed alternatives
 
@@ -40,106 +40,80 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ## Procedure
 
-### 1. Establish the context and applicable domains
+### Phase 1 — Define Requirements and Problems
 
-Read the user trigger, current project state, prior decisions, governing documents, relevant history, and any earlier valid design. Identify the intended consumer and the decisions the final artifact must enable. Classify material inputs as verified fact, user report, assumption, contradiction, decision, or open question.
+Start from the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and any contradictions. Create `requirements.md` from [the requirements template](templates/requirements.md), and keep each material statement visibly classified as fact, user report, assumption, contradiction, decision, or open question.
 
-Identify the applicable domain concerns, such as project structure, user experience, interfaces, software, language behavior, platform constraints, operations, or policy. Inspect the project evidence and authoritative domain sources that govern those concerns. When the baseline is absent, sparse, contradictory, or explicitly being reset, record the exact gap and obtain the missing project facts before using the baseline as evidence.
+Question the user until the document defines a solution-neutral contract:
 
-**Evidence:** an input and domain register with the trigger, baseline, artifact consumer, applicable concerns, authoritative inputs, contradictions, and open questions.
+- the trigger, current reality, root problem, consequences, current workaround or alternative, strongest credible do-nothing outcome, and why action matters now;
+- affected people and actors, their desired outcomes, and who owns each material decision;
+- material requirements expressed as needed outcomes or constraints rather than preferred mechanisms;
+- observable success, failure, falsification, and stop signals;
+- in-scope, out-of-scope, deferred, and explicitly rejected work;
+- hard constraints, soft preferences, authority boundaries, active-work overlap, and compatibility promises; and
+- assumptions, contradictions, unresolved questions, and questions that later study must answer.
 
-**Next:** if the baseline is unsafe or insufficient, obtain the exact missing project facts before step 2. If an applicable concern or governing source changes later, update the register before making the affected decision.
+Challenge a requested mechanism against the underlying problem. Keep it as a binding requirement only when inspected evidence proves that it is a hard constraint; otherwise record it as an unselected candidate for later discussion. Do not infer missing requirements, silently close contradictions, or begin topic preparation while a material problem or boundary remains unresolved.
 
-### 2. Define the problem, outcome, and reason to act
+Before approval, write the lifecycle notice into `requirements.md`: after approval the whole file is immutable, later corrections belong only in `ideation.md`, and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain explicit user approval, then freeze the entire file without adding an approval stamp or making any later byte change.
 
-Describe the affected people or actors, triggering event, current behavior, workarounds, consequences, desired outcome, root cause, prior attempts, and why the work matters now. Test the requested solution against the underlying problem, the strongest credible case for doing nothing, and plausible alternative framings.
+**Phase evidence:** an approved and frozen `requirements.md` that is independently readable, solution-neutral, and complete enough to direct study.
 
-Define observable success and falsification signals. Obtain the user's approval of the problem and desired outcome before choosing a design.
+**Recovery and next branch:** if evidence later invalidates the draft, preserve it unchanged and record the corrected requirement, evidence, user decision, and consequence in `ideation.md`. Continue to Phase 2 only after the frozen requirements contract exists.
 
-**Evidence:** an approved problem frame with the cause chain, actors, current reality, desired outcome, prior attempts, do-nothing case, reframe result, success signals, and falsification signals.
+### Phase 2 — Study Materials and Prepare Topics
 
-**Next:** if removing the stated cause would not remove the need for the work, or the premise lacks evidence, reframe the problem or stop. Otherwise continue to step 3.
+After `requirements.md` freezes and before generating any topic, conduct one deliberate study pass across both internal and external materials. Internal study inspects relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. External study inspects trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that bear on the frozen requirements.
 
-### 3. Lock scope, constraints, and decision criteria
+For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Separate what the design adopts, rejects as inapplicable, and keeps uncertain; record contradictions and useful negative results. There is no source-count target: study until the material requirements have an adequate foundation, and continue studying whenever an unresolved question or later decision needs more evidence.
 
-Enumerate in-scope, out-of-scope, and deferred work. Record hard constraints, soft preferences, active-work overlap, compatibility promises, authority boundaries, and decisions reserved for the user. Give every deferred item a named destination or an explicit drop decision.
+Only after both study surfaces have been examined, create `topics.md` from [the topics template](templates/topics.md). Derive a project-specific hierarchy from the frozen requirements and studied materials rather than importing a fixed taxonomy. Render one ASCII `text` tree and matching Markdown topic headings. For each topic, record its purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
 
-Derive the criteria for later choices from the approved outcome, constraints, risk, cost, reversibility, maintainability, usability, and success signals. Obtain the user's approval of material boundaries.
+Order the discussion parent-first and make dependencies and cross-topic conflicts visible. Audit the tree for every applicable concern across actors; boundaries and interfaces; state and data; resource use; failure and recovery; trust and governance; inclusion and locale; compatibility and reversal; and evidence, risk, and validation. Give an inspected not-applicable reason when a concern does not belong. Additional study is always allowed while preparing the tree.
 
-**Evidence:** an approved scope contract and an ordered set of design-decision criteria.
+Before approval, write the lifecycle notice into `topics.md`: it is a discussion agenda rather than a live tracker; after approval the whole file is immutable; later sources, corrected requirements, and emergent topics belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain explicit user approval, then freeze the entire file without adding an approval stamp or making any later byte change.
 
-**Next:** if the scope remains open-ended, overlaps unresolved work, or hides an adjacent outcome, continue clarification until the boundary is explicit. Otherwise continue to step 4.
+**Phase evidence:** an approved and frozen `topics.md` that independently explains the study foundation and supplies a requirement-grounded, source-grounded, complete discussion tree.
 
-### 4. Build the evidence and governing foundation
+**Recovery and next branch:** if study is inadequate, a source conflict is unresolved, or topic coverage is incomplete, continue study and topic preparation before approval. After freeze, preserve the file unchanged and carry every later change in `ideation.md`. Continue to Phase 3 only after the frozen topic agenda exists.
 
-Study current project behavior, implementation patterns, prior decisions, existing design or architecture material, relevant configuration, direct evidence from representative users or affected people when applicable, and trustworthy external prior art. When a material question needs bounded internal or external research, define the exact question, source boundary, evidence standard, and stopping condition before collecting evidence.
+### Phase 3 — Discuss the Topics Hierarchically
 
-Assess every material source for authority, relevance, currency, applicability, and licensing. Treat a `DESIGN.md`, brand guide, design system, architecture record, runtime configuration, compiler configuration, API specification, or maintained standard as governing only when it exists and has authority over the current scope. Never require one universal filename, design tool, framework, or programming language. Record useful negative results and keep facts separate from assumptions and secondary leads.
+Create `ideation.md` from [the final Ideation template](templates/ideation.md). Copy the complete frozen problem and requirements contract and the prepared topic tree into it so the final document never depends on links to the supporting drafts for meaning. Mark `ideation.md` as the evolving final authority; it may be revised until final approval.
 
-**Evidence:** a claim-to-source register, the governing foundation for each applicable domain, and the unresolved evidence gaps.
+Traverse the hierarchy parent-first. Resolve a parent topic before its children, reconcile siblings before closing their parent, and keep dependent topics open while an ancestor decision is unresolved. Ask every relevant question needed to complete the idea. If a child contradicts an ancestor or new evidence invalidates an earlier decision, reopen the earliest affected branch in `ideation.md`, obtain the required user decision, and propagate the consequence through its descendants without editing either frozen draft.
 
-**Next:** if the evidence cannot support a material direction, research the exact gap or ask the exact unresolved question. Do not guess. Otherwise continue to step 5.
+For each material decision:
 
-### 5. Explore and choose the high-level direction
+1. state the question, connected requirements, current context, and trustworthy evidence;
+2. compare genuinely different reference-backed alternatives, including doing nothing when credible, by pros, cons, fit, risks, and consequences;
+3. recommend the best-supported option and state what evidence would change the recommendation;
+4. obtain the user's decision whenever the Rules reserve authority to the user; and
+5. record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition.
 
-Develop at least two materially different directions when a genuine choice exists, including doing nothing when credible. Describe each at the whole-outcome level: actors, major responsibilities, principal flow, system or experience boundary, dependencies, consequences, risks, and fit with the governing foundation.
+Study remains available throughout discussion. Record every late source with the same assessment used in Phase 2. Put each corrected requirement and each emergent topic only in `ideation.md`; place an emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings. Preserve decision synthesis rather than a conversational transcript.
 
-Compare the directions with the approved criteria. Recommend one, explain why it is best supported, and state what evidence would change the recommendation. Obtain the user's decision and record why the other directions lost. When constraints leave only one viable direction, record the evidence that eliminates the alternatives instead of inventing cosmetic choices.
+Develop one integrated design that covers every applicable actor and responsibility; boundary, component, ownership, and interface; information, data, and state flow; normal, alternative, invalid, failure, and recovery path; performance and resource obligation; trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance concern; and assumption, risk, evidence gap, and validation commitment. Give each concern one owner, keep interfaces consumer-readable and dependencies acyclic, contain dependency failure, and expose verification seams.
 
-**Evidence:** an approved high-level direction and a decision record with criteria, alternatives, trade-offs, recommendation, selection, rejected options, and reopen conditions.
+Distinguish evidence that exists now from proposed future validation, and never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence. For each validation commitment, record the question it must answer, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition.
 
-**Next:** if no direction satisfies the problem and scope, return to step 2 or 3. Otherwise continue to step 6.
+Before completion:
 
-### 6. Map the selected design from the whole to its parts
+- list every change from the supporting drafts, with its evidence, user approval when material, affected branches, and consequence;
+- trace requirements, sources, topics, decisions, resulting design, risks, and validation by exact descriptive heading paths rather than artificial identifiers;
+- use [scenarios.md](scenarios.md) and [checklists.md](checklists.md) to confirm every applicable design obligation is present and testable;
+- read all three documents independently as a cold reader and remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links; and
+- confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
 
-Describe the complete outcome before refining local details. Establish the major actors, stages, responsibilities, components, journeys, information or data movement, dependencies, trust boundaries, lifecycle states, and completion evidence that apply to the domain.
+Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) before final approval; the evaluation verifies approval readiness while `ideation.md` remains evolving and its authority remains contingent. Material revisions reopen this phase and require a fresh complete evaluation. Only after evaluation passes, obtain the user's approval of `ideation.md`; that approval makes it the final authoritative Ideation result and automatically supersedes both frozen supporting drafts.
 
-Name the parent decisions and the design areas that depend on them. Resolve ownership, direction, and major boundaries before discussing dependent details. Use verified project conventions and authoritative domain evidence to decide what counts as a component, interaction, journey, module, contract, process, document, or other specialized unit.
+**Completion evidence:** returned `requirements.md`, `topics.md`, and `ideation.md`; independently readable supporting drafts whose bytes remained frozen after approval; a user-approved authoritative final document with complete decision synthesis, change disclosure, traceability, and current-versus-future evidence boundaries; and a passing evaluation of the exact three-document result.
 
-**Evidence:** an approved whole-design map with stable names, major boundaries, ownership, flow, and explicit parent-to-dependent decision relationships.
-
-**Next:** keep a dependent detail open while its parent decision is unresolved. If the map disproves the selected direction, return to step 5. Otherwise continue to step 7.
-
-### 7. Develop the design bottom-up through successive decisions
-
-Start with the smallest meaningful unit in each applicable domain and connect it toward the complete outcome. Discuss its purpose, inputs, outputs, state or information transitions, names, ownership, interfaces, dependencies, user-visible behavior, failure and recovery, and verification seams. Reconcile every new detail with the whole-design map and all earlier decisions.
-
-At each material level, define the decision and criteria, develop genuine alternatives, present concrete trade-offs and one recommendation, obtain the required user decision, and record the selection, rationale, consequences, rejected options, and reopen evidence. Derive specialized shapes and mechanics from verified project conventions and authoritative domain sources. Reconcile them through this one method.
-
-**Evidence:** an accumulated directional design whose details trace to approved parent decisions, evidence, and user choices.
-
-**Next:** if a detail disproves a parent decision, return to the earliest affected level instead of forcing it to fit. Do not create ordered implementation tasks. When the design is coherent, continue to step 8.
-
-### 8. Complete design coverage and decide the validation approach
-
-Inspect the design across every applicable actor, normal and alternative path, exact boundary, invalid state, failure, recovery, abuse, compatibility event, and counterfactual. Disposition performance, resource cost, privacy, security, trust, accessibility, locale, observability, operation, maintenance, migration, and rollback from inspected evidence. Use a precise not-applicable reason only after testing applicability.
-
-For each load-bearing assumption or material risk, record what fails if it is wrong, the evidence already available, and the evidence still needed. Discuss the best future validation method or artifact, such as a walkthrough, prototype, experiment, code spike, benchmark, or representative-user study. Record the question it would answer, suitable participants or environment, pass and fail signals, reopen condition, owner, and execution condition.
-
-Ideation records the validation commitment but does not create or test prototypes, code spikes, screens, implementation, or other realization outputs. A project-specific requirement may require additional evidence, but it becomes part of this operation only when an authoritative source makes it applicable to the current scope.
-
-**Evidence:** complete design-coverage dispositions and a risk-ordered validation plan that distinguishes current evidence from proposed future evidence.
-
-**Next:** unresolved material behavior returns to step 6 or 7. An under-evidenced high-risk assumption blocks completion unless the user changes the design or scope. Otherwise continue to step 9.
-
-### 9. Consolidate the checkpoint artifact, scenarios, and checks
-
-Update the canonical Ideation artifact with the approved problem, scope, evidence, criteria, alternatives, decisions, directional design, consequences, assumptions, risks, validation plan, unresolved questions, and deferred work. Preserve earlier approved constraints and decisions unless an explicit, authorized, evidence-backed replacement exists.
-
-Use [scenarios.md](scenarios.md) as the Ideation scenario source. Convert every approved non-exploratory scenario into a design obligation. Use [checklists.md](checklists.md) to give each load-bearing obligation an atomic, unchecked, evidence-bearing check. Close both traces: source to decision or scenario to obligation, and obligation to check.
-
-**Evidence:** one current, cold-readable What, Why, and How artifact with no orphaned claim, decision, scenario, obligation, or check.
-
-**Next:** if a trace is missing, a decision disappeared, or a scenario exposes a material gap, return to its earliest owning step. Otherwise continue to step 10.
-
-### 10. Complete and return the Ideation artifact
-
-Read the artifact as a cold reader. Confirm that it states the problem, reason, actors, scope, constraints, sources, assumptions, selected and rejected alternatives, directional design, ownership, interfaces, flows, states, failures, recovery, quality obligations, validation commitments, checks, and deferred work. Confirm that all material decisions are resolved, owned links and paths resolve, terminology is stable, and the approved What, Why, and How requires no private discussion context.
-
-Confirm that the artifact contains no ordered implementation task list, implementation diff, produced prototype, code spike, screen, or hidden design decision. Evaluate the artifact through [evaluation.md](evaluation.md) with the owned scenarios and checks. Return the completed, user-approved artifact and its evaluation result to the caller.
-
-**Completion evidence:** a user-approved What, Why, and How artifact, resolved decision record, closed obligation and check trace, explicit future validation commitments, complete evaluation result, and no hidden implementation-task decision.
-
-**Failure:** return to the earliest affected step. Do not return a cosmetically complete artifact with an unresolved material decision, unsupported completion claim, broken trace, or external method dependency.
+**Failure:** return to the earliest affected phase while respecting frozen-file immutability. Do not return a cosmetically complete bundle with a solution-biased requirement, missing internal or external study, inherited fixed taxonomy, unresolved material decision, silent contract change, broken trace, transcript-only discussion, unsupported evidence claim, or dependency on an outside method.
 
 ## References
+
+- [Requirements template](templates/requirements.md)
+- [Topics template](templates/topics.md)
+- [Final Ideation template](templates/ideation.md)
