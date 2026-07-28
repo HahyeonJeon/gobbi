@@ -178,36 +178,59 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 
 - [ ] **REACT-CHECK-35** · required · conditional — applies when an Effect in the change starts
   cancellable work on an input that can change again before it finishes
-  - **Claim.** The change records which of `cancel` and `ignore` it chose, and the choice matches what
-    the surface does to the work that is already running.
-  - **Pass when.** Where the work is left running deliberately, the change says so and the work is cheap
-    and bounded; where the input changes rapidly, the surface is long-lived, or the request is expensive,
-    the cleanup cancels it. Discarding the result while every superseded request runs to completion does
-    not pass on those three conditions — that is the case this item exists for.
-  - **Evidence.** Change the input several times in quick succession and observe the requests still in
-    flight; a cancelling implementation leaves at most the current one.
-  - **On fail.** Required item: open a finding. `REACT-CHECK-10` passing is not evidence for this item:
-    ignoring a result satisfies that item and leaves the work running, which is exactly the gap.
+  - **Claim.** The change records whether superseded work is cancelled or left running while its result
+    is ignored.
+  - **Pass when.** The change names exactly one of `cancel` or `ignore` for each qualifying work path and
+    the implementation performs the recorded choice.
+  - **Evidence.** Read the recorded choice, then change the input twice and compare the request lifecycle
+    with that record.
+  - **On fail.** Required item: open a finding. An implementation choice with no record leaves the
+    resource policy unauditable.
   - **`n/a` form.** `n/a: no Effect in the change starts cancellable work, or the input cannot change
     before the work finishes` — cited by the diff and the surface's lifetime.
   - **Source.** `REACT-SCENARIO-05` · `H6` · `P2`.
+
+- [ ] **REACT-CHECK-57** · required · conditional — applies when an Effect in the change starts
+  cancellable work on an input that can change again before it finishes
+  - **Claim.** The selected cancel-or-ignore policy matches the cost and lifetime of the work already
+    running.
+  - **Pass when.** Ignored work is cheap and bounded. Rapidly changing inputs, long-lived surfaces, or
+    expensive requests cancel superseded work; letting every superseded request finish does not pass.
+  - **Evidence.** Change the input several times in quick succession and observe the requests still in
+    flight; a path that requires cancellation leaves at most the current request.
+  - **On fail.** Required item: open a finding. `REACT-CHECK-10` and `REACT-CHECK-35` passing do not prove
+    this resource decision: a stale result may be ignored and the choice may be documented while all
+    obsolete work still runs.
+  - **`n/a` form.** `n/a: no Effect in the change starts cancellable work, or the input cannot change
+    before the work finishes` — cited by the diff and the surface's lifetime.
+  - **Source.** `REACT-SCENARIO-05` · `H6` · `P2` · split from `REACT-CHECK-35`.
 
 ### From REACT-SCENARIO-06 — the server and client boundary
 
 - [ ] **REACT-CHECK-11** · gate · conditional — applies when a value in the change crosses the
   server/client boundary
-  - **Claim.** Every value crossing the boundary has its direction recorded and is legal for that
-    direction.
-  - **Pass when.** For each crossing value, the change records which direction it crosses, and the value
-    is checked against the set that applies to that direction rather than against one merged notion of
-    serializable.
-  - **Evidence.** For each crossing value, the recorded direction plus the direction-specific check;
-    confirmed by passing the value across the real boundary.
+  - **Claim.** Every value crossing the boundary has its direction recorded.
+  - **Pass when.** Each crossing value is identified as server-to-client or client-to-server at the
+    boundary where it crosses.
+  - **Evidence.** Read the boundary record and map every crossing value to one recorded direction.
   - **Harm on fail.** The failure lands on the network hop rather than the call site, so it surfaces in
     production as an opaque serialization error far from the code that caused it.
   - **`n/a` form.** `n/a: no value in the change crosses the server/client boundary` — cited by the
     absence of a boundary module in the affected set.
   - **Source.** `REACT-SCENARIO-06` · `H7` · `P6`.
+
+- [ ] **REACT-CHECK-38** · gate · conditional — applies when a value in the change crosses the
+  server/client boundary
+  - **Claim.** Every crossing value is legal for its recorded direction.
+  - **Pass when.** Each value is checked against the serialization set for its recorded direction, not
+    against one merged notion of serializable.
+  - **Evidence.** Pass each value across the real boundary in its recorded direction and inspect the
+    direction-specific result.
+  - **Harm on fail.** A value can have a correct direction label and still fail at the network hop,
+    producing an opaque serialization error far from its source.
+  - **`n/a` form.** `n/a: no value in the change crosses the server/client boundary` — cited by the
+    absence of a boundary module in the affected set.
+  - **Source.** `REACT-SCENARIO-06` · `H7` · `P6` · split from `REACT-CHECK-11`.
 
 - [ ] **REACT-CHECK-12** · required · conditional — applies when a value the change needs on the other
   side cannot legally cross
@@ -218,23 +241,32 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **On fail.** Required item: open a finding. Marking the module as client code to silence the error
     moves the boundary instead of fixing the value and does not pass.
   - **`n/a` form.** `n/a: every value the change needs on the other side may legally cross` — cited by
-    the per-value direction check from `REACT-CHECK-11`.
+    the per-value legality check from `REACT-CHECK-38`.
   - **Source.** `REACT-SCENARIO-06` · `H7`.
 
 - [ ] **REACT-CHECK-34** · gate · conditional — applies when the change adds or edits a Server Function
-  - **Claim.** Every Server Function the change adds or edits validates its arguments and authorizes the
-    mutation inside its own body.
-  - **Pass when.** For each such function, the body checks the caller's authority before performing any
-    mutation, and checks each argument it uses rather than assuming the shape a component would have sent.
-    A check performed only in the calling component does not pass, and a type annotation on the parameter
-    does not pass — neither runs when the endpoint is called directly.
-  - **Evidence.** Read each added or edited Server Function body for the authority check and the argument
-    checks, then call the function directly with an argument no component would produce and confirm it
-    refuses before mutating.
+  - **Claim.** Every Server Function the change adds or edits validates each argument inside its own
+    body.
+  - **Pass when.** The body checks every argument it uses rather than assuming the shape a component
+    would have sent. A caller-side check or parameter type does not pass because neither runs when the
+    endpoint is called directly.
+  - **Evidence.** Call the function directly with an argument no component would produce and confirm it
+    refuses before using or persisting that value.
   - **Harm on fail.** The function is reachable by anything that can reach the endpoint, so an
-    unauthorized mutation needs no UI, no session in your application, and no bug in your components.
+    invalid mutation needs no UI and no bug in the calling component.
   - **`n/a` form.** `n/a: the change adds and edits no Server Function` — cited by the diff.
   - **Source.** `REACT-SCENARIO-06` · `H18` · `P6`.
+
+- [ ] **REACT-CHECK-56** · gate · conditional — applies when the change adds or edits a Server Function
+  - **Claim.** Every Server Function authorizes its mutation inside its own body.
+  - **Pass when.** The function checks the caller's authority before any mutation. Caller-side UI,
+    route, or component checks do not pass.
+  - **Evidence.** Call the function directly as an unauthorized caller and confirm it refuses before
+    mutating.
+  - **Harm on fail.** A well-shaped argument can still perform an unauthorized mutation without the UI
+    or component that normally calls the endpoint.
+  - **`n/a` form.** `n/a: the change adds and edits no Server Function` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-06` · `H18` · `P6` · split from `REACT-CHECK-34`.
 
 ### From REACT-SCENARIO-10 — producer assumptions and the renderer bridge
 
@@ -252,33 +284,88 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 - [ ] **REACT-CHECK-20** · gate · conditional — applies when the change runs in a renderer that reaches a
   privileged process
   - **Claim.** The surface exposed to the renderer is an enumerable list of named operations.
-  - **Pass when.** Every exposed entry is a named operation with its own arguments, and every incoming
-    message is validated where it arrives. A single generic invoke-by-channel entry point does not pass:
-    it re-exposes the whole surface under one name.
-  - **Evidence.** Enumerate the exposed surface from the shipped preload code and, from page-context
-    code, call it and record what it can reach.
+  - **Pass when.** Every reachable privileged capability appears as a distinct named entry in the shipped
+    preload surface.
+  - **Evidence.** Enumerate the shipped preload surface from page-context code and map each entry to the
+    privileged capability it reaches.
   - **Harm on fail.** A content-injection bug in the page becomes access to whatever the privileged side
     can do, which is the difference between a display defect and code execution.
   - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
     host.
   - **Source.** `REACT-SCENARIO-10` · `H16` · `P6`.
 
+- [ ] **REACT-CHECK-42** · gate · conditional — applies when the change runs in a renderer that reaches a
+  privileged process
+  - **Claim.** Every exposed renderer operation has its own operation-specific argument contract.
+  - **Pass when.** Each named operation accepts only the arguments needed for that capability rather
+    than forwarding an arbitrary payload.
+  - **Evidence.** Read every exposed signature and call it with an extra or wrong-shaped argument.
+  - **Harm on fail.** A finite method list still becomes an unbounded privileged surface when each method
+    forwards arbitrary data.
+  - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
+    host.
+  - **Source.** `REACT-SCENARIO-10` · `H16` · `P6` · split from `REACT-CHECK-20`.
+
+- [ ] **REACT-CHECK-43** · gate · conditional — applies when the change runs in a renderer that reaches a
+  privileged process
+  - **Claim.** Every incoming privileged-process message is validated where it arrives.
+  - **Pass when.** The receiver validates the operation's arguments before the first privileged action;
+    preload-only validation does not substitute for receiver validation.
+  - **Evidence.** Call each receiver with a payload no preload method would send and confirm rejection
+    before privileged work.
+  - **Harm on fail.** Another sender can bypass the page-facing wrapper and reach a privileged sink with
+    unchecked input.
+  - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
+    host.
+  - **Source.** `REACT-SCENARIO-10` · `H16` · `P6` · split from `REACT-CHECK-20`.
+
+- [ ] **REACT-CHECK-44** · gate · conditional — applies when the change runs in a renderer that reaches a
+  privileged process
+  - **Claim.** The renderer exposes no generic invoke-by-channel entry point.
+  - **Pass when.** Page-context code cannot supply a channel or operation name that selects an otherwise
+    unenumerated privileged capability.
+  - **Evidence.** Search the shipped preload surface for generic dispatch and attempt to call an
+    unlisted channel from page context.
+  - **Harm on fail.** One generic dispatcher re-exposes the whole privileged surface under a cosmetic
+    single method name.
+  - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
+    host.
+  - **Source.** `REACT-SCENARIO-10` · `H16` · `P6` · split from `REACT-CHECK-20`.
+
 - [ ] **REACT-CHECK-28** · gate · conditional — applies when the change runs in a renderer that reaches a
   privileged process
-  - **Claim.** The shipped window configuration has Node integration off, context isolation on, and the
-    sandbox on.
-  - **Pass when.** All three settings hold in the configuration the packaged application uses. Context
-    isolation being on is not evidence for the sandbox: the implication runs the other way, so the
-    sandbox is read as its own value.
-  - **Evidence.** Read the shipped configuration, not the development one; confirm the packaged build
-    carries the same three values.
-  - **Harm on fail.** Without context isolation the bridge and the page share one world, so every other
-    protection on this surface becomes decorative — and without the sandbox the renderer keeps the
-    operating-system access the sandbox exists to remove, which the cited source forbids in every
-    renderer.
+  - **Claim.** The shipped renderer has Node integration disabled.
+  - **Pass when.** `nodeIntegration` is false in the window configuration used by the packaged
+    application.
+  - **Evidence.** Read the packaged window configuration and confirm the effective value.
+  - **Harm on fail.** Page content receives Node capability directly, so a content defect becomes
+    operating-system access.
   - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
     host.
   - **Source.** `REACT-SCENARIO-10` · `H16`.
+
+- [ ] **REACT-CHECK-52** · gate · conditional — applies when the change runs in a renderer that reaches a
+  privileged process
+  - **Claim.** The shipped renderer has context isolation enabled.
+  - **Pass when.** `contextIsolation` is true in the window configuration used by the packaged
+    application.
+  - **Evidence.** Read the packaged window configuration and confirm the effective value.
+  - **Harm on fail.** The bridge and page share one JavaScript world, making the narrow exposed surface
+    decorative.
+  - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
+    host.
+  - **Source.** `REACT-SCENARIO-10` · `H16` · split from `REACT-CHECK-28`.
+
+- [ ] **REACT-CHECK-53** · gate · conditional — applies when the change runs in a renderer that reaches a
+  privileged process
+  - **Claim.** The shipped renderer has the sandbox enabled.
+  - **Pass when.** `sandbox` is true in the window configuration used by the packaged application;
+    context isolation is not accepted as proxy evidence.
+  - **Evidence.** Read the packaged window configuration and confirm the sandbox's own effective value.
+  - **Harm on fail.** The renderer retains operating-system access that the sandbox exists to remove.
+  - **`n/a` form.** `n/a: the change runs on no host with a privileged process` — cited by the recorded
+    host.
+  - **Source.** `REACT-SCENARIO-10` · `H16` · split from `REACT-CHECK-28`.
 
 ---
 
@@ -348,15 +435,43 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Source.** `REACT-SCENARIO-07` · `H14`.
 
 - [ ] **REACT-CHECK-25** · required · unconditional
-  - **Claim.** The change records the React contract it was written against: the presentation surface,
-    producer architecture, whether the compiler is enabled, and whether the source is TypeScript or
-    plain JavaScript.
-  - **Pass when.** All four are recorded in the change's own materials, as facts read from the codebase
-    rather than assumed.
-  - **Evidence.** The recorded contract, compared against the configuration files it claims to describe.
+  - **Claim.** The change records its presentation surface.
+  - **Pass when.** The change identifies browser or Electron presentation from the codebase rather than
+    inferring it from an example.
+  - **Evidence.** The recorded presentation surface compared with the host entry and packaging
+    configuration.
   - **On fail.** Required item: open a finding. Several items in this register resolve their
     applicability from this record, so its absence blocks them.
   - **Source.** `REACT-SCENARIO-07`, `REACT-SCENARIO-10` · `P1` · `Procedure P1`.
+
+- [ ] **REACT-CHECK-49** · required · unconditional
+  - **Claim.** The change records its producer architecture independently of its presentation surface.
+  - **Pass when.** The change identifies client-only, build-time, or request-time/remote production from
+    the actual producer implementation.
+  - **Evidence.** The recorded producer architecture compared with the framework, bundler, or request
+    entry that produces the output.
+  - **On fail.** Required item: open a finding. A presentation label is not producer evidence.
+  - **Source.** `REACT-SCENARIO-07`, `REACT-SCENARIO-10` · `P1` · `Procedure P1` · split from
+    `REACT-CHECK-25`.
+
+- [ ] **REACT-CHECK-50** · required · unconditional
+  - **Claim.** The change records whether the React Compiler is enabled.
+  - **Pass when.** The compiler switch is read from current configuration and recorded as enabled or not
+    enabled before memoization items are selected.
+  - **Evidence.** The recorded switch compared with the current compiler configuration.
+  - **On fail.** Required item: open a finding. `REACT-CHECK-13`, `-32`, and `-33` cannot all be resolved
+    honestly without this switch.
+  - **Source.** `REACT-SCENARIO-07` · `P1` · `P5` · `Procedure P1` · split from `REACT-CHECK-25`.
+
+- [ ] **REACT-CHECK-51** · required · unconditional
+  - **Claim.** The change records whether its source is TypeScript or plain JavaScript.
+  - **Pass when.** The source language is read from the affected files and project configuration before
+    language-specific companions or review axes are selected.
+  - **Evidence.** The recorded language compared with the affected file extensions and project
+    configuration.
+  - **On fail.** Required item: open a finding. The TypeScript companion and third review axis cannot be
+    selected from an assumed language.
+  - **Source.** `REACT-SCENARIO-07` · `P1` · `Procedure P1` · split from `REACT-CHECK-25`.
 
 ### From REACT-SCENARIO-08 — state placement
 
@@ -407,32 +522,56 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 
 - [ ] **REACT-CHECK-17** · gate · conditional — applies when the change adds or edits an interactive
   element
-  - **Claim.** Every interactive element the change produces is operable by keyboard and exposes a role
-    and an accessible name.
-  - **Pass when.** Each element can be reached and activated with the keyboard alone, and a query by role
-    and accessible name finds it. A generic element carrying a role and a tab index but no keyboard
-    activation does not pass.
-  - **Evidence.** Operate each element with the keyboard only, and query it by role and accessible name.
+  - **Claim.** Every interactive element the change produces is operable by keyboard.
+  - **Pass when.** Each element can be reached and activated with the keyboard alone. A generic element
+    carrying a role and tab index but no keyboard activation does not pass.
+  - **Evidence.** Operate each element with the keyboard only.
   - **Harm on fail.** The feature is unusable for anyone not using a mouse, and the defect is invisible
     to the mouse-driven check that produced it.
   - **`n/a` form.** `n/a: the change adds and edits no interactive element` — cited by the diff.
   - **Source.** `REACT-SCENARIO-09` · `H9` · `P4`.
 
+- [ ] **REACT-CHECK-39** · gate · conditional — applies when the change adds or edits an interactive
+  element
+  - **Claim.** Every interactive element exposes the correct role.
+  - **Pass when.** A role query returns each control under the semantics of the element it renders.
+  - **Evidence.** Query every changed control by its expected role.
+  - **Harm on fail.** Assistive technology cannot identify what operation the control performs even when
+    it remains keyboard-operable.
+  - **`n/a` form.** `n/a: the change adds and edits no interactive element` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-09` · `H9` · `P4` · split from `REACT-CHECK-17`.
+
+- [ ] **REACT-CHECK-40** · gate · conditional — applies when the change adds or edits an interactive
+  element
+  - **Claim.** Every interactive element exposes an accessible name.
+  - **Pass when.** A query by the element's expected accessible name returns it without relying on
+    implementation-only text.
+  - **Evidence.** Query every changed control by its accessible name.
+  - **Harm on fail.** A user can encounter an unnamed control and cannot distinguish it from its sibling
+    controls even when its role and keyboard behavior are correct.
+  - **`n/a` form.** `n/a: the change adds and edits no interactive element` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-09` · `H9` · `P4` · split from `REACT-CHECK-17`.
+
 - [ ] **REACT-CHECK-18** · gate · conditional — applies when the change adds or edits a dialog or overlay
-  - **Claim.** Focus moves into the dialog when it opens, and on close lands on a destination the rule
-    sanctions.
-  - **Pass when.** Immediately after open, the focused element is inside the dialog. Immediately after
-    close, the focused element is the control that invoked it — or, where the rule's stated conditions
-    hold, the recorded alternative: another element providing logical work flow when the invoking element
-    no longer exists, or the next step's element where the work flow makes that the more logical choice.
-    An alternative destination passes only when the change records which condition applies; an unrecorded
-    one does not, and neither does focus left where the closing dialog dropped it.
-  - **Evidence.** Read the focused element at both transitions while operating the flow by keyboard, and
-    for an alternative destination read the recorded condition beside it.
+  - **Claim.** Focus moves into the dialog when it opens.
+  - **Pass when.** Immediately after open, the focused element is inside the dialog.
+  - **Evidence.** Read the focused element immediately after opening the flow by keyboard.
   - **Harm on fail.** A keyboard or assistive-technology user is left in the page behind the dialog with
     no route into it, so the interaction cannot be completed at all.
   - **`n/a` form.** `n/a: the change adds and edits no dialog or overlay` — cited by the diff.
   - **Source.** `REACT-SCENARIO-09` · `H9`.
+
+- [ ] **REACT-CHECK-41** · gate · conditional — applies when the change adds or edits a dialog or overlay
+  - **Claim.** Focus lands on a rule-sanctioned destination when the dialog closes.
+  - **Pass when.** Immediately after close, focus is on the invoking control, or the change records the
+    applicable exception: the logical workflow element when the invoker no longer exists, or the next
+    step's element when workflow makes it more logical. An unrecorded destination does not pass.
+  - **Evidence.** Close the dialog by keyboard, read the focused element, and inspect any recorded
+    exception condition.
+  - **Harm on fail.** The user loses their place after completing or abandoning the dialog and must
+    reconstruct the workflow.
+  - **`n/a` form.** `n/a: the change adds and edits no dialog or overlay` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-09` · `H9` · split from `REACT-CHECK-18`.
 
 - [ ] **REACT-CHECK-27** · required · conditional — applies when the change adds an ARIA role, state, or
   property
@@ -454,17 +593,45 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
 ### From REACT-SCENARIO-11 — skeleton first, then slices
 
 - [ ] **REACT-CHECK-21** · required · conditional — applies in author mode
-  - **Claim.** A skeleton state exists in which every planned unit is present, the tree renders, the
-    type-check passes where the source is TypeScript, and no behavior is implemented.
-  - **Pass when.** At that state every unit named in the approved design resolves to a definition, the
-    top unit renders its static markup, the type-check exits clean, and no unit contains conditional
-    logic, data access, a state transition, or event handling.
-  - **Evidence.** The skeleton commit or the recorded pre-behavior state, inspected directly, plus the
-    type-check output produced from it.
-  - **On fail.** Required item: open a finding. A skeleton that already carries behavior does not pass —
-    the last clause is what the item turns on.
+  - **Claim.** Every planned unit is present in the skeleton state.
+  - **Pass when.** Each unit named in the approved design resolves to a definition in the recorded
+    pre-behavior state.
+  - **Evidence.** The approved unit list walked against the skeleton commit or recorded pre-behavior
+    state.
+  - **On fail.** Required item: open a finding. A partial unit graph cannot establish the intended
+    composition.
   - **`n/a` form.** `n/a: the run is review mode, which does not build` — cited by the declared mode.
   - **Source.** `REACT-SCENARIO-11` · `Procedure P5`.
+
+- [ ] **REACT-CHECK-45** · required · conditional — applies in author mode
+  - **Claim.** The skeleton state's top unit renders its static composition.
+  - **Pass when.** Rendering the top unit exercises the planned unit composition without needing feature
+    behavior.
+  - **Evidence.** Render output from the skeleton commit or recorded pre-behavior state.
+  - **On fail.** Required item: open a finding. Empty stubs that never compose can pass a file-existence
+    check while proving no structure.
+  - **`n/a` form.** `n/a: the run is review mode, which does not build` — cited by the declared mode.
+  - **Source.** `REACT-SCENARIO-11` · `Procedure P5` · split from `REACT-CHECK-21`.
+
+- [ ] **REACT-CHECK-46** · required · conditional — applies in author mode when the source is TypeScript
+  - **Claim.** The skeleton state passes the type-check.
+  - **Pass when.** The project type-check exits clean on the skeleton commit before behavior is added.
+  - **Evidence.** Fresh type-check output from the skeleton state.
+  - **On fail.** Required item: open a finding. A later green type-check does not prove the skeleton's
+    interfaces were coherent before behavior.
+  - **`n/a` form.** `n/a: the run is review mode, or the recorded source language is plain JavaScript` —
+    cited by the declared mode and `REACT-CHECK-51`.
+  - **Source.** `REACT-SCENARIO-11` · `Procedure P5` · split from `REACT-CHECK-21`.
+
+- [ ] **REACT-CHECK-47** · required · conditional — applies in author mode
+  - **Claim.** The skeleton state implements no feature behavior.
+  - **Pass when.** No skeleton unit contains conditional feature logic, data access, a state transition,
+    or event handling.
+  - **Evidence.** Inspect every skeleton unit in the pre-behavior state.
+  - **On fail.** Required item: open a finding. A skeleton that already carries behavior cannot
+    discriminate bottom-up construction from a whole-feature pass.
+  - **`n/a` form.** `n/a: the run is review mode, which does not build` — cited by the declared mode.
+  - **Source.** `REACT-SCENARIO-11` · `Procedure P5` · split from `REACT-CHECK-21`.
 
 - [ ] **REACT-CHECK-22** · required · unconditional
   - **Claim.** Every affected caller, test, story, and type moved in the same slice as the behavior it
@@ -483,46 +650,72 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
     language — three where the source is TypeScript, two where it is plain JavaScript — and each verdict
     names the axis it graded.
   - **Evidence.** The verdicts themselves, each naming the axis it graded, counted against the source
-    language recorded by `REACT-CHECK-25`.
+    language recorded by `REACT-CHECK-51`.
   - **Harm on fail.** One conflated pass lets a change that is fluent React but shallow as software
     through, which is the failure the three axes exist to separate.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P8`.
 
 - [ ] **REACT-CHECK-24** · gate · conditional — applies when the change adds or edits a taught React
   example
-  - **Claim.** Every taught example added or edited by the change resolves to a located sentence, in a
-    named primary source, that states what the example shows.
+  - **Claim.** Every taught example resolves to one named primary source, exact location, and quoted
+    sentence.
   - **Pass when.** For each example the run holds three things: the source name, the exact location
-    within it, and the quoted sentence — and that sentence states the behavior the example demonstrates,
-    not merely the API the example happens to use. An example described as coming from the documentation,
-    with no locatable sentence, fails. "The examples were reviewed" is not a resolution of this item.
+    within it, and the quoted sentence. An example described as coming from the documentation, with no
+    locatable sentence, fails.
   - **Evidence.** The quoted sentence beside each example with its source location, opened and read
     during this run, not carried forward from an earlier review.
-  - **Harm on fail.** A wrong example ships as a taught fact and is copied into code. Examples here are
-    cite-and-review by decision — no harness checks them — so this item is the only mechanical guard, and
-    a soft resolution of it leaves none.
+  - **Harm on fail.** An example with no reproducible source trace cannot be checked before it is copied
+    into code.
   - **`n/a` form.** `n/a: the change adds and edits no taught example` — cited by the diff.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P8`.
 
+- [ ] **REACT-CHECK-48** · gate · conditional — applies when the change adds or edits a taught React
+  example
+  - **Claim.** The located source sentence states the behavior the example teaches.
+  - **Pass when.** The quoted sentence supports the demonstrated behavior, not merely an API name the
+    example happens to use.
+  - **Evidence.** Compare the example's taught claim with the opened source sentence's complete
+    normative scope.
+  - **Harm on fail.** A locatable but irrelevant citation gives a wrong taught fact the appearance of
+    primary-source support.
+  - **`n/a` form.** `n/a: the change adds and edits no taught example` — cited by the diff.
+  - **Source.** `REACT-SCENARIO-12` · `Procedure P8` · split from `REACT-CHECK-24`.
+
 - [ ] **REACT-CHECK-29** · required · conditional — applies when the change adds or edits a component test
-  - **Claim.** Each such test finds its subject through the user-visible surface and imports `act` from
-    `react` where it uses it.
+  - **Claim.** Each component test finds its subject through the user-visible surface.
   - **Pass when.** Queries locate elements by role, accessible name, or visible text rather than by
-    component internals, state, or tree structure; any `act` import comes from `react`.
-  - **Evidence.** Read the queries and imports in the added or edited tests.
+    component internals, state, or tree structure.
+  - **Evidence.** Read the queries in the added or edited tests.
   - **On fail.** Required item: open a finding. A test that asserts implementation fails on a correct
     refactor and passes on a broken rewrite.
   - **`n/a` form.** `n/a: the change adds and edits no component test` — cited by the diff.
   - **Source.** `REACT-SCENARIO-12` · `H10` · `P7`.
 
+- [ ] **REACT-CHECK-54** · required · conditional — applies when an added or edited component test uses
+  `act`
+  - **Claim.** Every `act` import comes from `react`.
+  - **Pass when.** No added or edited component test imports `act` from a deprecated testing package.
+  - **Evidence.** Read every `act` import in the affected tests.
+  - **On fail.** Required item: open a finding.
+  - **`n/a` form.** `n/a: no added or edited component test uses act` — cited by the imports.
+  - **Source.** `REACT-SCENARIO-12` · `H10` · `P7` · split from `REACT-CHECK-29`.
+
 - [ ] **REACT-CHECK-30** · required · unconditional
-  - **Claim.** Every approved design item maps to an implemented unit, and every file in the affected set
-    is updated or recorded as a justified no-op.
-  - **Pass when.** Each item in the approved design resolves to code in the change, and each affected-set
-    file is either changed or carries a stated reason it needed no change.
-  - **Evidence.** The approved design and the affected set, each walked against the diff.
+  - **Claim.** Every approved design item maps to an implemented unit.
+  - **Pass when.** Each item in the approved design resolves to code in the change.
+  - **Evidence.** Walk the approved design item by item against the implementation.
   - **On fail.** Required item: open a finding.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P4` · `Procedure P8`.
+
+- [ ] **REACT-CHECK-55** · required · unconditional
+  - **Claim.** Every file in the affected set is updated or recorded as a justified no-op.
+  - **Pass when.** Each affected-set file appears in the diff or carries a specific reason that the
+    behavior change requires no edit there.
+  - **Evidence.** Walk the affected-set file list against the diff and no-op record.
+  - **On fail.** Required item: open a finding. Design-to-code closure does not prove caller, test, story,
+    type, or documentation closure.
+  - **Source.** `REACT-SCENARIO-12` · `Procedure P4` · `Procedure P8` · split from
+    `REACT-CHECK-30`.
 
 - [ ] **REACT-CHECK-37** · required · conditional — applies in author mode, where a design packet exists
   - **Claim.** The design packet carries every element Procedure P4 names, including where an error
@@ -541,6 +734,111 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **`n/a` form.** `n/a: the run is review mode, which reconstructs a packet rather than presenting one`
     — cited by the declared mode.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P3` · `Procedure P4`.
+
+### From REACT-SCENARIO-13 — Error Boundary fallback, recovery, and reach
+
+- [ ] **REACT-CHECK-58** · gate · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** A descendant render failure shows a specific usable fallback in the claimed region.
+  - **Pass when.** Injecting a deterministic descendant render throw commits intelligible fallback
+    content for that region.
+  - **Evidence.** The committed tree after the injected descendant render throw, including the fallback
+    content.
+  - **Harm on fail.** The claimed containment leaves the user with a blank or inert region and no way to
+    understand or continue from the failure.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligations `EB-1`, `EB-6` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-59** · gate · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** A descendant render failure leaves unaffected sibling regions usable.
+  - **Pass when.** Injecting the failure replaces only the claimed failure region, and an interaction in
+    an unaffected sibling still completes.
+  - **Evidence.** The committed region tree after the injected throw plus one completed sibling
+    interaction.
+  - **Harm on fail.** A local defect removes unrelated useful work, so the boundary does not provide the
+    containment its placement claims.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-1` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-60** · gate · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** The failed region has one named recovery action that returns it to its normal rendering.
+  - **Pass when.** The documented reset, retry, route change, or boundary-key change supplies corrected
+    input and the failed child renders again without a full application reload.
+  - **Evidence.** The named recovery action exercised from the visible fallback through the recovered
+    child tree.
+  - **Harm on fail.** The fallback becomes a permanent dead end even after the underlying input can be
+    corrected.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligations `EB-2`, `EB-6` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-61** · required · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** Recovering the failed region preserves unrelated usable state.
+  - **Pass when.** State changed in an unaffected sibling before the failure has the same value after the
+    named recovery action restores the child.
+  - **Evidence.** The sibling state recorded before failure and compared after recovery.
+  - **On fail.** Required item: open a finding. Recovery that resets unrelated work exceeds the claimed
+    failure region.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-2` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-62** · required · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** The boundary placement is justified by the largest useful region that may fail together.
+  - **Pass when.** The boundary map names the useful failure region and rejects both a cosmetic-leaf
+    placement that fragments the interface and a page-wide placement that removes unrelated useful work.
+  - **Evidence.** The recorded granularity decision compared with the region tree and with leaf, region,
+    and page failure placements.
+  - **On fail.** Required item: open a finding. Boundary-shaped syntax does not justify where the user
+    loses and retains work.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-3` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-63** · gate · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** The boundary is not credited with catching event-handler, ordinary asynchronous, or
+    server-render failures.
+  - **Pass when.** One injected throw in each named class follows a route other than the boundary
+    fallback, and the design records all three classes as outside the boundary's reach.
+  - **Evidence.** Independent event-handler, timer-callback, and server-render throws compared with the
+    boundary fallback route.
+  - **Harm on fail.** The design relies on containment React does not provide, leaving production failure
+    paths without their actual handler.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-4` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-64** · required · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure
+  - **Claim.** Each unsupported failure class has its own named handling owner.
+  - **Pass when.** The boundary map assigns event-handler, ordinary asynchronous, and server-render
+    failures to the concrete route that observes or handles each class.
+  - **Evidence.** The three owner records traced to their handling entry points.
+  - **On fail.** Required item: open a finding. Correctly denying boundary coverage is incomplete when
+    the unsupported failures have nowhere to go.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure` —
+    cited by the reconstructed or approved boundary map.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-4` · `Procedure P3`.
+
+- [ ] **REACT-CHECK-65** · required · conditional — applies when the design claims a React Error Boundary
+  catches a component-region failure and uses `startTransition`
+  - **Claim.** A throw from work invoked inside the `startTransition` function reaches the nearest Error
+    Boundary.
+  - **Pass when.** Equivalent transition and timer-callback throws are injected independently, and only
+    the transition throw commits the boundary fallback.
+  - **Evidence.** The two injected throws and their distinct observed routes.
+  - **On fail.** Required item: open a finding. Treating transition work as ordinary asynchronous work
+    removes a supported containment path.
+  - **`n/a` form.** `n/a: the design claims no React Error Boundary for a component-region failure, or
+    the change uses no startTransition work in that region` — cited by the boundary map and affected code.
+  - **Source.** `REACT-SCENARIO-13` obligation `EB-5` · `Procedure P3`.
 
 - [ ] **REACT-CHECK-31** · gate · unconditional
   - **Claim.** Every applicable verification gate ran on the final tree and exited clean.
@@ -578,36 +876,36 @@ at least one scenario family. Both directions were swept for orphans.
 
 | Rule | Items | Rule | Items |
 |---|---|---|---|
-| `H1` | 01 | `H10` | 29 |
+| `H1` | 01 | `H10` | 29, 54 |
 | `H2` | 03 | `H11` | 02 |
 | `H3` | 04 | `H12` | 06 |
 | `H4` | 05 | `H13` | 08 |
 | `H5` | 07 | `H14` | 14 |
-| `H6` | 09, 10, 35 | `H15` | 16, 26 |
-| `H7` | 11, 12 | `H16` | 20, 28 |
+| `H6` | 09, 10, 35, 57 | `H15` | 16, 26 |
+| `H7` | 11, 12, 38 | `H16` | 20, 28, 42, 43, 44, 52, 53 |
 | `H8` | 13, 32, 33 | `H17` | 19 |
-| `H9` | 17, 18, 27 | `H18` | 34 |
+| `H9` | 17, 18, 27, 39, 40, 41 | `H18` | 34, 56 |
 
 ### Principles
 
 | Principle | Items |
 |---|---|
-| `P1` Study the React contract | 25 |
-| `P2` Render is pure; an Effect is an escape hatch | 01, 02, 07, 35 |
+| `P1` Study the React contract | 25, 49, 50, 51 |
+| `P2` Render is pure; an Effect is an escape hatch | 01, 02, 07, 35, 57 |
 | `P3` One owner per piece of state | 08, 15 |
-| `P4` Compose, narrow props, markup is contract | 17 |
+| `P4` Compose, narrow props, markup is contract | 17, 39, 40 |
 | `P5` Memoize by the recorded compiler switch | 13, 32, 33 |
-| `P6` Know the boundary | 11, 19, 20, 34 |
-| `P7` Prove behavior the way a user reaches it | 29 |
+| `P6` Know the boundary | 11, 19, 20, 34, 38, 42, 43, 44, 56 |
+| `P7` Prove behavior the way a user reaches it | 29, 54 |
 
 ### Procedure steps
 
 | Step | Items | Step | Items |
 |---|---|---|---|
-| `Procedure P1` | 25, 36 | `Procedure P5` | 21 |
+| `Procedure P1` | 25, 36, 49, 50, 51 | `Procedure P5` | 21, 45, 46, 47 |
 | `Procedure P2` | none — see gaps | `Procedure P6` | 22 |
-| `Procedure P3` | 15, 37 | `Procedure P7` | 31, 36 |
-| `Procedure P4` | 30, 37 | `Procedure P8` | 23, 24, 30 |
+| `Procedure P3` | 15, 37, 58, 59, 60, 61, 62, 63, 64, 65 | `Procedure P7` | 31, 36 |
+| `Procedure P4` | 30, 37, 55 | `Procedure P8` | 23, 24, 30, 48, 55 |
 
 ### Items to families
 
@@ -617,26 +915,28 @@ at least one scenario family. Both directions were swept for orphans.
 | `REACT-SCENARIO-02` | 03, 04 |
 | `REACT-SCENARIO-03` | 05, 06 |
 | `REACT-SCENARIO-04` | 07, 08 |
-| `REACT-SCENARIO-05` | 09, 10, 31, 35, 36 |
-| `REACT-SCENARIO-06` | 11, 12, 34 |
-| `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33 |
+| `REACT-SCENARIO-05` | 09, 10, 31, 35, 36, 57 |
+| `REACT-SCENARIO-06` | 11, 12, 34, 38, 56 |
+| `REACT-SCENARIO-07` | 13, 14, 25, 31, 32, 33, 49, 50, 51 |
 | `REACT-SCENARIO-08` | 15, 16, 26 |
-| `REACT-SCENARIO-09` | 17, 18, 27 |
-| `REACT-SCENARIO-10` | 19, 20, 25, 28 |
-| `REACT-SCENARIO-11` | 21, 22 |
-| `REACT-SCENARIO-12` | 23, 24, 29, 30, 37 |
+| `REACT-SCENARIO-09` | 17, 18, 27, 39, 40, 41 |
+| `REACT-SCENARIO-10` | 19, 20, 25, 28, 42, 43, 44, 49, 52, 53 |
+| `REACT-SCENARIO-11` | 21, 22, 45, 46, 47 |
+| `REACT-SCENARIO-12` | 23, 24, 29, 30, 37, 48, 54, 55 |
+| `REACT-SCENARIO-13` | 58, 59, 60, 61, 62, 63, 64, 65 |
 
 ### Counts
 
-37 items — 21 gates and 16 required, no advisory item. Identifiers `REACT-CHECK-01` through `-24` are the
-slots the scenario families reserved and keep their reserved family; `-25` through `-37` were added where
-a family carried more than two independently falsifiable obligations. An identifier is never reused or
+65 items — 36 gates and 29 required, no advisory item. Identifiers `REACT-CHECK-01` through `-37` retain
+their published identities. Identifiers `-38` through `-57` hold clauses split from those published items;
+`-58` through `-65` close the obligations added by `REACT-SCENARIO-13`. An identifier is never reused or
 renumbered once published.
 
-Twenty-seven items are conditional on a stated predicate. Three of those read the compiler switch and they
+Fifty-one items are conditional on a stated predicate. Three of those read the compiler switch and they
 partition it: `-13` applies on the enabled branch, `-32` and `-33` on the not-enabled branch. `H8` is
 therefore covered whichever way the switch is recorded, and a run that resolves every one of the three
-`n/a` has not resolved `REACT-CHECK-25`.
+`n/a` has not resolved `REACT-CHECK-50`. Contract selection begins with `-25`, `-49`, `-50`, and `-51`;
+no one contract item stands in for the other three.
 
 ---
 
@@ -645,15 +945,10 @@ therefore covered whichever way the switch is recorded, and a run that resolves 
 - **Procedure P2, loading the companion for the fork in play, has no item.** Reading a document leaves no
   artifact an evaluator can inspect, so any check would resolve from the reader's assertion. Its effect is
   observable only through the items that depend on the depth it carries, and those are already here.
-- **Procedure P3 act 6 — error and loading boundary placement — is now half covered, and the other half
-  is a recorded gap.** `REACT-CHECK-37` fails a change whose design packet is silent on the placement, so
-  omitting the decision is now detectable through `REACT-SCENARIO-12`'s traceability discrimination. What
-  is still uncovered is *behavior*: no item can fail a change that places a boundary at an unusable
-  granularity, or that relies on one for an error a boundary does not catch — an event handler, server
-  rendering, or ordinary asynchronous code. `design.md` §5 teaches all of that from the source, but
-  teaching is not a gate. Closing it needs a scenario family whose defining discrimination is render-time
-  failure and recovery, and adding a thirteenth family crosses this set's stated split threshold, so it is
-  a structural decision rather than a checklist edit.
+- **Procedure P3 act 6's loading-boundary behavior has no dedicated family.** `REACT-CHECK-37` detects a
+  missing placement decision, and `REACT-SCENARIO-13` plus `REACT-CHECK-58` through `-65` close the Error
+  Boundary behavior. No current child scenario specifies loading-state reveal behavior beyond recording
+  its placement, so this register does not invent that upstream obligation.
 - **`REACT-CHECK-16` depends on a second client or an equivalent out-of-band write.** Where neither is
   available in the review environment, the item resolves from the recorded invalidation trigger being
   exercised — a weaker observation than the two-client one, and the run should say which it used.

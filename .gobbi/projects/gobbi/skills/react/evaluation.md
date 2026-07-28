@@ -4,7 +4,7 @@ Child doc for the evaluator, and for the executor's pre-handoff self-check, grad
 **idiom** quality. It is the React-specific companion to [`../coding/evaluation.md`](../coding/evaluation.md),
 which grades the language-agnostic property of good code, and to
 [`../typescript/evaluation.md`](../typescript/evaluation.md), which grades the language idiom when the source is
-TypeScript.
+TypeScript. `REACT-CHECK-51` resolves that language switch before this count is graded.
 
 **Three axes, and their count is itself a check.** `../coding/evaluation.md` grades the property,
 `../typescript/evaluation.md` the language idiom, and this file the React idiom. Where the source is TypeScript a
@@ -97,10 +97,11 @@ Run this after the target read and before the frame is locked.
 1. **Load all three sources** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) —
    plus [`../coding/evaluation.md`](../coding/evaluation.md), and
    [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
-2. **Read the recorded React contract first.** Twenty-seven of the thirty-seven items are conditional on a stated
-   predicate, and most of those predicates read the presentation surface, producer architecture, whether the compiler is enabled, and the source
-   language. `REACT-CHECK-25` is the item that records them, so resolve it before the items that depend on it. If
-   the contract is unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
+2. **Read the recorded React contract first.** Fifty-one of the sixty-five items are conditional on a
+   stated predicate. Most predicates read the presentation surface, producer architecture, compiler
+   switch, source language, or the claimed failure boundary. Resolve `REACT-CHECK-25`, `-49`, `-50`, and
+   `-51` before the items that depend on those four independent contract facts. If any required fact is
+   unrecorded, that is itself the finding — do not infer it from the diff. The compiler switch
    partitions three of those items rather than gating one: `REACT-CHECK-13` on the enabled branch, `-32` and
    `-33` on the not-enabled branch, so `H8` is covered either way and all three resolving `n/a` means the switch
    was never read.
@@ -117,7 +118,8 @@ Run this after the target read and before the frame is locked.
    editing neither source. Walk all seven perspectives even where the change exercises few of them; a walked
    perspective may legitimately record zero findings.
 6. **Demand direct evidence for the operation items.** One green final run proves final state only.
-   `REACT-CHECK-21` needs the pre-behavior state itself, `REACT-CHECK-22` needs the per-slice history, and
+   `REACT-CHECK-21`, `-45`, `-46`, and `-47` need the pre-behavior state itself,
+   `REACT-CHECK-22` needs the per-slice history, and
    `REACT-CHECK-31` needs fresh output from the tree being accepted. Evidence that first appears after a
    whole-feature pass fails those items.
 7. **Report a finding against `H15` as a house default.** It is the one rule with no primary source, labelled
@@ -136,7 +138,8 @@ section.
 architecture, compiler enablement, and source language — rather than a contract the author assumed from
 an example?
 
-**Activated**: `REACT-SCENARIO-10`, `-11` · `REACT-CHECK-19`, `-21`, `-22`, `-25`.
+**Activated**: `REACT-SCENARIO-10`, `-11` · `REACT-CHECK-19`, `-21`, `-22`, `-25`, `-45`, `-46`,
+`-47`, `-49`, `-50`, `-51`, `-55`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -150,8 +153,9 @@ an example?
 identity-keyed lists, Effects only for external systems, one owner per datum, and a boundary whose direction is
 known?
 
-**Activated**: `REACT-SCENARIO-01`, `-02`, `-03`, `-04`, `-06`, `-08` · `REACT-CHECK-01`, `-02`, `-03`, `-04`,
-`-05`, `-06`, `-07`, `-08`, `-11`, `-12`, `-15`, `-37`.
+**Activated**: `REACT-SCENARIO-01`, `-02`, `-03`, `-04`, `-06`, `-08`, `-13` · `REACT-CHECK-01`,
+`-02`, `-03`, `-04`, `-05`, `-06`, `-07`, `-08`, `-11`, `-12`, `-15`, `-37`, `-38`, `-55`,
+`-58`, `-59`, `-62`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -165,7 +169,8 @@ known?
 **Lens**: Is the change **efficient enough in idiomatic React** — the compiler trusted where it is enabled, manual
 memoization reasoned rather than reflexive, and no avoidable extra render passes?
 
-**Activated**: `REACT-SCENARIO-04`, `-07` · `REACT-CHECK-07`, `-08`, `-13`, `-14`, `-32`, `-33`.
+**Activated**: `REACT-SCENARIO-04`, `-05`, `-07` · `REACT-CHECK-07`, `-08`, `-13`, `-14`, `-32`,
+`-33`, `-57`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -192,7 +197,8 @@ derived values computed where they are used, and no memoization noise the compil
 **Lens**: Can the people who meet this change **actually use it** — a keyboard or assistive-technology user, and
 the reviewer who must grade it on the axes that apply?
 
-**Activated**: `REACT-SCENARIO-09`, `-11`, `-12` · `REACT-CHECK-17`, `-18`, `-23`, `-27`, `-29`.
+**Activated**: `REACT-SCENARIO-09`, `-11`, `-12`, `-13` · `REACT-CHECK-17`, `-18`, `-23`, `-27`,
+`-29`, `-39`, `-40`, `-41`, `-54`, `-58`, `-59`, `-60`, `-61`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -206,7 +212,8 @@ the reviewer who must grade it on the axes that apply?
 **Lens**: Does the change stay **consistent with what already exists and with what it claims** — the affected set
 moved together, an adoption event handled coherently, and every taught claim traceable?
 
-**Activated**: `REACT-SCENARIO-07`, `-12` · `REACT-CHECK-14`, `-22`, `-24`, `-26`, `-30`.
+**Activated**: `REACT-SCENARIO-07`, `-12` · `REACT-CHECK-14`, `-22`, `-24`, `-26`, `-30`, `-48`,
+`-55`.
 
 | Anti-pattern | Correction |
 |---|---|
@@ -221,7 +228,9 @@ moved together, an adoption event handled coherently, and every taught claim tra
 **Lens**: What can **fail, leak, or be reached** that the happy path hides — an outliving subscription, an
 out-of-order response, a divergent copy, an exposed privileged surface, or an unverified claim of verification?
 
-**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10` · `REACT-CHECK-09`, `-10`, `-16`, `-20`, `-28`, `-31`, `-34`, `-35`, `-36`.
+**Activated**: `REACT-SCENARIO-05`, `-06`, `-08`, `-10`, `-13` · `REACT-CHECK-09`, `-10`, `-16`,
+`-20`, `-28`, `-31`, `-34`, `-35`, `-36`, `-42`, `-43`, `-44`, `-52`, `-53`, `-56`, `-57`,
+`-60`, `-61`, `-62`, `-63`, `-64`, `-65`.
 
 | Anti-pattern | Correction |
 |---|---|
