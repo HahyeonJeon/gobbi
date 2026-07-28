@@ -11,6 +11,10 @@ Use this skill when Ideation starts or repeats to turn a user trigger into a con
 
 ## Principles
 
+### Question the user without hesitation until the idea is complete
+
+Treat every vague, partial, contradictory, or assumed part of the idea as an open topic. Ask direct, specific follow-up questions about the problem, desired outcome, affected people, boundaries, evidence, constraints, alternatives, risks, and success conditions until each gap is answered, explicitly deferred, or removed from scope. When an answer reveals another gap or weak premise, show it plainly and continue questioning instead of filling it by assumption. Persistent questioning serves completeness; keep it relevant, evidence-backed, and respectful.
+
 ### Ground the design in direct evidence, representative users, and trustworthy prior art
 
 Study the project's current behavior, prior decisions, patterns, and constraints. Seek direct evidence from representative users or people affected by the design, because project conventions and external examples cannot prove what users need. Use prior art to support a design choice only when its authority, relevance, currency, and applicability can be verified. Prefer direct project evidence, primary sources, official documentation, maintained standards, and established implementations. Treat secondary or unverified claims as leads, separate facts from assumptions, and justify any deviation from the best-supported pattern.
