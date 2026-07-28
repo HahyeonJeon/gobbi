@@ -98,7 +98,7 @@ always carry the word `Procedure`.
   it.** — **ecosystem convention**, the one rule here with no primary source; local state is a slot like any other.
 - **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
   enabled, context isolation disabled, or the sandbox off.** — a content bug must not become execution, and the
-  three settings are independent.
+  three settings are independent; the all-renderer Node.js-integration scope is a Gobbi house convention.
 - **H17 — NEVER infer producer architecture from the presentation surface.** — server-dependent features need an
   identified producer implementation, independently of browser or Electron presentation.
 - **H18 — MUST treat every Server Function argument as untrusted input and authorize the mutation on the
@@ -139,7 +139,10 @@ and applicability result, every dependent scenario/check/evaluation surface, and
 Compare the whole rule, not its opening. Fail a narrowing, broadening, missing or added exception, false
 applicability, stale dependent, or unsupported source claim. Record `H15` as an ecosystem convention with no
 primary-source claim. Record `H9`'s discontinued Using ARIA material as provenance for a house default, not a
-current W3C position.
+current W3C position. For `H16`, record Electron's remote-content scope for Node.js integration separately
+from its all-renderer context-isolation and sandbox guidance, then classify Gobbi's stricter all-renderer
+Node.js-integration prohibition as a deliberate house convention. An unlabelled all-renderer extension fails
+this gate even when the H16 opening remains literal.
 
 This is a freshness gate: a prior ledger is an input, not a result. Re-open the cited owner and bind the accepted
 row to the current source and dependent digests. A changed source or rule invalidates the row until the complete
@@ -206,6 +209,10 @@ Run this after the target read and before the frame is locked.
    whole-feature pass fails those items.
 9. **Report a finding against `H15` as a house default.** It is the one rule with no primary source, labelled
    ecosystem convention in `SKILL.md`. State that in the finding; never present it as a React-team position.
+10. **Keep `H16`'s two provenance scopes separate.** Electron backs context isolation and sandboxing for all
+    renderers and scopes its Node.js-integration recommendation to remote content. Gobbi's all-renderer
+    Node.js-integration prohibition is a deliberate house convention. Fail any evaluation or ledger that
+    presents the combined H16 policy as wholly Electron-owned.
 
 ---
 
@@ -345,7 +352,7 @@ by `SKILL.md` Procedure step P7. Then add the React-specific verifications below
 | Mutate a record out of band and re-read every screen that shows it | Convergence after invalidation (`H15`, `P3`) — a house-default finding, not a React-team position |
 | Operate the whole flow with the keyboard alone; read the focused element after a dialog opens and closes | Markup as contract (`H9`, `P4`) |
 | Query each control by role and accessible name; read the test queries and the `act` import | The user-visible seam (`H10`, `P7`) |
-| Enumerate the privileged surface from page-context code; read the shipped window configuration | Bridge containment (`H16`) — the packaged configuration, not the development one |
+| Enumerate the privileged surface from page-context code; read the shipped window configuration and classify each control's source scope | Bridge containment (`H16`) — the packaged configuration, not the development one; Electron-backed all-renderer isolation/sandboxing kept separate from the Gobbi all-renderer Node.js-integration convention |
 | Hold the presentation surface constant and swap client-only, build-time, and request-time/remote producers | Orthogonal producer applicability (`H17`, `Procedure P1`) |
 | Inspect the pre-behavior state and the per-slice history, not only the final tree | Bottom-up construction (`Procedure P5`, `Procedure P6`); rejects a final-green-only claim |
 | For each taught example, locate the sentence in the named source that states what it shows | Taught-example fidelity (`Procedure P8`); no harness exists, so this is the only guard |

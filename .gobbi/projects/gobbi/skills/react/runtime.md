@@ -38,9 +38,9 @@ Procedure P1.
 | Browser page | Client-only bundle | Client JavaScript and browser-rendered DOM | Application build, then browser execution | None: no producer-rendered initial HTML | Browser origin and every remote API boundary |
 | Browser page | Identified build-time framework or bundler | Generated HTML or RSC payload plus client assets | Build or CI | Required when producer-rendered HTML becomes the initial React tree; client-only islands attach normally | Browser origin plus the server/client serialization and trust boundaries |
 | Browser page | Identified request-time or remote framework/server | Per-request HTML or RSC payload, or remote data consumed by the client tree | Per request or remote call | Required when server-rendered HTML becomes the initial React tree; otherwise follow the payload's named integration | Browser origin plus the remote and server/client boundaries |
-| Electron renderer | Client-only bundle | Packaged client assets and renderer DOM | Package build, then renderer execution | None: no producer-rendered initial HTML | Finite preload API, Node integration off, context isolation on, sandbox on |
-| Electron renderer | Identified build-time framework or bundler | Generated HTML or RSC payload plus packaged client assets | Build or CI before packaging | Required when generated HTML becomes the initial React tree | The same finite isolated, sandboxed preload boundary; producer output grants no privilege |
-| Electron renderer | Identified request-time or remote framework/server | Remotely served HTML or RSC payload, or remote data consumed by the renderer | Per request or remote call | Required when server-rendered HTML becomes the initial React tree; otherwise follow the payload's named integration | Remote origin plus the same finite isolated, sandboxed preload boundary |
+| Electron renderer | Client-only bundle | Packaged client assets and renderer DOM | Package build, then renderer execution | None: no producer-rendered initial HTML | Finite preload API; context isolation and sandbox on; Node integration off for every renderer by Gobbi house convention |
+| Electron renderer | Identified build-time framework or bundler | Generated HTML or RSC payload plus packaged client assets | Build or CI before packaging | Required when generated HTML becomes the initial React tree | The same finite isolated, sandboxed preload boundary; Node integration remains off by Gobbi house convention; producer output grants no privilege |
+| Electron renderer | Identified request-time or remote framework/server | Remotely served HTML or RSC payload, or remote data consumed by the renderer | Per request or remote call | Required when server-rendered HTML becomes the initial React tree; otherwise follow the payload's named integration | Remote origin plus the same finite isolated, sandboxed preload boundary; Node integration remains off by Gobbi house convention |
 
 The question is never "is there a server" — `server-client.md` §7 shows the "server" in Server
 Components is a separate *environment* that can be a build step on a CI machine rather than a running
@@ -104,7 +104,8 @@ is what stops being true.
   processes should behave according to web standards (insofar as Chromium does, at least). Therefore, all
   user interfaces and app functionality within a single browser window should be written with the same
   tools and paradigms that you use on the web."* The consequence that surprises people arriving from a
-  Node background: *"the renderer has no direct access to require or other Node.js APIs."*
+  Node background: under Electron's default configuration, *"the renderer has no direct access to
+  require or other Node.js APIs."* H16 keeps that boundary for every renderer as a Gobbi house convention.
 - **The preload script is the only sanctioned seam.** *"Preload scripts contain code that executes in a
   renderer process before its web content begins loading."* It is where the bridge is built.
 
@@ -142,16 +143,18 @@ mechanics behind it:
   `ipcRenderer` instance. Even if you only listen for specific events, passing the callback directly means
   the renderer gets access to this event object."* Expose a named function per capability and pass the
   callback only the value.
-- **The defaults are the protection, and one of them switches off another.** Node integration off, context
-  isolation on, and the sandbox on are Electron's defaults. *"Sandboxing is a Chromium feature that uses
-  the operating system to significantly limit what renderer processes have access to. You should enable
-  the sandbox in all renderers."* The coupling to watch: *"Disabling context isolation (see above) also
-  disables process sandboxing, regardless of the default, `sandbox: false` or globally enabled
-  sandboxing!"* — one flag turns off two protections.
+- **Separate Electron's scope from the Gobbi extension.** Electron requires context isolation and the
+  sandbox for all renderers, while its Node.js-integration recommendation applies to renderers that load
+  remote content. H16 deliberately keeps Node integration off for every renderer as a Gobbi house
+  convention. Electron's defaults start with Node integration off, context isolation on, and the sandbox
+  on. *"Sandboxing is a Chromium feature that uses the operating system to significantly limit what
+  renderer processes have access to. You should enable the sandbox in all renderers."* The coupling to
+  watch: *"Disabling context isolation (see above) also disables process sandboxing, regardless of the
+  default, `sandbox: false` or globally enabled sandboxing!"* — one flag turns off two protections.
 - **Why any of it matters to a React author.** *"A cross-site-scripting (XSS) attack is more dangerous if
   an attacker can jump out of the renderer process and execute code on the user's computer."* The same
   unsanitized-markup defect that is a display bug in a browser tab is a different class of incident here,
-  which is why `H16` has no exception.
+  which is why H16 keeps the deliberate Gobbi all-renderer Node.js-integration extension strict.
 
 ### Two IPC shapes, and how they land in React
 
@@ -219,7 +222,7 @@ The negative space is presentation-specific. Producer-dependent behavior stays i
 |---|---|---|
 | Where React mounts | The browser DOM | The renderer DOM, never the main process |
 | Local privileged capability | None beyond browser APIs | Only through the finite preload API |
-| Node APIs in rendered code | Unavailable | Unavailable |
+| Node APIs in rendered code | Unavailable | Unavailable under H16; the all-renderer scope is a Gobbi house convention |
 | Arbitrary path resolves to the application shell | Normally, with server fallback | Not under packaged `file://`; use hash or custom-protocol routing — *ecosystem convention* |
 | Surface lifetime | Often a shorter-lived tab | Commonly a long-lived window — *ecosystem convention* |
 | Shipped-build gate | Production web build | Packaged build, not only the development server |
@@ -250,15 +253,16 @@ register owns the rule-level citations.
 | Source | What it supports here |
 |---|---|
 | [Electron process model](https://www.electronjs.org/docs/latest/tutorial/process-model) | §3 — the single main process in a Node environment, a renderer per window behaving to web standards, no direct `require` or Node APIs in the renderer, and what a preload script is |
-| [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security) | §3 — the raw-`ipcRenderer` and callback-forwarding hazards, the sandbox's purpose and its coupling to context isolation, the XSS escalation framing, and the `file://` guidance |
+| [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security) | §3 — Node.js integration disabled for renderers that load remote content; context isolation and sandboxing for all renderers; the raw-`ipcRenderer` and callback-forwarding hazards; the XSS escalation framing; and the `file://` guidance |
 | [Electron context isolation](https://www.electronjs.org/docs/latest/tutorial/context-isolation) | §3 — custom prototypes and symbols cannot cross the bridge |
 | [Electron IPC](https://www.electronjs.org/docs/latest/tutorial/ipc) | §3 — `invoke` paired with `handle`, and the return value arriving as a promise |
 | [Electron timelines](https://www.electronjs.org/docs/latest/tutorial/electron-timelines) | §3 — the eight-week major cadence and the latest-three support window |
 | [Server Components](https://react.dev/reference/rsc/server-components) | The matrix and §1–§3 — that RSC needs a bundler or framework implementing it, and can run at build time or per request |
 
-**Ecosystem convention here**, named as such where it appears and never as a vendor position: the
-`file://` routing constraint and its hash-or-custom-protocol repair; the long-lived-renderer memory
-observation; and guarding the bridge object.
+**Ecosystem convention here**, named as such where it appears and never as a vendor position: H16's
+extension of the Node.js-integration prohibition to every renderer; the `file://` routing constraint and
+its hash-or-custom-protocol repair; the long-lived-renderer memory observation; and guarding the bridge
+object.
 
 **Open items, not asserted as fact.** The typing pattern for the bridged API — declaring the exposed
 surface once and merging it onto the global window type — is in wide community use and is consistent with

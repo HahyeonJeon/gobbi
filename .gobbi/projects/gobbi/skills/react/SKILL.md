@@ -252,13 +252,16 @@ exception needs; it never introduces an exception this file does not state.
 - **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
   enabled, context isolation disabled, or the sandbox off.** Exposing a raw IPC surface gives page
   content access to the whole event system, and without context isolation a single content-injection bug
-  becomes code execution. The sandbox is a third, separate protection — "a Chromium feature that uses the
-  operating system to significantly limit what renderer processes have access to", and the source's
-  instruction is unconditional: "You should enable the sandbox in all renderers." It is listed separately
-  because the implication runs one way only: disabling context isolation also disables sandboxing, but
-  leaving context isolation on does not turn the sandbox on. Fix: expose a narrow, named API from the
-  preload script, validate every message, and confirm all three settings in the shipped configuration. No
-  exception. Source: electronjs.org security checklist, items 2, 3, 4, and 20.
+  becomes code execution. Electron requires context isolation and sandboxing for all renderers. Its
+  Node.js-integration recommendation is scoped to renderers that load remote content; this skill
+  deliberately extends that prohibition to every renderer as a Gobbi house convention. The sandbox is a
+  third, separate protection — "a Chromium feature that uses the operating system to significantly limit
+  what renderer processes have access to", and the source's instruction is unconditional: "You should
+  enable the sandbox in all renderers." It is listed separately because the implication runs one way only:
+  disabling context isolation also disables sandboxing, but leaving context isolation on does not turn the
+  sandbox on. Fix: expose a narrow, named API from the preload script, validate every message, and confirm
+  all three settings in the shipped configuration. The Gobbi all-renderer Node.js-integration extension is
+  deliberate and has no exception. Source: electronjs.org security checklist, items 2, 3, 4, and 20.
 - **H17 — NEVER infer producer architecture from the presentation surface.** Classify two independent
   axes at P1: browser page or Electron renderer for presentation, and client-only, build-time, or
   request-time/remote for the producer. Server Components, Server Functions, and streaming SSR require an
@@ -543,7 +546,8 @@ One owner per borrowed fact; the body states the fact and this register names it
   three circumstances in `H9`, and it is named here for provenance only — those circumstances are this
   skill's house default, not a current W3C position (H9).
 - [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security) — Node
-  integration disabled, context isolation and the sandbox enabled, and no raw Electron or IPC surface
-  exposed to page content (H16).
+  integration disabled for renderers that load remote content, context isolation and the sandbox enabled
+  for all renderers, and no raw Electron or IPC surface exposed to untrusted page content (H16). The
+  stricter all-renderer Node.js-integration prohibition is the Gobbi house convention stated in H16.
 - [Testing Library queries](https://testing-library.com/docs/queries/about/) — the query-priority order
   that puts role and accessible name first (H10).
