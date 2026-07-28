@@ -98,7 +98,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics.
 - Update the provisional topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
-- Annotate an external answer only when an authoritative standard, specification, or directly applicable prior-art source already determines it, and cite the source without selecting the answer.
 
 #### 2.3 Build and audit the topic hierarchy
 
