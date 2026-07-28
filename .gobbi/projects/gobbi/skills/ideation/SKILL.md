@@ -42,49 +42,61 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ### Phase 1 — Define Requirements and Problems
 
-Start from the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and any contradictions. Create `requirements.md` from [the requirements template](templates/requirements.md), and keep each material statement visibly classified as fact, user report, assumption, contradiction, decision, or open question.
+#### 1.1 Create the requirements document
 
-Question the user until the document defines a solution-neutral contract:
+Create `requirements.md` from [the requirements template](templates/requirements.md). Collect the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and known contradictions. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question.
 
-- the trigger, current reality, root problem, consequences, current workaround or alternative, strongest credible do-nothing outcome, and why action matters now;
-- affected people and actors, their desired outcomes, and who owns each material decision;
-- material requirements expressed as needed outcomes or constraints rather than preferred mechanisms;
-- observable success, failure, falsification, and stop signals;
-- in-scope, out-of-scope, deferred, and explicitly rejected work;
-- hard constraints, soft preferences, authority boundaries, active-work overlap, and compatibility promises; and
-- assumptions, contradictions, unresolved questions, and questions that later study must answer.
+#### 1.2 Define the problem
 
-Challenge a requested mechanism against the underlying problem. Keep it as a binding requirement only when inspected evidence proves that it is a hard constraint; otherwise record it as an unselected candidate for later discussion. Do not infer missing requirements, silently close contradictions, or begin topic preparation while a material problem or boundary remains unresolved.
+Record the trigger, current reality, root problem, consequences, current workaround or alternative, strongest credible do-nothing outcome, and why action matters now. Identify every affected person or actor, their desired outcome, and the owner of each material decision.
 
-Before approval, write the lifecycle notice into `requirements.md`: after approval the whole file is immutable, later corrections belong only in `ideation.md`, and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain explicit user approval, then freeze the entire file without adding an approval stamp or making any later byte change.
+#### 1.3 Define the requirements contract
 
-**Phase evidence:** an approved and frozen `requirements.md` that is independently readable, solution-neutral, and complete enough to direct study.
+Write requirements as needed outcomes or constraints rather than preferred mechanisms. Record observable success, failure, falsification, and stop signals; in-scope, out-of-scope, deferred, and rejected work; hard constraints, soft preferences, authority boundaries, active-work overlap, and compatibility promises.
 
-**Recovery and next branch:** if evidence later invalidates the draft, preserve it unchanged and record the corrected requirement, evidence, user decision, and consequence in `ideation.md`. Continue to Phase 2 only after the frozen requirements contract exists.
+#### 1.4 Resolve gaps and challenge mechanisms
+
+Question the user until every material assumption, contradiction, unresolved question, and boundary is answered, explicitly deferred, or removed from scope. Challenge each requested mechanism against the underlying problem: keep it as a binding requirement only when inspected evidence proves it is a hard constraint; otherwise record it as an unselected candidate for Phase 3. Do not infer missing requirements or silently close contradictions.
+
+#### 1.5 Approve and freeze `requirements.md`
+
+Add the lifecycle notice: approval freezes the whole file; later corrections belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 2 until the approved, independently readable, solution-neutral requirements contract is frozen; if later evidence invalidates it, preserve the file and record the correction, evidence, user decision, and consequence in `ideation.md`.
 
 ### Phase 2 — Study Materials and Prepare Topics
 
-After `requirements.md` freezes and before generating any topic, conduct one deliberate study pass across both internal and external materials. Internal study inspects relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. External study inspects trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that bear on the frozen requirements.
+#### 2.1 Study internal materials
 
-For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Separate what the design adopts, rejects as inapplicable, and keeps uncertain; record contradictions and useful negative results. There is no source-count target: study until the material requirements have an adequate foundation, and continue studying whenever an unresolved question or later decision needs more evidence.
+After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Connect each material finding to the frozen requirements it informs.
 
-Only after both study surfaces have been examined, create `topics.md` from [the topics template](templates/topics.md). Derive a project-specific hierarchy from the frozen requirements and studied materials rather than importing a fixed taxonomy. Render one ASCII `text` tree and matching Markdown topic headings. For each topic, record its purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
+#### 2.2 Study external materials
 
-Order the discussion parent-first and make dependencies and cross-topic conflicts visible. Audit the tree for every applicable concern across actors; boundaries and interfaces; state and data; resource use; failure and recovery; trust and governance; inclusion and locale; compatibility and reversal; and evidence, risk, and validation. Give an inspected not-applicable reason when a concern does not belong. Additional study is always allowed while preparing the tree.
+Inspect trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that bear on the frozen requirements. Do not generate the topic hierarchy until both internal and external study have been performed.
 
-Before approval, write the lifecycle notice into `topics.md`: it is a discussion agenda rather than a live tracker; after approval the whole file is immutable; later sources, corrected requirements, and emergent topics belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain explicit user approval, then freeze the entire file without adding an approval stamp or making any later byte change.
+#### 2.3 Assess the study materials
 
-**Phase evidence:** an approved and frozen `topics.md` that independently explains the study foundation and supplies a requirement-grounded, source-grounded, complete discussion tree.
+For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Classify its lessons as adopted, rejected as inapplicable, or uncertain, and record contradictions and useful negative results. Use no source-count target; continue study until every material requirement has an adequate foundation.
 
-**Recovery and next branch:** if study is inadequate, a source conflict is unresolved, or topic coverage is incomplete, continue study and topic preparation before approval. After freeze, preserve the file unchanged and carry every later change in `ideation.md`. Continue to Phase 3 only after the frozen topic agenda exists.
+#### 2.4 Build and audit the topic hierarchy
+
+Create `topics.md` from [the topics template](templates/topics.md). Derive a project-specific hierarchy from the frozen requirements and studied materials rather than importing a fixed taxonomy. Render one ASCII `text` tree and matching Markdown headings; for each topic, record its purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
+
+Order the discussion parent-first and expose dependencies and cross-topic conflicts. Audit the hierarchy for every applicable concern across actors; boundaries and interfaces; state and data; resource use; failure and recovery; trust and governance; inclusion and locale; compatibility and reversal; and evidence, risk, and validation. Record an inspected not-applicable reason for each concern that does not belong, and continue study or topic preparation while any material source conflict or coverage gap remains.
+
+#### 2.5 Approve and freeze `topics.md`
+
+Add the lifecycle notice: `topics.md` is a discussion agenda rather than a live tracker; approval freezes the whole file; later sources, corrected requirements, and emergent topics belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 3 until the frozen topic agenda independently explains its study foundation and complete discussion tree.
 
 ### Phase 3 — Discuss the Topics Hierarchically
 
-Create `ideation.md` from [the final Ideation template](templates/ideation.md). Copy the complete frozen problem and requirements contract and the prepared topic tree into it so the final document never depends on links to the supporting drafts for meaning. Mark `ideation.md` as the evolving final authority; it may be revised until final approval.
+#### 3.1 Initialize the final document
 
-Traverse the hierarchy parent-first. Resolve a parent topic before its children, reconcile siblings before closing their parent, and keep dependent topics open while an ancestor decision is unresolved. Ask every relevant question needed to complete the idea. If a child contradicts an ancestor or new evidence invalidates an earlier decision, reopen the earliest affected branch in `ideation.md`, obtain the required user decision, and propagate the consequence through its descendants without editing either frozen draft.
+Create `ideation.md` from [the final Ideation template](templates/ideation.md). Copy the complete frozen problem and requirements contract and the prepared topic tree into it so the final document does not depend on the supporting drafts for meaning. Mark it as the evolving final authority until final approval.
 
-For each material decision:
+#### 3.2 Traverse the topic hierarchy
+
+Resolve parent topics before their children, reconcile siblings before closing their parent, and keep dependent topics open while an ancestor decision is unresolved. Ask every relevant question needed to complete the idea. When a child contradicts an ancestor or new evidence invalidates an earlier decision, reopen the earliest affected branch, obtain the required user decision, and propagate the consequence through its descendants without editing either frozen draft.
+
+#### 3.3 Resolve each material decision
 
 1. state the question, connected requirements, current context, and trustworthy evidence;
 2. compare genuinely different reference-backed alternatives, including doing nothing when credible, by pros, cons, fit, risks, and consequences;
@@ -92,13 +104,19 @@ For each material decision:
 4. obtain the user's decision whenever the Rules reserve authority to the user; and
 5. record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition.
 
-Study remains available throughout discussion. Record every late source with the same assessment used in Phase 2. Put each corrected requirement and each emergent topic only in `ideation.md`; place an emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings. Preserve decision synthesis rather than a conversational transcript.
+#### 3.4 Incorporate later learning
 
-Develop one integrated design that covers every applicable actor and responsibility; boundary, component, ownership, and interface; information, data, and state flow; normal, alternative, invalid, failure, and recovery path; performance and resource obligation; trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance concern; and assumption, risk, evidence gap, and validation commitment. Give each concern one owner, keep interfaces consumer-readable and dependencies acyclic, contain dependency failure, and expose verification seams.
+Continue study whenever a decision needs more evidence, and assess every late source through the Phase 2 source fields. Put corrected requirements and emergent topics only in `ideation.md`; place each emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings. Preserve decision synthesis rather than a conversational transcript.
 
-Distinguish evidence that exists now from proposed future validation, and never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence. For each validation commitment, record the question it must answer, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition.
+#### 3.5 Develop the integrated design
 
-Before completion:
+Cover every applicable actor and responsibility; boundary, component, ownership, and interface; information, data, and state flow; normal, alternative, invalid, failure, and recovery path; performance and resource obligation; trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance concern; and assumption, risk, evidence gap, and validation commitment. Assign one owner to each concern, keep interfaces consumer-readable and dependencies acyclic, contain dependency failure, and expose verification seams.
+
+#### 3.6 Define future validation
+
+Separate existing evidence from proposed future validation. Never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence. For each validation commitment, record the question, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition.
+
+#### 3.7 Audit the three-document candidate
 
 - list every change from the supporting drafts, with its evidence, user approval when material, affected branches, and consequence;
 - trace requirements, sources, topics, decisions, resulting design, risks, and validation by exact descriptive heading paths rather than artificial identifiers;
@@ -106,11 +124,9 @@ Before completion:
 - read all three documents independently as a cold reader and remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links; and
 - confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
 
-Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) before final approval; the evaluation verifies approval readiness while `ideation.md` remains evolving and its authority remains contingent. Material revisions reopen this phase and require a fresh complete evaluation. Only after evaluation passes, obtain the user's approval of `ideation.md`; that approval makes it the final authoritative Ideation result and automatically supersedes both frozen supporting drafts.
+#### 3.8 Evaluate, approve, and return the result
 
-**Completion evidence:** returned `requirements.md`, `topics.md`, and `ideation.md`; independently readable supporting drafts whose bytes remained frozen after approval; a user-approved authoritative final document with complete decision synthesis, change disclosure, traceability, and current-versus-future evidence boundaries; and a passing evaluation of the exact three-document result.
-
-**Failure:** return to the earliest affected phase while respecting frozen-file immutability. Do not return a cosmetically complete bundle with a solution-biased requirement, missing internal or external study, inherited fixed taxonomy, unresolved material decision, silent contract change, broken trace, transcript-only discussion, unsupported evidence claim, or dependency on an outside method.
+Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) while `ideation.md` remains evolving and its authority remains contingent. Reopen the earliest affected operation and run a fresh complete evaluation after every material revision, without changing either frozen supporting draft. After evaluation passes, obtain the user's approval of `ideation.md`; return `requirements.md`, `topics.md`, and `ideation.md` together, with `ideation.md` authoritative and both supporting drafts automatically superseded.
 
 ## References
 
