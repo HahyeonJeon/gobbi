@@ -70,13 +70,13 @@ Add the lifecycle notice: approval freezes the whole file; later corrections bel
 
 ### Phase 2 — Study Materials and Prepare Topics
 
-#### 2.1 Study internal materials and draft topics
+#### 2.1 Draft topic by studying internal materials
 
 Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen target, scope, and rough result. For each material, record its location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and any contradiction.
 
 Turn applicable lessons, contradictions, and gaps into provisional design-decision topics covering constraints, preferences, conventions, qualities, behaviors, interfaces, data and state, operations, failures, and other details. Give each topic a question, relevance, source basis, alternatives, actors, dependencies, owner, and completion condition; merge duplicates, preserve conflicts, select no answer, use no fixed source count, and stop when every project-grounded dimension has a topic or inspected not-applicable reason.
 
-#### 2.2 Study external materials and refine topics
+#### 2.2 Update draft topic by studying external materials
 
 Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics. For each source, record its location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and agreements or contradictions with other findings.
 
