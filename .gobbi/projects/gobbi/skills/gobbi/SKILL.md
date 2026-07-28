@@ -70,8 +70,10 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 | [`execution`](../execution/SKILL.md) | The Execution-step method: one locked task through study, bounded change, verification, and a focused commit. | Dispatched by `workflow` at the Execution step. |
 | [`wrap-up`](../wrap-up/SKILL.md) | The Wrap-up method: promotion, evaluated handoff, and Git finalization. | Dispatched by `workflow` at the Wrap-up step. |
 | [`coding`](../coding/SKILL.md) | Language-agnostic construction quality. | Relevant whenever the task writes or changes code. |
+| [`desktop`](../desktop/SKILL.md) | Desktop application delivery as an Electron and TypeScript vertical slice: the design fidelity ladder, the privilege boundary, and a signed, update-rehearsed per-OS release. | Relevant when the work targets an installed windowed application; not for a browser page, a command-line tool, a library, or a service. |
 | [`python`](../python/SKILL.md) / [`typescript`](../typescript/SKILL.md) | Language method skills. | Relevant when the task enters that language. |
 | [`react`](../react/SKILL.md) | Library method skill: the React-idiom layer, under `coding` and beside `typescript`. | Relevant when the task writes or reviews React, in TypeScript or in plain JavaScript. |
+| [`electron`](../electron/SKILL.md) | Electron desktop-application method: process model, sandboxed bridge and IPC, code-only security items, window and native integration, build split, and packaging. | Relevant when the task builds or reviews an Electron desktop application. |
 | [`codex`](../codex/SKILL.md) | Native Codex and Codex-peer invocation surfaces. | Relevant when the active runtime is Codex or an operation uses a Codex peer. |
 
 ## Procedure

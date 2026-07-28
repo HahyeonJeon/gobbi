@@ -73,5 +73,5 @@ inventory to Execution's own Verify evidence for task 03, rather than blocking P
 - [[cons-6-001-gate-copy-identity-unasserted]] — the sibling Medium finding from the same iter-6
   evaluation; both are "the verification machinery is strong at the mechanical level, weaker one level
   up" findings
-- `mistakes/docs-sync/union-diff-must-reach-named-primitive-granularity.md` — the recorded trap this
+- `archive/mistakes/docs-sync/2026-07-26-union-diff-must-reach-named-primitive-granularity.md` — the recorded trap this
   finding is a live instance of

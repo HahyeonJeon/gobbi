@@ -4,7 +4,7 @@ description: A manager "not on disk / unchanged" read can cross with a teammate'
 type: mistakes
 scope: project
 feature: null
-status: active
+status: superseded
 created: 2026-07-07
 session: 39f3dfb0-49df-44d4-a6bd-d2e4743b36e3
 tags: [verification, process]
@@ -13,7 +13,9 @@ author: claude
 priority: medium
 domain: process
 supersedes: null
-superseded_by: null
+superseded_by: line-count-cannot-confirm-write-completion
+archived_at: 2026-07-26
+archive_reason: superseded
 related: [teammate-finalize-brief-crosses-with-in-progress-turn]
 ---
 
