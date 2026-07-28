@@ -97,12 +97,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 2.2 Update draft topic by studying external materials
 
 - Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics.
-- Record each source's location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and agreements or contradictions with other findings.
-- Compare the sources with internal findings to expose missing alternatives and trade-offs.
-- Add, split, merge, refine, or reject topics from the comparison.
-- Complete each retained topic's relevance, source basis, alternatives, actors, dependencies, owner, and completion condition.
-- Select no answer and use no fixed source count.
-- Stop when every applicable design dimension is grounded and a missing-alternative search finds no material gap.
+- Update the provisional topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
+- Annotate an external answer only when an authoritative standard, specification, or directly applicable prior-art source already determines it, and cite the source without selecting the answer.
 
 #### 2.3 Build and audit the topic hierarchy
 
