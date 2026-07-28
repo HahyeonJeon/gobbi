@@ -50,31 +50,29 @@ Inspect the user trigger, current project state, governing materials, prior deci
 
 Question the user about the intended outcome, trigger, current reality, observed symptoms, underlying problem or opportunity, consequences, current approach, strongest credible do-nothing outcome, and why action matters now. Ask one focused question at a time, show the relevant context before the question, and follow each answer until it is concrete enough to distinguish fact, user report, assumption, contradiction, decision, and open question.
 
-#### 1.3 Elicit outcome and behavior requirements
+#### 1.3 Elicit the requirements
 
 Question the user about every affected person or actor, their desired outcomes, required capabilities, observable behaviors, inputs and outputs, data and state changes, interfaces, integrations, and normal, alternative, invalid, failure, and recovery paths. When the subject is an implementation change, capture the required external behavior, integration boundaries, and compatibility outcome without prescribing ordered implementation tasks. Keep questioning until each requirement states what the result must accomplish and how a reader could recognize that outcome.
 
-#### 1.4 Elicit quality and operational requirements
-
 Discuss every applicable quality across performance and scale; reliability and availability; security, privacy, and access; accessibility and locale; compatibility, migration, and rollback; observability and diagnosis; deployment and operation; and maintenance and ownership. For each applicable quality, identify its required condition, relevant boundary, and acceptance signal. Record an inspected not-applicable reason when a material quality does not belong.
 
-#### 1.5 Define constraints, scope, authority, and acceptance
+#### 1.4 Define constraints, scope, authority, and acceptance
 
 Discuss hard constraints, soft preferences, platform or runtime constraints, permitted and prohibited dependencies, active-work overlap, compatibility promises, and other implementation conditions that genuinely restrict the design. Define in-scope, out-of-scope, deferred, and rejected work; identify who owns each material decision; and agree observable success, failure, falsification, acceptance, and stop signals. Keep questioning until the user can distinguish required outcomes and hard constraints from preferences and candidate solutions.
 
-#### 1.6 Challenge assumptions and proposed mechanisms
+#### 1.5 Challenge assumptions and proposed mechanisms
 
 Test each material assumption against the available evidence and ask the user to resolve any unsupported premise that would constrain the design. Challenge each requested mechanism against the underlying problem: treat it as a binding requirement only when inspected evidence proves it is a hard constraint; otherwise keep it as an unselected candidate for Phase 3. Do not infer missing requirements or accept a proposed solution as a substitute for defining the problem.
 
-#### 1.7 Reconcile and close the requirements discussion
+#### 1.6 Draft `requirements.md`
 
-Review the complete requirement set for conflicts, omissions, hidden dependencies, and incompatible acceptance conditions. Ask the user to resolve or prioritize competing requirements and continue the discussion until every material assumption, contradiction, open question, and boundary is answered, explicitly deferred, rejected, or removed from scope. Close the discussion only when the contract covers the intended outcome, required behavior, applicable qualities, constraints, authority, scope, and acceptance conditions without embedding an unproven solution.
+Create `requirements.md` from [the requirements template](templates/requirements.md) using the discussion so far. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question, and make the draft independently readable and solution-neutral.
 
-#### 1.8 Draft and review `requirements.md`
+#### 1.7 Reconcile and review the requirements
 
-Create `requirements.md` from [the requirements template](templates/requirements.md) using the completed discussion. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question, and make the document independently readable and solution-neutral. Present the complete draft to the user, discuss corrections, and revise it until the document accurately represents the agreed problem, requirements, and boundaries.
+Present the complete draft to the user and review the requirement set for conflicts, omissions, hidden dependencies, incompatible acceptance conditions, and inaccurate interpretations. Ask the user to correct the draft and resolve or prioritize competing requirements, then revise it and repeat the review until every material assumption, contradiction, open question, and boundary is answered, explicitly deferred, rejected, or removed from scope. Close the discussion only when `requirements.md` accurately covers the intended outcome, required behavior, applicable qualities, constraints, authority, scope, and acceptance conditions without embedding an unproven solution.
 
-#### 1.9 Approve and freeze `requirements.md`
+#### 1.8 Approve and freeze `requirements.md`
 
 Add the lifecycle notice: approval freezes the whole file; later corrections belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 2 until the approved requirements contract is frozen; if later evidence invalidates it, preserve the file and record the correction, evidence, user decision, and consequence in `ideation.md`.
 
