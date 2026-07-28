@@ -42,25 +42,33 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ### Phase 1 — Define Requirements and Problems
 
-#### 1.1 Create the requirements document
+#### 1.1 Establish the discussion context
 
-Create `requirements.md` from [the requirements template](templates/requirements.md). Collect the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and known contradictions. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question.
+Inspect the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and known contradictions. Summarize what is known, uncertain, or conflicting, and use that context to choose the first question. Do not draft requirements yet.
 
-#### 1.2 Define the problem
+#### 1.2 Discuss the problem
 
-Record the trigger, current reality, root problem, consequences, current workaround or alternative, strongest credible do-nothing outcome, and why action matters now. Identify every affected person or actor, their desired outcome, and the owner of each material decision.
+Question the user about the trigger, current reality, observed symptoms, suspected root problem, consequences, current workaround or alternative, strongest credible do-nothing outcome, and why action matters now. Ask one focused question at a time, show the relevant context before the question, and follow each answer until it is concrete enough to distinguish fact, user report, assumption, contradiction, decision, and open question.
 
-#### 1.3 Define the requirements contract
+#### 1.3 Discuss people, outcomes, and boundaries
 
-Write requirements as needed outcomes or constraints rather than preferred mechanisms. Record observable success, failure, falsification, and stop signals; in-scope, out-of-scope, deferred, and rejected work; hard constraints, soft preferences, authority boundaries, active-work overlap, and compatibility promises.
+Question the user about every affected person or actor, their desired outcome, and who owns each material decision. Discuss observable success, failure, falsification, and stop signals; in-scope, out-of-scope, deferred, and rejected work; hard constraints, soft preferences, authority boundaries, active-work overlap, and compatibility promises. Keep questioning until the user can distinguish what is required from what is merely preferred.
 
-#### 1.4 Resolve gaps and challenge mechanisms
+#### 1.4 Challenge assumptions and proposed mechanisms
 
-Question the user until every material assumption, contradiction, unresolved question, and boundary is answered, explicitly deferred, or removed from scope. Challenge each requested mechanism against the underlying problem: keep it as a binding requirement only when inspected evidence proves it is a hard constraint; otherwise record it as an unselected candidate for Phase 3. Do not infer missing requirements or silently close contradictions.
+Test each material assumption against the available evidence and ask the user to resolve any unsupported premise that would constrain the design. Challenge each requested mechanism against the underlying problem: treat it as a binding requirement only when inspected evidence proves it is a hard constraint; otherwise keep it as an unselected candidate for Phase 3. Do not infer missing requirements or accept a proposed solution as a substitute for defining the problem.
 
-#### 1.5 Approve and freeze `requirements.md`
+#### 1.5 Close the requirements discussion
 
-Add the lifecycle notice: approval freezes the whole file; later corrections belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 2 until the approved, independently readable, solution-neutral requirements contract is frozen; if later evidence invalidates it, preserve the file and record the correction, evidence, user decision, and consequence in `ideation.md`.
+Review every assumption, contradiction, unresolved question, and boundary with the user. Continue the discussion until each material item is answered, explicitly deferred, rejected, or removed from scope and the resulting contract can be stated entirely as needed outcomes and constraints rather than preferred mechanisms.
+
+#### 1.6 Draft and review `requirements.md`
+
+Create `requirements.md` from [the requirements template](templates/requirements.md) using the completed discussion. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question, and make the document independently readable and solution-neutral. Present the complete draft to the user, discuss corrections, and revise it until the document accurately represents the agreed problem, requirements, and boundaries.
+
+#### 1.7 Approve and freeze `requirements.md`
+
+Add the lifecycle notice: approval freezes the whole file; later corrections belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 2 until the approved requirements contract is frozen; if later evidence invalidates it, preserve the file and record the correction, evidence, user decision, and consequence in `ideation.md`.
 
 ### Phase 2 — Study Materials and Prepare Topics
 
