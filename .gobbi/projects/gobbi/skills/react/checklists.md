@@ -723,14 +723,11 @@ not accept the change-set.** Each gate below names the concrete harm its miss ca
   - **Pass when.** The packet presented and approved at P4 contains each of its named elements — the
     component-tree sketch, the prop and type surface, the state-placement table with owners, the
     server/client, presentation-surface, and producer-architecture boundary map, the error and loading
-    boundary placement, and one credible
-    alternative — and each resolves to something in the change or to a stated reason it needed nothing. A
-    packet that simply omits the error and loading boundary placement fails: silence is not a placement
-    decision.
+    boundary placement, and one credible alternative. A packet that simply omits the error and loading
+    boundary placement fails: silence is not a placement decision.
   - **Evidence.** The approved packet read against P4's list of elements, element by element.
-  - **On fail.** Required item: open a finding. This item asks whether the decision was made and recorded;
-    `REACT-CHECK-30` asks whether the recorded decisions reached the code, and neither substitutes for the
-    other.
+  - **On fail.** Required item: open a finding. An incomplete packet leaves a required design decision
+    unrecorded; `REACT-CHECK-30` separately asks whether the recorded decisions reached the code.
   - **`n/a` form.** `n/a: the run is review mode, which reconstructs a packet rather than presenting one`
     — cited by the declared mode.
   - **Source.** `REACT-SCENARIO-12` · `Procedure P3` · `Procedure P4`.

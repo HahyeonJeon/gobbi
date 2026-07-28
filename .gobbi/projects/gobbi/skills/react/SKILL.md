@@ -334,9 +334,10 @@ State the value you are proceeding on and what you inferred it from — an absen
 dependency that is not installed, the version a lockfile resolves, or this skill's own default. A
 recorded assumption is a valid answer; an unrecorded one is what leaves a later reader unable to tell a
 decision from an accident. Four switches are not eligible for this, because the codebase always answers
-them and `REACT-CHECK-25` requires them read rather than assumed: the presentation surface, producer
-architecture, whether the compiler is enabled, and whether the source is TypeScript or plain JavaScript.
-A missing compiler configuration is itself the answer "not enabled", not an unknown.
+them and their owning checks require them read rather than assumed: the presentation surface
+(`REACT-CHECK-25`), producer architecture (`REACT-CHECK-49`), whether the compiler is enabled
+(`REACT-CHECK-50`), and whether the source is TypeScript or plain JavaScript (`REACT-CHECK-51`). A
+missing compiler configuration is itself the answer "not enabled", not an unknown.
 
 **P1 is complete when** scope and success are explicit or a scope contract is cited, every switch above
 has an answer or a recorded assumption, the mode is declared, and the affected set or the reproduced
