@@ -11,10 +11,6 @@ Use this skill when Ideation starts or repeats to turn a user trigger into a con
 
 ## Principles
 
-### Define the user's problem and boundaries before choosing a design
-
-Start with the outcome the user needs, their current situation, the reason the outcome matters, and the root cause preventing it. Challenge any predefined solution and test whether the request points to a different problem. State the in-scope, out-of-scope, and deferred boundaries, including the hard and soft constraints that shape the possible design. Reopen the framing when later evidence shows that the problem or boundary is wrong.
-
 ### Ground the design in direct evidence, representative users, and trustworthy prior art
 
 Study the project's current behavior, prior decisions, patterns, and constraints. Seek direct evidence from representative users or people affected by the design, because project conventions and external examples cannot prove what users need. Use prior art to support a design choice only when its authority, relevance, currency, and applicability can be verified. Prefer direct project evidence, primary sources, official documentation, maintained standards, and established implementations. Treat secondary or unverified claims as leads, separate facts from assumptions, and justify any deviation from the best-supported pattern.
