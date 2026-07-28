@@ -50,11 +50,11 @@ Inspect the user trigger, current project state, governing materials, prior deci
 
 Question the user about the intended outcome, trigger, current reality, observed symptoms, underlying problem or opportunity, consequences, current approach, strongest credible do-nothing outcome, and why action matters now. Ask one focused question at a time, show the relevant context before the question, and follow each answer until it is concrete enough to distinguish fact, user report, assumption, contradiction, decision, and open question.
 
-#### 1.3 Define the scope
+#### 1.3 Define the scope and rough result
 
-Discuss what the result must do for every affected person or actor. Define their desired outcomes, the required capabilities and observable behavior, the inputs and outputs, the boundaries the change may cross, and what must remain unchanged. Classify work as in scope, out of scope, deferred, or rejected; when the target is an implementation change, describe the required external behavior and integration boundary without prescribing ordered implementation tasks or an internal solution.
+Discuss the rough result the user expects and what it must do for every affected person or actor. Define its intended form, desired outcomes, high-level capabilities, observable behavior, inputs and outputs, boundaries the change may cross, and what must remain unchanged. Classify work as in scope, out of scope, deferred, or rejected; when the target is an implementation change, describe the rough external result and integration boundary without prescribing ordered implementation tasks or an internal solution.
 
-Keep questioning until the target and scope state what must be achieved, for whom, and where the obligation stops. If the discussion introduces a mechanism, convention, preference, or design detail, do not add it to the Phase 1 contract; leave it for Phase 2 to identify and specify as a design-decision topic. Do not expand the phase into detailed design.
+Keep questioning until the target, scope, and rough result state what must be achieved, for whom, what kind of result is expected, and where the obligation stops. The rough result does not need settled constraints, conventions, internal structure, or other detailed design: Phase 2 specifies those dimensions as topics, and Phase 3 determines them with the user. If the discussion introduces such a detail, do not add it to the Phase 1 contract.
 
 #### 1.4 Draft `requirements.md`
 
@@ -62,7 +62,7 @@ Create `requirements.md` from [the requirements template](templates/requirements
 
 #### 1.5 Reconcile and review the requirements
 
-Present the complete draft to the user and review the target and scope for conflicts, omissions, inaccurate interpretations, hidden solution choices, and unclear boundaries. Ask the user to correct the draft, then revise it and repeat the review until every material target, purpose, problem, actor, desired outcome, scope inclusion, exclusion, deferral, rejection, and observable boundary is explicit. Close the phase only when `requirements.md` defines what to do and why without deciding how to do it.
+Present the complete draft to the user and review the target, scope, and rough result for conflicts, omissions, inaccurate interpretations, hidden solution choices, and unclear boundaries. Ask the user to correct the draft, then revise it and repeat the review until every material target, purpose, problem, actor, desired outcome, rough-result expectation, scope inclusion, exclusion, deferral, rejection, and observable boundary is explicit. Close the phase only when `requirements.md` defines what to do, why, and the rough result expected without deciding the detailed design.
 
 #### 1.6 Approve and freeze `requirements.md`
 
@@ -72,7 +72,7 @@ Add the lifecycle notice: approval freezes the whole file; later corrections bel
 
 #### 2.1 Study internal materials
 
-After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Identify the constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design details that the frozen target and scope require the later discussion to address.
+After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Identify the constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design details needed to specify the frozen target, scope, and rough result.
 
 #### 2.2 Study external materials
 
@@ -84,7 +84,7 @@ For every material source, record its link or stable location, claimed authority
 
 #### 2.4 Specify the design-decision topics
 
-From the frozen target and scope and the studied materials, specify every constraint, preference, convention, quality, behavior, interface, data and state concern, operational need, failure path, and other open detail that Phase 3 must determine. For each topic, state the question, why it matters to the target or scope, the source basis, genuine alternatives, affected actors, dependencies, decision owner, and completion condition. Do not choose an alternative in Phase 2.
+From the frozen target, scope, rough result, and studied materials, specify every constraint, preference, convention, quality, behavior, interface, data and state concern, operational need, failure path, and other open detail that Phase 3 must determine. For each topic, state the question, why it matters to the target, scope, or rough result, the source basis, genuine alternatives, affected actors, dependencies, decision owner, and completion condition. Do not choose an alternative in Phase 2.
 
 #### 2.5 Build and audit the topic hierarchy
 
@@ -114,7 +114,7 @@ Resolve parent topics before their children, reconcile siblings before closing t
 4. obtain the user's decision whenever the Rules reserve authority to the user; and
 5. record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition.
 
-Determine the applicable constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operational needs, failure paths, and other details through this decision process. Reject alternatives that exceed the approved scope, and do not treat any candidate from Phase 2 as already decided.
+Use this decision process to refine the rough result and determine its applicable constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operational needs, failure paths, and other details. Reject alternatives that exceed the approved scope, and do not treat any candidate from Phase 2 as already decided.
 
 #### 3.4 Incorporate later learning
 
