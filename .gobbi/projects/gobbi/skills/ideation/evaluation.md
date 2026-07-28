@@ -78,14 +78,8 @@ Exercise at least one self-containment probe: a project-only design, a software 
 
 | Parent rule | Primary report coverage |
 |---|---|
-| MUST define and approve the problem and boundaries before choosing a design | Project, Usage, Risk |
-| MUST ground material claims and load-bearing assumptions in sufficient evidence | Project, Performance, Consistency, Risk, Overall |
-| MUST develop one complete observable design from parent decisions to dependent details | Structure, Performance, Usage, Risk |
-| MUST compare genuine alternatives and preserve material user authority | Project, Usage, Risk |
+| MUST preserve material user authority | Project, Usage, Risk |
 | MUST complete Ideation from this operation and its owned companions | Structure, Consistency, Overall |
-| MUST keep the canonical artifact current and traceable | Project, Aesthetics, Consistency |
-| MUST complete Ideation only with a resolved, cold-readable result | Project, Usage, Consistency, Overall |
-| NEVER settle an unsupported framing, claim, choice, or detail | Project, Structure, Consistency, Overall |
 | NEVER change the accepted contract silently | Project, Consistency, Risk |
 
 ## Procedure crosswalk

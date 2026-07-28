@@ -29,22 +29,14 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ## Rules
 
-Ideation begins with problem framing and ends with one completed, user-approved What, Why, and How artifact. It owns the problem, rationale, scope, evidence, material design decisions, directional design, validation commitments, and traceable result.
-
 ### Must-Follow
 
-- **MUST define and approve the problem and boundaries before choosing a design.** State the user's outcome, current situation, trigger, affected people, root cause, success and falsification signals, in-scope work, out-of-scope work, deferred work, hard and soft constraints, and active-work overlaps. Obtain the user's approval of material boundaries.
-- **MUST ground material claims and load-bearing assumptions in sufficient evidence.** Study current behavior, history, prior decisions, representative users or affected people, trustworthy prior art, and useful negative results. Assess each source's authority, relevance, currency, and applicability. Distinguish facts from assumptions, cite adopted claims, and record for each load-bearing assumption what fails, its disconfirming signal, and the evidence needed to resolve it.
-- **MUST develop one complete observable design from parent decisions to dependent details.** Resolve the intended outcome, overall direction, and major boundaries before refining actors, components, ownership, interfaces, data flow, behavior, failure and recovery, exact edges, and applicable quality concerns. Keep dependent details open while a parent decision is unresolved, and return to the parent when later evidence invalidates it.
-- **MUST compare genuine alternatives and preserve material user authority.** Define criteria from the outcome, scope, constraints, risks, cost, and success signals. Include doing nothing when credible. Present concrete trade-offs, one recommendation, and reopen evidence. The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
-- **MUST complete Ideation from this operation and its owned companions.** Use project evidence and authoritative domain sources directly. Do not require another skill or outside procedure to supply a missing step, decision method, evidence method, completion rule, or evaluation method.
-- **MUST keep the canonical artifact current and traceable.** At each checkpoint record the current problem, scope, evidence, criteria, alternatives, selected and rejected options, rationale, consequences, assumptions, constraints, unresolved questions, risks, components, ownership, interfaces, flows, dependencies, obligations, checks, and sources. Preserve approved decisions and constraints across revisions; record every authorized replacement and its consequences.
-- **MUST complete Ideation only with a resolved, cold-readable result.** Resolve every material decision and collect sufficient evidence or an explicit validation commitment for each high-risk assumption. A cold reader must be able to trace the problem, scope, sources, decisions, design, obligations, checks, and deferred work without private context. The completed artifact contains no ordered implementation tasks, implementation diff, or produced prototype, code spike, screen, or other realization output.
+- **MUST preserve material user authority.** The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
+- **MUST complete Ideation from this operation and its owned companions.** Do not require another skill or outside procedure to supply a missing decision, evidence, completion, or evaluation method.
 
 ### Must-Not-Follow
 
-- **NEVER settle an unsupported framing, claim, choice, or detail.** A requested solution, visible symptom, weak source, unsupported assumption, cosmetic alternative, or dependent detail with an unresolved parent cannot settle the design.
-- **NEVER change the accepted contract silently.** Do not absorb adjacent work, leave scope open-ended, drop an accepted decision or constraint, or defer an in-scope design obligation. Give every deferred item a named destination or an explicit drop decision authorized by the user.
+- **NEVER change the accepted contract silently.** Any change to approved scope, decisions, constraints, or obligations requires new evidence, explicit user approval, and a recorded consequence.
 
 ## Procedure
 

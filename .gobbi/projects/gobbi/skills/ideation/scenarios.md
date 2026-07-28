@@ -24,7 +24,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 1 — the defining discrimination is outcome and scope.
 - Primary type: Positive. Secondary: Counterfactual, adversarial.
 - Coverage role: positive purpose; counterfactual premise; adversarial scope-gaming.
-- Source: Rules “problem and boundaries,” “genuine alternatives and preserve material user authority,” “unsupported framing, claim, choice, or detail,” and “accepted contract silently”; Procedure 2–3.
+- Source: Principles “question the user without hesitation until the idea is complete” and “find the best idea by comparing reference-backed alternatives”; Rules “preserve material user authority” and “accepted contract silently”; Procedure 2–3.
 - Given: a user trigger, active project scopes, and a proposed design.
 - When: the framing, cause chain, strongest do-nothing case, scope contract, and design are compared.
 - Then: removing the stated cause would remove the need; design solves that cause; boundaries enumerate in, out, and deferred work; the user approved them.
@@ -39,7 +39,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 2 — actors and use context define the discrimination.
 - Primary type: Alternative-valid. Secondary: Adversarial.
 - Coverage role: positive alternative actor; adversarial hidden-stakeholder case.
-- Source: Rules “problem and boundaries” and “complete observable design”; Procedure 2 and 6–8.
+- Source: Principle “question the user without hesitation until the idea is complete”; Procedure 2 and 6–8.
 - Given: primary users, operators, maintainers, approvers, and affected consumers.
 - When: each actor's goal, environment, constraint, and authority are traced through the design.
 - Then: every material actor has a supported path or explicit exclusion with user authority.
@@ -54,7 +54,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 3 — state transition and data lifecycle are defining.
 - Primary type: Boundary. Secondary: Negative.
 - Coverage role: positive handled transition; exact boundary; invalid-state rejection.
-- Source: Rules “complete observable design” and “canonical artifact current and traceable”; Procedure 6–9.
+- Source: Principle “discuss the design through a hierarchy of topics”; Procedure 6–9.
 - Given: the main input classes and pre/post states.
 - When: empty, one, many, below, at, and above each finite boundary are considered.
 - Then: valid transitions, invariants, rejected states, and prohibited side effects are explicit.
@@ -69,7 +69,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 4 — interface and dependency structure define the case.
 - Primary type: Positive. Secondary: Failure/recovery, adversarial.
 - Coverage role: positive contract; dependency failure; adversarial coupling.
-- Source: Rules “material claims and load-bearing assumptions,” “complete observable design,” “this operation and its owned companions,” “canonical artifact current and traceable,” and “unsupported framing, claim, choice, or detail”; Procedure 4–7.
+- Source: Principles “study trustworthy prior art before designing” and “discuss the design through a hierarchy of topics”; Rule “complete Ideation from this operation and its owned companions”; Procedure 4–7 and 9.
 - Given: proposed components, interfaces, dependencies, and data flow.
 - When: ownership, call direction, failure propagation, and test seams are traced.
 - Then: each concern has one owner, interfaces are consumer-readable, dependencies are acyclic, and failure is contained.
@@ -84,7 +84,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 5 — resource economics define the discrimination.
 - Primary type: Boundary. Secondary: Failure/recovery.
 - Coverage role: positive budget; exact capacity boundary; slow-call recovery.
-- Source: Rules “material claims and load-bearing assumptions” and “complete observable design”; Procedure 8.
+- Source: Procedure 8.
 - Given: variable volume, external calls, memory, storage, or paid resources.
 - When: ordinary load, expected growth, the exact capacity edge, and slow or failed dependencies are modeled.
 - Then: dominant cost, call pattern, measurement, budget, and refusal or degradation behavior are explicit.
@@ -99,7 +99,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 6 — handled failure and recovery are defining.
 - Primary type: Failure/recovery. Secondary: Boundary.
 - Coverage role: positive containment; injected failure; timeout boundary.
-- Source: Rule “complete observable design”; Procedure 8.
+- Source: Procedure 8.
 - Given: dependency outage, timeout, interruption, partial mutation, and invalid recovery input.
 - When: each failure is injected before, during, and after the mutation boundary.
 - Then: detection, containment, rollback or safe continuation, ownership, logging, and alerting are named.
@@ -114,7 +114,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 7 — harm and governance define the case.
 - Primary type: Adversarial. Secondary: Negative.
 - Coverage role: positive safe rejection; adversarial abuse; invalid-authority rejection.
-- Source: Rules “material claims and load-bearing assumptions,” “genuine alternatives and preserve material user authority,” “complete observable design,” and “unsupported framing, claim, choice, or detail”; Procedure 4–8.
+- Source: Principles “study trustworthy prior art before designing” and “find the best idea by comparing reference-backed alternatives”; Rule “preserve material user authority”; Procedure 4–8.
 - Given: untrusted input, privileged action, sensitive data, destructive action, and borrowed external material.
 - When: an unauthorized actor attempts the path and retention, egress, license, and approval are inspected.
 - Then: validation precedes privileged sinks, authority is explicit, data purpose and retention are bounded, and licenses are compatible.
@@ -129,7 +129,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 8 — access and locale define the discrimination.
 - Primary type: Alternative-valid. Secondary: Boundary.
 - Coverage role: positive alternative input method; locale boundary.
-- Source: Rule “complete observable design”; Procedure 8.
+- Source: Procedure 8.
 - Given: a user-facing surface, text, sorting, dates, numbers, input methods, or assistive technology.
 - When: keyboard, screen reader, contrast, non-default locale, and alternate formats are considered.
 - Then: applicable behavior is designed and testable, or inspected evidence supports a precise not-applicable reason.
@@ -144,7 +144,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 9 — lifecycle change and reversibility define the case.
 - Primary type: Change/regression/compat. Secondary: Failure/recovery.
 - Coverage role: positive compatible path; version change; failed rollback.
-- Source: Rules “problem and boundaries,” “complete observable design,” “canonical artifact current and traceable,” and “accepted contract silently”; Procedure 3 and 8–9.
+- Source: Principle “discuss the design through a hierarchy of topics”; Rule “accepted contract silently”; Procedure 3 and 8–9.
 - Given: existing users, files, data, APIs, behavior, or mixed versions.
 - When: before, during, after, rollback, and partial-upgrade states are compared.
 - Then: compatibility promise, migration, go/no-go, rollback, and deliberate breaks are explicit.
@@ -159,7 +159,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 10 — evidence and clarity define the discrimination.
 - Primary type: Positive. Secondary: Counterfactual, adversarial.
 - Coverage role: positive traceability; counterfactual unsupported premise; adversarial cosmetic completeness.
-- Source: Rules “material claims and load-bearing assumptions,” “canonical artifact current and traceable,” “resolved, cold-readable result,” “unsupported framing, claim, choice, or detail,” and “accepted contract silently”; Procedure 1, 4, 9–10.
+- Source: Principle “question the user without hesitation until the idea is complete”; Rule “accepted contract silently”; Procedure 1, 4, and 9–10.
 - Given: the canonical artifact without private discussion context.
 - When: a cold reader resolves every term, source, decision, assumption, scenario, obligation, and check.
 - Then: every reference resolves, traces close both ways, names stay stable, and no placeholder or uncited conclusion remains.
@@ -174,7 +174,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 4 — the defining discrimination is ownership and dependency structure between the base method and authoritative domain evidence.
 - Primary type: Alternative-valid. Secondary: Adversarial.
 - Coverage role: positive mixed-domain coverage; alternative project-only coverage; adversarial external-method dependency.
-- Source: Rules “material claims and load-bearing assumptions,” “complete observable design,” “this operation and its owned companions,” and “unsupported framing, claim, choice, or detail”; Procedure 1, 4, and 6–8.
+- Source: Principles “study trustworthy prior art before designing” and “discuss the design through a hierarchy of topics”; Rule “complete Ideation from this operation and its owned companions”; Procedure 1, 4, and 6–8.
 - Given: a request that may span project, interface, experience, software, and language-specific design, plus several candidate governing sources.
 - When: the request, baseline, applicable concerns, and authority of each candidate source are classified.
 - Then: this operation covers every applicable concern directly, uses only authoritative domain evidence, ignores irrelevant or unverified guidance, and completes without requiring another skill or procedure.
@@ -189,7 +189,7 @@ Scale threshold: split this source under an index above 12 families or 40 select
 - Primary category: 10 — the defining discrimination is whether evidence status is represented truthfully.
 - Primary type: Counterfactual. Secondary: Adversarial.
 - Coverage role: positive evidence distinction; counterfactual load-bearing assumption; adversarial artifact theater.
-- Source: Rules “material claims and load-bearing assumptions,” “canonical artifact current and traceable,” and “resolved, cold-readable result”; Procedure 4, 8, and 10.
+- Source: Procedure 4, 8, and 10.
 - Given: a material assumption whose best later validation may use a walkthrough, prototype, experiment, code spike, benchmark, or representative-user study.
 - When: current evidence, remaining uncertainty, and the proposed validation approach are recorded.
 - Then: the artifact distinguishes existing evidence from future evidence and names the question, method or artifact, participants or environment, pass and fail signals, reopen condition, owner, and execution condition without claiming the output was created.
