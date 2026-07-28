@@ -70,17 +70,17 @@ Add the lifecycle notice: approval freezes the whole file; later corrections bel
 
 ### Phase 2 — Study Materials and Prepare Topics
 
-#### 2.1 Study internal materials
+#### 2.1 Study internal materials and draft topics
 
-Build an initial provisional topic inventory by studying the project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results that bear on the frozen target, scope, and rough result. Judge each material while reading it by its stable location, authority, relevance, currency, applicability, and licensing when reuse may be affected; compare related materials to expose contradictions; and classify each lesson as a candidate, an inapplicable rejection, or an uncertainty.
+Study relevant project documents, code, configuration, history, decisions, patterns, counterexamples, and negative results against the frozen target, scope, and rough result. For each material, record its location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and any contradiction.
 
-Translate every applicable lesson or unresolved contradiction into the design-decision topics Phase 3 must determine, including constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other open details. For each topic, record the question, why it matters to the target, scope, or rough result, its internal source basis, known alternatives, affected actors, dependencies, decision owner, and completion condition. Merge duplicate questions, keep conflicting evidence visible, and do not treat an existing project pattern as an already selected answer. Do not target a fixed number of internal materials; stop when every project-grounded design dimension has a provisional topic or an inspected not-applicable reason.
+Turn applicable lessons, contradictions, and gaps into provisional design-decision topics covering constraints, preferences, conventions, qualities, behaviors, interfaces, data and state, operations, failures, and other details. Give each topic a question, relevance, source basis, alternatives, actors, dependencies, owner, and completion condition; merge duplicates, preserve conflicts, select no answer, use no fixed source count, and stop when every project-grounded dimension has a topic or inspected not-applicable reason.
 
-#### 2.2 Study external materials
+#### 2.2 Study external materials and refine topics
 
-Complete and challenge the provisional topic inventory by studying trustworthy prior art, maintained standards, proven approaches, genuine alternatives, and documented failure lessons that bear on the frozen target, scope, rough result, and internally identified topics. Judge each source while reading it by its link or stable location, authority, relevance, currency, applicability, and licensing when reuse may be affected; compare it with internal findings and other external sources; and classify each lesson as a candidate, an inapplicable rejection, or an uncertainty.
+Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics. For each source, record its location, authority, relevance, currency, applicability, licensing when reuse may be affected, disposition as candidate, inapplicable, or uncertain, and agreements or contradictions with other findings.
 
-Use the comparison to add missing topics, split compound questions, merge equivalent questions, expose contradictions and trade-offs, add genuine alternatives, and remove inapplicable topics with a recorded reason. Complete each retained topic's relevance, source basis, alternatives, affected actors, dependencies, decision owner, and completion condition without choosing an answer. Do not target a fixed number of external materials; stop when the topic inventory covers every applicable design dimension, each material topic has an adequate internal or external foundation, and a missing-alternative search finds no material gap.
+Use the comparison to add, split, merge, refine, or reject topics and to supply missing alternatives and trade-offs. Complete each retained topic's relevance, source basis, alternatives, actors, dependencies, owner, and completion condition; select no answer, use no fixed source count, and stop when every applicable dimension is grounded and a missing-alternative search finds no material gap.
 
 #### 2.3 Build and audit the topic hierarchy
 
