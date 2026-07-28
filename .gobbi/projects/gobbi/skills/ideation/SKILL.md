@@ -54,32 +54,17 @@ Question the user about the intended outcome, trigger, current reality, observed
 
 Discuss what the result must do for every affected person or actor. Define their desired outcomes, the required capabilities and observable behavior, the inputs and outputs, the boundaries the change may cross, and what must remain unchanged. Classify work as in scope, out of scope, deferred, or rejected; when the target is an implementation change, describe the required external behavior and integration boundary without prescribing ordered implementation tasks or an internal solution.
 
-Keep questioning until the target and scope state what must be achieved, for whom, and where the obligation stops. Do not expand the phase into detailed design.
+Keep questioning until the target and scope state what must be achieved, for whom, and where the obligation stops. If the discussion introduces a mechanism, convention, preference, or design detail, do not add it to the Phase 1 contract; leave it for Phase 2 to identify and specify as a design-decision topic. Do not expand the phase into detailed design.
 
-#### 1.4 Capture constraints, preferences, conventions, and open details
-
-Capture the known hard constraints, soft preferences, claimed conventions, active-work overlap, compatibility promises, authority boundaries, and observable success, failure, falsification, acceptance, and stop signals. Classify each item by how later phases must use it:
-
-- hard constraints bound the study and every acceptable design;
-- preferences become comparison criteria rather than mandatory requirements;
-- claimed conventions must be validated against internal or external materials in Phase 2; and
-- unresolved qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design details become study questions and discussion topics.
-
-Do not settle an unstudied convention or design detail in Phase 1. Record it precisely enough for Phase 2 to investigate and Phase 3 to decide.
-
-#### 1.5 Challenge assumptions and proposed mechanisms
-
-Test each material assumption against the available evidence and ask the user to resolve any unsupported premise that would constrain the design. Challenge each requested mechanism against the underlying problem: treat it as a binding requirement only when inspected evidence proves it is a hard constraint; otherwise keep it as an unselected candidate for Phase 3. Do not infer missing requirements or accept a proposed solution as a substitute for defining the problem.
-
-#### 1.6 Draft `requirements.md`
+#### 1.4 Draft `requirements.md`
 
 Create `requirements.md` from [the requirements template](templates/requirements.md) using the discussion so far. Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question, and make the draft independently readable and solution-neutral.
 
-#### 1.7 Reconcile and review the requirements
+#### 1.5 Reconcile and review the requirements
 
-Present the complete draft to the user and review the requirement set for conflicts, omissions, hidden dependencies, incompatible acceptance conditions, and inaccurate interpretations. Ask the user to correct the draft and resolve or prioritize competing requirements, then revise it and repeat the review until every material assumption, contradiction, open question, and boundary is answered, explicitly deferred, rejected, or assigned to later study and discussion. Close the phase only when `requirements.md` accurately defines the target, purpose, problem, scope, hard constraints, preferences, claimed conventions, authority, acceptance conditions, and open details without embedding an unproven solution.
+Present the complete draft to the user and review the target and scope for conflicts, omissions, inaccurate interpretations, hidden solution choices, and unclear boundaries. Ask the user to correct the draft, then revise it and repeat the review until every material target, purpose, problem, actor, desired outcome, scope inclusion, exclusion, deferral, rejection, and observable boundary is explicit. Close the phase only when `requirements.md` defines what to do and why without deciding how to do it.
 
-#### 1.8 Approve and freeze `requirements.md`
+#### 1.6 Approve and freeze `requirements.md`
 
 Add the lifecycle notice: approval freezes the whole file; later corrections belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 2 until the approved requirements contract is frozen; if later evidence invalidates it, preserve the file and record the correction, evidence, user decision, and consequence in `ideation.md`.
 
@@ -87,7 +72,7 @@ Add the lifecycle notice: approval freezes the whole file; later corrections bel
 
 #### 2.1 Study internal materials
 
-After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Validate each claimed convention and connect every material finding to the frozen requirement, preference, constraint, or open detail it informs.
+After `requirements.md` freezes, inspect the relevant project documents, code, configuration, history, prior decisions, established patterns, counterexamples, and negative results. Identify the constraints, preferences, conventions, qualities, behaviors, interfaces, data and state concerns, operational needs, failure paths, and other design details that the frozen target and scope require the later discussion to address.
 
 #### 2.2 Study external materials
 
@@ -95,15 +80,19 @@ Inspect trustworthy prior art, maintained standards, proven approaches, genuine 
 
 #### 2.3 Assess the study materials
 
-For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Classify its lessons as adopted, rejected as inapplicable, or uncertain; record contradictions and useful negative results; and state how it confirms, contradicts, or refines a constraint, preference, convention, or open detail. Use no source-count target; continue study until every material requirement and study question has an adequate foundation.
+For every material source, record its link or stable location, claimed authority, relevance, currency, applicability, and licensing when reuse may be affected. Classify its lessons as candidate, rejected as inapplicable, or uncertain, and record contradictions and useful negative results without selecting a design direction. Use no source-count target; continue study until the target and scope have an adequate foundation for topic preparation.
 
-#### 2.4 Build and audit the topic hierarchy
+#### 2.4 Specify the design-decision topics
+
+From the frozen target and scope and the studied materials, specify every constraint, preference, convention, quality, behavior, interface, data and state concern, operational need, failure path, and other open detail that Phase 3 must determine. For each topic, state the question, why it matters to the target or scope, the source basis, genuine alternatives, affected actors, dependencies, decision owner, and completion condition. Do not choose an alternative in Phase 2.
+
+#### 2.5 Build and audit the topic hierarchy
 
 Create `topics.md` from [the topics template](templates/topics.md). Derive a project-specific hierarchy from the frozen requirements and studied materials rather than importing a fixed taxonomy. Render one ASCII `text` tree and matching Markdown headings; for each topic, record its purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
 
 Order the discussion parent-first and expose dependencies and cross-topic conflicts. Audit the hierarchy for every applicable concern across actors; boundaries and interfaces; state and data; resource use; failure and recovery; trust and governance; inclusion and locale; compatibility and reversal; and evidence, risk, and validation. Record an inspected not-applicable reason for each concern that does not belong, and continue study or topic preparation while any material source conflict or coverage gap remains.
 
-#### 2.5 Approve and freeze `topics.md`
+#### 2.6 Approve and freeze `topics.md`
 
 Add the lifecycle notice: `topics.md` is a discussion agenda rather than a live tracker; approval freezes the whole file; later sources, corrected requirements, and emergent topics belong only in `ideation.md`; and approval of the final `ideation.md` automatically supersedes this supporting draft. Obtain the user's explicit approval, then freeze the entire file without adding an approval stamp or making any later byte change. Do not start Phase 3 until the frozen topic agenda independently explains its study foundation and complete discussion tree.
 
@@ -117,7 +106,7 @@ Create `ideation.md` from [the final Ideation template](templates/ideation.md). 
 
 Resolve parent topics before their children, reconcile siblings before closing their parent, and keep dependent topics open while an ancestor decision is unresolved. Ask every relevant question needed to complete the idea. When a child contradicts an ancestor or new evidence invalidates an earlier decision, reopen the earliest affected branch, obtain the required user decision, and propagate the consequence through its descendants without editing either frozen draft.
 
-#### 3.3 Resolve each material decision
+#### 3.3 Determine each design topic
 
 1. state the question, connected requirements, current context, and trustworthy evidence;
 2. compare genuinely different reference-backed alternatives, including doing nothing when credible, by pros, cons, fit, risks, and consequences;
@@ -125,7 +114,7 @@ Resolve parent topics before their children, reconcile siblings before closing t
 4. obtain the user's decision whenever the Rules reserve authority to the user; and
 5. record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition.
 
-Reject an alternative that exceeds the approved scope or violates a hard constraint. Use validated conventions and user preferences as comparison criteria rather than treating them as unquestioned requirements.
+Determine the applicable constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operational needs, failure paths, and other details through this decision process. Reject alternatives that exceed the approved scope, and do not treat any candidate from Phase 2 as already decided.
 
 #### 3.4 Incorporate later learning
 
