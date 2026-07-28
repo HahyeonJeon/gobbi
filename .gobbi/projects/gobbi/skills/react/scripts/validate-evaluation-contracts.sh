@@ -110,6 +110,160 @@ matrix_cell_count() {
   '
 }
 
+matrix_pair_contents() {
+  local matrix_file="$1"
+  local category
+  local case_type
+  local value
+  local family_ids
+  awk -F'\t' '
+    {
+      for (i=2; i<=9; i++) {
+        if ($i != "—" && $i != "-") {
+          print $1 "\t" (i-1) "\t" $i
+        }
+      }
+    }
+  ' "$matrix_file" |
+    while IFS=$'\t' read -r category case_type value; do
+      family_ids="$(
+        {
+          rg -o 'REACT-SCENARIO-[0-9]{2}' <<<"$value" || true
+        } | sort | paste -sd, -
+      )"
+      printf '%s\t%s\t%s\n' "$category" "$case_type" "${family_ids:-invalid}"
+    done |
+    sort
+}
+
+source_backed_matrix_pairs() {
+  local child="$1"
+  local set_identity
+  set_identity="$(head -1 "$child")"
+  case "$set_identity" in
+    '# React scenarios — Component behavior')
+      cat <<'PAIRS'
+1	1	REACT-SCENARIO-04,REACT-SCENARIO-13
+1	2	REACT-SCENARIO-04,REACT-SCENARIO-13
+1	3	REACT-SCENARIO-04,REACT-SCENARIO-13
+1	4	REACT-SCENARIO-13
+1	5	REACT-SCENARIO-13
+2	1	REACT-SCENARIO-09,REACT-SCENARIO-13
+2	2	REACT-SCENARIO-09,REACT-SCENARIO-13
+2	3	REACT-SCENARIO-09,REACT-SCENARIO-13
+2	5	REACT-SCENARIO-13
+3	1	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-08,REACT-SCENARIO-13
+3	2	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-08,REACT-SCENARIO-13
+3	3	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-08,REACT-SCENARIO-13
+3	4	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-08,REACT-SCENARIO-13
+3	5	REACT-SCENARIO-01,REACT-SCENARIO-05,REACT-SCENARIO-13
+3	6	REACT-SCENARIO-13
+3	8	REACT-SCENARIO-04
+4	1	REACT-SCENARIO-02,REACT-SCENARIO-13
+4	2	REACT-SCENARIO-02,REACT-SCENARIO-13
+4	3	REACT-SCENARIO-02,REACT-SCENARIO-13
+4	4	REACT-SCENARIO-13
+4	6	REACT-SCENARIO-13
+5	1	REACT-SCENARIO-04,REACT-SCENARIO-07,REACT-SCENARIO-13
+5	2	REACT-SCENARIO-04,REACT-SCENARIO-07,REACT-SCENARIO-13
+5	3	REACT-SCENARIO-04,REACT-SCENARIO-07,REACT-SCENARIO-13
+5	4	REACT-SCENARIO-13
+5	7	REACT-SCENARIO-07
+5	8	REACT-SCENARIO-07
+6	1	REACT-SCENARIO-05,REACT-SCENARIO-13
+6	2	REACT-SCENARIO-05,REACT-SCENARIO-13
+6	3	REACT-SCENARIO-05,REACT-SCENARIO-13
+6	4	REACT-SCENARIO-05,REACT-SCENARIO-13
+6	5	REACT-SCENARIO-05,REACT-SCENARIO-13
+6	6	REACT-SCENARIO-13
+8	1	REACT-SCENARIO-09
+8	2	REACT-SCENARIO-09
+8	3	REACT-SCENARIO-09
+8	4	REACT-SCENARIO-09
+9	1	REACT-SCENARIO-07
+9	2	REACT-SCENARIO-07
+9	3	REACT-SCENARIO-07
+9	7	REACT-SCENARIO-07
+9	8	REACT-SCENARIO-07
+10	1	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-07,REACT-SCENARIO-08,REACT-SCENARIO-09,REACT-SCENARIO-13
+10	2	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-07,REACT-SCENARIO-08,REACT-SCENARIO-09,REACT-SCENARIO-13
+10	3	REACT-SCENARIO-01,REACT-SCENARIO-02,REACT-SCENARIO-03,REACT-SCENARIO-04,REACT-SCENARIO-05,REACT-SCENARIO-07,REACT-SCENARIO-08,REACT-SCENARIO-09,REACT-SCENARIO-13
+10	5	REACT-SCENARIO-13
+10	6	REACT-SCENARIO-13
+PAIRS
+      ;;
+    '# React scenarios — Boundaries and hosts')
+      cat <<'PAIRS'
+1	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+1	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+1	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+2	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+2	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+2	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+3	1	REACT-SCENARIO-06
+3	2	REACT-SCENARIO-06
+3	3	REACT-SCENARIO-06
+4	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+4	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+4	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+4	4	REACT-SCENARIO-06
+4	5	REACT-SCENARIO-06
+5	1	REACT-SCENARIO-10
+5	2	REACT-SCENARIO-10
+5	3	REACT-SCENARIO-10
+6	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+6	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+6	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+6	4	REACT-SCENARIO-06
+6	5	REACT-SCENARIO-06,REACT-SCENARIO-10
+7	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+7	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+7	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+7	5	REACT-SCENARIO-10
+7	8	REACT-SCENARIO-10
+10	1	REACT-SCENARIO-06,REACT-SCENARIO-10
+10	2	REACT-SCENARIO-06,REACT-SCENARIO-10
+10	3	REACT-SCENARIO-06,REACT-SCENARIO-10
+PAIRS
+      ;;
+    '# React scenarios — Operation and evidence')
+      cat <<'PAIRS'
+1	1	REACT-SCENARIO-11,REACT-SCENARIO-12
+1	2	REACT-SCENARIO-11,REACT-SCENARIO-12
+1	3	REACT-SCENARIO-11,REACT-SCENARIO-12
+1	4	REACT-SCENARIO-11
+1	6	REACT-SCENARIO-11
+2	1	REACT-SCENARIO-11,REACT-SCENARIO-12
+2	2	REACT-SCENARIO-11,REACT-SCENARIO-12
+2	3	REACT-SCENARIO-11,REACT-SCENARIO-12
+2	6	REACT-SCENARIO-11,REACT-SCENARIO-12
+3	1	REACT-SCENARIO-11
+3	2	REACT-SCENARIO-11
+3	3	REACT-SCENARIO-11
+3	4	REACT-SCENARIO-11
+4	1	REACT-SCENARIO-11,REACT-SCENARIO-12
+4	2	REACT-SCENARIO-11,REACT-SCENARIO-12
+4	3	REACT-SCENARIO-11,REACT-SCENARIO-12
+4	4	REACT-SCENARIO-11
+4	7	REACT-SCENARIO-12
+9	1	REACT-SCENARIO-12
+9	2	REACT-SCENARIO-12
+9	3	REACT-SCENARIO-12
+9	7	REACT-SCENARIO-12
+10	1	REACT-SCENARIO-12
+10	2	REACT-SCENARIO-12
+10	3	REACT-SCENARIO-12
+10	6	REACT-SCENARIO-12
+10	7	REACT-SCENARIO-12
+PAIRS
+      ;;
+    *)
+      fail "unknown child set for exact category-by-case family derivation: $set_identity"
+      return 1
+      ;;
+  esac
+}
+
 source_backed_carriers() {
   local child="$1"
   local category="$2"
@@ -201,6 +355,8 @@ scenario_validate() {
   local registered_carriers
   local matrix_family_set
   local source_family_set
+  local observed_pairs_file
+  local expected_pairs_file
   local family
   local ledger
   local ledger_data
@@ -208,6 +364,20 @@ scenario_validate() {
   : >"$diagnostics_file"
   register_rows "$child" >"$rows_file"
   matrix_rows "$child" >"$matrix_file"
+  observed_pairs_file="$(mktemp)"
+  expected_pairs_file="$(mktemp)"
+  matrix_pair_contents "$matrix_file" >"$observed_pairs_file"
+  if source_backed_matrix_pairs "$child" | sort >"$expected_pairs_file"; then
+    if ! cmp -s "$expected_pairs_file" "$observed_pairs_file"; then
+      printf 'semantic: exact category-by-case family pairs differ from source-backed expectation\n' \
+        >>"$diagnostics_file"
+      semantic="fail"
+    fi
+  else
+    printf 'semantic: exact category-by-case family expectation is unavailable\n' \
+      >>"$diagnostics_file"
+    semantic="fail"
+  fi
   row_count="$(wc -l <"$rows_file" | tr -d ' ')"
   if [[ "$row_count" != "10" ]]; then
     printf 'mechanical: expected 10 register rows, observed %s\n' "$row_count" >>"$diagnostics_file"
@@ -383,6 +553,7 @@ scenario_validate() {
     done
   fi
 
+  rm -f -- "$observed_pairs_file" "$expected_pairs_file"
   printf '%s\t%s\n' "$mechanical" "$semantic"
   [[ "$mechanical" == "pass" && "$semantic" == "pass" ]]
 }
@@ -535,6 +706,12 @@ mutate_coordinated_semantics() {
           if (value != "—" && value != "-") $i=" `REACT-SCENARIO-01` "
         }
       }
+      if (defect == "family04-counterfactual-to-change" && number == 3) {
+        change=$9
+        counterfactual=$10
+        $9=counterfactual
+        $10=change
+      }
     }
     { print }
   ' "$source" >"$destination"
@@ -576,6 +753,7 @@ scenario_probe() {
     probes+=(
       coordinated-category1-na-carrier-removal
       unrelated-category8-carrier
+      family04-counterfactual-to-change
     )
   fi
   local checks='[]'
@@ -589,7 +767,7 @@ scenario_probe() {
     local observed
     local expected_diagnosis
     case "$probe" in
-      coordinated-category1-na-carrier-removal|unrelated-category8-carrier)
+      coordinated-category1-na-carrier-removal|unrelated-category8-carrier|family04-counterfactual-to-change)
         mutate_coordinated_semantics "$child" "$fixture" "$probe"
         ;;
       *)
@@ -612,6 +790,9 @@ scenario_probe() {
         ;;
       unrelated-category8-carrier)
         expected_diagnosis='category 8 register carriers differ from source-backed expectation'
+        ;;
+      family04-counterfactual-to-change)
+        expected_diagnosis='exact category-by-case family pairs differ from source-backed expectation'
         ;;
     esac
     set +e
