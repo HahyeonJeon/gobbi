@@ -24,7 +24,7 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 1. Bind the review to the exact bytes and digests of all three documents, the intended outcome, scope, exclusions, user decisions, lifecycle state, and acceptance criteria.
 2. Select every applicable owned scenario and every atomic checklist item inside its `IDEA-CK-01` through `IDEA-CK-16` family group, add target-specific cases for material conditions the sources miss, and name the evidence method for each.
 3. Establish chronology: requirements approval and freeze, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics approval and freeze, `ideation.tmp.md` initialization, iterative hierarchical discussion and temporary recording, initial integration into `ideation.md`, cross-topic design review, additional discussion and reintegration when required, design development, and the complete pre-approval candidate. Within each topic, confirm that the user receives genuine options and a supported recommendation before choosing, and confirm that every material choice exposed by integration returns through discussion and reintegration rather than being silently finalized. Confirm final approval has not yet been claimed.
-4. Compare each supporting draft and `ideation.tmp.md` with `ideation.md`. Confirm the supporting bytes remained stable, the final document fully restates their material context, every material temporary discussion and decision was integrated as synthesis, and every late source, corrected requirement, emergent topic, reopened branch, or changed consequence appears only in the final change disclosure.
+4. Compare each supporting draft and `ideation.tmp.md` with `ideation.md`. Confirm the supporting bytes remained stable; temporary records were grouped by topic and consolidated into current parent-first decisions; duplicates, dependencies, and consequences were reconciled; contradictions and unresolved choices returned to discussion rather than being decided by assumption; and every material record appears in the independently readable synthesis.
 5. Inspect the exact bundle and direct evidence across every perspective. Record strengths and separate causal findings with expected condition, observed condition, impact, evidence, root cause or leading hypothesis, tested alternative, and corrective direction.
 6. Resolve each applicable atomic checklist item as `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, then derive each family result from its lettered items. Missing, stale, contradictory, proxy-only, or unevaluable evidence cannot pass.
 7. Classify findings, derive each perspective result, and derive the final verdict with the rules below.
@@ -47,7 +47,7 @@ Test the root cause, trigger, desired outcome, success and falsification signals
 
 ### Structure
 
-Test the three-phase order, temporary-record-to-initial-integration transition, integration-review-discussion-reintegration loop, document authority, dynamic topic hierarchy, repeated option-recommendation-choice-discussion-study-decision loop, parent-before-child resolution, concern ownership, component boundaries, interfaces, dependency direction, state and data invariants, and test seams. Confirm unresolved ancestors block descendants, a child contradiction reopens and propagates through the earliest affected parent, every integration-created material choice returns to discussion, every material temporary record reaches `ideation.md`, and specialized evidence informs this self-contained method without importing another procedure.
+Test the three-phase order, topic-grouped discussion consolidation, temporary-record-to-initial-integration transition, integration-review-discussion-reintegration loop, document authority, dynamic topic hierarchy, repeated option-recommendation-choice-discussion-study-decision loop, parent-before-child resolution, concern ownership, component boundaries, interfaces, dependency direction, state and data invariants, and test seams. Confirm duplicate and stale records do not survive, unresolved conflicts return to the user, parent consequences propagate, every integration-created material choice returns to discussion, every material temporary record reaches `ideation.md`, and specialized evidence informs this self-contained method without importing another procedure.
 
 ### Performance
 
@@ -87,6 +87,7 @@ Use direct reads and safe read-only commands:
 - compare every late source, corrected requirement, emergent topic, reopened decision, and consequence with “Changes from the Supporting Drafts”;
 - trace every topic through its options, recommendation, user choice, discussion, needed additional study, revised choice, and decision or explicit deferral before the traversal advances;
 - compare `ideation.tmp.md` with `ideation.md` and reject every omitted material discussion, decision, correction, emergent topic, consequence, or reopen condition;
+- group temporary records by topic and reject chronological copying, unconsolidated rounds, surviving duplicates, unpropagated consequences, or assumed conflict resolutions;
 - inspect each integrated-design review and trace every material new or reopened choice through additional discussion, temporary recording, and reintegration;
 - classify every evidence claim as current evidence, rejected evidence, uncertainty, or future validation;
 - inspect every `n/a` disposition for a named property and direct evidence;
@@ -112,6 +113,7 @@ At minimum, run these discriminating behavior probes:
 | A topic reaches a decision while a discussion-created evidence gap or follow-up question remains unresolved | fail IDEA-CK-16 |
 | Traversal advances to a child while its ancestor remains unresolved | fail IDEA-CK-16 |
 | `ideation.md` omits a material discussion or decision recorded in `ideation.tmp.md` | fail IDEA-CK-16 |
+| `ideation.md` copies temporary records chronologically or retains duplicate, stale, contradictory, or unconsolidated decisions | fail IDEA-CK-16 |
 | `ideation.tmp.md` is deleted before evaluation or included in the returned bundle | fail IDEA-CK-16 |
 | The initial integration is treated as final or an integration-created material choice bypasses additional discussion and reintegration | fail IDEA-CK-16 |
 | The final document links to a supporting draft instead of restating material context | fail IDEA-CK-16 |
