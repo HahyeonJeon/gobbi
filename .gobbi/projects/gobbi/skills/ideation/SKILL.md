@@ -183,8 +183,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
-- Review `ideation.md` and correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output.
-- Evaluate the exact three-document candidate through [evaluation.md](evaluation.md), and when it does not pass, reopen the earliest affected step, revise the evolving result, and repeat the evaluation.
+- Evaluate the exact three-document candidate through [evaluation.md](evaluation.md), using its findings to review `ideation.md`, correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output, and reopen the earliest affected step until the evaluation passes.
 - After evaluation passes, obtain the user's approval and make the approved `ideation.md` authoritative, automatically superseding both supporting drafts.
 
 ## References
