@@ -183,13 +183,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Contain dependency failures and expose verification seams.
 - Repeat integrated review, additional discussion, reintegration, and design development until the design is coherent and no material topic or decision remains unresolved.
 
-#### 3.5 Define future validation
-
-- Separate existing evidence from proposed future validation.
-- Never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence.
-- Record the question, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition for each validation commitment.
-
-#### 3.6 Audit the three-document candidate
+#### 3.5 Audit, evaluate, approve, and return the result
 
 - Compare `ideation.tmp.md` with `ideation.md` and confirm that every material discussion, decision, correction, emergent topic, consequence, and reopen condition was integrated.
 - List every change from the supporting drafts with its evidence, material user approval, affected branches, and consequence.
@@ -198,9 +192,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Read all three documents independently as a cold reader.
 - Remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links.
 - Confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
-
-#### 3.7 Evaluate, approve, and return the result
-
 - Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) while `ideation.md` remains evolving and its authority remains contingent.
 - Reopen the earliest affected operation after every material revision.
 - Run a fresh complete evaluation without changing either frozen supporting draft.
