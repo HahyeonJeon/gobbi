@@ -157,7 +157,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
 - Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
 - Ask another decision-ready question when the choice remains unresolved, and repeat the discussion, revision, and conditional study until the user makes the required decision or explicitly defers it.
-- Temporarily record the discussion and decision in `ideation.tmp.md` with its selection, rationale, rejected alternatives, trade-offs, resulting design, reopen condition, corrected requirements, emergent topics under their correct parents, affected descendants, sibling reconciliation, reopened branches, and current ASCII tree and matching headings.
+- Temporarily record the discussion and decision in `ideation.tmp.md` with its selection, rationale, rejected alternatives, trade-offs, resulting design, reopen condition, corrected requirements, emergent topics under their correct parents, affected descendants, sibling reconciliation, and reopened branches.
 - Move to the next topic only after the current topic is resolved, explicitly deferred, or reopened at the correct ancestor, and repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
 - Treat no Phase 2 candidate as already decided, and never edit either frozen supporting draft.
 
