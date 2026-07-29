@@ -80,7 +80,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** none.
 - **Primary type:** Boundary — the discrimination sits at exact input and lifecycle edges.
 - **Coverage role:** Boundary; negative through invalid-state rejection.
-- **Source:** Principle “Discuss the design through a hierarchy of topics”; Phase 2 completeness audit; Phase 3 integrated design.
+- **Source:** Principle “Discuss the design through a hierarchy of topics”; Phase 2 coverage; Phase 3 integrated design.
 - **Given:** the material input classes, preconditions, lifecycle states, invariants, and finite limits.
 - **When:** empty, one, many, below, at, and above each applicable limit and every valid or invalid transition are inspected.
 - **Then:** accepted transitions, prohibited side effects, ownership, retention, deletion, and invalid-state handling are explicit.
@@ -112,7 +112,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** 3 Behavior / state / data for exact input and capacity classes.
 - **Primary type:** Boundary — the case tests exact scale and budget edges.
 - **Coverage role:** Boundary.
-- **Source:** Phase 2 completeness audit; Phase 3 integrated design and quality coverage.
+- **Source:** Phase 2 coverage; Phase 3 integrated design and quality coverage.
 - **Given:** variable work, external calls, recurring cost, or another scale-sensitive resource.
 - **When:** zero, one, expected, maximum, and just-over-maximum loads are evaluated with dominant costs and measurement plans.
 - **Then:** limits, refusal or degradation behavior, batching, timeouts, retries when applicable, and evidence needed to verify estimates are explicit.
@@ -139,7 +139,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** 3 Behavior / state / data for partial-state transitions; 4 Interfaces / dependencies / structure for dependency failure.
 - **Primary type:** Failure/recovery — the case injects interruption, dependency failure, or partial mutation.
 - **Coverage role:** Failure/recovery.
-- **Source:** Phase 2 completeness audit; Phase 3 integrated design and quality coverage.
+- **Source:** Phase 2 coverage; Phase 3 integrated design and quality coverage.
 - **Given:** each dependency, persistence boundary, asynchronous action, interruption point, and partial-mutation risk.
 - **When:** failure is injected before work, at the first partial state, and after the last reversible state.
 - **Then:** detection, containment, retry or rollback, terminal state, owner, operator signal, and diagnosis are explicit.
@@ -166,7 +166,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** 4 Interfaces / dependencies / structure for external-service and trust-boundary contracts.
 - **Primary type:** Adversarial — the case attempts to cross a trust or authority boundary.
 - **Coverage role:** Adversarial; negative through safe rejection.
-- **Source:** Principle “Study trustworthy prior art before designing”; Rule “MUST preserve material user authority”; Phase 2 source assessment and completeness audit; Phase 3 quality coverage.
+- **Source:** Principle “Study trustworthy prior art before designing”; Rule “MUST preserve material user authority”; Phase 2 source assessment and coverage; Phase 3 quality coverage.
 - **Given:** untrusted input, sensitive or retained data, privileged or destructive action, external service, governing obligation, and reusable prior art when applicable.
 - **When:** an unauthorized actor, malformed source, retention conflict, destructive request, or incompatible license is introduced.
 - **Then:** validation precedes privileged use, user authority remains explicit, retention and privacy are bounded, and incompatible use is rejected.
@@ -182,7 +182,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** 2 Actors / stakeholders / use-context for affected users and access environments.
 - **Primary type:** Alternative-valid — a different access method, language, format, or locale remains a valid use class.
 - **Coverage role:** Alternative-valid; boundary at locale or format transitions.
-- **Source:** Phase 2 completeness audit; Phase 3 quality coverage.
+- **Source:** Phase 2 coverage; Phase 3 quality coverage.
 - **Given:** user-facing or locale-sensitive behavior and the affected actors.
 - **When:** applicable keyboard, assistive, language, format, culture, timezone, and locale variants are inspected.
 - **Then:** every applicable need has a design obligation and testable outcome; every not-applicable disposition names the inspected property that excludes it.
@@ -198,7 +198,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Secondary categories:** 3 Behavior / state / data for migrated state; 4 Interfaces / dependencies / structure for consumer contracts; 6 Failure / recovery / operations for failed migration.
 - **Primary type:** Change/regression — the case compares before, during, and after a change.
 - **Coverage role:** Change/regression.
-- **Source:** Rule “NEVER change the accepted contract silently”; Phase 1 constraints; Phase 2 completeness audit; Phase 3 integrated design.
+- **Source:** Rule “NEVER change the accepted contract silently”; Phase 1 constraints; Phase 2 coverage; Phase 3 integrated design.
 - **Given:** existing users, data, files, interfaces, APIs, or behavior that the design may change.
 - **When:** pre-change, mixed, migrated, failed-migration, rollback, and post-change states are compared.
 - **Then:** compatibility promises, migration ownership, one-way gates, rollback limits, and reopen conditions are explicit and decided by the user when material.
@@ -303,9 +303,9 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Source:** Principle “Study trustworthy prior art before designing”; Phase 2; [topics template](templates/topics.md).
 - **Given:** completed requirements, provisional top-level topics, available project materials, external prior art, and a tempting pre-existing topic taxonomy.
 - **When:** topic origin, refinement chronology, source assessment, and final coverage are inspected.
-- **Then:** provisional topics derive from the completed requirements; internal study refines them; external study refines them again; a revision and supplementation pass identifies missing or weak topics, performs targeted additional study, and closes every material gap; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from the current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, and completion condition.
+- **Then:** provisional topics derive from the completed requirements; internal study refines them; external study refines them again; a revision and supplementation pass identifies missing or weak topics, performs targeted additional study, and closes every material gap; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from the current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, sources, questions, genuine options, and done condition.
 - **Failure oracle:** the requirements are not complete before provisional topics are drafted, either study pass is absent or token, the revision and supplementation pass is absent, a material missing or weak topic survives, the tree merely copies a fixed taxonomy, or any topic omits one of its eight required fields.
-- **Evidence tuple:** inspect the Phase 1 completion record, topic-preparation chronology, both source registers, requirement-and-source-to-topic derivation, coverage audit, and every field in each topic block; the ordered refinement passes, closed material gaps, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
+- **Evidence tuple:** inspect the Phase 1 completion record, topic-preparation chronology, both source registers, requirement-and-source-to-topic derivation, Coverage, and every field in each topic block; the ordered refinement passes, closed material gaps, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
 - **Adversarial face:** populate the required headings with token sources and a cosmetic gap review after generating a fixed tree; the case must fail on semantic refinement and material coverage.
 - **Obligation:** topic preparation progresses from completed requirements through provisional topics, internal refinement, external refinement, and gap-driven revision before producing the complete eight-field topic hierarchy.
 - **Checklist family:** IDEA-CK-14; atomic items IDEA-CK-14A through IDEA-CK-14G.

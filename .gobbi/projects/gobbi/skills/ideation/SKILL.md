@@ -129,7 +129,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Create `topics.md` from [the topics template](templates/topics.md) using `topics.tmp.md` as the current inventory.
 - Organize the current inventory into a project-specific hierarchy derived from the completed requirements and studied materials rather than a fixed taxonomy.
 - Render one ASCII `text` tree with matching Markdown headings.
-- Record each topic's purpose, parent, dependencies, connected requirements by exact descriptive heading, source basis, discussion questions, genuine alternatives, and completion condition.
+- Record each topic's purpose, parent, dependencies, connected requirements by exact descriptive heading, sources, questions, genuine options, and done condition.
 - Order the hierarchy for parent-first discussion and expose dependencies and cross-topic conflicts.
 - Audit actors, boundaries, interfaces, state, data, resources, failures, recovery, trust, governance, inclusion, locale, compatibility, reversal, evidence, risk, and validation for applicable topics.
 - Record an inspected not-applicable reason for every concern that does not belong.

@@ -106,7 +106,7 @@ At minimum, run these discriminating behavior probes:
 | Internal or external study is absent or does not materially refine the topic draft | fail IDEA-CK-14 |
 | A material missing or weak topic survives the revision and supplementation pass | fail IDEA-CK-14 |
 | A fixed generic or Startup taxonomy is copied despite project-specific evidence | fail IDEA-CK-14 |
-| A topic omits its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, or completion condition | fail IDEA-CK-14 |
+| A topic omits its purpose, parent, dependencies, exact connected requirements, sources, questions, genuine options, or done condition | fail IDEA-CK-14 |
 | Source links exist but authority, relevance, currency, applicability, and disposition are absent | fail IDEA-CK-14 or IDEA-CK-11 |
 | A status note or correction changes a preserved supporting file | fail IDEA-CK-15 |
 | Late study, a corrected requirement, or an emergent topic appears only in the final document with disclosure and propagation | pass the preservation part of IDEA-CK-15 |
@@ -155,7 +155,7 @@ Exercise at least one self-containment probe using a project-only, software, int
 | Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, completion, and preservation | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
 | Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and return | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 | `templates/requirements.md` — independently readable Goal, Problem, Result, Requirements, Scope, and Open Questions contract | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
-| `templates/topics.md` — assessed sources, dynamic matching hierarchy, and completeness audit | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
+| `templates/topics.md` — assessed sources, dynamic matching hierarchy, and coverage | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
 | `templates/ideation.md` — decision synthesis, integrated design, risks, validation, and deferred ideas | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 
 Every applicable lettered item inside the `IDEA-CK-01` through `IDEA-CK-16` family groups appears in the report checklist. The evaluator adds an item for any target-specific case. A material revision repeats all seven perspectives plus Overall from a fresh independent evaluator against new document digests.
