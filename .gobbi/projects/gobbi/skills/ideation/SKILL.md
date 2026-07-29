@@ -154,13 +154,12 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
 - State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
-- Ask the user the question and discuss the answer until its meaning, assumptions, alternatives, trade-offs, and consequences are clear.
+- Compare genuinely different reference-backed alternatives, including doing nothing when credible, by their pros, cons, fit, risks, and consequences, and exclude every alternative outside the approved scope.
+- Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
+- Discuss the user's response until its meaning, assumptions, trade-offs, and consequences are clear.
 - Perform targeted additional study only when the discussion exposes an evidence gap.
-- Ask the follow-up questions created by the discussion or additional study.
-- Repeat the question, discussion, study, and follow-up cycle until the topic is decision-ready.
-- Compare genuinely different reference-backed alternatives, including doing nothing when credible, by their pros, cons, fit, risks, and consequences.
-- Recommend the best-supported option, state what evidence would change the recommendation, and reject every alternative outside the approved scope.
-- Obtain the user's decision whenever the Rules reserve authority to the user.
+- Revise the alternatives and recommendation from the discussion or additional study, then ask the user another decision-ready question when a choice remains unresolved.
+- Repeat the option, recommendation, question, discussion, and study cycle until the user makes the required decision or explicitly defers it.
 - Record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition as synthesis rather than a conversational transcript.
 - Use the decision to refine the rough result and determine its constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operations, failures, and other details.
 - Put corrected requirements and emergent topics only in `ideation.md`, place each emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings.
