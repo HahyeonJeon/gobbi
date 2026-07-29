@@ -179,8 +179,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Define information, data, and state flows across normal, alternative, invalid, failure, and recovery paths.
 - Define applicable performance, resource, trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance obligations.
 - Record every material assumption, risk, evidence gap, and validation commitment.
-- Assign one owner to each concern.
-- Keep interfaces consumer-readable and dependencies acyclic.
 - Contain dependency failures and expose verification seams.
 - Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and continue refining the design from the updated decisions.
 - Repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
