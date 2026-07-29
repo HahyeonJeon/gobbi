@@ -161,12 +161,19 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Move to the next topic only after the current topic is resolved, explicitly deferred, or reopened at the correct ancestor, and repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
 - Treat no Phase 2 candidate as already decided, and never edit either frozen supporting draft.
 
-#### 3.3 Integrate the discussions and develop the design
+#### 3.3 Integrate the discussions and decisions
 
 - Create `ideation.md` from [the final Ideation template](templates/ideation.md).
 - Integrate the complete frozen problem, requirements contract, study foundation, topic tree, and every material discussion and decision from `ideation.tmp.md`.
 - Incorporate corrected requirements and emergent topics under their correct parents, mark topics added during discussion, and align the final ASCII tree with its headings.
 - Preserve decision synthesis rather than a conversational transcript, make the document independently readable, and mark it as the evolving final authority until final approval.
+- Compare `ideation.tmp.md` with the integrated draft and add every omitted material discussion, decision, correction, emergent topic, consequence, and reopen condition.
+- Treat the integrated document as an evolving input to design development rather than a finalized result.
+
+#### 3.4 Develop and refine the integrated design
+
+- Review the integrated discussions and decisions together to identify cross-topic relationships, contradictions, gaps, consequences, and new or reopened topics.
+- Return to Step 3.2 for every material topic or user choice exposed by the integrated review, record the additional discussion and decision in `ideation.tmp.md`, and rerun Step 3.3 before continuing design development.
 - Define every applicable actor, responsibility, boundary, component, owner, and interface.
 - Define information, data, and state flows across normal, alternative, invalid, failure, and recovery paths.
 - Define applicable performance, resource, trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance obligations.
@@ -174,15 +181,15 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Assign one owner to each concern.
 - Keep interfaces consumer-readable and dependencies acyclic.
 - Contain dependency failures and expose verification seams.
-- Return to Step 3.2 when integration exposes an unresolved topic, update `ideation.tmp.md`, and regenerate the integrated `ideation.md`.
+- Repeat integrated review, additional discussion, reintegration, and design development until the design is coherent and no material topic or decision remains unresolved.
 
-#### 3.4 Define future validation
+#### 3.5 Define future validation
 
 - Separate existing evidence from proposed future validation.
 - Never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence.
 - Record the question, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition for each validation commitment.
 
-#### 3.5 Audit the three-document candidate
+#### 3.6 Audit the three-document candidate
 
 - Compare `ideation.tmp.md` with `ideation.md` and confirm that every material discussion, decision, correction, emergent topic, consequence, and reopen condition was integrated.
 - List every change from the supporting drafts with its evidence, material user approval, affected branches, and consequence.
@@ -192,7 +199,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links.
 - Confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
 
-#### 3.6 Evaluate, approve, and return the result
+#### 3.7 Evaluate, approve, and return the result
 
 - Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) while `ideation.md` remains evolving and its authority remains contingent.
 - Reopen the earliest affected operation after every material revision.
