@@ -154,7 +154,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
 - State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
-- Compare genuinely different reference-backed alternatives, including doing nothing when credible, by their pros, cons, fit, risks, and consequences, and exclude every alternative outside the approved scope.
 - Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
 - Discuss the user's response until its meaning, assumptions, trade-offs, and consequences are clear.
 - Perform targeted additional study only when the discussion exposes an evidence gap.
