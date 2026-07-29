@@ -178,7 +178,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Design the actors, responsibilities, boundaries, components, ownership, and interfaces required by the integrated decisions.
 - Design information, data, and state flows for normal, alternative, invalid, failure, and recovery paths.
 - Design the applicable performance and resource behavior together with trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operational, and maintenance obligations.
-- Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
+- When design development exposes a material topic or user choice, discuss it through Step 3.2, record the decision in `ideation.tmp.md`, reintegrate it through Step 3.3, and refine the design from the updated decisions until every integrated decision is expressed and no material design choice remains unresolved.
 - Finalize the pre-approval record in `ideation.md` from [the final Ideation template](templates/ideation.md) with the frozen context, integrated decisions, corrected requirements, emergent topics, final topic tree, design, risks, and validation commitments.
 
 #### 3.5 Audit, evaluate, approve, and return the result
