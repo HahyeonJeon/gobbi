@@ -183,20 +183,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
-- Compare `ideation.tmp.md` with `ideation.md` and add every omitted material discussion, decision, correction, emergent topic, consequence, and reopen condition.
-- List every change from the supporting drafts with its evidence, material user approval, affected branches, and consequence.
-- Trace requirements, sources, topics, decisions, resulting design, risks, and validation by exact descriptive heading paths rather than artificial identifiers.
-- Use [scenarios.md](scenarios.md) and [checklists.md](checklists.md) to confirm that every applicable design obligation is present and testable.
-- Read all three documents independently as a cold reader.
-- Remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links.
-- Confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
-- Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) while `ideation.md` remains evolving and its authority remains contingent.
-- Reopen the earliest affected operation after every material revision.
-- Run a fresh complete evaluation without changing either frozen supporting draft.
-- Obtain the user's approval of `ideation.md` only after evaluation passes.
-- Make the approved `ideation.md` authoritative and automatically supersede both supporting drafts.
-- Verify that the approved `ideation.md` contains every material discussion and decision from `ideation.tmp.md`, then delete `ideation.tmp.md`.
-- Return `requirements.md`, `topics.md`, and `ideation.md` together.
+- Review `requirements.md`, `topics.md`, `ideation.tmp.md`, and `ideation.md` together, correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output, and keep both frozen supporting drafts unchanged.
+- Evaluate the exact three-document candidate through [evaluation.md](evaluation.md), and when it does not pass, reopen the earliest affected step, revise the evolving result, and repeat the evaluation.
+- After evaluation passes, obtain the user's approval and make the approved `ideation.md` authoritative, automatically superseding both supporting drafts.
+- Confirm that every material temporary discussion and decision appears in the approved `ideation.md`, delete `ideation.tmp.md`, and return `requirements.md`, `topics.md`, and `ideation.md` together.
 
 ## References
 
