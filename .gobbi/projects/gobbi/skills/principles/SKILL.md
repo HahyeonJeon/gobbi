@@ -6,49 +6,49 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## Principle 1 — Think and Study Before Acting: NO ACTION WITHOUT THINKING AND STUDYING IT THROUGH FIRST.
 
-**Why:** Agents often implement before they understand the work. Sound action requires both study — of the problem, existing work, and prior attempts — and thought about what the evidence means. Skipping either produces a well-executed answer to the wrong problem.
+**Why:** Agents often act before they understand the work. Sound action requires studying the problem, existing work, prior attempts, and the observed needs and behavior of affected people, then thinking about what the evidence means. Skipping either produces a well-executed answer to the wrong problem.
 
 **Practice:**
-- *Frame the problem:* Make the request and purpose concrete, challenge whether it is the right problem, and consider what the user will encounter, expect, find intuitive, or find surprising (see Principle 3).
-- *Study the evidence:* Inspect relevant code, documentation, conventions, prior art, patterns, and prior attempts, map the change's reach, then use the community-validated approach unless a clear reason justifies deviation.
-- *Prepare the work:* Identify constraints, edge cases, hidden dependencies, stakes, and easy-to-miss details, then order the steps, stopping points, and verification checkpoints.
+- *Frame the problem:* Make the request, affected people, and purpose concrete, challenge whether it is the right problem, and define what the user must be able to complete, expect, and recover from (see Principle 3).
+- *Study the evidence:* Inspect relevant code, documents, current behavior, applicable user research or feedback, design systems, conventions, prior art, patterns, and prior attempts, map the change's reach, then use the best-supported approach unless evidence justifies deviation.
+- *Prepare the work:* Identify constraints, edge cases, applicable accessibility and safety needs, hidden dependencies, stakes, and easy-to-miss details, then order the steps, stopping points, and verification checkpoints.
 
 **Anti-pattern:**
-- Start solving without clarifying the request, testing whether it is the right problem, or considering the user's experience.
-- Build or commit to an approach without studying existing work, prior attempts, established solutions, or the change's reach.
-- Begin without surfacing constraints, edge cases, or hidden dependencies or setting ordered steps and verification checkpoints.
+- Start solving without clarifying the request, affected people, whether it is the right problem, or the complete user outcome.
+- Commit to an approach without studying existing work, current behavior, user evidence, prior attempts, established solutions, or the change's reach.
+- Begin without surfacing constraints, edge cases, applicable accessibility and safety needs, hidden dependencies, and stakes or without setting ordered steps and verification checkpoints.
 
 ---
 
 ## Principle 2 — Bottom-Up Construction: BUILD THE FOUNDATION FIRST, THEN GROW IT ONE MINIMAL STEP AT A TIME.
 
-**Why:** Agents often implement a whole feature before its structure is sound. Later work copies that rushed foundation and spreads its flaws. Building the structure first, then adding small working increments, preserves coherence and exposes problems while they are cheap to fix.
+**Why:** Agents often build a whole feature or polished interface before its structure is sound. Later work copies that rushed foundation and spreads its flaws. Defining the whole skeleton first, then adding the smallest complete unit or path, preserves coherence and exposes problems while they are cheap to fix.
 
 **Practice:**
-- *Design the structure first:* Settle the layout, directory and module structure, file organization, key interfaces, class shapes, and seams while they are cheap to change.
-- *Build up a minimal skeleton:* Create nonfunctional but concrete stubs for directories, files, classes, methods, and parameters before adding behavior.
-- *Grow and refine:* Add the smallest correct increment while keeping the whole system working, then refine the skeleton, methods, parameters, and next placeholders from what you learned, never building a full feature in one pass.
+- *Design the structure first:* Settle the top-down experience or interface skeleton, user flow, information hierarchy, state map, and, for visual surfaces, low-fidelity wireframes; for implementation, settle the layout, modules, files, interfaces, class shapes, and seams.
+- *Build up a minimal skeleton:* Create a nonproduction skeleton with the core path and representative states for interface or experience design, or concrete stubs for directories, files, classes, methods, and parameters for implementation.
+- *Grow and refine:* Add the smallest complete interaction or implementation increment, keep the whole coherent and working, then refine the skeleton, paths, states, methods, parameters, interfaces, and next placeholders rather than building the full feature at once.
 
 **Anti-pattern:**
-- Start filling in functionality before the structure and layout are designed.
-- Build the next piece on top of a foundation that isn't yet solid.
-- Implement a whole feature or large first draft in one pass and let later work extend its locked-in flaws.
+- Start visual polish, detailed interaction, or implementation before the experience, interface, and implementation structures are designed.
+- Build a screen, state, component, or code increment on a foundation that is incomplete or inconsistent with the whole outcome.
+- Produce a full feature, polished interface, or large first draft in one pass and let later work inherit its flaws.
 
 ---
 
 ## Principle 3 — Design With the User, Based on References: NO DESIGN WITHOUT PRIOR ART AND USER ALIGNMENT.
 
-**Why:** Designing from scratch in the implementer's frame tends to produce idiosyncratic, inconsistent choices across interfaces, structure, naming, and other surfaces. Reference-backed options and explicit user alignment prevent that debt. Design must be judged by what the user encounters, not only by what is convenient to implement.
+**Why:** Designing from scratch in the implementer's frame produces idiosyncratic choices and isolated happy paths. References, project identity, current behavior, and user evidence ground the options; the user chooses the direction. For user-facing work, a polished screen is not proof: the design must cover a complete outcome and be tested with representative users.
 
 **Practice:**
-- *Study references first:* Study proven codebase, adjacent-library, and community patterns before designing UI or UX, project and directory structure, file organization, class or function shape, parameter design, or naming, then derive from the best fit.
-- *Show options and let the user choose:* Before prose, show two or three reference-backed options with structure and directory diagrams, interface or class sketches, or UI mockups, explain trade-offs and a recommendation, and let the user choose before building.
-- *Design for the consumer:* Check what the user sees and in what order, what feels intuitive or surprising, and how failures and delivery appear, then keep the unit understandable without internals and ensure internal changes do not break consumers.
+- *Study evidence first:* Before designing UI or UX, project structure, files, interfaces, functions, parameters, or naming, study the current product and behavior, project identity and governing systems, applicable user evidence, and proven codebase, platform, adjacent-library, and community patterns.
+- *Show options and let the user choose:* Before prose or building, show two or three materially different, reference-backed options as experience maps, user flows, wireframes, state or structure diagrams, interface sketches, or mockups, then explain trade-offs, recommend one, and let the user choose.
+- *Design and validate for the consumer:* Keep each unit clear and stable under internal change; for user-facing work, specify the complete path, states, content, feedback, failure, recovery, accessibility, safety, and adaptation before prototyping, then test with representative users.
 
 **Anti-pattern:**
-- Design something from scratch without first studying how it has been solved well elsewhere.
-- Hand the user a finished design or prose description, or choose the direction yourself, instead of offering concrete reference-backed options.
-- Design only the visible surface or optimize for technical elegance while ignoring structure, interfaces, naming, and what the user encounters.
+- Design from scratch without studying current behavior, applicable user evidence, project identity and governing systems, or proven patterns.
+- Hand the user a finished design or prose description, or choose the direction yourself, instead of offering concrete, reference-backed options.
+- Optimize for an isolated screen, happy path, visual polish, or technical elegance while ignoring structure, states, content, feedback, failure, recovery, accessibility, safety, or representative-user evidence.
 
 ---
 
@@ -89,13 +89,13 @@ allowed-tools: Read, Grep, Glob, Bash
 **Why:** Documents preserve project knowledge across people, sessions, and tasks. Reading them prevents work from starting with partial context; updating them prevents later work from following stale guidance. A stale document is as serious a defect as stale code. Every document change therefore needs a specification, a CRUD and blast-radius plan, and a structure a cold reader can navigate.
 
 **Practice:**
-- *Start by reading the docs:* Before each task, read the relevant specifications, designs, rules, skills, and recorded mistakes.
+- *Start by reading the docs:* Before each task, read the relevant specifications, research, designs, design systems, wireframes, flow maps, state maps, rules, skills, and recorded mistakes.
 - *Plan navigable document work:* Before editing, state each document's purpose and type, map **Create**, consistency **Read**, exact-line **Update**, **Delete**, and co-touches, and use a clear hierarchy and consistent, descriptive names that cold readers can navigate, agreeing any missing convention with the user.
-- *Finish with current docs:* Ship matching documentation with each change in the same step, treat stale documentation as a defect, and keep shared context navigable for future sessions.
+- *Finish with current docs:* Ship matching specifications, design artifacts, research or test evidence, and implementation documentation with each change, treat stale documentation as a defect, and keep shared context navigable for future sessions.
 
 **Anti-pattern:**
-- Start a task without reading the existing specs, designs, rules, and recorded mistakes.
-- Ship implementation without matching documentation, or edit a document without its specification, CRUD plan, exact update lines, and required co-touches.
+- Start a task without reading the existing specifications, research, design artifacts, rules, and recorded mistakes.
+- Ship design or implementation without matching documentation, or edit a document without its specification, CRUD plan, exact update lines, and required co-touches.
 - Create an unclear or cryptically named hierarchy or invent a missing naming or structure convention without user agreement.
 
 ---
