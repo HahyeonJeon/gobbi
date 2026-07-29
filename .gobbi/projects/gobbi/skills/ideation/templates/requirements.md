@@ -2,18 +2,18 @@
 
 ## Contents
 
-- [Material Statement Classification](#material-statement-classification)
-- [Problem Definition](#problem-definition)
-- [People and Desired Outcomes](#people-and-desired-outcomes)
+- [Statement Register](#statement-register)
+- [Problem](#problem)
+- [Actors and Outcomes](#actors-and-outcomes)
 - [Requirements](#requirements)
-- [Scope and Boundaries](#scope-and-boundaries)
-- [Success, Failure, and Stop Signals](#success-failure-and-stop-signals)
+- [Scope](#scope)
+- [Outcome Signals](#outcome-signals)
 - [Constraints and Authority](#constraints-and-authority)
-- [Assumptions, Contradictions, and Open Questions](#assumptions-contradictions-and-open-questions)
-- [Study Questions](#study-questions)
-- [Approval and Freeze](#approval-and-freeze)
+- [Open Issues](#open-issues)
+- [Research Questions](#research-questions)
+- [Approval](#approval)
 
-## Material Statement Classification
+## Statement Register
 
 | Exact heading path | Material statement | Type | Source, owner, or needed resolution |
 |---|---|---|---|
@@ -21,25 +21,29 @@
 
 {Register every material statement under exactly one of the six types. Keep the same classification visible when the statement is restated elsewhere in this document.}
 
-## Problem Definition
+## Problem
 
-### Trigger and Why Now
+### Trigger
 
 {Describe the event that started this work, why it matters now, and the source of each claim.}
 
-### Current Reality and Direct Evidence
+### Current Situation
 
 {Describe current behavior, prior attempts, and direct evidence. Keep every material statement linked to its visible six-way classification above.}
 
-### Root Problem and Consequences
+### Problem and Impact
 
 {State the root cause, affected outcomes, and consequences. Explain how removing the cause would remove the need.}
 
-### Current Alternative and Do-Nothing Outcome
+### Current Approach
 
-{Describe the current workaround or alternative and the strongest credible result of doing nothing.}
+{Describe the current workaround or alternative.}
 
-## People and Desired Outcomes
+### No-Change Outcome
+
+{Describe the strongest credible result of doing nothing.}
+
+## Actors and Outcomes
 
 | Person or actor | Current need or job | Desired observable outcome | Decision authority |
 |---|---|---|---|
@@ -47,7 +51,7 @@
 
 ## Requirements
 
-### {Descriptive Requirement Heading}
+### {Requirement}
 
 > **Statement:** {State a needed outcome or binding constraint without selecting a mechanism.}<br>
 > **Reason:** {Explain why the requirement follows from the problem.}<br>
@@ -56,13 +60,13 @@
 
 {Add one descriptive level-three heading and block for every material requirement.}
 
-## Scope and Boundaries
+## Scope
 
-### In Scope
+### Included
 
 {Enumerate the outcomes and surfaces included in this idea.}
 
-### Out of Scope
+### Excluded
 
 {Enumerate excluded outcomes and surfaces.}
 
@@ -70,13 +74,13 @@
 
 {State adjacent results this work deliberately will not produce.}
 
-### Deferred or Rejected
+### Deferred and Rejected
 
 | Item | Disposition | Reason | Destination or drop decision |
 |---|---|---|---|
 | `{item}` | `{Deferred or Rejected}` | `{reason}` | `{destination or explicit drop}` |
 
-## Success, Failure, and Stop Signals
+## Outcome Signals
 
 | Signal type | Observable signal | Meaning |
 |---|---|---|
@@ -93,19 +97,19 @@
 
 {Include active-work overlap and compatibility promises when applicable.}
 
-## Assumptions, Contradictions, and Open Questions
+## Open Issues
 
 | Item | Type | Material consequence | Resolution needed |
 |---|---|---|---|
 | `{claim or question}` | `{Assumption, Contradiction, or Open Question}` | `{consequence}` | `{answer, evidence, or user decision needed}` |
 
-## Study Questions
+## Research Questions
 
 | Question | Why it matters | Internal material to inspect | External material to inspect |
 |---|---|---|---|
 | `{question}` | `{decision or requirement it affects}` | `{project source}` | `{prior art or standard}` |
 
-## Approval and Freeze
+## Approval
 
 > **Approval condition:** The user confirms that this document is complete, solution-neutral, and accurate enough to direct study.<br>
 > **Freeze effect:** Approval freezes the whole file without a later status edit. All later corrections appear only in `ideation.md`.<br>
