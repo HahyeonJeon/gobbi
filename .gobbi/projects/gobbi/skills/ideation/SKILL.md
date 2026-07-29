@@ -183,7 +183,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
-- Review `requirements.md`, `topics.md`, `ideation.tmp.md`, and `ideation.md` together, correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output, and keep both frozen supporting drafts unchanged.
+- Review `ideation.md` and correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output.
 - Evaluate the exact three-document candidate through [evaluation.md](evaluation.md), and when it does not pass, reopen the earliest affected step, revise the evolving result, and repeat the evaluation.
 - After evaluation passes, obtain the user's approval and make the approved `ideation.md` authoritative, automatically superseding both supporting drafts.
 - Confirm that every material temporary discussion and decision appears in the approved `ideation.md`, delete `ideation.tmp.md`, and return `requirements.md`, `topics.md`, and `ideation.md` together.
