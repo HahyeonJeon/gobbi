@@ -1,10 +1,7 @@
 # {Idea or Problem Name} — Study and Discussion Topics
 
-> **Document role:** Supporting draft and frozen discussion agenda<br>
-> **State:** `{Draft until user approval; immutable after approval}`<br>
-> **Authority:** The approved final `ideation.md` automatically supersedes this document.<br>
-> **Immutability:** After approval, do not change any byte in this file; record later sources, corrected requirements, and emergent topics only in `ideation.md`.<br>
-> **Purpose:** Turn frozen requirements and progressive internal, external, and gap-driven topic refinement into a project-specific hierarchy for discussion.
+> **Document role:** Supporting study and discussion agenda<br>
+> **Purpose:** Turn completed requirements and progressive internal, external, and gap-driven topic refinement into a project-specific hierarchy for discussion.
 
 ## Contents
 
@@ -14,11 +11,10 @@
 - [Discussion Path](#discussion-path)
 - [Cross-Topic Dependencies and Conflicts](#cross-topic-dependencies-and-conflicts)
 - [Completeness Audit](#completeness-audit)
-- [Approval and Freeze](#approval-and-freeze)
 
 ## Requirements Snapshot
 
-{Restate the frozen goal, supported problem, result, material requirements, scope statuses, and open questions completely enough to understand this document without opening `requirements.md`. Use exact descriptive requirement headings.}
+{Restate the completed goal, supported problem, result, material requirements, scope statuses, and open questions completely enough to understand this document without opening `requirements.md`. Use exact descriptive requirement headings.}
 
 ## Study Scope and Sources
 
@@ -132,11 +128,3 @@
 | Inclusion and locale | `{Applicable or N/A}` | `{heading path}` | `{evidence or reason}` |
 | Compatibility and reversal | `{Applicable or N/A}` | `{heading path}` | `{evidence or reason}` |
 | Evidence, risk, and validation | `{Applicable or N/A}` | `{heading path}` | `{evidence or reason}` |
-
-## Approval and Freeze
-
-> **Approval condition:** The user confirms that the study foundation and project-specific topic hierarchy form a complete discussion agenda.<br>
-> **Freeze effect:** Approval freezes the whole file without a later status edit. All later sources, corrections, and emergent topics appear only in `ideation.md`.<br>
-> **Supersession effect:** User approval of the final `ideation.md` automatically supersedes this supporting draft.
-
-{Before freeze, record the approval evidence outside this file or in the surrounding discussion; do not edit this section after approval.}

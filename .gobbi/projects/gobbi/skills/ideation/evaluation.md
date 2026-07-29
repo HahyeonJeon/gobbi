@@ -1,15 +1,14 @@
 # Ideation Evaluation Entry
 
-Use this entrypoint to evaluate one exact three-document Ideation candidate before final approval: frozen `requirements.md`, frozen `topics.md`, and the evolving `ideation.md`. It owns the Ideation-specific evidence frame, perspective review, causal findings, completed checks, supporting-draft comparison, and derived verdict. It verifies whether the candidate is ready for final user approval; it does not edit any subject document, grant final authority, supersede a supporting draft, or make a decision reserved for the user.
+Use this entrypoint to evaluate one exact three-document Ideation candidate: preserved `requirements.md`, preserved `topics.md`, and the completed `ideation.md`. It owns the Ideation-specific evidence frame, perspective review, causal findings, completed checks, supporting-result comparison, and derived verdict. It verifies whether the candidate is complete and internally consistent; it does not edit any subject document or make a decision reserved for the user.
 
 ## Required Inputs
 
 - exact bytes, digest, and version for `requirements.md`, `topics.md`, and `ideation.md`;
 - the current bytes and digest of `ideation.tmp.md` as process evidence outside the returned candidate;
-- the requirements approval record and freeze digest;
-- the topics approval record, freeze digest, and chronology proving provisional topic drafting, internal refinement, external refinement, and revision and supplementation occurred in order;
-- the intended final-approval condition and the documents' contingent authority statements;
-- user-approved scope, requirements, material design decisions, and changes from the supporting drafts;
+- the requirements completion record and completion digest;
+- the topics completion record, completion digest, and chronology proving provisional topic drafting, internal refinement, external refinement, and revision and supplementation occurred in order;
+- user-decided scope, requirements, material design decisions, and changes from the supporting results;
 - topic-resolution discussion and study history sufficient to verify repeated decision-ready choices, recommendations, discussions, needed study, revised choices, and user decisions;
 - integrated design-development history sufficient to trace every decision into the design and every newly exposed material choice through additional discussion and reintegration;
 - internal and external source registers with authority, relevance, currency, applicability, disposition, and licensing assessments where applicable;
@@ -21,9 +20,9 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 
 ## Evaluation Method
 
-1. Bind the review to the exact bytes and digests of all three documents, the intended outcome, scope, exclusions, user decisions, lifecycle state, and acceptance criteria.
+1. Bind the review to the exact bytes and digests of all three documents, the intended outcome, scope, exclusions, user decisions, completion state, and acceptance criteria.
 2. Select every applicable owned scenario and every atomic checklist item inside its `IDEA-CK-01` through `IDEA-CK-16` family group, add target-specific cases for material conditions the sources miss, and name the evidence method for each.
-3. Establish chronology: requirements approval and freeze, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics approval and freeze, `ideation.tmp.md` initialization, iterative hierarchical discussion, decision integration in `ideation.tmp.md`, design development from `Integrated Decisions`, additional discussion and reintegration for every newly exposed material choice, final recording in `ideation.md`, and the complete pre-approval candidate. Confirm Step 3.3 never creates or updates `ideation.md` and final approval has not yet been claimed.
+3. Establish chronology: requirements completion and preservation, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics completion and preservation, `ideation.tmp.md` initialization, iterative hierarchical discussion, decision integration in `ideation.tmp.md`, design development from `Integrated Decisions`, additional discussion and reintegration for every newly exposed material choice, final recording in `ideation.md`, and the complete candidate. Confirm Step 3.3 never creates or updates `ideation.md`.
 4. Compare each supporting draft and `ideation.tmp.md` with `ideation.md`. Confirm the supporting bytes remained stable; temporary records were grouped by topic and consolidated into current parent-first decisions; duplicates, dependencies, and consequences were reconciled; contradictions and unresolved choices returned to discussion rather than being decided by assumption; and every material record appears in the independently readable synthesis.
 5. Inspect the exact bundle and direct evidence across every perspective. Record strengths and separate causal findings with expected condition, observed condition, impact, evidence, root cause or leading hypothesis, tested alternative, and corrective direction.
 6. Resolve each applicable atomic checklist item as `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, then derive each family result from its lettered items. Missing, stale, contradictory, proxy-only, or unevaluable evidence cannot pass.
@@ -32,18 +31,18 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 
 ### Verdict Rules
 
-- A **revision finding** identifies a correctable defect while the accepted problem, intended outcome, scope, artifact lifecycle, and design direction remain assessable and viable.
-- A **failure finding** shows that the accepted problem, intended outcome, scope, authority, safety, feasibility, lifecycle integrity, or design direction is invalid, or that missing, stale, contradictory, or unevaluable core evidence prevents reliable judgment.
+- A **revision finding** identifies a correctable defect while the established problem, intended outcome, scope, artifact state, and design direction remain assessable and viable.
+- A **failure finding** shows that the established problem, intended outcome, scope, authority, safety, feasibility, artifact integrity, or design direction is invalid, or that missing, stale, contradictory, or unevaluable core evidence prevents reliable judgment.
 - A perspective is `FAIL` when it contains a failure finding, `REVISE` when it contains no failure finding but contains a revision finding, and `PASS` when it contains no findings.
 - Every failed atomic checklist item cites one or more findings and inherits the most severe cited classification. A perspective or checklist item without an applicable property is `n/a:<property>` and does not affect the final verdict.
 - The final verdict is the most severe applicable perspective or atomic checklist result: `FAIL` over `REVISE` over `PASS`. It is `PASS` only when every applicable perspective and atomic checklist item passes.
-- A missing document, missing perspective, unresolved check, malformed or unclassified finding, changed supporting-draft digest, stale subject digest, or inconsistent severity makes the report invalid rather than producing a verdict. Correct the evaluation record or subject lifecycle before issuing the result.
+- A missing document, missing perspective, unresolved check, malformed or unclassified finding, changed supporting-result digest, stale subject digest, or inconsistent severity makes the report invalid rather than producing a verdict. Correct the evaluation record or subject state before issuing the result.
 
 ## Perspective Lenses
 
 ### Project
 
-Test the goal, supported problem, result, actor outcomes, solution-neutral and observable requirements, strongest no-change case, user-approved four-status scope, open-question boundary, active-scope overlap, material authority, and complete obligation coverage. Confirm the final design solves the approved problem without silent expansion and that every material supporting-draft change carries evidence and approval where required.
+Test the goal, supported problem, result, actor outcomes, solution-neutral and observable requirements, strongest no-change case, user-decided four-status scope, open-question boundary, active-scope overlap, material authority, and complete obligation coverage. Confirm the final design solves the defined problem without silent expansion and that every material supporting-result change carries evidence and a user decision where required.
 
 ### Structure
 
@@ -55,30 +54,30 @@ Test scale assumptions, dominant resources, external-call counts, batching, time
 
 ### Aesthetics
 
-Read each document cold and independently. Test lifecycle clarity, `## Contents`, stable descriptive headings, matching ASCII trees and heading hierarchies, concise blocks and tables, scanability, placeholders, filler, and whether a skim yields the same authority and meaning as a full read.
+Read each document cold and independently. Test document-purpose clarity, `## Contents`, stable descriptive headings, matching ASCII trees and heading hierarchies, concise blocks and tables, scanability, placeholders, filler, and whether a skim yields the same meaning as a full read.
 
 ### Usage
 
-Test whether intended users, readers, callers, operators, maintainers, and approvers can understand and use each document without private context. Confirm the topic agenda supports parent-first discussion, the final document supports later consumers without pointers to hidden meaning, and applicable accessibility, locale, actionable failure, diagnosis, and future-validation instructions are usable.
+Test whether intended users, readers, callers, operators, maintainers, and authorizing actors can understand and use each document without private context. Confirm the topic agenda supports parent-first discussion, the final document supports later consumers without pointers to hidden meaning, and applicable accessibility, locale, actionable failure, diagnosis, and future-validation instructions are usable.
 
 ### Consistency
 
-Compare frozen requirements, assessed sources, prepared topics, final requirements, final topic tree, decisions, integrated design, risks, validation, traceability, and supporting-draft changes. Search for changed frozen bytes, source links without assessment, stale heading paths, mismatched tree nodes, contradictory decisions, transcript without synthesis, artificial trace IDs, fixed inherited taxonomies, future validation represented as current evidence, and final content that merely points to a supporting draft.
+Compare preserved requirements, assessed sources, prepared topics, final requirements, final topic tree, decisions, integrated design, risks, validation, traceability, and supporting-result changes. Search for changed preserved bytes, source links without assessment, stale heading paths, mismatched tree nodes, contradictory decisions, transcript without synthesis, artificial trace IDs, fixed inherited taxonomies, future validation represented as current evidence, and final content that merely points to a supporting result.
 
 ### Risk
 
-Test blast radius, rollback, one-way actions, security and authorization, privacy and retention, shared state, compatibility, dependency and license risk, cost runaway, and load-bearing assumptions. Treat a post-freeze supporting-draft edit, silent contract change, unsupported governing source, missing recovery, or planned prototype, spike, benchmark, experiment, or study cited as completed proof as a material risk.
+Test blast radius, rollback, one-way actions, security and authorization, privacy and retention, shared state, compatibility, dependency and license risk, cost runaway, and load-bearing assumptions. Treat a post-completion supporting-result edit, silent contract change, unsupported governing source, missing recovery, or planned prototype, spike, benchmark, experiment, or study cited as completed proof as a material risk.
 
 ### Overall
 
-Challenge wrong premises, solution-biased requirements, unrefined provisional topics, token source assessment, unclosed missing or weak topics, copied fixed taxonomies, unnecessary novelty, unrelated bundled outcomes, premature implementation tasks, external-method dependencies, and process theater. Preserve trustworthy source assessments, sharp scope language, explicit authority, genuine alternatives, parent-to-child reasoning, draft immutability, and complete decision synthesis.
+Challenge wrong premises, solution-biased requirements, unrefined provisional topics, token source assessment, unclosed missing or weak topics, copied fixed taxonomies, unnecessary novelty, unrelated bundled outcomes, premature implementation tasks, external-method dependencies, and process theater. Preserve trustworthy source assessments, sharp scope language, explicit authority, genuine alternatives, parent-to-child reasoning, supporting-result stability, and complete decision synthesis.
 
 ## Recommended Verification
 
 Use direct reads and safe read-only commands:
 
-- compute and record all three subject digests, then compare the two supporting digests with their freeze evidence;
-- verify the chronology `requirements freeze → provisional topics → internal refinement → external refinement → revision and supplementation → hierarchy construction → topics freeze → temporary hierarchical discussion → temporary decision integration → design development and refinement → final recording in ideation.md → complete pre-approval candidate`, then confirm final approval and authority are still contingent on a later passing evaluation;
+- compute and record all three subject digests, then compare the two supporting digests with their completion evidence;
+- verify the chronology `requirements completion → provisional topics → internal refinement → external refinement → revision and supplementation → hierarchy construction → topics completion → temporary hierarchical discussion → temporary decision integration → design development and refinement → final recording in ideation.md → complete candidate`;
 - resolve every local link and every `## Contents` entry;
 - compare each ASCII topic-tree node with its matching heading and find headings missing from the tree;
 - search for placeholders, artificial trace identifiers, transcript-only language, ordered implementation tasks, and stale single-artifact claims;
@@ -99,18 +98,18 @@ At minimum, run these discriminating behavior probes:
 
 | Probe | Expected result |
 |---|---|
-| A proposed internal mechanism appears as a requirement instead of an approved external form or an unselected later candidate | fail IDEA-CK-13 |
+| A proposed internal mechanism appears as a requirement instead of a user-decided external form or an unselected later candidate | fail IDEA-CK-13 |
 | A material problem or requirement claim lacks local basis or presents uncertainty as fact | fail IDEA-CK-13 |
 | The result omits an applicable actor outcome, external behavior, input, output, integration boundary, or unchanged behavior | fail IDEA-CK-13 |
-| An open question could change the approved goal, problem, result, requirements, or scope | fail IDEA-CK-13 |
-| Provisional topics are drafted before `requirements.md` freezes | fail IDEA-CK-14 |
+| An open question could change the completed goal, problem, result, requirements, or scope | fail IDEA-CK-13 |
+| Provisional topics are drafted before `requirements.md` is complete and preserved | fail IDEA-CK-14 |
 | Internal or external study is absent or does not materially refine the topic draft | fail IDEA-CK-14 |
 | A material missing or weak topic survives the revision and supplementation pass | fail IDEA-CK-14 |
 | A fixed generic or Startup taxonomy is copied despite project-specific evidence | fail IDEA-CK-14 |
 | A topic omits its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, or completion condition | fail IDEA-CK-14 |
 | Source links exist but authority, relevance, currency, applicability, and disposition are absent | fail IDEA-CK-14 or IDEA-CK-11 |
-| An approval stamp or correction changes a frozen supporting file | fail IDEA-CK-15 |
-| Late study, a corrected requirement, or an emergent topic appears only in the final document with disclosure and propagation | pass the lifecycle part of IDEA-CK-15 |
+| A status note or correction changes a preserved supporting file | fail IDEA-CK-15 |
+| Late study, a corrected requirement, or an emergent topic appears only in the final document with disclosure and propagation | pass the preservation part of IDEA-CK-15 |
 | A child decision changes an ancestor without reopening and reconciling it | fail IDEA-CK-15 or IDEA-CK-04 |
 | A material topic asks the user to answer without presenting genuine options and a supported recommendation | fail IDEA-CK-16 |
 | A topic reaches a decision while a discussion-created evidence gap or follow-up question remains unresolved | fail IDEA-CK-16 |
@@ -125,10 +124,9 @@ At minimum, run these discriminating behavior probes:
 | A material decision omits its explicit question, evidence-that-would-change, trade-offs, or reopen condition | fail IDEA-CK-16 |
 | The final document contains ordered implementation tasks or an implementation diff | fail IDEA-CK-16 |
 | The returned bundle contains a produced realization output even when it is honestly labeled | fail IDEA-CK-12 or IDEA-CK-16 |
-| The candidate claims final approval, final authority, or supporting-draft supersession before evaluation passes | fail IDEA-CK-16 |
 | An applicable actor, state, interface, resource, failure, trust, inclusion, or compatibility concern is missing | fail its corresponding IDEA-CK-02 through IDEA-CK-09 |
 | A planned validation artifact is cited as existing evidence | fail IDEA-CK-12 |
-| All three documents are independently readable, lifecycle-correct, complete, and traceable | eligible for `PASS` after all other checks pass |
+| All three documents are independently readable, complete, stable where required, and traceable | eligible for `PASS` after all other checks pass |
 
 Exercise at least one self-containment probe using a project-only, software, interface or experience, or mixed-domain idea. The probe fails when the method requires another skill, omits an applicable concern, imports an outside procedure, accepts a non-authoritative source, or lets source order silently resolve an authority conflict.
 
@@ -153,11 +151,11 @@ Exercise at least one self-containment probe using a project-only, software, int
 
 | Parent clause | Primary report coverage |
 |---|---|
-| Phase 1 — solution-neutral goal, problem, result, requirements, scope, open questions, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
-| Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
-| Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
-| `templates/requirements.md` — independently readable Goal, Problem, Result, Requirements, Scope, Open Questions, and Approval contract | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
-| `templates/topics.md` — assessed sources, dynamic matching hierarchy, completeness audit, and lifecycle notice | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
-| `templates/ideation.md` — final authority, decision synthesis, integrated design, draft-change disclosure, traceability, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
+| Phase 1 — solution-neutral goal, problem, result, requirements, scope, open questions, completion, and preservation | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
+| Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, completion, and preservation | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
+| Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and return | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
+| `templates/requirements.md` — independently readable Goal, Problem, Result, Requirements, Scope, and Open Questions contract | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
+| `templates/topics.md` — assessed sources, dynamic matching hierarchy, and completeness audit | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
+| `templates/ideation.md` — decision synthesis, integrated design, supporting-result change disclosure, and traceability | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 
 Every applicable lettered item inside the `IDEA-CK-01` through `IDEA-CK-16` family groups appears in the report checklist. The evaluator adds an item for any target-specific case. A material revision repeats all seven perspectives plus Overall from a fresh independent evaluator against new document digests.

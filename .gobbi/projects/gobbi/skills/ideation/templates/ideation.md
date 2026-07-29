@@ -1,8 +1,6 @@
 # {Idea or Problem Name} — Ideation
 
-> **Document role:** Final Ideation authority<br>
-> **State:** `{Evolving until final user approval; authoritative after approval}`<br>
-> **Authority:** After approval, this document supersedes `requirements.md` and `topics.md` automatically.<br>
+> **Document role:** Integrated Ideation result<br>
 > **Purpose:** Preserve the finalized problem, study foundation, hierarchical decisions, and integrated design as one independently readable result.
 > **Output boundary:** Do not include ordered implementation tasks, an implementation diff, or any produced realization such as a prototype, code spike, benchmark, experiment, or completed study. Record unperformed realization work only as future validation.
 
@@ -19,11 +17,10 @@
 - [Changes from the Supporting Drafts](#changes-from-the-supporting-drafts)
 - [Deferred and Rejected Ideas](#deferred-and-rejected-ideas)
 - [Traceability and Completeness](#traceability-and-completeness)
-- [Final Approval](#final-approval)
 
 ## Executive Summary
 
-{State the approved problem, desired outcome, selected direction, decisive evidence, major trade-offs, and final scope in a cold-readable summary.}
+{State the final problem, desired outcome, selected direction, decisive evidence, major trade-offs, and final scope in a cold-readable summary.}
 
 ## Final Requirements
 
@@ -54,7 +51,7 @@
 > **Basis:** {Why it applies and the supporting source or user decision.}<br>
 > **Observable result:** {How a reader can recognize that the outcome is achieved.}
 
-{Repeat for every final material requirement, including approved corrections to the frozen supporting draft.}
+{Repeat for every final material requirement, including documented corrections to the supporting draft.}
 
 ### Scope
 
@@ -64,7 +61,7 @@
 
 ### Open Questions
 
-| Frozen question | Final resolution or deferral | Design consequence |
+| Supporting question | Final resolution or deferral | Design consequence |
 |---|---|---|
 | `{question from requirements.md or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
 
@@ -192,11 +189,11 @@
 
 ## Changes from the Supporting Drafts
 
-| Frozen heading path or prepared topic | Final change | New evidence | User approval when material | Affected branches and consequence |
+| Supporting heading path or prepared topic | Final change | New evidence | User decision when material | Affected branches and consequence |
 |---|---|---|---|---|
-| `{requirements.md or topics.md > heading path}` | `{correction, addition, removal, or changed decision}` | `{source}` | `{approval evidence}` | `{propagation}` |
+| `{requirements.md or topics.md > heading path}` | `{correction, addition, removal, or changed decision}` | `{source}` | `{user decision evidence}` | `{propagation}` |
 
-{Include late sources, corrected requirements, emergent topics, reopened branches, and changed constraints. State “No changes” only after comparing both frozen drafts with this document.}
+{Include late sources, corrected requirements, emergent topics, reopened branches, and changed constraints. State “No changes” only after comparing both supporting drafts with this document.}
 
 ## Deferred and Rejected Ideas
 
@@ -211,11 +208,3 @@
 | `{descriptive requirement heading}` | `{source links or paths}` | `{heading paths}` | `{heading path}` | `{heading path or N/A with reason}` |
 
 {Confirm every material requirement, source, topic, decision, design consequence, risk, validation commitment, and supporting-draft change resolves by descriptive heading path. Confirm all links resolve and all applicable concerns are covered.}
-
-## Final Approval
-
-> **Approval condition:** The user confirms that this document completely and accurately expresses the final problem, requirements, evidence, decisions, and integrated design.<br>
-> **Authority effect:** Approval makes this the authoritative Ideation result and automatically supersedes the frozen `requirements.md` and `topics.md`.<br>
-> **Return set:** Return all three documents together; the supporting drafts remain unchanged historical inputs.
-
-{Record the approval evidence outside this document in the surrounding result without rewriting either frozen supporting draft.}

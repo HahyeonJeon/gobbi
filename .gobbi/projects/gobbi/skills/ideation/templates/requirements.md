@@ -8,7 +8,6 @@
 - [Requirements](#requirements)
 - [Scope](#scope)
 - [Open Questions](#open-questions)
-- [Approval](#approval)
 
 ## Goal
 
@@ -78,12 +77,4 @@
 |---|---|---|
 | `{question that remains to be studied or discussed}` | `{what depends on the answer}` | `{Goal, Problem, Result, Requirement, or Scope heading}` |
 
-{Resolve every question that could change the goal, problem, result, requirements, or scope before approval. Retain only questions whose answers can refine the later design without changing this contract.}
-
-## Approval
-
-> **Approval condition:** The user confirms that the goal, problem, result, requirements, scope, and open questions are complete, accurate, and solution-neutral, with no unresolved question that could change this contract.<br>
-> **Freeze effect:** Approval freezes the whole file without a later status edit. All later corrections appear only in `ideation.md`.<br>
-> **Supersession effect:** User approval of the final `ideation.md` automatically supersedes this supporting draft.
-
-{Before freeze, record the approval evidence outside this file or in the surrounding discussion; do not edit this section after approval.}
+{Resolve every question that could change the goal, problem, result, requirements, or scope before completing Phase 1. Retain only questions whose answers can refine the later design without changing this contract.}

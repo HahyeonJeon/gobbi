@@ -35,39 +35,39 @@ This source exercises the obligations in [SKILL.md](SKILL.md) for the three-docu
 | IDEA-SC-12 | Counterfactual | Adversarial through dedicated case IDEA-SC-12-B | planned output presented as current proof |
 | IDEA-SC-13 | Negative | Change/regression | mechanism disguised as a requirement |
 | IDEA-SC-14 | Negative | Adversarial | provisional topics survive token study and gap review unchanged |
-| IDEA-SC-15 | Change/regression | Adversarial through dedicated case IDEA-SC-15-B | post-freeze byte edit |
+| IDEA-SC-15 | Change/regression | Adversarial through dedicated case IDEA-SC-15-B | post-completion byte edit |
 | IDEA-SC-16 | Adversarial | Positive | transcript or cross-file pointer presented as final synthesis |
 
 Every selected category has a positive handled discrimination in at least one family. One case discharges one triggered minimum; the five named dedicated cases keep independently constructible minima separate. Exact-boundary, failure/recovery, adversarial, change, and counterfactual minima are exercised where their triggers apply; target-specific triggers discovered during evaluation require additional cases.
 
 Scale threshold: split this source under an index above 16 families or 48 selected category-by-type cells.
 
-## IDEA-SC-01 — The result solves the approved problem inside an approved boundary
+## IDEA-SC-01 — The result solves the defined problem inside the established boundary
 
 - **Primary category:** 1 — the defining discrimination is whether the intended outcome and scope solve the actual problem.
-- **Secondary categories:** 7 Trust / harm / governance for material user authority; 10 Evidence / traceability / clarity for approval and problem-to-design proof.
+- **Secondary categories:** 7 Trust / harm / governance for material user authority; 10 Evidence / traceability / clarity for user decisions and problem-to-design proof.
 - **Primary type:** Positive — the ordinary result must align the problem, observable outcome, and scope.
 - **Coverage role:** Positive; counterfactual by testing the do-nothing case and premise.
 - **Source:** Principle “Question the user without hesitation until the idea is complete”; Principle “Find the best idea by comparing reference-backed alternatives”; Rule “MUST preserve material user authority”; Rule “NEVER change the accepted contract silently”; Phase 1 and Phase 3.
 - **Given:** a user trigger, current reality, active scope, strongest credible do-nothing outcome, and a proposed final design.
 - **When:** the supported problem, desired and observable results, final scope, and selected design are compared.
-- **Then:** the design addresses the approved problem, every result and requirement has an observable outcome, and every included, excluded, deferred, or rejected item has a user-approved boundary.
+- **Then:** the design addresses the defined problem, every result and requirement has an observable outcome, and every included, excluded, deferred, or rejected item has an explicit user-decided boundary.
 - **Failure oracle:** the design solves an adjacent symptom, relies on an untested premise without a reopen condition, or admits undeclared work.
-- **Evidence tuple:** inspect the final problem definition, scope tables, decision rationale, and supporting-draft changes; alignment and approval evidence confirm the outcome.
-- **Adversarial face:** add a useful adjacent cleanup under a broad phrase such as “related work”; the case fails unless it is explicitly approved in scope.
-- **Obligation:** the result states one root-cause-aligned outcome and a refusable, user-approved scope contract.
+- **Evidence tuple:** inspect the final problem definition, scope tables, decision rationale, and supporting-draft changes; alignment and user-decision evidence confirm the outcome.
+- **Adversarial face:** add a useful adjacent cleanup under a broad phrase such as “related work”; the case fails unless it is explicitly included in scope by the user.
+- **Obligation:** the result states one problem-aligned outcome and a refusable, user-decided scope contract.
 - **Checklist family:** IDEA-CK-01; atomic items IDEA-CK-01A through IDEA-CK-01D.
 
-## IDEA-SC-02 — Every affected actor has a usable outcome or approved exclusion
+## IDEA-SC-02 — Every affected actor has a usable outcome or explicit exclusion
 
 - **Primary category:** 2 — actors and use context define the discrimination.
 - **Secondary categories:** 6 Failure / recovery / operations for the failure-time actor; 7 Trust / harm / governance for actor authority.
 - **Primary type:** Alternative-valid — materially different actors must each have a valid path.
 - **Coverage role:** Alternative-valid; adversarial through a hidden stakeholder.
 - **Source:** Principle “Question the user without hesitation until the idea is complete”; Rule “MUST preserve material user authority”; Phase 1 and Phase 3.
-- **Given:** primary users, operators, maintainers, approvers, affected consumers, and their environments and authority.
+- **Given:** primary users, operators, maintainers, authorizing actors, affected consumers, and their environments and authority.
 - **When:** each actor is traced from the problem through requirements, topic decisions, resulting design, and failure handling.
-- **Then:** every material actor has a named responsibility and usable outcome or an explicit exclusion approved by the user.
+- **Then:** every material actor has a named responsibility and usable outcome or an explicit exclusion decided by the user.
 - **Failure oracle:** an intended reader, caller, operator, or maintainer needs private context or lacks a required path or authority.
 - **Evidence tuple:** inspect actor tables and actor-to-design traces; a cold-consumer read confirms each path.
 - **Adversarial face:** surface an operator affected only during failure; the case fails if the actor appears nowhere in the design.
@@ -170,7 +170,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Given:** untrusted input, sensitive or retained data, privileged or destructive action, external service, governing obligation, and reusable prior art when applicable.
 - **When:** an unauthorized actor, malformed source, retention conflict, destructive request, or incompatible license is introduced.
 - **Then:** validation precedes privileged use, user authority remains explicit, retention and privacy are bounded, and incompatible use is rejected.
-- **Failure oracle:** the design grants authority by implication, retains sensitive data without policy, performs a destructive action without approval, or adopts incompatible material.
+- **Failure oracle:** the design grants authority by implication, retains sensitive data without policy, performs a destructive action without authorization, or adopts incompatible material.
 - **Evidence tuple:** inspect trust and data flows, authority decisions, source assessments, and license evidence; rejection paths confirm control.
 - **Adversarial face:** route a privileged action through a nominally trusted component to bypass the user decision; the case must still reject it.
 - **Obligation:** the design controls every applicable trust, authority, privacy, governance, and licensing surface.
@@ -201,7 +201,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Source:** Rule “NEVER change the accepted contract silently”; Phase 1 constraints; Phase 2 completeness audit; Phase 3 integrated design.
 - **Given:** existing users, data, files, interfaces, APIs, or behavior that the design may change.
 - **When:** pre-change, mixed, migrated, failed-migration, rollback, and post-change states are compared.
-- **Then:** compatibility promises, migration ownership, one-way gates, rollback limits, and reopen conditions are explicit and user-approved when material.
+- **Then:** compatibility promises, migration ownership, one-way gates, rollback limits, and reopen conditions are explicit and decided by the user when material.
 - **Failure oracle:** an existing consumer breaks silently, a migration has no failure state, or an irreversible action is presented as reversible.
 - **Evidence tuple:** inspect compatibility matrices and migration flows against existing consumers; transition walkthroughs confirm each state.
 - **Adversarial face:** label a destructive migration “rollback” even though original information is lost; the case must fail.
@@ -278,21 +278,21 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Evidence tuple:** inspect the artifact inventory and cited result; absence of a produced, inspected output confirms the adversarial attempt.
 - **Obligation trace:** this case supports the IDEA-SC-12 obligation and IDEA-CK-12 without discharging the primary counterfactual case.
 
-## IDEA-SC-13 — Requirements are solution-neutral, approved, and frozen before topic preparation
+## IDEA-SC-13 — Requirements are solution-neutral and complete before topic preparation
 
 - **Primary category:** 1 — the problem and requirement boundary defines the case.
-- **Secondary categories:** 9 Change / compatibility / reversibility for the approval-to-freeze transition; 10 Evidence / traceability / clarity for approval chronology and digest proof.
+- **Secondary categories:** 9 Change / compatibility / reversibility for the completion transition; 10 Evidence / traceability / clarity for chronology and digest proof.
 - **Primary type:** Negative — a premature solution mechanism must be rejected as a requirement.
-- **Coverage role:** Negative; change/regression through the freeze transition.
+- **Coverage role:** Negative; change/regression through the completion transition.
 - **Source:** Phase 1; [requirements template](templates/requirements.md).
 - **Given:** a user trigger that proposes a mechanism before the goal, problem, result, requirements, and scope are complete.
 - **When:** `requirements.md` is reviewed immediately before Phase 2 begins.
-- **Then:** the document states the complete goal, supported problem, result, actor outcomes, solution-neutral requirements, four-status scope, and nonblocking open questions; material claims carry local basis and uncertainty; every contract-changing question is resolved; user approval exists; the lifecycle notice is present; and the file freezes before any topic is prepared.
-- **Failure oracle:** any required section is materially incomplete, a claim hides its basis or uncertainty, a preferred implementation is disguised as an outcome requirement, a contract-changing question remains open, topics exist before approval, or the supporting file remains editable after the transition.
-- **Evidence tuple:** inspect every Phase 1 section, local claim basis, requirement blocks, scope statuses, open-question connections, approval evidence, topic chronology, and file digest at freeze; completeness, solution neutrality, question closure, and stable timing confirm the case.
+- **Then:** the document states the complete goal, supported problem, result, actor outcomes, solution-neutral requirements, four-status scope, and nonblocking open questions; material claims carry local basis and uncertainty; every contract-changing question is resolved; and the file is preserved before any topic is prepared.
+- **Failure oracle:** any required section is materially incomplete, a claim hides its basis or uncertainty, a preferred implementation is disguised as an outcome requirement, a contract-changing question remains open, topics exist before Phase 1 completes, or the supporting file remains editable after the transition.
+- **Evidence tuple:** inspect every Phase 1 section, local claim basis, requirement blocks, scope statuses, open-question connections, topic chronology, and the digest recorded at completion; completeness, solution neutrality, question closure, and stable timing confirm the case.
 - **Adversarial face:** rename a proposed mechanism as an outcome while leaving the external result unspecified; the case must reject it.
-- **Obligation:** Ideation freezes a complete, locally supported, solution-neutral requirements contract with no unresolved question that could change it before preparing topics.
-- **Checklist family:** IDEA-CK-13; atomic items IDEA-CK-13A through IDEA-CK-13L.
+- **Obligation:** Ideation preserves a complete, locally supported, solution-neutral requirements contract with no unresolved question that could change it before preparing topics.
+- **Checklist family:** IDEA-CK-13; atomic items IDEA-CK-13A through IDEA-CK-13K.
 
 ## IDEA-SC-14 — Progressive topic preparation closes study and coverage gaps
 
@@ -301,58 +301,58 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Primary type:** Negative — a topic agenda that skips a study or revision pass must be rejected.
 - **Coverage role:** Negative; adversarial through a fixed inherited taxonomy.
 - **Source:** Principle “Study trustworthy prior art before designing”; Phase 2; [topics template](templates/topics.md).
-- **Given:** frozen requirements, provisional top-level topics, available project materials, external prior art, and a tempting pre-existing topic taxonomy.
+- **Given:** completed requirements, provisional top-level topics, available project materials, external prior art, and a tempting pre-existing topic taxonomy.
 - **When:** topic origin, refinement chronology, source assessment, and final coverage are inspected.
-- **Then:** provisional topics derive from the frozen requirements; internal study refines them; external study refines them again; a revision and supplementation pass identifies missing or weak topics, performs targeted additional study, and closes every material gap; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from the current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, and completion condition.
-- **Failure oracle:** the requirements are not frozen before provisional topics are drafted, either study pass is absent or token, the revision and supplementation pass is absent, a material missing or weak topic survives, the tree merely copies a fixed taxonomy, or any topic omits one of its eight required fields.
-- **Evidence tuple:** inspect the freeze record, topic-preparation chronology, both source registers, requirement-and-source-to-topic derivation, coverage audit, and every field in each topic block; the ordered refinement passes, closed material gaps, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
+- **Then:** provisional topics derive from the completed requirements; internal study refines them; external study refines them again; a revision and supplementation pass identifies missing or weak topics, performs targeted additional study, and closes every material gap; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from the current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, and completion condition.
+- **Failure oracle:** the requirements are not complete before provisional topics are drafted, either study pass is absent or token, the revision and supplementation pass is absent, a material missing or weak topic survives, the tree merely copies a fixed taxonomy, or any topic omits one of its eight required fields.
+- **Evidence tuple:** inspect the Phase 1 completion record, topic-preparation chronology, both source registers, requirement-and-source-to-topic derivation, coverage audit, and every field in each topic block; the ordered refinement passes, closed material gaps, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
 - **Adversarial face:** populate the required headings with token sources and a cosmetic gap review after generating a fixed tree; the case must fail on semantic refinement and material coverage.
-- **Obligation:** topic preparation progresses from frozen requirements through provisional topics, internal refinement, external refinement, and gap-driven revision before producing the complete eight-field topic hierarchy.
+- **Obligation:** topic preparation progresses from completed requirements through provisional topics, internal refinement, external refinement, and gap-driven revision before producing the complete eight-field topic hierarchy.
 - **Checklist family:** IDEA-CK-14; atomic items IDEA-CK-14A through IDEA-CK-14G.
 
-## IDEA-SC-15 — Frozen supporting drafts remain byte-stable while later learning changes only the final document
+## IDEA-SC-15 — Preserved supporting results remain byte-stable while later learning changes only the final document
 
-- **Primary category:** 9 — the lifecycle change from editable draft to frozen support defines the case.
+- **Primary category:** 9 — the transition from editable work to a preserved supporting result defines the case.
 - **Secondary categories:** 10 Evidence / traceability / clarity for digest stability and disclosed propagation.
 - **Primary type:** Change/regression — the case compares file bytes before and after late learning.
 - **Coverage role:** Change/regression.
 - **Source:** Principle “Discuss the design through a hierarchy of topics”; Rule “NEVER change the accepted contract silently”; all three phases and all three templates.
-- **Given:** approved digests for `requirements.md` and `topics.md`, followed by a late source, corrected requirement, child-to-parent contradiction, or emergent topic.
-- **When:** the change is incorporated and final approval is requested.
-- **Then:** both supporting digests remain identical; `ideation.md` records the change, evidence, material approval, affected branches, consequence, updated tree, and reopen decisions.
+- **Given:** completion digests for `requirements.md` and `topics.md`, followed by a late source, corrected requirement, child-to-parent contradiction, or emergent topic.
+- **When:** the change is incorporated into the final result.
+- **Then:** both supporting digests remain identical; `ideation.md` records the change, evidence, material user decision, affected branches, consequence, updated tree, and reopen decisions.
 - **Failure oracle:** either supporting file changes by even one byte, the change is hidden, or a descendant changes without reopening and reconciling its ancestor.
-- **Evidence tuple:** compare frozen and final digests and inspect “Changes from the Supporting Drafts” plus the final hierarchy; byte identity and explicit propagation confirm the case.
-- **Adversarial face:** add a harmless approval stamp or typo fix to a frozen file; the case must still fail.
-- **Obligation:** late learning changes only the final authority and never mutates a frozen supporting draft.
+- **Evidence tuple:** compare completion and returned digests and inspect “Changes from the Supporting Drafts” plus the final hierarchy; byte identity and explicit propagation confirm the case.
+- **Adversarial face:** add a harmless status note or typo fix to a preserved file; the case must still fail.
+- **Obligation:** late learning changes only the final document and never mutates a preserved supporting result.
 - **Checklist family:** IDEA-CK-15; atomic items IDEA-CK-15A through IDEA-CK-15D.
 
-### IDEA-SC-15-B — A harmless-looking post-freeze edit is still rejected
+### IDEA-SC-15-B — A harmless-looking post-completion edit is still rejected
 
 - **Primary type:** Adversarial — the case attempts to bypass immutability with a cosmetically harmless change.
 - **Coverage role:** Adversarial.
-- **Given:** approved supporting-draft digests and a proposed approval stamp, status update, typo correction, or formatting cleanup.
-- **When:** the proposed byte change is compared with the whole-file freeze contract.
+- **Given:** supporting-result completion digests and a proposed status update, typo correction, or formatting cleanup.
+- **When:** the proposed byte change is compared with the whole-file preservation rule.
 - **Then:** the supporting edit is rejected and any material correction is recorded only in `ideation.md`.
-- **Failure oracle:** intent, harmlessness, or formatting is accepted as permission to change a frozen byte.
-- **Evidence tuple:** compare the proposed and frozen bytes and inspect the final change disclosure; digest stability confirms rejection.
+- **Failure oracle:** intent, harmlessness, or formatting is accepted as permission to change a preserved byte.
+- **Evidence tuple:** compare the proposed and preserved bytes and inspect the final change disclosure; digest stability confirms rejection.
 - **Obligation trace:** this case supports the IDEA-SC-15 obligation and IDEA-CK-15 without discharging the primary change/regression case.
 
 ## IDEA-SC-16 — The returned bundle is independently readable and the final document is decision synthesis
 
 - **Primary category:** 10 — artifact authority, completeness, and communication define the case.
-- **Secondary categories:** 1 Purpose / outcomes / scope for complete returned outcome; 2 Actors / stakeholders / use-context for cold readers; 9 Change / compatibility / reversibility for supersession lifecycle.
+- **Secondary categories:** 1 Purpose / outcomes / scope for complete returned outcome; 2 Actors / stakeholders / use-context for cold readers; 9 Change / compatibility / reversibility for supporting-result stability.
 - **Primary type:** Adversarial — pointers or transcript volume attempt to substitute for synthesis.
 - **Coverage role:** Adversarial; positive through a complete three-document return.
 - **Source:** Intro; Rule “MUST complete Ideation from this operation and its owned companions”; Phase 3; all three templates.
-- **Given:** `ideation.tmp.md` containing the completed Phase 3 discussion record and the complete pre-approval candidate containing frozen `requirements.md`, frozen `topics.md`, and evolving `ideation.md`.
+- **Given:** `ideation.tmp.md` containing the completed Phase 3 discussion record and the complete candidate containing preserved `requirements.md`, preserved `topics.md`, and `ideation.md`.
 - **When:** each returned file is read alone and `ideation.md` is compared with the temporary discussion record.
-- **Then:** `ideation.tmp.md` remains available through evaluation but outside the returned candidate; integration produces the coherent parent-first decision set only in the temporary file; design development organizes those decisions into one complete structure and detailed behavior, routes every newly exposed material choice through additional discussion and reintegration, and finalizes the coherent result in the pre-approval `ideation.md`; every material decision records its complete decision tuple; changes are disclosed; and no ordered implementation tasks or implementation diff appears.
-- **Failure oracle:** the temporary record is absent before evaluation, Step 3.3 creates or updates `ideation.md`, integration copies the temporary record chronologically instead of synthesizing it, integrated decisions are not written back to `ideation.tmp.md`, duplicate or stale decisions survive, a contradiction or unresolved choice is resolved by assumption, design development turns a newly exposed material choice into design without additional discussion and reintegration, `ideation.md` is created before the integrated design is coherent, the final document omits a material temporary discussion or decision, the final document says “see requirements,” a topic asks an open-ended question without presenting options and a recommendation, the hierarchy advances past an unresolved ancestor, any material decision field is missing, an ordered implementation task list or implementation diff appears, one returned file is absent, `ideation.tmp.md` is returned, the contingent-authority statement is missing, or final approval or authority is claimed before evaluation passes.
-- **Evidence tuple:** group the pre-integration temporary records by topic, compare every discussion round with `Integrated Decisions`, inspect how design development organizes the decision set into the structure and behavior recorded in pre-approval `ideation.md`, trace newly exposed choices through additional discussion and reintegration, then perform three isolated cold reads and the output-boundary sweeps; complete decision synthesis, design development, final recording, standalone meaning, approval readiness, and a clean three-document output boundary confirm the case.
+- **Then:** `ideation.tmp.md` remains available through evaluation but outside the returned candidate; integration produces the coherent parent-first decision set only in the temporary file; design development organizes those decisions into one complete structure and detailed behavior, routes every newly exposed material choice through additional discussion and reintegration, and finalizes the coherent result in `ideation.md`; every material decision records its complete decision tuple; changes are disclosed; and no ordered implementation tasks or implementation diff appears.
+- **Failure oracle:** the temporary record is absent before evaluation, Step 3.3 creates or updates `ideation.md`, integration copies the temporary record chronologically instead of synthesizing it, integrated decisions are not written back to `ideation.tmp.md`, duplicate or stale decisions survive, a contradiction or unresolved choice is resolved by assumption, design development turns a newly exposed material choice into design without additional discussion and reintegration, `ideation.md` is created before the integrated design is coherent, the final document omits a material temporary discussion or decision, the final document says “see requirements,” a topic asks an open-ended question without presenting options and a recommendation, the hierarchy advances past an unresolved ancestor, any material decision field is missing, an ordered implementation task list or implementation diff appears, one returned file is absent, or `ideation.tmp.md` is returned.
+- **Evidence tuple:** group the pre-integration temporary records by topic, compare every discussion round with `Integrated Decisions`, inspect how design development organizes the decision set into the structure and behavior recorded in `ideation.md`, trace newly exposed choices through additional discussion and reintegration, then perform three isolated cold reads and the output-boundary sweeps; complete decision synthesis, design development, final recording, standalone meaning, and a clean three-document output boundary confirm the case.
 - **Adversarial face:** provide every conversation turn and link to the drafts but omit a selected design or rationale; the case must fail.
-- **Obligation:** Ideation consolidates temporary discussion rounds into a coherent parent-first decision set, develops and refines the complete design from that set through any needed additional discussion, finalizes the pre-approval `ideation.md`, and preserves the three-document authority and output boundaries.
+- **Obligation:** Ideation consolidates temporary discussion rounds into a coherent parent-first decision set, develops and refines the complete design from that set through any needed additional discussion, finalizes `ideation.md`, and preserves the three-document output boundary.
 - **Checklist family:** IDEA-CK-16; atomic items IDEA-CK-16A through IDEA-CK-16M.
 
 ## Omission Sweep
 
-Every Principle, Rule, phase boundary, document lifecycle, and template contract maps to at least one seed. Every seed maps to one observable obligation and one checklist family whose atomic lettered items cover the obligation. Target-specific obligations discovered during a run must be added to the filled evaluation frame before review; they do not change this source.
+Every Principle, Rule, phase boundary, artifact-preservation rule, and template contract maps to at least one seed. Every seed maps to one observable obligation and one checklist family whose atomic lettered items cover the obligation. Target-specific obligations discovered during a run must be added to the filled evaluation frame before review; they do not change this source.
