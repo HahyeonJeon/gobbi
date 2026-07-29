@@ -158,7 +158,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
 - Ask another decision-ready question when the choice remains unresolved, and repeat the discussion, revision, and conditional study until the user makes the required decision or explicitly defers it.
 - Record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition as synthesis rather than a conversational transcript.
-- Use the decision to refine the rough result and determine its constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operations, failures, and other details.
 - Put corrected requirements and emergent topics only in `ideation.md`, place each emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings.
 - Propagate each decision or correction through every affected descendant, reconcile sibling topics before closing their parent, and reopen the earliest affected branch when a child or new evidence contradicts an ancestor.
 - Move to the next topic only after the current topic is resolved, deferred with an explicit reason, or reopened at the correct ancestor.
