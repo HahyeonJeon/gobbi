@@ -65,7 +65,7 @@ Ideation applies from the first problem framing through user approval of a plan-
 
 Read the user trigger, current project state, prior decisions, governing documents, relevant history, and any earlier valid design. Identify the intended consumer and the decisions the final artifact must enable. Classify material inputs as verified fact, user report, assumption, contradiction, decision, or open question.
 
-Select only the domain skills the work needs. Use [Startup](../startup/SKILL.md) when the project baseline is absent, sparse, contradictory, or explicitly being reset. Use [UI](../ui/SKILL.md) for observable interface design, [UX](../ux/SKILL.md) for user-outcome and experience design, [Coding](../coding/SKILL.md) for software design, [Python](../python/SKILL.md) or [TypeScript](../typescript/SKILL.md) for their language-specific contracts, and [Electron](../electron/SKILL.md) for the desktop-platform contract. A project or process design may need only this base method. Domain skills supplement this procedure; do not copy their detailed mechanics into it.
+Select only the domain skills the work needs. Use [Startup](../startup/SKILL.md) when the project baseline is absent, sparse, contradictory, or explicitly being reset. Use [UI](../ui/SKILL.md) for observable interface design, [UX](../ux/SKILL.md) for user-outcome and experience design, [Coding](../coding/SKILL.md) for software design, [Python](../python/SKILL.md) or [TypeScript](../typescript/SKILL.md) for their language-specific contracts, [React](../react/SKILL.md) for React's library-specific contract, and [Electron](../electron/SKILL.md) for the desktop-platform contract. A project or process design may need only this base method. Domain skills supplement this procedure; do not copy their detailed mechanics into it.
 
 **Evidence:** an input and routing register with the trigger, baseline, artifact consumer, applicable domains, authoritative inputs, contradictions, and open questions.
 
@@ -172,6 +172,7 @@ Confirm that the artifact contains no ordered implementation task list, implemen
 - [UX](../ux/SKILL.md) owns specialized user-outcome research, experience design, prototype evaluation, and measurement handoff.
 - [Coding](../coding/SKILL.md) owns language-agnostic software design and construction principles.
 - [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific design contracts and idioms.
+- [React](../react/SKILL.md) owns React's library-specific design contract and idioms.
 - [Electron](../electron/SKILL.md) owns the desktop-platform design contract an Electron application adds on top of those.
 - [Planning](../planning/SKILL.md) owns ordered implementation decomposition after Ideation readiness.
 - [Workflow Ideation adapter](../workflow/steps/ideation.md) owns manager entry, user gates, and transitions.

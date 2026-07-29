@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/react/scripts/validate-evaluation-contracts.sh

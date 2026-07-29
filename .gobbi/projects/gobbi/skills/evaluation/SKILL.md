@@ -308,6 +308,7 @@ version and repeat every applicable step with current evidence. Prior results re
 - [Coding](../coding/SKILL.md) owns language-agnostic software review criteria.
 - [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific review
   criteria and verification methods.
+- [React](../react/SKILL.md) owns React's library-specific review criteria and verification methods.
 - [Electron](../electron/SKILL.md) owns the desktop-platform review criteria and verification methods an
   Electron application adds on top of those.
 - [EVALUATION manager adapter](../workflow/steps/evaluation.md) owns Gobbi's fresh dual-system dispatch, machine
