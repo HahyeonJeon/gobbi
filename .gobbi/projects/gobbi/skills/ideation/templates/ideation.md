@@ -36,9 +36,9 @@
 
 ### Result
 
-| Actor | Need | Desired observable outcome |
+| Actor | Need | Outcome |
 |---|---|---|
-| `{actor}` | `{need}` | `{outcome}` |
+| `{actor}` | `{need}` | `{desired observable outcome}` |
 
 {Restate the final intended form, high-level capabilities, observable external behavior, inputs, outputs, integration boundary, and unchanged behavior.}
 
@@ -55,13 +55,13 @@
 
 ### Scope
 
-| Item | Final status | Reason |
+| Item | Status | Reason |
 |---|---|---|
 | `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
 
 ### Questions
 
-| Supporting question | Final resolution or deferral | Design consequence |
+| Question | Resolution | Effect |
 |---|---|---|
 | `{question from requirements.md or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
 
@@ -69,15 +69,15 @@
 
 ### Internal Study
 
-| Material | Stable location | Authority, relevance, currency, and applicability | Licensing when reuse may be affected | Adopted, rejected, or uncertain lesson |
+| Source | Location | Assessment | License | Lesson |
 |---|---|---|---|---|
-| `{internal source, including late sources}` | `{path or link}` | `{assessment of every named property}` | `{license assessment or N/A with reason}` | `{disposition and lesson}` |
+| `{internal source, including late sources}` | `{path or link}` | `{authority, relevance, currency, and applicability}` | `{license assessment or N/A with reason}` | `{disposition and lesson}` |
 
 ### External Study
 
-| Material | Link | Authority, currency, relevance, applicability, and license | Adopted, rejected, or uncertain lesson |
+| Source | Link | Assessment | Lesson |
 |---|---|---|---|
-| `{external source, including late sources}` | `{URL}` | `{assessment}` | `{disposition and lesson}` |
+| `{external source, including late sources}` | `{URL}` | `{authority, currency, relevance, applicability, and license}` | `{disposition and lesson}` |
 
 ### Gaps and Conflicts
 
@@ -111,9 +111,9 @@
 
 #### Options
 
-| Alternative | Pros | Cons | Fit with outcomes and constraints | Risks and consequences |
+| Option | Pros | Cons | Fit | Risks |
 |---|---|---|---|---|
-| `{alternative}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
+| `{option}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
 
 #### Decision
 
@@ -143,9 +143,9 @@
 
 **Options:**
 
-| Alternative | Pros | Cons | Fit with outcomes and constraints | Risks and consequences |
+| Option | Pros | Cons | Fit | Risks |
 |---|---|---|---|---|
-| `{alternative}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
+| `{option}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
 
 **Decision:** {State the recommendation, user decision when required, why it won, and what evidence would have changed it.}
 
@@ -181,7 +181,7 @@
 
 ## Risks and Validation
 
-| Assumption or risk | What fails if wrong | Current evidence | Validation question | Method or artifact and participants or environment | Pass and fail signals | Owner and execution condition | Reopen condition |
+| Risk or Assumption | Impact | Evidence | Question | Method | Signals | Owner and Timing | Reopen When |
 |---|---|---|---|---|---|---|---|
 | `{assumption or risk}` | `{impact}` | `{existing evidence only}` | `{question the validation must answer}` | `{planned walkthrough, prototype, experiment, spike, benchmark, study, or other method; who or what participates}` | `{signals}` | `{owner and when it runs}` | `{condition}` |
 
@@ -189,7 +189,7 @@
 
 ## Changes
 
-| Supporting heading path or prepared topic | Final change | New evidence | User decision when material | Affected branches and consequence |
+| Source Item | Change | Evidence | User Decision | Effects |
 |---|---|---|---|---|
 | `{requirements.md or topics.md > heading path}` | `{correction, addition, removal, or changed decision}` | `{source}` | `{user decision evidence}` | `{propagation}` |
 
@@ -197,13 +197,13 @@
 
 ## Deferred and Rejected
 
-| Idea | Deferred or rejected | Reason | Destination, drop decision, or reopen condition |
+| Idea | Status | Reason | Next Step |
 |---|---|---|---|
 | `{idea}` | `{disposition}` | `{reason}` | `{destination or condition}` |
 
 ## Traceability
 
-| Final requirement heading | Source headings | Topic and decision heading paths | Resulting design heading | Risk or validation heading |
+| Requirement | Sources | Topics and Decisions | Design | Risk or Validation |
 |---|---|---|---|---|
 | `{descriptive requirement heading}` | `{source links or paths}` | `{heading paths}` | `{heading path}` | `{heading path or N/A with reason}` |
 
