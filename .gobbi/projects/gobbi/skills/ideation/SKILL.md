@@ -189,6 +189,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ## References
 
-- [Requirements template](templates/requirements.md)
-- [Topics template](templates/topics.md)
-- [Final Ideation template](templates/ideation.md)
+- [`requirements.md`](templates/requirements.md) defines the Phase 1 problem, target, scope, rough result, and supporting-draft lifecycle.
+- [`topics.md`](templates/topics.md) defines the Phase 2 study foundation, topic hierarchy, discussion contract, and supporting-draft lifecycle.
+- [`ideation.md`](templates/ideation.md) defines the Phase 3 decision synthesis, integrated design, changes, risks, validation commitments, and final authority.
