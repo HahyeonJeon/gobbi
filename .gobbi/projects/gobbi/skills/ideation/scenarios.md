@@ -34,7 +34,7 @@ This source exercises the obligations in [SKILL.md](SKILL.md) for the three-docu
 | IDEA-SC-11 | Alternative-valid | Adversarial | polished non-authoritative source |
 | IDEA-SC-12 | Counterfactual | Adversarial through dedicated case IDEA-SC-12-B | planned output presented as current proof |
 | IDEA-SC-13 | Negative | Change/regression | mechanism disguised as a requirement |
-| IDEA-SC-14 | Negative | Adversarial | topics generated before both study surfaces |
+| IDEA-SC-14 | Negative | Adversarial | provisional topics survive token study and gap review unchanged |
 | IDEA-SC-15 | Change/regression | Adversarial through dedicated case IDEA-SC-15-B | post-freeze byte edit |
 | IDEA-SC-16 | Adversarial | Positive | transcript or cross-file pointer presented as final synthesis |
 
@@ -294,21 +294,21 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Obligation:** Ideation visibly classifies every material statement into one of the six parent types and freezes a complete solution-neutral requirements contract before preparing topics.
 - **Checklist family:** IDEA-CK-13; atomic items IDEA-CK-13A through IDEA-CK-13L.
 
-## IDEA-SC-14 — A deliberate internal and external study pass precedes dynamic topic generation
+## IDEA-SC-14 — Progressive topic preparation closes study and coverage gaps
 
 - **Primary category:** 10 — source-grounded derivation and chronology define the case.
 - **Secondary categories:** 1 Purpose / outcomes / scope for requirement coverage; 4 Interfaces / dependencies / structure for the topic hierarchy and its dependencies.
-- **Primary type:** Negative — topics generated before either required study surface must be rejected.
+- **Primary type:** Negative — a topic agenda that skips a study or revision pass must be rejected.
 - **Coverage role:** Negative; adversarial through a fixed inherited taxonomy.
 - **Source:** Principle “Study trustworthy prior art before designing”; Phase 2; [topics template](templates/topics.md).
-- **Given:** frozen requirements, available project materials, external prior art, and a tempting pre-existing topic taxonomy.
-- **When:** topic origin and chronology are inspected.
-- **Then:** both internal and external materials were deliberately studied first; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, and completion condition.
-- **Failure oracle:** either study register is absent, links replace source assessment, topics predate study, the tree merely copies a fixed taxonomy, or any topic omits one of its eight required fields.
-- **Evidence tuple:** inspect every named source-assessment field, both source registers, chronology, requirement-to-topic derivation, and every field in each topic block; complete assessed sources, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
-- **Adversarial face:** populate the required headings with token sources after generating a fixed tree; the case must fail on chronology and semantic derivation.
-- **Obligation:** dynamic topic preparation begins only after meaningful internal and external study and gives every topic the complete eight-field parent tuple.
-- **Checklist family:** IDEA-CK-14; atomic items IDEA-CK-14A through IDEA-CK-14F.
+- **Given:** frozen requirements, provisional top-level topics, available project materials, external prior art, and a tempting pre-existing topic taxonomy.
+- **When:** topic origin, refinement chronology, source assessment, and final coverage are inspected.
+- **Then:** provisional topics derive from the frozen requirements; internal study refines them; external study refines them again; a revision and supplementation pass identifies missing or weak topics, performs targeted additional study, and closes every material gap; each material source records authority, relevance, currency, applicability, disposition, and licensing when reuse may be affected; the resulting tree is visibly derived from the current requirements and findings; and every topic records its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, and completion condition.
+- **Failure oracle:** the requirements are not frozen before provisional topics are drafted, either study pass is absent or token, the revision and supplementation pass is absent, a material missing or weak topic survives, the tree merely copies a fixed taxonomy, or any topic omits one of its eight required fields.
+- **Evidence tuple:** inspect the freeze record, topic-preparation chronology, both source registers, requirement-and-source-to-topic derivation, coverage audit, and every field in each topic block; the ordered refinement passes, closed material gaps, source-backed differences from generic taxonomies, and complete topic tuples confirm the case.
+- **Adversarial face:** populate the required headings with token sources and a cosmetic gap review after generating a fixed tree; the case must fail on semantic refinement and material coverage.
+- **Obligation:** topic preparation progresses from frozen requirements through provisional topics, internal refinement, external refinement, and gap-driven revision before producing the complete eight-field topic hierarchy.
+- **Checklist family:** IDEA-CK-14; atomic items IDEA-CK-14A through IDEA-CK-14G.
 
 ## IDEA-SC-15 — Frozen supporting drafts remain byte-stable while later learning changes only the final document
 

@@ -4,7 +4,7 @@
 > **State:** `{Draft until user approval; immutable after approval}`<br>
 > **Authority:** The approved final `ideation.md` automatically supersedes this document.<br>
 > **Immutability:** After approval, do not change any byte in this file; record later sources, corrected requirements, and emergent topics only in `ideation.md`.<br>
-> **Purpose:** Turn frozen requirements and deliberate internal and external study into a project-specific hierarchy for discussion.
+> **Purpose:** Turn frozen requirements and progressive internal, external, and gap-driven topic refinement into a project-specific hierarchy for discussion.
 
 ## Contents
 

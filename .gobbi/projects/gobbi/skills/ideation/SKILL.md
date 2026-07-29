@@ -111,7 +111,16 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Update and refine the topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
 - Write the complete externally updated topic draft back to `topics.tmp.md`.
 
-#### 2.4 Build and audit the topic hierarchy
+#### 2.4 Revise and supplement the topic draft
+
+- Read `topics.tmp.md` as the complete draft produced by the internal and external study passes.
+- Compare the draft with the frozen requirements and studied materials to identify missing topics, weak questions, shallow source support, incomplete alternatives or trade-offs, unresolved contradictions, duplicate topics, and uncovered dependencies.
+- Perform targeted additional internal or external study for every material gap that the existing sources cannot resolve.
+- Revise weak topics, add missing topics or subtopics, merge duplicates, and preserve unresolved contradictions for discussion.
+- Repeat the review, additional study, revision, and supplementation until no material topic gap remains.
+- Write the complete revised and supplemented topic draft back to `topics.tmp.md`.
+
+#### 2.5 Build and audit the topic hierarchy
 
 - Read `topics.tmp.md` and verify that every topic is traceable to its Phase 1, internal, or external basis.
 - Create `topics.md` from [the topics template](templates/topics.md) using `topics.tmp.md` as the current inventory.
@@ -121,9 +130,9 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Order the hierarchy for parent-first discussion and expose dependencies and cross-topic conflicts.
 - Audit actors, boundaries, interfaces, state, data, resources, failures, recovery, trust, governance, inclusion, locale, compatibility, reversal, evidence, risk, and validation for applicable topics.
 - Record an inspected not-applicable reason for every concern that does not belong.
-- Continue study and topic preparation while any material source conflict or coverage gap remains.
+- Return to Step 2.4 while any material source conflict or coverage gap remains.
 
-#### 2.5 Approve and freeze `topics.md`
+#### 2.6 Approve and freeze `topics.md`
 
 - Add a lifecycle notice stating that `topics.md` is a discussion agenda rather than a live tracker.
 - State that approval freezes the whole file, later sources and corrections belong only in `ideation.md`, and final approval of `ideation.md` automatically supersedes this supporting draft.

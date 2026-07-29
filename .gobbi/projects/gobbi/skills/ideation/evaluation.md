@@ -6,7 +6,7 @@ Use this entrypoint to evaluate one exact three-document Ideation candidate befo
 
 - exact bytes, digest, and version for `requirements.md`, `topics.md`, and `ideation.md`;
 - the requirements approval record and freeze digest;
-- the topics approval record, freeze digest, and chronology proving topic generation followed internal and external study;
+- the topics approval record, freeze digest, and chronology proving provisional topic drafting, internal refinement, external refinement, and revision and supplementation occurred in order;
 - the intended final-approval condition and the documents' contingent authority statements;
 - user-approved scope, requirements, material design decisions, and changes from the supporting drafts;
 - internal and external source registers with authority, relevance, currency, applicability, disposition, and licensing assessments where applicable;
@@ -20,7 +20,7 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 
 1. Bind the review to the exact bytes and digests of all three documents, the intended outcome, scope, exclusions, user decisions, lifecycle state, and acceptance criteria.
 2. Select every applicable owned scenario and every atomic checklist item inside its `IDEA-CK-01` through `IDEA-CK-16` family group, add target-specific cases for material conditions the sources miss, and name the evidence method for each.
-3. Establish chronology: requirements approval and freeze, deliberate internal and external study, topic generation, topics approval and freeze, hierarchical discussion, and the complete pre-approval candidate. Confirm final approval has not yet been claimed.
+3. Establish chronology: requirements approval and freeze, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics approval and freeze, hierarchical discussion, and the complete pre-approval candidate. Confirm final approval has not yet been claimed.
 4. Compare each supporting draft with `ideation.md`. Confirm the supporting bytes remained stable, the final document fully restates their material context, and every late source, corrected requirement, emergent topic, reopened branch, or changed consequence appears only in the final change disclosure.
 5. Inspect the exact bundle and direct evidence across every perspective. Record strengths and separate causal findings with expected condition, observed condition, impact, evidence, root cause or leading hypothesis, tested alternative, and corrective direction.
 6. Resolve each applicable atomic checklist item as `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, then derive each family result from its lettered items. Missing, stale, contradictory, proxy-only, or unevaluable evidence cannot pass.
@@ -68,14 +68,14 @@ Test blast radius, rollback, one-way actions, security and authorization, privac
 
 ### Overall
 
-Challenge wrong premises, solution-biased requirements, topics generated before study, token source assessment, copied fixed taxonomies, unnecessary novelty, unrelated bundled outcomes, premature implementation tasks, external-method dependencies, and process theater. Preserve trustworthy source assessments, sharp scope language, explicit authority, genuine alternatives, parent-to-child reasoning, draft immutability, and complete decision synthesis.
+Challenge wrong premises, solution-biased requirements, unrefined provisional topics, token source assessment, unclosed missing or weak topics, copied fixed taxonomies, unnecessary novelty, unrelated bundled outcomes, premature implementation tasks, external-method dependencies, and process theater. Preserve trustworthy source assessments, sharp scope language, explicit authority, genuine alternatives, parent-to-child reasoning, draft immutability, and complete decision synthesis.
 
 ## Recommended Verification
 
 Use direct reads and safe read-only commands:
 
 - compute and record all three subject digests, then compare the two supporting digests with their freeze evidence;
-- verify the chronology `requirements freeze → internal and external study → topic generation → topics freeze → hierarchical discussion → complete pre-approval candidate`, then confirm final approval and authority are still contingent on a later passing evaluation;
+- verify the chronology `requirements freeze → provisional topics → internal refinement → external refinement → revision and supplementation → hierarchy construction → topics freeze → hierarchical discussion → complete pre-approval candidate`, then confirm final approval and authority are still contingent on a later passing evaluation;
 - resolve every local link and every `## Contents` entry;
 - compare each ASCII topic-tree node with its matching heading and find headings missing from the tree;
 - search for placeholders, artificial trace identifiers, transcript-only language, ordered implementation tasks, and stale single-artifact claims;
@@ -93,7 +93,9 @@ At minimum, run these discriminating behavior probes:
 |---|---|
 | A proposed mechanism appears as a requirement without hard-constraint evidence | fail IDEA-CK-13 |
 | A material requirement statement lacks a visible fact, user-report, assumption, contradiction, decision, or open-question classification | fail IDEA-CK-13 |
-| Topics exist before either internal or external study | fail IDEA-CK-14 |
+| Provisional topics are drafted before `requirements.md` freezes | fail IDEA-CK-14 |
+| Internal or external study is absent or does not materially refine the topic draft | fail IDEA-CK-14 |
+| A material missing or weak topic survives the revision and supplementation pass | fail IDEA-CK-14 |
 | A fixed generic or Startup taxonomy is copied despite project-specific evidence | fail IDEA-CK-14 |
 | A topic omits its purpose, parent, dependencies, exact connected requirements, source basis, discussion questions, genuine alternatives, or completion condition | fail IDEA-CK-14 |
 | Source links exist but authority, relevance, currency, applicability, and disposition are absent | fail IDEA-CK-14 or IDEA-CK-11 |
@@ -134,7 +136,7 @@ Exercise at least one self-containment probe using a project-only, software, int
 | Parent clause | Primary report coverage |
 |---|---|
 | Phase 1 — solution-neutral problem and requirements definition, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
-| Phase 2 — deliberate internal and external study before dynamic topic preparation, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
+| Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
 | Phase 3 — parent-first discussion, evidence-backed alternative decisions, integrated design, late-change routing, synthesis, evaluation, and final approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 | `templates/requirements.md` — independently readable solution-neutral supporting contract and lifecycle notice | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
 | `templates/topics.md` — assessed sources, dynamic matching hierarchy, completeness audit, and lifecycle notice | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
