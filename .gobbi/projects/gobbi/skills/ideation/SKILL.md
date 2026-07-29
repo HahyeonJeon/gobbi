@@ -145,7 +145,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.1 Initialize the temporary discussion record
 
-- Create `ideation.tmp.md` as the editable working record for Phase 3 with separate `Discussion Records`, `Integrated Decisions`, and `Integrated Design` sections.
+- Create `ideation.tmp.md` as the editable working record for Phase 3 with separate `Discussion Records` and `Integrated Decisions` sections.
 - Copy the complete frozen problem, requirements contract, and prepared topic tree into it as discussion context.
 - State that the file temporarily records discussions and decisions, is not final authority, and will not be returned.
 - Do not create `ideation.md` until Step 3.4 completes the integrated design.
@@ -178,11 +178,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Design the actors, responsibilities, boundaries, components, ownership, and interfaces required by the integrated decisions.
 - Design information, data, and state flows for normal, alternative, invalid, failure, and recovery paths.
 - Design the applicable performance and resource behavior together with trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operational, and maintenance obligations.
-- Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and continue refining the design from the updated decisions.
-- Repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
-- Write the complete coherent design under `Integrated Design` in `ideation.tmp.md`.
+- Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
 - Finalize the pre-approval record in `ideation.md` from [the final Ideation template](templates/ideation.md) with the frozen context, integrated decisions, corrected requirements, emergent topics, final topic tree, design, risks, and validation commitments.
-- Match the final ASCII tree to its headings, make `ideation.md` independently readable, and mark it as the evolving final authority until final approval.
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
