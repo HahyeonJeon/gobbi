@@ -155,7 +155,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
 - State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
 - Ask the user the question and discuss the answer until its meaning, assumptions, alternatives, trade-offs, and consequences are clear.
-- Perform targeted additional study when the discussion exposes an evidence gap, and assess every late source through the Phase 2 source fields.
+- Perform targeted additional study only when the discussion exposes an evidence gap.
 - Ask the follow-up questions created by the discussion or additional study.
 - Repeat the question, discussion, study, and follow-up cycle until the topic is decision-ready.
 - Compare genuinely different reference-backed alternatives, including doing nothing when credible, by their pros, cons, fit, risks, and consequences.
