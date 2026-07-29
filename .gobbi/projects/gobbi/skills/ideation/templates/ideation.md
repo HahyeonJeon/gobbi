@@ -14,9 +14,7 @@
 - [Design](#design)
 - [Quality and Operations](#quality-and-operations)
 - [Risks and Validation](#risks-and-validation)
-- [Changes](#changes)
 - [Deferred and Rejected](#deferred-and-rejected)
-- [Traceability](#traceability)
 
 ## Summary
 
@@ -187,24 +185,8 @@
 
 {Never describe planned validation as completed evidence.}
 
-## Changes
-
-| Source Item | Change | Evidence | User Decision | Effects |
-|---|---|---|---|---|
-| `{requirements.md or topics.md > heading path}` | `{correction, addition, removal, or changed decision}` | `{source}` | `{user decision evidence}` | `{propagation}` |
-
-{Include late sources, corrected requirements, emergent topics, reopened branches, and changed constraints. State “No changes” only after comparing both supporting drafts with this document.}
-
 ## Deferred and Rejected
 
 | Idea | Status | Reason | Next Step |
 |---|---|---|---|
 | `{idea}` | `{disposition}` | `{reason}` | `{destination or condition}` |
-
-## Traceability
-
-| Requirement | Sources | Topics and Decisions | Design | Risk or Validation |
-|---|---|---|---|---|
-| `{descriptive requirement heading}` | `{source links or paths}` | `{heading paths}` | `{heading path}` | `{heading path or N/A with reason}` |
-
-{Confirm every material requirement, source, topic, decision, design consequence, risk, validation commitment, and supporting-draft change resolves by descriptive heading path. Confirm all links resolve and all applicable concerns are covered.}

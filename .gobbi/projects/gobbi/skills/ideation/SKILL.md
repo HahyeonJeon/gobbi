@@ -192,4 +192,4 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - [`requirements.md`](templates/requirements.md) defines the Phase 1 goal, problem, result, requirements, scope, and open questions.
 - [`topics.md`](templates/topics.md) defines the Phase 2 study foundation, topic hierarchy, and discussion contract.
-- [`ideation.md`](templates/ideation.md) defines the Phase 3 decision synthesis, integrated design, changes, risks, and validation commitments.
+- [`ideation.md`](templates/ideation.md) defines the Phase 3 decision synthesis, integrated design, risks, validation commitments, and deferred ideas.

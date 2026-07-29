@@ -219,7 +219,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Evidence tuple:** inspect the migration failure path, before/after data, and consumer-visible signals; restored invariants confirm recovery.
 - **Obligation trace:** this case supports the IDEA-SC-09 obligation and IDEA-CK-09 without discharging the primary change/regression case.
 
-## IDEA-SC-10 — The result is cold-readable and fully traceable without artificial IDs
+## IDEA-SC-10 — The result is cold-readable and internally consistent without artificial IDs
 
 - **Primary category:** 10 — evidence, traceability, and clarity define the case.
 - **Secondary categories:** none.
@@ -227,12 +227,12 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Coverage role:** Adversarial; positive through a successful cold read.
 - **Source:** Principle “Question the user without hesitation until the idea is complete”; Rule “NEVER change the accepted contract silently”; all three phases and templates.
 - **Given:** the returned `requirements.md`, `topics.md`, and `ideation.md` without private discussion context.
-- **When:** a cold reader resolves every term, source, descriptive heading path, requirement, topic, decision, design consequence, risk, validation commitment, and supporting-draft change.
-- **Then:** links resolve, names remain stable, traces close in both directions, and no placeholder, unsupported conclusion, or artificial trace ID remains.
+- **When:** a cold reader compares every term, source, descriptive heading, requirement, topic, decision, design consequence, risk, and validation commitment.
+- **Then:** links resolve, names remain stable, connected sections agree, and no placeholder, unsupported conclusion, or artificial trace ID remains.
 - **Failure oracle:** a source does not support its claim, a decision has no requirement or resulting design, a heading path is stale, or present-looking content is empty.
 - **Evidence tuple:** run link, placeholder, retired-ID, and orphan sweeps plus a cold read; complete resolution confirms the case.
-- **Adversarial face:** add a full-looking table whose rows do not trace to decisions; the case must fail.
-- **Obligation:** all three documents are readable alone and the final synthesis has closed descriptive-heading traceability.
+- **Adversarial face:** add a full-looking section whose claims conflict with the recorded decisions; the case must fail.
+- **Obligation:** all three documents are readable alone and the final synthesis is internally consistent through descriptive headings.
 - **Checklist family:** IDEA-CK-10; atomic items IDEA-CK-10A through IDEA-CK-10E.
 
 ## IDEA-SC-11 — Authoritative domain evidence supports one self-contained Ideation method
@@ -321,7 +321,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **When:** the change is incorporated into the final result.
 - **Then:** both supporting digests remain identical; `ideation.md` records the change, evidence, material user decision, affected branches, consequence, updated tree, and reopen decisions.
 - **Failure oracle:** either supporting file changes by even one byte, the change is hidden, or a descendant changes without reopening and reconciling its ancestor.
-- **Evidence tuple:** compare completion and returned digests and inspect “Changes” plus the final hierarchy; byte identity and explicit propagation confirm the case.
+- **Evidence tuple:** compare completion and returned digests, then inspect the affected Requirements, Study, Topics, Decisions, Design, Risks and Validation, or Deferred and Rejected sections; byte identity and explicit propagation confirm the case.
 - **Adversarial face:** add a harmless status note or typo fix to a preserved file; the case must still fail.
 - **Obligation:** late learning changes only the final document and never mutates a preserved supporting result.
 - **Checklist family:** IDEA-CK-15; atomic items IDEA-CK-15A through IDEA-CK-15D.

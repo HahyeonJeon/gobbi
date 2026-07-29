@@ -62,7 +62,7 @@ Test whether intended users, readers, callers, operators, maintainers, and autho
 
 ### Consistency
 
-Compare preserved requirements, assessed sources, prepared topics, final requirements, final topic tree, decisions, integrated design, risks, validation, traceability, and supporting-result changes. Search for changed preserved bytes, source links without assessment, stale heading paths, mismatched tree nodes, contradictory decisions, transcript without synthesis, artificial trace IDs, fixed inherited taxonomies, future validation represented as current evidence, and final content that merely points to a supporting result.
+Compare preserved requirements, assessed sources, prepared topics, final requirements, final topic tree, decisions, integrated design, risks, validation, and later learning. Search for changed preserved bytes, source links without assessment, stale heading references, mismatched tree nodes, contradictory decisions, transcript without synthesis, artificial trace IDs, fixed inherited taxonomies, future validation represented as current evidence, and final content that merely points to a supporting result.
 
 ### Risk
 
@@ -82,8 +82,8 @@ Use direct reads and safe read-only commands:
 - compare each ASCII topic-tree node with its matching heading and find headings missing from the tree;
 - search for placeholders, artificial trace identifiers, transcript-only language, ordered implementation tasks, and stale single-artifact claims;
 - reject any produced realization output in the returned bundle even when it is accurately labeled and is not cited as current evidence;
-- trace each requirement to assessed sources, topics, decisions, resulting design, risks, validation, and supporting-draft changes by descriptive heading path;
-- compare every late source, corrected requirement, emergent topic, reopened decision, and consequence with “Changes”;
+- compare each requirement with its assessed sources, topics, decisions, resulting design, risks, and validation through descriptive headings;
+- compare every late source, corrected requirement, emergent topic, reopened decision, and consequence with the affected final sections;
 - trace every topic through its options, recommendation, user choice, discussion, needed additional study, revised choice, and decision or explicit deferral before the traversal advances;
 - compare `ideation.tmp.md` with `ideation.md` and reject every omitted material discussion, decision, correction, emergent topic, consequence, or reopen condition;
 - group temporary records by topic and reject chronological copying, unconsolidated rounds, surviving duplicates, unpropagated consequences, or assumed conflict resolutions;
@@ -126,7 +126,7 @@ At minimum, run these discriminating behavior probes:
 | The returned bundle contains a produced realization output even when it is honestly labeled | fail IDEA-CK-12 or IDEA-CK-16 |
 | An applicable actor, state, interface, resource, failure, trust, inclusion, or compatibility concern is missing | fail its corresponding IDEA-CK-02 through IDEA-CK-09 |
 | A planned validation artifact is cited as existing evidence | fail IDEA-CK-12 |
-| All three documents are independently readable, complete, stable where required, and traceable | eligible for `PASS` after all other checks pass |
+| All three documents are independently readable, complete, stable where required, and internally consistent | eligible for `PASS` after all other checks pass |
 
 Exercise at least one self-containment probe using a project-only, software, interface or experience, or mixed-domain idea. The probe fails when the method requires another skill, omits an applicable concern, imports an outside procedure, accepts a non-authoritative source, or lets source order silently resolve an authority conflict.
 
@@ -156,6 +156,6 @@ Exercise at least one self-containment probe using a project-only, software, int
 | Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and return | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 | `templates/requirements.md` — independently readable Goal, Problem, Result, Requirements, Scope, and Open Questions contract | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
 | `templates/topics.md` — assessed sources, dynamic matching hierarchy, and completeness audit | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
-| `templates/ideation.md` — decision synthesis, integrated design, supporting-result change disclosure, and traceability | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
+| `templates/ideation.md` — decision synthesis, integrated design, risks, validation, and deferred ideas | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 
 Every applicable lettered item inside the `IDEA-CK-01` through `IDEA-CK-16` family groups appears in the report checklist. The evaluator adds an item for any target-specific case. A material revision repeats all seven perspectives plus Overall from a fresh independent evaluator against new document digests.
