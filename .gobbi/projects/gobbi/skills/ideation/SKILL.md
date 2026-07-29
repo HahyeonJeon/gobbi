@@ -184,8 +184,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 3.5 Audit, evaluate, approve, and return the result
 
 - Review `ideation.md` according to [evaluation.md](evaluation.md), correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output, and reopen the earliest affected step until the review passes.
-- After the review passes, present the user with a concise summary of the problem, scope, key decisions, integrated design, material trade-offs, risks, and deferred items.
-- After presenting the summary, obtain the user's approval and make the approved `ideation.md` authoritative, automatically superseding both supporting drafts.
+- After the review passes, display a concise summary of the problem, scope, key decisions, integrated design, material trade-offs, risks, and deferred items to the user in the session.
+- After displaying the summary, obtain the user's approval and make the approved `ideation.md` authoritative, automatically superseding both supporting drafts.
 
 ## References
 
