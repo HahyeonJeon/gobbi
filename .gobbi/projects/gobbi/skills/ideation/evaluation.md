@@ -55,7 +55,7 @@ Test scale assumptions, dominant resources, external-call counts, batching, time
 
 ### Aesthetics
 
-Read each document cold and independently. Test first-page lifecycle clarity, `## Contents`, stable descriptive headings, matching ASCII trees and heading hierarchies, concise blocks and tables, scanability, placeholders, filler, and whether a skim yields the same authority and meaning as a full read.
+Read each document cold and independently. Test lifecycle clarity, `## Contents`, stable descriptive headings, matching ASCII trees and heading hierarchies, concise blocks and tables, scanability, placeholders, filler, and whether a skim yields the same authority and meaning as a full read.
 
 ### Usage
 

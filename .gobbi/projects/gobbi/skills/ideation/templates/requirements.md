@@ -1,11 +1,5 @@
 # {Idea or Problem Name} — Requirements and Problems
 
-> **Document role:** Supporting draft for the problem and requirements contract<br>
-> **State:** `{Draft until user approval; immutable after approval}`<br>
-> **Authority:** The approved final `ideation.md` automatically supersedes this document.<br>
-> **Immutability:** After approval, do not change any byte in this file; record later corrections only in `ideation.md`.<br>
-> **Purpose:** Define what is needed and why without selecting a solution.
-
 ## Contents
 
 - [Material Statement Classification](#material-statement-classification)
