@@ -153,7 +153,7 @@ Exercise at least one self-containment probe using a project-only, software, int
 |---|---|
 | Phase 1 — solution-neutral problem and requirements definition, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
 | Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
-| Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, approval, and temporary-file cleanup | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
+| Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 | `templates/requirements.md` — independently readable solution-neutral supporting contract and lifecycle notice | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
 | `templates/topics.md` — assessed sources, dynamic matching hierarchy, completeness audit, and lifecycle notice | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
 | `templates/ideation.md` — final authority, decision synthesis, integrated design, draft-change disclosure, traceability, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
