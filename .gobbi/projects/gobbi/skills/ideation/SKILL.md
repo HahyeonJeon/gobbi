@@ -166,8 +166,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Read the complete discussion and decision record in `ideation.tmp.md` against the frozen requirements, study foundation, and topic hierarchy.
 - Group the temporary records by topic in parent-first order and keep every discussion round about the same choice together.
 - Consolidate each topic's rounds into one current decision record containing its question, connected requirements, evidence, alternatives, recommendation, status, selection or deferral, rationale, rejected alternatives, trade-offs, resulting design, consequences, and reopen condition.
-- Merge duplicate records, reconcile compatible decisions, connect dependent decisions, propagate every parent decision or correction through affected children and sibling branches, and expose contradictions, omissions, stale conclusions, and unresolved consequences without resolving them by assumption.
 - Return every material conflict, reopened topic, or unresolved user choice to Step 3.2, record the resulting discussion and decision in `ideation.tmp.md`, and restart integration.
+- Merge duplicate records, reconcile compatible decisions, connect dependent decisions, propagate every parent decision or correction through affected children and sibling branches, and expose contradictions, omissions, stale conclusions, and unresolved consequences without resolving them by assumption.
 - After the integrated decision set is coherent, write the complete parent-first decision synthesis, corrected requirements, and emergent topics under their correct parents to `Integrated Decisions` in `ideation.tmp.md` without removing material discussion evidence.
 - Treat the integrated temporary record as an evolving input to design development rather than a finalized result.
 
