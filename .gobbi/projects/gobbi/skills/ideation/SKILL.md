@@ -155,10 +155,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
 - State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
 - Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
-- Discuss the user's response until its meaning, assumptions, trade-offs, and consequences are clear.
-- Perform targeted additional study only when the discussion exposes an evidence gap.
-- Revise the alternatives and recommendation from the discussion or additional study, then ask the user another decision-ready question when a choice remains unresolved.
-- Repeat the option, recommendation, question, discussion, and study cycle until the user makes the required decision or explicitly defers it.
+- Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
+- Ask another decision-ready question when the choice remains unresolved, and repeat the discussion, revision, and conditional study until the user makes the required decision or explicitly defers it.
 - Record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition as synthesis rather than a conversational transcript.
 - Use the decision to refine the rough result and determine its constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operations, failures, and other details.
 - Put corrected requirements and emergent topics only in `ideation.md`, place each emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings.
