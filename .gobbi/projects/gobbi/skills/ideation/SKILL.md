@@ -171,10 +171,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - After the integrated decision set is coherent, write the complete parent-first decision synthesis, corrected requirements, and emergent topics under their correct parents to `Integrated Decisions` in `ideation.tmp.md` without removing material discussion evidence.
 - Treat the integrated temporary record as an evolving input to design development rather than a finalized result.
 
-#### 3.4 Develop and refine the integrated design
+#### 3.4 Develop, refine, and record the integrated design
 
-- Review the integrated discussions and decisions together to identify cross-topic relationships, contradictions, gaps, consequences, and new or reopened topics.
-- Return to Step 3.2 for every material topic or user choice exposed by the integrated review, record the additional discussion and decision in `ideation.tmp.md`, and rerun Step 3.3 before continuing design development.
+- Use `Integrated Decisions` in `ideation.tmp.md` as the basis for developing one coherent design from the target and outcomes through the topic hierarchy.
+- Translate the integrated decisions, dependencies, consequences, corrections, and emergent topics into the design's overall structure and detailed behavior.
 - Define every applicable actor, responsibility, boundary, component, owner, and interface.
 - Define information, data, and state flows across normal, alternative, invalid, failure, and recovery paths.
 - Define applicable performance, resource, trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance obligations.
@@ -182,13 +182,15 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Assign one owner to each concern.
 - Keep interfaces consumer-readable and dependencies acyclic.
 - Contain dependency failures and expose verification seams.
-- Repeat integrated review, additional discussion, reintegration, and design development until the design is coherent and no material topic or decision remains unresolved.
-- Record the complete integrated design under `Integrated Design` in `ideation.tmp.md`, then create or update `ideation.md` from [the final Ideation template](templates/ideation.md) with the frozen context, integrated decisions, corrected requirements, emergent topics, design, risks, and validation commitments.
-- Compare `ideation.md` with `ideation.tmp.md`, add every omitted material record, align the final ASCII tree with its headings, make the document independently readable, and mark it as the evolving final authority until final approval.
+- Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and continue refining the design from the updated decisions.
+- Repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
+- Write the complete coherent design under `Integrated Design` in `ideation.tmp.md`.
+- Finalize the pre-approval record in `ideation.md` from [the final Ideation template](templates/ideation.md) with the frozen context, integrated decisions, corrected requirements, emergent topics, final topic tree, design, risks, and validation commitments.
+- Match the final ASCII tree to its headings, make `ideation.md` independently readable, and mark it as the evolving final authority until final approval.
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
-- Compare `ideation.tmp.md` with `ideation.md` and confirm that every material discussion, decision, correction, emergent topic, consequence, and reopen condition was integrated.
+- Compare `ideation.tmp.md` with `ideation.md` and add every omitted material discussion, decision, correction, emergent topic, consequence, and reopen condition.
 - List every change from the supporting drafts with its evidence, material user approval, affected branches, and consequence.
 - Trace requirements, sources, topics, decisions, resulting design, risks, and validation by exact descriptive heading paths rather than artificial identifiers.
 - Use [scenarios.md](scenarios.md) and [checklists.md](checklists.md) to confirm that every applicable design obligation is present and testable.

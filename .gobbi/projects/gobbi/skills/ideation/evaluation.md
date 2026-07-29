@@ -11,7 +11,7 @@ Use this entrypoint to evaluate one exact three-document Ideation candidate befo
 - the intended final-approval condition and the documents' contingent authority statements;
 - user-approved scope, requirements, material design decisions, and changes from the supporting drafts;
 - topic-resolution discussion and study history sufficient to verify repeated decision-ready choices, recommendations, discussions, needed study, revised choices, and user decisions;
-- integrated draft history and cross-topic review evidence sufficient to verify every integration-created choice was discussed and reintegrated;
+- integrated design-development history sufficient to trace every decision into the design and every newly exposed material choice through additional discussion and reintegration;
 - internal and external source registers with authority, relevance, currency, applicability, disposition, and licensing assessments where applicable;
 - direct evidence, prior attempts, active project scope, risk and validation records, and artifact inventory;
 - [scenarios.md](scenarios.md) and [checklists.md](checklists.md); and
@@ -23,7 +23,7 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 
 1. Bind the review to the exact bytes and digests of all three documents, the intended outcome, scope, exclusions, user decisions, lifecycle state, and acceptance criteria.
 2. Select every applicable owned scenario and every atomic checklist item inside its `IDEA-CK-01` through `IDEA-CK-16` family group, add target-specific cases for material conditions the sources miss, and name the evidence method for each.
-3. Establish chronology: requirements approval and freeze, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics approval and freeze, `ideation.tmp.md` initialization, iterative hierarchical discussion and temporary recording, decision integration back into `ideation.tmp.md`, cross-topic design review, additional discussion and temporary reintegration when required, coherent design development in the temporary file, creation of `ideation.md`, and the complete pre-approval candidate. Confirm Step 3.3 never creates or updates `ideation.md`, every material choice exposed by integration returns through discussion and reintegration, and final approval has not yet been claimed.
+3. Establish chronology: requirements approval and freeze, provisional topic drafting, deliberate internal refinement, deliberate external refinement, revision and supplementation, hierarchy construction, topics approval and freeze, `ideation.tmp.md` initialization, iterative hierarchical discussion, decision integration in `ideation.tmp.md`, design development from `Integrated Decisions`, additional discussion and reintegration for every newly exposed material choice, coherent recording under `Integrated Design`, final recording in `ideation.md`, and the complete pre-approval candidate. Confirm Step 3.3 never creates or updates `ideation.md` and final approval has not yet been claimed.
 4. Compare each supporting draft and `ideation.tmp.md` with `ideation.md`. Confirm the supporting bytes remained stable; temporary records were grouped by topic and consolidated into current parent-first decisions; duplicates, dependencies, and consequences were reconciled; contradictions and unresolved choices returned to discussion rather than being decided by assumption; and every material record appears in the independently readable synthesis.
 5. Inspect the exact bundle and direct evidence across every perspective. Record strengths and separate causal findings with expected condition, observed condition, impact, evidence, root cause or leading hypothesis, tested alternative, and corrective direction.
 6. Resolve each applicable atomic checklist item as `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, then derive each family result from its lettered items. Missing, stale, contradictory, proxy-only, or unevaluable evidence cannot pass.
@@ -47,7 +47,7 @@ Test the root cause, trigger, desired outcome, success and falsification signals
 
 ### Structure
 
-Test the three-phase order, topic-grouped discussion consolidation inside `ideation.tmp.md`, integration-review-discussion-reintegration loop, temporary design development, final-artifact creation boundary, document authority, dynamic topic hierarchy, repeated option-recommendation-choice-discussion-study-decision loop, parent-before-child resolution, concern ownership, component boundaries, interfaces, dependency direction, state and data invariants, and test seams. Confirm Step 3.3 writes only the temporary record, duplicate and stale records do not survive, unresolved conflicts return to the user, parent consequences propagate, every integration-created material choice returns to discussion, and `ideation.md` is created only after the temporary integrated design is coherent.
+Test the three-phase order, topic-grouped discussion consolidation inside `ideation.tmp.md`, decision-to-design development, additional-discussion and reintegration loops, temporary design recording, final-artifact creation boundary, document authority, dynamic topic hierarchy, parent-before-child resolution, concern ownership, component boundaries, interfaces, dependency direction, state and data invariants, and test seams. Confirm Step 3.3 writes only the temporary record, every integrated decision shapes the design, newly exposed material choices return to the user, and Step 3.4 creates `ideation.md` only after `Integrated Design` is coherent.
 
 ### Performance
 
@@ -78,7 +78,7 @@ Challenge wrong premises, solution-biased requirements, unrefined provisional to
 Use direct reads and safe read-only commands:
 
 - compute and record all three subject digests, then compare the two supporting digests with their freeze evidence;
-- verify the chronology `requirements freeze → provisional topics → internal refinement → external refinement → revision and supplementation → hierarchy construction → topics freeze → hierarchical discussion → complete pre-approval candidate`, then confirm final approval and authority are still contingent on a later passing evaluation;
+- verify the chronology `requirements freeze → provisional topics → internal refinement → external refinement → revision and supplementation → hierarchy construction → topics freeze → temporary hierarchical discussion → temporary decision integration → temporary design development and refinement → final recording in ideation.md → complete pre-approval candidate`, then confirm final approval and authority are still contingent on a later passing evaluation;
 - resolve every local link and every `## Contents` entry;
 - compare each ASCII topic-tree node with its matching heading and find headings missing from the tree;
 - search for placeholders, artificial trace identifiers, transcript-only language, ordered implementation tasks, and stale single-artifact claims;
@@ -89,7 +89,7 @@ Use direct reads and safe read-only commands:
 - compare `ideation.tmp.md` with `ideation.md` and reject every omitted material discussion, decision, correction, emergent topic, consequence, or reopen condition;
 - group temporary records by topic and reject chronological copying, unconsolidated rounds, surviving duplicates, unpropagated consequences, or assumed conflict resolutions;
 - verify file-creation chronology and reject any Step 3.3 write to `ideation.md` or any final-artifact creation before Step 3.4 completes the integrated temporary design;
-- inspect each integrated-design review and trace every material new or reopened choice through additional discussion, temporary recording, and reintegration;
+- trace each integrated decision into the developed structure or behavior and every newly exposed material choice through additional discussion, temporary recording, and reintegration;
 - classify every evidence claim as current evidence, rejected evidence, uncertainty, or future validation;
 - inspect every `n/a` disposition for a named property and direct evidence;
 - perform isolated cold reads of all three documents; and
@@ -117,7 +117,7 @@ At minimum, run these discriminating behavior probes:
 | `ideation.md` copies temporary records chronologically or retains duplicate, stale, contradictory, or unconsolidated decisions | fail IDEA-CK-16 |
 | Step 3.3 creates or updates `ideation.md`, or Step 3.4 creates it before the integrated temporary design is coherent | fail IDEA-CK-16 |
 | `ideation.tmp.md` is deleted before evaluation or included in the returned bundle | fail IDEA-CK-16 |
-| The initial integration is treated as final or an integration-created material choice bypasses additional discussion and reintegration | fail IDEA-CK-16 |
+| A material integrated decision does not shape the design, or design development silently resolves a newly exposed material choice | fail IDEA-CK-16 |
 | The final document links to a supporting draft instead of restating material context | fail IDEA-CK-16 |
 | The final document preserves turns but omits alternatives, selection, rationale, consequence, or reopen condition | fail IDEA-CK-16 |
 | A material decision omits its explicit question, evidence-that-would-change, trade-offs, or reopen condition | fail IDEA-CK-16 |
@@ -153,7 +153,7 @@ Exercise at least one self-containment probe using a project-only, software, int
 |---|---|
 | Phase 1 — solution-neutral problem and requirements definition, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
 | Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
-| Phase 3 — temporary hierarchical discussion records, initial integration, cross-topic design review, additional discussion and reintegration, design development, evaluation, final approval, and temporary-file cleanup | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
+| Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, approval, and temporary-file cleanup | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 | `templates/requirements.md` — independently readable solution-neutral supporting contract and lifecycle notice | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
 | `templates/topics.md` — assessed sources, dynamic matching hierarchy, completeness audit, and lifecycle notice | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
 | `templates/ideation.md` — final authority, decision synthesis, integrated design, draft-change disclosure, traceability, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
