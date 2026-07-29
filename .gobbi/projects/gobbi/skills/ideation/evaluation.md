@@ -83,7 +83,7 @@ Use direct reads and safe read-only commands:
 - search for placeholders, artificial trace identifiers, transcript-only language, ordered implementation tasks, and stale single-artifact claims;
 - reject any produced realization output in the returned bundle even when it is accurately labeled and is not cited as current evidence;
 - trace each requirement to assessed sources, topics, decisions, resulting design, risks, validation, and supporting-draft changes by descriptive heading path;
-- compare every late source, corrected requirement, emergent topic, reopened decision, and consequence with “Changes from the Supporting Drafts”;
+- compare every late source, corrected requirement, emergent topic, reopened decision, and consequence with “Changes”;
 - trace every topic through its options, recommendation, user choice, discussion, needed additional study, revised choice, and decision or explicit deferral before the traversal advances;
 - compare `ideation.tmp.md` with `ideation.md` and reject every omitted material discussion, decision, correction, emergent topic, consequence, or reopen condition;
 - group temporary records by topic and reject chronological copying, unconsolidated rounds, surviving duplicates, unpropagated consequences, or assumed conflict resolutions;

@@ -321,7 +321,7 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **When:** the change is incorporated into the final result.
 - **Then:** both supporting digests remain identical; `ideation.md` records the change, evidence, material user decision, affected branches, consequence, updated tree, and reopen decisions.
 - **Failure oracle:** either supporting file changes by even one byte, the change is hidden, or a descendant changes without reopening and reconciling its ancestor.
-- **Evidence tuple:** compare completion and returned digests and inspect “Changes from the Supporting Drafts” plus the final hierarchy; byte identity and explicit propagation confirm the case.
+- **Evidence tuple:** compare completion and returned digests and inspect “Changes” plus the final hierarchy; byte identity and explicit propagation confirm the case.
 - **Adversarial face:** add a harmless status note or typo fix to a preserved file; the case must still fail.
 - **Obligation:** late learning changes only the final document and never mutates a preserved supporting result.
 - **Checklist family:** IDEA-CK-15; atomic items IDEA-CK-15A through IDEA-CK-15D.

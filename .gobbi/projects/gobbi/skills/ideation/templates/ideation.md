@@ -6,23 +6,23 @@
 
 ## Contents
 
-- [Executive Summary](#executive-summary)
-- [Final Requirements](#final-requirements)
-- [Study Foundation](#study-foundation)
-- [Final Topic Tree](#final-topic-tree)
-- [Hierarchical Discussion and Decisions](#hierarchical-discussion-and-decisions)
-- [Integrated Design](#integrated-design)
-- [Quality, Constraints, and Operations](#quality-constraints-and-operations)
-- [Assumptions, Risks, and Validation](#assumptions-risks-and-validation)
-- [Changes from the Supporting Drafts](#changes-from-the-supporting-drafts)
-- [Deferred and Rejected Ideas](#deferred-and-rejected-ideas)
-- [Traceability and Completeness](#traceability-and-completeness)
+- [Summary](#summary)
+- [Requirements](#requirements)
+- [Study](#study)
+- [Topics](#topics)
+- [Decisions](#decisions)
+- [Design](#design)
+- [Quality and Operations](#quality-and-operations)
+- [Risks and Validation](#risks-and-validation)
+- [Changes](#changes)
+- [Deferred and Rejected](#deferred-and-rejected)
+- [Traceability](#traceability)
 
-## Executive Summary
+## Summary
 
 {State the final problem, desired outcome, selected direction, decisive evidence, major trade-offs, and final scope in a cold-readable summary.}
 
-## Final Requirements
+## Requirements
 
 ### Goal
 
@@ -42,7 +42,7 @@
 
 {Restate the final intended form, high-level capabilities, observable external behavior, inputs, outputs, integration boundary, and unchanged behavior.}
 
-### Requirements
+### Required Outcomes
 
 #### {Descriptive Requirement Heading}
 
@@ -59,31 +59,31 @@
 |---|---|---|
 | `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
 
-### Open Questions
+### Questions
 
 | Supporting question | Final resolution or deferral | Design consequence |
 |---|---|---|
 | `{question from requirements.md or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
 
-## Study Foundation
+## Study
 
-### Internal Materials
+### Internal Study
 
 | Material | Stable location | Authority, relevance, currency, and applicability | Licensing when reuse may be affected | Adopted, rejected, or uncertain lesson |
 |---|---|---|---|---|
 | `{internal source, including late sources}` | `{path or link}` | `{assessment of every named property}` | `{license assessment or N/A with reason}` | `{disposition and lesson}` |
 
-### External Materials
+### External Study
 
 | Material | Link | Authority, currency, relevance, applicability, and license | Adopted, rejected, or uncertain lesson |
 |---|---|---|---|
 | `{external source, including late sources}` | `{URL}` | `{assessment}` | `{disposition and lesson}` |
 
-### Negative Results, Contradictions, and Gaps
+### Gaps and Conflicts
 
 {Preserve useful failed approaches, source conflicts, unresolved uncertainty, and their design consequences.}
 
-## Final Topic Tree
+## Topics
 
 ```text
 {Problem and Desired Outcome}
@@ -95,7 +95,7 @@
 
 {Include every prepared and emergent topic. Mark topics added during discussion and keep the tree aligned with the headings below.}
 
-## Hierarchical Discussion and Decisions
+## Decisions
 
 ### {Parent Topic}
 
@@ -105,29 +105,29 @@
 > **Requirement connection:** {Exact descriptive requirement headings.}<br>
 > **Source basis:** {Assessed internal and external sources.}
 
-#### Context and Evidence
+#### Context
 
 {Explain the decision context, evidence, and relevant ancestor decisions.}
 
-#### Alternatives
+#### Options
 
 | Alternative | Pros | Cons | Fit with outcomes and constraints | Risks and consequences |
 |---|---|---|---|---|
 | `{alternative}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
 
-#### Selection and Rationale
+#### Decision
 
 {State the recommendation, user decision when required, why it won, and what evidence would have changed it.}
 
-#### Rejected Alternatives
+#### Rejected Options
 
 {Explain why each credible alternative lost.}
 
-#### Consequences and Resulting Design
+#### Consequences
 
 {State trade-offs, affected branches, and the design this decision creates.}
 
-#### Reopen Condition
+#### Reopen When
 
 {State the evidence or changed condition that would reopen this decision.}
 
@@ -139,47 +139,47 @@
 > **Requirement connection:** {Exact descriptive requirement headings.}<br>
 > **Source basis:** {Assessed internal and external sources.}
 
-**Context and evidence:** {Explain the child decision context, evidence, and parent decision.}
+**Context:** {Explain the child decision context, evidence, and parent decision.}
 
-**Alternatives:**
+**Options:**
 
 | Alternative | Pros | Cons | Fit with outcomes and constraints | Risks and consequences |
 |---|---|---|---|---|
 | `{alternative}` | `{pros}` | `{cons}` | `{fit}` | `{risks and consequences}` |
 
-**Selection and rationale:** {State the recommendation, user decision when required, why it won, and what evidence would have changed it.}
+**Decision:** {State the recommendation, user decision when required, why it won, and what evidence would have changed it.}
 
-**Rejected alternatives:** {Explain why each credible alternative lost.}
+**Rejected options:** {Explain why each credible alternative lost.}
 
-**Consequences and resulting design:** {State trade-offs, sibling effects, and the design this decision creates.}
+**Consequences:** {State trade-offs, sibling effects, and the design this decision creates.}
 
-**Reopen condition:** {State the evidence or changed condition that would reopen this decision.}
+**Reopen when:** {State the evidence or changed condition that would reopen this decision.}
 
 {Repeat matching level-three, level-four, or deeper topic headings for every node. Preserve decision synthesis rather than a conversational transcript.}
 
-## Integrated Design
+## Design
 
-### Actors and Responsibilities
+### Actors
 
 {Define who does what and who owns each material decision or operation.}
 
-### Boundaries, Components, Ownership, and Interfaces
+### Structure
 
 {Define the whole structure, consumer-readable contracts, acyclic dependency direction, contained dependency failure, verification seams, trust boundaries, and one owner per concern.}
 
-### Information, Data, and State Flows
+### Data and State
 
 {Define inputs, outputs, lifecycle states, invariants, retention or deletion, and exact boundary behavior.}
 
-### Normal, Alternative, Failure, and Recovery Flows
+### Behavior and Recovery
 
 {Define the main path, valid alternatives, invalid states, detection, containment, recovery, ownership, and diagnosis.}
 
-## Quality, Constraints, and Operations
+## Quality and Operations
 
 {Disposition applicable performance, resource, security, privacy, governance, accessibility, locale, compatibility, migration, rollback, observability, maintenance, and operational obligations. Give evidence for each not-applicable decision.}
 
-## Assumptions, Risks, and Validation
+## Risks and Validation
 
 | Assumption or risk | What fails if wrong | Current evidence | Validation question | Method or artifact and participants or environment | Pass and fail signals | Owner and execution condition | Reopen condition |
 |---|---|---|---|---|---|---|---|
@@ -187,7 +187,7 @@
 
 {Never describe planned validation as completed evidence.}
 
-## Changes from the Supporting Drafts
+## Changes
 
 | Supporting heading path or prepared topic | Final change | New evidence | User decision when material | Affected branches and consequence |
 |---|---|---|---|---|
@@ -195,13 +195,13 @@
 
 {Include late sources, corrected requirements, emergent topics, reopened branches, and changed constraints. State “No changes” only after comparing both supporting drafts with this document.}
 
-## Deferred and Rejected Ideas
+## Deferred and Rejected
 
 | Idea | Deferred or rejected | Reason | Destination, drop decision, or reopen condition |
 |---|---|---|---|
 | `{idea}` | `{disposition}` | `{reason}` | `{destination or condition}` |
 
-## Traceability and Completeness
+## Traceability
 
 | Final requirement heading | Source headings | Topic and decision heading paths | Resulting design heading | Risk or validation heading |
 |---|---|---|---|---|
