@@ -7,7 +7,7 @@ skill-type: operation
 
 # Ideation
 
-Use this skill to turn a user trigger into a complete, evidence-backed design through three phases: define and freeze the problem and requirements in `requirements.md`, study internal and external materials and freeze a project-specific discussion tree in `topics.md`, then resolve that tree with the user in `ideation.tmp.md` and integrate the discussions into `ideation.md`. The temporary file is a working record rather than a returned artifact; the first two returned documents are immutable supporting drafts after approval, and the approved `ideation.md` is the final authority that supersedes and returns with them as one independently readable Ideation result.
+Use this skill to turn a user trigger into a complete, evidence-backed design through three phases: define and freeze the problem and requirements in `requirements.md`, study internal and external materials and freeze a project-specific discussion tree in `topics.md`, then resolve and integrate that tree in `ideation.tmp.md`, develop the integrated design, and create `ideation.md`. The temporary file is a working record rather than a returned artifact; the first two returned documents are immutable supporting drafts after approval, and the approved `ideation.md` is the final authority that supersedes and returns with them as one independently readable Ideation result.
 
 ## Principles
 
@@ -145,10 +145,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.1 Initialize the temporary discussion record
 
-- Create `ideation.tmp.md` as the editable working record for Phase 3.
+- Create `ideation.tmp.md` as the editable working record for Phase 3 with separate `Discussion Records`, `Integrated Decisions`, and `Integrated Design` sections.
 - Copy the complete frozen problem, requirements contract, and prepared topic tree into it as discussion context.
 - State that the file temporarily records discussions and decisions, is not final authority, and will not be returned.
-- Do not create `ideation.md` until Step 3.3 integrates the completed discussion record.
+- Do not create `ideation.md` until Step 3.4 completes the integrated design.
 
 #### 3.2 Traverse and resolve the topic hierarchy
 
@@ -157,7 +157,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
 - Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
 - Ask another decision-ready question when the choice remains unresolved, and repeat the discussion, revision, and conditional study until the user makes the required decision or explicitly defers it.
-- Temporarily record the discussion and decision in `ideation.tmp.md` with its selection, rationale, rejected alternatives, trade-offs, resulting design, reopen condition, corrected requirements, emergent topics under their correct parents, affected descendants, sibling reconciliation, and reopened branches.
+- Temporarily record the discussion and decision under `Discussion Records` in `ideation.tmp.md` with its selection, rationale, rejected alternatives, trade-offs, resulting design, reopen condition, corrected requirements, emergent topics under their correct parents, affected descendants, sibling reconciliation, and reopened branches.
 - Move to the next topic only after the current topic is resolved, explicitly deferred, or reopened at the correct ancestor, and repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
 - Treat no Phase 2 candidate as already decided, and never edit either frozen supporting draft.
 
@@ -168,9 +168,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Consolidate each topic's rounds into one current decision record containing its question, connected requirements, evidence, alternatives, recommendation, status, selection or deferral, rationale, rejected alternatives, trade-offs, resulting design, consequences, and reopen condition.
 - Merge duplicate records, reconcile compatible decisions, connect dependent decisions, propagate every parent decision or correction through affected children and sibling branches, and expose contradictions, omissions, stale conclusions, and unresolved consequences without resolving them by assumption.
 - Return every material conflict, reopened topic, or unresolved user choice to Step 3.2, record the resulting discussion and decision in `ideation.tmp.md`, and restart integration.
-- After the integrated decision set is coherent, create or update `ideation.md` from [the final Ideation template](templates/ideation.md) with the complete frozen context, integrated decision synthesis, corrected requirements, and emergent topics under their correct parents.
-- Compare the integrated draft with `ideation.tmp.md`, add every omitted material record, align the final ASCII tree with its headings, make the document independently readable, and mark it as the evolving final authority until final approval.
-- Treat the integrated document as an evolving input to design development rather than a finalized result.
+- After the integrated decision set is coherent, write the complete parent-first decision synthesis, corrected requirements, and emergent topics under their correct parents to `Integrated Decisions` in `ideation.tmp.md` without removing material discussion evidence.
+- Treat the integrated temporary record as an evolving input to design development rather than a finalized result.
 
 #### 3.4 Develop and refine the integrated design
 
@@ -184,6 +183,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Keep interfaces consumer-readable and dependencies acyclic.
 - Contain dependency failures and expose verification seams.
 - Repeat integrated review, additional discussion, reintegration, and design development until the design is coherent and no material topic or decision remains unresolved.
+- Record the complete integrated design under `Integrated Design` in `ideation.tmp.md`, then create or update `ideation.md` from [the final Ideation template](templates/ideation.md) with the frozen context, integrated decisions, corrected requirements, emergent topics, design, risks, and validation commitments.
+- Compare `ideation.md` with `ideation.tmp.md`, add every omitted material record, align the final ASCII tree with its headings, make the document independently readable, and mark it as the evolving final authority until final approval.
 
 #### 3.5 Audit, evaluate, approve, and return the result
 
