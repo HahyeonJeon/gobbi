@@ -306,6 +306,8 @@ version and repeat every applicable step with current evidence. Prior results re
 - [Startup](../startup/SKILL.md) owns sparse-baseline classification.
 - [UI](../ui/SKILL.md) and [UX](../ux/SKILL.md) own specialized interface and experience evidence.
 - [Coding](../coding/SKILL.md) owns language-agnostic software review criteria.
+- [HTML](../html/SKILL.md) and [CSS](../css/SKILL.md) each own their language-specific review criteria and
+  verification methods; select either independently.
 - [Python](../python/SKILL.md) and [TypeScript](../typescript/SKILL.md) own their language-specific review
   criteria and verification methods.
 - [React](../react/SKILL.md) owns React's library-specific review criteria and verification methods.

@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Gobbi workflow skills and agents for Configuration, Ideation, Planning, Execution, and Wrap-up in Claude Code",
   "author": {
     "name": "HahyeonJeon"

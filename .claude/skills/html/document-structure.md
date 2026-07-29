@@ -1,0 +1,1 @@
+../../../.gobbi/projects/gobbi/skills/html/document-structure.md
