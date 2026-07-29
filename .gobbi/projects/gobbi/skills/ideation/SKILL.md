@@ -174,12 +174,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 3.4 Develop, refine, and record the integrated design
 
 - Use `Integrated Decisions` in `ideation.tmp.md` as the basis for developing one coherent design from the target and outcomes through the topic hierarchy.
-- Translate the integrated decisions, dependencies, consequences, corrections, and emergent topics into the design's overall structure and detailed behavior.
-- Define every applicable actor, responsibility, boundary, component, owner, and interface.
-- Define information, data, and state flows across normal, alternative, invalid, failure, and recovery paths.
-- Define applicable performance, resource, trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operation, and maintenance obligations.
-- Record every material assumption, risk, evidence gap, and validation commitment.
-- Contain dependency failures and expose verification seams.
+- Organize the integrated decisions, dependencies, consequences, corrections, and emergent topics into a coherent design structure and detailed behavior.
+- Design the actors, responsibilities, boundaries, components, ownership, and interfaces required by the integrated decisions.
+- Design information, data, and state flows for normal, alternative, invalid, failure, and recovery paths.
+- Design the applicable performance and resource behavior together with trust, governance, privacy, security, accessibility, locale, compatibility, migration, rollback, operational, and maintenance obligations.
 - Return every material topic or user choice exposed during design development to Step 3.2, record the additional discussion and decision in `ideation.tmp.md`, rerun Step 3.3, and continue refining the design from the updated decisions.
 - Repeat design development, additional discussion, and reintegration until the design completely expresses the integrated decisions and no material design choice remains unresolved.
 - Write the complete coherent design under `Integrated Design` in `ideation.tmp.md`.
