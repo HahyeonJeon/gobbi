@@ -150,36 +150,26 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Make the document independently readable without relying on the supporting drafts for meaning.
 - Mark it as the evolving final authority until final approval.
 
-#### 3.2 Traverse the topic hierarchy
+#### 3.2 Traverse and resolve the topic hierarchy
 
-- Resolve every parent topic before its children.
-- Reconcile sibling topics before closing their parent.
-- Keep dependent topics open while an ancestor decision is unresolved.
-- Ask every relevant question needed to complete the idea.
-- Reopen the earliest affected branch when a child contradicts an ancestor or new evidence invalidates an earlier decision.
-- Obtain the required user decision and propagate its consequence through every affected descendant without editing either frozen draft.
-
-#### 3.3 Determine each design topic
-
-- State the question, connected requirements, current context, and trustworthy evidence for each topic.
+- Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
+- State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
+- Ask the user the question and discuss the answer until its meaning, assumptions, alternatives, trade-offs, and consequences are clear.
+- Perform targeted additional study when the discussion exposes an evidence gap, and assess every late source through the Phase 2 source fields.
+- Ask the follow-up questions created by the discussion or additional study.
+- Repeat the question, discussion, study, and follow-up cycle until the topic is decision-ready.
 - Compare genuinely different reference-backed alternatives, including doing nothing when credible, by their pros, cons, fit, risks, and consequences.
-- Recommend the best-supported option and state what evidence would change the recommendation.
+- Recommend the best-supported option, state what evidence would change the recommendation, and reject every alternative outside the approved scope.
 - Obtain the user's decision whenever the Rules reserve authority to the user.
-- Record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition.
+- Record the selection, rationale, rejected alternatives, trade-offs, resulting design, and reopen condition as synthesis rather than a conversational transcript.
 - Use the decision to refine the rough result and determine its constraints, preferences, conventions, qualities, behaviors, interfaces, data and state design, operations, failures, and other details.
-- Reject every alternative that exceeds the approved scope.
-- Treat no Phase 2 candidate as already decided.
+- Put corrected requirements and emergent topics only in `ideation.md`, place each emergent topic under the correct parent, mark it as added during discussion, and update the final ASCII tree and matching headings.
+- Propagate each decision or correction through every affected descendant, reconcile sibling topics before closing their parent, and reopen the earliest affected branch when a child or new evidence contradicts an ancestor.
+- Move to the next topic only after the current topic is resolved, deferred with an explicit reason, or reopened at the correct ancestor.
+- Repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
+- Treat no Phase 2 candidate as already decided, and never edit either frozen supporting draft.
 
-#### 3.4 Incorporate later learning
-
-- Continue study whenever a decision needs more evidence.
-- Assess every late source through the Phase 2 source fields.
-- Put corrected requirements and emergent topics only in `ideation.md`.
-- Place each emergent topic under the correct parent and mark it as added during discussion.
-- Update the final ASCII tree and matching headings after every hierarchy change.
-- Preserve decision synthesis rather than a conversational transcript.
-
-#### 3.5 Develop the integrated design
+#### 3.3 Develop the integrated design
 
 - Define every applicable actor, responsibility, boundary, component, owner, and interface.
 - Define information, data, and state flows across normal, alternative, invalid, failure, and recovery paths.
@@ -189,13 +179,13 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Keep interfaces consumer-readable and dependencies acyclic.
 - Contain dependency failures and expose verification seams.
 
-#### 3.6 Define future validation
+#### 3.4 Define future validation
 
 - Separate existing evidence from proposed future validation.
 - Never represent a planned walkthrough, prototype, experiment, code spike, benchmark, or user study as completed evidence.
 - Record the question, method or artifact, participants or environment, pass and fail signals, owner, execution condition, and reopen condition for each validation commitment.
 
-#### 3.7 Audit the three-document candidate
+#### 3.5 Audit the three-document candidate
 
 - List every change from the supporting drafts with its evidence, material user approval, affected branches, and consequence.
 - Trace requirements, sources, topics, decisions, resulting design, risks, and validation by exact descriptive heading paths rather than artificial identifiers.
@@ -204,7 +194,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Remove hidden context, placeholders, unsupported conclusions, unresolved material decisions, and broken links.
 - Confirm that the result contains no ordered implementation tasks, implementation diff, produced realization output, or silently chosen design decision.
 
-#### 3.8 Evaluate, approve, and return the result
+#### 3.6 Evaluate, approve, and return the result
 
 - Evaluate the exact three-document candidate through [evaluation.md](evaluation.md) while `ideation.md` remains evolving and its authority remains contingent.
 - Reopen the earliest affected operation after every material revision.
