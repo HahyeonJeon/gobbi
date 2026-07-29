@@ -9,7 +9,7 @@
 ## Contents
 
 - [Executive Summary](#executive-summary)
-- [Final Requirements and Problem Definition](#final-requirements-and-problem-definition)
+- [Final Requirements](#final-requirements)
 - [Study Foundation](#study-foundation)
 - [Final Topic Tree](#final-topic-tree)
 - [Hierarchical Discussion and Decisions](#hierarchical-discussion-and-decisions)
@@ -23,41 +23,50 @@
 
 ## Executive Summary
 
-{State the root problem, desired outcome, selected direction, decisive evidence, major trade-offs, and final scope in a cold-readable summary.}
+{State the approved problem, desired outcome, selected direction, decisive evidence, major trade-offs, and final scope in a cold-readable summary.}
 
-## Final Requirements and Problem Definition
+## Final Requirements
 
-### Material Statement Classification
+### Goal
 
-| Exact heading path | Material statement | Type | Source, owner, or resolution |
-|---|---|---|---|
-| `{heading > child heading}` | `{fact, report, assumption, contradiction, decision, or question}` | `{Fact, User Report, Assumption, Contradiction, Decision, or Open Question}` | `{source, decision owner, or final resolution}` |
+> **Target:** {Restate the final kind of result and desired change.}<br>
+> **Purpose:** {Restate why the result is needed.}<br>
+> **Why now:** {Restate the trigger and why action matters now.}
 
-{Restate the complete six-way classification from the frozen requirements contract and include every approved correction made during discussion.}
+### Problem
 
-### Trigger, Current Reality, and Root Problem
+{Restate the final current situation, material evidence and uncertainty, supported problem or opportunity, impact, and relevant current or no-change context.}
 
-{Restate the finalized trigger, current behavior, direct evidence, root cause, consequences, and why now.}
+### Result
 
-### People, Authority, and Desired Outcomes
+| Actor | Need | Desired observable outcome |
+|---|---|---|
+| `{actor}` | `{need}` | `{outcome}` |
 
-| Person or actor | Need or responsibility | Desired outcome | Decision authority |
-|---|---|---|---|
-| `{actor}` | `{need or responsibility}` | `{outcome}` | `{authority}` |
+{Restate the final intended form, high-level capabilities, observable external behavior, inputs, outputs, integration boundary, and unchanged behavior.}
 
-### Final Requirements
+### Requirements
 
 #### {Descriptive Requirement Heading}
 
-> **Statement:** {Final required outcome or binding constraint.}<br>
-> **Reason and evidence:** {Why it applies and the supporting source.}<br>
-> **Observable success:** {Evidence that would prove it is met.}
+> **Statement:** {Final solution-neutral required outcome.}<br>
+> **Affected actors:** {Actors or actor outcomes this requirement serves.}<br>
+> **Basis:** {Why it applies and the supporting source or user decision.}<br>
+> **Observable result:** {How a reader can recognize that the outcome is achieved.}
 
 {Repeat for every final material requirement, including approved corrections to the frozen supporting draft.}
 
-### Scope, Constraints, and Success Conditions
+### Scope
 
-{Restate final in-scope, out-of-scope, non-goal, constraint, authority, success, failure, falsification, and stop conditions.}
+| Item | Final status | Reason |
+|---|---|---|
+| `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{reason}` |
+
+### Open Questions
+
+| Frozen question | Final resolution or deferral | Design consequence |
+|---|---|---|
+| `{question from requirements.md or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
 
 ## Study Foundation
 

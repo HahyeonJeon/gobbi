@@ -18,7 +18,7 @@
 
 ## Requirements Snapshot
 
-{Restate the frozen problem, desired outcomes, material requirements, scope, constraints, and study questions completely enough to understand this document without opening `requirements.md`. Use exact descriptive requirement headings.}
+{Restate the frozen goal, supported problem, result, material requirements, scope statuses, and open questions completely enough to understand this document without opening `requirements.md`. Use exact descriptive requirement headings.}
 
 ## Study Scope and Sources
 

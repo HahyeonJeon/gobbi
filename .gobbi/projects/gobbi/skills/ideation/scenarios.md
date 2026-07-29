@@ -42,16 +42,16 @@ Every selected category has a positive handled discrimination in at least one fa
 
 Scale threshold: split this source under an index above 16 families or 48 selected category-by-type cells.
 
-## IDEA-SC-01 — The result solves the root problem inside an approved boundary
+## IDEA-SC-01 — The result solves the approved problem inside an approved boundary
 
 - **Primary category:** 1 — the defining discrimination is whether the intended outcome and scope solve the actual problem.
 - **Secondary categories:** 7 Trust / harm / governance for material user authority; 10 Evidence / traceability / clarity for approval and problem-to-design proof.
-- **Primary type:** Positive — the ordinary result must align cause, outcome, success, and scope.
+- **Primary type:** Positive — the ordinary result must align the problem, observable outcome, and scope.
 - **Coverage role:** Positive; counterfactual by testing the do-nothing case and premise.
 - **Source:** Principle “Question the user without hesitation until the idea is complete”; Principle “Find the best idea by comparing reference-backed alternatives”; Rule “MUST preserve material user authority”; Rule “NEVER change the accepted contract silently”; Phase 1 and Phase 3.
 - **Given:** a user trigger, current reality, active scope, strongest credible do-nothing outcome, and a proposed final design.
-- **When:** the root cause, desired outcome, success and falsification signals, final scope, and selected design are compared.
-- **Then:** removing the stated cause would remove the need, the design addresses that cause, the signals are observable, and every included, excluded, deferred, or rejected outcome has user-approved boundaries.
+- **When:** the supported problem, desired and observable results, final scope, and selected design are compared.
+- **Then:** the design addresses the approved problem, every result and requirement has an observable outcome, and every included, excluded, deferred, or rejected item has a user-approved boundary.
 - **Failure oracle:** the design solves an adjacent symptom, relies on an untested premise without a reopen condition, or admits undeclared work.
 - **Evidence tuple:** inspect the final problem definition, scope tables, decision rationale, and supporting-draft changes; alignment and approval evidence confirm the outcome.
 - **Adversarial face:** add a useful adjacent cleanup under a broad phrase such as “related work”; the case fails unless it is explicitly approved in scope.
@@ -285,13 +285,13 @@ Scale threshold: split this source under an index above 16 families or 48 select
 - **Primary type:** Negative — a premature solution mechanism must be rejected as a requirement.
 - **Coverage role:** Negative; change/regression through the freeze transition.
 - **Source:** Phase 1; [requirements template](templates/requirements.md).
-- **Given:** a user trigger that proposes a mechanism before the root problem, outcomes, and constraints are complete.
+- **Given:** a user trigger that proposes a mechanism before the goal, problem, result, requirements, and scope are complete.
 - **When:** `requirements.md` is reviewed immediately before Phase 2 begins.
-- **Then:** every material statement is visibly classified as a fact, user report, assumption, contradiction, decision, or open question; each material requirement states an outcome or evidenced hard constraint; every contradiction is resolved or visible; user approval exists; the lifecycle notice is present; and the file freezes before any topic is prepared.
-- **Failure oracle:** a material statement lacks one of the six classifications, a preferred implementation is disguised as a requirement, topics exist before approval, or the supporting file remains editable after the transition.
-- **Evidence tuple:** inspect the complete material-statement register, requirements wording, approval evidence, topic chronology, and file digest at freeze; six-way classification, solution neutrality, and stable timing confirm the case.
-- **Adversarial face:** rename a proposed mechanism as a “constraint” without evidence; the case must reject it.
-- **Obligation:** Ideation visibly classifies every material statement into one of the six parent types and freezes a complete solution-neutral requirements contract before preparing topics.
+- **Then:** the document states the complete goal, supported problem, result, actor outcomes, solution-neutral requirements, four-status scope, and nonblocking open questions; material claims carry local basis and uncertainty; every contract-changing question is resolved; user approval exists; the lifecycle notice is present; and the file freezes before any topic is prepared.
+- **Failure oracle:** any required section is materially incomplete, a claim hides its basis or uncertainty, a preferred implementation is disguised as an outcome requirement, a contract-changing question remains open, topics exist before approval, or the supporting file remains editable after the transition.
+- **Evidence tuple:** inspect every Phase 1 section, local claim basis, requirement blocks, scope statuses, open-question connections, approval evidence, topic chronology, and file digest at freeze; completeness, solution neutrality, question closure, and stable timing confirm the case.
+- **Adversarial face:** rename a proposed mechanism as an outcome while leaving the external result unspecified; the case must reject it.
+- **Obligation:** Ideation freezes a complete, locally supported, solution-neutral requirements contract with no unresolved question that could change it before preparing topics.
 - **Checklist family:** IDEA-CK-13; atomic items IDEA-CK-13A through IDEA-CK-13L.
 
 ## IDEA-SC-14 — Progressive topic preparation closes study and coverage gaps

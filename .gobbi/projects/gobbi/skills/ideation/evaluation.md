@@ -43,7 +43,7 @@ Missing evidence is evaluated as a gap or unevaluable issue; it is not silently 
 
 ### Project
 
-Test the root cause, trigger, desired outcome, success and falsification signals, strongest do-nothing case, solution-neutral requirements, user-approved scope, active-scope overlap, material authority, and complete obligation coverage. Confirm the final design solves the approved problem without silent expansion and that every material supporting-draft change carries evidence and approval where required.
+Test the goal, supported problem, result, actor outcomes, solution-neutral and observable requirements, strongest no-change case, user-approved four-status scope, open-question boundary, active-scope overlap, material authority, and complete obligation coverage. Confirm the final design solves the approved problem without silent expansion and that every material supporting-draft change carries evidence and approval where required.
 
 ### Structure
 
@@ -99,8 +99,10 @@ At minimum, run these discriminating behavior probes:
 
 | Probe | Expected result |
 |---|---|
-| A proposed mechanism appears as a requirement without hard-constraint evidence | fail IDEA-CK-13 |
-| A material requirement statement lacks a visible fact, user-report, assumption, contradiction, decision, or open-question classification | fail IDEA-CK-13 |
+| A proposed internal mechanism appears as a requirement instead of an approved external form or an unselected later candidate | fail IDEA-CK-13 |
+| A material problem or requirement claim lacks local basis or presents uncertainty as fact | fail IDEA-CK-13 |
+| The result omits an applicable actor outcome, external behavior, input, output, integration boundary, or unchanged behavior | fail IDEA-CK-13 |
+| An open question could change the approved goal, problem, result, requirements, or scope | fail IDEA-CK-13 |
 | Provisional topics are drafted before `requirements.md` freezes | fail IDEA-CK-14 |
 | Internal or external study is absent or does not materially refine the topic draft | fail IDEA-CK-14 |
 | A material missing or weak topic survives the revision and supplementation pass | fail IDEA-CK-14 |
@@ -151,10 +153,10 @@ Exercise at least one self-containment probe using a project-only, software, int
 
 | Parent clause | Primary report coverage |
 |---|---|
-| Phase 1 — solution-neutral problem and requirements definition, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
+| Phase 1 — solution-neutral goal, problem, result, requirements, scope, open questions, approval, and whole-file freeze | Project, Usage, Consistency; IDEA-CK-01, IDEA-CK-02, IDEA-CK-13 |
 | Phase 2 — progressive topic drafting, internal and external refinement, gap-driven revision and supplementation, hierarchy construction, approval, and whole-file freeze | Structure, Aesthetics, Consistency, Overall; IDEA-CK-10, IDEA-CK-11, IDEA-CK-14 |
 | Phase 3 — temporary hierarchical discussion records, decision integration, design development and refinement through additional discussion, final recording, evaluation, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
-| `templates/requirements.md` — independently readable solution-neutral supporting contract and lifecycle notice | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
+| `templates/requirements.md` — independently readable Goal, Problem, Result, Requirements, Scope, Open Questions, and Approval contract | Project, Aesthetics, Consistency; IDEA-CK-13, IDEA-CK-16 |
 | `templates/topics.md` — assessed sources, dynamic matching hierarchy, completeness audit, and lifecycle notice | Structure, Aesthetics, Consistency; IDEA-CK-10, IDEA-CK-14, IDEA-CK-16 |
 | `templates/ideation.md` — final authority, decision synthesis, integrated design, draft-change disclosure, traceability, and approval | all perspectives; IDEA-CK-01 through IDEA-CK-12, IDEA-CK-15, IDEA-CK-16 |
 

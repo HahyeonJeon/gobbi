@@ -2,116 +2,87 @@
 
 ## Contents
 
-- [Statement Register](#statement-register)
+- [Goal](#goal)
 - [Problem](#problem)
-- [Actors and Outcomes](#actors-and-outcomes)
+- [Result](#result)
 - [Requirements](#requirements)
 - [Scope](#scope)
-- [Outcome Signals](#outcome-signals)
-- [Constraints and Authority](#constraints-and-authority)
-- [Open Issues](#open-issues)
-- [Research Questions](#research-questions)
+- [Open Questions](#open-questions)
 - [Approval](#approval)
 
-## Statement Register
+## Goal
 
-| Exact heading path | Material statement | Type | Source, owner, or needed resolution |
-|---|---|---|---|
-| `{heading > child heading}` | `{fact, report, assumption, contradiction, decision, or question}` | `{Fact, User Report, Assumption, Contradiction, Decision, or Open Question}` | `{source, decision owner, or resolution needed}` |
-
-{Register every material statement under exactly one of the six types. Keep the same classification visible when the statement is restated elsewhere in this document.}
+> **Target:** {State what kind of result is being shaped and the desired change.}<br>
+> **Purpose:** {Explain why the result is needed.}<br>
+> **Why now:** {State the trigger and why action matters now.}
 
 ## Problem
 
-### Trigger
-
-{Describe the event that started this work, why it matters now, and the source of each claim.}
-
 ### Current Situation
 
-{Describe current behavior, prior attempts, and direct evidence. Keep every material statement linked to its visible six-way classification above.}
+{Describe current behavior, relevant prior attempts, and direct evidence. Attribute user reports, cite inspected facts, and state material uncertainty where it appears.}
 
 ### Problem and Impact
 
-{State the root cause, affected outcomes, and consequences. Explain how removing the cause would remove the need.}
+{State the supported problem or opportunity, affected outcomes, and consequences. Distinguish a supported cause from a causal hypothesis.}
 
-### Current Approach
+### Current and No-Change Context
 
-{Describe the current workaround or alternative.}
+{Describe the current approach or workaround and the strongest credible result of making no change when either affects the decision to act.}
 
-### No-Change Outcome
+## Result
 
-{Describe the strongest credible result of doing nothing.}
+### Actors and Outcomes
 
-## Actors and Outcomes
+| Actor | Need | Desired observable outcome |
+|---|---|---|
+| `{person, group, system, or other affected actor}` | `{current need}` | `{outcome}` |
 
-| Person or actor | Current need or job | Desired observable outcome | Decision authority |
-|---|---|---|---|
-| `{actor}` | `{need}` | `{outcome}` | `{authority}` |
+### Expected Result
+
+{Describe the intended form, high-level capabilities, and observable external behavior without selecting an internal design.}
+
+### External Boundary
+
+| Aspect | Description |
+|---|---|
+| Inputs | `{material inputs, when applicable}` |
+| Outputs | `{material outputs, when applicable}` |
+| Integration boundary | `{where the result connects to existing behavior and where its obligation stops}` |
+| Unchanged behavior | `{existing behavior that must remain unchanged, when applicable}` |
+
+{Use only applicable rows. Do not prescribe internal structure, conventions, implementation mechanisms, or ordered tasks.}
 
 ## Requirements
 
 ### {Requirement}
 
-> **Statement:** {State a needed outcome or binding constraint without selecting a mechanism.}<br>
-> **Reason:** {Explain why the requirement follows from the problem.}<br>
-> **Evidence:** {Link or identify the supporting fact, user report, or approved constraint.}<br>
-> **Observable success:** {Describe evidence that would prove the requirement is met.}
+> **Statement:** {State one solution-neutral outcome the result must achieve.}<br>
+> **Affected actors:** {Name the actors or actor outcomes this requirement serves.}<br>
+> **Basis:** {Explain why the requirement follows from the goal, problem, or user decision and cite material evidence.}<br>
+> **Observable result:** {Describe how a reader can recognize that the outcome is achieved.}
 
 {Add one descriptive level-three heading and block for every material requirement.}
 
 ## Scope
 
-### Included
-
-{Enumerate the outcomes and surfaces included in this idea.}
-
-### Excluded
-
-{Enumerate excluded outcomes and surfaces.}
-
-### Non-Goals
-
-{State adjacent results this work deliberately will not produce.}
-
-### Deferred and Rejected
-
-| Item | Disposition | Reason | Destination or drop decision |
-|---|---|---|---|
-| `{item}` | `{Deferred or Rejected}` | `{reason}` | `{destination or explicit drop}` |
-
-## Outcome Signals
-
-| Signal type | Observable signal | Meaning |
+| Item | Status | Reason |
 |---|---|---|
-| Success | `{signal}` | `{what it proves}` |
-| Failure | `{signal}` | `{what failed}` |
-| Falsification | `{signal}` | `{which premise it disproves}` |
-| Stop | `{signal}` | `{why work should stop or reframe}` |
+| `{outcome or surface}` | `{Included, Excluded, Deferred, or Rejected}` | `{why this status is correct}` |
 
-## Constraints and Authority
+{Give every material outcome and user-named surface exactly one status.}
 
-| Constraint or decision | Hard constraint, soft preference, or authority boundary | Owner | Evidence |
-|---|---|---|---|
-| `{constraint or decision}` | `{classification}` | `{owner}` | `{source}` |
+## Open Questions
 
-{Include active-work overlap and compatibility promises when applicable.}
+| Question | Why it matters | Related section |
+|---|---|---|
+| `{question that remains to be studied or discussed}` | `{what depends on the answer}` | `{Goal, Problem, Result, Requirement, or Scope heading}` |
 
-## Open Issues
-
-| Item | Type | Material consequence | Resolution needed |
-|---|---|---|---|
-| `{claim or question}` | `{Assumption, Contradiction, or Open Question}` | `{consequence}` | `{answer, evidence, or user decision needed}` |
-
-## Research Questions
-
-| Question | Why it matters | Internal material to inspect | External material to inspect |
-|---|---|---|---|
-| `{question}` | `{decision or requirement it affects}` | `{project source}` | `{prior art or standard}` |
+{Resolve every question that could change the goal, problem, result, requirements, or scope before approval. Retain only questions whose answers can refine the later design without changing this contract.}
 
 ## Approval
 
-> **Approval condition:** The user confirms that this document is complete, solution-neutral, and accurate enough to direct study.<br>
+> **Approval condition:** The user confirms that the goal, problem, result, requirements, scope, and open questions are complete, accurate, and solution-neutral, with no unresolved question that could change this contract.<br>
 > **Freeze effect:** Approval freezes the whole file without a later status edit. All later corrections appear only in `ideation.md`.<br>
 > **Supersession effect:** User approval of the final `ideation.md` automatically supersedes this supporting draft.
 

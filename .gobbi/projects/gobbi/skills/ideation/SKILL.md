@@ -53,30 +53,34 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Ask the user about the intended outcome, trigger, current reality, observed symptoms, underlying problem or opportunity, consequences, current approach, strongest credible do-nothing outcome, and why action matters now.
 - Show the relevant context before each question and ask one focused question at a time.
-- Follow each answer until it is concrete enough to classify as a fact, user report, assumption, contradiction, decision, or open question.
+- Follow each answer until its meaning, basis, and material uncertainty are clear enough to use without assumption.
 
-#### 1.3 Define the scope and rough result
+#### 1.3 Define the scope and result
 
-- Ask the user to describe the rough result and what it must do for every affected person or actor.
+- Ask the user to describe the result and what it must do for every affected person or actor.
 - Define the intended form, desired outcomes, high-level capabilities, observable behavior, inputs and outputs, permitted boundaries, and unchanged behavior.
 - Classify work as in scope, out of scope, deferred, or rejected.
-- Describe only the rough external result and integration boundary for an implementation target, without prescribing ordered tasks or an internal solution.
-- Continue questioning until the target, scope, and rough result state what must be achieved, for whom, what kind of result is expected, and where the obligation stops.
+- Describe only the external result and integration boundary for an implementation target, without prescribing ordered tasks or an internal solution.
+- Continue questioning until the target, scope, and result state what must be achieved, for whom, what kind of result is expected, and where the obligation stops.
 - Leave constraints, conventions, preferences, internal structure, and other design details for Phase 2 to specify as topics and Phase 3 to determine with the user.
 
 #### 1.4 Draft `requirements.md`
 
 - Create `requirements.md` from [the requirements template](templates/requirements.md) using the completed discussion.
-- Classify every material statement as a fact, user report, assumption, contradiction, decision, or open question.
+- Keep each material claim at one semantic owner, attribute user reports, cite inspected facts, and state uncertainty where it affects the goal, problem, result, requirements, or scope.
+- Write each material requirement under a descriptive heading with one solution-neutral outcome, its affected actors, its basis, and its observable result.
+- Give each material outcome and user-named surface one `Included`, `Excluded`, `Deferred`, or `Rejected` scope status with a reason.
+- Record only nonblocking design or study questions under `Open Questions`, and connect each question to the section its answer may refine.
 - Make the draft independently readable and solution-neutral.
 
 #### 1.5 Reconcile and review the requirements
 
 - Present the complete draft to the user.
-- Review the target, scope, and rough result for conflicts, omissions, inaccurate interpretations, hidden solution choices, and unclear boundaries.
+- Review the target, scope, and result for conflicts, omissions, inaccurate interpretations, hidden solution choices, and unclear boundaries.
 - Ask the user to correct the draft and resolve every material disagreement.
-- Revise the draft and repeat the review until every target, purpose, problem, actor, desired outcome, rough-result expectation, scope inclusion, exclusion, deferral, rejection, and observable boundary is explicit.
-- Close the phase only when `requirements.md` defines what to do, why, and the expected rough result without deciding the detailed design.
+- Revise the draft and repeat the review until every goal, problem, actor, desired outcome, result expectation, requirement, scope inclusion, exclusion, deferral, rejection, observable boundary, and open question is explicit.
+- Resolve every question that could change the goal, problem, result, requirements, or scope, and retain only questions whose answers can refine the later design without changing the Phase 1 contract.
+- Close the phase only when `requirements.md` defines what to do, why, and the expected result without deciding the detailed design.
 
 #### 1.6 Approve and freeze `requirements.md`
 
@@ -90,8 +94,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 2.1 Draft top-level topics from Phase 1 results
 
-- Review the frozen target, purpose, problem, scope, and rough result in `requirements.md`.
-- Identify the top-level questions that must be answered to turn the rough result into a coherent design.
+- Review the frozen goal, problem, result, requirements, scope, and open questions in `requirements.md`.
+- Identify the top-level questions that must be answered to turn the result into a coherent design.
 - Draft one provisional top-level topic for each distinct decision area without choosing an answer or importing a fixed taxonomy.
 - Write the complete initial topic draft to `topics.tmp.md`.
 
@@ -107,7 +111,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 2.3 Update topic by studying external materials
 
 - Read `topics.tmp.md` as the topic draft to update.
-- Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen target, scope, rough result, and provisional topics.
+- Study trustworthy prior art, standards, proven approaches, genuine alternatives, and failure lessons against the frozen goal, result, requirements, scope, open questions, and provisional topics.
 - Update and refine the topics from the questions, alternatives, trade-offs, and design dimensions uncovered while studying the external materials.
 - Write the complete externally updated topic draft back to `topics.tmp.md`.
 
@@ -189,6 +193,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 ## References
 
-- [`requirements.md`](templates/requirements.md) defines the Phase 1 problem, target, scope, rough result, and supporting-draft lifecycle.
+- [`requirements.md`](templates/requirements.md) defines the Phase 1 goal, problem, result, requirements, scope, open questions, and supporting-draft lifecycle.
 - [`topics.md`](templates/topics.md) defines the Phase 2 study foundation, topic hierarchy, discussion contract, and supporting-draft lifecycle.
 - [`ideation.md`](templates/ideation.md) defines the Phase 3 decision synthesis, integrated design, changes, risks, validation commitments, and final authority.
