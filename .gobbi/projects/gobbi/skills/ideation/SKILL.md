@@ -166,8 +166,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Read the complete discussion and decision record in `ideation.tmp.md` against the frozen requirements, study foundation, and topic hierarchy.
 - Group the temporary records by topic in parent-first order and keep every discussion round about the same choice together.
 - Consolidate each topic's rounds into one current decision record containing its question, connected requirements, evidence, alternatives, recommendation, status, selection or deferral, rationale, rejected alternatives, trade-offs, resulting design, consequences, and reopen condition.
-- Merge duplicate records, connect dependent decisions, and propagate every parent decision or correction through affected children and sibling branches.
-- Reconcile compatible decisions and expose contradictions, omissions, stale conclusions, and unresolved consequences without resolving them by assumption.
+- Merge duplicate records, reconcile compatible decisions, connect dependent decisions, propagate every parent decision or correction through affected children and sibling branches, and expose contradictions, omissions, stale conclusions, and unresolved consequences without resolving them by assumption.
 - Return every material conflict, reopened topic, or unresolved user choice to Step 3.2, record the resulting discussion and decision in `ideation.tmp.md`, and restart integration.
 - After the integrated decision set is coherent, create or update `ideation.md` from [the final Ideation template](templates/ideation.md) with the complete frozen context, integrated decision synthesis, corrected requirements, and emergent topics under their correct parents.
 - Compare the integrated draft with `ideation.tmp.md`, add every omitted material record, align the final ASCII tree with its headings, make the document independently readable, and mark it as the evolving final authority until final approval.
