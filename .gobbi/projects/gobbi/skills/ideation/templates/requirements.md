@@ -1,4 +1,4 @@
-# {Idea or Problem Name} — Requirements and Problems
+# {Title} - Requirements
 
 ## Contents
 
