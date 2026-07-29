@@ -158,8 +158,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
 - Ask another decision-ready question when the choice remains unresolved, and repeat the discussion, revision, and conditional study until the user makes the required decision or explicitly defers it.
 - Temporarily record the discussion and decision in `ideation.tmp.md` with its selection, rationale, rejected alternatives, trade-offs, resulting design, reopen condition, corrected requirements, emergent topics under their correct parents, affected descendants, sibling reconciliation, reopened branches, and current ASCII tree and matching headings.
-- Move to the next topic only after the current topic is resolved, deferred with an explicit reason, or reopened at the correct ancestor.
-- Repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
+- Move to the next topic only after the current topic is resolved, explicitly deferred, or reopened at the correct ancestor, and repeat the complete topic-resolution cycle until every topic in the evolving hierarchy is resolved or explicitly deferred.
 - Treat no Phase 2 candidate as already decided, and never edit either frozen supporting draft.
 
 #### 3.3 Integrate the discussions and develop the design
