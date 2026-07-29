@@ -59,14 +59,14 @@ or cross-system agreement.
 
 For this closure the exact waiver is:
 
-> Claude absent Wrap-up iteration 2.
+> Claude absent Wrap-up iteration 3.
 
 The Wrap-up subject is therefore Codex-only. Its independent evaluation result,
 finding ledger, and aggregate verdict are sealed in
-`4-wrap-up/evaluation/iteration-2/` and `state.json`; this handoff is valid for
+`4-wrap-up/evaluation/iteration-3/` and `state.json`; this handoff is valid for
 finalization only when those artifacts record `PASS`. The user approved both
 Wrap-up routing decisions as cross-cutting project mistakes in
-`4-wrap-up/working/iteration-2/open-decisions.md`.
+`4-wrap-up/working/iteration-3/open-decisions.md`.
 
 ## 4. Decisions to respect
 
@@ -141,7 +141,7 @@ and delete only the proven merged remote and local session branches.
 
 The main accepted evidence limitation is single-system review. The user
 explicitly waived Claude for the named recovery iterations, including Wrap-up
-iteration 2. The evidence proves Codex review and verification only; it does
+iteration 3. The evidence proves Codex review and verification only; it does
 not prove cross-system agreement.
 
 The historical 20-record promotion is accepted under the closure contract even

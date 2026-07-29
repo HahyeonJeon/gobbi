@@ -41,4 +41,3 @@ Planning iteration 4 is the authorized pass that must resolve `CODEX-USAGE-001`,
 ## Consequences
 
 No Claude draft, cross-review, evaluator report, cross-system agreement, technical result, or PASS is created by this waiver. It grants no merge, publication, branch deletion, or worktree cleanup authority.
-

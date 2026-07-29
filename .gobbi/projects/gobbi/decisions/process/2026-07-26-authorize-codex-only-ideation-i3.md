@@ -41,4 +41,3 @@ The cold-use acceptance amendment changes the locked Ideation contract. A new Id
 ## Consequences
 
 No Claude draft, cross-review, evaluator report, cross-system agreement, technical result, or PASS is created by this waiver. It grants no merge, publication, branch deletion, or worktree cleanup authority.
-
