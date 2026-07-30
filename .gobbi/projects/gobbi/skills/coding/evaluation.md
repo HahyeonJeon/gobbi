@@ -1,6 +1,11 @@
 # Coding — Code-Quality Review Frame
 
-Child doc for the evaluator reviewing a code change-set against the `coding` skill's seventeen principles. Intended to complement `execution/evaluation.md` (code-quality vs did-the-task); the runtime load-both wiring is deferred. The execution child doc covers the workflow-level question (did the executor implement the right plan task, completely, without scope creep, verifiably); this `coding` child doc covers the **code-quality** question (is the code itself well-designed, well-built, and well-crafted). Provides per-perspective **seed scenarios with attached yes/no checklists** + **recommended verifications** + **perspective-specific anti-patterns**, then **Overall** anchors.
+Child doc for the evaluator reviewing a code change-set against the `coding` skill's seventeen principles.
+Intended to complement the [Execution operation](../execution/SKILL.md) (code-quality versus task completion);
+the runtime load-both wiring is deferred. Execution covers whether the executor implemented the right task
+completely, within scope, and with verification; this `coding` child doc covers whether the code itself is
+well-designed, well-built, and well-crafted. It provides per-perspective seed scenarios with attached yes/no
+checklists, recommended verifications, perspective-specific anti-patterns, and Overall anchors.
 
 Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P17)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 17. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the `python` / `typescript` skills, and platform idioms to the `electron` skill, so this frame grades the property, not the idiom.
 

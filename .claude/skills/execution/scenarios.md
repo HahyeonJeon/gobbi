@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/execution/scenarios.md
