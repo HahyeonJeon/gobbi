@@ -155,7 +155,7 @@ Async main-process ESM initialization that must precede `ready` needs top-level 
 | Windows or Linux second start | Receive `second-instance`, validate the delivered command line and working directory, then focus or create the owned window |
 | macOS cold or running app | Register `open-url` and `open-file` before readiness, call `preventDefault()` when handled, queue validated input until services are ready |
 
-Use one validated delivery function for cold start and later delivery. Closed allowlists for protocol, host, route, and payload remain a convention requirement.
+Use one validated delivery function for cold start and later delivery. Closed allowlists for protocol, host, route, and payload remain an `electron-design` requirement.
 
 For the pinned major, current [Deep Links guidance](https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app) says macOS and Linux protocol registration works only in a packaged application; a command-line development launch cannot verify it.
 
