@@ -50,10 +50,10 @@ implies another.
 - **MUST preserve the accepted stack unless current evidence materially challenges it.** For a new or
   challenged stack, assess resource and package cost, content trust, native depth, target and update fit, team
   upgrade capacity, migration cost, and release needs; a material conflict pauses for the user's decision.
-- **MUST keep each decision with its current owner.** UI and UX own observable design, coding and applicable
-  language or renderer skills own idiom, `desktop-contract` owns the installed-platform contract, the
-  Electron family owns Electron mechanics, `desktop-release` owns release judgment, and Evaluation owns the
-  independent verdict.
+- **MUST keep each decision with its current owner.** `desktop-interface` owns observable design judgment,
+  coding and applicable language or renderer skills own idiom, `desktop-contract` owns the installed-platform
+  contract, the Electron family owns Electron mechanics, `desktop-release` owns release judgment, and
+  Evaluation owns the independent verdict.
 - **MUST keep every slice and target internally consistent.** Code, configuration, types, tests,
   documentation, persistent-data behavior, package inputs, and operational evidence move together, and a
   missing target proof narrows the claim rather than becoming an inferred pass.
@@ -98,8 +98,8 @@ implies another.
 
 #### 2.1 Reconcile observable design and implementation ownership
 
-- **Input and precondition:** use the accepted UI and UX contracts, outcome contract, current application
-  structure, and selected implementation owners.
+- **Input and precondition:** use the accepted `desktop-interface` design decisions, outcome contract, current
+  application structure, and selected implementation owners.
 - **Action:** trace every entry mode, state, action, failure, recovery route, accessibility obligation, first
   paint, and touched native behavior to an observable specification. Assign each implementation unit one
   process and one capability owner.

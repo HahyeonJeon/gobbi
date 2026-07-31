@@ -8,11 +8,11 @@ skill-type: operation
 # Web Frontend
 
 Use this operation for the browser-facing outcome: journey, content, interaction, visual hierarchy, responsive
-behavior, accessibility, trust, recovery, and user-visible measurement. Generic UI and UX skills are not
-prerequisites.
+behavior, accessibility, trust, recovery, and user-visible measurement.
 
-It owns observable frontend behavior. HTML, CSS, language, framework, platform, backend, topology, testing,
-and security owners load only when their triggers apply.
+It owns observable frontend behavior. `web-interface` owns the identity, evidence, concept, and expression
+judgments it applies. HTML, CSS, language, framework, platform, backend, topology, testing, and security
+owners load only when their triggers apply.
 
 ## Principles
 
