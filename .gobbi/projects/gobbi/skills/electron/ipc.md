@@ -20,7 +20,7 @@ written, and what each frame state must produce.
 |---|---|
 | Checklist items 17 and 20, the origin allowlist, and the navigation event surface | [`security.md`](security.md) |
 | The sandboxed preload's module surface, and why it is one bundled file | [`process-model.md`](process-model.md) |
-| How to *write* a discriminated union and a type predicate | [`../typescript/typing.md`](../typescript/typing.md) |
+| How to *write* a discriminated union and a type predicate | [`typescript-typing`](../typescript/typescript-typing/SKILL.md) |
 | The removed-in-vN table and the behavior-claim register | [`migration.md`](migration.md) |
 | The seam that drives a null and a detached sender frame in a test | [`testing.md`](testing.md) |
 | Validating untrusted input at a trust boundary, as a language-agnostic property | [`../coding/SKILL.md`](../coding/SKILL.md) |
@@ -345,9 +345,10 @@ export function isOpenRequest(value: unknown): value is OpenRequest {
 ```
 
 The handler takes its payload as `unknown`, narrows it with a predicate like this one, and denies on failure —
-the same return-without-acting branch § 7 requires for the sender. For how to write predicates, discriminated
-unions and exhaustive narrowing well, read [`../typescript/typing.md`](../typescript/typing.md); this file owns
-only the placement, which is main-side and per handler.
+the same return-without-acting branch § 7 requires for the sender. For how to write predicates,
+discriminated unions and exhaustive narrowing well, read
+[`typescript-typing`](../typescript/typescript-typing/SKILL.md); this file owns only the placement, which is
+main-side and per handler.
 
 ---
 

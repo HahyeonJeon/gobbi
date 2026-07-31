@@ -1058,10 +1058,11 @@ Every borrowed fact has one owner. This section names the owner; it never restat
 
 - [`coding`](../coding/SKILL.md) owns language-agnostic construction quality, including the trust-boundary
   property this skill instantiates at the privilege boundary.
-- [`typescript`](../typescript/SKILL.md) owns general language idiom, with
-  [`typing.md`](../typescript/typing.md) for declaration-versus-verification and declaration-file authoring,
-  [`modules-tooling.md`](../typescript/modules-tooling.md) for the flag set and the import-extension fork,
-  and [`async-resources.md`](../typescript/async-resources.md) for disposal.
+- [`typescript`](../typescript/SKILL.md) routes general language work, with
+  [`typescript-typing`](../typescript/typescript-typing/SKILL.md) for declaration-versus-verification and
+  declaration-file authoring, [`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) for
+  compiler profiles and import-resolution forks, and
+  [`typescript-async`](../typescript/typescript-async/SKILL.md) for disposal.
 - [`evaluation`](../evaluation/SKILL.md) owns the evaluator perspectives, causal findings, and verdict
   derivation. [`evaluation/checklist`](../evaluation/checklist/SKILL.md) owns perspective-led scenario and
   checklist-source construction, including the scenario classes and nested checklist rows this skill reuses.

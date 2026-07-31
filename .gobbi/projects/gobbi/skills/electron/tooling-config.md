@@ -16,7 +16,7 @@ combined config. This doc owns the mechanics: what the three targets actually di
 
 | Borrowed fact | Its one owner |
 |---|---|
-| What each `tsconfig` flag *means* — `verbatimModuleSyntax`, `moduleResolution`, the strict base | [`../typescript/modules-tooling.md`](../typescript/modules-tooling.md) |
+| What compiler, module-resolution, and import settings mean | [`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) |
 | The runtime constraint that forces the split, and the sandboxed preload surface | [`process-model.md`](process-model.md) |
 | What React must do under the packaged origin | [`renderer-react.md`](renderer-react.md) |
 | Why a custom protocol beats `file://` for the packaged renderer | [`security.md`](security.md) |
@@ -129,8 +129,8 @@ Two of those rows are easy to get wrong in the same direction:
   `__dirname` and `process.exit` would all compile and fail at runtime. The four globals need a small
   hand-written ambient declaration instead; no vendor declaration for the subset exists.
 
-For what each flag in the shared strict base *means*, read
-[`../typescript/modules-tooling.md`](../typescript/modules-tooling.md). This doc owns only the split and the
+For the meaning of compiler, module-resolution, and import settings, read
+[`typescript-compiler`](../typescript/typescript-compiler/SKILL.md). This doc owns only the split and the
 per-target deltas.
 
 ## 4. Per-process `electron` module views
@@ -316,6 +316,7 @@ source that validates it.
   `electron@43.2.0` and `@types/node@24.10.1` on 2026-07-25, not quoted from a document.
 - [`process-model.md`](process-model.md) — the runtime constraints these configurations encode: the sandboxed
   preload surface, the one-file rule, and the per-process module allowlist.
-- [`../typescript/modules-tooling.md`](../typescript/modules-tooling.md) — the meaning of every flag in the
-  shared strict base. This doc owns only the split and the per-target deltas.
+- [`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) — the compiler,
+  module-resolution, and import semantics behind the shared base. This doc owns only the split and the
+  per-target deltas.
 - [`SKILL.md`](SKILL.md) — EL-R-02, EL-R-11 and EL-N-08, which this doc deepens and does not restate.

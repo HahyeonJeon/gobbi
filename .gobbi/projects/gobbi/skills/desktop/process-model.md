@@ -100,8 +100,9 @@ safe. The two failures pair: a valid payload from an unexpected frame and an inv
 expected frame are both reachable, and each needs its own check.
 
 Parsing an untrusted value into a domain type is a language concern, and
-[`typescript/typing.md`](../typescript/typing.md) owns the declaration-versus-verification distinction that
-makes it work. This file states where the parse must happen; that file states how to write one.
+[`typescript-typing`](../typescript/typescript-typing/SKILL.md) owns the
+declaration-versus-verification distinction that makes it work. This file states where the parse must
+happen; that skill states how to write one.
 
 ## The `contextBridge` crossable-type boundary
 
@@ -153,7 +154,7 @@ Ports come in pairs, and the pair is the unit.
 Therefore lifetime is owned explicitly. `DESK-R18` states the rule: every privileged resource held on behalf
 of a renderer names the window or `webContents` lifecycle event that releases it, with `will-quit` as the
 last-resort terminal. Key disposal to the lifecycle event, never to scope exit.
-[`typescript/async-resources.md`](../typescript/async-resources.md) owns the disposal idiom itself.
+[`typescript-async`](../typescript/typescript-async/SKILL.md) owns the disposal idiom itself.
 
 A utility process communicates over these ports, so a utility process's lifetime is a port lifetime question
 and inherits everything above.
@@ -173,9 +174,9 @@ marking, and the marking travels with the rule wherever it is restated, taught, 
 | Preload | the narrowest set of the three | yes | it has the document interfaces and only a limited subset of the rest |
 
 Wire the three as separate projects with their own library, type, and module settings, joined by project
-references over **one type-only shared layer**. [`typescript/modules-tooling.md`](../typescript/modules-tooling.md)
-owns the flag set and the import-extension fork; this file states only which targets exist and why they
-differ.
+references over **one type-only shared layer**.
+[`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) owns the compiler profiles and
+import-resolution fork; this file states only which targets exist and why they differ.
 
 ### Excluding the runtime's types from the renderer is a defect fix, not a preference
 

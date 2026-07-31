@@ -17,7 +17,7 @@ actually reach at runtime, and what happens when a unit reaches for something it
 | Borrowed fact | Its one owner |
 |---|---|
 | The `webPreferences` defaults, and what the `sandbox` flag means for security | [`security.md`](security.md) |
-| ESM and `verbatimModuleSyntax` semantics — what the flags mean in TypeScript | [`../typescript/modules-tooling.md`](../typescript/modules-tooling.md) |
+| Compiler and module-resolution semantics — what the settings mean in TypeScript | [`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) |
 | How the preload bundling and the per-process module views are configured | [`tooling-config.md`](tooling-config.md) |
 | The bridge's shape, its serialization tables, and sender validation | [`ipc.md`](ipc.md) |
 
@@ -171,9 +171,9 @@ differences are runtime facts, not configuration choices:
 All four rows are `verified-against docs/tutorial/esm.md@v43.2.0 on 2026-07-25`.
 
 The renderer row is the one that surprises. A renderer is a browser page, so an ESM import of `node:fs` there
-is not merely disallowed by policy — there is nothing to resolve it against. For what `verbatimModuleSyntax`,
-`moduleResolution` and the import-extension modes *mean*, read
-[`../typescript/modules-tooling.md`](../typescript/modules-tooling.md); this doc says only which mode each
+is not merely disallowed by policy — there is nothing to resolve it against. For compiler, module-resolution,
+and import-specifier semantics, read
+[`typescript-compiler`](../typescript/typescript-compiler/SKILL.md); this doc says only which mode each
 process is in.
 
 ## 5. `utilityProcess.fork()` — the sanctioned offload target

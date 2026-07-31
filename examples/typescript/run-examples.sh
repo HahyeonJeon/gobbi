@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 # run-examples.sh — runner half of the example-verification harness for the
-# gobbi `typescript` skill (design §9 / D7).
+# gobbi `typescript` skill family.
 #
 # Extracts every fenced `ts` / `typescript` block from the given markdown
 # file(s) or directory (via extract-blocks.mjs) and type-checks the whole set
-# with the LOCAL tsc under tsconfig.examples.json. Every taught TS fact is thus
-# proven to compile under the skill's own maximal-strict baseline.
+# with the LOCAL tsc under tsconfig.examples.json. This profile verifies
+# compatible teaching fragments; it does not prove every runtime host, compiler
+# profile, build transform, module loader, or packed-package path.
 #
 # Usage:  bash run-examples.sh <markdown-file-or-dir> [more...]
 #
@@ -64,9 +65,9 @@ if [ "$unit_count" -eq 0 ]; then
   exit 3
 fi
 
-# The temp package.json makes nodenext resolve the units as ESM (matches the
-# skill's ESM-only + verbatimModuleSyntax baseline). The temp tsconfig extends
-# the committed examples config and compiles only the extracted units.
+# The temp package.json gives the isolated fragments one deterministic module
+# context. The temp tsconfig extends the committed compatibility profile and
+# compiles only the extracted units.
 printf '{\n  "type": "module"\n}\n' > "$tmp_dir/package.json"
 printf '{\n  "extends": "%s/tsconfig.examples.json",\n  "include": ["units/*.ts"]\n}\n' \
   "$script_dir" > "$tmp_dir/tsconfig.json"

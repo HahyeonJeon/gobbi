@@ -19,7 +19,7 @@ observations possible at all.
 |---|---|
 | The nine code-only items, which five are origin-sensitive, and the origin allowlist | [`security.md`](security.md) |
 | The channel contract being tested, the sender-state table, and the bridge surface | [`ipc.md`](ipc.md) |
-| General test structure, fakes, and type-level testing as language idiom | [`../typescript/testing.md`](../typescript/testing.md) |
+| Runtime, deterministic-seam, and type-level testing as language idiom | [`typescript-testing`](../typescript/typescript-testing/SKILL.md) |
 | Design for verification as a language-agnostic property | [`../coding/SKILL.md`](../coding/SKILL.md) |
 | The React-side subscription lifetime this doc's fake bridge is used to check | [`renderer-react.md`](renderer-react.md) |
 | Fuses, the packaged artifact, and how it is inspected | [`packaging-distribution.md`](packaging-distribution.md) |
@@ -347,7 +347,8 @@ that validates it.
   pins, and the bridge surface § 7's fake stands in for.
 - [`security.md`](security.md) — the nine code-only items, the five origin-sensitive ones, and the permission
   pair § 5 tests.
-- [`../coding/SKILL.md`](../coding/SKILL.md) and [`../typescript/testing.md`](../typescript/testing.md) — the
-  seam property § 2 derives from, and how to write the fakes and type-level checks above.
+- [`../coding/SKILL.md`](../coding/SKILL.md) and
+  [`typescript-testing`](../typescript/typescript-testing/SKILL.md) — the seam property § 2 derives from,
+  and how to write the fakes and type-level checks above.
 - [`SKILL.md`](SKILL.md) — EL-R-04, EL-R-09 and EL-N-01, whose behavioral halves this doc makes runnable, and
   the supported-majors window every version claim above is read against.

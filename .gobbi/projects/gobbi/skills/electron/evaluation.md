@@ -1,9 +1,11 @@
 # Electron — Idiom Review Frame
 
-The entrypoint an independent evaluator uses to grade a change-set for **Electron idiom** — the desktop-runtime
-companion to [`../coding/evaluation.md`](../coding/evaluation.md) and
-[`../typescript/evaluation.md`](../typescript/evaluation.md). It is also the executor's own route into the triad
-at [`SKILL.md` P8](SKILL.md#p8--review-on-three-axes-then-trace).
+The entrypoint an independent evaluator uses to grade a change-set for **Electron idiom** — the
+desktop-runtime companion to [`../coding/evaluation.md`](../coding/evaluation.md). The TypeScript axis uses
+general [`evaluation`](../evaluation/SKILL.md) with
+[`typescript-conventions`](../typescript/typescript-conventions/SKILL.md) and
+[`typescript-typing`](../typescript/typescript-typing/SKILL.md). This file is also the executor's own route
+into the triad at [`SKILL.md` P8](SKILL.md#p8--review-on-three-axes-then-trace).
 
 This file **routes; it does not restate**. The general method — the seven perspectives plus Overall, causal
 findings, resolved checks, and verdict derivation — is owned by
@@ -24,7 +26,7 @@ the caller's output set is unchanged.
 | Every rule, its check, its defeater, and the strength bar | [`SKILL.md`](SKILL.md) |
 | The cases, their failure oracles, and the coverage frame | [`scenarios.md`](scenarios.md) |
 | The binary rows, the resolution enum, and coverage closure versus acceptance | [`checklists.md`](checklists.md) |
-| The language-agnostic property and the TypeScript idiom | [`../coding/evaluation.md`](../coding/evaluation.md), [`../typescript/evaluation.md`](../typescript/evaluation.md) |
+| The language-agnostic property and the TypeScript idiom | [`../coding/evaluation.md`](../coding/evaluation.md), general [`evaluation`](../evaluation/SKILL.md), [`typescript-conventions`](../typescript/typescript-conventions/SKILL.md), and [`typescript-typing`](../typescript/typescript-typing/SKILL.md) |
 | The Electron depth behind any finding | the nine content children, through the [`SKILL.md` P2 router](SKILL.md#p2--route-to-the-child-docs-for-the-forks-in-play) |
 | The Electron major each version-sensitive behavior is qualified against | [`migration.md`](migration.md) |
 
@@ -38,7 +40,7 @@ none substitutes for another, and `EL-CHECK-01c` fails a record that names an ax
 | Axis | Frame | Owns |
 |---|---|---|
 | Property | [`../coding/evaluation.md`](../coding/evaluation.md) | whether the change is good software at all — decomposition, naming, error handling, test seams, blast radius |
-| TypeScript idiom | [`../typescript/evaluation.md`](../typescript/evaluation.md) | whether the property is expressed in strict, idiomatic TypeScript — `any`, `as`, floating promises, erasable syntax, the exported type surface |
+| TypeScript idiom | General [`evaluation`](../evaluation/SKILL.md) with [`typescript-conventions`](../typescript/typescript-conventions/SKILL.md) and [`typescript-typing`](../typescript/typescript-typing/SKILL.md) | whether the property is expressed with clear TypeScript conventions and an honest typed surface |
 | Electron idiom | this file | only what the multi-process desktop runtime adds — process placement, the per-target type-check, the bridge, the sender contract, the security posture, the packaged artifact |
 
 **The boundary test is `SKILL.md`'s own:** advice that would still hold in a plain Node and browser application
@@ -48,17 +50,22 @@ belongs to one of the two parents, not here. Apply it to findings as well as to 
 line only when their causes differ and the corrections differ. One cause plus one correcting edit is one
 finding, recorded on the owning axis and cross-referenced from the other.
 
+When the TypeScript root triggers apply, add
+[`typescript-async`](../typescript/typescript-async/SKILL.md) for promise handling and
+[`typescript-typing`](../typescript/typescript-typing/SKILL.md) for typed-boundary causes.
+
 ```text
 Same line, two findings?  Ask: does each axis name a different cause AND a different correction?
   yes -> two findings, one per axis, cross-referenced
   no  -> one finding, on the axis that owns the cause; the other axis cites it
 
 Worked routing:
-  an un-awaited promise in a main handler            -> TypeScript (promise handling)
+  an un-awaited promise in a main handler            -> TypeScript Async (promise handling)
   a god-object main module                           -> property (decomposition)
   `event.senderFrame` read after the first `await`   -> Electron (EL-R-09; the await is incidental)
-  `any` on an IPC payload parameter                  -> TypeScript (the ban) AND Electron (EL-R-09 runtime
-                                                        narrowing is absent) — different causes, different fixes
+  `any` on an IPC payload parameter                  -> TypeScript Typing (`any` disables boundary checking)
+                                                        AND Electron (EL-R-09 runtime narrowing is absent) —
+                                                        different causes, different fixes
 ```
 
 ---

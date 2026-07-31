@@ -19,7 +19,7 @@ judgment default: where in the build each obligation sits, and what a green resu
 | The build output that becomes the packaged artifact, and the dev-vs-production load path | [`tooling-config.md`](tooling-config.md) |
 | Why deep links and macOS notifications only work in a signed, packaged app | [`windows-native.md`](windows-native.md) |
 | Which major removed or changed a packaging-relevant API | [`migration.md`](migration.md) |
-| Publishing an npm package, which is a different problem | [`../typescript/packaging-publishing.md`](../typescript/packaging-publishing.md) |
+| Publishing an npm package, which is a different problem | [`typescript-packaging`](../typescript/typescript-packaging/SKILL.md) |
 
 ## Contents
 

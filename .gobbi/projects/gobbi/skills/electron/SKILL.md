@@ -596,7 +596,9 @@ console is not one of them (EL-N-01).
 Review on three independent axes and route to each:
 
 1. the language-agnostic **property**, with [`../coding/evaluation.md`](../coding/evaluation.md);
-2. the **TypeScript idiom**, with [`../typescript/evaluation.md`](../typescript/evaluation.md);
+2. the **TypeScript idiom**, with general [`evaluation`](../evaluation/SKILL.md) applying
+   [`typescript-conventions`](../typescript/typescript-conventions/SKILL.md) and
+   [`typescript-typing`](../typescript/typescript-typing/SKILL.md);
 3. the **Electron idiom**, with the local [`evaluation.md`](evaluation.md).
 
 All three run; none substitutes for another. For a pre-handoff check, read
@@ -643,8 +645,11 @@ which also states its own coverage ceiling.
 - [`coding/SKILL.md`](../coding/SKILL.md) — owns the language-agnostic properties of good software that
   this skill specializes for the desktop runtime, and the boundary test: advice that would still hold in
   a plain Node and browser app belongs there, not here.
-- [`typescript/SKILL.md`](../typescript/SKILL.md) — owns strict-flag semantics, `any` and `unknown`,
-  promise handling, and the ESM module model. This skill owns only the three-target *split*.
+- [`typescript`](../typescript/SKILL.md) routes TypeScript language work.
+  [`typescript-compiler`](../typescript/typescript-compiler/SKILL.md) owns strict-flag and ESM/module
+  semantics, [`typescript-typing`](../typescript/typescript-typing/SKILL.md) owns `any` and `unknown`, and
+  [`typescript-async`](../typescript/typescript-async/SKILL.md) owns promise handling. This skill owns only
+  the three-target *split*.
 - [`principles/SKILL.md`](../principles/SKILL.md) — owns the ten behavioral principles the Procedure
   above operationalizes.
 - The nine content children own the Electron depth behind each Rule; the P2 router names which fork

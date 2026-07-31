@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/typescript/typescript-development/SKILL.md
