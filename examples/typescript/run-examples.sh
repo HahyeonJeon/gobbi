@@ -16,9 +16,7 @@
 #                 parser or a no-example input is NEVER reported as a pass)
 #   - exit != 0   the local tsc / bun toolchain is missing
 #
-# No `|| true`, no swallowed pipe: a real failure always propagates a non-zero
-# exit (see project mistakes verifies-must-be-self-failing,
-# exit-in-command-substitution-fails-open).
+# No `|| true`, no swallowed pipe: a real failure always propagates a non-zero exit.
 
 set -euo pipefail
 

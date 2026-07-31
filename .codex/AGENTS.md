@@ -1,6 +1,7 @@
 # AGENTS.md
 
-Gobbi is an open-source ClaudeX workflow for Claude Code and Codex. In this repository, Codex uses these repo-local entry points:
+Gobbi is an open-source ClaudeX system for Claude Code and Codex. In this repository, Codex uses these
+repo-local entry points:
 
 - Skills: `.agents/skills/<skill-name>/SKILL.md`
 - Custom agents: `.codex/agents/<role>.toml`
@@ -9,47 +10,62 @@ Gobbi is an open-source ClaudeX workflow for Claude Code and Codex. In this repo
 - Claude Code plugin manifest: `plugins/gobbi/.claude-plugin/plugin.json`
 - Canonical sources: `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/`
 
-Read this file at session start and every context boundary. Load Gobbi skills from the repo-local canonical source, never from a user-level copy. Before agent work, load `principles`, the applicable project rules, and `mistake`; then load the skills for the current workflow step.
+Read this file at session start and every context boundary. Load Gobbi skills from the repo-local canonical
+source, never a user-level copy. Before agent work, load `principles`, applicable project rules, then `gobbi`
+and the skills for the selected mode and current task.
 
-## Workflow contract
+## Session mode contract
 
-Every Gobbi session follows one mandatory workflow:
+Gobbi offers three modes:
 
-`Configuration → Ideation → Planning → Execution → Wrap-up`
+`General | Cowork | Workflow`
 
-Each productive step follows one loop:
+At every fresh Gobbi entry, present all three through the structured user-input control with no automatic
+resolution. Task wording may support a recommendation but never records the selection. At a valid resume,
+`/clear`, rewind, or runtime compaction, preserve the established mode; ask again only when mode evidence is
+missing, ambiguous, or conflicting.
 
-`DISCUSSION → WORK → EVALUATION → RECORD`
+| Mode | Contract |
+|---|---|
+| **General** | Ordinary assistance from the Gobbi floor and task-specific skills. No orchestration owner or Gobbi session state. |
+| **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
+| **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-`state.json` is the active router. `session.json` is the low-frequency lifecycle manifest. Runtime todo and task lists are projections, not another source of truth. Use `step`, `stage`, and `iteration` as the canonical routing vocabulary.
+`cowork` owns Cowork. It is manifest-free and never creates Workflow `session.json`, `state.json`, RECORD,
+typed staging, promotion manifests, or full Workflow Wrap-up output. Its explicit Wrap-up applies `memory`
+directly, commits durable updates or proves none are needed, then checks evaluation freshness.
 
-Configuration performs read-only preflight, resolves settings with the user, creates one session worktree and branch, and initializes the session record. Resume only from an explicit session in the current worktree. A resumed session reuses its resolved settings unless the user requests a change.
-
-Ideation locks what and why. Planning turns that scope into ordered tasks. Execution completes, verifies, and commits one task at a time in the isolated worktree. Wrap-up evaluates promotion and handoff work, records the durable outcome, and performs only the configured Git finalization.
+`workflow` owns Workflow. `state.json` is its active router and `session.json` its lifecycle manifest;
+runtime task lists are projections. Configuration creates the isolated branch and worktree and initializes
+records. Ideation locks what and why, Planning orders tasks, Execution verifies and commits one task at a
+time, and Wrap-up promotes and hands off the durable result.
 
 ## Dual-system quality contract
 
-Every WORK stage uses the same dual-system protocol:
+Workflow retains its full dual-system protocol: independent Claude and Codex drafts, frozen inputs,
+reciprocal cross-reviews, active-runtime synthesis, and user resolution before EVALUATION. Each EVALUATION
+uses two fresh isolated evaluators covering Project, Structure, Performance, Aesthetics, Usage, Consistency,
+Risk, and Overall. A material revision repeats the complete round.
 
-1. Claude and Codex independently create system-labeled drafts from the same neutral contract.
-2. Freeze and validate both drafts before either system sees the other.
-3. Claude reviews the Codex draft and Codex reviews the Claude draft.
-4. The active runtime specialist synthesizes the canonical candidate.
-5. Record and resolve every material open decision with the user before EVALUATION.
+Cowork does not run dual-system creation automatically. When the user calls `evaluate`, Cowork runs one fresh
+Claude-and-Codex evaluation round over the frozen requested subject. If either required system is unavailable
+or invalid, pause with the exact failure unless the user explicitly waives that named system for the round.
 
-Every EVALUATION uses two fresh independent evaluators, one Claude and one Codex. Each report covers Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall, with a complete finding ledger, checklist, and `PASS`, `REVISE`, or `FAIL` verdict. The aggregate uses the more severe verdict. Never apply a finding before the user approves its disposition. A material revision receives another complete dual-system WORK and EVALUATION iteration. Never reduce dual-system creation, Ideation, or evaluation rigor to save tokens.
-
-If either system is unavailable or returns invalid output, pause and show the exact failure. A single-system continuation requires the user's explicit waiver for that named step and iteration.
+Never apply an evaluator finding before the user approves its disposition. General uses only the evaluation
+explicitly required by its task owner.
 
 ## Delegation contract
 
-The manager alone changes scope, makes user decisions, assigns runtime tasks, accepts work, and authorizes destructive actions. Use the shared assignment skeleton in `workflow/delegation.md` as the sole assignment shape.
+The manager alone changes scope, makes user decisions, assigns specialists, accepts work, and authorizes
+destructive or external actions. Cowork and Workflow both use
+`.gobbi/projects/gobbi/skills/workflow/delegation.md` as the sole Gobbi specialist assignment shape.
 
-Claude Code may keep stable leader, executor, and assistant teammates when identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. Codex uses its native specialist mechanism. All worktree writes stay in one ordered writer chain; parallel work is limited to independent read-only analysis.
+Keep all worktree writes in one ordered writer chain. Parallel work is limited to independent read-only
+analysis and fresh independent evaluation. After a specialist report, reread the promised artifact or commit,
+reproduce verification, and confirm idle/addressable state before another assignment.
 
-After a teammate report, reread the promised artifact or commit and confirm the teammate is idle and addressable before sending another assignment. Do not infer completion from an idle notice or a lagging runtime task status.
-
-When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Every fresh brief must include explicit load directives because fresh agents do not inherit loaded skills.
+When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Fresh briefs include
+exact load directives because specialists do not inherit manager context.
 
 | Role | Codex wrapper | Canonical prompt |
 |---|---|---|
@@ -61,24 +77,28 @@ When Codex subagents are explicitly authorized, use the repo-local custom agents
 
 ## Plugin topology
 
-The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks. It carries both runtime manifests. `.agents/plugins/marketplace.json` and `.claude-plugin/marketplace.json` point to `./plugins/gobbi` using their runtime-specific schemas. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin components.
+The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks and
+carries both runtime manifests. `.agents/plugins/marketplace.json` and
+`.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
+repo-local and are not installed as plugin components.
 
-Run `scripts/sync-plugin-package.sh --check` to validate canonical topology without mutation. Run `scripts/sync-plugin-package.sh` only when intentionally repairing discovery mirrors. Run `scripts/test-sync-plugin-package.sh` for fixture coverage and `scripts/check-codex-plugin-smoke.sh` for isolated installed-cache behavior. The package has no lifecycle-hook component.
-
-Codex source-package behavior and installed-cache behavior are separate. If the installed cache omits a symlinked component directory, report the Codex installation limitation; do not materialize the source package to work around it.
+Run `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
+`scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
+installed-cache behavior. The package has no lifecycle-hook component. If an installed cache omits a symlinked
+component, report that limitation instead of materializing the source package.
 
 ## Principles
 
-The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`. Its enforceable summary is:
+The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 
 1. Think and study before acting.
 2. Build foundations before dependent work.
 3. Design with the user and prior art.
-4. Refine the task until what, why, and how are concrete.
-5. Treat scope as a contract with the user.
-6. Start with documents and finish with current documents.
+4. Refine what, why, and how with the user.
+5. Treat scope as a contract.
+6. Start and finish with current documents.
 7. Write plainly, briefly, and literally.
-8. Fix root causes, not symptoms.
+8. Fix root causes.
 9. Check CRUD and 5W1H before editing.
 10. Finish all agreed in-scope work.
 
@@ -86,10 +106,12 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`. Its en
 
 | Document | Owns |
 |---|---|
-| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, glossary, and skill routing |
-| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Manager authority, Configuration, and global invariants |
-| `.gobbi/projects/gobbi/skills/workflow/steps/` | Thin step adapters and dual-system WORK mechanics |
-| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | General independent evaluation method and evidence-derived verdict |
-| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-record mechanics and PASS-only artifacts |
-| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Typed staging and durable promotion |
-| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Promotion, handoff, and finalization |
+| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, three-mode selection, and skill routing |
+| `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | Manifest-free Cowork orchestration |
+| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration |
+| `.gobbi/projects/gobbi/skills/workflow/delegation.md` | Shared Gobbi specialist assignment contract |
+| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
+| `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
+| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Cowork direct memory updates and Workflow durable-memory method |
+| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Workflow session-record mechanics |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Workflow promotion, handoff, and finalization |

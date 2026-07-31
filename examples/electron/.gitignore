@@ -1,7 +1,0 @@
-# Derived per-process `electron` module views. generate-electron-views.mjs
-# rebuilds all three from node_modules/electron/electron.d.ts at install time,
-# so they are ~3.4 MB of vendor-derived output with nothing hand-maintained in
-# them. Committing them would put a copy of the vendor typings under review on
-# every Electron bump, and would let a stale committed view outlive the vendor
-# file it was derived from.
-generated/

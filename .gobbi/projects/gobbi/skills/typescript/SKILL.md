@@ -165,7 +165,7 @@ ordinary strict module.
 *Deepens principles P1 / P4 and coding P1 — study first, refine the task.*
 
 Lock What / Why / How + in/out scope + success with the user, or cite a Scope Contract. Read the
-relevant specs, design notes, README, public-API docs, project rules, applicable mistakes, neighboring
+relevant specs, design notes, README, public-API docs, project rules, prior failure evidence, neighboring
 modules, callers, tests, and local prior art. Then read the concrete **TypeScript contract**: the
 `tsconfig` strict-flag set; the target runtime(s) and the import-extension mode each requires; the module
 system (ESM + `verbatimModuleSyntax`); the declared TS version floor; the artifact type (library / app /

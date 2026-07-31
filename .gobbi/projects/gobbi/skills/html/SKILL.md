@@ -13,6 +13,9 @@ documents. Its children separate artifact work, platform lookup, and semantic ju
 This root owns navigation only. Load every child whose trigger applies; every supported HTML task must select
 at least one row.
 
+Electron renderer work also routes through [`electron`](../electron/SKILL.md), whose root selects every
+applicable Electron child; HTML children own only the emitted markup.
+
 ## Child Skills
 
 | Child skill | Type | Load when |

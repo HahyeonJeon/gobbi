@@ -89,12 +89,12 @@ allowed-tools: Read, Grep, Glob, Bash
 **Why:** Documents preserve project knowledge across people, sessions, and tasks. Reading them prevents work from starting with partial context; updating them prevents later work from following stale guidance. A stale document is as serious a defect as stale code. Every document change therefore needs a specification, a CRUD and blast-radius plan, and a structure a cold reader can navigate.
 
 **Practice:**
-- *Start by reading the docs:* Before each task, read the relevant specifications, research, designs, design systems, wireframes, flow maps, state maps, rules, skills, and recorded mistakes.
+- *Start by reading the docs:* Before each task, read the relevant specifications, research, designs, design systems, wireframes, flow maps, state maps, rules, and skills.
 - *Plan navigable document work:* Before editing, state each document's purpose and type, map **Create**, consistency **Read**, exact-line **Update**, **Delete**, and co-touches, and use a clear hierarchy and consistent, descriptive names that cold readers can navigate, agreeing any missing convention with the user.
 - *Finish with current docs:* Ship matching specifications, design artifacts, research or test evidence, and implementation documentation with each change, treat stale documentation as a defect, and keep shared context navigable for future sessions.
 
 **Anti-pattern:**
-- Start a task without reading the existing specifications, research, design artifacts, rules, and recorded mistakes.
+- Start a task without reading the existing specifications, research, design artifacts, rules, and skills.
 - Ship design or implementation without matching documentation, or edit a document without its specification, CRUD plan, exact update lines, and required co-touches.
 - Create an unclear or cryptically named hierarchy or invent a missing naming or structure convention without user agreement.
 

@@ -88,7 +88,7 @@ Inspect the evidence for durable value. A candidate must be one of the record-ma
 | Durable session handoff or journal material | notes |
 | Accepted ordered implementation plan | plans, in Planning only |
 
-Do not stage every finding automatically. Stage only what remains useful across sessions and is supported by an approved decision or verified result. A user correction that exposes a repeatable trap becomes a decision candidate marked for mistake routing under the Mistake skill.
+Do not stage every finding automatically. Stage only what remains useful across sessions and is supported by an approved decision or verified result.
 
 ### 4. Write candidates through memory-owned templates
 
