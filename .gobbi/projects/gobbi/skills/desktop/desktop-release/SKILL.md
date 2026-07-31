@@ -9,7 +9,7 @@ skill-type: preference
 
 Use this skill when choosing desktop targets and channels, deciding what release evidence supports, or setting data, update, recovery, rollout, support, and publication defaults. It helps agents make bounded release judgments without assuming that one artifact or environment proves another.
 
-`desktop-platform` owns the observable installed-platform contract, and the [`electron`](../../electron/SKILL.md) family owns Electron packaging, signing, update, and platform mechanisms. `desktop-delivery` owns ordered work for a complete outcome; this skill owns only the valid choice space, defaults, exceptions, and authority boundaries for release decisions.
+`desktop-contract` owns the observable installed-platform contract, and the [`electron`](../../electron/SKILL.md) family owns Electron packaging, signing, update, and platform mechanisms. `desktop-delivery` owns ordered work for a complete outcome; this skill owns only the valid choice space, defaults, exceptions, and authority boundaries for release decisions.
 
 ## Principles
 

@@ -1,11 +1,11 @@
 ---
-name: desktop-platform
+name: desktop-contract
 description: "Use when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
 
-# Desktop Platform
+# Desktop Contract
 
 This manual helps an agent define and review the user-visible contract of an installed desktop application. It covers the operating-system and installed-state behavior a product promises, independently of the framework or mechanism used to implement it.
 
@@ -42,7 +42,7 @@ The platform contract states required behavior and evidence. The selected framew
 
 ### Ownership boundary
 
-Desktop Platform owns the observable contract and the evidence question. It may state that an installed application must restore a window after activation, preserve a launch input, expose a usable failure, or recover user data; it does not select an Electron event, process, IPC channel, permission handler, package format, updater, or signing mechanism.
+Desktop Contract owns the observable contract and the evidence question. It may state that an installed application must restore a window after activation, preserve a launch input, expose a usable failure, or recover user data; it does not select an Electron event, process, IPC channel, permission handler, package format, updater, or signing mechanism.
 
 For Electron work, load the Electron root and then select every applicable child:
 

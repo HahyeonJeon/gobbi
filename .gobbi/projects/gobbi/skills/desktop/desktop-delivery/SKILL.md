@@ -11,7 +11,7 @@ Use this operation when an agent must coordinate several capability owners or de
 Electron and TypeScript application outcome. It produces one bounded outcome that a person can install,
 launch, use, exit, relaunch, and recover on every operating-system and architecture pair the result claims.
 
-Route the observable installed-platform contract to `desktop-platform`, release judgment to
+Route the observable installed-platform contract to `desktop-contract`, release judgment to
 `desktop-release`, and bounded Electron mechanics through the [`electron`](../../electron/SKILL.md) root.
 Isolated interface, experience, language, or renderer work stays with its owner; this operation coordinates without replacing owner policy, evaluating independently, or publishing.
 
@@ -50,7 +50,7 @@ implies another.
   challenged stack, assess resource and package cost, content trust, native depth, target and update fit, team
   upgrade capacity, migration cost, and release needs; a material conflict pauses for the user's decision.
 - **MUST keep each decision with its current owner.** UI and UX own observable design, coding and applicable
-  language or renderer skills own idiom, `desktop-platform` owns the installed-platform contract, the
+  language or renderer skills own idiom, `desktop-contract` owns the installed-platform contract, the
   Electron family owns Electron mechanics, `desktop-release` owns release judgment, and Evaluation owns the
   independent verdict.
 - **MUST keep every slice and target internally consistent.** Code, configuration, types, tests,
@@ -103,7 +103,7 @@ implies another.
   paint, and touched native behavior to an observable specification. Assign each implementation unit one
   process and one capability owner.
 - **Routing:** apply coding and TypeScript to implementation; load React, HTML, and CSS only when those
-  technologies enter scope. Take installed-platform behavior to `desktop-platform`, and route Electron
+  technologies enter scope. Take installed-platform behavior to `desktop-contract`, and route Electron
   process, bridge, security, lifecycle, native, build, package, test, and release mechanics through the
   Electron root and every applicable child.
 - **Branch and recovery:** if an implementation constraint contradicts the accepted experience, return the
@@ -114,10 +114,10 @@ implies another.
 
 #### 2.2 Lock runtime, local-data, and release contracts
 
-- **Input and precondition:** use the reconciled design, `desktop-platform` contract, the project's selected
+- **Input and precondition:** use the reconciled design, `desktop-contract` contract, the project's selected
   Electron version, current mechanism-owner facts, persisted formats, and `desktop-release` judgments.
 - **Action:** lock the observable target, entry, window, lifecycle, native, installed-resource, and recovery
-  behavior through `desktop-platform`. Obtain process placement, bridge and IPC contracts, caller and payload
+  behavior through `desktop-contract`. Obtain process placement, bridge and IPC contracts, caller and payload
   trust rules, cleanup, and development-versus-packaged load paths from the applicable Electron children.
 - **Action:** lock local-data CRUD, location, retention, export, atomic or detectably incomplete writes,
   schema versions, migration, downgrade or forward compatibility, corrupt-state recovery, and fail-closed
