@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/web/ux/ideation.md
