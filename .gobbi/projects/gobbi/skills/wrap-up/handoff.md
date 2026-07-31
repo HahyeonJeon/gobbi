@@ -3,8 +3,8 @@
 This direct child supplies the operator brief used by parent Step 2.2 and the Git receipt used by parent
 Step 4.2. [`SKILL.md`](SKILL.md) owns the operation, actors, authority, sequencing, failures, and recovery.
 
-The report is durable Memory. The receipt is conversation-only evidence created after Git finalization and
-must never be added to the report.
+The report is written to the caller-supplied handoff path. The receipt is conversation-only evidence created
+after finalization and must never be added to the report.
 
 ## Tracked operator brief
 
@@ -19,7 +19,7 @@ Write the tracked report with this template:
 
 | Context | Value |
 |---|---|
-| Mode | `{Cowork | Workflow}` |
+| Caller context | `{free-text caller context label}` |
 | Session | `{Gobbi UUID}` |
 | Prepared | `{ISO 8601 UTC}` |
 | Base | `{base branch} @ {base commit}` |

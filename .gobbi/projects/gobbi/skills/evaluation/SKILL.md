@@ -1,6 +1,6 @@
 ---
 name: evaluation
-description: "MUST load for EVALUATION. Evaluation is an operation skill for a fresh, independent review of work through checklists, tests, seven perspectives, and Overall, producing problems, optional improvements, strengths, and an evidence-derived verdict."
+description: "MUST load when finished work needs an independent, evidence-based judgment. Evaluation is an operation skill for a fresh, independent review through checklists, tests, seven perspectives, and Overall, producing problems, optional improvements, strengths, and an evidence-derived verdict."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
@@ -44,6 +44,21 @@ naming the root cause. If evidence remains incomplete, record the leading hypoth
 evidence, and recommend prevention instead of symptom masking.
 
 ## Rules
+
+- **MUST evaluate as an evaluator who did not design, author, or implement the work.** A self-check may support
+  the evidence but never supplies the independent verdict, and any conflict or limitation that could bias the
+  judgment is disclosed.
+- **MUST support every reported problem, optional improvement, and strength with inspected evidence.** Inspect
+  the actual artifacts and observable state rather than the work's summary or completion claim.
+- **MUST run every applicable checklist row and test and review all eight perspectives.** Record each result
+  with its supporting evidence and justify every not-applicable result.
+- **NEVER soften a problem into an optional improvement or record an improvement without evidence.** A problem
+  is an unmet outcome, requirement, or acceptance condition and stays reported as one.
+- **MUST derive the verdict only from completed evidence and the acceptance criteria supplied with the work.**
+  Issue no verdict while a required result, material evidence gap, causal uncertainty, or coverage gap remains
+  unresolved.
+- **NEVER change the work, implement a correction, alter the criteria, or decide how the owner responds.**
+  Repeat all three phases when the work changes materially, because a prior result is history, not proof.
 
 ## Procedure
 
@@ -141,7 +156,7 @@ evidence, and recommend prevention instead of symptom masking.
   - Evaluation context, independence, criteria, methods, evidence, limitations, uncertainties, derivation, and
     reproduction details.
   - Corrective directions, reopen conditions, and the handoff boundary.
-- Make the result understandable without private discussion context. A caller or workflow adapter may wrap it
+- Make the result understandable without private discussion context. Whoever receives the result may wrap it
   in a required schema or storage format without changing the evaluation.
 - Hand off the result without editing the work, implementing a correction, changing the criteria, or deciding
   how the owner responds.

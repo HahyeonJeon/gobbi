@@ -25,7 +25,7 @@ Use brief factual sentences and lists. Remove stories, commentary, and long desc
 
 ## Rules
 
-- **MUST follow the most specific active delegation contract.** A project, workflow, role, or runtime owner may replace the base template’s headings, metadata, order, or return shape. Use the generic template only where the specific contract is silent.
+- **MUST follow the most specific active delegation contract.** Any contract that already governs this assignment may replace the base template’s headings, metadata, order, or return shape; use the generic template only where that contract is silent.
 
 ## Preferences
 

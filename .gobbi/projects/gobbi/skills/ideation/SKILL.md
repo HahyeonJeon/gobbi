@@ -9,9 +9,8 @@ skill-type: operation
 
 Use this skill to turn a user trigger into a complete, evidence-backed design through three phases: define the problem and requirements in `requirements.md`, study internal and external materials and prepare a project-specific discussion tree in `topics.md`, then resolve and integrate that tree in `ideation.tmp.md`, develop the integrated design, and create `ideation.md`. The temporary file is a working record rather than a returned artifact; the first two returned documents preserve the completed Phase 1 and Phase 2 results, and `ideation.md` consolidates the final Ideation result as one independently readable design.
 
-Ideation always creates and self-reviews its complete artifact set. It normally performs independent
-evaluation before returning; a recognized orchestration caller may instead select
-`caller-owned-independent-evaluation` and own the timing of that separate review.
+Ideation always creates and self-reviews its complete artifact set, then performs independent evaluation
+before returning.
 
 ## Principles
 
@@ -36,9 +35,8 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 ### Must-Follow
 
 - **MUST preserve material user authority.** The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
-- **MUST complete artifact creation and self-review from this operation and its owned companions.** Use
-  `inline-independent-evaluation` by default; defer only its separate independent review when a recognized
-  orchestration caller explicitly selects `caller-owned-independent-evaluation`.
+- **MUST complete artifact creation, self-review, and independent evaluation from this operation and its owned
+  companions.** Perform the separate independent review inline before returning the result.
 - **MUST stop Ideation at the design boundary.** Return requirements, topics, and an integrated design without ordered implementation tasks, implementation diffs, or produced realization output.
 
 ### Must-Not-Follow
@@ -52,9 +50,6 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 #### 1.1 Establish the discussion context
 
 - Inspect the user trigger, current project state, governing materials, prior decisions, prior attempts, direct evidence, active scope, and known contradictions.
-- Read the caller's independent-evaluation policy. Default an absent policy to
-  `inline-independent-evaluation`; accept `caller-owned-independent-evaluation` only from an orchestration
-  owner that names its later review trigger and subject.
 - Identify whether the user is shaping a product, feature, system, architecture, process, implementation change, or another design outcome.
 - Summarize what is known, uncertain, or conflicting, and use that context to choose the first question.
 - Do not draft requirements yet.
@@ -199,13 +194,10 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Self-review `requirements.md`, `topics.md`, `ideation.tmp.md`, and `ideation.md` against this operation and
   its templates. Correct every material omission, inconsistency, unresolved decision, broken link, or
   prohibited implementation output through the earliest affected step.
-- Under `inline-independent-evaluation`, freeze all four files as one exact review subject and ask a fresh
-  independent evaluator to review them without mutation. Present every material finding for disposition,
-  apply only accepted corrections through the earliest affected step, freeze the revision as a new subject,
-  and repeat until no material issue remains.
-- Under `caller-owned-independent-evaluation`, do not dispatch an evaluator or claim an independent verdict.
-  Confirm the caller owns the later trigger and exact subject, then return the self-reviewed result with that
-  evaluation state explicit.
+- Freeze all four files as one exact review subject and ask a fresh independent evaluator to review them
+  without mutation. Present every material finding for disposition, apply only accepted corrections through
+  the earliest affected step, freeze the revision as a new subject, and repeat until no material issue
+  remains.
 - Display a concise summary of the problem, scope, key decisions, integrated design, material trade-offs,
   risks, deferred items, and independent-evaluation state. Delete `ideation.tmp.md`, then return
   `requirements.md`, `topics.md`, and `ideation.md` together as the complete Ideation result.
