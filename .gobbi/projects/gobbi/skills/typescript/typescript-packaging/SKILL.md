@@ -9,7 +9,7 @@ skill-type: operation
 
 TypeScript Packaging owns the operation that turns TypeScript sources into a consumable package contract. It covers export maps, JavaScript artifacts, public declarations, compatibility, packed-artifact validation, and publication readiness without prescribing one module format for every package.
 
-Package work also loads TypeScript Toolchain, Typing, and Testing when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change target files and create target artifacts within its approved scope. Review-only validation inspects existing artifacts or collects non-target disposable evidence only; it does not edit target files, build or create target artifacts, install into a persistent environment, update documentation or release notes, or publish. It skips mutation steps and reports evidence, findings, and limitations. Publication itself still requires the repository's release authority and credential controls.
+Package work also loads `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change target files and create target artifacts within its approved scope. Review-only validation inspects existing artifacts or collects non-target disposable evidence only; it does not edit target files, build or create target artifacts, install into a persistent environment, update documentation or release notes, or publish. It skips mutation steps and reports evidence, findings, and limitations. Publication itself still requires the repository's release authority and credential controls.
 
 ## Principles
 

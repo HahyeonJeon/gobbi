@@ -66,6 +66,6 @@ Reproduce with the built or shipped entry point when build rewriting, package ex
 
 ### Verify the toolchain
 
-Run the effective-configuration inspection, type-check, lint, build, and target-host smoke tests that apply. For a package, continue with TypeScript Packaging and TypeScript Testing so the packed consumer surface is verified rather than only the source checkout.
+Run the effective-configuration inspection, type-check, lint, build, and target-host smoke tests that apply. For a package, continue with `typescript-packaging` and `typescript-testing` so the packed consumer surface is verified rather than only the source checkout.
 
 ## References

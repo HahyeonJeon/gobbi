@@ -9,7 +9,7 @@ skill-type: operation
 
 TypeScript Development carries an authorized implementation from the existing contract through a typed design, bottom-up construction, and final verification. It applies to mutation work only; read-only review uses the general Evaluation operation with the applicable TypeScript preference children.
 
-This operation composes with TypeScript Conventions and TypeScript Typing for ordinary implementation. Load TypeScript Async, Toolchain, Packaging, or Testing whenever their root trigger also applies.
+This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load `typescript-async`, `typescript-toolchain`, `typescript-packaging`, or `typescript-testing` whenever their root trigger also applies.
 
 ## Principles
 
