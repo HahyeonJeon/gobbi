@@ -14,6 +14,13 @@ needs.
 This root owns navigation only. Load every child whose trigger matches the task; a task may need several
 children, such as development, design, testing, and toolchain guidance for one code change.
 
+What a Go service emits — structured logs, metrics, traces, trace-context propagation, crash and
+unhandled-error capture, and diagnostic redaction — is owned by
+[`web-observability`](../web/web-observability/SKILL.md), which covers emission for every surface that
+participates in one request. Load it directly; the children below keep Go implementation, idiom, concurrency,
+tooling, and test evidence, including the `context.Context` and cancellation contracts a propagated trace
+rides on.
+
 ## Child Skills
 
 | Child skill | Type | Load when |

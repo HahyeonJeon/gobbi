@@ -11,7 +11,7 @@ Desktop covers complete installable Electron and TypeScript outcomes, their obse
 
 This root owns navigation only. Load every applicable child below; when an outcome uses Electron, also load the [`electron`](../electron/SKILL.md) root and every applicable Electron child.
 
-An installed application's renderer interaction behavior — event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, and WAI-ARIA widget patterns — is owned by [`web-interaction`](../web/web-interaction/SKILL.md), which applies to any browser surface. Load it directly; `desktop-interface` decides whether an interaction is warranted and `desktop-contract` owns the observable installed-platform behavior around it.
+Two `web` children apply to an installed application and are loaded directly. [`web-interaction`](../web/web-interaction/SKILL.md) owns renderer interaction behavior — event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, and WAI-ARIA widget patterns — and [`web-observability`](../web/web-observability/SKILL.md) owns what the installed application emits, including main-process and renderer crash capture. `desktop-interface` still decides whether an interaction is warranted, `desktop-contract` still owns the observable installed-platform behavior around it, and `desktop-delivery` still coordinates the outcome rather than owning either policy.
 
 ## Child Skills
 
