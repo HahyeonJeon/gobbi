@@ -11,7 +11,7 @@ skill-type: preference
 
 Use this preference skill before creating, changing, or reviewing CSS, debugging toward a CSS change, or choosing CSS conventions. It defines the binding valid-choice boundary for emitted presentation.
 
-CSS constraints own presentation and outward-owner boundaries, essential outcomes, accessibility conditions, target resilience, canonical-source repair, and evidence ceilings. Project-overridable implementation choices belong to CSS conventions.
+CSS constraints own presentation and outward-owner boundaries, essential outcomes, accessibility conditions, target resilience, canonical-source repair, and evidence ceilings. Project-overridable implementation choices belong to `css-conventions`.
 
 ## Principles
 

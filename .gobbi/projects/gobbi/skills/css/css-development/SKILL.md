@@ -36,7 +36,7 @@ Trace failures to the first wrong source, transform, assumption, or owner decisi
 - **MUST change only authorized canonical CSS source.** For generated CSS, change its source
   or route generator mechanics outward, then inspect the emitted CSS.
 - **MUST frame the rendering outcome and affected owners before editing.** Stop when an unresolved outward-owner decision controls the result.
-- **MUST apply CSS constraints and the project's CSS conventions to every implementation
+- **MUST apply `css-constraints` and the project's `css-conventions` to every implementation
   choice.** Treat constraints as the valid-choice boundary and conventions as project
   defaults.
 - **MUST grow the change in observable increments.** Keep each increment small enough to
@@ -62,14 +62,14 @@ Trace failures to the first wrong source, transform, assumption, or owner decisi
 
 - Identify targets, modes, user settings, representative content, checks, and regression scope.
 - Inspect current source, cascade boundaries, stable hooks, transforms, and nearby patterns.
-- Select evidence that can falsify each risk. Load CSS platform for runtime lookup, and stop
-  when a material target, fixture, or access path is missing.
+- Select evidence that can falsify each risk. Load `css-platform` for runtime lookup, and
+  stop when a material target, fixture, or access path is missing.
 
 ### Phase 2 — Establish the Rendering Skeleton
 
 #### 2.1 Build and grow the implementation
 
-- At canonical source, apply CSS constraints and project conventions, then create only the
+- At canonical source, apply `css-constraints` and project conventions, then create only the
   cascade, selector, custom-property, and layout skeleton needed for the first outcome.
 - Inspect transformed output, then add one state or constraint at a time and check its
   winner and affected computed or layout result.

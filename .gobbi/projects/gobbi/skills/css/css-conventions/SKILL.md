@@ -9,9 +9,9 @@ skill-type: preference
 
 ## Intro
 
-Use this preference skill before creating, changing, or reviewing CSS, debugging toward a CSS change, or choosing CSS conventions. It selects overridable project choices within the CSS constraints.
+Use this preference skill before creating, changing, or reviewing CSS, debugging toward a CSS change, or choosing CSS conventions. It selects overridable project choices within `css-constraints`.
 
-CSS conventions own cascade and selector choices, naming and hooks, custom-property and token interfaces, layout adaptation, and source or ownership seams. CSS constraints and outward domain owners remain authoritative.
+CSS conventions own cascade and selector choices, naming and hooks, custom-property and token interfaces, layout adaptation, and source or ownership seams. `css-constraints` and outward domain owners remain authoritative.
 
 ## Principles
 
@@ -33,7 +33,7 @@ A convention departure names its scope, preserves affected contracts, and carrie
 
 ## Rules
 
-- **MUST keep every convention choice inside the CSS constraints.** A constraint wins every conflict with a project default or local preference.
+- **MUST keep every convention choice inside `css-constraints`.** A constraint wins every conflict with a project default or local preference.
 - **MUST preserve established public hooks and custom-property or token interfaces unless an authorized migration updates every affected consumer.**
 - **MUST make declaration, selector, custom-property, layer, and source ownership explicit at the canonical owner.**
 - **NEVER invent a project-wide naming, layer, selector, token, or layout scheme for a local task.** Use an established convention or keep the decision scoped to its actual owner.

@@ -11,7 +11,7 @@ skill-type: operation
 
 Use this operation for a focused, read-only CSS review in a browser or Electron renderer. It assesses problems, optional improvements, strengths, limitations, and action owners.
 
-The operation inspects without editing or accepting. Formal verdicts belong to evaluation, implementation to CSS development, validity constraints to CSS constraints, and implementation defaults to CSS conventions.
+The operation inspects without editing or accepting. Formal verdicts belong to evaluation, implementation to `css-development`, validity constraints to `css-constraints`, and implementation defaults to `css-conventions`.
 
 ## Principles
 
@@ -38,7 +38,7 @@ changing the subject.
 - **MUST keep the review read-only.** Do not edit source, output, configuration, fixtures,
   baselines, or runtime state beyond reversible inspection.
 - **MUST frame the subject and review boundary.** Name source, transformed output, targets, states, requested concerns, and limits.
-- **MUST apply CSS constraint Rules and relevant CSS convention Preferences.** Route
+- **MUST apply `css-constraints` Rules and relevant `css-conventions` Preferences.** Route
   document, product, state, security, generator, and Electron process questions outward.
 - **MUST inspect evidence in proportion to the claim and consequence.** Appearance or lint
   alone cannot establish cascade, order, focus, layout, support, performance, or acceptance.
@@ -65,7 +65,7 @@ changing the subject.
   accessibility, compatibility, and performance risks.
 - Select only evidence that can test those risks: source and parsing, CSSOM, matched and
   cascaded rules, computed values, geometry, overflow, modes, targets, or rendering.
-- Load CSS platform for runtime lookup; unavailable evidence becomes a limitation.
+- Load `css-platform` for runtime lookup; unavailable evidence becomes a limitation.
 
 ### Phase 2 — Inspect the CSS
 
@@ -96,8 +96,8 @@ changing the subject.
 
 #### 3.2 Challenge each item
 
-- Test each item against CSS constraints and conventions, counterevidence, target scope, and
-  owner boundaries.
+- Test each item against `css-constraints` and `css-conventions`, counterevidence, target
+  scope, and owner boundaries.
 - Remove appearance-only, duplicate, speculative, or non-actionable conclusions.
 - Update changed classes or owners before handoff; withdraw items whose evidence fails.
 
@@ -108,7 +108,7 @@ changing the subject.
 - Present problems by consequence, then improvements, strengths, limitations, and routing.
 - For each problem, include the evidence, affected behavior and targets, confidence, owner,
   and verification needed after a repair.
-- Complete with a read-only, reproducible assessment; route changes to CSS development and
+- Complete with a read-only, reproducible assessment; route changes to `css-development` and
   formal verdicts to evaluation.
 
 ## References
