@@ -62,7 +62,7 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 | [`cowork`](../cowork/SKILL.md) | User-led Gobbi orchestration for fast topic-by-topic implementation with optional shaping, user-called evaluation, and memory-updating Wrap-up. | Load only after the user selects Cowork. |
 | [`workflow`](../workflow/SKILL.md) | Durable Configuration→Ideation→Planning→Execution→Wrap-up orchestration with DISCUSSION→WORK→EVALUATION→RECORD loops. | Load only after the user selects Workflow or a valid Workflow resume is proved. |
 | [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Used directly by Cowork Wrap-up and by other durable-memory work. |
-| [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project. |
+| [`startup`](../startup/SKILL.md) | Evidence-backed software-project interview that produces confirmed Startup design briefs. | Relevant to a new or sparse project, conflicting project direction, or an explicit design reset after the user requests or accepts the interview. |
 | [`planning`](../planning/SKILL.md) | Ordered, dependency-aware task decomposition. | Used by Workflow Planning or optional Cowork Planning. |
 | [`execution`](../execution/SKILL.md) | One defined task through study, bounded change, verification, and a focused commit. | Used by Workflow Execution or a Cowork implementation unit. |
 | [`wrap-up`](../wrap-up/SKILL.md) | Shared terminal Memory, Git, handoff, and recovery operation. | Used when Cowork or Workflow enters terminal closure. |

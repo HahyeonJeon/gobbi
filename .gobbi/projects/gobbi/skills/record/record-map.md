@@ -73,6 +73,30 @@ evaluation/iteration-{n}/claude.md
 evaluation/iteration-{n}/codex.md
 ```
 
+An accepted Startup interview may use one fixed temporary file, one fixed index,
+and a flat family of subject briefs during Ideation DISCUSSION, before
+dual-system WORK:
+
+```text
+1-ideation/working/iteration-{n}/research/startup-interview.tmp.md
+1-ideation/working/iteration-{n}/research/startup-design-brief-index.md
+1-ideation/working/iteration-{n}/research/startup-design-{architecture|feature|process|roadmap}-{descriptive-kebab-case-subject}.md
+```
+
+The temporary file is a structured, noncanonical working record. Retain it on
+interruption and remove it only after the user confirms the complete index and
+brief set. The index and briefs are Startup design inputs for ordinary Ideation,
+not Ideation outputs, PASS outputs, staging candidates, or durable-memory
+artifacts. Each brief declares an intended `memory/design/` destination, but
+Startup does not write there. None of these paths authorizes raw transcript or
+private conversation capture; the ban on `working/discussion-log.md` and
+equivalent conversation logs still applies.
+
+The index must list every current brief. Brief names use exactly one Design
+Memory category and one descriptive kebab-case subject. The known legacy
+single-report artifact is `startup-interview.md`; it remains historical session
+evidence and has no automatic migration into this contract.
+
 Execution has step-level `staging/` and `outputs/` directories. After Planning
 locks task numbers and names, every task receives the same four-slot interior:
 
