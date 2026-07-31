@@ -69,7 +69,7 @@ different things.
 #### 1.2 Route the applicable owners
 
 - Test every sibling trigger and each implementation domain against the locked frame.
-- Load frontend, backend, architecture, platform, convention, security, and testing when their triggers apply.
+- Load frontend, backend, architecture, platform, topology, security, and testing when their triggers apply.
 - Load coding, language, runtime, framework, database, provider, deployment, and other implementation owners
   as needed.
 - Record the owner set and evidence for every omission without copying owner policy; continue only when every

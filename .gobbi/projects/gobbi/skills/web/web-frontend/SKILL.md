@@ -45,7 +45,7 @@ they act.
 - **MUST specify the complete browser journey top-down and its smallest units bottom-up before production
   implementation.** Cover every required state, transition, content, interaction, adaptation, and recovery
   path.
-- **MUST route topology to `web-convention`, suite mechanics to `web-testing`, and security analysis to
+- **MUST route topology to `web-topology`, suite mechanics to `web-testing`, and security analysis to
   `web-security` when triggered.** Keep accessibility integral to frontend behavior.
 - **MUST make semantics and interaction operable without guessing.** Prefer native elements and expose
   accurate names, roles, states, structure, keyboard behavior, focus movement, form guidance, error
@@ -116,7 +116,7 @@ they act.
 
 #### 3.1 Materialize the complete scaffold
 
-- Load applicable HTML, CSS, language, framework, platform, convention, testing, and security owners.
+- Load applicable HTML, CSS, language, framework, platform, topology, testing, and security owners.
 - Materialize routes, semantic document regions, component boundaries, state and data seams, focus targets,
   responsive structure, representative state placeholders, test seams, and explicit labels on simulated data
   or dependencies.

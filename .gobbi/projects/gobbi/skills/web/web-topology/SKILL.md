@@ -1,11 +1,11 @@
 ---
-name: web-convention
+name: web-topology
 description: "Use when establishing or reviewing a web project's directory structure, workspace/application roots, source/runtime/test/configuration/asset/migration/shared/generated-output placement, or a topology exception."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---
 
-# Web Convention
+# Web Topology
 
 This preference skill guides web project topology: roots, applications, packages, source, routes, assets,
 tests, configuration, migrations, scripts, documentation, shared code, generated content, caches, builds, and

@@ -10,7 +10,7 @@ skill-type: operation
 Use this operation for one complete authoritative backend outcome: interfaces, domain policy, data lifecycle,
 provider effects, failure recovery, migrations, diagnostics, and operations.
 
-It owns backend design and implementation. Route topology to `web-convention`, test-system mechanics to
+It owns backend design and implementation. Route topology to `web-topology`, test-system mechanics to
 `web-testing`, and security requirements and threat analysis to `web-security` when their triggers apply.
 
 ## Principles
@@ -74,7 +74,7 @@ Specify and build policy, data, effects, failure, and recovery before transport 
   [OpenAPI Specification](https://spec.openapis.org/oas/) when OpenAPI is used.
 - Verify each source's owner, version, relevance, applicability, context, conflict, and limits, then put each
   accepted conclusion and citation beside the contract clause it shapes.
-- Load convention, testing, security, language, runtime, database, provider, and framework owners when
+- Load topology, testing, security, language, runtime, database, provider, and framework owners when
   triggered; return every unowned policy, lifecycle, effect, or recovery path.
 
 ### Phase 2 — Specify the Complete Backend
@@ -108,7 +108,7 @@ Specify and build policy, data, effects, failure, and recovery before transport 
 
 #### 3.1 Materialize the scaffold and foundations
 
-- Load applicable coding, language, runtime, database, provider, framework, convention, security, and testing
+- Load applicable coding, language, runtime, database, provider, framework, topology, security, and testing
   owners.
 - Materialize every planned type, interface, schema, policy and dependency seam, migration, diagnostic,
   fixture, and test seam; label stubs, fakes, and simulated dependencies.
