@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/desktop/scripts/check_relation.py

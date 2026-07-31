@@ -21,9 +21,14 @@ media/embed alternatives, native interactive content, resource declarations,
 
 It does not own visual design or CSS, JavaScript state machines, application
 security implementation, template/framework syntax, or Electron main/preload
-behavior. In Electron work, route main/preload, IPC, privilege, native
-integration, permissions, packaging, and release decisions to
-[`electron`](../electron/SKILL.md) or the applicable runtime owner.
+behavior. Isolated renderer HTML remains with this skill and applicable UI or
+language owners. Load the [`desktop`](../desktop/SKILL.md) domain only when the
+task also coordinates an installable Electron and TypeScript application
+outcome, enters Electron platform mechanics, or makes desktop release
+judgments. Route main/preload, IPC, privilege, native integration, permission,
+and packaging mechanics to
+[`desktop-electron`](../desktop/desktop-electron/SKILL.md), and release
+judgments to [`desktop-release`](../desktop/desktop-release/SKILL.md).
 
 ## Rules
 

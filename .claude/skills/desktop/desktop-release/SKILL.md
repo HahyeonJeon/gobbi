@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/desktop/desktop-release/SKILL.md

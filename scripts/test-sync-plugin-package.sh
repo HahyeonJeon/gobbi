@@ -195,6 +195,38 @@ test_safe_reconciliation() {
   pass 'safe reconciliation prunes stale owned leaves and dirs, fills gaps, and is idempotent'
 }
 
+test_stale_agents_skill_link_reconciliation() {
+  local root="$tmp_root/stale-agents-skill" active_link active_inode log
+  make_fixture "$root"
+  write_skill_file "$root" alpha SKILL.md '# Alpha'
+  run_sync "$root" >/dev/null
+
+  active_link="$root/.agents/skills/alpha"
+  active_inode="$(stat -c '%i' -- "$active_link")"
+  ln -s '../../.gobbi/projects/gobbi/skills/retired' "$root/.agents/skills/retired"
+  ln -s '../../unrelated-target' "$root/.agents/skills/unrelated-link"
+  printf 'user data\n' > "$root/.agents/skills/local-note"
+
+  log="$tmp_root/stale-agents-skill.check.log"
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted a stale managed Codex discovery link'
+  fi
+  assert_file_contains "$log" '.agents/skills/retired has no canonical skill (stale discovery link)'
+  [[ -L "$root/.agents/skills/unrelated-link" ]] || fail 'check mode removed the unrelated Codex discovery symlink'
+  [[ -f "$root/.agents/skills/local-note" ]] || fail 'check mode removed the unrelated Codex discovery file'
+
+  run_sync "$root" >/dev/null
+  [[ ! -e "$root/.agents/skills/retired" && ! -L "$root/.agents/skills/retired" ]] || fail 'stale managed Codex discovery link survived'
+  [[ -L "$root/.agents/skills/unrelated-link" ]] || fail 'unrelated Codex discovery symlink was removed'
+  [[ -f "$root/.agents/skills/local-note" ]] || fail 'unrelated Codex discovery file was removed'
+  [[ "$(stat -c '%i' -- "$active_link")" == "$active_inode" ]] || fail 'existing canonical Codex discovery link was recreated'
+
+  run_sync "$root" --check >/dev/null
+  [[ -L "$root/.agents/skills/unrelated-link" ]] || fail 'successful check removed the unrelated Codex discovery symlink'
+  [[ -f "$root/.agents/skills/local-note" ]] || fail 'successful check removed the unrelated Codex discovery file'
+  pass 'check and normal sync agree on managed Codex discovery links'
+}
+
 test_unsafe_regular_file() {
   local root="$tmp_root/unsafe-regular"
   prepare_synced_fixture "$root"
@@ -380,6 +412,7 @@ test_static_deletion_guards() {
 
 test_static_deletion_guards
 test_safe_reconciliation
+test_stale_agents_skill_link_reconciliation
 test_unsafe_regular_file
 test_unsafe_wrong_target
 test_unsafe_directory_symlink

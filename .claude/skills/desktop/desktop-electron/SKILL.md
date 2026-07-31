@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/desktop/desktop-electron/SKILL.md

@@ -7,7 +7,7 @@ completely, within scope, and with verification; this `coding` child doc covers 
 well-designed, well-built, and well-crafted. It provides per-perspective seed scenarios with attached yes/no
 checklists, recommended verifications, perspective-specific anti-patterns, and Overall anchors.
 
-Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P17)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 17. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the `python` / `typescript` skills, and platform idioms to the `electron` skill, so this frame grades the property, not the idiom.
+Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P17)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 17. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the `python` / `typescript` skills, and platform idioms to the `desktop-electron` skill, so this frame grades the property, not the idiom.
 
 The artifact under evaluation is the **actual code change-set** (modified source, new units, the executor's
 notes). Scenarios include adversarial cases (premature abstractions, masked symptoms, silently-widened trust

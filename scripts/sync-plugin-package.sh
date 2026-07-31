@@ -206,6 +206,16 @@ validate_source_topology() {
   [[ "$source_topology_failures" -eq 0 ]]
 }
 
+is_managed_agents_skill_link() {
+  local mirror_entry="$1" mirror_name expected_target actual_target
+
+  [[ -L "$mirror_entry" ]] || return 1
+  mirror_name="${mirror_entry##*/}"
+  expected_target="../../.gobbi/projects/gobbi/skills/$mirror_name"
+  actual_target="$(readlink -- "$mirror_entry")"
+  [[ "$actual_target" == "$expected_target" ]]
+}
+
 check_agents_skill_mirror() {
   local skill_name mirror_entry mirror_name
   while IFS= read -r skill_name; do
@@ -216,12 +226,25 @@ check_agents_skill_mirror() {
     for mirror_entry in "$repo_root"/.agents/skills/*; do
       [[ -e "$mirror_entry" || -L "$mirror_entry" ]] || continue
       mirror_name="${mirror_entry##*/}"
-      if [[ ! -d "$canonical_skills_root/$mirror_name" ]]; then
+      if [[ ! -d "$canonical_skills_root/$mirror_name" ]] && is_managed_agents_skill_link "$mirror_entry"; then
         printf '.agents/skills/%s has no canonical skill (stale discovery link)\n' "$mirror_name" >&2
         return 1
       fi
     done
   fi
+}
+
+prune_stale_agents_skill_links() {
+  local mirror_entry mirror_name
+  [[ -d "$repo_root/.agents/skills" ]] || return 0
+
+  for mirror_entry in "$repo_root"/.agents/skills/*; do
+    [[ -e "$mirror_entry" || -L "$mirror_entry" ]] || continue
+    mirror_name="${mirror_entry##*/}"
+    [[ -d "$canonical_skills_root/$mirror_name" ]] && continue
+    is_managed_agents_skill_link "$mirror_entry" || continue
+    rm -f -- "$mirror_entry"
+  done
 }
 
 for_each_canonical_skill() {
@@ -684,6 +707,7 @@ fi
 # A mixed safe+unsafe mirror therefore leaves the complete mirror byte-for-byte intact.
 preflight_claude_skills_reconciliation
 apply_claude_skills_reconciliation
+prune_stale_agents_skill_links
 
 for skill_name in "${reconcile_skill_names[@]}"; do
   ensure_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
