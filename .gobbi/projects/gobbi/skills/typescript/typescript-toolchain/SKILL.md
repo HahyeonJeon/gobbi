@@ -58,6 +58,16 @@ Run the project's type-check entry point to prove the type contract. Separately 
 
 When a host performs type stripping, verify the host's supported syntax and module rules directly. Type stripping removes types; it does not make every TypeScript feature executable or validate the program.
 
+### Emit declarations, source maps, and build state
+
+JavaScript is not the only emit. `declaration` writes `.d.ts` files, `declarationMap` writes maps that let a consumer navigate from a declaration to the original source, and `composite` implies both incremental builds and declaration output while requiring `rootDir`. Confirm which of these the delivered artifact actually needs; a declaration-only package, an application bundle, and a script have different answers.
+
+`incremental` and `composite` write build state to a `.tsbuildinfo` file whose location follows `outDir` or the configuration file unless `tsBuildInfoFile` overrides it. Stale or shared build state makes a rebuild skip work it should have redone, so treat unexplained missing or outdated output as a build-state question and clear that file before concluding the source is at fault.
+
+When a bundler, transpiler, or type-stripping host processes one file at a time, it cannot see cross-file type information. `isolatedModules` reports the constructs that fail under that model, including a `const enum` and a type re-exported without `export type`. Enable it whenever anything other than a whole-program compiler produces the shipped JavaScript.
+
+A stack trace is only as readable as the last map in the chain. When `tsc` emits JavaScript and a bundler then transforms it, that bundler must consume the upstream map or the final map points at intermediate output instead of the original TypeScript; `inlineSources` embeds the original text when sources cannot be served beside the map. Whether a production map is published is decided by [`web-deployment`](../../web/web-deployment/SKILL.md), not here.
+
 ### Diagnose runtime differences
 
 Confirm the actual versions and capabilities of every target host. Browser, server, test, worker, Electron main, preload, and renderer environments may expose different globals, module loaders, and library declarations even inside one repository.
@@ -67,5 +77,7 @@ Reproduce with the built or shipped entry point when build rewriting, package ex
 ### Verify the toolchain
 
 Run the effective-configuration inspection, type-check, lint, build, and target-host smoke tests that apply. For a package, continue with `typescript-packaging` and `typescript-testing` so the packed consumer surface is verified rather than only the source checkout.
+
+This tool's boundary ends at the emitted JavaScript, declarations, maps, and build state. Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are deployment strategy and belong to [`web-deployment`](../../web/web-deployment/SKILL.md).
 
 ## References
