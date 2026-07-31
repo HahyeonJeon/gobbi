@@ -6,10 +6,11 @@
 
 Enter Ideation DISCUSSION from Configuration or a user-authorized return. Supply the leader with the user's framing, project memory, applicable rules, relevant code and history, prior valid artifacts, and any accepted evaluation dispositions. On a new iteration, identify changed inputs rather than treating the prior synthesis as authority.
 
-When the user accepts a Startup interview, treat
-`1-ideation/working/iteration-{n}/research/startup-interview.md` as noncanonical DISCUSSION research
-created before dual-system WORK. Supply the confirmed final report to the leader, but never import the
-temporary record or a raw transcript and never treat the report as an Ideation output.
+When the user accepts a Startup interview, read the confirmed
+`1-ideation/working/iteration-{n}/research/startup-design-brief-index.md` and every listed
+`startup-design-{architecture|feature|process|roadmap}-{subject}.md` file before dual-system WORK.
+Supply this complete set to the leader as Startup design inputs and evidence. Never import the temporary
+record or a raw transcript, and never treat a Startup brief as an Ideation output or evaluated design.
 
 ## DISCUSSION
 

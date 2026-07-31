@@ -48,7 +48,7 @@ Gobbi does not depend on hooks, environment-variable passthrough, transcripts, r
 ### Must not follow
 
 - Do not ask for an interaction mode or route to any alternate workflow.
-- Do not force-load the workflow owner on entry, and do not run a startup or baseline-classifier gate. The workflow owner and `startup` are indexed skills, loaded only when the session needs them.
+- Do not force-load the workflow owner or `startup` on entry. Both are indexed skills, loaded only when the session needs them.
 - Do not read or create a separate `settings.json`.
 - Do not depend on a hook, transcript path, rollout path, environment-export script, agent ledger, token count, cache count, integration counter, or iteration event log.
 - Do not run durable-memory merge, threshold, hard-cap, or compaction behavior. Runtime compaction only reloads context and attaches runtime identity when distinct.
@@ -64,7 +64,7 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 |---|---|---|
 | [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Relevant when reading or writing durable project memory. |
 | [`workflow`](../workflow/SKILL.md) | The full DISCUSSION→WORK→EVALUATION→RECORD owner: fresh/resume classification, Configuration, routing, dual-system, and finalization. | Load it for a full Gobbi workflow session; it owns session classification, the read-only Configuration preflight, and the cursor handoff. |
-| [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional recorded Ideation interview. | Relevant to a new, sparse-baseline, contradictory, or explicitly reset project; loaded when the manager judges it relevant. Gobbi adds no gate around it and writes nothing. |
+| [`startup`](../startup/SKILL.md) | Evidence-backed software-project interview that produces confirmed Startup design briefs. | Relevant to a new or sparse project, conflicting project direction, or an explicit design reset after the user requests or accepts the interview. |
 | [`planning`](../planning/SKILL.md) | The Planning-step method: ordered, dependency-aware task decomposition. | Dispatched by `workflow` at the Planning step, not loaded directly from Gobbi. |
 | [`execution`](../execution/SKILL.md) | The Execution-step method: one locked task through study, bounded change, verification, and a focused commit. | Dispatched by `workflow` at the Execution step. |
 | [`wrap-up`](../wrap-up/SKILL.md) | The Wrap-up method: promotion, evaluated handoff, and Git finalization. | Dispatched by `workflow` at the Wrap-up step. |
@@ -135,7 +135,7 @@ Evidence: the recorded session kind, the floor load register, and — for a work
 - [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns legal cursor transitions, iteration routing, halt, and resume behavior.
 - [`../workflow/delegation.md`](../workflow/delegation.md) owns the Gobbi specialist brief construction and status handling.
 - [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
-- [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional recorded Ideation interview, baseline validity, and explicit reset.
+- [`../startup/SKILL.md`](../startup/SKILL.md) owns the accepted adaptive interview, its recoverable record, and confirmed Startup design briefs for ordinary Ideation.
 - [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.
 - [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns repository entrypoint and plugin-source topology checks.
