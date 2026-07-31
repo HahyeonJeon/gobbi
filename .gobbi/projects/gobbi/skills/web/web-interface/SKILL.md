@@ -15,8 +15,10 @@ The evidence Rule below is a risk threshold, not an unconditional gate: it requi
 evidence only for the choices it names. This skill owns no mechanics.
 [`html-semantics`](../../html/html-semantics/SKILL.md) owns element, name, state, and accessibility meaning,
 [`css-conventions`](../../css/css-conventions/SKILL.md) owns the emitted-presentation floor and token
-conventions, [`react-design`](../../react/react-design/SKILL.md) owns component boundaries and state
-ownership, and `web-frontend` owns the ordered browser operation. Rules define the boundary, Preferences
+conventions, [`css-motion`](../../css/css-motion/SKILL.md) owns declarative motion mechanics,
+`web-interaction` owns event, pointer, keyboard, focus, and widget-pattern mechanics,
+[`react-design`](../../react/react-design/SKILL.md) owns component boundaries and state ownership, and
+`web-frontend` owns the ordered browser operation. Rules define the boundary, Preferences
 select defaults inside it, and a Rule wins every conflict.
 
 ## Principles
@@ -89,6 +91,7 @@ affordance easier to read. Depart only for a recorded identity obligation, and n
 
 **PREFER** a transition when it makes a change of state, location, or causality legible, and no motion
 otherwise. This skill decides only whether motion is warranted and what it must communicate; the safety floor
-and the emitted mechanics stay with [`css-conventions`](../../css/css-conventions/SKILL.md).
+stays with [`css-conventions`](../../css/css-conventions/SKILL.md) and the emitted mechanics with
+[`css-motion`](../../css/css-motion/SKILL.md).
 
 ## References
