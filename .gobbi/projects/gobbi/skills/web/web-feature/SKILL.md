@@ -94,7 +94,9 @@ different things.
 - Route test-system design to `web-testing`, threat and control analysis to `web-security`, and layer-specific
   proof to its owner.
 - Set quality targets from project evidence or an explicit feature decision instead of inventing universal
-  performance, availability, security, or accessibility budgets.
+  performance, availability, security, or accessibility budgets. Define each user-visible success measure's
+  intended and harmful interpretation, the guardrail that detects the harmful one, and the failure or
+  recovery signal beside it; a proxy that can improve while the user outcome worsens never stands alone.
 - Define each claim's required evidence, environment, owner, release condition, monitoring signal, stop
   condition, and rollback proof; pause before any unauthorized external or irreversible action.
 
@@ -139,7 +141,8 @@ different things.
   contracts, implementation, configuration, migrations, tests, security records, telemetry, support, and
   documentation.
 - Assemble compatibility notes, rollout, stop, rollback, diagnostics, support, deployment-authority state,
-  and post-deployment validation for a cold operator.
+  and post-deployment validation for a cold operator, including the user-visible measure set, its owner and
+  review cadence, and the evidence that reopens the design.
 - Report implementation correctness, frontend acceptance, backend effects, release readiness, deployment
   authorization, deployment state, and live outcome validation as separate claims.
 - End at the release-ready handoff; deployment and live validation proceed only under their own authority.

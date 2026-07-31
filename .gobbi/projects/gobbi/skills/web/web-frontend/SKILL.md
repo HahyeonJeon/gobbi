@@ -157,9 +157,10 @@ they act.
 #### 4.2 Prepare the frontend handoff
 
 - Require resolved verification findings or an explicit disposition of every remaining acceptance gap.
-- Bring the project-native specification into agreement with the implementation and assemble the complete
-  paths and states, accessibility and responsive behavior, material reference decisions, user-evidence
-  limits, degradations, verification evidence, outcome signals, and support route.
+- Bring the project-native specification into agreement with the implementation and assemble the accepted
+  `web-interface` identity and concept decisions, the complete paths and states, accessibility and
+  responsive behavior, material reference decisions, user-evidence limits, degradations, verification
+  evidence, outcome signals, and support route.
 - State separately what was specified, implemented, technically verified, evidenced with representative
   users, and observed after release.
 - Hand the result to `web-feature` or the requesting caller, preserving release and live-outcome claims until
