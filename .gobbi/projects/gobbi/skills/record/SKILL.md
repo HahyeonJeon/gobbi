@@ -109,7 +109,21 @@ memory/
 │   ├── process/
 │   └── roadmap/
 ├── learnings/
+│   ├── design/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── work/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── memory/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── dev/
+│   │   ├── tips.md
+│   │   └── mistakes.md
 │   └── {domain}/
+│       ├── tips.md
+│       └── mistakes.md
 ├── reports/
 │   ├── note/
 │   ├── review/
@@ -133,7 +147,7 @@ memory/
 | `design/feature/` | the design of one named capability |
 | `design/process/` | the design of one way of working |
 | `design/roadmap/` | direction over time for one subject |
-| `learnings/{domain}/` | reusable knowledge and repeated mistakes for one stable subject |
+| `learnings/{domain}/` | reusable knowledge in `tips.md` and repeatable failure patterns in `mistakes.md`, for `design/`, `work/`, `memory/`, `dev/`, or another stable subject |
 | `reports/note/` | one completed piece of work, including the outcome of a discussion and the record of a shipped change |
 | `reports/review/` | one review's subject, criteria, findings, and conclusion |
 | `reports/analysis/` | one question, its method, and its interpreted result |
