@@ -119,5 +119,11 @@ Type correctness is one gate among runtime behavior, integration, build, packagi
 - Re-run the original defect reproducer last when one exists.
 - Map fresh evidence to every success criterion and inspect the final scope for unrelated changes.
 - Hand off limitations or unavailable gates literally; do not convert missing evidence into a pass.
+- When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
+  owned by an active `typescript` sibling supply the applicable conditions; the general Evaluation
+  operation resolves them and issues any verdict.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
