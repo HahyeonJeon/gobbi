@@ -12,7 +12,7 @@ Server Components, Server Functions, or client/server directives. React's presen
 those features.
 
 This child answers module, value, endpoint, and hydration questions. `react-development` owns the work
-sequence, while `react-idioms` owns React choice policy.
+sequence, while `react-design` owns React choice policy.
 
 Apply the installed React line and the framework's supported integration; do not infer behavior from a
 neighboring version or another framework.
@@ -40,8 +40,9 @@ limit disclosure on the server.
   manual.** Use that integration's current contract when it narrows React's platform surface.
 
 - **MUST treat [`'use client'`](https://react.dev/reference/rsc/use-client) as a module boundary.** It marks
-  the module and its transitive dependencies as client code when server code imports it; keep the boundary at
-  the smallest interactive subtree.
+  the module and its transitive dependencies as client code when server code imports it; default to the
+  smallest interactive subtree and expand only for installed framework support, a required dependency, or
+  measured transfer cost.
 
 - **MUST use [`'use server'`](https://react.dev/reference/rsc/use-server) only for async Server Functions.**
   A [Server Component](https://react.dev/reference/rsc/server-components) has no directive of its own.
@@ -53,8 +54,10 @@ limit disclosure on the server.
   caller identity when required, authorize the exact action against current server state, and keep secrets
   and disclosure decisions on the server.
 
-- **MUST make the first hydrated client output match the server output.** Repair mismatches under
-  [`hydrateRoot`](https://react.dev/reference/react-dom/client/hydrateRoot) instead of suppressing them.
+- **MUST repair every avoidable mismatch between the first hydrated client output and the server output.**
+  Under [`hydrateRoot`](https://react.dev/reference/react-dom/client/hydrateRoot), use
+  `suppressHydrationWarning` only for a genuinely unavoidable text or attribute mismatch on one element and
+  rely on it only one level deep.
 
 ## Manual
 
@@ -80,9 +83,9 @@ at its owner. Confirm the live direction-specific list rather than using `JSON.s
 
 ### Operate Server Function endpoints
 
-- Use [Server Functions](https://react.dev/reference/rsc/server-functions) for mutations, not general data
-  fetching. A caller outside a form invokes one inside a Transition; `<form action>` and `formAction` calls
-  are wrapped automatically.
+- Follow the [`'use server'` Server Function contract](https://react.dev/reference/rsc/use-server): use Server
+  Functions for mutations, not general data fetching. Invoke them inside a Transition outside forms;
+  `<form action>` and `formAction` provide Transition wrapping.
 - Treat expected validation failures as explicit user-visible outcomes. Keep unexpected failures observable
   at the nearest recoverable owner.
 - Verify validation, applicable identity checks, exact authorization, disclosure, and failure recovery for
@@ -91,6 +94,10 @@ at its owner. Confirm the live direction-specific list rather than using `JSON.s
 ### Verify server output and hydration
 
 Trace imports and values across each boundary, exercise server-rendered and hydrated output, and verify the
-first client tree matches. Test the affected loading, failure, recovery, preservation, and reset paths.
+first client tree matches. Repair every avoidable mismatch; bounded `suppressHydrationWarning` use is an
+escape hatch for an unavoidable one-element, one-level text or attribute difference, not a repair. Test the
+affected loading, failure, recovery, preservation, and reset paths.
 
 ## References
+
+- [React Server and Client Checklist](checklists.md)

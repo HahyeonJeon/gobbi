@@ -10,12 +10,12 @@ skill-type: operation
 Use this operation to turn one accepted React implementation task or defined read-only review into a verified
 change or an evidence-backed finding set.
 
-This child owns the ordered work outcome: inspect the project contract, model the behavior, implement or
-review, verify, repair, and hand off. React idiom policy and server/client platform facts remain with sibling
-skills selected by the React domain root.
+This child owns the overall work outcome: inspect the project contract, model the behavior, implement or
+review, verify, repair, and hand off. Design choices, conventions, testing mechanics, compiler facts,
+React-specific TypeScript facts, and server/client facts remain with siblings selected by the domain root.
 
-The domain root must also route `react-idioms`. It routes `react-server-client` when server rendering,
-hydration, Server Components, Server Functions, or client/server directives are in scope.
+The domain root selects every applicable sibling. This operation coordinates those owners without copying
+their policy.
 
 ## Principles
 
@@ -43,8 +43,8 @@ the project gates that can detect regressions.
   target, React and renderer versions, framework, compiler configuration, Hooks lint configuration, rendering
   architecture, and applicable verification commands.
 
-- **MUST route domain guidance before modeling the solution.** Load `react-idioms` for every supported task
-  and load `react-server-client` when its trigger applies.
+- **MUST route every applicable React child before modeling the solution.** Record which child triggers apply
+  and do not substitute this operation for their policy.
 
 - **MUST keep review mode read-only and implementation mode within the accepted authority.** Stop for an
   unapproved dependency, migration, architecture change, or observable scope change.
@@ -71,8 +71,8 @@ the project gates that can detect regressions.
 
 - Map the user path, affected components and Hooks, inputs, events, persistent and derived data, external
   systems, loading and failure states, tests, and every server/client or host boundary.
-- Use `react-idioms` to decide the React shape. Use `react-server-client` to look up platform behavior when
-  that child is active.
+- Use active preference children to decide the React shape and active tool children to establish platform
+  facts. Use `react-testing` when tests or React-specific evidence are being created or reviewed.
 - On a review path, derive the model from the requested behavior and actual diff without editing the work.
 - Confirm that every in-scope path reaches observable completion, a recoverable state, or an explicit stop.
 
@@ -102,8 +102,8 @@ the project gates that can detect regressions.
   the changed failure and recovery paths.
 - Run focused component or Hook tests, Hooks and compiler lint, language type checks, and the affected test
   suite. Add the applicable build, server render, hydration, or host integration check.
-- For evaluation, complete every applicable row in [React Evaluation Checklist](checklists.md) and apply the
-  general `evaluation` perspectives.
+- For evaluation, complete [React Development Checklist](checklists.md) and every checklist owned by an
+  active sibling, then apply the general `evaluation` perspectives.
 
 #### 3.2 Repair and complete
 
@@ -116,4 +116,4 @@ the project gates that can detect regressions.
 
 ## References
 
-- [React Evaluation Checklist](checklists.md)
+- [React Development Checklist](checklists.md)

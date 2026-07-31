@@ -3,7 +3,7 @@
 **Owns** — the Electron↔React seam: the router-strategy fork under the packaged origin; mounting under that
 origin; path resolution and the dev-works/production-breaks class as React meets it; the pattern for moving an
 IPC push into React state without leaking the internal `event`; the development-only DevTools load; and the
-explicit statement that general React idioms are out of scope. **Owns no load-path switch.**
+explicit statement that general React guidance is out of scope. **Owns no load-path switch.**
 
 **Split criterion** — a distinct decision fork ([`../skill-writing/SKILL.md`](../skill-writing/SKILL.md)): the
 router strategy, what a component may hold, and where a subscription's lifetime ends are decided once, when a
