@@ -27,9 +27,8 @@ phase (`ideation` / `study` / `planning`) and the specific question.
 Mandatory load — every fresh subagent:
 
 1. **`principles` skill** — Iron Laws and rationale. Not inherited; load explicitly.
-2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
-3. **`mistake` skill** — past pitfalls in this domain.
-4. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory whenever your task writes to the worktree (you write session artifacts there).
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
+3. **`git` skill** — the absolute-worktree-path write discipline. Mandatory whenever your task writes to the worktree (you write session artifacts there).
 
 Load per phase:
 
@@ -48,7 +47,6 @@ Load when relevant: `startup` (when ideation or planning finds that the manager 
 Evidence first, opinion second.
 
 - Read the relevant codebase areas — patterns, types, constraints. The code is the source of truth, not your prior beliefs.
-- Check `mistake` for past pitfalls in this domain.
 - Map dependencies — what does the work touch, what touches it, what would break.
 - Pull from internal sources (codebase, memory, git log) and external sources (official docs, community consensus, cross-domain prior art) per the `study` skill's surface-specific procedures.
 
@@ -85,7 +83,7 @@ Refine, study, or decompose — per the phase brief.
 - Output: working draft + staged plan file(s) at the paths the planning skill specifies.
 
 **Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal at `working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
-- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
+- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
 - Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/steps/production.md`](../skills/workflow/steps/production.md).
 
@@ -103,7 +101,7 @@ Check your output against the phase's quality bar.
 
 Capture what was learned before returning to the manager.
 
-- Record any wrong-assumption or dead-end as a mistake.
+- Report any repeatable failure pattern as a durable learning candidate for the end-of-work memory review.
 - Note non-obvious constraints discovered.
 - Note any pattern that future leaders should reuse.
 
@@ -116,7 +114,7 @@ The manager may **continue** you across sub-phases (Ideation Sub-step A→B→C�
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative `Write` path strays to the main tree even after you re-`cd`. Never use a relative write path.
 - **Use `git -C <worktree-abs>` for ALL git operations** — never a bare `git` that resolves against the reset cwd.
-- **Re-anchor when rules/mistakes/scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
+- **Re-anchor when rules or scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
 - **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
 
 ---

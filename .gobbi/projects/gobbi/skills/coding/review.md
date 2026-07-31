@@ -359,7 +359,7 @@ Two first-class sub-checks: import structure (6a) and file/directory structure (
 
 ### Phase 0 — Preflight
 
-Confirm the review target and its scope contract. Identify the public API surfaces first — they are where review attention pays off most. Load the relevant project mistakes and conventions. Confirm the change is **small and self-contained**; a large, multi-purpose change is reviewed worse, and a reviewer may return it for size alone, asking the author to split it. List the safe verification commands — the type checks, the test subset, the build — and confirm they are side-effect-free before running them.
+Confirm the review target and its scope contract. Identify the public API surfaces first — they are where review attention pays off most. Load the relevant project conventions and prior failure evidence. Confirm the change is **small and self-contained**; a large, multi-purpose change is reviewed worse, and a reviewer may return it for size alone, asking the author to split it. List the safe verification commands — the type checks, the test subset, the build — and confirm they are side-effect-free before running them.
 
 ### Phase 1 — Understand the change
 

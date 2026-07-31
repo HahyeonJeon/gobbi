@@ -11,7 +11,7 @@ Skill Writing creates or substantively revises one self-contained project skill 
 classifies the target as domain, operation, tool, or preference and produces an evidence-backed, clearly
 written, and verified artifact set.
 
-The operation studies consumers, prior art, mistakes, and mechanism owners before writing. It designs the
+The operation studies consumers, prior art, prior failures, and mechanism owners before writing. It designs the
 skill with the user, delegates writing to one type-specific procedure, then reviews and improves the complete
 artifact set. A legacy skill may remain untyped until substantive revision; a narrow compatibility correction
 does not require migration.
@@ -63,9 +63,9 @@ evidence so the cold reader reaches the intended understanding directly.
 
 #### 1.1 Study the skill context
 
-- Read the request, current skill when one exists, intended consumers, prior decisions, applicable mistakes,
-  and two or three relevant internal skills. Use concrete use cases to identify the capability, boundary,
-  expected result, failure cases, and likely type without fixing the design yet.
+- Read the request, current skill when one exists, intended consumers, prior decisions, applicable prior
+  failures, and two or three relevant internal skills. Use concrete use cases to identify the capability,
+  boundary, expected result, failure cases, and likely type without fixing the design yet.
 - Study authoritative external practice when it can improve the capability. Read every mechanism that owns a
   behavior, command, path, schema, permission, or wiring claim. Verify claims and examples against their live
   owners instead of treating a plausible statement as evidence.

@@ -44,7 +44,7 @@ Every completion claim cites an artifact, verification result, or commit. The ev
   terminal record to the sole project-root typed archive with its exact compatible reason. Preserve the
   frozen body verbatim under Memory's archive-body contract, then repoint active inbound path references.
 - **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest,
-  prove prior staging is unchanged, and run the applicable memory, link, mistake, vocabulary, and
+  prove prior staging is unchanged, and run the applicable memory, link, vocabulary, and
   topology guards. Apply Memory's link scope exactly: archive bodies stay outside relative-link
   resolution, while every changed active carrier and every live namespace move remains link-gated.
 - **W-9 — Produce one nine-section handoff body.** The session output and durable note bodies match. Every claim and next action has direct evidence.

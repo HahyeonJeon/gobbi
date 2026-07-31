@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/mistake/scripts/validate-skill-mistakes.sh

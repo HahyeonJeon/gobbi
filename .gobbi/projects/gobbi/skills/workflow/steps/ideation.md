@@ -4,7 +4,7 @@
 
 ## Entry
 
-Enter Ideation DISCUSSION from Configuration or a user-authorized return. Supply the leader with the user's framing, project memory, applicable rules and mistakes, relevant code and history, prior valid artifacts, and any accepted evaluation dispositions. On a new iteration, identify changed inputs rather than treating the prior synthesis as authority.
+Enter Ideation DISCUSSION from Configuration or a user-authorized return. Supply the leader with the user's framing, project memory, applicable rules, relevant code and history, prior valid artifacts, and any accepted evaluation dispositions. On a new iteration, identify changed inputs rather than treating the prior synthesis as authority.
 
 ## DISCUSSION
 
