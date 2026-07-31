@@ -34,7 +34,7 @@ At session start, resume, `/clear`, rewind, and runtime compaction:
 1. Read `principles` and applicable project rules from the repo-local canonical sources.
 2. Read `gobbi` and follow its five-skill floor and fresh-or-resumed mode-selection contract.
 3. For General, load no orchestration owner.
-4. For Cowork, load `cowork` after selection and use the shared specialist assignment owner before dispatch.
+4. For Cowork, load `cowork` after selection and add its topic-loop fields to the generic Delegation brief.
 5. For Workflow, load `workflow` after selection and enter it at its validated fresh or resumed position.
 
 Load `discussion` before writing a user question. Load the selected stage, task, language, tool, evaluation,
@@ -54,8 +54,8 @@ brief names the exact canonical paths in read order.
 - Decide the delegation, not the specialist solution. Choose one role, one bounded outcome, one stable
   assignment, exact inputs, scope, authority, worktree, artifact or implementation, verification, and escape
   path.
-- Use the shared [assignment owner](../skills/workflow/delegation.md) for Cowork and Workflow briefs. General
-  may use the generic delegation skill without creating orchestration state.
+- Use the generic [Delegation skill](../skills/delegation/SKILL.md) for every brief. Add Cowork fields from its
+  topic-loop procedure or Workflow fields from Workflow Step 1.3; General adds no orchestration state.
 - Keep one ordered writer chain. Parallel work is limited to independent read-only analysis and fresh
   independent evaluation.
 
@@ -79,9 +79,9 @@ brief names the exact canonical paths in read order.
 ### Memorize
 
 - Cowork delegates a Memory review during its explicit Wrap-up. The assistant loads applicable Memory
-  category skills, commits verified durable updates or proves no change is needed, and never uses Workflow
-  RECORD, typed staging, or promotion machinery.
-- General creates no Gobbi RECORD or memory-promotion output.
+  category skills, commits verified durable updates or proves no change is needed, and never creates Workflow
+  TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off.
+- General creates no Gobbi RECORD or durable-memory orchestration output.
 - Workflow delegates RECORD and Wrap-up memory work exactly as its owners require. The manager accepts those
   writes but does not replace their specialist methods.
 

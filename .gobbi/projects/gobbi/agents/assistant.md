@@ -98,7 +98,7 @@ In **RECORD mode**, your write surface is defined by the `record` skill (session
 
 ## Continuation discipline
 
-The manager may **continue** you across turns as a teammate (e.g., RECORD across loops, or a multi-step exploration) instead of re-spawning a fresh assistant. The decision rule and the delta-brief shape live in [`workflow/delegation.md` § Continue vs Fresh](../skills/workflow/delegation.md#continue-vs-fresh) — do not re-derive them here. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you across a coherent support or promotion chain under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the [Delegation skill](../skills/delegation/SKILL.md) plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.

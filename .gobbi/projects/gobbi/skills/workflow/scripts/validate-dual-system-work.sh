@@ -22,7 +22,7 @@ usage() {
     cat >&2 <<'EOF'
 usage:
   validate-dual-system-work.sh --root ABS --step STEP --iteration N
-      --assignment ID [--task task-NN-slug]
+      --assignment ID --runtime-system claude|codex [--task task-NN-slug]
   validate-dual-system-work.sh self-test
 
 Validates one complete dual-system WORK package. Non-Execution packages are
@@ -272,13 +272,14 @@ package_prefix() {
 }
 
 command_validate() {
-    local root="" step="" iteration="" assignment="" task=""
+    local root="" step="" iteration="" assignment="" task="" runtime_system=""
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --root) root="${2:-}"; shift 2 ;;
             --step) step="${2:-}"; shift 2 ;;
             --iteration) iteration="${2:-}"; shift 2 ;;
             --assignment) assignment="${2:-}"; shift 2 ;;
+            --runtime-system) runtime_system="${2:-}"; shift 2 ;;
             --task) task="${2:-}"; shift 2 ;;
             -h|--help) usage; exit 0 ;;
             *) die "unknown argument: $1" ;;
@@ -288,20 +289,14 @@ command_validate() {
     [ -n "$step" ] || die "--step is required"
     [[ "$iteration" =~ ^[1-9][0-9]?$ ]] || die "--iteration must be an integer from 1 through 99"
     [[ "$assignment" =~ ^[a-z0-9][a-z0-9-]{0,127}$ ]] || die "invalid --assignment: $assignment"
+    case "$runtime_system" in claude|codex) ;; *) die "--runtime-system must be claude or codex" ;; esac
     case "$root" in /*) ;; *) die "--root must be absolute" ;; esac
     [ -d "$root" ] && [ ! -L "$root" ] || die "session root is missing or symbolic: $root"
     root="$(realpath -e -- "$root")"
-    [ -f "$root/session.json" ] && [ ! -L "$root/session.json" ] || die "session manifest is missing"
-    jq -e . "$root/session.json" >/dev/null 2>&1 || die "session manifest is malformed"
 
     local prefix package claude_draft codex_draft claude_review codex_review synthesis decisions
-    local claude_json codex_json claude_review_json codex_review_json contract runtime_system synthesis_owner
-    runtime_system="$(jq -er '.runtime.system' "$root/session.json")" || die "session runtime system is missing"
-    case "$runtime_system" in
-        claude-code) synthesis_owner=claude ;;
-        codex) synthesis_owner=codex ;;
-        *) die "invalid session runtime system: $runtime_system" ;;
-    esac
+    local claude_json codex_json claude_review_json codex_review_json contract synthesis_owner
+    synthesis_owner="$runtime_system"
     prefix="$(package_prefix "$step" "$task")"
     package="$root/$prefix/working/iteration-$iteration"
     [ -d "$package" ] && [ ! -L "$package" ] || die "WORK package directory is missing: $package"
@@ -383,14 +378,15 @@ self_test_fail() {
 }
 
 expect_validation_failure() {
-    local label="$1" root="$2"
-    if "$SCRIPT_PATH" --root "$root" --step ideation --iteration 1 --assignment dual-package >/dev/null 2>&1; then
+    local label="$1" root="$2" runtime_system="$3"
+    if "$SCRIPT_PATH" --root "$root" --step ideation --iteration 1 --assignment dual-package \
+        --runtime-system "$runtime_system" >/dev/null 2>&1; then
         self_test_fail "$label was accepted"
     fi
 }
 
 command_self_test() {
-    local sandbox worktree uuid root package contract claude_digest codex_digest
+    local sandbox worktree uuid root package contract claude_digest codex_digest evidence_root
     local claude_worktree claude_uuid claude_root claude_package
     local backup target
     sandbox="$(temp_dir)"
@@ -416,11 +412,11 @@ command_self_test() {
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
-    command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package
+    command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package --runtime-system codex
 
     write_synthesis_fixture "$package" claude claude-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
-    expect_validation_failure codex-session-claude-owner "$root"
+    expect_validation_failure codex-session-claude-owner "$root" codex
 
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
@@ -428,7 +424,7 @@ command_self_test() {
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/reused-claude-review.json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
-    expect_validation_failure codex-owned-reused-claude-peer-identity "$root"
+    expect_validation_failure codex-owned-reused-claude-peer-identity "$root" codex
     "$RECORD_TOOL" write-artifact --root "$root" --kind cross-review --input "$sandbox/claude-review.json" --target 1-ideation/working/iteration-1/cross-reviews/claude-on-codex.md --expected-system claude --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
 
     claude_worktree="$sandbox/claude-worktree"
@@ -445,11 +441,11 @@ command_self_test() {
     cp -- "$package/cross-reviews/codex-on-claude.md" "$claude_package/cross-reviews/codex-on-claude.md"
     write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$claude_package" ideation 1 dual-package
-    command_validate --root "$claude_root" --step ideation --iteration 1 --assignment dual-package
+    command_validate --root "$claude_root" --step ideation --iteration 1 --assignment dual-package --runtime-system claude
 
     write_synthesis_fixture "$claude_package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$claude_package" ideation 1 dual-package
-    expect_validation_failure claude-session-codex-owner "$claude_root"
+    expect_validation_failure claude-session-codex-owner "$claude_root" claude
 
     write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$claude_package" ideation 1 dual-package
@@ -457,7 +453,7 @@ command_self_test() {
     "$RECORD_TOOL" write-artifact --root "$claude_root" --kind cross-review --input "$sandbox/reused-codex-review.json" --target 1-ideation/working/iteration-1/cross-reviews/codex-on-claude.md --expected-system codex --expected-step ideation --expected-iteration 1 --expected-assignment dual-package >/dev/null
     write_synthesis_fixture "$claude_package" claude claude-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$claude_package" ideation 1 dual-package
-    expect_validation_failure claude-owned-reused-codex-peer-identity "$claude_root"
+    expect_validation_failure claude-owned-reused-codex-peer-identity "$claude_root" claude
 
     write_synthesis_fixture "$package" codex codex-synthesis-self-test ideation 1 dual-package
     write_decisions_fixture "$package" ideation 1 dual-package
@@ -466,53 +462,58 @@ command_self_test() {
     target="$package/drafts/claude.md"
     cp -- "$target" "$backup"
     : > "$target"
-    expect_validation_failure empty "$root"
+    expect_validation_failure empty "$root" codex
     cp -- "$backup" "$target"
 
     mv -- "$package/drafts/codex.md" "$sandbox/codex.md"
-    expect_validation_failure missing "$root"
+    expect_validation_failure missing "$root" codex
     mv -- "$sandbox/codex.md" "$package/drafts/codex.md"
 
     printf 'unexpected\n' > "$package/drafts/extra.md"
-    expect_validation_failure extra "$root"
+    expect_validation_failure extra "$root" codex
     rm -- "$package/drafts/extra.md"
 
     target="$package/drafts/claude.md"
     cp -- "$target" "$backup"
     sed -i 's/^system: claude$/system: codex/' "$target"
-    expect_validation_failure mislabeled "$root"
+    expect_validation_failure mislabeled "$root" codex
     cp -- "$backup" "$target"
 
     target="$package/cross-reviews/claude-on-codex.md"
     cp -- "$target" "$backup"
     sed -i 's/^iteration: 1$/iteration: 2/' "$target"
-    expect_validation_failure stale-iteration "$root"
+    expect_validation_failure stale-iteration "$root" codex
     cp -- "$backup" "$target"
 
     cp -- "$target" "$backup"
     sed -i 's/subject-system: codex/subject-system: claude/; s/"subjectSystem": "codex"/"subjectSystem": "claude"/' "$target"
-    expect_validation_failure same-author "$root"
+    expect_validation_failure same-author "$root" codex
     cp -- "$backup" "$target"
 
     target="$package/synthesis.md"
     cp -- "$target" "$backup"
     sed -i 's/^claude-draft-sha256: ./claude-draft-sha256: 0/' "$target"
-    expect_validation_failure wrong-digest "$root"
+    expect_validation_failure wrong-digest "$root" codex
     cp -- "$backup" "$target"
 
     target="$package/open-decisions.md"
     cp -- "$target" "$backup"
     sed -i 's/^status: resolved$/status: open/' "$target"
-    expect_validation_failure unresolved "$root"
+    expect_validation_failure unresolved "$root" codex
     cp -- "$backup" "$target"
 
     mv -- "$package/cross-reviews/claude-on-codex.md" "$sandbox/claude-on-codex.md"
     mv -- "$package/cross-reviews/codex-on-claude.md" "$sandbox/codex-on-claude.md"
-    expect_validation_failure synthesis-before-cross-reviews "$root"
+    expect_validation_failure synthesis-before-cross-reviews "$root" codex
     mv -- "$sandbox/claude-on-codex.md" "$package/cross-reviews/claude-on-codex.md"
     mv -- "$sandbox/codex-on-claude.md" "$package/cross-reviews/codex-on-claude.md"
 
-    command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package
+    command_validate --root "$root" --step ideation --iteration 1 --assignment dual-package --runtime-system codex
+    evidence_root="$sandbox/evidence-root"
+    mkdir -p "$evidence_root/1-ideation/working"
+    cp -R -- "$package" "$evidence_root/1-ideation/working/iteration-1"
+    command_validate --root "$evidence_root" --step ideation --iteration 1 \
+        --assignment dual-package --runtime-system codex
     printf 'validate-dual-system-work self-test: PASS\n'
 }
 
