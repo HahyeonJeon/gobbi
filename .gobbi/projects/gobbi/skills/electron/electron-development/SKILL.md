@@ -113,6 +113,7 @@ Static and build checks prove construction, not runtime security or Electron beh
 - Confirm each affected process owns only valid imports and capabilities, each bridge is narrow, each privileged handler validates trust and data, and each resource has cleanup.
 - Confirm current code, configuration, and documentation agree and that every local construction command has recorded evidence.
 - Return changed paths, process ownership, contract behavior, known platform limits, and unresolved environmental constraints.
+- When this change is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an active `electron` sibling supply the applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 5.2 Route remaining evidence
 
@@ -121,3 +122,5 @@ Static and build checks prove construction, not runtime security or Electron beh
 - Do not claim completion when an in-scope process, integration path, failure case, or required handoff remains unspecified.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
