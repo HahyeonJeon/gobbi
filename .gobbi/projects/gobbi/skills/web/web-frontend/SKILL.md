@@ -153,6 +153,9 @@ they act.
   analytics.
 - Return specification drift, implementation failure, unsupported reference use, or an unproven claim to the
   earliest owning Step; screenshots cannot prove semantics, focus, responsiveness, interaction, or usability.
+- When this browser outcome is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 
 #### 4.2 Prepare the frontend handoff
 
@@ -167,3 +170,6 @@ they act.
   their evidence exists.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
