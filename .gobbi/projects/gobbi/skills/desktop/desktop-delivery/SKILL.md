@@ -114,8 +114,9 @@ implies another.
 
 #### 2.2 Lock runtime, local-data, and release contracts
 
-- **Input and precondition:** use the reconciled design, `desktop-contract` contract, the project's selected
-  Electron version, current mechanism-owner facts, persisted formats, and `desktop-release` judgments.
+- **Input and precondition:** use the reconciled design, the installed-platform contract from
+  `desktop-contract`, the project's selected Electron version, current mechanism-owner facts,
+  persisted formats, and `desktop-release` judgments.
 - **Action:** lock the observable target, entry, window, lifecycle, native, installed-resource, and recovery
   behavior through `desktop-contract`. Obtain process placement, bridge and IPC contracts, caller and payload
   trust rules, cleanup, and development-versus-packaged load paths from the applicable Electron children.

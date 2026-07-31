@@ -7,9 +7,9 @@ skill-type: domain
 
 # CSS
 
-CSS covers browser and Electron-renderer presentation work: implementation, platform
-understanding, validity constraints, project conventions, and focused review. Concerns owned
-by other domains remain with those owners.
+CSS covers browser and Electron-renderer presentation work: implementation and review,
+platform understanding, and valid project choices. Concerns owned by other domains remain
+with those owners.
 
 This root owns navigation only. Load every row whose trigger applies; one task may require
 more than one child.
