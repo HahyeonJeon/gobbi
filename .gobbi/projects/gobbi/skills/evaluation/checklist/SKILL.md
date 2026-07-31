@@ -123,7 +123,12 @@ Use this shape:
 - Write the row as a condition, not an action log. Keep it stable under prose reordering.
 - Exclude test specifications, evidence metadata, severity, scoring, and remediation instructions.
 - Define each row once beneath its owning scenario. Reference its ID when another scenario uses the same row.
-- Split any row whose conditions could fail independently.
+- Split a row that states two different conditions. Never split a row that applies one condition to several
+  members of a set: keep one row that names every member, and never generalize the members away.
+- Decide with a placeholder test. Replace each row's varying subject or object with a placeholder, and treat
+  identical residual sentences as one condition carried by one row.
+- Read this boundary with the six-row scenario cap at Step 4.1. The cap alone invites compound rows, and this
+  boundary alone depends on the author noticing the fan-out.
 
 Use this shape:
 
@@ -137,7 +142,7 @@ Use this shape:
 
 - Confirm that every scenario has at least one checklist row.
 - Confirm that every row has one stable ID, one owning scenario, and one condition.
-- Remove duplicate definitions and split every row whose conditions can fail independently.
+- Remove duplicate definitions, then apply the Step 3.1 split and placeholder tests to every row.
 - Return to Phase 2 when a row exposes missing, ambiguous, or incorrect scenario context.
 
 ### Phase 4 — Review and Improvement
@@ -149,6 +154,10 @@ Use this shape:
   checklist row.
 - Review the six scenario classes for materially missing situations without imposing a fixed count per
   perspective.
+- Count the rows beneath each scenario. A scenario carries at most six rows; a longer list means a Step 3.1
+  merge was missed, not that the cap is wrong.
+- Merge the fanned-out rows first, then split the scenario when more than six different conditions remain.
+  Never meet the count by dropping a traced row or by bundling conditions into one row.
 - Return to the earliest affected phase when a perspective, source obligation, or material situation lacks
   coverage.
 
