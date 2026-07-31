@@ -1,13 +1,13 @@
 ---
 name: cowork
-description: "Use for user-led, stepwise implementation in one isolated worktree, with scaled inline shaping and user-called evaluation."
+description: "Cowork is a user-led orchestration mode for stepwise implementation in one isolated worktree, with scaled inline shaping and user-called evaluation."
 allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
 
 # Cowork
 
-Cowork is an operation for fast, user-led implementation after cowork mode has already been selected. It
+Cowork is a user-led orchestration mode for fast implementation after it has already been selected. It
 turns each user topic into a verified sequence of focused local commits and then returns control to the user.
 
 The operating agent scales inline shaping to the topic, keeps one isolated worktree and ordered writer chain,
