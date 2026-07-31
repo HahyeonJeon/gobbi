@@ -100,14 +100,19 @@ fails when it creates orchestration state or loads Cowork or Workflow.
 
 ### GOBBI-SC-USAGE-02 — Normal case: Cowork reaches fast stepwise work
 
-After a Cowork selection, the Cowork owner must establish its isolated worktree and run the user-topic loop.
-The path fails when Gobbi creates the worktree or Workflow records appear.
+After a Cowork selection, the Cowork owner must establish its isolated worktree, run the user-topic loop, and
+perform a direct Memory pass during explicit Wrap-up. The path fails when Gobbi creates the worktree,
+Workflow records appear, or closure skips durable-memory review.
 
 #### Checklist
 
 - [ ] GOBBI-CK-USAGE-02-01 — Cowork owns worktree creation or recovery before editing.
 - [ ] GOBBI-CK-USAGE-02-02 — Cowork remains manifest-free.
-- [ ] GOBBI-CK-USAGE-02-03 — Cowork preserves user-called evaluation and closure.
+- [ ] GOBBI-CK-USAGE-02-03 — Cowork preserves user-called evaluation and Wrap-up.
+- [ ] GOBBI-CK-USAGE-02-04 — Cowork Wrap-up applies Memory and applicable category skills directly.
+- [ ] GOBBI-CK-USAGE-02-05 — Cowork Wrap-up commits verified memory changes or proves no change is needed.
+- [ ] GOBBI-CK-USAGE-02-06 — Cowork checks evaluation freshness after the accepted Memory pass.
+- [ ] GOBBI-CK-USAGE-02-07 — Cowork Wrap-up creates no Workflow typed staging or promotion manifest.
 
 ### GOBBI-SC-USAGE-03 — Normal case: Workflow behavior is preserved
 
@@ -144,6 +149,7 @@ change fails when any active consumer still says every session follows one manda
 - [ ] GOBBI-CK-CONSISTENCY-01-02 — Every active entry consumer scopes durable records to Workflow.
 - [ ] GOBBI-CK-CONSISTENCY-01-03 — Every active entry consumer scopes automatic dual-system creation to Workflow.
 - [ ] GOBBI-CK-CONSISTENCY-01-04 — Manager Markdown and TOML route through the selected owner.
+- [ ] GOBBI-CK-CONSISTENCY-01-05 — Every active consumer distinguishes Cowork direct Memory updates from Workflow promotion.
 
 ### GOBBI-SC-CONSISTENCY-02 — Expected failure: runtime entry drops a mode
 

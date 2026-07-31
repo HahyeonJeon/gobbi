@@ -197,7 +197,7 @@ boundaries without adding policy.
 - **Given:** a fresh entry presents all three modes and the user selects Cowork.
 - **When:** Gobbi routes the selection.
 - **Then:** Cowork loads and owns fast stepwise topics, optional shaping, worktree creation, and user-called
-  evaluation and closure.
+  evaluation and memory-updating Wrap-up.
 - **Failure:** Cowork is treated as General or routed into Workflow records.
 - **Sources:** GB-3, GB-5.
 

@@ -25,7 +25,7 @@ the three-way choice.
 | Mode | Best for | Operating model |
 |---|---|---|
 | **General** | Ordinary questions and bounded tasks that do not need Gobbi orchestration. | Use the Gobbi behavioral floor and task-specific skills without an orchestration owner or Gobbi session state. |
-| **Cowork** | Fast, collaborative implementation where the user supplies topics step by step. | Repeat user topic → optional Ideation → optional Planning → verified Execution. Evaluate or wrap up only when the user calls for it. |
+| **Cowork** | Fast, collaborative implementation where the user supplies topics step by step. | Repeat user topic → optional Ideation → optional Planning → verified Execution. Evaluate or run memory-updating Wrap-up only when the user calls for it. |
 | **Workflow** | Large or durable work that needs complete recorded evidence and independent dual-system quality gates. | Run `Configuration → Ideation → Planning → Execution → Wrap-up`; every productive step runs `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
 ## Cowork
@@ -42,9 +42,14 @@ Leaders commit shaping artifacts; executors commit implementation units. Every s
 self-verifies, and one ordered writer chain keeps dependent work on verified commits.
 
 Cowork creates or recovers one isolated branch and worktree before the first edit. It is manifest-free: it
-does not create Workflow `session.json`, `state.json`, RECORD, typed staging, memory promotion, or full
+does not create Workflow `session.json`, `state.json`, RECORD, typed staging, promotion manifests, or full
 Workflow Wrap-up output. A user `evaluate` call runs one fresh Claude-and-Codex review round over the frozen
-subject. A user `wrap up` call returns the retained local handoff and names any uncovered commits.
+subject.
+
+A user `wrap up` call applies the canonical Memory operation directly. An assistant reviews durable future
+value, loads the applicable Memory category skills, commits verified memory updates or proves that no update
+is needed, and then checks whether evaluation covers the resulting head. Cowork returns the retained local
+handoff only after the user chooses evaluation or self-verified closure for any uncovered commits.
 
 ## Workflow
 
@@ -141,6 +146,8 @@ claude plugin validate --strict plugins/gobbi
 - [Workflow](.gobbi/projects/gobbi/skills/workflow/SKILL.md) owns durable five-step orchestration.
 - [Delegation](.gobbi/projects/gobbi/skills/workflow/delegation.md) owns the shared Gobbi assignment shape.
 - [Evaluation](.gobbi/projects/gobbi/skills/evaluation/SKILL.md) owns independent review and verdicts.
+- [Memory](.gobbi/projects/gobbi/skills/memory/SKILL.md) owns Cowork direct memory updates and Workflow
+  durable-memory structure.
 - [Record](.gobbi/projects/gobbi/skills/record/SKILL.md) owns Workflow session evidence and PASS-only outputs.
 - [Git](.gobbi/projects/gobbi/skills/git/SKILL.md) owns worktree, commit, publication, merge, cleanup, and
   recovery.

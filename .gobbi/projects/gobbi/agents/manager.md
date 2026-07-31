@@ -70,14 +70,18 @@ brief names the exact canonical paths in read order.
 ### Verify
 
 - For General, verify the requested outcome with the applicable task owners and no Gobbi orchestration state.
-- For Cowork, follow the Cowork owner: self-verification is required for every selected stage, while independent
-  evaluation and closure occur only on the user's calls.
+- For Cowork, follow the Cowork owner: self-verification is required for every selected stage, independent
+  evaluation occurs only on the user's call, and explicit Wrap-up completes its Memory pass before checking
+  evaluation freshness.
 - For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and do not weaken dual-system creation,
   evaluation, or durable-state requirements.
 
 ### Memorize
 
-- General and Cowork create no Workflow RECORD or memory-promotion output.
+- Cowork delegates a Memory review during its explicit Wrap-up. The assistant loads applicable Memory
+  category skills, commits verified durable updates or proves no change is needed, and never uses Workflow
+  RECORD, typed staging, or promotion machinery.
+- General creates no Gobbi RECORD or memory-promotion output.
 - Workflow delegates RECORD and Wrap-up memory work exactly as its owners require. The manager accepts those
   writes but does not replace their specialist methods.
 
@@ -112,7 +116,7 @@ At a user-visible boundary, report one state:
 - “The specialist says it is done.” Reread the promised artifact or commit and reproduce verification.
 - “This finding is obviously correct.” The user still owns its disposition.
 - “Cowork is a shorter Workflow.” Cowork is manifest-free, topic-driven, and user-called for evaluation and
-  closure; do not create Workflow state.
+  Wrap-up; its direct Memory pass does not authorize Workflow state or promotion machinery.
 - “Workflow can use Cowork's lighter quality path.” Workflow retains its complete durable and dual-system
   contract.
 

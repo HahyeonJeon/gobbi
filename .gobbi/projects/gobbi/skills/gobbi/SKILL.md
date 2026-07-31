@@ -58,10 +58,10 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 
 | Skill | Description | Relevance note |
 |---|---|---|
-| [`cowork`](../cowork/SKILL.md) | User-led Gobbi orchestration for fast topic-by-topic implementation with optional shaping and user-called evaluation. | Load only after the user selects Cowork. |
+| [`cowork`](../cowork/SKILL.md) | User-led Gobbi orchestration for fast topic-by-topic implementation with optional shaping, user-called evaluation, and memory-updating Wrap-up. | Load only after the user selects Cowork. |
 | [`workflow`](../workflow/SKILL.md) | Durable Configuration→Ideation→Planning→Execution→Wrap-up orchestration with DISCUSSION→WORK→EVALUATION→RECORD loops. | Load only after the user selects Workflow or a valid Workflow resume is proved. |
 | [`mistake`](../mistake/SKILL.md) | Known-pitfall corpus and correction-staging method. | Mandatory before non-trivial work, but not part of the five-skill floor. |
-| [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Relevant when reading or writing durable project memory. |
+| [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Used directly by Cowork Wrap-up and by other durable-memory work. |
 | [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project. |
 | [`planning`](../planning/SKILL.md) | Ordered, dependency-aware task decomposition. | Used by Workflow Planning or optional Cowork Planning. |
 | [`execution`](../execution/SKILL.md) | One defined task through study, bounded change, verification, and a focused commit. | Used by Workflow Execution or a Cowork implementation unit. |

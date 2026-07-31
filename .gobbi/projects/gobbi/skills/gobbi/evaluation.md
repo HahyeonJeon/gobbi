@@ -63,6 +63,8 @@ Walk these paths:
 5. Valid General, Cowork, and Workflow context boundaries with no repeated prompt.
 6. Missing and conflicting mode evidence that reopens selection.
 7. Invalid Cowork or Workflow handoff evidence that stops without mutation.
+8. Cowork Wrap-up with a verified Memory update and with a verified no-change result.
+9. A prior Cowork evaluation made stale by the Memory commit, followed by a new evaluation choice.
 
 Use GOBBI-SCN-04, GOBBI-SCN-06, and GOBBI-SCN-10. Confirm each path has one observable next owner or one exact
 stop condition.
@@ -71,7 +73,8 @@ stop condition.
 
 Compare the canonical skill, its review companions, manager Markdown and TOML, `.codex/AGENTS.md`,
 `.claude/CLAUDE.md`, README, sync script, and fixtures. They must all name General, Cowork, and Workflow while
-scoping Workflow records and automatic dual-system creation to Workflow.
+scoping Workflow records, typed promotion, and automatic dual-system creation to Workflow. They must describe
+Cowork Wrap-up as a direct Memory operation that precedes evaluation-freshness checking.
 
 Run the negative entry-document fixtures. A missing Cowork token in either runtime document must fail with
 the mode-contract diagnostic.

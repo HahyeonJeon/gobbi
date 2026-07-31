@@ -47,7 +47,8 @@ List every required file as an exact workspace-relative or absolute path in read
 2. applicable project rules;
 3. its canonical role prompt;
 4. `.gobbi/projects/gobbi/skills/mistake/SKILL.md` and the applicable project and skill-owned mistake paths;
-5. the current Workflow productive-step skill or selected Cowork stage skill;
+5. the current Workflow productive-step skill or selected Cowork stage skill, including `memory` for Cowork
+   Wrap-up;
 6. task-specific language, tool, Git, evaluation, record, scenario, or checklist skills that the selected
    mode and assignment require; and
 7. the primary artifacts named under Inputs.
@@ -172,7 +173,12 @@ independent report is frozen.
 
 ### Assistant
 
-Keep the objective narrow. State whether it is read-only research, record support, or bounded mechanical work. An assistant cannot infer scope or promotion candidates and cannot invent a finding to populate an empty area.
+Keep the objective narrow. State whether it is read-only research, Workflow record support, Cowork Wrap-up
+memory work, or bounded mechanical work. For Cowork Wrap-up, provide the accepted closure evidence, current
+project memory root, allowlisted paths, verification, and focused commit authority; require `memory` and every
+applicable category skill, permit a verified no-change result, and prohibit Workflow staging or promotion.
+An assistant cannot invent durable content, scope, a promotion candidate, or a finding to populate an empty
+area.
 
 ## References
 

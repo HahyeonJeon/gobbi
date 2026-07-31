@@ -39,12 +39,13 @@ separate user-called judgment, never a substitute for stage quality.
 - **MUST apply the canonical Ideation and Planning skills whenever their optional stages are selected.** Their
   canonical artifact sets are allowed Cowork outputs at exact user-approved project paths.
 - **MUST keep one ordered writer chain with role-bound focused commits and manager acceptance.** Leaders own
-  selected Ideation and Planning artifacts; executors own implementation units.
+  selected Ideation and Planning artifacts, executors own implementation units, and assistants own Wrap-up
+  memory updates.
 - **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
   Claude-and-Codex round, and a bare call uses the whole clean Cowork branch through its current head.
-- **MUST close only after an explicit `wrap up` call and remain manifest-free.** Never create Workflow
-  `session.json`, `state.json`, RECORD, typed staging, memory promotion, or full Workflow Wrap-up output, and
-  retain the branch and worktree unless a separate Git operation is authorized.
+- **MUST run Cowork Wrap-up only after an explicit `wrap up` call and remain manifest-free.** Apply the
+  canonical Memory operation before the final evaluation-freshness decision; never create Workflow
+  `session.json`, `state.json`, RECORD, typed staging, promotion manifests, or full Workflow Wrap-up output.
 
 ## Procedure
 
@@ -106,20 +107,32 @@ separate user-called judgment, never a substitute for stage quality.
   through [Evaluation](../evaluation/SKILL.md). Keep reports separate until valid; pause on an unavailable or
   invalid system unless the user waives that named system for this round.
 - Aggregate with the more severe verdict and present every material finding for user disposition before
-  changing work. Accepted corrections return to the owning leader or executor in Phase 2, create new focused
-  commits, make prior whole-branch coverage stale, and require another explicit `evaluate` call.
+  changing work. Accepted corrections return to the owning leader or executor in Phase 2 or the memory
+  assistant in Phase 4, create new focused commits, make prior whole-branch coverage stale, and require another
+  explicit `evaluate` call.
 
-### Phase 4 — Close on User Call
+### Phase 4 — Wrap Up on User Call
 
-#### 4.1 Return the retained result
+#### 4.1 Update memory and return the retained result
 
-- Enter only for an explicit `wrap up`. When no independent verdict covers the current whole-branch head, use
-  [Discussion](../discussion/SKILL.md) to ask whether to evaluate or close with self-verification only; name
-  the uncovered commit range and record a decline literally.
+- Enter only for an explicit `wrap up`. Freeze the accepted topics, scope, decisions, artifacts, commits,
+  verification, evaluation coverage, exclusions, risks, current project state, and existing memory as the
+  closure input.
+- Assign an assistant through the shared assignment contract to apply [Memory](../memory/SKILL.md). It must
+  review durable future value, load every applicable Memory category skill, update and verify only the current
+  project's memory root, and create one focused memory commit through the ordered Cowork writer chain.
+  Accept an explicit verified no-change result when no durable update is needed.
+- Do not use Workflow typed staging, RECORD, promotion manifests, or the Workflow Wrap-up operation. Stop for
+  missing category guidance, unresolved user decisions, invalid memory paths, failed validation, wrong-tree
+  evidence, or unrelated user work, then repair through the same memory assignment.
+- After the accepted Memory pass, check evaluation coverage against the resulting head. When no independent
+  verdict covers that whole branch, use [Discussion](../discussion/SKILL.md) to ask whether to evaluate or
+  close with self-verification only; name the uncovered commit range and record a decline literally. An
+  evaluation choice runs Phase 3 and then repeats this freshness check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence for accepted focused commits, a clean Cowork worktree, and an
   unchanged main checkout. Return a conversation-only handoff with outcome, scope, topics, artifacts, commits,
-  verification, evaluation coverage and dispositions, exclusions, risks, UUID, base, branch, worktree, head,
-  status, and first recovery command; retain local objects and route any later publication, merge, or cleanup
-  through a separate explicit Git operation.
+  durable memory changes or verified no-change result, verification, evaluation coverage and dispositions,
+  exclusions, risks, UUID, base, branch, worktree, head, status, and first recovery command. Retain local
+  objects and route any later publication, merge, or cleanup through a separate explicit Git operation.
 
 ## References

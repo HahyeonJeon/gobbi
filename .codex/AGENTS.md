@@ -28,11 +28,12 @@ missing, ambiguous, or conflicting.
 | Mode | Contract |
 |---|---|
 | **General** | Ordinary assistance from the Gobbi floor and task-specific skills. No orchestration owner or Gobbi session state. |
-| **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or closure only on the user's call. |
+| **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
 `cowork` owns Cowork. It is manifest-free and never creates Workflow `session.json`, `state.json`, RECORD,
-typed staging, memory promotion, or full Workflow Wrap-up output.
+typed staging, promotion manifests, or full Workflow Wrap-up output. Its explicit Wrap-up applies `memory`
+directly, commits durable updates or proves none are needed, then checks evaluation freshness.
 
 `workflow` owns Workflow. `state.json` is its active router and `session.json` its lifecycle manifest;
 runtime task lists are projections. Configuration creates the isolated branch and worktree and initializes
@@ -111,5 +112,6 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 | `.gobbi/projects/gobbi/skills/workflow/delegation.md` | Shared Gobbi specialist assignment contract |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
 | `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
+| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Cowork direct memory updates and Workflow durable-memory method |
 | `.gobbi/projects/gobbi/skills/record/SKILL.md` | Workflow session-record mechanics |
 | `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Workflow promotion, handoff, and finalization |
