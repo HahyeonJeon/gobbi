@@ -36,10 +36,10 @@ running the role must act correctly from the spec alone — not from the session
 
 > **Point to the one canonical owner; never restate it.**
 
-The `.md` is the role's behavioral contract; the shared assignment skeleton and role overlays in
-[`workflow/delegation.md`](../workflow/delegation.md) govern how the manager briefs a role
-per task. They have different jobs. The role spec does not duplicate the assignment skeleton, and
-agent-writing does not create a second assignment surface. Cite the owner; do not copy it.
+The `.md` is the role's behavioral contract. The [Delegation skill](../delegation/SKILL.md) owns the generic
+brief shape, and [`Workflow` Step 1.3](../workflow/SKILL.md#13-build-and-accept-specialist-assignments) adds
+workflow fields. They have different jobs. The role spec does not duplicate either assignment contract, and
+agent-writing does not create a second assignment surface. Cite the owners; do not copy them.
 
 > **Verify every wiring claim by reading the owner — never assert it.**
 
@@ -175,8 +175,8 @@ the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
 The role taxonomy is a **closed set of five**: `manager` / `leader` / `executor` / `evaluator`
 / `assistant` (verified — the Agent Taxonomy table in `gobbi/SKILL.md` and the 5 `.md` files).
-All specialist assignments use one shared skeleton in `workflow/delegation.md`. Its role map
-and overlays distinguish leader, executor, evaluator, and assistant through that one owner.
+All specialist assignments use the generic Delegation template. The role document supplies role behavior,
+and Workflow Step 1.3 supplies session-specific assignment fields.
 
 **The common case is editing an existing role**, not adding one. To refine a role, edit its
 `agents/{role}.md` (and the `.toml` only if a min-load or guardrail changed). No new wiring.
@@ -189,12 +189,10 @@ the user's explicit decision. Its FULL wiring set is:
 3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
    time; do not rely on a stored line number).
 4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
-5. A matching role-map and overlay decision in `workflow/delegation.md`; the shared skeleton
-   remains the sole assignment shape.
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
-cannot be spawned in Claude Code; without the shared assignment skeleton and a matching role
-overlay the manager has no bounded brief shape.
+cannot be spawned in Claude Code. Its canonical role document must remain complete enough for the generic
+Delegation template and Workflow Step 1.3 to load it without a separate role overlay.
 
 ### P5 — Wiring a role (HAND-OWNED mirrors; verify each)
 
@@ -227,9 +225,8 @@ Wire a role in this order, each step with its verify command. From the worktree 
    ```
    The `--check` must exit 0.
 5. **For a NEW role only** — add the taxonomy surfaces from P4: the `Agent({role})` permission
-   in `.claude/settings.json`, the Agent Taxonomy row in `gobbi/SKILL.md`, and the role map/overlay
-   decision in `workflow/delegation.md`. Verify each by reading the final owners and running
-   the source-topology check.
+   in `.claude/settings.json` and the Agent Taxonomy row in `gobbi/SKILL.md`. Verify each by reading the final
+   owners and running the source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
@@ -255,8 +252,9 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   behavioral substance lives in the `.md`, never duplicated in the `.toml`.
 - **MUST set the Codex wrapper policy exactly** — every role uses
   `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`.
-- **MUST point to the one canonical owner, not restate it** — the role spec cites the
-  shared assignment skeleton and its role overlay; it does not copy them.
+- **MUST point to each canonical owner, not restate it** — the role spec cites Delegation for the generic
+  brief shape and Workflow Step 1.3 for Gobbi fields and acceptance; the canonical role prompt itself owns
+  role behavior and status meanings. Do not create or copy a separate role overlay.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read
   `.claude/settings.json`, read the sync script — never assert a mirror or permission exists.
 - **MUST verify loadability empirically** before declaring a role done — both `readlink`
@@ -283,20 +281,21 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   `.claude/settings.json`. Verify a mechanism by reading its owner, not the end-state.
 
 - **Duplicating the shared assignment skeleton inside the role spec.** Inlining the per-task brief
-  shape into `agents/{role}.md`. The `.md` is the behavioral contract; the manager brief shape lives
-  in `workflow/delegation.md`. Keep them separate and cross-link.
+  shape into `agents/{role}.md`. The `.md` is the behavioral contract; the generic brief shape lives in the
+  Delegation skill and the workflow additions live in Workflow Step 1.3. Keep them separate and cross-link.
 
 - **Adding a role when an edit would do.** Creating a sixth role for work an existing role
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
   `.md`. A new role needs the full P4 wiring set AND the user's explicit decision.
 
-- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` perm,
-  the taxonomy row, or the matching role overlay. A new role is loadable only when ALL of P4
-  is in place; a missing piece leaves it unspawnable or un-briefable.
+- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` permission or taxonomy
+  row. A new role is loadable only when all of P4 is in place; a missing piece leaves it unspawnable or
+  un-briefable.
 
 ## Cross-references
 
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
-- Shared delegation skeleton and role overlays → [`workflow/delegation.md`](../workflow/delegation.md)
+- Generic assignment shape → [`delegation/SKILL.md`](../delegation/SKILL.md)
+- Workflow assignment fields and acceptance → [`workflow/SKILL.md` Step 1.3](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)

@@ -31,14 +31,14 @@ missing, ambiguous, or conflicting.
 | **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-`cowork` owns Cowork. It is manifest-free and never creates Workflow `session.json`, `state.json`, RECORD,
-typed staging, promotion manifests, or full Workflow Wrap-up output. Its explicit Wrap-up applies `memory`
-directly, commits durable updates or proves none are needed, then checks evaluation freshness.
+`cowork` owns Cowork. It is manifest-free and never creates Workflow TODOs, phase receipts, RECORD evidence,
+or a Workflow Hand-off. Its explicit Wrap-up applies `memory` directly, commits durable updates or proves
+none are needed, then checks evaluation freshness.
 
-`workflow` owns Workflow. `state.json` is its active router and `session.json` its lifecycle manifest;
-runtime task lists are projections. Configuration creates the isolated branch and worktree and initializes
-records. Ideation locks what and why, Planning orders tasks, Execution verifies and commits one task at a
-time, and Wrap-up promotes and hands off the durable result.
+`workflow` owns Workflow. The native TODO list is its active route; phase receipts and committed evidence
+rebuild that route after a context boundary. Configuration creates the isolated branch and worktree.
+Ideation locks what and why, Planning orders tasks, Execution verifies and commits one task at a time, and
+Wrap-up closes and hands off the durable result.
 
 ## Dual-system quality contract
 
@@ -57,8 +57,9 @@ explicitly required by its task owner.
 ## Delegation contract
 
 The manager alone changes scope, makes user decisions, assigns specialists, accepts work, and authorizes
-destructive or external actions. Cowork and Workflow both use
-`.gobbi/projects/gobbi/skills/workflow/delegation.md` as the sole Gobbi specialist assignment shape.
+destructive or external actions. Build every brief through
+`.gobbi/projects/gobbi/skills/delegation/SKILL.md`. Cowork adds the fields in its topic-loop procedure;
+Workflow adds the fields in `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3.
 
 Keep all worktree writes in one ordered writer chain. Parallel work is limited to independent read-only
 analysis and fresh independent evaluation. After a specialist report, reread the promised artifact or commit,
@@ -109,9 +110,9 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 | `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, three-mode selection, and skill routing |
 | `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | Manifest-free Cowork orchestration |
 | `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration |
-| `.gobbi/projects/gobbi/skills/workflow/delegation.md` | Shared Gobbi specialist assignment contract |
+| `.gobbi/projects/gobbi/skills/delegation/SKILL.md` | Generic specialist assignment shape |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
 | `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
 | `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Cowork direct memory updates and Workflow durable-memory method |
 | `.gobbi/projects/gobbi/skills/record/SKILL.md` | Workflow session-record mechanics |
-| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Workflow promotion, handoff, and finalization |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Shared terminal Memory, Git, handoff, and recovery operation |

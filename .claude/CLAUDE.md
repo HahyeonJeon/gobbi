@@ -23,10 +23,10 @@ conflicting.
 | **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-Cowork is manifest-free and never creates Workflow records, typed staging, promotion manifests, or full
-Workflow Wrap-up output. Its explicit Wrap-up applies `memory` directly, commits durable updates or proves
-none are needed, then checks evaluation freshness. Workflow keeps `state.json` as its active router and
-`session.json` as its lifecycle manifest; runtime tasks remain scheduling projections.
+Cowork is manifest-free and never creates Workflow TODOs, phase receipts, RECORD evidence, or a Workflow
+Hand-off. Its explicit Wrap-up applies `memory` directly, commits durable updates or proves none are needed,
+then checks evaluation freshness. Workflow uses the native TODO list as its active route;
+phase receipts and committed evidence rebuild that route after a context boundary.
 
 ## Dual-system quality contract
 
@@ -44,8 +44,8 @@ explicitly required by its task owner.
 ## Agent Teams
 
 The manager alone assigns tasks, changes scope, makes user decisions, accepts work, and authorizes destructive
-or external actions. Cowork and Workflow both use `workflow/delegation.md` as the sole Gobbi specialist
-assignment shape.
+or external actions. Build every brief through `.gobbi/projects/gobbi/skills/delegation/SKILL.md`. Cowork
+adds the fields in its topic-loop procedure; Workflow adds the fields in Workflow Step 1.3.
 
 Claude Code may retain stable leader, executor, and assistant teammates while identity, assignment,
 dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team.
@@ -86,9 +86,9 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 | `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, three-mode selection, and skill routing |
 | `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | Manifest-free Cowork orchestration |
 | `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration |
-| `.gobbi/projects/gobbi/skills/workflow/delegation.md` | Shared Gobbi specialist assignment contract |
+| `.gobbi/projects/gobbi/skills/delegation/SKILL.md` | Generic specialist assignment shape |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
 | `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
 | `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Cowork direct memory updates and Workflow durable-memory method |
 | `.gobbi/projects/gobbi/skills/record/SKILL.md` | Workflow session-record mechanics |
-| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Workflow promotion, handoff, and finalization |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Shared terminal Memory, Git, handoff, and recovery operation |

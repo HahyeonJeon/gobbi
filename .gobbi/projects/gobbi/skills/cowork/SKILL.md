@@ -44,8 +44,8 @@ separate user-called judgment, never a substitute for stage quality.
 - **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
   Claude-and-Codex round, and a bare call uses the whole clean Cowork branch through its current head.
 - **MUST run Cowork Wrap-up only after an explicit `wrap up` call and remain manifest-free.** Apply the
-  canonical Memory operation before the final evaluation-freshness decision; never create Workflow
-  `session.json`, `state.json`, RECORD, typed staging, promotion manifests, or full Workflow Wrap-up output.
+  canonical Memory operation before the final evaluation-freshness decision; never create Workflow TODOs,
+  phase receipts, RECORD evidence, or a Workflow Hand-off.
 
 ## Procedure
 
@@ -77,10 +77,9 @@ separate user-called judgment, never a substitute for stage quality.
 - Require Ideation for material design work and Planning for multiple dependent implementation units. Report
   the selected depth and reason; return to this decision when new evidence, changed stage selection, or a
   material user decision changes the contract.
-- Build each specialist assignment through [Delegation](../delegation/SKILL.md) and the
-  [shared assignment contract](../workflow/delegation.md). Include the Cowork UUID, topic, depth, selected
-  stage, stable assignment, absolute worktree, branch, prerequisite commits, allowed and protected paths,
-  expected artifact or implementation, verification, commit authority, and escape paths.
+- Build each specialist assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic,
+  depth, selected stage, stable assignment, absolute worktree, branch, prerequisite commits, allowed and
+  protected paths, expected artifact or implementation, verification, commit authority, and escape paths.
 - For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md) with
   `caller-owned-independent-evaluation`, self-review its canonical artifact set, and create one focused
   shaping commit. For selected Planning, assign a leader to apply [Planning](../planning/SKILL.md) to the
@@ -118,13 +117,14 @@ separate user-called judgment, never a substitute for stage quality.
 - Enter only for an explicit `wrap up`. Freeze the accepted topics, scope, decisions, artifacts, commits,
   verification, evaluation coverage, exclusions, risks, current project state, and existing memory as the
   closure input.
-- Assign an assistant through the shared assignment contract to apply [Memory](../memory/SKILL.md). It must
-  review durable future value, load every applicable Memory category skill, update and verify only the current
-  project's memory root, and create one focused memory commit through the ordered Cowork writer chain.
+- Assign an assistant through [Delegation](../delegation/SKILL.md) with the Cowork fields from Step 2.1 to
+  apply [Memory](../memory/SKILL.md). It must review durable future value, load every applicable Memory
+  category skill, update and verify only the current project's memory root, and create one focused memory
+  commit through the ordered Cowork writer chain.
   Accept an explicit verified no-change result when no durable update is needed.
-- Do not use Workflow typed staging, RECORD, promotion manifests, or the Workflow Wrap-up operation. Stop for
-  missing category guidance, unresolved user decisions, invalid memory paths, failed validation, wrong-tree
-  evidence, or unrelated user work, then repair through the same memory assignment.
+- Do not create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off. Stop for missing
+  category guidance, unresolved user decisions, invalid memory paths, failed validation, wrong-tree evidence,
+  or unrelated user work, then repair through the same memory assignment.
 - After the accepted Memory pass, check evaluation coverage against the resulting head. When no independent
   verdict covers that whole branch, use [Discussion](../discussion/SKILL.md) to ask whether to evaluate or
   close with self-verification only; name the uncovered commit range and record a decline literally. An

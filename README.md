@@ -144,7 +144,8 @@ claude plugin validate --strict plugins/gobbi
 - [Gobbi entry](.gobbi/projects/gobbi/skills/gobbi/SKILL.md) owns bootstrap, mode selection, and handoff.
 - [Cowork](.gobbi/projects/gobbi/skills/cowork/SKILL.md) owns fast manifest-free user-topic orchestration.
 - [Workflow](.gobbi/projects/gobbi/skills/workflow/SKILL.md) owns durable five-step orchestration.
-- [Delegation](.gobbi/projects/gobbi/skills/workflow/delegation.md) owns the shared Gobbi assignment shape.
+- [Delegation](.gobbi/projects/gobbi/skills/delegation/SKILL.md) owns the generic specialist assignment shape;
+  Cowork and Workflow add their mode-specific fields in their own procedures.
 - [Evaluation](.gobbi/projects/gobbi/skills/evaluation/SKILL.md) owns independent review and verdicts.
 - [Memory](.gobbi/projects/gobbi/skills/memory/SKILL.md) owns Cowork direct memory updates and Workflow
   durable-memory structure.

@@ -201,5 +201,6 @@ Only the manager may offer retry, a bounded input repair, an explicit one-system
 - [Record renderer](../record/scripts/session-record.sh)
 - [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
 - [Evaluation report validator](../record/scripts/validate-evaluation-report.sh)
-- [Specialist delegation owner](../workflow/delegation.md)
+- [Generic specialist delegation owner](../delegation/SKILL.md)
+- [Workflow assignment additions](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
 - [Repository runtime entry contract](../../../../../AGENTS.md)

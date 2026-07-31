@@ -83,7 +83,8 @@ is not.
 #### 2.1 Apply Memory
 
 - Give the assistant the frozen closure inputs, exact project memory root, allowed paths, protected paths,
-  expected report, and verification contract through the shared delegation contract.
+  expected report, and verification contract through the generic [Delegation](../delegation/SKILL.md)
+  template plus the calling mode's fields.
 - Apply the [Memory operation](../memory/SKILL.md) to the completed work. Load every applicable category skill,
   including [Reports](../memory/reports/SKILL.md) for the handoff and
   [History](../memory/history/SKILL.md) when the completed session produced a durable project change.

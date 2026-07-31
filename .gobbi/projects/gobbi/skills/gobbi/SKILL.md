@@ -48,7 +48,8 @@ its owner without copying that owner's procedure or creating a second router.
 - **MUST preserve a valid established mode and reselect when its evidence is unreliable.** A context boundary
   does not re-prompt when mode and identity validate, while absent, ambiguous, or conflicting evidence does.
 - **MUST load each conditional owner before its governed action.** General loads no orchestration owner,
-  Cowork loads `cowork`, Workflow loads `workflow`, and specialist briefs use the shared delegation owner.
+  Cowork loads `cowork`, Workflow loads `workflow`, and every specialist brief starts from the floor-loaded
+  generic Delegation skill before its selected mode adds fields.
 - **NEVER mutate from Gobbi entry or revive retired machinery.** Keep mode creation and work inside their
   owners, load other indexed skills only on demand, and route generated-view repair to the sync owner.
 
@@ -64,7 +65,7 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 | [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project. |
 | [`planning`](../planning/SKILL.md) | Ordered, dependency-aware task decomposition. | Used by Workflow Planning or optional Cowork Planning. |
 | [`execution`](../execution/SKILL.md) | One defined task through study, bounded change, verification, and a focused commit. | Used by Workflow Execution or a Cowork implementation unit. |
-| [`wrap-up`](../wrap-up/SKILL.md) | Durable Workflow promotion, evaluated handoff, and configured Git finalization. | Used only by Workflow Wrap-up; Cowork closure stays with `cowork`. |
+| [`wrap-up`](../wrap-up/SKILL.md) | Shared terminal Memory, Git, handoff, and recovery operation. | Used when Cowork or Workflow enters terminal closure. |
 | [`coding`](../coding/SKILL.md) | Language-agnostic construction quality. | Relevant whenever the task writes or changes code. |
 | [`web`](../web/SKILL.md) | Web application domain router for feature, frontend, backend, convention, platform, architecture, security, and testing owners. | Relevant when work delivers or reviews a bounded web feature; changes browser or authoritative backend behavior; establishes project topology; interprets the Web Platform; chooses architecture; designs or runs tests; or crosses a trust boundary. |
 | [`desktop`](../desktop/SKILL.md) | Desktop domain family for complete Electron and TypeScript delivery, observable installed-platform behavior, and release judgment. | Relevant when any of those concerns enters scope; load every applicable Desktop child and route Electron mechanics through the Electron family. |
@@ -116,9 +117,10 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 #### 1.4 Load conditional owners
 
 - Load [`../codex/SKILL.md`](../codex/SKILL.md) when the active runtime or a peer operation requires it.
-- Before any Cowork or Workflow specialist brief, read the shared
-  [assignment owner](../workflow/delegation.md). Load task-specific indexed skills only when their triggers
-  apply.
+- Build every specialist brief through the floor-loaded [Delegation](../delegation/SKILL.md) skill. Cowork
+  adds its Procedure Step 2.1 fields; Workflow adds
+  [`Workflow` Step 1.3](../workflow/SKILL.md#13-build-and-accept-specialist-assignments).
+- Load task-specific indexed skills only when their triggers apply.
 
 #### 1.5 Hand off without mutation
 
@@ -134,10 +136,10 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 ## References
 
 - [`../principles/SKILL.md`](../principles/SKILL.md) owns the ten behavioral principles.
+- [`../delegation/SKILL.md`](../delegation/SKILL.md) owns the generic specialist assignment shape.
 - [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user-question structure and decisions.
 - [`../cowork/SKILL.md`](../cowork/SKILL.md) owns Cowork orchestration.
 - [`../workflow/SKILL.md`](../workflow/SKILL.md) owns durable Workflow orchestration.
-- [`../workflow/delegation.md`](../workflow/delegation.md) owns Gobbi specialist assignment construction.
 - [`../git/SKILL.md`](../git/SKILL.md) owns mode-specific branch, worktree, commit, and recovery mechanics.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager behavior.
 - [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns runtime
