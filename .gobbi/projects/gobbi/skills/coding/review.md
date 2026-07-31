@@ -359,7 +359,7 @@ Two first-class sub-checks: import structure (6a) and file/directory structure (
 
 ### Phase 0 — Preflight
 
-Confirm the review target and its scope contract. Identify the public API surfaces first — they are where review attention pays off most. Load the relevant project mistakes and conventions. Confirm the change is **small and self-contained**; a large, multi-purpose change is reviewed worse, and a reviewer may return it for size alone, asking the author to split it. List the safe verification commands — the type checks, the test subset, the build — and confirm they are side-effect-free before running them.
+Confirm the review target and its scope contract. Identify the public API surfaces first — they are where review attention pays off most. Load the relevant project conventions and prior failure evidence. Confirm the change is **small and self-contained**; a large, multi-purpose change is reviewed worse, and a reviewer may return it for size alone, asking the author to split it. List the safe verification commands — the type checks, the test subset, the build — and confirm they are side-effect-free before running them.
 
 ### Phase 1 — Understand the change
 
@@ -469,7 +469,7 @@ If that wiring is built later, it must preserve these invariants:
 
 ## Scope — language-agnostic, illustrated in Python and TypeScript
 
-This doc states the language-agnostic *property* of each review point. Python and TypeScript appear only as illustrations inside the property-led signal tables — never as a section of their own. The rule of thumb mirrors `coding/SKILL.md` § Scope: if the check changes when you switch languages, it is an idiom, not a review point. The points here check the property ("the same concept gets the same name", "untrusted input is validated at the boundary"); the concrete idiom ("in this language, that boundary is this type, that test is this framework") defers to the `python` and `typescript` skills, and the platform idiom to the `desktop-electron` skill.
+This doc states the language-agnostic *property* of each review point. Python and TypeScript appear only as illustrations inside the property-led signal tables — never as a section of their own. The rule of thumb mirrors `coding/SKILL.md` § Scope: if the check changes when you switch languages, it is an idiom, not a review point. The points here check the property ("the same concept gets the same name", "untrusted input is validated at the boundary"); the concrete idiom ("in this language, that boundary is this type, that test is this framework") defers to the `python` and `typescript` skills, and Electron platform idioms to the `electron` family.
 
 Because the points are properties, they apply to a third language too. A reviewer reading a Go or Rust change applies the same thirteen points; the Python and TypeScript columns are examples to reason by, not gates the change must match.
 

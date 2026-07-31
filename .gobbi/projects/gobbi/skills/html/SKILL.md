@@ -23,12 +23,20 @@ It does not own visual design or CSS, JavaScript state machines, application
 security implementation, template/framework syntax, or Electron main/preload
 behavior. Isolated renderer HTML remains with this skill and applicable UI or
 language owners. Load the [`desktop`](../desktop/SKILL.md) domain only when the
-task also coordinates an installable Electron and TypeScript application
-outcome, enters Electron platform mechanics, or makes desktop release
-judgments. Route main/preload, IPC, privilege, native integration, permission,
-and packaging mechanics to
-[`desktop-electron`](../desktop/desktop-electron/SKILL.md), and release
-judgments to [`desktop-release`](../desktop/desktop-release/SKILL.md).
+task also coordinates a complete installable Electron and TypeScript outcome,
+defines observable installed-platform behavior, or makes desktop release
+judgments.
+
+For any Electron work, **MUST load
+[`electron`](../electron/SKILL.md) and every child whose root trigger applies**:
+[`electron-convention`](../electron/electron-convention/SKILL.md) for
+conventions, [`electron-development`](../electron/electron-development/SKILL.md)
+for implementation or review,
+[`electron-runtime`](../electron/electron-runtime/SKILL.md) for runtime lookup,
+[`electron-test`](../electron/electron-test/SKILL.md) for Electron-specific
+evidence, and [`electron-release`](../electron/electron-release/SKILL.md) for
+release work. Load several children when several triggers apply. HTML remains
+the emitted renderer-document layer and defines no Electron platform policy.
 
 ## Rules
 
@@ -102,8 +110,9 @@ conformance and language behavior of the emitted bytes.
 Never describe string concatenation, `innerHTML`, or an equivalent injection
 sink as a safe HTML authoring technique. Server validation and authorization
 are not replaced by form validation. Embed permissions, iframe sandbox policy,
-remote content, and Electron privilege boundaries require the applicable
-security/runtime owner.
+and remote content require the applicable security or runtime owner. Electron
+privilege boundaries require the Electron root and applicable children named
+in Purpose.
 
 For transformed HTML, retain four linked identities:
 

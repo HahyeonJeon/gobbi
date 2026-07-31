@@ -39,7 +39,7 @@ Selection rules:
 2. Activate F7 for general-image evidence, F8 for UI evidence, F9 for slides, F10 for ordered frames/video,
    and F11 for charts/data visualization. Activate every applicable family for a mixed artifact.
 3. Activate both the ordinary and adversarial cases in each selected family. Add target-specific edge cases
-   discovered from the actual artifact, applicable mistakes/rules, or prior evaluation iteration.
+   discovered from the actual artifact, applicable rules, prior failures, or the prior evaluation iteration.
 4. Activate conditional checklist rows only when their evidence predicate applies, but keep unconditional
    accessibility, evidence-class, whole/local, uncertainty, and handoff checks in every Frame.
 5. For a skill-bundle target, additionally test exact file set, parent/child ownership, direct links, mirror

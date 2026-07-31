@@ -30,6 +30,7 @@ declare -a reconcile_expected_dirs=()
 declare -a reconcile_expected_leaves=()
 declare -a reconcile_stale_dirs=()
 declare -a reconcile_stale_leaves=()
+declare -a reconcile_stale_agents_skill_links=()
 declare -A reconcile_expected_dir_set=()
 declare -A reconcile_expected_leaf_set=()
 declare -A reconcile_expected_target=()
@@ -38,6 +39,18 @@ reconcile_mirror_entries=0
 reconcile_canonical_walks=0
 reconcile_mirror_walks=0
 reconcile_preflight_failed=0
+
+readlink_raw_target() {
+  local -n output="$1"
+  local link_path="$2" captured
+
+  # Command substitution removes trailing newlines. `readlink -n` removes only
+  # readlink's delimiter, while the sentinel preserves newlines in the target.
+  if ! captured="$(readlink -n -- "$link_path" && printf '\034')"; then
+    return 1
+  fi
+  output="${captured%$'\034'}"
+}
 
 check_link() {
   local link_path="$1"
@@ -49,7 +62,10 @@ check_link() {
   fi
 
   local actual_target
-  actual_target="$(readlink "$link_path")"
+  if ! readlink_raw_target actual_target "$link_path"; then
+    printf 'cannot read symlink target for %s\n' "$link_path" >&2
+    return 1
+  fi
   if [[ "$actual_target" != "$expected_target" ]]; then
     printf '%s points to %s; expected %s\n' "$link_path" "$actual_target" "$expected_target" >&2
     return 1
@@ -72,7 +88,10 @@ ensure_link() {
 
   if [[ -L "$link_path" ]]; then
     local actual_target
-    actual_target="$(readlink "$link_path")"
+    if ! readlink_raw_target actual_target "$link_path"; then
+      printf 'cannot read symlink target for %s\n' "$link_path" >&2
+      return 1
+    fi
     if [[ "$actual_target" == "$expected_target" && -e "$link_path" ]]; then
       return 0
     fi
@@ -99,7 +118,10 @@ require_link() {
     topology_fail "${path#"$repo_root"/} is not a symlink"
     return
   fi
-  actual_target="$(readlink "$path")"
+  if ! readlink_raw_target actual_target "$path"; then
+    topology_fail "${path#"$repo_root"/} has an unreadable symlink target"
+    return
+  fi
   if [[ "$actual_target" != "$expected_target" ]]; then
     topology_fail "${path#"$repo_root"/} points to $actual_target; expected $expected_target"
   elif [[ ! -e "$path" ]]; then
@@ -206,16 +228,6 @@ validate_source_topology() {
   [[ "$source_topology_failures" -eq 0 ]]
 }
 
-is_managed_agents_skill_link() {
-  local mirror_entry="$1" mirror_name expected_target actual_target
-
-  [[ -L "$mirror_entry" ]] || return 1
-  mirror_name="${mirror_entry##*/}"
-  expected_target="../../.gobbi/projects/gobbi/skills/$mirror_name"
-  actual_target="$(readlink -- "$mirror_entry")"
-  [[ "$actual_target" == "$expected_target" ]]
-}
-
 check_agents_skill_mirror() {
   local skill_name mirror_entry mirror_name
   while IFS= read -r skill_name; do
@@ -226,25 +238,12 @@ check_agents_skill_mirror() {
     for mirror_entry in "$repo_root"/.agents/skills/*; do
       [[ -e "$mirror_entry" || -L "$mirror_entry" ]] || continue
       mirror_name="${mirror_entry##*/}"
-      if [[ ! -d "$canonical_skills_root/$mirror_name" ]] && is_managed_agents_skill_link "$mirror_entry"; then
+      if [[ ! -d "$canonical_skills_root/$mirror_name" ]]; then
         printf '.agents/skills/%s has no canonical skill (stale discovery link)\n' "$mirror_name" >&2
         return 1
       fi
     done
   fi
-}
-
-prune_stale_agents_skill_links() {
-  local mirror_entry mirror_name
-  [[ -d "$repo_root/.agents/skills" ]] || return 0
-
-  for mirror_entry in "$repo_root"/.agents/skills/*; do
-    [[ -e "$mirror_entry" || -L "$mirror_entry" ]] || continue
-    mirror_name="${mirror_entry##*/}"
-    [[ -d "$canonical_skills_root/$mirror_name" ]] && continue
-    is_managed_agents_skill_link "$mirror_entry" || continue
-    rm -f -- "$mirror_entry"
-  done
 }
 
 for_each_canonical_skill() {
@@ -460,7 +459,10 @@ preflight_claude_skills_reconciliation() {
       skill="${rel%%/*}"
       leaf="${rel#*/}"
       expected="$(claude_link_target "$skill" "$leaf")"
-      actual="$(readlink -- "$entry")"
+      if ! readlink_raw_target actual "$entry"; then
+        report_reconcile_error "$display" 'symlink target could not be read'
+        continue
+      fi
       if [[ "$actual" != "$expected" ]]; then
         if ! resolved="$(realpath -m -- "${entry%/*}/$actual")"; then
           report_reconcile_error "$display" 'symlink target could not be normalized'
@@ -521,6 +523,62 @@ preflight_claude_skills_reconciliation() {
   return 0
 }
 
+preflight_agents_skill_reconciliation() {
+  local mirror_root="$repo_root/.agents/skills"
+  local entry skill_name display expected_target actual_target
+
+  if [[ -L "$mirror_root" ]]; then
+    report_reconcile_error '.agents/skills' 'mirror root is a directory symlink'
+  elif [[ -e "$mirror_root" && ! -d "$mirror_root" ]]; then
+    report_reconcile_error '.agents/skills' 'mirror root is not a real directory'
+  elif [[ -d "$mirror_root" ]]; then
+    while IFS= read -r -d '' entry; do
+      case "$entry" in
+        "$mirror_root"/*) skill_name="${entry#"$mirror_root"/}" ;;
+        *)
+          report_reconcile_error "$entry" 'Codex discovery inventory path escapes the mirror root'
+          continue
+          ;;
+      esac
+      display=".agents/skills/$skill_name"
+
+      if ! validate_reconcile_relative_path "$skill_name"; then
+        report_reconcile_error "$display" "$reconcile_path_reason"
+        continue
+      fi
+      expected_target="../../.gobbi/projects/gobbi/skills/$skill_name"
+      if [[ ! -L "$entry" ]]; then
+        if [[ -d "$canonical_skills_root/$skill_name" ]]; then
+          report_reconcile_error "$display" 'expected a generator-owned skill symlink'
+        else
+          report_reconcile_error "$display" 'has no canonical skill and is not a generator-owned symlink'
+        fi
+        continue
+      fi
+
+      if ! readlink_raw_target actual_target "$entry"; then
+        report_reconcile_error "$display" 'symlink target could not be read'
+        continue
+      fi
+      if [[ "$actual_target" != "$expected_target" ]]; then
+        report_reconcile_error "$display" \
+          "raw symlink target is $actual_target; expected generator-owned target $expected_target"
+      elif [[ -d "$canonical_skills_root/$skill_name" ]]; then
+        if [[ ! -e "$entry" ]]; then
+          report_reconcile_error "$display" 'generator-owned skill symlink points to a missing target'
+        fi
+      else
+        reconcile_stale_agents_skill_links+=("$entry")
+      fi
+    done < <(find "$mirror_root" -mindepth 1 -maxdepth 1 -print0)
+  fi
+
+  if [[ "$reconcile_preflight_failed" -ne 0 ]]; then
+    printf '.agents/skills reconciliation aborted before mutation\n' >&2
+    return 1
+  fi
+}
+
 apply_claude_skills_reconciliation() {
   local mirror_root="$repo_root/.claude/skills"
   local rel skill leaf sort_file
@@ -555,6 +613,17 @@ apply_claude_skills_reconciliation() {
     skill="${rel%%/*}"
     leaf="${rel#*/}"
     ensure_link "$mirror_root/$rel" "${reconcile_expected_target[$rel]}"
+  done
+}
+
+apply_agents_skill_reconciliation() {
+  local link_path skill_name
+
+  for link_path in "${reconcile_stale_agents_skill_links[@]}"; do
+    rm -f -- "$link_path"
+  done
+  for skill_name in "${reconcile_skill_names[@]}"; do
+    ensure_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
   done
 }
 
@@ -622,7 +691,11 @@ check_claude_skills_mirror() {
       fi
       continue
     fi
-    actual="$(readlink "$link_path")"
+    if ! readlink_raw_target actual "$link_path"; then
+      printf '.claude/skills/%s/%s has an unreadable symlink target\n' "$skill_name" "$rel" >&2
+      claude_skills_drift=1
+      continue
+    fi
     if [[ "$actual" != "$target" ]]; then
       printf '.claude/skills/%s/%s points to %s; expected %s\n' "$skill_name" "$rel" "$actual" "$target" >&2
       claude_skills_drift=1
@@ -703,15 +776,12 @@ if $check_mode; then
   exit 0
 fi
 
-# Prove the whole .claude/skills mutation plan before changing any sync-managed path.
+# Prove both runtime skill-mirror mutation plans before changing any sync-managed path.
 # A mixed safe+unsafe mirror therefore leaves the complete mirror byte-for-byte intact.
 preflight_claude_skills_reconciliation
+preflight_agents_skill_reconciliation
 apply_claude_skills_reconciliation
-prune_stale_agents_skill_links
-
-for skill_name in "${reconcile_skill_names[@]}"; do
-  ensure_link "$repo_root/.agents/skills/$skill_name" "../../.gobbi/projects/gobbi/skills/$skill_name"
-done
+apply_agents_skill_reconciliation
 
 ensure_link "$package_root/skills" "$expected_plugin_skills"
 ensure_link "$package_root/agents" "$expected_plugin_agents"

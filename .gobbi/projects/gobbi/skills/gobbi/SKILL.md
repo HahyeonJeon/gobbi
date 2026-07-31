@@ -38,7 +38,7 @@ Gobbi does not depend on hooks, environment-variable passthrough, transcripts, r
 ### Must follow
 
 - **GB-1 — Run on every entry boundary.** Run this operation at session start, resume, `/clear`, rewind, runtime compaction, and any other boundary that discards or may stale manager context. Runtime compaction means a context boundary; it is unrelated to durable-memory maintenance.
-- **GB-2 — Rebuild the floor of exactly five.** The always-load floor is exactly these five skills and no others: `principles`, `delegation`, `discussion`, `ideation`, and `git`. Read them in order, then the applicable project rules and the canonical manager role. Read each source completely before using it. No other skill — `mistake`, `workflow`, `startup`, or any language skill — belongs in the floor; each is reached through the skill map on demand.
+- **GB-2 — Rebuild the floor of exactly five.** The always-load floor is exactly these five skills and no others: `principles`, `delegation`, `discussion`, `ideation`, and `git`. Read them in order, then the applicable project rules and the canonical manager role. Read each source completely before using it. No other skill — `workflow`, `startup`, or any language skill — belongs in the floor; each is reached through the skill map on demand.
 - **GB-3 — Load a conditional owner before its action.** Load `codex` when the active runtime is native Codex or an operation uses a Codex peer surface. Before authoring a specialist brief in a workflow session, load the Gobbi assignment skeleton at [`../workflow/delegation.md`](../workflow/delegation.md). The floor already covers `discussion` and `git`, so they are not conditionally loaded here.
 - **GB-4 — Preserve durable identity and reuse settings.** Preserve the Gobbi UUID and the persisted version 3 cursor across every boundary. On a runtime context boundary, let the indexed `workflow` owner and Record append a distinct observed runtime ID to the version 5 manifest before work continues. A resumed, cleared, rewound, or runtime-compacted session validates and reuses its existing settings; it never reconfigures merely because context was discarded.
 - **GB-5 — Point classification and creation at the workflow owner.** Fresh/resume classification, the read-only defaults preflight, session-tree and manifest creation, and settings placement are owned by the indexed `workflow` skill. Gobbi neither restates their mechanics nor performs them; it loads that owner for a workflow session.
@@ -62,7 +62,6 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 
 | Skill | Description | Relevance note |
 |---|---|---|
-| [`mistake`](../mistake/SKILL.md) | Known-pitfall corpus; check before acting, stage a candidate after a correction. | Stays mandatory for non-trivial work and sits at position 4 of every subagent's delegation Load Directives. The index lazy-loads it; it does not weaken it. |
 | [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Relevant when reading or writing durable project memory. |
 | [`workflow`](../workflow/SKILL.md) | The full DISCUSSION→WORK→EVALUATION→RECORD owner: fresh/resume classification, Configuration, routing, dual-system, and finalization. | Load it for a full Gobbi workflow session; it owns session classification, the read-only Configuration preflight, and the cursor handoff. |
 | [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project; loaded when the manager judges it relevant. Gobbi adds no gate around it. |
@@ -70,11 +69,12 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 | [`execution`](../execution/SKILL.md) | The Execution-step method: one locked task through study, bounded change, verification, and a focused commit. | Dispatched by `workflow` at the Execution step. |
 | [`wrap-up`](../wrap-up/SKILL.md) | The Wrap-up method: promotion, evaluated handoff, and Git finalization. | Dispatched by `workflow` at the Wrap-up step. |
 | [`coding`](../coding/SKILL.md) | Language-agnostic construction quality. | Relevant whenever the task writes or changes code. |
-| [`desktop`](../desktop/SKILL.md) | Desktop domain router for coordinating an installable Electron and TypeScript application outcome, working on Electron platform mechanics, and making desktop release judgments. | Relevant when any of those concerns enters scope; load the root and follow every applicable child route. Isolated renderer-only interface and language work remains outside it. |
+| [`desktop`](../desktop/SKILL.md) | Desktop domain family for complete Electron and TypeScript delivery, observable installed-platform behavior, and release judgment. | Relevant when any of those concerns enters scope; load every applicable Desktop child and route Electron mechanics through the Electron family. |
 | [`html`](../html/SKILL.md) | HTML language operation for browser and Electron renderer documents. | Relevant when work writes or reviews HTML; independently selectable. |
 | [`css`](../css/SKILL.md) | CSS language operation for browser and Electron renderer styles. | Relevant when work writes or reviews CSS; independently selectable. |
 | [`python`](../python/SKILL.md) / [`typescript`](../typescript/SKILL.md) | Language method skills. | Relevant when the task enters that language. |
 | [`react`](../react/SKILL.md) | Library method skill: the React-idiom layer, under `coding` and beside `typescript`. | Relevant when the task writes or reviews React, in TypeScript or in plain JavaScript. |
+| [`electron`](../electron/SKILL.md) | Electron domain family for platform development, runtime lookup, conventions, Electron-specific testing, and release work. | Relevant when developing, testing, reviewing, packaging, or releasing an Electron application; load every applicable child routed by the domain root. |
 | [`codex`](../codex/SKILL.md) | Native Codex and Codex-peer invocation surfaces. | Relevant when the active runtime is Codex or an operation uses a Codex peer. |
 
 ## Procedure
@@ -97,13 +97,13 @@ Read these sources in order:
 4. [`../ideation/SKILL.md`](../ideation/SKILL.md).
 5. [`../git/SKILL.md`](../git/SKILL.md).
 
-Then read every applicable file under [`../../rules/`](../../rules/) and any governing repository instructions, and the canonical [`manager` role](../../agents/manager.md). The floor is exactly these five skills; no sixth skill joins it. Do not treat a missing optional rules tier as permission to skip the repository's declared empty-state rule, and do not follow a protected role document into a deleted workflow child.
+Then read every applicable file under `.gobbi/projects/gobbi/rules/` when that directory exists and is non-empty, any governing repository instructions, and the canonical [`manager` role](../../agents/manager.md). If the project rules directory is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file. The floor is exactly these five skills; no sixth skill joins it. Do not follow a protected role document into a deleted workflow child.
 
 Evidence: an ordered load register with exact paths and exactly the five floor skills.
 
 #### 3. Load the owner needed for the next boundary
 
-Consult the skill map and load only the indexed owner whose trigger applies. Read [`../codex/SKILL.md`](../codex/SKILL.md) when the active runtime is Codex or any operation uses a Codex peer. Read [`../workflow/delegation.md`](../workflow/delegation.md) before authoring a specialist brief in a workflow session. Load `mistake` before any non-trivial work, and a language skill when the task enters its domain. These sources define their own mechanics; Gobbi does not copy them.
+Consult the skill map and load only the indexed owner whose trigger applies. Read [`../codex/SKILL.md`](../codex/SKILL.md) when the active runtime is Codex or any operation uses a Codex peer. Read [`../workflow/delegation.md`](../workflow/delegation.md) before authoring a specialist brief in a workflow session, and a language skill when the task enters its domain. These sources define their own mechanics; Gobbi does not copy them.
 
 Evidence: each conditional owner is in the load register before its first governed action.
 
@@ -117,7 +117,7 @@ Evidence: before/after manifest identity, ordered runtime IDs, unchanged setting
 
 The split is the manager's routine judgment from the task, not a user-facing mode question.
 
-- **General (non-workflow) session:** work from the floor (`principles`, `delegation`, `discussion`, `ideation`, `git`) and load any indexed skill the task needs — `mistake` for a non-trivial decision, a language skill for code. The `workflow` owner is never loaded. There is no Configuration, no session tree, and no dual-system machinery.
+- **General (non-workflow) session:** work from the floor (`principles`, `delegation`, `discussion`, `ideation`, `git`) and load any indexed skill the task needs, such as a language skill for code. The `workflow` owner is never loaded. There is no Configuration, no session tree, and no dual-system machinery.
 - **Workflow session:** load the indexed [`../workflow/SKILL.md`](../workflow/SKILL.md) and enter it at the validated `state.json.current` cursor. The workflow owner then holds fresh/resume classification, the read-only Configuration preflight, the Ideation transition, and every productive step. Gobbi creates nothing and dispatches no productive specialist directly.
 
 On a blocked handoff, report the exact invalid owner artifact, identity, or missing authority. Preserve the prior durable state and do not invent a fallback route.
@@ -136,7 +136,6 @@ Evidence: the recorded session kind, the floor load register, and — for a work
 - [`../workflow/delegation.md`](../workflow/delegation.md) owns the Gobbi specialist brief construction and status handling.
 - [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
 - [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional Ideation input-building operation, baseline validity, and explicit reset.
-- [`../mistake/SKILL.md`](../mistake/SKILL.md) owns the mistake corpus, staging, and Wrap-up promotion.
 - [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.
 - [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns repository entrypoint and plugin-source topology checks.

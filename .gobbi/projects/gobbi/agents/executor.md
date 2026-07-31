@@ -27,10 +27,9 @@ The manager delegates to you with: a specific deliverable, a scope boundary, the
 Mandatory load:
 
 1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
-2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
-3. **`mistake` skill** — past pitfalls.
-4. **`workflow/steps/execution.md`** + **`execution` skill** — implementation and verification principles.
-5. **`git` skill + `git/mistakes.md`** — the absolute-worktree-path write discipline and its traps. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
+3. **`workflow/steps/execution.md`** + **`execution` skill** — implementation and verification principles.
+4. **`git` skill** — the absolute-worktree-path write discipline. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
 
@@ -49,7 +48,6 @@ Read before writing. The codebase is the source of truth — the briefing is the
 - Read every file referenced in the brief.
 - Read the area you will modify — patterns, types, conventions. Follow them; do not invent.
 - Read research artifacts in the task's note directory.
-- Check `mistake` for known pitfalls in this domain.
 - Trace dependencies: what does your change touch, what touches it, what would break.
 
 ### Plan
@@ -72,7 +70,7 @@ Implement focused, minimal changes.
 - If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
 **Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal for THIS task at `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
-- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory/mistakes; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
+- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `task-{NN}-{slug}/working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
 - Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/steps/production.md`](../skills/workflow/steps/production.md).
 
@@ -83,7 +81,6 @@ Before declaring done, produce **fresh** evidence (Execution Verify phase — `e
 - Run the project's check command(s) and capture the result.
 - Run the test suite if one exists; capture pass/fail counts.
 - Re-read your diff against the scope boundary — anything outside scope? Revert it.
-- Re-read against `mistake` — any known pitfall triggered?
 - For runtime docs: cross-references still resolve? terminology consistent with the rest of the tree?
 
 Verification evidence belongs in your status report — not "tests pass" but "2197/0 with `bun test`, output attached".
@@ -92,7 +89,7 @@ Verification evidence belongs in your status report — not "tests pass" but "21
 
 Capture what surprised you for future sessions.
 
-- New mistake → write it.
+- Repeatable failure pattern → report it as a durable learning candidate for the end-of-work memory review.
 - Non-obvious constraint discovered → note it in the subtask doc.
 - Pattern you reused or invented that future executors should know → note it.
 
@@ -106,7 +103,7 @@ The manager may **continue** you from task NN to NN+1 (shared subsystem, under t
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
 - **Use `git -C <worktree-abs>` for ALL git operations** — never a bare `git`. A bare `git commit` after a cwd reset commits your task to the main tree's branch instead of the worktree branch. Verify the branch (`git -C <worktree-abs> rev-parse --abbrev-ref HEAD`) before committing.
 - **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § Runtime git environment](../skills/git/SKILL.md#runtime-git-environment).
-- **Re-anchor when rules/mistakes/scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
+- **Re-anchor when rules or scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
 - **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
 
 ---

@@ -6,7 +6,7 @@
 - **Owner:** Gobbi entry skill.
 - **Consumer:** manager at the named pause points; evaluator as scenario-derived acceptance evidence.
 - **Mode:** operational.
-- **Source version:** `gobbi-bootstrap-v2`; this source stays unchecked. The version bumps on any material change to the item set.
+- **Source version:** `gobbi-bootstrap-v3`; this source stays unchecked. The version bumps on any material change to the item set.
 - **Run rule:** create a filled copy for each run, identify the source version and run, and declare the listed use style at each active pause point.
 - **Applicability:** inspect each conditional predicate. Use `n/a:<property>` only when direct evidence proves it false.
 - **Resolution tokens:** `PASS`, `FAIL:<finding/action-id>`, `n/a:<property>`, `recorded-open:<owner+resolution-method>`, and the checklist owner's narrow operational `waived/exception-authorized:<authority+rationale>` form where permitted.
@@ -29,7 +29,7 @@
 - [ ] **GOBBI-CHK-FLOOR-02** `[gate/killer, read-do]` The floor of exactly five was read in parent order, then rules and the manager role, with no sixth skill.
   - **Applicability:** unconditional.
   - **Source:** GB-2; GOBBI-SCN-01-A, GOBBI-SCN-01-C.
-  - **Pass condition:** exact reads show `principles` → `delegation` → `discussion` → `ideation` → `git`, then the applicable rules and the canonical manager role, all before action; no additional skill (`mistake`, `workflow`, `startup`, or a language skill) is read as floor.
+  - **Pass condition:** exact reads show `principles` → `delegation` → `discussion` → `ideation` → `git`, then the applicable rules and the canonical manager role, all before action; no additional skill (`workflow`, `startup`, or a language skill) is read as floor.
   - **Evidence:** ordered read register with complete-file bounds and exactly five floor entries.
   - **On fail:** consequence — authority is absent or a non-floor skill inflated the floor; halt and correct the floor.
   - **Resolution:** ______
@@ -70,17 +70,9 @@
   - **On fail:** consequence — a cold reader cannot find an owner, or reads the index as an eager-load catalog; reject the index.
   - **Resolution:** ______
 
-- [ ] **GOBBI-CHK-MAP-02** `[required, read-do]` The `mistake` index entry records that `mistake` stays mandatory though lazy-loaded.
-  - **Applicability:** unconditional for a Gobbi entry change.
-  - **Source:** GB-MAP; GOBBI-SCN-09-B.
-  - **Pass condition:** the `mistake` relevance note states it stays mandatory for non-trivial work and sits at position 4 of every subagent's delegation Load Directives; the note reads as a lazy-load, not a removal.
-  - **Evidence:** the `mistake` skill-map entry text and its cross-owner citation.
-  - **On fail:** consequence — a reader treats `mistake` as optional; correct the relevance note.
-  - **Resolution:** ______
-
-- [ ] **GOBBI-CHK-MAP-03** `[gate/killer, read-do]` An indexed owner is loaded only on task-need, never eagerly force-loaded on entry.
+- [ ] **GOBBI-CHK-MAP-02** `[gate/killer, read-do]` An indexed owner is loaded only on task-need, never eagerly force-loaded on entry.
   - **Applicability:** unconditional.
-  - **Source:** GB-MAP, GB-2; GOBBI-SCN-09-C.
+  - **Source:** GB-MAP, GB-2; GOBBI-SCN-09-B.
   - **Pass condition:** the entry load register shows the floor of exactly five and no eager load of `workflow`, `startup`, or a language skill; each indexed owner loads only when its task trigger applies.
   - **Evidence:** entry load register and triggered-load trace.
   - **On fail:** consequence — the index becomes a gate and the floor swells; halt and remove the eager load.

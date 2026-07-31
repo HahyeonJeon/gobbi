@@ -133,8 +133,8 @@ body byte-for-byte with its frozen active preimage; and run the scoped Markdown-
 changed active Markdown file and inbound carrier. Frozen archive bodies are not link-resolution inputs,
 so an outbound relative link left unresolved only by the terminal move is not a failure. A stale active
 inbound path still fails. A live namespace move remains under the full changed-Markdown link gate. Run
-the Mistake validator when a skill-owned mistake file changed, and run any topology or content guard
-whose declared scope includes a changed path. Preserve exact commands and results. A legitimate
+any topology or content guard whose declared scope includes a changed path. Preserve exact commands and
+results. A legitimate
 guard-carrier correction is a new planned mutation and requires another complete iteration; it is not
 patched outside the manifest.
 
@@ -162,7 +162,7 @@ Only the typed sources listed by the Record and Memory owners are eligible. Ther
 
 [`memory/rules.md` § 2](../memory/rules.md#2-frontmatter-standard) is the sole owner of durable base fields, per-type extensions, required values, lifecycle links, and staging-field stripping. The matching file in [`memory/templates/`](../memory/templates/) owns the body and frontmatter form for its type.
 
-Read routing inputs before rendering, preserve every owner-required durable field, strip only owner-declared staging fields from the destination candidate, and leave the immutable source unchanged. Validate the complete rendered file before manifest freeze. A skill-owned `mistakes.md` destination follows the Mistake-owned section contract instead of the durable-memory frontmatter standard.
+Read routing inputs before rendering, preserve every owner-required durable field, strip only owner-declared staging fields from the destination candidate, and leave the immutable source unchanged. Validate the complete rendered file before manifest freeze.
 
 ## Collision and idempotency
 

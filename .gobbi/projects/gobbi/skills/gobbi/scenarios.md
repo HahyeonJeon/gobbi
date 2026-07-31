@@ -8,7 +8,7 @@
 - **Lifecycle:** design obligations; freeze this source before an evaluation run.
 - **Scope:** entry-boundary read-only setup, the floor of exactly five, conditional owner loads, the skill-map index, resume identity across runtime boundaries, session-kind routing, the read-only handoff to the workflow owner, retired-machinery absence, and canonical/runtime entry views.
 - **Non-goals:** fresh/resume classification cardinality, fresh initialization, Configuration mechanics, state transitions, record bytes, question-card rendering, delegation formats, Git commands, peer commands, plugin repair, and productive-step methods — all owned by the indexed `workflow` skill or another current owner, not by the entry.
-- **Scale:** seven families and twenty-eight cases. The author thresholds are twelve families and eighty distinct category/case-type cells. Split by bootstrap concern if either threshold is exceeded.
+- **Scale:** seven families and twenty-seven cases. The author thresholds are twelve families and eighty distinct category/case-type cells. Split by bootstrap concern if either threshold is exceeded.
 - **Stable IDs:** `GOBBI-SCN-<family>-<case>`; wording changes do not renumber an ID.
 - **Evidence policy:** cite inspected paths, manifests, state, commands, and runtime views. Never embed runtime secrets or private conversation data.
 
@@ -35,7 +35,7 @@ Every source is a live clause in the rewritten `SKILL.md`.
 | GB-5 | GB-5, Procedure 5, Principle "Keep the entry read-only" | Point classification, the read-only preflight, session-tree/manifest creation, and settings placement at the indexed `workflow` owner; the entry itself writes nothing. |
 | GB-6 | GB-6, Procedure 5, Principle "Route on demand" | Route by session kind: a general session runs on the floor; a workflow session enters the `workflow` owner at the validated cursor; never dispatch a productive specialist directly; a blocked handoff reports the exact invalid artifact. |
 | GB-7 | GB-7, Procedure 1, References | Current owners govern; a cosmetic legacy heading or protected role text cannot reactivate retired behavior; the entry resolves the canonical four-file bundle and its mirror views; route mirror repair to the sync owner. |
-| GB-MAP | `## Skill map` section, Principle "Route on demand" | Index every non-floor skill once (name + one-line description + neutral relevance note); the index is not a load-when gate; the `mistake` entry records it stays mandatory for non-trivial work and at position 4 of every subagent Load Directives. |
+| GB-MAP | `## Skill map` section, Principle "Route on demand" | Index every non-floor skill once (name + one-line description + neutral relevance note); the index is not a load-when gate. |
 | GB-MN | Rules § Must not follow | Bootstrap needs no interaction-mode question or alternate route, no forced workflow load or startup/baseline-classifier gate, no separate settings file, no hook/transcript/rollout/ledger/telemetry dependency, and no durable-memory merge, threshold, cap, or compaction; the absence of retired machinery is valid operation. |
 
 ## Coverage register
@@ -45,8 +45,8 @@ Every source is a live clause in the rewritten `SKILL.md`.
 | 1 | Purpose / outcomes / scope | selected | GOBBI-SCN-10-A, GOBBI-SCN-01-A |
 | 2 | Actors / stakeholders / use-context | selected | GOBBI-SCN-01-A, GOBBI-SCN-10-A..B |
 | 3 | Behavior / state / data | selected | GOBBI-SCN-04-A..B, GOBBI-SCN-06-A |
-| 4 | Interfaces / dependencies / structure | selected | GOBBI-SCN-06-A..E, GOBBI-SCN-08-A..F, GOBBI-SCN-09-A..C |
-| 5 | Quality attributes / resource economics | selected | GOBBI-SCN-04-B, GOBBI-SCN-09-C; entry loading stays lazy and bounded |
+| 4 | Interfaces / dependencies / structure | selected | GOBBI-SCN-06-A..E, GOBBI-SCN-08-A..F, GOBBI-SCN-09-A..B |
+| 5 | Quality attributes / resource economics | selected | GOBBI-SCN-04-B, GOBBI-SCN-09-B; entry loading stays lazy and bounded |
 | 6 | Failure / recovery / operations | selected | GOBBI-SCN-06-D, GOBBI-SCN-08-D |
 | 7 | Trust / harm / governance | selected | GOBBI-SCN-06-C, GOBBI-SCN-07-B, GOBBI-SCN-01-D |
 | 8 | Inclusion / locale | selected | GOBBI-SCN-08-B..C; both runtime entry environments reach the same literal operation |
@@ -64,7 +64,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 | 06 Session-kind routing and read-only handoff | 4, because the entry-to-workflow-owner seam defines the family | 1, 6, 7, 10 | positive, adversarial, adversarial, failure, counterfactual |
 | 07 Retired-system absence | 9, because the operation must remain valid after removed dependencies | 3, 6, 7, 10 | positive, adversarial, change, negative |
 | 08 Canonical and runtime views | 10, because source identity and followable wiring prove cold use | 4, 6, 8, 9 | positive, alternative-valid, boundary, failure, adversarial, change |
-| 09 Skill-map index | 4, because the index is the routing structure that points at every non-floor owner | 1, 5, 10 | positive, alternative-valid, adversarial |
+| 09 Skill-map index | 4, because the index is the routing structure that points at every non-floor owner | 1, 5, 10 | positive, adversarial |
 | 10 General versus workflow routing | 1, because the dual-purpose light entry serving both session kinds is the outcome | 2, 4 | positive, alternative-valid, adversarial |
 
 ## GOBBI-SCN-01 — Complete manager floor and skill map
@@ -94,7 +94,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 ### GOBBI-SCN-01-C — Cosmetic legacy or a sixth floor skill
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
-- **Given:** an active surrounding document carries a familiar old heading, a plausible alternate route, or an always-load list naming a sixth skill (for example `mistake` or the workflow owner) as floor.
+- **Given:** an active surrounding document carries a familiar old heading, a plausible alternate route, or an always-load list naming a sixth skill (for example the workflow owner or a language skill) as floor.
 - **When:** a manager considers following it instead of the current parent.
 - **Then:** the floor stays exactly the five, the extra skill is reached through the skill map on demand, and the manager follows the current canonical owner while reporting the stale consumer for its owning task.
 - **Failure oracle:** a cosmetic heading reactivates an alternate route, or a sixth skill silently joins the floor.
@@ -321,17 +321,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Evidence tuple:** skill-map inventory and per-entry field scan; direct inspection confirms.
 - **Obligation / checks:** the index orients without copying policy or gating a load. GOBBI-CHK-MAP-01.
 
-### GOBBI-SCN-09-B — The `mistake` entry stays mandatory though lazy-loaded
-
-- **Primary type / coverage-role:** Alternative-valid / alternative-valid plus adversarial.
-- **Given:** `mistake` is not in the floor of five and is reached through the skill map.
-- **When:** a reader inspects the `mistake` index entry.
-- **Then:** the entry's relevance note records that `mistake` stays mandatory for non-trivial work and sits at position 4 of every subagent's delegation Load Directives; the index lazy-loads it but does not weaken it.
-- **Failure oracle:** the note reads as a removal, or omits the still-mandatory clause, so a reader treats `mistake` as optional.
-- **Evidence tuple:** the `mistake` index entry text and its cross-owner citation; direct inspection confirms.
-- **Obligation / checks:** demotion to the index is a lazy-load, not a removal. GOBBI-CHK-MAP-02.
-
-### GOBBI-SCN-09-C — Index entry treated as a load-when gate
+### GOBBI-SCN-09-B — Index entry treated as a load-when gate
 
 - **Primary type / coverage-role:** Adversarial / adversarial.
 - **Given:** a manager reads an index relevance note as a command to load eagerly.
@@ -339,7 +329,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 - **Then:** it rejects the eager load; indexed owners load only on task-need, and the floor stays exactly the five.
 - **Failure oracle:** an indexed skill is force-loaded on entry, or the index is read as a mandatory-load catalog that swells the floor.
 - **Evidence tuple:** entry load register and the triggered-load trace; a floor of exactly five with no eager index load confirms.
-- **Obligation / checks:** the index is a bounded on-demand router, not an eager-load gate. GOBBI-CHK-MAP-03.
+- **Obligation / checks:** the index is a bounded on-demand router, not an eager-load gate. GOBBI-CHK-MAP-02.
 
 ## GOBBI-SCN-10 — General versus workflow routing
 
@@ -386,7 +376,7 @@ All ten categories are exercised here. Applicable case types are positive, alter
 | GB-5 | GOBBI-SCN-06-C | ROUTE-02 |
 | GB-6 | GOBBI-SCN-06-A, -B, -D, -E, GOBBI-SCN-10-A..C | HAND-01, HAND-02, HAND-03, HAND-04, ROUTE-01 |
 | GB-7 | GOBBI-SCN-01-C, -D, GOBBI-SCN-08-A..F | OWN-01, OWN-02, VIEW-01..06 |
-| GB-MAP | GOBBI-SCN-09-A..C | MAP-01, MAP-02, MAP-03 |
+| GB-MAP | GOBBI-SCN-09-A..B | MAP-01, MAP-02 |
 | GB-MN | GOBBI-SCN-07-A..D, GOBBI-SCN-10-C | RET-01, RET-02, RET-03, RET-04 |
 
 Every non-exploratory scenario produces an obligation and a checklist reference. There are no orphan scenarios, uncovered parent clauses, or exploratory cases. Every source row maps to at least one scenario and at least one checklist item; every listed checklist ID is defined in [`checklists.md`](checklists.md).

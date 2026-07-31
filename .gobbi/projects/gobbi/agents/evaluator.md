@@ -18,7 +18,7 @@ The manager delegates to you with: a system assignment (you are one of exactly t
 
 **Evaluation scope is the entire work, not just its output:**
 - **Artifacts** — code, docs, configs, the contracted deliverable.
-- **Process documents** — research notes, plans, ideation artifacts, record entries, mistakes, status reports.
+- **Process documents** — research notes, plans, ideation artifacts, record entries, and status reports.
 - **Verification claims** — the executor's claim of "tests pass" vs. fresh evidence on the target branch.
 - **Compliance** — adherence to principles, rules, and project conventions.
 
@@ -36,9 +36,8 @@ The manager delegates to you with: a system assignment (you are one of exactly t
 Mandatory load:
 
 1. **`principles` skill** — Iron Laws; and `evaluation/SKILL.md` — producer/evaluator separation governs your existence.
-2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty; if it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty; fallback memory/rules.md read` and read `.gobbi/projects/{project-name}/skills/memory/rules.md` **§ Empty-state contract** as the de-facto rules landing page. Full two-state definition: that same `§ Empty-state contract`.
-3. **`mistake` skill** — past pitfalls in this domain.
-4. **`evaluation` skill** — the complete three-phase Procedure, seven perspectives plus Overall, causal-problem
+2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
+3. **`evaluation` skill** — the complete three-phase Procedure, seven perspectives plus Overall, causal-problem
    content, optional-improvement boundary, strength and preserve records, completed checks and tests, and
    evidence-derived verdicts. The active workflow adapter owns caller-specific finding metadata and output
    schema; do not redefine either in this file.

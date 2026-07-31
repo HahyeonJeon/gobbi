@@ -37,10 +37,9 @@ List every required file as an exact workspace-relative or absolute path in read
 1. `.gobbi/projects/gobbi/skills/principles/SKILL.md`;
 2. applicable project rules;
 3. its canonical role prompt;
-4. `.gobbi/projects/gobbi/skills/mistake/SKILL.md` and the applicable project and skill-owned mistake paths;
-5. the current productive-step skill;
-6. task-specific language, tool, Git, evaluation, record, scenario, or checklist skills; and
-7. the primary artifacts named under Inputs.
+4. the current productive-step skill;
+5. task-specific language, tool, Git, evaluation, record, scenario, or checklist skills; and
+6. the primary artifacts named under Inputs.
 
 Fresh specialists do not inherit the manager's loaded skills. Require them to read every directive completely before acting and report the exact loaded paths.
 

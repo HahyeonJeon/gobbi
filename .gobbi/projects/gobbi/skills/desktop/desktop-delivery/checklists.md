@@ -21,7 +21,7 @@ The delivery appears complete while an in-scope path is absent or a claim exceed
 - [ ] DELIVERY-CK-PROJECT-02-07 — Every bounded single-owner request is handed directly to that owner.
 - [ ] DELIVERY-CK-PROJECT-02-08 — The accepted stack is preserved unless current evidence materially challenges it.
 - [ ] DELIVERY-CK-PROJECT-02-09 — Every challenged stack decision has a complete evidence matrix covering resource and package cost, content trust, native depth, target and update fit, team upgrade capacity, migration cost, and release needs.
-- [ ] DELIVERY-CK-PROJECT-02-10 — Every material stack conflict is resolved through an explicit user decision.
+- [ ] DELIVERY-CK-PROJECT-02-10 — Every material owner conflict is resolved through an explicit user decision.
 ## Structure
 
 ### DELIVERY-SC-STRUCTURE-01 — Normal case: Explicit ownership
