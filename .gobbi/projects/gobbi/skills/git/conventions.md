@@ -1,14 +1,14 @@
 # Git Conventions
 
-Deterministic mappings for Gobbi session branches, worktree paths, focused commits, provenance trailers,
-optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the Workflow and Cowork
-contract sources, lifecycle, authority gates, failure handling, and cleanup order.
+Deterministic mappings for session branches, worktree paths, focused commits, provenance trailers,
+optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the session contract,
+lifecycle, authority gates, failure handling, and cleanup order.
 
 The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
 ## Session branch naming
 
-A Gobbi session branch is derived once from the active runtime system, session start date, and Gobbi-owned UUID:
+A session branch is derived once from the active runtime system, session start date, and session UUID:
 
 ```text
 <runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
@@ -30,9 +30,9 @@ Examples:
 - `claude-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 - `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 
-Workflow reads the UUID from `session.json.sessionId`. Cowork reads it from the conversation-locked contract
-and verifies it against the branch and commit provenance during recovery. It is never a runtime ID, issue
-number, pull-request number, or task slug, and a runtime context boundary never renames the session branch.
+The UUID is the proved identity the caller's contract supplies, verified against the branch name and commit
+provenance during recovery. It is never a runtime ID, issue number, pull-request number, or task slug, and a
+runtime context boundary never renames the session branch.
 
 ### Non-session branches
 
@@ -76,26 +76,24 @@ For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c
 |---|---|
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
 | Leaf | exact session branch |
-| Workflow source | absolute normalized path in `session.json.git.worktreePath` |
-| Cowork source | absolute normalized path in the conversation-locked Git contract |
+| Source | the absolute normalized path the caller's contract supplies as its registered worktree |
 | Ignore check | `git check-ignore -q .gobbi/projects/<project>/worktrees/` |
 | Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
 
 ## Base branch and commit
 
-Workflow reads its project-specific base branch and commit from `session.json.git`. Cowork locks the inspected
-base branch and immutable base commit in its conversation contract before creating the worktree. A dirty,
-detached, or ambiguous Cowork checkout requires a user decision; Git never invents `main`, `master`, `develop`,
-or a remote default.
+The base branch and the immutable base commit are the values the caller's contract supplies, locked before the
+worktree exists. A dirty, detached, or ambiguous checkout requires a user decision; Git never invents `main`,
+`master`, `develop`, or a remote default.
 
 The selected value is used for branch creation and whole-branch comparison. A later publication operation
 revalidates the target base before pull-request, merge, or synchronization work.
 
 ## Publication mapping
 
-Workflow maps `session.json.settings.git` to actions without hidden coupling:
+A declared publication intent maps to required results without hidden coupling:
 
-| Settings | Required result |
+| Declared intent | Required result |
 |---|---|
 | `publication: local` | verified local commits; branch and worktree retained |
 | `publication: push` | local result plus session-branch push; no pull request |
@@ -107,8 +105,8 @@ Workflow maps `session.json.settings.git` to actions without hidden coupling:
 
 `draftPullRequest` does not change an already existing pull request automatically. Issue absence never changes the branch shape, commit trailer, publication path, or pull-request validity.
 
-Cowork has no persisted publication settings. It retains verified local commits by default; a later push,
-pull request, issue, merge, or cleanup requires a separate explicit Git operation and current user authority.
+A caller that declares only local retention keeps its verified local commits; a later push, pull request,
+issue, merge, or cleanup requires a separate explicit Git operation and current user authority.
 
 ## Commit messages
 
@@ -152,9 +150,9 @@ Example:
 AI-Provenance-Record: gobbi://session/37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/task/05d-git-owner
 ```
 
-The session segment uses the Workflow manifest UUID or Cowork contract UUID. The task segment uses the stable
-plan or manager assignment ID. Do not use a runtime ID, branch name, issue number, filename, role, or Wrap-up
-label as a substitute.
+The session segment uses the contract's proved-identity UUID. The task segment uses the stable plan or manager
+assignment ID. Do not use a runtime ID, branch name, issue number, filename, role, or closing label as a
+substitute.
 
 ### Trailer order
 
@@ -241,8 +239,8 @@ It is valid only after the Git operation directly proves the exact branch was th
 
 ## Optional issue format
 
-Issue creation is used only when Workflow has `createIssue: true` or a separate Cowork Git operation has
-explicit authority.
+Issue creation is used only when the declared publication intent includes `createIssue: true` or a separate
+Git operation has explicit authority.
 
 | Field | Convention |
 |---|---|
