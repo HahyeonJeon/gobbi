@@ -1,12 +1,15 @@
 # Planning Manager Adapter
 
-[`planning/SKILL.md`](../../planning/SKILL.md) owns readiness and Who, When, and Where decomposition. Planning is mandatory. This adapter owns manager entry, dispatch inputs, user gates, completion proof, and transitions.
+[`planning/SKILL.md`](../../planning/SKILL.md) owns Who, When, and Where decomposition. Planning is mandatory.
+This adapter owns manager entry, dispatch inputs, user gates, completion proof, and transitions.
 
 ## Entry and DISCUSSION
 
 Enter Planning DISCUSSION only after Ideation PASS. Dispatch the leader with the locked Ideation artifact, complete creation and evaluation evidence, approved finding dispositions, applicable memory, candidate skills, repository state, and external-write authority.
 
-Run the specialist's readiness gate first. A ready result continues. A material upstream gap pauses for the user's decision to return to Ideation or abort. Missing context remains in Planning DISCUSSION until supplied or aborted; it is not repaired by inventing scope.
+Begin decomposition directly from the locked Ideation contract. If decomposition exposes a material upstream
+gap, pause for the user's decision to return to Ideation or abort. Missing context remains in Planning
+DISCUSSION until supplied or aborted; it is not repaired by inventing scope.
 
 The manager obtains explicit user decisions for task boundaries, file ownership, dependency order, parallel read-only lanes, writer order, acceptance criteria, required skills, and non-obvious role or authority assignments. DISCUSSION completes when the plan contract is internally consistent and every Ideation obligation maps to a narrow ordered task.
 

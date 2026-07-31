@@ -50,7 +50,7 @@ Each `scenario.md` is organized by the 7 perspectives (`project`, `structure`, `
 | Step | Job | GOOD | BAD / adversarial |
 |---|---|---|---|
 | Ideation | Get the IDEA right | Root cause; sharp enumerated scope; research-backed | Symptom framing; adv: adjacent feature silently absorbs the idea |
-| Planning | Prove READINESS, then DECOMPOSE | Readiness sources and dispositions are complete; every task traces; deps ordered | Hidden gap or orphan task; adv: an unrelated readiness fix becomes an unapproved task |
+| Planning | DECOMPOSE locked intent | Every task traces; dependencies and writer order are explicit | Orphan task or hidden dependency; adv: unrelated cleanup becomes an unapproved task |
 | Execution | IMPLEMENT | Change-set matches task 1:1; `verifies:` run; scoped | Partial-complete; adv: tidy abstraction hides a cycle |
 | Wrap-up | CONSOLIDATE | Every shipped artifact referenced; promotions valid; handoff matches `git log` | Phantom completion; adv: a promoted file makes old memory wrong, both stay active |
 

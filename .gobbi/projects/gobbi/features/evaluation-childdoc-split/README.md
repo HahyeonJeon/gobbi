@@ -22,7 +22,8 @@ The productive-step skills may keep focused `evaluation.md`, `scenarios.md`, and
 
 ## Current contract (2026-07-20)
 
-- Ideation, Planning, Execution, and Wrap-up all use `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning owns its readiness entry gate; there is no standalone Preparation step.
+- Ideation, Planning, Execution, and Wrap-up all use `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning
+  begins decomposition directly from locked Ideation; there is no standalone Preparation step.
 - Each EVALUATION dispatches fresh independent Claude and Codex evaluators. Each returns one schema-valid report at `evaluation/iteration-{n}/{system}.md`.
 - Each system report contains Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, Overall, eight finding ledgers, a completed checklist, and verdicts derived pessimistically from the findings.
 - The Evaluation-owned validator rejects missing or duplicate perspectives, contradictory section/report verdicts, bad provenance, dangling checklist findings, and stale identity. Pair validation aggregates the two systems with `FAIL > REVISE > PASS` while preserving provenance.

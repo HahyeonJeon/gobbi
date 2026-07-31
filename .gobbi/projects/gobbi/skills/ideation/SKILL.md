@@ -153,7 +153,7 @@ Use [scenarios.md](scenarios.md) as the Ideation scenario source. Convert every 
 
 **Next:** if a trace is missing, a decision disappeared, or a scenario exposes a material gap, return to its earliest owning step. Otherwise continue to step 10.
 
-### 10. Prove Planning readiness and hand off
+### 10. Complete the Planning handoff
 
 Read the artifact as a fresh planner. Confirm that it states the problem, reason, actors, scope, constraints, sources, assumptions, selected and rejected alternatives, directional design, ownership, interfaces, flows, states, failures, recovery, quality obligations, validation decisions, checks, and deferred work. Confirm that all material decisions are resolved, references and paths resolve, terminology is stable, and Planning can decompose the design without private discussion context.
 

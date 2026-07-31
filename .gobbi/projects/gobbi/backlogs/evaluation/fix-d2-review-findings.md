@@ -25,8 +25,8 @@ Historical finding locations below remain evidence of the reviewed tree. For any
 
 Preparation-specific findings D2-001, D2-006, D2-008, D2-012, D2-018, and D2-026 are closed or
 obsolete. The Preparation-omission aspects of Cluster E are also obsolete. D2-011's project-skill
-classification is resolved by the Planning readiness gate: a missing project skill becomes Task 01,
-while a missing workspace or domain skill returns `NEEDS_CONTEXT`. The old locations below remain
+classification is resolved during Planning task construction: a missing project skill becomes an earlier
+foundation task, while a missing shared capability is surfaced through Discussion. The old locations below remain
 historical review evidence and must not be used as current edit targets. Other findings stay open only
 after they are re-derived against the current files, line numbers, and four-loop workflow.
 

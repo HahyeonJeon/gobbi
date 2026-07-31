@@ -34,11 +34,14 @@ Load per workflow phase (one of these — never more than one at a time):
 
 - **Configuration** → driven by `gobbi workflow init` CLI; no extra skill.
 - **Ideation** → `workflow/steps/ideation.md`, plus the `ideation` skill. Delegate WORK to **leader**; delegate RECORD to **assistant**.
-- **Planning** → `workflow/steps/planning.md`, plus the `planning` skill. Begin DISCUSSION with the readiness entry gate; delegate WORK to **leader** and RECORD to **assistant**.
+- **Planning** → `workflow/steps/planning.md`, plus the `planning` skill. Begin DISCUSSION with the supplied
+  Ideation contract and task-decomposition decisions; delegate WORK to **leader** and RECORD to **assistant**.
 - **Execution** → `workflow/steps/execution.md`, plus the `execution` skill. Delegate WORK to **executor**; delegate RECORD to **assistant**.
 - **Wrap-up** → `workflow/steps/wrap-up.md`, plus the `wrap-up` skill. Delegate WORK to **assistant** (sole writer to memory among the workflow loops); delegate RECORD to **assistant** (seals session artifacts, upserts `session.json`, emits `workflow.finish` on PASS).
 
-Canonical phase list: Configuration → Ideation → Planning → Execution → Wrap-up. Evaluation and RECORD are sub-phases that run inside each productive loop. Planning's readiness gate is inside DISCUSSION, not a phase. Any exhaustive enumeration must list exactly these five phases (or explicitly name Evaluation / RECORD as sub-phases). Drift from this list is a bug.
+Canonical phase list: Configuration → Ideation → Planning → Execution → Wrap-up. Evaluation and RECORD are
+sub-phases that run inside each productive loop. Any exhaustive enumeration must list exactly these five
+phases, or explicitly name Evaluation and RECORD as sub-phases. Drift from this list is a bug.
 
 Load `discussion` skill any time the user prompt is vague enough that a subagent would have to guess.
 

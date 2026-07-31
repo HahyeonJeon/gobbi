@@ -22,7 +22,8 @@ The `workflow` feature is the Gobbi session engine. It routes one mandatory work
 
 `Configuration -> Ideation -> Planning -> Execution -> Wrap-up`
 
-Every productive step uses `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning is non-skippable and begins with a readiness gate over locked Ideation, memory, skills, authority, and staging.
+Every productive step uses `DISCUSSION -> WORK -> EVALUATION -> RECORD`. Planning is non-skippable and begins
+task decomposition directly from locked Ideation.
 
 ## Current contract (2026-07-20)
 

@@ -8,7 +8,7 @@ status: active
 created: 2026-06-25
 session: 6cf13813-a002-4e55-96b9-a5d65f619ef8
 tags: [verification, process]
-keywords: [drift-gate, hardcoded-baseline, scaffold, record-map, expected-subtree, readiness-audit]
+keywords: [drift-gate, hardcoded-baseline, scaffold, record-map, expected-subtree, task-map]
 author: claude
 priority: high
 domain: process
@@ -24,11 +24,11 @@ Planning modeled the session-record-shape change (adding the `working/proposals/
 
 ## Why it happens
 
-A drift gate that hardcodes its expectation is not a neutral verifier of the structure — it is a **third copy of the spec**. Any change to the guarded structure must update all copies: the producer (scaffold), the human-readable doc (record-map), AND the guard's own hardcoded baseline. The plan (and the Preparation readiness audit, and both Planning evaluators) treated the guard as a pure verifier and under-counted the file set by one. The assumption "the gate reads the doc" was never verified against the gate's source.
+A drift gate that hardcodes its expectation is not a neutral verifier of the structure — it is a **third copy of the spec**. Any change to the guarded structure must update all copies: the producer (scaffold), the human-readable doc (record-map), AND the guard's own hardcoded baseline. The plan, the former Preparation readiness audit, and both Planning evaluators treated the guard as a pure verifier and under-counted the file set by one. The assumption "the gate reads the doc" was never verified against the gate's source.
 
 ## Correct approach
 
-Enumerate the guard's own baseline as a member of the change's file set whenever the change alters the guarded structure. For this feature: the drift-gated unit is THREE files (scaffold + record-map + `verify-record-map.sh` baseline), not two. Preparation/Planning readiness audits must read the guard's source to classify it (derives-from-artifact vs hardcoded-baseline) before declaring it "the gate, not a target." Where feasible, prefer guards that derive expectation from the artifact (no third copy to drift); where a hardcoded baseline is unavoidable, treat it as part of the structure's spec.
+Enumerate the guard's own baseline as a member of the change's file set whenever the change alters the guarded structure. For this feature: the drift-gated unit is THREE files (scaffold + record-map + `verify-record-map.sh` baseline), not two. Planning task construction must read the guard's source to classify it (derives-from-artifact vs hardcoded-baseline) before declaring it "the gate, not a target." Where feasible, prefer guards that derive expectation from the artifact (no third copy to drift); where a hardcoded baseline is unavoidable, treat it as part of the structure's spec.
 
 ## How to detect
 

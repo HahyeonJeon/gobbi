@@ -21,9 +21,9 @@ shipped_in: null
 
 The reviewed paths and finding text below remain historical evidence. Do not execute the former
 Preparation instructions against the current tree. D1-005, D1-012, D1-013, D1-015, and D1-031 are
-closed or obsolete because readiness now runs inside Planning DISCUSSION. D1-028's old
-`4-execution/` path must be re-derived against the current `3-execution/` tree. All other findings
-remain open only after their locations and assumptions are revalidated against the four-loop model.
+closed or obsolete because Preparation was retired and Planning now begins direct decomposition.
+D1-028's old `4-execution/` path must be re-derived against the current `3-execution/` tree. All other
+findings remain open only after their locations and assumptions are revalidated against the four-loop model.
 
 ## Context
 
