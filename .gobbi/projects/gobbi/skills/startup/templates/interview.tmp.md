@@ -95,7 +95,7 @@ or `retired`.
 
 | Question alias | Phase / topic ID | Applies to component or surface | Current wording or axis | Origin | Derived from | Basis or adaptation reason | Status | Answer IDs |
 |---|---|---|---|---|---|---|---|---|
-| `[software-type]` | `1 / S01` | `project` | `Which software type or mixed set owns the outcome?` | `seed` | `none` | `{{evidence or reason}}` | `open` | `{{IDs or none}}` |
+| `[software-type]` | `1 / S01` | `project` | `What type of software, or combination of software types, will deliver the project's intended result?` | `seed` | `none` | `{{evidence or reason}}` | `open` | `{{IDs or none}}` |
 
 ## Structured answer events
 

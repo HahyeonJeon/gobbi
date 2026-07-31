@@ -33,66 +33,66 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 #### Software form and lifecycle
 
-- [software-type] Which software type or mixed set owns the outcome?
-- [current-software] Which software forms exist today?
-- [lifecycle-stage] Which lifecycle stage describes the current project?
-- [prior-attempt] What happened in the most recent attempt to address this need?
+- [software-type] What type of software, or combination of software types, will deliver the project's intended result?
+- [current-software] What kinds of software already exist for this project?
+- [lifecycle-stage] What stage is the project in now—for example, idea, prototype, active development, released, or maintenance?
+- [prior-attempt] What happened in the most recent prior attempt, if any, to solve this problem?
 
 #### Evidence source
 
-- [project-source-of-truth] Which source governs the current project direction?
+- [project-source-of-truth] When project sources disagree, which source has final authority over the project's current purpose and direction?
 
 ### Topic 2 — Problems, Causes, Outcomes, and Success
 
 #### Problem evidence
 
 - [last-problem-event] What happened in the most recent concrete occurrence of the problem?
-- [problem-cost] What measurable consequence did that occurrence create?
-- [problem-frequency] How often does the same situation occur?
+- [problem-cost] What measurable cost, delay, error, or other consequence resulted from the most recent occurrence of the problem?
+- [problem-frequency] How often does this problem occur?
 
 #### Cause and timing
 
 - [root-cause] What evidence supports the current root-cause explanation?
-- [deeper-cause-test] What observation would show that the stated cause is only a symptom?
+- [deeper-cause-test] What observation would show that the stated cause is itself caused by a deeper problem?
 - [why-now] What changed to make this the right time to act?
 
 #### Risks and assumptions
 
-- [riskiest-assumption] Which load-bearing assumption has the weakest evidence?
-- [material-risk] Which risk has the greatest consequence for the project outcome?
-- [risk-warning] Which earliest signal reveals that risk?
-- [risk-mitigation] Which action reduces that risk?
-- [assumption-test] Which cheapest reliable test can resolve the riskiest assumption?
+- [riskiest-assumption] Which assumption is most important to project success and currently has the weakest evidence?
+- [material-risk] Which risk could cause the greatest harm to the project's intended result?
+- [risk-warning] What is the earliest observable sign that the highest-consequence risk is beginning to occur?
+- [risk-mitigation] What single action would do the most to prevent or limit harm from the highest-consequence risk?
+- [assumption-test] What is the least costly reliable way to find out whether the riskiest assumption is true?
 
 #### Durable outcome and evidence
 
-- [durable-outcome] What should remain true if the implementation changes completely?
-- [current-baseline] Which current observation establishes the starting point?
-- [success-signal] Which observable change would show that the project works?
-- [false-success] What could be technically successful but still fail the project outcome?
-- [stop-evidence] Which evidence would show that the current outcome should no longer be pursued?
+- [durable-outcome] What result for users or consumers must remain true even if the software is rebuilt in a different way?
+- [current-baseline] What can be observed or measured now as the starting point for later comparison?
+- [success-signal] What measurable real-world change would show that the project achieved its intended result?
+- [false-success] What technical result could meet the stated requirements but still fail users or the project's intended result?
+- [stop-evidence] What evidence would show that the project should stop pursuing its intended result?
 
 ### Topic 3 — People, Jobs, Alternatives, and Adoption
 
 #### People and jobs
 
-- [first-user] Who is the first user or consumer of the software outcome?
-- [affected-people] Who is materially affected without directly using the software?
-- [excluded-people] Who is outside the current target boundary?
-- [primary-job] What progress is the first user trying to make?
-- [job-context] In which concrete situation does the primary job arise?
-- [job-failure] What happens when that job cannot be completed?
+- [first-user] Which person, group, or external system should benefit from or consume the software's result first?
+- [affected-people] Who, if anyone, could be significantly affected by the software or its results without using it directly?
+- [excluded-people] Which people or consumers are intentionally outside the project's current target group?
+- [primary-job] What important task or goal is the first user trying to complete?
+- [job-context] In what real situation does the first user need to complete that task?
+- [job-failure] What happens to the first user when they cannot complete that task?
 
 #### Alternatives and adoption
 
-- [current-alternative] What does the first user do today instead?
-- [alternative-breakdown] Where does the current alternative fail?
-- [switch-push] What pushes the user away from the current approach?
-- [switch-pull] What pulls the user toward the proposed outcome?
-- [switch-anxiety] What makes the new approach feel risky?
-- [switch-habit] Which habit keeps the current approach in place?
-- [adoption-evidence] Which observed action shows willingness to change?
-- [value-advantage] Which outcome must be better than the current alternative?
+- [current-alternative] How does the first user complete that task today without the proposed software?
+- [alternative-breakdown] Which part of the current approach prevents or delays completion of the task?
+- [switch-push] What problem with the current approach would motivate the user to stop relying on it?
+- [switch-pull] What benefit of the proposed software would motivate the user to try it?
+- [switch-anxiety] What concern could prevent the user from trying or adopting the proposed software?
+- [switch-habit] What existing habit or workflow makes the current approach difficult to replace?
+- [adoption-evidence] What action, if any, has the user already taken that shows a willingness to change from the current approach?
+- [value-advantage] Which result must the proposed software improve compared with the user's current approach?
 
 ## Phase 2 — Project Design
 
@@ -100,79 +100,79 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 #### Owned outcome and scope
 
-- [owned-outcome] Which complete outcome does the project own?
+- [owned-outcome] What complete result for a user or consumer is this project responsible for delivering?
 - [responsibility-boundary] Where does the project's responsibility begin and end?
-- [initial-capabilities] Which capabilities are inside the first useful boundary?
+- [initial-capabilities] What must the first useful version of the software be able to do?
 
 #### External contracts
 
-- [external-contract] Which externally observed contract must remain stable?
-- [compatibility-boundary] Which existing behavior must remain compatible?
+- [external-contract] What behavior, input, output, or interface must remain stable because users or connected systems rely on it?
+- [compatibility-boundary] Which current behavior must continue to work for existing users or connected systems after the project changes?
 
 #### Non-goals and change tests
 
-- [explicit-non-goal] Which tempting capability is not a current goal?
-- [manual-boundary] Which outcome will remain manual?
-- [refused-use] Which use must the software reject?
-- [scope-change-evidence] Which evidence may justify expanding the boundary?
-- [irreversible-boundary] Which boundary choice is expensive to reverse?
+- [explicit-non-goal] Which plausible capabilities, if any, are explicitly outside the project's current scope?
+- [manual-boundary] Which tasks, if any, will intentionally remain manual rather than being performed by the software?
+- [refused-use] Which attempted uses, if any, must the software reject?
+- [scope-change-evidence] What evidence would justify adding work that is currently outside the project's scope?
+- [irreversible-boundary] Which decision about the project's scope or responsibilities would be most costly to change later?
 
 ### Topic 5 — Capabilities and Journeys
 
 #### Capability shape
 
-- [minimum-complete-capability] Which smallest complete capability produces real value?
-- [capability-prerequisite] Which prerequisite must hold before the next capability can work?
+- [minimum-complete-capability] What is the smallest complete software capability that lets a user or consumer complete a useful task?
+- [capability-prerequisite] What must already exist or be true before the next planned software function can work?
 
 #### Primary journey
 
-- [journey-trigger] What starts the primary journey?
-- [journey-completion] Which observable state proves that the journey completed?
-- [journey-handoff] Where does responsibility pass to another actor or system?
+- [journey-trigger] Which user action, system event, or scheduled event starts the main task that the software must support?
+- [journey-completion] What can a user or connected system observe to know that the main task finished successfully?
+- [journey-handoff] At what point in the main task does responsibility pass to another person or system?
 
 #### Failure priority
 
-- [highest-cost-failure] Which journey failure has the greatest consequence?
+- [highest-cost-failure] Which failure during the main task would have the greatest consequence?
 
 ### Topic 6 — Experience, Interfaces, and Accessibility
 
 #### Shared interface direction
 
-- [interface-type] Which interface does each primary actor use?
-- [success-feedback] What is the first clear success signal?
-- [domain-concepts] Which domain concepts must stay consistent across interfaces?
-- [information-priority] Which information must be visible for a sound decision?
-- [result-explanation] Which consequential result must explain its basis?
-- [error-action] Which next action must an error make possible?
-- [destructive-safeguard] Which safeguard must protect a destructive action?
+- [interface-type] How will each main user or connected system interact with the software—for example, through a screen, command line, or application programming interface?
+- [success-feedback] What should the interface show or return first to confirm that an action succeeded?
+- [domain-concepts] Which project-specific ideas and terms must have the same meaning in every interface?
+- [information-priority] Before a user makes an important decision supported by the software, what information must they see?
+- [result-explanation] Which result could significantly affect someone and therefore needs an explanation of how it was reached?
+- [error-action] After an error, what must the affected user or connected system be able to do next?
+- [destructive-safeguard] What safeguard—for example, confirmation, permission, or recovery—must protect people or system state from an action that deletes data or causes another hard-to-reverse change?
 
 #### Accessibility and references
 
-- [accessibility-needs] Which accessibility needs shape the first useful version?
-- [representative-users] Which representative people should test the riskiest experience assumption?
-- [representative-tasks] Which tasks should those people attempt?
-- [design-reference] Which existing product or interface is a positive reference?
-- [reference-rejection] Which apparent reference must not be copied?
+- [accessibility-needs] Which needs of users with disabilities must shape the first useful version?
+- [representative-users] Which intended users should test the most uncertain assumption about using the software?
+- [representative-tasks] Which realistic tasks should the representative users attempt during testing?
+- [design-reference] Which existing product or interface, if any, demonstrates an approach that this project should emulate?
+- [reference-rejection] Which existing product or interface, if any, may look relevant but should not guide this project's design?
 
 ### Topic 7 — System Context and Data Direction
 
 #### System context and boundaries
 
-- [context-actors] Which actors exchange information with the project?
-- [information-direction] In which direction does each material information flow?
-- [stable-boundary] Which boundary should remain stable while internals change?
-- [coupling-risk] Where would tight coupling create the highest future cost?
-- [architecture-change-evidence] Which evidence would change the architecture direction?
+- [context-actors] Which people, organizations, or external systems send information to or receive information from the software?
+- [information-direction] For each important kind of information, who or what sends it, and who or what receives it?
+- [stable-boundary] Which connection between system parts, users, or external systems must keep the same behavior when the internal implementation changes?
+- [coupling-risk] Which parts of the project or connected systems must remain easy to change independently to avoid the greatest future cost?
+- [architecture-change-evidence] What new evidence would justify changing the current high-level system design?
 
 #### State and data direction
 
-- [state-authority] Which system is authoritative for outcome-bearing state?
-- [data-lifecycle] Which data lifecycle must the project support?
+- [state-authority] If systems disagree about data or status that determines the project's result, which system's value should be treated as correct?
+- [data-lifecycle] What must happen to the project's data from creation or collection through use, storage, retention, and deletion?
 
 #### Conditional platform direction
 
-- [web-runtime-boundary] Which behavior belongs in the browser?
-- [data-processing-model] Which processing model fits the data outcome?
+- [web-runtime-boundary] For a web project, which work must run in the user's browser rather than on a server or another system?
+- [data-processing-model] How should the project process data to produce its intended result—for example, as data arrives, in scheduled batches, or on demand?
 
 ## Phase 3 — Project Specification
 
@@ -180,202 +180,202 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 #### Runtime architecture
 
-- [runtime-units] Which high-level runtime units make up the system?
-- [unit-responsibility] Which responsibility does each high-level unit own?
+- [runtime-units] Which major parts of the system run independently—for example, an application, service, background worker, or scheduled job?
+- [unit-responsibility] For each independently running part of the system, what responsibility does it own?
 
-- [primary-runtime-path] Which runtime path produces the primary outcome?
-- [background-path] Which background path matters to correctness?
-- [failure-containment] Which boundary must contain a failure?
-- [retry-semantics] Which operation may be retried safely?
-- [idempotency-boundary] Which repeated operation must preserve its effective outcome?
-- [runtime-recovery] Which state must recovery restore?
+- [primary-runtime-path] When the system produces its main result, which running components handle the work from start to finish?
+- [background-path] Which work that runs without a user waiting for it must succeed for the final result to be correct?
+- [failure-containment] Which part of the system must prevent one failure from affecting other parts or users?
+- [retry-semantics] Which failed operation may be tried again without producing an incorrect or unsafe result?
+- [idempotency-boundary] Which operation must have the same end result when the same request is performed more than once?
+- [runtime-recovery] After a runtime failure, which system state must be restored before normal work can continue?
 
 #### Failure contracts
 
-- [invalid-input] What must happen when input is invalid?
-- [partial-state] What must happen when only part of the work succeeds?
-- [dependency-unavailable] What must happen when a required dependency is unavailable?
-- [failure-visibility] How does the affected actor learn that the journey failed?
-- [failure-recovery] Which action returns the journey to a safe state?
-- [misuse-response] What is the safe response to an already refused use?
+- [invalid-input] How must the software respond when it receives invalid input?
+- [partial-state] How must the software respond when only part of an operation succeeds?
+- [dependency-unavailable] When a required dependency is temporarily unavailable, what must the running software do?
+- [failure-visibility] How will the affected user or connected system learn that the main task failed?
+- [failure-recovery] What action returns the failed task to a safe state?
+- [misuse-response] When someone attempts a use that the project explicitly refuses to support, how must the software respond safely?
 
 #### Data contracts
 
-- [consistency-promise] Which consistency promise must hold?
-- [stored-data-evolution] How may stored data evolve?
-- [data-retention] How long must each material data class remain available?
-- [restore-evidence] Which evidence proves that stored state can be restored?
-- [data-export-contract] Which data-export contract must remain stable?
-- [data-lineage] Which transformation history must remain traceable?
+- [consistency-promise] When the same data appears in more than one place, what agreement or update-timing guarantee must consumers be able to rely on?
+- [stored-data-evolution] What compatibility must be preserved when the format or meaning of stored data changes?
+- [data-retention] For each important category of stored data, how long must the project keep it available for product or operational needs?
+- [restore-evidence] What test or evidence proves that stored data can be restored after loss?
+- [data-export-contract] When the project exports data, which formats, fields, meanings, or behaviors must remain compatible for consumers?
+- [data-lineage] For which data must the project be able to trace its source and every transformation that produced the current result?
 
 #### Conditional data-engineering axes
 
-- [data-time-semantics] Which timestamp determines result correctness?
-- [data-ordering] Which ordering guarantee affects correctness?
-- [data-lateness] How should late data change an already produced result?
-- [data-duplicates] Which duplicate inputs must be tolerated?
-- [data-replay] Which previously produced outcome must a replay preserve?
-- [data-backfill] Which downstream result may a backfill revise?
-- [data-freshness] Which freshness signal matters to the data consumer?
+- [data-time-semantics] When data has multiple timestamps—for example, when an event happened and when it arrived—which timestamp must calculations use?
+- [data-ordering] Which records or events must be processed in a particular order for the result to be correct?
+- [data-lateness] When data arrives after a result has already been produced, how, if at all, should that result change?
+- [data-duplicates] Which input records may be delivered more than once without making the result incorrect?
+- [data-replay] If historical input is processed again, which earlier result must the new run reproduce?
+- [data-backfill] When missing or corrected historical data is processed later, which previously produced result may change?
+- [data-freshness] What signal tells a data consumer whether the data is recent enough to use?
 
 #### Conditional network-engineering axes
 
-- [network-intended-state] Which source is authoritative for intended network state?
-- [network-liveness] Which signal proves that a network component remains live?
-- [network-convergence] Which observable state proves convergence after change?
-- [network-reconciliation] How should operational state return to intended state?
-- [network-partition] Which behavior must remain safe during a partition?
-- [network-stale-state] When does network state become too stale to trust?
+- [network-intended-state] Which configuration or system is the source of truth for how the network is supposed to be configured?
+- [network-liveness] Which signal shows that a network component is still running and responding?
+- [network-convergence] After a network change, what observable condition shows that all affected components have reached the intended state?
+- [network-reconciliation] When the network's actual state differs from its intended configuration, how should the project bring them back into agreement?
+- [network-partition] If parts of the network cannot communicate with each other, which behavior must still remain safe?
+- [network-stale-state] How old may observed network-state data become before the project must stop relying on it?
 
 ### Topic 9 — Technology Stack, Dependencies, and Platform Compatibility
 
 #### Current and intended stack
 
-- [programming-languages] Which programming languages constrain future work?
-- [frameworks] Which frameworks constrain future work?
-- [runtimes] Which runtimes constrain future work?
-- [data-stores] Which data-store choices constrain future work?
-- [supported-versions] Which technology support windows apply?
-- [hard-stack-constraint] Which stack choice is a hard constraint?
-- [tech-stack] Which technology choices should govern future work?
-- [stack-change-evidence] Which evidence would invalidate the current stack direction?
+- [programming-languages] Which programming languages must future work use or continue to support?
+- [frameworks] Which software frameworks must future work use or remain compatible with?
+- [runtimes] Which execution runtimes must future software continue to run on?
+- [data-stores] Which databases or other data stores must future work keep using or remain compatible with?
+- [supported-versions] For each required technology, which versions must the project support, and for how long?
+- [hard-stack-constraint] Which technology choice is mandatory rather than a preference?
+- [tech-stack] Which combination of technologies—for example, languages, frameworks, execution runtimes, and data stores—should future work use?
+- [stack-change-evidence] What evidence would show that the chosen technology stack no longer fits the project?
 
 #### Dependencies and platform fit
 
-- [critical-dependency] Which external dependency is essential to the outcome?
-- [dependency-failure] What happens when that dependency fails?
-- [dependency-change] What happens when that dependency changes incompatibly?
-- [dependency-exit] How can the project continue if that dependency disappears?
-- [stack-license] Which technology-license condition constrains selection?
-- [stack-portability] Which portability requirement constrains selection?
+- [critical-dependency] Which external dependency, if any, is essential to the project's intended result?
+- [dependency-failure] If a critical external dependency fails, which project capability or result is lost or reduced?
+- [dependency-change] What must the project do if a critical external dependency changes in a way that the current integration cannot use?
+- [dependency-exit] How can the project continue if a critical external dependency becomes permanently unavailable?
+- [stack-license] Which software-license requirement limits the technologies that the project may choose?
+- [stack-portability] What ability to run or move the software across different operating environments must the chosen technologies preserve?
 
 #### Compatibility lifecycle
 
-- [versioning-policy] Which external contract requires versioning?
-- [deprecation-policy] How will consumers learn that a contract is being deprecated?
-- [migration-obligation] Which consumer migration must the project support?
+- [versioning-policy] Which public interface or data format must carry a version so consumers can detect incompatible changes?
+- [deprecation-policy] How must the project notify consumers that a supported interface or data format will be retired?
+- [migration-obligation] When a supported interface, data format, or other external contract changes incompatibly, which consumers must the project help move to its replacement?
 
 #### Conditional web contracts
 
-- [web-direct-link] Which state must a direct URL open?
-- [web-navigation-continuity] What must remain correct across browser history navigation?
-- [web-refresh-continuity] What must survive a browser refresh?
-- [web-storage-lifetime] How long may browser-held state remain valid?
-- [web-browser-support] Which browser compatibility contract must the project support?
-- [web-offline-promise] Which browser outcome must work without a network connection?
+- [web-direct-link] When someone opens a saved or shared URL directly, which page and user state must appear?
+- [web-navigation-continuity] When a user selects the browser's Back or Forward button, which page, data, or task state must remain correct?
+- [web-refresh-continuity] Which user-entered data or in-progress task state must remain after the page is refreshed?
+- [web-storage-lifetime] How long may data stored in the user's browser be reused before it must be refreshed or discarded?
+- [web-browser-support] Which web browsers and browser versions must the project support?
+- [web-offline-promise] Which user task must the web application support without a network connection?
 
 #### Conditional desktop and mobile contracts
 
-- [desktop-restart-state] Which user state must survive an application restart?
-- [desktop-os-integration] Which operating-system integration is part of the user contract?
-- [mobile-interruption] Which user state must survive a system interruption?
-- [mobile-form-factor] Which form-factor change must preserve the task?
-- [desktop-target-os] Which desktop operating-system support window applies?
-- [mobile-target-os] Which mobile operating-system support window applies?
+- [desktop-restart-state] Which user work or application state must be restored after the desktop application restarts?
+- [desktop-os-integration] Which operating-system feature, such as notifications, file associations, or system menus, must the desktop application support?
+- [mobile-interruption] If the mobile operating system pauses or closes the application, which in-progress user state must be restored?
+- [mobile-form-factor] When the device size, orientation, or physical form changes, which in-progress task must continue without losing state?
+- [desktop-target-os] Which desktop operating systems and versions must the application support, and for how long?
+- [mobile-target-os] Which mobile operating systems and versions must the application support, and for how long?
 
 #### Conditional command-line, library, and SDK contracts
 
-- [cli-invocation-contract] Which command invocation contract must remain compatible?
-- [cli-machine-output] Which command output is consumed by automation?
-- [cli-exit-status] Which outcomes require distinct exit statuses?
-- [cli-execution-support] Which command-line execution environments must remain compatible?
-- [library-public-contract] Which published library or SDK surface is compatibility-bound?
-- [library-runtime-support] Which consumer runtimes must the library or SDK support?
+- [cli-invocation-contract] Which command names, arguments, options, and input behaviors must remain compatible for existing users or scripts?
+- [cli-machine-output] Which command output formats are read by scripts or other automation?
+- [cli-exit-status] Which command outcomes must return different process exit codes so scripts can tell them apart?
+- [cli-execution-support] Which operating systems and command shells must continue to run the command-line tool?
+- [library-public-contract] Which public functions, classes, types, or behaviors must existing library or software development kit users be able to keep using?
+- [library-runtime-support] Which language or execution-runtime versions must applications using the library or software development kit be able to run on?
 
 #### Conditional data and network platforms
 
-- [network-standard] Which network standard governs compatibility?
-- [network-peer-compatibility] Which peer implementations must interoperate?
-- [network-registry] Which registry governs protocol values when the project defines them?
-- [network-negotiation] Which capability negotiation must peers support?
+- [network-standard] Which published protocol or networking standard must the project follow to work with other systems?
+- [network-peer-compatibility] Which other devices, services, or software implementations must successfully exchange protocol messages with this project?
+- [network-registry] If the protocol defines named or numbered values, which official registry controls how those values are assigned?
+- [network-negotiation] When two protocol peers connect, which supported features or versions must they be able to agree on?
 
 ### Topic 10 — Delivery, Operations, Quality, and Verification
 
 #### Environments and release
 
-- [environment-model] Which operating environments differ in a material way?
-- [configuration-source] Which source is authoritative for runtime configuration?
-- [runtime-restriction] Which runtime restriction changes the software contract?
-- [release-channel] Through which channel does the release reach its consumer?
-- [deployment-method] How does a release enter its operating environment?
-- [rollout-signal] Which signal permits a rollout to continue?
-- [rollback-trigger] Which signal triggers rollback?
-- [rollback-state] Which state must a rollback preserve?
-- [recovery-priority] Which outcome must disaster recovery restore first?
+- [environment-model] Which differences among the project's operating environments—for example, development, test, staging, or production—can change the software's behavior or risk?
+- [configuration-source] Which file, service, or system is the source of truth for configuration used while the software is running?
+- [runtime-restriction] Which operating restriction, such as limited network access, local deployment, or regional limits, changes what the software must support?
+- [release-channel] How do the intended users or connected systems receive a release?
+- [deployment-method] How is a released version installed or deployed into the environment where it will run?
+- [rollout-signal] During a gradual release, which observed result shows that it is safe to continue releasing to more users or systems?
+- [rollback-trigger] Which observed failure requires the release to stop and the previous version to be restored?
+- [rollback-state] If a release is rolled back, which user, system, or operational state must remain intact?
+- [recovery-priority] Which user or system capability must disaster recovery restore first?
 
 #### Operating contract
 
-- [consumer-indicator] Which signal measures the outcome from the consumer's perspective?
-- [service-objective] Which consumer-visible service behavior needs a reliability objective?
-- [service-workload-envelope] Which workload shape must the service support?
-- [diagnostic-evidence] Which diagnostic evidence must be available during failure?
-- [operational-runbook] Which critical operation requires a tested runbook?
+- [consumer-indicator] What user- or consumer-visible measurement shows whether the running software is delivering its intended result?
+- [service-objective] Which behavior visible to service consumers needs a measurable reliability target, such as availability or successful responses?
+- [service-workload-envelope] What range and pattern of requests or jobs must the service handle correctly?
+- [diagnostic-evidence] When the software fails, which logs, metrics, traces, or other records must be available to determine what happened?
+- [operational-runbook] Which high-risk operating task needs written, tested step-by-step instructions?
 
 #### Quality direction
 
-- [accessibility-target] Which accessibility target applies?
-- [quality-priority] Which quality attribute dominates the hardest trade-off?
-- [quality-scenario] Which concrete scenario defines that quality?
-- [quality-threshold] Which observable threshold defines an acceptable result?
-- [threshold-basis] Which source justifies that threshold?
-- [allowed-degradation] Which quality may degrade first under pressure?
-- [protected-quality] Which quality may not degrade?
+- [accessibility-target] Which accessibility standard and conformance level must the user interface meet?
+- [quality-priority] When important qualities conflict, which one, such as correctness, security, speed, or usability, must take priority?
+- [quality-scenario] For the project's highest-priority quality, what specific operating situation shows what that quality must achieve?
+- [quality-threshold] What measurable result marks the minimum acceptable level for the project's highest-priority quality?
+- [threshold-basis] Which evidence or authoritative source justifies the project's chosen quality threshold?
+- [allowed-degradation] When the system is overloaded or resources are limited, which quality may be reduced first?
+- [protected-quality] Which quality must remain at its required level even when the system is overloaded or failing?
 
 #### Verification and review
 
-- [verification-strategy] Which evidence depth fits each material claim?
-- [end-to-end-evidence] Which complete outcome requires end-to-end evidence?
-- [security-review] Which change requires security review?
-- [performance-evidence] Which performance claim requires measured evidence?
-- [operational-evidence] Which operating claim requires tested evidence?
-- [accessibility-evidence] Which standards-based accessibility evidence is required?
-- [user-validation] Which claim requires representative-user evidence?
-- [maintenance-scenario] Which representative change proves that the project is maintainable?
+- [verification-strategy] For each important project claim, what level of testing or review is needed to support it?
+- [end-to-end-evidence] Which complete user or system result must be tested from its initial trigger through its final result?
+- [security-review] Which kinds of software changes must receive a security review before release?
+- [performance-evidence] Which claim about speed, capacity, or resource use must be supported by measurements?
+- [operational-evidence] Which claim about deployment, recovery, or routine operation must be demonstrated in a realistic test?
+- [accessibility-evidence] What test results or review evidence must show that the interface meets its accessibility standard?
+- [user-validation] Which claim about user behavior or experience must be tested with people representative of the intended users?
+- [maintenance-scenario] Which realistic future change should a new maintainer be able to complete to show that the project can be maintained?
 
 #### Conditional delivery axes
 
 - [desktop-install] How is a desktop application installed?
 - [desktop-update] How is a desktop application updated?
-- [desktop-signing] Which signing or notarization requirement applies?
-- [mobile-distribution] Which mobile-distribution channel applies?
-- [package-distribution] Which package channel distributes a command-line tool, library, or SDK?
-- [data-pipeline-health] Which signal proves that a data pipeline is producing usable outputs?
-- [network-deployment] How can a network change coexist with previous behavior during rollout?
-- [network-diagnostics] Which diagnostic evidence must be obtainable without disrupting service?
+- [desktop-signing] Which code-signing or platform-notarization checks must the desktop release pass before distribution?
+- [mobile-distribution] Through which application store, enterprise channel, or direct method will the mobile application be distributed?
+- [package-distribution] Which package registry or installation channel will distribute the command-line tool, library, or software development kit?
+- [data-pipeline-health] What observable signal shows that a data pipeline's output is usable by its consumers?
+- [network-deployment] During deployment, how can new network behavior operate safely while devices or peers still use the previous behavior?
+- [network-diagnostics] Which operational data must an engineer be able to collect without interrupting network service?
 
 ### Topic 11 — Security, Privacy, Safety, and Data Duties
 
 #### Protection and trust
 
-- [protected-assets] Which project asset requires the strongest protection?
-- [trust-boundaries] Which system boundary changes the level of trust?
-- [authorization-rule] Which rule decides whether an actor may perform an action?
-- [audit-evidence] Which sensitive action requires audit evidence?
+- [protected-assets] Which project asset, such as data, credentials, software, or infrastructure, would cause the most harm if compromised?
+- [trust-boundaries] Where does data or control cross between parts of the system with different trust or security levels?
+- [authorization-rule] Which rule decides whether a user or connected system may perform an action?
+- [audit-evidence] Which sensitive action must leave a protected audit record?
 
 #### Threats and safe behavior
 
-- [threat-actor] Which credible threat actor matters to this project?
-- [abuse-case] Which abuse case could cause material harm?
-- [security-failure] Which security failure has the highest consequence?
-- [safe-failure] Which state must remain safe after a failure?
+- [threat-actor] Which person, group, or system could realistically try to harm or misuse this project?
+- [abuse-case] Which realistic misuse of the software could cause serious harm?
+- [security-failure] Which security failure would cause the greatest harm to the project or its users?
+- [safe-failure] After a serious failure, what condition must the system preserve to avoid harm?
 
 #### Privacy and data duties
 
-- [personal-data] Which personal or sensitive data enters the project?
-- [data-minimization] Which collected data is unnecessary for the owned outcome?
-- [consent-duty] Which data use requires consent?
-- [privacy-retention] Which privacy duty limits data retention?
-- [privacy-deletion] Which deletion event must the project honor?
-- [data-disclosure] Under which condition may protected data leave its current boundary?
+- [personal-data] Which personal or sensitive data does the software collect, receive, store, or transmit?
+- [data-minimization] Which collected data, if any, is unnecessary for the project's intended result?
+- [consent-duty] Which collection or use of personal data, if any, requires the person's consent?
+- [privacy-retention] Which privacy law, policy, or user commitment limits how long the project may keep personal or sensitive data?
+- [privacy-deletion] Which user request, policy deadline, or lifecycle event, if any, requires the project to delete personal or sensitive data?
+- [data-disclosure] Under what approved condition may protected data be shared outside the system or organization that currently holds it?
 
 #### Conditional mobile and network duties
 
-- [mobile-permission] Which in-scope capability requires a sensitive platform permission?
-- [mobile-permission-purpose] Which user-visible purpose justifies that permission?
-- [mobile-permission-revocation] What remains usable after that permission is revoked?
-- [network-replay-threat] Which protocol message must resist replay?
-- [network-integrity-threat] Which protocol state must resist unauthorized modification?
-- [network-denial-threat] Which denial-of-service condition requires explicit mitigation?
+- [mobile-permission] Which software capability, if any, requires access to sensitive device features or user data?
+- [mobile-permission-purpose] What user-visible benefit justifies requesting each sensitive mobile-platform permission?
+- [mobile-permission-revocation] If a user revokes a sensitive mobile-platform permission, which application capabilities must still work?
+- [network-replay-threat] Which protocol message must be rejected if an attacker captures it and sends the same message again?
+- [network-integrity-threat] Which protocol state must the project treat as invalid if an unauthorized party changes it?
+- [network-denial-threat] Which attempt to exhaust traffic, connections, or computing resources could make the network service unavailable and therefore needs a planned defense?
 
 ## Phase 4 — Project Rules
 
@@ -385,40 +385,40 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 - [product-authority] Who has final authority over product direction?
 - [technical-authority] Who has final authority over technical direction?
-- [data-contract-owner] Who approves incompatible dataset-contract changes?
-- [data-quality-owner] Who decides whether a dataset is fit for use?
+- [data-contract-owner] Who may approve a change to a dataset's format or meaning that existing consumers cannot use without changing their systems?
+- [data-quality-owner] Who decides whether a dataset meets the requirements for its intended use?
 - [license-model] Which license governs the software?
 - [distribution-model] How may the software be distributed?
-- [governance-model] How are disputed project decisions resolved?
+- [governance-model] What process resolves disputed project decisions?
 
 #### Project constraints
 
-- [legal-constraint] Which legal obligation binds the project?
-- [regulatory-constraint] Which regulatory obligation binds the project?
-- [budget-constraint] Which budget limit changes the project direction?
-- [schedule-constraint] Which date constraint changes the project direction?
-- [available-time] Which contributor time is actually available?
-- [available-systems] Which required system is unavailable?
+- [legal-constraint] Which law or contractual legal obligation limits the project?
+- [regulatory-constraint] Which industry regulation or regulatory rule limits the project?
+- [budget-constraint] Which spending limit constrains the project's scope or technology choices?
+- [schedule-constraint] Which required date constrains the project's scope or delivery?
+- [available-time] How much time can each confirmed contributor spend on the project, and during what period?
+- [available-systems] Which required systems, if any, are currently unavailable or inaccessible?
 
 #### Engineering conventions
 
-- [directory-convention] Which directory structure is intentional?
-- [module-convention] Which module boundary should contributors preserve?
-- [naming-convention] Which naming pattern is binding?
-- [interface-convention] Which interface-design pattern is binding?
-- [error-convention] Which error-handling pattern is binding?
-- [documentation-convention] Which documentation pattern is binding?
-- [test-convention] Which test-organization pattern is binding?
-- [contribution-convention] Which contribution pattern is binding?
-- [live-example] Which current file best demonstrates the intended conventions?
-- [counterexample] Which locally common pattern must not be copied?
+- [directory-convention] Which parts of the repository's directory structure are deliberate and must be preserved?
+- [module-convention] Which responsibilities must contributors keep separated by a module or package boundary?
+- [naming-convention] What mandatory naming patterns apply to files, modules, types, functions, or other project elements?
+- [interface-convention] What mandatory design pattern must contributors follow for user, programmatic, or module interfaces?
+- [error-convention] What mandatory pattern must code follow when reporting, propagating, or recovering from errors?
+- [documentation-convention] What mandatory pattern must contributors follow for the format and location of project documentation?
+- [test-convention] What mandatory pattern must contributors follow for naming, grouping, and locating tests?
+- [contribution-convention] What mandatory process must a contributor follow when proposing and submitting a change?
+- [live-example] Which current file or module is the authoritative example of the project's conventions?
+- [counterexample] Which locally common pattern, if any, is misleading and should not be copied?
 
 #### Idioms, rules, and mistakes
 
-- [intentional-idiom] Which unusual project pattern is intentional?
+- [intentional-idiom] Which unusual-looking pattern in this project is deliberate and should be preserved?
 - [binding-rule] Which project rule is mandatory rather than preferred?
-- [recurring-mistake] What do contributors or agents repeatedly get wrong?
-- [corrected-approach] Which approach should replace a misleading local pattern?
+- [recurring-mistake] What project-specific mistake, if any, do contributors or agents repeatedly make?
+- [corrected-approach] What approved approach should contributors use instead of the project's misleading local pattern?
 
 ### Topic 13 — Ownership, Maintenance, Risk, and Continuity
 
@@ -429,13 +429,13 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 #### Risk and authority ownership
 
-- [risk-owner] Who owns that risk?
-- [missing-authority] Which unresolved decision lacks an authorized owner?
+- [risk-owner] Who is accountable for monitoring and responding to the project's highest-consequence risk?
+- [missing-authority] Which open project decision currently has no authorized decision-maker?
 
 #### Maintenance and continuity
 
 - [primary-maintainer] Who owns ongoing maintenance of the software?
 - [backup-maintainer] Who can continue maintenance when the primary maintainer is unavailable?
-- [hidden-knowledge] Which critical project knowledge has only one current owner?
-- [lifecycle-exit-trigger] Which evidence shows that active maintenance should end?
-- [continuity-documentation] Which current document enables another person to continue the project?
+- [hidden-knowledge] Which essential project task or decision depends on knowledge held by only one person?
+- [lifecycle-exit-trigger] What evidence would justify ending active maintenance of the software?
+- [continuity-documentation] Which document must another maintainer be able to follow to continue the project without the current maintainer?
