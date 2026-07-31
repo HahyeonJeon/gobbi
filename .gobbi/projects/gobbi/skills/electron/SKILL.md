@@ -650,9 +650,8 @@ which also states its own coverage ceiling.
 - The nine content children own the Electron depth behind each Rule; the P2 router names which fork
   reaches which one, and [`security.md`](security.md) is the single home of the `webPreferences` defaults
   table.
-- General React idioms — hooks, composition, state management, rendering behavior — are **out of scope**
-  and have no owner in this project. [`renderer-react.md`](renderer-react.md) covers only the
-  Electron↔React seam.
+- General React work routes through the [`../react/SKILL.md`](../react/SKILL.md) domain root to its applicable
+  child guidance. [`renderer-react.md`](renderer-react.md) covers only the Electron↔React seam.
 
 ### Primary sources
 

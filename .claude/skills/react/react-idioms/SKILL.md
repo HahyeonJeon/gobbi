@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/react/react-idioms/SKILL.md

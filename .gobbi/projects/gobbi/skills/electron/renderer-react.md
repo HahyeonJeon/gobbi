@@ -10,10 +10,10 @@ router strategy, what a component may hold, and where a subscription's lifetime 
 React tree is first put inside a packaged renderer, and they are decided against facts no general React
 document carries.
 
-**General React idioms — hooks, component composition, state management, rendering behavior — are out of scope
-for this skill and have no owner in this project.** Nothing below is advice about writing React. Every item
-here exists because the renderer is an Electron window: it loads from two different origins, it has no
-filesystem, and its data arrives from another process.
+**General React work routes through the [`../react/SKILL.md`](../react/SKILL.md) domain root to its applicable
+child guidance and remains out of scope here.** Nothing below is advice about writing React. Every item here
+exists because the renderer is an Electron window: it loads from two different origins, it has no filesystem,
+and its data arrives from another process.
 
 This doc **deepens, and does not restate,** EL-R-11's *consequence* for the React tree. EL-R-11 itself — one
 branch, no dev-server literal in the artifact — is owned by [`tooling-config.md`](tooling-config.md), the
