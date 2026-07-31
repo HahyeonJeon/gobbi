@@ -11,8 +11,9 @@ Use this operation when an agent must coordinate several capability owners or de
 Electron and TypeScript application outcome. It produces one bounded outcome that a person can install,
 launch, use, exit, relaunch, and recover on every operating-system and architecture pair the result claims.
 
-Route the observable installed-platform contract to `desktop-contract`, release judgment to
-`desktop-release`, and bounded Electron mechanics through the [`electron`](../../electron/SKILL.md) root.
+Route the observable installed-platform contract to `desktop-contract`, observable design judgment to
+`desktop-interface`, release judgment to `desktop-release`, and bounded Electron mechanics through the
+[`electron`](../../electron/SKILL.md) root.
 Isolated interface, experience, language, or renderer work stays with its owner; this operation coordinates without replacing owner policy, evaluating independently, or publishing.
 
 ## Principles
