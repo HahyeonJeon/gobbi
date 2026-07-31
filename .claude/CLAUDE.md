@@ -30,7 +30,7 @@ If either system is unavailable or returns invalid output, pause and show the ex
 
 Claude Code may lazily retain stable leader, executor, and assistant teammates while their identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. The manager alone assigns tasks, changes scope, makes user decisions, accepts work, and authorizes destructive actions. Parallelize independent read-only analysis; keep all worktree writes in one ordered writer chain.
 
-Use the shared assignment skeleton in `workflow/delegation.md`. After a teammate reports, reread its promised artifact or commit and confirm it is idle and addressable before assigning more work. At a context boundary, verify durable state and teammate identity; replace and reprime any teammate that cannot be confirmed.
+Build every brief through `.gobbi/projects/gobbi/skills/delegation/SKILL.md`, then add the workflow fields from `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3. After a teammate reports, reread its promised artifact or commit and confirm it is idle and addressable before assigning more work. At a context boundary, verify durable state and teammate identity; replace and reprime any teammate that cannot be confirmed.
 
 ## Plugin topology
 

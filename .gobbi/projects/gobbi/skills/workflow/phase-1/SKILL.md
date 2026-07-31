@@ -113,8 +113,9 @@ whose completion cannot be proved.
 - Load the [Ideation](../../ideation/SKILL.md) skill and give the leader the user's request, prior decisions,
   applicable project rules, durable memory, repository evidence, prior art, constraints, risks, and recovery
   needs.
-- Use the exact assignment shape in [delegation.md](../delegation.md). Include the phase, TODO, stage,
-  iteration, scope, expected artifact, authority, and accepted findings.
+- Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
+  1.3 fields. Include the phase, TODO, stage, iteration, scope, expected artifact, authority, and accepted
+  findings.
 - Resolve with the user:
   - the root problem and affected people;
   - What will change and what will not;

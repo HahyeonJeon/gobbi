@@ -1,12 +1,13 @@
 # Agent Teams
 
-This document owns persistent-specialist scheduling for runtimes that support it and the shared rules for
-TODO-based assignment and recovery. Persistent specialists improve continuity but do not change routing,
-authority, independence, evidence, or one-writer rules.
+This document owns persistent-specialist scheduling and recovery for runtimes that support it. Persistent
+specialists improve continuity but do not change routing, authority, assignment shape, independence, evidence,
+or one-writer rules.
 
-When persistent specialists are unavailable, use fresh agents with the complete
-[`delegation.md`](delegation.md) contract. Native Codex uses the matching repository custom-agent role; Claude
-Code may retain addressable teammates when its runtime supports them.
+Build every fresh or continued brief through the [Delegation](../delegation/SKILL.md) skill with the
+workflow-specific fields in [`SKILL.md` Step 1.3](SKILL.md#13-build-and-accept-specialist-assignments). Native
+Codex uses the matching repository custom-agent role; Claude Code may retain addressable teammates when its
+runtime supports them.
 
 ## Roster
 
@@ -24,15 +25,9 @@ Evaluators are always fresh and never join a persistent team.
 
 ## TODO-based assignment
 
-Every assignment names:
-
-- the exact current TODO and status;
-- phase;
-- productive step and stage;
-- iteration and cap;
-- stable `task-NN-slug` when applicable;
-- assignment ID; and
-- expected evidence.
+The parent Workflow Step 1.3 owns assignment metadata and the response prefix. This document owns only how
+those assignments are scheduled, acknowledged, continued, replaced, and recovered, including addressability
+and idle-state checks. Workflow Step 1.3 alone owns report validation and manager acceptance.
 
 The manager creates, retitles, reorders, and completes TODO items. Specialists may report progress but cannot
 self-claim, reassign, or change progression.
@@ -41,8 +36,8 @@ One mutable item represents one productive-step iteration. The manager retitles 
 WORK, EVALUATION, and RECORD; after verified PASS it uses the PASS gate marker and completes the item. A
 revision creates a new iteration item rather than erasing the completed pass.
 
-A task status is scheduling information until the manager rereads and verifies the promised artifact or
-commit.
+A task status is scheduling information and never establishes acceptance; Workflow Step 1.3 decides whether
+the report may advance the TODO.
 
 ## Allowed concurrency
 
@@ -77,13 +72,12 @@ in-contract disagreements from evidence and escalates only a critical blocker.
 
 Use this order:
 
-1. The manager creates a stable assignment under [`delegation.md`](delegation.md).
+1. The manager creates a stable assignment through the Delegation skill and parent Workflow Step 1.3.
 2. A persistent specialist acknowledges the assignment ID, scope, and expected artifact.
 3. The specialist performs the bounded work and returns the required status.
-4. The manager confirms idle and addressable state when reuse is planned.
-5. The manager rereads the artifact or commit and runs the named checks.
-6. The manager retitles or completes the TODO only after evidence passes.
-7. The next assignment starts only after the prior assignment closes.
+4. The manager applies Workflow Step 1.3 to the report and the TODO transition.
+5. After acceptance, the manager confirms idle and addressable state when reuse is planned.
+6. The next assignment starts only after the prior assignment closes.
 
 An idle notification or lagging task status proves neither success nor failure.
 
@@ -154,28 +148,27 @@ continuation remains automatic unless the user interrupts.
 
 ## Write safety
 
-Every write-capable assignment contains the exact absolute worktree and protected paths. Continued specialists
-re-anchor to those paths on every assignment.
+When scheduling a write-capable assignment, re-anchor continued specialists to the exact worktree and
+protected paths supplied under Workflow Step 1.3.
 
-Before reuse, the manager verifies the branch, worktree, changed paths, promised artifact, and commit. A report
-never substitutes for that reread.
+Before dispatch or reuse, the manager verifies that the branch and worktree still match the assignment and
+that no writer overlaps. Workflow Step 1.3 owns report and artifact validation.
 
-## Completion conditions
+## Reuse readiness
 
-A persistent assignment completes only when:
+A persistent specialist is eligible for another assignment only after Workflow Step 1.3 accepts the prior
+report and all of these scheduling conditions hold:
 
-- the status matches the assignment;
-- the specialist is idle and addressable when reuse is planned;
-- the manager rereads the artifact or commit;
-- verification passes;
-- scope and protected paths pass; and
-- the matching TODO update succeeds.
+- the specialist is idle and addressable;
+- role, scope, subsystem, dependency chain, authority, loaded context, and write boundary remain coherent; and
+- the next assignment has a new assignment ID and no overlapping writer.
 
-Runtime scheduling supports the workflow. It never replaces evidence or manager authority.
+Runtime scheduling supports the workflow. It never replaces Workflow Step 1.3 acceptance, evidence, or manager
+authority.
 
 ## References
 
-- [`delegation.md`](delegation.md) owns the assignment shape.
+- [Delegation](../delegation/SKILL.md) owns the generic assignment shape.
 - [`SKILL.md`](SKILL.md) owns routing, phase continuity, and blocker policy.
 - [`phase-1/SKILL.md`](phase-1/SKILL.md), [`phase-2/SKILL.md`](phase-2/SKILL.md), and
   [`phase-3/SKILL.md`](phase-3/SKILL.md) own the phase-specific operations.

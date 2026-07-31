@@ -120,7 +120,7 @@ End the report with:
 ## Status Contract
 
 Your final response MUST begin with `STATUS: <value>` as its first line and follow
-[`skills/workflow/delegation.md` § Status contract](../skills/workflow/delegation.md#12-status-contract).
+[`skills/workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments).
 Put `VERDICT: <PASS|REVISE|FAIL>` immediately after it. The role-specific meanings below remain binding.
 
 End your work with **exactly one** status:

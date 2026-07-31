@@ -144,7 +144,44 @@ P3 · Hand-off
 - Complete Configuration only after rereading `configuration.md`, verifying the evidence root, branch,
   worktree, settings, and TODO route, and then activate `P1 · Ideation · DISCUSSION · 1/2`.
 
-#### 1.3 Run user-led Ideation
+#### 1.3 Build and accept specialist assignments
+
+- Before writing or revising any specialist brief, keep the
+  [Delegation](../delegation/SKILL.md) skill loaded and use its `Metadata`, `Task`, `Instructions`,
+  `Resources`, and `Return` headings. The workflow adds the fields below; it does not replace that template.
+- In `Metadata`, name the Gobbi session UUID, active runtime, absolute worktree, absolute evidence root,
+  branch, phase, exact current TODO and status, productive step and stage, iteration and cap, stable task ID
+  when applicable, assignment ID, prerequisite evidence, and why the assignment is ready.
+- In `Task`, name one role, one bounded outcome, why the current TODO needs it, the locked Phase 1 terms, and
+  exact acceptance criteria.
+- In `Instructions`, state the manager's retained user, scope, routing, acceptance, reassignment, destructive,
+  and external-action authority. Give the exact scope, write root, allowed and protected paths, mutation and
+  commit authority, external-effect authority, one-writer boundary, applicable independence rules, and stop
+  conditions. Specialists never update the workflow TODO or ask the user directly. Every RECORD assignment
+  names Step 1.2 as the evidence-only override.
+- In `Resources`, list exact canonical paths in this read order: Principles; every project rule or
+  `NO_PROJECT_RULES`; the canonical role prompt; this Workflow skill; the active phase operation; the
+  productive-step and task-specific skills; then the primary artifacts. Fresh specialists inherit no loaded
+  skill. A continued specialist receives a new assignment ID, current TODO, changed inputs, mandatory
+  rereads, full current scope, and any changed independence rule.
+- In `Return`, name the expected artifacts, paths, system labels, checks, evidence, and exact escape responses.
+  Require this workflow prefix:
+
+```text
+STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
+VERDICT: PASS | REVISE | FAIL
+ARTIFACT: <path or response-only>
+SKILLS LOADED:
+  - <exact path, in read order>
+```
+
+- `VERDICT` is evaluator-only and is omitted for other roles. `ARTIFACT` is omitted only when no artifact is
+  required. After a report, the manager validates the assignment, role, prefix, loaded paths, promised
+  artifact or commit, named checks, scope, and protected paths before updating the TODO. Apply
+  [`agent-teams.md`](agent-teams.md) for acknowledgement, reuse, replacement, addressability, and idle-state
+  checks.
+
+#### 1.4 Run user-led Ideation
 
 - Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded and load the
   [Ideation skill](../ideation/SKILL.md) before DISCUSSION. Load the
@@ -163,7 +200,7 @@ P3 · Hand-off
 - In RECORD, seal the creation package, both reports, decisions, findings, checks, and Configuration receipt.
   Write the canonical Ideation artifact only after PASS and verify it before updating the TODO.
 
-#### 1.4 Apply the fast gate and hand off
+#### 1.5 Apply the fast gate and hand off
 
 - Ideation has two total iterations. Evaluator verdicts remain independent report evidence; the fast
   `gate.md`, not their more-severe aggregate, controls the TODO.
@@ -268,7 +305,7 @@ P3 · Hand-off
   worktree. Verify the actual post-promotion tree and the Wrap-up-owned handoff body.
 - In EVALUATION, give two fresh independent evaluators the actual tree, full creation package, handoff, checks,
   and finalization plan. In RECORD, seal the verdict, findings, promotion evidence, and handoff.
-- Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.4. A blocking first pass
+- Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.5. A blocking first pass
   receives one complete revision; a blocking second pass stops with exact evidence and no third iteration.
 
 #### 3.2 Finalize authorized work
@@ -293,5 +330,4 @@ P3 · Hand-off
 - [`phase-1/SKILL.md`](phase-1/SKILL.md) owns the complete Phase 1 operation.
 - [`phase-2/SKILL.md`](phase-2/SKILL.md) owns the complete Phase 2 operation.
 - [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the complete Phase 3 operation.
-- [`delegation.md`](delegation.md) owns the shared specialist assignment contract.
 - [`agent-teams.md`](agent-teams.md) owns persistent-specialist scheduling and recovery.

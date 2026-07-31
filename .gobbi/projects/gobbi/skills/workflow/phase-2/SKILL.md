@@ -83,7 +83,8 @@ plan, task, receipt, or commit.
 - Give the leader the Ideation contract, Phase 1 evidence, settings, decisions, accepted findings, repository
   and worktree preimages, relevant memory, required skills, external-write authority, dependencies, and
   Planning iteration.
-- Use the exact assignment shape in [delegation.md](../delegation.md).
+- Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
+  1.3 fields.
 - Resolve agent-to-agent:
   - the complete task hierarchy;
   - stable `task-NN-slug` identities;

@@ -43,7 +43,7 @@ If either system is unavailable or returns invalid output, pause and show the ex
 
 ## Delegation contract
 
-The manager alone changes scope, makes user decisions, assigns runtime tasks, accepts work, and authorizes destructive actions. Use the shared assignment skeleton in `workflow/delegation.md` as the sole assignment shape.
+The manager alone changes scope, makes user decisions, assigns runtime tasks, accepts work, and authorizes destructive actions. Build every brief through `.gobbi/projects/gobbi/skills/delegation/SKILL.md`, then add the workflow fields from `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3.
 
 Claude Code may keep stable leader, executor, and assistant teammates when identity, assignment, dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team. Codex uses its native specialist mechanism. All worktree writes stay in one ordered writer chain; parallel work is limited to independent read-only analysis.
 

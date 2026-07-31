@@ -91,8 +91,8 @@ outcomes without rewriting history.
 
 #### 1.3 Lock the closure discussion contract
 
-- Give the Wrap-up specialist the complete closure inventory through the exact assignment shape in
-  [delegation.md](../delegation.md).
+- Give the Wrap-up specialist the complete closure inventory through the
+  [Delegation](../../delegation/SKILL.md) template plus the parent Workflow Step 1.3 fields.
 - Resolve agent-to-agent:
   - which typed candidates have sufficient evidence;
   - source-to-destination promotion mapping;
