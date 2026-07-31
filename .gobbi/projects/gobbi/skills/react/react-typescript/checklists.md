@@ -3,6 +3,9 @@
 Use this unchecked `react-typescript` source with general `evaluation` when the React root activates the
 TypeScript child; `RTSX` is the stable owner prefix.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### RTSX-SC-PROJECT-01 — Normal case: The installed TypeScript React seam is established
@@ -12,23 +15,16 @@ compiler configuration. A copied neighboring-version type or missing type-check 
 
 #### Checklist
 
-- [ ] RTSX-CK-PROJECT-01-01 — Project files establish the installed TypeScript line.
-- [ ] RTSX-CK-PROJECT-01-02 — Project files establish the installed React line.
-- [ ] RTSX-CK-PROJECT-01-03 — Project files establish the installed renderer.
-- [ ] RTSX-CK-PROJECT-01-04 — Project files establish the active framework.
-- [ ] RTSX-CK-PROJECT-01-05 — Project files establish the installed React type definitions.
-- [ ] RTSX-CK-PROJECT-01-06 — The active JSX mode is recorded.
-- [ ] RTSX-CK-PROJECT-01-07 — The active target libraries are recorded.
-- [ ] RTSX-CK-PROJECT-01-08 — The active strictness settings are recorded.
-- [ ] RTSX-CK-PROJECT-01-09 — The active module configuration is recorded.
-- [ ] RTSX-CK-PROJECT-01-10 — The project type-check command covers the affected React source or test.
+- [ ] RTSX-CK-PROJECT-01-01 — Project files establish the installed TypeScript line, installed React line, installed renderer, active framework, and installed React type definitions.
+- [ ] RTSX-CK-PROJECT-01-02 — The active JSX mode, target libraries, strictness settings, and module configuration are recorded.
+- [ ] RTSX-CK-PROJECT-01-03 — The project type-check command covers the affected React source or test.
 
 ## Structure
 
-### RTSX-SC-STRUCTURE-01 — Normal case: React-facing types express the real component boundary
+### RTSX-SC-STRUCTURE-01 — Normal case: Props and children express the real component boundary
 
-Props, children, state, events, refs, and JSX-facing values should use the installed React contract without
-hiding invalid states. A broad approximation, missing absence, or unsupported child claim fails.
+Props and children form the component's public TypeScript surface. A broad approximation or an unintended
+breadth in that surface fails the scenario.
 
 #### Checklist
 
@@ -36,11 +32,27 @@ hiding invalid states. A broad approximation, missing absence, or unsupported ch
 - [ ] RTSX-CK-STRUCTURE-01-02 — Each public component has a props object that describes every caller-visible input.
 - [ ] RTSX-CK-STRUCTURE-01-03 — Renderable children use the installed `ReactNode` contract only when that breadth is intended.
 - [ ] RTSX-CK-STRUCTURE-01-04 — Element-only children use the installed `ReactElement` contract only when primitives are invalid.
-- [ ] RTSX-CK-STRUCTURE-01-05 — No TypeScript annotation claims to restrict children to a component type that the JSX type system cannot enforce.
-- [ ] RTSX-CK-STRUCTURE-01-06 — A Hook type argument is added only when inference does not express the complete state or callback contract.
-- [ ] RTSX-CK-STRUCTURE-01-07 — Each ref type includes its applicable absent state.
-- [ ] RTSX-CK-STRUCTURE-01-08 — Each ref type names its exact owned target.
-- [ ] RTSX-CK-STRUCTURE-01-09 — Each JSX-facing event, ref, node, element, or style value uses installed React definitions rather than a handwritten approximation.
+
+### RTSX-SC-STRUCTURE-02 — Normal case: Hook, ref, and JSX-facing values use the installed contract
+
+State, callbacks, refs, events, nodes, elements, and styles have installed React definitions. A handwritten
+approximation, a redundant type argument, or a ref type that hides absence or ownership fails.
+
+#### Checklist
+
+- [ ] RTSX-CK-STRUCTURE-02-01 — A Hook type argument is added only when inference does not express the complete state or callback contract.
+- [ ] RTSX-CK-STRUCTURE-02-02 — Each ref type includes its applicable absent state.
+- [ ] RTSX-CK-STRUCTURE-02-03 — Each ref type names its exact owned target.
+- [ ] RTSX-CK-STRUCTURE-02-04 — Each JSX-facing event, ref, node, element, or style value uses installed React definitions rather than a handwritten approximation.
+
+### RTSX-SC-STRUCTURE-03 — Rule violation: A type claims an invariant JSX cannot enforce
+
+The JSX type system cannot restrict children to one component type. An annotation written as if it can states
+a guarantee the compiler never checks and fails the scenario.
+
+#### Checklist
+
+- [ ] RTSX-CK-STRUCTURE-03-01 — No TypeScript annotation claims to restrict children to a component type that the JSX type system cannot enforce.
 
 ## Performance
 
@@ -74,6 +86,17 @@ Wrong element events, unusable children, or false non-null guarantees fail.
 - [ ] RTSX-CK-USAGE-01-04 — Each handler reads `currentTarget` when it needs the element whose handler is executing.
 - [ ] RTSX-CK-USAGE-01-05 — Each ref consumer handles absence wherever the lifecycle permits it.
 
+### RTSX-SC-USAGE-02 — Expected failure: A type check fails on the affected source
+
+The focused type check reports an error on the affected React source or test. The repair belongs to the props,
+state, event, ref, boundary value, or configuration that owns the mismatch; clearing the error without
+repairing that owner fails the scenario.
+
+#### Checklist
+
+- [ ] RTSX-CK-USAGE-02-01 — Each type failure is repaired at the props, state, event, ref, boundary value, or project configuration that owns the mismatch.
+- Also applies: RTSX-CK-OVERALL-01-02 (a bypass does not stand in for the repair).
+
 ## Consistency
 
 ### RTSX-SC-CONSISTENCY-01 — Edge case: Framework, JSX, and installed definitions change the seam
@@ -84,12 +107,9 @@ Build, editor, test, and documentation disagreement fails.
 #### Checklist
 
 - [ ] RTSX-CK-CONSISTENCY-01-01 — Framework-generated or renderer-specific types are applied where that owner narrows the generic React contract.
-- [ ] RTSX-CK-CONSISTENCY-01-02 — The focused type check and affected build resolve the same React definitions.
-- [ ] RTSX-CK-CONSISTENCY-01-03 — The focused type check and affected build resolve the same JSX definitions.
-- [ ] RTSX-CK-CONSISTENCY-01-04 — Source examples compile under the installed project configuration.
-- [ ] RTSX-CK-CONSISTENCY-01-05 — Documentation examples compile under the installed project configuration.
-- [ ] RTSX-CK-CONSISTENCY-01-06 — Version-sensitive ref patterns match the installed React line.
-- [ ] RTSX-CK-CONSISTENCY-01-07 — Version-sensitive JSX patterns match the installed React line.
+- [ ] RTSX-CK-CONSISTENCY-01-02 — The focused type check and affected build resolve the same React and JSX definitions.
+- [ ] RTSX-CK-CONSISTENCY-01-03 — Source and documentation examples compile under the installed project configuration.
+- [ ] RTSX-CK-CONSISTENCY-01-04 — Version-sensitive ref and JSX patterns match the installed React line.
 
 ## Risk
 
@@ -113,6 +133,4 @@ The type surface must match the accepted runtime behavior.
 #### Checklist
 
 - [ ] RTSX-CK-OVERALL-01-01 — The React type surface permits exactly the accepted caller-visible behavior.
-- [ ] RTSX-CK-OVERALL-01-02 — No `any` bypasses the installed React contract.
-- [ ] RTSX-CK-OVERALL-01-03 — No broad cast bypasses the installed React contract.
-- [ ] RTSX-CK-OVERALL-01-04 — No copied declaration bypasses the installed React contract.
+- [ ] RTSX-CK-OVERALL-01-02 — No `any`, broad cast, or copied declaration bypasses the installed React contract.
