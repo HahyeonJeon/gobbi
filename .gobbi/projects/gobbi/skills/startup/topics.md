@@ -3,6 +3,23 @@
 This seed bank frames a Startup interview around project design. Each topic supplies compact prompts;
 the Startup operation owns question order, evidence handling, topic adaptation, and Phase checkpoints.
 
+## Contents
+
+1. [Phase 1 — Evidence, Problem, and People](#phase-1--evidence-problem-and-people)
+   - [Topic 1 — Current Reality, Trigger, and Authority](#topic-1--current-reality-trigger-and-authority)
+   - [Topic 2 — Problem, Outcome, and Success](#topic-2--problem-outcome-and-success)
+   - [Topic 3 — People, Jobs, Alternatives, and Value](#topic-3--people-jobs-alternatives-and-value)
+2. [Phase 2 — Project Boundary](#phase-2--project-boundary)
+   - [Topic 4 — Scope, Boundaries, and Non-goals](#topic-4--scope-boundaries-and-non-goals)
+3. [Phase 3 — Project and System Direction](#phase-3--project-and-system-direction)
+   - [Topic 5 — Capabilities and Journeys](#topic-5--capabilities-and-journeys)
+   - [Topic 6 — Experience, Adoption, and Compatibility](#topic-6--experience-adoption-and-compatibility)
+   - [Topic 7 — System, Data, Delivery, and Ownership Direction](#topic-7--system-data-delivery-and-ownership-direction)
+4. [Phase 4 — Viability and Guardrails](#phase-4--viability-and-guardrails)
+   - [Topic 8 — Trust, Safety, and Data Duties](#topic-8--trust-safety-and-data-duties)
+   - [Topic 9 — Constraints, Quality, and Validation](#topic-9--constraints-quality-and-validation)
+   - [Topic 10 — Risks, Capacity, and Continuity](#topic-10--risks-capacity-and-continuity)
+
 ## Phase 1 — Evidence, Problem, and People
 
 ### Topic 1 — Current Reality, Trigger, and Authority
