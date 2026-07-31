@@ -1,187 +1,158 @@
 ---
 name: wrap-up
-description: MUST load for Wrap-up. Promotes typed session staging, produces the evaluated handoff, and proves the session is ready for manager-owned Git finalization.
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit
+description: "MUST load for terminal closure. Wrap-up updates durable Memory, completes authorized Git operations, and displays an immutable handoff with a factual receipt."
+allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
 
 # Wrap-up
 
-Use this skill after all planned Execution tasks pass. The assistant accounts for typed staging, freezes and applies a complete promotion manifest inside the session worktree, writes one evidence-backed handoff body in session and durable memory, and proves the result ready for finalization.
+Wrap-up is the shared terminal operation for a manager closing accepted Cowork or Workflow work. It produces
+current durable memory, a finalized Git state, and an exact operator handoff followed by a factual receipt.
 
-Wrap-up is the final productive step. It uses DISCUSSION → WORK → EVALUATION → RECORD like every other productive step. It is not a separate closeout sequence. The manager alone performs Git finalization after PASS RECORD.
+The manager owns entry, the closure contract, user gates, Git actions, acceptance, display, and recovery. A
+delegated assistant applies Memory inside the bounded project memory root before the manager starts Git.
 
 ## Principles
 
-### Promotion begins only from typed staging
+### Memory owns durable context
 
-Typed staging is the complete source set. Scratch, discussion history, WORK artifacts, evaluator reports, outputs, and ad hoc direct candidates are not promotion sources. Empty staging is a valid result and must not be filled with invented material.
+Memory preserves the completed work, current decisions, and session progression that future work needs.
 
-### Plan the complete mutation before writing
+### Git is the final mutation
 
-Inventory every source, route, destination, preimage, lifecycle update, archive move, and reference change before the first durable-memory write. One invalid row blocks the complete apply.
+All tracked content is complete and frozen before Git finalization begins. Later evidence may be read and
+displayed, but it cannot be used to repair or decorate the result.
 
-### Prior evidence is immutable
+### Handoff and receipt contain different facts
 
-Earlier staging, creation artifacts, and evaluation reports are read-only evidence. Normalize only in a Wrap-up-owned candidate. Never repair an authoritative source in place.
+The tracked handoff describes delivered work and pre-finalization Git intent. The display-only receipt reports
+Git outcomes that direct evidence proves afterward.
 
-### The next session receives facts, not recollection
+### Recovery is more important than appearance
 
-Every completion claim cites an artifact, verification result, or commit. The evaluated handoff body is identical in its session output and durable note. Git facts created after evaluation belong only in the finalization receipt.
+A recoverable stop with exact evidence is complete failure handling. Unsupported or altered completion text
+is not.
 
 ## Rules
 
-### Must follow
-
-- **W-1 — Use the universal loop.** DISCUSSION locks closure inputs; dual-system WORK creates and applies the promotion and handoff; two fresh evaluators inspect the actual result; RECORD seals PASS artifacts.
-- **W-2 — Inventory typed staging only.** Recursively account for every file in every expected step-level and Execution-task staging directory. Each source has one outcome: promote, explicit defer, explicit drop, or already promoted.
-- **W-3 — Accept empty staging.** Record that the inventory is empty and continue. Do not create a note, finding, rule, or mistake merely to make staging non-empty.
-- **W-4 — Freeze all mutations and preimages.** The manifest covers the entire source set and every destination or related lifecycle mutation before apply. Capture whole-file preimages for shared destinations.
-- **W-5 — Write only inside the isolated worktree.** Resolve every durable target from the validated session worktree and prove it is not the main checkout or another worktree.
-- **W-6 — Apply idempotently.** Stable source identity plus the frozen mapping selects the destination. Equal bytes are a no-op; preimage drift halts and rebuilds the complete manifest.
-- **W-7 — Close with the right lifecycle, archive, and never delete.** A true one-record supersession is
-  reciprocal. Retirement, completion, and abandonment do not invent successors. Move every complete
-  terminal record to the sole project-root typed archive with its exact compatible reason. Preserve the
-  frozen body verbatim under Memory's archive-body contract, then repoint active inbound path references.
-- **W-8 — Validate the actual post-promotion tree.** Reconcile every changed path to the frozen manifest,
-  prove prior staging is unchanged, and run the applicable memory, link, vocabulary, and
-  topology guards. Apply Memory's link scope exactly: archive bodies stay outside relative-link
-  resolution, while every changed active carrier and every live namespace move remains link-gated.
-- **W-9 — Produce one nine-section handoff body.** The session output and durable note bodies match. Every claim and next action has direct evidence.
-- **W-10 — Keep finalization manager-owned.** The assistant does not push, merge, remove a worktree, delete a branch, or claim that a planned Git action succeeded.
-- **W-11 — Repeat full review after material change.** A change to the manifest, promoted tree, or handoff starts another complete iteration with dual-system WORK and two fresh evaluations.
-
-### Must not follow
-
-- Do not promote from working, evaluation, outputs, runtime history, or an ad hoc direct input.
-- Do not mutate prior staging to make it validate.
-- Do not apply a partial valid prefix before the complete batch validates.
-- Do not invent a destination type, area, schema field, scope, or collision policy.
-- Do not delete a durable record or session evidence.
-- Do not finalize Git before PASS RECORD.
+- **MUST freeze the exact closure inputs and authority before changing Memory.** Wrong-worktree evidence,
+  unrelated changes, an active writer, or an unresolved decision stops the operation before Git.
+- **MUST apply Memory before Git and write the tracked handoff as report memory.** Verify every affected
+  memory path, index, and link before freezing the report.
+- **MUST make the authorized Git sequence the final mutating operation.** Follow the current mode contract
+  and the [Git operation](../git/SKILL.md), with current authority for every external or destructive action.
+- **MUST freeze the handoff bytes and SHA-256 digest before Git, then reread and verify the exact source
+  afterward.** Display those bytes unchanged before appending a separate factual receipt.
+- **NEVER put final commit, publication, merge, branch-removal, or worktree-removal results in the tracked
+  handoff.** It may state only the Git intent known before finalization.
+- **NEVER repair, rewrite, or counterfeit completion after Git begins.** Complete the authorized Git sequence
+  or stop with the exact failure, retained objects, and first safe recovery command.
 
 ## Procedure
 
-### 1. Confirm closure inputs in DISCUSSION
+### Phase 1 — Freeze the closure contract
 
-Read every canonical step artifact, approved finding disposition, user decision, waiver, task commit, verification result, current branch and worktree state, and configured Git policy. Enumerate all expected staging directories from the locked task list and record owner.
+#### 1.1 Validate the completed work and session identity
 
-Present omissions, conflicts, final material additions, deferred work, risks, and publication intent to the user. Any final durable material must first be written to the correct typed Wrap-up staging directory under the normal RECORD rules. Do not create a special direct-input path.
+- Enter only when the calling Cowork or Workflow manager identifies accepted work as ready for terminal
+  closure. The caller owns its trigger, acceptance gate, and any required evaluation or record evidence.
+- Read the accepted scope, outcomes, artifacts, commits, verification, evaluation coverage, user decisions,
+  exclusions, risks, and unresolved items. Reject an unsupported completion claim or an unresolved material
+  decision.
+- Resolve the mode, Gobbi UUID, repository root, project memory root, base branch and commit, work branch,
+  absolute worktree, current head, and status from the current caller contract and direct evidence.
+- Prove that the worktree is registered to the expected branch, is not the main checkout, and contains no
+  unrelated change or concurrent writer. Stop before mutation with the observed root, branch, head, status,
+  and recovery point when any proof fails.
 
-Evidence: a user-approved closure contract and exact expected-source register.
+#### 1.2 Resolve Memory, handoff, and Git authority
 
-### 2. Inventory immutable staging
+- Freeze the UTC completion time, descriptive outcome title, closure inputs, project memory root, and intended
+  handoff path. Freeze the selected Git intent and every authority already granted by the mode contract.
+- For Workflow, read publication and related Git intent from its validated current contract. For Cowork,
+  default to local retention; push, pull request, issue, merge, or cleanup requires a separate current user
+  authorization through the Git operation.
+- Confirm that the manager owns user decisions, the final Git sequence, acceptance, display, and recovery.
+  Assign one assistant to the bounded Memory update; no other writer may run.
+- Treat every unperformed Git action as intent, not outcome. Missing Memory, external, destructive, or
+  finalization authority stops before Git and preserves the current recovery state.
 
-Recursively enumerate each expected typed staging directory at step and Execution-task altitude. Record path relative to the session root, type, size, hash, and source identity. Include empty directories in the accounting. Exclude every non-staging path.
+### Phase 2 — Update Memory and write the handoff
 
-Hash prior staging before further work. A missing expected staging directory is a record-shape failure. An existing empty directory is valid.
+#### 2.1 Apply Memory
 
-Evidence: a stable, sorted inventory whose row count reconciles to the filesystem.
+- Give the assistant the frozen closure inputs, exact project memory root, allowed paths, protected paths,
+  expected report, and verification contract through the shared delegation contract.
+- Apply the [Memory operation](../memory/SKILL.md) to the completed work. Load every applicable category skill,
+  including [Reports](../memory/reports/SKILL.md) for the handoff and
+  [History](../memory/history/SKILL.md) when the completed session produced a durable project change.
+- Create the handoff at
+  `<project-memory-root>/reports/note/YYYY-MM-DD-{descriptive-title}-handoff.md`, using the UTC completion date
+  and report naming rules. Update the report index and every other index or link required by Memory.
+- Review all other applicable durable categories, then create, update, move, or remove only what their loaded
+  owners require. A completed session with no durable project change creates no History record.
+- Require the assistant to reread every changed memory path and return the exact path set and verification.
+  Memory failure, an invalid path, unrelated work, or an unexplained stale copy stops before Git with the
+  recoverable worktree retained.
 
-### 3. Run the neutral WORK contract
+#### 2.2 Verify and freeze the handoff report
 
-Freeze the closure contract, staging inventory, routing owners, current durable preimages, prior artifacts, commits, verification, finalization policy, and handoff requirements as identical inputs to the workflow-owned dual-system WORK procedure.
+- Reread the complete Memory result as manager. Confirm that every change stays under the bounded project
+  memory root, follows its category owner, keeps required navigation current, and matches the accepted work.
+- Populate the tracked report from [the handoff template](handoff.md). Use factual work evidence and
+  pre-finalization Git intent only; use `None` for mandatory empty content.
+- Confirm that the report is independently readable, contains no secret or transient exhaust, and makes no
+  unsupported Git claim. Resolve an existing same-day filename with a more descriptive title, never a
+  sequence number or overwrite of another completed event.
+- Run the applicable Memory, link, and repository checks. Compare the full worktree diff with the frozen
+  closure contract and stop before Git if any changed path is unrelated, missing, or unverified.
+- Freeze the report's repository-relative path, exact bytes, and SHA-256 digest in manager runtime context.
+  Do not create a second tracked receipt or mutate any session record to hold the digest.
 
-Both systems independently design the promotion manifest and the complete nine-section handoff body. Cross-reviews challenge omission, routing, idempotency, evidence, wrong-tree risk, supersession, and resume usability. Route every material conflict to the user before apply.
+### Phase 3 — Finalize Git
 
-After synthesis and user decisions, write the durable handoff candidate through the notes template into the current Wrap-up typed staging directory. Recompute and freeze the complete staging inventory, now including that candidate. Derive the session handoff candidate from the same body. No other WORK artifact becomes a promotion source.
+#### 3.1 Perform the authorized Git operation as the final mutation
 
-Evidence: a validated dual-system package, one decision-complete handoff body, and a final typed-source inventory.
+- Immediately before the first Git mutation, recheck the worktree root, branch, head, status, accepted diff,
+  report path, and frozen digest. Stop before mutation when any input drifted.
+- Start the [Git operation](../git/SKILL.md) and make its authorized sequence the last mutation of any
+  filesystem, Memory, Git, session-record, or external state. Stage only closure-owned paths, inspect the
+  staged diff, create the required focused local commit, and reread that commit.
+- Continue only through the publication, merge, and cleanup actions that the validated Workflow settings or
+  a current Cowork Git authorization permits. Recheck mutable evidence before each dependent action and
+  retain unique work on ambiguity, refusal, unavailability, or failure.
+- If the local commit fails, do not edit, restage, or retry by changing content. Retain the worktree, record
+  the failed command and evidence, and use the retained handoff path as the Phase 4 source.
+- Record each resulting state literally as `not configured`, `not authorized`, `not attempted`, `deferred`,
+  `failed`, `completed`, or `retained`; branch and worktree may be `removed` only when direct evidence proves
+  removal.
 
-### 4. Render and validate every candidate
+### Phase 4 — Display the exact handoff
 
-For each staged file, ask the owning memory rules for its legal destination, durable frontmatter, scope, area, and lifecycle behavior. Read routing fields before stripping them from the candidate. Use user decisions only where the owner declares a material routing fork.
+#### 4.1 Reread and verify the handoff
 
-Render candidates in Wrap-up working space. Mechanical normalization changes only the candidate and records the source hash plus delta. Semantic gaps return NEEDS_CONTEXT. Validate every candidate and every shared-file result before continuing.
+- When the local commit completed, reread the handoff from that accepted commit's Git object using its exact
+  repository-relative path. This remains the preferred source after publication, merge, or cleanup.
+- When the local commit failed, reread the exact retained worktree path without changing it. Do not fall back
+  to remembered text, a draft, another branch, or a generated substitute.
+- Compute SHA-256 from the reread bytes and compare it with the frozen digest. A missing source, byte
+  difference, digest mismatch, or evidence of a post-Git mutation stops display without any repair.
+- On a stop, return the expected and observed source, path, digest, Git state, retained objects, exact failure,
+  and first read-only recovery command.
 
-Evidence: one validated candidate or explicit no-write outcome for every inventory row.
+#### 4.2 Display the handoff and factual Git receipt
 
-### 5. Freeze the promotion manifest and preimages
-
-Create one source-accounting row per staged source and one mutation row per path the apply may change.
-Include creates, replacements, shared-file appends, reciprocal true-supersession edits, non-successor
-terminal stamps, project-root archive moves, inbound-reference repoints, and any required index update.
-
-Capture absent or exact hashed preimages for every target, move source, move destination, and reference carrier. Freeze the complete manifest and its hash only after all rows and candidates validate. If any row is invalid, make zero durable writes.
-
-### 6. Recheck and apply inside the worktree
-
-Immediately re-read every frozen preimage. On any difference, make zero writes and rebuild the complete manifest against fresh state. When all match, apply only the frozen rows in stable order inside session.json.git.worktreePath.
-
-After each mutation, verify the expected bytes or move state. Stop at the exact failed row on I/O error and preserve the manifest for recovery. On rerun, equal candidate bytes at the same frozen target are a no-op; never allocate a suffix for the same stable source.
-
-### 7. Complete supersession and archive moves
-
-For each authorized true one-record supersession, write the new record and add reciprocal lifecycle
-links. For each authorized design retirement, plan completion/abandonment, or checklist retirement,
-keep `superseded_by` absent or null. Stamp the status-compatible archive reason and matching date, move
-the complete record to project-root `archive/{type}/{area}/`, and repoint every inbound path reference
-as one frozen mutation set. Preserve original type, scope, feature, and every body byte, including
-historical outbound relative-link text. A feature-local archive destination is invalid. The exact
-archive-body, active-carrier, and live-namespace link boundary remains owned by
-[`memory/rules.md` §2.7](../memory/rules.md#27-strict-archive-form); do not invent or narrow it here.
-
-Never delete or reduce the old record to a tombstone. If the source and new candidate conflict without authorized supersession, halt for a user decision.
-
-### 8. Verify the post-promotion project tree
-
-Diff the actual durable project tree against the frozen preimages. Every changed path must map to exactly one mutation row, and every mutation row must have the expected result. Re-hash prior staging and prove paths and bytes are unchanged.
-
-Run all applicable post-promotion validators from their current owners. Run Memory validation with no
-arguments for the live tree, then explicitly validate every newly rendered project-root archive path in
-strict mode. Prove each new archive body byte-identical to its frozen active preimage. Run the root
-Markdown-link validator over every changed active Markdown file, including inbound carriers, but do not
-submit frozen archive bodies to relative-link resolution. A stale active inbound path fails, and a live
-namespace move receives the complete changed-Markdown gate with no archive exception. Resolve a
-legitimate new guard carrier through a new complete iteration; do not patch it outside the manifest.
-Freeze final tree hashes and guard evidence for EVALUATION.
-
-### 9. Reconcile the handoff with the actual result
-
-The synthesized handoff body has these sections in this order:
-
-1. Outcome and agreed scope.
-2. Completed or shipped work, with artifact and verification evidence.
-3. Dual-system evaluation result, approved finding dispositions, and any waiver.
-4. Decisions to respect.
-5. Durable memory promoted or superseded.
-6. Pre-finalization Git state and authorized finalization plan.
-7. Unresolved, blocked, or deferred items with explicit reasons.
-8. Known risks and accepted exceptions.
-9. Exact next-session start point: objective, required reads, branch and worktree state, and first action.
-
-Use durable repository-relative paths for continuation. Each completion claim cites a commit and verification evidence. Each unresolved item has a runnable next action. Do not claim a commit, push, pull request, merge, or cleanup result that has not occurred.
-
-Compare every promotion and Git claim with the actual post-promotion tree and current Git state. If any material claim differs, do not edit the promoted note or session candidate in place. Start a complete new iteration, rebuild the handoff candidate and manifest from typed staging, and repeat dual-system WORK.
-
-### 10. Store one matching body in two locations
-
-The session candidate is destined for 4-wrap-up/outputs/handoff.md on PASS. The durable candidate originated in typed staging and was promoted to notes/{area}/{YYYY-MM-DD}-{slug}.md with the required notes frontmatter. Compare the body bytes, excluding only the durable frontmatter wrapper. They must match.
-
-Include both candidates and their hashes in the evaluated subject. The session output remains absent until PASS RECORD; the durable note is already part of the applied and verified promotion manifest.
-
-### 11. Submit the actual result to EVALUATION
-
-Give both fresh evaluators the complete creation package, frozen manifest, source inventory, all preimages, actual post-promotion tree, applied-delta comparison, prior-staging hashes, guard results, handoff candidates, and authorized Git plan. Neither evaluator sees the other's report.
-
-The evaluated subject is the actual tree, not the intended manifest alone. A material correction repeats the complete WORK and EVALUATION stages.
-
-### 12. Seal PASS artifacts and hand off finalization
-
-After dual PASS and the approved disposition batch, RECORD seals the session handoff, canonical promotion evidence, and durable pointers. Confirm the final handoff body still matches the evaluated durable note and the record verifies.
-
-Return control to the manager. The manager creates verified local commits and performs only configured, authorized publication or merge actions. The manager appends a factual finalization receipt after displaying the complete evaluated handoff; the evaluated body is not mutated to add those later facts.
-
-Completion evidence: complete staging accounting, frozen and idempotently applied manifest, unchanged prior evidence, green post-promotion tree, matching handoff bodies, dual PASS, PASS-only session outputs, and a manager-owned finalization plan.
+- Display the verified tracked handoff byte-for-byte unchanged. Do not add a heading, annotation, status, or
+  Git result inside its byte boundary.
+- After the complete handoff, append the separate conversation-only Git receipt from
+  [the handoff template](handoff.md). Keep every receipt row and derive its state and evidence from direct
+  current Git and external-system reads.
+- Give one exact first recovery command, or the template's explicit no-recovery value. Do not write the
+  receipt to the report, another Memory file, a session record, or the repository.
+- Complete only when the exact handoff was displayed, the receipt reports every Git action literally, no
+  post-Git mutation occurred, and the result is either finalized or retained at an exact recovery point.
 
 ## References
 
-- [Workflow Wrap-up adapter](../workflow/steps/wrap-up.md) owns entry, user gates, evaluator dispatch, transitions, and finalization handoff.
-- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent creation and reciprocal review mechanics.
-- [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
-- [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
-- [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
-  non-successor terminal states, strict archive behavior, and archive/link validation scope.
-- [Evaluation](../evaluation/SKILL.md) owns the independent review method, causal findings, verdict derivation,
-  and repeat review. The active workflow adapter owns dual reports and finding dispositions.
-- [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.
+- [Handoff template](handoff.md) defines the tracked operator brief and the separate display-only Git receipt.
