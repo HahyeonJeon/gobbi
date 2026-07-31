@@ -91,6 +91,6 @@ Exercise at least one applicable routing probe: a project-only design, a Python 
 | 6–7. Top-down whole design and bottom-up successive decisions | Structure, Usage, Consistency |
 | 8. Complete coverage and discussion-only validation plan | Performance, Usage, Risk, Overall |
 | 9. Checkpoint artifact and closed obligation trace | Aesthetics, Consistency |
-| 10. Planning readiness and workflow-independent handoff | Project, Consistency, Overall |
+| 10. Traceable Planning handoff | Project, Consistency, Overall |
 
 Every applicable IDEA-CK item appears in the report checklist. The evaluator adds an item for any target-specific case. A material revision repeats the complete seven perspectives plus Overall from a fresh evaluator.
