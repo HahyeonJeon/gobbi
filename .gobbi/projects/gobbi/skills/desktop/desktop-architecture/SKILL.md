@@ -121,3 +121,6 @@ genuinely recomputable at every launch, such as a derived ordering, and recomput
 it.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
