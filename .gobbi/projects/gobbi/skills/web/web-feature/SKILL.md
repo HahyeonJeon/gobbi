@@ -145,6 +145,7 @@ different things.
   review cadence, and the evidence that reopens the design.
 - Report implementation correctness, frontend acceptance, backend effects, release readiness, deployment
   authorization, deployment state, and live outcome validation as separate claims.
-- End at the release-ready handoff; deployment and live validation proceed only under their own authority.
+- End at the release-ready handoff to `web-deployment`; deployment and live validation proceed only under
+  their own authority.
 
 ## References
