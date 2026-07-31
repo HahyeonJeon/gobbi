@@ -1,6 +1,6 @@
 ---
 name: desktop-delivery
-description: "Use when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness."
+description: "MUST load when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---

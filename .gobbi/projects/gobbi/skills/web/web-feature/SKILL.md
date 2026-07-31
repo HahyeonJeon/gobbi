@@ -1,6 +1,6 @@
 ---
 name: web-feature
-description: "Use when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff."
+description: "MUST load when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---

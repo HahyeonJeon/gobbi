@@ -1,6 +1,6 @@
 ---
 name: web-platform
-description: "Use when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics."
+description: "MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---

@@ -1,6 +1,6 @@
 ---
 name: web-architecture
-description: "Use when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application."
+description: "MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---

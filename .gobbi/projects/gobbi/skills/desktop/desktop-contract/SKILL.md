@@ -1,6 +1,6 @@
 ---
 name: desktop-contract
-description: "Use when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery."
+description: "MUST load when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---

@@ -15,6 +15,6 @@ This root owns navigation only. Load every applicable child below; when an outco
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`desktop-contract`](desktop-contract/SKILL.md) | tool | Use when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery. |
-| [`desktop-delivery`](desktop-delivery/SKILL.md) | operation | Use when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness. |
-| [`desktop-release`](desktop-release/SKILL.md) | preference | Use when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults. |
+| [`desktop-contract`](desktop-contract/SKILL.md) | tool | MUST load when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery. |
+| [`desktop-delivery`](desktop-delivery/SKILL.md) | operation | MUST load when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness. |
+| [`desktop-release`](desktop-release/SKILL.md) | preference | MUST load when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults. |

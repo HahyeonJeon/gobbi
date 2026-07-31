@@ -1,6 +1,6 @@
 ---
 name: go-development
-description: "Load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification."
+description: "MUST load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---

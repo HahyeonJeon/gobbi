@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: "Use when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults."
+description: "MUST load when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---

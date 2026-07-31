@@ -1,6 +1,6 @@
 ---
 name: go-design
-description: "Load when designing or reviewing Go packages, exported APIs, functions, structs, methods, values and pointers, interfaces, errors, generics, mutable-data ownership, or ordinary resource lifetime."
+description: "MUST load when designing or reviewing Go packages, exported APIs, functions, structs, methods, values and pointers, interfaces, errors, generics, mutable-data ownership, or ordinary resource lifetime."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---

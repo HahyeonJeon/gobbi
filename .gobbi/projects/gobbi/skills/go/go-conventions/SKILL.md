@@ -1,6 +1,6 @@
 ---
 name: go-conventions
-description: "Load when choosing or reviewing Go names, files, packages, imports, documentation, comments, error text, or formatting."
+description: "MUST load when choosing or reviewing Go names, files, packages, imports, documentation, comments, error text, or formatting."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
