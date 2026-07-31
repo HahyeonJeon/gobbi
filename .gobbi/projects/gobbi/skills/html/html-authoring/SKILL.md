@@ -116,3 +116,5 @@ and repeat affected evidence.
 - Otherwise return the failure and first missing fact, owner action, or authorized recovery step.
 
 ## References
+
+- [HTML development evaluation checklist](checklists.md)
