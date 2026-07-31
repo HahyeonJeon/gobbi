@@ -23,10 +23,11 @@ conflicting.
 | **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-Cowork is manifest-free and never creates Workflow TODOs, phase receipts, RECORD evidence, or a Workflow
-Hand-off. Its explicit Wrap-up applies `memory` directly, commits durable updates or proves none are needed,
-then checks evaluation freshness. Workflow uses the native TODO list as its active route;
-phase receipts and committed evidence rebuild that route after a context boundary.
+Cowork owns its own Git contract, evaluation policy, and session locations, and never creates Workflow TODOs,
+phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Its explicit Wrap-up applies `memory` directly,
+commits durable updates or proves none are needed, then checks evaluation freshness. Workflow uses the native
+TODO list as its active route; phase receipts and committed evidence rebuild that route after a context
+boundary.
 
 ## Dual-system quality contract
 
@@ -83,12 +84,12 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 
 | Document | Owns |
 |---|---|
-| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, three-mode selection, and skill routing |
-| `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | Manifest-free Cowork orchestration |
-| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration |
+| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, nine-skill system load, and three-mode selection |
+| `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | User-led Cowork orchestration |
+| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration with its Git session contract, evaluation policy, and evidence layout |
 | `.gobbi/projects/gobbi/skills/delegation/SKILL.md` | Generic specialist assignment shape |
 | `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
 | `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
-| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Cowork direct memory updates and Workflow durable-memory method |
-| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Workflow session-record mechanics |
-| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Shared terminal Memory, Git, handoff, and recovery operation |
+| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Durable project-memory method |
+| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-evidence method and the session memory tree shape |
+| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Terminal Memory, handoff, and recovery operation |

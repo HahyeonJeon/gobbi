@@ -43,22 +43,43 @@ separate user-called judgment, never a substitute for stage quality.
   memory updates.
 - **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
   Claude-and-Codex round, and a bare call uses the whole clean Cowork branch through its current head.
-- **MUST run Cowork Wrap-up only after an explicit `wrap up` call and remain manifest-free.** Apply the
-  canonical Memory operation before the final evaluation-freshness decision; never create Workflow TODOs,
-  phase receipts, RECORD evidence, or a Workflow Hand-off.
+- **MUST run Cowork Wrap-up only after an explicit `wrap up` call.** Apply the canonical Memory operation
+  before the final evaluation-freshness decision; never create Workflow TODOs, phase receipts, RECORD-stage
+  evidence, or a Workflow Hand-off.
 
 ## Procedure
 
 ### Phase 1 — Establish the Isolated Cowork Session
 
-#### 1.1 Create or recover the worktree
+#### 1.1 Supply the Git contract and create or recover the worktree
 
-- Enter only after Gobbi records the user's Cowork selection. Use the [Git operation](../git/SKILL.md) to lock
-  the manifest-free Cowork contract and create one isolated branch and worktree before any tracked edit, or
-  recover only the branch/worktree the user explicitly names.
+- Enter only after Gobbi records the user's Cowork selection. Cowork owns its Git session contract and states
+  it as four properties for the [Git operation](../git/SKILL.md):
+
+| Contract property | Where Cowork gets it |
+|---|---|
+| Proved identity | The Gobbi UUID locked in this conversation, checked against the session-branch name and the provenance trailer of every Cowork commit. |
+| Immutable base commit | The clean head the manager inspects and the user confirms before the worktree exists. It never moves afterward. |
+| Registered worktree outside the main checkout | The path derived from the session branch, proved registered to that exact branch and resolving outside the main checkout. |
+| Declared publication intent | Local retention. Push, pull request, merge, and cleanup happen only through a separate explicit Git operation with current user authority. |
+
+- Supply that contract, then create one isolated branch and worktree before any tracked edit, or recover only
+  the branch and worktree the user explicitly names.
 - Verify and report the UUID, repository, base branch and commit, session branch, absolute worktree, head,
   clean status, unchanged main checkout, and recovery point. Stop with exact evidence when identity,
   isolation, provenance, base, writer ownership, or recovery cannot be proved.
+
+#### 1.2 Establish the Cowork session locations
+
+- Root the session at `{worktree}/.gobbi/projects/{project}/sessions/{date}-{uuid}/` and report that path with
+  the Step 1.1 evidence.
+- Use `{session-root}/memory/` as the session memory tree. The [Record operation](../record/SKILL.md) names
+  that tree's shape and Cowork roots it here; Step 4.1 memorizes it. Create each directory when its first
+  record needs it.
+- Use `{session-root}/work/` as the session-only sibling beside it. Selected shaping artifacts, plans,
+  scenarios, and checklists land there unless the user approves another path.
+- Never write a session-only kind inside `memory/`, and never write either location outside the verified
+  worktree.
 
 ### Phase 2 — Run the User-Topic Loop
 
@@ -80,11 +101,11 @@ separate user-called judgment, never a substitute for stage quality.
 - Build each specialist assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic,
   depth, selected stage, stable assignment, absolute worktree, branch, prerequisite commits, allowed and
   protected paths, expected artifact or implementation, verification, commit authority, and escape paths.
-- For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md) with
-  `caller-owned-independent-evaluation`, self-review its canonical artifact set, and create one focused
-  shaping commit. For selected Planning, assign a leader to apply [Planning](../planning/SKILL.md) to the
-  accepted design or locked topic contract, self-review its canonical artifact set, and create one focused
-  planning commit.
+- For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md), self-review its canonical
+  artifact set, and create one focused shaping commit. Ideation always evaluates its own result inline;
+  Cowork neither suppresses that round nor counts it as Phase 3 coverage. For selected Planning, assign a
+  leader to apply [Planning](../planning/SKILL.md) to the accepted design or locked topic contract,
+  self-review its canonical artifact set, and create one focused planning commit.
 - Assign each dependency-ready unit to an executor through [Execution](../execution/SKILL.md). Keep writers
   sequential; after every report, reread the promised artifact or implementation and commit, reproduce the
   relevant verification, and accept, repair, or redispatch it before dependent work begins.
@@ -98,6 +119,10 @@ separate user-called judgment, never a substitute for stage quality.
 
 #### 3.1 Evaluate one frozen subject
 
+- Cowork owns this evaluation policy. A selected stage evaluates or self-reviews inside its own operation:
+  Ideation always runs its inline independent evaluation, and Planning and Execution self-review or
+  self-verify. Cowork runs no automatic dual-system creation and no automatic Phase 3 round. Independent
+  Cowork evaluation happens only on an explicit `evaluate` call, and no inline stage evaluation satisfies it.
 - Enter only for an explicit `evaluate`. A bare call requires a clean worktree and freezes the whole Cowork
   subject from the locked base commit through the current head, including all commits, tree changes, topic
   contracts, accepted artifacts, user decisions, verification, status, and exclusions. A user-named narrower
@@ -118,11 +143,12 @@ separate user-called judgment, never a substitute for stage quality.
   verification, evaluation coverage, exclusions, risks, current project state, and existing memory as the
   closure input.
 - Assign an assistant through [Delegation](../delegation/SKILL.md) with the Cowork fields from Step 2.1 to
-  apply [Memory](../memory/SKILL.md). It must review durable future value, load every applicable Memory
-  category skill, update and verify only the current project's memory root, and create one focused memory
-  commit through the ordered Cowork writer chain.
+  apply [Memory](../memory/SKILL.md). It must read the Step 1.2 session memory tree together with the frozen
+  closure input, review durable future value, load every applicable Memory category skill, update and verify
+  only the current project's memory root, and create one focused memory commit through the ordered Cowork
+  writer chain.
   Accept an explicit verified no-change result when no durable update is needed.
-- Do not create Workflow TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off. Stop for missing
+- Do not create Workflow TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Stop for missing
   category guidance, unresolved user decisions, invalid memory paths, failed validation, wrong-tree evidence,
   or unrelated user work, then repair through the same memory assignment.
 - After the accepted Memory pass, check evaluation coverage against the resulting head. When no independent

@@ -106,8 +106,17 @@ P3 · Hand-off
 - Resolve defaults or customization with the user, including the Execution `maxIterations` value, which
   defaults to three total passes per task, role selections, Git finalization, required-system availability,
   and any narrow waiver authority.
-- Generate a Gobbi session UUID before deriving its branch or worktree. Create and verify one isolated session
-  branch and worktree through the Git skill.
+- Generate a Gobbi session UUID before deriving its branch or worktree. Workflow owns its Git session contract
+  and states it as four properties for the [Git skill](../git/SKILL.md):
+
+| Contract property | Where Workflow gets it |
+|---|---|
+| Proved identity | The session UUID generated in this step and recorded in `configuration.md`, checked against the branch name and every commit trailer. |
+| Immutable base commit | The base revision resolved with the user in this step and recorded in `configuration.md`. It never moves afterward. |
+| Registered worktree outside the main checkout | The path derived from the session branch, proved registered to that exact branch and resolving outside the main checkout. |
+| Declared publication intent | The Git finalization resolved with the user in this step and recorded in `configuration.md`. Phase 3 performs only what it authorizes. |
+
+- Create and verify one isolated session branch and worktree from that contract.
 - Create the workflow evidence root at
   `{worktree}/.gobbi/projects/{project}/sessions/{date}-{gobbi-session-id}/`. Write `configuration.md` there
   with the UUID, resolved settings, repository, base revision, branch, absolute worktree, runtime system, and
@@ -123,24 +132,28 @@ P3 · Hand-off
 
 - Each owner uses `working/iteration-N/` for the dual-system package,
   `evaluation/iteration-N/{claude.md,codex.md,gate.md}` for independent reports and the workflow gate,
-  `record/iteration-N.md` for the RECORD receipt, `staging/` for typed durable candidates, and `outputs/` for
-  PASS-only canonical artifacts.
+  `record/iteration-N.md` for the RECORD receipt, and `outputs/` for PASS-only canonical artifacts.
+- Root the session locations at that same evidence root. `{evidence-root}/memory/` is the session memory tree
+  whose shape the [Record skill](../record/SKILL.md) names; every step's durable records land there and
+  Wrap-up memorizes that tree. `{evidence-root}/work/` is the session-only sibling beside it and receives
+  plans, scenarios, checklists, and every other session-only kind no evidence owner above already holds.
+  Never write a session-only kind inside `memory/`.
 - A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
-  `open-decisions.md`. Validate it with
-  `.gobbi/projects/gobbi/skills/workflow/scripts/validate-dual-system-work.sh --root <evidence-root> --step <step> --iteration <n> --assignment <id> --runtime-system <claude|codex>`
-  and add `--task task-NN-slug` for Execution.
-- Draft and cross-review inputs follow the Record-owned schemas, but the manager-side writer renders them at
-  these workflow-owned paths. It does not invoke an imported operation that requires another progression
-  authority.
+  `open-decisions.md`. The dual-system requirement is a written contract carried by manager acceptance: the
+  manager reads the package directly, confirms both system-labeled drafts, both cross-reviews, the synthesis,
+  and the open decisions, and refuses the stage when one is missing or unlabeled. No script enforces it.
+- Workflow owns this evaluation policy. Every productive step runs its EVALUATION stage with two fresh
+  independent evaluators, one Claude and one Codex, and neither sees the other report. Ideation additionally
+  runs the inline evaluation its own operation always performs; the workflow accepts that redundant round and
+  never suppresses it. Evaluator verdicts are report evidence, and the `gate.md` decision alone advances the
+  TODO.
 - Each evaluation report is a complete human-readable Evaluation output. Every finding states an ID, severity,
   evidence, impact, cause, confidence, suggested direction, and `blocking: yes|no`.
 - Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
   IDs, actual blocking finding IDs, accepted nonblocking finding IDs, and the workflow decision. Each RECORD
-  receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and staging.
+  receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and the
+  durable records written into the session memory tree.
 - Gates and receipts are recovery evidence. Only the native TODO selects the next action.
-- Within this workflow, the Record skill supplies typed-staging and PASS-only-output guidance only. This
-  evidence layout and the native TODO override conflicting placement, transition, verdict, or command
-  instructions; never invoke a Record operation that requires or changes another progression authority.
 - Complete Configuration only after rereading `configuration.md`, verifying the evidence root, branch,
   worktree, settings, and TODO route, and then activate `P1 · Ideation · DISCUSSION · 1/2`.
 
@@ -158,7 +171,7 @@ P3 · Hand-off
   and external-action authority. Give the exact scope, write root, allowed and protected paths, mutation and
   commit authority, external-effect authority, one-writer boundary, applicable independence rules, and stop
   conditions. Specialists never update the workflow TODO or ask the user directly. Every RECORD assignment
-  names Step 1.2 as the evidence-only override.
+  names the Step 1.2 evidence layout and session locations as the paths it writes into.
 - In `Resources`, list exact canonical paths in this read order: Principles; every project rule or
   `NO_PROJECT_RULES`; the canonical role prompt; this Workflow skill; the active phase operation; the
   productive-step and task-specific skills; then the primary artifacts. Fresh specialists inherit no loaded
@@ -186,7 +199,7 @@ SKILLS LOADED:
 - Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded and load the
   [Ideation skill](../ideation/SKILL.md) before DISCUSSION. Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
 - When Startup was accepted and produced a confirmed set, validate the project, session, and iteration
   identity, `confirmed` status, completion checks, and complete brief register in
   `1-ideation/working/iteration-{n}/research/startup-design-brief-index.md`. The manager and leader must read
@@ -199,8 +212,8 @@ SKILLS LOADED:
   only when the user has locked the direction and each material unknown has an owner or decision.
 - In WORK, give that same contract and frozen evidence to independent Claude and Codex leaders. Freeze both
   system-labeled drafts; run Claude-on-Codex and Codex-on-Claude review in later, separate operations; freeze
-  both reviews; let the active runtime leader synthesize; resolve user-owned conflicts; and validate the
-  complete package with [`scripts/validate-dual-system-work.sh`](scripts/validate-dual-system-work.sh).
+  both reviews; let the active runtime leader synthesize; resolve user-owned conflicts; and read the complete
+  package against the Step 1.2 written contract before accepting it.
 - In EVALUATION, give the complete creation package to one fresh Claude evaluator and one fresh Codex
   evaluator. Neither sees the other report, and both cover Project, Structure, Performance, Aesthetics, Usage,
   Consistency, Risk, and Overall; each finding states severity and whether it is an actual blocker.
@@ -234,13 +247,13 @@ SKILLS LOADED:
 - Load the internal [`phase-2`](phase-2/SKILL.md) operation and the
   [Planning skill](../planning/SKILL.md) before DISCUSSION. Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
 - Use the canonical Ideation artifact, accepted decisions and findings, repository evidence, authority,
   required skills, dependencies, and writer boundary as Planning inputs.
 - In DISCUSSION, the manager and agents resolve task hierarchy, stable `task-NN-slug` IDs, dependencies,
   assignment, read-only lanes, one-writer order, acceptance, and verification without routine user questions.
-- Run WORK with the same independent drafts, freeze, reciprocal review, active-runtime synthesis, and package
-  validation used in Ideation.
+- Run WORK with the same independent drafts, freeze, reciprocal review, active-runtime synthesis, and direct
+  manager reading of the package used in Ideation.
 - Run EVALUATION with two fresh independent evaluators and the fast two-iteration gate. Run RECORD after every
   verdict; on PASS, verify that the canonical plan covers every Ideation obligation in dependency-valid order.
 - Resolve routine, contract-preserving gaps agent-to-agent. Stop only at the critical-blocker boundary stated
@@ -253,7 +266,7 @@ SKILLS LOADED:
   `P2 · Execution · <task-NN-slug> · DISCUSSION · 1/<configured-max>`.
 - Load the [Execution skill](../execution/SKILL.md) before task DISCUSSION and WORK, the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION, and the
-  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
 - For each task, let agents turn the plan entry, current preimage, exact path scope, dependencies, skills,
   authority, acceptance, and checks into an executable DISCUSSION contract.
 - In WORK, use independent Claude and Codex analysis over the same contract and frozen preimage, freeze both,
@@ -302,11 +315,13 @@ SKILLS LOADED:
   [Git](../git/SKILL.md) skills plus the internal [`phase-3`](phase-3/SKILL.md) operation before DISCUSSION.
   Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
 - Use canonical step artifacts, decisions, findings, waivers, task commits, verification, current Memory,
   the Wrap-up handoff template, and configured Git authority.
-- In DISCUSSION, apply Wrap-up Phase 1 to freeze the closure inventory, Memory boundary, tracked handoff path,
-  and Git intent without routine user questions.
+- In DISCUSSION, apply Wrap-up Phase 1 to freeze the closure inventory without routine user questions, and
+  supply its four properties from this workflow: the Step 1.2 session memory tree as the memorization source,
+  the current project's memory root as the bounded destination, the tracked handoff path under `4-wrap-up/`,
+  and the Step 1.2 declared publication intent as the authorized finalization sequence.
 - In WORK, run independent Claude and Codex Memory-and-handoff drafts, freeze both, cross-review after freeze,
   synthesize, and let one authorized writer apply Wrap-up Phase 2 inside the isolated worktree. Freeze the
   actual pre-Git tree and tracked handoff bytes.

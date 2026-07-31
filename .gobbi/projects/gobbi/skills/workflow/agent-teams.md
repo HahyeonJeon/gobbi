@@ -19,7 +19,7 @@ Start these specialists lazily:
 |---|---|
 | leader | A coherent Ideation or Planning chain |
 | executor | Related ordered tasks in one subsystem |
-| assistant | A coherent narrow support or promotion chain |
+| assistant | A coherent narrow support or memorization chain |
 
 Evaluators are always fresh and never join a persistent team.
 
