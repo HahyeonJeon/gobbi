@@ -111,3 +111,6 @@ Preferences apply only inside the Rules. A Rule wins every conflict.
 **Departure:** Introduce a new seam only when the current owner cannot express the contract, and keep configuration, trust, transform mechanics, and runtime decisions with their owners.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
