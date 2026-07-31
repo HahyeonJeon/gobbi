@@ -359,7 +359,7 @@ by `SKILL.md` Procedure step P7. Then add the React-specific verifications below
 
 ---
 
-## Overall (Stage 3) — React-specific anchors
+## Overall — React-specific anchors
 
 Step back from the per-perspective passes and read the change-set against the four React failure modes, then
 against what exists only **between** lenses — a pure-looking component whose state has two homes, a correct

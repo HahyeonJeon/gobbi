@@ -1063,10 +1063,8 @@ Every borrowed fact has one owner. This section names the owner; it never restat
   [`modules-tooling.md`](../typescript/modules-tooling.md) for the flag set and the import-extension fork,
   and [`async-resources.md`](../typescript/async-resources.md) for disposal.
 - [`evaluation`](../evaluation/SKILL.md) owns the evaluator perspectives, causal findings, and verdict
-  derivation. [`evaluation/scenario`](../evaluation/scenario/SKILL.md) owns scenario-set construction, and
-  [`evaluation/checklist`](../evaluation/checklist/SKILL.md) owns the operational checklist mechanics — its
-  terminal enum, its acceptance rule, and its evidence floor, which this skill's floors reuse rather than
-  restate.
+  derivation. [`evaluation/checklist`](../evaluation/checklist/SKILL.md) owns perspective-led scenario and
+  checklist-source construction, including the scenario classes and nested checklist rows this skill reuses.
 - [`vision`](../vision/SKILL.md) and [`vision/ui.md`](../vision/ui.md) own capture limits, and are loaded
   only when captured renderings are evaluated.
 - [`discussion`](../discussion/SKILL.md) owns question and decision quality at every `DESK-R27` gate.

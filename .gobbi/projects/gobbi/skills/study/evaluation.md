@@ -78,5 +78,5 @@ A material Study defect affects the ordinary artifact verdict:
   containment failure, concealed contradiction, unsupported high-risk claim, or unauthorized write or
   decision.
 
-The ordinary aggregator, finding ledger, user disposition gate, and full-iteration revision rules remain
+The ordinary aggregator, result ledgers, user disposition gate, and full-iteration revision rules remain
 owned by Evaluation and Workflow. Study never applies a finding or launches a retry.

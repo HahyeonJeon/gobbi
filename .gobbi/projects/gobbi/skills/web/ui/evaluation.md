@@ -9,7 +9,7 @@ When actual captures exist, load [`vision`](../../vision/SKILL.md) and
 [`vision/ui.md`](../../vision/ui.md) and apply their visual-inspection procedure. Never invoke vision merely to
 infer unrendered behavior. Framework evaluation remains independently owned by the applicable framework skill.
 
-## Stage 0 — Read and bind the target
+## Phase 1 extension — Read and bind the target
 
 Read the active phase objective/diff/evidence, the parent feature contract, accepted generic UI specification
 and evidence, all five files in this child, project browser/accessibility commitments, and applicable language/
@@ -49,7 +49,8 @@ generic UI evidence stays `NEEDS_CONTEXT`; it is not repaired by implementation 
    retained edge, confirm the source item's actual PASS condition and named evidence—not reverse-audit prose—
    preserve the full case-level `Obligation`. Preserve its ID, criticality, claim, applicability, pass
    condition, evidence, on-fail route, and source wording. Keep generic UI and root web items independently active.
-4. Copy each selection under `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
+4. Copy each selection under `## Prepared Baseline Additions` as an evaluator-owned coverage row. Set its
+   use-style to
    `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
    operational pause points.
 5. Resolve every evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>` and named

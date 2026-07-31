@@ -16,7 +16,7 @@ for a specific claim. There is **no `mistakes.md` in this skill's directory**, s
 skill-owned mistakes home is written by Wrap-up promotion, and naming a path that does not exist would fail
 the load closed.
 
-## Stage 0 — Frame the evidence
+## Phase 1 extension — Frame the evidence
 
 Before judging anything, fix what is being judged and what evidence exists for it.
 

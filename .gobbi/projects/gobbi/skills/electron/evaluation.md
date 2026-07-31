@@ -142,8 +142,8 @@ These three resolve only when the subject is `skills/electron/` itself.
 
 ## Selecting cases and checks
 
-Run this once the subject and its version are fixed, before the frame is frozen — the step is
-[`../evaluation/SKILL.md` § 3](../evaluation/SKILL.md#3-build-the-scenario-and-checklist-frame), and this
+Run this once the subject and its version are fixed, before the prepared baseline is frozen — the step is
+[`../evaluation/SKILL.md` § Phase 2](../evaluation/SKILL.md#phase-2--evaluate-checklists-tests-and-perspectives), and this
 procedure only tells that step which Electron cases and rows to take.
 
 1. **Load all three siblings** — this file, [`scenarios.md`](scenarios.md), and
@@ -187,7 +187,7 @@ procedure only tells that step which Electron cases and rows to take.
 ## Perspectives
 
 Each lens is the general perspective — defined in
-[`../evaluation/SKILL.md` § 5](../evaluation/SKILL.md#5-investigate-the-subject-across-perspectives) — narrowed
+[`../evaluation/SKILL.md` § Step 2.2](../evaluation/SKILL.md#22-review-each-perspective) — narrowed
 to what the desktop runtime adds. Every one of the 58 rows appears under exactly one lens: that lens is where
 its finding is recorded, not a claim that no other lens may observe the condition. All seven are walked even
 when the change does not exercise one; that lens may record zero findings.
@@ -357,7 +357,7 @@ add the Electron-idiom verifications below. Each names the rows it produces evid
 Step back from the per-lens passes and read the change against the five failure modes below, then against what
 exists only **between** lenses: a clean bridge over an unproven sender, a measured offload that lost its
 disposer, a green three-target run whose configs share one view. Verdict derivation itself is owned by
-[`../evaluation/SKILL.md` § 7](../evaluation/SKILL.md#7-derive-the-perspective-and-overall-verdicts).
+[`../evaluation/SKILL.md` § Phase 3](../evaluation/SKILL.md#phase-3--organize-and-validate-the-evaluation-results).
 
 | Mode | What it looks like in an Electron change-set |
 |---|---|

@@ -354,7 +354,7 @@ exactly once here and exactly once in the matrix.
 - **Types:** matched `{adversarial}`; primary `Adversarial`; coverage-role
   `{adversarial: remove HTML/UI/UX/web context and detect any hidden dependency}`.
 - **Actor/Given/When/Then:** CSS operator; given only coding, this bundle,
-  emitted CSS, and targets, when the eight-step procedure runs, then CSS-owned
+  emitted CSS, and targets, when the three-phase evaluation procedure runs, then CSS-owned
   work completes and other owners are explicitly routed outward.
 - **Failure oracle/evidence:** the run cannot proceed without a sibling skill or
   claims Electron-process authority; load contract, owner map, selected route,

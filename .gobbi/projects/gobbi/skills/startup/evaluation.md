@@ -125,5 +125,6 @@ retry.
 ## Completion proof
 
 The ordinary evaluation report is complete only when it contains all seven perspectives plus Overall,
-the full finding ledger, the completed applicable Startup checklist items, and its verdict. Verify that
+the full problem and optional-improvement ledgers, the completed applicable Startup checklist items, and its
+verdict. Verify that
 no additional Startup evaluation output or per-perspective file was created.

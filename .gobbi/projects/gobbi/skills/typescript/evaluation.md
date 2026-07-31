@@ -69,7 +69,7 @@ Procedure keys always carry the word `Procedure`.
 
 ## Selecting cases and checks
 
-Run this after the evaluation Stage 0 target read and before locking the Stage 1 Frames.
+Run this after Phase 1 target understanding and before freezing the Phase 2 prepared baseline.
 
 1. **Load all three** — this file, [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md), plus
    [`../coding/evaluation.md`](../coding/evaluation.md) for the independent language-agnostic axis.
@@ -81,7 +81,8 @@ Run this after the evaluation Stage 0 target read and before locking the Stage 1
    a specific `n/a: {reason}` for an inapplicable hard check the surface could plausibly activate — never omit it
    silently.
 4. **Stage, do not copy prose.** Put the selected `TS-CHECK-*` items into the copied phase checklist under exactly
-   `## Stage 1 Additions`, keeping their IDs and wording from `checklists.md` and editing neither source. Every
+   `## Prepared Baseline Additions`, keeping their IDs and wording from `checklists.md` and editing neither
+   source. Every
    evaluation still walks all seven perspectives — one the change does not exercise is still walked and may record
    zero findings. The triad adds no tenth output: findings stay in the seven perspective files + `overall.md`, and
    the filled `checklist.md` stays the coverage register.
@@ -217,7 +218,7 @@ step P7. Then add the TypeScript-idiom-specific verifications below.
 
 ---
 
-## Overall (Stage 3) — TypeScript-specific anchors
+## Overall — TypeScript-specific anchors
 
 Step back from the per-perspective passes and check the change-set against the four TypeScript failure modes, then
 against what exists only **between** lenses — a clean type surface hiding an un-validated boundary, a bounded

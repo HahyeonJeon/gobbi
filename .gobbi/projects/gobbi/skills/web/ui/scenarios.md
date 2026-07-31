@@ -7,9 +7,9 @@ UI research/prototype cases remain with [`../../ui`](../../ui/scenarios.md).
 
 Scale: nine families and 34 cases. Sensitive evidence is referenced, not copied.
 
-Family primary and secondary-category values, and case primary and coverage-role values, use the canonical
-taxonomies owned by [`scenario`](../../evaluation/scenario/SKILL.md). `Secondary/domain tags` add subject routing only;
-they never discharge a case-type minimum.
+The category and coverage-role labels below are local to this source. New evaluation checklist sources use the
+scenario classes owned by [`checklist`](../../evaluation/checklist/SKILL.md). `Secondary/domain tags` add
+subject routing only; they never discharge a case-type minimum.
 
 ## Coverage register
 

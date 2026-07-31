@@ -1,11 +1,12 @@
 # UX Design — Evaluation Entry
 
 Evaluator entrypoint for grading one UX design run. It extends the general Evaluation method with the UX
-scenario and checklist sources. It does not replace the eight-step method, perspectives, causal finding content,
-completed checks, or declared verdict derivation. When Gobbi calls it, the active workflow adapter continues to
-own its stages, finding metadata, scoring, output tree, and report contract.
+scenario and checklist sources. It does not replace the three-phase method, perspectives, causal problem
+content, optional-improvement boundary, completed checks and tests, or declared verdict derivation. When Gobbi
+calls it, the active workflow adapter continues to own finding metadata, scoring, output tree, and report
+contract.
 
-Load and read the complete UX bundle before building the evaluation frame. In Gobbi, this happens at Stage 0:
+Load and read the complete UX bundle during Phase 1, before assembling the prepared baseline:
 
 1. [`SKILL.md`](SKILL.md) — sole policy owner.
 2. [`ideation.md`](ideation.md) — user-decision procedure and gate trace.
@@ -15,8 +16,9 @@ Load and read the complete UX bundle before building the evaluation frame. In Go
 
 When used inside Gobbi, also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md`
 bundle. UX additions are
-copied into the active evaluator's filled checklist under `## Stage 1 Additions`; the shipped UX source remains
-unchecked. Findings use only the active Gobbi adapter's metadata and destinations.
+copied into the active evaluator's filled checklist under `## Prepared Baseline Additions`; the shipped UX
+source remains unchecked. Problems and supported improvements use only the active Gobbi adapter's metadata and
+destinations.
 
 ## Parent-clause crosswalk
 
@@ -39,12 +41,12 @@ unchecked. Findings use only the active Gobbi adapter's metadata and destination
 
 ## Selecting scenarios and checks
 
-Run this selection after Stage 0 target understanding and before the active evaluation freezes each Stage 1
-Frame.
+Run this selection after Phase 1 target understanding and before the active evaluation freezes the Phase 2
+prepared baseline.
 
 1. **Confirm target and status.** Extract the one outcome, current UX phase, feature design document, evidence
    set, prototype status, and acceptance claim. If the target has no clear What, Why, or How, use the active
-   evaluation's Stage 0 gate.
+   evaluation's Phase 1 gate.
 2. **Activate the invariant core.** Always select `UX-SCENARIO-01`, `03`, `05`–`18`, and `22`–`26`, plus every
    `UX-CHECK-*` item except conditional `UX-CHECK-18`. These cases distinguish a substantive completed run from
    big-bang polish, evidence theater, premature prototype work, cosmetic concepts, inaccessible evidence,
@@ -65,7 +67,8 @@ Frame.
    changing their ID, claim, pass condition, evidence, or on-fail route. Resolve them through the active
    checklist/evaluation state machine.
 8. **Extend only the run copy.** A newly discovered UX scenario or check becomes a `scenario_gap` or
-   `checklist_gap` finding and an active-run Stage 1 addition. Evaluators never edit the shipped UX bundle.
+   `checklist_gap` finding and an active-run perspective-derived addition. Evaluators never edit the shipped UX
+   bundle.
 
 ## Protected-waiver adversarial truth table
 

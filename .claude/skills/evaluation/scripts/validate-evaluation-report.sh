@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/evaluation/scripts/validate-evaluation-report.sh
