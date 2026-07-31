@@ -1,12 +1,11 @@
 # Writing a Tool Skill
 
-Operation-shaped child procedure for producing one tool skill. Load it only at P5 after the parent Skill
-Writing operation classifies the target as `skill-type: tool`. Its observable outcome is a self-contained,
-authoritative manual that helps agents understand and use one named tool or platform correctly.
+Use this child document at Step 2.1 after the parent Skill Writing operation classifies the target as
+`skill-type: tool`. It produces a self-contained, authoritative manual for understanding and using one named
+tool or platform correctly.
 
-The Procedure in this document belongs to the authoring operation; the target tool skill uses Manual rather
-than Procedure as its dominant section. This file remains a direct child document rather than an independently
-loadable skill, so the parent owns its loading, verification bundle, and frontmatter.
+This document owns the authoring Procedure, while the target tool skill uses Manual as its dominant section.
+The parent owns this direct child's loading, type selection, and frontmatter contract.
 
 ## Principles
 
@@ -35,17 +34,13 @@ the boundaries that let a reader interpret both working and non-working behavior
 
 ## Rules
 
-### Must-Follow
-
-- **MUST run this procedure only after P2 classifies the target as `tool`.** Return to P2 when the target owns a
-  broader ordered work outcome or mainly states tool-independent judgment and defaults.
+- **MUST run this procedure only after Step 1.3 classifies the target as `tool`.** Return to Step 1.3 when the
+  target owns a broader ordered work outcome, mainly states tool-independent judgment and defaults, or only
+  navigates a mixed domain child-skill family.
 - **MUST produce the exact tool target shape.** Use Frontmatter → Intro → Principles → Rules → Manual →
   References; keep Manual dominant; and add no Procedure.
 - **MUST keep one named tool or platform inside an explicit compatibility boundary.** Fence adjacent tools and
   broader workflows as non-goals, and keep setup or local sequences scoped to one tool capability.
-- **MUST keep every target Rule within the parent Rules contract.** Begin it with a bold normative lead, make
-  it binding, self-contained, testable, and distinct from every Principle, and keep the complete Rules section
-  to at most nine semantic items.
 - **MUST include only applicable Manual material.** Omit empty template headings and organize every retained
   capability, setup, syntax, input, output, side effect, default, limit, example, error, diagnosis, or recovery
   item for direct lookup.
@@ -55,96 +50,74 @@ the boundaries that let a reader interpret both working and non-working behavior
 
 ## Procedure
 
-### S1 — Lock the named tool and consumer tasks
+### Phase 1 — Model the Manual
 
-Name the exact tool or platform, supported versions or compatibility range, intended consumers, and the lookup
-tasks the skill must answer. Fence adjacent tools and broader workflows as non-goals.
+#### 1.1 Lock the named surface, consumers, and evidence
 
-### S2 — Read authoritative and live surfaces
+- Use the approved design to name the exact tool or platform, supported versions or compatibility range,
+  intended consumers, lookup tasks, adjacent-tool boundary, and non-goals.
+- Prefer official documentation, built-in help, schemas, source, and observed supported behavior; record any
+  material difference between documented and live behavior.
+- Inspect permission, cost, network, mutation, and compatibility boundaries before teaching or running an
+  example.
 
-Prefer official documentation, built-in help, schemas, source, and the installed version over recollection or
-third-party summaries. Record version-sensitive facts and any difference between documented and observed
-behavior. Inspect permission, cost, network, and mutation boundaries before running examples.
+#### 1.2 Select applicable Manual coverage
 
-### S3 — Inventory the Manual
+- Inventory only the prerequisites, capabilities, syntax, inputs, outputs, state, side effects, defaults,
+  limits, examples, errors, diagnosis, and recovery needed for the approved lookup tasks.
+- Group retained material by stable capability or question and omit empty headings or topics that do not
+  apply.
+- Return to parent Phase 1 when the target expands into a broader work outcome, tool-independent judgment, or
+  a domain navigation family.
 
-Select only applicable material:
+### Phase 2 — Write the Tool Skill
 
-- prerequisites and setup;
-- capabilities and when each applies;
-- commands, syntax, options, or application programming interfaces;
-- inputs, outputs, state, and side effects;
-- defaults and precedence;
-- limits, compatibility, and unsupported cases;
-- examples; and
-- errors, diagnosis, and recovery.
+#### 2.1 Create the complete skeleton
 
-The list is a menu, not mandatory boilerplate. Omit a subsection the tool does not need.
+- Render the approved frontmatter, Intro, Principles, Rules, Manual, References, and planned direct children
+  in their exact order.
+- Stamp `skill-type: tool`, use placeholders only to expose the approved structure, and write no substantive
+  prose until the skeleton is complete.
 
-### S4 — Create the complete skeleton
+#### 2.2 Write Manual as the core
 
-Render the four frontmatter slots and the required headings in their exact order. Stamp `skill-type: tool`,
-name every planned direct child, and use placeholders only to expose the intended structure. Do not write
-substantive prose until the skeleton is complete.
+- Organize Manual for direct lookup using stable capability names and the tool's own vocabulary; place syntax
+  beside semantics and name required inputs, outputs, side effects, defaults, and limits.
+- Keep setup and local sequences scoped to the named tool capability, and point to an operation skill when
+  the consumer needs an end-to-end work outcome.
+- Run or trace every command, snippet, and application programming interface example against the supported
+  surface; confirm its output and side effects, exercise an expected failure, and state its prerequisites,
+  permissions, cost, and compatibility conditions.
+- Mark an example as illustrative when it cannot be executed, and never present it as verified behavior.
 
-### S5 — Write Principles and Rules
+#### 2.3 Complete Principles, Rules, Intro, and References
 
-Principles explain durable usage judgment. Rules hold safety, correctness, permission, or compatibility
-invariants.
+- Write Principles for durable usage judgment and Rules for distinct safety, correctness, permission, or
+  compatibility invariants; apply the parent limits and normative expressions.
+- Write the Intro from the completed body without adding instructions or compatibility claims absent from
+  their owners.
+- Keep References limited to owned Markdown children, cite outside owners beside their claims, and leave the
+  heading empty when no internal child applies.
+- Re-read the target as a cold user and confirm that its vocabulary and lookup structure answer the approved
+  tasks without unstated context.
 
-Apply the parent rule-count and non-duplication contract. Inventory semantic rule items rather than bullets.
-Keep only binding, self-contained, testable constraints in Rules. A Rule may enforce a boundary motivated by
-a Principle, but it must not repeat the Principle's claim. Begin every item with a bold `MUST`, `MUST NOT`,
-`ALWAYS`, or `NEVER` lead.
+### Phase 3 — Review and Improve the Tool Skill
 
-### S6 — Write Manual
+#### 3.1 Review lookup behavior and evidence
 
-Organize Manual for lookup. Use stable capability names and the tool's own vocabulary. Put syntax beside its
-semantics, name required inputs and observable outputs, and distinguish defaults from configured behavior.
+- Test direct lookup for capability discovery, setup, syntax, input and output interpretation, expected
+  failure, and diagnosis; revise any answer that requires an unrelated workflow or private context.
+- Confirm the named-tool and compatibility boundaries, applicable Manual coverage, and separation between
+  Principles, Rules, and lookup material.
+- Verify every taught command, example, output, side effect, failure, and version-sensitive claim against its
+  stated owner or supported surface.
+- Confirm that internal References remain local and that the complete target also passes parent Phase 3.
 
-Short setup instructions and capability-local sequences are allowed. Stop before prescribing a broader work
-outcome. Point to an operation skill when the consumer needs an end-to-end workflow.
+#### 3.2 Correct and re-review the tool skill
 
-### S7 — Verify examples and failure guidance
-
-For every command, snippet, or application programming interface example:
-
-1. run or trace it safely against the supported version;
-2. confirm its output and side effects;
-3. exercise at least one expected failure; and
-4. state any prerequisite, permission, cost, or compatibility condition needed to interpret the result.
-
-Do not present an unverified illustrative example as a tested fact.
-
-### S8 — Finish Frontmatter and Intro
-
-Complete the four-key frontmatter contract from the parent. Begin the description with `MUST load`, state the
-exact load condition, and identify the skill as a tool skill for the named surface and consumer tasks.
-
-Write the Intro from the completed body. In a little more detail than the description, explain the named
-tool, consumers, load condition, supported task boundary, and kind of lookup material the reader will find.
-It may summarize the body but may not introduce instructions, compatibility claims, or owner facts absent
-from their owning sections.
-
-### S9 — Write References, test lookup, and accept the tool skill
-
-Keep the required References heading. Link only to Markdown child documents and child-skill entrypoints whose
-resolved paths stay beneath the directory containing the target `SKILL.md`. Cite an outside owner beside the
-claim it validates, never in References. Leave the heading empty when the skill has no allowed child material.
-
-Read the whole skill as a cold reader. Use one stable term for each concept, expand unfamiliar abbreviations
-at first use, keep one main claim per sentence, and replace vague, ornamental, or implied expressions with
-literal actors, conditions, tool vocabulary, and evidence.
-
-Give the reader lookup tasks for capability discovery, setup, syntax, input/output interpretation, expected
-failure, and diagnosis. Revise any answer that requires unstated session context.
-
-Then inspect the complete artifact. Confirm the frontmatter and description, skeleton-first record, aligned
-Intro, exact section shape, named-tool boundary, semantic Rule inventory, Principle-to-Rule separation,
-applicable Manual structure, example-verification evidence, claim-owner citations, local References, and
-cold-reader language all satisfy the parent and child contracts. Return to the owning step on any failure.
-
-Return to the parent classifier if the repair grows into a normative end-to-end workflow or tool-independent
-preference guidance.
+- Trace each finding to the earliest incorrect boundary, evidence source, coverage choice, skeleton section,
+  Manual entry, Principle, or Rule and propagate the correction through the complete target.
+- Repeat the affected lookup tasks and evidence checks; return to parent Phase 1 if the correction changes
+  the skill type.
 
 ## References
