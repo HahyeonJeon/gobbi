@@ -138,6 +138,9 @@ Specify and build policy, data, effects, failure, and recovery before transport 
   delayed, and unreconciled states.
 - Return contract drift, a fake-seam claim, failed policy, migration ambiguity, or an unsupported environment
   claim to its earliest owner.
+- When this backend outcome is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 
 #### 4.2 Prepare the bounded handoff
 
@@ -150,3 +153,6 @@ Specify and build policy, data, effects, failure, and recovery before transport 
   deployment, reconciliation, and live-health claim.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
