@@ -79,3 +79,6 @@ PREFER one consistent placement strategy when the selected framework permits alt
 exception only when ownership, compatibility, or lifecycle evidence earns the difference.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
