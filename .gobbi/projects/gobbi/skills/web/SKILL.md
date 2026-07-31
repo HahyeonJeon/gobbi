@@ -8,8 +8,8 @@ skill-type: domain
 # Web
 
 Web routes bounded feature delivery, browser-facing work, interaction behavior, authoritative backend work,
-project topology, security assurance, testing, diagnostic emission, Web Platform interpretation, and
-structural web choices.
+project topology, security assurance, testing, diagnostic emission, production build and deployment, Web
+Platform interpretation, and structural web choices.
 
 The root owns navigation only. Load every row whose trigger applies; each child owns its complete operation,
 manual, or preferences.
@@ -20,6 +20,7 @@ manual, or preferences.
 |---|---|---|
 | [`web-architecture`](web-architecture/SKILL.md) | preference | MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application. |
 | [`web-backend`](web-backend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's server, API, domain, data, provider, authorization, or operational behavior. |
+| [`web-deployment`](web-deployment/SKILL.md) | operation | MUST load when configuring a web build for production or when deploying, verifying, or reversing a web release, covering bundler configuration, chunking, asset hashing, production source maps, rollout, and rollback. |
 | [`web-feature`](web-feature/SKILL.md) | operation | MUST load when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff. |
 | [`web-frontend`](web-frontend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's browser-facing interface and experience. |
 | [`web-interaction`](web-interaction/SKILL.md) | preference | MUST load when choosing or reviewing a browser feature's interaction behavior, covering event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, listener hygiene and rate limiting, and WAI-ARIA widget patterns. |
