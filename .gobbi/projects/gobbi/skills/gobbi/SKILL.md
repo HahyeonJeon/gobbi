@@ -74,7 +74,7 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 | [`css`](../css/SKILL.md) | CSS language operation for browser and Electron renderer styles. | Relevant when work writes or reviews CSS; independently selectable. |
 | [`python`](../python/SKILL.md) / [`typescript`](../typescript/SKILL.md) | Language method skills. | Relevant when the task enters that language. |
 | [`react`](../react/SKILL.md) | Library method skill: the React-idiom layer, under `coding` and beside `typescript`. | Relevant when the task writes or reviews React, in TypeScript or in plain JavaScript. |
-| [`electron`](../electron/SKILL.md) | Electron desktop-application method: process model, sandboxed bridge and IPC, code-only security items, window and native integration, build split, and packaging. | Relevant when the task builds or reviews an Electron desktop application. |
+| [`electron`](../electron/SKILL.md) | Electron domain family for platform development, runtime lookup, conventions, Electron-specific testing, and release work. | Relevant when developing, testing, reviewing, packaging, or releasing an Electron application; load every applicable child routed by the domain root. |
 | [`codex`](../codex/SKILL.md) | Native Codex and Codex-peer invocation surfaces. | Relevant when the active runtime is Codex or an operation uses a Codex peer. |
 
 ## Procedure
