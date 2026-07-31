@@ -58,9 +58,9 @@ make_fixture() {
   printf '%s\n' \
     '{"env":{"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS":"1"},"teammateMode":"in-process"}' \
     > "$root/.claude/settings.json"
-  printf '%s\n' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
+  printf '%s\n' 'General | Cowork | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
     > "$root/.codex/AGENTS.md"
-  printf '%s\n' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
+  printf '%s\n' 'General | Cowork | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
     > "$root/.claude/CLAUDE.md"
   ln -s '.codex/AGENTS.md' "$root/AGENTS.md"
 
@@ -454,6 +454,31 @@ test_marketplace_and_role_contracts() {
   pass 'sync source topology rejects marketplace and role-wrapper drift'
 }
 
+test_entry_mode_contract() {
+  local codex_root="$tmp_root/missing-codex-mode" claude_root="$tmp_root/missing-claude-mode" log
+
+  make_fixture "$codex_root"
+  write_skill_file "$codex_root" alpha SKILL.md '# Alpha'
+  printf '%s\n' 'General | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' \
+    'DISCUSSION -> WORK -> EVALUATION -> RECORD' > "$codex_root/.codex/AGENTS.md"
+  log="$tmp_root/missing-codex-mode.log"
+  if run_sync "$codex_root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted a Codex entry without Cowork'
+  fi
+  assert_file_contains "$log" '.codex/AGENTS.md does not describe the General | Cowork | Workflow session-mode contract'
+
+  make_fixture "$claude_root"
+  write_skill_file "$claude_root" alpha SKILL.md '# Alpha'
+  printf '%s\n' 'General | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' \
+    'DISCUSSION -> WORK -> EVALUATION -> RECORD' > "$claude_root/.claude/CLAUDE.md"
+  log="$tmp_root/missing-claude-mode.log"
+  if run_sync "$claude_root" --check > "$log" 2>&1; then
+    fail 'sync --check accepted a Claude entry without Cowork'
+  fi
+  assert_file_contains "$log" '.claude/CLAUDE.md does not describe the General | Cowork | Workflow session-mode contract'
+  pass 'sync source topology rejects runtime entries that omit Cowork'
+}
+
 test_static_deletion_guards() {
   if grep -Eq 'rm[[:space:]]+-[^[:space:]]*r[^[:space:]]*f|rm[[:space:]]+-[^[:space:]]*f[^[:space:]]*r' "$sync_script"; then
     fail 'sync script contains recursive forced deletion'
@@ -482,5 +507,6 @@ test_bounded_walks
 test_hook_component_rejection
 test_manifest_hook_rejection
 test_marketplace_and_role_contracts
+test_entry_mode_contract
 
 printf 'PASS: %d sync reconciliation tests completed\n' "$tests_run"

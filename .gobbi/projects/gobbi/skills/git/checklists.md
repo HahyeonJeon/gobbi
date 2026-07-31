@@ -10,9 +10,9 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Run use-style:** `do-confirm`.
 - **Source state:** every item below remains unchecked. Work a fresh filled copy for each run.
 - **Source version:** the filled copy records this file's Git blob hash and review identity.
-- **Trace count:** 18 checks map one-to-one to 18 scenario seeds and one or more parent rules.
+- **Trace count:** 24 checks map one-to-one to 24 scenario seeds and one or more parent rules.
 - **Permitted terminal tokens:** `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`.
-- **Coverage closure:** all 18 rows have one terminal token with inspected evidence.
+- **Coverage closure:** all 24 rows have one terminal token with inspected evidence.
 - **Acceptance:** every applicable row is `PASS`. Coverage closure alone is not acceptance.
 - **Evidence rule:** a matching heading, setting, clean-looking status, or reported success is not enough without the named property and actual Git objects.
 
@@ -26,7 +26,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** one manifest-matching branch and worktree exist, the base commit is correct, and issue/push/pull-request activity is zero.
 - **Evidence:** version 5 manifest, worktree porcelain, branch log, status, and action trace.
 - **On fail:** open a blocking isolation finding and stop acceptance because the session cannot guarantee local-only delivery.
-- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-6](SKILL.md#g-6), [GIT-SCEN-01](scenarios.md#git-scen-01).
+- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-4](SKILL.md#g-4), [GIT-SCEN-01](scenarios.md#git-scen-01).
 
 ### GIT-CHECK-02
 
@@ -46,7 +46,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** main-checkout hashes and status stay unchanged, one session worktree remains, and no write or extra worktree occurs.
 - **Evidence:** resolved roots, before/after hashes/statuses, rejected command plan, and worktree inventory.
 - **On fail:** open a blocking wrong-tree finding and stop acceptance because user work or session isolation is at risk.
-- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-3](SKILL.md#g-3), [G-11](SKILL.md#g-11), [GIT-SCEN-03](scenarios.md#git-scen-03).
+- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-3](SKILL.md#g-3), [G-4](SKILL.md#g-4), [GIT-SCEN-03](scenarios.md#git-scen-03).
 
 ## Optional publication paths
 
@@ -58,7 +58,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** local and remote heads match, issue/PR counts do not change, and the worktree remains registered.
 - **Evidence:** settings, local/remote ref hashes, GitHub query, and worktree list.
 - **On fail:** open a publication-scope finding and stop acceptance.
-- **Sources:** [G-4](SKILL.md#g-4), [G-6](SKILL.md#g-6), [G-7](SKILL.md#g-7), [GIT-SCEN-04](scenarios.md#git-scen-04).
+- **Sources:** [G-4](SKILL.md#g-4), [GIT-SCEN-04](scenarios.md#git-scen-04).
 
 ### GIT-CHECK-05
 
@@ -68,7 +68,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** one matching request exists, no issue was invented, and repeated execution reuses the same request.
 - **Evidence:** settings, exact-head/base query, request body, issue inventory, and rerun result.
 - **On fail:** open a blocking optionality/idempotency finding and stop acceptance.
-- **Sources:** [G-4](SKILL.md#g-4), [G-6](SKILL.md#g-6), [GIT-SCEN-05](scenarios.md#git-scen-05).
+- **Sources:** [G-4](SKILL.md#g-4), [GIT-SCEN-05](scenarios.md#git-scen-05).
 
 ### GIT-CHECK-06
 
@@ -88,7 +88,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** the probe is rejected, local objects remain recoverable, and unavailable external actions are labeled not configured, deferred, or failed.
 - **Evidence:** settings, rejected flow, action trace, local object inventory, external error, and receipt.
 - **On fail:** open a blocking legacy-flow false-pass finding and stop acceptance.
-- **Sources:** [G-4](SKILL.md#g-4), [G-6](SKILL.md#g-6), [G-10](SKILL.md#g-10), [G-13](SKILL.md#g-13), [GIT-SCEN-07](scenarios.md#git-scen-07).
+- **Sources:** [G-4](SKILL.md#g-4), [GIT-SCEN-07](scenarios.md#git-scen-07).
 
 ## Focused verified task commits
 
@@ -100,7 +100,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** task allowlist, staged diff, commit tree, verification subject, stable task ID, and trailer all agree.
 - **Evidence:** plan task, final verification output, staged path/diff evidence, `git show`, trailer parse, and status.
 - **On fail:** open a blocking commit-integrity finding and stop acceptance.
-- **Sources:** [G-2](SKILL.md#g-2), [G-3](SKILL.md#g-3), [G-5](SKILL.md#g-5), [GIT-SCEN-08](scenarios.md#git-scen-08).
+- **Sources:** [G-2](SKILL.md#g-2), [G-3](SKILL.md#g-3), [GIT-SCEN-08](scenarios.md#git-scen-08).
 
 ### GIT-CHECK-09
 
@@ -122,7 +122,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** absence or mismatch of authority leaves the request, branch, and worktree unchanged and recoverable.
 - **Evidence:** decision artifact, approved/current heads, pull-request state, refs, and worktree list.
 - **On fail:** open a Critical authority finding and halt because an externally visible irreversible action was unauthorized.
-- **Sources:** [G-5](SKILL.md#g-5), [G-8](SKILL.md#g-8), [G-10](SKILL.md#g-10), [G-11](SKILL.md#g-11), [GIT-SCEN-10](scenarios.md#git-scen-10).
+- **Sources:** [G-4](SKILL.md#g-4), [GIT-SCEN-10](scenarios.md#git-scen-10).
 
 ### GIT-CHECK-11
 
@@ -132,7 +132,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** merge is absent under stale evidence and any repair produces a new verified head before another authority gate.
 - **Evidence:** head/check timeline, decision subject, merge query, repair commit, and verification results.
 - **On fail:** open a Critical stale-gate finding and halt merge.
-- **Sources:** [G-8](SKILL.md#g-8), [G-10](SKILL.md#g-10), [G-12](SKILL.md#g-12), [G-13](SKILL.md#g-13), [GIT-SCEN-11](scenarios.md#git-scen-11).
+- **Sources:** [G-4](SKILL.md#g-4), [GIT-SCEN-11](scenarios.md#git-scen-11).
 
 ## Safe cleanup
 
@@ -144,7 +144,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** clean state may proceed, dirty state retains worktree/branch and exact diff, and no force form runs.
 - **Evidence:** clean/dirty status and hashes, action trace, worktree list, and refs.
 - **On fail:** open a Critical data-loss finding and halt cleanup.
-- **Sources:** [G-9](SKILL.md#g-9), [G-10](SKILL.md#g-10), [G-11](SKILL.md#g-11), [G-12](SKILL.md#g-12), [G-13](SKILL.md#g-13), [GIT-SCEN-12](scenarios.md#git-scen-12).
+- **Sources:** [G-6](SKILL.md#g-6), [GIT-SCEN-12](scenarios.md#git-scen-12).
 
 ### GIT-CHECK-13
 
@@ -154,7 +154,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** the action/evidence order is exact, unrelated worktrees are unchanged, and every removed object is proven absent.
 - **Evidence:** merge association, base log, status, ordered commands, worktree inventory, refs, and unrelated-worktree hashes.
 - **On fail:** open a Critical cleanup-order finding and halt remaining deletion.
-- **Sources:** [G-9](SKILL.md#g-9), [G-11](SKILL.md#g-11), [G-12](SKILL.md#g-12), [GIT-SCEN-13](scenarios.md#git-scen-13).
+- **Sources:** [G-6](SKILL.md#g-6), [GIT-SCEN-13](scenarios.md#git-scen-13).
 
 ### GIT-CHECK-14
 
@@ -164,7 +164,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** the changed object is skipped, new state is reported, and no broad shared-root deletion occurs.
 - **Evidence:** preview and immediate snapshots, injected mutation, action/skip log, and surviving object inventory.
 - **On fail:** open a Critical race/data-loss finding and halt cleanup.
-- **Sources:** [G-8](SKILL.md#g-8), [G-9](SKILL.md#g-9), [G-12](SKILL.md#g-12), [GIT-SCEN-14](scenarios.md#git-scen-14).
+- **Sources:** [G-6](SKILL.md#g-6), [GIT-SCEN-14](scenarios.md#git-scen-14).
 
 ## Retained and interrupted recovery
 
@@ -176,7 +176,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** branch/worktree remain, unique commits are reachable, and the receipt names path, head, status, blocker, and first command.
 - **Evidence:** refs, worktree list/status, reachability, publication state, and receipt.
 - **On fail:** open a Critical recovery/data-loss finding and stop acceptance.
-- **Sources:** [G-10](SKILL.md#g-10), [G-11](SKILL.md#g-11), [GIT-SCEN-15](scenarios.md#git-scen-15).
+- **Sources:** [G-5](SKILL.md#g-5), [GIT-SCEN-15](scenarios.md#git-scen-15).
 
 ### GIT-CHECK-16
 
@@ -186,7 +186,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** current objects prove the prefix, already-complete work is reused, and only the first unproven action resumes.
 - **Evidence:** prior receipt, current local/remote refs, exact-head queries, worktree state, and resumed action log.
 - **On fail:** open an idempotency/recovery finding and stop acceptance.
-- **Sources:** [G-6](SKILL.md#g-6), [G-10](SKILL.md#g-10), [G-12](SKILL.md#g-12), [G-13](SKILL.md#g-13), [GIT-SCEN-16](scenarios.md#git-scen-16).
+- **Sources:** [G-5](SKILL.md#g-5), [GIT-SCEN-16](scenarios.md#git-scen-16).
 
 ## Handoff and receipt truth
 
@@ -198,7 +198,7 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** local commits, issue, push, pull request, merge, worktree, remote branch, and local branch each have an accurate explicit state.
 - **Evidence:** evaluated handoff, final response, commit log, refs, worktree list, GitHub queries, and receipt.
 - **On fail:** open a handoff-usability finding and stop acceptance.
-- **Sources:** [G-5](SKILL.md#g-5), [G-7](SKILL.md#g-7), [G-14](SKILL.md#g-14), [GIT-SCEN-17](scenarios.md#git-scen-17).
+- **Sources:** [G-5](SKILL.md#g-5), [GIT-SCEN-17](scenarios.md#git-scen-17).
 
 ### GIT-CHECK-18
 
@@ -208,7 +208,92 @@ Unchecked source register for evaluating the [Git operation](SKILL.md) against t
 - **Pass:** both handoff bodies retain their evaluated hashes and the receipt is structurally separate.
 - **Evidence:** pre/post handoff body hashes, final response boundary, and later Git facts.
 - **On fail:** open a blocking evaluated-subject-integrity finding and stop acceptance.
-- **Sources:** [G-14](SKILL.md#g-14), [GIT-SCEN-18](scenarios.md#git-scen-18).
+- **Sources:** [G-5](SKILL.md#g-5), [GIT-SCEN-18](scenarios.md#git-scen-18).
+
+## Manifest-free Cowork lifecycle
+
+### GIT-CHECK-19
+
+- [ ] **Criticality:** gate
+- **Claim:** Fresh Cowork creates exactly one isolated local branch/worktree before tracked editing and creates
+  no Workflow record.
+- **Applicability:** every fresh Cowork session; otherwise use a disposable repository fixture.
+- **Pass:** UUID precedes derivation, branch/path/base agree, the worktree is clean and registered, the main
+  checkout is unchanged, and `session.json` and `state.json` are absent from Cowork output.
+- **Evidence:** Cowork contract, before/after statuses, worktree porcelain, branch log, exact root proof, and
+  record-absence check.
+- **On fail:** open a blocking isolation or mode-boundary finding and stop acceptance.
+- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-4](SKILL.md#g-4),
+  [GIT-SCEN-19](scenarios.md#git-scen-19).
+
+### GIT-CHECK-20
+
+- [ ] **Criticality:** gate
+- **Claim:** Explicit Cowork resume reconstructs the same UUID and base from the named branch/worktree and
+  contiguous canonical provenance.
+- **Applicability:** resumed Cowork session; otherwise use a seeded provenance history.
+- **Pass:** no second object or manifest appears, the earliest matching session commit parent supplies the
+  base, and evaluation is absent unless its exact frozen subject is proved.
+- **Evidence:** branch parse, trailer sequence, base-parent calculation, worktree inventory, status, and
+  conversation evidence.
+- **On fail:** open a blocking recovery-identity finding and stop mutation.
+- **Sources:** [G-1](SKILL.md#g-1), [G-2](SKILL.md#g-2), [G-5](SKILL.md#g-5),
+  [GIT-SCEN-20](scenarios.md#git-scen-20).
+
+### GIT-CHECK-21
+
+- [ ] **Criticality:** gate
+- **Claim:** A Cowork leader commits only one accepted shaping artifact set and an executor commits only one
+  locked implementation unit.
+- **Applicability:** every Cowork writer assignment.
+- **Pass:** role, allowlist, staged diff, final verification, commit tree, UUID, assignment ID, and manager
+  reread agree.
+- **Evidence:** assignment contract, role identity, staged diff, verification output, `git show`, trailer, and
+  acceptance trace.
+- **On fail:** open a blocking role or commit-integrity finding and stop dependent work.
+- **Sources:** [G-2](SKILL.md#g-2), [G-3](SKILL.md#g-3),
+  [GIT-SCEN-21](scenarios.md#git-scen-21).
+
+### GIT-CHECK-22
+
+- [ ] **Criticality:** gate
+- **Claim:** Cowork rejects main-checkout writes, relative roots, hidden manifests, and other cosmetic
+  manifest-free implementations before mutation.
+- **Applicability:** unconditional adversarial probe.
+- **Pass:** the main checkout and Workflow record surfaces remain unchanged and one exact worktree remains the
+  only writer root.
+- **Evidence:** rejected path/state proposal, before/after hashes and statuses, record absence, and worktree
+  inventory.
+- **On fail:** open a Critical wrong-tree or hidden-state finding and halt.
+- **Sources:** [G-2](SKILL.md#g-2), [G-6](SKILL.md#g-6),
+  [GIT-SCEN-22](scenarios.md#git-scen-22).
+
+### GIT-CHECK-23
+
+- [ ] **Criticality:** gate
+- **Claim:** Cowork closure retains local branch/worktree objects unless a separate explicit Git operation has
+  current authority.
+- **Applicability:** every Cowork closure.
+- **Pass:** no network or cleanup action occurs without separate authority, and the receipt names base, head,
+  status, retained objects, and first recovery command.
+- **Evidence:** user-authority trace, action trace, refs, worktree inventory, and receipt.
+- **On fail:** open a blocking external-authority or recovery finding and stop acceptance.
+- **Sources:** [G-4](SKILL.md#g-4), [G-5](SKILL.md#g-5),
+  [GIT-SCEN-23](scenarios.md#git-scen-23).
+
+### GIT-CHECK-24
+
+- [ ] **Criticality:** gate
+- **Claim:** Ambiguous Cowork provenance, base, dirty work, or writer ownership pauses recovery without
+  discarding or rewriting anything.
+- **Applicability:** every ambiguous Cowork resume; otherwise use a seeded manual-commit or dirty-tree fixture.
+- **Pass:** mutation remains absent, unique work stays reachable, and the exact ambiguity and safe choices are
+  reported to the user.
+- **Evidence:** candidate bases, provenance sequence, status/diff, writer state, object inventory, and recovery
+  response.
+- **On fail:** open a Critical fabricated-identity or data-loss finding and halt.
+- **Sources:** [G-5](SKILL.md#g-5), [G-6](SKILL.md#g-6),
+  [GIT-SCEN-24](scenarios.md#git-scen-24).
 
 ## Pilot expectations
 
@@ -224,6 +309,9 @@ A valid pilot includes:
 8. a cleanup race that changes state after preview;
 9. an unmerged/deferred recovery run;
 10. a partial-prefix resume; and
-11. cosmetic issue-first and handoff-mutation probes.
+11. cosmetic issue-first and handoff-mutation probes;
+12. fresh and resumed manifest-free Cowork sessions;
+13. leader-versus-executor commit-boundary probes; and
+14. Cowork external-authority and ambiguous-recovery probes.
 
 Coverage closes only after every selected row has inspected evidence. Acceptance remains false if any applicable gate or required row is not `PASS`.
