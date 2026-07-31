@@ -7,289 +7,239 @@ skill-type: operation
 
 # Git
 
-Use this skill for the Git lifecycle of one Gobbi session. The operation creates one isolated branch and worktree after Configuration resolves settings, keeps every ordered Execution task in that worktree, requires focused verified local commits, and either retains the local recovery path or performs only the configured publication and user-authorized merge actions.
+Use this skill for the Git lifecycle of one selected Gobbi orchestration mode. It creates or recovers one
+isolated branch and worktree, keeps an ordered local history of focused verified commits, and either retains
+that recovery path or performs only the external and destructive actions the active mode and user authorize.
 
-The manager owns session-level Git lifecycle and external actions. An assigned executor owns only the task-scoped worktree writes, verification, staging, and focused local commit authorized by its brief. [`conventions.md`](conventions.md) owns deterministic branch, path, commit, trailer, issue, and pull-request formats.
+Workflow supplies a durable manifest-backed Git contract. Cowork supplies a manifest-free contract locked in
+the conversation and revalidated from direct Git evidence. The manager owns session-level setup, acceptance,
+publication, merge, cleanup, and recovery; a leader or executor owns only the writes and local commit granted
+by one assignment. [`conventions.md`](conventions.md) owns deterministic formats.
 
 ## Principles
 
-### One session is one isolated writer history
+### Keep one identity and one isolated writer history
 
-The Gobbi session UUID, not a runtime context ID or issue number, identifies the session branch and worktree. Every planned task shares that worktree and extends one ordered local history. A second writer or a fallback to the main checkout destroys attribution.
+One Gobbi UUID identifies one session branch and one linked worktree. Every accepted commit extends that
+history through one ordered writer chain; a second writer or a fallback to the main checkout breaks isolation.
 
-### Local delivery is the invariant
+### Make local delivery the invariant
 
-A clean verified local commit is required even when no remote, GitHub authentication, issue, push, or pull request exists. Publication is a policy choice layered on top of the local result; it is not a prerequisite for doing the work.
+A clean verified local commit is required even when no remote, GitHub authentication, issue, push, or pull
+request exists. Publication is a separate policy or user-authority layer, never a prerequisite for local work.
 
-### Authority precedes external or destructive action
+### Require authority before external or destructive action
 
-Configured publication permits the named push or pull-request path. It does not authorize merge, history rewriting, destructive cleanup, or modification of user Git configuration. Merge always remains a user decision.
+Only the manager may perform an authorized network or cleanup action. Merge, history rewriting, destructive
+abandonment, and configuration changes always require the exact current user authority this operation names.
 
-### Cleanup follows proof, never optimism
+### Prefer current evidence and recoverable stops
 
-A worktree or branch is removed only after the exact pull request is confirmed merged, the base is synchronized, and the session worktree is clean. Unmerged or deferred work remains intact at an exact recovery path.
-
-### Git evidence must describe the tree that actually exists
-
-Branch, worktree, commit, push, pull-request, merge, and cleanup claims come from direct Git or GitHub evidence. The evaluated handoff states the authorized plan before finalization; a later factual receipt records what actually happened without rewriting the handoff.
+Git claims come from the objects and worktrees that exist now, not a report or remembered state. When evidence
+is missing, stale, or contradictory, retain unique work and stop at an exact recovery path.
 
 ## Rules
 
-### G-1
+<a id="g-1"></a>
+### G-1 — Bind one isolated session identity
 
-Generate the Gobbi session UUID before deriving the branch or worktree. After the fresh-session defaults decision, create exactly one branch and one worktree for that session. Reuse both across all ordered Execution tasks. Do not create per-task worktrees.
+**MUST bind every session to one proved mode contract, Gobbi UUID, base commit, branch, and isolated
+worktree.** Generate the UUID before deriving the branch or worktree, and never create a per-task worktree.
 
-### G-2
+<a id="g-2"></a>
+### G-2 — Validate every writer root
 
-Resolve every write against the absolute `session.json.git.worktreePath`. A missing, null, mismatched, symbolic-link-escaped, or main-checkout path is an error. Never treat it as permission to write in the main checkout.
+**MUST resolve every write against the validated fully expanded worktree path and keep one ordered writer
+chain.** Use `git -C <absolute-worktree>` for Git commands, revalidate after context boundaries, and never use
+`git stash` to compare or preserve work.
 
-#### Worktree CWD discipline
+<a id="g-3"></a>
+### G-3 — Commit one verified assignment
 
-Shell current working directories do not persist across all runtimes and tool boundaries. Use the validated absolute worktree path for every file write and `git -C <absolute-worktree>` for every Git command. Confirm `git -C <absolute-worktree> rev-parse --show-toplevel` equals the manifest path before the first write and after any context boundary. Do not use `git stash` to compare or preserve worktree state; use `git show`, `git diff`, or a separate explicitly authorized worktree.
+**MUST create focused verified commits through the role authorized for the selected mode.** Stage only
+assignment-owned paths, inspect the staged diff, attach the canonical provenance trailer, and reread the
+commit before manager acceptance.
 
-### G-3
+<a id="g-4"></a>
+### G-4 — Separate external authority
 
-Keep one ordered worktree writer chain. Every planned Execution task produces a focused local commit only after its final verification passes. Stage only task-owned paths, inspect the staged diff, and attach the canonical `AI-Provenance-Record` trailer. Never push, merge, or clean up from an executor assignment unless a later manager-owned contract explicitly grants that distinct action.
+**MUST separate local commits from publication, merge, cleanup, and configuration authority.** Workflow
+follows its persisted publication settings; Cowork retains local objects unless a separate explicit Git
+operation receives current user authority.
 
-### G-4
+<a id="g-5"></a>
+### G-5 — Recheck evidence and retain recovery
 
-Treat `session.json.settings.git` as the publication contract:
+**MUST recheck mutable Git and GitHub evidence immediately before every dependent action and retain an exact
+recovery path on failure or ambiguity.** Resume from the first unproved action and report completed, deferred,
+failed, not-configured, and retained states literally.
 
-| Setting | Meaning |
-|---|---|
-| `publication: local` | Create verified local commits and retain the unmerged branch and worktree. |
-| `publication: push` | Create verified local commits and push the session branch. Do not open a pull request. |
-| `publication: pull-request` | Create verified local commits, push the session branch, and open or reuse a pull request. |
-| `createIssue: true` | Create or reuse an issue as an independent optional action. |
-| `draftPullRequest: true` | Create a new configured pull request as a draft. It has no effect on local or push-only publication. |
+<a id="g-6"></a>
+### G-6 — Reject destructive shortcuts
 
-An absent issue never blocks worktree creation, local commits, push, or pull-request creation. A pull request may have no linked issue.
-
-#### Runtime git environment
-
-Run [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) before a configured network action. The probe is read-only and reports unknown values honestly. Network and approval posture are runtime-owned; do not infer that push or `gh` will work from CLI presence alone. A blocked configured external action is reported and deferred unless the user separately authorizes a safe runtime change. Never edit `.git/config`, user Git configuration, Codex configuration, or Claude settings as an implicit remedy.
-
-### G-5
-
-Keep authority separated:
-
-| Action | Normal owner | Required authority |
-|---|---|---|
-| Create session branch and worktree | manager during Configuration | resolved defaults/customization decision |
-| Write, verify, stage, and commit one planned task | assigned executor | locked task brief |
-| Create or update issue | manager | `createIssue: true` and available GitHub path |
-| Push branch | manager | `publication: push` or `pull-request` |
-| Open or reuse pull request | manager | `publication: pull-request` |
-| Merge | manager | explicit user authority after the merge gate passes |
-| Remove worktree and branches | manager | confirmed merge plus clean-tree cleanup gate |
-
-No specialist may change scope, publication policy, or user authority.
-
-### G-6
-
-#### Prerequisites
-
-Validate only the prerequisites required by the configured path:
-
-- Every path requires a Git repository, the configured base branch, an ignored project worktree root, a unique session branch, and a writable Git/worktree posture.
-- Push additionally requires a configured remote and runtime-approved network access.
-- Pull-request publication additionally requires `gh`, authentication, repository access, and a usable remote.
-- Issue creation additionally requires the same GitHub access, but issue failure does not invalidate a local, push, or pull-request result.
-
-Recheck mutable prerequisites at the point of use. A missing external prerequisite defers that external action. It never causes a main-tree fallback or permits a false success claim.
-
-### G-7
-
-Run Git finalization only after Wrap-up PASS RECORD seals the evaluated handoff and promotion evidence. Before that boundary, create the task commits the plan requires but do not perform session publication, merge, cleanup, or final receipt claims.
-
-### G-8
-
-Merge requires all of these immediately before the merge command:
-
-1. explicit user authority for this merge;
-2. the pull request is open and points from the exact session branch to the configured base;
-3. all required checks are green for the current pull-request head;
-4. every planned task is complete with verified focused commits;
-5. Wrap-up has PASS; and
-6. the session worktree is clean.
-
-Any failed or stale condition stops merge. A draft pull request is made ready only under the same manager authority; draft state never implies merge consent.
-
-### G-9
-
-After a confirmed merge, perform cleanup in this order: synchronize the configured base with a fast-forward-only update; recheck the session worktree is clean; remove that exact worktree without force; prune worktree metadata; then delete the remote and local session branches through the safe branch-deletion rules. Recheck merge association and liveness immediately before each destructive step.
-
-For a normal merge, use `git branch -d`. A squash merge creates no ancestor relationship, so the narrow `git branch -D` exception is allowed only when pull-request association proves that the exact local branch was the head of the confirmed merged pull request. `-D` for a genuinely unmerged or unproven branch remains destructive and user-owned.
-
-### G-10
-
-If publication is local, publication is deferred, the pull request is open, merge is not authorized, merge is not confirmed, checks fail, or cleanup state becomes ambiguous, keep the session branch and worktree. Report their exact names, absolute path, head commit, current status, publication state, blocker, and first recovery command. Do not delete unique work merely because the workflow is stopping.
-
-### G-11
-
-Do not force-push, reset hard, mass-restore, rewrite published history, force-remove a worktree, delete an unmerged branch, close an unmerged pull request, delete an issue, or modify Git configuration without explicit user authority for that exact destructive action. Prefer additive commits, targeted read-only comparisons, standard worktree removal, and retained recovery paths.
-
-The only non-user-gated force form is the exact post-squash local `git branch -D` exception in G-9 after direct merge-association proof.
-
-### G-12
-
-Treat cleanup and publication as time-of-check/time-of-use-sensitive. Re-read branch head, worktree registration, worktree status, pull-request head and state, check status, and merge association immediately before the dependent action. If the evidence changed, stop and rebuild the plan from the current state.
-
-### G-13
-
-Handle conflicts and partial external failure without hiding state. A base-sync or merge conflict returns to an authorized worktree writer for resolution and full re-verification. A failed push, issue operation, pull-request operation, merge, or cleanup records the exact completed prefix and leaves remaining objects intact. Re-running uses current evidence and idempotently skips already-complete actions.
-
-### G-14
-
-Keep the evaluated handoff immutable after Wrap-up evaluation. After finalization, append a factual receipt that distinguishes `not configured`, `not attempted`, `deferred`, `failed`, and `completed` for local commit, issue, push, pull request, merge, worktree removal, remote-branch deletion, and local-branch deletion.
-
-### Prohibited shortcuts
-
-- Do not require an issue for a branch, commit, push, or pull request.
-- Do not publish merely because `gh` is installed or authenticated.
-- Require Wrap-up PASS before the first finalization action.
-- Do not use an idle notification, task-list state, or clean-looking summary instead of Git evidence.
-- Do not remove a dirty or unmerged worktree to make the repository look clean.
-- Do not use a recursively broad empty-directory deletion under the shared worktree root.
+**NEVER force-push, hard-reset, mass-restore, rewrite published history, force-remove a worktree, delete
+unproved unique work, or modify Git or runtime configuration without exact user authority.** The sole narrow
+exception is post-squash local `git branch -D` after direct proof that the branch was the confirmed merged
+pull-request head.
 
 ## Procedure
 
-### 1. Bind the operation to the session manifest
+### Phase 1 — Bind and Prove the Session Contract
 
-Read the version 5 `session.json`, version 3 `state.json`, current branch, worktree registration, status, and configured base. Confirm the Gobbi session UUID, session branch, absolute worktree path, publication settings, issue/PR identities, and current workflow cursor agree.
+#### 1.1 Select and validate the mode-specific Git contract
 
-For a resumed session, reuse the persisted settings and existing branch/worktree. Verify the current runtime context boundary was recorded by the manifest owner when required. Do not create another branch or worktree. For a fresh session, continue only after the manager reports the defaults/customize decision complete.
+- Read the active mode from the calling orchestration owner and bind exactly one contract:
 
-Evidence: manifest identity, `git worktree list --porcelain`, exact branch head, and worktree status.
+| Mode | Identity source | Required Git facts | Publication source |
+|---|---|---|---|
+| **Workflow** | validated version 5 `session.json` plus version 3 `state.json` | session UUID, runtime system, configured base branch and commit, branch, absolute worktree, current cursor | `session.json.settings.git` |
+| **Cowork** | conversation-locked contract plus direct Git evidence | mode, UUID, runtime system, start date, repository and project roots, base branch and commit, branch, absolute worktree, head, clean status | local retention until a separate explicit Git operation |
 
-### 2. Probe the required Git posture
+- Reject a missing, null, relative, main-checkout, mismatched, or symbolic-link-escaped worktree path. Confirm
+  `git -C <absolute-worktree> rev-parse --show-toplevel` equals the contract path before the first write and
+  after any context boundary.
+- For Workflow resume, reuse the validated manifest identity and settings. For Cowork resume, require the user
+  to name the retained branch or worktree explicitly and rebuild the contract through Step 1.2; never search
+  other worktrees for an implicit active session.
+- Evidence is the selected mode, contract source, UUID, base commit, branch, absolute worktree, registered
+  worktree record, head, and status.
 
-Run the retained posture probe and inspect the local repository without mutation. Validate the configured base and worktree-root ignore rule. Determine which external prerequisites apply from the publication and issue settings; do not run GitHub checks for a local-only result unless issue creation is configured.
+#### 1.2 Recover a manifest-free Cowork contract
 
-Classify each prerequisite as ready, unavailable, runtime-blocked, or not applicable. An unavailable GitHub path may defer only the actions that need it. A repository or worktree-isolation failure blocks session creation.
+- Validate the named branch against the session-branch format and extract its runtime prefix, start date, and
+  UUID. Confirm the named worktree is registered to that exact branch and remains outside the main checkout.
+- Inspect first-parent history for the earliest contiguous agent-authored commit whose
+  `AI-Provenance-Record` contains the same Cowork UUID. Its parent is the Cowork base commit; before the first
+  Cowork commit, the current clean head is the provisional base.
+- Recover the base branch only from unambiguous repository evidence or a current user confirmation. Stop when
+  manual commits, missing or malformed provenance, multiple plausible bases, a dirty conflicting worktree, a
+  branch/path mismatch, or another writer makes reconstruction ambiguous.
+- Treat independent evaluation as absent after recovery unless the current conversation proves the exact
+  frozen subject and completed round. Report the reconstructed contract and exact recovery point before work.
 
-Evidence: probe output plus direct checks for each applicable prerequisite.
+### Phase 2 — Create, Re-anchor, and Commit Local Work
 
-### 3. Create the session branch and worktree during Configuration
+#### 2.1 Probe posture and create one isolated worktree
 
-For a fresh session, derive the branch and worktree path through [`conventions.md`](conventions.md). Recheck the base and target path. Ensure neither the branch nor target worktree is already owned by another session.
+- For a fresh Workflow session, continue only after its settings decision. For a fresh Cowork session, inspect
+  the current checkout, branch, head, status, configured worktree root, ignore rule, existing worktrees, and
+  target branch/path before mutation.
+- Recommend the current clean branch and head as Cowork's base. Ask the user when the checkout is dirty,
+  detached, ambiguous, or conflicts with an existing target; do not silently exclude uncommitted work or
+  invent `main`, `master`, `develop`, or a remote default.
+- Run [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) for the local prerequisites required by
+  every mode. Probe remote and GitHub prerequisites only when Workflow settings or a separate Cowork Git
+  operation authorizes an external action.
+- Generate the Gobbi UUID before using [`conventions.md`](conventions.md) to derive the branch and absolute
+  worktree. Create them once from the proved base, then verify the worktree root, branch, base commit, clean
+  status, ignore posture, and unchanged main checkout.
+- If the same identity or target already exists, stop for recovery instead of adding a suffix, deleting it, or
+  creating another worktree.
 
-For a configured remote publication path, fetch and fast-forward the configured local base before branching when the remote is ready. For a local-only path, use the inspected local configured base unless the user separately requests synchronization. Never make network availability an unstated local-session prerequisite.
+#### 2.2 Re-anchor the single writer
 
-Create the branch and worktree once from that configured base. Verify the resulting worktree root, branch, and clean status before Record initialization. If dependency installation is required by the project, treat it as a separate configured project action and preserve any lockfile change as explicit work; do not assume network access.
+- Give every write-capable assignment its mode, UUID, stable assignment ID, fully expanded absolute worktree,
+  branch, allowlisted paths, protected paths, commit authority, and verification contract.
+- Permit one write-capable assignment at a time. Read-only helpers may run in parallel but may not write to the
+  worktree, Git objects, session records, or external systems.
+- Workflow authorizes an executor to write, verify, stage, and commit one planned Execution task. Cowork
+  authorizes a leader to do so for one locked Ideation or Planning artifact set, or an executor to do so for
+  one locked implementation unit.
+- After a specialist report, the manager rereads the promised artifact or implementation, reproduces the
+  relevant verification, checks the exact worktree path, and confirms the writer is no longer active before
+  accepting the result or assigning the next writer.
 
-If a same-identity worktree already exists, stop for recovery evidence rather than creating a suffix or deleting it.
+#### 2.3 Create one focused verified commit
 
-Evidence: exact branch, absolute worktree, base commit, worktree registration, and clean initial status.
+- After final-tree verification passes, inspect the unstaged diff and map every changed path to the locked
+  assignment. Stop if unrelated user work cannot be separated safely.
+- Stage only assignment-owned paths. Inspect the staged path list and full staged diff, construct the subject
+  and provenance trailer through [`conventions.md`](conventions.md), and create the local commit.
+- Reread the commit, confirm its tree contains the verified bytes, confirm the trailer uses the contract UUID
+  and stable assignment ID, and confirm no assignment-owned change remains uncommitted.
+- Specialists never push, merge, publish, clean up, delete branches, or alter configuration. Return the commit,
+  verification evidence, post-commit status, retained objects, and any exact blocker to the manager.
 
-### 4. Re-anchor every writer
+### Phase 3 — Finalize Only the Authorized Path
 
-Give each write-capable assignment the fully expanded absolute worktree and allowlisted paths. Before its first write, verify G-2. Permit only one writer at a time.
+#### 3.1 Freeze the pre-finalization evidence
 
-After a runtime context boundary or continued assignment, re-read the manifest and repeat the root check. A relative patch path, a path under the main checkout, or an unverified current directory blocks mutation.
+- Workflow enters only after Wrap-up PASS RECORD and uses its evaluated handoff and persisted finalization
+  plan. Cowork local retention needs no network action; any Cowork push, pull request, merge, or cleanup enters
+  only as a separate explicit Git operation with a current subject and current user authority.
+- Inventory the branch, base, head, accepted commits, provenance, worktree status, selected publication path,
+  optional issue or pull request, remote refs, checks, merge association, and surviving objects.
+- Return to the owning writer and create a new verified focused commit when authorized finalization-owned
+  content is still uncommitted. A material mismatch with an evaluated or accepted subject returns to its
+  orchestration owner before external action.
 
-Evidence: validated root and one active write-capable assignment.
+#### 3.2 Complete local retention or configured publication
 
-### 5. Create each planned task commit
+- For Workflow `publication: local` and ordinary Cowork closure, perform no network action. Verify the accepted
+  local commits and retain the branch and worktree with their exact base, head, status, and first continuation
+  command.
+- For authorized push or pull-request publication, rerun the posture and remote checks, confirm the intended
+  local head, push without force, and verify the remote ref equals that head. Stop and retain local recovery
+  objects if the action is unavailable, declined, or fails.
+- Workflow creates or reuses an issue only when `createIssue: true`; issue failure never invalidates an
+  otherwise authorized local, push, or pull-request result. A separately authorized Cowork issue action is
+  likewise independent.
+- For pull-request publication, query by exact head branch and repository. Reuse one open request with the
+  matching head and base or create one through [`conventions.md`](conventions.md); stop on multiple or
+  mismatched requests and retain the pushed branch.
 
-After a task's final-tree verification passes, inspect the unstaged diff and map every path to the locked task. Stage only those paths. Inspect the staged path list and full staged diff. Construct the commit message and provenance trailer through [`conventions.md`](conventions.md), then create the local commit.
+#### 3.3 Gate merge and cleanup
 
-Reread the commit, confirm its tree contains the verified bytes, and confirm no task-owned change remains uncommitted. Preserve unrelated user work and stop if it cannot be separated safely. Do not push from the executor path.
+- Ask for merge authority only after proving the exact open pull request, source branch, base branch, current
+  head, green required checks, complete accepted commits, clean worktree, and the active mode's completion
+  gate. Recheck all evidence after approval and immediately before merging.
+- On conflict, changed head, failing check, dirty worktree, unavailable action, or withdrawn authority, stop.
+  Resolve content only through an authorized writer, create and verify a new focused commit, then rebuild the
+  gate and obtain authority for the new head.
+- After a confirmed merge, fast-forward the base, recheck the exact worktree is clean and registered to the
+  merged branch, remove it without force, prune metadata, and remove only its specific empty parent with
+  `rmdir` when needed.
+- Delete the remote branch when authorized and still present. Delete the local branch with `-d`; use the
+  post-squash `-D` exception only after rechecking exact merged pull-request association. Verify every removed
+  object is absent and stop with surviving objects if any proof fails.
 
-Evidence: verification command results, staged diff, commit hash, trailer, and post-commit status.
+### Phase 4 — Recover and Report
 
-### 6. Freeze the pre-finalization state after Wrap-up PASS
+#### 4.1 Resume from current evidence
 
-After Wrap-up PASS RECORD, inventory the final task and promotion commits, branch head, worktree status, configured publication, optional issue/PR identity, and authorized finalization plan from the evaluated handoff. If the worktree has uncommitted finalization-owned content, create and verify the required focused local commit before any external action.
+- For retained local work, deferred or failed publication, an open pull request, interrupted cleanup, or a
+  context boundary, begin with a read-only inventory of the applicable contract source, local and remote refs,
+  branch head, worktree registration and status, accepted commits, pull-request state and head, checks, merge
+  association, and prior receipt.
+- Protect every live or dirty worktree. Continue from the first unproved action, idempotently reuse proved
+  external objects, and never delete an unmerged branch or unique edit merely because the session is stopping.
+- For partial cleanup after confirmed merge, rerun the complete merge, liveness, cleanliness, and association
+  evidence before each remaining destructive action.
 
-Any material mismatch with the evaluated plan returns to the owning workflow step. A factual change produced only by executing the authorized plan belongs in the later receipt.
+#### 4.2 Emit the factual receipt
 
-### 7. Complete local publication
+- Report the mode contract and UUID; base branch and commit; local commit hashes and verification; issue,
+  push, pull-request, and merge authority and results; worktree and branch retained or removed states; exact
+  blocker; and first recovery command.
+- Distinguish `not configured`, `not authorized`, `not attempted`, `deferred`, `failed`, `completed`, and
+  `retained`. Build every fact from direct evidence.
+- For Workflow, append the receipt after the immutable evaluated handoff. For Cowork, return it after the
+  conversation handoff or separate Git operation without inventing Workflow state or records.
 
-For `publication: local`, perform no network action. Verify the branch contains every required commit and the worktree status is clean or exactly records preserved unrelated user work that blocks finalization. Retain the branch and worktree under G-10.
-
-Record the exact recovery path, head commit, configured base, and first continuation command. Local publication is complete when those facts are reproducible; absence of a remote is not a defect.
-
-### 8. Push when configured
-
-For `publication: push` or `pull-request`, re-run the applicable posture and remote checks. Confirm the local branch head is the intended head, then push that branch without force. Verify the remote ref resolves to the same commit.
-
-If push is blocked, declined, or fails, stop the external sequence, keep the worktree and branch, and report the exact error and recovery action. Do not mark a pull request as attempted when its prerequisite push never succeeded.
-
-Evidence: posture result, push command result, and equal local/remote ref hashes or exact deferral error.
-
-### 9. Create an optional issue independently
-
-When `createIssue` is false, record issue as not configured. When true, look for a session-associated existing issue before creating one. Use the optional issue format in [`conventions.md`](conventions.md), store the resulting identity through the manifest owner, and continue the configured publication path.
-
-If issue creation fails, record the failure and continue a push or issue-free pull-request path when those actions remain authorized and possible. Never invent an issue number for branch naming or provenance.
-
-Evidence: configured boolean, lookup result, created/reused identity or exact failure, and unchanged publication authority.
-
-### 10. Open or reuse the pull request
-
-For `publication: pull-request`, query by exact head branch and repository. Reuse one open pull request whose head and base match; otherwise create one from the deterministic template. Apply draft state only when `draftPullRequest` is true for a newly created request. Do not require or synthesize a linked issue section.
-
-Verify the pull request head commit, base branch, state, URL, and optional issue association. If creation fails, retain the pushed branch and worktree and report recovery under G-10.
-
-Evidence: exact-head query, request identity and state, base/head hashes, body, and retained worktree.
-
-### 11. Gate and perform a user-authorized merge
-
-Ask for merge authority after the complete G-8 evidence is current. The merge question states the exact pull request, head, base, check status, and cleanup consequence. Without explicit approval, keep the open pull request and worktree.
-
-After approval, re-run the complete gate to close the time-of-check/time-of-use window. Merge using the project convention. Verify GitHub reports the exact pull request merged with a non-null merge timestamp and the remote base reports the merge result before entering cleanup.
-
-On a conflict, changed head, failing check, dirty worktree, or withdrawn authority, stop. Resolve code only through an authorized writer, create a new verified commit, push it, and rebuild the gate.
-
-Evidence: current authority decision, gate results, merge response, merge timestamp, and synchronized base result.
-
-### 12. Clean up only the confirmed merged session
-
-Synchronize the configured base with a fast-forward-only update. Re-read the session worktree status and require it to be clean. Confirm the worktree registration, branch head, and merged pull-request association again.
-
-Remove the exact session worktree without `--force`. Prune worktree metadata. If a nested branch path left an empty parent, use `rmdir` only on that specific parent chain; never scan or delete the shared worktree tree.
-
-Delete the remote session branch when it still exists. Delete the local branch with `-d` when Git recognizes the merge. For a verified squash merge only, use the G-9 `-D` exception after rechecking the exact branch-to-pull-request association. Verify each object is absent after its deletion.
-
-If any check fails, stop at that point and report the surviving objects. Never force-remove the worktree or delete an unproven branch to finish the sequence.
-
-Evidence: ordered action receipt plus post-action worktree and branch inventories.
-
-### 13. Recover a retained or interrupted session
-
-For resume, local publication, deferred publication, failed external action, or interrupted cleanup, start with a read-only inventory: manifest, branch head, local and remote refs, worktree registration and status, pull-request state and head, checks, merge association, and completed receipt actions.
-
-Protect any live or dirty worktree. Continue from the first unproven action, not from a remembered step. If the branch is unmerged, retain it unless the user explicitly authorizes destructive abandonment. If the worktree is orphaned but contains unique commits or edits, surface the exact recovery choices; do not clean it automatically.
-
-For partial cleanup after confirmed merge, re-run the G-9 and G-12 evidence before each remaining action. An already-absent object is idempotently complete only when its prior removal is supported by the current merged state.
-
-Evidence: fresh inventory, proven completed prefix, retained unique work, and first safe recovery action.
-
-### 14. Emit the factual finalization receipt
-
-After the authorized path stops or completes, build the receipt from direct evidence. Report:
-
-- local commit hashes and verification status;
-- issue number or `not configured`, plus actual create/reuse/failure state;
-- push remote and exact ref, or `not configured`/deferred/failure;
-- pull-request number, URL, head/base, and draft/open/merged state, or `not configured`;
-- merge authority and actual merge result;
-- worktree path and retained/removed state;
-- remote and local branch retained/removed state; and
-- the exact recovery command when anything remains.
-
-Append the receipt after the complete evaluated handoff. Do not edit the handoff body to make later Git facts appear pre-evaluated.
-
-Completion evidence is one verified local history plus either an exact retained recovery path or a fully evidenced authorized publication, merge, and cleanup result.
+Completion is one verified local history plus either an exact retained recovery path or a fully evidenced,
+authorized publication, merge, and cleanup result.
 
 ## References
 
-- [Git conventions](conventions.md) owns deterministic branch, path, commit, trailer, optional issue, pull-request, label, and merge-format mappings.
-- [Git scenarios](scenarios.md), [checklist](checklists.md), and [evaluation entrypoint](evaluation.md) exercise this operation without adding policy.
-- [Workflow](../workflow/SKILL.md) owns Configuration, workflow routing, user authority, and the post-Wrap-up finalization boundary.
-- [Execution](../execution/SKILL.md) owns task implementation and final-tree verification before commit.
-- [Wrap-up](../wrap-up/SKILL.md) owns the evaluated handoff and pre-finalization plan.
-- [Discussion](../discussion/SKILL.md) owns user decision cards and merge-authority questioning.
-- [Session manifest schema](../record/schemas/session.schema.json) owns the executable Git identity and publication-setting shape.
+- [Git conventions](conventions.md) owns deterministic branch, path, commit, trailer, issue, pull-request,
+  label, and merge mappings.
+- [Git scenarios](scenarios.md), [checklist](checklists.md), and [evaluation entrypoint](evaluation.md) exercise
+  both mode contracts without adding policy.
+- [Workflow](../workflow/SKILL.md) owns its durable Configuration, routing, and finalization boundary.
+- [Cowork](../cowork/SKILL.md) owns its user-led topic loop, evaluation call, conversation handoff, and explicit
+  closure.
+- [Execution](../execution/SKILL.md) owns implementation and final-tree verification before an executor commit.
+- [Discussion](../discussion/SKILL.md) owns user decisions.
+- [Session manifest schema](../record/schemas/session.schema.json) owns only the Workflow Git identity and
+  publication shape.
 - [Git posture probe](scripts/git-posture-probe.sh) owns the read-only runtime posture report.
