@@ -1,11 +1,11 @@
 ---
-name: html-authoring
-description: "MUST load when creating, repairing, or accepting an emitted HTML artifact. HTML Authoring is an operation skill for producing an exact artifact with proportionate evidence."
+name: html-development
+description: "MUST load when creating, repairing, or accepting an emitted HTML artifact. HTML Development is an operation skill for producing an exact artifact with proportionate evidence."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
-# HTML Authoring
+# HTML Development
 
 Use this operation to create, repair, or accept one HTML document or fragment. Its outcome is the exact
 emitted artifact, identified by bytes or digest, with proportionate evidence.

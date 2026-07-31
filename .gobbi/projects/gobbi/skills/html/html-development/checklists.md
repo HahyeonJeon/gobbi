@@ -1,7 +1,7 @@
 # HTML Development Evaluation Checklist
 
 This reusable unchecked source evaluates one HTML development change and its exact emitted document or
-fragment. It is governed by the [`html`](../SKILL.md) domain, [`html-authoring`](SKILL.md) operation,
+fragment. It is governed by the [`html`](../SKILL.md) domain, [`html-development`](SKILL.md) operation,
 [`html-platform`](../html-platform/SKILL.md) manual, and
 [`html-semantics`](../html-semantics/SKILL.md) preferences. The source commit that contains this file
 identifies the checklist version. Its stable owner prefix is `HTML`.

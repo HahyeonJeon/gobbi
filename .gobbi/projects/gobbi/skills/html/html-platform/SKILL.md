@@ -11,7 +11,7 @@ Use this manual for the [WHATWG HTML Living Standard](https://html.spec.whatwg.o
 realization in declared browser or Electron renderer targets. It answers conformance, parsing, compatibility,
 and evidence questions.
 
-It does not author artifacts or set general accessibility policy. Use `html-authoring` for the artifact
+It does not author artifacts or set general accessibility policy. Use `html-development` for the artifact
 outcome and `html-semantics` for element and accessibility choices.
 
 ## Principles
