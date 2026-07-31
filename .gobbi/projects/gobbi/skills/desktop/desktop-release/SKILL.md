@@ -61,3 +61,6 @@ A narrow support claim with direct evidence is stronger than a broad claim with 
 **PREFER** a forward fix for machines that may already have installed a faulty release. Choose rollback only when target-specific distribution mechanics and data or schema compatibility prove that rollback preserves user state, reaches the affected machines, and stays inside the supported-version promise.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
