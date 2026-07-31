@@ -23,7 +23,7 @@ Whether a change deserves motion at all, and what a transition must communicate,
 [`web-interface`](../../web/web-interface/SKILL.md) or
 [`desktop-interface`](../../desktop/desktop-interface/SKILL.md). Motion a script drives from a live input —
 a pointer drag, a scroll position, a sequence that must reverse from where it stands — belongs to
-`web-interaction`, which takes the scale, the safe-property limit, and
+[`web-interaction`](../../web/web-interaction/SKILL.md), which takes the scale, the safe-property limit, and
 the reduced-motion obligation below as given. Rules define the valid choices, Preferences select defaults
 inside them, and a Rule wins every conflict.
 
@@ -113,8 +113,8 @@ element's resting state.
 [Baseline 2024](https://developer.mozilla.org/en-US/docs/Web/CSS/@starting-style), so older targets need the
 fallback that `css-conventions` requires.
 
-**Departure:** Use a keyframe animation, or a scripted two-frame class toggle owned by `web-interaction`,
-when a declared target predates support.
+**Departure:** Use a keyframe animation, or a scripted two-frame class toggle owned by
+[`web-interaction`](../../web/web-interaction/SKILL.md), when a declared target predates support.
 
 ### Compositor hints
 
@@ -158,6 +158,7 @@ movement is the strongest vestibular trigger and the hardest to reduce well.
 **Departure:** When the linkage is accepted, a declarative `animation-timeline` is preferable to a scripted
 one but is
 [not Baseline](https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline), so it needs direct
-target evidence; route the scripted alternative and its listener contract to `web-interaction`.
+target evidence; route the scripted alternative and its listener contract to
+[`web-interaction`](../../web/web-interaction/SKILL.md).
 
 ## References

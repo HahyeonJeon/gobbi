@@ -11,6 +11,8 @@ Electron owns navigation for Electron platform work. It routes to focused child 
 
 Load every child whose trigger applies. A task may need several children, such as development plus design and testing.
 
+An Electron renderer's interaction behavior — event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, and WAI-ARIA widget patterns — is owned by [`web-interaction`](../web/web-interaction/SKILL.md), which applies to any browser surface. Load it directly; Electron children own the process, bridge, window, and platform boundaries around the renderer rather than the behavior inside it.
+
 ## Child Skills
 
 | Child skill | Type | Load when |
