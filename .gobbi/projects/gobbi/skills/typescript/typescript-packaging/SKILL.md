@@ -104,6 +104,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Rebuild and recreate the archive from the accepted tree.
 - Re-run package metadata, declaration, consumer, license, provenance, and vulnerability gates required by the repository.
 - Bind all evidence to the exact archive digest or contents being proposed.
+- When this package work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `typescript` sibling supply the applicable conditions in both author and review-only modes;
+  the general Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Confirm release authority
 
@@ -112,3 +115,6 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Verify registry metadata and installation after publication; if publication is not authorized, stop at a publication-ready artifact.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
