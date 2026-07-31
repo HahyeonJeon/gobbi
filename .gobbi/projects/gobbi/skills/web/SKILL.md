@@ -21,6 +21,7 @@ manual, or preferences.
 | [`web-backend`](web-backend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's server, API, domain, data, provider, authorization, or operational behavior. |
 | [`web-feature`](web-feature/SKILL.md) | operation | MUST load when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff. |
 | [`web-frontend`](web-frontend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's browser-facing interface and experience. |
+| [`web-interface`](web-interface/SKILL.md) | preference | MUST load when choosing or reviewing a browser feature's project identity, design-evidence threshold, interface concept exploration, aesthetic system, or interaction and motion intent. |
 | [`web-platform`](web-platform/SKILL.md) | tool | MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics. |
 | [`web-security`](web-security/SKILL.md) | operation | MUST load when a web change crosses a trust boundary; handles identity, sessions, protected or sensitive data; accepts untrusted content; changes authorization, providers, dependencies, security configuration, or public exposure; or requires security review. |
 | [`web-testing`](web-testing/SKILL.md) | operation | MUST load when designing, writing, running, diagnosing, or reviewing tests for a web application or feature. |
