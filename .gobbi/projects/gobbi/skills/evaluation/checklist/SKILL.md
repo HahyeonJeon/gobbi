@@ -122,11 +122,14 @@ Use this shape:
 - State one binary, independently answerable condition specific to the scenario.
 - Write the row as a condition, not an action log. Keep it stable under prose reordering.
 - Exclude test specifications, evidence metadata, severity, scoring, and remediation instructions.
-- Define each row once beneath its owning scenario. Reference its ID when another scenario uses the same row.
+- Define each row once beneath its owning scenario. When another scenario reuses that row, write
+  `- Also applies: <row ID> (<short label>).` beneath its own rows. The ID resolves to the owning scenario,
+  and the line carries no checkbox, so it stays visible without counting toward the six-row cap.
 - Split a row that states two different conditions. Never split a row that applies one condition to several
   members of a set: keep one row that names every member, and never generalize the members away.
-- Decide with a placeholder test. Replace each row's varying subject or object with a placeholder, and treat
-  identical residual sentences as one condition carried by one row.
+- Decide with a placeholder test. Replace only the varying subject or object with a placeholder and leave
+  every verb phrase as written. Merge only when the residual verb phrases name the same required state;
+  broadening a verb phrase to make two rows match proves two states, not one.
 - Read this boundary with the six-row scenario cap at Step 4.1. The cap alone invites compound rows, and this
   boundary alone depends on the author noticing the fan-out.
 
@@ -136,6 +139,7 @@ Use this shape:
 #### Checklist
 
 - [ ] <OWNER>-CK-<PERSPECTIVE>-NN-NN — <condition>
+- Also applies: <OWNER>-CK-<PERSPECTIVE>-NN-NN (<short label>).
 ```
 
 #### 3.2 Reconcile each scenario checklist
