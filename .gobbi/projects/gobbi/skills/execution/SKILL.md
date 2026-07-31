@@ -65,8 +65,8 @@ repair that cause, and verify the resulting whole again.
 
 #### 1.2 Study for the implementation
 
-- Load the governing project rules, applicable implementation, language, framework, platform, and tool skills,
-  and their applicable known mistakes before making decisions in those domains.
+- Load the governing project rules and applicable implementation, language, framework, platform, and tool
+  skills before making decisions in those domains.
 - Study the closest internal evidence first: accepted design and research, source definitions and call sites,
   tests, documentation, configuration, schemas, build and runtime behavior, project memory, relevant history,
   prior attempts, and established project patterns.

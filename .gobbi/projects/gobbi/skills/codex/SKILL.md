@@ -202,5 +202,4 @@ Only the manager may offer retry, a bounded input repair, an explicit one-system
 - [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
 - [Evaluation report validator](../record/scripts/validate-evaluation-report.sh)
 - [Specialist delegation owner](../workflow/delegation.md)
-- [Codex-specific mistakes](mistakes.md)
 - [Repository runtime entry contract](../../../../../AGENTS.md)

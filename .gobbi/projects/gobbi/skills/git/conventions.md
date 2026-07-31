@@ -1,6 +1,8 @@
 # Git Conventions
 
-Deterministic mappings for Gobbi session branches, worktree paths, focused commits, provenance trailers, optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the lifecycle, authority gates, failure handling, and cleanup order.
+Deterministic mappings for Gobbi session branches, worktree paths, focused commits, provenance trailers,
+optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the Workflow and Cowork
+contract sources, lifecycle, authority gates, failure handling, and cleanup order.
 
 The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
@@ -18,7 +20,7 @@ The complete validator is:
 ^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
 ```
 
-| `session.json.runtime.system` | Prefix |
+| Runtime system | Prefix |
 |---|---|
 | `claude-code` | `claude` |
 | `codex` | `codex` |
@@ -28,7 +30,9 @@ Examples:
 - `claude-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 - `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
 
-The UUID portion is `session.json.sessionId`. It is not `CLAUDE_CODE_SESSION_ID`, `CODEX_THREAD_ID`, an issue number, a pull-request number, or a task slug. A runtime context boundary does not rename the session branch.
+Workflow reads the UUID from `session.json.sessionId`. Cowork reads it from the conversation-locked contract
+and verifies it against the branch and commit provenance during recovery. It is never a runtime ID, issue
+number, pull-request number, or task slug, and a runtime context boundary never renames the session branch.
 
 ### Non-session branches
 
@@ -72,19 +76,24 @@ For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c
 |---|---|
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
 | Leaf | exact session branch |
-| Manifest field | absolute normalized path in `session.json.git.worktreePath` |
+| Workflow source | absolute normalized path in `session.json.git.worktreePath` |
+| Cowork source | absolute normalized path in the conversation-locked Git contract |
 | Ignore check | `git check-ignore -q .gobbi/projects/<project>/worktrees/` |
 | Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
 
-## Base branch
+## Base branch and commit
 
-The base is `session.json.git.baseBranch`. It is project-specific and never inferred from `main`, `master`, `develop`, the current checkout, or a remote default.
+Workflow reads its project-specific base branch and commit from `session.json.git`. Cowork locks the inspected
+base branch and immutable base commit in its conversation contract before creating the worktree. A dirty,
+detached, or ambiguous Cowork checkout requires a user decision; Git never invents `main`, `master`, `develop`,
+or a remote default.
 
-The same value is used for session branch creation, pull-request base, merge verification, and post-merge synchronization. A settings change is not a Git convention edit; it follows the manifest and user-authority owners.
+The selected value is used for branch creation and whole-branch comparison. A later publication operation
+revalidates the target base before pull-request, merge, or synchronization work.
 
 ## Publication mapping
 
-`session.json.settings.git` maps to Git actions without hidden coupling:
+Workflow maps `session.json.settings.git` to actions without hidden coupling:
 
 | Settings | Required result |
 |---|---|
@@ -97,6 +106,9 @@ The same value is used for session branch creation, pull-request base, merge ver
 | `draftPullRequest: true` | create a new configured pull request as draft |
 
 `draftPullRequest` does not change an already existing pull request automatically. Issue absence never changes the branch shape, commit trailer, publication path, or pull-request validity.
+
+Cowork has no persisted publication settings. It retains verified local commits by default; a later push,
+pull request, issue, merge, or cleanup requires a separate explicit Git operation and current user authority.
 
 ## Commit messages
 
@@ -140,7 +152,9 @@ Example:
 AI-Provenance-Record: gobbi://session/37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/task/05d-git-owner
 ```
 
-The session segment uses `session.json.sessionId`. The task segment uses the stable plan or manager assignment ID. Do not use a runtime ID, branch name, issue number, filename, role, or Wrap-up label as a substitute.
+The session segment uses the Workflow manifest UUID or Cowork contract UUID. The task segment uses the stable
+plan or manager assignment ID. Do not use a runtime ID, branch name, issue number, filename, role, or Wrap-up
+label as a substitute.
 
 ### Trailer order
 
@@ -182,9 +196,10 @@ Use the commit subject grammar. Under squash merge, this becomes the base-branch
 - [ ] <exact command or evidence>
 
 ## Gobbi session
+- Mode: `<workflow-or-cowork>`
 - Session: `<gobbi-session-uuid>`
 - Branch: `<session-branch>`
-- Handoff: `<durable-repository-relative-path>`
+- Handoff: `<durable-repository-relative-path-or-conversation-only>`
 ```
 
 When an issue exists, append this optional section:
@@ -226,7 +241,8 @@ It is valid only after the Git operation directly proves the exact branch was th
 
 ## Optional issue format
 
-Issue creation is used only when `createIssue: true`.
+Issue creation is used only when Workflow has `createIssue: true` or a separate Cowork Git operation has
+explicit authority.
 
 | Field | Convention |
 |---|---|
@@ -259,8 +275,12 @@ Do not create a label merely because it appears in this registry. Repository lab
 
 ## Release metadata
 
-Git finalization never changes a plugin or package version as a side effect. A version changes only when the locked implementation task explicitly includes that file and value. For the current Gobbi workflow redesign, the plugin manifest version remains unchanged.
+Git finalization never changes a plugin or package version as a side effect. A version changes only when the
+locked implementation task explicitly includes that file and value.
 
 ## Runtime git posture
 
-[`SKILL.md` § Runtime git environment](SKILL.md#runtime-git-environment) owns how runtime sandbox, network, and approval state affect Git actions. [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) is the read-only probe. This conventions document owns no runtime configuration and authorizes no edit to `.codex/config.toml`, Claude settings, `.git/config`, or user Git configuration.
+[`SKILL.md` § Probe posture](SKILL.md#21-probe-posture-and-create-one-isolated-worktree) owns how runtime
+sandbox, network, and approval state affect Git actions. [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh)
+is the read-only probe. This conventions document owns no runtime configuration and authorizes no edit to
+`.codex/config.toml`, Claude settings, `.git/config`, or user Git configuration.
