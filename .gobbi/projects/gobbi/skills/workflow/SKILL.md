@@ -205,7 +205,7 @@ SKILLS LOADED:
   `1-ideation/working/iteration-{n}/research/startup-design-brief-index.md`. The manager and leader must read
   that index and every listed subject brief before freezing the Ideation contract and before dual-system
   WORK. Do not import `startup-interview.tmp.md`; treat the confirmed set only as Startup design evidence
-  inputs, never as an Ideation output, evaluated design, staging candidate, implementation plan, or
+  inputs, never as an Ideation output, evaluated design, session memory record, implementation plan, or
   durable-memory artifact.
 - In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
   material assumptions, alternatives, authority, and deferrals with the user. Freeze the neutral contract

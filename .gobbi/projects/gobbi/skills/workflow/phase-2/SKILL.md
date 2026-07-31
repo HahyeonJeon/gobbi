@@ -121,9 +121,9 @@ plan, task, receipt, or commit.
 - Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh Claude evaluator and one fresh
   Codex evaluator. Neither sees the other report.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
-- Load the [Record](../../record/SKILL.md) skill under the parent Workflow Step 1.2 evidence-only override.
-- Seal the creation package, reports, `gate.md`, checks, canonical output, findings, and staging in
-  `record/iteration-N.md`.
+- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
+- Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
+  findings, and the durable records written into the session memory tree.
 - On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
   FAIL, preserve the recoverable state and stop at the critical-blocker boundary without creating iteration 3.
 - On PASS, verify stable IDs, dependency order, scope coverage, and the absence of overlapping write-capable
@@ -199,13 +199,14 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.6 Record and route the task result
 
-- Load the [Record](../../record/SKILL.md) skill under the parent Workflow Step 1.2 evidence-only override.
+- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
 - Seal both evaluation reports, `gate.md`, findings, dispositions, committed diff, verification, artifact
   pointers, and system provenances.
 - Verify only authorized paths changed, the focused commit exists in the exact worktree, and the required
   checks describe the committed tree.
 - Write `record/iteration-N.md` with the exact TODO, package and report hashes, gate hash, checks, commit,
-  output, and staging. Reread the receipt before changing the TODO.
+  output, and the durable records written into the session memory tree. Reread the receipt before changing
+  the TODO.
 - On PASS, retitle and complete the task item and activate the next planned task immediately.
 - On REVISE below the configured cap, complete the recorded pass, create the next iteration at DISCUSSION, and
   continue immediately.

@@ -128,7 +128,7 @@ from direct evidence without changing the handoff.
 
 #### 2.4 Record and route the result
 
-- Load [Record](../../record/SKILL.md) under parent Workflow Step 1.2's evidence-only override.
+- Load [Record](../../record/SKILL.md) rooted at the parent Workflow Step 1.2 session memory tree.
 - Seal the creation package, evaluator reports, system provenance, Memory verification, tracked handoff path
   and digest, checks, decisions, findings, Git intent, authority, and retained recovery state.
 - Write and verify `gate.md` and `record/iteration-N.md` with their required report, package, gate, output, and

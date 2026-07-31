@@ -118,7 +118,7 @@ whose completion cannot be proved.
   `1-ideation/working/iteration-{n}/research/startup-design-brief-index.md`. The manager and leader must read
   that index and every listed subject brief before freezing the Ideation contract and before dual-system
   WORK. Do not import `startup-interview.tmp.md`; treat the confirmed set only as Startup design evidence
-  inputs, never as an Ideation output, evaluated design, staging candidate, implementation plan, or
+  inputs, never as an Ideation output, evaluated design, session memory record, implementation plan, or
   durable-memory artifact.
 - Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
   1.3 fields. Include the phase, TODO, stage, iteration, scope, expected artifact, authority, and accepted
@@ -165,15 +165,16 @@ whose completion cannot be proved.
 
 #### 2.4 Record and route the result
 
-- Load the [Record](../../record/SKILL.md) skill under the parent Workflow Step 1.2 evidence-only override.
+- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
 - Seal the current creation package, evaluator reports, Configuration receipt, decisions, findings, checks,
   and system provenances.
 - Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking
   IDs, accepted nonblocking IDs, and the workflow decision.
-- Write a canonical Ideation artifact only after fast-gate PASS. Stage only durable candidates supported by
-  evidence; empty staging is valid.
+- Write a canonical Ideation artifact only after fast-gate PASS. Write into the session memory tree only
+  durable records supported by evidence; an empty result is valid.
 - Write `record/iteration-N.md` with the exact TODO, input and output hashes, gate hash, checks, canonical
-  output, and staging. Reread the receipt and every promised artifact before updating the TODO.
+  output, and the durable records written into the session memory tree. Reread the receipt and every promised
+  artifact before updating the TODO.
 - On iteration-1 REVISE, complete the recorded item, create iteration 2 at DISCUSSION, and repeat the complete
   cycle. Resolve any new user-owned Phase 1 decision before the revised contract freezes.
 - On iteration-2 FAIL, preserve the recoverable route, exact evidence, branch, and worktree and present the
