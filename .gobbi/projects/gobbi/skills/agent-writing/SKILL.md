@@ -46,9 +46,7 @@ agent-writing does not create a second assignment surface. Cite the owner; do no
 A claim about a mirror symlink, a permission, or which tool manages a surface MUST come from
 reading the owner directly — `readlink` the symlink, read `.claude/settings.json`, read the
 sync script's source. Do not assume the agent wiring parallels the skill wiring: it does NOT
-(P5). The recorded [verify-before-asserting trap](../../mistakes/verification/verify-dont-assert-taught-facts.md)
-is exactly an asserted-not-verified path reaching a briefing. Verify a MECHANISM by reading
-its owner, not by guessing from the end-state.
+(P5). Verify a mechanism by reading its owner, not by guessing from the end-state.
 
 > **A new role is not done until both mirrors resolve, verified empirically.**
 
@@ -123,7 +121,7 @@ Continuation discipline):
    `.toml` controls runtime; the Markdown body is still the canonical contract.
 3. **Persona** — who the role is and how it thinks; what the manager hands it.
 4. **`**Out of scope:**`** — a bullet list of what the role MUST NOT do.
-5. **`## Before You Start`** — mandatory loads (skills / rules / mistakes), in order.
+5. **`## Before You Start`** — mandatory skills and rules, in order.
 6. **`## Lifecycle`** — the role's phases as `### {Phase}` subsections (executor:
    Study → Plan → Execute → Verify → Memorize; evaluator: Study → Assess → Report).
 7. **`## Continuation discipline`** — *optional;* only for roles a continued teammate may run
@@ -157,7 +155,7 @@ Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 
 Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
 At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
-`.gobbi/projects/gobbi/skills/mistake/SKILL.md`, {the role's other min skills} before work.
+{the role's other minimum skills} before work.
 
 {The role's git/scope guardrail — e.g. for an implementer: stay inside the
 delegated scope, do not evaluate your own work, provide fresh verification
@@ -282,9 +280,7 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 
 - **Asserting a mirror or permission without verifying.** Writing "the role is mirrored to
   Codex" without `readlink`, or "the Agent() perm is at line 28" without reading
-  `.claude/settings.json`. The recorded trap
-  [verify owner facts before asserting them](../../mistakes/verification/verify-dont-assert-taught-facts.md)
-  is exactly this. Verify a MECHANISM by reading its owner, not the end-state.
+  `.claude/settings.json`. Verify a mechanism by reading its owner, not the end-state.
 
 - **Duplicating the shared assignment skeleton inside the role spec.** Inlining the per-task brief
   shape into `agents/{role}.md`. The `.md` is the behavioral contract; the manager brief shape lives
@@ -304,4 +300,3 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - Shared delegation skeleton and role overlays → [`workflow/delegation.md`](../workflow/delegation.md)
 - The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
-- The verify-before-asserting trap → [verify owner facts before asserting them](../../mistakes/verification/verify-dont-assert-taught-facts.md)

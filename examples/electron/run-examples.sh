@@ -28,9 +28,7 @@
 #   - exit != 0   the local tsc / bun toolchain is missing, or the three
 #                 generated `electron` views could not be produced
 #
-# No `|| true`, no swallowed pipe: a real failure always propagates a non-zero
-# exit (see project mistakes verifies-must-be-self-failing,
-# exit-in-command-substitution-fails-open).
+# No `|| true`, no swallowed pipe: a real failure always propagates a non-zero exit.
 #
 # PREREQUISITE: `bun install` has been run in this directory. `node_modules/` is
 # not committed, and `generated/` is derived from `node_modules/electron`.

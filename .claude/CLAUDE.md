@@ -2,7 +2,7 @@
 
 Gobbi is an open-source ClaudeX workflow for Claude Code and Codex.
 
-Read this file at session start and every context boundary. Load the canonical Gobbi skills from `.gobbi/projects/gobbi/skills/`. Before agent work, load `principles`, the applicable project rules, and `mistake`; then load the skills for the current workflow step.
+Read this file at session start and every context boundary. Load the canonical Gobbi skills from `.gobbi/projects/gobbi/skills/`. Before agent work, load `principles`, the applicable project rules, and the skills for the current workflow step.
 
 ## Workflow contract
 

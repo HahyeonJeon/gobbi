@@ -404,7 +404,7 @@ floor for an ordinary single-window feature.
 *Deepens principles 1 and 4 and coding P1 — study first, refine the task.*
 
 Lock What / Why / How, in and out of scope, and success with the user, or cite a scope contract. Read the
-relevant specs, project rules, applicable mistakes, neighboring modules, callers and tests. Then read the
+relevant specs, project rules, prior failure evidence, neighboring modules, callers and tests. Then read the
 concrete **Electron contract**: which Electron major the app runs and whether it is inside the supported
 window in References; the three-target build and which `tsconfig` governs each; the `webPreferences`
 in force at every window construction site; the existing preload bridge surface and channel list;

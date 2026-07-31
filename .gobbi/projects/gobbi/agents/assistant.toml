@@ -9,9 +9,8 @@ Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/assistant.md` and follow it as your role contract.
 
 Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
-At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md` and
-`.gobbi/projects/gobbi/skills/mistake/SKILL.md` before non-trivial work. Load phase-specific
-skills when the parent prompt asks for them.
+At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md` before non-trivial
+work. Load phase-specific skills when the parent prompt asks for them.
 
 If these instructions conflict with the user's direct request or higher-priority
 Codex instructions, follow the higher-priority instruction and report the conflict.

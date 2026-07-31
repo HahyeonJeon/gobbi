@@ -308,7 +308,7 @@ or hook.
 *Deepens `coding` Principle 1 and `principles` Principles 1 and 4 — study first, refine the task with the user.*
 
 Lock What / Why / How, in and out of scope, and success with the user, or cite an existing scope
-contract. Read the relevant specs, design notes, project rules, applicable mistakes, the neighboring
+contract. Read the relevant specs, design notes, project rules, prior failure evidence, the neighboring
 components, their callers, and the tests.
 
 Then read the concrete **React contract**, which is the set of switches that decide which mechanisms are

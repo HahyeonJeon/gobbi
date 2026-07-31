@@ -598,7 +598,7 @@ to be followed, not to be pointed at.
 
 ### `P1` — Frame the outcome, the authority, and the stack fit
 
-*Input:* the user trigger, the live application if one exists, project rules, applicable mistakes, and the
+*Input:* the user trigger, the live application if one exists, project rules, prior failure evidence, and the
 decision authority.
 
 *Action:* **load [`ideation.md`](ideation.md) first and keep it open through `P6`** — it is the run's decision

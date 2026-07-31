@@ -293,4 +293,3 @@ Completion evidence is one verified local history plus either an exact retained 
 - [Discussion](../discussion/SKILL.md) owns user decision cards and merge-authority questioning.
 - [Session manifest schema](../record/schemas/session.schema.json) owns the executable Git identity and publication-setting shape.
 - [Git posture probe](scripts/git-posture-probe.sh) owns the read-only runtime posture report.
-- [Recorded Git traps](mistakes.md) remains a required read before Git work.

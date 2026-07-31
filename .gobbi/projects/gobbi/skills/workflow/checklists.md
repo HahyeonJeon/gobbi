@@ -6,7 +6,7 @@
 - **Owner:** workflow skill.
 - **Consumer:** manager for operational gates; evaluator as scenario-derived acceptance evidence.
 - **Mode:** operational.
-- **Source version:** `orch-v1`; this file is the unchecked source and is never filled in place.
+- **Source version:** `orch-v2`; this file is the unchecked source and is never filled in place.
 - **Run rule:** copy this file for each run, identify the run and source version, and declare the listed use style at each pause point.
 - **Applicability:** the active pause point selects its checks; a conditional item may resolve `n/a:<property>` only after inspecting evidence that its predicate is false.
 - **Resolution tokens:** `PASS`, `FAIL:<finding/action-id>`, `n/a:<property>`, `recorded-open:<owner+resolution-method>`, and `waived/exception-authorized:<authority+rationale>` where the checklist skill permits them. The source remains `[ ]`.
@@ -193,7 +193,7 @@
 - [ ] **ORCH-CHK-DELEG-02** `[required, read-do]` Ordered load directives name exact canonical paths and the specialist reports those paths in read order.
   - **Applicability:** unconditional for fresh dispatch; continuation names only required rereads plus changed loads.
   - **Source:** ORCH-P05; ORCH-SCN-05-A.
-  - **Pass condition:** principles, rules, role, mistake sources, productive-step skill, task skills, and primary artifacts are exact and ordered.
+  - **Pass condition:** principles, rules, role, productive-step skill, task skills, and primary artifacts are exact and ordered.
   - **Evidence:** brief load list and response `SKILLS LOADED` comparison.
   - **On fail:** stop acceptance and request exact load evidence.
   - **Resolution:** ______

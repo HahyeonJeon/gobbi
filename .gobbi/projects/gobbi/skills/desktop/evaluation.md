@@ -12,9 +12,7 @@ collect.
 
 **Bundle load list.** Three files, all of which exist: [`SKILL.md`](SKILL.md),
 [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md). The mechanics children are read as needed
-for a specific claim. There is **no `mistakes.md` in this skill's directory**, so nothing here loads one — a
-skill-owned mistakes home is written by Wrap-up promotion, and naming a path that does not exist would fail
-the load closed.
+for a specific claim.
 
 ## Phase 1 extension — Frame the evidence
 

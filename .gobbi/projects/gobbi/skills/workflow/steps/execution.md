@@ -4,7 +4,7 @@
 
 ## Entry and DISCUSSION
 
-Enter one locked task at a time in plan order. Dispatch the executor with the stable task ID, canonical plan, accepted upstream artifacts, current worktree preimage, applicable rules and mistakes, exact in-scope and out-of-scope paths, required skills, acceptance criteria, verification commands, and prior approved finding dispositions.
+Enter one locked task at a time in plan order. Dispatch the executor with the stable task ID, canonical plan, accepted upstream artifacts, current worktree preimage, applicable rules, exact in-scope and out-of-scope paths, required skills, acceptance criteria, verification commands, and prior approved finding dispositions.
 
 The manager resolves with the user any newly discovered scope, design, destructive, dependency, or authority decision. If the locked plan is invalid, return through Planning or Ideation as the evidence requires. DISCUSSION completes when the task contract is executable without changing scope.
 

@@ -10,7 +10,7 @@ completed checks, or verdict derivation. The active Gobbi workflow owns its sche
 Before reviewing a Gobbi bootstrap change:
 
 1. Read [`SKILL.md`](SKILL.md), [`scenarios.md`](scenarios.md), and [`checklists.md`](checklists.md) completely.
-2. Read the current owners linked from `SKILL.md`: Principles, the manager role, the `workflow` owner and its mistakes, Mistake, Discussion, Git, Startup, Codex, Record, the state machine, delegation, and the repository sync owner.
+2. Read the current owners linked from `SKILL.md`: Principles, the manager role, Workflow, Discussion, Git, Startup, Codex, Record, the state machine, delegation, and the repository sync owner.
 3. Freeze the exact four authored files, their digests, the protected-role and plugin-manifest preimages, and the runtime/source view inventories.
 4. Select every scenario whose Given can occur and every checklist item at a triggered pause point. An omitted case or item needs inspected `n/a:<property>` evidence.
 5. Add the selected cases and checks to the active evaluation frame. Work a filled copy of the checklist; never mark this source.
@@ -26,18 +26,18 @@ Perspective assignment directs attention. It never removes an applicable case or
 | Perspective | Primary scenario families | Required checklist selection |
 |---|---|---|
 | Project | GOBBI-SCN-01, -06, -07, -10 | FLOOR-01..02; ROUTE-01..02; HAND-01..03; RET-01..04 |
-| Structure | GOBBI-SCN-01, -06, -08, -09 | FLOOR-02..03; OWN-01..02; MAP-01..03; HAND-01..04; VIEW-01..06 |
-| Performance | GOBBI-SCN-04, -07, -09 | RESUME-02; MAP-03; RET-01, -03 |
-| Aesthetics | GOBBI-SCN-01, -08, -09 | FLOOR-02; MAP-01..02; VIEW-01..06 |
-| Usage | GOBBI-SCN-01, -04, -06, -08, -09, -10 | FLOOR-01..03; RESUME-01..02; ROUTE-01..02; HAND-01..04; MAP-01..03; VIEW-02..06 |
+| Structure | GOBBI-SCN-01, -06, -08, -09 | FLOOR-02..03; OWN-01..02; MAP-01..02; HAND-01..04; VIEW-01..06 |
+| Performance | GOBBI-SCN-04, -07, -09 | RESUME-02; MAP-02; RET-01, -03 |
+| Aesthetics | GOBBI-SCN-01, -08, -09 | FLOOR-02; MAP-01; VIEW-01..06 |
+| Usage | GOBBI-SCN-01, -04, -06, -08, -09, -10 | FLOOR-01..03; RESUME-01..02; ROUTE-01..02; HAND-01..04; MAP-01..02; VIEW-02..06 |
 | Consistency | GOBBI-SCN-01..10 | every checklist ID, with emphasis on OWN-01..02, RESUME-01..02, RET-01..04, VIEW-01..06 |
-| Risk | GOBBI-SCN-01..10 | every gate/killer plus MAP-03, ROUTE-02, HAND-03, RET-03, VIEW-05..06 |
+| Risk | GOBBI-SCN-01..10 | every gate/killer plus MAP-02, ROUTE-02, HAND-03, RET-03, VIEW-05..06 |
 
 The complete checklist ID set is:
 
 - GOBBI-CHK-FLOOR-01, GOBBI-CHK-FLOOR-02, GOBBI-CHK-FLOOR-03.
 - GOBBI-CHK-OWN-01, GOBBI-CHK-OWN-02.
-- GOBBI-CHK-MAP-01, GOBBI-CHK-MAP-02, GOBBI-CHK-MAP-03.
+- GOBBI-CHK-MAP-01, GOBBI-CHK-MAP-02.
 - GOBBI-CHK-RESUME-01, GOBBI-CHK-RESUME-02.
 - GOBBI-CHK-ROUTE-01, GOBBI-CHK-ROUTE-02.
 - GOBBI-CHK-HAND-01, GOBBI-CHK-HAND-02, GOBBI-CHK-HAND-03, GOBBI-CHK-HAND-04.
@@ -94,7 +94,7 @@ Walk the operation as the real manager in these cases:
 2. a workflow session that loads the indexed `workflow` owner from the same entry;
 3. `/clear`, rewind, and runtime compaction with new and duplicate runtime IDs;
 4. a resume that must not reconfigure settings;
-5. a skill-map lookup for a non-floor owner, and the mandatory-but-lazy `mistake` entry;
+5. a skill-map lookup for a non-floor owner;
 6. absent hooks, transcripts, rollouts, and telemetry;
 7. cosmetic legacy and protected role contradictions, including a sixth-floor-skill temptation;
 8. native Codex, plugin-source, renamed, and partial runtime views; and
@@ -136,7 +136,7 @@ Overall must answer all of these:
 2. Does every entry trigger preserve one Gobbi identity and keep the entry read-only, with all creation deferred to the `workflow` owner?
 3. Does a general session proceed on the floor without loading the `workflow` owner, and a workflow session enter it at exactly one validated cursor?
 4. Is the session-kind split a routine manager judgment rather than a reintroduced interaction-mode question or alternate route?
-5. Is every non-floor skill indexed once with name, description, and relevance note, with `mistake` recorded as mandatory-but-lazy and no indexed owner eagerly force-loaded?
+5. Is every non-floor skill indexed once with name, description, and relevance note, with no indexed owner eagerly force-loaded?
 6. Can missing hooks, transcripts, rollouts, telemetry, modes, separate settings, retired gates, and memory compaction remain absent without degraded operation?
 7. Do current owners outrank cosmetic legacy while protected role and manifest files remain unchanged?
 8. Do the canonical, native Codex, plugin-source, and renamed `workflow` mirror views expose the operation, with no stale look-alike surviving and partial views reported honestly?
@@ -155,7 +155,7 @@ Overall cannot PASS when an applicable gate or required item is not PASS, subjec
 | GB-5 | GOBBI-SCN-06-C | ROUTE-02 | Project, Consistency, Risk |
 | GB-6 | GOBBI-SCN-06-A, -B, -D, -E, GOBBI-SCN-10-A..C | HAND-01..04, ROUTE-01 | Project, Structure, Usage, Consistency, Risk |
 | GB-7 | GOBBI-SCN-01-C, -D, GOBBI-SCN-08-A..F | OWN-01, OWN-02, VIEW-01..06 | Structure, Aesthetics, Usage, Consistency, Risk |
-| GB-MAP | GOBBI-SCN-09-A..C | MAP-01, MAP-02, MAP-03 | Structure, Aesthetics, Performance, Usage |
+| GB-MAP | GOBBI-SCN-09-A..B | MAP-01, MAP-02 | Structure, Aesthetics, Performance, Usage |
 | GB-MN | GOBBI-SCN-07-A..D, GOBBI-SCN-10-C | RET-01..04 | Project, Performance, Usage, Consistency, Risk |
 
 ## Recommended mechanical probes
@@ -163,7 +163,7 @@ Overall cannot PASS when an applicable gate or required item is not PASS, subjec
 - Four-key frontmatter order and `skill-type: operation`.
 - Top-level order `# Gobbi` → Principles → Rules → Procedure → References, with no top-level Manual.
 - Exact `### Session Bootstrap Order` anchor and `## Skill map` section presence.
-- Skill-map completeness: every non-floor skill indexed once with name + one-line description + relevance note, and the `mistake` entry's mandatory-but-lazy note.
+- Skill-map completeness: every non-floor skill indexed once with name + one-line description + relevance note.
 - Scenario/check ID set equality and bidirectional parent traces to GB-1..GB-7, the Skill map, and the Must-not rules.
 - Every perspective plus Overall selected, with every checklist ID assigned at least once.
 - All relative links resolve from each authored file.

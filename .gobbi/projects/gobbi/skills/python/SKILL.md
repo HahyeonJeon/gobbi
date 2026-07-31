@@ -226,7 +226,7 @@ module.
 
 Study everything the design must fit before designing. Lock What/Why/How + in/out scope + success with the
 user, or cite a Scope Contract. Read the relevant specs, design notes, README, public-API and operator docs,
-project rules, applicable mistakes, neighboring modules, callers, tests, and local prior art. Read the
+project rules, prior failure evidence, neighboring modules, callers, tests, and local prior art. Read the
 concrete **Python contract**: `requires-python` and the CI matrix; the artifact type (library / app / CLI /
 service / script / notebook); import and entry surfaces; documented compatibility; formatter, linter, and
 type-checker config; packaging metadata; and installed-artifact obligations. A new project with no declared

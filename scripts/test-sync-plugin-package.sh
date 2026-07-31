@@ -108,7 +108,8 @@ snapshot_mirror() {
 
   : > "$output"
   if [[ -L "$mirror" ]]; then
-    printf 'root-symlink\t%s\n' "$(readlink -- "$mirror")" >> "$output"
+    raw="$(readlink -n -- "$mirror" | od -An -tx1 | tr -d ' \n')"
+    printf 'root-symlink\thex:%s\n' "$raw" >> "$output"
     return 0
   fi
   if [[ ! -e "$mirror" ]]; then
@@ -130,8 +131,8 @@ snapshot_mirror() {
     rel="${rel#/}"
     [[ -n "$rel" ]] || rel='.'
     if [[ -L "$entry" ]]; then
-      raw="$(readlink -- "$entry")"
-      printf 'l\t%s\t%s\n' "$rel" "$raw"
+      raw="$(readlink -n -- "$entry" | od -An -tx1 | tr -d ' \n')"
+      printf 'l\t%s\thex:%s\n' "$rel" "$raw"
     elif [[ -d "$entry" ]]; then
       printf 'd\t%s\t-\n' "$rel"
     elif [[ -f "$entry" ]]; then
@@ -178,6 +179,7 @@ test_safe_reconciliation() {
   make_owned_mirror_link "$root" alpha old/nested/removed.md
   make_owned_mirror_link "$root" retired SKILL.md
   make_owned_mirror_link "$root" retired deep/old.md
+  ln -s '../../.gobbi/projects/gobbi/skills/retired' "$root/.agents/skills/retired"
 
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
@@ -186,6 +188,7 @@ test_safe_reconciliation() {
   [[ ! -e "$root/.claude/skills/alpha/removed.md" && ! -L "$root/.claude/skills/alpha/removed.md" ]] || fail 'dangling stale owned leaf survived'
   [[ ! -e "$root/.claude/skills/alpha/old" ]] || fail 'nested stale real directories survived'
   [[ ! -e "$root/.claude/skills/retired" ]] || fail 'whole stale skill directory survived'
+  [[ ! -e "$root/.agents/skills/retired" && ! -L "$root/.agents/skills/retired" ]] || fail 'stale Codex discovery link survived'
 
   snapshot_mirror "$root" "$first"
   run_sync "$root" >/dev/null
@@ -193,6 +196,79 @@ test_safe_reconciliation() {
   snapshot_mirror "$root" "$second"
   cmp -s "$first" "$second" || fail 'second safe sync was not idempotent'
   pass 'safe reconciliation prunes stale owned leaves and dirs, fills gaps, and is idempotent'
+}
+
+test_unsafe_agents_entry() {
+  local root="$tmp_root/unsafe-agents-entry" log="$tmp_root/unsafe-agents-entry.log"
+  prepare_synced_fixture "$root"
+  make_owned_mirror_link "$root" alpha removed.md
+  printf 'user data\n' > "$root/.agents/skills/user-owned"
+
+  if run_sync "$root" > "$log" 2>&1; then
+    fail 'unsafe-agents-entry unexpectedly succeeded'
+  fi
+  assert_file_contains "$log" '.agents/skills/user-owned'
+  assert_file_contains "$log" 'has no canonical skill and is not a generator-owned symlink'
+  [[ -L "$root/.claude/skills/alpha/removed.md" ]] || fail 'Claude mirror mutated before unsafe Codex discovery entry rejection'
+  pass 'unsafe Codex discovery entries fail closed before mirror mutation'
+}
+
+test_unsafe_agents_wrong_target() {
+  local root="$tmp_root/unsafe-agents-wrong-target" log="$tmp_root/unsafe-agents-wrong-target.log"
+  local unsafe_link="$root/.agents/skills/user-owned-link"
+  prepare_synced_fixture "$root"
+  make_owned_mirror_link "$root" alpha removed.md
+  ln -s '../../user-owned-target' "$unsafe_link"
+
+  if run_sync "$root" > "$log" 2>&1; then
+    fail 'unsafe-agents-wrong-target unexpectedly succeeded'
+  fi
+  assert_file_contains "$log" '.agents/skills/user-owned-link'
+  assert_file_contains "$log" 'raw symlink target is ../../user-owned-target'
+  [[ -L "$unsafe_link" ]] || fail 'wrong-target Codex discovery symlink was deleted'
+  [[ "$(readlink -- "$unsafe_link")" == '../../user-owned-target' ]] || fail 'wrong-target Codex discovery symlink was changed'
+  [[ -L "$root/.claude/skills/alpha/removed.md" ]] || fail 'Claude mirror mutated before wrong-target Codex discovery rejection'
+  pass 'wrong-target Codex discovery symlinks fail closed before mirror mutation'
+}
+
+test_unsafe_agents_trailing_newline_target() {
+  local root="$tmp_root/unsafe-agents-trailing-newline" log="$tmp_root/unsafe-agents-trailing-newline.log"
+  local unsafe_link="$root/.agents/skills/newline-wrong-target"
+  local expected_target='../../.gobbi/projects/gobbi/skills/newline-wrong-target'
+  local before_target="$tmp_root/unsafe-agents-trailing-newline.before"
+  local after_target="$tmp_root/unsafe-agents-trailing-newline.after"
+  prepare_synced_fixture "$root"
+  make_owned_mirror_link "$root" alpha removed.md
+  ln -s "$expected_target"$'\n' "$unsafe_link"
+  readlink -n -- "$unsafe_link" > "$before_target"
+
+  if run_sync "$root" > "$log" 2>&1; then
+    fail 'unsafe-agents-trailing-newline unexpectedly succeeded'
+  fi
+  assert_file_contains "$log" '.agents/skills/newline-wrong-target'
+  assert_file_contains "$log" 'raw symlink target is'
+  [[ -L "$unsafe_link" ]] || fail 'trailing-newline Codex discovery symlink was deleted'
+  readlink -n -- "$unsafe_link" > "$after_target"
+  cmp -s "$before_target" "$after_target" || fail 'trailing-newline Codex discovery target bytes changed'
+  [[ -L "$root/.claude/skills/alpha/removed.md" ]] || fail 'Claude mirror mutated before trailing-newline Codex discovery rejection'
+  pass 'trailing-newline Codex discovery targets fail closed byte-for-byte'
+}
+
+test_unsafe_agents_dot_entry() {
+  local root="$tmp_root/unsafe-agents-dot-entry" log="$tmp_root/unsafe-agents-dot-entry.log"
+  local unsafe_entry="$root/.agents/skills/.user-owned"
+  prepare_synced_fixture "$root"
+  make_owned_mirror_link "$root" alpha removed.md
+  printf 'user data\n' > "$unsafe_entry"
+
+  if run_sync "$root" > "$log" 2>&1; then
+    fail 'unsafe-agents-dot-entry unexpectedly succeeded'
+  fi
+  assert_file_contains "$log" '.agents/skills/.user-owned'
+  assert_file_contains "$log" 'path contains a dot-prefixed or traversal component'
+  [[ -f "$unsafe_entry" ]] || fail 'hidden Codex discovery entry was deleted'
+  [[ -L "$root/.claude/skills/alpha/removed.md" ]] || fail 'Claude mirror mutated before hidden Codex discovery rejection'
+  pass 'hidden Codex discovery entries fail closed before mirror mutation'
 }
 
 test_unsafe_regular_file() {
@@ -207,6 +283,16 @@ test_unsafe_wrong_target() {
   prepare_synced_fixture "$root"
   ln -s '../../../.gobbi/projects/gobbi/skills/alpha/not-the-same.md' "$root/.claude/skills/alpha/wrong.md"
   assert_unsafe_zero_mutation unsafe-wrong-target "$root" 'raw symlink target is'
+}
+
+test_unsafe_claude_trailing_newline_target() {
+  local root="$tmp_root/unsafe-claude-trailing-newline"
+  local unsafe_link="$root/.claude/skills/alpha/newline.md"
+  local expected_target
+  prepare_synced_fixture "$root"
+  expected_target="$(mirror_target alpha newline.md)"
+  ln -s "$expected_target"$'\n' "$unsafe_link"
+  assert_unsafe_zero_mutation unsafe-claude-trailing-newline "$root" 'raw symlink target is'
 }
 
 test_unsafe_directory_symlink() {
@@ -380,8 +466,13 @@ test_static_deletion_guards() {
 
 test_static_deletion_guards
 test_safe_reconciliation
+test_unsafe_agents_entry
+test_unsafe_agents_wrong_target
+test_unsafe_agents_trailing_newline_target
+test_unsafe_agents_dot_entry
 test_unsafe_regular_file
 test_unsafe_wrong_target
+test_unsafe_claude_trailing_newline_target
 test_unsafe_directory_symlink
 test_unsafe_dot_entry
 test_unsafe_path_escape
