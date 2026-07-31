@@ -4,167 +4,198 @@
 
 ### DELIVERY-SC-PROJECT-01 — Normal case: Bounded installed outcome
 
-One coordinated delivery claims a complete installed outcome within an explicit boundary. The scenario breaks when the outcome, target claim, or installed completion cannot be identified without private context.
+A coordinated delivery claims one installed outcome. It succeeds only when the claim, boundary, stack decision, and authority are explicit.
 #### Checklist
 
-- [ ] DELIVERY-CK-PROJECT-01-01 — The delivered outcome is explicit.
-- [ ] DELIVERY-CK-PROJECT-01-02 — Every claimed operating-system and architecture pair has proof from its matching exact installed artifact.
-- [ ] DELIVERY-CK-PROJECT-01-04 — The non-goals are explicit.
-### DELIVERY-SC-PROJECT-02 — Rule violation: Incomplete or unauthorized claim
-
-The delivery appears complete while an in-scope path is absent or a claim exceeds its proof or authority. The scenario breaks unless all scope is closed and unsupported claims or actions remain blocked.
-#### Checklist
-
-- [ ] DELIVERY-CK-PROJECT-02-01 — Every in-scope path is complete.
-- [ ] DELIVERY-CK-PROJECT-02-02 — No delivery claim exceeds its proof.
-- [ ] DELIVERY-CK-PROJECT-02-06 — This operation is used only for multi-capability coordination or a complete installed, packaged, or release-ready claim.
-- [ ] DELIVERY-CK-PROJECT-02-07 — Every bounded single-owner request is handed directly to that owner.
-- [ ] DELIVERY-CK-PROJECT-02-08 — The accepted stack is preserved unless current evidence materially challenges it.
-- [ ] DELIVERY-CK-PROJECT-02-09 — Every challenged stack decision has a complete evidence matrix covering resource and package cost, content trust, native depth, target and update fit, team upgrade capacity, migration cost, and release needs.
-- [ ] DELIVERY-CK-PROJECT-02-10 — Every material owner conflict is resolved through an explicit user decision.
+- [ ] DELIVERY-CK-PROJECT-01-01 — This operation has an applicable Desktop delivery trigger.
+- [ ] DELIVERY-CK-PROJECT-01-02 — Every bounded single-owner request is handed to that owner.
+- [ ] DELIVERY-CK-PROJECT-01-03 — Every affected actor is named.
+- [ ] DELIVERY-CK-PROJECT-01-04 — Every supported entry mode is named.
+- [ ] DELIVERY-CK-PROJECT-01-05 — Observable completion is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-06 — System completion is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-07 — The data boundary is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-08 — Every failure path is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-09 — Every recovery path is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-10 — The support route is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-11 — Every claimed operating system is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-12 — Every claimed architecture is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-13 — Every claimed target is required by current user need.
+- [ ] DELIVERY-CK-PROJECT-01-14 — The non-goals are explicit.
+- [ ] DELIVERY-CK-PROJECT-01-15 — Publication authority is explicit.
+- [ ] DELIVERY-CK-PROJECT-01-16 — The claim limitations are explicit.
+- [ ] DELIVERY-CK-PROJECT-01-17 — The accepted stack is preserved unless current evidence challenges it.
+- [ ] DELIVERY-CK-PROJECT-01-18 — Every challenged stack choice is evidence-backed.
+- [ ] DELIVERY-CK-PROJECT-01-19 — Every material stack conflict has an explicit user decision.
+- [ ] DELIVERY-CK-PROJECT-01-20 — A missing target proof narrows the target claim.
 ## Structure
 
-### DELIVERY-SC-STRUCTURE-01 — Normal case: Explicit ownership
+### DELIVERY-SC-STRUCTURE-01 — Rule violation: Bypassed owner or incomplete slice
 
-The application contract assigns runtime placement and authority before slices are built. The scenario breaks when a unit, bridge capability, or persistent-data responsibility has ambiguous ownership.
+The delivery bypasses a capability owner or lets one delivery surface drift. It succeeds only when ownership, Electron routing, and slice synchronization remain explicit.
 #### Checklist
 
-- [ ] DELIVERY-CK-STRUCTURE-01-01 — Each implementation unit has explicit process placement.
-- [ ] DELIVERY-CK-STRUCTURE-01-03 — Each implementation unit has one explicit capability owner.
-- [ ] DELIVERY-CK-STRUCTURE-01-04 — Persistent data has one explicit owner.
-- [ ] DELIVERY-CK-STRUCTURE-01-05 — Every Electron implementation unit declares its owning target.
-- [ ] DELIVERY-CK-STRUCTURE-01-06 — Main, preload, renderer, and every utility process each have a separate build result.
-- [ ] DELIVERY-CK-STRUCTURE-01-07 — Every typed process target has a separate type environment.
-- [ ] DELIVERY-CK-STRUCTURE-01-08 — Every typed process target has a separate type-check result.
-### DELIVERY-SC-STRUCTURE-02 — Adversarial: Privilege-boundary bypass
-
-Renderer content attempts to reach machine authority outside the reviewed contract. The scenario breaks if a broad bridge or an unproved caller can produce a privileged effect.
-#### Checklist
-
-- [ ] DELIVERY-CK-STRUCTURE-02-01 — The renderer has no path around the declared narrow bridge.
-- [ ] DELIVERY-CK-STRUCTURE-02-02 — Every privileged effect requires an allowed caller.
-- [ ] DELIVERY-CK-STRUCTURE-02-03 — Every privileged effect requires a valid payload.
+- [ ] DELIVERY-CK-STRUCTURE-01-01 — Every in-scope obligation has one owner.
+- [ ] DELIVERY-CK-STRUCTURE-01-02 — Every implementation unit has explicit process placement.
+- [ ] DELIVERY-CK-STRUCTURE-01-03 — Every implementation unit has one capability owner.
+- [ ] DELIVERY-CK-STRUCTURE-01-04 — Every Desktop decision comes from its applicable Desktop child.
+- [ ] DELIVERY-CK-STRUCTURE-01-05 — Every Electron mechanism is routed to every applicable Electron child.
+- [ ] DELIVERY-CK-STRUCTURE-01-06 — Every Electron-specific requirement has truthful evidence from `electron-test`.
+- [ ] DELIVERY-CK-STRUCTURE-01-07 — Every packaged Electron mechanism claim has exact-target evidence from `electron-release`.
+- [ ] DELIVERY-CK-STRUCTURE-01-08 — No Electron result from another target substitutes for the claimed target.
+- [ ] DELIVERY-CK-STRUCTURE-01-09 — No Electron result from another evidence class substitutes for the claimed evidence class.
+- [ ] DELIVERY-CK-STRUCTURE-01-10 — No Electron mechanism changes an accepted product requirement.
+- [ ] DELIVERY-CK-STRUCTURE-01-11 — No Electron mechanism changes user authority.
+- [ ] DELIVERY-CK-STRUCTURE-01-12 — Every completed slice keeps its code current.
+- [ ] DELIVERY-CK-STRUCTURE-01-13 — Every completed slice keeps its configuration current.
+- [ ] DELIVERY-CK-STRUCTURE-01-14 — Every completed slice keeps its types current.
+- [ ] DELIVERY-CK-STRUCTURE-01-15 — Every completed slice keeps its tests current.
+- [ ] DELIVERY-CK-STRUCTURE-01-16 — Every completed slice keeps its documentation current.
+- [ ] DELIVERY-CK-STRUCTURE-01-17 — Every completed slice keeps its persistent-data behavior current.
+- [ ] DELIVERY-CK-STRUCTURE-01-18 — Every completed slice keeps its package inputs current.
+- [ ] DELIVERY-CK-STRUCTURE-01-19 — Every completed slice keeps its operational evidence current.
+- [ ] DELIVERY-CK-STRUCTURE-01-20 — Every user-visible capability has no deferred layer.
 ## Performance
 
 ### DELIVERY-SC-PERFORMANCE-01 — Poor quality: Functional but unresponsive
 
-The outcome functions under light use while representative work stalls the application or exceeds an installed resource claim. The scenario breaks when responsiveness or resource use rests on assumption.
+The installed outcome functions under light use but stalls or retains resources under representative work. It succeeds only when installed performance and resource behavior are bounded.
 #### Checklist
 
-- [ ] DELIVERY-CK-PERFORMANCE-01-01 — The main process remains responsive during representative work.
-- [ ] DELIVERY-CK-PERFORMANCE-01-02 — Every installed performance claim is measured under its declared conditions.
-- [ ] DELIVERY-CK-PERFORMANCE-01-03 — Every installed resource claim is measured under its declared conditions.
+- [ ] DELIVERY-CK-PERFORMANCE-01-01 — The installed application remains responsive during representative work.
+- [ ] DELIVERY-CK-PERFORMANCE-01-02 — Every installed performance claim is measured.
+- [ ] DELIVERY-CK-PERFORMANCE-01-03 — Every installed resource claim is measured.
+- [ ] DELIVERY-CK-PERFORMANCE-01-04 — Every owned resource has an explicit bounded lifetime.
 ## Aesthetics
 
-### DELIVERY-SC-AESTHETICS-01 — Poor quality: Packaged experience drift
+### DELIVERY-SC-AESTHETICS-01 — Poor quality: Installed experience drift
 
-The packaged application works but its first paint, assets, states, or touched native behavior no longer express the accepted design. The scenario breaks on visible packaged drift or target-incoherent behavior.
+The installed application works but no longer expresses the accepted experience. It succeeds only when observable presentation and adaptation remain faithful on each target.
 #### Checklist
 
-- [ ] DELIVERY-CK-AESTHETICS-01-01 — Packaged first paint preserves the accepted design.
-- [ ] DELIVERY-CK-AESTHETICS-01-02 — Touched native behavior is coherent on each claimed target.
+- [ ] DELIVERY-CK-AESTHETICS-01-01 — Installed first paint preserves the accepted design.
+- [ ] DELIVERY-CK-AESTHETICS-01-02 — Every accepted observable state is preserved.
+- [ ] DELIVERY-CK-AESTHETICS-01-03 — Every accepted accessibility obligation is preserved.
+- [ ] DELIVERY-CK-AESTHETICS-01-04 — Reduced-motion behavior preserves the accepted contract.
+- [ ] DELIVERY-CK-AESTHETICS-01-05 — Touched native behavior is coherent on its claimed target.
 ## Usage
 
 ### DELIVERY-SC-USAGE-01 — Normal case: Complete installed use
 
-A person begins from a clean machine and completes the bounded outcome through the supported ways of entering and operating the application. The scenario breaks when installation, operation, relaunch, or support fails.
+A person installs and uses the outcome through its supported platform paths. It succeeds only when installed actions, platform behavior, native effects, and local data remain usable.
 #### Checklist
 
-- [ ] DELIVERY-CK-USAGE-01-01 — A clean installation completes.
-- [ ] DELIVERY-CK-USAGE-01-02 — The outcome is complete through every supported entry mode.
-- [ ] DELIVERY-CK-USAGE-01-03 — Exit remains usable.
-- [ ] DELIVERY-CK-USAGE-01-04 — The intended installed application launches.
-- [ ] DELIVERY-CK-USAGE-01-06 — Relaunch remains usable.
-### DELIVERY-SC-USAGE-02 — Expected failure: Data or version incompatibility
-
-The installed application encounters interrupted, corrupt, migrated, or newer-version data. The expected outcome is preservation or explicit recovery rather than plausible corruption or silent data loss.
-#### Checklist
-
-- [ ] DELIVERY-CK-USAGE-02-01 — An interrupted write preserves data or enters the declared recovery path.
-- [ ] DELIVERY-CK-USAGE-02-02 — An incompatible data version fails explicitly.
-- [ ] DELIVERY-CK-USAGE-02-03 — Corrupt stored data enters the declared recovery path.
-- [ ] DELIVERY-CK-USAGE-02-04 — Corrupt stored data causes no silent data loss.
-- [ ] DELIVERY-CK-USAGE-02-05 — A failed migration preserves data or enters the declared recovery path.
-- [ ] DELIVERY-CK-USAGE-02-06 — An interrupted migration preserves data or enters the declared recovery path.
-- [ ] DELIVERY-CK-USAGE-02-07 — Recovery remains available for an incompatible data version.
-- [ ] DELIVERY-CK-USAGE-02-08 — The immediate predecessor transition is rehearsed.
-- [ ] DELIVERY-CK-USAGE-02-09 — Every materially different supported predecessor transition is rehearsed.
-- [ ] DELIVERY-CK-USAGE-02-10 — Every persistent write is atomic or detectably incomplete.
-- [ ] DELIVERY-CK-USAGE-02-11 — Every persisted structure has an explicit schema version.
-- [ ] DELIVERY-CK-USAGE-02-12 — Every required predecessor rehearsal begins from its corresponding previously released installed artifact.
-- [ ] DELIVERY-CK-USAGE-02-13 — Every required predecessor rehearsal uses realistic data.
-- [ ] DELIVERY-CK-USAGE-02-14 — Persisted-data forward compatibility or explicit refusal is defined.
-- [ ] DELIVERY-CK-USAGE-02-15 — Downgrade behavior is defined whenever persisted data changes.
-- [ ] DELIVERY-CK-USAGE-02-16 — Round-trip behavior is defined whenever persisted data changes.
+- [ ] DELIVERY-CK-USAGE-01-01 — A clean installation completes on every claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-02 — The intended installed application launches.
+- [ ] DELIVERY-CK-USAGE-01-03 — Every supported entry mode completes on each claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-04 — Every entry mode preserves its input.
+- [ ] DELIVERY-CK-USAGE-01-05 — Every required action remains available.
+- [ ] DELIVERY-CK-USAGE-01-06 — Exit remains usable.
+- [ ] DELIVERY-CK-USAGE-01-07 — Relaunch remains usable.
+- [ ] DELIVERY-CK-USAGE-01-08 — Every lifecycle transition returns to its declared usable state on each claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-09 — Every required action is operable by keyboard alone.
+- [ ] DELIVERY-CK-USAGE-01-10 — Every accepted assistive-technology path completes.
+- [ ] DELIVERY-CK-USAGE-01-11 — Every claimed operating system has observable window behavior.
+- [ ] DELIVERY-CK-USAGE-01-12 — Every supported update path is observable on each claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-13 — Every supported recovery is observable on each claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-14 — Every target-specific platform difference is explicit.
+- [ ] DELIVERY-CK-USAGE-01-15 — Every supported native operation has an observable authoritative effect on its claimed operating system.
+- [ ] DELIVERY-CK-USAGE-01-16 — Every native operation has an observable failure signal.
+- [ ] DELIVERY-CK-USAGE-01-17 — Every cancellable native operation has a verified cancellation path.
+- [ ] DELIVERY-CK-USAGE-01-18 — Every activation path handles duplicate activation.
+- [ ] DELIVERY-CK-USAGE-01-19 — Every owned platform resource is disposed when its scope ends.
+- [ ] DELIVERY-CK-USAGE-01-20 — Every unavailable native capability has an observable outcome.
+- [ ] DELIVERY-CK-USAGE-01-21 — Every native integration has an accessible alternative.
+- [ ] DELIVERY-CK-USAGE-01-22 — Local-data creation behavior is defined.
+- [ ] DELIVERY-CK-USAGE-01-23 — Local-data read behavior is defined.
+- [ ] DELIVERY-CK-USAGE-01-24 — Local-data update behavior is defined.
+- [ ] DELIVERY-CK-USAGE-01-25 — Local-data deletion behavior is defined.
+- [ ] DELIVERY-CK-USAGE-01-26 — Every local datum has an installed location.
+- [ ] DELIVERY-CK-USAGE-01-27 — Every local datum has a retention rule.
+- [ ] DELIVERY-CK-USAGE-01-28 — Every exportable local datum has an export path.
+- [ ] DELIVERY-CK-USAGE-01-29 — Every retained local datum has a backup decision.
+- [ ] DELIVERY-CK-USAGE-01-30 — Every recoverable local datum has a recovery path.
+- [ ] DELIVERY-CK-USAGE-01-31 — Every non-native platform convention is required by current user need.
+- [ ] DELIVERY-CK-USAGE-01-32 — Every non-native platform convention is discoverable.
+- [ ] DELIVERY-CK-USAGE-01-33 — Every claimed operating system has observable local-data behavior.
 ## Consistency
 
 ### DELIVERY-SC-CONSISTENCY-01 — Edge case: Cross-artifact identity
 
-A target sits at the boundary between source, package, installed state, data schema, and update metadata. The scenario breaks when any surface describes a different release, target, artifact, or limitation.
+A target sits between source, package, installed state, update metadata, and evidence. It succeeds only when each surface identifies the same bounded release claim.
 #### Checklist
 
-- [ ] DELIVERY-CK-CONSISTENCY-01-01 — Source, configuration, and package identify the same version.
-- [ ] DELIVERY-CK-CONSISTENCY-01-09 — The selected Electron version is explicit for every platform decision.
-- [ ] DELIVERY-CK-CONSISTENCY-01-10 — Every intervening Electron breaking change is reviewed for an upgrade.
+- [ ] DELIVERY-CK-CONSISTENCY-01-01 — The source version matches the claimed application version.
+- [ ] DELIVERY-CK-CONSISTENCY-01-02 — The configuration version matches the claimed application version.
+- [ ] DELIVERY-CK-CONSISTENCY-01-03 — The package version matches the claimed application version.
+- [ ] DELIVERY-CK-CONSISTENCY-01-04 — The installed version matches the claimed application version.
+- [ ] DELIVERY-CK-CONSISTENCY-01-05 — The update metadata version matches the claimed application version.
+- [ ] DELIVERY-CK-CONSISTENCY-01-06 — The evidenced artifact matches the claimed artifact.
+- [ ] DELIVERY-CK-CONSISTENCY-01-07 — The evidenced limitations match the claimed limitations.
+- [ ] DELIVERY-CK-CONSISTENCY-01-08 — The claimed delivery state is explicit.
+- [ ] DELIVERY-CK-CONSISTENCY-01-09 — The claimed release channel is explicit.
+- [ ] DELIVERY-CK-CONSISTENCY-01-10 — The claimed release environment is explicit.
+- [ ] DELIVERY-CK-CONSISTENCY-01-11 — The claimed evidence class is explicit.
 ## Risk
 
-### DELIVERY-SC-RISK-01 — Adversarial: Renderer and external-input abuse
+### DELIVERY-SC-RISK-01 — Expected failure: Data, update, or release control failure
 
-A compromised renderer or hostile external input attempts to widen authority through process configuration, the bridge, IPC, navigation, windows, URLs, or protocols. The scenario breaks if any path fails open.
+Stored data, an update, or release control fails. The expected outcome is recoverable data, a bounded release claim, and no unauthorized external effect.
 #### Checklist
 
-- [ ] DELIVERY-CK-RISK-01-01 — Renderer privilege settings preserve the declared isolated posture.
-- [ ] DELIVERY-CK-RISK-01-02 — The bridge exposes no Electron objects.
-- [ ] DELIVERY-CK-RISK-01-03 — IPC captures the sender synchronously before the first asynchronous boundary.
-- [ ] DELIVERY-CK-RISK-01-04 — Every content-loading session enforces its exact permission allowlist.
-- [ ] DELIVERY-CK-RISK-01-05 — Renderer privilege settings preserve the declared sandboxed posture.
-- [ ] DELIVERY-CK-RISK-01-06 — The bridge exposes no internal events.
-- [ ] DELIVERY-CK-RISK-01-07 — IPC denies a missing sender frame before the effect.
-- [ ] DELIVERY-CK-RISK-01-08 — Every `webContents` enforces an exact frame-aware navigation allowlist.
-- [ ] DELIVERY-CK-RISK-01-09 — Every `webContents` enforces an exact new-window allowlist.
-- [ ] DELIVERY-CK-RISK-01-10 — External-target decisions use exact allowlists.
-- [ ] DELIVERY-CK-RISK-01-11 — Protocol decisions use exact allowlists.
-- [ ] DELIVERY-CK-RISK-01-12 — Every `webContents` enforces an exact frame-aware redirect allowlist.
-- [ ] DELIVERY-CK-RISK-01-13 — IPC denies a detached sender frame before the effect.
-- [ ] DELIVERY-CK-RISK-01-14 — Every renderer keeps Node integration off.
-- [ ] DELIVERY-CK-RISK-01-15 — Every renderer enforces a restrictive Content Security Policy.
-- [ ] DELIVERY-CK-RISK-01-16 — Every renderer keeps `webSecurity` enabled.
-- [ ] DELIVERY-CK-RISK-01-17 — Every renderer keeps insecure-content execution disabled.
-- [ ] DELIVERY-CK-RISK-01-18 — Every exact installed artifact has verified packaged-resource evidence.
-- [ ] DELIVERY-CK-RISK-01-19 — Every exact installed artifact has verified native-module evidence.
-- [ ] DELIVERY-CK-RISK-01-20 — Every exact installed artifact has verified fuse posture.
-- [ ] DELIVERY-CK-RISK-01-21 — Every exact installed artifact has no development-only URL or path literal.
-- [ ] DELIVERY-CK-RISK-01-22 — Every exact installed artifact has no bundled credential.
-- [ ] DELIVERY-CK-RISK-01-23 — Every exact installed artifact has verified signing state when the target requires it.
-### DELIVERY-SC-RISK-02 — Expected failure: Release control failure
-
-Secret protection, update recovery, artifact integrity, or release authority is unavailable. The expected outcome is fail-closed preservation and a blocked release claim rather than degraded security or publication.
-#### Checklist
-
-- [ ] DELIVERY-CK-RISK-02-01 — Secret persistence fails closed when its required protection is unavailable.
-- [ ] DELIVERY-CK-RISK-02-02 — A failed update preserves a usable application or enters the declared recovery path.
-- [ ] DELIVERY-CK-RISK-02-03 — Invalid integrity evidence blocks release.
-- [ ] DELIVERY-CK-RISK-02-04 — A failed update preserves data or enters the declared recovery path.
-- [ ] DELIVERY-CK-RISK-02-05 — Invalid update evidence blocks release.
-- [ ] DELIVERY-CK-RISK-02-06 — Missing publication authority blocks release.
-- [ ] DELIVERY-CK-RISK-02-07 — Machines already on a faulty release have a forward-fix path to a safe version.
-- [ ] DELIVERY-CK-RISK-02-08 — The supported-version window is explicit.
-- [ ] DELIVERY-CK-RISK-02-09 — Rollout monitoring is defined.
-- [ ] DELIVERY-CK-RISK-02-10 — Rollout stop conditions are explicit.
-- [ ] DELIVERY-CK-RISK-02-11 — Recovery accounts for installed releases that distribution withdrawal cannot recall.
-- [ ] DELIVERY-CK-RISK-02-12 — Each target's live-owner obligation matrix has no unresolved notarization, store or package-manager, updater, feed, entitlement, permission, or support entry.
-- [ ] DELIVERY-CK-RISK-02-13 — Every channel that supports controlled audience growth uses staged rollout.
-- [ ] DELIVERY-CK-RISK-02-14 — Every departure from staged rollout has evidence of a channel constraint.
-- [ ] DELIVERY-CK-RISK-02-15 — Rollback evidence proves affected installed machines are reachable.
-- [ ] DELIVERY-CK-RISK-02-16 — Rollback evidence proves persisted user data remains safe.
-- [ ] DELIVERY-CK-RISK-02-17 — Rollback evidence proves schema compatibility.
+- [ ] DELIVERY-CK-RISK-01-01 — An interrupted write preserves recoverable data.
+- [ ] DELIVERY-CK-RISK-01-02 — An incompatible data version fails explicitly.
+- [ ] DELIVERY-CK-RISK-01-03 — Recovery remains available for an incompatible data version.
+- [ ] DELIVERY-CK-RISK-01-04 — Corrupt stored data enters the declared recovery path.
+- [ ] DELIVERY-CK-RISK-01-05 — Corrupt stored data causes no silent data loss.
+- [ ] DELIVERY-CK-RISK-01-06 — A failed migration preserves recoverable data.
+- [ ] DELIVERY-CK-RISK-01-07 — An interrupted migration preserves recoverable data.
+- [ ] DELIVERY-CK-RISK-01-08 — Every persistent write is atomic or detectably incomplete.
+- [ ] DELIVERY-CK-RISK-01-09 — Every persisted structure has an explicit schema version.
+- [ ] DELIVERY-CK-RISK-01-10 — Secret persistence fails closed when its required protection is unavailable.
+- [ ] DELIVERY-CK-RISK-01-11 — Persisted-data forward compatibility or explicit refusal is defined.
+- [ ] DELIVERY-CK-RISK-01-12 — Downgrade behavior is defined whenever persisted data changes.
+- [ ] DELIVERY-CK-RISK-01-13 — Round-trip behavior is defined whenever persisted data changes.
+- [ ] DELIVERY-CK-RISK-01-14 — Recovery remains available to users on a supported older release.
+- [ ] DELIVERY-CK-RISK-01-15 — An update cannot race with a live write into partially migrated data.
+- [ ] DELIVERY-CK-RISK-01-16 — A failed update preserves a usable application.
+- [ ] DELIVERY-CK-RISK-01-17 — A failed update preserves recoverable data.
+- [ ] DELIVERY-CK-RISK-01-18 — The immediate predecessor transition is rehearsed.
+- [ ] DELIVERY-CK-RISK-01-19 — Every materially different supported predecessor transition is rehearsed.
+- [ ] DELIVERY-CK-RISK-01-20 — Every predecessor rehearsal starts from its corresponding installed release.
+- [ ] DELIVERY-CK-RISK-01-21 — Every predecessor rehearsal uses realistic data.
+- [ ] DELIVERY-CK-RISK-01-22 — Every predecessor rehearsal covers interruption recovery.
+- [ ] DELIVERY-CK-RISK-01-23 — Persisted-data schema evolution is additive by default.
+- [ ] DELIVERY-CK-RISK-01-24 — Every risky migration uses copy-on-upgrade.
+- [ ] DELIVERY-CK-RISK-01-25 — Every evolution-policy departure cites a measured constraint.
+- [ ] DELIVERY-CK-RISK-01-26 — Every target-specific release obligation has a current live owner.
+- [ ] DELIVERY-CK-RISK-01-27 — Machines already on a faulty release have a forward-fix path.
+- [ ] DELIVERY-CK-RISK-01-28 — The supported-version window is explicit.
+- [ ] DELIVERY-CK-RISK-01-29 — Rollout monitoring is defined.
+- [ ] DELIVERY-CK-RISK-01-30 — Rollout stop conditions are explicit.
+- [ ] DELIVERY-CK-RISK-01-31 — Release recovery limits are explicit.
+- [ ] DELIVERY-CK-RISK-01-32 — Recovery covers installed releases that distribution withdrawal cannot recall.
+- [ ] DELIVERY-CK-RISK-01-33 — Every channel with controlled audience growth uses staged rollout.
+- [ ] DELIVERY-CK-RISK-01-34 — Every staged-rollout departure cites a channel constraint.
+- [ ] DELIVERY-CK-RISK-01-35 — Rollback evidence proves affected installed machines are reachable.
+- [ ] DELIVERY-CK-RISK-01-36 — Rollback evidence proves persisted user data remains safe.
+- [ ] DELIVERY-CK-RISK-01-37 — Rollback evidence proves schema compatibility.
+- [ ] DELIVERY-CK-RISK-01-38 — Missing authority blocks installer publication.
+- [ ] DELIVERY-CK-RISK-01-39 — Missing authority blocks update publication.
+- [ ] DELIVERY-CK-RISK-01-40 — Missing authority blocks store release.
+- [ ] DELIVERY-CK-RISK-01-41 — Missing authority blocks signing-identity mutation.
+- [ ] DELIVERY-CK-RISK-01-42 — Missing authority blocks signing-provider mutation.
+- [ ] DELIVERY-CK-RISK-01-43 — Missing authority blocks live-feed mutation.
+- [ ] DELIVERY-CK-RISK-01-44 — Missing authority blocks channel mutation.
+- [ ] DELIVERY-CK-RISK-01-45 — Missing authority blocks rollout mutation.
 ## Overall
 
 ### DELIVERY-SC-OVERALL-01 — Adversarial: Cosmetic release readiness
 
-A complete-looking handoff attempts to substitute inventories and labels for reproducible readiness. The scenario breaks unless a cold operator can reproduce the claim boundaries and the authorized stopping point.
+A complete-looking handoff substitutes labels or inventories for an observed installed outcome. It succeeds only when a cold operator can reproduce the bounded claim.
 #### Checklist
 
-- [ ] DELIVERY-CK-OVERALL-01-01 — A cold operator can reproduce the release-ready state from the handoff.
-- [ ] DELIVERY-CK-OVERALL-01-02 — Evidence-class boundaries remain explicit.
-- [ ] DELIVERY-CK-OVERALL-01-03 — Limitations remain explicit.
+- [ ] DELIVERY-CK-OVERALL-01-01 — A cold operator can reproduce the release-ready state.
+- [ ] DELIVERY-CK-OVERALL-01-02 — No delivery claim exceeds its evidence.
+- [ ] DELIVERY-CK-OVERALL-01-03 — Every assistive-technology claim names its directly exercised technology.
+- [ ] DELIVERY-CK-OVERALL-01-04 — Every assistive-technology claim names its directly exercised target.
+- [ ] DELIVERY-CK-OVERALL-01-05 — No inventory substitutes for an observed installed outcome.
