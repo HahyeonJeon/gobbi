@@ -123,10 +123,7 @@ Include every item in the evaluation owner's frozen bundle. Include the complete
 | Multiple values or wrapper text | strict parse result | No extraction or repair |
 | Schema-invalid output | schema path and validator failure | No target write |
 | Identity mismatch | expected and observed field | No relabeling |
-| Digest mismatch | named expected and observed digest | No stale-input acceptance |
 | Reused process or response | prior identity/digest collision | No replay |
-| Record command failure | exact command diagnostic | Existing target remains authoritative |
-| Package/report validator failure | exact owner-validator diagnostic | Pause before workflow transition |
 
 The active-runtime assistant reports the failure. It does not generate substitute content. It does not trim fences, select the first of several values, extract JSON from prose, repair fields, or rerender a response; any such transformation would make the wrapper an author. The manager owns all recovery choices and any user-approved one-system waiver.
 

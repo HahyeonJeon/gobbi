@@ -27,7 +27,7 @@ The peer returns one closed response and never writes the session tree. The acti
 
 ### Treat failure as a visible pause
 
-An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, schema failure, identity mismatch, digest mismatch, renderer failure, or validator failure blocks the operation. The wrapper never authors replacement content under the missing system's label.
+An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, or identity mismatch blocks the operation. The wrapper never authors replacement content under the missing system's label.
 
 ## Rules
 
@@ -65,10 +65,8 @@ This skill defines no artifact schema, no per-kind response shape, and no digest
 | Skill discovery | `.agents/skills/{skill}/` | Resolves to the canonical skill directory |
 | Repo-local specialist | `.codex/agents/{role}.toml` | Loads the matching protected role document |
 | Shared plugin package | `plugins/gobbi/` | Package topology is verified by the root sync and smoke commands |
-| Session identity and settings | `session.json` version 5 | Record and workflow own attachment and validation |
-| Active workflow cursor | `state.json` version 3 | Workflow owns transitions; native task lists are projections |
 
-When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and checkpoints it through the record owner. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
+When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and carries it in the assignment as runtime evidence. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
 
 For role selection and model values, read the validated session settings and the repo-local Codex configuration named by the runtime entry documents. This skill adds no model override. For package setup, topology, and installed-cache checks, follow the root runtime instructions rather than copying their commands here.
 
@@ -180,10 +178,7 @@ No later check compensates for a failed earlier check. A failure changes nothing
 | Any other nonzero status | process failure | Pause with status and immediate stderr diagnostic |
 | Empty response | empty output | Pause; do not synthesize missing content |
 | Multiple values, prose, fence, or parse error | malformed output | Pause with the parser result |
-| JSON Schema failure | contract failure | Pause with the failing schema path and validator result |
-| Metadata or runtime identity mismatch | stale or mislabeled output | Pause and show expected versus observed identity |
-| Frozen digest mismatch | wrong input or replay | Pause and show the named digest mismatch |
-| Record renderer or owner validator failure | storage boundary failure | Preserve prior bytes and report the exact failing command |
+| Metadata or runtime identity mismatch | stale, replayed, or mislabeled output | Pause and show expected versus observed identity |
 
 Only the manager may offer retry, a bounded input repair, an explicit one-system waiver, return to DISCUSSION, or abort. This tool does not create the decision or mutate the workflow cursor.
 
