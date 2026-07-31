@@ -1,6 +1,6 @@
 ---
 name: html-platform
-description: "MUST load when looking up HTML conformance, parsing, target support, or evidence meaning. HTML Platform is a tool skill for using the WHATWG HTML Living Standard and its browser or Electron realizations."
+description: "MUST load when looking up HTML conformance, parsing, target support, or evidence meaning."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---

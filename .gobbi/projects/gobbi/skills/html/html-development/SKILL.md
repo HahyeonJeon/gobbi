@@ -1,6 +1,6 @@
 ---
 name: html-development
-description: "MUST load when creating, repairing, or accepting an emitted HTML artifact. HTML Development is an operation skill for producing an exact artifact with proportionate evidence."
+description: "MUST load when creating, repairing, or accepting an emitted HTML artifact."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---

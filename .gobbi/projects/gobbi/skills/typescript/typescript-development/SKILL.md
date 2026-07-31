@@ -1,6 +1,6 @@
 ---
 name: typescript-development
-description: "MUST load when implementing or changing TypeScript code. TypeScript Development is an operation skill for studying the code contract, designing the typed surface, building bottom-up, and verifying the completed change."
+description: "MUST load when implementing or changing TypeScript code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
