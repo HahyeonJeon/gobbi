@@ -1,13 +1,11 @@
 # Writing a Preference Skill
 
-Operation-shaped child procedure for producing one preference skill. Load it only at P5 after the parent
-Skill Writing operation classifies the target as `skill-type: preference`. Its observable outcome is a
-self-contained skill that improves judgment through Principles, binding Rules, and overridable Preferences
-without inventing ordered execution or a named-tool manual.
+Use this child document at Step 2.1 after the parent Skill Writing operation classifies the target as
+`skill-type: preference`. It produces a self-contained skill that improves judgment through Principles,
+binding Rules, and overridable Preferences without inventing ordered execution or a named-tool manual.
 
-The Procedure in this document belongs to the authoring operation; the target preference skill has no
-Procedure. This file remains a direct child document rather than an independently loadable skill, so the
-parent owns its loading, verification bundle, and frontmatter.
+This document owns the authoring Procedure, while the target preference skill has no Procedure. The parent
+owns this direct child's loading, type selection, and frontmatter contract.
 
 ## Principles
 
@@ -30,113 +28,84 @@ context.
 
 ## Rules
 
-### Must-Follow
-
-- **MUST run this procedure only after P2 classifies the target as `preference`.** Return to P2 when the target
-  owns ordered actions for a work outcome or primarily explains one named tool or platform.
+- **MUST run this procedure only after Step 1.3 classifies the target as `preference`.** Return to Step 1.3
+  when the target owns ordered actions for a work outcome, primarily explains one named tool or platform, or
+  only navigates a mixed domain child-skill family.
 - **MUST produce the exact preference target shape.** Use Frontmatter → Intro → Principles → Rules →
   Preferences → References; keep Principles, Rules, and Preferences dominant; and add neither Procedure nor
   Manual.
-- **MUST keep every target Rule within the parent Rules contract.** Begin it with a bold normative lead, make
-  it binding, self-contained, testable, and distinct from every Principle, keep the complete Rules section to
-  at most nine semantic items, and let every Rule override every conflicting Preference.
+- **MUST let every target Rule override every conflicting Preference.** A Preference cannot weaken or create
+  an exception to a Rule.
 - **MUST include at least one real Preference.** Each Preference states a recommended default, when it applies,
   and the evidence or condition that permits departure; it neither duplicates a Rule, hides a binding
   requirement, nor uses padding to satisfy a rigid entry schema.
 
 ## Procedure
 
-### S1 — Frame the judgment surface
+### Phase 1 — Model the Judgment
 
-List the decisions the skill must improve, the actors making them, the contexts in which the guidance applies,
-and the consequences of a wrong choice. Name the non-goals and any judgment the skill deliberately leaves to a
-different owner.
+#### 1.1 Define the choice space
 
-### S2 — Build the evidence map
+- Use the approved design to name the decisions the skill must improve, the actors making them, the contexts
+  in which they arise, and the consequences of a poor choice.
+- Define the valid-choice boundary, non-goals, and judgments owned by another skill.
+- Return to parent Phase 1 when the capability instead requires ordered execution, a named-tool manual, or a
+  domain navigation family.
 
-Gather the governing requirements, accepted decisions, recurring failures, user preferences, and established
-practice. Separate:
+#### 1.2 Separate constraints, defaults, exceptions, and evidence
 
-- facts borrowed from an owner;
-- local preferences this skill owns;
-- binding constraints imposed by an owner; and
-- contextual defaults that admit exceptions.
+- Classify the evidence as borrowed facts, binding constraints, durable mental models, overridable defaults,
+  justified exceptions, or unresolved tensions.
+- Assign every borrowed fact and binding constraint to its owner, and keep local Preferences inside the valid
+  choice space established by Rules.
+- Confirm that the capability contains at least one genuine default with a meaningful exception; otherwise
+  return to the parent classifier.
 
-### S3 — Create the complete skeleton
+### Phase 2 — Write the Preference Skill
 
-Render the four frontmatter slots and the required headings in their exact order. Stamp
-`skill-type: preference`, name every planned direct child, and use placeholders only to expose the intended
-structure. Do not write substantive prose until the skeleton is complete.
+#### 2.1 Create the complete skeleton
 
-### S4 — Write Principles
+- Render the approved frontmatter, Intro, Principles, Rules, Preferences, References, and planned direct
+  children in their exact order.
+- Stamp `skill-type: preference`, use placeholders only to expose the approved structure, and write no
+  substantive prose until the skeleton is complete.
 
-Write self-standing mental models that explain why the preferences exist and how to reason when legitimate
-preferences pull in different directions. Keep each Principle universal enough to survive a tool or
-implementation change.
+#### 2.2 Write Preferences as the core
 
-Do not force a fixed count or per-Principle field schema. Use the amount and structure the judgment needs.
-Move a binding statement to Rules when it is directly gradable on a finished artifact or behavior. Move an
-overridable default to Preferences. Before S5, compare every candidate Rule with the Principles and separate
-the general rationale from the distinct pass/fail boundary.
+- Write each Preference as an overridable default with its applicability condition, departure evidence or
+  condition, and enough rationale to weigh the exception.
+- Use `SHOULD`, `PREFER`, `AVOID`, or equally explicit default language and keep binding requirements in Rules.
+- Include at least one real Preference; do not duplicate a Rule, hide a prohibition, or pad the section with
+  artificial defaults or a rigid entry schema.
 
-### S5 — Write Rules as binding constraints
+#### 2.3 Complete Principles, Rules, Intro, and References
 
-Place only binding requirements and prohibitions in Rules. Use `MUST`, `MUST NOT`, `ALWAYS`, or `NEVER`, and
-begin every item with that normative verb in a bold lead. Make each Rule self-contained and checkable. Do not
-use `SHOULD`, `PREFER`, or `AVOID` for contextual defaults here. A Rule always takes precedence over a
-conflicting Preference.
+- Write Principles that explain the durable judgment model and resolve legitimate tension between valid
+  Preferences.
+- Write Rules as self-contained constraints that establish the valid choice space and override every
+  conflicting Preference; apply the parent limits and normative expressions.
+- Write the Intro from the completed body without adding new policy, and keep References limited to owned
+  Markdown children while citing outside owners beside their claims.
+- Re-read the target as a cold decision-maker and confirm that it supports sound judgment without private
+  author context.
 
-Apply the parent rule-count and non-duplication contract. Inventory semantic rule items rather than bullets.
-If the inventory exceeds the limit, relocate rationale to Principles, defaults to Preferences, and ordered
-work to an operation skill. Do not merge unrelated constraints or drop a condition merely to reduce the
-count.
+### Phase 3 — Review and Improve the Preference Skill
 
-### S6 — Write Preferences as overridable defaults
+#### 3.1 Review the judgment behavior
 
-Place recommended defaults in Preferences. Use `SHOULD`, `PREFER`, `AVOID`, or equally explicit default
-language. Every entry states the preferred choice, when it applies, and the evidence or condition that permits
-departure. Include enough rationale for a new reader to weigh the exception.
+- Confirm the exact preference shape, a real Preferences section, clear separation between Principles, Rules,
+  and Preferences, and the target's compliance with parent Phase 3.
+- Test an ordinary default, a justified exception, a Rule-and-Preference conflict, tension between two
+  Preferences, and a cosmetically compliant choice that violates the intended judgment.
+- Require Rules to win binding conflicts and Principles to resolve legitimate tension without turning the
+  skill into ordered execution.
+- Confirm that borrowed claims resolve to their owners and that internal References remain local.
 
-The section is required and contains at least one real default. Do not duplicate a Rule, hide a binding
-requirement here, or pad entries to satisfy a rigid mini-schema. Examples, counterexamples, and tensions are
-optional structures. If the capability has no genuine overridable default, return to P1 and P2 instead of
-inventing preference content.
+#### 3.2 Correct and re-review the preference skill
 
-### S7 — Finish Frontmatter and Intro
-
-Complete the four-key frontmatter contract from the parent. Begin the description with `MUST load`, state the
-exact load condition, and identify the skill as a preference skill for the judgment it improves.
-
-Write the Intro from the completed body. In a little more detail than the description, explain the judgment,
-actor, load condition, boundary, and kind of guidance the reader will find. It may summarize the body but may
-not introduce policy, instructions, owner citations, or rationale absent from the owning section.
-
-### S8 — Write References and run the language pass
-
-Keep the required References heading. Link only to Markdown child documents and child-skill entrypoints whose
-resolved paths stay beneath the directory containing the target `SKILL.md`. Cite an outside owner beside the
-claim it validates, never in References. Leave the heading empty when the skill has no allowed child material.
-
-Read the whole skill as a cold reader. Use one stable term for each concept, expand unfamiliar abbreviations
-at first use, keep one main claim per sentence, and replace vague, ornamental, or implied expressions with
-literal actors, conditions, choices, and evidence.
-
-### S9 — Stress and accept the preference skill
-
-Test at least:
-
-1. an ordinary case where the default should win;
-2. an exception where evidence should override a contextual Preference;
-3. a Rule and Preference conflict where the Rule must win;
-4. a conflict between two Preferences that the Principles must resolve; and
-5. a cosmetically compliant artifact that violates the underlying intent.
-
-Then inspect the complete artifact. Confirm the frontmatter and description, skeleton-first record, aligned
-Intro, exact section shape, semantic Rule inventory, Principle-to-Rule separation, real Preferences,
-claim-owner citations, local References, and cold-reader language all satisfy the parent and child contracts.
-Return to the owning step on any failure.
-
-Revise until a new reader reaches the intended judgment from the skill alone. Return to the parent classifier
-if the repair introduces ordered execution or a named-tool manual.
+- Trace each finding to the earliest incorrect choice boundary, evidence class, skeleton section, Principle,
+  Rule, or Preference and propagate the correction through the complete target.
+- Repeat the affected judgment cases and the complete preference review; return to parent Phase 1 if the
+  correction changes the skill type.
 
 ## References
