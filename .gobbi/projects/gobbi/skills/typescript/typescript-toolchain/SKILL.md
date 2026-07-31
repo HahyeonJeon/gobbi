@@ -1,13 +1,13 @@
 ---
-name: typescript-compiler
+name: typescript-toolchain
 description: "MUST load when TypeScript work involves compiler configuration, module resolution, imports, emit, type stripping, linting, building, or runtime host differences."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
-# TypeScript Compiler
+# TypeScript Toolchain
 
-TypeScript Compiler is the inspection and configuration tool for the language pipeline. It separates checking, JavaScript production, type stripping, module resolution, linting, building, and runtime loading so evidence from one layer is never mistaken for another.
+TypeScript Toolchain is the inspection and configuration tool for the language pipeline. It separates checking, JavaScript production, type stripping, module resolution, linting, building, and runtime loading so evidence from one layer is never mistaken for another.
 
 The correct settings are conditional on the artifact: an application, library, script, test, declaration-only package, browser bundle, server process, or desktop process may need different profiles. Read the project and runtime contracts before selecting flags or import forms.
 
