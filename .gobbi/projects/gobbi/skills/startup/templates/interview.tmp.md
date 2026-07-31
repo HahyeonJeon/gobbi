@@ -11,6 +11,7 @@ secrets and user-marked sensitive values, and retain the file while the intervie
 - Ideation iteration: `{{n}}`
 - Trigger: `{{fresh-project | sparse-baseline | explicit-reset}}`
 - Classifier: `{{sparse | absent | contradictory}}`
+- Classifier evidence: `{{ordered source citations and named gaps}}`
 - Started: `{{timestamp}}`
 - Updated: `{{timestamp}}`
 - Current Phase: `{{1 | 2 | 3 | 4}}`
@@ -43,7 +44,7 @@ secrets and user-marked sensitive values, and retain the file while the intervie
 
 ## Evolving topic tree
 
-Use seed IDs `S01`–`S10`. Keep an adapted seed's ID. Give an emergent topic the earliest owning seed
+Use seed IDs `S01`–`S13`. Keep an adapted seed's ID. Give an emergent topic the earliest owning seed
 plus a sequence, such as `S06.E01`.
 
 Topic origin is `seed`, `adapted`, or `emergent`. Topic status is `open`, `resolved`, `not-needed`,
@@ -53,31 +54,48 @@ Topic origin is `seed`, `adapted`, or `emergent`. Topic status is `open`, `resol
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
-| `S01` | Current Reality, Trigger, and Authority | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S01` | Existing Reality, Software Form, Lifecycle, and Authority | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S02` | Problem, Outcome, and Success | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S03` | People, Jobs, Alternatives, and Value | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S03` | People, Jobs, Alternatives, and Adoption | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
 ### Phase 2 — Project Boundary
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
-| `S04` | Scope, Boundaries, and Non-goals | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S04` | Scope, Boundaries, External Contracts, and Non-goals | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
-### Phase 3 — Project and System Direction
+### Phase 3 — Software and System Direction
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S05` | Capabilities and Journeys | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S06` | Experience, Adoption, and Compatibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S07` | System, Data, Delivery, and Ownership Direction | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S06` | Experience, Interfaces, Accessibility, and Compatibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S07` | Architecture, System Context, Runtime, and Data | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S08` | Technology Stack and Dependencies | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S09` | Delivery, Operations, and Ownership | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
 ### Phase 4 — Viability and Guardrails
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
-| `S08` | Trust, Safety, and Data Duties | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S09` | Constraints, Quality, and Validation | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S10` | Risks, Capacity, and Continuity | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S10` | Security, Privacy, Safety, and Data Duties | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S11` | Engineering Conventions, Idioms, and Recurring Mistakes | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S12` | Constraints, Quality, and Verification | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S13` | Risks, Capacity, Maintenance, and Continuity | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+
+## Evolving question agenda
+
+Add only instantiated questions. Do not copy every seed or conditional prompt into this table.
+
+Question aliases are globally unique lowercase kebab-case values such as `[tech-stack]`. Scope each
+question to one component or surface; derive distinct aliases when sibling components can answer
+differently. Question origin is `seed`, `adapted`, `emergent`, `follow-up`, or `conflict-resolution`.
+Question status is `open`, `asked`, `answered`, `evidence-confirmed`, `not-needed`, `merged`, `reopened`,
+or `retired`.
+
+| Question alias | Phase / topic ID | Applies to component or surface | Current wording or axis | Origin | Derived from | Basis or adaptation reason | Status | Answer IDs |
+|---|---|---|---|---|---|---|---|---|
+| `[software-type]` | `1 / S01` | `project` | `Which software type or mixed set owns the outcome?` | `seed` | `none` | `{{evidence or reason}}` | `open` | `{{IDs or none}}` |
 
 ## Structured answer events
 
@@ -86,6 +104,10 @@ Copy this block for each material answer. Use sequential answer IDs such as `A00
 ### `{{A001}}` — `{{short answer label}}`
 
 - Phase and topic: `{{Phase number}}` / `{{topic ID}}`
+- Question alias: `{{[semantic-alias]}}`
+- Applies to component or surface: `{{project | named component or surface}}`
+- Question origin: `{{seed | adapted | emergent | follow-up | conflict-resolution}}`
+- Derived from question aliases: `{{aliases or none}}`
 - Exact question: `{{question as asked}}`
 - Faithful non-sensitive answer summary: `{{summary, not a transcript}}`
 - Claim kind: `{{fact | user-report | intent | preference | forecast | decision | open-question}}`
@@ -111,7 +133,8 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
-- Current answers: `{{answer IDs and summaries}}`
+- Current questions and dispositions: `{{aliases, component scopes, statuses, and adaptation reasons}}`
+- Current answers: `{{alias-to-answer mappings and summaries}}`
 - Facts and evidence: `{{facts and sources}}`
 - Assumptions: `{{claims and resolution methods}}`
 - Decisions, rejected alternatives, and evidence-to-change: `{{details}}`
@@ -124,7 +147,8 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
-- Current answers: `{{answer IDs and summaries}}`
+- Current questions and dispositions: `{{aliases, component scopes, statuses, and adaptation reasons}}`
+- Current answers: `{{alias-to-answer mappings and summaries}}`
 - Facts and evidence: `{{facts and sources}}`
 - Assumptions: `{{claims and resolution methods}}`
 - Decisions, rejected alternatives, and evidence-to-change: `{{details}}`
@@ -133,11 +157,12 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 - Downstream or reopened effects: `{{details or none}}`
 - User confirmation: `{{timestamp and confirmation summary}}`
 
-### Phase 3 checkpoint — Project and System Direction
+### Phase 3 checkpoint — Software and System Direction
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
-- Current answers: `{{answer IDs and summaries}}`
+- Current questions and dispositions: `{{aliases, component scopes, statuses, and adaptation reasons}}`
+- Current answers: `{{alias-to-answer mappings and summaries}}`
 - Facts and evidence: `{{facts and sources}}`
 - Assumptions: `{{claims and resolution methods}}`
 - Decisions, rejected alternatives, and evidence-to-change: `{{details}}`
@@ -150,7 +175,8 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
-- Current answers: `{{answer IDs and summaries}}`
+- Current questions and dispositions: `{{aliases, component scopes, statuses, and adaptation reasons}}`
+- Current answers: `{{alias-to-answer mappings and summaries}}`
 - Facts and evidence: `{{facts and sources}}`
 - Assumptions: `{{claims and resolution methods}}`
 - Decisions, rejected alternatives, and evidence-to-change: `{{details}}`
@@ -166,6 +192,7 @@ answers apply under different conditions.
 
 ### `{{C001}}` — `{{short conflict label}}`
 
+- Question aliases: `{{aliases}}`
 - Previous answer: `{{answer ID and incompatible claim}}`
 - Later answer: `{{answer ID and incompatible claim}}`
 - Evidence and downstream consequence: `{{details}}`
@@ -181,6 +208,12 @@ answers apply under different conditions.
 
 - [ ] Every current topic is `resolved`, `not-needed` with reason and evidence, `merged`, or `open` with an owner and method.
 - [ ] Every topic change records its context and reason.
+- [ ] Every instantiated question has one valid, globally unique semantic alias and a current disposition.
+- [ ] Every instantiated question records the component or surface to which it applies.
+- [ ] Contextual rewording retains an alias only when its semantic axis is unchanged.
+- [ ] Semantic splits, changed axes, and conflict-resolution axes receive new aliases with derived-from aliases.
+- [ ] Every current answer is reachable through its question alias.
+- [ ] No question remains `asked` or `reopened`; each has a finalizable disposition.
 - [ ] Every material contradiction has the user's resolution and correction links.
 - [ ] Every reopened Phase and affected downstream checkpoint is current.
 - [ ] Current answers, evidence, uncertainty, decisions, and open questions agree across sections.
