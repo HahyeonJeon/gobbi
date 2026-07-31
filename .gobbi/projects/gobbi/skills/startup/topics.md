@@ -1,582 +1,102 @@
 # Startup Topics
 
-The lookup tree for Startup's optional evidence-led question operation. It is ordered by dependency:
-problem space → boundary → solution space (product shape before system shape) → guardrails. One question
-per turn. The tree feeds ordinary Ideation DISCUSSION; it is not a storage schema or separate lifecycle.
-
-## Contents
-
-- [How to traverse the tree](#how-to-traverse-the-tree)
-  - [Anti-sycophancy contract](#anti-sycophancy-contract)
-  - [Worked pushback exemplars](#worked-pushback-exemplars)
-- [Baseline-quality tests](#baseline-quality-tests)
-- [Group I — Problem space](#group-i--problem-space)
-  - [Topic 1 — Existing Reality & Intent](#topic-1--existing-reality--intent)
-  - [Topic 2 — Problem, Vision & Success](#topic-2--problem-vision--success)
-  - [Topic 3 — Users, Jobs, Alternatives & Value](#topic-3--users-jobs-alternatives--value)
-- [Group II — Boundary](#group-ii--boundary)
-  - [Topic 4 — Scope, Boundaries & Non-goals](#topic-4--scope-boundaries--non-goals)
-  - [Problem-before-solution premise gate](#problem-before-solution-premise-gate)
-- [Group III — Solution space (product shape before system shape)](#group-iii--solution-space-product-shape-before-system-shape)
-  - [Topic 5 — Features & User Journeys](#topic-5--features--user-journeys)
-  - [Topic 6 — Experience & Product Design](#topic-6--experience--product-design)
-  - [Topic 7 — Architecture, System Context & Data](#topic-7--architecture-system-context--data)
-  - [Topic 8 — Tech Stack, Delivery & Operations](#topic-8--tech-stack-delivery--operations)
-- [Group IV — Guardrails](#group-iv--guardrails)
-  - [Topic 9 — Conventions, Constraints & Quality bar](#topic-9--conventions-constraints--quality-bar)
-  - [Topic 10 — Risks, Unknowns & Roadmap](#topic-10--risks-unknowns--roadmap)
-  - [Topic 11 — Idioms, Rules & Recurring Mistakes](#topic-11--idioms-rules--recurring-mistakes)
-- [Topic summaries](#topic-summaries)
-- [Traversal and mandatory coverage](#traversal-and-mandatory-coverage)
-
-## How to traverse the tree
-
-1. Follow the topics and Level-2 branches in order. Ask **one question per turn**.
-2. Each bullet under a branch is a **prompt bank**, not a single question. When a bullet bundles several
-   decision axes (e.g. 1.4 license/governance, 8.2 build/deploy/observe/rollback, 10.1 likelihood/impact/
-   warning/mitigation), ask **one axis per turn**; a single answer event may still fill several
-   already-explicit coverage fields. Choose two to four prompts from a branch's bank as needed; do not
-   recite the whole bank once the branch is already evidenced.
-3. Before asking, inspect the relevant project docs and repo evidence. If a fact is verified, show it
-   first and ask the user to confirm or correct it — a shown fact shortens the answer. **Prefer
-   past-behavior and repository evidence over opinion or hypothetical, and never lead the answer** — ask
-   what actually happened, not what the user supposes would happen.
-4. **When a branch reaches a design-bearing choice** (marked under the heading below), do not close it
-   from the user's initial preference. Run the [study, recommend, and resolve procedure](SKILL.md#7-study-recommend-and-resolve-design-directions)
-   before closing it. Capture-only branches trigger it only when they expose a choice.
-5. If an answer is vague, probe with a concrete example, a past-behavior question, or a counterexample.
-   If the re-answer is still vague, probe a second time (the [`discussion`](../discussion/SKILL.md)
-   § Push-once-then-push-again rule); if it is still vague after the second probe, close the branch
-   `open` with an owner and resolution method rather than accepting a vague answer or pushing
-   indefinitely. This at-most-twice cap governs a still-vague or contradicted answer only; do not re-ask
-   merely to restate an answer that already landed concrete. A concrete, evidenced answer is not a stop
-   signal — when it exposes a new in-scope claim, dependency, contradiction, or untested assumption, open
-   an evidence-advancing follow-up under rule 9.
-6. Classify each answer in transient working context as `confirmed`, `assumption`, `open`, or
-   `contradicted`, and account for every Level-2 branch as `confirmed`, `proven-irrelevant` with a reason,
-   or `open` with an owner. The returned packet preserves these distinctions.
-7. Smart-skip a branch only when existing evidence fully answers it AND the user confirms; record the
-   evidence and the confirmation.
-8. Re-open an earlier branch when a later answer contradicts it. Architecture must not silently redefine
-   scope; roadmap must not silently redefine the quality bar.
-9. **Follow the evidence down as far as it keeps moving.** A concrete, evidenced answer may open a deeper
-   follow-up under the same branch when it exposes a new in-scope claim, dependency, contradiction, or
-   untested assumption AND the follow-up can produce new evidence. Keep descending that chain while each
-   probe still advances the evidence within the branch's topic scope. Each probe is still one question per
-   turn (rule 1); the chain simply continues across turns and stops only when the next probe would not move
-   the evidence, when it would leave topic scope, or when the branch is settled. This is DEPTH, distinct
-   from the rule-5 vague-repair cap: the cap bounds re-asking a still-vague answer, this rule pursues
-   evidence off a concrete one. A follow-up deepens its parent branch, inherits that branch's closure
-   state, and never adds a required branch.
-
-**Design-bearing markers.** Branches that settle a direction carry an inline marker under their heading.
-The core design cluster is **Topics 6–9**, plus the always-design-bearing capability and journey branches
-**5.1–5.2**; a conditional set (**4.4, 5.3, 5.4, 7.1, 8.4, 9.4, 10.4, 11.1, 11.2**) fires the same
-micro-loop only when the branch selects or changes a direction rather than inventorying current state.
-The markers below are authoritative; see [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions).
-
-### Anti-sycophancy contract
-
-Hold this posture through every turn:
-
-- Do NOT use "that is interesting", "that could work", "there are many ways", or "you might consider" as
-  standalone assessments — they read as agreement and teach nothing.
-- Do NOT put the desired answer inside a discovery question.
-- After each answer, state the read explicitly: "My read: [evidence status] because [specific evidence or
-  gap]; this changes if [observable evidence]."
-- When disagreeing, cite the contradiction, the source, or the missing signal — not a feeling.
-- Push a vague or contradicted answer at most twice, then mark it `open` with an owner.
-- A user decision can lock intent, but it cannot convert a contradicted external fact into evidence.
-
-### Worked pushback exemplars
-
-Use these BAD → GOOD rewrites on the design-bearing and problem/user branches:
-
-- **Vague target** — BAD: accept "developers". GOOD: "'Developers' is not a segment. Who experienced
-  this last, what exact task, and what did the failure cost?"
-- **Compliments** — BAD: treat "they love it" as demand. GOOD: "Liking it is free. Which of them changed
-  behavior or gave up time, effort, or money?"
-- **Undefined quality** — BAD: accept "seamless". GOOD: "'Seamless' is not measurable. Which step blocks
-  first value, what is the baseline completion / time, and what threshold would pass?"
-- **No alternative** — BAD: accept "there's nothing like it". GOOD: "The status quo is still what you
-  must beat. What do users do now, and what anxiety or habit keeps them there?"
-
----
-
-## Baseline-quality tests
-
-The read-only classifier applies all eleven tests. `Sufficient` means downstream Ideation can use the
-baseline without guessing; it does not mean every risk is solved.
-
-1. **Coverage:** all eleven topic groups are substantively represented or explicitly irrelevant.
-2. **User and job:** at least one first user, concrete job, and role boundary are identifiable.
-3. **Behavioral evidence:** load-bearing problem claims trace to an event, behavior, commitment, or
-   directly verified fact—not praise or an untested forecast.
-4. **Bounded shape:** scope, non-goals, critical journeys, and rough product direction agree.
-5. **Feasibility:** material build, dependency, operational, recovery, and maintenance constraints are
-   visible.
-6. **Authority:** decision owners and boundaries of user, project, legal, and operational authority are
-   clear.
-7. **License and governance:** applicable license, distribution, ownership, contribution, and data-use
-   constraints are recorded or explicitly open.
-8. **Downstream usability:** a reader can begin Ideation without recovering essential context from an
-   unstored conversation.
-9. **Contradictions:** load-bearing conflicts are resolved or clearly surfaced with an owner.
-10. **Secrecy:** the baseline exposes no secret, credential, or user-marked sensitive value.
-11. **Load-bearing evidence:** assumptions that determine problem reality, feasibility, safety, or scope
-    are supported or explicitly open; branch coverage alone does not turn them into evidence.
-
----
-
-## Group I — Problem space
-
-### Topic 1 — Existing Reality & Intent
-
-#### 1.1 Trigger & lifecycle
-- Why is the baseline being established or revised **now**?
-- Is the project greenfield, experimental, production, mature, legacy, or retiring?
-- What confusion or repeated mistake should this reference prevent first?
-
-#### 1.2 Current state & evidence
-- What exists today — an idea, code, users, deployments, docs, or some combination?
-- Which current-state claims can be verified directly from the repo or from observed behavior?
-- What has already been tried, and what happened in the most recent concrete case?
-
-#### 1.3 Authority & uncertainty
-- Who settles product, technical, security, and delivery decisions?
-- Which current answers are confirmed vs assumption vs open vs already contradicted?
-- Which existing docs stay authoritative, and which are candidates for review or supersession?
-
-#### 1.4 License, distribution & governance
-- What license does the project ship under, and is it open-source, internal, commercial, or mixed?
-- What external distribution, contribution, review-authority, or community-obligation model applies?
-- Who can change the license or governance model, and which legal/compliance constraint also needs
-  recording later (cross-refs Topic 9.4)?
-
-*Not-applicable rule:* for a closed/internal project with no external distribution, record
-`license/governance: internal — not applicable` as a one-line **confirmed** answer and move on. Never
-fabricate a license, and never skip the branch silently.
-
-### Topic 2 — Problem, Vision & Success
-
-#### 2.1 Problem event & consequence
-- What was the last concrete occurrence of the problem — when, and who experienced it?
-- What did that person actually do when it happened, and what did it cost them?
-- What recurring situation triggers the need for this project, and how often does it recur?
-
-#### 2.2 Root cause, why-now & fatal premise
-- Why does the problem persist, and what evidence would show the stated problem is only a symptom of a
-  deeper cause?
-- What recently changed that makes now the time to solve it?
-- Which single claim, if false, would make this project pointless or wrong? (Ask one axis per turn.)
-
-#### 2.3 Vision & durable outcome
-- What have you already seen that makes a better outcome believable? Then, tagged `intent`: if the
-  project succeeds, what is materially different for its users or operators?
-- What stays true in three years even if the implementation changes completely?
-- What one-sentence description should a new contributor be able to repeat accurately?
-
-#### 2.4 Baseline, target, failure & stop threshold
-- What is the current measured baseline from the most recent real case?
-- Which target improvement — measured by whom, by when, and set on what sourced, context-specific basis or method (a prior comparable, a benchmark with its source, or a stated method, not an unsourced number) — would prove the project works, and what
-  would count as a technically successful build but a failed project?
-- What threshold or evidence would say stop, pivot, or narrow — and on what sourced basis or method?
-
-### Topic 3 — Users, Jobs, Alternatives & Value
-
-#### 3.1 First user, persona & roles
-- Who is the one first user or segment, and what evidence makes them first?
-- Where distinct roles exist, who operates, approves, supports, or is affected — each as a separately
-  applicable axis, not a purchasing chain?
-- Who is explicitly **not** a target in the current boundary?
-
-#### 3.2 Job & switching forces
-- In what concrete situation does the user reach for it, and what progress (not feature) are they trying
-  to make?
-- Complete the job story: "When [situation], I want [motivation], so I can [outcome]." What happens if
-  that job fails?
-- Name the switching forces: what pushes the user off the current way, what pulls them toward a new one,
-  what anxiety the new approach creates, and what habit or allegiance holds them to the old. What event
-  overcame those forces in the last real switch, and which force is strongest?
-
-#### 3.3 Current alternatives & status quo
-- What do target users do today instead — a workaround, doing nothing, or an adjacent tool? The status
-  quo is the real thing the project must beat.
-- How well does the current alternative actually work, and where does it break down?
-- What anxiety or habit keeps users on the status quo even when it fails them?
-
-#### 3.4 Behavioral evidence of the problem
-- What dated instances of the problem can the user point to, and how frequent is the need among the first
-  users?
-- What has the first user already spent — effort, time, or money — or what workaround have they built to
-  cope? (Past behavior only — never "what would you pay".)
-- What is the consequence of doing nothing, and what observed behavior shows the problem is real?
-
-#### 3.5 Value proposition
-- What outcome does the project deliver better than the current alternative?
-- What has the first target user already done when the current alternative fell short — switched tools,
-  built a workaround, or absorbed the cost?
-- Which value claim would be dropped if the supporting behavior never appears?
-
----
-
-## Group II — Boundary
-
-### Topic 4 — Scope, Boundaries & Non-goals
-
-#### 4.1 Outcome boundary
-- Which user outcome does the first viable version own end to end?
-- Where does the project's responsibility begin and end?
-- Which adjacent outcome belongs to another tool, team, or workflow phase?
-
-#### 4.2 In-scope
-- Which capabilities must exist for the core value to be real?
-- Which platforms, environments, data classes, and segments are included first?
-- Which constraints are part of the scope contract rather than implementation preferences?
-
-#### 4.3 Non-goals
-- Which tempting feature would broaden the project without strengthening its core value?
-- Which use cases will it refuse or leave manual for now?
-- Which scope expansion has already been proposed or attempted, and why was it declined or left manual?
-  Given that, what should a contributor never infer from the vision statement?
-
-#### 4.4 Decision tests
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- What test decides whether a proposed capability belongs in the current scope?
-- Which past scope decision has already been reversed or expanded, and what evidence drove it? Then,
-  labeled `forecast`: what evidence or condition would justify expanding the boundary later?
-- Which scope choices are reversible, and which create an expensive commitment?
-
-### Problem-before-solution premise gate
-
-After Topic 4 and before Topic 5, show these premises one by one
-for agree / disagree:
-
-1. the recurring problem + its last-instance evidence;
-2. the first user / segment + the job;
-3. the current alternative + the behavioral evidence the problem is real;
-4. the root cause + why-now;
-5. the fatal assumption + the current disconfirming evidence;
-6. the outcome boundary + explicit non-goals.
-
-A failed premise reopens its earliest owning branch; do not enter features until it is confirmed. No
-commercial premise is graded here.
-
----
-
-## Group III — Solution space (product shape before system shape)
-
-Establish and confirm product shape (Topics 5–6) before system shape (Topics 7–8). Do not use an
-architecture or stack choice to narrow Topics 2–5 after the fact.
-
-### Topic 5 — Features & User Journeys
-
-#### 5.1 Durable capabilities
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which durable capabilities deliver the in-scope outcome?
-- Which candidates are user-value features, and which are internal mechanisms or one-time tasks?
-- What is the smallest useful foundation that delivers real value rather than only infrastructure?
-
-#### 5.2 Critical journeys
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Walk the primary journey from trigger to outcome in the user's own terms.
-- Where does the user decide, provide data, wait, recover, or hand work to someone else?
-- Which step has the highest cost of failure, and what happened in a comparable real flow?
-
-#### 5.3 States & dependencies
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- Which capabilities already exist, are in progress, are planned, or were abandoned?
-- What must be true before each planned capability can work?
-- Which capability unlocks the most downstream value with the fewest prerequisites?
-
-#### 5.4 Edge & failure journeys
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- What happens on invalid input, partial state, unavailable dependencies, or interrupted work?
-- How does the user recover without hidden manual repair?
-- Which misuse or abuse case changes the product boundary or requires an explicit refusal?
-
-### Topic 6 — Experience & Product Design
-
-#### 6.1 Interaction model
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which interface does each user need — CLI, API, UI, library, automation, or a mix?
-- What is the first meaningful action and the first clear success signal?
-- Which details must be visible to support trust and control, and which can stay hidden?
-
-#### 6.2 Information & content model
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which objects and concepts does the user think in, and what names do they use?
-- What information must be shown together to support a sound decision?
-- Which current terms are overloaded, misleading, or likely to be confused?
-
-#### 6.3 Accessibility, trust & failure experience
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which accessibility and internationalization needs belong in the first quality bar?
-- What must the project explain before a user can trust an action or result?
-- What should an error say, and what next action should it enable?
-
-#### 6.4 Design references
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which existing product or interface do you already rely on as a positive reference, and for what exact,
-  concrete property?
-- Which apparent reference should not be copied, and why does it not fit here?
-- What sketch or prototype would let you choose between concrete directions? The manager studies
-  alternatives independently — the named reference is a starting point, not the full option set.
-
-### Topic 7 — Architecture, System Context & Data
-
-#### 7.1 System context
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- Which people and external systems exchange information with the project?
-- What crosses each trust boundary, and in which direction?
-- Which responsibility stays outside the system even when integration would be convenient?
-
-#### 7.2 Building blocks & responsibilities
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- What are the major deployable units or containers, and what single responsibility does each own?
-- Which boundaries should stay stable while their internals change?
-- Where would tight coupling impose the highest future cost?
-
-#### 7.3 Runtime & lifecycle
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Walk the main runtime path from a user action to its result.
-- Which background, async, scheduled, startup, shutdown, or recovery paths also matter?
-- How is failure contained, retried, surfaced, and reversed along those paths?
-
-#### 7.4 Data & state
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- What data is created, read, updated, deleted, retained, and exported?
-- Which data is authoritative, derived, cached, sensitive, personal, or regulated?
-- What consistency, migration, backup, retention, and deletion promises must hold?
-
-#### 7.5 Architecture decisions & alternatives
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which architecture choices are already fixed, by whom, and for what reason?
-- What credible alternative exists for each expensive or hard-to-reverse choice?
-- What evidence would change the current direction?
-
-### Topic 8 — Tech Stack, Delivery & Operations
-
-#### 8.1 Stack choices
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- What does the repository use today — languages, frameworks, runtimes, data stores, build tools — and
-  which concrete version or constraint has made a current choice succeed or fail?
-- Which of those is a hard constraint, and which is only a current preference?
-- Which stack direction should the project require going forward (intent/forecast), and what version,
-  maturity, license, portability, or available-skill concern could invalidate it?
-
-#### 8.2 Environments & deployment
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Where does the project run in dev, test, staging, and production?
-- How is it built, configured, deployed, observed, rolled back, and recovered?
-- What must work offline, on-premises, across regions, or in restricted networks?
-
-#### 8.3 Integrations & dependencies
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which external dependency is essential to the user value?
-- What happens if that dependency changes, fails, becomes expensive, or disappears?
-- Which dependency categories are preferred, banned, or require approval?
-
-#### 8.4 Ownership & support
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- Who maintains each subsystem and responds when it fails?
-- Which operational task must remain possible without the original author?
-- Which logs, metrics, traces, alerts, and runbooks are required before launch?
-
----
-
-## Group IV — Guardrails
-
-Guardrails reference the confirmed problem, boundary, product shape, and system shape. They come last so
-they constrain a known project rather than invent one.
-
-### Topic 9 — Conventions, Constraints & Quality bar
-
-#### 9.1 Engineering conventions
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which directory, module, naming, interface, error, and documentation patterns are intentional?
-- Which live files are the best examples of those patterns?
-- Which locally common pattern should **not** be copied, and what makes it a counterexample?
-
-#### 9.2 Quality attributes
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which qualities dominate trade-offs — correctness, security, latency, availability, usability,
-  maintainability, or another?
-- What scenario and measurable threshold define each top quality, and what sourced, context-specific basis or measurement method sets that threshold?
-- Which quality may degrade first under pressure, and which cannot?
-
-#### 9.3 Verification & review bar
-
-*Design-decision trigger: use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) when this branch selects or changes a direction.*
-
-- Which unit, integration, end-to-end, security, and operational checks prove a change safe?
-- What must every change request or release include before acceptance?
-- Who reviews each class of change, and which changes need explicit approval?
-
-#### 9.4 External & internal constraints
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- Which legal, regulatory, security, budget, schedule, compatibility, or organizational constraints bind
-  the project?
-- Who owns each constraint, and what citable source establishes it?
-- What happens when two constraints conflict — including the license/distribution obligation recorded in
-  Topic 1.4?
-
-### Topic 10 — Risks, Unknowns & Roadmap
-
-#### 10.1 Risk register
-- What could make the project undesirable, infeasible, unsafe, or unsustainable?
-- For each material risk — likelihood, impact, earliest warning, and mitigation?
-- What is the strongest argument not to build it, or to stop after starting?
-
-#### 10.2 Unknowns & assumptions
-- Which load-bearing claim currently has the weakest evidence?
-- What is the cheapest reliable way to resolve each unknown?
-- Which unknown blocks scope, architecture, or sequencing and cannot be deferred?
-
-#### 10.3 Capacity & time horizon
-- Who is available, with what skills and decision authority?
-- Which fixed date, budget, cost, or support obligation constrains sequencing?
-- What can proceed in parallel without competing for the same scarce person or system?
-
-#### 10.4 Roadmap & stop conditions
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- What belongs in now, next, and later, and which dependency explains that order?
-- What milestone proves enough value to justify the next investment?
-- What signal has paused, pivoted, or narrowed this or a comparable past project before? Then, labeled
-  `forecast`: what evidence would pause, pivot, narrow, or retire this project?
-
-### Topic 11 — Idioms, Rules & Recurring Mistakes
-
-#### 11.1 Intentional idioms
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- What looks unusual here but is intentional and should be preserved?
-- Which live example shows the idiom, and what problem does it solve?
-- Where should the idiom **not** be used?
-
-#### 11.2 Binding rules
-
-*Conditionally design-bearing — use [study, recommend, and resolve](SKILL.md#7-study-recommend-and-resolve-design-directions) only when the branch selects or changes a direction, not when inventorying current state.*
-
-- Which conventions are mandatory rather than preferred?
-- What concrete failure or cost does each rule prevent, and where does it apply?
-- What genuine exception exists, and does the user explicitly confirm the rule, its scope, its reason, and
-  its exception?
-
-#### 11.3 Recurring traps
-- What do contributors or agents repeatedly get wrong?
-- What was the most expensive past failure, what root assumption caused it, and how could it have been
-  detected earlier?
-- What approach looks reasonable here but reliably breaks, and what is the corrected approach?
-
-#### 11.4 Hidden knowledge & decay
-- What critical project knowledge lives in only one person's head?
-- Which baseline claim is most likely to go stale first?
-- What event should trigger an explicit baseline reset or focused topic review?
-
----
-
-## Topic summaries
-
-At the close of each Level-1 topic, show the user a transient summary with exactly these categories:
-
-- **Confirmed facts** and their evidence.
-- **Assumptions** still needing evidence.
-- **Open questions**, each with an owner and a resolution method.
-- **Contradictions** that were resolved or that remain open.
-- **Binding decisions** made in this topic.
-- **Potential downstream record effects**, clearly labeled as uncommitted.
-
-Ask whether the summary is accurate. On correction, update the transient coverage frame and present the
-affected summary again. The ordinary Ideation cursor and artifacts—not Startup—provide continuity.
-
----
-
-## Traversal and mandatory coverage
-
-- **One question per turn**, following the topic and branch order above. Show any verified repo fact first
-  to shorten the answer.
-- **Mandatory coverage:** the accepted guided operation accounts for all 11 Level-1 topics and every Level-2 branch.
-  There is no quick or core tier.
-- **Answer status and branch closure are separate.** An answer's evidence status is `confirmed`,
-  `assumption`, `open`, or `contradicted`. A branch is `confirmed`, `proven-irrelevant` with a reason, or
-  `open` with an owner. The returned Startup packet preserves both axes.
-- **Coverage gate:** every required branch needs a closure state. An unresolved branch without an owner
-  blocks a readiness claim, but may be returned explicitly for ordinary Ideation to resolve.
-- **Smart-skip shortens, it does not drop.** Existing docs/repo evidence may close a branch when the user
-  confirms — but coverage stays mandatory; smart-skip removes redundant questions, never required branches.
-- **Probe up to twice, then record open — a still-vague answer only.** Probe a vague answer with a
-  concrete example, past-behavior question, or counterexample. If the re-answer is still vague, probe a
-  second time (the [`discussion`](../discussion/SKILL.md) § Push-once-then-push-again rule); if it is still
-  vague after the second probe, close the branch `open` with an owner and resolution method rather than
-  accepting a vague answer or pushing indefinitely. This at-most-twice cap governs a still-vague or
-  contradicted answer only; a concrete, evidenced answer is not a stop signal — when it exposes a new
-  in-scope claim, dependency, contradiction, or untested assumption, open an evidence-advancing follow-up
-  ([How to traverse the tree](#how-to-traverse-the-tree) rule 9), still one question per turn.
-- **Re-open on contradiction.** When a later answer contradicts an earlier branch, re-open the earlier
-  branch and resolve it in the coverage frame — do not paper over it. Architecture must not silently redefine
-  scope; roadmap must not silently redefine the quality bar.
-- **Ordinary cursor continuity.** If the conversation pauses, `state.json` remains at Ideation
-  DISCUSSION. The manager reconstructs working context from accepted Ideation evidence and asks the next
-  unresolved question; Startup creates no private resume marker.
-- **Safe decline or stop.** A decline or interruption causes no Startup-owned cleanup because this
-  operation writes no session or durable files.
-- **Depth override.** After the first real problem event, score assumptions by uncertainty × reversibility
-  × magnitude and give the riskiest claim the first disconfirming probe, then follow that probe down as an
-  evidence-led chain (rule 9) until the evidence stops moving.
-- **JTBD switching forces are user / problem understanding.** In 3.2 and 3.3, probe the four forces —
-  push, pull, anxiety of the new, and habit / allegiance to the old — and the event that overcame them in
-  the last real switch, to close the gap where a real problem still fails to produce a change in behavior.
-  This is user / problem understanding, not competitive positioning.
-- **Synthesis-in-sections before handoff.** Before returning the input packet, present the direction back
-  in small coherent sections (problem / evidence → first user → boundary → product shape → feasibility →
-  guardrails), ask whether each interpretation is accurate, and allow backward movement on a new
-  constraint. (A ~200–300-word-per-section heuristic, not a hard check.)
-
-The manager returns the resulting evidence packet to ordinary Ideation. Ideation, Record, and Wrap-up own
-canonical artifacts, session storage, typed staging, and any later durable promotion.
+This seed bank frames a Startup interview around project design. Each topic supplies compact prompts;
+the Startup operation owns question order, evidence handling, topic adaptation, and Phase checkpoints.
+
+## Phase 1 — Evidence, Problem, and People
+
+### Topic 1 — Current Reality, Trigger, and Authority
+
+- Why is this project baseline being established or revised now?
+- What exists today in code, documentation, deployments, use, and observed outcomes?
+- Which sources are current and authoritative, and which claims are stale, disputed, or unverified?
+- What is the project's expected lifetime and rate of change?
+- Who decides project, experience, technical, security, data, release, and maintenance direction?
+- Which existing users, contributors, systems, or workflows already depend on the project?
+
+### Topic 2 — Problem, Outcome, and Success
+
+- What was the last concrete occurrence of the problem, who experienced it, and what happened?
+- What did the affected person do, and what time, effort, risk, or loss did it cause?
+- Why does the problem persist, and what evidence could reveal a deeper cause?
+- What happens if the project does nothing?
+- What observable outcome should change, and how will current and target states be compared?
+- Which assumption could invalidate the project, and what evidence would trigger narrowing or stopping?
+
+### Topic 3 — People, Jobs, Alternatives, and Value
+
+- Who first uses, operates, maintains, contributes to, approves, or is affected by the project?
+- In which contexts, abilities, devices, environments, languages, or locales do they act?
+- What progress is each primary person trying to make, and what happens when that job fails?
+- What do they do today, including workarounds, adjacent tools, manual work, or doing nothing?
+- What observed behavior shows the need, and what push, pull, anxiety, or habit shapes change?
+- Who is excluded from the current boundary, and what outcome must be better than the alternative?
+
+## Phase 2 — Project Boundary
+
+### Topic 4 — Scope, Boundaries, and Non-goals
+
+- Which complete outcome does the project own, and where does that responsibility begin and end?
+- Which capabilities, people, environments, data classes, and integrations are included first?
+- Which adjacent outcomes belong to another person, system, tool, or workflow?
+- Which behavior and compatibility surface must remain unchanged?
+- Which tempting capabilities are non-goals, deferred, rejected, manual, or safe to simulate?
+- What evidence admits a future scope change, and which boundary choices are hard to reverse?
+
+## Phase 3 — Project and System Direction
+
+### Topic 5 — Capabilities and Journeys
+
+- What is the smallest complete function that produces the intended outcome?
+- Which capabilities deliver that outcome, and which candidates are only internal mechanisms or tasks?
+- What starts the primary journey, which decisions and handoffs occur, and what proves completion?
+- Where does a person provide data, wait, change direction, or leave safely?
+- What invalid, partial, unavailable, interrupted, or misuse states must the project handle?
+- How does each important failure become visible, recoverable, and safe?
+
+### Topic 6 — Experience, Adoption, and Compatibility
+
+- Which interface does each person need, and what are the first meaningful action and success signal?
+- Which concepts, information, terminology, hierarchy, feedback, and controls must remain clear?
+- Which empty, loading, partial, error, permission, destructive, and recovery states need a defined experience?
+- Which accessibility, inclusion, assistive-technology, language, locale, or device needs shape the direction?
+- Which prototype or representative task would test the riskiest experience assumption, and what would it not prove?
+- Which existing design references, systems, habits, data, workflows, and compatibility promises should be reused, migrated, or supported during adoption?
+
+### Topic 7 — System, Data, Delivery, and Ownership Direction
+
+- Which people and external systems exchange information with the project, and what stays outside it?
+- Which high-level runtime units own each responsibility, and which boundaries should remain stable?
+- What data is created, read, updated, deleted, retained, exported, or derived, and which source is authoritative?
+- Which integrations, dependencies, environments, configuration, and restricted-runtime conditions shape the system?
+- How is the project built, released, observed, rolled back, recovered, and maintained?
+- Who owns each system boundary and operational duty when the original author is unavailable?
+
+## Phase 4 — Viability and Guardrails
+
+### Topic 8 — Trust, Safety, and Data Duties
+
+- Which people, assets, data, actions, and project outcomes require protection?
+- Which mistakes, failures, misuse, abuse, or threat actors could cause material harm?
+- Which permissions, trust boundaries, approvals, explanations, or audit evidence are required?
+- Which privacy, consent, minimization, classification, retention, deletion, and disclosure duties apply?
+- How should the project fail safely, recover, notify affected people, and support incident response?
+- Who owns each mitigation and which evidence will verify that it works?
+
+### Topic 9 — Constraints, Quality, and Validation
+
+- Which legal, license, distribution, governance, policy, budget, schedule, platform, or organizational constraints bind the project?
+- Which public interfaces, data, behavior, or environments require versioning, deprecation, migration, or backward compatibility?
+- Which quality attributes govern trade-offs, and which scenario and evidence define each required level?
+- Which coding, design, architecture, naming, error, documentation, and contribution conventions are binding?
+- Which live examples should contributors follow, and which familiar patterns are counterexamples here?
+- Which test layers, specialist reviews, release evidence, and accountable owners prove a change safe and maintainable?
+
+### Topic 10 — Risks, Capacity, and Continuity
+
+- Which load-bearing assumption has the weakest evidence, and what is the cheapest reliable way to test it?
+- What could make the project undesirable, infeasible, unsafe, incompatible, or unsustainable?
+- What is each material risk's earliest warning, mitigation, contingency, and owner?
+- Which skills, time, systems, budget, and decision authority are available or missing?
+- Which primary and backup owners, documentation, and recovery paths prevent critical knowledge loss?
+- Which maintenance, dependency, or evidence changes should trigger review, narrowing, replacement, retirement, or a baseline reset?

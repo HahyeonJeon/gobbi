@@ -64,7 +64,7 @@ Every skill outside the floor is indexed here once — a name, a one-line descri
 |---|---|---|
 | [`memory`](../memory/SKILL.md) | Durable typed-memory schema, areas, and templates. | Relevant when reading or writing durable project memory. |
 | [`workflow`](../workflow/SKILL.md) | The full DISCUSSION→WORK→EVALUATION→RECORD owner: fresh/resume classification, Configuration, routing, dual-system, and finalization. | Load it for a full Gobbi workflow session; it owns session classification, the read-only Configuration preflight, and the cursor handoff. |
-| [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional Ideation elicitation. | Relevant to a new, sparse-baseline, or explicitly reset project; loaded when the manager judges it relevant. Gobbi adds no gate around it. |
+| [`startup`](../startup/SKILL.md) | Read-only project-baseline classifier and optional recorded Ideation interview. | Relevant to a new, sparse-baseline, contradictory, or explicitly reset project; loaded when the manager judges it relevant. Gobbi adds no gate around it and writes nothing. |
 | [`planning`](../planning/SKILL.md) | The Planning-step method: ordered, dependency-aware task decomposition. | Dispatched by `workflow` at the Planning step, not loaded directly from Gobbi. |
 | [`execution`](../execution/SKILL.md) | The Execution-step method: one locked task through study, bounded change, verification, and a focused commit. | Dispatched by `workflow` at the Execution step. |
 | [`wrap-up`](../wrap-up/SKILL.md) | The Wrap-up method: promotion, evaluated handoff, and Git finalization. | Dispatched by `workflow` at the Wrap-up step. |
@@ -135,7 +135,7 @@ Evidence: the recorded session kind, the floor load register, and — for a work
 - [`../workflow/steps/state-machine.md`](../workflow/steps/state-machine.md) owns legal cursor transitions, iteration routing, halt, and resume behavior.
 - [`../workflow/delegation.md`](../workflow/delegation.md) owns the Gobbi specialist brief construction and status handling.
 - [`../record/SKILL.md`](../record/SKILL.md) and its [session-record map](../record/record-map.md) own version 5 and version 3 files, settings placement, initialization, checkpointing, containment, and atomic writes.
-- [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional Ideation input-building operation, baseline validity, and explicit reset.
+- [`../startup/SKILL.md`](../startup/SKILL.md) owns read-only baseline classification, the optional recorded Ideation interview, baseline validity, and explicit reset.
 - [`../codex/SKILL.md`](../codex/SKILL.md) owns native Codex and Codex-peer invocation surfaces.
 - [`../../agents/manager.md`](../../agents/manager.md) owns manager role behavior; its protected legacy workflow text is an accepted exception and does not own active routing.
 - [`../../../../../scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) owns repository entrypoint and plugin-source topology checks.

@@ -1,189 +1,270 @@
 ---
 name: startup
-description: "Use at a fresh or sparse project baseline, or for an explicit baseline reset, to classify the existing baseline read-only and optionally elicit evidence for ordinary Ideation."
-allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
+description: "Use at a fresh or sparse project baseline, or for an explicit baseline reset, to classify the baseline read-only and optionally run a recorded adaptive Ideation interview."
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Startup
 
-Startup is a read-only baseline operation. It classifies the existing project reference and, when the
-user accepts, helps ordinary Ideation DISCUSSION establish the evidence and direction needed to start
-well. It does not own a session, cursor, pipeline, promotion, evaluation lifecycle, or durable output.
+Startup gives a manager an evidenced project-baseline result. It begins with a read-only classifier and,
+when that baseline is insufficient and the user accepts, continues as an adaptive interview inside
+ordinary Ideation DISCUSSION.
 
-Load Startup for a new project, when the project reference is absent or sparse, or when the user
-explicitly requests a baseline reset. A normal resume or runtime context boundary does not trigger it.
+The accepted interview records structured questions, current answers, evidence, decisions, corrections,
+and Phase checkpoints. Its final report is noncanonical Ideation research, not an evaluated design,
+implementation plan, durable-memory artifact, or readiness verdict.
+
+Load Startup for a new project, a sparse or contradictory baseline, or an explicit baseline reset. A
+normal resume or runtime context boundary does not trigger it.
 
 ## Principles
 
-### Interview craft
+### Put evidence before direction
 
-1. **Start with a real problem event.** Establish who experienced the last concrete occurrence, what
-   happened, what they did, and what it cost before accepting vision, feature, or solution language.
-2. **Weight behavior over praise.** Existing workarounds, switches, repeated effort, time, or money are
-   stronger evidence than compliments, surveys, or promises.
-3. **Ask neutrally, then take a position.** Do not pitch inside a question. State the evidence read and
-   what evidence would change it. Push a vague or contradicted answer at most twice, then leave it open.
-4. **Attack the riskiest assumption first, then follow the evidence down.** Spend depth according to
-   uncertainty × reversibility × magnitude, while still accounting for every required topic. A concrete,
-   evidenced answer is a launch point for depth, not a stop signal: when it exposes a new in-scope claim,
-   dependency, contradiction, or untested assumption, ask the next disconfirming probe and keep descending
-   while each probe still moves the evidence within the branch's scope. This depth is distinct from the
-   at-most-twice vague-repair cap in principle 3, which only bounds re-asking a still-vague answer.
-5. **Name one first user and their switch.** Separate actors, operators, approvers, and affected people;
-   identify their job, current alternative, push, pull, anxiety, and habit.
+Start with verified project facts, concrete problem events, observed behavior, and current alternatives.
+Treat praise, preferences, forecasts, and unsupported claims as evidence gaps rather than proof.
 
-### Design craft
+### Adapt for complete project design
 
-1. **Confirm problem premises before solution direction.** A feature, architecture, or stack choice
-   cannot repair an unconfirmed problem, user, root cause, boundary, or non-goal.
-2. **Study three layers and recommend.** Compare tried-and-true, new-and-popular, and first-principles
-   options. Present genuinely distinct minimal and ideal directions at equal weight, recommend one, and
-   name the evidence that would change the recommendation.
-3. **Shape a rough, solved, bounded direction.** Connect the product elements, critical journeys,
-   failure paths, boundary, and system direction at the macro level. Leave mechanism to later work.
-4. **Test viability.** Check feasibility, dependencies, capacity, ownership, operation, recovery, and
-   maintenance for the intended life of the project.
-5. **The user owns intent.** The manager investigates, challenges, and recommends; the user locks scope
-   and direction. Reopen a decision only when new evidence crosses its stated threshold.
+The seed topics provide a starting structure, not a mandatory questionnaire. Change that structure when
+the interview context reveals a material project-design concern that would otherwise be missing or misplaced.
+
+### Reconcile before advancing
+
+A later answer never silently replaces an earlier answer. Make the conflict visible, let the user state
+the current or conditional truth, and propagate the correction through every affected topic and checkpoint.
+
+### Make Phase checkpoints recoverable
+
+Each Phase checkpoint records the current project understanding and the first safe continuation action.
+An interruption preserves that state without creating a separate Startup lifecycle or source of truth.
 
 ## Rules
 
-- **ST-1 — Read before asking.** Inventory the project reference, repository, tests, and known history.
-  Show a verified fact before asking a question whose answer the repository can narrow.
-- **ST-2 — Classify substance, not directory presence.** A `README.md`, `design/`, or `features/`
-  directory does not prove a usable baseline.
-- **ST-3 — Keep the classifier read-only.** Report validity and gaps without scaffolding, repairing,
-  archiving, superseding, staging, or promoting anything.
-- **ST-4 — Preserve user authority.** When the baseline is insufficient, the user may accept the guided
-  question operation or proceed without it. Do not infer acceptance.
-- **ST-5 — Use one evidence-led question per turn.** One decision axis keeps the evidence falsifiable.
-  Apply smart-skip only when current evidence actually resolves the branch.
-- **ST-6 — Close coverage explicitly.** Account for every required branch as `confirmed`,
-  `proven-irrelevant` with a reason, or `open` with an owner. Coverage is not acceptance.
-- **ST-7 — Keep claims typed.** Separate verified facts, user-reported facts, assumptions,
-  contradictions, decisions, and open questions in the handoff.
-- **ST-8 — Pass the problem-before-solution gate.** Do not enter product-shape questions until the
-  problem event, first user and job, current alternative, root cause, why-now, fatal assumption, boundary,
-  and non-goals have been shown to the user for agreement or correction.
-- **ST-9 — Study design-bearing directions.** Use the Study operation for internal and external
-  evidence. Never fabricate a source or close a design choice from an unexamined preference.
-- **ST-10 — Stay at direction altitude.** Do not design signatures, schemas, algorithms, module
-  internals, migrations, or task breakdowns.
-- **ST-11 — Keep sensitive material out.** Do not place secrets or user-marked sensitive values in the
-  returned packet or downstream artifacts.
-- **ST-12 — Return evidence; do not write it.** Startup returns a structured packet to the manager.
-  Accepted material enters the ordinary Ideation package through its owners.
+- **MUST run only for `fresh-project`, `sparse-baseline`, or `explicit-reset` and keep classification
+  read-only.** Classify substantive evidence rather than directory presence, and never repair or scaffold
+  the baseline while classifying it.
+- **MUST receive explicit user acceptance and validate the ordinary Ideation record location before the
+  first interview write.** A `sufficient` result or user decline writes no Startup interview file.
+- **MUST ask one neutral, evidence-led decision axis per turn and record the resulting structured
+  evidence.** Show discoverable repository facts before asking, prefer observed behavior to praise, and
+  keep unresolved claims open with an owner and method.
+- **MUST adapt and close the current topic tree according to the interview context.** Record why each
+  topic was added, adapted, merged, reopened, or marked `not-needed`, without treating seed coverage as acceptance.
+- **MUST resolve material conflicts with the user before treating their affected answers as current.**
+  Preserve correction links, reopen the earliest affected Phase, and reconfirm only affected checkpoints.
+- **NEVER record a raw transcript, secret, credential, or user-marked sensitive value, and never create
+  a Startup cursor, evaluation, promotion, durable-memory path, or private lifecycle.** Keep direction at
+  project-design altitude and leave detailed mechanism and task decomposition to later workflow steps.
 
 ## Procedure
 
-### 1. Confirm the trigger and caller context
+### Phase 1 — Classify the Project Baseline
 
-The manager supplies one trigger: `fresh-project`, `sparse-baseline`, or `explicit-reset`. Confirm the
-project root and the existing project-memory root. During Configuration, run only the classifier in
-steps 2–3. If the user accepts guided questioning, Workflow first enters Ideation DISCUSSION and
-then invokes steps 4–9 as a bounded input-building operation at that ordinary cursor.
+#### 1.1 Confirm the trigger and caller context
 
-Do not create a Startup cursor, directory, record, mode, checklist run, or completion predicate.
+- Receive the trigger, absolute project root, project-memory root when one exists, and current workflow
+  context from the manager.
+- Continue only for `fresh-project`, `sparse-baseline`, or `explicit-reset`. Return an invalid trigger to
+  the caller without reading it as permission to create or change project state.
+- During Configuration, run only this Phase. An accepted interview begins later inside ordinary Ideation
+  DISCUSSION under the workflow owner.
 
-### 2. Inventory the current baseline read-only
+#### 1.2 Inventory the baseline read-only
 
-Read the root project index and the relevant typed memory, repository documentation, source, tests, and
-history. Record in working context which facts are directly verified, which are user claims, and which
-are unknown. Do not mutate invalid or stale records during classification.
+- Read the project index, typed memory, repository documentation, source, tests, configuration, and
+  relevant history. Inspect the closest current evidence before relying on summaries or user recollection.
+- Separate directly verified facts, user-reported facts, assumptions, forecasts, contradictions,
+  decisions, and open questions in working context.
+- Do not create, edit, repair, archive, supersede, stage, or promote a file while inventorying or classifying.
 
-### 3. Classify baseline validity
+#### 1.3 Classify substantive validity
 
-Return one classifier result:
+- Test whether a cold Ideation reader can identify, without guessing:
+  - the recurring problem, concrete behavioral evidence, affected people, jobs, and current alternatives;
+  - the intended outcome, success and stop evidence, scope, boundaries, non-goals, capabilities, and journeys;
+  - the rough experience, system, data, delivery, adoption, and compatibility direction;
+  - feasibility, dependencies, capacity, ownership, operation, recovery, and maintenance constraints;
+  - decision authority, license, governance, trust, safety, privacy, quality, and validation obligations; and
+  - material risks, contradictions, assumptions, evidence gaps, and owned open questions.
+- Require load-bearing claims about problem reality, feasibility, safety, and scope to be evidenced or
+  explicitly open. Reject secrets, stale contradictions, cosmetic directories, and baselines that depend
+  on an unstored conversation.
+- Return exactly one classifier result with cited evidence and named gaps:
+  - `sufficient` when ordinary Ideation can proceed without reconstructing a load-bearing premise;
+  - `sparse` when usable evidence exists but one or more load-bearing areas are missing or weak;
+  - `absent` when no substantive baseline exists; or
+  - `contradictory` when load-bearing records disagree or are too stale for safe downstream use.
+- For `sufficient`, return the classifier report with terminal outcome `sufficient` and write no interview
+  file. Route every other result to Phase 2.
 
-- `sufficient` — downstream Ideation can identify the agreed problem, user/job, boundary, rough product
-  direction, feasibility constraints, authority, risks, and important open questions without guessing;
-- `sparse` — some usable evidence exists, but one or more load-bearing areas are absent or too weak;
-- `absent` — no substantive baseline exists; or
-- `contradictory` — load-bearing records disagree or are stale enough that downstream use is unsafe.
+### Phase 2 — Prepare an Accepted Interview
 
-Apply all baseline-quality tests in [`topics.md`](topics.md#baseline-quality-tests): coverage, user/job,
-behavioral evidence, bounded shape, feasibility, authority, license/governance, downstream usability,
-contradictions, secrecy, and load-bearing evidence. Cite the evidence and gaps. A `sufficient` result
-returns directly to Gobbi. Every other result goes through Discussion for the user's accept/decline
-choice; a decline produces no invented baseline.
+#### 2.1 Obtain the user's accept or decline decision
 
-### 4. Build a transient coverage frame
+- Use the user-decision mechanics owned by [`../discussion/SKILL.md`](../discussion/SKILL.md) to present
+  the classifier, evidence, gaps, and optional guided interview.
+- Do not infer acceptance. On decline, return the classifier, gaps, and terminal outcome `declined`
+  without inventing facts or writing an interview file.
+- On acceptance, require the workflow owner to enter ordinary Ideation DISCUSSION before continuing.
+  Startup creates no step, stage, cursor, session, mode, or completion predicate.
 
-Inside Ideation DISCUSSION, load [`topics.md`](topics.md) and account for its eleven topic groups. Start
-from verified evidence, mark the riskiest assumption, and order unanswered branches by dependency and
-risk. The frame is working context, not a second ledger or stored artifact.
+#### 2.2 Validate the record target
 
-### 5. Ask one evidence-led question at a time
+- Receive the manifest-declared absolute `{session-root}` and current Ideation iteration `{n}`. Derive only
+  these two regular-file targets:
 
-Use the anti-sycophancy and smart-skip rules in [`topics.md`](topics.md#anti-sycophancy-contract). Ask for
-the last concrete event, current behavior, alternatives, and costs before accepting preferences. Show
-verified repository facts first. After each answer, state the evidence read and what would change it.
-Keep unresolved or contradicted claims explicit.
+```text
+{session-root}/1-ideation/working/iteration-{n}/research/startup-interview.tmp.md
+{session-root}/1-ideation/working/iteration-{n}/research/startup-interview.md
+```
 
-### 6. Pass the problem-before-solution gate
+- Apply the containment and session-tree contract owned by
+  [`../record/record-map.md`](../record/record-map.md). Confirm the root belongs to the current worktree and
+  session, the cursor is Ideation DISCUSSION at iteration `{n}`, the `research/` directory is authorized,
+  and no root, parent, or target is a symbolic link.
+- Normalize both paths and require them to remain beneath the supplied session root. A missing, escaped,
+  mismatched, symbolic-link-redirected, or unrelated pre-existing target stops before the first write.
+- When a temporary file already exists, resume only after its project, session, iteration, trigger, and
+  classifier identity match the current invocation. A confirmed final report is not overwritten as a new interview.
 
-Before product-shape questions, present the problem premises listed in ST-8 for agree/correct. If a
-premise fails, return to its earliest owning topic. Do not let a proposed solution narrow the earlier
-problem or user after the fact.
+#### 2.3 Initialize the working record
 
-### 7. Study, recommend, and resolve design directions
+- Create the temporary record from [`templates/interview.tmp.md`](templates/interview.tmp.md). Populate
+  its identity, classifier evidence, current uncertainty, and the ten seed topics from [`topics.md`](topics.md).
+- Use seed IDs `S01`–`S10`, preserve an adapted seed's ID, and give an emergent topic the earliest owning
+  seed plus a sequence such as `S06.E01`.
+- Set the interview and first Phase to active `draft`. The temporary file is structured, noncanonical
+  Ideation research and the sole recoverable Startup working record.
 
-For each design-bearing branch, call [`../study/SKILL.md`](../study/SKILL.md) with the exact
-Ideation cursor. Compare tried-and-true, new-and-popular, and first-principles evidence. Present at least
-two distinct directions—one minimal and one ideal—with effort, risk, reuse, feasibility, a recommendation,
-and evidence-to-change. Discussion owns the user decision. Record rejected directions in the returned
-packet so Ideation can preserve the reasoning.
+### Phase 3 — Interview, Adapt, and Checkpoint
 
-### 8. Check closure and viability
+#### 3.1 Build the contextual topic agenda
 
-Revisit all eleven topic groups. Every required branch must be confirmed, proven irrelevant with a
-reason, or open with an owner. Challenge contradictions, load-bearing assumptions, unsupported demand,
-unclear authority, sensitive material, and infeasible or unsustainable directions. An open
-load-bearing claim is valid coverage but is not evidence of readiness.
+- Order the current topics by dependency, uncertainty, reversibility, consequence, and the cheapest
+  disconfirming evidence. Use the Phase order in [`topics.md`](topics.md) while moving within or back across
+  Phases when evidence requires it.
+- Rename, reorder, split, merge, narrow, reopen, or mark a seed topic `not-needed` when current evidence
+  justifies the change. Record the reason, evidence, dependencies, origin, and disposition.
+- Add an emergent topic when a material actor, dependency, interface, state, data duty, failure, recovery
+  path, trust or governance concern, inclusion need, compatibility promise, risk, or validation claim has
+  no owner. A proposed scope expansion still requires the user's decision before it enters the boundary.
 
-### 9. Return the Startup input packet
+#### 3.2 Ask and record one evidence-led axis
 
-Return a structured packet containing:
+- Before each question, inspect available project evidence. Show a verified fact for confirmation or
+  correction instead of asking the user to rediscover it.
+- Ask one neutral decision axis per turn. Seek the last concrete event, current behavior, alternative,
+  cost, constraint, or evidence-to-change before accepting a preference or forecast.
+- Probe a still-vague answer with a concrete event, counterexample, or past-behavior question at most
+  twice. If it remains unresolved, record it `open` with an owner and resolution method.
+- Smart-skip a prompt only when current evidence resolves it and the user confirms or corrects that
+  evidence. Continue deeper when a concrete answer reveals another material in-scope claim or dependency.
+- For every material answer, write the exact question, faithful non-sensitive summary, claim kind,
+  evidence status and source, interpretation, confidence gap, decision or open question, dependencies,
+  topic effects, and follow-up owner and method. Record summaries, not conversation turns.
 
-1. trigger and classifier result;
-2. verified repository and project-reference facts;
-3. behavioral problem evidence and evidence strength;
-4. first user, job, current alternative, and switching forces;
-5. agreed scope, boundary, and non-goals;
-6. rough product and system direction, alternatives, decisions, and evidence-to-change;
-7. feasibility, sustainability, authority, license, and governance constraints;
-8. contradictions, risks, open questions, and owners; and
-9. the coverage disposition for every required topic branch.
+#### 3.3 Pass the problem-before-solution gate
 
-The manager supplies this packet to ordinary Ideation DISCUSSION. Ideation owns any canonical artifact,
-dual-system WORK, evaluation, finding disposition, RECORD staging, and later Wrap-up promotion. Startup
-does not write the packet into the session tree or durable memory.
+- After topic Phase 2 and before topic Phase 3, present the current recurring problem and concrete event,
+  first people and jobs, current alternatives and behavior, root cause and trigger, riskiest assumption,
+  outcome boundary, and non-goals for the user's agreement or correction.
+- If a premise fails, return to its earliest owning topic and update the record. Do not let a capability,
+  experience, architecture, or technology preference rewrite the problem or boundary after the fact.
 
-## Output contract
+#### 3.4 Study and resolve design-bearing directions
 
-Startup returns either a classifier report or the structured Ideation input packet from step 9. It
-creates no output path. A user decline returns the classifier plus the declined disposition and gaps;
-it never fabricates missing project facts.
+- For a topic that selects project direction, invoke the read-only Study operation at the exact Ideation
+  cursor under [`../study/SKILL.md`](../study/SKILL.md). Study current project evidence and applicable
+  authoritative prior art before proposing a direction.
+- Present two or three materially distinct, reference-backed directions with reuse, effort, risk,
+  feasibility, and limits. Recommend one, state the evidence that would change it, and let the user decide
+  through Discussion.
+- Record the decision, rejected alternatives, rationale, and evidence-to-change. Keep the result at
+  project, experience, system-context, quality, and ownership direction rather than detailed schemas,
+  algorithms, modules, migrations, or task order.
 
-## Boundaries
+#### 3.5 Reconcile a conflicting answer
 
-- Discussion owns user questions and decisions.
-- Workflow owns Configuration, the v3 cursor, productive-step transitions, and iteration policy.
-- Ideation owns the first productive artifact and its full DISCUSSION → WORK → EVALUATION → RECORD loop.
-- Study owns read-only evidence gathering for design-bearing questions.
-- Record owns all session-tree writes and typed staging.
-- Wrap-up owns durable promotion.
-- Evaluation owns the seven perspectives, dual-system reports, verdict aggregation, and finding gate.
+- When answers conflict, assign a conflict ID and show the user both answer IDs, their incompatible
+  claims, available evidence, and the downstream consequence. Ask which claim is current or whether they
+  apply under distinct conditions; never assume the later answer wins.
+- Write one current corrected answer, mark replaced answers superseded, and preserve bidirectional
+  correction links. Re-evaluate every dependent topic and reopen the earliest affected Phase.
+- Propagate the correction through affected checkpoints. Reconfirm only the reopened Phase and its
+  affected downstream checkpoints rather than restarting unaffected work.
+
+#### 3.6 Confirm a Phase checkpoint
+
+- A Phase may checkpoint when every current topic is `resolved`, `not-needed` with reason and evidence,
+  `merged`, or `open` with an owner and method. Mechanical topic coverage never proves that a load-bearing
+  assumption is ready.
+- Record the current topic tree and dispositions, current answers, facts and evidence, assumptions,
+  decisions, rejected alternatives, evidence-to-change, open questions with owners and methods, conflicts,
+  corrections, downstream effects, and the user's confirmation.
+- Set the Phase status to `confirmed` or `corrected`. Use `reopened` after a material correction and
+  return it to `confirmed` or `corrected` only after the user reconfirms the affected result.
+- A checkpoint is a recoverable interview state, not an evaluation verdict. Continue until all four
+  topic Phases have current checkpoints.
+
+#### 3.7 Preserve an interruption
+
+- If the interview pauses after initialization, leave the temporary record at its latest complete write.
+  Do not delete, partially finalize, stage, promote, or copy it elsewhere.
+- Return terminal outcome `interrupted`, the temporary path, current Phase and status, next unresolved
+  topic, and first recovery action. Resume through Step 2.2 identity validation.
+
+### Phase 4 — Finalize the Ideation Research Input
+
+#### 4.1 Audit the current interview
+
+- Confirm every current topic has an allowed disposition, every adaptation has a reason, every open item
+  has an owner and method, every material conflict has the user's resolution, and every reopened checkpoint
+  is current.
+- Cross-check answers, evidence, decisions, topic dependencies, Phase checkpoints, risks, and the final
+  topic tree. Remove no correction provenance needed to understand a current answer.
+- Verify that secrets, credentials, user-marked sensitive values, raw transcript content, implementation
+  detail, and unsupported readiness claims are absent.
+- On an audit or finalization failure, retain the temporary record and return `interrupted` with the
+  failed condition and first recovery action.
+
+#### 4.2 Create and confirm the final report
+
+- Create the final path from [`templates/interview.md`](templates/interview.md). Synthesize only current
+  answers while retaining concise provenance for material corrections that changed an answer, topic, or
+  checkpoint.
+- Include the final topic tree, Phase results, evidence and uncertainty, decisions and rejected
+  alternatives, open questions and owners, risks, constraints, and the ordinary Ideation handoff.
+- Present the report to the user for confirmation. Apply corrections through the temporary record,
+  reopen affected checkpoints when required, regenerate the report, and repeat Step 4.1 before asking again.
+
+#### 4.3 Complete and hand off
+
+- After user confirmation, remove the temporary record and verify the final report remains at:
+
+```text
+{session-root}/1-ideation/working/iteration-{n}/research/startup-interview.md
+```
+
+- Return terminal outcome `completed`, the final path, current Phase statuses, open owners, and material
+  correction IDs. Supply the report to ordinary Ideation as noncanonical DISCUSSION research before
+  dual-system WORK.
+- Ideation owns its canonical synthesis and productive loop; Evaluation, Record, Memory, and Wrap-up keep
+  their existing ownership. Startup creates no output, verdict, staging candidate, or durable promotion.
+
+#### 4.4 Report the terminal outcome
+
+- Return exactly one terminal outcome:
+  - `sufficient` with the classifier evidence and no interview path;
+  - `declined` with the classifier gaps and no interview path;
+  - `interrupted` with the retained temporary path and first recovery action; or
+  - `completed` with the confirmed final report path and Ideation handoff.
+- Do not claim completion when the final report is unconfirmed, the temporary record remains after
+  confirmation, or a material conflict lacks the user's current answer.
 
 ## References
 
-- [`topics.md`](topics.md) owns the eleven-topic elicitation tree and its baseline-quality tests.
-- [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and [`evaluation.md`](evaluation.md)
-  exercise this operation without creating another lifecycle or output.
-- [`../gobbi/SKILL.md`](../gobbi/SKILL.md) owns the Configuration trigger and read-only classifier gate.
-- [`../workflow/SKILL.md`](../workflow/SKILL.md) owns the workflow and cursor.
-- [`../ideation/SKILL.md`](../ideation/SKILL.md) owns accepted input and productive artifacts.
-- [`../discussion/SKILL.md`](../discussion/SKILL.md) owns user-decision mechanics.
-- [`../record/SKILL.md`](../record/SKILL.md) owns session records and staging.
-- [`../memory/SKILL.md`](../memory/SKILL.md) and [`../wrap-up/SKILL.md`](../wrap-up/SKILL.md) own durable memory and promotion.
+- [`topics.md`](topics.md)
+- [`templates/interview.tmp.md`](templates/interview.tmp.md)
+- [`templates/interview.md`](templates/interview.md)

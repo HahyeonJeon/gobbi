@@ -6,6 +6,11 @@
 
 Enter Ideation DISCUSSION from Configuration or a user-authorized return. Supply the leader with the user's framing, project memory, applicable rules, relevant code and history, prior valid artifacts, and any accepted evaluation dispositions. On a new iteration, identify changed inputs rather than treating the prior synthesis as authority.
 
+When the user accepts a Startup interview, treat
+`1-ideation/working/iteration-{n}/research/startup-interview.md` as noncanonical DISCUSSION research
+created before dual-system WORK. Supply the confirmed final report to the leader, but never import the
+temporary record or a raw transcript and never treat the report as an Ideation output.
+
 ## DISCUSSION
 
 Dispatch the leader under [`delegation.md`](../delegation.md). The leader researches and frames the problem according to the specialist method. The manager discusses its evidence with the user and obtains explicit decisions for scope, success criteria, design direction, material assumptions, external research adoption, and deferred work.
