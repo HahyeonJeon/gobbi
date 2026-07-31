@@ -81,3 +81,6 @@ Run the effective-configuration inspection, type-check, lint, build, and target-
 This tool's boundary ends at the emitted JavaScript, declarations, maps, and build state. Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are deployment strategy and belong to [`web-deployment`](../../web/web-deployment/SKILL.md).
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
