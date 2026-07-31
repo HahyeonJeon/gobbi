@@ -135,6 +135,7 @@ Preparing a verified artifact does not authorize credentials, upload, channel pr
 - Map every target to frozen inputs, artifact checksum, fuse state, signature verification, notarization receipt, install result, update result, rollback result, and known limitation.
 - Confirm live support and breaking-change evidence remains current at handoff time and rerun affected checks when the candidate or environment changed.
 - Fail the handoff when an in-scope target lacks a reproducible artifact or required platform evidence.
+- When this release work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an active `electron` sibling supply the applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 6.2 Stop at the authority boundary
 
@@ -143,3 +144,5 @@ Preparing a verified artifact does not authorize credentials, upload, channel pr
 - Publish, promote, roll out, submit, or modify an update feed only when a separate explicit authorization grants that action.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
