@@ -145,3 +145,6 @@ backgrounding, cancellation, concurrency, retry, and late completion through min
 diagnostics. A degraded interface may narrow capability but cannot establish an effect it did not verify.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
