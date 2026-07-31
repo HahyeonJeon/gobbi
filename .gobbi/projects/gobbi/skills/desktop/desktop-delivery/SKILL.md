@@ -207,6 +207,9 @@ implies another.
 - **Action:** route the complete frozen subject to independent Evaluation. Return each problem to its earliest
   owner, repair only after its disposition is authorized, and repeat the affected proof plus every dependent
   whole-outcome check.
+- **Checklist:** the [evaluation checklist](checklists.md) and every checklist owned by an active `desktop`
+  sibling or Electron owner supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 - **Handoff:** state the outcome and non-goals, target and artifact matrix, observable contract, process and
   bridge map, data schemas and recovery, update paths, support and forward-fix plan, limitations, and each
   distinct delivery state through release readiness and authority.
@@ -216,3 +219,8 @@ implies another.
 - **Completion:** this operation ends with one reproducible installed outcome, no in-scope gap, a cold
   operator handoff, and literal claim boundaries—or with a recoverable blocked state naming the missing
   owner, evidence, or authority.
+
+## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
