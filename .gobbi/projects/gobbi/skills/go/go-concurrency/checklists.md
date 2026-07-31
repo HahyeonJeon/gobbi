@@ -6,6 +6,9 @@ returned outcomes under evaluation.
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### GOCON-SC-PROJECT-01 — Normal case: Concurrency serves the caller contract
@@ -37,9 +40,7 @@ should have one owner and terminal path; orphaned lifetime fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-01-01 — Every goroutine has one identifiable owner.
-- [ ] GOCON-CK-STRUCTURE-01-02 — Every goroutine has a bounded stop condition.
-- [ ] GOCON-CK-STRUCTURE-01-03 — Every goroutine exposes or retains a completion observation.
+- [ ] GOCON-CK-STRUCTURE-01-01 — Every goroutine has one identifiable owner, a bounded stop condition, and a retained or exposed completion observation.
 
 ### GOCON-SC-STRUCTURE-02 — Edge case: Channel closure races with active senders
 
@@ -48,9 +49,8 @@ closing and receivers should not claim closure authority; send-after-close or do
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-02-01 — The sending owner is the only channel-closing authority.
+- [ ] GOCON-CK-STRUCTURE-02-01 — The sending owner is the only channel-closing authority, and receiver completion never closes a sender-owned channel.
 - [ ] GOCON-CK-STRUCTURE-02-02 — Channel closure cannot occur while an owned sender remains able to send.
-- [ ] GOCON-CK-STRUCTURE-02-03 — Receiver completion does not close a channel owned by a sender.
 
 ### GOCON-SC-STRUCTURE-03 — Rule violation: Request context loses its propagation contract
 
@@ -59,10 +59,8 @@ the caller's cancellation. Context should remain an explicit first parameter wit
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-03-01 — Every request context is passed explicitly as the first parameter.
-- [ ] GOCON-CK-STRUCTURE-03-02 — No request context is nil.
-- [ ] GOCON-CK-STRUCTURE-03-03 — No replacement context discards a caller deadline.
-- [ ] GOCON-CK-STRUCTURE-03-04 — No replacement context discards caller cancellation.
+- [ ] GOCON-CK-STRUCTURE-03-01 — Every request context is passed explicitly as the first parameter and is never nil.
+- [ ] GOCON-CK-STRUCTURE-03-02 — No replacement context discards the caller's deadline or cancellation.
 
 ## Performance
 
@@ -73,9 +71,8 @@ shedding, replacement, or persistence policy; silent unbounded growth fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-PERFORMANCE-01-01 — Every worker pool has a deliberate maximum concurrency.
-- [ ] GOCON-CK-PERFORMANCE-01-02 — Every queue has a deliberate capacity policy.
-- [ ] GOCON-CK-PERFORMANCE-01-03 — Capacity behavior preserves the stated caller contract.
+- [ ] GOCON-CK-PERFORMANCE-01-01 — Every worker pool and queue has a deliberate maximum-concurrency or capacity policy.
+- [ ] GOCON-CK-PERFORMANCE-01-02 — Capacity behavior preserves the stated caller contract.
 
 ### GOCON-SC-PERFORMANCE-02 — Poor quality: Fan-out or timers grow without a resource bound
 
@@ -84,9 +81,8 @@ Resource use should remain bounded by a real capacity; scale-dependent exhaustio
 
 #### Checklist
 
-- [ ] GOCON-CK-PERFORMANCE-02-01 — Goroutine fan-out is bounded by an explicit resource limit.
-- [ ] GOCON-CK-PERFORMANCE-02-02 — Timer and ticker creation cannot accumulate without ownership.
-- [ ] GOCON-CK-PERFORMANCE-02-03 — Buffering does not conceal an indefinitely slow consumer.
+- [ ] GOCON-CK-PERFORMANCE-02-01 — Per-item goroutine, timer, and ticker creation stays bounded by an explicit resource limit and owner.
+- [ ] GOCON-CK-PERFORMANCE-02-02 — Buffering does not conceal an indefinitely slow consumer.
 
 ## Aesthetics
 
@@ -98,9 +94,8 @@ Names and structure should make lifetime and shared-state ownership apparent; op
 #### Checklist
 
 - [ ] GOCON-CK-AESTHETICS-01-01 — Goroutine ownership is visible at its creation site.
-- [ ] GOCON-CK-AESTHETICS-01-02 — Channel direction reflects the actual send role.
-- [ ] GOCON-CK-AESTHETICS-01-03 — Channel direction reflects the actual receive role.
-- [ ] GOCON-CK-AESTHETICS-01-04 — The protected invariant is clear at each synchronization boundary.
+- [ ] GOCON-CK-AESTHETICS-01-02 — Channel direction reflects the actual send and receive roles.
+- [ ] GOCON-CK-AESTHETICS-01-03 — The protected invariant is clear at each synchronization boundary.
 
 ## Usage
 
@@ -111,9 +106,8 @@ should observe cancellation and reach its documented terminal state; indefinite 
 
 #### Checklist
 
-- [ ] GOCON-CK-USAGE-01-01 — Every blocking operation has a cancellation or bounded completion path.
-- [ ] GOCON-CK-USAGE-01-02 — Caller cancellation reaches every request-owned concurrent branch.
-- [ ] GOCON-CK-USAGE-01-03 — Cancellation returns the documented caller-visible outcome.
+- [ ] GOCON-CK-USAGE-01-01 — Caller cancellation reaches every blocking operation and every request-owned concurrent branch, each of which has a cancellation or bounded completion path.
+- [ ] GOCON-CK-USAGE-01-02 — Cancellation returns the documented caller-visible outcome.
 
 ### GOCON-SC-USAGE-02 — Edge case: Shutdown is called repeatedly or concurrently
 
@@ -122,9 +116,8 @@ remain safe and understandable; double close, panic, or abandoned work fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-USAGE-02-01 — Repeated shutdown follows one documented result.
-- [ ] GOCON-CK-USAGE-02-02 — Concurrent shutdown cannot close an owned resource twice.
-- [ ] GOCON-CK-USAGE-02-03 — Shutdown completion accounts for every owned goroutine.
+- [ ] GOCON-CK-USAGE-02-01 — Repeated and concurrent shutdown follow one documented result and cannot close an owned resource twice.
+- [ ] GOCON-CK-USAGE-02-02 — Shutdown completion accounts for every owned goroutine.
 
 ## Consistency
 
@@ -135,9 +128,8 @@ tests, and code should share one lifecycle contract; contradiction fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-CONSISTENCY-01-01 — Documented cancellation behavior matches runtime behavior.
-- [ ] GOCON-CK-CONSISTENCY-01-02 — Documented channel closure matches the sending owner's behavior.
-- [ ] GOCON-CK-CONSISTENCY-01-03 — Tests exercise the documented shutdown terminal state.
+- [ ] GOCON-CK-CONSISTENCY-01-01 — Documented cancellation and channel-closure behavior match runtime behavior.
+- [ ] GOCON-CK-CONSISTENCY-01-02 — Tests exercise the documented shutdown terminal state.
 
 ### GOCON-SC-CONSISTENCY-02 — Normal case: Race evidence matches the concurrent surface
 
@@ -147,8 +139,18 @@ paths should correspond to the changed behavior; unrelated or overly broad claim
 #### Checklist
 
 - [ ] GOCON-CK-CONSISTENCY-02-01 — Race evidence exercises the changed shared-state paths.
-- [ ] GOCON-CK-CONSISTENCY-02-02 — Race claims stay within the executed platform.
-- [ ] GOCON-CK-CONSISTENCY-02-03 — Race claims stay within the workload that exercises the changed concurrent surface.
+- [ ] GOCON-CK-CONSISTENCY-02-02 — Race claims stay within the executed platform and workload.
+
+### GOCON-SC-CONSISTENCY-03 — Adversarial: A lifecycle test is fitted to the observed timing
+
+A shutdown, cancellation, or ordering test is made to pass by adding a sleep, widening a tolerance, retrying,
+or accepting the timing the implementation happens to produce. The test should assert the documented lifecycle
+contract, so a wrong lifecycle fails; a test fitted to observed timing agrees with the defect.
+
+#### Checklist
+
+- [ ] GOCON-CK-CONSISTENCY-03-01 — No lifecycle assertion depends on a sleep, retry, or widened tolerance in place of an observable completion signal.
+- [ ] GOCON-CK-CONSISTENCY-03-02 — Every lifecycle assertion states the documented contract rather than the currently observed timing.
 
 ## Risk
 
@@ -159,9 +161,8 @@ synchronization edge should protect the complete invariant; scheduling luck fail
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-01-01 — Every concurrent mutable write is synchronized.
-- [ ] GOCON-CK-RISK-01-02 — Every concurrent read observes the synchronization protecting its value.
-- [ ] GOCON-CK-RISK-01-03 — Synchronization covers the complete multi-field invariant when one exists.
+- [ ] GOCON-CK-RISK-01-01 — Every concurrent read and write of shared mutable state is protected by a memory-model-defined synchronization edge.
+- [ ] GOCON-CK-RISK-01-02 — Synchronization covers the complete multi-field invariant when one exists.
 
 ### GOCON-SC-RISK-02 — Rule violation: A synchronization primitive is copied after use
 
@@ -170,9 +171,7 @@ becoming active. The primitive should remain in one owned object; copied synchro
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-02-01 — No synchronization primitive is copied after first use.
-- [ ] GOCON-CK-RISK-02-02 — Shared synchronization state has one stable address.
-- [ ] GOCON-CK-RISK-02-03 — Shared synchronization state has one owner.
+- [ ] GOCON-CK-RISK-02-01 — Every synchronization primitive stays in one owned object at one stable address and is never copied after first use.
 
 ### GOCON-SC-RISK-03 — Adversarial: Input amplifies concurrent resource use
 
@@ -181,9 +180,8 @@ pressure. The design should preserve its bounds and failure policy; resource amp
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-03-01 — Untrusted input cannot bypass the concurrency limit.
-- [ ] GOCON-CK-RISK-03-02 — Retry behavior cannot multiply work beyond the stated bound.
-- [ ] GOCON-CK-RISK-03-03 — Over-capacity input reaches the documented containment outcome.
+- [ ] GOCON-CK-RISK-03-01 — Untrusted input and retry behavior cannot push work beyond the stated concurrency bound.
+- [ ] GOCON-CK-RISK-03-02 — Over-capacity input reaches the documented containment outcome.
 
 ### GOCON-SC-RISK-04 — Adversarial: A receiver or stale sender violates channel ownership
 
@@ -192,8 +190,7 @@ should prevent both paths structurally; relying on caller goodwill fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-04-01 — A receiver cannot close a sender-owned channel through the exposed API.
-- [ ] GOCON-CK-RISK-04-02 — A sender cannot outlive the owner's close decision.
+- [ ] GOCON-CK-RISK-04-01 — The exposed API structurally prevents a receiver from closing a sender-owned channel and a sender from outliving the owner's close decision.
 
 ### GOCON-SC-RISK-05 — Rule violation: A returned cancel function has no caller
 
@@ -203,8 +200,18 @@ The creating scope should release the context resources on every terminal path; 
 #### Checklist
 
 - [ ] GOCON-CK-RISK-05-01 — Every returned cancel function has one owner.
-- [ ] GOCON-CK-RISK-05-02 — Every returned cancel function runs when its owned work ends.
-- [ ] GOCON-CK-RISK-05-03 — Every terminal path preserves cancel-function execution.
+- [ ] GOCON-CK-RISK-05-02 — Every returned cancel function runs when its owned work ends, on every terminal path.
+
+### GOCON-SC-RISK-06 — Normal case: An ordinary run leaves no concurrent residue
+
+The operation completes normally under its expected load. After it returns, no owned goroutine, timer,
+ticker, channel, lock, or context should remain held, and the process should be able to exit without waiting
+on abandoned work; residue that only a long-running process reveals fails.
+
+#### Checklist
+
+- [ ] GOCON-CK-RISK-06-01 — Every goroutine, timer, ticker, and context the ordinary run created has ended or been released when the operation returns.
+- [ ] GOCON-CK-RISK-06-02 — Repeating the ordinary run does not accumulate held concurrent resources.
 
 ## Overall
 
