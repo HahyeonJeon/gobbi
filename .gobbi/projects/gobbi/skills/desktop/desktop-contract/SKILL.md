@@ -9,7 +9,7 @@ skill-type: tool
 
 This manual helps an agent define and review the user-visible contract of an installed desktop application. It covers the operating-system and installed-state behavior a product promises, independently of the framework or mechanism used to implement it.
 
-It does not own complete delivery, release choices, interface design, or framework mechanics. `desktop-delivery` coordinates the whole outcome, `desktop-release` owns release judgments, and an Electron implementation loads the [`electron`](../../electron/SKILL.md) root and every applicable Electron child.
+It does not own complete delivery, release choices, interface design, in-application structure, or framework mechanics. `desktop-delivery` coordinates the whole outcome, `desktop-architecture` owns the view hierarchy and state ownership inside the application, `desktop-release` owns release judgments, and an Electron implementation loads the [`electron`](../../electron/SKILL.md) root and every applicable Electron child.
 
 ## Principles
 

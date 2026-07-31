@@ -17,6 +17,7 @@ Four `web` children apply to an installed application and are loaded directly. [
 
 | Child skill | Type | Load when |
 |---|---|---|
+| [`desktop-architecture`](desktop-architecture/SKILL.md) | preference | MUST load when choosing or reviewing an installed desktop application's in-application information architecture or renderer state architecture, covering view hierarchy, navigation without URLs, state ownership across processes and windows, and what a relaunch restores. |
 | [`desktop-contract`](desktop-contract/SKILL.md) | tool | MUST load when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery. |
 | [`desktop-delivery`](desktop-delivery/SKILL.md) | operation | MUST load when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness. |
 | [`desktop-interface`](desktop-interface/SKILL.md) | preference | MUST load when choosing or reviewing an installed desktop application's project identity, design-evidence threshold, interface concept exploration, aesthetic system, or interaction and motion intent. |

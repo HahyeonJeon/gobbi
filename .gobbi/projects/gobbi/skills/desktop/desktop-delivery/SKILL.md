@@ -51,8 +51,8 @@ implies another.
   challenged stack, assess resource and package cost, content trust, native depth, target and update fit, team
   upgrade capacity, migration cost, and release needs; a material conflict pauses for the user's decision.
 - **MUST keep each decision with its current owner.** `desktop-interface` owns observable design judgment,
-  coding and applicable language or renderer skills own idiom, `desktop-contract` owns the installed-platform
-  contract, the Electron family owns Electron mechanics, `desktop-release` owns release judgment, and
+  `desktop-architecture` owns in-application structure and state ownership, coding and applicable language or
+  renderer skills own idiom, `desktop-contract` owns the installed-platform contract, the Electron family owns Electron mechanics, `desktop-release` owns release judgment, and
   Evaluation owns the independent verdict.
 - **MUST keep every slice and target internally consistent.** Code, configuration, types, tests,
   documentation, persistent-data behavior, package inputs, and operational evidence move together, and a
