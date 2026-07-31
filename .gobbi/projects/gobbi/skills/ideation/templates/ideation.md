@@ -91,7 +91,7 @@
 └── {Parent Topic}
 ```
 
-{Include every prepared and emergent topic. Mark topics added during discussion and keep the tree aligned with the headings below.}
+{The problem and desired outcome are a visual root label, not a topic. Include every prepared and emergent topic below it, mark topics added during discussion, and keep every topic node aligned with a heading below.}
 
 ## Decisions
 
@@ -153,7 +153,7 @@
 
 **Reopen when:** {State the evidence or changed condition that would reopen this decision.}
 
-{Repeat matching level-three, level-four, or deeper topic headings for every node. Preserve decision synthesis rather than a conversational transcript.}
+{Repeat matching level-three, level-four, or deeper topic headings for every topic node below the visual root. Preserve decision synthesis rather than a conversational transcript.}
 
 ## Design
 
@@ -181,7 +181,7 @@
 
 | Risk or Assumption | Impact | Evidence | Question | Method | Signals | Owner and Timing | Reopen When |
 |---|---|---|---|---|---|---|---|
-| `{assumption or risk}` | `{impact}` | `{existing evidence only}` | `{question the validation must answer}` | `{planned walkthrough, prototype, experiment, spike, benchmark, study, or other method; who or what participates}` | `{signals}` | `{owner and when it runs}` | `{condition}` |
+| `{assumption or risk}` | `{impact}` | `{existing evidence only}` | `{question the validation must answer}` | `{planned walkthrough, prototype, experiment, spike, benchmark, study, or other method; who or what participates}` | `Pass: {observable pass signal}; Fail: {observable fail signal}` | `{owner and when it runs}` | `{condition}` |
 
 {Never describe planned validation as completed evidence.}
 

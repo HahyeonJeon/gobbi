@@ -53,7 +53,7 @@
     └── {Child Topic}
 ```
 
-{The tree is generated from this idea's requirements and studied materials. Do not copy a fixed topic taxonomy.}
+{The problem and desired outcome are a visual root label, not a topic. Generate every topic below that root from this idea's requirements and studied materials, and do not copy a fixed topic taxonomy.}
 
 ## Discussion Order
 
@@ -77,7 +77,7 @@
 
 ### Options
 
-{Name genuinely different, source-backed alternatives worth comparing.}
+{List genuinely different, source-backed options and summarize the relevant pros, cons, and fit of each.}
 
 ### Done When
 
@@ -101,13 +101,13 @@
 
 #### Options
 
-{Name genuinely different, source-backed alternatives worth comparing.}
+{List genuinely different, source-backed options and summarize the relevant pros, cons, and fit of each.}
 
 #### Done When
 
 {State what must be decided, evidenced, deferred, or excluded before this child closes.}
 
-{Repeat matching level-two, level-three, or level-four topic sections for every node in the ASCII tree.}
+{Repeat matching level-two, level-three, or level-four topic sections for every topic node below the visual root.}
 
 ## Dependencies
 

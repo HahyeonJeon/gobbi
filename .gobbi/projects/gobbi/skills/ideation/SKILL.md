@@ -33,6 +33,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - **MUST preserve material user authority.** The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
 - **MUST complete Ideation from this operation and its owned companions.** Do not require another skill or outside procedure to supply a missing decision, evidence, completion, or evaluation method.
+- **MUST stop Ideation at the design boundary.** Return requirements, topics, and an integrated design without ordered implementation tasks, implementation diffs, or produced realization output.
 
 ### Must-Not-Follow
 
@@ -118,9 +119,11 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 - Read `topics.tmp.md` as the complete draft produced by the internal and external study passes.
 - Compare the draft with the completed requirements and studied materials to identify missing topics, weak questions, shallow source support, incomplete alternatives or trade-offs, unresolved contradictions, duplicate topics, and uncovered dependencies.
-- Perform targeted additional internal or external study for every material gap that the existing sources cannot resolve.
-- Revise weak topics, add missing topics or subtopics, merge duplicates, and preserve unresolved contradictions for discussion.
-- Repeat the review, additional study, revision, and supplementation until no material topic gap remains.
+- Perform targeted additional internal or external study when more study can close a material gap.
+- When a gap cannot be closed through study but enough is known to compare options safely, turn it into a topic that states the uncertainty, its effect, the decision question, and the supported options.
+- When missing context prevents safe, decision-ready options, pause Phase 2 and ask the user for the missing context, authority, or scope change.
+- Revise weak topics, add missing topics or subtopics, merge duplicates, and route unresolved contradictions into the affected discussion topics.
+- Repeat the review, study, revision, and supplementation until every material gap is resolved or represented by a decision-ready topic.
 - Write the complete revised and supplemented topic draft back to `topics.tmp.md`.
 
 #### 2.5 Build and audit the topic hierarchy
@@ -128,12 +131,12 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Read `topics.tmp.md` and verify that every topic is traceable to its Phase 1, internal, or external basis.
 - Create `topics.md` from [the topics template](templates/topics.md) using `topics.tmp.md` as the current inventory.
 - Organize the current inventory into a project-specific hierarchy derived from the completed requirements and studied materials rather than a fixed taxonomy.
-- Render one ASCII `text` tree with matching Markdown headings.
-- Record each topic's purpose, parent, dependencies, connected requirements by exact descriptive heading, sources, questions, genuine options, and done condition.
+- Render one ASCII `text` tree whose problem-and-outcome root is a visual label rather than a topic, and give every topic node below it a matching Markdown heading.
+- Record each topic's purpose, parent, dependencies, connected requirements by exact descriptive heading, sources, questions, genuine options with their relevant pros, cons, and fit, and done condition.
 - Order the hierarchy for parent-first discussion and expose dependencies and cross-topic conflicts.
 - Audit actors, boundaries, interfaces, state, data, resources, failures, recovery, trust, governance, inclusion, locale, compatibility, reversal, evidence, risk, and validation for applicable topics.
 - Record an inspected not-applicable reason for every concern that does not belong.
-- Return to Step 2.4 while any material source conflict or coverage gap remains.
+- Return to Step 2.4 while a material concern remains uncovered or an unresolved gap lacks safe, decision-ready options.
 
 #### 2.6 Complete and preserve `topics.md`
 
@@ -153,7 +156,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.2 Traverse and resolve the topic hierarchy
 
-- Start at the root topic and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
+- Start at the first top-level topic below the visual root and traverse parent before child while keeping every child or dependent topic open until its ancestors are resolved.
 - State the current topic's question, connected requirements, ancestor decisions, context, and trustworthy evidence.
 - Ask the user to choose through a decision-ready question that presents the alternatives as options, places the best-supported option first as the recommendation, explains why it is recommended, and states what evidence would change the recommendation.
 - Discuss the user's response and revise the alternatives and recommendation, performing targeted additional study only when the discussion exposes an evidence gap.
@@ -184,9 +187,11 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 
 #### 3.5 Audit, evaluate, and return the result
 
-- Review `ideation.md` according to [evaluation.md](evaluation.md), correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output, and reopen the earliest affected step until the review passes.
-- After the review passes, display a concise summary of the problem, scope, key decisions, integrated design, material trade-offs, risks, and deferred items to the user in the session.
-- Return `requirements.md`, `topics.md`, and `ideation.md` together as the complete Ideation result.
+- Self-review `ideation.md` against this operation and its templates; correct every material omission, inconsistency, unresolved decision, broken link, or prohibited implementation output through the earliest affected step.
+- Freeze `requirements.md`, `topics.md`, `ideation.tmp.md`, and `ideation.md` as one exact review subject, then ask a fresh independent evaluator to review it against this operation and its templates without changing any subject file.
+- Present every material finding for disposition, apply only accepted corrections through the earliest affected step, freeze the revised result as a new subject, and repeat the independent review.
+- When the independent review finds no material issue, display a concise summary of the problem, scope, key decisions, integrated design, material trade-offs, risks, and deferred items to the user in the session.
+- Delete `ideation.tmp.md`, then return `requirements.md`, `topics.md`, and `ideation.md` together as the complete Ideation result.
 
 ## References
 
