@@ -35,7 +35,7 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, or
 
 - **C-1 — Use canonical Gobbi sources.** Load skills from `.gobbi/projects/gobbi/skills/`. Treat `.agents/skills/` and `plugins/gobbi/skills/` as discovery or package views, not alternate owners.
 - **C-2 — Use repo-local specialists in native Codex.** Role wrappers live under `.codex/agents/` and point to the protected canonical role documents.
-- **C-3 — Resolve settings through their owners.** The session manifest owns resolved role models. Repo-local Codex configuration and role wrappers own runtime defaults. Do not duplicate or change those values here.
+- **C-3 — Resolve settings through their owners.** Repo-local Codex configuration owns the repository-wide runtime defaults, and each role wrapper owns that role's model and instructions. Do not duplicate or change those values here.
 - **C-4 — Keep every peer operation independent.** A draft operation receives nothing from the other draft until both freeze, and an evaluator receives no other evaluator report and no prior evaluator context.
 - **C-5 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
 - **C-6 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
@@ -68,7 +68,7 @@ This skill defines no artifact schema, no per-kind response shape, and no digest
 
 When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and carries it in the assignment as runtime evidence. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
 
-For role selection and model values, read the validated session settings and the repo-local Codex configuration named by the runtime entry documents. This skill adds no model override. For package setup, topology, and installed-cache checks, follow the root runtime instructions rather than copying their commands here.
+For role selection and model values, read the repo-local Codex configuration and the role wrappers named by the runtime entry documents. This skill adds no model override. For package setup, topology, and installed-cache checks, follow the root runtime instructions rather than copying their commands here.
 
 ### Peer operation selection
 

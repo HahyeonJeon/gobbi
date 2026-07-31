@@ -160,8 +160,9 @@ memory/
 
 - Plans, scenarios, and checklists are session-only: they direct this session's work and are not memorized.
   Write them in the sibling directory the caller names beside `memory/`, never inside it.
-- Each directory's interior conventions — file shape, naming, and index — belong to the operation that later
-  memorizes the tree. Route the candidate to its directory; do not invent those conventions here.
+- Beyond the file names this shape already fixes, each directory's interior conventions — file shape, naming,
+  and index — belong to the operation that later memorizes the tree. Route the candidate to its directory; do
+  not invent those conventions here.
 - If a candidate matches two directories, split it into distinct facts or choose the directory a later reader
   would search first. If it matches none, keep it outside `memory/` and report it.
 
