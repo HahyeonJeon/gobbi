@@ -18,8 +18,7 @@ more than one child.
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`css-constraints`](css-constraints/SKILL.md) | preference | MUST load before creating, changing, or reviewing CSS, including debugging expected to produce a CSS change and choosing CSS conventions. |
-| [`css-conventions`](css-conventions/SKILL.md) | preference | MUST load before creating, changing, or reviewing CSS, including debugging expected to produce a CSS change and choosing CSS conventions. |
+| [`css-conventions`](css-conventions/SKILL.md) | preference | MUST load when a CSS task must decide whether a choice is valid and which project default applies, covering accessibility, target support, motion, evidence limits, cascade ownership, naming, custom-property and token interfaces, and layout adaptation. |
 | [`css-development`](css-development/SKILL.md) | operation | MUST load when creating or changing CSS, including debugging expected to produce a CSS change. |
 | [`css-platform`](css-platform/SKILL.md) | tool | MUST load when understanding, inspecting, or diagnosing browser or Electron-renderer CSS behavior, including diagnosis before a CSS change, or when choosing runtime evidence for CSS. |
 | [`css-review`](css-review/SKILL.md) | operation | MUST load when performing a focused review of existing CSS. |

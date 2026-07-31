@@ -11,7 +11,7 @@ skill-type: operation
 
 Use this operation for a focused, read-only CSS review in a browser or Electron renderer. It assesses problems, optional improvements, strengths, limitations, and action owners.
 
-The operation inspects without editing or accepting. Formal verdicts belong to evaluation, implementation to `css-development`, validity constraints to `css-constraints`, and implementation defaults to `css-conventions`.
+The operation inspects without editing or accepting. Formal verdicts belong to evaluation, implementation to `css-development`, and both validity constraints and implementation defaults to `css-conventions`.
 
 ## Principles
 
@@ -38,7 +38,7 @@ changing the subject.
 - **MUST keep the review read-only.** Do not edit source, output, configuration, fixtures,
   baselines, or runtime state beyond reversible inspection.
 - **MUST frame the subject and review boundary.** Name source, transformed output, targets, states, requested concerns, and limits.
-- **MUST apply `css-constraints` Rules and relevant `css-conventions` Preferences.** Route
+- **MUST apply the `css-conventions` Rules and relevant Preferences.** Route
   document, product, state, security, generator, and Electron process questions outward.
 - **MUST inspect evidence in proportion to the claim and consequence.** Appearance or lint
   alone cannot establish cascade, order, focus, layout, support, performance, or acceptance.
@@ -96,8 +96,8 @@ changing the subject.
 
 #### 3.2 Challenge each item
 
-- Test each item against `css-constraints` and `css-conventions`, counterevidence, target
-  scope, and owner boundaries.
+- Test each item against `css-conventions`, counterevidence, target scope, and owner
+  boundaries.
 - Remove appearance-only, duplicate, speculative, or non-actionable conclusions.
 - Update changed classes or owners before handoff; withdraw items whose evidence fails.
 

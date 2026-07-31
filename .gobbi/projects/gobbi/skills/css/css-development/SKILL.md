@@ -36,9 +36,8 @@ Trace failures to the first wrong source, transform, assumption, or owner decisi
 - **MUST change only authorized canonical CSS source.** For generated CSS, change its source
   or route generator mechanics outward, then inspect the emitted CSS.
 - **MUST frame the rendering outcome and affected owners before editing.** Stop when an unresolved outward-owner decision controls the result.
-- **MUST apply `css-constraints` and the project's `css-conventions` to every implementation
-  choice.** Treat constraints as the valid-choice boundary and conventions as project
-  defaults.
+- **MUST apply `css-conventions` to every implementation choice.** Treat its Rules as the
+  valid-choice boundary and its Preferences as the project's overridable defaults.
 - **MUST grow the change in observable increments.** Keep each increment small enough to
   verify and repair without hiding an earlier failure.
 - **MUST verify in proportion to consequence and target variation.** Appearance, lint, and
@@ -69,8 +68,8 @@ Trace failures to the first wrong source, transform, assumption, or owner decisi
 
 #### 2.1 Build and grow the implementation
 
-- At canonical source, apply `css-constraints` and project conventions, then create only the
-  cascade, selector, custom-property, and layout skeleton needed for the first outcome.
+- At canonical source, apply `css-conventions`, then create only the cascade, selector,
+  custom-property, and layout skeleton needed for the first outcome.
 - Inspect transformed output, then add one state or constraint at a time and check its
   winner and affected computed or layout result.
 - Repeat until the framed behavior is complete; repair a failing slice before adding another,
