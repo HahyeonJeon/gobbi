@@ -104,3 +104,6 @@ owner, and unknowns; route validity constraints and project-choice judgment to
 `css-conventions`, and both changes and read-only assessment to `css-development`.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
