@@ -1065,8 +1065,6 @@ Every borrowed fact has one owner. This section names the owner; it never restat
 - [`evaluation`](../evaluation/SKILL.md) owns the evaluator perspectives, causal findings, and verdict
   derivation. [`evaluation/checklist`](../evaluation/checklist/SKILL.md) owns perspective-led scenario and
   checklist-source construction, including the scenario classes and nested checklist rows this skill reuses.
-- [`vision`](../vision/SKILL.md) and [`vision/ui.md`](../vision/ui.md) own capture limits, and are loaded
-  only when captured renderings are evaluated.
 - [`discussion`](../discussion/SKILL.md) owns question and decision quality at every `DESK-R27` gate.
 - [`skill-writing`](../skill-writing/SKILL.md) owns the authoring standard this file is written against.
 

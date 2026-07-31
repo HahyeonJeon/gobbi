@@ -221,8 +221,6 @@ plan. A cold operator must be able to release or roll back without hidden sessio
 - [`../coding/SKILL.md`](../coding/SKILL.md) owns language-agnostic software construction quality.
 - [`../ui/SKILL.md`](../ui/SKILL.md) and [`../ux/SKILL.md`](../ux/SKILL.md) own the generic design and direct-
   evidence acceptance contracts specialized by the two web children.
-- [`../vision/SKILL.md`](../vision/SKILL.md) and [`../vision/ui.md`](../vision/ui.md) own rendered-capture
-  analysis and its evidence limits.
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/) is the normative web-accessibility reference.
 - [WHATWG HTML](https://html.spec.whatwg.org/) owns browser forms, interaction, navigation, and history
   mechanics.

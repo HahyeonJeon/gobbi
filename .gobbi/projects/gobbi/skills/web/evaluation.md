@@ -8,8 +8,7 @@ but that does not replace independent evaluation.
 
 Policy lives in [`SKILL.md`](SKILL.md). Cases live in [`scenarios.md`](scenarios.md), and binary operational
 gates live in [`checklists.md`](checklists.md). When browser UI or UX applies, load the generic parent before
-the web child and use that child's evaluation companion as another frame. Load [`vision`](../vision/SKILL.md)
-and [`vision/ui.md`](../vision/ui.md) only when captured renderings are evaluated.
+the web child and use that child's evaluation companion as another frame.
 
 ## Phase 1 extension — Frame the evidence before judging
 
@@ -20,8 +19,7 @@ Read the following in order:
 2. all five files in this `web` bundle;
 3. `coding` and every applicable language/runtime/framework evaluation frame;
 4. generic `ui` then `web/ui` when an observable browser interface is present;
-5. generic `ux` then `web/ux` when flow, content, recovery, trust, research, or measurement is present;
-6. `vision` plus `vision/ui.md` only for actual captured frames.
+5. generic `ux` then `web/ux` when flow, content, recovery, trust, research, or measurement is present.
 
 If an expected artifact is missing, record `NEEDS_CONTEXT` or a finding as the generic evaluation contract
 requires; do not invent the evidence. Preserve producer/evaluator separation.

@@ -171,7 +171,7 @@ mistakes a green relation test for a complete obligation proof.
 | Automated tests | exercised behavior in the test environment, on the build the suite actually ran against | the shipped artifact when the build matrix differs, visual quality, user acceptance |
 | Live application interaction | the operated path and visible state on that system, in that build | hidden semantics, other operating systems, packaged behavior |
 | Accessibility-tree inspection | semantics, name, role, value, exposed state | pixel quality, all assistive-technology behavior, user acceptance |
-| Captured rendering | the captured pixels and visible state at one moment | semantics, keyboard and focus behavior, motion, accessibility conformance — [`vision`](../vision/SKILL.md) owns these limits |
+| Captured rendering | the captured pixels and visible state at one moment | semantics, keyboard and focus behavior, motion, accessibility conformance |
 | Representative-user evidence | observed design fit for the recruited people, on the system it was gathered on | implementation correctness, or any population or system not represented |
 | Local-data and state evidence | authoritative on-disk effects and invariants in that environment | user comprehension, or behavior after a version change |
 | Lab performance | repeatable synthetic behavior under declared conditions, **on the named platform version** | the production population, or any other platform version |

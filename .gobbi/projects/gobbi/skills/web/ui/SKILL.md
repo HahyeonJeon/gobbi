@@ -14,9 +14,8 @@ direct-user testing, and design acceptance. This child owns the browser-specific
 specification: semantic documents, focus and input, forms, responsive states, overlays, asynchronous feedback,
 browser rendering lifecycles, and evidence.
 
-Load [`vision`](../../vision/SKILL.md) and [`vision/ui.md`](../../vision/ui.md) only when captured renderings are
-evaluated. Load the applicable language and framework skill for implementation idioms. React is an integration
-case here—hydration, routing, state continuity, and semantic output—not an API, hooks, rendering-mode, router,
+Load the applicable language and framework skill for implementation idioms. React is an integration case
+here—hydration, routing, state continuity, and semantic output—not an API, hooks, rendering-mode, router,
 state-library, or ecosystem policy source.
 
 ## Principles
@@ -183,8 +182,6 @@ status to the root web release gate. Do not claim feature readiness independentl
   direct representative-user evidence, and design acceptance.
 - [`ideation.md`](ideation.md), [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and
   [`evaluation.md`](evaluation.md) operationalize this child without adding policy.
-- [`../../vision/SKILL.md`](../../vision/SKILL.md) and [`../../vision/ui.md`](../../vision/ui.md) own captured-
-  rendering analysis and its proof limits.
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/) is the normative accessibility reference selected through project
   requirements and feature risk.
 - [WHATWG HTML](https://html.spec.whatwg.org/) defines native document, form, interaction, history, and

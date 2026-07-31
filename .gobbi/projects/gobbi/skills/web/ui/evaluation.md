@@ -5,9 +5,7 @@ Browser-interface frame for the active Gobbi evaluation and the executor's pre-h
 This frame grades production browser realization of the accepted interface; generic UI retains design
 acceptance. It adds no evaluation phase or output and no policy beyond [`SKILL.md`](SKILL.md).
 
-When actual captures exist, load [`vision`](../../vision/SKILL.md) and
-[`vision/ui.md`](../../vision/ui.md) and apply their visual-inspection procedure. Never invoke vision merely to
-infer unrendered behavior. Framework evaluation remains independently owned by the applicable framework skill.
+Framework evaluation remains independently owned by the applicable framework skill.
 
 ## Phase 1 extension — Read and bind the target
 
