@@ -16,31 +16,26 @@ before returning.
 
 ### Question the user without hesitation until the idea is complete
 
-An incomplete idea is a set of open topics, not a specification to fill by assumption. Question the user directly until every material gap or contradiction is answered, explicitly deferred, or removed from scope. Persistent questioning should remain relevant, evidence-backed, and respectful.
+An incomplete idea is a set of open topics, not a specification to fill by assumption. Question the user directly until every material gap or contradiction is answered, explicitly deferred, or removed from scope, keeping each question relevant, evidence-backed, and respectful.
 
 ### Study trustworthy prior art before designing
 
-Good ideas begin with proven solutions, not a blank page. Study established project patterns and trustworthy external prior art, judge each reference by its authority, relevance, currency, and applicability, and use the strongest fit as the baseline. Combine lessons or deviate only when the current problem or constraints require it.
+Good ideas begin with proven solutions rather than a blank page, so study established project patterns and trustworthy external prior art and judge each reference by its authority, relevance, currency, and applicability. Use the strongest fit as the baseline, and combine lessons or deviate only when the current problem or constraints require it.
 
 ### Discuss the design through a hierarchy of topics
 
-A design discussion is a tree of topics rooted in the user's problem and desired outcome. Derive the tree from internal materials and trustworthy external references, then resolve parent topics before their children and reconcile sibling branches before moving deeper. When later learning changes the hierarchy, update the final tree in `ideation.md` and reopen the affected branches without editing the preserved `topics.md`.
+A design discussion is a tree of topics rooted in the user's problem and desired outcome. Derive the tree from internal materials and trustworthy external references, then resolve parent topics before their children and reconcile sibling branches before moving deeper.
 
 ### Find the best idea by comparing reference-backed alternatives
 
-The first idea is a candidate, not the answer. Compare it with genuinely different, reference-backed alternatives by their pros, cons, and fit with the user's outcome and constraints. Use the comparison to improve or replace the leading idea, then explain why the best-supported idea wins and what would change the recommendation.
+The first idea is a candidate to test against genuinely different, reference-backed alternatives, compared by their pros, cons, and fit with the user's outcome and constraints. Use the comparison to improve or replace the leading idea, then explain why the best-supported idea wins and what would change the recommendation.
 
 ## Rules
-
-### Must-Follow
 
 - **MUST preserve material user authority.** The user decides material scope, success criteria, design direction, destructive implications, external dependencies or services, and whether a material assumption may constrain the design.
 - **MUST complete artifact creation, self-review, and independent evaluation from this operation and its owned
   companions.** Perform the separate independent review inline before returning the result.
 - **MUST stop Ideation at the design boundary.** Return requirements, topics, and an integrated design without ordered implementation tasks, implementation diffs, or produced realization output.
-
-### Must-Not-Follow
-
 - **NEVER change the accepted contract silently.** Any change to established scope, decisions, constraints, or obligations requires new evidence, an explicit user decision, and a recorded consequence.
 
 ## Procedure
@@ -148,6 +143,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - Preserve the completed file as the Phase 2 supporting result without making later byte changes.
 - Delete `topics.tmp.md` only after the completed `topics.md` has been verified.
 - Do not start Phase 3 until the topic agenda is complete and preserved.
+- If later learning changes the hierarchy, update the final topic tree in `ideation.md` and reopen the affected branches without editing `topics.md`.
 
 ### Phase 3 — Discuss the Topics Hierarchically
 

@@ -11,14 +11,18 @@ Use this skill to turn defined work into an executable plan. Break the work into
 tasks, decomposing each group until every task is actionable. For every task, define its work, assign one
 accountable agent role, and set its order relative to its dependencies.
 
+The operation runs in three phases. It reads the defined work, its purpose, scope, output, and design; it
+decomposes that work top-down into a frozen task hierarchy in `tasks.md`; and it reorganizes those tasks
+bottom-up into a frozen `plan.md`. Planning ends at that frozen plan, which the assigned agents then execute.
+
 ## Principles
 
 ### Separate task hierarchy from execution order
 
-The task hierarchy explains how broad work divides into decomposable groups and bounded tasks. Execution
-order explains how those tasks build on one another and which independent tasks may run in parallel. Keeping
-these views separate prevents parent-child structure from being mistaken for dependency order and exposes
-safe parallel work that can reduce total execution time.
+The task hierarchy explains how broad work divides into decomposable groups and bounded tasks, while
+execution order explains how those tasks build on one another and which independent tasks may run in
+parallel. Keeping these views separate prevents parent-child structure from being mistaken for dependency
+order and exposes safe parallel work that can reduce total execution time.
 
 ### Bound each task for one accountable agent
 
@@ -27,8 +31,6 @@ work, boundary, output, context, and required capabilities. If completion requir
 task is too broad or its recorded details are incomplete.
 
 ## Rules
-
-### Must follow
 
 - **MUST preserve scope and coverage.** Every planned task comes from the defined work, and every defined work
   item appears in the task hierarchy and final plan.

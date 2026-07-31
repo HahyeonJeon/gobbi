@@ -9,6 +9,8 @@ skill-type: preference
 
 Discussion is a preference skill for writing clear, evidence-backed questions that help the user clarify a request, challenge a premise, or make a decision. Use it to make What, Why, and How concrete, ask for evidence or authority, and resolve user-owned choices without changing the user's accepted direction by assumption.
 
+The Principles explain the judgment behind a good question, the Rules bound what every question must and must not do, and the Preferences give the default Question Template and how to present it. The skill shapes the question only: it prescribes no ordered procedure and decides nothing the user has not decided.
+
 ## Principles
 
 ### Study the problem and possible options
@@ -17,11 +19,11 @@ Before suggesting options, understand the request, the user's goal, the relevant
 
 ### Challenge weak premises
 
-Challenge assumptions, contradictions, vague claims, unrealistic expectations, missing edge cases, and weak evidence before they shape the task. Explain the concern plainly and support it with evidence. Agreement without scrutiny leaves the user choosing from a faulty premise.
+Challenge assumptions, contradictions, vague claims, unrealistic expectations, missing edge cases, and weak evidence before they shape the task, explaining each concern plainly and supporting it with evidence. Agreement without scrutiny leaves the user choosing from a faulty premise.
 
 ### Present meaningful options with a recommendation
 
-When the user must choose, present distinct options that fit the request and differ in ways that matter. Explain the relevant benefits, drawbacks, and constraints. Recommend the best-supported option, explain why it fits, and state what new evidence or changed constraint would change the recommendation.
+When the user must choose, present distinct options that fit the request, differ in ways that matter, and state their relevant benefits, drawbacks, and constraints. Recommend the best-supported option, explain why it fits, and state what new evidence or changed constraint would change the recommendation.
 
 ## Rules
 
@@ -32,7 +34,7 @@ When the user must choose, present distinct options that fit the request and dif
 
 ### Must-Not-Follow
 
-- **NEVER use empty praise or soft agreement instead of a position.** Avoid phrases such as “That's interesting,” “Great question,” “You might want to consider,” “There are many ways to think about this,” “That could work,” “I can see why you'd think that,” “Maybe we should,” and an unnamed “It depends.” State the conclusion and reason, or name the exact dependency that prevents one.
+- **NEVER use empty praise or soft agreement instead of a position.** Avoid phrases such as “That's interesting,” “Great question,” “You might want to consider,” “There are many ways to think about this,” “That could work,” “I can see why you'd think that,” “Maybe we should,” and an unnamed “It depends”; state the conclusion and reason, or name the exact dependency that prevents one.
 
 ## Preferences
 
