@@ -103,3 +103,6 @@ stays with the renderer's applicable presentation owner and the emitted mechanic
 [`css-motion`](../../css/css-motion/SKILL.md).
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
