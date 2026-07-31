@@ -137,6 +137,9 @@ rather than on the place the failure appeared.
   focus visibility, and rendered output according to risk.
 - Measure performance before and after with behavior and accessibility guards; missing
   material evidence is a limitation or stop condition.
+- When this change is evaluated, the [evaluation checklist](checklists.md) and every
+  checklist owned by an active `css` sibling supply the applicable conditions; the general
+  evaluation skill resolves them and issues any verdict.
 
 #### 2.3 Repair a failed result
 
@@ -192,6 +195,10 @@ rather than on the place the failure appeared.
 - For each problem, include the evidence, affected behavior and targets, confidence, owner,
   and verification needed after a repair.
 - Complete with a read-only, reproducible assessment; route a repair to a new authorized
-  change-mode run and a formal verdict to the general evaluation skill.
+  change-mode run, and a formal verdict to the general evaluation skill together with the
+  [evaluation checklist](checklists.md).
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
