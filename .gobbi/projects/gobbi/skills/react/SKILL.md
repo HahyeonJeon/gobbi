@@ -249,28 +249,26 @@ exception needs; it never introduces an exception this file does not state.
   later. Exception: a snapshot deliberately copied for local editing — a form draft — is client state, and
   it is client state until it is submitted. *Ecosystem convention*: no React-team position states this
   rule; it is this skill's house default. Depth: `state.md`.
-- **H16 — NEVER expose a raw process bridge to a renderer, and never run one with Node integration
-  enabled, context isolation disabled, or the sandbox off.** Exposing a raw IPC surface gives page
-  content access to the whole event system, and without context isolation a single content-injection bug
-  becomes code execution. Electron requires context isolation and sandboxing for all renderers. Its
-  Node.js-integration recommendation is scoped to renderers that load remote content; this skill
-  deliberately extends that prohibition to every renderer as a Gobbi house convention. The sandbox is a
-  third, separate protection — "a Chromium feature that uses the operating system to significantly limit
-  what renderer processes have access to", and the source's instruction is unconditional: "You should
-  enable the sandbox in all renderers." It is listed separately because the implication runs one way only:
-  disabling context isolation also disables sandboxing, but leaving context isolation on does not turn the
-  sandbox on. Fix: expose a narrow, named API from the preload script, validate every message, and confirm
-  all three settings in the shipped configuration. The Gobbi all-renderer Node.js-integration extension is
-  deliberate and has no exception. Source: electronjs.org security checklist, items 2, 3, 4, and 20.
+- **H16 — NEVER let a React unit define or depend on Electron platform mechanisms.** In an Electron
+  renderer, consume a data-only capability contract like any other asynchronous external capability:
+  request/response work follows the same event, loading, failure, cancellation, and staleness patterns as
+  another promise; a push capability is a subscription and follows H6's Effect cleanup; and capability
+  absence is an explicit state in browser builds, component previews, and tests. React owns the renderer
+  consumption and presentation consequences only. Before choosing, implementing, reviewing, or testing the
+  Electron process, bridge, security, loader, lifecycle, native, packaged, or release mechanism, load
+  [`electron`](../electron/SKILL.md) and every applicable child. No exception. Source:
+  `electron-convention`, `electron-development`, `electron-runtime`, `electron-test`, and
+  `electron-release`.
 - **H17 — NEVER infer producer architecture from the presentation surface.** Classify two independent
   axes at P1: browser page or Electron renderer for presentation, and client-only, build-time, or
   request-time/remote for the producer. Server Components, Server Functions, and streaming SSR require an
   identified framework or bundler that implements them. A client-only bundle has no target for those
   features on either presentation surface; either surface may consume build-time or request-time/remote
-  producer output when that implementation exists. An Electron renderer consuming such output remains a
-  renderer and gains no Node privilege: `H16` still requires the isolated, sandboxed, finite preload
-  boundary. No exception. Source: react.dev Server Components and the Electron process model. Depth:
-  `runtime.md` for the six combinations; `server-client.md` for what the boundary is.
+  producer output when that implementation exists. An Electron renderer consuming such output remains the
+  renderer DOM where React mounts; main and preload are not React presentation surfaces, and producer output
+  does not change the data-only capability contract React consumes. No exception. Source: react.dev Server
+  Components and the Electron skill family. Depth: `runtime.md` for the six combinations;
+  `server-client.md` for what the boundary is.
 
 **Version facts this skill pins, and the ones it does not.** React 19.2 as the documented line, and the
 React Compiler's first stable release on 2025-10-07, are pinned above and in References, because they are
@@ -353,6 +351,23 @@ failure is recorded.
 Read the companion **before** the decision it governs, and re-run this routing when the design changes.
 An ordinary component needs no companion to be correct; the Rules above stay the floor after one loads.
 
+For an Electron presentation or any Electron platform need, **MUST load
+[`electron`](../electron/SKILL.md)** and every child whose trigger applies:
+
+- [`electron-convention`](../electron/electron-convention/SKILL.md) for security boundaries, project shape,
+  bridge and IPC contracts, process or window ownership, native behavior, errors, or platform defaults;
+- [`electron-development`](../electron/electron-development/SKILL.md) for implementing or reviewing main,
+  preload, renderer, utility, window, lifecycle, or native-integration changes;
+- [`electron-runtime`](../electron/electron-runtime/SKILL.md) for capability, process, preload, IPC,
+  lifecycle, native, or operating-system lookup;
+- [`electron-test`](../electron/electron-test/SKILL.md) for Electron-specific process, bridge, security,
+  lifecycle, native, or packaged evidence; and
+- [`electron-release`](../electron/electron-release/SKILL.md) for packaging, signing, notarizing, upgrading,
+  update rehearsal, or release artifacts.
+
+React [`runtime.md`](runtime.md) owns only the React presentation and producer consequences. It never
+substitutes for one of these Electron children.
+
 | Read | When |
 |---|---|
 | `rendering.md` | Deciding what re-renders and why, whether a value needs memoizing under either compiler branch, how `key` and position decide what keeps state, or whether scheduling work as a transition is the right answer |
@@ -380,7 +395,8 @@ Design as ordered acts, not one flat choice, and finish with no behavior body wr
 
 1. **Fix the region and its boundaries.** Which part of the tree changes, which side of the
    server/client line it sits on, which presentation surface renders it, and which architecture produces
-   its delivered artifacts.
+   its delivered artifacts. For an Electron renderer, record the data-only capability contract the React
+   tree consumes and route its platform realization through the applicable Electron children.
 2. **Place every datum and name its owner.** Local, lifted, context, client store, or server cache — and
    for each, the one thing that owns it. Anything derivable is computed, not stored.
 3. **Pick the unit shape.** A component when it renders, a custom hook when stateful logic is reused, a
@@ -450,7 +466,8 @@ self-failing.
 6. **End-to-end tests** — when a host boundary is in play.
 7. **Build** — and for a desktop host, a check against the actual packaged build, not only the dev
    server: routing and asset resolution differ between the two, so a dev-server pass proves nothing about
-   the shipped app.
+   the shipped app. React verifies the rendered route and asset outcome; load `electron-test` and
+   `electron-release` for the loader, protocol, packaging, and artifact mechanisms and their evidence.
 
 For a bug, re-run the P1 reproducer last.
 
@@ -545,9 +562,14 @@ One owner per borrowed fact; the body states the fact and this register names it
   inappropriate to cite this document as other than abandoned work". It is the historical origin of the
   three circumstances in `H9`, and it is named here for provenance only — those circumstances are this
   skill's house default, not a current W3C position (H9).
-- [Electron security checklist](https://www.electronjs.org/docs/latest/tutorial/security) — Node
-  integration disabled for renderers that load remote content, context isolation and the sandbox enabled
-  for all renderers, and no raw Electron or IPC surface exposed to untrusted page content (H16). The
-  stricter all-renderer Node.js-integration prohibition is the Gobbi house convention stated in H16.
+- [`electron`](../electron/SKILL.md) — routes every Electron platform need to all applicable children (H16,
+  H17, P2, and P7).
+- [`electron-convention`](../electron/electron-convention/SKILL.md),
+  [`electron-development`](../electron/electron-development/SKILL.md),
+  [`electron-runtime`](../electron/electron-runtime/SKILL.md),
+  [`electron-test`](../electron/electron-test/SKILL.md), and
+  [`electron-release`](../electron/electron-release/SKILL.md) — own Electron platform convention,
+  construction, lookup, evidence, and release work respectively; React owns only renderer consumption and
+  presentation consequences.
 - [Testing Library queries](https://testing-library.com/docs/queries/about/) — the query-priority order
   that puts role and accessible name first (H10).

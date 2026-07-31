@@ -21,9 +21,16 @@ media/embed alternatives, native interactive content, resource declarations,
 
 It does not own visual design or CSS, JavaScript state machines, application
 security implementation, template/framework syntax, or Electron main/preload
-behavior. In Electron work, route main/preload, IPC, privilege, native
-integration, permissions, packaging, and release decisions to
-[`electron`](../electron/SKILL.md) or the applicable runtime owner.
+behavior. For any Electron work, **MUST load
+[`electron`](../electron/SKILL.md) and every child whose root trigger applies**:
+[`electron-convention`](../electron/electron-convention/SKILL.md) for
+conventions, [`electron-development`](../electron/electron-development/SKILL.md)
+for implementation or review,
+[`electron-runtime`](../electron/electron-runtime/SKILL.md) for runtime lookup,
+[`electron-test`](../electron/electron-test/SKILL.md) for Electron-specific
+evidence, and [`electron-release`](../electron/electron-release/SKILL.md) for
+release work. Load several children when several triggers apply. HTML remains
+the emitted renderer-document layer and defines no Electron platform policy.
 
 ## Rules
 
@@ -97,8 +104,9 @@ conformance and language behavior of the emitted bytes.
 Never describe string concatenation, `innerHTML`, or an equivalent injection
 sink as a safe HTML authoring technique. Server validation and authorization
 are not replaced by form validation. Embed permissions, iframe sandbox policy,
-remote content, and Electron privilege boundaries require the applicable
-security/runtime owner.
+and remote content require the applicable security or runtime owner. Electron
+privilege boundaries require the Electron root and applicable children named
+in Purpose.
 
 For transformed HTML, retain four linked identities:
 
