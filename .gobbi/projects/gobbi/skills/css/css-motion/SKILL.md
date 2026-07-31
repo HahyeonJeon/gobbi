@@ -162,3 +162,6 @@ target evidence; route the scripted alternative and its listener contract to
 [`web-interaction`](../../web/web-interaction/SKILL.md).
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
