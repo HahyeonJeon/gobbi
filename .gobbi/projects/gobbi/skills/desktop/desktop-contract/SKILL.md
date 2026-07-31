@@ -103,3 +103,6 @@ When behavior fails, inspect in this order:
 Do not weaken a security, accessibility, consent, data, or authority boundary to make the symptom disappear. Return a contract mismatch to its product owner and a mechanism defect to the selected framework owner.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
