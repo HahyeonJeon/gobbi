@@ -146,7 +146,9 @@ evidence needed for the risk and state every untested path or unsupported target
 - For a regression, prove the test failed against the defective behavior before the fix and passes afterward
   when that comparison is safely reproducible. Rerun the original reproducer as separate evidence.
 - If a check fails, preserve its command, environment, and first useful diagnostic; repair the test or return
-  a production defect to its owner, then repeat every affected layer.
+  a production defect to its owner, then repeat every affected layer. When this test evidence is evaluated,
+  the [evaluation checklist](checklists.md) and every checklist owned by an active `go` sibling supply the
+  applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Interpret and hand off the result
 

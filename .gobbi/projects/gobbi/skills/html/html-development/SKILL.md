@@ -114,6 +114,9 @@ and repeat affected evidence.
 - Accept only the artifact whose checks pass and owner decisions are resolved.
 - Report source and transform identity, bytes or digest, targets, observations, limits, and the narrow claim.
 - Otherwise return the failure and first missing fact, owner action, or authorized recovery step.
+- When this artifact is evaluated, the [HTML development evaluation checklist](checklists.md) and every
+  checklist owned by an active `html` sibling supply the applicable conditions; the general Evaluation
+  operation resolves them and issues any verdict.
 
 ## References
 
