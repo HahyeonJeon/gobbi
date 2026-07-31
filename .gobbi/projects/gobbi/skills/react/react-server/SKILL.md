@@ -1,11 +1,11 @@
 ---
-name: react-server-client
+name: react-server
 description: "MUST load when a React browser application or Electron renderer uses server rendering, hydration, Server Components, Server Functions, or client/server directives."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
-# React Server and Client
+# React Server
 
 Use this lookup tool only when a compatible framework or bundler supplies React server rendering, hydration,
 Server Components, Server Functions, or client/server directives. React's presence alone does not establish
@@ -100,4 +100,4 @@ affected loading, failure, recovery, preservation, and reset paths.
 
 ## References
 
-- [React Server and Client Checklist](checklists.md)
+- [React Server Checklist](checklists.md)

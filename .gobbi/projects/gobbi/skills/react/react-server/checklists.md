@@ -1,7 +1,7 @@
-# React Server and Client Checklist
+# React Server Checklist
 
-Use this unchecked `react-server-client` source with general `evaluation` when the React root activates the
-server/client child; `RSCL` is the stable owner prefix.
+Use this unchecked `react-server` source with general `evaluation` when the React root activates the
+`react-server` child; `RSCL` is the stable owner prefix.
 
 ## Project
 
