@@ -24,9 +24,12 @@ design document.
 
 ## Final topic register
 
-| Topic Phase | Topic ID | Current topic | Origin | Final status | Basis or change reason | Owning briefs |
+Topic status `retired` means the topic no longer owns material work. It is distinct from a retired question
+alias, and it requires a retirement reason and evidence.
+
+| Topic Phase | Topic ID | Current topic | Origin | Final status | Basis, change reason, and evidence | Owning briefs |
 |---|---|---|---|---|---|---|
-| `{{1–4}}` | `{{S01 or S06.E01}}` | `{{topic}}` | `{{seed | adapted | emergent}}` | `{{resolved | not-needed | merged | open}}` | `{{reason and evidence}}` | `{{briefs or none}}` |
+| `{{1–4}}` | `{{S01 or S06.E01}}` | `{{topic}}` | `{{seed | adapted | emergent}}` | `{{resolved | not-needed | merged | retired | open}}` | `{{basis, reason, and evidence}}` | `{{briefs or none}}` |
 
 ## Question and answer coverage
 
@@ -39,9 +42,9 @@ items that ended `open`, `not-needed`, `merged`, or `retired`; do not add uninst
 
 ## Material corrections
 
-| Conflict ID | Question aliases | Superseded answers | Current answer | Evidence or user resolution | Affected briefs and checkpoints |
+| Correction ID | Question aliases | Superseded Answer IDs and claims | Current Answer ID and claim | User resolution and evidence | Affected briefs and checkpoints |
 |---|---|---|---|---|---|
-| `{{C001}}` | `{{aliases}}` | `{{answer IDs}}` | `{{answer ID and claim}}` | `{{details}}` | `{{briefs and Topic Phases}}` |
+| `{{C001}}` | `{{aliases}}` | `{{answer IDs and concise superseded claims}}` | `{{answer ID and current claim}}` | `{{user resolution and supporting evidence}}` | `{{briefs and Topic Phases}}` |
 
 ## Excluded and unresolved items
 
@@ -53,9 +56,9 @@ items that ended `open`, `not-needed`, `merged`, or `retired`; do not add uninst
 
 - [ ] The index lists at least one Startup design brief.
 - [ ] Every listed brief exists, identifies this index, and declares the same subject, category, and destination.
-- [ ] Every current material answer appears in exactly one brief and is reachable through its question alias.
-- [ ] Every topic and instantiated alias has a final disposition and recorded change reason when applicable.
-- [ ] Every material correction points to the current answer and affected brief.
+- [ ] Every current material answer appears in exactly one brief and is reachable as `alias → current Answer ID → exact question, current answer, and evidence`.
+- [ ] Every topic and instantiated alias has a final disposition; each retired topic records its reason and evidence separately from any retired question alias.
+- [ ] Every material correction records its superseded Answer IDs and claims, current Answer ID and claim, user resolution, and affected brief.
 - [ ] Every open question has an owner, consequence, and resolution method.
 - [ ] Related designs use links instead of duplicated design content.
 - [ ] Intended destinations follow `memory/design/{architecture|feature|process|roadmap}/{descriptive-kebab-case-subject}.md`.

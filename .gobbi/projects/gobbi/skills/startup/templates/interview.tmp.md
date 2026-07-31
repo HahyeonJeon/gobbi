@@ -39,11 +39,12 @@ faithfully, omit sensitive values, and retain this file until the complete desig
 
 Use seed IDs `S01`–`S13`. Keep an adapted seed's ID. Give an emergent topic the earliest owning seed plus a
 sequence, such as `S06.E01`. Origin is `seed`, `adapted`, or `emergent`. Status is `open`, `resolved`,
-`not-needed`, `merged`, or `reopened`.
+`not-needed`, `merged`, `retired`, or `reopened`. A retired topic no longer owns material work and must retain
+its retirement reason and evidence; this is distinct from retiring one question alias.
 
 ### Topic Phase 1 — Problem Definitions
 
-| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
+| Topic ID | Topic | Origin | Basis, change reason, and evidence | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S01` | Existing Reality and Evidence | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S02` | Problems, Causes, Outcomes, and Success | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
@@ -51,7 +52,7 @@ sequence, such as `S06.E01`. Origin is `seed`, `adapted`, or `emergent`. Status 
 
 ### Topic Phase 2 — Project Design
 
-| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
+| Topic ID | Topic | Origin | Basis, change reason, and evidence | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S04` | Scope, Boundaries, External Contracts, and Non-goals | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S05` | Capabilities and Journeys | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
@@ -60,7 +61,7 @@ sequence, such as `S06.E01`. Origin is `seed`, `adapted`, or `emergent`. Status 
 
 ### Topic Phase 3 — Project Specification
 
-| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
+| Topic ID | Topic | Origin | Basis, change reason, and evidence | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S08` | Architecture, Runtime, State, and Data Contracts | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S09` | Technology Stack, Dependencies, and Platform Compatibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
@@ -69,7 +70,7 @@ sequence, such as `S06.E01`. Origin is `seed`, `adapted`, or `emergent`. Status 
 
 ### Topic Phase 4 — Project Rules
 
-| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
+| Topic ID | Topic | Origin | Basis, change reason, and evidence | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S12` | Authority, Governance, Constraints, and Engineering Conventions | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S13` | Ownership, Maintenance, Risk, and Continuity | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
@@ -78,7 +79,8 @@ sequence, such as `S06.E01`. Origin is `seed`, `adapted`, or `emergent`. Status 
 
 Add only instantiated questions. Aliases are globally unique lowercase kebab-case values such as
 `[tech-stack]`. Origin is `seed`, `adapted`, `emergent`, `follow-up`, or `conflict-resolution`. Status is
-`open`, `asked`, `answered`, `evidence-confirmed`, `not-needed`, `merged`, `reopened`, or `retired`.
+`open`, `asked`, `answered`, `evidence-confirmed`, `not-needed`, `merged`, `reopened`, or `retired`. A retired
+question status applies only to that alias; it does not retire its owning topic.
 
 | Alias | Topic Phase / topic ID | Component or surface | Exact current question | Origin | Derived from | Basis or change reason | Status | Answer IDs |
 |---|---|---|---|---|---|---|---|---|
@@ -107,7 +109,8 @@ Copy this block for each material answer. Use sequential IDs such as `A001` and 
 
 ## Topic Phase checkpoints
 
-Use one row per Topic Phase. Update a row when a correction reopens that Phase.
+Use one row per Topic Phase. Record each retired topic with its reason and evidence separately from retired
+question aliases. Update a row when a correction reopens that Phase.
 
 | Topic Phase | Status | Topic and alias dispositions | Current answers and evidence | Decisions and alternatives | Open owners and methods | Conflicts and effects | User confirmation |
 |---|---|---|---|---|---|---|---|
@@ -146,7 +149,7 @@ apply under different conditions.
 
 ## Finalization checks
 
-- [ ] Every current topic has an allowed disposition and every adaptation has a reason.
+- [ ] Every current topic is `resolved`, `not-needed` with reason and evidence, `merged`, `retired` with reason and evidence, or `open` with an owner and method.
 - [ ] Every instantiated alias is valid, unique, scoped, and linked to a current answer or owned open item.
 - [ ] No question remains `asked` or `reopened`.
 - [ ] Every material contradiction has a user resolution, correction links, and current checkpoints.

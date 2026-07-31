@@ -93,9 +93,9 @@ private conversation capture; the ban on `working/discussion-log.md` and
 equivalent conversation logs still applies.
 
 The index must list every current brief. Brief names use exactly one Design
-Memory category and one descriptive kebab-case subject. A legacy single-report
-Startup artifact is historical session evidence and has no automatic migration
-into this contract.
+Memory category and one descriptive kebab-case subject. The known legacy
+single-report artifact is `startup-interview.md`; it remains historical session
+evidence and has no automatic migration into this contract.
 
 Execution has step-level `staging/` and `outputs/` directories. After Planning
 locks task numbers and names, every task receives the same four-slot interior:

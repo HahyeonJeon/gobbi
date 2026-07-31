@@ -49,9 +49,9 @@ it makes repeated mappings, hierarchy, flow, or dependencies easier to understan
 
 ## Answer traceability
 
-Include each current material answer owned by this brief exactly once. Preserve the exact alias and question,
-but keep the answer concise and readable.
+Include each current material answer owned by this brief exactly once. Preserve its current Answer ID, exact
+alias, and exact question, but keep the answer concise and readable.
 
-| Topic ID | Question alias | Component or surface | Exact question | Current non-sensitive answer | Evidence | Correction ID |
-|---|---|---|---|---|---|---|
-| `{{S01}}` | `{{[alias]}}` | `{{scope}}` | `{{question as asked}}` | `{{current answer}}` | `{{source and status}}` | `{{C001 or none}}` |
+| Current Answer ID | Topic ID | Question alias | Component or surface | Exact question | Current non-sensitive answer | Evidence | Correction ID |
+|---|---|---|---|---|---|---|---|
+| `{{A001}}` | `{{S01}}` | `{{[alias]}}` | `{{scope}}` | `{{question as asked}}` | `{{current answer}}` | `{{source and status}}` | `{{C001 or none}}` |

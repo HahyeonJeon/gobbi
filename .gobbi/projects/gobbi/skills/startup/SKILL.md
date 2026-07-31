@@ -81,11 +81,13 @@ traceability without turning a design brief into a transcript or question dump.
   [`templates/interview.tmp.md`](templates/interview.tmp.md). Populate its identity and the thirteen seed
   topics from [`topics.md`](topics.md), then set Interview status to `active`.
 - When the temporary record exists, resume only after its project, session, iteration, and artifact identities
-  match. Treat it as authoritative; validate any matching unconfirmed index and briefs before regenerating
-  them, and verify a matching confirmed set before completing it.
+  match. Validate every recorded topic disposition and require each `retired` topic to preserve its reason and
+  evidence. Treat the record as authoritative; validate any matching unconfirmed index and briefs before
+  regenerating them, and verify a matching confirmed set before completing it.
 - When only a confirmed index and all of its briefs exist, verify and return `completed`. A mismatched artifact,
-  an unconfirmed set without its temporary record, a symbolic-link escape, or a legacy single-report artifact
-  that would require migration returns `blocked` without a write.
+  an unconfirmed set without its temporary record, a symbolic-link escape, or a recovery attempt that depends
+  on `startup-interview.md`—the known legacy single-report artifact—returns `blocked` without a write or
+  automatic migration.
 
 #### 1.2 Inspect evidence and shape the current hierarchy
 
@@ -131,8 +133,9 @@ traceability without turning a design brief into a transcript or question dump.
 - Write a new current answer, mark replaced answers superseded, and preserve correction links. Re-evaluate
   every dependency, reopen the earliest affected Topic Phase, and update each affected checkpoint.
 - A Topic Phase may checkpoint when every current topic is `resolved`, `not-needed` with reason and evidence,
-  `merged`, or `open` with an owner and method. Record current topics, aliases, answers, evidence, decisions,
-  open items, conflicts, corrections, downstream effects, and user confirmation.
+  `merged`, `retired` with reason and evidence, or `open` with an owner and method. Record current topics,
+  aliases, answers, evidence, decisions, open items, conflicts, corrections, downstream effects, and user
+  confirmation.
 - When the interview pauses, set Interview status to `interrupted` and retain the latest complete temporary
   record. Return `interrupted` with its path, current Topic Phase, next unresolved alias, and first safe recovery
   action; resume through Step 1.1.
@@ -154,9 +157,10 @@ traceability without turning a design brief into a transcript or question dump.
 
 #### 2.2 Confirm the design understanding
 
-- Audit that every current topic and question has an allowed disposition, every adaptation has a reason, every
-  current answer is reachable from one alias, every material conflict has the user's resolution, and every
-  reopened checkpoint is current.
+- Audit that every current topic is `resolved`, `not-needed` with reason and evidence, `merged`, `retired` with
+  reason and evidence, or `open` with an owner and method. Confirm every question has an allowed disposition,
+  every adaptation has a reason, every current answer is reachable from one alias, every material conflict has
+  the user's resolution, and every reopened checkpoint is current.
 - Require each alias to match `^\[[a-z][a-z0-9]*(?:-[a-z0-9]+)*\]$` and own one semantic axis and component
   scope. Normalize an unanswered question to `open` with an owner and method; neither `asked` nor `reopened`
   may advance.
@@ -194,9 +198,11 @@ traceability without turning a design brief into a transcript or question dump.
   answer's single owning brief, every correction, every merged, retired, or `not-needed` item, and every open
   owner. Remove stale briefs from the rendered set only when they match this Startup identity and the
   temporary record proves they are no longer current.
-- Verify that the index and briefs agree; every current material answer appears exactly once; links and paths
-  resolve; current corrections point to the current answer; open questions have owners and methods; and raw
-  conversation, sensitive values, detailed implementation tasks, and unsupported readiness claims are absent.
+- Verify that the index and briefs agree; every current material answer appears exactly once; every brief
+  traceability row carries its current Answer ID; and every correction preserves the superseded claim, current
+  claim, and user resolution. Require each retired topic to preserve its reason and evidence, resolve links and
+  paths, require owners and methods for open questions, and exclude raw conversation, sensitive values,
+  detailed implementation tasks, and unsupported readiness claims.
 
 #### 3.3 Confirm, complete, and hand off
 
