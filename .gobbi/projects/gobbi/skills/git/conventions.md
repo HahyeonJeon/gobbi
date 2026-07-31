@@ -194,7 +194,7 @@ Use the commit subject grammar. Under squash merge, this becomes the base-branch
 - [ ] <exact command or evidence>
 
 ## Gobbi session
-- Mode: `<workflow-or-cowork>`
+- Mode: `<session-mode>`
 - Session: `<gobbi-session-uuid>`
 - Branch: `<session-branch>`
 - Handoff: `<durable-repository-relative-path-or-conversation-only>`

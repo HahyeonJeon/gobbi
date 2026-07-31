@@ -72,7 +72,7 @@ Implement focused, minimal changes.
 **Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal for THIS task at `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
 - Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
 - Log every delta to the **Integration Log** at `task-{NN}-{slug}/working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
-- Surface any `large-gap` to the manager; do not resolve it yourself. See [`workflow/steps/production.md`](../skills/workflow/steps/production.md).
+- Surface any `large-gap` to the manager; do not resolve it yourself.
 
 ### Verify
 
@@ -102,7 +102,7 @@ The manager may **continue** you across related ordered tasks while role, scope,
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
 - **Use `git -C <worktree-abs>` for ALL git operations** — never a bare `git`. A bare `git commit` after a cwd reset commits your task to the main tree's branch instead of the worktree branch. Verify the branch (`git -C <worktree-abs> rev-parse --abbrev-ref HEAD`) before committing.
-- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § Runtime git environment](../skills/git/SKILL.md#runtime-git-environment).
+- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § 2.1 Probe posture and create one isolated worktree](../skills/git/SKILL.md#21-probe-posture-and-create-one-isolated-worktree).
 - **Re-anchor when rules or scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
 - **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
 

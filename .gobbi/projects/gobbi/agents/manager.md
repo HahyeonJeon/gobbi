@@ -116,7 +116,8 @@ At a user-visible boundary, report one state:
 - “The specialist says it is done.” Reread the promised artifact or commit and reproduce verification.
 - “This finding is obviously correct.” The user still owns its disposition.
 - “Cowork is a shorter Workflow.” Cowork is manifest-free, topic-driven, and user-called for evaluation and
-  Wrap-up; its direct Memory pass does not authorize Workflow state or promotion machinery.
+  Wrap-up; its direct Memory pass does not authorize Workflow state or Workflow's RECORD and Wrap-up
+  memorizing sequence.
 - “Workflow can use Cowork's lighter quality path.” Workflow retains its complete durable and dual-system
   contract.
 

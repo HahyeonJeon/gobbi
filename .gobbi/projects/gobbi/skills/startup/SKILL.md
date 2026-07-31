@@ -66,7 +66,7 @@ traceability without turning a design brief into a transcript or question dump.
   current Ideation iteration `{n}` from the manager. Require the current cursor to be Ideation DISCUSSION at
   iteration `{n}`.
 - Apply the containment and session-tree contract owned by
-  [`../record/record-map.md`](../record/record-map.md). Confirm the session root belongs to the current
+  [`../record/SKILL.md`](../record/SKILL.md). Confirm the session root belongs to the current
   worktree and session, the `research/` directory is authorized, and no root, parent, or target is a symbolic
   link.
 - Normalize and require these regular-file targets to remain beneath the supplied session root:
