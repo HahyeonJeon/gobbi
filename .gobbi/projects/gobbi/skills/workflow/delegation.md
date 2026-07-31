@@ -61,7 +61,10 @@ specialist normally loads:
 2. every applicable project rule, or records `NO_PROJECT_RULES` when the rules directory is absent or empty;
 3. its canonical role prompt under `.gobbi/projects/gobbi/agents/`;
 4. `.gobbi/projects/gobbi/skills/workflow/SKILL.md`;
-5. the current `phase-1.md`, `phase-2.md`, or `phase-3.md`;
+5. the current phase operation at
+   `.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md`,
+   `.gobbi/projects/gobbi/skills/workflow/phase-2/SKILL.md`, or
+   `.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md`;
 6. the productive-step and task-specific skills; and
 7. the primary artifacts named under Inputs.
 
@@ -297,6 +300,6 @@ mismatch or missing explicit override blocks acceptance.
 
 - [`SKILL.md`](SKILL.md) owns routing and phase policy.
 - [`agent-teams.md`](agent-teams.md) owns persistent-specialist scheduling.
-- [`phase-1.md`](phase-1.md), [`phase-2.md`](phase-2.md), and [`phase-3.md`](phase-3.md) own phase-specific
-  dispatch inputs.
+- [`phase-1/SKILL.md`](phase-1/SKILL.md), [`phase-2/SKILL.md`](phase-2/SKILL.md), and
+  [`phase-3/SKILL.md`](phase-3/SKILL.md) own the phase-specific operations and dispatch inputs.
 - Canonical role prompts live under [`.gobbi/projects/gobbi/agents/`](../../agents/).

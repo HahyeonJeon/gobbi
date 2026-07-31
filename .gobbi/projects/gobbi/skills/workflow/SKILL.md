@@ -70,6 +70,8 @@ immediately unless the user interrupts; Phase 3 ends the workflow.
 
 - Inspect the current repository, branch, worktrees, native TODO surface, and unfinished work without
   mutation.
+- Load the internal [`phase-1`](phase-1/SKILL.md) operation before acting on `P1 · Configuration`. A phase
+  child is loaded by this exact path after the parent routes to it; it is never invoked independently by name.
 - In Claude Code, use `TaskList` and `TaskGet` to inspect tasks, `TaskCreate` to add items, and `TaskUpdate` to
   change a subject or status. In Codex, use `update_plan` to publish the complete ordered list and statuses.
 - On a fresh session, create one item for Configuration, one mutable item for each productive-step iteration,
@@ -95,7 +97,8 @@ P3 · Hand-off
   third item.
 - For recovery, apply the algorithm in [`agent-teams.md`](agent-teams.md): begin at the latest verified
   Hand-off, walk canonical records and task commits in workflow order, reconstruct the first unproved TODO,
-  and continue only after the native list has been corrected.
+  and continue only after the native list has been corrected. Load the internal phase operation that matches
+  the reconstructed item before continuing.
 
 #### 1.2 Configure the session and its evidence
 
@@ -123,11 +126,17 @@ P3 · Hand-off
   PASS-only canonical artifacts.
 - A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
   `open-decisions.md`. Validate it with
-  `scripts/validate-dual-system-work.sh --root <evidence-root> --step <step> --iteration <n> --assignment <id> --runtime-system <claude|codex>`
+  `.gobbi/projects/gobbi/skills/workflow/scripts/validate-dual-system-work.sh --root <evidence-root> --step <step> --iteration <n> --assignment <id> --runtime-system <claude|codex>`
   and add `--task task-NN-slug` for Execution.
+- Draft and cross-review inputs follow the Record-owned schemas, but the manager-side writer renders them at
+  these workflow-owned paths. It does not invoke an imported operation that requires another progression
+  authority.
+- Each evaluation report is a complete human-readable Evaluation output. Every finding states an ID, severity,
+  evidence, impact, cause, confidence, suggested direction, and `blocking: yes|no`.
 - Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
   IDs, actual blocking finding IDs, accepted nonblocking finding IDs, and the workflow decision. Each RECORD
   receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and staging.
+- Gates and receipts are recovery evidence. Only the native TODO selects the next action.
 - Within this workflow, the Record skill supplies typed-staging and PASS-only-output guidance only. This
   evidence layout and the native TODO override conflicting placement, transition, verdict, or command
   instructions; never invoke a Record operation that requires or changes another progression authority.
@@ -136,7 +145,8 @@ P3 · Hand-off
 
 #### 1.3 Run user-led Ideation
 
-- Load the [Ideation skill](../ideation/SKILL.md) plus [`phase-1.md`](phase-1.md) before DISCUSSION. Load the
+- Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded and load the
+  [Ideation skill](../ideation/SKILL.md) before DISCUSSION. Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
   [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
 - In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
@@ -175,7 +185,8 @@ P3 · Hand-off
 
 #### 2.1 Plan continuously from the locked contract
 
-- Load the [Planning skill](../planning/SKILL.md) plus [`phase-2.md`](phase-2.md) before DISCUSSION. Load the
+- Load the internal [`phase-2`](phase-2/SKILL.md) operation and the
+  [Planning skill](../planning/SKILL.md) before DISCUSSION. Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
   [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
 - Use the canonical Ideation artifact, accepted decisions and findings, repository evidence, authority,
@@ -242,7 +253,8 @@ P3 · Hand-off
 #### 3.1 Run Wrap-up continuously
 
 - Load the [Wrap-up](../wrap-up/SKILL.md), [Memory](../memory/SKILL.md), and
-  [Git](../git/SKILL.md) skills plus [`phase-3.md`](phase-3.md) before DISCUSSION. Load the
+  [Git](../git/SKILL.md) skills plus the internal [`phase-3`](phase-3/SKILL.md) operation before DISCUSSION.
+  Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
   [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
 - Use canonical step artifacts, decisions, findings, waivers, task commits, verification, typed staging,
@@ -290,8 +302,8 @@ Continuation:
 
 ## References
 
-- [`phase-1.md`](phase-1.md) gives Phase 1 dispatch, evidence, and recovery details.
-- [`phase-2.md`](phase-2.md) gives continuous Planning and Execution details.
-- [`phase-3.md`](phase-3.md) gives continuous Wrap-up and closeout details.
+- [`phase-1/SKILL.md`](phase-1/SKILL.md) owns the complete Phase 1 operation.
+- [`phase-2/SKILL.md`](phase-2/SKILL.md) owns the complete Phase 2 operation.
+- [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the complete Phase 3 operation.
 - [`delegation.md`](delegation.md) owns the shared specialist assignment contract.
 - [`agent-teams.md`](agent-teams.md) owns persistent-specialist scheduling and recovery.

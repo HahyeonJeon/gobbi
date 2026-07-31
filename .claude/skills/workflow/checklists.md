@@ -1,1 +1,0 @@
-../../../.gobbi/projects/gobbi/skills/workflow/checklists.md

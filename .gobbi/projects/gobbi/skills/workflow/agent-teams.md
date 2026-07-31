@@ -177,5 +177,5 @@ Runtime scheduling supports the workflow. It never replaces evidence or manager 
 
 - [`delegation.md`](delegation.md) owns the assignment shape.
 - [`SKILL.md`](SKILL.md) owns routing, phase continuity, and blocker policy.
-- [`phase-1.md`](phase-1.md), [`phase-2.md`](phase-2.md), and [`phase-3.md`](phase-3.md) own phase-specific
-  operation.
+- [`phase-1/SKILL.md`](phase-1/SKILL.md), [`phase-2/SKILL.md`](phase-2/SKILL.md), and
+  [`phase-3/SKILL.md`](phase-3/SKILL.md) own the phase-specific operations.
