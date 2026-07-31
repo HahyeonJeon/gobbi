@@ -186,6 +186,9 @@ disagree while none of them looks wrong.
   effect, and every difference from the frozen artifact.
 - Ask `web-testing` for suite evidence and `web-platform` for a disputed browser fact; return any mismatch
   between the frozen artifact and the served bytes to Step 3.1 before reporting the deployment complete.
+- When this deployment is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by
+  an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 
 #### 4.2 Reverse, or stop at the authority boundary
 
@@ -200,3 +203,6 @@ disagree while none of them looks wrong.
   everything preserved and name the exact blocked action and the authority it requires.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
