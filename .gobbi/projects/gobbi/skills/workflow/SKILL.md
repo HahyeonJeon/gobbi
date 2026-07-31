@@ -296,31 +296,33 @@ SKILLS LOADED:
   Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
   [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
-- Use canonical step artifacts, decisions, findings, waivers, task commits, verification, typed staging,
-  destination preimages, handoff requirements, and configured Git authority.
-- In DISCUSSION, agents freeze the closure inventory and contract without routine user questions and without
-  inventing material to fill empty staging.
-- In WORK, run independent Claude and Codex promotion-and-handoff drafts, freeze both, cross-review after
-  freeze, synthesize, and let one authorized writer apply only supported promotion inside the isolated
-  worktree. Verify the actual post-promotion tree and the Wrap-up-owned handoff body.
-- In EVALUATION, give two fresh independent evaluators the actual tree, full creation package, handoff, checks,
-  and finalization plan. In RECORD, seal the verdict, findings, promotion evidence, and handoff.
+- Use canonical step artifacts, decisions, findings, waivers, task commits, verification, current Memory,
+  the Wrap-up handoff template, and configured Git authority.
+- In DISCUSSION, apply Wrap-up Phase 1 to freeze the closure inventory, Memory boundary, tracked handoff path,
+  and Git intent without routine user questions.
+- In WORK, run independent Claude and Codex Memory-and-handoff drafts, freeze both, cross-review after freeze,
+  synthesize, and let one authorized writer apply Wrap-up Phase 2 inside the isolated worktree. Freeze the
+  actual pre-Git tree and tracked handoff bytes.
+- In EVALUATION, give two fresh independent evaluators the actual pre-Git tree, Memory changes, handoff,
+  checks, and finalization plan. In RECORD, seal the verdict, findings, closure evidence, handoff digest, and
+  authorized Git intent.
 - Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.5. A blocking first pass
   receives one complete revision; a blocking second pass stops with exact evidence and no third iteration.
 
 #### 3.2 Finalize authorized work
 
-- After PASS, verify the canonical Wrap-up artifact, every local commit, the handoff, and the worktree state.
-- Perform only Git actions already configured and authorized. If publication, merge, or cleanup is not
-  authorized or does not complete, retain the branch and worktree and record the exact recovery action rather
-  than asking a routine question or claiming success.
+- After PASS, verify the canonical closure evidence, every local commit, the tracked handoff digest, and the
+  worktree state.
+- Resume Wrap-up Phase 3 and perform only Git actions already configured and authorized. If publication,
+  merge, or cleanup is not authorized or does not complete, retain the branch and worktree and record the
+  exact recovery action rather than asking a routine question or claiming success.
 - Retitle and complete the Wrap-up item, then activate `P3 · Hand-off`.
 
 #### 3.3 Render the terminal Hand-off
 
-- Display the complete evaluated Hand-off body defined by the [Wrap-up](../wrap-up/SKILL.md) operation.
-- Append the factual finalization receipt defined by the [Git](../git/SKILL.md) skill. Report only actions
-  that occurred.
+- Resume Wrap-up Phase 4 and display the verified tracked Hand-off byte-for-byte.
+- Append the display-only factual Git receipt defined by
+  [`wrap-up/handoff.md`](../wrap-up/handoff.md). Report only actions that occurred.
 - Leave no next TODO after `P3 · Hand-off`; this is the terminal workflow checkpoint.
 - Complete `P3 · Hand-off` only after the handoff, TODO route, local evidence, and retained recovery state
   agree. Display the terminal checkpoint and end the workflow.

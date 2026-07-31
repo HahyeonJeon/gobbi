@@ -1,12 +1,15 @@
-# Gobbi Bootstrap Operational Checklist
+# Gobbi Entry Evaluation Checklist
 
-## Source contract
+This unchecked source evaluates the Gobbi entry contract in [`SKILL.md`](SKILL.md) with the fixtures in
+[`scenarios.md`](scenarios.md). Each row is one independently answerable condition.
 
-- **Purpose:** stop a manager before a bootstrap omission can rebuild the wrong floor, force a route, write from the entry, or leave a stale runtime view.
+- **Purpose:** stop a manager before a bootstrap omission can rebuild the wrong floor, force or misroute a
+  mode, write from the entry, or leave a stale runtime view.
 - **Owner:** Gobbi entry skill.
 - **Consumer:** manager at the named pause points; evaluator as scenario-derived acceptance evidence.
 - **Mode:** operational.
-- **Source version:** `gobbi-bootstrap-v3`; this source stays unchecked. The version bumps on any material change to the item set.
+- **Source version:** `gobbi-bootstrap-v4`; this source stays unchecked. The version bumps on any material
+  change to the item set.
 - **Run rule:** create a filled copy for each run, identify the source version and run, and declare the listed use style at each active pause point.
 - **Applicability:** inspect each conditional predicate. Use `n/a:<property>` only when direct evidence proves it false.
 - **Resolution tokens:** `PASS`, `FAIL:<finding/action-id>`, `n/a:<property>`, `recorded-open:<owner+resolution-method>`, and the checklist owner's narrow operational `waived/exception-authorized:<authority+rationale>` form where permitted.
@@ -14,17 +17,14 @@
 - **Acceptance:** every applicable gate and required item is `PASS`, except only the checklist owner's narrowly authorized killer exception. Coverage closure alone is not acceptance.
 - **Evidence rule:** a path name, familiar heading, task status, or claimed intent is not proof. Inspect the named evidence before resolution.
 
-## Pause point A — Before the first bootstrap action
+## Project
 
-**Run use style:** `read-do`.
+### GOBBI-SC-PROJECT-01 — Normal case: fresh entry reaches a user-selected mode
 
-- [ ] **GOBBI-CHK-FLOOR-01** `[gate/killer, read-do]` The entry trigger and canonical Gobbi source are established before any write or user decision.
-  - **Applicability:** unconditional.
-  - **Source:** GB-1; GOBBI-SCN-01-A.
-  - **Pass condition:** the load register names the trigger, active runtime, and canonical `gobbi/SKILL.md`; the write trace is empty.
-  - **Evidence:** resolved canonical path, trigger record, runtime identity source, and pre-action write inventory.
-  - **On fail:** consequence — bootstrap may use stale policy or mutate the wrong tree; halt before action.
-  - **Resolution:** ______
+A fresh manager must rebuild its floor, present all three modes, and hand the user's selection to the correct
+owner. The entry fails when it omits a choice, chooses automatically, or begins mode work itself.
+
+#### Checklist
 
 - [ ] **GOBBI-CHK-FLOOR-02** `[gate/killer, read-do]` The floor of exactly five was read in parent order, then rules and the manager role, with no sixth skill.
   - **Applicability:** unconditional.
@@ -33,42 +33,28 @@
   - **Evidence:** ordered read register with complete-file bounds and exactly five floor entries.
   - **On fail:** consequence — authority is absent or a non-floor skill inflated the floor; halt and correct the floor.
   - **Resolution:** ______
+- [ ] GOBBI-CK-PROJECT-01-01 — The fresh entry presents General, Cowork, and Workflow.
+- [ ] GOBBI-CK-PROJECT-01-02 — The user explicitly selects one presented mode.
+- [ ] GOBBI-CK-PROJECT-01-03 — Gobbi hands the selection to the matching owner without mutation.
 
-- [ ] **GOBBI-CHK-FLOOR-03** `[required, read-do]` Each triggered conditional owner loads before its governed action, and `discussion`/`git` are not re-loaded as conditional.
-  - **Applicability:** conditional — a Codex peer surface or a workflow-session specialist brief is next.
-  - **Source:** GB-3; GOBBI-SCN-01-B.
-  - **Pass condition:** `codex` precedes native/peer Codex use and the workflow assignment skeleton precedes brief authoring; `discussion` and `git` are already floor.
-  - **Evidence:** owner-read and governed-action timestamps or ordered trace.
-  - **On fail:** stop the governed action and load the current owner.
-  - **Resolution:** ______
+### GOBBI-SC-PROJECT-02 — Rule violation: task wording replaces selection
 
-- [ ] **GOBBI-CHK-OWN-01** `[gate/killer, read-do]` Current owner semantics, not a cosmetic legacy heading, choose the route.
-  - **Applicability:** conditional — any surrounding source suggests an alternate or retired route.
-  - **Source:** GB-7; GOBBI-SCN-01-C.
-  - **Pass condition:** the chosen path resolves through current `workflow`/record/discussion/Git/startup/Codex owners and the stale consumer is only reported.
-  - **Evidence:** claim-owner comparison and actual route.
-  - **On fail:** consequence — retired behavior may regain authority; halt and restore owner precedence.
-  - **Resolution:** ______
+Even task wording that names a mode may support only a recommendation on a fresh entry. The operation fails
+when wording, inference, a default, or a timeout records the selection.
 
-- [ ] **GOBBI-CHK-OWN-02** `[gate/killer, read-do]` Protected role sources remain unchanged and do not route through obsolete workflow text.
-  - **Applicability:** unconditional when the protected manager role is loaded.
-  - **Source:** GB-7; GOBBI-SCN-01-D.
-  - **Pass condition:** protected role hashes match the implementation baseline and active routing follows current owners rather than the role's obsolete floor or child text.
-  - **Evidence:** role hash comparison, role/TOML diff, and route trace.
-  - **On fail:** consequence — protected scope or workflow authority is breached; halt and report exact bytes/path.
-  - **Resolution:** ______
+#### Checklist
 
-## Pause point B — Before presenting or using the skill map
+- [ ] GOBBI-CK-PROJECT-02-01 — Fresh-entry task wording does not replace the three-way selection control.
+- [ ] GOBBI-CK-PROJECT-02-02 — The mode question has no automatic resolution.
 
-**Run use style:** `read-do`.
+## Structure
 
-- [ ] **GOBBI-CHK-MAP-01** `[gate/killer, read-do]` Every non-floor skill is indexed once with a name, a one-line description, and a neutral relevance note, and the index is not a load-when gate.
-  - **Applicability:** unconditional for a Gobbi entry change.
-  - **Source:** GB-MAP; GOBBI-SCN-09-A.
-  - **Pass condition:** each non-floor skill appears exactly once in the `## Skill map` section with the three fields, points at its owner, copies no mechanics, and no entry is phrased as a mandatory-load command.
-  - **Evidence:** skill-map inventory and per-entry field scan.
-  - **On fail:** consequence — a cold reader cannot find an owner, or reads the index as an eager-load catalog; reject the index.
-  - **Resolution:** ______
+### GOBBI-SC-STRUCTURE-01 — Normal case: owner seams stay singular
+
+General has no orchestration owner, Cowork uses `cowork`, and Workflow uses `workflow`. The structure fails
+when Gobbi copies a mode procedure, creates a second router, or eagerly loads an indexed owner.
+
+#### Checklist
 
 - [ ] **GOBBI-CHK-MAP-02** `[gate/killer, read-do]` An indexed owner is loaded only on task-need, never eagerly force-loaded on entry.
   - **Applicability:** unconditional.
@@ -78,166 +64,175 @@
   - **On fail:** consequence — the index becomes a gate and the floor swells; halt and remove the eager load.
   - **Resolution:** ______
 
-## Pause point C — Before continuing a resumed/context-boundary session
+- [ ] GOBBI-CK-STRUCTURE-01-01 — General routes without an orchestration owner.
+- [ ] GOBBI-CK-STRUCTURE-01-02 — Cowork routes only through the Cowork owner.
+- [ ] GOBBI-CK-STRUCTURE-01-03 — Workflow routes only through the Workflow owner.
+- [ ] GOBBI-CK-STRUCTURE-01-04 — Gobbi contains no copied productive-step procedure.
 
-**Run use style:** `do-confirm`.
+### GOBBI-SC-STRUCTURE-02 — Rule violation: entry mutates mode state
 
-- [ ] **GOBBI-CHK-RESUME-01** `[gate/killer, do-confirm]` Resume preserves Gobbi UUID, saved settings, branch, worktree, and durable cursor without reconfiguring.
-  - **Applicability:** conditional — exact resume, `/clear`, rewind, runtime compaction, or another context boundary.
-  - **Source:** GB-4; GOBBI-SCN-04-A, GOBBI-SCN-04-C.
-  - **Pass condition:** those fields match their pre-boundary values and no defaults reconfiguration occurs on context loss.
-  - **Evidence:** before/after manifest, state, Git registration, and question trace.
-  - **On fail:** consequence — one session may fork or reset; halt before any productive action.
-  - **Resolution:** ______
+Gobbi is a read-only router. An empty directory, artifact, branch, worktree, manifest, cursor update, or direct
+specialist dispatch is a structural failure.
 
-- [ ] **GOBBI-CHK-RESUME-02** `[required, do-confirm]` Runtime identity attachment is append-only, unique, ordered, and idempotent.
-  - **Applicability:** conditional — a context boundary is being attached.
-  - **Source:** GB-4; GOBBI-SCN-04-A, GOBBI-SCN-04-B.
-  - **Pass condition:** a new ID appears once at the end through the workflow owner and Record; an existing ID leaves the list unchanged; the Gobbi UUID does not change.
-  - **Evidence:** before/after runtime object and schema/checkpoint result.
-  - **On fail:** stop before routing and restore the prior manifest through Record recovery.
-  - **Resolution:** ______
+#### Checklist
 
-## Pause point D — Before routing by session kind and handing off
+- [ ] GOBBI-CK-STRUCTURE-02-01 — Entry execution leaves filesystem bytes unchanged.
+- [ ] GOBBI-CK-STRUCTURE-02-02 — Entry execution leaves Git refs and worktrees unchanged.
+- [ ] GOBBI-CK-STRUCTURE-02-03 — Productive specialists are dispatched only by a selected orchestration owner.
 
-**Run use style:** `do-confirm`.
+## Performance
 
-- [ ] **GOBBI-CHK-ROUTE-01** `[gate/killer, do-confirm]` A general session proceeds on the floor without loading the `workflow` owner, and the split is routine judgment, not a mode prompt.
-  - **Applicability:** unconditional.
-  - **Source:** GB-6; GOBBI-SCN-10-A, GOBBI-SCN-10-B, GOBBI-SCN-10-C.
-  - **Pass condition:** a general session works from the floor with no `workflow`-owner load and no session-tree write; a workflow session reaches the workflow by loading the indexed `workflow` owner; the entry contains no user-facing interaction-mode question or alternate route.
-  - **Evidence:** floor load register, `workflow`-owner load presence/absence, and question/route trace.
-  - **On fail:** consequence — the entry is not actually lightened, or a retired mode prompt returns; halt and correct the routing.
-  - **Resolution:** ______
+### GOBBI-SC-PERFORMANCE-01 — Normal case: bootstrap loading is bounded
 
-- [ ] **GOBBI-CHK-ROUTE-02** `[gate/killer, do-confirm]` The entry writes nothing; branch, worktree, session-tree, and manifest creation are deferred to the `workflow` owner's Configuration.
-  - **Applicability:** unconditional.
-  - **Source:** GB-5; GOBBI-SCN-06-C.
-  - **Pass condition:** no branch, worktree, session root, manifest, router, or empty scaffold is created from the entry; creation happens only inside the loaded `workflow` owner.
-  - **Evidence:** Git refs/worktrees and filesystem pre/post inventory across the entry.
-  - **On fail:** consequence — persistent state exists without the workflow owner's authority; halt and use the owning safe recovery.
-  - **Resolution:** ______
+Bootstrap must read exactly the five floor skills and load every other skill only on demand. The operation
+fails when the mode addition grows the always-load floor or scans unrelated state.
 
-- [ ] **GOBBI-CHK-HAND-01** `[gate/killer, do-confirm]` A workflow session enters the indexed `workflow` owner at exactly one validated `state.json.current` cursor.
-  - **Applicability:** conditional — the manager judged the run a workflow session.
-  - **Source:** GB-6; GOBBI-SCN-06-A.
-  - **Pass condition:** manifest/state and required boundary evidence validate; the `workflow` owner accepts the persisted cursor unchanged and the entry creates nothing.
-  - **Evidence:** cursor, record verification, `workflow`-owner entry, and projected task view.
-  - **On fail:** consequence — two routes or an invalid route may run; halt before specialist dispatch.
-  - **Resolution:** ______
+#### Checklist
 
-- [ ] **GOBBI-CHK-HAND-02** `[gate/killer, do-confirm]` The entry has not directly loaded or dispatched a productive-step specialist as routing.
-  - **Applicability:** unconditional.
-  - **Source:** GB-6; GOBBI-SCN-06-B.
-  - **Pass condition:** the load/dispatch trace enters the `workflow` owner first; adapter and specialist selection occur there.
-  - **Evidence:** load and assignment trace.
-  - **On fail:** consequence — stage/user gates can be bypassed; halt the direct dispatch.
-  - **Resolution:** ______
+- [ ] GOBBI-CK-PERFORMANCE-01-01 — The ordered bootstrap floor contains exactly five skills.
+- [ ] GOBBI-CK-PERFORMANCE-01-02 — Non-floor owners load only after their trigger applies.
+- [ ] GOBBI-CK-PERFORMANCE-01-03 — Mode routing requires no all-worktree, transcript, rollout, or telemetry scan.
 
-- [ ] **GOBBI-CHK-HAND-03** `[gate/killer, do-confirm]` A missing or invalid owner artifact blocks handoff with exact evidence.
-  - **Applicability:** conditional — any required owner artifact or authority is missing.
-  - **Source:** GB-6; GOBBI-SCN-06-D.
-  - **Pass condition:** no handoff or durable transition occurs and the report names the exact artifact/identity/error/recovery owner while preserving prior durable state.
-  - **Evidence:** error report and state digest.
-  - **On fail:** consequence — silent fallback can route unverified work; halt and restore prior state authority.
-  - **Resolution:** ______
+### GOBBI-SC-PERFORMANCE-02 — Poor quality: the skill map becomes eager
 
-- [ ] **GOBBI-CHK-HAND-04** `[gate/killer, do-confirm]` A disagreeing runtime task view is rebuilt from durable state and cannot write back.
-  - **Applicability:** conditional — a runtime projection exists.
-  - **Source:** GB-6; GOBBI-SCN-06-E.
-  - **Pass condition:** the state digest remains unchanged and the projection equals the persisted cursor after rebuild.
-  - **Evidence:** before/after state digest and task-view comparison.
-  - **On fail:** consequence — display state becomes a second router; halt before continuation.
-  - **Resolution:** ______
+A superficially complete index can still be poor when every indexed skill loads on entry. That design fails
+the bounded-entry outcome even if all owners are available.
 
-## Pause point E — Retired-machinery absence
+#### Checklist
 
-**Run use style:** `do-confirm`.
+- [ ] GOBBI-CK-PERFORMANCE-02-01 — Reading the skill map does not load every indexed skill.
 
-- [ ] **GOBBI-CHK-RET-01** `[gate/killer, do-confirm]` Bootstrap succeeds without Gobbi hooks, transcript/rollout paths, or operational ledgers.
-  - **Applicability:** unconditional.
-  - **Source:** GB-MN; GOBBI-SCN-07-A.
-  - **Pass condition:** no required read, validation, or route depends on those surfaces.
-  - **Evidence:** dependency search and successful cold routing evidence.
-  - **On fail:** consequence — deleted machinery becomes an undeclared prerequisite; halt and remove the active dependency.
-  - **Resolution:** ______
+## Aesthetics
 
-- [ ] **GOBBI-CHK-RET-02** `[gate/killer, do-confirm]` Stale environment or capture data cannot override durable identity or routing.
-  - **Applicability:** conditional — such data exists in the runtime environment or stale docs.
-  - **Source:** GB-MN; GOBBI-SCN-07-B.
-  - **Pass condition:** selected UUID, session root, and cursor come only from validated Gobbi state.
-  - **Evidence:** conflicting-input fixture and selected identity trace.
-  - **On fail:** consequence — the wrong session may be entered; halt and discard observational input.
-  - **Resolution:** ______
+### GOBBI-SC-AESTHETICS-01 — Normal case: the mode decision is readable
 
-- [ ] **GOBBI-CHK-RET-03** `[required, do-confirm]` Runtime compaction performs no durable-memory maintenance.
-  - **Applicability:** conditional — the trigger is runtime compaction.
-  - **Source:** GB-1, GB-MN; GOBBI-SCN-07-C.
-  - **Pass condition:** only floor reads and an authorized runtime-ID checkpoint may occur; no memory count, merge, threshold, or move occurs.
-  - **Evidence:** memory-tree diff and action trace.
-  - **On fail:** stop and route the unauthorized memory mutation to recovery.
-  - **Resolution:** ______
+A cold user must distinguish the three choices quickly. The prompt fails when the names, use cases, or owner
+consequences are hidden in dense prose.
 
-- [ ] **GOBBI-CHK-RET-04** `[gate/killer, do-confirm]` No mode question, alternate mode route, forced workflow load, startup/baseline-classifier gate, or separate settings file participates in bootstrap.
-  - **Applicability:** unconditional.
-  - **Source:** GB-MN; GOBBI-SCN-07-D.
-  - **Pass condition:** the question/route trace contains one on-demand routing judgment only; session root/config searches find no separate settings dependency; the entry force-loads no workflow owner and runs no retired baseline gate.
-  - **Evidence:** scoped vocabulary/dependency search and root inventory.
-  - **On fail:** consequence — a retired route or gate becomes active; halt before the workflow handoff.
-  - **Resolution:** ______
+#### Checklist
 
-## Pause point F — Before accepting the Gobbi skill bundle and mirror views
+- [ ] GOBBI-CK-AESTHETICS-01-01 — Each mode has one literal name and one short use case.
+- [ ] GOBBI-CK-AESTHETICS-01-02 — Any recommendation is visibly separate from the user's selection.
+- [ ] GOBBI-CK-AESTHETICS-01-03 — The entry skill keeps Procedure dominant and uses plain, direct language.
 
-**Run use style:** `do-confirm`.
+## Usage
 
-- [ ] **GOBBI-CHK-VIEW-01** `[gate/killer, do-confirm]` The canonical directory contains the required four-file operation bundle and all policy is present in the parent.
-  - **Applicability:** unconditional for a Gobbi skill change.
-  - **Source:** GB-7; GOBBI-SCN-08-A.
-  - **Pass condition:** the four required direct siblings `SKILL.md`, `scenarios.md`, `checklists.md`, and `evaluation.md` exist; companions trace but add no policy.
-  - **Evidence:** canonical directory inventory and parent-to-companion rule trace.
-  - **On fail:** consequence — cold use or ownership closure is incomplete; reject the bundle.
-  - **Resolution:** ______
+### GOBBI-SC-USAGE-01 — Normal case: General remains lightweight
 
-- [ ] **GOBBI-CHK-VIEW-02** `[required, do-confirm]` Native Codex discovery resolves the canonical Gobbi directory and all four operation files.
-  - **Applicability:** conditional — repository supports native Codex.
-  - **Source:** GB-7; GOBBI-SCN-08-B.
-  - **Pass condition:** `.agents/skills/gobbi` canonicalizes to the source directory and its file set contains all four.
-  - **Evidence:** symlink/realpath result and directory inventory.
-  - **On fail:** reject the native Codex cold-use claim and route repair to sync ownership.
-  - **Resolution:** ______
+After a General selection, ordinary assistance continues from the floor and relevant task skills. The path
+fails when it creates orchestration state or loads Cowork or Workflow.
 
-- [ ] **GOBBI-CHK-VIEW-03** `[required, do-confirm]` The plugin source view resolves the same canonical four-file bundle.
-  - **Applicability:** conditional — shared plugin source is in scope for the repository.
-  - **Source:** GB-7; GOBBI-SCN-08-C.
-  - **Pass condition:** `plugins/gobbi/skills/gobbi` canonicalizes to the source directory and contains no copied divergent policy.
-  - **Evidence:** symlink/realpath result, file set, and digest comparison where needed.
-  - **On fail:** reject plugin-source readiness and route repair to sync ownership.
-  - **Resolution:** ______
+#### Checklist
 
-- [ ] **GOBBI-CHK-VIEW-04** `[required, do-confirm]` Every partial runtime view is reported exactly and left for the topology owner rather than hand-repaired here.
-  - **Applicability:** conditional — a configured runtime view does not expose all four companions.
-  - **Source:** GB-7; GOBBI-SCN-08-D.
-  - **Pass condition:** expected/actual sets and missing paths are reported, the canonical bundle remains complete, and no out-of-scope view edit occurs.
-  - **Evidence:** runtime-view inventories and exact changed-path allowlist.
-  - **On fail:** reject the scope or completeness claim and restore one-owner wiring discipline.
-  - **Resolution:** ______
+- [ ] GOBBI-CK-USAGE-01-01 — General creates no Gobbi orchestration state.
+- [ ] GOBBI-CK-USAGE-01-02 — General loads neither Cowork nor Workflow.
 
-- [ ] **GOBBI-CHK-VIEW-05** `[gate/killer, do-confirm]` A look-alike copied runtime bundle cannot pass as the canonical source.
-  - **Applicability:** conditional — a runtime view is a directory or materialized copy rather than the verified canonical view.
-  - **Source:** GB-7; GOBBI-SCN-08-E.
-  - **Pass condition:** canonical path and digest checks prove identity; matching filenames or headings alone never pass.
-  - **Evidence:** source/view canonical paths, symlink topology, and content digests.
-  - **On fail:** consequence — stale bootstrap policy may execute; reject cold-use readiness and route repair to sync ownership.
-  - **Resolution:** ______
+### GOBBI-SC-USAGE-02 — Normal case: Cowork reaches fast stepwise work
 
-- [ ] **GOBBI-CHK-VIEW-06** `[gate/killer, do-confirm]` The renamed `workflow` mirror resolves and zero UNCLASSIFIED old-skill-path mirror directory survives.
-  - **Applicability:** conditional — the skill was renamed and the mirrors regenerated.
-  - **Source:** GB-7; GOBBI-SCN-08-F.
-  - **Pass condition:** `.claude/skills/workflow/` (with its `steps/` subdirectory) and `.agents/skills/workflow` resolve to the canonical `workflow` directory, and a scoped residual sweep of the mirror trees yields zero UNCLASSIFIED old-skill-path references — every residual hit is a documented leave, not a live look-alike view. This pass condition is phrased zero-UNCLASSIFIED, never "zero grep hits."
-  - **Evidence:** realpath of the renamed mirror plus the classified residual sweep of the mirror trees.
-  - **On fail:** consequence — the renamed view is unresolved or a stale look-alike could be cold-loaded as canonical; reject cold-use readiness and route repair to sync ownership.
-  - **Resolution:** ______
+After a Cowork selection, the Cowork owner must establish its isolated worktree, run the user-topic loop, and
+perform a direct Memory pass during explicit Wrap-up. The path fails when Gobbi creates the worktree,
+Workflow records appear, or closure skips durable-memory review.
 
-## Coverage and acceptance close
+#### Checklist
 
-A filled run closes coverage only when every triggered item has a permitted terminal resolution with inspected evidence. It accepts the Gobbi bootstrap only when every applicable gate and required item is `PASS`, subject solely to the checklist owner's narrow operational killer exception. `recorded-open`, `n/a`, or a topology concern may explain coverage but cannot be counted as `PASS` for an applicable claim.
+- [ ] GOBBI-CK-USAGE-02-01 — Cowork owns worktree creation or recovery before editing.
+- [ ] GOBBI-CK-USAGE-02-02 — Cowork remains manifest-free.
+- [ ] GOBBI-CK-USAGE-02-03 — Cowork preserves user-called evaluation and Wrap-up.
+- [ ] GOBBI-CK-USAGE-02-04 — Cowork Wrap-up applies Memory and applicable category skills directly.
+- [ ] GOBBI-CK-USAGE-02-05 — Cowork Wrap-up commits verified memory changes or proves no change is needed.
+- [ ] GOBBI-CK-USAGE-02-06 — Cowork checks evaluation freshness after the accepted Memory pass.
+- [ ] GOBBI-CK-USAGE-02-07 — Cowork Wrap-up creates no Workflow typed staging or promotion manifest.
+
+### GOBBI-SC-USAGE-03 — Normal case: Workflow behavior is preserved
+
+After a Workflow selection, the Workflow owner must retain Configuration, durable routing, dual-system work,
+evaluation, RECORD, and Wrap-up. The path fails when the new mode split weakens that contract.
+
+#### Checklist
+
+- [ ] GOBBI-CK-USAGE-03-01 — Workflow retains its five ordered steps.
+- [ ] GOBBI-CK-USAGE-03-02 — Workflow retains its productive DISCUSSION→WORK→EVALUATION→RECORD loop.
+- [ ] GOBBI-CK-USAGE-03-03 — Workflow remains the owner of its manifests and cursor.
+
+### GOBBI-SC-USAGE-04 — Edge case: context boundary mode evidence
+
+A valid established mode should resume without interruption, while missing or conflicting evidence must
+return to selection. Either unconditional prompting or unconditional reuse is a failure.
+
+#### Checklist
+
+- [ ] GOBBI-CK-USAGE-04-01 — Valid established mode evidence suppresses a repeated selection question.
+- [ ] GOBBI-CK-USAGE-04-02 — Missing mode evidence triggers the three-way selection.
+- [ ] GOBBI-CK-USAGE-04-03 — Conflicting mode evidence preserves prior state and triggers the selection.
+
+## Consistency
+
+### GOBBI-SC-CONSISTENCY-01 — Normal case: consumers describe the same three modes
+
+The canonical skill, manager pair, Codex entry, Claude entry, README, and topology guard must agree. The
+change fails when any active consumer still says every session follows one mandatory workflow.
+
+#### Checklist
+
+- [ ] GOBBI-CK-CONSISTENCY-01-01 — Every active entry consumer names General, Cowork, and Workflow.
+- [ ] GOBBI-CK-CONSISTENCY-01-02 — Every active entry consumer scopes durable records to Workflow.
+- [ ] GOBBI-CK-CONSISTENCY-01-03 — Every active entry consumer scopes automatic dual-system creation to Workflow.
+- [ ] GOBBI-CK-CONSISTENCY-01-04 — Manager Markdown and TOML route through the selected owner.
+- [ ] GOBBI-CK-CONSISTENCY-01-05 — Every active consumer distinguishes Cowork direct Memory updates from Workflow promotion.
+
+### GOBBI-SC-CONSISTENCY-02 — Expected failure: runtime entry drops a mode
+
+The topology guard must reject a Codex or Claude entry document that omits any mode. A check that still passes
+when Cowork is absent does not protect the public contract.
+
+#### Checklist
+
+- [ ] GOBBI-CK-CONSISTENCY-02-01 — The sync check rejects a Codex entry without Cowork.
+- [ ] GOBBI-CK-CONSISTENCY-02-02 — The sync check rejects a Claude entry without Cowork.
+- [ ] GOBBI-CK-CONSISTENCY-02-03 — Valid three-mode fixtures pass the sync check.
+
+## Risk
+
+### GOBBI-SC-RISK-01 — Adversarial: explicit mode wording bypasses user control
+
+A caller can intentionally phrase a request as though selection already occurred. Fresh entry still fails
+closed until the structured control records one of the three options.
+
+#### Checklist
+
+- [ ] GOBBI-CK-RISK-01-01 — Explicit mode wording cannot bypass the fresh-entry selection.
+- [ ] GOBBI-CK-RISK-01-02 — A recommendation cannot be recorded as the user's answer.
+
+### GOBBI-SC-RISK-02 — Expected failure: owner evidence is invalid
+
+Missing or mismatched owner, identity, cursor, branch, or worktree evidence must stop handoff. The entry fails
+when it guesses a fallback or mutates state to make evidence look valid.
+
+#### Checklist
+
+- [ ] GOBBI-CK-RISK-02-01 — Invalid owner evidence blocks handoff.
+- [ ] GOBBI-CK-RISK-02-02 — A blocked handoff names the exact invalid evidence.
+- [ ] GOBBI-CK-RISK-02-03 — A blocked handoff preserves the prior state.
+
+### GOBBI-SC-RISK-03 — Adversarial: runtime view is a look-alike
+
+A copied or partial runtime view may contain the expected words while diverging from canonical policy. It
+must fail source-identity checks and be routed to the sync owner.
+
+#### Checklist
+
+- [ ] GOBBI-CK-RISK-03-01 — Runtime views resolve to canonical Gobbi sources.
+- [ ] GOBBI-CK-RISK-03-02 — A partial or copied view cannot pass on matching words alone.
+
+## Overall
+
+### GOBBI-SC-OVERALL-01 — Normal case: complete entry contract
+
+The result is acceptable only when a cold manager can rebuild the exact floor, obtain or preserve one mode,
+route through the correct owner, and leave the entry preimage unchanged across both runtimes.
+
+#### Checklist
+
+- [ ] GOBBI-CK-OVERALL-01-01 — Every applicable Project through Risk row is satisfied.
+- [ ] GOBBI-CK-OVERALL-01-02 — The six parent rules are each covered by at least one scenario and row.
+- [ ] GOBBI-CK-OVERALL-01-03 — A cosmetically compliant two-mode or auto-selected entry fails at least one row.

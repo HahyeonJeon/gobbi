@@ -64,7 +64,7 @@ Two properties make the difference:
 
 **Parse persisted data at the boundary, into a domain type.** A file written by an older version of this
 application is external input in exactly the sense a network payload is, and the compiler cannot check what a
-previous release wrote. [`typescript/typing.md`](../typescript/typing.md) owns the
+previous release wrote. [`typescript-typing`](../typescript/typescript-typing/SKILL.md) owns the
 declaration-versus-verification distinction that makes a boundary parse work.
 
 > **Never do file work synchronously in the privileged process.** It owns windows, interaction, and the

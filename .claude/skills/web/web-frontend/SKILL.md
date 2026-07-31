@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/web/web-frontend/SKILL.md

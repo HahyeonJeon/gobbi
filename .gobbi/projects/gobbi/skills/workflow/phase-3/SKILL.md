@@ -1,6 +1,6 @@
 ---
 name: phase-3
-description: "MUST load when Workflow enters Phase 3. Phase 3 is an operation skill for promoting supported durable material, producing the evaluated handoff, performing authorized Git finalization, and ending with a verified terminal Hand-off."
+description: "MUST load when Workflow enters Phase 3. Phase 3 evaluates the actual terminal closure, seals PASS evidence, resumes authorized Git finalization, and ends with the exact Hand-off and factual receipt."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,56 +8,54 @@ user-invocable: false
 
 # Workflow Phase 3
 
-The manager loads this child skill after the parent [Workflow](../SKILL.md) operation activates
-`P3 · Wrap-up · DISCUSSION · 1/2`, or when recovery selects an unfinished Phase 3 item. Entry requires a
-verified Phase 2 Hand-off, completed task commits, and the configured finalization authority.
+The manager loads this child after the parent [Workflow](../SKILL.md) activates
+`P3 · Wrap-up · DISCUSSION · 1/2`. Entry requires a verified Phase 2 Hand-off, completed task commits, and
+current finalization authority.
 
-Phase 3 promotes only supported durable material, evaluates the actual closure result, performs only
-authorized Git finalization, and reports the exact terminal state. It completes when the terminal Hand-off,
-finalization receipt, native TODO, Git state, and filesystem evidence agree.
+Phase 3 applies the shared [Wrap-up](../../wrap-up/SKILL.md) operation in two parts. DISCUSSION and WORK freeze
+and materialize its pre-Git Memory and handoff result; EVALUATION and RECORD judge and seal that actual tree.
+Only after PASS does the manager resume Wrap-up for Git finalization and exact display.
 
-This child owns Phase 3 actions, decisions, evidence, failure recovery, and terminal checks. It applies the
-parent's shared route, evidence, and fast-gate contracts, the Wrap-up operation's final Hand-off body
-contract, and the Git skill's finalization receipt contract. It never invents promotion material or authority.
+This child owns the Workflow loop, fast gate, TODO route, and PASS boundary. Wrap-up owns Memory-to-Git order,
+the tracked handoff, finalization sequence, receipt template, display, and recovery. Phase 3 never copies those
+schemas or reports an intended Git action as complete.
 
 ## Principles
 
-### Promote only what typed evidence supports
+### Freeze the terminal mutation boundary
 
-Every durable destination change must trace to a staged source whose type, content, and evidence justify
-promotion.
+The tracked tree, handoff bytes, and Git intent become immutable before EVALUATION. Git is the final mutation
+and begins only after RECORD proves PASS.
 
-### Evaluate the actual closure result
+### Evaluate the actual pre-Git result
 
-Wrap-up evaluation judges the real post-promotion worktree, handoff, commits, and finalization plan rather than
-an intended or pre-application result.
+Evaluators judge the applied Memory changes, tracked handoff, commits, checks, and finalization plan. A draft
+or intended closure cannot substitute for the actual worktree.
 
-### Report only actions that occurred
+### Keep handoff and Git facts separate
 
-The terminal Hand-off and factual receipt distinguish completed, retained, deferred, failed, and unconfigured
-outcomes without rewriting history.
+The tracked handoff contains only pre-finalization facts. The display-only receipt reports later Git outcomes
+from direct evidence without changing the handoff.
 
 ## Rules
 
-- **MUST enter through the parent Workflow route with a verified Phase 2 Hand-off and exactly one unfinished
-  Phase 3 item in progress.** Return to recovery when task evidence, commits, staging, authority, branch, or
-  worktree disagree.
+- **MUST enter through the parent Workflow route with a verified Phase 2 Hand-off and one active Phase 3
+  item.** Return to recovery when task commits, authority, branch, worktree, or TODO evidence disagree.
 
-- **MUST verify every changed durable destination against one evidenced staged source and confirm the source
-  remains unchanged.** Empty staging is valid and never requires invented material.
+- **MUST evaluate and record the complete Wrap-up Phase 2 result before Git begins.** Any tracked mutation
+  after the evaluated tree freezes returns to WORK and repeats the complete review.
 
-- **MUST apply the parent fast gate and its two-iteration cap to Wrap-up.** Preserve both evaluator verdicts
-  and let only the separate workflow decision route the TODO.
+- **MUST apply the parent fast gate and its two-iteration cap.** Preserve both evaluator verdicts and let only
+  the parent workflow decision route the TODO.
 
-- **MUST perform only Git actions that are already configured and authorized.** Retain the branch and worktree
-  with an exact recovery action when publication, merge, or cleanup is unavailable, unauthorized, deferred, or
-  incomplete.
+- **MUST use Wrap-up and its `handoff.md` child without copying their tracked brief or receipt schemas.** This
+  adapter supplies Workflow inputs, evaluation, RECORD evidence, and TODO transitions only.
 
-- **NEVER treat an optional remote action without authority as an automatic blocker.** Complete the authorized
-  local outcome and report the unperformed action unless the locked outcome made it mandatory.
+- **MUST perform only Git actions that are currently configured and authorized.** Retain the branch and
+  worktree with an exact recovery action when publication, merge, or cleanup cannot complete safely.
 
-- **NEVER report an intended, deferred, or failed promotion, publication, merge, cleanup, or deletion as
-  completed.** Every terminal claim must come from current Git, filesystem, and artifact evidence.
+- **NEVER report intended, deferred, failed, or unproved Memory, commit, publication, merge, cleanup, or
+  deletion as completed.** Every terminal claim comes from current artifact, Git, and filesystem evidence.
 
 ## Procedure
 
@@ -65,137 +63,120 @@ outcomes without rewriting history.
 
 #### 1.1 Enter and operate continuously
 
-- Confirm the parent [Workflow](../SKILL.md) operation is loaded, the Phase 2 Hand-off validates, and
+- Confirm the parent Workflow is loaded, the Phase 2 Hand-off validates, and
   `P3 · Wrap-up · DISCUSSION · 1/2` is the only active TODO on first entry.
-- Load the [Wrap-up](../../wrap-up/SKILL.md), [Memory](../../memory/SKILL.md), and
-  [Git](../../git/SKILL.md) skills before the closure discussion.
-- After every returned artifact, verify it, retitle or complete the active item, activate the next stage, and
-  continue immediately.
-- Ask the user only through the parent critical-blocker boundary for missing safety or authority, an
-  unavailable required system without waiver, or an extremely material change outside the Phase 1 contract.
-- Treat active waiting for an assigned agent, required system, or tool as work. A progress message or Hand-off
-  is not a pause request.
+- Load [Wrap-up](../../wrap-up/SKILL.md), [Memory](../../memory/SKILL.md), and
+  [Git](../../git/SKILL.md), then apply Wrap-up Phase 1 as the closure-discussion method.
+- After every returned artifact, verify it, update the active item, activate the next stage, and continue in
+  the same turn. Ask the user only at the parent critical-blocker boundary.
+- Treat active waiting for a required agent, system, or tool as work. A progress report or checkpoint is not a
+  pause request.
 
-#### 1.2 Inventory promotion and finalization inputs
+#### 1.2 Inventory accepted work and terminal authority
 
-- Collect the canonical Ideation and Planning artifacts, every completed Execution task and focused commit,
-  checks, evaluations, accepted findings, decisions, system waivers, and plan amendments.
-- Read the typed staging inventory, durable destination preimages, memory and record rules, handoff
-  requirements, configured Git finalization, and actual external and destructive authority.
-- Verify each staged candidate has a type, source evidence, intended destination, and current destination
-  preimage. Preserve empty staging as a valid input.
-- Identify local commit coverage, retained recovery paths, unresolved items, and every configured publication,
-  pull-request, merge, or cleanup action.
-- Stop before WORK when protected user changes, unsupported candidates, conflicting commits, or missing
-  mandatory authority make safe closure impossible.
+- Collect the accepted Ideation and Planning artifacts, every Execution task and focused commit, checks,
+  evaluations, findings, decisions, waivers, amendments, exclusions, risks, and unresolved items.
+- Resolve the Workflow UUID, base branch and commit, session branch, absolute worktree, current head and
+  status, project Memory root, intended tracked handoff path, configured publication, and actual destructive
+  or external authority from current evidence.
+- Read current Memory, the [handoff template](../../wrap-up/handoff.md), repository checks, and Git posture.
+  Record each unconfigured or unauthorized Git action literally rather than treating it as an automatic
+  blocker.
+- Stop before WORK for protected user changes, an active writer, unsupported completion claims, unresolved
+  material decisions, wrong-tree evidence, or missing mandatory authority.
 
-#### 1.3 Lock the closure discussion contract
+#### 1.3 Lock the DISCUSSION result
 
-- Give the Wrap-up specialist the complete closure inventory through the
-  [Delegation](../../delegation/SKILL.md) template plus the parent Workflow Step 1.3 fields.
-- Resolve agent-to-agent:
-  - which typed candidates have sufficient evidence;
-  - source-to-destination promotion mapping;
-  - empty staging;
-  - the Wrap-up-owned handoff body;
-  - unresolved items and recovery;
-  - local commit coverage;
-  - configured publication steps; and
-  - actual merge or cleanup authority.
-- Never invent a durable item to populate empty staging or promote material that lacks typed evidence.
-- Freeze the neutral closure contract, immutable inputs, promotion boundary, handoff requirements, and checks
-  before retitling the TODO to WORK.
+- Build each brief through [Delegation](../../delegation/SKILL.md) with parent Workflow Step 1.3 fields.
+- Resolve agent-to-agent the complete Memory review boundary, tracked handoff path and content contract,
+  verification, immutable pre-Git evidence, finalization intent, exclusions, risks, and recovery behavior.
+- Freeze one neutral closure contract for both WORK systems. It permits no post-EVALUATION tracked repair and
+  contains no claimed final Git outcome.
+- Retitle the active item to WORK only after the contract, inputs, paths, authority, and checks are complete.
 
-### Phase 2 — Produce and record Wrap-up
+### Phase 2 — Materialize, evaluate, and record closure
 
 #### 2.1 Produce and cross-review closure drafts
 
-- Give independent Claude and Codex specialists the same frozen closure contract and immutable evidence.
-- Require independent promotion-and-handoff drafts. Freeze and verify both drafts before reciprocal review.
-- Dispatch reciprocal reviews as later, separate operations and freeze both.
-- Give the active runtime specialist the contract, both drafts, and both reviews. Require a canonical
-  promotion manifest and Wrap-up-owned handoff body.
-- Reread the synthesis and resolve routine in-contract differences agent-to-agent. Stop for the parent
-  critical-blocker boundary when synthesis would require new scope or authority.
+- Give independent Claude and Codex specialists the same frozen contract and immutable evidence. Require
+  system-labeled Memory-and-handoff drafts that include the complete expected path set and verification.
+- Freeze and verify both drafts before reciprocal review. Run both cross-reviews as later isolated operations,
+  then give the active runtime specialist the contract, drafts, and reviews for synthesis.
+- Require one decision-complete Memory plan and tracked handoff candidate. Resolve routine in-contract
+  differences agent-to-agent and stop only for the parent critical-blocker boundary.
 
-#### 2.2 Apply and verify supported promotion
+#### 2.2 Apply and freeze Wrap-up Phase 2
 
-- Give one authorized writer the resolved promotion manifest and exact destination allowlist.
-- Apply only supported promotion inside the isolated worktree. Keep every other process read-only.
-- Verify every changed destination against exactly one staged source and confirm the source evidence remains
-  unchanged.
-- Verify the applied result is repeatable and that the session handoff and any durable handoff note use the
-  same substantive body.
-- Run the required project checks and inspect the actual post-promotion tree.
-- Render the complete WORK package at the parent-owned Wrap-up path and run the exact parent Workflow Step 1.2
-  validator command for `--step wrap-up`.
-- Freeze the actual tree, promotion evidence, and handoff before activating EVALUATION. Add no factual
-  finalization receipt until the authorized Git actions occur.
+- Give one authorized assistant the synthesis, exact Memory root, allowed and protected paths, and checks.
+  Apply Wrap-up Phase 2 through the Memory operation; every other process remains read-only.
+- Verify every Memory change, required index and link, tracked handoff field, and the complete worktree diff.
+  Reject an unrelated path, stale navigation, unsupported claim, or duplicate report.
+- Freeze the tracked handoff repository path, exact bytes, SHA-256 digest, actual pre-Git tree, and current Git
+  intent. Do not start Wrap-up Phase 3 or add a factual receipt.
+- Render the parent-owned Wrap-up WORK package and run the exact Workflow Step 1.2 validator command for
+  `--step wrap-up` before activating EVALUATION.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh Claude evaluator and one fresh
-  Codex evaluator. Neither may be a creator, persistent teammate, or recipient of the other report.
-- Give both evaluators the complete creation package, actual post-promotion tree, source and destination
-  evidence, promotion manifest, handoff, commits, checks, configured Git plan, and retained recovery paths.
-- Require complete Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage
-  and the parent-owned finding fields.
-- Preserve both declared verdicts and apply the parent Wrap-up fast gate and two-iteration cap.
-- Retitle the active TODO to RECORD only after both independent reports and the workflow decision validate.
+- Load [Evaluation](../../evaluation/SKILL.md) and dispatch one fresh Claude evaluator and one fresh Codex
+  evaluator. Neither may be a creator, persistent teammate, or recipient of the other report.
+- Give both the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
+  task commits, checks, finalization intent, authority, exclusions, risks, and retained recovery paths.
+- Require Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage with the
+  parent finding fields. Preserve both verdicts and apply the parent Wrap-up fast gate.
+- Retitle the active item to RECORD only after both reports and the workflow decision validate.
 
 #### 2.4 Record and route the result
 
-- Load the [Record](../../record/SKILL.md) skill under the parent Workflow Step 1.2 evidence-only override.
-- Seal the creation package, evaluator reports, system provenances, promotion evidence, handoff, checks,
-  decisions, findings, and retained recovery state.
-- Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking
-  IDs, accepted nonblocking IDs, and the workflow decision.
-- Verify every promotion source and destination mapping, the Wrap-up-owned handoff body, and that no
-  unsupported material was staged or promoted.
-- Write `record/iteration-N.md` with the exact TODO, package and report hashes, gate hash, promotion checks,
-  canonical output, and staging. Reread the receipt before updating the TODO.
-- On iteration-1 REVISE, create Wrap-up iteration 2 at DISCUSSION and repeat the complete cycle immediately.
-- On iteration-2 FAIL, preserve the evidence, branch, worktree, and exact recovery choices. Never create
-  iteration 3.
-- On PASS, write and verify canonical Wrap-up evidence and retitle the Wrap-up item to PASS. Keep that item in
-  progress through authorized Git finalization; do not activate `P3 · Hand-off` yet.
+- Load [Record](../../record/SKILL.md) under parent Workflow Step 1.2's evidence-only override.
+- Seal the creation package, evaluator reports, system provenance, Memory verification, tracked handoff path
+  and digest, checks, decisions, findings, Git intent, authority, and retained recovery state.
+- Write and verify `gate.md` and `record/iteration-N.md` with their required report, package, gate, output, and
+  check hashes before updating the TODO.
+- On iteration-1 REVISE, create Wrap-up iteration 2 at DISCUSSION and repeat the complete cycle. On an
+  iteration-2 blocking result, preserve the evidence, branch, worktree, and recovery choices with no third
+  iteration.
+- On PASS, write and verify canonical closure evidence and retitle the Wrap-up item to PASS. Keep it active
+  through authorized Git finalization; do not activate `P3 · Hand-off` yet.
 
 ### Phase 3 — Finalize and finish
 
-#### 3.1 Verify PASS and the authorized local state
+#### 3.1 Verify PASS and the immutable pre-Git state
 
-- Verify canonical Wrap-up evidence, promotion results, every local task and promotion commit, required
-  checks, Wrap-up-owned handoff body, branch, worktree, and active Wrap-up PASS item.
-- Confirm the evaluated finalization plan agrees with current configured authority and current Git and
-  filesystem evidence.
-- Create a required final local documentation or promotion commit only when its exact content was evaluated
-  and is not already committed.
-- Return to the earliest responsible Wrap-up step when a material mismatch exists. Do not make an external
-  action conform to a stale evaluated plan.
+- Reread canonical closure evidence, evaluator reports, RECORD receipts, every task commit, current tree,
+  tracked handoff bytes and digest, branch, worktree, Git intent, authority, and active PASS item.
+- Require the current tracked tree to match the evaluated tree exactly. A material difference returns to the
+  earliest responsible Wrap-up stage instead of making Git conform to stale evidence.
+- Confirm every in-scope tracked change has a verified focused local commit or is the exact evaluated closure
+  content authorized for the final local commit.
 
-#### 3.2 Perform configured Git finalization
+#### 3.2 Resume Wrap-up Phase 3 and finalize Git
 
-- Confirm every in-scope change has a verified focused local commit and the committed tree matches the
-  evaluated result.
-- Perform configured publication only when it is already authorized and its current prerequisites pass.
-- Merge only with explicit user authority and current merge-gate evidence.
-- Clean up only after a confirmed merge, synchronized base, clean session worktree, and verified safe
-  preimage. Otherwise retain the branch and worktree.
-- Record the actual outcomes required by the [Git](../../git/SKILL.md) skill's factual finalization receipt.
-- When an external action is unconfigured, unauthorized, deferred, or failed, preserve the completed local
-  outcome and the exact recovery evidence required by the Git skill.
+- Apply Wrap-up Phase 3 through the [Git operation](../../git/SKILL.md). Recheck mutable branch, worktree,
+  publication, merge, and cleanup evidence immediately before each dependent action.
+- Perform configured publication only with its current prerequisites. Merge and cleanup require explicit
+  current user authority and their complete safety gates.
+- Record each actual outcome as `not configured`, `not authorized`, `not attempted`, `deferred`, `failed`,
+  `completed`, or `retained`. Preserve exact recovery evidence when any object remains.
+- Complete the Wrap-up PASS item and activate `P3 · Hand-off` only after every authorized Git action reaches a
+  proved completed or recoverable terminal state.
 
-#### 3.3 Render and verify the terminal Hand-off
+#### 3.3 Resume Wrap-up Phase 4 and close the workflow
 
-- Complete the Wrap-up PASS item and activate `P3 · Hand-off` only after Step 3.2 records the actual outcomes
-  of every authorized Git action.
-- Display the complete evaluated Hand-off body defined by the [Wrap-up](../../wrap-up/SKILL.md) operation.
-- Append the factual finalization receipt defined by the [Git](../../git/SKILL.md) skill without rewriting
-  the evaluated Hand-off body.
-- Verify the Hand-off, receipt, native TODO, local commits, publication state, branch, worktree, and any
-  recovery command against direct evidence.
-- Complete `P3 · Hand-off` only when those facts agree. Display the terminal checkpoint and end the workflow.
-- When the branch or worktree remains, include its exact identity, status, head commit, and first recovery
-  command.
+- Reread the tracked handoff from its accepted commit object, recompute its digest, and require an exact match
+  with the frozen bytes before display.
+- Display the tracked handoff byte-for-byte, then append the separate factual Git receipt defined by
+  [Wrap-up `handoff.md`](../../wrap-up/handoff.md). Do not add the receipt to any tracked file.
+- Verify the handoff, receipt, native TODO, commits, publication state, branch, worktree, and recovery command
+  against direct evidence.
+- Complete `P3 · Hand-off` only when those facts agree. Leave no next TODO, display the terminal checkpoint,
+  and end the Workflow.
 
 ## References
+
+- [Parent Workflow](../SKILL.md) owns native TODO routing, shared evidence, assignment additions, gates, and
+  dual-system coordination.
+- [Wrap-up](../../wrap-up/SKILL.md) owns shared terminal Memory, Git, handoff, display, and recovery order.
+- [Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked operator brief and display-only Git receipt.
+- [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md),
+  [Record](../../record/SKILL.md), and [Git](../../git/SKILL.md) own their respective mechanisms.
