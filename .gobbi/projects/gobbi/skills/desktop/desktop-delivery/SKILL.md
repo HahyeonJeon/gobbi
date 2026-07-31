@@ -214,7 +214,3 @@ implies another.
 - **Completion:** this operation ends with one reproducible installed outcome, no in-scope gap, a cold
   operator handoff, and literal claim boundaries—or with a recoverable blocked state naming the missing
   owner, evidence, or authority.
-
-## References
-
-- [Desktop delivery evaluation checklist](checklists.md)
