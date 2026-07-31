@@ -61,3 +61,5 @@ Prefer central factories for secure windows, views, sessions, protocol handlers,
 Prefer `BrowserWindow` for a normal single-web-content window because it owns its renderer lifecycle. Use `BaseWindow` with `WebContentsView` when the product truly needs composed views, and make manual `webContents` cleanup part of that design.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
