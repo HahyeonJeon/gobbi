@@ -64,7 +64,7 @@ other word for that meaning.
 |---|---|
 | `development` | The author-or-change operation for a domain, including a review mode where the family carries one |
 | `testing` | The evidence operation |
-| `conventions` | The written-form and overridable-choice preference |
+| `conventions` | The written-form and overridable-choice preference, including the binding boundary those choices sit inside |
 | `design` | The structural-judgment preference |
 | `platform` | A standard or engine you did not write |
 | `runtime` | A framework runtime you execute inside |
