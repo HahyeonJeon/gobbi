@@ -8,12 +8,10 @@ skill-type: operation
 # Cowork
 
 Cowork is a user-led Gobbi orchestration mode for fast implementation after the user selects it at Gobbi
-entry. It takes one topic at a time through the smallest safe combination of optional Ideation, optional
-Planning, and verified Execution, then returns control to the user.
+entry.
 
-Cowork may create the canonical artifacts owned by Ideation and Planning. It keeps those artifacts and
-implementation units in one isolated local history, evaluates only when the user calls `evaluate`, and closes
-only when the user calls `wrap up`.
+It takes one topic at a time through the smallest safe combination of optional Ideation, optional Planning,
+and verified Execution, then returns control to the user.
 
 ## Principles
 
