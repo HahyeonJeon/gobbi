@@ -6,6 +6,9 @@ returned outcomes under evaluation.
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### GODSN-SC-PROJECT-01 — Normal case: The public surface serves real callers
@@ -15,9 +18,8 @@ by current clients and should hide implementation choices; an unnecessary or inc
 
 #### Checklist
 
-- [ ] GODSN-CK-PROJECT-01-01 — Every exported declaration serves a current caller need.
+- [ ] GODSN-CK-PROJECT-01-01 — Every exported declaration serves a current caller need, and every implementation detail stays unexported unless callers must name it.
 - [ ] GODSN-CK-PROJECT-01-02 — Every caller-dependent behavior is part of the deliberate public contract.
-- [ ] GODSN-CK-PROJECT-01-03 — Implementation details remain unexported unless callers must name them.
 
 ### GODSN-SC-PROJECT-02 — Rule violation: A public change ignores compatibility
 
@@ -39,9 +41,8 @@ fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-STRUCTURE-01-01 — Every interface expresses behavior required by its consumer.
-- [ ] GODSN-CK-STRUCTURE-01-02 — No interface exists solely to make one concrete type mockable.
-- [ ] GODSN-CK-STRUCTURE-01-03 — No API uses a pointer to an interface.
+- [ ] GODSN-CK-STRUCTURE-01-01 — Every interface expresses behavior its consumer requires rather than existing to make one concrete type mockable.
+- [ ] GODSN-CK-STRUCTURE-01-02 — No API uses a pointer to an interface.
 
 ### GODSN-SC-STRUCTURE-02 — Poor quality: Construction is mandatory without an invariant
 
@@ -61,9 +62,8 @@ identity, copy safety, and the intended method set; a subtle interface or copy m
 
 #### Checklist
 
-- [ ] GODSN-CK-STRUCTURE-03-01 — Every pointer receiver is justified by mutation, identity, size, or copy safety.
-- [ ] GODSN-CK-STRUCTURE-03-02 — Every value receiver is safe on an independent copy.
-- [ ] GODSN-CK-STRUCTURE-03-03 — The resulting method set satisfies every intended interface.
+- [ ] GODSN-CK-STRUCTURE-03-01 — Every pointer and value receiver is justified by mutation, identity, size, or copy safety.
+- [ ] GODSN-CK-STRUCTURE-03-02 — The resulting method set satisfies every intended interface.
 
 ### GODSN-SC-STRUCTURE-04 — Poor quality: Generics precede a real type relationship
 
@@ -72,9 +72,8 @@ Generics should preserve a current static relationship; a speculative constraint
 
 #### Checklist
 
-- [ ] GODSN-CK-STRUCTURE-04-01 — Every type parameter relates current supported types.
-- [ ] GODSN-CK-STRUCTURE-04-02 — Every constraint contains only operations the implementation requires.
-- [ ] GODSN-CK-STRUCTURE-04-03 — A simpler concrete or interface design would not serve the same callers more clearly.
+- [ ] GODSN-CK-STRUCTURE-04-01 — Every type parameter and constraint stays within the type relationship and operations the current implementation requires.
+- [ ] GODSN-CK-STRUCTURE-04-02 — A simpler concrete or interface design would not serve the same callers more clearly.
 
 ## Performance
 
@@ -107,8 +106,7 @@ small coherent vocabulary; redundant or scattered concepts fail.
 
 #### Checklist
 
-- [ ] GODSN-CK-AESTHETICS-01-01 — Exported declarations form one coherent package vocabulary.
-- [ ] GODSN-CK-AESTHETICS-01-02 — Public names remain clear after package qualification.
+- [ ] GODSN-CK-AESTHETICS-01-01 — Exported declarations form one coherent vocabulary that stays clear after package qualification.
 
 ### GODSN-SC-AESTHETICS-02 — Poor quality: The API exposes more shape than behavior
 
@@ -140,9 +138,8 @@ accidental identity fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error has a stable public contract.
-- [ ] GODSN-CK-USAGE-02-02 — Every intended wrapped identity remains discoverable.
-- [ ] GODSN-CK-USAGE-02-03 — No caller contract depends on matching human error text.
+- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error keeps a stable public contract and stays discoverable through its promised wrapped identity.
+- [ ] GODSN-CK-USAGE-02-02 — No caller contract depends on matching human error text.
 
 ### GODSN-SC-USAGE-03 — Edge case: Nil and empty values differ at a boundary
 
@@ -153,8 +150,7 @@ fails.
 #### Checklist
 
 - [ ] GODSN-CK-USAGE-03-01 — Every observable nil-versus-empty distinction is deliberate.
-- [ ] GODSN-CK-USAGE-03-02 — Every nil input allowed by the contract is safe.
-- [ ] GODSN-CK-USAGE-03-03 — Every nil return state allowed by the contract is safe.
+- [ ] GODSN-CK-USAGE-03-02 — Every nil input and nil return state allowed by the contract is safe.
 
 ## Consistency
 
@@ -165,9 +161,8 @@ One documented ownership model should govern each boundary; inconsistent aliasin
 
 #### Checklist
 
-- [ ] GODSN-CK-CONSISTENCY-01-01 — Every reference-bearing input has one explicit ownership rule.
-- [ ] GODSN-CK-CONSISTENCY-01-02 — Every reference-bearing output has one explicit ownership rule.
-- [ ] GODSN-CK-CONSISTENCY-01-03 — Related methods apply the same ownership rule unless their contracts distinguish it.
+- [ ] GODSN-CK-CONSISTENCY-01-01 — Every reference-bearing input and output has one explicit ownership rule.
+- [ ] GODSN-CK-CONSISTENCY-01-02 — Related methods apply the same ownership rule unless their contracts distinguish it.
 
 ### GODSN-SC-CONSISTENCY-02 — Rule violation: Receiver choices conflict within one type
 
@@ -176,8 +171,7 @@ set should represent one coherent type model; unexplained mixing fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-CONSISTENCY-02-01 — Receiver choices are consistent across the method set.
-- [ ] GODSN-CK-CONSISTENCY-02-02 — Each exceptional receiver choice has a distinct semantic reason.
+- [ ] GODSN-CK-CONSISTENCY-02-01 — Receiver choices are consistent across the method set except where a distinct semantic reason is stated.
 
 ### GODSN-SC-CONSISTENCY-03 — Rule violation: Documentation, errors, and behavior disagree
 
@@ -186,10 +180,18 @@ caller-visible forms should express the same behavior; contradictory surfaces fa
 
 #### Checklist
 
-- [ ] GODSN-CK-CONSISTENCY-03-01 — Public documentation matches current behavior.
-- [ ] GODSN-CK-CONSISTENCY-03-02 — Returned error identities match the documented error contract.
-- [ ] GODSN-CK-CONSISTENCY-03-03 — Documented ownership matches actual aliasing.
-- [ ] GODSN-CK-CONSISTENCY-03-04 — Documented ownership matches actual resource lifetime.
+- [ ] GODSN-CK-CONSISTENCY-03-01 — Public documentation matches current behavior, returned error identities, actual aliasing, and actual resource lifetime.
+
+### GODSN-SC-CONSISTENCY-04 — Adversarial: Documentation is widened to legalize the behavior
+
+A surprising behavior is found, and the doc comment or contract text is broadened so the two agree, instead of
+the behavior being corrected or the change being decided. The contract should lead the implementation; a
+document edited to make an unintended behavior conformant fails.
+
+#### Checklist
+
+- [ ] GODSN-CK-CONSISTENCY-04-01 — No documented contract was widened or weakened to accommodate behavior the design intended to reject.
+- [ ] GODSN-CK-CONSISTENCY-04-02 — Every documentation change that follows a behavioral surprise names the decision that accepted that behavior.
 
 ## Risk
 
@@ -200,8 +202,7 @@ error unless the governing contract requires panic; an ordinary failure that ter
 
 #### Checklist
 
-- [ ] GODSN-CK-RISK-01-01 — No expected operational failure is represented by panic.
-- [ ] GODSN-CK-RISK-01-02 — Every programmer-invariant panic is distinguishable from an ordinary failure.
+- [ ] GODSN-CK-RISK-01-01 — Panic is reserved for programmer-invariant violations and is distinguishable from an expected operational failure.
 
 ### GODSN-SC-RISK-02 — Rule violation: A resource leaks on an alternate path
 
@@ -212,8 +213,7 @@ fails.
 #### Checklist
 
 - [ ] GODSN-CK-RISK-02-01 — Every acquired resource has exactly one owner.
-- [ ] GODSN-CK-RISK-02-02 — Every owner releases its resource on every terminal path.
-- [ ] GODSN-CK-RISK-02-03 — No cleanup runs before the resource's required lifetime ends.
+- [ ] GODSN-CK-RISK-02-02 — Every owner releases its resource on every terminal path and never before the required lifetime ends.
 
 ### GODSN-SC-RISK-03 — Adversarial: A caller mutates an aliased value after return
 
@@ -244,9 +244,19 @@ loss fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-RISK-05-01 — Every returned error is handled or explicitly discarded.
-- [ ] GODSN-CK-RISK-05-02 — Every explicit error discard has a documented reason.
-- [ ] GODSN-CK-RISK-05-03 — Added error context preserves every promised error identity.
+- [ ] GODSN-CK-RISK-05-01 — Every returned error is handled or explicitly discarded with a documented reason.
+- Also applies: GODSN-CK-USAGE-02-01 (added context preserves every promised error identity).
+
+### GODSN-SC-RISK-06 — Normal case: A failed operation leaves the caller able to recover
+
+An ordinary call fails partway through validation, allocation, or I/O. The package should leave its observable
+state consistent so the caller can retry or stop, and should not keep a half-applied change; a failure that
+leaves the value unusable without saying so fails.
+
+#### Checklist
+
+- [ ] GODSN-CK-RISK-06-01 — Every failed operation leaves the package's observable state consistent for a retry or a stop.
+- [ ] GODSN-CK-RISK-06-02 — No partially applied change survives a failed operation without a documented position.
 
 ## Overall
 
@@ -258,8 +268,7 @@ ownership, ordinary error flow, and closed resource lifetimes. A gap between tho
 #### Checklist
 
 - [ ] GODSN-CK-OVERALL-01-01 — The complete design is understandable from the caller-facing contract.
-- [ ] GODSN-CK-OVERALL-01-02 — Internal choices preserve every public ownership promise.
-- [ ] GODSN-CK-OVERALL-01-03 — Internal choices preserve every public failure promise.
+- [ ] GODSN-CK-OVERALL-01-02 — Internal choices preserve every public ownership and failure promise.
 
 ### GODSN-SC-OVERALL-02 — Adversarial: Compilation and tests mask an unsafe contract
 
@@ -268,6 +277,5 @@ speculative abstraction still harms callers. Mechanical success must not substit
 
 #### Checklist
 
-- [ ] GODSN-CK-OVERALL-02-01 — Acceptance is not based solely on compilation.
-- [ ] GODSN-CK-OVERALL-02-02 — Acceptance is not based solely on current test success.
-- [ ] GODSN-CK-OVERALL-02-03 — Every caller-visible edge in this checklist remains satisfied together.
+- [ ] GODSN-CK-OVERALL-02-01 — Acceptance is not based solely on compilation or on current test success.
+- [ ] GODSN-CK-OVERALL-02-02 — Every caller-visible edge in this checklist remains satisfied together.
