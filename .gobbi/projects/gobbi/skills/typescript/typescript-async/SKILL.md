@@ -59,3 +59,6 @@ async function runOwned(task: Task, signal: AbortSignal): Promise<void> {
 ```
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
