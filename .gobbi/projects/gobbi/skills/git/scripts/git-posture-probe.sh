@@ -5,8 +5,9 @@
 #   Report the effective runtime git posture — the sandbox / network / approval
 #   state that decides whether networked git ops (git push, gh) can run. The
 #   manager reads this BEFORE attempting a push, not after the wall is hit
-#   (git/SKILL.md § Runtime git environment). Locked by Ideation DD-3 +
-#   Planning PIN-1; the runtime-posture concept name is locked by OQ-7.
+#   (git/SKILL.md § 2.1 Probe posture and create one isolated worktree).
+#   Locked by Ideation DD-3 + Planning PIN-1; the runtime-posture concept name
+#   is locked by OQ-7.
 #
 #   HONESTY CONTRACT (PIN-1): report only what is reliably detectable. The one
 #   reliable field is network (via CODEX_SANDBOX_NETWORK_DISABLED on Codex).

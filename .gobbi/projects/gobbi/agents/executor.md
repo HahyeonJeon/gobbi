@@ -28,7 +28,7 @@ Mandatory load:
 
 1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
-3. **`workflow/steps/execution.md`** + **`execution` skill** — implementation and verification principles.
+3. **`workflow/phase-2/SKILL.md`** + **`execution` skill** — implementation and verification principles.
 4. **`git` skill** — the absolute-worktree-path write discipline. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
