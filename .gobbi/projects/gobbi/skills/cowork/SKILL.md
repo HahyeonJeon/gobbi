@@ -61,186 +61,124 @@ is a separate user-called judgment and never substitutes for stage quality check
 
 #### 1.1 Bind the session to one worktree
 
-- Start after cowork has been selected and loaded. Treat the first user topic as the trigger to establish the
-  session before any tracked file is edited.
-- Inspect the repository root, current checkout, branch, head, status, registered worktrees, candidate base,
-  ignore rule, and intended worktree root without mutation. Record the main checkout status so later checks can
-  prove cowork did not change it.
-- Reuse the current checkout only when direct Git evidence shows it is the intended isolated linked worktree
-  and not the main checkout. Otherwise propose the current branch as the local base, resolve a dirty or
-  ambiguous base with the user, generate one Gobbi session UUID, and create one branch and linked worktree
-  through the [Git operation](../git/SKILL.md).
-- Verify the new worktree is registered, clean, on the intended branch, rooted at the exact absolute path, and
-  based on the agreed commit. Report the base, branch, worktree, head, and clean status in the conversation.
-- Stop on a missing repository, unsafe or occupied target, mismatched root, unresolved base, or failed worktree
-  creation. Keep existing work intact, show the exact evidence, and resume from this step after the cause is
-  resolved.
-- Never copy, move, stash, restore, or silently absorb uncommitted changes from another checkout. Use the
-  verified absolute worktree path for every write and `git -C <absolute-worktree>` for every Git command.
+After cowork is selected, use the [Git operation](../git/SKILL.md) to create or reuse one verified isolated
+worktree before any tracked edit. Preserve the main checkout, use the fully expanded worktree path for every
+write, and report the base, branch, worktree, head, and clean status. If the gate cannot be proved, retain all
+existing work, report the exact recovery evidence, and stop at this step.
 
 #### 1.2 Recover a retained cowork session
 
-- On resume, require an explicit retained branch or worktree identity. Inspect its registration, branch, head,
-  commits, provenance trailers, status, and available verification evidence before continuing.
-- Recover completed work from the local Git history and recover pending work only from the inspected worktree.
-  Stop for a user decision when unique edits, unexpected commits, or conflicting writers make ownership
-  unclear.
-- Treat evaluation as absent when the current conversation does not reliably identify a prior frozen subject
-  and completed round. Git history proves implementation, but it does not prove an independent review occurred.
-- Do not create or infer `session.json`, `state.json`, workflow records, typed staging, or RECORD artifacts.
-  Continue only after the retained local state has one safe writer and an exact recovery point.
+Resume only from an explicitly named retained branch or worktree. Use Git evidence to recover committed and
+pending work, require one safe writer, and report the exact recovery point. When the conversation does not
+prove a prior frozen evaluation subject and completed round, treat evaluation as absent; never infer full
+Workflow state from the retained local history.
 
 ### Phase 2 — Run the Topic Loop
 
 #### 2.1 Inspect, understand, and route the user topic
 
-- Read the user topic, current tree, closest project documents and patterns, relevant history, current behavior,
-  applicable mistakes, and the reach of the proposed change before asking questions.
-- Make the outcome, reason, actors, included and excluded work, unchanged behavior, success criteria, risks,
-  and first action concrete. Resolve every material scope, design, destructive, compatibility, migration,
-  security, or external-service decision with the user through [Discussion](../discussion/SKILL.md).
-- Select and report the smallest safe delivery depth and the resulting path through optional Ideation,
-  optional Planning, and required Execution. Do not ask the user to choose a depth label.
+Inspect the user-supplied topic and relevant project evidence, then use
+[Discussion](../discussion/SKILL.md) to make the outcome, boundaries, acceptance proof, and material choices
+concrete. The agent selects and reports the smallest safe delivery depth and its path through optional
+Ideation, optional Planning, and required Execution; the user supplies topics and owns material decisions.
 
-  | Depth | Evidence | Normal topic path |
-  | --- | --- | --- |
-  | **Direct** | The outcome, root cause when applicable, acceptance proof, and one execution unit are already clear, local, reversible, and low-risk. | Skip Ideation and Planning; execute the locked topic contract. |
-  | **Light** | The topic is bounded but needs a design decision or modest decomposition. | Run whichever optional stage the evidence requires, then execute. |
-  | **Structured** | The topic is large, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation and Planning, then execute. |
+| Depth | Evidence | Normal topic path |
+| --- | --- | --- |
+| **Direct** | The outcome, root cause when applicable, acceptance proof, and one execution unit are clear, local, reversible, and low-risk. | Skip Ideation and Planning; execute the locked topic contract. |
+| **Light** | A bounded topic needs a design decision or modest decomposition. | Run whichever optional stage the evidence requires, then execute. |
+| **Structured** | The topic is large, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation and Planning, then execute. |
 
-- Require Ideation for design work and Planning for multi-unit work. A fix may skip Ideation when its root
-  cause, outcome, scope, and before-and-after acceptance proof are already concrete.
-- Lock the chosen path and topic contract in the conversation. When an optional stage will write artifacts,
-  record each fully expanded worktree path, reuse the project's document hierarchy convention, and ask the
-  user before inventing a hierarchy when no convention exists.
-- If new user input changes the active topic, stop further writes, preserve the current state, revise the
-  contract, and report the new route before continuing.
+Design work requires Ideation, multi-unit work requires Planning, and a concrete fix may skip Ideation. Lock
+the chosen path and topic contract in the conversation, including exact fully expanded paths for selected
+artifacts; reuse the project hierarchy or ask the user when none exists. If new input changes the active topic,
+stop writes, preserve state, revise the contract, and report the new route.
 
 #### 2.2 Run optional Ideation
 
-- Skip this step when Step 2.1 did not select Ideation. Otherwise load and apply
-  [Ideation](../ideation/SKILL.md) inside the locked topic boundary.
-- Create its normal durable `requirements.md`, `topics.md`, and `ideation.md` artifacts at the exact worktree
-  paths in the topic contract. Let Ideation manage its temporary working files, but do not create an
-  unapproved hierarchy or write outside the worktree.
-- Complete Ideation's evidence study, user decisions, artifact creation, and self-review. Cowork overrides
-  only evaluator timing: do not dispatch an independent evaluator or claim an independent Ideation verdict;
-  defer that review to an explicit Cowork `evaluate` call in Phase 3.
-- Verify the three durable artifacts, their agreement, and their tracked paths. Commit them as one focused
-  prerequisite before Planning or Execution reads them.
-- Treat the committed Ideation artifacts as the authoritative design inputs. Stop with exact recovery evidence
-  if they remain incomplete, unverified, uncommitted, or materially disputed.
+When selected, load and apply [Ideation](../ideation/SKILL.md) within the locked topic. Write
+`requirements.md`, `topics.md`, and `ideation.md` at their exact contracted worktree paths, complete the
+operation's creation and self-review, and defer independent review to an explicit Phase 3 `evaluate` call.
+
+Verify and commit the three artifacts as one focused prerequisite before dependent work. Their committed
+content is the design authority; stop at this step when it is incomplete, unverified, uncommitted, or
+materially disputed. When Ideation was not selected, continue to the selected next step.
 
 #### 2.3 Run optional Planning
 
-- Skip this step when Step 2.1 did not select Planning. Otherwise load and apply
-  [Planning](../planning/SKILL.md), using committed Ideation artifacts when present or the locked topic contract
-  when Ideation was skipped.
-- Create its normal durable `tasks.md` and `plan.md` artifacts at the exact worktree paths in the topic
-  contract. Let Planning manage its temporary working files and keep every task within the accepted scope.
-- Complete Planning's decomposition, ordering, artifact creation, and self-review. Do not dispatch an
-  independent evaluator from this stage; defer independent review to an explicit Cowork `evaluate` call in
-  Phase 3.
-- Verify both durable artifacts, their coverage, their dependency-valid order, and their tracked paths. Commit
-  them as one focused prerequisite before Execution reads them.
-- Treat the committed Planning artifacts as the execution authority. Stop with exact recovery evidence if
-  they remain incomplete, unverified, uncommitted, cyclic, or inconsistent with their inputs.
+When selected, load and apply [Planning](../planning/SKILL.md) to the committed Ideation artifacts or, when
+Ideation was skipped, the locked topic contract. Write `tasks.md` and `plan.md` at their exact contracted
+worktree paths, complete the operation's creation and self-review, and defer independent review to an explicit
+Phase 3 `evaluate` call.
+
+Verify and commit both artifacts as one focused prerequisite before Execution. Their committed content is the
+execution authority; stop at this step when it is incomplete, unverified, uncommitted, dependency-invalid, or
+inconsistent with its inputs. When Planning was not selected, continue with the single-unit topic contract.
 
 #### 2.4 Execute, verify, and commit the next unit
 
-- Select the next dependency-ready unit from committed `plan.md`, or use the locked single-unit topic contract
-  when Planning was skipped.
-- Assign the unit to one accountable executor through the [Delegation contract](../delegation/SKILL.md).
-  Include the complete input artifacts, exact scope, fully expanded worktree and write paths, required skills
-  and mistake companions, acceptance checks, one commit boundary, and required return evidence.
-- Keep one ordered writer chain. Require the executor to verify its root before editing, use
-  `git -C <absolute-worktree>`, stage only owned paths, never use `git stash`, and run the complete
-  [Execution operation](../execution/SKILL.md) through final-tree verification and one focused local commit.
-- After the executor reports, reread the promised artifacts and commit, confirm the executor is finished and
-  addressable, rerun the required checks, inspect the changed paths, and compare the main checkout with its
-  recorded pre-session status.
-- Reject a unit that is uncommitted, unverified, outside scope, on the wrong branch, inconsistent with its
-  authoritative inputs, or not isolated from the main checkout. Diagnose and repair the cause through the same
-  writer chain, then repeat this step.
-- Never push, merge, publish, remove the worktree, delete a branch, or rewrite history from this step.
+Select the next dependency-ready unit from committed `plan.md`, or use the locked single-unit contract when
+Planning was skipped. Keep one ordered writer and apply the
+[Delegation contract](../delegation/SKILL.md) with the [Execution operation](../execution/SKILL.md) to produce,
+verify, and accept one focused local commit.
+
+Do not start dependent work before acceptance. Repair an invalid unit or commit through the same ordered
+writer and repeat this step. If its evidence instead materially changes the contract, preserve state and route
+through Step 2.5.
 
 #### 2.5 Route the next loop action
 
-- When another planned unit is dependency-ready, return to Step 2.4.
-- When execution invalidates the design contract, return to Step 2.2, then rerun Step 2.3 when Planning applies
-  before resuming Execution. When only the task decomposition or order is invalidated, return to Step 2.3.
-- When evidence changes the selected stages or exposes a material user decision, return to Step 2.1 and report
-  the revised path before another write.
-- Complete the topic only after every selected stage and in-scope unit has verified focused commits, the exact
-  final tree passes its checks, the worktree is clean, and no unauthorized change remains.
-- Report the outcome, scope, durable artifact paths, commit hashes, verification commands and results,
-  concerns, and user-kept exclusions. Mark commits after the last evaluated head as unevaluated.
-- Wait for the next user topic, explicit `evaluate` call, or explicit `wrap up` call. A new topic returns to
-  Step 2.1; do not start evaluation or closure automatically.
+Route another dependency-ready unit to Step 2.4. Route an invalid design to Step 2.2 and then Step 2.3 when
+Planning applies; route invalid decomposition to Step 2.3; route a changed stage selection or material
+decision to Step 2.1. Verify and commit every revised durable prerequisite before dependent work resumes.
+
+Complete a topic only when all selected stages and units have verified focused commits and the worktree passes
+its checks. Report the outcome, scope, artifacts, commits, verification, concerns, exclusions, and any commits
+after the last evaluated head. Then wait for the user's next topic, explicit `evaluate`, or explicit `wrap up`.
 
 ### Phase 3 — Evaluate on User Call
 
 #### 3.1 Freeze one user-called review subject
 
-- Enter this phase only when the user explicitly calls `evaluate`. Accept an optional named topic, commit, or
-  commit range; otherwise include every session commit after the last completed evaluation subject, or every
-  session commit after the base when no prior round is reliably known.
-- Freeze the exact head, included commits and diff, topic contracts, selected stage artifacts, requirements,
-  verification evidence, and worktree status before dispatch. Disclose any session commit outside a
-  user-narrowed subject as unevaluated.
-- Keep the frozen subject unchanged while evaluators work. If the tree or head changes, discard the round as
-  stale and ask for a new explicit evaluation call.
+Enter this phase only for an explicit `evaluate` call. Freeze the named subject or, by default, the session
+commits after the last completed evaluation subject (after the base when none is reliably known), including
+the exact head, diff, contracts, stage artifacts, requirements, verification, and status. Disclose excluded
+commits as unevaluated. If the tree or head changes during review, discard the stale round and require a new
+explicit call.
 
 #### 3.2 Run one independent dual-system round
 
-- Give the same neutral frozen-subject contract to one fresh Claude evaluator and one fresh Codex evaluator.
-  Each evaluator must be independent of the work and must not see the other report.
-- Require both evaluators to apply the complete [Evaluation operation](../evaluation/SKILL.md). Each report
-  must cover Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall, with the full
-  finding ledger, checklist, evidence, and a `PASS`, `REVISE`, or `FAIL` verdict.
-- Validate both reports before comparing them. If either system is unavailable or returns invalid output,
-  pause and show the exact failure; continue without that named system only after the user explicitly waives
-  it for this evaluation round.
+One call authorizes one fresh, independent Claude-and-Codex round over the same neutral frozen subject through
+the [Evaluation operation](../evaluation/SKILL.md). Keep the reports separate until both are valid. If either
+system is unavailable or invalid, pause with the exact failure; a single-system continuation requires the
+user's explicit waiver for that named round.
 
 #### 3.3 Aggregate and disposition the findings
 
-- Reconcile the two valid reports without changing the frozen work. Use the more severe verdict in the order
-  `FAIL` over `REVISE` over `PASS`, preserve every material finding, and explain any conflict.
-- Present one decision-ready finding batch with recommended accept, reject, or defer dispositions. Never apply
-  a finding until the user approves its disposition.
-- Record the completed round, subject, aggregate verdict, and dispositions in the conversation only. Approved
-  immediate corrections become new normal cowork topics and return to Phase 2.
-- Do not evaluate a correction automatically. Any commit after the frozen head is unevaluated until another
-  explicit `evaluate` call authorizes one new round.
+Aggregate valid reports using the more severe `FAIL`, `REVISE`, or `PASS` verdict and present every material
+finding for the user's accept, reject, or defer disposition. Do not change the work before that disposition.
+Record the subject, verdict, and decisions in the conversation only. Accepted corrections return to Phase 2;
+their changed head remains unevaluated until another explicit `evaluate` call.
 
 ### Phase 4 — Close on User Call
 
 #### 4.1 Decide evaluation freshness
 
-- Enter this phase only when the user explicitly calls `wrap up`. Compare the current head with the last
-  completed evaluation subject.
-- When no completed evaluation exists or later commits made it stale, use [Discussion](../discussion/SKILL.md)
-  to ask whether to run one evaluation round or close with self-verification only. State the exact unevaluated
-  commits and recommend evaluation when their risk or breadth justifies it.
-- If the user chooses evaluation, treat that choice as one `evaluate` call, complete Phase 3, then repeat this
-  freshness step. If approved corrections change the head, every additional round requires another user
-  choice.
-- If the user chooses self-verification only, record that evaluation was declined for the named head. Do not
-  imply an independent verdict.
+Enter this phase only for an explicit `wrap up` call. Compare the head with the last completed evaluation
+subject. When evaluation is absent or stale, use [Discussion](../discussion/SKILL.md) to ask whether to run one
+round or close with self-verification only, naming the unevaluated commits.
+
+If the user chooses evaluation, complete Phase 3 and repeat this freshness decision; every later round remains
+a user choice. If the user declines, record that no independent verdict covers the named head.
 
 #### 4.2 Verify and hand off the retained local result
 
-- Require a clean worktree, focused local commits for all in-scope work, current self-verification, and an
-  unchanged main checkout relative to the recorded pre-session status. Return to the owning Phase 2 step,
-  including Step 2.2 or 2.3 for a stage artifact and Step 2.4 for an execution unit, or stop with exact recovery
-  evidence when a condition cannot be repaired safely.
-- Provide a conversation-only handoff containing the outcome and scope, durable artifact paths, commits,
-  verification, evaluation coverage and verdict, approved, rejected, and deferred findings, unresolved work,
-  risks, base, branch, worktree, head, status, and the first recovery command.
-- Retain the branch and worktree by default. Do not run full Workflow Wrap-up, RECORD, memory promotion,
-  publication, merge, cleanup, branch deletion, or worktree removal.
-- Treat a separate user request for publication, merge, or cleanup as a new Git operation with its own current
-  evidence and authority gates. Cowork is complete when the verified local history and its retained recovery
-  path are reproducible.
+Use current Execution and Git evidence to require a clean worktree, focused verified commits, and an unchanged
+main checkout; return a defect to its owning Phase 2 step. Provide a conversation-only handoff with the
+outcome, scope, artifacts, commits, verification, evaluation coverage and dispositions, unresolved risks,
+base, branch, worktree, head, status, and first recovery command.
+
+Retain the branch and worktree, and do not produce full Workflow state, RECORD, memory promotion, or Wrap-up
+output. Publication, merge, cleanup, branch deletion, and worktree removal require a separate explicit Git
+operation.
 
 ## References
