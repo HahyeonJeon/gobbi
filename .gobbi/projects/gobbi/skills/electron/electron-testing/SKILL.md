@@ -126,6 +126,7 @@ Preserve exact commands, environment, operating system, architecture, artifact i
 - Map every requirement to its test seam, exact command, result, and retained evidence; name each unrun case and its blocker.
 - Confirm success and applicable invalid, untrusted, cancellation, cleanup, restart, single-instance, deep-link, platform, and packaged cases have explicit dispositions.
 - Return product defects, environment gaps, residual risks, and the narrowest reproduction command.
+- When this test work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an active `electron` sibling supply the applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 5.2 Hand packaged evidence to release
 
@@ -134,3 +135,5 @@ Preserve exact commands, environment, operating system, architecture, artifact i
 - Do not create, sign, notarize, publish, promote, or roll out an artifact from this operation.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
