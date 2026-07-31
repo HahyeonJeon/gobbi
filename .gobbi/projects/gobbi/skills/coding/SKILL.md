@@ -290,7 +290,7 @@ Good code minimizes the complexity the next person must hold in their head to ch
 
 ## Scope — Language-Agnostic
 
-These principles state the language-agnostic *property* of good code; language-specific *idioms* live in the [HTML](../html/SKILL.md), [CSS](../css/SKILL.md), [Python](../python/SKILL.md), and [TypeScript](../typescript/SKILL.md) skills. Select each language skill independently when that language enters scope.
+These principles state the language-agnostic *property* of good code; language-specific *idioms* live in the [HTML](../html/SKILL.md), [CSS](../css/SKILL.md), [Go](../go/SKILL.md), [Python](../python/SKILL.md), and [TypeScript](../typescript/SKILL.md) skills. Select each language skill independently when that language enters scope. For Go, load every applicable child from its domain routing table.
 
 For any Electron work, **MUST load [`electron`](../electron/SKILL.md) and every child whose root trigger applies**: [`electron-convention`](../electron/electron-convention/SKILL.md) for conventions, [`electron-development`](../electron/electron-development/SKILL.md) for implementation or review, [`electron-runtime`](../electron/electron-runtime/SKILL.md) for runtime lookup, [`electron-test`](../electron/electron-test/SKILL.md) for Electron-specific evidence, and [`electron-release`](../electron/electron-release/SKILL.md) for release work. Load several children when several triggers apply; `coding` remains only the language-agnostic construction layer and defines no Electron platform policy.
 

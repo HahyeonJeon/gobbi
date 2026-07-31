@@ -70,9 +70,10 @@ Every skill outside the floor is indexed here once. The index identifies owners;
 | [`desktop`](../desktop/SKILL.md) | Desktop application delivery as an Electron and TypeScript vertical slice: the design fidelity ladder, the privilege boundary, and a signed, update-rehearsed per-OS release. | Relevant when the work targets an installed windowed application; not for a browser page, a command-line tool, a library, or a service. |
 | [`html`](../html/SKILL.md) | HTML domain routing for artifact authoring, platform lookup, and semantic judgment. | Relevant when work writes or reviews HTML; load every applicable child. |
 | [`css`](../css/SKILL.md) | CSS domain for browser and Electron-renderer presentation work. | Relevant for CSS development, platform diagnosis, validity constraints, convention decisions, or focused review; load every applicable child. |
+| [`go`](../go/SKILL.md) | Go domain family for development, modules, testing, toolchain use, and Go-specific judgment. | Relevant whenever a task implements, reviews, tests, packages, or diagnoses Go software; load every applicable child route. |
 | [`python`](../python/SKILL.md) / [`typescript`](../typescript/SKILL.md) | Language skills; TypeScript is a domain router to focused child skills. | Relevant when the task enters that language. |
-| [`react`](../react/SKILL.md) | Library method skill: the React-idiom layer, under `coding` and beside `typescript`. | Relevant when work writes or reviews React, in TypeScript or in plain JavaScript. |
 | [`electron`](../electron/SKILL.md) | Electron domain family for platform development, runtime lookup, conventions, Electron-specific testing, and release work. | Relevant when developing, testing, reviewing, packaging, or releasing an Electron application; load every applicable child routed by the domain root. |
+| [`react`](../react/SKILL.md) | Library method skill: the React-idiom layer, under `coding` and beside `typescript`. | Relevant when the task writes or reviews React, in TypeScript or in plain JavaScript. |
 | [`codex`](../codex/SKILL.md) | Native Codex and Codex-peer invocation surfaces. | Relevant when the active runtime is Codex or an operation uses a Codex peer. |
 
 ## Procedure
