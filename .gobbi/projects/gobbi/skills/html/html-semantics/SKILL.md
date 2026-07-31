@@ -65,3 +65,6 @@ Prefer an essential native path across all declared targets, with enhancements l
 exact-target path may depart when the complete target is one pinned runtime and no broader claim is made.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
