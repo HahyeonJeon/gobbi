@@ -29,6 +29,15 @@ or readiness verdict. Present only current answers and retain concise provenance
 |---|---|---|---|---|---|---|
 | `{{1–4}}` | `{{S01 or S06.E01}}` | `{{title}}` | `{{seed | adapted | emergent}}` | `{{resolved | not-needed | merged | open}}` | `{{reason and evidence}}` | `{{IDs}}` |
 
+## Current answer register
+
+Include current answers only. Preserve the keyed question-to-answer and evidence chain after the
+temporary record is removed.
+
+| Answer ID | Phase / topic ID | Exact question | Faithful non-sensitive current answer | Claim kind | Evidence status and source | Decision or open owner / method | Material correction ID |
+|---|---|---|---|---|---|---|---|
+| `{{A001}}` | `{{Phase number / topic ID}}` | `{{question as asked}}` | `{{current answer}}` | `{{claim kind}}` | `{{status and source}}` | `{{decision or owner / method}}` | `{{conflict ID or none}}` |
+
 ## Phase 1 — Evidence, Problem, and People
 
 - Status: `{{confirmed | corrected}}`
@@ -96,7 +105,7 @@ Include only conflicts that changed a current answer, topic tree, or Phase check
 - Classifier and trigger: `{{current result and reason}}`
 - Verified repository and project facts: `{{facts and sources}}`
 - Behavioral problem evidence: `{{events, behavior, and strength}}`
-- First people, jobs, alternatives, and switching forces: `{{current answers}}`
+- First people, jobs, alternatives, and change or adoption factors: `{{current answers}}`
 - Scope, boundary, unchanged behavior, and non-goals: `{{current answers}}`
 - Project and system direction: `{{current macro direction}}`
 - Experience, accessibility, adoption, and compatibility direction: `{{current macro direction}}`

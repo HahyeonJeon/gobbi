@@ -29,7 +29,7 @@ the Startup operation owns question order, evidence handling, topic adaptation, 
 - In which contexts, abilities, devices, environments, languages, or locales do they act?
 - What progress is each primary person trying to make, and what happens when that job fails?
 - What do they do today, including workarounds, adjacent tools, manual work, or doing nothing?
-- What observed behavior shows the need, and what push, pull, anxiety, or habit shapes change?
+- What observed behavior shows the need, and what helps or blocks a change from current practice?
 - Who is excluded from the current boundary, and what outcome must be better than the alternative?
 
 ## Phase 2 — Project Boundary
@@ -60,7 +60,8 @@ the Startup operation owns question order, evidence handling, topic adaptation, 
 - Which concepts, information, terminology, hierarchy, feedback, and controls must remain clear?
 - Which empty, loading, partial, error, permission, destructive, and recovery states need a defined experience?
 - Which accessibility, inclusion, assistive-technology, language, locale, or device needs shape the direction?
-- Which prototype or representative task would test the riskiest experience assumption, and what would it not prove?
+- Which representative people and tasks should test the riskiest experience assumption?
+- Which prototype or test evidence would resolve that assumption, and what would the evidence not prove?
 - Which existing design references, systems, habits, data, workflows, and compatibility promises should be reused, migrated, or supported during adoption?
 
 ### Topic 7 — System, Data, Delivery, and Ownership Direction
@@ -90,6 +91,7 @@ the Startup operation owns question order, evidence handling, topic adaptation, 
 - Which quality attributes govern trade-offs, and which scenario and evidence define each required level?
 - Which coding, design, architecture, naming, error, documentation, and contribution conventions are binding?
 - Which live examples should contributors follow, and which familiar patterns are counterexamples here?
+- Which accessibility target or standard applies, which standards-based and representative-user evidence validates it, and who owns each validation?
 - Which test layers, specialist reviews, release evidence, and accountable owners prove a change safe and maintainable?
 
 ### Topic 10 — Risks, Capacity, and Continuity

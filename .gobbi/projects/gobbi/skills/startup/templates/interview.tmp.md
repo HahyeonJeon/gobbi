@@ -98,6 +98,7 @@ Copy this block for each material answer. Use sequential answer IDs such as `A00
 - Dependencies: `{{topic or answer IDs, or none}}`
 - Topic effects: `{{added, adapted, merged, not-needed, reopened, or none; include reason}}`
 - Supersedes: `{{answer IDs or none}}`
+- Superseded by: `{{answer ID or none}}`
 - Conflicts with: `{{answer or conflict IDs, or none}}`
 - Follow-up owner and method: `{{owner and method, or none}}`
 

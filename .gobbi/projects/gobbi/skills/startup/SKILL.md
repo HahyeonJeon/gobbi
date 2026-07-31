@@ -68,8 +68,8 @@ An interruption preserves that state without creating a separate Startup lifecyc
   context from the manager.
 - Continue only for `fresh-project`, `sparse-baseline`, or `explicit-reset`. Return an invalid trigger to
   the caller without reading it as permission to create or change project state.
-- During Configuration, run only this Phase. An accepted interview begins later inside ordinary Ideation
-  DISCUSSION under the workflow owner.
+- During Configuration, run this Phase and the read-only accept or decline gate in Step 2.1. Do not run
+  any later step or write an interview file until Workflow has entered ordinary Ideation DISCUSSION.
 
 #### 1.2 Inventory the baseline read-only
 
@@ -97,7 +97,7 @@ An interruption preserves that state without creating a separate Startup lifecyc
   - `absent` when no substantive baseline exists; or
   - `contradictory` when load-bearing records disagree or are too stale for safe downstream use.
 - For `sufficient`, return the classifier report with terminal outcome `sufficient` and write no interview
-  file. Route every other result to Phase 2.
+  file. Route every other result to the read-only Step 2.1 gate while Configuration remains active.
 
 ### Phase 2 — Prepare an Accepted Interview
 
@@ -107,8 +107,9 @@ An interruption preserves that state without creating a separate Startup lifecyc
   the classifier, evidence, gaps, and optional guided interview.
 - Do not infer acceptance. On decline, return the classifier, gaps, and terminal outcome `declined`
   without inventing facts or writing an interview file.
-- On acceptance, require the workflow owner to enter ordinary Ideation DISCUSSION before continuing.
-  Startup creates no step, stage, cursor, session, mode, or completion predicate.
+- On acceptance, return the accepted disposition to Workflow and suspend Startup without writing an
+  interview file. After Workflow enters ordinary Ideation DISCUSSION, resume Startup at Step 2.2.
+- Startup creates no step, stage, cursor, session, mode, or completion predicate.
 
 #### 2.2 Validate the record target
 
@@ -236,12 +237,19 @@ An interruption preserves that state without creating a separate Startup lifecyc
   checkpoint.
 - Include the final topic tree, Phase results, evidence and uncertainty, decisions and rejected
   alternatives, open questions and owners, risks, constraints, and the ordinary Ideation handoff.
-- Present the report to the user for confirmation. Apply corrections through the temporary record,
-  reopen affected checkpoints when required, regenerate the report, and repeat Step 4.1 before asking again.
+- Re-read the rendered report and compare it with the temporary record. Verify its required sections,
+  keyed current-answer register, final topic tree, current Phase statuses, open owners, material correction
+  provenance, and sensitive-data exclusions.
+- On any mismatch, retain the temporary record, repair through it, regenerate the report, and repeat
+  Steps 4.1–4.2. Do not delete the temporary record or claim completion.
+- Present only the verified report to the user for confirmation. Apply user corrections through the
+  temporary record, reopen affected checkpoints when required, regenerate the report, and repeat Steps
+  4.1–4.2 before asking again.
 
 #### 4.3 Complete and hand off
 
-- After user confirmation, remove the temporary record and verify the final report remains at:
+- After the post-render verification and user confirmation both succeed, remove the temporary record and
+  verify the final report remains at:
 
 ```text
 {session-root}/1-ideation/working/iteration-{n}/research/startup-interview.md
@@ -261,7 +269,8 @@ An interruption preserves that state without creating a separate Startup lifecyc
   - `interrupted` with the retained temporary path and first recovery action; or
   - `completed` with the confirmed final report path and Ideation handoff.
 - Do not claim completion when the final report is unconfirmed, the temporary record remains after
-  confirmation, or a material conflict lacks the user's current answer.
+  confirmation, the rendered report mismatches the temporary record, or a material conflict lacks the
+  user's current answer.
 
 ## References
 
