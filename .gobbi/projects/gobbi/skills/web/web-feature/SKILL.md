@@ -134,6 +134,9 @@ different things.
   unresolved risk; a screenshot cannot prove semantics, focus, hidden behavior, or conformance.
 - Run the active evaluation method and return failed claims to their earliest owner, preserving each evidence
   gap instead of widening a weaker signal.
+- When this feature is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an
+  active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them and
+  issues any verdict.
 
 #### 4.2 Prepare the release-ready handoff
 
@@ -149,3 +152,6 @@ different things.
   their own authority.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
