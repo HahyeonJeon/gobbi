@@ -124,3 +124,6 @@ synchronous layout. Depart when the behavior needs the scroll offset itself, and
 preference above.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
