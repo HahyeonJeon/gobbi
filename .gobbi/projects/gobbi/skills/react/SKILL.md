@@ -283,10 +283,11 @@ the cost of the whole child set has been measured — no token or latency figure
 no child owns measuring React runtime performance either. Both are stated here as known limitations
 rather than left for a reader to discover.
 
-**Rules this skill deliberately does not carry.** Typing discipline, assertion versus annotation, module
-and import mechanics, and strict-flag sets belong to `typescript`. Deep units, blast radius, naming, and
-root-cause repair belong to `coding`. Restating either here would create a second owner and the two would
-drift.
+**Rules this skill deliberately does not carry.** Typing discipline and assertion versus annotation belong
+to [`typescript-typing`](../typescript/typescript-typing/SKILL.md). Module and import mechanics, including
+strict configuration and compiler-flag semantics, belong to
+[`typescript-compiler`](../typescript/typescript-compiler/SKILL.md). Deep units, blast radius, naming, and
+root-cause repair belong to `coding`. Restating those owners here would create duplicate policy that drifts.
 
 ---
 
@@ -484,7 +485,7 @@ two and still be wrong React, and it can be fluent React and still fail a proper
 | Axis | Graded with | Question |
 |---|---|---|
 | Property | `../coding/evaluation.md` | Is this good software, in any language? |
-| Language idiom | `../typescript/evaluation.md` | Is this idiomatic TypeScript? Omitted on a plain-JavaScript codebase |
+| Language idiom | General [`evaluation`](../evaluation/SKILL.md) with [`typescript-conventions`](../typescript/typescript-conventions/SKILL.md) and [`typescript-typing`](../typescript/typescript-typing/SKILL.md) | Is this idiomatic TypeScript? Omitted on a plain-JavaScript codebase |
 | React idiom | `evaluation.md` | Is this idiomatic current React? |
 
 For a pre-handoff self-check, read `scenarios.md` for the probes that match the change, then answer the
@@ -507,8 +508,9 @@ One owner per borrowed fact; the body states the fact and this register names it
 
 - [`coding/SKILL.md`](../coding/SKILL.md#scope--language-agnostic) — owns the language-agnostic
   properties of good software that this skill specializes into React idioms.
-- [`typescript/SKILL.md`](../typescript/SKILL.md) and [`typescript/typing.md`](../typescript/typing.md) —
-  own the TypeScript language and type-system mechanics this skill never restates.
+- [`typescript/SKILL.md`](../typescript/SKILL.md) routes the TypeScript language family, and
+  [`typescript-typing`](../typescript/typescript-typing/SKILL.md) owns the type-system mechanics this skill
+  never restates.
 - [`principles/SKILL.md`](../principles/SKILL.md) — owns the ten behavioral principles this Procedure
   operationalizes for React.
 - [Rules of React](https://react.dev/reference/rules) — purity and idempotence, side effects outside

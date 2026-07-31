@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Example-verification harness for the gobbi `typescript` skill: extracts fenced ts blocks from the skill docs and type-checks them under a maximal-strict examples tsconfig. Not published.",
+  "description": "Example-verification harness for the gobbi `typescript` skill: extracts fenced TypeScript teaching fragments and type-checks them under one strict compatibility profile. It does not verify every runtime host or package artifact mode. Not published.",
   "devDependencies": {
     "typescript": "5.9.3"
   }

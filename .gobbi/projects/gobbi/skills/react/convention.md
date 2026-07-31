@@ -15,9 +15,10 @@ router.
 
 - **Against [`typing.md`](typing.md):** that file owns what a declaration *means* to the compiler; this
   one owns what it *looks like* once the meaning is settled. "Which of `interface` and `type` to declare
-  props with" is a language question and belongs to `typescript/typing.md` §8, which `typing.md` points
-  at; "props are declared above the component and the type is exported beside it" is here. If a sentence
-  would change behavior or type-checking, it is not a convention.
+  props with" is a language question and belongs to
+  [`typescript-typing`](../typescript/typescript-typing/SKILL.md), which `typing.md` points at; "props are
+  declared above the component and the type is exported beside it" is here. If a sentence would change
+  behavior or type-checking, it is not a convention.
 - **Against [`design.md`](design.md):** that file decides whether a component or hook is *earned* and
   what its prop surface *is*; this one decides what the result is *called* and where it *lives*. Props
   therefore pass through three files in a fixed order — shape in `design.md` §3, type in `typing.md` §2,

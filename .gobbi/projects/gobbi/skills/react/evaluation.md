@@ -1,17 +1,20 @@
 # React — Idiom Review Frame
 
 Child doc for the evaluator, and for the executor's pre-handoff self-check, grading a React change-set for
-**idiom** quality. It is the React-specific companion to [`../coding/evaluation.md`](../coding/evaluation.md),
-which grades the language-agnostic property of good code, and to
-[`../typescript/evaluation.md`](../typescript/evaluation.md), which grades the language idiom when the source is
-TypeScript. `REACT-CHECK-51` resolves that language switch before this count is graded.
+**idiom** quality. It is the React-specific companion to
+[`../coding/evaluation.md`](../coding/evaluation.md), which grades the language-agnostic property of good
+code. When the source is TypeScript, general [`evaluation`](../evaluation/SKILL.md) applies
+[`typescript-conventions`](../typescript/typescript-conventions/SKILL.md) and
+[`typescript-typing`](../typescript/typescript-typing/SKILL.md) to grade the language idiom.
+`REACT-CHECK-51` resolves that language switch before this count is graded.
 
-**Three axes, and their count is itself a check.** `../coding/evaluation.md` grades the property,
-`../typescript/evaluation.md` the language idiom, and this file the React idiom. Where the source is TypeScript a
-review produces three verdicts; where it is plain JavaScript the language-idiom axis does not apply and a review
-produces two, which is a complete review rather than a reduced one. `REACT-CHECK-23` resolves on that count. The
-axes are independent: a change can satisfy every property and still be wrong React — an Effect deriving state, an
-index key, a client store holding server data — and it can be fluent React and still fail a property.
+**Three axes, and their count is itself a check.** `../coding/evaluation.md` grades the property, general
+Evaluation with the applicable TypeScript children grades the language idiom, and this file grades the React
+idiom. Where the source is TypeScript a review produces three verdicts; where it is plain JavaScript the
+language-idiom axis does not apply and a review produces two, which is a complete review rather than a reduced
+one. `REACT-CHECK-23` resolves on that count. The axes are independent: a change can satisfy every property and
+still be wrong React — an Effect deriving state, an index key, a client store holding server data — and it can
+be fluent React and still fail a property.
 
 **This frame points; it does not restate.** The good, bad, and adversarial cases live in
 [`scenarios.md`](scenarios.md) (`REACT-SCENARIO-*`), the binary items in [`checklists.md`](checklists.md)
@@ -178,8 +181,10 @@ Run this after the target read and before the frame is locked.
    family counts against the current files. Reject stale, parent-only, mechanically incomplete, or semantically
    false evidence before deriving any selector, count, crosswalk, or metric.
 2. **Load all evaluation sources** — this file, [`scenarios.md`](scenarios.md), its three child sets, and
-   [`checklists.md`](checklists.md) — plus [`../coding/evaluation.md`](../coding/evaluation.md), and
-   [`../typescript/evaluation.md`](../typescript/evaluation.md) when the source is TypeScript.
+   [`checklists.md`](checklists.md) — plus [`../coding/evaluation.md`](../coding/evaluation.md). When the
+   source is TypeScript, load general [`evaluation`](../evaluation/SKILL.md),
+   [`typescript-conventions`](../typescript/typescript-conventions/SKILL.md), and
+   [`typescript-typing`](../typescript/typescript-typing/SKILL.md).
 3. **Run both source gates.** Complete the fresh full-scope cited-owner ledger and the raw literal-opening
    comparison. Run both independence probes. Stop on either failure.
 4. **Read the recorded React contract first.** Fifty-one of the sixty-five items are conditional on a

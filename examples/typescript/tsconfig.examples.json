@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
-  "//": "Examples baseline for the `typescript` skill (design §2 + §9b). Maximal-strict TYPE-safety, but the fragment-hostile unused-checks are RELAXED so a teaching snippet may declare a value only to show its type. Type strictness is what is under test; unused-checks are not. Consumed as the `extends` base by examples/typescript/run-examples.sh; not run standalone.",
+  "//": "Compatibility profile for fenced TypeScript teaching fragments. It keeps strict type-safety checks while relaxing fragment-hostile unused-symbol checks. Passing this profile proves only that a snippet is compatible with this pinned compiler and profile; runtime hosts, other compiler profiles, transforms, loaders, and package artifacts need their own evidence. Consumed as the `extends` base by examples/typescript/run-examples.sh; not run standalone.",
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
