@@ -446,12 +446,12 @@
   - **On fail:** consequence — explicit user scope is breached; halt and restore only the unauthorized edits safely.
   - **Resolution:** ______
 
-- [ ] **ORCH-CHK-DOC-05** `[required, do-confirm]` The active changed sources contain no retired alternate workflow mechanics or role-specific delegation files.
+- [ ] **ORCH-CHK-DOC-05** `[required, do-confirm]` The active changed sources contain no retired or unowned alternate orchestration mechanics or role-specific delegation files.
   - **Applicability:** conditional — workflow documentation changed.
   - **Source:** ORCH-P10; ORCH-SCN-08-D.
-  - **Pass condition:** semantic reread and scoped vocabulary/path search confirm one workflow, one router, one shared skeleton, and only live children.
+  - **Pass condition:** semantic reread and scoped vocabulary/path search confirm Workflow and Cowork use their recognized owners, one shared delegation skeleton, and only live children.
   - **Evidence:** changed-path inventory, scoped search, and full reread.
-  - **On fail:** open a blocking ownership finding and remove the active alternate mechanic.
+  - **On fail:** open a blocking ownership finding and remove the unowned alternate mechanic.
   - **Resolution:** ______
 
 ## Pilot and stress register
