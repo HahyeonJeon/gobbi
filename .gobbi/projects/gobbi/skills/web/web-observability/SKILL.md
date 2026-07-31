@@ -188,6 +188,9 @@ value never entered the record.
   and retention state, and per crash class a stack resolved to source or the stated reason it could not be.
 - Return an unanswerable question to Step 2.1 and a signal that never arrived to Step 3.2; ask `web-testing`
   for a harness when reproduction needs one and `web-platform` when a browser fact is disputed.
+- When this emission outcome is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 
 #### 4.2 Check the destination and hand off
 
@@ -202,3 +205,6 @@ value never entered the record.
   implemented emission, verified arrival, and observed live health as separate claims.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
