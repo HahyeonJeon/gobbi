@@ -13,7 +13,7 @@ Use this preference skill when a CSS task must decide whether a choice is valid 
 
 The Rules define that boundary through presentation ownership, accessibility conditions, declared-target support, and evidence limits. The Preferences select cascade, naming, custom-property and token, layout, and source-seam defaults inside it, and a Rule wins every conflict.
 
-Load `css-development` to make a change, `css-review` to assess existing CSS, and `css-platform` for runtime evidence. Document meaning, application state, product direction, security, and process work belong to their own domain owners.
+Load `css-development` to change or review CSS, and `css-platform` for runtime evidence. Document meaning, application state, product direction, security, and process work belong to their own domain owners.
 
 ## Principles
 

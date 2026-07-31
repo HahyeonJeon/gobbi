@@ -101,6 +101,6 @@ Compare representative conditions before and after with behavior and accessibili
 
 Compare working and failing cases at the earliest divergence. Report target, state, evidence,
 owner, and unknowns; route validity constraints and project-choice judgment to
-`css-conventions`, changes to `css-development`, and read-only assessment to `css-review`.
+`css-conventions`, and both changes and read-only assessment to `css-development`.
 
 ## References
