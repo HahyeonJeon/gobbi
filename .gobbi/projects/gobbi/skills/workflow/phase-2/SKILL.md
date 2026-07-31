@@ -17,7 +17,7 @@ It completes when Planning and every Execution task have verified PASS evidence 
 is active.
 
 This child owns Phase 2 actions, decisions, evidence, revisions, recovery, and completion checks. It applies
-the parent's shared route, evidence, gate, and Hand-off contracts and never reopens Phase 1 or a completed
+the parent's shared route, evidence, gate, and transition contracts and never reopens Phase 1 or a completed
 Planning item.
 
 ## Principles
@@ -234,7 +234,7 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 3.2 Render the checkpoint and continue
 
-- Fill the parent-owned Hand-off template exactly:
+- Render this Phase 2 checkpoint receipt:
 
 ```text
 Phase: Phase 2

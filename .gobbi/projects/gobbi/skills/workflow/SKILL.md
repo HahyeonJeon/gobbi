@@ -37,8 +37,9 @@ evaluators judge the synthesis independently from its creators and each other.
 
 ### Make every phase boundary recoverable
 
-Each Hand-off names the completed evidence, Git location, and exact next TODO. Phase 1 and Phase 2 continue
-immediately unless the user interrupts; Phase 3 ends the workflow.
+Each nonterminal Hand-off names the completed evidence, Git location, and exact next TODO. Phase 1 and Phase 2
+continue immediately unless the user interrupts; the Wrap-up-owned terminal Hand-off body and Git-owned
+finalization receipt end Phase 3.
 
 ## Rules
 
@@ -175,9 +176,10 @@ P3 · Hand-off
   2/2 at DISCUSSION, and repeat the complete cycle. After a blocking second pass, keep the current route
   recoverable and present the exact choices; never create iteration 3.
 - On PASS, retitle the item to `PASS`, complete it, and activate `P1 · Hand-off`.
-- Render the shared Hand-off template below, set `Next TODO` to
-  `P2 · Planning · DISCUSSION · 1/2`, and set `Continuation` to
-  `automatic unless the user interrupts for clear or compact`.
+- Render the Phase 1 checkpoint receipt defined by the internal
+  [`phase-1`](phase-1/SKILL.md) operation. Set its next route to
+  `P2 · Planning · DISCUSSION · 1/2` with automatic continuation unless the user interrupts for clear or
+  compact.
 - Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 2 in the
   same turn.
 
@@ -242,9 +244,9 @@ P3 · Hand-off
 #### 2.4 Hand off and continue
 
 - After every planned task has verified PASS evidence and a focused commit, activate `P2 · Hand-off` and
-  render the shared template.
-- Set `Next TODO` to `P3 · Wrap-up · DISCUSSION · 1/2` and `Continuation` to
-  `automatic unless the user interrupts for clear or compact`.
+  render the Phase 2 checkpoint receipt defined by the internal [`phase-2`](phase-2/SKILL.md) operation.
+- Set its next route to `P3 · Wrap-up · DISCUSSION · 1/2` with automatic continuation unless the user
+  interrupts for clear or compact.
 - Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 3 in the
   same turn.
 
@@ -263,7 +265,7 @@ P3 · Hand-off
   inventing material to fill empty staging.
 - In WORK, run independent Claude and Codex promotion-and-handoff drafts, freeze both, cross-review after
   freeze, synthesize, and let one authorized writer apply only supported promotion inside the isolated
-  worktree. Verify the actual post-promotion tree and shared handoff body.
+  worktree. Verify the actual post-promotion tree and the Wrap-up-owned handoff body.
 - In EVALUATION, give two fresh independent evaluators the actual tree, full creation package, handoff, checks,
   and finalization plan. In RECORD, seal the verdict, findings, promotion evidence, and handoff.
 - Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.4. A blocking first pass
@@ -279,26 +281,12 @@ P3 · Hand-off
 
 #### 3.3 Render the terminal Hand-off
 
-- Render the shared template with a factual receipt for commits, publication, merge, cleanup, branch, and
-  worktree. Report only actions that occurred.
-- Set `Next TODO` to `none — workflow complete` and `Continuation` to `terminal`.
+- Display the complete evaluated Hand-off body defined by the [Wrap-up](../wrap-up/SKILL.md) operation.
+- Append the factual finalization receipt defined by the [Git](../git/SKILL.md) skill. Report only actions
+  that occurred.
+- Leave no next TODO after `P3 · Hand-off`; this is the terminal workflow checkpoint.
 - Complete `P3 · Hand-off` only after the handoff, TODO route, local evidence, and retained recovery state
   agree. Display the terminal checkpoint and end the workflow.
-
-Use this exact shared Hand-off template:
-
-```text
-Phase:
-Outcome:
-Completed:
-Evidence:
-Decisions:
-Accepted nonblocking findings:
-Branch:
-Worktree:
-Next TODO:
-Continuation:
-```
 
 ## References
 

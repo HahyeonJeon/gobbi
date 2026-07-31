@@ -17,8 +17,8 @@ authorized Git finalization, and reports the exact terminal state. It completes 
 finalization receipt, native TODO, Git state, and filesystem evidence agree.
 
 This child owns Phase 3 actions, decisions, evidence, failure recovery, and terminal checks. It applies the
-parent's shared route, evidence, fast-gate, and Hand-off contracts and never invents promotion material or
-authority.
+parent's shared route, evidence, and fast-gate contracts, the Wrap-up operation's final Hand-off body
+contract, and the Git skill's finalization receipt contract. It never invents promotion material or authority.
 
 ## Principles
 
@@ -97,14 +97,14 @@ outcomes without rewriting history.
   - which typed candidates have sufficient evidence;
   - source-to-destination promotion mapping;
   - empty staging;
-  - the shared handoff body;
+  - the Wrap-up-owned handoff body;
   - unresolved items and recovery;
   - local commit coverage;
   - configured publication steps; and
   - actual merge or cleanup authority.
 - Never invent a durable item to populate empty staging or promote material that lacks typed evidence.
-- Freeze the neutral closure contract, immutable inputs, promotion boundary, handoff requirements, checks, and
-  finalization receipt shape before retitling the TODO to WORK.
+- Freeze the neutral closure contract, immutable inputs, promotion boundary, handoff requirements, and checks
+  before retitling the TODO to WORK.
 
 ### Phase 2 — Produce and record Wrap-up
 
@@ -114,7 +114,7 @@ outcomes without rewriting history.
 - Require independent promotion-and-handoff drafts. Freeze and verify both drafts before reciprocal review.
 - Dispatch reciprocal reviews as later, separate operations and freeze both.
 - Give the active runtime specialist the contract, both drafts, and both reviews. Require a canonical
-  promotion manifest, shared handoff body, verification plan, and finalization receipt shape.
+  promotion manifest and Wrap-up-owned handoff body.
 - Reread the synthesis and resolve routine in-contract differences agent-to-agent. Stop for the parent
   critical-blocker boundary when synthesis would require new scope or authority.
 
@@ -150,8 +150,8 @@ outcomes without rewriting history.
   decisions, findings, and retained recovery state.
 - Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking
   IDs, accepted nonblocking IDs, and the workflow decision.
-- Verify every promotion source and destination mapping, the shared handoff body, and that no unsupported
-  material was staged or promoted.
+- Verify every promotion source and destination mapping, the Wrap-up-owned handoff body, and that no
+  unsupported material was staged or promoted.
 - Write `record/iteration-N.md` with the exact TODO, package and report hashes, gate hash, promotion checks,
   canonical output, and staging. Reread the receipt before updating the TODO.
 - On iteration-1 REVISE, create Wrap-up iteration 2 at DISCUSSION and repeat the complete cycle immediately.
@@ -165,7 +165,7 @@ outcomes without rewriting history.
 #### 3.1 Verify PASS and the authorized local state
 
 - Verify canonical Wrap-up evidence, promotion results, every local task and promotion commit, required
-  checks, shared handoff body, branch, worktree, and active Wrap-up PASS item.
+  checks, Wrap-up-owned handoff body, branch, worktree, and active Wrap-up PASS item.
 - Confirm the evaluated finalization plan agrees with current configured authority and current Git and
   filesystem evidence.
 - Create a required final local documentation or promotion commit only when its exact content was evaluated
@@ -181,37 +181,17 @@ outcomes without rewriting history.
 - Merge only with explicit user authority and current merge-gate evidence.
 - Clean up only after a confirmed merge, synchronized base, clean session worktree, and verified safe
   preimage. Otherwise retain the branch and worktree.
-- Record the actual outcome for:
-  - local commits;
-  - publication;
-  - pull request;
-  - merge;
-  - cleanup;
-  - branch; and
-  - worktree.
+- Record the actual outcomes required by the [Git](../../git/SKILL.md) skill's factual finalization receipt.
 - When an external action is unconfigured, unauthorized, deferred, or failed, preserve the completed local
-  outcome and record the exact first recovery action.
+  outcome and the exact recovery evidence required by the Git skill.
 
 #### 3.3 Render and verify the terminal Hand-off
 
 - Complete the Wrap-up PASS item and activate `P3 · Hand-off` only after Step 3.2 records the actual outcomes
   of every authorized Git action.
-- Fill the parent-owned Hand-off template exactly:
-
-```text
-Phase: Phase 3
-Outcome: <completed authorized session outcome>
-Completed: <Wrap-up, promotion, verification, and authorized Git actions>
-Evidence: <canonical artifacts, commits, checks, and evaluations>
-Decisions: <material and autonomous closeout decisions>
-Accepted nonblocking findings: <findings or none>
-Branch: <actual retained or finalized branch>
-Worktree: <actual retained or removed worktree>
-Next TODO: none — workflow complete
-Continuation: terminal
-```
-
-- Append the factual finalization receipt without rewriting the evaluated handoff body.
+- Display the complete evaluated Hand-off body defined by the [Wrap-up](../../wrap-up/SKILL.md) operation.
+- Append the factual finalization receipt defined by the [Git](../../git/SKILL.md) skill without rewriting
+  the evaluated Hand-off body.
 - Verify the Hand-off, receipt, native TODO, local commits, publication state, branch, worktree, and any
   recovery command against direct evidence.
 - Complete `P3 · Hand-off` only when those facts agree. Display the terminal checkpoint and end the workflow.

@@ -170,18 +170,22 @@ The evaluated subject is the actual tree, not the intended manifest alone. A mat
 
 After dual PASS and the approved disposition batch, RECORD seals the session handoff, canonical promotion evidence, and durable pointers. Confirm the final handoff body still matches the evaluated durable note and the record verifies.
 
-Return control to the manager. The manager creates verified local commits and performs only configured, authorized publication or merge actions. The manager appends a factual finalization receipt after displaying the complete evaluated handoff; the evaluated body is not mutated to add those later facts.
+Return control to the manager. The manager creates verified local commits and performs only configured,
+authorized publication or merge actions. Through the [Git](../git/SKILL.md) skill, the manager appends the
+Git-owned factual finalization receipt after displaying the complete evaluated handoff; the evaluated body is
+not mutated to add those later facts.
 
 Completion evidence: complete staging accounting, frozen and idempotently applied manifest, unchanged prior evidence, green post-promotion tree, matching handoff bodies, dual PASS, PASS-only session outputs, and a manager-owned finalization plan.
 
 ## References
 
-- [Workflow Wrap-up adapter](../workflow/steps/wrap-up.md) owns entry, user gates, evaluator dispatch, transitions, and finalization handoff.
-- [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent creation and reciprocal review mechanics.
+- [Workflow](../workflow/SKILL.md) owns native TODO routing, shared evidence, gates, and dual-system coordination.
+- [Workflow Phase 3](../workflow/phase-3/SKILL.md) owns finalization execution and the terminal TODO transition after Wrap-up PASS.
 - [Record map](../record/record-map.md) owns the session tree, typed staging vocabulary, and command paths.
 - [Record](../record/SKILL.md) owns staging capture, PASS-only outputs, and RECORD validation.
 - [Memory rules](../memory/rules.md) own durable types, routing, frontmatter, true supersession,
   non-successor terminal states, strict archive behavior, and archive/link validation scope.
 - [Evaluation](../evaluation/SKILL.md) owns the independent review method, causal findings, verdict derivation,
   and repeat review. The active workflow adapter owns dual reports and finding dispositions.
-- [Git](../git/SKILL.md) owns finalization, publication, merge authority, and safe cleanup.
+- [Git](../git/SKILL.md) owns finalization, the factual finalization receipt, publication, merge authority, and
+  safe cleanup.

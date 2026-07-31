@@ -10,7 +10,7 @@ user-invocable: false
 
 The manager loads this child skill after the parent [Workflow](../SKILL.md) operation activates
 `P1 · Configuration`, or when recovery selects an unfinished Phase 1 item. The parent must already be loaded;
-it owns the native TODO grammar, shared evidence contract, gate definitions, and Hand-off template.
+it owns the native TODO grammar, shared evidence contract, gate definitions, and transition authority.
 
 Phase 1 creates or recovers one isolated session, resolves settings, and locks What, Why, How, scope, success,
 and authority with the user. It completes when verified Ideation evidence supports the Phase 1 Hand-off and
@@ -194,7 +194,7 @@ whose completion cannot be proved.
 
 #### 3.2 Render the checkpoint and continue
 
-- Fill the parent-owned Hand-off template exactly:
+- Render this Phase 1 checkpoint receipt:
 
 ```text
 Phase: Phase 1
