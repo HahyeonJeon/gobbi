@@ -95,3 +95,6 @@ stays with [`css-conventions`](../../css/css-conventions/SKILL.md) and the emitt
 [`css-motion`](../../css/css-motion/SKILL.md).
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
