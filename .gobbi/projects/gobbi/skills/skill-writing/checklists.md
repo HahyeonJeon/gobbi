@@ -235,7 +235,8 @@ gate and required item to be `PASS`; a recorded owner, deferral, or failed item 
   - Applicability: `skill-type: operation`.
   - Pass: evaluator entrypoint loads both siblings, selects applicable cases/checks, supplies lenses and tool
     verification, and contributes them to one independent evaluation result with seven perspectives, Overall,
-    a causal finding ledger, and a completed checklist without imposing a workflow format.
+    separate problem and optional-improvement ledgers, verified strengths, and a completed checklist with
+    applicable tests without imposing a workflow format.
   - Evidence: evaluation route trace, a trial selection, and the complete evaluation result.
   - On fail: return to operation child S10.
   - Source: `operation-skill.md` S10–S11; `SW-SCENARIO-10`, `11`.

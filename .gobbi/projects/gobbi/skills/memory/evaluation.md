@@ -135,7 +135,7 @@ The subject permits unsupported or unauthorized durable writes, loses or deletes
 Return the single active Evaluation report with:
 
 - Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall exactly once;
-- the complete finding ledger;
+- the complete problem and optional-improvement ledgers;
 - every applicable `MEM-CHECK-` result with inspected evidence;
 - the rule-crosswalk coverage result;
 - unresolved evidence gaps; and

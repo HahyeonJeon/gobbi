@@ -177,7 +177,7 @@ For Execution, also pass the validator's canonical `--task task-NN-slug` argumen
 One evaluation report:
 
 ```bash
-.gobbi/projects/gobbi/skills/evaluation/scripts/validate-evaluation-report.sh one \
+.gobbi/projects/gobbi/skills/record/scripts/validate-evaluation-report.sh one \
   --report "$stored_report" \
   --expected-system "$expected_system" \
   --expected-step "$expected_step" \
@@ -216,4 +216,4 @@ The active-runtime assistant reports the failure. It does not generate substitut
 - [Cross-review schema](../record/schemas/cross-review.schema.json)
 - [Evaluation-report schema](../record/schemas/evaluation-report.schema.json)
 - [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
-- [Evaluation report validator](../evaluation/scripts/validate-evaluation-report.sh)
+- [Evaluation report validator](../record/scripts/validate-evaluation-report.sh)

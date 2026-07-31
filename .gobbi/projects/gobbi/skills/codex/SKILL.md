@@ -200,7 +200,7 @@ Only the manager may offer retry, a bounded input repair, an explicit one-system
 - [Draft schema](../record/schemas/draft.schema.json), [cross-review schema](../record/schemas/cross-review.schema.json), and [evaluation-report schema](../record/schemas/evaluation-report.schema.json)
 - [Record renderer](../record/scripts/session-record.sh)
 - [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
-- [Evaluation report validator](../evaluation/scripts/validate-evaluation-report.sh)
+- [Evaluation report validator](../record/scripts/validate-evaluation-report.sh)
 - [Specialist delegation owner](../workflow/delegation.md)
 - [Codex-specific mistakes](mistakes.md)
 - [Repository runtime entry contract](../../../../../AGENTS.md)

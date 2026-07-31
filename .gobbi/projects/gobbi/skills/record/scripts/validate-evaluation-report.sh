@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SCRIPT_PATH="$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]}")"
-RECORD_DIR="$(cd "$SCRIPT_DIR/../../record" && pwd)"
+RECORD_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 EVALUATION_SCHEMA="$RECORD_DIR/schemas/evaluation-report.schema.json"
 TEMP_ROOT=""
 FINDING_VERDICT_FILTER='def contributes: (.disposition == "open" or .disposition == "disputed");

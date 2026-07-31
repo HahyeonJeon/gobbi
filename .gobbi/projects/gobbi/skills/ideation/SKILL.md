@@ -180,5 +180,5 @@ Confirm that the artifact contains no ordered implementation task list, implemen
 - [Dual-system WORK](../workflow/steps/dual-system-work.md) owns independent drafts, reciprocal review, synthesis mechanics, and package validation.
 - [Evaluation](../evaluation/SKILL.md) owns the seven perspectives, Overall, findings, checklist completion, verdicts, and repeat review.
 - [Record](../record/SKILL.md) owns typed staging, PASS-only canonical artifacts, and session-record validation.
-- [Scenario](../evaluation/scenario/SKILL.md) owns the ten-category coverage frame and scenario construction rules.
+- [Checklist](../evaluation/checklist/SKILL.md) owns perspective-led scenario and checklist-source construction.
 - [Checklist](../evaluation/checklist/SKILL.md) owns unchecked source checks, evidence semantics, and acceptance.

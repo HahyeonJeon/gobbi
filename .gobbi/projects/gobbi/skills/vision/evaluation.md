@@ -2,13 +2,13 @@
 
 Evaluator entrypoint for reviewing the `vision` skill bundle or a report produced by it. This file extends the
 general Evaluation method with vision-specific scenarios, checks, lenses, and evidence. It does not replace the
-eight-step method, perspectives, causal finding content, completed checks, or declared verdict derivation. When
-Gobbi calls it, the active workflow adapter owns its stages, metadata, scoring, reconciliation, and output
-contract.
+three-phase method, perspectives, causal problem content, optional-improvement boundary, completed checks and
+tests, or declared verdict derivation. When Gobbi calls it, the active workflow adapter owns metadata, scoring,
+reconciliation, and the output contract.
 
 ## Evaluation Entry
 
-When used inside Gobbi, follow its active Stage 0 load order:
+During Phase 1, follow this load order:
 
 1. the shared [`../evaluation/SKILL.md`](../evaluation/SKILL.md) and the active phase's required scenario,
    checklist, and evaluation bundle;
@@ -19,17 +19,17 @@ When used inside Gobbi, follow its active Stage 0 load order:
 5. the frozen target: the complete nine-file bundle when evaluating the skill, or the report, artifacts,
    sources, coverage record, maps, measurements, frame samples, and references used by an analysis run.
 
-Extract What / Why / How under the shared Stage-0 gate. For a report target, interpret these as: **What** visual
+Extract What / Why / How under the shared Phase 1 gate. For a report target, interpret these as: **What** visual
 artifact/set and report are being reviewed; **Why** the purpose, audience, and success condition matter; **How**
 the report routed types, planned coverage, mapped evidence, evaluated, verified, and synthesized. Missing target
 evidence remains a finding or blocker under the shared evaluation rules; this extension does not soften them.
 
-### Stage-1 frame selection
+### Phase 2 prepared-baseline selection
 
 Build the active perspective Frames from the applicable `VISION-SCENARIO-*` cases, then attach the stable
 `VISION-CHECK-*` conditions that would prove each case handled. Preserve IDs and parent trace. Treat the
 operation checklist as an unchecked source: do not resolve it in place. In the active phase's filled evaluation
-checklist, render selected conditions under the shared `## Stage 1 Additions` mechanism and use only the shared
+checklist, render selected conditions under `## Prepared Baseline Additions` and use only the shared
 evaluation markers there.
 
 Selection rules:
@@ -45,8 +45,8 @@ Selection rules:
 5. For a skill-bundle target, additionally test exact file set, parent/child ownership, direct links, mirror
    topology, cold loading, and whether a fresh agent can produce the parent report from normal load context.
 
-The evaluator may create scenario/checklist gaps only in the active evaluation outputs under the shared Stage-1
-procedure. It never edits this bundle during evaluation.
+The evaluator may create scenario/checklist gaps only in the active evaluation record during shared Phase 2.
+It never edits this bundle during evaluation.
 
 ## Perspective Lenses
 
@@ -143,7 +143,7 @@ as pass; Bash used to mutate the analyzed source.
 
 ### Overall
 
-The shared Stage 3 owns the holistic verdict. Add these anchors:
+The shared Phase 2 Overall perspective owns the holistic investigation. Add these anchors:
 
 - Did understanding proceed whole→maps/relations and evaluation primitive/object→component/cluster→region/layout
   →whole→use context/sequence, with revisions when evidence conflicted?
@@ -204,10 +204,11 @@ coverage gap; it is never inferred from another runtime or adjacent source.
 - [`SKILL.md`](SKILL.md) is the sole owner of the visual-analysis operation, evidence vocabulary, aesthetics,
   finding schema, and report contract evaluated here.
 - [`scenarios.md`](scenarios.md) supplies the visual-analysis case families and adversarial obligations for
-  Stage-1 selection.
+  Phase 2 prepared-baseline selection.
 - [`checklists.md`](checklists.md) supplies stable operational conditions to attach to selected scenarios; its
   source remains unchecked.
 - [`image.md`](image.md), [`ui.md`](ui.md), [`slides.md`](slides.md), [`video.md`](video.md), and
   [`chart.md`](chart.md) supply only type-specific procedure evidence for selected artifact types.
-- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns evaluator independence, the eight-step method, seven
-  perspectives plus Overall, causal finding content, completed checks, and declared verdict derivation.
+- [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns evaluator independence, the three-phase method, seven
+  perspectives plus Overall, causal problems, optional improvements, completed checks and tests, and declared
+  verdict derivation.

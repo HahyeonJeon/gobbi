@@ -388,9 +388,8 @@ and acceptance; unresolved critical evidence stops the report from being represe
 - [`checklists.md`](checklists.md) owns the operational pause-point checks, evidence resolution, coverage
   closure, and acceptance gates for this procedure.
 - [`evaluation.md`](evaluation.md) extends the active Gobbi evaluation with vision-specific review lenses.
-- [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) validates the scenario-set construction used by
-  `scenarios.md`.
-- [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) validates the operational checklist state machine and gates
-  used by `checklists.md`.
+- [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) owns current scenario and
+  checklist-source construction; this skill's `scenarios.md` and `checklists.md` retain their domain-specific
+  evidence.
 - [`../evaluation/SKILL.md`](../evaluation/SKILL.md) owns the shared evaluator method, perspectives, causal
   finding content, completed checks, and declared verdict derivation extended by `evaluation.md`.

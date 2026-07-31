@@ -13,7 +13,7 @@ EVALUATION_REPORT_SCHEMA="$RECORD_DIR/schemas/evaluation-report.schema.json"
 SESSION_TEMPLATE="$RECORD_DIR/templates/session.json"
 STATE_TEMPLATE="$RECORD_DIR/templates/state.json"
 DUAL_WORK_VALIDATOR="$RECORD_DIR/../workflow/scripts/validate-dual-system-work.sh"
-EVALUATION_VALIDATOR="$RECORD_DIR/../evaluation/scripts/validate-evaluation-report.sh"
+EVALUATION_VALIDATOR="$RECORD_DIR/scripts/validate-evaluation-report.sh"
 CLEANUP_FILES=()
 CLEANUP_DIRS=()
 

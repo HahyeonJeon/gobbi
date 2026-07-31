@@ -4,7 +4,9 @@ Child doc for the evaluator reviewing a code change-set against the `coding` ski
 
 Every graded scenario cites the teaching principle it checks by number — `(P1)` … `(P17)` — keyed to the `coding/SKILL.md` principle of that number. Nothing is graded that the skill does not teach, and no citation exceeds 17. The principles are language-agnostic *properties* of good code; concrete language idioms (casing, type-system, test-framework, runtime-perf specifics) defer to the `python` / `typescript` skills, and platform idioms to the `electron` skill, so this frame grades the property, not the idiom.
 
-The artifact under evaluation is the **actual code change-set** (modified source, new units, the executor's notes). Scenarios include adversarial cases (premature abstractions, masked symptoms, silently-widened trust boundaries) so Stage 2 walks each Frame once without a separate adversarial pass.
+The artifact under evaluation is the **actual code change-set** (modified source, new units, the executor's
+notes). Scenarios include adversarial cases (premature abstractions, masked symptoms, silently-widened trust
+boundaries), so Phase 2 investigates each perspective once without a separate adversarial pass.
 
 ---
 
@@ -358,7 +360,7 @@ The artifact under evaluation is the **actual code change-set** (modified source
 
 ---
 
-## Overall (Stage 3) — phase-specific anchors
+## Overall — phase-specific anchors
 
 Step back from the per-perspective passes and check the change-set holistically against Karpathy's four failure modes, stated in code terms.
 

@@ -1,11 +1,12 @@
 # UI Design — Evaluation Entry
 
 Evaluator entrypoint for grading one complete UI design run. It extends the general Evaluation method with the
-UI scenario and checklist sources. It does not replace the eight-step method, perspectives, causal finding
-content, completed checks, or declared verdict derivation. When Gobbi calls it, the active workflow adapter
-continues to own its stages, finding metadata, scoring, output paths, and report contract.
+UI scenario and checklist sources. It does not replace the three-phase method, perspectives, causal problem
+content, optional-improvement boundary, completed checks and tests, or declared verdict derivation. When Gobbi
+calls it, the active workflow adapter continues to own finding metadata, scoring, output paths, and report
+contract.
 
-Load and read the complete UI bundle before building the evaluation frame. In Gobbi, this happens at Stage 0:
+Load and read the complete UI bundle during Phase 1, before assembling the prepared baseline:
 
 1. [`SKILL.md`](SKILL.md) — sole UI policy owner.
 2. [`ideation.md`](ideation.md) — user-decision procedure and gate trace.
@@ -14,10 +15,10 @@ Load and read the complete UI bundle before building the evaluation frame. In Go
 5. This `evaluation.md` entry — selection, UI perspective lenses, verification, and Overall anchors.
 
 When used inside Gobbi, also load the active phase's own `scenario.md`, `checklist.md`, and `evaluation.md`
-bundle. At Stage 1, reconcile
+bundle. During Phase 2, reconcile
 its seed frame with the applicable UI cases and copy selected `UI-CHECK-*` items into the active evaluator's
-filled checklist under `## Stage 1 Additions`. Never edit or tick the shipped UI source. Record findings only
-through the active Gobbi adapter's schema and destinations.
+filled checklist under `## Prepared Baseline Additions`. Never edit or tick the shipped UI source. Record
+problems and supported improvements only through the active Gobbi adapter's schema and destinations.
 
 ## Parent-clause crosswalk
 
@@ -43,11 +44,11 @@ through the active Gobbi adapter's schema and destinations.
 
 ## Selecting scenarios and checks
 
-Run this selection after Stage 0 target understanding and before each Stage 1 perspective frame is frozen.
+Run this selection after Phase 1 target understanding and before the Phase 2 prepared baseline is frozen.
 
 1. **Confirm target and status.** Extract the one observable outcome, actor/context map, selected surfaces,
    current UI phase, feature design document, decision/evidence records, prototype status, and acceptance claim.
-   If What, Why, or How is missing, use the active evaluation's Stage 0 gate.
+   If What, Why, or How is missing, use the active evaluation's Phase 1 gate.
 2. **Activate the invariant core.** Always select `UI-SCENARIO-01`, `03`–`13`, `16`–`24`, and `28`–`32`, plus
    every `UI-CHECK-*` item except conditional `UI-CHECK-16`. These cases distinguish a substantive run from
    big-bang polish, missing evidence, premature prototyping, local-unit breakage, aesthetics-first work,
@@ -71,8 +72,8 @@ Run this selection after Stage 0 target understanding and before each Stage 1 pe
    ID, claim, pass condition, evidence, or on-fail route. Resolve them through the active checklist/evaluation
    state machine.
 8. **Extend only the run copy.** A newly discovered UI scenario or check becomes a `scenario_gap` or
-   `checklist_gap` finding plus a Stage 1 addition in the active run. Evaluators never edit the shipped UI
-   bundle. A missing policy obligation is a parent-policy finding; do not repair it in a companion.
+   `checklist_gap` finding plus a perspective-derived addition in the active run. Evaluators never edit the
+   shipped UI bundle. A missing policy obligation is a parent-policy finding; do not repair it in a companion.
 
 ## Protected-waiver adversarial truth table
 

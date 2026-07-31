@@ -175,4 +175,4 @@ Completion evidence: READY input status, full trace closure, an acyclic ordered 
 - [Evaluation](../evaluation/SKILL.md) owns independent review, causal findings, checklist completion, and
   evidence-derived verdicts. A calling workflow owns report mechanics.
 - [Record](../record/SKILL.md) owns task scaffolding, typed staging, and PASS-only artifacts.
-- [Scenario](../evaluation/scenario/SKILL.md) and [Checklist](../evaluation/checklist/SKILL.md) own the companion construction standards.
+- [Checklist](../evaluation/checklist/SKILL.md) owns perspective-led scenario and checklist-source construction.

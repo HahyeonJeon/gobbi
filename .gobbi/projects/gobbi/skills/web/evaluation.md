@@ -11,7 +11,7 @@ gates live in [`checklists.md`](checklists.md). When browser UI or UX applies, l
 the web child and use that child's evaluation companion as another frame. Load [`vision`](../vision/SKILL.md)
 and [`vision/ui.md`](../vision/ui.md) only when captured renderings are evaluated.
 
-## Stage 0 — Frame the evidence before judging
+## Phase 1 extension — Frame the evidence before judging
 
 Read the following in order:
 
@@ -62,7 +62,8 @@ new rule.
    scenario is a close fit. For every retained edge, confirm the check's actual PASS condition and named
    evidence—not audit-table prose—preserve the full case-level `Obligation`. Keep its ID, criticality, claim,
    applicability, pass condition, evidence, on-fail route, and source wording unchanged in the evaluation copy.
-4. Copy each selection into the active checklist's `## Stage 1 Additions` as an evaluator-owned coverage row.
+4. Copy each selection into the active checklist's `## Prepared Baseline Additions` as an evaluator-owned
+   coverage row.
    Set the evaluation-copy use-style to `do-confirm`; retain the operational pause-point ID only as trace
    metadata, because an evaluation copy has no operational pause point.
 5. Resolve each evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>`, each backed by

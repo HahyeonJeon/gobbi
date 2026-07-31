@@ -117,6 +117,7 @@ Direct evidence shows an unauthorized merge or destructive action, wrong-tree mu
 ## Output
 
 Write one result through the active [Evaluation method](../evaluation/SKILL.md). Cover Project, Structure,
-Performance, Aesthetics, Usage, Consistency, Risk, and Overall exactly once. Use its causal finding ledger,
-completed checklist, declared scoring, and verdict. Preserve the exact Git subject identity and do not run
-mutating Git or GitHub actions during evaluation. Let the caller serialize or store the result.
+Performance, Aesthetics, Usage, Consistency, Risk, and Overall exactly once. Use its separate problem and
+optional-improvement ledgers, verified strengths, completed checklist and applicable tests, declared scoring,
+and verdict. Preserve the exact Git subject identity and do not run mutating Git or GitHub actions during
+evaluation. Let the caller serialize or store the result.

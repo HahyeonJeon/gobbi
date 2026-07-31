@@ -179,4 +179,4 @@ Completion evidence: all applicable checks in [checklists.md](checklists.md) pas
 - [Record](../record/SKILL.md) and its [record map](../record/record-map.md) own typed staging writes and the complete session tree.
 - [Wrap-up](../wrap-up/SKILL.md) owns typed-source inventory, frozen mapping, apply, actual-tree verification, and matching handoff mechanics.
 - [Evaluation](../evaluation/SKILL.md) owns independent review, findings, checklist completion, and verdict derivation.
-- [Scenario](../evaluation/scenario/SKILL.md) and [Checklist](../evaluation/checklist/SKILL.md) own the companion authoring contracts used by this operation.
+- [Checklist](../evaluation/checklist/SKILL.md) owns perspective-led scenario and checklist-source construction.

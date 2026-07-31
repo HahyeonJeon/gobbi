@@ -2,8 +2,9 @@
 
 Evaluator entrypoint for grading a skill-writing result. It extends the general Evaluation method with the
 skill-writing scenario and checklist sources. One independent evaluation result still contains the seven
-perspectives, Overall, the causal finding ledger, the completed checklist, and its evidence-derived verdict.
-A calling workflow may add its own identity, schema, validation, and storage requirements.
+perspectives, Overall, separate problem and optional-improvement ledgers, verified strengths, the completed
+checklist and applicable tests, and its evidence-derived verdict. A calling workflow may add its own identity,
+schema, validation, and storage requirements.
 
 Load [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), and the target skill's complete canonical
 directory. For an operation target, include all direct children and its plural verification bundle.

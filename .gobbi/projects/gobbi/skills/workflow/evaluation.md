@@ -14,7 +14,7 @@ Before reviewing a workflow artifact:
 3. Select every scenario whose Given conditions can occur in the target and every checklist item at its triggered pause point. A selection omission requires an explicit `n/a:<property>` backed by inspected evidence.
 4. Add the selected cases and checks to the evaluator's locked frame. Fill a run-specific copy of the checklist source; do not edit the source.
 5. Run all seven perspectives plus Overall under the active evaluation procedure.
-6. Emit findings only through the existing finding ledger and validate the system report against [`../record/schemas/evaluation-report.schema.json`](../record/schemas/evaluation-report.schema.json) and [`../evaluation/scripts/validate-evaluation-report.sh`](../evaluation/scripts/validate-evaluation-report.sh).
+6. Emit findings only through the existing finding ledger and validate the system report against [`../record/schemas/evaluation-report.schema.json`](../record/schemas/evaluation-report.schema.json) and [`../record/scripts/validate-evaluation-report.sh`](../record/scripts/validate-evaluation-report.sh).
 
 Both fresh systems execute this entrypoint independently. Neither sees the other report before its own report freezes.
 

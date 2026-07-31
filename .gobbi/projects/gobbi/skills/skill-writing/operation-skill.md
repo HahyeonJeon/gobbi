@@ -158,9 +158,10 @@ not repair a missing parent requirement.
 
 ### S8 — Load scenario and write `scenarios.md`
 
-Load [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) completely. Derive scenario families
-from the parent flow, disposition the full coverage frame, and include ordinary, alternative-valid, boundary,
-failure/recovery, adversarial, change, and counterfactual cases when their triggers apply.
+Load [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) completely. Use its scenario classes
+to derive scenario families from the parent flow, disposition the full coverage frame, and include ordinary,
+alternative-valid, boundary, failure/recovery, adversarial, change, and counterfactual cases when their
+triggers apply.
 
 Every non-exploratory case produces an observable design obligation that traces to a parent clause. Give
 cases stable IDs and reserve checklist-ID slots. A cosmetically conformant but non-working run must fail at
@@ -184,9 +185,10 @@ loads the two sibling sources, selects applicable cases and checks, and contribu
 evaluation.
 
 Define operation-specific perspective lenses, recommended verifications, anti-patterns, Overall anchors, and a
-rule-key crosswalk back to `SKILL.md`. Reuse the general Evaluation method's perspectives, causal finding
-content, completed checks, and verdicts. The caller owns any machine shape, output path, or storage mechanics;
-the plural bundle adds no extra result and does not replace the caller's evaluation contract.
+rule-key crosswalk back to `SKILL.md`. Reuse the general Evaluation method's perspectives, separate problem and
+optional-improvement records, verified strengths, completed checks and applicable tests, and verdicts. The
+caller owns any machine shape, output path, or storage mechanics; the plural bundle adds no extra result and
+does not replace the caller's evaluation contract.
 
 ### S11 — Close traceability and accept the operation skill
 

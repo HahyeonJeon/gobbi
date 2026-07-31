@@ -1,7 +1,7 @@
 # TypeScript — Implementation Checklist Register
 
 A copyable binary PASS/FAIL register for a TypeScript implementation change-set. The evaluator copies the
-activated items into the phase checklist's `## Stage 1 Additions` and ticks each against the diff; the
+activated items into the phase checklist's `## Prepared Baseline Additions` and ticks each against the diff; the
 executor runs them as a Procedure step P8 self-review. Tick a box when resolved and annotate PASS or FAIL.
 This register deepens, it does not restate: every item carries a `SKILL.md` anchor (`H{n}` = a Rule,
 `P{n}` = a Principle, `Procedure P{n}` = a Procedure step) that resolves to its verbatim clause through

@@ -10,7 +10,7 @@ If the outcome has an observable interface, also load generic UI then web UI eva
 remains with the applicable framework skill; router/state integration is judged here only by the resulting web
 journey.
 
-## Stage 0 — Read and bind the target
+## Phase 1 extension — Read and bind the target
 
 Read the active phase objective/diff/evidence, root feature contract, accepted generic UX specification and
 research limits, all five files in this child, current routes/content/session/provider behavior, support and
@@ -51,7 +51,8 @@ evidence remains `NEEDS_CONTEXT`.
    retained edge, confirm the source item's actual PASS condition and named evidence—not reverse-audit prose—
    preserve the full case-level `Obligation`. Preserve its ID, criticality, claim, applicability, pass
    condition, evidence, on-fail route, and source wording. Keep generic UX and root web checks independently active.
-4. Copy each selection into `## Stage 1 Additions` as an evaluator-owned coverage row. Set its use-style to
+4. Copy each selection into `## Prepared Baseline Additions` as an evaluator-owned coverage row. Set its
+   use-style to
    `do-confirm`; retain the operational pause-point ID only as trace metadata because evaluation copies have no
    operational pause points.
 5. Resolve every evaluation copy with exactly `PASS`, `FAIL:<finding-id>`, or `n/a:<property>` and named

@@ -16,7 +16,7 @@ and a case that traces to no clause is a defect in this file, not a missing rule
 | Borrowed fact | Its one owner |
 |---|---|
 | Every rule, its check, its defeater, and the strength bar every oracle below is written to | [`SKILL.md`](SKILL.md) |
-| The coverage categories, the case types, the coverage-role model, and the primary-declaration rule | [`../evaluation/scenario/SKILL.md`](../evaluation/scenario/SKILL.md) |
+| The six scenario classes and perspective-led scenario-to-checklist nesting for new checklist sources | [`../evaluation/checklist/SKILL.md`](../evaluation/checklist/SKILL.md) |
 | The binary items the reserved slots will carry, and coverage closure versus acceptance | [`checklists.md`](checklists.md) |
 | The perspectives these families are graded through | [`evaluation.md`](evaluation.md) |
 | The Electron depth behind every probe | the nine content children, named per family |
