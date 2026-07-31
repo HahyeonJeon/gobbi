@@ -133,6 +133,9 @@ Doubles, automation, captures, emulation, and live observations each prove only 
   skip or quarantine.
 - Re-run affected evidence and the required wider set, preserving unresolved failures, flakes, and
   environment gaps.
+- When this test system is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by
+  an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them and
+  issues any verdict.
 
 #### 4.2 Reconcile claims with results
 
@@ -146,3 +149,6 @@ Doubles, automation, captures, emulation, and live observations each prove only 
   health separate.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
