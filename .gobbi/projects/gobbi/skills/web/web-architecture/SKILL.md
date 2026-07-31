@@ -83,3 +83,6 @@ ownership, isolation, scaling, release, data, failure, or capability needs outwe
 diagnostic, security, performance, maintenance, and removal costs.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
