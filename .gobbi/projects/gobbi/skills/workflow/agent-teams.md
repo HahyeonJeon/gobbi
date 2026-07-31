@@ -1,81 +1,181 @@
-# Claude Code Agent Teams
+# Agent Teams
 
-This document owns Gobbi's persistent-specialist policy for Claude Code. Current Claude Code forms one implicit team when the first teammate starts, displays teammates in-process by default, and cleans the team up automatically when the session exits. Manual team lifecycle calls are obsolete. See the [official Agent Teams guide](https://code.claude.com/docs/en/agent-teams).
+This document owns persistent-specialist scheduling for runtimes that support it and the shared rules for
+TODO-based assignment and recovery. Persistent specialists improve continuity but do not change routing,
+authority, independence, evidence, or one-writer rules.
 
-The capability is valuable but not required. When unavailable, use fresh subagents with the complete delegation contract. Native Codex uses its native specialist mechanism instead.
+When persistent specialists are unavailable, use fresh agents with the complete
+[`delegation.md`](delegation.md) contract. Native Codex uses the matching repository custom-agent role; Claude
+Code may retain addressable teammates when its runtime supports them.
 
-## Roster and creation
+## Roster
 
-The manager is the lead and sole task creator. Lazily start a predictably named `leader`, `executor`, or `assistant` on first use. Retain a teammate only while its role and dependency chain remain coherent.
+The manager is the sole assignment creator, dispatcher, and TODO owner.
 
-An `evaluator` is never a teammate. Every evaluator is a fresh isolated agent outside the persistent team.
+Start these specialists lazily:
 
-Claude Code supports one team per session. Teammates use the shared runtime task list, but `state.json` and verified artifacts remain authoritative. The manager assigns tasks; teammates never self-claim or reassign them.
+| Role | Reuse boundary |
+|---|---|
+| leader | A coherent Ideation or Planning chain |
+| executor | Related ordered tasks in one subsystem |
+| assistant | A coherent narrow support or promotion chain |
+
+Evaluators are always fresh and never join a persistent team.
+
+## TODO-based assignment
+
+Every assignment names:
+
+- the exact current TODO and status;
+- phase;
+- productive step and stage;
+- iteration and cap;
+- stable `task-NN-slug` when applicable;
+- assignment ID; and
+- expected evidence.
+
+The manager creates, retitles, reorders, and completes TODO items. Specialists may report progress but cannot
+self-claim, reassign, or change progression.
+
+One mutable item represents one productive-step iteration. The manager retitles it from DISCUSSION through
+WORK, EVALUATION, and RECORD; after verified PASS it uses the PASS gate marker and completes the item. A
+revision creates a new iteration item rather than erasing the completed pass.
+
+A task status is scheduling information until the manager rereads and verifies the promised artifact or
+commit.
 
 ## Allowed concurrency
 
-Parallel teammate work is limited to read-only research, competing hypotheses, factual investigation, and critique whose contracts cannot mutate the worktree, session record, external systems, scope, or user decisions.
+Parallel work is limited to independent read-only:
 
-All worktree mutations use one ordered writer chain. A leader, executor, or assistant with write authority must not overlap another writer. The manager rejects any task layout that would create parallel writers.
+- study;
+- factual investigation;
+- competing hypotheses;
+- test interpretation; and
+- critique.
+
+All worktree, record, Git, TODO, and external-system mutations use one ordered writer chain. The manager rejects
+a dispatch that overlaps another writer.
 
 ## Direct messages
 
-Direct teammate messages are allowed only for explicitly assigned research, factual handoffs, and critique. They may not:
+Specialists may exchange only assigned facts, research results, and critique.
 
-- change or expand scope;
+They may not:
+
+- change scope;
 - decide for the user;
-- reassign or accept work;
-- authorize destructive action or publication; or
-- mark a durable workflow transition complete.
+- accept or reassign work;
+- change the TODO route;
+- authorize destructive or external action; or
+- turn an evaluator into a persistent teammate.
 
-Material disagreements return to the manager, who presents user-owned choices when needed.
+Material disagreement returns to the manager. During Phase 2 and Phase 3, the manager resolves routine
+in-contract disagreements from evidence and escalates only a critical blocker.
 
 ## Assignment handshake
 
-Every teammate assignment follows this order:
+Use this order:
 
-1. The manager creates and assigns a stable task ID with the bounded brief from [`delegation.md`](delegation.md).
-2. The teammate explicitly acknowledges the task ID, scope, and expected artifact.
-3. The manager waits for the response-first structured status report.
-4. The manager confirms the teammate is idle and addressable after the report.
-5. The manager rereads the promised artifact or commit and runs its verification.
-6. Only then does the manager mark the runtime task complete and advance `state.json`.
-7. A follow-up brief is sent only after all prior steps succeed.
+1. The manager creates a stable assignment under [`delegation.md`](delegation.md).
+2. A persistent specialist acknowledges the assignment ID, scope, and expected artifact.
+3. The specialist performs the bounded work and returns the required status.
+4. The manager confirms idle and addressable state when reuse is planned.
+5. The manager rereads the artifact or commit and runs the named checks.
+6. The manager retitles or completes the TODO only after evidence passes.
+7. The next assignment starts only after the prior assignment closes.
 
-An idle notification alone means neither success nor failure. Shared task status can lag actual work and cannot override verified artifact evidence.
+An idle notification or lagging task status proves neither success nor failure.
 
 ## Continuation and replacement
 
-Continue the same leader across a coherent Ideation or Planning chain. Continue the same executor across related ordered tasks in the same subsystem when its scope and context remain reliable. Continue an assistant across a coherent bounded support chain.
+Continue a specialist only when all of these remain coherent:
 
-Replace a teammate when:
+- role;
+- scope;
+- subsystem;
+- dependency chain;
+- authority;
+- loaded context;
+- write boundary; and
+- addressability.
 
-- the subsystem or role changes;
-- context drift makes the prior brief unreliable;
-- the teammate fails or loses addressability;
-- the next assignment requires independence; or
-- durable artifacts no longer agree with its reported context.
+Replace the specialist after:
 
-There is no arbitrary limit on the number of related tasks. Evidence of coherence, not a counter, decides continuation.
+- role or subsystem change;
+- context drift;
+- failed or malformed work;
+- lost addressability;
+- protected-work conflict; or
+- a fresh-independence requirement.
 
-## Runtime context boundaries
+There is no arbitrary task-count limit. Evidence of coherent context decides reuse.
 
-Teammates are not restored by resume or rewind. After compact, clear, resume, rewind, or another runtime context boundary:
+## Context-boundary recovery
 
-1. read `state.json` and the runtime task list;
-2. identify the expected teammate and stable assignment;
-3. verify identity, assignment, addressability, and idle state;
-4. continue only when all four match durable evidence; and
-5. otherwise start a replacement and fully re-prime it from the canonical session artifacts.
+After compact, clear, resume, rewind, lost TODO data, or another context boundary:
 
-Do not infer survival from a name in the runtime task list. Resume and rewind therefore take the replacement path; the confirmed-survivor path applies only to a boundary where the runtime still exposes the same live teammate. Any survivor may continue only after the same verification.
+1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
+2. Inspect the native runtime TODO list when it survives.
+3. Verify the Hand-off's claims against workflow-owned RECORD receipts, `gate.md` decisions, canonical
+   outputs, checks, task commits, branch, and worktree.
+4. Recreate the minimum canonical item sequence from that checkpoint.
+5. Walk later evidence strictly in workflow and plan order, applying numbered plan amendments only to the
+   pending Execution items they name. Mark an item completed only when its required receipt, gate, artifact,
+   verification, and commit all pass.
+6. Create or correct the exact first unproved item and make it the only `in_progress` item.
+7. Leave every later item `pending`.
+8. Verify any surviving specialist's identity, assignment, addressability, and idle state.
+9. Continue that specialist only when every check agrees; otherwise start a fully primed replacement.
+
+Evidence is used to reconstruct a missing or incorrect native list, then the native list resumes sole routing.
+It does not operate as a parallel live route.
+
+When evidence is incomplete or contradictory, select the earliest safe unproved stage and repeat only
+idempotent checks or work. Stop as a critical blocker when repetition could duplicate an unsafe effect or the
+conflict cannot be resolved inside existing authority.
+
+Do not infer specialist survival from a name or task entry. The latest Hand-off supplies phase, branch,
+worktree, next TODO, and continuation mode; the accepted plan supplies Execution order.
+
+## Phase 2 and Phase 3 continuity
+
+During Phase 2 and Phase 3:
+
+- activate the next stage immediately after verification;
+- send the next bounded assignment in the same turn when possible;
+- monitor actively running agents or tools;
+- resolve routine in-contract choices agent-to-agent;
+- record nonblocking findings without a user question; and
+- stop only at the workflow's critical-blocker boundary.
+
+A Hand-off is a clear or compact checkpoint. Phase 1 and Phase 2 Hand-offs do not become idle waits;
+continuation remains automatic unless the user interrupts.
 
 ## Write safety
 
-Every write-capable brief contains the exact absolute worktree and session root. Continued specialists re-anchor on those paths for each assignment. The manager checks the promised paths and Git branch after every report before assigning more work.
+Every write-capable assignment contains the exact absolute worktree and protected paths. Continued specialists
+re-anchor to those paths on every assignment.
 
-No Agent Teams quality enforcement is added outside this evidence handshake. Runtime notifications support scheduling; durable state, artifacts, tests, and commits prove completion.
+Before reuse, the manager verifies the branch, worktree, changed paths, promised artifact, and commit. A report
+never substitutes for that reread.
 
 ## Completion conditions
 
-A persistent assignment closes only when the structured report matches the stable task ID, the teammate is idle and addressable, the manager rereads and verifies its artifact, and the durable transition succeeds. Session exit needs no manual team cleanup; unmerged branch and worktree retention follow the Git and Wrap-up policies, not the runtime team's lifecycle.
+A persistent assignment completes only when:
+
+- the status matches the assignment;
+- the specialist is idle and addressable when reuse is planned;
+- the manager rereads the artifact or commit;
+- verification passes;
+- scope and protected paths pass; and
+- the matching TODO update succeeds.
+
+Runtime scheduling supports the workflow. It never replaces evidence or manager authority.
+
+## References
+
+- [`delegation.md`](delegation.md) owns the assignment shape.
+- [`SKILL.md`](SKILL.md) owns routing, phase continuity, and blocker policy.
+- [`phase-1.md`](phase-1.md), [`phase-2.md`](phase-2.md), and [`phase-3.md`](phase-3.md) own phase-specific
+  operation.

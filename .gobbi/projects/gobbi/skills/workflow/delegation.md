@@ -1,151 +1,302 @@
 # Delegation
 
-This document is the sole owner of Gobbi specialist assignment construction. Read it before every dispatch. A delegation is a bounded contract, not a suggestion: it gives a capable specialist enough durable context to act without guessing while reserving scope and user authority to the manager.
+This document is the sole owner of Gobbi specialist assignment construction. Read it before every dispatch. A
+delegation is a bounded contract that gives a capable specialist enough context to act without guessing while
+reserving scope and user authority to the manager.
 
-## Role and runtime map
+## Shared assignment skeleton
 
-| Role | Claude default | Codex default | Normal ownership |
-|---|---|---|---|
-| manager | opus | gpt-5.6-sol | User relationship, routing, assignment, verification |
-| leader | opus | gpt-5.6-sol | Ideation and Planning |
-| executor | opus | gpt-5.6-sol | Ordered implementation tasks |
-| evaluator | opus | gpt-5.6-sol | Fresh independent review |
-| assistant | sonnet | gpt-5.6-sol | Narrow research, record support, bounded mechanical support |
-
-In Claude Code, use a stable persistent leader, executor, or assistant when [`agent-teams.md`](agent-teams.md) allows it. Use fresh specialists when the capability is unavailable. Native Codex uses the matching repository custom agent and an ephemeral Claude command-line peer when opposite-system work is required. Evaluators are always fresh in both runtimes.
-
-## Shared delegation skeleton
-
-Every first assignment contains the following headings in this order. Put the primary task contract inline. Links may add evidence but cannot replace the contract.
+Every first assignment uses these headings in order. Put the task contract inline; links may add evidence but
+cannot replace it.
 
 ### 1. Workflow context
 
-State the Gobbi session UUID, active runtime, absolute session root, absolute worktree, branch, current `step`, `stage`, `iteration`, current task when applicable, stable assignment ID, and prerequisite artifact status. Say why this assignment is ready now.
+State:
+
+- Gobbi session UUID;
+- active runtime;
+- absolute worktree;
+- absolute workflow evidence root;
+- branch;
+- current phase;
+- exact current TODO title and status;
+- productive step and stage;
+- iteration and cap;
+- stable task ID when applicable;
+- assignment ID;
+- prerequisite evidence; and
+- why the assignment is ready.
+
+The TODO title is the sole progression field. Do not supply a competing route.
 
 ### 2. Role
 
-Name exactly one role and its responsibility for this assignment. State that the manager retains user discussion, scope, routing, acceptance, reassignment, and destructive-action authority.
+Name one role and its responsibility:
+
+| Role | Normal ownership |
+|---|---|
+| manager | User relationship, TODO routing, assignment, acceptance, and verification |
+| leader | Ideation and Planning |
+| executor | Ordered implementation |
+| evaluator | Fresh independent evaluation |
+| assistant | Narrow research, record support, promotion, or bounded mechanical help |
+
+State that the manager retains user discussion, scope, routing, acceptance, reassignment, and
+destructive-action authority.
 
 ### 3. Objective and reason
 
-Give one observable outcome and why it is needed for the current transition. Include the user's locked intent and exact acceptance criteria. A specialist must be able to tell whether it is done without inferring a broader objective.
+Give one observable outcome and why the current TODO needs it. Include the locked Phase 1 terms that bind the
+work and exact acceptance criteria.
+
+The specialist must be able to decide whether its bounded work is complete without inferring a broader
+objective.
 
 ### 4. Ordered load directives
 
-List every required file as an exact workspace-relative or absolute path in read order. A fresh Gobbi specialist normally loads:
+List every required file as an exact canonical workspace-relative or absolute path in read order. A fresh
+specialist normally loads:
 
 1. `.gobbi/projects/gobbi/skills/principles/SKILL.md`;
-2. applicable project rules;
-3. its canonical role prompt;
-4. the current productive-step skill;
-5. task-specific language, tool, Git, evaluation, record, scenario, or checklist skills; and
-6. the primary artifacts named under Inputs.
+2. every applicable project rule, or records `NO_PROJECT_RULES` when the rules directory is absent or empty;
+3. its canonical role prompt under `.gobbi/projects/gobbi/agents/`;
+4. `.gobbi/projects/gobbi/skills/workflow/SKILL.md`;
+5. the current `phase-1.md`, `phase-2.md`, or `phase-3.md`;
+6. the productive-step and task-specific skills; and
+7. the primary artifacts named under Inputs.
 
-Fresh specialists do not inherit the manager's loaded skills. Require them to read every directive completely before acting and report the exact loaded paths.
+Fresh specialists inherit no loaded skill. Require them to read every directive completely and return a
+`SKILLS LOADED` list with exact paths in read order.
+
+When the locked task intentionally overrides a loaded clause, name the clause, replacement rule, reason, and
+assignment-only boundary. Silence is not an override.
+
+Every RECORD assignment names [`SKILL.md`](SKILL.md) Step 1.2 as the evidence-only override for conflicting
+Record placement, transition, verdict, and command clauses.
 
 ### 5. Inputs
 
-Name immutable and mutable inputs separately. Include canonical artifacts, frozen source identities, accepted decisions, approved finding dispositions, relevant repository state, and commands or schemas the specialist must use. State trust boundaries and which input wins if two disagree.
+Separate immutable and mutable inputs. Include:
+
+- canonical upstream artifacts;
+- the neutral contract;
+- frozen source identities;
+- accepted decisions;
+- findings and dispositions;
+- repository and worktree preimages;
+- exact commands, schemas, formats, and tools;
+- trust boundaries; and
+- precedence when inputs disagree.
+
+The locked user contract wins over conflicting legacy prose within its authorized scope. Protected user work
+wins over assumptions and triggers a stop.
 
 ### 6. In scope and out of scope
 
-Enumerate allowed outcomes and paths, then explicit exclusions. For write-capable work, provide an allowlist, the single absolute write root, and any protected paths. State whether creating, updating, deleting, moving, committing, or invoking an external side effect is authorized.
+List allowed outcomes and paths, then explicit exclusions. For write-capable work, state:
+
+- the one absolute write root;
+- exact allowlisted and protected paths;
+- whether create, update, delete, move, or commit is authorized;
+- whether an external side effect is authorized; and
+- whether publication, merge, or cleanup is authorized.
 
 ### 7. Authority and write roots
 
-State the specialist's decision authority and stop points. The specialist may make routine in-scope implementation choices supported by the contract. It must stop for new scope, missing user authority, destructive action, material design conflict, unsafe recovery, publication, or a conflict with protected user work.
+State the routine decisions the specialist may make and its exact stop points. It stops for:
 
-Every filesystem write uses the absolute session worktree root. Git commands use that worktree explicitly. One ordered writer chain owns mutations; read-only helpers cannot write to the worktree, session record, or an external system.
+- new scope;
+- missing safety or user authority;
+- destructive action without authority;
+- an extremely material design conflict outside the locked contract;
+- unsafe recovery;
+- publication without authority;
+- protected user changes; or
+- an unavailable required system without waiver authority.
+
+Every write uses the absolute session worktree. Every Git command targets that worktree explicitly. One ordered
+writer chain owns mutations.
+
+A specialist reports progress but never creates, retitles, reorders, or completes a workflow TODO. In Phase 2
+and Phase 3 it discusses routine gaps with the manager or assigned agents, never with the user.
 
 ### 8. Conditional independence rules
 
-State the assignment's independence requirements:
+State every applicable rule:
 
-- independent draft authors do not see each other's draft before both freeze;
-- reciprocal reviewers receive the opposite frozen draft only after freeze;
-- evaluators are fresh, do not share a creator context, and never see another evaluator report;
-- an opposite-system command-line process is read-only and ephemeral;
-- parallel helpers are limited to assigned research, factual handoff, or critique;
-- a continuation is allowed only after the previous assignment's report, idle/addressable confirmation, and manager artifact reread.
+- independent Claude and Codex authors receive the same neutral contract;
+- neither author sees the other draft before both freeze;
+- freezing is a completed manager-verified round trip;
+- reciprocal review begins only in a later operation;
+- each reciprocal reviewer receives the opposite frozen draft and original contract;
+- evaluators are fresh, share no creator context, and never see the other evaluator report;
+- opposite-system command processes are read-only and ephemeral;
+- parallel helpers perform only assigned read-only analysis or critique; and
+- continuation follows report, idle and addressable confirmation, manager artifact reread, and verification.
 
-Omit a condition only when its trigger cannot apply, and say why.
+Omit a rule only when its trigger cannot apply, and say why.
 
 ### 9. Expected artifacts
 
-Name each required artifact, structured response, diff, commit, or decision record. Give its owner and the record-command operation that stores or validates it. Do not ask an opposite-system process to write directly into the session tree.
+Name each response, artifact, diff, commit, finding set, or decision record. Give:
+
+- owner;
+- exact path when filesystem output is authorized;
+- format and active schema or template;
+- system label;
+- task and iteration identity;
+- verification owner; and
+- whether the result is evidence, canonical output, or both.
+
+For EVALUATION and RECORD, name both independent report paths, `gate.md`, `record/iteration-N.md`, their mode,
+and their required hashes. A declared evaluator verdict is report evidence; only the workflow gate decision
+updates the TODO.
+
+Do not ask a read-only opposite-system process to write into the worktree. The manager-side writer stores a
+validated response only after it freezes.
 
 ### 10. Verification
 
-List mechanical and semantic checks. Include rereads, schemas, validators, tests, exact acceptance evidence, scope checks, protected-file checks, and worktree checks. Define what proves completion and what merely reports progress.
+List mechanical and semantic checks, including:
+
+- exact artifact rereads;
+- active schemas, formats, and validators;
+- tests;
+- acceptance evidence;
+- scope and protected-path checks;
+- branch and worktree checks;
+- commit checks; and
+- loaded-path comparison.
+
+Define what proves completion and what only reports progress. For dual-system WORK, include
+[`scripts/validate-dual-system-work.sh`](scripts/validate-dual-system-work.sh) with the canonical productive
+step, iteration, assignment, active `--runtime-system`, and `task-NN-slug` when Execution applies.
 
 ### 11. Escape paths
 
-Give explicit responses for missing context, blocked dependencies, malformed peer output, validation failure, user-owned conflicting changes, unavailable system, unexpected scope, and unsafe or unauthorized action. Require the specialist to stop with exact evidence rather than broaden scope or degrade silently.
+Give exact responses for:
+
+- missing context;
+- blocked dependency;
+- malformed output;
+- validation failure;
+- protected user work;
+- unavailable system;
+- unexpected scope;
+- unsafe action; and
+- missing authority.
+
+Require exact evidence. Never authorize silent degradation, scope expansion, a second writer, or an
+unapproved external effect.
+
+In Phase 2 and Phase 3, distinguish routine gaps, which agents resolve within the locked contract, from
+critical blockers, which return to the manager for the only permitted user escalation.
 
 ### 12. Status contract
 
-Require the final response to start with these fields and no text before them:
+Require the response to start with:
 
 ```text
 STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
 VERDICT: PASS | REVISE | FAIL
-ARTIFACT: <canonical path>
+ARTIFACT: <path or response-only>
 SKILLS LOADED:
   - <exact path, in read order>
 ```
 
-`VERDICT` is evaluator-only and must be omitted by other roles. `ARTIFACT` is omitted only when the contract requires no artifact. After the prefix, require a concise outcome, evidence, exact changed paths or findings, verification results, and concerns. `DONE_WITH_CONCERNS` means the bounded work is complete but a named non-blocking concern remains. `NEEDS_CONTEXT` means a specific required input or authority is missing. `BLOCKED` means an attempted in-scope path cannot safely proceed; it includes the attempted evidence and recovery choice.
+`VERDICT` is evaluator-only, reports that evaluator's independent judgment, and is omitted for other roles.
+It is never a substitute for `gate.md`. `ARTIFACT` is omitted only when the assignment requires no artifact.
+
+After the prefix, require a concise outcome, evidence, changed paths or findings, verification results, and
+concerns:
+
+- `DONE` means the bounded work and verification are complete.
+- `DONE_WITH_CONCERNS` means the work is complete with a named nonblocking concern.
+- `NEEDS_CONTEXT` means a specific required input or authority is missing.
+- `BLOCKED` means an attempted in-scope path cannot safely continue.
 
 ## Dispatch and acceptance
 
 ### First assignment
 
-Assign a stable task ID and predictable role name. Send the full skeleton. For a persistent teammate, wait for an explicit acknowledgement that repeats the task ID, scope, and intended artifact before treating it as running.
+Use the complete skeleton. Assign a stable assignment ID and predictable role identity.
+
+A persistent specialist acknowledges the assignment ID, scope, and expected artifact before work begins.
 
 ### Continued assignment
 
-Continue a leader, executor, or assistant only when the role, dependency chain, subsystem, scope authority, and context remain coherent. Send a delta brief containing the new stable assignment ID, changed objective and inputs, current cursor, reread requirements, full current scope boundary, independence changes, expected artifact, verification, escape paths, and unchanged status contract.
+Continue a leader, executor, or assistant only while role, scope, subsystem, dependency chain, authority, and
+context remain coherent.
 
-Replace the specialist on subsystem change, context drift, failure, lost addressability, or an explicit independence need. There is no arbitrary task-count rule.
+A continuation brief includes:
+
+- the new assignment ID;
+- exact current TODO;
+- changed objective and inputs;
+- mandatory rereads;
+- complete current scope;
+- independence changes;
+- expected artifact;
+- verification;
+- escape paths; and
+- unchanged status contract.
+
+Use a fresh specialist after subsystem change, context drift, failure, lost addressability, or an independence
+requirement.
 
 ### Report handling
 
-After a report, the manager:
+After every report, the manager:
 
-1. validates the response-first status fields;
-2. confirms the report matches the stable assignment;
-3. confirms idle and addressable state when a continuation may follow;
-4. rereads every promised artifact or commit from disk;
-5. runs the named verification and checks the absolute worktree;
-6. updates durable state only after the evidence passes; and
-7. sends another brief only after the previous assignment is closed.
+1. validates the status prefix;
+2. matches the assignment ID and role;
+3. compares `SKILLS LOADED` with the required canonical paths;
+4. confirms idle and addressable state when continuation is planned;
+5. rereads every promised artifact or commit;
+6. runs the named checks in the exact worktree;
+7. checks scope and protected paths;
+8. updates the native TODO only after evidence passes; and
+9. sends a follow-up only after the prior assignment closes.
 
-An idle notification, runtime task status, plausible summary, or clean-looking diff cannot replace these checks. If an artifact differs from the report, the artifact is evidence and the manager investigates before routing.
+An idle notification, runtime task status, plausible summary, or clean-looking diff is not completion
+evidence.
 
 ## Role overlays
 
-These are additions to the shared skeleton, not separate templates.
-
 ### Leader
 
-Identify whether the assignment belongs to Ideation or Planning, include the relevant specialist method, and name every user-owned decision. A leader may research, critique, and author its assigned artifact. It cannot implement an Execution task or lock user scope.
+Name Ideation or Planning, the relevant specialist method, and each user-owned decision. A leader may study,
+draft, and critique but cannot implement an Execution task or lock user scope.
 
 ### Executor
 
-Include one plan task, absolute write root, allowlisted paths, current preimage, verification commands, commit authority, and protected files. An executor implements only the locked task and does not push, merge, or accept its own work.
+Give one plan task, current preimage, exact write boundary, verification, commit authority, and protected paths.
+An executor cannot push, merge, broaden scope, or accept its own work.
 
 ### Evaluator
 
-Require a fresh isolated context, all seven perspectives plus Overall, the complete creation package, finding schema, checklist, report schema, and validator. State that creator communication and the other evaluator's report are unavailable until the independent report is frozen.
+Require a fresh isolated context, the complete evidence bundle, all seven perspectives plus Overall, the
+active finding and report formats, verdict criteria, validators, and reproduction steps. Every finding states
+severity and `blocking: yes|no`; creator discussion and the other evaluator report remain unavailable until
+the independent report freezes.
 
 ### Assistant
 
-Keep the objective narrow. State whether it is read-only research, record support, or bounded mechanical work. An assistant cannot infer scope or promotion candidates and cannot invent a finding to populate an empty area.
+Keep the objective narrow and state whether it is read-only analysis, record support, promotion, or bounded
+mechanical work. An assistant cannot infer scope, invent missing evidence, or promote unsupported material.
+
+## Template integrity
+
+When policy adds, removes, or renames a required assignment field, update this skeleton and every
+workflow-owned example in the same change.
+
+The manager checks the actual loaded paths, not only a specialist's claim that skills were loaded. A path
+mismatch or missing explicit override blocks acceptance.
 
 ## References
 
-- Persistent teammate lifecycle and handshake: [`agent-teams.md`](agent-teams.md)
-- Active routing and completion transitions: [`steps/state-machine.md`](steps/state-machine.md)
-- Dual-system WORK order: [`steps/dual-system-work.md`](steps/dual-system-work.md)
-- Record command boundary: [`steps/session-record.md`](steps/session-record.md)
-- Canonical role prompts: [`.gobbi/projects/gobbi/agents/`](../../agents/)
+- [`SKILL.md`](SKILL.md) owns routing and phase policy.
+- [`agent-teams.md`](agent-teams.md) owns persistent-specialist scheduling.
+- [`phase-1.md`](phase-1.md), [`phase-2.md`](phase-2.md), and [`phase-3.md`](phase-3.md) own phase-specific
+  dispatch inputs.
+- Canonical role prompts live under [`.gobbi/projects/gobbi/agents/`](../../agents/).

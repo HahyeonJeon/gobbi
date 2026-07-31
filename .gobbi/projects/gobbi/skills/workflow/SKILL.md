@@ -1,174 +1,297 @@
 ---
 name: workflow
-description: How a manager runs one durable Gobbi workflow — start, resume, route, and close a session across Configuration to Wrap-up.
-allowed-tools: Read, Grep, Glob, Bash, Write, Agent, Task, AskUserQuestion
+description: How a manager runs one durable Gobbi session through three checkpointed phases using native TODO routing, independent dual-system work, verified records, and a terminal hand-off.
+allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Workflow
 
-Use this skill when a manager starts, resumes, routes, or closes a Gobbi session. The outcome is one isolated, recoverable session that follows Configuration → Ideation → Planning → Execution → Wrap-up and leaves verified local commits plus a durable handoff.
+A Gobbi manager loads this skill to start, recover, route, and close one isolated session. The result is a
+verified branch and worktree, a native runtime TODO route, evidence for every completed step, and a hand-off
+that a cold manager can continue or close.
 
-The manager owns user discussion, authority, dispatch, routing, and verification. Specialists own the work assigned to their roles. The user retains final authority over material direction, scope, destructive action, publication, waivers, and finding disposition.
+The workflow has three phases: Configuration → Ideation → Hand-off; Planning → Execution → Hand-off; and
+Wrap-up → Hand-off. Every productive step runs DISCUSSION → WORK → EVALUATION → RECORD.
+
+The manager owns user discussion, routing, assignments, acceptance, and authority checks. The user owns Phase 1
+direction, changes outside its locked contract, new safety or external authority, destructive actions,
+publication, and merge authority. Specialists own only their bounded work.
 
 ## Principles
 
-### One workflow, one cursor
+### Route through one native TODO
 
-Every productive step runs DISCUSSION → WORK → EVALUATION → RECORD. `state.json` version 3 is the only active router. Runtime task lists and concise progress messages are one-way views of that file.
+The runtime TODO list is the sole progression authority. Artifacts, tests, commits, and reports prove whether
+the manager may update it; they never become a concurrent route.
 
-### Independent work before synthesis
+### Lock direction before autonomous delivery
 
-Each WORK stage begins with independent Claude and Codex drafts created from the same neutral contract. Reciprocal review begins only after both drafts are frozen. The active runtime's specialist synthesizes after both cross-reviews. Cost is never a reason to narrow independent Ideation, independent creation, or evaluation rigor.
+Phase 1 locks the problem, purpose, scope, and approach with the user. Phase 2 and Phase 3 then resolve routine
+in-contract choices through agent discussion and continue without routine user questions.
 
-### Fresh independent review
+### Preserve independent creation and review
 
-Every productive step receives two fresh evaluator reports. Each system independently covers Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall. A materially revised canonical artifact receives the complete review again.
+Claude and Codex create independently from one neutral contract before either sees the other draft. Fresh
+evaluators judge the synthesis independently from its creators and each other.
 
-### Durable evidence before routing
+### Make every phase boundary recoverable
 
-The manager advances only after rereading promised artifacts and verifying the record. A specialist report, idle notice, runtime task status, or progress message is not completion evidence by itself.
-
-### Isolated local delivery
-
-Each Gobbi session owns one UUID, branch, and worktree. All ordered Execution writes use that worktree and one writer chain. Verified local commits are mandatory. Remote issue, push, pull-request, and merge actions occur only under their configured and user-authorized conditions.
+Each Hand-off names the completed evidence, Git location, and exact next TODO. Phase 1 and Phase 2 continue
+immediately unless the user interrupts; Phase 3 ends the workflow.
 
 ## Rules
 
-### Must follow
+- **MUST use the native runtime TODO list to select the current phase, productive step, stage, task, and
+  iteration.** Use only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
 
-- Read [`delegation.md`](delegation.md) before every specialist dispatch.
-- Generate the Gobbi session UUID before creating its branch or worktree. A runtime identity never replaces that UUID.
-- Write a validated `state.json` transition before announcing any visible transition.
-- Run Planning. It cannot be skipped.
-- Use both systems for every WORK and EVALUATION stage unless the user explicitly approves a waiver limited to one named system, step, and iteration.
-- Keep evaluators fresh, isolated from creator roles, and isolated from each other.
-- Present one recommended finding-disposition batch to the user after evaluation. Do not revise the canonical artifact until the user approves or edits the batch.
-- Keep all worktree writes ordered through one writer chain even when read-only investigation is parallel.
-- Verify the promised artifact or commit after every specialist report and before advancing the cursor.
-- Preserve settings on resume. Change them only on explicit user request or a user decision after an exhausted iteration cap.
+- **MUST run DISCUSSION → WORK → EVALUATION → RECORD for Ideation, Planning, every Execution task, and
+  Wrap-up.** Reread and verify the required evidence before changing the active item to its next stage.
 
-### Must not follow
+- **MUST freeze independent Claude and Codex drafts before reciprocal review and synthesize only after both
+  cross-reviews freeze.** A required system failure stops the stage unless a valid waiver names that system,
+  productive step, and iteration.
 
-- Do not let a runtime task list, progress message, or specialist change `state.json` directly.
-- Do not let a specialist change scope, make a user decision, accept its own work, reassign work, or authorize a destructive action.
-- Do not place an evaluator in a persistent team.
-- Do not silently continue with one system after the other fails.
-- Do not create session files before the fresh-session defaults decision.
-- Do not search other worktrees for an active session or maintain a global active-session pointer.
-- Do not write step artifacts to durable project memory before Wrap-up.
+- **MUST keep worktree mutations in one ordered writer chain.** Parallel work is limited to independent
+  read-only study, factual analysis, and critique.
+
+- **MUST continue Phase 2 and Phase 3 after every verified nonterminal stage and Hand-off.** Ask the user only
+  for missing safety or authority, a required-system failure without waiver authority, or an extremely
+  material design or strategy change outside the Phase 1 contract.
+
+- **NEVER accept a specialist report, idle signal, TODO status, or plausible summary as completion evidence
+  by itself.** The manager must reread the promised artifact or commit and run its named verification.
 
 ## Procedure
 
-### 1. Classify fresh start or resume
+### Phase 1 — Configure, ideate, and hand off
 
-Run a read-only preflight in the current worktree. Look only for unfinished Gobbi sessions in that worktree.
+#### 1.1 Initialize or recover the native TODO
 
-- If exactly one unfinished session exists, validate its version 5 `session.json`, version 3 `state.json`, worktree path, branch, settings, and current cursor. Resume it automatically with those settings.
-- If none exists, continue as a fresh session.
-- If more than one exists, ask for an explicit session path or offer a fresh session. Do not guess.
-- If the user supplied an explicit session path, validate and use only that path.
+- Inspect the current repository, branch, worktrees, native TODO surface, and unfinished work without
+  mutation.
+- In Claude Code, use `TaskList` and `TaskGet` to inspect tasks, `TaskCreate` to add items, and `TaskUpdate` to
+  change a subject or status. In Codex, use `update_plan` to publish the complete ordered list and statuses.
+- On a fresh session, create one item for Configuration, one mutable item for each productive-step iteration,
+  and one item for each Hand-off before doing other progression work. Start with only `P1 · Configuration` in
+  progress and keep later items pending.
+- Use this exact title grammar:
 
-After compact, clear, resume, rewind, or another runtime context boundary, append the newly observed runtime ID to `session.json.runtime.ids` only when distinct. Preserve the existing Gobbi session UUID. Use the record checkpoint command for the validated atomic update.
+```text
+P1 · Configuration
+P1 · Ideation · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
+P1 · Hand-off
+P2 · Planning · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
+P2 · Execution · <unplanned|task-NN-slug> · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/<configured-max>
+P2 · Hand-off
+P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
+P3 · Hand-off
+```
 
-### 2. Resolve fresh-session settings
+- Retitle the active productive-step item as it enters each stage. `PASS` is the verified gate marker after
+  RECORD, not a fifth stage.
+- When an iteration needs revision, complete its item at RECORD, create the next iteration at DISCUSSION, and
+  leave the prior item as evidence of the completed pass. Ideation, Planning, and Wrap-up never receive a
+  third item.
+- For recovery, apply the algorithm in [`agent-teams.md`](agent-teams.md): begin at the latest verified
+  Hand-off, walk canonical records and task commits in workflow order, reconstruct the first unproved TODO,
+  and continue only after the native list has been corrected.
 
-For a fresh session, show the defaults once and ask exactly: **"use defaults or customize?"**
+#### 1.2 Configure the session and its evidence
 
-The default iteration cap is three total passes for each productive step. The default role selections are:
+- Resolve defaults or customization with the user, including the Execution `maxIterations` value, which
+  defaults to three total passes per task, role selections, Git finalization, required-system availability,
+  and any narrow waiver authority.
+- Generate a Gobbi session UUID before deriving its branch or worktree. Create and verify one isolated session
+  branch and worktree through the Git skill.
+- Create the workflow evidence root at
+  `{worktree}/.gobbi/projects/{project}/sessions/{date}-{gobbi-session-id}/`. Write `configuration.md` there
+  with the UUID, resolved settings, repository, base revision, branch, absolute worktree, runtime system, and
+  creation checks.
+- Use these fixed evidence owners:
 
-| System | manager | leader | executor | evaluator | assistant |
-|---|---|---|---|---|---|
-| Claude | opus | opus | opus | opus | sonnet |
-| Codex | gpt-5.6-sol | gpt-5.6-sol | gpt-5.6-sol | gpt-5.6-sol | gpt-5.6-sol |
-
-The default Git policy is local publication, no issue, and no draft pull request. If the user customizes, resolve every changed value before any filesystem mutation. Planning remains enabled with a positive cap.
-
-### 3. Create the isolated session
-
-After the defaults decision:
-
-1. Generate a Gobbi-owned UUID.
-2. Derive the session branch from the active system, start date, and UUID.
-3. Create one branch and worktree under the Git skill's safe worktree procedure.
-4. Invoke [`record/scripts/session-record.sh`](../record/scripts/session-record.sh) `init` with the absolute session root, UUID, project, runtime system and ID, timestamp, branch, absolute worktree, repository data, and optional resolved-settings file.
-5. Run the command's `verify` operation and reread `session.json` and `state.json`.
-
-Initialization eagerly creates the configured iteration skeleton. Planning later supplies the locked task list to `scaffold-tasks`. The record skill and command own all schemas, directory mechanics, rendering, root containment, and atomic replacement; workflow does not reproduce them.
-
-### 4. Enter Ideation
-
-Use a record-command transition patch to move the cursor from Configuration to Ideation DISCUSSION. Confirm the candidate state validates, then render only:
-
-`step=<step> stage=<stage> iteration=<n> task=<task-or-none>`
-
-Project the same cursor into the runtime-native task list. The projection cannot write back.
-
-### 5. Run each productive step
-
-Load the step adapter and run its four stages in order:
-
-1. DISCUSSION locks the inputs, decisions, scope, and specialist contract for the iteration.
-2. WORK follows [`steps/dual-system-work.md`](steps/dual-system-work.md).
-3. EVALUATION follows [`steps/evaluation.md`](steps/evaluation.md).
-4. RECORD follows [`steps/record.md`](steps/record.md).
-
-The step adapters are:
-
-| Step | Manager adapter | Specialist owner |
-|---|---|---|
-| Ideation | [`steps/ideation.md`](steps/ideation.md) | [`ideation/SKILL.md`](../ideation/SKILL.md) |
-| Planning | [`steps/planning.md`](steps/planning.md) | [`planning/SKILL.md`](../planning/SKILL.md) |
-| Execution | [`steps/execution.md`](steps/execution.md) | [`execution/SKILL.md`](../execution/SKILL.md) |
-| Wrap-up | [`steps/wrap-up.md`](steps/wrap-up.md) | [`wrap-up/SKILL.md`](../wrap-up/SKILL.md) |
-
-Use [`steps/state-machine.md`](steps/state-machine.md) for every verdict branch, iteration-cap branch, halt, return, and cursor advance. Update state before every visible transition.
-
-### 6. Coordinate specialists
-
-The role roster is fixed:
-
-| Role | Ownership |
+| Productive work | Evidence directory |
 |---|---|
-| manager | User relationship, authority, routing, assignment, and verification |
-| leader | Ideation and Planning |
-| executor | Ordered implementation tasks |
-| evaluator | Fresh independent evaluation |
-| assistant | Narrow research, record support, and bounded mechanical support |
+| Ideation | `1-ideation/` |
+| Planning | `2-planning/` |
+| Execution | `3-execution/task-NN-slug/` |
+| Wrap-up | `4-wrap-up/` |
 
-In Claude Code, apply [`agent-teams.md`](agent-teams.md) when the capability is available. Otherwise use fresh specialists. Native Codex uses its native specialist mechanism and an ephemeral Claude command-line peer for opposite-system operations. In either runtime, the same assignment, evidence, and independence rules apply.
+- Each owner uses `working/iteration-N/` for the dual-system package,
+  `evaluation/iteration-N/{claude.md,codex.md,gate.md}` for independent reports and the workflow gate,
+  `record/iteration-N.md` for the RECORD receipt, `staging/` for typed durable candidates, and `outputs/` for
+  PASS-only canonical artifacts.
+- A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
+  `open-decisions.md`. Validate it with
+  `scripts/validate-dual-system-work.sh --root <evidence-root> --step <step> --iteration <n> --assignment <id> --runtime-system <claude|codex>`
+  and add `--task task-NN-slug` for Execution.
+- Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
+  IDs, actual blocking finding IDs, accepted nonblocking finding IDs, and the workflow decision. Each RECORD
+  receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and staging.
+- Within this workflow, the Record skill supplies typed-staging and PASS-only-output guidance only. This
+  evidence layout and the native TODO override conflicting placement, transition, verdict, or command
+  instructions; never invoke a Record operation that requires or changes another progression authority.
+- Complete Configuration only after rereading `configuration.md`, verifying the evidence root, branch,
+  worktree, settings, and TODO route, and then activate `P1 · Ideation · DISCUSSION · 1/2`.
 
-### 7. Handle failures and exhausted iterations
+#### 1.3 Run user-led Ideation
 
-An unavailable system, timeout, malformed structured response, missing artifact, invalid package, or failed validator pauses the current stage. Surface the exact failure and recovery choices. A user-approved missing-system waiver is narrow, recorded as a material decision, and linked from the final outcome. It does not authorize any later iteration or step.
+- Load the [Ideation skill](../ideation/SKILL.md) plus [`phase-1.md`](phase-1.md) before DISCUSSION. Load the
+  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
+  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+- In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
+  material assumptions, alternatives, authority, and deferrals with the user. Freeze the neutral contract
+  only when the user has locked the direction and each material unknown has an owner or decision.
+- In WORK, give that same contract and frozen evidence to independent Claude and Codex leaders. Freeze both
+  system-labeled drafts; run Claude-on-Codex and Codex-on-Claude review in later, separate operations; freeze
+  both reviews; let the active runtime leader synthesize; resolve user-owned conflicts; and validate the
+  complete package with [`scripts/validate-dual-system-work.sh`](scripts/validate-dual-system-work.sh).
+- In EVALUATION, give the complete creation package to one fresh Claude evaluator and one fresh Codex
+  evaluator. Neither sees the other report, and both cover Project, Structure, Performance, Aesthetics, Usage,
+  Consistency, Risk, and Overall; each finding states severity and whether it is an actual blocker.
+- In RECORD, seal the creation package, both reports, decisions, findings, checks, and Configuration receipt.
+  Write the canonical Ideation artifact only after PASS and verify it before updating the TODO.
 
-When an iteration cap is exhausted or evaluation returns FAIL, follow the state-machine user gate. Never add another pass or redirect the workflow without the user's decision.
+#### 1.4 Apply the fast gate and hand off
 
-### 8. Close through Wrap-up
+- Ideation has two total iterations. Evaluator verdicts remain independent report evidence; the fast
+  `gate.md`, not their more-severe aggregate, controls the TODO.
+- Set the fast-gate decision to PASS when no unresolved Critical or actual blocking finding remains, even when
+  a report declares REVISE for an accepted nonblocking finding. Set iteration 1 to REVISE when either class
+  remains; set iteration 2 to FAIL and stop when either class remains.
+- Record optional improvements and all other findings as accepted nonblocking findings without forcing
+  revision.
+- After a blocking first pass, complete RECORD, obtain any required Phase 1 user decision, create iteration
+  2/2 at DISCUSSION, and repeat the complete cycle. After a blocking second pass, keep the current route
+  recoverable and present the exact choices; never create iteration 3.
+- On PASS, retitle the item to `PASS`, complete it, and activate `P1 · Hand-off`.
+- Render the shared Hand-off template below, set `Next TODO` to
+  `P2 · Planning · DISCUSSION · 1/2`, and set `Continuation` to
+  `automatic unless the user interrupts for clear or compact`.
+- Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 2 in the
+  same turn.
 
-Wrap-up is the final productive step, not a separate pipeline. After its PASS RECORD, verify its canonical artifacts and post-promotion tree. Then create verified local commits and execute only the configured Git finalization actions. Merge still requires explicit user authority.
+### Phase 2 — Plan, execute, and hand off
 
-Checkpoint the version 5 manifest with the final durable outcome and mark version 3 state complete. Display the full evaluated handoff, its durable path, and a factual receipt of actual commit, publication, merge, cleanup, branch, and worktree results. Do not alter the evaluated handoff merely to add that receipt.
+#### 2.1 Plan continuously from the locked contract
 
-### 9. Prove completion
+- Load the [Planning skill](../planning/SKILL.md) plus [`phase-2.md`](phase-2.md) before DISCUSSION. Load the
+  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
+  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+- Use the canonical Ideation artifact, accepted decisions and findings, repository evidence, authority,
+  required skills, dependencies, and writer boundary as Planning inputs.
+- In DISCUSSION, the manager and agents resolve task hierarchy, stable `task-NN-slug` IDs, dependencies,
+  assignment, read-only lanes, one-writer order, acceptance, and verification without routine user questions.
+- Run WORK with the same independent drafts, freeze, reciprocal review, active-runtime synthesis, and package
+  validation used in Ideation.
+- Run EVALUATION with two fresh independent evaluators and the fast two-iteration gate. Run RECORD after every
+  verdict; on PASS, verify that the canonical plan covers every Ideation obligation in dependency-valid order.
+- Resolve routine, contract-preserving gaps agent-to-agent. Stop only at the critical-blocker boundary stated
+  in the Rules.
 
-Before declaring the session complete:
+#### 2.2 Expand and execute the task route
 
-1. Run the record command's `verify` operation with the locked task list when applicable.
-2. Confirm every productive step has a final PASS verdict and canonical artifact pointer, or the final outcome names the user-approved halt or abort reason.
-3. Confirm every completed Execution task has verification evidence and a focused local commit.
-4. Confirm every waiver and approved finding disposition is durable and linked.
-5. Confirm the handoff's session body and durable-memory body match.
-6. Confirm `state.json` and `session.json` carry the final state and outcome.
+- Replace the pending `unplanned` placeholder with the first canonical plan task and add the remaining
+  `task-NN-slug` items in plan order. Each task starts at
+  `P2 · Execution · <task-NN-slug> · DISCUSSION · 1/<configured-max>`.
+- Load the [Execution skill](../execution/SKILL.md) before task DISCUSSION and WORK, the
+  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION, and the
+  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+- For each task, let agents turn the plan entry, current preimage, exact path scope, dependencies, skills,
+  authority, acceptance, and checks into an executable DISCUSSION contract.
+- In WORK, use independent Claude and Codex analysis over the same contract and frozen preimage, freeze both,
+  cross-review after freeze, and let the active runtime executor synthesize and implement as the sole writer.
+  Run the required checks and create one focused local task commit.
+- In EVALUATION, give two fresh independent evaluators the task contract, complete creation package, diff,
+  tests, commit, and repository evidence. For normal mode, record both report verdicts in `gate.md` and use
+  the more severe verdict as the workflow decision: FAIL outranks REVISE, which outranks PASS.
+- In RECORD, seal the verdict, findings, dispositions, verification, and artifact pointers. PASS only after
+  the manager rereads the committed diff, verifies allowed paths, and reruns or directly checks the named
+  evidence.
+
+#### 2.3 Route revisions and continue
+
+- On REVISE below the configured cap, complete RECORD, create the next iteration at DISCUSSION, and continue
+  immediately. Resolve noncritical finding dispositions agent-to-agent within the locked contract.
+- On PASS, retitle and complete the task item, then activate the next task immediately.
+- A FAIL or exhausted cap is an actual blocker after every safe in-contract recovery is exhausted. Preserve
+  the current item, exact evidence, branch, worktree, and recovery choices rather than adding an unauthorized
+  pass or accepting failed work.
+- For an unavailable or invalid system response, retry only the failed bounded operation when safe. Continue
+  with one system only when the existing waiver authority names the missing system, productive step, and
+  iteration.
+- When Execution exposes an in-contract plan defect, preserve the completed Planning item and write a
+  numbered plan amendment during the current task's DISCUSSION. The amendment records the cause, affected
+  pending tasks, revised order or contracts, and verification; retitle or reorder only pending Execution
+  items and never consume another Planning iteration.
+- Preserve completed task commits. Add a compensating pending task when an in-contract amendment must alter a
+  completed result; stop at the critical-blocker boundary when safe compensation is impossible or the change
+  exceeds the locked contract.
+
+#### 2.4 Hand off and continue
+
+- After every planned task has verified PASS evidence and a focused commit, activate `P2 · Hand-off` and
+  render the shared template.
+- Set `Next TODO` to `P3 · Wrap-up · DISCUSSION · 1/2` and `Continuation` to
+  `automatic unless the user interrupts for clear or compact`.
+- Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 3 in the
+  same turn.
+
+### Phase 3 — Wrap up and finish
+
+#### 3.1 Run Wrap-up continuously
+
+- Load the [Wrap-up](../wrap-up/SKILL.md), [Memory](../memory/SKILL.md), and
+  [Git](../git/SKILL.md) skills plus [`phase-3.md`](phase-3.md) before DISCUSSION. Load the
+  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
+  [Record skill](../record/SKILL.md) under the Step 1.2 evidence-only override before RECORD.
+- Use canonical step artifacts, decisions, findings, waivers, task commits, verification, typed staging,
+  destination preimages, handoff requirements, and configured Git authority.
+- In DISCUSSION, agents freeze the closure inventory and contract without routine user questions and without
+  inventing material to fill empty staging.
+- In WORK, run independent Claude and Codex promotion-and-handoff drafts, freeze both, cross-review after
+  freeze, synthesize, and let one authorized writer apply only supported promotion inside the isolated
+  worktree. Verify the actual post-promotion tree and shared handoff body.
+- In EVALUATION, give two fresh independent evaluators the actual tree, full creation package, handoff, checks,
+  and finalization plan. In RECORD, seal the verdict, findings, promotion evidence, and handoff.
+- Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.4. A blocking first pass
+  receives one complete revision; a blocking second pass stops with exact evidence and no third iteration.
+
+#### 3.2 Finalize authorized work
+
+- After PASS, verify the canonical Wrap-up artifact, every local commit, the handoff, and the worktree state.
+- Perform only Git actions already configured and authorized. If publication, merge, or cleanup is not
+  authorized or does not complete, retain the branch and worktree and record the exact recovery action rather
+  than asking a routine question or claiming success.
+- Retitle and complete the Wrap-up item, then activate `P3 · Hand-off`.
+
+#### 3.3 Render the terminal Hand-off
+
+- Render the shared template with a factual receipt for commits, publication, merge, cleanup, branch, and
+  worktree. Report only actions that occurred.
+- Set `Next TODO` to `none — workflow complete` and `Continuation` to `terminal`.
+- Complete `P3 · Hand-off` only after the handoff, TODO route, local evidence, and retained recovery state
+  agree. Display the terminal checkpoint and end the workflow.
+
+Use this exact shared Hand-off template:
+
+```text
+Phase:
+Outcome:
+Completed:
+Evidence:
+Decisions:
+Accepted nonblocking findings:
+Branch:
+Worktree:
+Next TODO:
+Continuation:
+```
 
 ## References
 
-- Transition rules and recovery: [`steps/state-machine.md`](steps/state-machine.md)
-- Session command boundary: [`steps/session-record.md`](steps/session-record.md)
-- Dual-system WORK contract: [`steps/dual-system-work.md`](steps/dual-system-work.md)
-- Evaluation gate: [`steps/evaluation.md`](steps/evaluation.md)
-- RECORD gate: [`steps/record.md`](steps/record.md)
-- Delegation contract: [`delegation.md`](delegation.md)
-- Persistent-team contract: [`agent-teams.md`](agent-teams.md)
-- Git isolation and finalization: [`git/SKILL.md`](../git/SKILL.md)
-- Operation scenarios, checks, and review entrypoint: [`scenarios.md`](scenarios.md), [`checklists.md`](checklists.md), [`evaluation.md`](evaluation.md)
+- [`phase-1.md`](phase-1.md) gives Phase 1 dispatch, evidence, and recovery details.
+- [`phase-2.md`](phase-2.md) gives continuous Planning and Execution details.
+- [`phase-3.md`](phase-3.md) gives continuous Wrap-up and closeout details.
+- [`delegation.md`](delegation.md) owns the shared specialist assignment contract.
+- [`agent-teams.md`](agent-teams.md) owns persistent-specialist scheduling and recovery.
