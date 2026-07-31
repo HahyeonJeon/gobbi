@@ -7,9 +7,9 @@ skill-type: tool
 
 # Codex
 
-Use this skill to locate Gobbi in native Codex or to invoke one opposite-system command-line peer for a draft, cross-review, or evaluation report. It documents the installed Codex and Claude non-interactive surfaces and the validation boundary around them.
+Use this skill to locate Gobbi in native Codex or to invoke one opposite-system command-line peer for a draft, cross-review, or evaluation report. It documents the installed Codex and Claude non-interactive surfaces and the wrapper boundary around them.
 
-Gobbi workflow order, specialist authority, artifact schemas, and finding policy remain with their own skills. This tool never chooses scope, a waiver, a finding disposition, a model, or a workflow route.
+Gobbi workflow order, specialist authority, and finding policy remain with their own skills. This tool never chooses scope, a waiver, a finding disposition, a model, or a workflow route.
 
 ## Principles
 
@@ -19,11 +19,11 @@ The Gobbi-owned UUID names the session, branch, and worktree. A Codex thread ID 
 
 ### Give every peer a complete neutral input
 
-Each peer operation starts a new process. Its prompt contains the complete artifact contract and complete input contents. It does not rely on earlier process context, private runtime state, or follow-up questions.
+Each peer operation starts a new process. Its prompt contains the complete neutral contract and complete input contents. It does not rely on earlier process context, private runtime state, or follow-up questions.
 
 ### Keep the peer read-only and the wrapper accountable
 
-The peer returns one structured JSON value and never writes the session tree. The active-runtime assistant validates the response, renders it through the record command, and then runs the applicable owner validator.
+The peer returns one closed response and never writes the session tree. The active-runtime assistant handles that response, reports what it received, and leaves acceptance of the operation to the manager.
 
 ### Treat failure as a visible pause
 
@@ -36,13 +36,14 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, sc
 - **C-1 — Use canonical Gobbi sources.** Load skills from `.gobbi/projects/gobbi/skills/`. Treat `.agents/skills/` and `plugins/gobbi/skills/` as discovery or package views, not alternate owners.
 - **C-2 — Use repo-local specialists in native Codex.** Role wrappers live under `.codex/agents/` and point to the protected canonical role documents.
 - **C-3 — Resolve settings through their owners.** The session manifest owns resolved role models. Repo-local Codex configuration and role wrappers own runtime defaults. Do not duplicate or change those values here.
-- **C-4 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
-- **C-5 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
-- **C-6 — Require one schema-valid JSON value.** Reject empty output, multiple top-level values, prose wrappers, code fences, unknown fields, and any value that fails the selected artifact schema.
-- **C-7 — Bind output to the invocation.** Before storage, match kind, system, step, iteration, assignment, runtime identity, neutral-contract digest, and the operation-specific frozen subject digest.
-- **C-8 — Store only through the record owner.** Pass the validated JSON to `session-record.sh write-artifact`. A peer process cannot write or repair Markdown directly.
-- **C-9 — Validate the stored boundary.** Run the dual-system WORK validator when its full package exists, or the evaluation validator for an evaluation report. Reread the stored artifact before accepting the operation.
-- **C-10 — Surface exact failures.** Preserve the prior target bytes, report the command status and immediate diagnostic, and return control to workflow for retry, user decision, or abort.
+- **C-4 — Keep every peer operation independent.** A draft operation receives nothing from the other draft until both freeze, and an evaluator receives no other evaluator report and no prior evaluator context.
+- **C-5 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
+- **C-6 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
+- **C-7 — Bind output to the invocation.** The peer states the operation's kind, system, step, iteration, and stable assignment so the manager can bind the response to the assignment it accepts.
+- **C-8 — Require one closed response.** The peer returns exactly one self-contained value and nothing else: no prose wrapper, code fence, partial value, second output channel, or follow-up turn.
+- **C-9 — Surface exact failures.** Report the command status and immediate diagnostic, change nothing, and return control to workflow for retry, user decision, or abort.
+
+This skill defines no artifact schema, no per-kind response shape, and no digest comparison. The manager's acceptance of the reported response is the only control over peer output.
 
 ### Must not follow
 
@@ -51,7 +52,7 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, sc
 - Do not let one independent draft operation read the other draft before both freeze.
 - Do not let an evaluator read another evaluator report or reuse a prior evaluator context.
 - Do not accept a wrapper summary, reconstructed response, partial value, stale response, or reused runtime identity as peer output.
-- Do not add a second renderer, artifact schema, adapter executable, or storage path.
+- Do not add a second adapter executable, peer surface, or output channel.
 - Do not infer a missing-system waiver. Waiver authority remains with workflow and the user.
 
 ## Manual
@@ -77,10 +78,10 @@ Use an opposite-system peer only through the workflow-owned WORK or EVALUATION c
 
 | Active runtime | Opposite-system process | Structured-output owner |
 |---|---|---|
-| Claude Code | `codex exec` | `--output-schema` receives the artifact schema file |
+| Claude Code | `codex exec` | `--output-schema` receives the structured-output schema file |
 | Native Codex | `claude -p` | `--json-schema` receives the compact schema contents |
 
-The applicable JSON Schema is one of the record-owned draft, cross-review, or evaluation-report schemas. The active-runtime assistant chooses it from the assigned artifact kind. It does not weaken or extend the schema for a single call.
+The structured-output option receives whatever the wrapper supplies for that call. This skill defines no artifact schema and never states what a response of a given kind must contain.
 
 ### Common invocation envelope
 
@@ -89,7 +90,7 @@ Before launch, render a neutral prompt in a runtime temporary directory outside 
 - operation kind: draft, cross-review, or evaluation report;
 - expected output system, step, iteration, stable assignment, and fresh runtime identity;
 - one unique invocation identity for replay detection;
-- the exact artifact schema contract and output-only-JSON rule;
+- the closed-response rule: exactly one self-contained value and nothing else;
 - the neutral contract plus its lowercase SHA-256 digest;
 - every binding input as complete inline content, with its source label and digest;
 - exact in-scope and out-of-scope boundaries;
@@ -137,42 +138,38 @@ The wrapper must not pass `"$schema_file"` itself to `--json-schema`. It must co
 
 ### Draft input
 
-Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, digest, summary, or hint from the other draft. Its response must match `draft.schema.json`, echo the assigned runtime identity, and carry the exact `contractSha256`.
+Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, digest, summary, or hint from the other draft.
 
-Freeze and store both rendered drafts before either cross-review prompt is constructed. A response from an earlier invocation, step, iteration, or assignment is stale even when its content appears useful.
+Freeze both drafts before either cross-review prompt is constructed. A response from an earlier invocation, step, iteration, or assignment is stale even when its content appears useful.
 
 ### Cross-review input
 
-The reviewer receives the complete original neutral contract plus the complete frozen rendered draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper supplies:
+The reviewer receives the complete original neutral contract plus the complete frozen draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper supplies:
 
 - the expected opposite `subjectSystem`;
-- the SHA-256 of the exact rendered subject file as `subjectSha256`; and
+- the SHA-256 of the exact frozen subject file as `subjectSha256`; and
 - the same `contractSha256` used by both drafts.
 
-The response must match `cross-review.schema.json`. Claude reviews Codex and Codex reviews Claude. Same-system or same-subject labeling blocks storage.
+Claude reviews Codex and Codex reviews Claude. Same-system or same-subject labeling blocks the operation.
 
 ### Evaluation input
 
 Each evaluator receives the complete frozen evaluation bundle required by the evaluation owner: canonical synthesis or actual tree, both drafts, both cross-reviews, resolved decisions, applicable waiver, locked scope, upstream artifacts, scenarios, checklist source, plan, and verification evidence. It never receives the other evaluator report or a prior evaluator session.
 
-The wrapper hashes the exact evaluated subject and expects it as `subjectSha256`. The response must match `evaluation-report.schema.json`, including the ordered seven perspectives, Overall, ledger, completed checklist, and derived verdict.
+The wrapper hashes the exact evaluated subject and supplies that digest in the envelope. The evaluation method owns what an evaluation report contains.
 
-### Pre-storage validation
+### Response handling
 
 The active-runtime assistant performs these checks in order:
 
 1. Confirm the peer binary and required local dependencies exist before launch.
 2. Launch once with a bounded timeout. Capture the exact exit status before inspecting content.
-3. Treat status `124` as timeout and every other nonzero status as failure. Read the immediate stderr diagnostic; do not store it as a session artifact.
-4. Require a non-empty regular response file. Parse with a strict JSON reader. `jq -e -s 'length == 1'` rejects multiple top-level values; a second check requires the one value to be an object. Prose, wrappers, and code fences fail parsing.
-5. Validate the response against the selected record-owned schema with `jsonschema`.
-6. Compare kind, system, step, iteration, assignment, and runtime identity with the frozen invocation envelope.
-7. Compare `contractSha256`, `subjectSystem`, and `subjectSha256` where the selected schema requires them. Recompute the frozen file digests rather than trusting prompt prose.
-8. Reject a runtime identity or invocation response already used by an earlier peer operation. Confirm the target is the current canonical system-labeled path and is not an already frozen artifact from another operation.
-9. Call `session-record.sh write-artifact` with the exact expected kind, system, step, iteration, assignment, input, and canonical root-relative target.
-10. Reread the rendered artifact. When the complete WORK package exists, run `validate-dual-system-work.sh`. For an evaluation report, run `validate-evaluation-report.sh one`; after both reports validate independently, the manager may run its pair mode.
+3. Treat status `124` as timeout and every other nonzero status as failure. Read the immediate stderr diagnostic; do not keep it as session evidence.
+4. Require a non-empty regular response file holding exactly one self-contained value. Prose, wrappers, code fences, and a second value fail this check.
+5. Compare kind, system, step, iteration, assignment, and runtime identity with the frozen invocation envelope.
+6. Reject a runtime identity or invocation response already used by an earlier peer operation.
 
-No later check compensates for a failed earlier check. A storage or validator failure leaves the prior valid artifact bytes authoritative and pauses the workflow.
+No later check compensates for a failed earlier check. A failure changes nothing and pauses the workflow. The manager decides whether the reported response is accepted.
 
 ### Failure diagnosis
 
@@ -192,15 +189,8 @@ Only the manager may offer retry, a bounded input repair, an explicit one-system
 
 ## References
 
-- [Peer adapter command and validation lookup](peer-adapters.md)
-- [Dual-system WORK owner](../workflow/steps/dual-system-work.md)
-- [EVALUATION manager adapter](../workflow/steps/evaluation.md)
+- [Peer adapter command lookup](peer-adapters.md)
+- [Dual-system WORK and EVALUATION owner](../workflow/SKILL.md), including its [specialist assignment additions](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
 - [Evaluation method](../evaluation/SKILL.md)
-- [Record method](../record/SKILL.md) and [record command map](../record/record-map.md)
-- [Draft schema](../record/schemas/draft.schema.json), [cross-review schema](../record/schemas/cross-review.schema.json), and [evaluation-report schema](../record/schemas/evaluation-report.schema.json)
-- [Record renderer](../record/scripts/session-record.sh)
-- [Dual-system WORK validator](../workflow/scripts/validate-dual-system-work.sh)
-- [Evaluation report validator](../record/scripts/validate-evaluation-report.sh)
 - [Generic specialist delegation owner](../delegation/SKILL.md)
-- [Workflow assignment additions](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
 - [Repository runtime entry contract](../../../../../AGENTS.md)
