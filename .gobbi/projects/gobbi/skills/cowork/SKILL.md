@@ -20,11 +20,6 @@ and verified Execution, then returns control to the user.
 The user supplies each topic and owns every material scope, design, risk, destructive-action, and external
 service decision. The manager makes the topic concrete, returns accepted evidence, and waits for direction.
 
-### Match shaping depth to the topic
-
-Fast work still needs enough thought to be correct and recoverable. Select the smallest delivery depth that
-fits the topic's uncertainty, dependencies, breadth, risk, and reversibility.
-
 ### Keep one inspectable local history
 
 One linked worktree and one ordered writer chain keep every result attributable and recoverable. Each selected
