@@ -34,7 +34,7 @@ Static and build checks prove construction, not runtime security or Electron beh
 - **MUST bind the change to an observable outcome, pinned Electron major, target operating systems and architectures, existing stack, process owners, trust boundaries, and user authority before implementation.**
 - **MUST inspect current process imports, BrowserWindow or view options, preload exposure, IPC registration, lifecycle hooks, cleanup, build targets, and packaged path assumptions before changing them.**
 - **MUST implement a cross-process change in dependency order: shared contract, privileged owner, preload adapter, renderer consumer, then window, lifecycle, native, configuration, and documentation integration.**
-- **MUST preserve secure defaults and validate sender and payload data in the privileged process.** Load `electron-convention` for the complete non-negotiable posture.
+- **MUST preserve secure defaults and validate sender and payload data in the privileged process.** Load `electron-design` for the complete non-negotiable posture.
 - **NEVER use a successful typecheck or development launch as proof that IPC authorization, preload loading, lifecycle ordering, native outcomes, or packaged paths work.**
 - **MUST finish with current code, configuration, and documentation plus exact local verification and explicit remaining test or release evidence.**
 

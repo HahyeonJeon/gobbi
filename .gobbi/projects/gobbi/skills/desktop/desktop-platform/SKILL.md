@@ -48,7 +48,7 @@ For Electron work, load the Electron root and then select every applicable child
 
 | Electron concern | Owner |
 |---|---|
-| Security boundaries, project organization, bridge and IPC contracts, window ownership, native defaults, and errors | [`electron-convention`](../../electron/electron-convention/SKILL.md) |
+| Security boundaries, project organization, bridge and IPC contracts, window ownership, native defaults, and errors | [`electron-design`](../../electron/electron-design/SKILL.md) |
 | Main, preload, renderer, utility, window, lifecycle, or native implementation and review | [`electron-development`](../../electron/electron-development/SKILL.md) |
 | Process capabilities, preload and IPC mechanics, lifecycle, native behavior, and platform failure lookup | [`electron-runtime`](../../electron/electron-runtime/SKILL.md) |
 | Process, trust, lifecycle, native, packaged, and installed evidence | [`electron-test`](../../electron/electron-test/SKILL.md) |

@@ -9,13 +9,13 @@ skill-type: domain
 
 Electron owns navigation for Electron platform work. It routes to focused child skills without repeating their policy or procedures.
 
-Load every child whose trigger applies. A task may need several children, such as development plus convention and test.
+Load every child whose trigger applies. A task may need several children, such as development plus design and test.
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`electron-convention`](electron-convention/SKILL.md) | preference | MUST load when choosing or reviewing Electron security boundaries, project organization, bridges, IPC contracts, window ownership, native behavior, errors, or platform defaults. |
+| [`electron-design`](electron-design/SKILL.md) | preference | MUST load when choosing or reviewing Electron security boundaries, project organization, bridges, IPC contracts, window ownership, native behavior, errors, or platform defaults. |
 | [`electron-development`](electron-development/SKILL.md) | operation | MUST load when implementing or reviewing an Electron platform change across main, preload, renderer, utility, window, lifecycle, or native integration boundaries. |
 | [`electron-release`](electron-release/SKILL.md) | operation | MUST load when packaging, signing, notarizing, upgrading, update-rehearsing, or preparing Electron artifacts for release. |
 | [`electron-runtime`](electron-runtime/SKILL.md) | tool | MUST load when looking up Electron process capabilities, preload constraints, IPC mechanics, lifecycle behavior, native integrations, or platform-specific failures. |

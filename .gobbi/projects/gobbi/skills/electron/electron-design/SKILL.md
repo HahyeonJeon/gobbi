@@ -1,15 +1,15 @@
 ---
-name: electron-convention
+name: electron-design
 description: "MUST load when choosing or reviewing Electron security boundaries, project organization, bridges, IPC contracts, window ownership, native behavior, errors, or platform defaults."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---
 
-# Electron Convention
+# Electron Design
 
-Use these conventions when an Electron design or implementation needs a stable default. They define the security posture, ownership model, naming, and project-shape choices shared by development, testing, and release work.
+Use this preference skill when an Electron design or implementation needs a stable default. It defines the security posture, ownership model, naming, and project-shape choices shared by development, testing, and release work.
 
-These conventions do not prescribe product experience, renderer framework idioms, test methodology, or release commands. A project may depart from a preference with evidence, but it may not depart from a rule without changing the governing contract.
+This skill does not prescribe product experience, renderer framework idioms, test methodology, or release commands. A project may depart from a preference with evidence, but it may not depart from a rule without changing the governing contract.
 
 ## Principles
 

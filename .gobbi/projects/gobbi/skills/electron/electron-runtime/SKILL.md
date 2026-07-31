@@ -9,7 +9,7 @@ skill-type: tool
 
 Use this manual for direct lookup while designing, implementing, or diagnosing Electron platform behavior. Bind every lookup to the project's pinned Electron major, emitted module format, target operating system, and actual process.
 
-This tool explains mechanisms and failure signals. Security posture and default choices belong to `electron-convention`; implementation, test, and release procedures belong to their operation skills.
+This tool explains mechanisms and failure signals. Security posture and default choices belong to `electron-design`; implementation, test, and release procedures belong to their operation skills.
 
 ## Principles
 
