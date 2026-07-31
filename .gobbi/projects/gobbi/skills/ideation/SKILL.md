@@ -189,7 +189,7 @@ The first idea is a candidate, not the answer. Compare it with genuinely differe
 - When design development exposes a material topic or user choice, discuss it through Step 3.2, record the decision in `ideation.tmp.md`, reintegrate it through Step 3.3, and refine the design from the updated decisions until every integrated decision is expressed and no material design choice remains unresolved.
 - Finalize `ideation.md` from [the final Ideation template](templates/ideation.md) with the preserved context, integrated decisions, corrected requirements, emergent topics, final topic tree, design, risks, and validation commitments.
 
-#### 3.5 Audit and return or evaluate the result
+#### 3.5 Audit, evaluate, and return the result
 
 - Self-review `requirements.md`, `topics.md`, `ideation.tmp.md`, and `ideation.md` against this operation and
   its templates. Correct every material omission, inconsistency, unresolved decision, broken link, or
