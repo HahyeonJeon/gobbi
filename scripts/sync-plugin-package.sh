@@ -182,10 +182,14 @@ validate_source_topology() {
 
   require_link "$repo_root/AGENTS.md" '.codex/AGENTS.md'
   if [[ -f "$repo_root/.codex/AGENTS.md" ]]; then
+    grep -Fq 'General | Cowork | Workflow' "$repo_root/.codex/AGENTS.md" \
+      || topology_fail '.codex/AGENTS.md does not describe the General | Cowork | Workflow session-mode contract'
     grep -Fq 'Configuration' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the Configuration-first workflow'
     grep -Fq 'DISCUSSION' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the productive-step stage loop'
   fi
   if [[ -f "$repo_root/.claude/CLAUDE.md" ]]; then
+    grep -Fq 'General | Cowork | Workflow' "$repo_root/.claude/CLAUDE.md" \
+      || topology_fail '.claude/CLAUDE.md does not describe the General | Cowork | Workflow session-mode contract'
     grep -Fq 'Configuration' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the Configuration-first workflow'
     grep -Fq 'DISCUSSION' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the productive-step stage loop'
   fi
