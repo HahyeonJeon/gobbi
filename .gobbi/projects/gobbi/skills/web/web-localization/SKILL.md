@@ -134,3 +134,6 @@ the declared supported-locale list contains no right-to-left language, and recor
 that reopens the moment one is added.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
