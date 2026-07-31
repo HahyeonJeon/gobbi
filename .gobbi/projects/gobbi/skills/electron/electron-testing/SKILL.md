@@ -1,11 +1,11 @@
 ---
-name: electron-test
+name: electron-testing
 description: "MUST load when designing, implementing, running, or interpreting Electron-specific tests across process, bridge, security, lifecycle, native, or packaged boundaries."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
-# Electron Test
+# Electron Testing
 
 Use this operation to produce truthful Electron-specific evidence at the cheapest seam that can observe the claim. It covers process placement, privileged handlers, preload contracts, renderer integration, security rejection, lifecycle, native behavior, and packaged smoke paths.
 

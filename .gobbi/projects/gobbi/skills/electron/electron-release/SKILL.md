@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this operation to prepare signed, installable, update-compatible Electron artifacts for each authorized operating-system target. It covers live support evidence, packaging, fuses, signing and notarization, installed verification, update and rollback rehearsal, and exact handoff for publication.
 
-This operation preserves a sound existing packaging stack and stops before credential use or publication that lacks explicit authority. Application implementation belongs to `electron-development`; Electron-specific test design belongs to `electron-test`.
+This operation preserves a sound existing packaging stack and stops before credential use or publication that lacks explicit authority. Application implementation belongs to `electron-development`; Electron-specific test design belongs to `electron-testing`.
 
 ## Principles
 
@@ -112,7 +112,7 @@ Preparing a verified artifact does not authorize credentials, upload, channel pr
 
 #### 5.1 Test the packaged artifact
 
-- Give `electron-test` the exact artifact and run the applicable per-operating-system install, first launch, normal launch, main/preload/renderer loading, resources, native modules, protocol, deep-link, single-instance, permissions, and uninstall smoke.
+- Give `electron-testing` the exact artifact and run the applicable per-operating-system install, first launch, normal launch, main/preload/renderer loading, resources, native modules, protocol, deep-link, single-instance, permissions, and uninstall smoke.
 - Verify the installed application, not only an unpacked directory, when installer behavior is in scope.
 - Record operating system, architecture, artifact checksum, signature state, commands, results, logs, and any environment gap.
 

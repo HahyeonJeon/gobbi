@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this operation to deliver one correctly placed, integrated, and locally verified Electron platform change. It begins from the pinned Electron major, target operating systems, existing stack, process authority, and expected behavior.
 
-This operation ends with local implementation evidence and explicit handoffs to `electron-test` and, when packaging is affected, `electron-release`. Product experience, renderer-framework methods, full test design, and release execution remain with their owners.
+This operation ends with local implementation evidence and explicit handoffs to `electron-testing` and, when packaging is affected, `electron-release`. Product experience, renderer-framework methods, full test design, and release execution remain with their owners.
 
 ## Principles
 
@@ -27,7 +27,7 @@ Keep the established package manager, bundler, module format, target split, and 
 
 ### Verification follows the boundary
 
-Static and build checks prove construction, not runtime security or Electron behavior. Route behavioral claims to `electron-test` and packaged claims to `electron-release`.
+Static and build checks prove construction, not runtime security or Electron behavior. Route behavioral claims to `electron-testing` and packaged claims to `electron-release`.
 
 ## Rules
 
@@ -98,7 +98,7 @@ Static and build checks prove construction, not runtime security or Electron beh
 
 - Run the repository's focused formatting, lint, type, unit, and main/preload/renderer build commands that apply to the changed paths.
 - Inspect emitted entries and development loading for the pinned module format; record exact commands, exit status, and relevant output.
-- Treat static success as construction evidence only. Hand IPC, security, lifecycle, native, and Electron integration claims to `electron-test`.
+- Treat static success as construction evidence only. Hand IPC, security, lifecycle, native, and Electron integration claims to `electron-testing`.
 
 #### 4.2 Diagnose boundary failures
 
@@ -116,7 +116,7 @@ Static and build checks prove construction, not runtime security or Electron beh
 
 #### 5.2 Route remaining evidence
 
-- Load `electron-test` with the outcome, process map, security claims, failure modes, local commands, and cheapest truthful runtime seams.
+- Load `electron-testing` with the outcome, process map, security claims, failure modes, local commands, and cheapest truthful runtime seams.
 - Load `electron-release` when entries, resources, preload format, native modules, ASAR placement, installers, signing, updates, or per-operating-system artifacts may change.
 - Do not claim completion when an in-scope process, integration path, failure case, or required handoff remains unspecified.
 
