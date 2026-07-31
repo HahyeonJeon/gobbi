@@ -9,27 +9,27 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 ## Contents
 
-1. [Phase 1 — Evidence, Problem, and People](#phase-1--evidence-problem-and-people)
-   - [Topic 1 — Existing Reality, Software Form, Lifecycle, and Authority](#topic-1--existing-reality-software-form-lifecycle-and-authority)
-   - [Topic 2 — Problem, Outcome, and Success](#topic-2--problem-outcome-and-success)
+1. [Phase 1 — Problem Definitions](#phase-1--problem-definitions)
+   - [Topic 1 — Existing Reality and Evidence](#topic-1--existing-reality-and-evidence)
+   - [Topic 2 — Problems, Causes, Outcomes, and Success](#topic-2--problems-causes-outcomes-and-success)
    - [Topic 3 — People, Jobs, Alternatives, and Adoption](#topic-3--people-jobs-alternatives-and-adoption)
-2. [Phase 2 — Project Boundary](#phase-2--project-boundary)
+2. [Phase 2 — Project Design](#phase-2--project-design)
    - [Topic 4 — Scope, Boundaries, External Contracts, and Non-goals](#topic-4--scope-boundaries-external-contracts-and-non-goals)
-3. [Phase 3 — Software and System Direction](#phase-3--software-and-system-direction)
    - [Topic 5 — Capabilities and Journeys](#topic-5--capabilities-and-journeys)
-   - [Topic 6 — Experience, Interfaces, Accessibility, and Compatibility](#topic-6--experience-interfaces-accessibility-and-compatibility)
-   - [Topic 7 — Architecture, System Context, Runtime, and Data](#topic-7--architecture-system-context-runtime-and-data)
-   - [Topic 8 — Technology Stack and Dependencies](#topic-8--technology-stack-and-dependencies)
-   - [Topic 9 — Delivery, Operations, and Ownership](#topic-9--delivery-operations-and-ownership)
-4. [Phase 4 — Viability and Guardrails](#phase-4--viability-and-guardrails)
-   - [Topic 10 — Security, Privacy, Safety, and Data Duties](#topic-10--security-privacy-safety-and-data-duties)
-   - [Topic 11 — Engineering Conventions, Idioms, and Recurring Mistakes](#topic-11--engineering-conventions-idioms-and-recurring-mistakes)
-   - [Topic 12 — Constraints, Quality, and Verification](#topic-12--constraints-quality-and-verification)
-   - [Topic 13 — Risks, Capacity, Maintenance, and Continuity](#topic-13--risks-capacity-maintenance-and-continuity)
+   - [Topic 6 — Experience, Interfaces, and Accessibility](#topic-6--experience-interfaces-and-accessibility)
+   - [Topic 7 — System Context and Data Direction](#topic-7--system-context-and-data-direction)
+3. [Phase 3 — Project Specification](#phase-3--project-specification)
+   - [Topic 8 — Architecture, Runtime, State, and Data Contracts](#topic-8--architecture-runtime-state-and-data-contracts)
+   - [Topic 9 — Technology Stack, Dependencies, and Platform Compatibility](#topic-9--technology-stack-dependencies-and-platform-compatibility)
+   - [Topic 10 — Delivery, Operations, Quality, and Verification](#topic-10--delivery-operations-quality-and-verification)
+   - [Topic 11 — Security, Privacy, Safety, and Data Duties](#topic-11--security-privacy-safety-and-data-duties)
+4. [Phase 4 — Project Rules](#phase-4--project-rules)
+   - [Topic 12 — Authority, Governance, Constraints, and Engineering Conventions](#topic-12--authority-governance-constraints-and-engineering-conventions)
+   - [Topic 13 — Ownership, Maintenance, Risk, and Continuity](#topic-13--ownership-maintenance-risk-and-continuity)
 
-## Phase 1 — Evidence, Problem, and People
+## Phase 1 — Problem Definitions
 
-### Topic 1 — Existing Reality, Software Form, Lifecycle, and Authority
+### Topic 1 — Existing Reality and Evidence
 
 #### Software form and lifecycle
 
@@ -38,19 +38,11 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [lifecycle-stage] Which lifecycle stage describes the current project?
 - [prior-attempt] What happened in the most recent attempt to address this need?
 
-#### Sources and authority
+#### Evidence source
 
 - [project-source-of-truth] Which source governs the current project direction?
-- [product-authority] Who has final authority over product direction?
-- [technical-authority] Who has final authority over technical direction?
 
-#### License, distribution, and governance
-
-- [license-model] Which license governs the software?
-- [distribution-model] How may the software be distributed?
-- [governance-model] How are disputed project decisions resolved?
-
-### Topic 2 — Problem, Outcome, and Success
+### Topic 2 — Problems, Causes, Outcomes, and Success
 
 #### Problem evidence
 
@@ -63,7 +55,14 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [root-cause] What evidence supports the current root-cause explanation?
 - [deeper-cause-test] What observation would show that the stated cause is only a symptom?
 - [why-now] What changed to make this the right time to act?
+
+#### Risks and assumptions
+
 - [riskiest-assumption] Which load-bearing assumption has the weakest evidence?
+- [material-risk] Which risk has the greatest consequence for the project outcome?
+- [risk-warning] Which earliest signal reveals that risk?
+- [risk-mitigation] Which action reduces that risk?
+- [assumption-test] Which cheapest reliable test can resolve the riskiest assumption?
 
 #### Durable outcome and evidence
 
@@ -95,7 +94,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [adoption-evidence] Which observed action shows willingness to change?
 - [value-advantage] Which outcome must be better than the current alternative?
 
-## Phase 2 — Project Boundary
+## Phase 2 — Project Design
 
 ### Topic 4 — Scope, Boundaries, External Contracts, and Non-goals
 
@@ -118,8 +117,6 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [scope-change-evidence] Which evidence may justify expanding the boundary?
 - [irreversible-boundary] Which boundary choice is expensive to reverse?
 
-## Phase 3 — Software and System Direction
-
 ### Topic 5 — Capabilities and Journeys
 
 #### Capability shape
@@ -133,17 +130,11 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [journey-completion] Which observable state proves that the journey completed?
 - [journey-handoff] Where does responsibility pass to another actor or system?
 
-#### Failure journeys
+#### Failure priority
 
-- [invalid-input] What must happen when input is invalid?
-- [partial-state] What must happen when only part of the work succeeds?
-- [dependency-unavailable] What must happen when a required dependency is unavailable?
 - [highest-cost-failure] Which journey failure has the greatest consequence?
-- [failure-visibility] How does the affected actor learn that the journey failed?
-- [failure-recovery] Which action returns the journey to a safe state?
-- [misuse-response] What is the safe response to an already refused use?
 
-### Topic 6 — Experience, Interfaces, Accessibility, and Compatibility
+### Topic 6 — Experience, Interfaces, and Accessibility
 
 #### Shared interface direction
 
@@ -158,49 +149,39 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 #### Accessibility and references
 
 - [accessibility-needs] Which accessibility needs shape the first useful version?
-- [accessibility-target] Which accessibility target applies?
 - [representative-users] Which representative people should test the riskiest experience assumption?
 - [representative-tasks] Which tasks should those people attempt?
 - [design-reference] Which existing product or interface is a positive reference?
 - [reference-rejection] Which apparent reference must not be copied?
 
-#### Conditional web axes
+### Topic 7 — System Context and Data Direction
 
-- [web-direct-link] Which state must a direct URL open?
-- [web-navigation-continuity] What must remain correct across browser history navigation?
-- [web-refresh-continuity] What must survive a browser refresh?
-- [web-storage-lifetime] How long may browser-held state remain valid?
-- [web-browser-support] Which browser compatibility contract must the project support?
-- [web-offline-promise] Which browser outcome must work without a network connection?
-
-#### Conditional desktop and mobile axes
-
-- [desktop-restart-state] Which user state must survive an application restart?
-- [desktop-os-integration] Which operating-system integration is part of the user contract?
-- [mobile-interruption] Which user state must survive a system interruption?
-- [mobile-form-factor] Which form-factor change must preserve the task?
-
-#### Conditional command-line, library, and SDK axes
-
-- [cli-invocation-contract] Which command invocation contract must remain compatible?
-- [cli-machine-output] Which command output is consumed by automation?
-- [cli-exit-status] Which outcomes require distinct exit statuses?
-- [cli-execution-support] Which command-line execution environments must remain compatible?
-- [library-public-contract] Which published library or SDK surface is compatibility-bound?
-
-### Topic 7 — Architecture, System Context, Runtime, and Data
-
-#### System context and structure
+#### System context and boundaries
 
 - [context-actors] Which actors exchange information with the project?
 - [information-direction] In which direction does each material information flow?
-- [runtime-units] Which high-level runtime units make up the system?
-- [unit-responsibility] Which responsibility does each high-level unit own?
 - [stable-boundary] Which boundary should remain stable while internals change?
 - [coupling-risk] Where would tight coupling create the highest future cost?
 - [architecture-change-evidence] Which evidence would change the architecture direction?
 
-#### Runtime and state
+#### State and data direction
+
+- [state-authority] Which system is authoritative for outcome-bearing state?
+- [data-lifecycle] Which data lifecycle must the project support?
+
+#### Conditional platform direction
+
+- [web-runtime-boundary] Which behavior belongs in the browser?
+- [data-processing-model] Which processing model fits the data outcome?
+
+## Phase 3 — Project Specification
+
+### Topic 8 — Architecture, Runtime, State, and Data Contracts
+
+#### Runtime architecture
+
+- [runtime-units] Which high-level runtime units make up the system?
+- [unit-responsibility] Which responsibility does each high-level unit own?
 
 - [primary-runtime-path] Which runtime path produces the primary outcome?
 - [background-path] Which background path matters to correctness?
@@ -208,11 +189,18 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [retry-semantics] Which operation may be retried safely?
 - [idempotency-boundary] Which repeated operation must preserve its effective outcome?
 - [runtime-recovery] Which state must recovery restore?
-- [state-authority] Which system is authoritative for outcome-bearing state?
 
-#### Data direction
+#### Failure contracts
 
-- [data-lifecycle] Which data lifecycle must the project support?
+- [invalid-input] What must happen when input is invalid?
+- [partial-state] What must happen when only part of the work succeeds?
+- [dependency-unavailable] What must happen when a required dependency is unavailable?
+- [failure-visibility] How does the affected actor learn that the journey failed?
+- [failure-recovery] Which action returns the journey to a safe state?
+- [misuse-response] What is the safe response to an already refused use?
+
+#### Data contracts
+
 - [consistency-promise] Which consistency promise must hold?
 - [stored-data-evolution] How may stored data evolve?
 - [data-retention] How long must each material data class remain available?
@@ -222,7 +210,6 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 #### Conditional data-engineering axes
 
-- [data-contract-owner] Who approves incompatible dataset-contract changes?
 - [data-time-semantics] Which timestamp determines result correctness?
 - [data-ordering] Which ordering guarantee affects correctness?
 - [data-lateness] How should late data change an already produced result?
@@ -230,7 +217,6 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [data-replay] Which previously produced outcome must a replay preserve?
 - [data-backfill] Which downstream result may a backfill revise?
 - [data-freshness] Which freshness signal matters to the data consumer?
-- [data-quality-owner] Who decides whether a dataset is fit for use?
 
 #### Conditional network-engineering axes
 
@@ -241,7 +227,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [network-partition] Which behavior must remain safe during a partition?
 - [network-stale-state] When does network state become too stale to trust?
 
-### Topic 8 — Technology Stack and Dependencies
+### Topic 9 — Technology Stack, Dependencies, and Platform Compatibility
 
 #### Current and intended stack
 
@@ -263,19 +249,47 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [stack-license] Which technology-license condition constrains selection?
 - [stack-portability] Which portability requirement constrains selection?
 
-#### Conditional platform axes
+#### Compatibility lifecycle
 
-- [web-runtime-boundary] Which behavior belongs in the browser?
+- [versioning-policy] Which external contract requires versioning?
+- [deprecation-policy] How will consumers learn that a contract is being deprecated?
+- [migration-obligation] Which consumer migration must the project support?
+
+#### Conditional web contracts
+
+- [web-direct-link] Which state must a direct URL open?
+- [web-navigation-continuity] What must remain correct across browser history navigation?
+- [web-refresh-continuity] What must survive a browser refresh?
+- [web-storage-lifetime] How long may browser-held state remain valid?
+- [web-browser-support] Which browser compatibility contract must the project support?
+- [web-offline-promise] Which browser outcome must work without a network connection?
+
+#### Conditional desktop and mobile contracts
+
+- [desktop-restart-state] Which user state must survive an application restart?
+- [desktop-os-integration] Which operating-system integration is part of the user contract?
+- [mobile-interruption] Which user state must survive a system interruption?
+- [mobile-form-factor] Which form-factor change must preserve the task?
 - [desktop-target-os] Which desktop operating-system support window applies?
 - [mobile-target-os] Which mobile operating-system support window applies?
+
+#### Conditional command-line, library, and SDK contracts
+
+- [cli-invocation-contract] Which command invocation contract must remain compatible?
+- [cli-machine-output] Which command output is consumed by automation?
+- [cli-exit-status] Which outcomes require distinct exit statuses?
+- [cli-execution-support] Which command-line execution environments must remain compatible?
+- [library-public-contract] Which published library or SDK surface is compatibility-bound?
 - [library-runtime-support] Which consumer runtimes must the library or SDK support?
-- [data-processing-model] Which processing model fits the data outcome?
+
+#### Conditional data and network platforms
+
 - [network-standard] Which network standard governs compatibility?
 - [network-peer-compatibility] Which peer implementations must interoperate?
 - [network-registry] Which registry governs protocol values when the project defines them?
 - [network-negotiation] Which capability negotiation must peers support?
 
-### Topic 9 — Delivery, Operations, and Ownership
+### Topic 10 — Delivery, Operations, Quality, and Verification
 
 #### Environments and release
 
@@ -289,15 +303,34 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [rollback-state] Which state must a rollback preserve?
 - [recovery-priority] Which outcome must disaster recovery restore first?
 
-#### Operation and ownership
+#### Operating contract
 
 - [consumer-indicator] Which signal measures the outcome from the consumer's perspective?
 - [service-objective] Which consumer-visible service behavior needs a reliability objective?
 - [service-workload-envelope] Which workload shape must the service support?
-- [operational-owner] Who owns routine operation of the software?
 - [diagnostic-evidence] Which diagnostic evidence must be available during failure?
-- [incident-owner] Who coordinates response to a production incident?
 - [operational-runbook] Which critical operation requires a tested runbook?
+
+#### Quality direction
+
+- [accessibility-target] Which accessibility target applies?
+- [quality-priority] Which quality attribute dominates the hardest trade-off?
+- [quality-scenario] Which concrete scenario defines that quality?
+- [quality-threshold] Which observable threshold defines an acceptable result?
+- [threshold-basis] Which source justifies that threshold?
+- [allowed-degradation] Which quality may degrade first under pressure?
+- [protected-quality] Which quality may not degrade?
+
+#### Verification and review
+
+- [verification-strategy] Which evidence depth fits each material claim?
+- [end-to-end-evidence] Which complete outcome requires end-to-end evidence?
+- [security-review] Which change requires security review?
+- [performance-evidence] Which performance claim requires measured evidence?
+- [operational-evidence] Which operating claim requires tested evidence?
+- [accessibility-evidence] Which standards-based accessibility evidence is required?
+- [user-validation] Which claim requires representative-user evidence?
+- [maintenance-scenario] Which representative change proves that the project is maintainable?
 
 #### Conditional delivery axes
 
@@ -310,9 +343,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [network-deployment] How can a network change coexist with previous behavior during rollout?
 - [network-diagnostics] Which diagnostic evidence must be obtainable without disrupting service?
 
-## Phase 4 — Viability and Guardrails
-
-### Topic 10 — Security, Privacy, Safety, and Data Duties
+### Topic 11 — Security, Privacy, Safety, and Data Duties
 
 #### Protection and trust
 
@@ -346,7 +377,28 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [network-integrity-threat] Which protocol state must resist unauthorized modification?
 - [network-denial-threat] Which denial-of-service condition requires explicit mitigation?
 
-### Topic 11 — Engineering Conventions, Idioms, and Recurring Mistakes
+## Phase 4 — Project Rules
+
+### Topic 12 — Authority, Governance, Constraints, and Engineering Conventions
+
+#### Authority and governance
+
+- [product-authority] Who has final authority over product direction?
+- [technical-authority] Who has final authority over technical direction?
+- [data-contract-owner] Who approves incompatible dataset-contract changes?
+- [data-quality-owner] Who decides whether a dataset is fit for use?
+- [license-model] Which license governs the software?
+- [distribution-model] How may the software be distributed?
+- [governance-model] How are disputed project decisions resolved?
+
+#### Project constraints
+
+- [legal-constraint] Which legal obligation binds the project?
+- [regulatory-constraint] Which regulatory obligation binds the project?
+- [budget-constraint] Which budget limit changes the project direction?
+- [schedule-constraint] Which date constraint changes the project direction?
+- [available-time] Which contributor time is actually available?
+- [available-systems] Which required system is unavailable?
 
 #### Engineering conventions
 
@@ -367,56 +419,23 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [binding-rule] Which project rule is mandatory rather than preferred?
 - [recurring-mistake] What do contributors or agents repeatedly get wrong?
 - [corrected-approach] Which approach should replace a misleading local pattern?
-- [hidden-knowledge] Which critical project knowledge has only one current owner?
 
-### Topic 12 — Constraints, Quality, and Verification
+### Topic 13 — Ownership, Maintenance, Risk, and Continuity
 
-#### Constraints and compatibility
+#### Operational ownership
 
-- [legal-constraint] Which legal obligation binds the project?
-- [regulatory-constraint] Which regulatory obligation binds the project?
-- [budget-constraint] Which budget limit changes the project direction?
-- [schedule-constraint] Which date constraint changes the project direction?
-- [versioning-policy] Which external contract requires versioning?
-- [deprecation-policy] How will consumers learn that a contract is being deprecated?
-- [migration-obligation] Which consumer migration must the project support?
+- [operational-owner] Who owns routine operation of the software?
+- [incident-owner] Who coordinates response to a production incident?
 
-#### Quality direction
+#### Risk and authority ownership
 
-- [quality-priority] Which quality attribute dominates the hardest trade-off?
-- [quality-scenario] Which concrete scenario defines that quality?
-- [quality-threshold] Which observable threshold defines an acceptable result?
-- [threshold-basis] Which source justifies that threshold?
-- [allowed-degradation] Which quality may degrade first under pressure?
-- [protected-quality] Which quality may not degrade?
-
-#### Verification and review
-
-- [verification-strategy] Which evidence depth fits each material claim?
-- [end-to-end-evidence] Which complete outcome requires end-to-end evidence?
-- [security-review] Which change requires security review?
-- [performance-evidence] Which performance claim requires measured evidence?
-- [operational-evidence] Which operating claim requires tested evidence?
-- [accessibility-evidence] Which standards-based accessibility evidence is required?
-- [user-validation] Which claim requires representative-user evidence?
-
-### Topic 13 — Risks, Capacity, Maintenance, and Continuity
-
-#### Risks and capacity
-
-- [material-risk] Which risk has the greatest consequence for the project outcome?
-- [risk-warning] Which earliest signal reveals that risk?
-- [risk-mitigation] Which action reduces that risk?
 - [risk-owner] Who owns that risk?
-- [assumption-test] Which cheapest reliable test can resolve the riskiest assumption?
-- [available-time] Which contributor time is actually available?
-- [available-systems] Which required system is unavailable?
 - [missing-authority] Which unresolved decision lacks an authorized owner?
 
 #### Maintenance and continuity
 
 - [primary-maintainer] Who owns ongoing maintenance of the software?
 - [backup-maintainer] Who can continue maintenance when the primary maintainer is unavailable?
-- [maintenance-scenario] Which representative change proves that the project is maintainable?
+- [hidden-knowledge] Which critical project knowledge has only one current owner?
 - [lifecycle-exit-trigger] Which evidence shows that active maintenance should end?
 - [continuity-documentation] Which current document enables another person to continue the project?

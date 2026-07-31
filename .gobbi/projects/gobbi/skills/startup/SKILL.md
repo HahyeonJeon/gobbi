@@ -210,7 +210,7 @@ An interruption preserves that state without creating a separate Startup lifecyc
 
 #### 3.3 Pass the problem-before-solution gate
 
-- After topic Phase 2 and before topic Phase 3, present the current recurring problem and concrete event,
+- After topic Phase 1 and Topic 4, and before Topic 5, present the current recurring problem and concrete event,
   first people and jobs, current alternatives and behavior, root cause and trigger, riskiest assumption,
   outcome boundary, and non-goals for the user's agreement or correction.
 - If a premise fails, return to its earliest owning topic and update the record. Do not let a capability,

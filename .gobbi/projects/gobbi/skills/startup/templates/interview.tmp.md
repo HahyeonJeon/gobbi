@@ -50,38 +50,38 @@ plus a sequence, such as `S06.E01`.
 Topic origin is `seed`, `adapted`, or `emergent`. Topic status is `open`, `resolved`, `not-needed`,
 `merged`, or `reopened`.
 
-### Phase 1 — Evidence, Problem, and People
+### Phase 1 — Problem Definitions
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
-| `S01` | Existing Reality, Software Form, Lifecycle, and Authority | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S02` | Problem, Outcome, and Success | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S01` | Existing Reality and Evidence | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S02` | Problems, Causes, Outcomes, and Success | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 | `S03` | People, Jobs, Alternatives, and Adoption | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
-### Phase 2 — Project Boundary
+### Phase 2 — Project Design
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
 | `S04` | Scope, Boundaries, External Contracts, and Non-goals | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-
-### Phase 3 — Software and System Direction
-
-| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
-|---|---|---|---|---|---|---|
 | `S05` | Capabilities and Journeys | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S06` | Experience, Interfaces, Accessibility, and Compatibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S07` | Architecture, System Context, Runtime, and Data | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S08` | Technology Stack and Dependencies | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S09` | Delivery, Operations, and Ownership | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S06` | Experience, Interfaces, and Accessibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S07` | System Context and Data Direction | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
-### Phase 4 — Viability and Guardrails
+### Phase 3 — Project Specification
 
 | Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
 |---|---|---|---|---|---|---|
-| `S10` | Security, Privacy, Safety, and Data Duties | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S11` | Engineering Conventions, Idioms, and Recurring Mistakes | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S12` | Constraints, Quality, and Verification | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
-| `S13` | Risks, Capacity, Maintenance, and Continuity | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S08` | Architecture, Runtime, State, and Data Contracts | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S09` | Technology Stack, Dependencies, and Platform Compatibility | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S10` | Delivery, Operations, Quality, and Verification | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S11` | Security, Privacy, Safety, and Data Duties | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+
+### Phase 4 — Project Rules
+
+| Topic ID | Topic | Origin | Basis or adaptation reason | Status | Dependencies | Answer IDs |
+|---|---|---|---|---|---|---|
+| `S12` | Authority, Governance, Constraints, and Engineering Conventions | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
+| `S13` | Ownership, Maintenance, Risk, and Continuity | `seed` | `{{basis}}` | `open` | `{{IDs or none}}` | `{{IDs or none}}` |
 
 ## Evolving question agenda
 
@@ -129,7 +129,7 @@ Copy this block for each material answer. Use sequential answer IDs such as `A00
 At each checkpoint, record the current topic tree and current answers rather than a conversation
 history. A topic may be resolved, not needed with evidence and reason, or open with an owner and method.
 
-### Phase 1 checkpoint — Evidence, Problem, and People
+### Phase 1 checkpoint — Problem Definitions
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
@@ -143,7 +143,7 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 - Downstream or reopened effects: `{{details or none}}`
 - User confirmation: `{{timestamp and confirmation summary}}`
 
-### Phase 2 checkpoint — Project Boundary
+### Phase 2 checkpoint — Project Design
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
@@ -157,7 +157,7 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 - Downstream or reopened effects: `{{details or none}}`
 - User confirmation: `{{timestamp and confirmation summary}}`
 
-### Phase 3 checkpoint — Software and System Direction
+### Phase 3 checkpoint — Project Specification
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`
@@ -171,7 +171,7 @@ history. A topic may be resolved, not needed with evidence and reason, or open w
 - Downstream or reopened effects: `{{details or none}}`
 - User confirmation: `{{timestamp and confirmation summary}}`
 
-### Phase 4 checkpoint — Viability and Guardrails
+### Phase 4 checkpoint — Project Rules
 
 - Status: `{{draft | confirmed | corrected | reopened}}`
 - Current topics and dispositions: `{{IDs, adaptations, and statuses}}`

@@ -50,7 +50,7 @@ temporary record is removed.
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `{{A001}}` | `{{Phase number / topic ID}}` | `{{[semantic-alias]}}` | `{{project | named component or surface}}` | `{{origin}}` | `{{aliases or none}}` | `{{question as asked}}` | `{{current answer}}` | `{{claim kind}}` | `{{status and source}}` | `{{decision or owner / method}}` | `{{conflict ID or none}}` |
 
-## Phase 1 — Evidence, Problem, and People
+## Phase 1 — Problem Definitions
 
 - Status: `{{confirmed | corrected}}`
 - Current topics and dispositions: `{{IDs and statuses}}`
@@ -63,7 +63,7 @@ temporary record is removed.
 - Open questions, owners, and methods: `{{details or none}}`
 - Material corrections: `{{conflict IDs and current result, or none}}`
 
-## Phase 2 — Project Boundary
+## Phase 2 — Project Design
 
 - Status: `{{confirmed | corrected}}`
 - Current topics and dispositions: `{{IDs and statuses}}`
@@ -76,7 +76,7 @@ temporary record is removed.
 - Open questions, owners, and methods: `{{details or none}}`
 - Material corrections: `{{conflict IDs and current result, or none}}`
 
-## Phase 3 — Software and System Direction
+## Phase 3 — Project Specification
 
 - Status: `{{confirmed | corrected}}`
 - Current topics and dispositions: `{{IDs and statuses}}`
@@ -89,7 +89,7 @@ temporary record is removed.
 - Open questions, owners, and methods: `{{details or none}}`
 - Material corrections: `{{conflict IDs and current result, or none}}`
 
-## Phase 4 — Viability and Guardrails
+## Phase 4 — Project Rules
 
 - Status: `{{confirmed | corrected}}`
 - Current topics and dispositions: `{{IDs and statuses}}`
