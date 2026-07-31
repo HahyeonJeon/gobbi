@@ -185,3 +185,5 @@ For the pinned major, current [Deep Links guidance](https://www.electronjs.org/d
 | Native operation silently does nothing | Explicit result ignored | Boolean, error string, cancellation field, support probe, platform failure event |
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
