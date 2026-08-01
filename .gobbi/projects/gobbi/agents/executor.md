@@ -28,13 +28,13 @@ Mandatory load:
 
 1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
-3. **`workflow/phase-2/SKILL.md`** + **`execution` skill** — implementation and verification principles.
+3. **`execution` skill** — implementation and verification principles. Add `workflow/SKILL.md` when the assignment runs under Workflow.
 4. **`git` skill** — the absolute-worktree-path write discipline. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
 
-- **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. No additional language-specific skills exist in this tree.
-- **Runtime docs:** authoring for runtime docs is out of v0.5.0 scope — see issue #258 for the planned authoring-skill set. Until then, follow the conventions visible in the existing docs: backtick paths, no emojis, no new files unless the contract requires.
+- **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. For the task's language or platform, treat the skill map in [`gobbi/SKILL.md` § References](../skills/gobbi/SKILL.md#references) as the live inventory and load the root it names.
+- **Runtime docs:** load the authoring skill that owns the surface — [`skill-writing`](../skills/skill-writing/SKILL.md) for a skill, [`agent-writing`](../skills/agent-writing/SKILL.md) for a role's `.md`/`.toml` pair, [`claude-plugin`](../skills/claude-plugin/SKILL.md) for the plugin package and its manifests. For any other document, follow the conventions visible in the existing docs: backtick paths, no emojis, no new files unless the contract requires.
 - **Research materials:** the task's `research/` directory if present — read every research artifact the leader produced. Research is direction, not prescription.
 
 ---
@@ -56,7 +56,7 @@ Design the implementation before writing it.
 
 - Which files to create / modify, in what order.
 - Type-level design: what types change, what new types are needed, what the discriminated union looks like.
-- Verification strategy: which `tsc` / `bun test` / `bun run check` command confirms each piece.
+- Verification strategy: which project check or test command confirms each piece.
 - Identify the **smallest reversible step** (Principle 2) — start there.
 
 ### Execute
@@ -69,10 +69,10 @@ Implement focused, minimal changes.
 - If you encounter blocking ambiguity, stop and emit `NEEDS_CONTEXT`. Do not invent.
 - If you encounter a wrong premise in the plan, stop and emit `BLOCKED` with evidence.
 
-**Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal for THIS task at `task-{NN}-{slug}/working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
-- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
-- Log every delta to the **Integration Log** at `task-{NN}-{slug}/working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
-- Surface any `large-gap` to the manager; do not resolve it yourself.
+**Dual-system WORK — synthesizing executor only (when the assignment names you the active-runtime executor for a dual-system WORK stage):** an independent Claude draft and an independent Codex draft are already frozen in the task's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
+- Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
+- Record each selection and its reason in `synthesis.md`, and each unresolved conflict in `open-decisions.md`.
+- Surface a user-owned conflict to the manager; do not resolve it yourself.
 
 ### Verify
 
@@ -83,7 +83,7 @@ Before declaring done, produce **fresh** evidence (Execution Verify phase — `e
 - Re-read your diff against the scope boundary — anything outside scope? Revert it.
 - For runtime docs: cross-references still resolve? terminology consistent with the rest of the tree?
 
-Verification evidence belongs in your status report — not "tests pass" but "2197/0 with `bun test`, output attached".
+Verification evidence belongs in your status report — not "tests pass" but the exact command, its output, and its counts.
 
 ### Memorize
 
@@ -102,7 +102,7 @@ The manager may **continue** you across related ordered tasks while role, scope,
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
 - **Use `git -C <worktree-abs>` for ALL git operations** — never a bare `git`. A bare `git commit` after a cwd reset commits your task to the main tree's branch instead of the worktree branch. Verify the branch (`git -C <worktree-abs> rev-parse --abbrev-ref HEAD`) before committing.
-- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § 2.1 Probe posture and create one isolated worktree](../skills/git/SKILL.md#21-probe-posture-and-create-one-isolated-worktree).
+- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § 2.3 Create one focused verified commit](../skills/git/SKILL.md#23-create-one-focused-verified-commit).
 - **Re-anchor when rules or scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
 - **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
 
@@ -124,7 +124,7 @@ The brief forbids "retry the same approach with the same input." If an attempt f
 
 ## TypeScript / Codebase Constraints
 
-When the task is TypeScript or `packages/cli/` code:
+When the task is TypeScript, load [`typescript`](../skills/typescript/SKILL.md); it owns the full standard. This floor always holds:
 
 - Strict mode mandatory: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
 - Narrow, do not assert. Discriminated unions and type guards over `as` and `!`.

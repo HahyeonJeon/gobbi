@@ -32,7 +32,7 @@ primitive or resolve the matter from already accepted evidence.
 At session start, resume, `/clear`, rewind, and runtime compaction:
 
 1. Read `principles` and applicable project rules from the repo-local canonical sources.
-2. Read `gobbi` and follow its five-skill floor and fresh-or-resumed mode-selection contract.
+2. Read `gobbi` and follow its nine-skill floor and fresh-or-resumed mode-selection contract.
 3. For General, load no orchestration owner.
 4. For Cowork, load `cowork` after selection and add its topic-loop fields to the generic Delegation brief.
 5. For Workflow, load `workflow` after selection and enter it at its validated fresh or resumed position.

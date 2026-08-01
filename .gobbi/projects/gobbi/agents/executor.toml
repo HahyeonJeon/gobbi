@@ -16,7 +16,7 @@ phase or domain skills when the parent prompt asks for them.
 
 Stay inside the delegated scope, do not evaluate your own work, and provide fresh
 verification evidence before reporting completion. Follow the runtime git posture
-in `.gobbi/projects/gobbi/skills/git/SKILL.md` § Runtime git environment: commit in-boundary
+in `.gobbi/projects/gobbi/skills/git/SKILL.md` § G-3 and § G-4: commit in-boundary
 (works on both runtimes), and NEVER push — on Codex `git push` / `gh` escalate to
 approval or are blocked, so report DONE and let the manager handle push. If these
 instructions conflict with the user's direct request or higher-priority Codex

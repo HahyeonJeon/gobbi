@@ -32,14 +32,17 @@ Mandatory load — every fresh subagent:
 
 Load per phase:
 
-- **Ideation** → `workflow/phase-1/SKILL.md`, `ideation` skill.
-- **Study** → `study` skill (loaded by ideation Sub-step C, or whenever the brief calls for it).
-- **Planning** → `workflow/phase-2/SKILL.md`, `planning` skill.
+- **Ideation** → `ideation` skill.
+- **Study** → `study` skill.
+- **Planning** → `planning` skill.
 
 Load when relevant: `startup` (when Ideation needs structured, evidence-backed software-project interviewing
-and design-brief elicitation). When the work touches runtime docs, agents, or rules, read the active surfaces
-directly (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) — no dedicated
-skill exists for those domains in this tree.
+and design-brief elicitation). When the work touches runtime docs or agents, read the active surfaces directly
+(`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) and load the skill that
+owns the surface — [`skill-writing`](../skills/skill-writing/SKILL.md),
+[`agent-writing`](../skills/agent-writing/SKILL.md), or
+[`claude-plugin`](../skills/claude-plugin/SKILL.md). For a language or platform, use the skill map in
+[`gobbi/SKILL.md` § References](../skills/gobbi/SKILL.md#references) as the live inventory.
 
 ---
 
@@ -85,10 +88,10 @@ Refine, study, or decompose — per the phase brief.
 - Trigger the USER CHALLENGE escalation primitive (per the planning skill) when your analysis substantively disagrees with the user's stated Ideation direction.
 - Output: working draft + staged plan file(s) at the paths the planning skill specifies.
 
-**Dual-system production — Claude Code bridge / Claude producer ONLY (when the loop runs `propose.mode == dual` AND you are the Claude Code producer):** a Codex proposer wrote a parallel proposal at `working/proposals/codex/draft-iter{n}.md` (frozen before you integrate). You are the Claude producer and the **default integrator**. A native Codex producer ignores this block — native-Codex dual production is deferred (`backlogs/codex/native-codex-proposer-symmetry.md`).
-- Selectively integrate: fold in each Codex element that better satisfies the 10 principles + the Scope Contract + memory; keep your own where stronger. NEVER naive-blend — integration is a SELECTION, not an average.
-- Log every delta to the **Integration Log** at `working/reconciliation-iter{n}.md` (`delta` / `decision` / `why` / `codex_origin`).
-- Surface any `large-gap` to the manager; do not resolve it yourself.
+**Dual-system WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a dual-system WORK stage):** an independent Claude draft and an independent Codex draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
+- Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
+- Record each selection and its reason in `synthesis.md`, and each unresolved conflict in `open-decisions.md`.
+- Surface a user-owned conflict to the manager; do not resolve it yourself.
 
 ### Verify
 

@@ -48,9 +48,9 @@ introduced. Write the report as human-readable Markdown using the field set in `
 
 Load per target type:
 
-- Evaluating any workflow artifact (ideation, planning, execution, wrap-up) → load the phase-specific three-file evaluation bundle (e.g., `skills/ideation/{scenario,checklist,evaluation}.md`, `skills/planning/{scenario,checklist,evaluation}.md`, `skills/execution/{scenario,checklist,evaluation}.md`). The general procedure and perspective definitions are in `skills/evaluation/SKILL.md`; the assigning caller owns the report shape.
+- Evaluating any artifact produced by a skill → read that skill's own `SKILL.md` and load whichever scenario, checklist, or evaluation children it names. Not every skill has them: verify by listing the skill directory before citing a child. The general procedure and perspective definitions stay in `skills/evaluation/SKILL.md`; the assigning caller owns the report shape.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
-- No perspective-specific sub-docs exist under `skills/evaluation/`, `agents/evaluation/`, `rules/evaluation/`, or `project/evaluation/` — do not construct paths to those directories.
+- `skills/evaluation/checklist/SKILL.md` is the only child under `skills/evaluation/`, and it builds checklist sources rather than defining a perspective. No perspective-specific sub-doc exists anywhere — do not construct a path to one.
 
 The **seven perspectives plus Overall** are defined in `skills/evaluation/SKILL.md`. You walk all of them in
 one evaluator instance; keep each perspective's judgment distinct — do not blur problems or improvements across

@@ -11,8 +11,9 @@ Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 
 Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
 At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`
-and `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` before evaluating. Load
-phase-specific evaluation docs when the parent prompt identifies a workflow phase.
+and `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` before evaluating. When the target
+was produced by a skill, read that skill and load only the scenario, checklist, or
+evaluation children it actually names.
 
 Evaluate only. Do not implement fixes. If these instructions conflict with the
 user's direct request or higher-priority Codex instructions, follow the
