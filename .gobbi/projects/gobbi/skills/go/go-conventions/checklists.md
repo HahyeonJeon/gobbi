@@ -118,8 +118,9 @@ caller should understand the contract without reading the implementation; decora
 
 #### Checklist
 
-- [ ] GOCNV-CK-USAGE-02-01 — Every package comment and exported declaration comment names its subject and states its purpose.
-- [ ] GOCNV-CK-USAGE-02-02 — Every caller-relevant behavioral condition appears in public documentation.
+- [ ] GOCNV-CK-USAGE-02-01 — Every package comment and exported declaration comment names its subject.
+- [ ] GOCNV-CK-USAGE-02-02 — Every package comment and exported declaration comment states its purpose.
+- [ ] GOCNV-CK-USAGE-02-03 — Every caller-relevant behavioral condition appears in public documentation.
 
 ### GOCNV-SC-USAGE-03 — Adversarial: A conformant name misleads the caller
 
@@ -201,7 +202,8 @@ failure instead of claiming formatted output; a false formatting claim fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-RISK-03-01 — Invalid Go source is not represented as canonically formatted, and its formatting blocker remains visible in the returned outcome.
+- [ ] GOCNV-CK-RISK-03-01 — Invalid Go source is not represented as canonically formatted.
+- [ ] GOCNV-CK-RISK-03-02 — The formatting blocker for invalid Go source remains visible in the returned outcome.
 
 ### GOCNV-SC-RISK-04 — Normal case: A convention change leaves behavior alone
 

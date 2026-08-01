@@ -117,7 +117,8 @@ the earliest diagnostic that explains later failures; a wall of cascading output
 
 #### Checklist
 
-- [ ] GOTCH-CK-AESTHETICS-01-01 — The first causally useful diagnostic is identifiable and its cascading diagnostics are not presented as independent root causes.
+- [ ] GOTCH-CK-AESTHETICS-01-01 — The first causally useful diagnostic is identifiable.
+- [ ] GOTCH-CK-AESTHETICS-01-02 — Cascading diagnostics are not presented as independent root causes.
 
 ### GOTCH-SC-AESTHETICS-02 — Poor quality: Tool output obscures the affected source
 

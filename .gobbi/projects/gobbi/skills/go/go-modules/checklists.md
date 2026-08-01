@@ -129,7 +129,9 @@ from inside the module are insufficient.
 
 #### Checklist
 
-- [ ] GOMOD-CK-USAGE-01-01 — An external consumer can resolve the module path, import each promised public package, and run each installable command outside its source directory.
+- [ ] GOMOD-CK-USAGE-01-01 — An external consumer can resolve the module path outside its source directory.
+- [ ] GOMOD-CK-USAGE-01-02 — An external consumer can import each promised public package outside its source directory.
+- [ ] GOMOD-CK-USAGE-01-03 — An external consumer can run each installable command outside its source directory.
 
 ### GOMOD-SC-USAGE-02 — Edge case: Version 2 or later uses semantic import versioning
 
@@ -300,7 +302,9 @@ consumer validation.
 #### Checklist
 
 - [ ] GOMOD-CK-OVERALL-02-01 — Acceptance is not based solely on tidy module files or on tests run inside the module.
-- Also applies: GOMOD-CK-USAGE-01-01 (every promised external consumer path remains usable).
+- Also applies: GOMOD-CK-USAGE-01-01 (the module path resolves for an external consumer).
+- Also applies: GOMOD-CK-USAGE-01-02 (every promised public package imports for an external consumer).
+- Also applies: GOMOD-CK-USAGE-01-03 (every installable command runs for an external consumer).
 
 ### GOMOD-SC-OVERALL-03 — Edge case: A released compatibility defect needs reversal
 

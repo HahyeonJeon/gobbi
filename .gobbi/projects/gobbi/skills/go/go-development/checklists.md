@@ -84,7 +84,8 @@ non-compiling first increment fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-STRUCTURE-04-01 — Package placement, file placement, caller-visible signatures, and build-constrained boundaries exist and compile before dependent behavior.
+- [ ] GODEV-CK-STRUCTURE-04-01 — Package placement, file placement, caller-visible signatures, and build-constrained boundaries exist before dependent behavior.
+- [ ] GODEV-CK-STRUCTURE-04-02 — Package placement, file placement, caller-visible signatures, and build-constrained boundaries compile before dependent behavior.
 - Also applies: GODEV-CK-AESTHETICS-02-01 (no placeholder behavior remains).
 
 ## Performance
@@ -157,9 +158,9 @@ workaround fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-USAGE-02-01 — The reproduction gap remains explicit.
-- [ ] GODEV-CK-USAGE-02-02 — A diagnostic or test seam distinguishes the leading causes before production code changes.
-- [ ] GODEV-CK-USAGE-02-03 — No speculative production workaround substitutes for reproduction.
+- [ ] GODEV-CK-USAGE-02-01 — A diagnostic or test seam distinguishes the leading causes before production code changes.
+- [ ] GODEV-CK-USAGE-02-02 — No speculative production workaround substitutes for reproduction.
+- Also applies: GODEV-CK-OVERALL-03-01 (the reproduction gap remains explicit).
 
 ### GODEV-SC-USAGE-03 — Edge case: A public change requires compatibility handling
 
@@ -316,5 +317,6 @@ name the affected obligation and stop the corresponding completion claim; substi
 
 #### Checklist
 
-- [ ] GODEV-CK-OVERALL-03-01 — Every required verification gap is explicit and names the affected obligation.
-- [ ] GODEV-CK-OVERALL-03-02 — Completion is not claimed across a required verification gap.
+- [ ] GODEV-CK-OVERALL-03-01 — Every reproduction gap and every required verification gap remains explicit.
+- [ ] GODEV-CK-OVERALL-03-02 — Every required verification gap names the affected obligation.
+- [ ] GODEV-CK-OVERALL-03-03 — Completion is not claimed across a required verification gap.

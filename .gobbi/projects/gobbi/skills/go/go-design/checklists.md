@@ -138,8 +138,9 @@ accidental identity fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error keeps a stable public contract and stays discoverable through its promised wrapped identity.
-- [ ] GODSN-CK-USAGE-02-02 — No caller contract depends on matching human error text.
+- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error keeps a stable public contract.
+- [ ] GODSN-CK-USAGE-02-02 — Every programmatically inspectable error stays discoverable through its promised wrapped identity.
+- [ ] GODSN-CK-USAGE-02-03 — No caller contract depends on matching human error text.
 
 ### GODSN-SC-USAGE-03 — Edge case: Nil and empty values differ at a boundary
 
@@ -202,7 +203,8 @@ error unless the governing contract requires panic; an ordinary failure that ter
 
 #### Checklist
 
-- [ ] GODSN-CK-RISK-01-01 — Panic is reserved for programmer-invariant violations and is distinguishable from an expected operational failure.
+- [ ] GODSN-CK-RISK-01-01 — Panic is reserved for programmer-invariant violations.
+- [ ] GODSN-CK-RISK-01-02 — Panic is distinguishable from an expected operational failure.
 
 ### GODSN-SC-RISK-02 — Rule violation: A resource leaks on an alternate path
 
@@ -245,7 +247,7 @@ loss fails.
 #### Checklist
 
 - [ ] GODSN-CK-RISK-05-01 — Every returned error is handled or explicitly discarded with a documented reason.
-- Also applies: GODSN-CK-USAGE-02-01 (added context preserves every promised error identity).
+- Also applies: GODSN-CK-USAGE-02-02 (added context preserves every promised error identity).
 
 ### GODSN-SC-RISK-06 — Normal case: A failed operation leaves the caller able to recover
 
