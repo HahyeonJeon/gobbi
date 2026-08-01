@@ -1,26 +1,27 @@
 # Migration guide
 
-The current Gobbi redesign is a breaking, new-session-only contract. The plugin
-manifest version deliberately remains `0.5.3`; an unchanged package version
-does not make session records from different Gobbi revisions compatible.
+The current Gobbi redesign is a breaking, new-session-only contract. The package
+version does not describe it; two revisions sharing a version number still do
+not share compatible session records.
 
-Use the live [session schema](.gobbi/projects/gobbi/skills/record/schemas/session.schema.json),
-[state schema](.gobbi/projects/gobbi/skills/record/schemas/state.schema.json),
-and [Record map](.gobbi/projects/gobbi/skills/record/record-map.md) as the
-authorities for sessions created from this source tree.
+Use the [Workflow skill](.gobbi/projects/gobbi/skills/workflow/SKILL.md) for the
+session route and evidence layout, and the
+[Record skill](.gobbi/projects/gobbi/skills/record/SKILL.md) for the session
+memory tree, as the authorities for sessions created from this source tree.
 
 ## Compatibility boundary
 
-- New sessions created by the current source use `session.json` version 5 and
-  `state.json` version 3.
+- New sessions created by the current source carry no session manifest. Their
+  live route is the native runtime TODO list, and their durable evidence is the
+  tree under `sessions/{date}-{gobbi-session-id}/`.
 - Existing unfinished sessions remain owned by the exact Gobbi revision that
   created them. The current source does not rewrite or adopt them.
 - Completed historical sessions and archived records remain unchanged.
 - There is no converter, dual-write path, or open-ended legacy reader.
 
-Do not edit version fields or reshape an existing session by hand. Matching the
-current numbers would not recreate the invariants, directory shape, frozen
-artifacts, or transition history required by the current schemas.
+Do not reshape an existing session by hand. Copying the current directory names
+would not recreate the frozen packages, gates, receipts, and commits the current
+contract requires as evidence.
 
 ## Current workflow contract
 
@@ -39,21 +40,23 @@ additional iteration is scaffolded.
 
 ## Record changes for new sessions
 
-| File | Current responsibility |
+| Location | Current responsibility |
 |---|---|
-| `session.json` version 5 | Gobbi identity, ordered runtime identities, Git identity, resolved settings, and durable final outcome |
-| `state.json` version 3 | Active status, the `step`/`stage`/`iteration`/task cursor, completed work, last verdict, and active dispatches |
+| the native runtime TODO list | The only live route: current phase, productive step, stage, task, and iteration |
+| `configuration.md` | Gobbi UUID, resolved settings, repository, base revision, branch, absolute worktree, runtime system, and creation checks |
+| `1-ideation/`, `2-planning/`, `3-execution/task-NN-slug/`, `4-wrap-up/` | Each productive step's working package, both evaluation reports, `gate.md`, the RECORD receipt, and PASS-only canonical output |
+| `memory/` | The session memory tree that Wrap-up memorizes into project memory |
+| `work/` | Session-only plans, scenarios, checklists, and every other kind no evidence owner holds |
 
-Resolved workflow, model, and Git settings now live only under
-`session.json.settings`. State does not duplicate those settings or lifecycle
-metadata. State transitions and manifest checkpoints validate complete
-candidate files before atomic replacement.
+Resolved workflow, model, and Git settings live only in `configuration.md`. No
+manifest duplicates them. No script validates the tree: the manager reads each
+package, gate, and receipt directly and refuses the stage when a required part
+is missing or unlabeled.
 
-Configuration eagerly creates the predictable session tree and every
-authorized iteration directory. Planning later scaffolds the locked Execution
-tasks. Output directories may exist in advance, but canonical output files are
-written only after PASS. Empty typed staging is valid when there is nothing
-durable to promote.
+Configuration creates the evidence root and its `configuration.md`. Every other
+directory is created when its first record needs it, never scaffolded in
+advance, because an empty directory asserts a record that does not exist.
+Canonical output files are written only after PASS.
 
 ## Quality changes for new sessions
 
@@ -80,14 +83,15 @@ preserving the session, branch, worktree, settings, and persisted cursor.
 The shared package is hookless. Claude Code uses the package's conventional
 skill and agent surfaces. The Codex plugin declares skills, while native Codex
 role wrappers remain repo-local under `.codex/agents/`. The current lifecycle
-advances through explicit manager decisions and validated record transitions.
+advances only through explicit manager decisions taken on reread evidence.
 
 Local worktree isolation and verified commits are mandatory. Issues, pushes,
 and pull requests remain optional settings. Merge always requires explicit
 user authority and current green checks, completed tasks, and a clean worktree.
 
-Both plugin manifests and the Claude marketplace entry remain at version
-`0.5.3` by deliberate user decision:
+Both plugin manifests and the Claude marketplace entry declare the package
+version. Read them directly instead of inferring session compatibility from a
+version number:
 
 - [Claude Code manifest](plugins/gobbi/.claude-plugin/plugin.json)
 - [Codex manifest](plugins/gobbi/.codex-plugin/plugin.json)
@@ -109,10 +113,9 @@ so runtime discovery reads the current contract.
 5. Start the next session in a new runtime context with the current Gobbi
    source.
 
-Do not point current record tooling at the unfinished session, rename its
-directories, or copy current schemas into it. If the creating revision cannot
-be proven, stop and preserve the session for explicit recovery instead of
-attempting an in-place conversion.
+Do not rename the unfinished session's directories or copy the current session
+shape into it. If the creating revision cannot be proven, stop and preserve the
+session for explicit recovery instead of attempting an in-place conversion.
 
 ## Verify the current package
 
