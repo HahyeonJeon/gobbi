@@ -130,8 +130,8 @@ Use this shape:
 - Decide with a placeholder test. Replace only the varying subject or object with a placeholder and leave
   every verb phrase as written. Merge only when the residual verb phrases name the same required state;
   broadening a verb phrase to make two rows match proves two states, not one.
-- Read this boundary with the six-row scenario cap at Step 4.1. The cap alone invites compound rows, and this
-  boundary alone depends on the author noticing the fan-out.
+- Read this boundary with the six-row scenario cap and the fifty-row source cap at Step 4.1. A cap alone
+  invites compound rows, and this boundary alone depends on the author noticing the fan-out.
 
 Use this shape:
 
@@ -162,6 +162,11 @@ Use this shape:
   merge was missed, not that the cap is wrong.
 - Merge the fanned-out rows first, then split the scenario when more than six different conditions remain.
   Never meet the count by dropping a traced row or by bundling conditions into one row.
+- Count the rows in the whole source. A source carries at most fifty rows; a longer list means the bound
+  subject holds more than one source's obligations, not that the cap is wrong.
+- Merge the fanned-out rows across every scenario first, then return to Step 1.1 and bind a narrower subject
+  when more than fifty different conditions remain. Never meet either count by dropping a traced row or by
+  bundling conditions into one row.
 - Return to the earliest affected phase when a perspective, source obligation, or material situation lacks
   coverage.
 
