@@ -27,7 +27,7 @@ The peer returns one closed response and never writes the session tree. The acti
 
 ### Treat failure as a visible pause
 
-An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, or identity mismatch blocks the operation. The wrapper never authors replacement content under the missing system's label.
+An unavailable binary, timeout, nonzero exit, empty response, more than one response, or identity mismatch blocks the operation. The wrapper never authors replacement content under the missing system's label.
 
 ## Rules
 
@@ -40,7 +40,7 @@ An unavailable binary, timeout, nonzero exit, empty response, malformed JSON, or
 - **C-5 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
 - **C-6 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
 - **C-7 — Bind output to the invocation.** The peer states the operation's kind, system, step, iteration, and stable assignment so the manager can bind the response to the assignment it accepts.
-- **C-8 — Require one closed response.** The peer returns exactly one self-contained value and nothing else: no prose wrapper, code fence, partial value, second output channel, or follow-up turn.
+- **C-8 — Require one closed response.** The peer returns exactly one self-contained report and nothing else: no partial response, second response, second output channel, or follow-up turn.
 - **C-9 — Surface exact failures.** Report the command status and immediate diagnostic, change nothing, and return control to workflow for retry, user decision, or abort.
 
 This skill defines no artifact schema, no per-kind response shape, and no digest comparison. The manager's acceptance of the reported response is the only control over peer output.
@@ -51,7 +51,7 @@ This skill defines no artifact schema, no per-kind response shape, and no digest
 - Do not give an opposite-system process a write-capable sandbox, write tool, shell tool, or session-tree output path.
 - Do not let one independent draft operation read the other draft before both freeze.
 - Do not let an evaluator read another evaluator report or reuse a prior evaluator context.
-- Do not accept a wrapper summary, reconstructed response, partial value, stale response, or reused runtime identity as peer output.
+- Do not accept a wrapper summary, reconstructed response, partial response, stale response, or reused runtime identity as peer output.
 - Do not add a second adapter executable, peer surface, or output channel.
 - Do not infer a missing-system waiver. Waiver authority remains with workflow and the user.
 
@@ -74,12 +74,12 @@ For role selection and model values, read the repo-local Codex configuration and
 
 Use an opposite-system peer only through the workflow-owned WORK or EVALUATION contract:
 
-| Active runtime | Opposite-system process | Structured-output owner |
+| Active runtime | Opposite-system process | Response |
 |---|---|---|
-| Claude Code | `codex exec` | `--output-schema` receives the structured-output schema file |
-| Native Codex | `claude -p` | `--json-schema` receives the compact schema contents |
+| Claude Code | `codex exec` | One self-contained report on standard output |
+| Native Codex | `claude -p` | One self-contained report on standard output |
 
-The structured-output option receives whatever the wrapper supplies for that call. This skill defines no artifact schema and never states what a response of a given kind must contain.
+This skill defines no artifact schema and never states what a response of a given kind must contain. The manager reads the reported response and accepts or refuses it.
 
 ### Common invocation envelope
 
@@ -88,15 +88,15 @@ Before launch, render a neutral prompt in a runtime temporary directory outside 
 - operation kind: draft, cross-review, or evaluation report;
 - expected output system, step, iteration, stable assignment, and fresh runtime identity;
 - one unique invocation identity for replay detection;
-- the closed-response rule: exactly one self-contained value and nothing else;
-- the neutral contract plus its lowercase SHA-256 digest;
-- every binding input as complete inline content, with its source label and digest;
+- the closed-response rule: exactly one self-contained report and nothing else;
+- the complete neutral contract;
+- every binding input as complete inline content with its source label;
 - exact in-scope and out-of-scope boundaries;
 - independence restrictions for the operation;
-- the operation-specific frozen subject and expected digest; and
+- the operation-specific frozen subject; and
 - the exact failure contract: stop without substitute output when required context is absent.
 
-Paths may identify evidence, but they do not replace the complete contents. The wrapper freezes and hashes the prompt inputs before launch. A retry receives the same frozen envelope and a new invocation and runtime identity.
+Paths may identify evidence, but they do not replace the complete contents. The wrapper freezes the prompt inputs before launch. A retry receives the same frozen envelope and a new invocation and runtime identity.
 
 ### Claude Code to Codex
 
@@ -107,11 +107,10 @@ timeout "$peer_timeout" codex exec \
   -C "$trusted_read_root" \
   --ephemeral \
   --sandbox read-only \
-  --output-schema "$schema_file" \
   - < "$prompt_file" > "$response_file" 2> "$stderr_file"
 ```
 
-The load-bearing command is `codex exec -C "$trusted_read_root" --ephemeral --sandbox read-only --output-schema "$schema_file" -`. The final `-` reads the complete prompt from standard input. `--ephemeral` prevents session persistence. `--sandbox read-only` prevents model-generated writes. `--output-schema` validates the final response shape through the installed Codex interface.
+The load-bearing command is `codex exec -C "$trusted_read_root" --ephemeral --sandbox read-only -`. The final `-` reads the complete prompt from standard input. `--ephemeral` prevents session persistence. `--sandbox read-only` prevents model-generated writes. Nothing validates the response shape; the prompt states the closed-response rule and the manager reads what came back.
 
 Do not add `--add-dir`, a write-capable sandbox, or a session output path. The parent wrapper owns stdin, stdout, and the immediate stderr diagnostic. These temporary files stay outside the session record.
 
@@ -126,27 +125,20 @@ timeout "$peer_timeout" claude \
   --no-session-persistence \
   --safe-mode \
   --tools "Read,Grep,Glob" \
-  --json-schema "$(jq -c . "$schema_file")" \
   < "$prompt_file" > "$response_file" 2> "$stderr_file"
 ```
 
-`-p` makes the call non-interactive. `--permission-mode plan` blocks an edit-oriented permission path. `--no-session-persistence` prevents later resume. `--safe-mode` disables project and user customizations for the call. `--tools "Read,Grep,Glob"` removes write and shell capabilities. `--json-schema` accepts the compact JSON Schema contents, not the schema path.
-
-The wrapper must not pass `"$schema_file"` itself to `--json-schema`. It must compact and pass the file contents exactly as shown.
+`-p` makes the call non-interactive. `--permission-mode plan` blocks an edit-oriented permission path. `--no-session-persistence` prevents later resume. `--safe-mode` disables project and user customizations for the call. `--tools "Read,Grep,Glob"` removes write and shell capabilities.
 
 ### Draft input
 
-Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, digest, summary, or hint from the other draft.
+Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, summary, or hint from the other draft.
 
 Freeze both drafts before either cross-review prompt is constructed. A response from an earlier invocation, step, iteration, or assignment is stale even when its content appears useful.
 
 ### Cross-review input
 
-The reviewer receives the complete original neutral contract plus the complete frozen draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper supplies:
-
-- the expected opposite `subjectSystem`;
-- the SHA-256 of the exact frozen subject file as `subjectSha256`; and
-- the same `contractSha256` used by both drafts.
+The reviewer receives the complete original neutral contract plus the complete frozen draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper names the expected opposite subject system and states that the contract is the same one both drafts received.
 
 Claude reviews Codex and Codex reviews Claude. Same-system or same-subject labeling blocks the operation.
 
@@ -154,7 +146,7 @@ Claude reviews Codex and Codex reviews Claude. Same-system or same-subject label
 
 Each evaluator receives the complete frozen evaluation bundle required by the evaluation owner: canonical synthesis or actual tree, both drafts, both cross-reviews, resolved decisions, applicable waiver, locked scope, upstream artifacts, scenarios, checklist source, plan, and verification evidence. It never receives the other evaluator report or a prior evaluator session.
 
-The wrapper hashes the exact evaluated subject and supplies that digest in the envelope. The evaluation method owns what an evaluation report contains.
+The wrapper supplies the exact frozen subject as complete content. The evaluation method owns what an evaluation report contains.
 
 ### Response handling
 
@@ -163,7 +155,7 @@ The active-runtime assistant performs these checks in order:
 1. Confirm the peer binary and required local dependencies exist before launch.
 2. Launch once with a bounded timeout. Capture the exact exit status before inspecting content.
 3. Treat status `124` as timeout and every other nonzero status as failure. Read the immediate stderr diagnostic; do not keep it as session evidence.
-4. Require a non-empty regular response file holding exactly one self-contained value. Prose, wrappers, code fences, and a second value fail this check.
+4. Require a non-empty regular response file holding exactly one self-contained report. A truncated response, a second response, and a second output channel fail this check.
 5. Compare kind, system, step, iteration, assignment, and runtime identity with the frozen invocation envelope.
 6. Reject a runtime identity or invocation response already used by an earlier peer operation.
 
@@ -177,7 +169,7 @@ No later check compensates for a failed earlier check. A failure changes nothing
 | Exit status `124` | timeout | Pause and report the configured bound |
 | Any other nonzero status | process failure | Pause with status and immediate stderr diagnostic |
 | Empty response | empty output | Pause; do not synthesize missing content |
-| Multiple values, prose, fence, or parse error | malformed output | Pause with the parser result |
+| Truncated response, second response, or second output channel | malformed output | Pause with the observed content |
 | Metadata or runtime identity mismatch | stale, replayed, or mislabeled output | Pause and show expected versus observed identity |
 
 Only the manager may offer retry, a bounded input repair, an explicit one-system waiver, return to DISCUSSION, or abort. This tool does not create the decision or mutate the workflow cursor.
