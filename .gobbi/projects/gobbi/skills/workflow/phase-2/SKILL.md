@@ -43,9 +43,8 @@ plan, task, receipt, or commit.
   Phase 2 item in progress.** Return to recovery when the native TODO, plan evidence, commits, branch, or
   worktree disagree.
 
-- **MUST use each canonical `task-NN-slug` in the TODO title, delegation, WORK package, validator command,
-  RECORD receipt, and commit evidence.** Do not create an alternate task identity for a revision or recovery
-  pass.
+- **MUST use each canonical `task-NN-slug` in the TODO title, delegation, WORK package, RECORD receipt, and
+  commit evidence.** Do not create an alternate task identity for a revision or recovery pass.
 
 - **MUST apply the parent fast gate to Planning and the parent normal more-severe gate to every Execution
   task.** Preserve both evaluator verdicts and never convert a normal non-PASS decision to PASS because its
@@ -111,8 +110,9 @@ plan, task, receipt, or commit.
   - required skills and roles;
   - scope boundaries; and
   - acceptance and verification for every task.
-- Render the complete WORK package at the parent-owned Planning path and run the exact parent Workflow Step
-  1.2 validator command for `--step planning`.
+- Render the complete WORK package at the parent-owned Planning path and read it directly against the parent
+  Workflow Step 1.2 written contract: both system-labeled drafts, both cross-reviews, the synthesis, and the
+  open decisions. No script enforces this; refuse the stage when one is missing or unlabeled.
 - Reread the canonical candidate and verify every Ideation obligation appears exactly once before activating
   EVALUATION.
 

@@ -39,17 +39,16 @@ Mandatory load:
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
 3. **`evaluation` skill** — the complete three-phase Procedure, seven perspectives plus Overall, causal-problem
    content, optional-improvement boundary, strength and preserve records, completed checks and tests, and
-   evidence-derived verdicts. The active workflow adapter owns caller-specific finding metadata and output
-   schema; do not redefine either in this file.
+   evidence-derived verdicts. It owns the evaluation method, not any caller's report shape.
 
-**Gobbi report schema:** load the active Record-owned evaluation-report schema and evaluation report validator
-through the EVALUATION manager adapter. They own the exact problem metadata, controlled values, confidence and
-severity scales, verdict thresholds, and machine shape. Do not define a parallel schema in this role or
-attribute caller-specific fields to the general evaluation skill.
+**Gobbi report contract:** the assignment names the caller that owns the report shape. For a Workflow
+assignment, read `skills/workflow/SKILL.md` Step 1.2: it states the required finding fields and what each
+`gate.md` records. Gobbi has no evaluation-report schema file and no report validator, and none may be
+introduced. Write the report as human-readable Markdown using the field set in `Report` below.
 
 Load per target type:
 
-- Evaluating any workflow artifact (ideation, planning, execution, wrap-up) → load the phase-specific three-file evaluation bundle (e.g., `skills/ideation/{scenario,checklist,evaluation}.md`, `skills/planning/{scenario,checklist,evaluation}.md`, `skills/execution/{scenario,checklist,evaluation}.md`). The general procedure and perspective definitions are in `skills/evaluation/SKILL.md`; the active manager adapter and Record schema own Gobbi's machine contract.
+- Evaluating any workflow artifact (ideation, planning, execution, wrap-up) → load the phase-specific three-file evaluation bundle (e.g., `skills/ideation/{scenario,checklist,evaluation}.md`, `skills/planning/{scenario,checklist,evaluation}.md`, `skills/execution/{scenario,checklist,evaluation}.md`). The general procedure and perspective definitions are in `skills/evaluation/SKILL.md`; the assigning caller owns the report shape.
 - Evaluating code → read the project's active runtime convention files (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus the relevant domain area in the codebase.
 - No perspective-specific sub-docs exist under `skills/evaluation/`, `agents/evaluation/`, `rules/evaluation/`, or `project/evaluation/` — do not construct paths to those directories.
 
@@ -80,33 +79,32 @@ perspective results, and verdicts. Load the target's applicable evaluation compa
 sources. Do not let those sources limit the perspective investigation.
 
 In every phase, apply the verification approach the artifact admits: run tools for runnable artifacts;
-close-reading plus cross-reference and search for text-only artifacts. Under Gobbi's active report contract,
-confidence at or above 75 requires tool-verified evidence or close reading with exact citations.
+close-reading plus cross-reference and search for text-only artifacts. Confidence at or above 75 requires
+tool-verified evidence or close reading with exact citations.
 
 ### Report
 
-Produce structured, evidence-grounded problem findings using the Record-owned evaluation-report schema loaded
-through the active manager adapter:
+Produce structured, evidence-grounded problem findings as human-readable Markdown. State every field:
 
-- **Type** — one of: `scenario_gap` / `checklist_gap` / `design_flaw` / `assumption_risk` / `general`.
-- **Domain** — use one value allowed by the active schema (for example, `process`, `docs-sync`, `security`,
-  `test`, or `performance`). `general/general` is a contract violation — specialize at least one.
-- **Disposition** — `open` / `addressed` / `disputed` / `deferred` / `superseded`
-- **Confidence** — `0` / `25` / `50` / `75` / `100`.
+- **ID** — a stable identifier the manager can cite in `gate.md` and the RECORD receipt.
 - **Severity** — `Critical` / `High` / `Medium` / `Low`.
 - **Evidence** — file path + line range or exact quote of what is wrong.
-- **Why it matters** — the downstream consequence in plain language.
+- **Impact** — the downstream consequence in plain language.
+- **Cause** — the root condition that produced it, traced per the `evaluation` skill.
+- **Confidence** — `0` / `25` / `50` / `75` / `100`.
 - **Suggested direction** — not a prescription. The manager + user decide the fix.
+- **blocking** — `yes` when acceptance requires resolving it, otherwise `no`.
 
 Record each optional improvement separately with its current acceptable condition, evidence, expected benefit,
 cost or limitation, confidence, and suggested direction. An optional improvement never lowers a verdict. If
 acceptance depends on it, record it as a problem finding instead. Record verified strengths and the conditions
 later work must preserve.
 
-Apply the verdict thresholds implemented by the active evaluation report validator: any contributing Critical
-problem with confidence at or above 75 yields `FAIL`; otherwise, any contributing High problem with confidence
-at or above 50 yields `REVISE`; otherwise the problem-derived verdict is `PASS`. Optional improvements never
-contribute to this calculation.
+Declare the verdict with these thresholds unless the assignment supplies different acceptance criteria: any
+contributing Critical problem with confidence at or above 75 yields `FAIL`; otherwise, any contributing High
+problem with confidence at or above 50 yields `REVISE`; otherwise the problem-derived verdict is `PASS`.
+Optional improvements never contribute to this calculation. A declared verdict is report evidence; the manager
+derives the workflow gate decision separately.
 
 End the report with:
 

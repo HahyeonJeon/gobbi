@@ -113,8 +113,9 @@ from direct evidence without changing the handoff.
   Reject an unrelated path, stale navigation, unsupported claim, or duplicate report.
 - Freeze the tracked handoff repository path, exact bytes, SHA-256 digest, actual pre-Git tree, and current Git
   intent. Do not start Wrap-up Phase 3 or add a factual receipt.
-- Render the parent-owned Wrap-up WORK package and run the exact Workflow Step 1.2 validator command for
-  `--step wrap-up` before activating EVALUATION.
+- Render the parent-owned Wrap-up WORK package and read it directly against the parent Workflow Step 1.2
+  written contract before activating EVALUATION. No script enforces this; refuse the stage when a
+  system-labeled draft, cross-review, synthesis, or open-decisions record is missing.
 
 #### 2.3 Evaluate and apply the fast gate
 

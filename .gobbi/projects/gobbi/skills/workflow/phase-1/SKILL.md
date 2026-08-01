@@ -147,9 +147,11 @@ whose completion cannot be proved.
   synthesis and a complete material-decision ledger.
 - Resolve every remaining user-owned conflict with the user before EVALUATION. Agents may resolve only
   evidence-backed implementation detail already inside the locked contract.
-- Render the complete WORK package at the parent-owned path through the manager-side writer, then run the exact
-  parent Workflow Step 1.2 validator command for `--step ideation`.
-- Reread the package and decisions. Retitle the active TODO to EVALUATION only after the package validates.
+- Render the complete WORK package at the parent-owned path through the manager-side writer, then read it
+  directly against the parent Workflow Step 1.2 written contract: both system-labeled drafts, both
+  cross-reviews, the synthesis, and the open decisions. No script enforces this; refuse the stage when one is
+  missing or unlabeled.
+- Reread the package and decisions. Retitle the active TODO to EVALUATION only after that reading passes.
 
 #### 2.3 Evaluate and apply the fast gate
 
