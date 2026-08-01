@@ -44,12 +44,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wave A.1 — Orchestration core: schema v6, `step.advancement.observed` audit event, explicit `EventStore` partition-key constructor params, WAL checkpoint after `workflow.step.exit`, handoff state-machine step (`specs/handoff/spec.json`), `gobbi maintenance migrate-state-db` + `restore-state-db`, memorization path-pointer manifest, `.gobbi/gobbi.db` git-tracked via `.gitignore` exception, 10 Wave A.1 integration tests (#146, #147)
 
 - Domain skills — Nine children covering gaps the eight families left open: `css/css-motion`, `web/web-interaction`, `web/web-observability`, `web/web-configuration`, `web/web-deployment`, `web/web-localization`, `web/web-interface`, `desktop/desktop-architecture`, and `desktop/desktop-interface`. The two interface children host the surface obligations absorbed from `ui` and `ux`.
-- Domain skills — An unchecked `checklists.md` evaluation source for every child across the `css`, `desktop`, `electron`, `go`, `html`, `react`, `typescript`, and `web` families: 52 sources carrying 2,115 rows under the `Perspective → Scenario → Checklist rows` hierarchy.
+- Domain skills — An unchecked `checklists.md` evaluation source for every child across the `css`, `desktop`, `electron`, `go`, `html`, `react`, `typescript`, and `web` families: 52 sources carrying 2,196 rows under the `Perspective → Scenario → Checklist rows` hierarchy.
 
 ### Removed
 
 - Domain skills — Removed the cross-surface `ui` and `ux` parent skills. Their obligations were absorbed into the seven target families and the two new interface children first; the skills were deleted only after absorption.
 - Domain skills — Command-line, voice, and mobile interface and experience design have no owner after the `ui` and `ux` removal. No target family hosts those surfaces, so each is recorded as a deferred gap rather than a covered one. `react/SKILL.md` already states that React Native needs project-specific guidance.
+- Domain skills — What a standalone Go server process should emit, and how it captures its own crashes, has no owner. `web-observability` owns the emission contracts but its procedure covers web and Electron surfaces, and no `go` child took the server process, so `go/SKILL.md` records it as an open gap rather than a route.
 
 ## [0.5.3] - 2026-07-19
 
