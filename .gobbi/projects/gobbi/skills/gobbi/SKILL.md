@@ -10,9 +10,10 @@ skill-type: operation
 Gobbi is the read-only entry operation for a Gobbi manager. It loads the nine-skill Gobbi system, obtains one
 session mode from the user — General, Cowork, or Workflow — and hands the session to that mode's owner.
 
-Gobbi owns only the load, the selection, and the routing. General continues from the loaded system, Cowork
-uses [`cowork`](../cowork/SKILL.md), and Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold
-all mode-specific creation, state, routing, execution, evaluation, and closure.
+Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
+every mode inherits. General continues from the loaded system, Cowork uses [`cowork`](../cowork/SKILL.md), and
+Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all mode-specific creation, state,
+routing, execution, evaluation, and closure.
 
 The entry writes nothing. It runs again at every boundary that may discard manager context and keeps an
 established mode whenever that mode's evidence still validates.
@@ -56,6 +57,15 @@ its owner without copying that owner's procedure or creating a second router.
   reference nothing outside themselves; `wrap-up` may reference only `record` and `memory`, and nothing in
   that isolated set may reference `wrap-up`.
 
+- **MUST hold the session to its selected mode's evaluation commitment.** Never apply an evaluator finding
+  before the user approves its disposition, and pause with the exact failure when a required evaluation system
+  is unavailable or invalid unless the user waives that named system for the round.
+
+- **MUST keep the manager the session's only authority for assignment, scope, user decisions, acceptance, and
+  destructive or external action.** Build every specialist brief through
+  [`delegation`](../delegation/SKILL.md), keep all worktree writes in one ordered writer chain, and
+  parallelize only independent read-only analysis and fresh independent evaluation.
+
 Rule 4 names three linking skills, eight isolated skills, and `wrap-up`. Every skill it does not name is
 unclassified: the rule constrains it in no direction, and it may reference anything. The isolated eight are
 constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
@@ -73,9 +83,9 @@ are not skill references.
 - Confirm the governance source, the active runtime, and the trigger, then resolve this canonical skill
   directory through the active entrypoint.
 - Record the canonical source, runtime, trigger, and unchanged repository preimage. Gobbi has written nothing.
-- Stop and route the repair to
-  [`scripts/sync-plugin-package.sh`](../../../../../scripts/sync-plugin-package.sh) when the resolved view is
-  broken.
+- Stop and name the exact broken element when the resolved view is missing, partial, or inconsistent. Repair it
+  by restoring the runtime's Gobbi package or entrypoint from its canonical source; the repository's governing
+  instructions own any repository-local repair command, and no step continues against a partial view.
 
 #### 1.2 Load the nine-skill Gobbi system
 
@@ -100,12 +110,18 @@ are not skill references.
 - At every fresh entry, use the [Discussion](../discussion/SKILL.md) structure and the active runtime's
   structured user-input request to ask the user to select exactly one mode. Set no automatic resolution:
 
-| Mode | Select when |
-|---|---|
-| **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. |
-| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. |
-| **Workflow** | The user wants the durable five-step, dual-system, recorded workflow. |
+| Mode | Select when | Evaluation commitment |
+|---|---|---|
+| **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Only the evaluation its task owner requires. |
+| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | No automatic dual-system creation, and one fresh Claude-and-Codex round for each explicit user `evaluate` call over the frozen requested subject. |
+| **Workflow** | The user wants the durable five-step, dual-system, recorded workflow. | Retained independent Claude and Codex drafts before every EVALUATION, and two fresh isolated evaluators for each EVALUATION. |
 
+- Present the commitment column with the selection so the user chooses a known quality bar. Workflow's retained
+  drafts carry frozen inputs, reciprocal cross-reviews, active-runtime synthesis, and user resolution before
+  EVALUATION, and every Workflow EVALUATION covers Project, Structure, Performance, Aesthetics, Usage,
+  Consistency, Risk, and Overall.
+- Name the commitment only. [`cowork`](../cowork/SKILL.md) and [`workflow`](../workflow/SKILL.md) own how their
+  mode produces it, and the entry never runs, schedules, or repeats an evaluation.
 - A request may support a recommendation, but even explicit words such as "use Cowork" do not replace the
   selection control on a fresh entry.
 - At a context boundary, keep the established selection while its mode evidence and identity still validate.
@@ -121,9 +137,72 @@ are not skill references.
 - **Workflow:** load [`../workflow/SKILL.md`](../workflow/SKILL.md). That owner performs fresh and resume
   classification, Configuration, durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Build every specialist brief through the loaded [Delegation](../delegation/SKILL.md) skill, and let the
-  selected mode add its own brief fields. Load any further task-specific skill from that skill's own trigger,
-  because the entry keeps no skill index.
+  selected mode add its own brief fields. After a specialist reports, reread its artifact or commit and
+  reproduce its verification before assigning further work.
+- Use the [skill map](#references) to find a further task-specific skill, then load that skill from its own
+  trigger. The map indexes what exists for routing; it loads nothing beyond the nine and gives no skill a
+  second entry point.
 - On missing or invalid mode evidence, owner artifacts, identity, or authority, preserve the prior state and
   report the exact blocker. Never invent a fallback mode, cursor, worktree, or direct specialist route.
 
 ## References
+
+This is the complete map of the canonical Gobbi skill system. Step 1.2 loads the entry floor; every other
+skill loads from its own trigger, so this map shows what exists rather than what is loaded.
+
+### Entry floor
+
+| Skill | Owns |
+|---|---|
+| [`principles`](../principles/SKILL.md) | The ten behavioral principles every agent applies. |
+| [`ideation`](../ideation/SKILL.md) | Exploring a problem with the user and locking what and why. |
+| [`planning`](../planning/SKILL.md) | Decomposing accepted work into an ordered executable plan. |
+| [`wrap-up`](../wrap-up/SKILL.md) | Closing accepted work with durable memory and an exact handoff. |
+| [`delegation`](../delegation/SKILL.md) | The brief shape every specialist assignment uses. |
+| [`discussion`](../discussion/SKILL.md) | The shape of a question put to the user. |
+| [`record`](../record/SKILL.md) | Session evidence and the session memory tree. |
+| [`memory`](../memory/SKILL.md) | Durable project memory. |
+| [`git`](../git/SKILL.md) | Branch, worktree, commit, publication, merge, and recovery. |
+
+### Mode owners
+
+| Skill | Owns |
+|---|---|
+| [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git contract, evaluation policy, and session locations. |
+| [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and evidence layout. |
+
+### Work operations
+
+| Skill | Owns |
+|---|---|
+| [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
+| [`startup`](../startup/SKILL.md) | The project interview that produces confirmed design briefs. |
+| [`ux`](../ux/SKILL.md) | Designing one complete observable user outcome. |
+| [`ui`](../ui/SKILL.md) | Designing one complete observable interface outcome. |
+| [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
+| [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
+
+### Authoring the system
+
+| Skill | Owns |
+|---|---|
+| [`skill-writing`](../skill-writing/SKILL.md) | Authoring or substantively revising one project skill. |
+| [`agent-writing`](../agent-writing/SKILL.md) | Authoring a Gobbi agent's canonical Markdown and TOML pair. |
+| [`claude-plugin`](../claude-plugin/SKILL.md) | The shared Claude Code and Codex plugin package and its manifests. |
+| [`codex`](../codex/SKILL.md) | Native Codex entry surfaces and the read-only peer process. |
+
+### Languages and platforms
+
+Each of these roots covers work in its language or platform and routes the task to its applicable children.
+
+| Skill | Covers |
+|---|---|
+| [`web`](../web/SKILL.md) | The web platform |
+| [`html`](../html/SKILL.md) | HTML markup |
+| [`css`](../css/SKILL.md) | CSS styling |
+| [`typescript`](../typescript/SKILL.md) | TypeScript |
+| [`react`](../react/SKILL.md) | React |
+| [`python`](../python/SKILL.md) | Python |
+| [`go`](../go/SKILL.md) | Go |
+| [`electron`](../electron/SKILL.md) | Electron |
+| [`desktop`](../desktop/SKILL.md) | Installable desktop applications |

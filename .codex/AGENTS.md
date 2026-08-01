@@ -43,28 +43,15 @@ Wrap-up closes and hands off the durable result.
 
 ## Dual-system quality contract
 
-Workflow retains its full dual-system protocol: independent Claude and Codex drafts, frozen inputs,
-reciprocal cross-reviews, active-runtime synthesis, and user resolution before EVALUATION. Each EVALUATION
-uses two fresh isolated evaluators covering Project, Structure, Performance, Aesthetics, Usage, Consistency,
-Risk, and Overall. A material revision repeats the complete round.
-
-Cowork does not run dual-system creation automatically. When the user calls `evaluate`, Cowork runs one fresh
-Claude-and-Codex evaluation round over the frozen requested subject. If either required system is unavailable
-or invalid, pause with the exact failure unless the user explicitly waives that named system for the round.
-
-Never apply an evaluator finding before the user approves its disposition. General uses only the evaluation
-explicitly required by its task owner.
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns each mode's dual-system and evaluation commitment, the
+pause on an unavailable or invalid system, and the user's approval of every finding's disposition.
 
 ## Delegation contract
 
-The manager alone changes scope, makes user decisions, assigns specialists, accepts work, and authorizes
-destructive or external actions. Build every brief through
-`.gobbi/projects/gobbi/skills/delegation/SKILL.md`. Cowork adds the fields in its topic-loop procedure;
-Workflow adds the fields in `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3.
-
-Keep all worktree writes in one ordered writer chain. Parallel work is limited to independent read-only
-analysis and fresh independent evaluation. After a specialist report, reread the promised artifact or commit,
-reproduce verification, and confirm idle/addressable state before another assignment.
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns manager authority, the `delegation`-built brief, the single
+ordered writer chain, and the read-only limit on parallel work. Cowork adds its brief fields in the topic-loop
+procedure; Workflow adds them in `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3. Confirm a
+specialist's idle and addressable state before another assignment.
 
 When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Fresh briefs include
 exact load directives because specialists do not inherit manager context.
@@ -106,14 +93,6 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 
 ## Navigate deeper
 
-| Document | Owns |
-|---|---|
-| `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` | Entry, nine-skill system load, and three-mode selection |
-| `.gobbi/projects/gobbi/skills/cowork/SKILL.md` | User-led Cowork orchestration |
-| `.gobbi/projects/gobbi/skills/workflow/SKILL.md` | Durable Workflow orchestration with its Git session contract, evaluation policy, and evidence layout |
-| `.gobbi/projects/gobbi/skills/delegation/SKILL.md` | Generic specialist assignment shape |
-| `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` | Independent evaluation method |
-| `.gobbi/projects/gobbi/skills/git/SKILL.md` | Worktree, branch, commit, publication, and recovery |
-| `.gobbi/projects/gobbi/skills/memory/SKILL.md` | Durable project-memory method |
-| `.gobbi/projects/gobbi/skills/record/SKILL.md` | Session-evidence method and the session memory tree shape |
-| `.gobbi/projects/gobbi/skills/wrap-up/SKILL.md` | Terminal Memory, handoff, and recovery operation |
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the nine-skill system
+load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of every
+canonical skill with what that skill owns.
