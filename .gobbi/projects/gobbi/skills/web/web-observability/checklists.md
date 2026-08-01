@@ -149,7 +149,7 @@ are the failure.
 - [ ] WEBOBS-CK-CONSISTENCY-01-01 — One trace context is propagated across every boundary a single user action crosses.
 - [ ] WEBOBS-CK-CONSISTENCY-01-02 — `traceparent` and `tracestate` carry the context on HTTP boundaries and an explicit carried field carries it on worker, IPC, and queue boundaries.
 - [ ] WEBOBS-CK-CONSISTENCY-01-03 — The sampling rule is decided at the entry point so a sampled action stays sampled across every hop.
-- [ ] WEBOBS-CK-CONSISTENCY-01-04 — The build identity is attached to every signal so a report resolves to exact bytes.
+- [ ] WEBOBS-CK-CONSISTENCY-01-04 — The build identity is carried by every signal the application emits and by each out-of-process crash report through its annotations or its endpoint URL, so a report resolves to exact bytes.
 
 ### WEBOBS-SC-CONSISTENCY-02 — Normal case: emission, arrival, and live health are separate claims
 
@@ -197,31 +197,34 @@ mechanism as universal is the failure.
 
 A token, a cookie, a session identifier, or a personal data field is carried into a log, a metric label, a
 span attribute, a crash annotation, or an error message. The expected outcome keeps that value out of the
-record at the emission seam, using the classification `web-security` owns; a value redacted at the destination
-instead of before the boundary is the failure.
+record before it leaves the application — at the emission seam for a signal the application builds, and in the
+allow-listed annotations for a crash report it does not build — using the classification `web-security` owns;
+an application-emitted signal redacted at the destination instead of before the boundary is the failure.
 
 #### Checklist
 
 - [ ] WEBOBS-CK-RISK-03-01 — No credential, token, authorization header, cookie, session identifier, or personal data field reaches a log, metric label, span attribute, crash annotation, or error message.
 - [ ] WEBOBS-CK-RISK-03-02 — The fields treated as protected are taken from the `web-security` classification rather than decided in this operation.
-- [ ] WEBOBS-CK-RISK-03-03 — One emission seam allow-lists the attributes each signal may carry, so a newly added field is absent until it is added deliberately.
-- [ ] WEBOBS-CK-RISK-03-04 — Stripping at the seam covers URLs, query strings, request and response bodies, exception messages, and crash annotations.
+- [ ] WEBOBS-CK-RISK-03-03 — One allow-list governs both the attributes each application-emitted signal may carry through the emission seam and the annotations supplied to the out-of-process crash reporter, so a newly added field is absent until it is added deliberately.
+- [ ] WEBOBS-CK-RISK-03-04 — Stripping at the seam covers URLs, query strings, request and response bodies, and exception messages.
 - [ ] WEBOBS-CK-RISK-03-05 — A test proves that a record containing a protected field leaves the seam without it.
-- [ ] WEBOBS-CK-RISK-03-06 — No signal path reaches a transport without passing the seam.
+- [ ] WEBOBS-CK-RISK-03-06 — No application-emitted signal path reaches a transport without passing the seam.
 
 ### WEBOBS-SC-RISK-04 — Adversarial: the emitter's own check stands in for the destination
 
 The seam's test passes and the review shows a list of blocked keys, so the diagnostics are declared clean and
-nobody opens the destination. The expected outcome reads what is actually stored and searches it; an
-emitter-side result accepted as proof of what left the process is the failure.
+nobody opens the destination. The expected outcome reads what is actually stored and searches it, and has the
+destination redact and bound what no seam could reach; an emitter-side result accepted as proof of what left
+the process is the failure.
 
 #### Checklist
 
-- [ ] WEBOBS-CK-RISK-04-01 — The records actually stored at each destination are read rather than the emitter's input.
+- [ ] WEBOBS-CK-RISK-04-01 — The records actually stored at each destination, including the crash-report destination, are read rather than the emitter's input.
 - [ ] WEBOBS-CK-RISK-04-02 — The stored records are searched for credentials, tokens, session identifiers, and personal data.
 - [ ] WEBOBS-CK-RISK-04-03 — A protected value found at a destination is raised as a `web-security` finding with its own remediation and retention correction.
 - [ ] WEBOBS-CK-RISK-04-04 — A protected field already reaching a destination is corrected before new emission is added on the same path.
 - [ ] WEBOBS-CK-RISK-04-05 — Who can read each destination, and for how long, is recorded.
+- [ ] WEBOBS-CK-RISK-04-06 — The crash-report payload the application cannot redact before transport is redacted and retention-bounded at its destination.
 - Also applies: WEBOBS-CK-RISK-03-03 (the seam allow-lists rather than blocks known-bad keys).
 
 ## Overall

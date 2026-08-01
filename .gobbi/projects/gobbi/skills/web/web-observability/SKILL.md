@@ -20,8 +20,8 @@ Load those to diagnose a failure; load this one to decide what the application p
 `web-feature` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
 this operation supplies the signal shape those contracts name. `web-security` owns which data is protected and
 which logging controls are required; this operation owns keeping that data out of a diagnostic before it
-leaves the process. `web-testing` proves behavior under test, which is a different claim from what production
-emits.
+leaves the process, and out of the annotations an out-of-process crash reporter carries on its behalf.
+`web-testing` proves behavior under test, which is a different claim from what production emits.
 
 ## Principles
 
@@ -43,11 +43,11 @@ A process that died, a renderer that was killed, and a document the browser disc
 any in-process handler executes. Capture for those failures must be configured before them and delivered by
 something that outlives them.
 
-### Redaction happens before the boundary, not at the destination
+### A protected value must never enter the record
 
 Once a diagnostic leaves the process it is transmitted, copied, indexed, and retained beyond the sender's
-control, and a later deletion cannot prove every copy is gone. The only reliable control is that the protected
-value never entered the record.
+control, and a later deletion cannot prove every copy is gone. The application enforces that at the emission
+seam for a signal it builds, and in the annotations it supplies in advance for a report it does not build.
 
 ## Rules
 
@@ -64,13 +64,15 @@ value never entered the record.
   boundaries and an explicit carried field on worker, IPC, and queue boundaries.
 
 - **MUST configure crash and unsurvivable-failure capture before the code that can fail runs, and collect it
-  from outside the failing process.** A page cannot observe its own `crash` report and a killed renderer
-  cannot flush a buffer, so a reporter started late captures nothing.
+  from outside the failing process.** A reporter started late captures nothing, and because the user agent or
+  the crash reporter then builds and uploads that report through its own transport, the application governs
+  only the annotations and endpoint it configured in advance.
 
 - **NEVER let a credential, token, authorization header, cookie, session identifier, or personal data field
   reach a log, metric label, span attribute, crash annotation, or error message.** Redact at the emission seam
-  by allow-listing what each signal may carry; `web-security` owns which data is protected and this operation
-  owns keeping it out of diagnostics.
+  by allow-listing what each application-emitted signal may carry, apply the same allow-list to the
+  annotations supplied to an out-of-process crash reporter, and redact at the destination the crash payload no
+  seam can reach; `web-security` owns which data is protected.
 
 - **NEVER let emission change the behavior it observes.** A telemetry call must not throw into the user path,
   block an authoritative effect, delay navigation, or retry until the request it measures degrades.
@@ -123,7 +125,9 @@ value never entered the record.
   worker, fetch, Electron preload and IPC, server, queue, and provider.
 - Carry one trace context across every boundary, using `traceparent` and `tracestate` on HTTP boundaries and
   an explicit field elsewhere; decide the sampling rule at the entry point so a sampled action stays sampled
-  across every hop, and attach the build identity to every signal so a report resolves to exact bytes.
+  across every hop, and carry the build identity on every signal the application emits and into each
+  out-of-process crash report through its annotations or its endpoint URL, so a report resolves to exact
+  bytes.
 - Record a boundary-by-boundary propagation map, the sampling decision and where it is made, and the
   build-identity attribute name.
 - Continue when one identifier joins client, server, and crash signals for a single action; confirm with
@@ -142,9 +146,12 @@ value never entered the record.
   ([Reporting API](https://developer.mozilla.org/en-US/docs/Web/API/Reporting_API)), and in Electron calling
   [`crashReporter.start()`](https://www.electronjs.org/docs/latest/api/crash-reporter) in the main process
   before `app.on('ready')` — a renderer created before that call is not monitored — with `render-process-gone`
-  and `child-process-gone` handled on `app`.
-- Record, per surface, the in-process error path, the out-of-process failure path, the attached build
-  identity, and the decision that makes a reported stack readable, which `web-deployment` owns.
+  and `child-process-gone` handled on `app`; neither out-of-process report passes an application seam, so the
+  only content control is the allow-listed annotations set before the failure, within the documented key and
+  value size limits of 39 bytes per key and 127 bytes per `extra` value.
+- Record, per surface, the in-process error path, the out-of-process failure path, the allow-listed
+  annotations and endpoint configured for it, the attached build identity, and the decision that makes a
+  reported stack readable, which `web-deployment` owns.
 - Continue when both paths exist for every shipped surface; treat the browser Reporting API as newly
   available rather than universal, keep the in-process path as the signal that must always work, and record
   any surface whose unsurvivable failure cannot be captured as an accepted gap with its owner.
@@ -154,14 +161,17 @@ value never entered the record.
 #### 3.1 Build the redaction seam and the emitter
 
 - Take the designed signal set and the `web-security` classification of protected fields.
-- Implement one emission seam that every signal passes through and allow-list the attributes each signal may
-  carry, so a newly added field is absent until it is added deliberately; strip credentials, tokens,
-  authorization headers, cookies, session identifiers, and personal data at that seam, including inside URLs,
-  query strings, request and response bodies, exception messages, and crash annotations.
+- Implement one emission seam that every application-emitted signal passes through and allow-list the
+  attributes each signal may carry, so a newly added field is absent until it is added deliberately; strip
+  credentials, tokens, authorization headers, cookies, session identifiers, and personal data at that seam,
+  including inside URLs, query strings, request and response bodies, and exception messages, and govern the
+  annotations supplied to an out-of-process crash reporter with the same allow-list.
 - Produce one seam with its allow-list plus a test proving that a record containing a protected field leaves
   the seam without it.
-- Continue when no signal path bypasses the seam; repair a direct call to a transport that skips it before
-  instrumenting anything further, because a deny-list ships the next unredacted field.
+- Continue when no application-emitted signal path bypasses the seam and every crash annotation comes from
+  the allow-list; repair a direct call to a transport that skips the seam before instrumenting anything
+  further, and require the crash-report destination to redact and bound the retention of the payload no seam
+  can reach, because a deny-list ships the next unredacted field.
 
 #### 3.2 Instrument the paths and their failures
 
@@ -195,9 +205,9 @@ value never entered the record.
 #### 4.2 Check the destination and hand off
 
 - Take the arrived records, the allow-list, and each destination's retention and access configuration.
-- Read the records actually stored at the destination rather than the emitter's input, search them for
-  credentials, tokens, session identifiers, and personal data, and record who can read each destination and
-  for how long.
+- Read the records actually stored at each destination, including the crash-report destination, rather than
+  the emitter's input, search them for credentials, tokens, session identifiers, and personal data, and
+  record who can read each destination and for how long.
 - Reconcile every question with its answering signal, its cost and cardinality, the destination check result,
   the named correlation and coverage limits, and every accepted gap with its owner.
 - Treat a protected value found at a destination as a `web-security` finding with its own remediation and
