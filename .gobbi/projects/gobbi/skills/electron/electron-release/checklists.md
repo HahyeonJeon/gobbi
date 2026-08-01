@@ -153,19 +153,17 @@ hardening; patching a signed artifact, however small the change, is the failure.
 
 ## Risk
 
-### ELECREL-SC-RISK-01 — Normal case: platform trust established on the final bytes
+### ELECREL-SC-RISK-01 — Normal case: signing established on the final bytes
 
-Signing and notarization decide whether the operating system will run the artifact, and both apply to the
-exact bytes being handed off. The expected outcome signs every required component in the target order and
-verifies the result with platform tools; an unexpected identity, entitlement, or trust result fails the
-release.
+Signing decides whether the operating system will run the artifact, and it applies to the exact bytes being
+handed off. The expected outcome signs every required component in the target order and verifies the result
+with platform tools; an unexpected identity, entitlement, or trust result fails the release.
 
 #### Checklist
 
-- [ ] ELECREL-CK-RISK-01-01 — Application binaries, nested code, helpers, native modules, installers, and packages are signed in the target-required order and timestamped where required.
-- [ ] ELECREL-CK-RISK-01-02 — Signatures are verified with platform tools on the final bytes, and an unexpected identity, entitlement, nested signature, timestamp, or trust result fails the release.
-- [ ] ELECREL-CK-RISK-01-03 — Every macOS artifact requiring notarization is submitted through the authorized path, its request identity and result retained, stapled where the format supports it, and its Gatekeeper assessment rechecked.
-- [ ] ELECREL-CK-RISK-01-04 — Notarization timeout, rejection, unavailable credentials, and an unauthorized credential path each stop the operation with preserved artifacts and logs.
+- [ ] ELECREL-CK-RISK-01-01 — Application binaries, nested code, helpers, native modules, installers, and packages are signed in the target-required order.
+- [ ] ELECREL-CK-RISK-01-02 — Application binaries, nested code, helpers, native modules, installers, and packages are timestamped where required.
+- [ ] ELECREL-CK-RISK-01-03 — Signatures are verified with platform tools on the final bytes, and an unexpected identity, entitlement, nested signature, timestamp, or trust result fails the release.
 
 ### ELECREL-SC-RISK-02 — Adversarial: packaging presented as protection
 
@@ -178,6 +176,30 @@ protection claim with the mechanism that enforces it; packaging accepted as a bo
 - [ ] ELECREL-CK-RISK-02-01 — ASAR packaging is not treated as a security boundary or as protection for bundled content or secrets.
 - [ ] ELECREL-CK-RISK-02-02 — Files that require real filesystem access are unpacked and their resolved packaged paths are verified.
 - [ ] ELECREL-CK-RISK-02-03 — No packaged-artifact property is presented as a security control without evidence from the mechanism that enforces it.
+
+### ELECREL-SC-RISK-03 — Normal case: notarization proven on the final macOS artifact
+
+Notarization is a separate Apple service decision from signing, and its result must be attached to the
+artifact and rechecked locally. The expected outcome submits each artifact through the authorized path,
+retains the request identity and result, and proves the shipped bytes still pass assessment; a submission
+whose outcome is never reattached or rechecked is the failure.
+
+#### Checklist
+
+- [ ] ELECREL-CK-RISK-03-01 — Every macOS artifact requiring notarization is submitted through the authorized path.
+- [ ] ELECREL-CK-RISK-03-02 — The notarization request identity and result are retained for every submitted macOS artifact.
+- [ ] ELECREL-CK-RISK-03-03 — Every notarized macOS artifact is stapled where its format supports it.
+- [ ] ELECREL-CK-RISK-03-04 — The Gatekeeper assessment is rechecked for every notarized macOS artifact.
+
+### ELECREL-SC-RISK-04 — Expected failure: notarization cannot complete
+
+The notarization service times out, rejects the submission, or the credentials are missing or outside the
+authorized path. The expected outcome stops the operation with the artifacts and logs preserved for a retry;
+continuing to a release on an incomplete notarization result is the failure.
+
+#### Checklist
+
+- [ ] ELECREL-CK-RISK-04-01 — Notarization timeout, rejection, unavailable credentials, and an unauthorized credential path each stop the operation with preserved artifacts and logs.
 
 ## Overall
 

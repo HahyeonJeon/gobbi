@@ -76,8 +76,9 @@ of the design; a composed design that assumes automatic destruction is the failu
 
 #### Checklist
 
-- [ ] ELECDSN-CK-STRUCTURE-03-01 — `BrowserWindow` is chosen for a normal single-web-content window, and `BaseWindow` with `WebContentsView` is chosen only where the product needs composed views.
-- [ ] ELECDSN-CK-STRUCTURE-03-02 — Every manually created web contents in a composed-view design has an explicit teardown step in the design.
+- [ ] ELECDSN-CK-STRUCTURE-03-01 — `BrowserWindow` is chosen for a normal single-web-content window.
+- [ ] ELECDSN-CK-STRUCTURE-03-02 — `BaseWindow` with `WebContentsView` is chosen only where the product needs composed views.
+- Also applies: ELECDSN-CK-STRUCTURE-02-02 (a manually created web contents carries its own destruction or close path).
 
 ## Performance
 
@@ -160,9 +161,9 @@ manager, bundler, module format, and packaging tool; a migration justified by ta
 
 ### ELECDSN-SC-RISK-01 — Normal case: activated content is closed by independent controls
 
-Permissions, navigation, new windows, webview attachment, external URLs, and custom protocols are separate
-surfaces, and installing one control closes only its own. The expected outcome applies default-deny controls
-to every relevant and later-created session, partition, and web contents; one uncovered surface is the failure.
+Permissions, navigation, new windows, webview attachment, and external URLs are separate surfaces, and
+installing one control closes only its own. The expected outcome applies default-deny controls to every
+relevant and later-created session, partition, and web contents; one uncovered surface is the failure.
 
 #### Checklist
 
@@ -171,7 +172,6 @@ to every relevant and later-created session, partition, and web contents; one un
 - [ ] ELECDSN-CK-RISK-01-03 — `setWindowOpenHandler` is installed on every relevant and later-created web contents.
 - [ ] ELECDSN-CK-RISK-01-04 — `will-attach-webview` validates the requested URL, preload, unsafe `webPreferences`, and owning session or partition before attachment.
 - [ ] ELECDSN-CK-RISK-01-05 — Every external URL is admitted through a parsed, closed allowlist.
-- [ ] ELECDSN-CK-RISK-01-06 — Every custom-protocol path is decoded, normalized, resolved, and proven to remain beneath an allowed canonical root before it is read.
 
 ### ELECDSN-SC-RISK-02 — Edge case: a renderer loads content from a secure remote source
 
@@ -196,6 +196,20 @@ the privileged process; a check that a caller can shape or outlive is the failur
 - [ ] ELECDSN-CK-RISK-03-02 — Every privileged handler rejects a missing, detached, or untrusted frame.
 - [ ] ELECDSN-CK-RISK-03-03 — Every privileged handler validates payload values at runtime rather than relying on a TypeScript type.
 - [ ] ELECDSN-CK-RISK-03-04 — No authorization decision rests on a value the calling renderer supplies.
+
+### ELECDSN-SC-RISK-04 — Adversarial: a custom-protocol request carries an escaping path
+
+A custom protocol handler turns a caller-supplied path into a file read, and percent-encoding, traversal
+segments, and link resolution can each move the final target outside its intended root. The expected outcome
+resolves the path completely and proves containment before any read; a path read on the strength of its
+literal appearance is the failure.
+
+#### Checklist
+
+- [ ] ELECDSN-CK-RISK-04-01 — Every custom-protocol path is decoded before it is read.
+- [ ] ELECDSN-CK-RISK-04-02 — Every custom-protocol path is normalized before it is read.
+- [ ] ELECDSN-CK-RISK-04-03 — Every custom-protocol path is resolved before it is read.
+- [ ] ELECDSN-CK-RISK-04-04 — Every custom-protocol path is proven to remain beneath an allowed canonical root before it is read.
 
 ## Overall
 

@@ -54,8 +54,9 @@ failure.
 
 - [ ] ELECDEV-CK-STRUCTURE-01-01 — The change is applied in dependency order: shared contract, privileged owner, preload adapter, renderer consumer, then window, lifecycle, native, configuration, and documentation integration.
 - [ ] ELECDEV-CK-STRUCTURE-01-02 — The shared contract imports no process-only runtime module across a boundary.
-- [ ] ELECDEV-CK-STRUCTURE-01-03 — Operating-system, filesystem, secret, and process authority stays in main or a bounded utility process while renderer code stays web-shaped.
-- [ ] ELECDEV-CK-STRUCTURE-01-04 — Every privileged handler is registered once at the correct lifecycle point, with duplicate registration, restart, and teardown behavior explicit.
+- [ ] ELECDEV-CK-STRUCTURE-01-03 — Operating-system, filesystem, secret, and process authority stays in main or a bounded utility process.
+- [ ] ELECDEV-CK-STRUCTURE-01-04 — Renderer code stays web-shaped.
+- [ ] ELECDEV-CK-STRUCTURE-01-05 — Every privileged handler is registered once at the correct lifecycle point, with duplicate registration, restart, and teardown behavior explicit.
 
 ### ELECDEV-SC-STRUCTURE-02 — Poor quality: placement chosen by import convenience
 

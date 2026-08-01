@@ -162,20 +162,17 @@ its own observable case; one assertion standing for several controls is the fail
 - [ ] ELECTST-CK-RISK-01-02 — The preload is asserted to expose only named domain methods, strip Electron events, serialize supported values, and remove listeners through its disposer.
 - [ ] ELECTST-CK-RISK-01-03 — Every activated security surface has an independently observable case so one installed handler cannot stand in for a missing control.
 
-### ELECTST-SC-RISK-02 — Adversarial: each activated control attacked on its own path
+### ELECTST-SC-RISK-02 — Adversarial: content policy and renderer preferences attacked on their own paths
 
-An attacker reaches content policy, window preferences, permissions, navigation, new windows, and webview
-attachment through separate paths, including later-created web contents and secondary partitions. The
-expected outcome attacks each path independently and proves the rejection happens before creation.
+An attacker reaches content policy through every renderer delivery path and reaches each unsafe
+`webPreferences` key through its own creation call. The expected outcome attacks each independently and
+proves the rejection happens before the renderer is created.
 
 #### Checklist
 
 - [ ] ELECTST-CK-RISK-02-01 — Absent and permissive `Content-Security-Policy` values are tested as separate cases on every renderer delivery path, and a disallowed script or resource is proven blocked.
-- [ ] ELECTST-CK-RISK-02-02 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each exercised independently and rejected before renderer creation.
-- [ ] ELECTST-CK-RISK-02-03 — `setPermissionCheckHandler` and `setPermissionRequestHandler` paths are exercised separately on the default session and every secondary session or partition, with varied requesting and embedding origins and frame facts, asserting default denial.
-- [ ] ELECTST-CK-RISK-02-04 — Allowed and denied main-frame, subframe, and redirect navigation is attempted through `will-navigate`, `will-frame-navigate`, and `will-redirect`, including on later-created web contents.
-- [ ] ELECTST-CK-RISK-02-05 — A new-window request from a later-created web contents, including one backed by a secondary session or partition, is rejected at `setWindowOpenHandler` before the child is created.
-- [ ] ELECTST-CK-RISK-02-06 — Webview attachment with a disallowed URL, an unsafe preload, unsafe `webPreferences`, and a disallowed requested partition is each rejected at `will-attach-webview` before the guest is created.
+- [ ] ELECTST-CK-RISK-02-02 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each exercised independently.
+- [ ] ELECTST-CK-RISK-02-03 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each rejected before renderer creation.
 
 ### ELECTST-SC-RISK-03 — Adversarial: the test environment weakened to produce a pass
 
@@ -189,6 +186,19 @@ weakening anything and keeps every reachable denied path under test.
 - [ ] ELECTST-CK-RISK-03-02 — Renderer console, main-process, crash, and native diagnostics are recorded without weakening a security setting to make a test pass.
 - [ ] ELECTST-CK-RISK-03-03 — Every authorized security-reducing exception is paired with documented user authority and a bounded runtime test.
 - [ ] ELECTST-CK-RISK-03-04 — Every explicitly set `webPreferences` key has separate pinned-default and runtime cases rather than one generic secure-window assertion.
+
+### ELECTST-SC-RISK-04 — Adversarial: each activated session surface attacked on its own path
+
+An attacker reaches permissions, navigation, new windows, and webview attachment through separate paths,
+including later-created web contents and secondary sessions or partitions. The expected outcome attacks each
+path independently and proves the rejection happens before the child or guest is created.
+
+#### Checklist
+
+- [ ] ELECTST-CK-RISK-04-01 — `setPermissionCheckHandler` and `setPermissionRequestHandler` paths are exercised separately on the default session and every secondary session or partition, with varied requesting and embedding origins and frame facts, asserting default denial.
+- [ ] ELECTST-CK-RISK-04-02 — Allowed and denied main-frame, subframe, and redirect navigation is attempted through `will-navigate`, `will-frame-navigate`, and `will-redirect`, including on later-created web contents.
+- [ ] ELECTST-CK-RISK-04-03 — A new-window request from a later-created web contents, including one backed by a secondary session or partition, is rejected at `setWindowOpenHandler` before the child is created.
+- [ ] ELECTST-CK-RISK-04-04 — Webview attachment with a disallowed URL, an unsafe preload, unsafe `webPreferences`, and a disallowed requested partition is each rejected at `will-attach-webview` before the guest is created.
 
 ## Overall
 
