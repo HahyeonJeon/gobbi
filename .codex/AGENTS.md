@@ -73,8 +73,15 @@ repo-local and are not installed as plugin components.
 
 Run `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-installed-cache behavior. The package has no lifecycle-hook component. If an installed cache omits a symlinked
-component, report that limitation instead of materializing the source package.
+installed-cache behavior. The package has no lifecycle-hook component.
+
+A Codex plugin install of Gobbi receives both manifests and no skills, because the Codex plugin installer
+copies a plugin into its cache without following symlinks. This is an open Codex defect —
+[openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install: support symlinks per the
+cross-agent marketplace contract" — not a packaging error here, and `check-codex-plugin-smoke.sh` reports it
+as a warning. Keep the single canonical source and never materialize it into the package to work around the
+installer. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves and
+needs no install.
 
 ## Principles
 
