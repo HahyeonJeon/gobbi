@@ -177,8 +177,6 @@ children routes to them from its own document.
 |---|---|
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
 | [`startup`](../startup/SKILL.md) | The project interview that produces confirmed design briefs. |
-| [`ux`](../ux/SKILL.md) | Designing one complete observable user outcome. |
-| [`ui`](../ui/SKILL.md) | Designing one complete observable interface outcome. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
 

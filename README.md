@@ -14,8 +14,8 @@ Gobbi lets you choose how much orchestration a task needs. It offers three modes
 ordinary assistance, Cowork for fast implementation one topic at a time, and Workflow for a durable, recorded,
 dual-system lifecycle. You pick the mode; Gobbi never picks it for you.
 
-Gobbi ships no binary and no framework. It is 30 top-level skills and 5 agent role prompts that Claude Code
-and Codex already know how to load. With their children, those skills are 85 documents.
+Gobbi ships no binary and no framework. It is 28 top-level skills and 5 agent role prompts that Claude Code
+and Codex already know how to load. With their children, those skills are 90 documents.
 
 ## Install
 
@@ -113,7 +113,7 @@ Push, pull request, merge, and cleanup are separate actions you authorize.
 | Session | `gobbi` `cowork` `workflow` |
 | Method | `ideation` `planning` `execution` `evaluation` `discussion` `delegation` `study` `startup` |
 | Record | `memory` `record` `wrap-up` `git` |
-| Craft | `typescript` `go` `react` `css` `html` `web` `desktop` `electron` `ui` `ux` |
+| Craft | `typescript` `go` `react` `css` `html` `web` `desktop` `electron` |
 | Authoring | `skill-writing` `agent-writing` `claude-plugin` `codex` |
 | Floor | `principles` |
 
