@@ -56,6 +56,9 @@ preserve completed historical records and express later changes in newer records
 | Durable sources and supporting inputs | [`materials/SKILL.md`](materials/SKILL.md) | `memory/materials/` |
 | Deferred project or feature outcomes | [`backlogs/SKILL.md`](backlogs/SKILL.md) | `memory/backlogs/` |
 
+- Each `Home` value resolves under the current project's memory root `.gobbi/projects/<project>/memory/`,
+  where `<project>` is that project's directory name under `.gobbi/projects/`. The root is tracked, and git
+  stores no empty directory, so a category directory exists only once it holds a real record.
 - Review the completed work, relevant project evidence, accepted decisions, current project state, and
   existing memory.
 - At session close, review the session's net durable change after updating the other memory records.
@@ -82,7 +85,8 @@ preserve completed historical records and express later changes in newer records
 - When no memory change was needed, confirm that the operation changed no path.
 - Reread every changed path and every related index or link.
 - Confirm that the changed content follows the loaded category skills.
-- Confirm that every changed path remains under the current project's `memory/` root.
+- Confirm that every changed path remains under the current project's
+  `.gobbi/projects/<project>/memory/` root.
 - Confirm that the memory is in its intended location and has no unexplained stale copy.
 - Repair every problem found in the affected memory files, then repeat verification until every problem is
   resolved.

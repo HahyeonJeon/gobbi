@@ -75,7 +75,7 @@ is not.
 | Property | Value |
 |---|---|
 | Session memory tree location | The location of the closing session's memory tree, read as the memorization source. |
-| Project memory root | The bounded root under which every durable memory change must land. |
+| Project memory root | The closing project's bounded `.gobbi/projects/<project>/memory/` root, under which every durable memory change must land; reject a value of any other shape. |
 | Handoff path | The exact repository-relative path the tracked handoff report is written to. |
 | Authorized finalization sequence | The ordered final actions the caller authorizes, with the authority already granted for each. |
 

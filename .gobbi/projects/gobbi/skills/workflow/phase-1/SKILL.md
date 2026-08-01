@@ -79,10 +79,13 @@ whose completion cannot be proved.
 - Resolve settings with the user, including the Execution iteration cap, role selections, required-system
   availability, narrow waiver authority, and configured Git finalization. Reuse parent defaults where the user
   accepts them.
+- Run the parent Workflow Step 1.2 bootstrap preflight before the base is captured. When the posture requires
+  it, the one user-approved bootstrap commit is the verified base; when it does not, the base is the current
+  clean head.
 - Generate the Gobbi session UUID before deriving the branch or worktree. Create exactly one isolated branch
-  and worktree from the verified base through the Git skill.
-- Verify the absolute worktree, branch, base revision, clean initial state, registration, and ignore posture
-  before writing workflow evidence.
+  and worktree from that verified base through the Git skill.
+- Verify the absolute worktree, branch, base revision, clean initial state, registration, and the ignore
+  posture [Git](../../git/SKILL.md) Step 2.1 defines, before writing workflow evidence.
 - Create the parent-owned evidence root and write `configuration.md` with the UUID, resolved settings,
   repository, base revision, branch, absolute worktree, runtime system, and creation checks.
 - Verify the initial TODO route, evidence directories, and Configuration receipt against the parent Workflow

@@ -107,18 +107,28 @@ P3 · Hand-off
   defaults to three total passes per task, role selections, Git finalization, required-system availability,
   and any narrow waiver authority.
 - Generate a Gobbi session UUID before deriving its branch or worktree. Workflow owns its Git session contract
-  and states it as four properties for the [Git skill](../git/SKILL.md):
+  and states it as five properties for the [Git skill](../git/SKILL.md):
 
 | Contract property | Where Workflow gets it |
 |---|---|
 | Proved identity | The session UUID generated in this step and recorded in `configuration.md`, checked against the branch name and every commit trailer. |
-| Immutable base commit | The base revision resolved with the user in this step and recorded in `configuration.md`. It never moves afterward. |
+| Immutable base commit | The base revision resolved with the user in this step and recorded in `configuration.md`, which is the bootstrap commit when the preflight below creates one. It never moves afterward. |
 | Isolated worktree outside the main checkout | For a fresh session, the intended path derived from the session branch, resolving outside the main checkout with nothing registered there or to that branch. For a recovered session, the path already registered to that exact branch. |
 | Declared publication intent | The Git finalization resolved with the user in this step and recorded in `configuration.md`. Phase 3 performs only what it authorizes. |
+| Required layout | The canonical `.gobbi/` paths, their tracked-or-ignored states, and the ignore-rule content that achieves them, defined by [Gobbi](../gobbi/SKILL.md) Step 1.1 and resolved for this repository's `<project>`. |
 
+- Bootstrap the required layout before the base is captured. Resolve and validate `<project>` through the
+  [Gobbi](../gobbi/SKILL.md) Step 1.1 resolver, require a clean current checkout, and let the Git operation
+  verify the posture and stop on the conditions it names.
+- When the posture is already correct, create nothing, commit nothing, and leave the main checkout unchanged.
+  Otherwise create the required directories, write `.gobbi/.gitignore`, and obtain the user's explicit
+  approval for exactly one bootstrap commit of those paths on the current branch. That commit's clean head is
+  the immutable base commit; stop without that approval.
+- The bootstrap is the only tracked write outside the session worktree. It covers only the required layout and
+  its ignore file, happens at most once per repository, and never writes a repository's root `.gitignore`.
 - Create and verify one isolated session branch and worktree from that contract. For a fresh session, the Git
   operation proves the intended path is free, creates it, and returns the registered worktree that completes
-  the contract before any write.
+  the contract before any other write.
 - Create the workflow evidence root at
   `{worktree}/.gobbi/projects/{project}/sessions/{date}-{gobbi-session-id}/`. Write `configuration.md` there
   with the UUID, resolved settings, repository, base revision, branch, absolute worktree, runtime system, and

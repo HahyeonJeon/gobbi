@@ -77,7 +77,8 @@ For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
 | Leaf | exact session branch |
 | Source | the absolute normalized path the caller's contract supplies as its registered worktree |
-| Ignore check | `git check-ignore -q .gobbi/projects/<project>/worktrees/` |
+| Ignore check | `git check-ignore --no-index -v .gobbi/projects/<project>/worktrees`, with no trailing slash and only after that directory exists |
+| Project memory root | `.gobbi/projects/<project>/memory/`, tracked; git must never ignore it |
 | Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
 
 ## Base branch and commit

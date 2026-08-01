@@ -32,8 +32,10 @@ separate user-called judgment, never a substitute for stage quality.
 
 ## Rules
 
-- **MUST establish one verified isolated Cowork worktree before the first tracked edit.** Use the fully
-  expanded worktree path for every write and preserve the main checkout.
+- **MUST establish one verified isolated Cowork worktree before the first tracked edit, except for the one
+  user-approved commit that bootstraps the required layout and its ignore file before the base is captured.**
+  Use the fully expanded worktree path for every write after that commit and change nothing else in the main
+  checkout.
 - **MUST let the manager select and report Direct, Light, or Structured delivery while the user owns every
   material decision.** Changed evidence or a material user decision reruns topic routing.
 - **MUST apply the canonical Ideation and Planning skills whenever their optional stages are selected.** Their
@@ -54,22 +56,33 @@ separate user-called judgment, never a substitute for stage quality.
 #### 1.1 Supply the Git contract and create or recover the worktree
 
 - Enter only after Gobbi records the user's Cowork selection. Cowork owns its Git session contract and states
-  it as four properties for the [Git operation](../git/SKILL.md):
+  it as five properties for the [Git operation](../git/SKILL.md):
 
 | Contract property | Where Cowork gets it |
 |---|---|
 | Proved identity | The Gobbi UUID locked in this conversation, checked against the session-branch name and the provenance trailer of every Cowork commit. |
-| Immutable base commit | The clean head the manager inspects and the user confirms before the worktree exists. It never moves afterward. |
+| Immutable base commit | The clean head the manager inspects and the user confirms before the worktree exists, which is the bootstrap commit when the preflight below creates one. It never moves afterward. |
 | Isolated worktree outside the main checkout | For a fresh session, the intended path derived from the session branch, resolving outside the main checkout with nothing registered there or to that branch. For a recovery, the path the user names, already registered to that exact branch. |
 | Declared publication intent | Local retention. Push, pull request, merge, and cleanup happen only through a separate explicit Git operation with current user authority. |
+| Required layout | The canonical `.gobbi/` paths, their tracked-or-ignored states, and the ignore-rule content that achieves them, defined by [Gobbi](../gobbi/SKILL.md) Step 1.1 and resolved for this repository's `<project>`. |
 
+- Bootstrap the required layout before the base is captured. Resolve and validate `<project>` through the
+  [Gobbi](../gobbi/SKILL.md) Step 1.1 resolver, require a clean current checkout, and let the Git operation
+  verify the posture and stop on the conditions it names.
+- When the posture is already correct, create nothing, commit nothing, and leave the main checkout unchanged.
+  Otherwise create the required directories, write `.gobbi/.gitignore`, and obtain the user's explicit
+  approval for exactly one bootstrap commit of those paths on the current branch. That commit's clean head is
+  the immutable base commit; stop without that approval.
+- The bootstrap is the only tracked write outside the session worktree. It covers only the required layout and
+  its ignore file, happens at most once per repository, and never writes a repository's root `.gitignore`.
 - Supply that contract in its matching lifecycle state, then create one isolated branch and worktree before
-  any tracked edit, or recover only the branch and worktree the user explicitly names. For a fresh session,
-  the Git operation proves the intended path is free, creates it, and returns the registered worktree that
-  completes the contract.
+  any other tracked edit, or recover only the branch and worktree the user explicitly names. For a fresh
+  session, the Git operation proves the intended path is free, creates it, and returns the registered worktree
+  that completes the contract.
 - Verify and report the UUID, repository, base branch and commit, session branch, absolute worktree, head,
-  clean status, unchanged main checkout, and recovery point. Stop with exact evidence when identity,
-  isolation, provenance, base, writer ownership, or recovery cannot be proved.
+  clean status, the main checkout unchanged apart from an approved bootstrap commit, and recovery point. Stop
+  with exact evidence when identity, isolation, provenance, base, writer ownership, or recovery cannot be
+  proved.
 
 #### 1.2 Establish the Cowork session locations
 

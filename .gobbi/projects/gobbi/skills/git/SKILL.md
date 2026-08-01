@@ -11,10 +11,11 @@ Use this skill for the Git lifecycle of one session. It creates or recovers one 
 keeps an ordered local history of focused verified commits, and either retains that recovery path or performs
 only the external and destructive actions the supplied contract and the user authorize.
 
-The caller supplies one session contract with four properties: proved identity, an immutable base commit, a
-registered worktree outside the main checkout, and declared publication intent. The manager owns session-level
-setup, acceptance, publication, merge, cleanup, and recovery; a leader or executor owns only the writes and
-local commit granted by one assignment. [`conventions.md`](conventions.md) owns deterministic formats.
+The caller supplies one session contract with five properties: proved identity, an immutable base commit, a
+registered worktree outside the main checkout, declared publication intent, and the required repository layout.
+The manager owns session-level setup, acceptance, publication, merge, cleanup, and recovery; a leader or
+executor owns only the writes and local commit granted by one assignment.
+[`conventions.md`](conventions.md) owns deterministic formats.
 
 ## Principles
 
@@ -50,8 +51,10 @@ Generate the UUID before deriving the branch or worktree, and never create a per
 ### G-2 — Validate every writer root
 
 **MUST resolve every write against the validated fully expanded worktree path and keep one ordered writer
-chain.** Use `git -C <absolute-worktree>` for Git commands, revalidate after context boundaries, and never use
-`git stash` to compare or preserve work.
+chain, allowing one user-approved bootstrap of the contract's required layout and its ignore file in the main
+checkout before the session worktree exists.** Use `git -C <absolute-worktree>` for Git commands, revalidate
+after context boundaries, never use `git stash` to compare or preserve work, and commit that bootstrap before
+capturing the immutable base commit.
 
 <a id="g-3"></a>
 ### G-3 — Commit one verified assignment
@@ -88,7 +91,7 @@ pull-request head.
 
 #### 1.1 Validate the supplied session contract
 
-- Require exactly one session contract from the caller before any write. The contract must carry these four
+- Require exactly one session contract from the caller before any write. The contract must carry these five
   properties, each provable from direct evidence. Where the caller obtains each property is outside this
   operation:
 
@@ -98,7 +101,10 @@ pull-request head.
 | Immutable base commit | One commit hash the caller confirmed before the branch existed, still resolvable in this repository, and unchanged for the whole session. |
 | Isolated worktree outside the main checkout | One absolute path resolving outside the main checkout, in whichever lifecycle state the table below matches. |
 | Declared publication intent | One named external outcome — local retention, push, or pull request, with any issue action stated separately — declared before work and bounding every later external action. |
+| Required layout | The set of repository paths that must exist, each path's required tracked-or-ignored state, and the ignore-rule content that achieves that state. The caller supplies all three; this operation verifies them and invents no path and no rule. |
 
+- Outside the main checkout means the path is not the main worktree root and the required layout keeps it
+  ignored there, so the main checkout never tracks it even when it sits under the repository root.
 - The worktree property has two lifecycle states, because a session cannot prove a registered worktree before
   that worktree exists. Every contract is in exactly one state:
 
@@ -137,6 +143,28 @@ pull-request head.
 - Enter this step only with a fresh contract, and continue only after the caller declares its publication
   intent. Inspect the current checkout, branch, head, status, configured worktree root, ignore rule, existing
   worktrees, and target branch/path before mutation.
+- Verify the contract's required layout before recommending a base or creating anything. Create every required
+  directory first, then check each path with `git check-ignore --no-index -v <path>` and compare the result
+  against that path's required tracked-or-ignored state.
+- Run the check in that exact form. Create before checking, because a directory-only pattern cannot match a
+  path that does not exist on disk; pass `--no-index`, because the plain form silently skips an already-tracked
+  path and reports it as not ignored; and write the path with no trailing slash, because a trailing slash
+  changes which pattern matches an absent path.
+- Stop when an ancestor ignore file ignores `.gobbi/`, and name the exact file and line `git check-ignore -v`
+  reports. A nested `.gobbi/.gitignore` is never read and can re-include nothing, so this is not repairable
+  from inside `.gobbi/`.
+- Stop when a file is already tracked under a path the layout requires to be ignored, and list every such path.
+  Detect it with `git ls-files -- <path>`, which must print nothing. `git check-ignore` cannot detect this
+  case, because it answers whether a path would be ignored, not whether it is tracked. A file committed before
+  the ignore rule existed reports as ignored and stays tracked. An ignore rule does not untrack a file, and
+  `git rm --cached` is never automatic.
+- Stop when a conflicting or partial ignore file already exists at the layout's path, report its exact bytes,
+  and obtain the user's disposition. Never overwrite or append to that file.
+- Stop when a required path component exists as a file or a symbolic link instead of a directory, and name the
+  path and what it is.
+- Repair any remaining mismatch only through the bootstrap [`G-2`](#g-2) allows: one user-approved write of the
+  required layout and its ignore file in the main checkout, committed before the base commit is captured. Rerun
+  the check after that commit.
 - Recommend the current clean branch and head as the base. Ask the user when the checkout is dirty,
   detached, ambiguous, or conflicts with an existing target; do not silently exclude uncommitted work or
   invent `main`, `master`, `develop`, or a remote default.

@@ -76,13 +76,47 @@ are not skill references.
 
 ### Phase 1 — Load the System and Route the Selected Mode
 
-#### 1.1 Establish the entry context and active runtime
+#### 1.1 Establish the entry context, runtime, and canonical layout
 
 - Take the entry trigger — session start, resume, `/clear`, rewind, or runtime compaction — and the
   repository's governance source as the input.
 - Confirm the governance source, the active runtime, and the trigger, then resolve this canonical skill
   directory through the active entrypoint.
 - Record the canonical source, runtime, trigger, and unchanged repository preimage. Gobbi has written nothing.
+- Resolve the project key `<project>` with:
+
+```text
+basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
+```
+
+- Use `--git-common-dir` because it names the shared repository directory. Every Cowork and Workflow session
+  runs inside a session worktree whose own top level is the session branch name, so any form that reads the
+  current worktree's root yields the branch instead of the project. Validate the key against
+  `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$` at up to 64 characters, and ask the user before deriving any path when
+  it does not match.
+- Gobbi defines these paths:
+
+```text
+.gobbi/                          tracked
+├── .gitignore                   tracked
+└── projects/<project>/          tracked
+    ├── memory/                  tracked   the project memory root
+    ├── sessions/                ignored
+    └── worktrees/               ignored
+```
+
+- `tracked` means git must not ignore the path. `ignored` means git must ignore the directory and every
+  descendant. Git stores no empty directory, so a tracked directory holds nothing until its first real record.
+- `.gobbi/.gitignore` is the only file that carries Gobbi's ignore rules, and Gobbi never writes a repository's
+  root `.gitignore`. Its canonical content is one comment line plus `projects/*/sessions/` and
+  `projects/*/worktrees/`. The middle slash anchors each pattern; a slashless pattern such as `sessions/`
+  matches at any depth and would ignore durable memory under `memory/design/sessions/`.
+- Bootstrap creates the namespace roots only: never a `memory/` category directory, never a session directory,
+  and no marker file under `memory/`. An empty directory asserts a record that does not exist
+  ([`record`](../record/SKILL.md) Step 2.2). `rules/` is not bootstrapped, because every agent contract already
+  reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
+- The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
+  first record needs it, so a missing directory is not a broken view and is not the failure below.
 - Stop and name the exact broken element when the resolved view is missing, partial, or inconsistent. Repair it
   by restoring the runtime's Gobbi package or entrypoint from its canonical source; the repository's governing
   instructions own any repository-local repair command, and no step continues against a partial view.
