@@ -14,10 +14,14 @@ Gobbi lets you choose how much orchestration a task needs. It offers three modes
 ordinary assistance, Cowork for fast implementation one topic at a time, and Workflow for a durable, recorded,
 dual-system lifecycle. You pick the mode; Gobbi never picks it for you.
 
-Gobbi ships no binary and no framework. It is 31 skills and 5 agent role prompts that Claude Code and Codex
-already know how to load.
+Gobbi ships no binary and no framework. It is 30 top-level skills and 5 agent role prompts that Claude Code
+and Codex already know how to load. With their children, those skills are 85 documents.
 
 ## Install
+
+Both marketplace commands below resolve `HahyeonJeon/gobbi` to the repository's default branch. That branch
+serves version 1.0.0 only once this release is merged into it. Until then an install delivers whatever version
+the default branch currently holds.
 
 ### Claude Code
 
@@ -45,15 +49,20 @@ an open Codex defect — [openai/codex#24770](https://github.com/openai/codex/is
 support symlinks per the cross-agent marketplace contract". Gobbi keeps a single canonical source and will not
 copy it into the package to work around an installer bug.
 
-Codex skill discovery does follow symlinks, so until the defect is fixed, either work inside a clone of this
-repository, where `.agents/skills/` already resolves, or copy the skills user-wide:
+Codex skill discovery does follow symlinks, so until the defect is fixed, clone this repository and link its
+skills into your own project:
 
 ```bash
-mkdir -p ~/.agents/skills
-cp -R /path/to/gobbi/.gobbi/projects/gobbi/skills/* ~/.agents/skills/
+mkdir -p .agents/skills
+ln -s /path/to/gobbi/.gobbi/projects/gobbi/skills/* .agents/skills/
 ```
 
-Working inside a clone needs no install at all. This repository carries its own entry contracts at
+Link, do not copy. The skills reach outside their own directory — the entry skill loads
+`../../agents/manager.md` — and only a link keeps those paths resolving. A `git pull` in the clone then
+updates every linked skill. `ln -s` refuses any name that already exists and prints it, so nothing of yours is
+replaced. Use `~/.agents/skills` instead to install Gobbi for every project in one shared namespace.
+
+Working inside the clone itself needs no install at all. This repository carries its own entry contracts at
 [.claude/CLAUDE.md](.claude/CLAUDE.md) and [AGENTS.md](AGENTS.md).
 
 ## Start a session
@@ -104,7 +113,7 @@ Push, pull request, merge, and cleanup are separate actions you authorize.
 | Session | `gobbi` `cowork` `workflow` |
 | Method | `ideation` `planning` `execution` `evaluation` `discussion` `delegation` `study` `startup` |
 | Record | `memory` `record` `wrap-up` `git` |
-| Craft | `python` `typescript` `go` `react` `css` `html` `web` `desktop` `electron` `ui` `ux` |
+| Craft | `typescript` `go` `react` `css` `html` `web` `desktop` `electron` `ui` `ux` |
 | Authoring | `skill-writing` `agent-writing` `claude-plugin` `codex` |
 | Floor | `principles` |
 

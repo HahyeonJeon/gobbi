@@ -116,12 +116,10 @@ are not skill references.
 | **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | No automatic dual-system creation, and one fresh Claude-and-Codex round for each explicit user `evaluate` call over the frozen requested subject. |
 | **Workflow** | The user wants the durable five-step, dual-system, recorded workflow. | Retained independent Claude and Codex drafts before every EVALUATION, and two fresh isolated evaluators for each EVALUATION. |
 
-- Present the commitment column with the selection so the user chooses a known quality bar. Workflow's retained
-  drafts carry frozen inputs, reciprocal cross-reviews, active-runtime synthesis, and user resolution before
-  EVALUATION, and every Workflow EVALUATION covers Project, Structure, Performance, Aesthetics, Usage,
-  Consistency, Risk, and Overall.
-- Name the commitment only. [`cowork`](../cowork/SKILL.md) and [`workflow`](../workflow/SKILL.md) own how their
-  mode produces it, and the entry never runs, schedules, or repeats an evaluation.
+- Present the commitment column with the selection so the user chooses a known quality bar. State what each
+  mode guarantees, not how it produces that guarantee.
+- Name the commitment only. [`cowork`](../cowork/SKILL.md) and [`workflow`](../workflow/SKILL.md) own the
+  mechanism behind their own commitment, and the entry never runs, schedules, or repeats an evaluation.
 - A request may support a recommendation, but even explicit words such as "use Cowork" do not replace the
   selection control on a fresh entry.
 - At a context boundary, keep the established selection while its mode evidence and identity still validate.
@@ -147,8 +145,9 @@ are not skill references.
 
 ## References
 
-This is the complete map of the canonical Gobbi skill system. Step 1.2 loads the entry floor; every other
-skill loads from its own trigger, so this map shows what exists rather than what is loaded.
+This is the complete map of the canonical Gobbi skill roots. Step 1.2 loads the entry floor; every other
+skill loads from its own trigger, so this map shows what exists rather than what is loaded. A root that has
+children routes to them from its own document.
 
 ### Entry floor
 
@@ -164,10 +163,11 @@ skill loads from its own trigger, so this map shows what exists rather than what
 | [`memory`](../memory/SKILL.md) | Durable project memory. |
 | [`git`](../git/SKILL.md) | Branch, worktree, commit, publication, merge, and recovery. |
 
-### Mode owners
+### Entry and mode owners
 
 | Skill | Owns |
 |---|---|
+| [`gobbi`](SKILL.md) | This entry: the system load, the mode selection, and the handoff. |
 | [`cowork`](../cowork/SKILL.md) | Cowork, with its own Git contract, evaluation policy, and session locations. |
 | [`workflow`](../workflow/SKILL.md) | Workflow, with its checkpointed phases, evaluation policy, and evidence layout. |
 
@@ -202,7 +202,6 @@ Each of these roots covers work in its language or platform and routes the task 
 | [`css`](../css/SKILL.md) | CSS styling |
 | [`typescript`](../typescript/SKILL.md) | TypeScript |
 | [`react`](../react/SKILL.md) | React |
-| [`python`](../python/SKILL.md) | Python |
 | [`go`](../go/SKILL.md) | Go |
 | [`electron`](../electron/SKILL.md) | Electron |
 | [`desktop`](../desktop/SKILL.md) | Installable desktop applications |
