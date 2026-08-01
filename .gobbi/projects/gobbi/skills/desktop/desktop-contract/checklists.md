@@ -127,7 +127,8 @@ state with an accessible alternative; a silent no-op is the failure.
 #### Checklist
 
 - [ ] DTCONT-CK-USAGE-02-01 — Every native integration states its behavior both when the capability is unavailable on the target and when a required permission or entitlement is refused.
-- [ ] DTCONT-CK-USAGE-02-02 — Every native effect states whether it is visible, cancellable, and reversible, and names its accessible alternative.
+- [ ] DTCONT-CK-USAGE-02-02 — Every native effect states whether it is visible, cancellable, and reversible.
+- [ ] DTCONT-CK-USAGE-02-03 — Every native effect names its accessible alternative.
 
 ## Consistency
 

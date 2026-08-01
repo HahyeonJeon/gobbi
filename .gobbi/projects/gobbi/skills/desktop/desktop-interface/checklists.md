@@ -176,7 +176,8 @@ evidence demand the Rule does not make are failures.
 - [ ] DTINTF-CK-RISK-01-01 — Every design claim names the evidence class it rests on.
 - [ ] DTINTF-CK-RISK-01-02 — Every material choice that is novel, uncertain, exclusionary, consequential, security- or compatibility-sensitive, hard to reverse, or carries material risk of harm was accepted only after new representative-user evidence.
 - [ ] DTINTF-CK-RISK-01-03 — A material choice matching none of those triggers is accepted on its named evidence class, without new representative-user evidence being required of it.
-- [ ] DTINTF-CK-RISK-01-04 — The evidence class is selected before the choice is decided, and the class chosen is one that could still falsify that choice.
+- [ ] DTINTF-CK-RISK-01-04 — The evidence class is selected before the choice is decided.
+- [ ] DTINTF-CK-RISK-01-05 — The evidence class chosen is one that could still falsify that choice.
 
 ### DTINTF-SC-RISK-02 — Rule violation: a claim about people rests on evidence that is not from people
 

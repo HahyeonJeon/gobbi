@@ -68,7 +68,9 @@ end to end from an installed artifact; behavior built on a partial skeleton is t
 - [ ] DTDLVR-CK-STRUCTURE-01-01 — The complete source, process, bridge, data, build, package, test, documentation, and instrumentation skeleton exists before detailed behavior.
 - [ ] DTDLVR-CK-STRUCTURE-01-02 — Each configuration and type boundary sits with the process it governs.
 - [ ] DTDLVR-CK-STRUCTURE-01-03 — One smallest real path runs from a supported entry through the observable interface and narrow bridge to its authoritative effect, truthful completion, and applicable persisted state.
-- [ ] DTDLVR-CK-STRUCTURE-01-04 — That path is packaged, installed, and exercised on one explicitly named target without a development-only assumption.
+- [ ] DTDLVR-CK-STRUCTURE-01-04 — That path is packaged for one explicitly named target.
+- [ ] DTDLVR-CK-STRUCTURE-01-05 — The packaged path is installed on that named target.
+- [ ] DTDLVR-CK-STRUCTURE-01-06 — The installed path is exercised on that named target with no development-only assumption.
 
 ### DTDLVR-SC-STRUCTURE-02 — Rule violation: the coordinator decided a routed policy itself
 
@@ -177,8 +179,9 @@ target's result standing in for it is the failure.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-CONSISTENCY-02-01 — Every retained target claim has matching installed-artifact evidence in the claim matrix, and every target that cannot be exercised is marked unproved and dropped from the claim.
-- [ ] DTDLVR-CK-CONSISTENCY-02-02 — No target's result substitutes for another target's proof.
+- [ ] DTDLVR-CK-CONSISTENCY-02-01 — Every retained target claim has matching installed-artifact evidence in the claim matrix.
+- [ ] DTDLVR-CK-CONSISTENCY-02-02 — Every target that cannot be exercised and every transition whose predecessor is unavailable are marked unproved and dropped from the supported claim.
+- [ ] DTDLVR-CK-CONSISTENCY-02-03 — No target's result substitutes for another target's proof.
 
 ### DTDLVR-SC-CONSISTENCY-03 — Edge case: the accepted stack is challenged
 
@@ -217,7 +220,7 @@ leaves the application or its data unusable is the failure.
 - [ ] DTDLVR-CK-RISK-02-01 — Each supported transition is rehearsed through update discovery, download, installation, migration, launch, ordinary use, and relaunch with realistic data.
 - [ ] DTDLVR-CK-RISK-02-02 — An incompatible version refuses explicitly while preserving recoverable data.
 - [ ] DTDLVR-CK-RISK-02-03 — A failed update preserves a usable application and data or enters the declared recovery path.
-- [ ] DTDLVR-CK-RISK-02-04 — An unavailable predecessor leaves its transition unproved and outside the supported claim.
+- Also applies: DTDLVR-CK-CONSISTENCY-02-02 (an unprovable target or transition is marked unproved and dropped from the claim).
 
 ### DTDLVR-SC-RISK-03 — Adversarial: a passing gate presented as authority to publish
 
@@ -253,5 +256,6 @@ whole-outcome check; a result inherited across a changed subject is the failure.
 #### Checklist
 
 - [ ] DTDLVR-CK-OVERALL-02-01 — The subject routed to Evaluation is the exact frozen candidate, artifacts, matrices, records, and trace.
-- [ ] DTDLVR-CK-OVERALL-02-02 — Every repair is made only after its disposition is authorized, and each repair repeats the affected proof plus every dependent whole-outcome check.
-- [ ] DTDLVR-CK-OVERALL-02-03 — No evaluation or proof result carries forward across a material change to the candidate.
+- [ ] DTDLVR-CK-OVERALL-02-02 — Every repair is made only after its disposition is authorized.
+- [ ] DTDLVR-CK-OVERALL-02-03 — Every repair repeats the affected proof and every dependent whole-outcome check.
+- [ ] DTDLVR-CK-OVERALL-02-04 — No evaluation or proof result carries forward across a material change to the candidate.

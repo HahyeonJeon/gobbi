@@ -66,8 +66,9 @@ those users; a change that only considers the new version is the failure.
 
 - [ ] DTRLSE-CK-STRUCTURE-02-01 — Every persisted-data change defines forward compatibility or an explicit refusal, downgrade or round-trip behavior, and a recovery for users on an older release.
 - [ ] DTRLSE-CK-STRUCTURE-02-02 — Schema changes are additive and forward-compatible, or copy-on-upgrade is used where a risky migration could strand older releases.
-- [ ] DTRLSE-CK-STRUCTURE-02-03 — Every departure from additive evolution names the measured storage, time, or product requirement behind it and protects every affected version with an explicit refusal, downgrade behavior, and accepted recovery.
-- [ ] DTRLSE-CK-STRUCTURE-02-04 — Compatibility and recovery are chosen over a smaller migration or release burden where the two conflict.
+- [ ] DTRLSE-CK-STRUCTURE-02-03 — Every departure from additive evolution names the measured storage, time, or product requirement behind it.
+- [ ] DTRLSE-CK-STRUCTURE-02-04 — Every departure from additive evolution protects each affected version with an explicit refusal, downgrade behavior, and accepted recovery.
+- [ ] DTRLSE-CK-STRUCTURE-02-05 — Compatibility and recovery are chosen over a smaller migration or release burden where the two conflict.
 
 ## Performance
 
@@ -164,8 +165,11 @@ only on explicit user authority at that point; acting on a general approval give
 
 #### Checklist
 
-- [ ] DTRLSE-CK-RISK-01-01 — No installer, update, or store release is published, no signing identity or provider is changed, no live feed or channel is mutated, and no rollout is widened without explicit user authority at that point of action.
-- [ ] DTRLSE-CK-RISK-01-02 — Release readiness is recorded as separate from release authority.
+- [ ] DTRLSE-CK-RISK-01-01 — No installer, update, or store release is published without explicit user authority at that point of action.
+- [ ] DTRLSE-CK-RISK-01-02 — No signing identity or provider is changed without explicit user authority at that point of action.
+- [ ] DTRLSE-CK-RISK-01-03 — No live feed or channel is mutated without explicit user authority at that point of action.
+- [ ] DTRLSE-CK-RISK-01-04 — No rollout is widened without explicit user authority at that point of action.
+- [ ] DTRLSE-CK-RISK-01-05 — Release readiness is recorded as separate from release authority.
 
 ### DTRLSE-SC-RISK-02 — Edge case: a faulty release is already on people's machines
 
