@@ -37,8 +37,12 @@ and closes with findings. Any write inside the review-only classification breaks
 
 #### Checklist
 
-- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no target file is edited, no target artifact is built or created, nothing is installed into a persistent environment, no documentation or release note is updated, and nothing is published.
-- [ ] TSPKG-CK-PROJECT-02-02 — A review-only run skips every mutation step and finishes with evidence, findings, and limitations.
+- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no target file is edited.
+- [ ] TSPKG-CK-PROJECT-02-02 — Under review-only validation, no target artifact is built or created.
+- [ ] TSPKG-CK-PROJECT-02-03 — Under review-only validation, nothing is installed into a persistent environment.
+- [ ] TSPKG-CK-PROJECT-02-04 — Under review-only validation, no documentation or release note is updated.
+- [ ] TSPKG-CK-PROJECT-02-05 — Under review-only validation, nothing is published.
+- [ ] TSPKG-CK-PROJECT-02-06 — A review-only run skips every mutation step and finishes with evidence, findings, and limitations.
 
 ## Structure
 
@@ -153,9 +157,10 @@ workflow. Publishing outside that path, or without the classification, breaks th
 
 #### Checklist
 
-- [ ] TSPKG-CK-RISK-01-01 — Public API changes are classified and release authority is obtained before publishing or changing a compatibility promise.
-- [ ] TSPKG-CK-RISK-01-02 — Publication happens only through the repository's authorized release workflow.
-- [ ] TSPKG-CK-RISK-01-03 — Registry metadata and installation are verified after publication, or the work stops at a publication-ready artifact when publication is not authorized.
+- [ ] TSPKG-CK-RISK-01-01 — Public API changes are classified before publishing or changing a compatibility promise.
+- [ ] TSPKG-CK-RISK-01-02 — Release authority is obtained before publishing or changing a compatibility promise.
+- [ ] TSPKG-CK-RISK-01-03 — Publication happens only through the repository's authorized release workflow.
+- [ ] TSPKG-CK-RISK-01-04 — Registry metadata and installation are verified after publication, or the work stops at a publication-ready artifact when publication is not authorized.
 
 ### TSPKG-SC-RISK-02 — Normal case: the archive contains exactly what it should
 
@@ -179,9 +184,10 @@ result carried over from an earlier archive is the failure.
 
 #### Checklist
 
-- [ ] TSPKG-CK-OVERALL-01-01 — The archive is rebuilt and recreated from the accepted tree.
-- [ ] TSPKG-CK-OVERALL-01-02 — The repository's required package metadata, declaration, consumer, license, provenance, and vulnerability gates are re-run.
-- [ ] TSPKG-CK-OVERALL-01-03 — Every piece of evidence is bound to the exact archive digest or contents being proposed.
+- [ ] TSPKG-CK-OVERALL-01-01 — The build output is rebuilt from the accepted tree.
+- [ ] TSPKG-CK-OVERALL-01-02 — The archive is recreated from that rebuilt output.
+- [ ] TSPKG-CK-OVERALL-01-03 — The repository's required package metadata, declaration, consumer, license, provenance, and vulnerability gates are re-run.
+- [ ] TSPKG-CK-OVERALL-01-04 — Every piece of evidence is bound to the exact archive digest or contents being proposed.
 
 ### TSPKG-SC-OVERALL-02 — Expected failure: a claimed host, consumer, or gate cannot be run here
 

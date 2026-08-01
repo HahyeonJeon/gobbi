@@ -62,8 +62,9 @@ relationship it preserves and keeps inputs narrow until a real boundary widens t
 #### Checklist
 
 - [ ] TSTYPE-CK-STRUCTURE-02-01 — Every generic preserves a visible relationship among inputs, outputs, or members.
-- [ ] TSTYPE-CK-STRUCTURE-02-02 — Every type parameter carries the smallest useful constraint and is actually used.
-- [ ] TSTYPE-CK-STRUCTURE-02-03 — Input types stay narrow, and widening happens only at an intentional abstraction or public boundary.
+- [ ] TSTYPE-CK-STRUCTURE-02-02 — Every type parameter carries the smallest useful constraint.
+- [ ] TSTYPE-CK-STRUCTURE-02-03 — Every type parameter is actually used.
+- [ ] TSTYPE-CK-STRUCTURE-02-04 — Input types stay narrow, and widening happens only at an intentional abstraction or public boundary.
 
 ## Performance
 
@@ -143,9 +144,11 @@ that check breaks the Rule while the program still compiles.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-RISK-01-01 — External, decoded, and otherwise unverified data is accepted as `unknown` and parsed or narrowed before use.
-- [ ] TSTYPE-CK-RISK-01-02 — No type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
-- [ ] TSTYPE-CK-RISK-01-03 — Built-in control-flow narrowing, user-defined guards, and parsers are used instead of assertions, and validated domain values come from one boundary adapter.
+- [ ] TSTYPE-CK-RISK-01-01 — External, decoded, and otherwise unverified data is accepted as `unknown`.
+- [ ] TSTYPE-CK-RISK-01-02 — External, decoded, and otherwise unverified data is parsed or narrowed before use.
+- [ ] TSTYPE-CK-RISK-01-03 — No type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
+- [ ] TSTYPE-CK-RISK-01-04 — Built-in control-flow narrowing, user-defined guards, and parsers are used instead of assertions.
+- [ ] TSTYPE-CK-RISK-01-05 — Validated domain values come from one boundary adapter.
 
 ### TSTYPE-SC-RISK-02 — Rule violation: `any` where uncertainty could have been preserved
 

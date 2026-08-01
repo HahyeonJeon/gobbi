@@ -50,7 +50,9 @@ canonical owner. Any of those three widenings breaks the Rule on its own.
 
 - [ ] TSDEV-CK-PROJECT-03-01 — No file outside the authorized affected set is changed.
 - [ ] TSDEV-CK-PROJECT-03-02 — No local change is turned into an unapproved migration.
-- [ ] TSDEV-CK-PROJECT-03-03 — No generated mirror is edited directly; the canonical owner is edited and its owning sync mechanism is run.
+- [ ] TSDEV-CK-PROJECT-03-03 — No generated mirror is edited directly.
+- [ ] TSDEV-CK-PROJECT-03-04 — The canonical owner is edited instead of its generated mirror.
+- [ ] TSDEV-CK-PROJECT-03-05 — The sync mechanism owning the generated mirror is run after the canonical owner is edited.
 
 ## Structure
 
@@ -116,8 +118,9 @@ preserves behavior outside scope, and proves the consumer path from the artifact
 #### Checklist
 
 - [ ] TSDEV-CK-USAGE-01-01 — Each slice updates its affected callers, tests, types, and documentation together with the implementation.
-- [ ] TSDEV-CK-USAGE-01-02 — Behavior outside scope is preserved, and no compatibility path is removed without authorization.
-- [ ] TSDEV-CK-USAGE-01-03 — The built or packed artifact is used wherever source-checkout success cannot prove the consumer path.
+- [ ] TSDEV-CK-USAGE-01-02 — Behavior outside scope is preserved.
+- [ ] TSDEV-CK-USAGE-01-03 — No compatibility path is removed without authorization.
+- [ ] TSDEV-CK-USAGE-01-04 — The built or packed artifact is used wherever source-checkout success cannot prove the consumer path.
 
 ### TSDEV-SC-USAGE-02 — Expected failure: a required gate, host, or tool is unavailable
 
@@ -141,8 +144,9 @@ whose triggers apply, and compares the design with prior art. Inference in place
 #### Checklist
 
 - [ ] TSDEV-CK-CONSISTENCY-01-01 — The effective compiler and runtime contracts are inspected rather than inferred from file extensions.
-- [ ] TSDEV-CK-CONSISTENCY-01-02 — Every TypeScript child whose trigger applies is recorded and loaded before the decisions it owns.
-- [ ] TSDEV-CK-CONSISTENCY-01-03 — The proposed surface is compared with project prior art and one credible alternative.
+- [ ] TSDEV-CK-CONSISTENCY-01-02 — Every TypeScript child whose trigger applies is recorded.
+- [ ] TSDEV-CK-CONSISTENCY-01-03 — Every TypeScript child whose trigger applies is loaded before the decisions it owns.
+- [ ] TSDEV-CK-CONSISTENCY-01-04 — The proposed surface is compared with project prior art and one credible alternative.
 
 ### TSDEV-SC-CONSISTENCY-02 — Poor quality: scope and affected files are never traced back
 
@@ -189,9 +193,10 @@ to each success criterion. Evidence collected before the final tree is the failu
 
 #### Checklist
 
-- [ ] TSDEV-CK-OVERALL-01-01 — A defect is reproduced before it is changed, and current observable behavior is captured for feature work.
-- [ ] TSDEV-CK-OVERALL-01-02 — The original defect reproducer is re-run last when one exists.
-- [ ] TSDEV-CK-OVERALL-01-03 — Fresh evidence from the final tree is mapped to every success criterion.
+- [ ] TSDEV-CK-OVERALL-01-01 — A defect is reproduced before it is changed.
+- [ ] TSDEV-CK-OVERALL-01-02 — Current observable behavior is captured for feature work.
+- [ ] TSDEV-CK-OVERALL-01-03 — The original defect reproducer is re-run last when one exists.
+- [ ] TSDEV-CK-OVERALL-01-04 — Fresh evidence from the final tree is mapped to every success criterion.
 
 ### TSDEV-SC-OVERALL-02 — Adversarial: gates made to pass instead of made to hold
 

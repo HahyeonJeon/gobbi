@@ -28,7 +28,8 @@ its place.
 
 - [ ] TSASYNC-CK-PROJECT-01-01 — Every started promise is awaited, returned, aggregated, or explicitly caught so its rejection has an observable owner.
 - [ ] TSASYNC-CK-PROJECT-01-02 — Detached background work is used only where structured ownership through `await`, a returned promise, or an aggregate cannot carry the required lifetime.
-- [ ] TSASYNC-CK-PROJECT-01-03 — Every departure from these preferences names the host or framework lifecycle owner it relies on and keeps that owner's ownership and cleanup evidence explicit.
+- [ ] TSASYNC-CK-PROJECT-01-03 — Every departure from these preferences names the host or framework lifecycle owner it relies on.
+- [ ] TSASYNC-CK-PROJECT-01-04 — Every departure from these preferences keeps that owner's ownership and cleanup evidence explicit.
 
 ### TSASYNC-SC-PROJECT-02 — Expected failure: the supported runtime lacks the mechanism a preference names
 

@@ -26,9 +26,10 @@ a foreign concern here, or applying a baseline over a settled convention, is the
 
 #### Checklist
 
-- [ ] TSCONV-CK-PROJECT-01-01 — Every decided choice is a name, file, export, import, documentation, comment, or formatting choice, and every type-semantics, runtime-architecture, and compiler-configuration question is routed to its owner.
-- [ ] TSCONV-CK-PROJECT-01-02 — The project's existing convention is followed wherever it is coherent and tool-enforced.
-- [ ] TSCONV-CK-PROJECT-01-03 — A baseline preference from this skill is applied only where the project has not settled the choice.
+- [ ] TSCONV-CK-PROJECT-01-01 — Every decided choice is a name, file, export, import, documentation, comment, or formatting choice.
+- [ ] TSCONV-CK-PROJECT-01-02 — Every type-semantics, runtime-architecture, and compiler-configuration question is routed to its owner.
+- [ ] TSCONV-CK-PROJECT-01-03 — The project's existing convention is followed wherever it is coherent and tool-enforced.
+- [ ] TSCONV-CK-PROJECT-01-04 — A baseline preference from this skill is applied only where the project has not settled the choice.
 
 ### TSCONV-SC-PROJECT-02 — Rule violation: an established convention changes without a migration
 
@@ -107,7 +108,8 @@ project's readers and tools expect. Documentation that stops at what the type al
 
 - [ ] TSCONV-CK-USAGE-01-01 — Every public API is documented at the level its consumers need, including the behavior, failure, and lifecycle obligations its types cannot express.
 - [ ] TSCONV-CK-USAGE-01-02 — TSDoc-style documentation is used where the repository publishes generated API docs, and ordinary prose comments carry local intent.
-- [ ] TSCONV-CK-USAGE-01-03 — Named exports are used where they improve searchability and refactoring, and a project's deliberate default-export convention is followed where it is already consistent.
+- [ ] TSCONV-CK-USAGE-01-03 — Named exports are used where they improve searchability and refactoring.
+- [ ] TSCONV-CK-USAGE-01-04 — A project's deliberate default-export convention is followed where it is already consistent.
 
 ### TSCONV-SC-USAGE-02 — Adversarial: documentation written to satisfy a coverage check
 
@@ -132,7 +134,8 @@ or departing without a scoped and recorded choice, is the failure.
 
 - [ ] TSCONV-CK-CONSISTENCY-01-01 — New code follows the file, export, import, documentation, and formatting convention observed in neighboring source.
 - [ ] TSCONV-CK-CONSISTENCY-01-02 — No second casing, export, layout, import-order, or documentation style is introduced beside a consistent existing one.
-- [ ] TSCONV-CK-CONSISTENCY-01-03 — Every deliberate departure is consistent within its scope and recorded.
+- [ ] TSCONV-CK-CONSISTENCY-01-03 — Every deliberate departure is consistent within its scope.
+- [ ] TSCONV-CK-CONSISTENCY-01-04 — Every deliberate departure is recorded.
 
 ### TSCONV-SC-CONSISTENCY-02 — Rule violation: a type-only binding imported as a runtime binding
 
@@ -169,5 +172,6 @@ records it. Turning the local decision into a project-wide scheme is the observa
 
 #### Checklist
 
-- [ ] TSCONV-CK-OVERALL-01-01 — Where the project has no settled convention, one baseline choice is applied consistently across the change and recorded.
-- [ ] TSCONV-CK-OVERALL-01-02 — No project-wide naming, layout, export, import, or documentation scheme is introduced to satisfy a local change.
+- [ ] TSCONV-CK-OVERALL-01-01 — Where the project has no settled convention, one baseline choice is applied consistently across the change.
+- [ ] TSCONV-CK-OVERALL-01-02 — Where the project has no settled convention, the baseline choice that was applied is recorded.
+- [ ] TSCONV-CK-OVERALL-01-03 — No project-wide naming, layout, export, import, or documentation scheme is introduced to satisfy a local change.

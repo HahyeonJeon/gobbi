@@ -62,8 +62,9 @@ the single-file safety check where a non-whole-program tool ships the JavaScript
 
 #### Checklist
 
-- [ ] TSTOOL-CK-STRUCTURE-02-01 — `declaration`, `declarationMap`, and `composite` are enabled only where the delivered artifact needs them, and `composite` carries the `rootDir` it requires.
-- [ ] TSTOOL-CK-STRUCTURE-02-02 — `isolatedModules` is enabled wherever anything other than a whole-program compiler produces the shipped JavaScript, so single-file-hostile constructs such as a `const enum` or a type re-exported without `export type` are reported.
+- [ ] TSTOOL-CK-STRUCTURE-02-01 — `declaration`, `declarationMap`, and `composite` are enabled only where the delivered artifact needs them.
+- [ ] TSTOOL-CK-STRUCTURE-02-02 — `composite` carries the `rootDir` it requires.
+- [ ] TSTOOL-CK-STRUCTURE-02-03 — `isolatedModules` is enabled wherever anything other than a whole-program compiler produces the shipped JavaScript, so single-file-hostile constructs such as a `const enum` or a type re-exported without `export type` are reported.
 
 ## Performance
 
@@ -128,8 +129,9 @@ the shipped JavaScript separately. Carrying one result into the other's claim br
 #### Checklist
 
 - [ ] TSTOOL-CK-CONSISTENCY-01-01 — No successful type-check is treated as evidence that emitted or stripped JavaScript runs in the target host.
-- [ ] TSTOOL-CK-CONSISTENCY-01-02 — The project's type-check entry point is run to prove the type contract, and the producer of the shipped JavaScript is inspected separately.
-- [ ] TSTOOL-CK-CONSISTENCY-01-03 — That producer is confirmed to support the TypeScript syntax the source uses.
+- [ ] TSTOOL-CK-CONSISTENCY-01-02 — The project's type-check entry point is run to prove the type contract.
+- [ ] TSTOOL-CK-CONSISTENCY-01-03 — The producer of the shipped JavaScript is inspected separately.
+- [ ] TSTOOL-CK-CONSISTENCY-01-04 — That producer is confirmed to support the TypeScript syntax the source uses.
 
 ### TSTOOL-SC-CONSISTENCY-02 — Normal case: the source-map chain reaches the original TypeScript
 

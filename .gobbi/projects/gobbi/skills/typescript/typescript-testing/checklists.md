@@ -37,7 +37,8 @@ the authority the run was given.
 #### Checklist
 
 - [ ] TSTEST-CK-PROJECT-02-01 — Review-only mode is marked whenever edits are not authorized.
-- [ ] TSTEST-CK-PROJECT-02-02 — No production or test file is changed in review-only mode, and findings are reported instead.
+- [ ] TSTEST-CK-PROJECT-02-02 — No production or test file is changed in review-only mode.
+- [ ] TSTEST-CK-PROJECT-02-03 — Every finding from a review-only run is reported rather than applied.
 
 ## Structure
 
@@ -115,17 +116,18 @@ every exit. A test that reaches past the public surface proves something the con
 - [ ] TSTEST-CK-USAGE-01-02 — Outputs, state transitions, emitted events, side effects, and failures that consumers observe are asserted.
 - [ ] TSTEST-CK-USAGE-01-03 — Cleanup is verified after success, failure, cancellation, and early exit wherever resources are involved.
 
-### TSTEST-SC-USAGE-02 — Normal case: declarations and resolution are proved from outside the project
+### TSTEST-SC-USAGE-02 — Normal case: declarations are proved from outside the project
 
-The source project resolves its own paths and types in ways an installed consumer cannot. The expected outcome
-type-checks isolated consumer fixtures against the emitted declarations and exercises the installed artifact's
-entry points and resolution modes. Evidence collected only inside the source project is the failure.
+The source project resolves its own types in ways an installed consumer cannot. The expected outcome
+type-checks isolated consumer fixtures against the emitted declarations and compares the declared surface
+wherever compatibility is promised. Declaration evidence collected only inside the source project is the
+failure.
 
 #### Checklist
 
 - [ ] TSTEST-CK-USAGE-02-01 — Public declarations and resolution are tested from a consumer boundary rather than only inside the source project.
-- [ ] TSTEST-CK-USAGE-02-02 — The public declarations are emitted or obtained and isolated consumer fixtures are type-checked against them.
-- [ ] TSTEST-CK-USAGE-02-03 — The package is built or packed, that artifact is installed, and its documented entry points and resolution modes are exercised.
+- [ ] TSTEST-CK-USAGE-02-02 — The public declarations are emitted or obtained.
+- [ ] TSTEST-CK-USAGE-02-03 — Isolated consumer fixtures are type-checked against the public declarations.
 - [ ] TSTEST-CK-USAGE-02-04 — Declaration or API surfaces are compared wherever compatibility is part of the contract.
 
 ### TSTEST-SC-USAGE-03 — Normal case: documented examples compile as they are taught
@@ -140,6 +142,19 @@ profile does not prove. An example that drifts from the code it teaches is the f
 - [ ] TSTEST-CK-USAGE-03-02 — Each extracted example is compiled according to its declared category among positive, partial-with-prelude, expected-error, and type-level.
 - [ ] TSTEST-CK-USAGE-03-03 — The example profile's limit is stated: it verifies compatible teaching fragments and does not prove every runtime host, compiler profile, or package artifact mode.
 
+### TSTEST-SC-USAGE-04 — Normal case: resolution is proved on the installed artifact
+
+A packed artifact carries different files, entry points, and resolution conditions than the checkout it came
+from. The expected outcome installs the artifact a consumer would receive and exercises its documented entry
+points and resolution modes there. Resolution evidence taken from the source project is the failure.
+
+#### Checklist
+
+- [ ] TSTEST-CK-USAGE-04-01 — The package is built or packed.
+- [ ] TSTEST-CK-USAGE-04-02 — The built or packed artifact is installed.
+- [ ] TSTEST-CK-USAGE-04-03 — The installed artifact's documented entry points are exercised.
+- [ ] TSTEST-CK-USAGE-04-04 — The installed artifact's documented resolution modes are exercised.
+
 ## Consistency
 
 ### TSTEST-SC-CONSISTENCY-01 — Rule violation: source-checkout evidence offered for package behavior
@@ -151,7 +166,8 @@ as built or packed behavior breaks the Rule.
 #### Checklist
 
 - [ ] TSTEST-CK-CONSISTENCY-01-01 — No source-checkout test result is treated as proof of built or packed package behavior.
-- Also applies: TSTEST-CK-USAGE-02-03 (the installed artifact is exercised).
+- Also applies: TSTEST-CK-USAGE-04-03 (the installed artifact's entry points are exercised).
+- Also applies: TSTEST-CK-USAGE-04-04 (the installed artifact's resolution modes are exercised).
 
 ### TSTEST-SC-CONSISTENCY-02 — Normal case: claims and tests agree in both directions
 
@@ -196,9 +212,11 @@ rejection. A suite that can stay green while work fails in the background is the
 
 #### Checklist
 
-- [ ] TSTEST-CK-RISK-03-01 — Completion order is controlled and overlapping operations are tested with inverted results.
-- [ ] TSTEST-CK-RISK-03-02 — Cancellation is distinguished from stale-result suppression and the intended one is asserted.
-- [ ] TSTEST-CK-RISK-03-03 — Every rejection is observed so no test can pass with a background failure.
+- [ ] TSTEST-CK-RISK-03-01 — Completion order is controlled.
+- [ ] TSTEST-CK-RISK-03-02 — Overlapping operations are tested with inverted results.
+- [ ] TSTEST-CK-RISK-03-03 — Cancellation is distinguished from stale-result suppression.
+- [ ] TSTEST-CK-RISK-03-04 — The intended one of cancellation and stale-result suppression is asserted.
+- [ ] TSTEST-CK-RISK-03-05 — Every rejection is observed so no test can pass with a background failure.
 
 ## Overall
 
@@ -211,9 +229,11 @@ each test must catch and demonstrates the failure; coverage accepted as failure 
 #### Checklist
 
 - [ ] TSTEST-CK-OVERALL-01-01 — The mutation or controlled defect that would make each test fail is defined.
-- [ ] TSTEST-CK-OVERALL-01-02 — The named defect is introduced or simulated where practical and the test is confirmed to fail for the expected reason.
-- [ ] TSTEST-CK-OVERALL-01-03 — The accepted implementation is restored and the focused test is run fresh afterwards.
-- [ ] TSTEST-CK-OVERALL-01-04 — No snapshot or broad assertion that passes under the named defect is retained.
+- [ ] TSTEST-CK-OVERALL-01-02 — The named defect is introduced or simulated where practical.
+- [ ] TSTEST-CK-OVERALL-01-03 — The test is confirmed to fail for the expected reason.
+- [ ] TSTEST-CK-OVERALL-01-04 — The accepted implementation is restored.
+- [ ] TSTEST-CK-OVERALL-01-05 — The focused test is run fresh after the accepted implementation is restored.
+- [ ] TSTEST-CK-OVERALL-01-06 — No snapshot or broad assertion that passes under the named defect is retained.
 
 ### TSTEST-SC-OVERALL-02 — Expected failure: a host, tool, or package mode is unavailable
 
