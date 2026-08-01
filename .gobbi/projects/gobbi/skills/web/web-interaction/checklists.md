@@ -1,7 +1,7 @@
 # Web Interaction Evaluation Checklist
 
 This reusable unchecked source evaluates one browser feature's interaction choices against the
-keyboard-parity, pointer-floor, widget-pattern, focus-decision, listener-contract, and rate-limit obligations
+keyboard-parity, pointer-floor, role-and-pattern, focus-decision, listener-contract, and rate-limit obligations
 this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-interaction`](SKILL.md)
 preferences, with [`web-frontend`](../web-frontend/SKILL.md) as the ordered operation that applies them,
 [`html-semantics`](../../html/html-semantics/SKILL.md) as the owner of which element, name, role, and state
@@ -65,15 +65,16 @@ declared or announced is the failure.
 ### WEBIXN-SC-STRUCTURE-03 — Poor quality: a widget pattern is implemented in part
 
 A control matches a published Authoring Practices pattern and most of that pattern is built. The expected
-outcome implements the pattern, records its name, and evidences every deviation; a partial pattern promising
-keys, states, or announcements the widget does not have is the failure.
+outcome builds the pattern or records a justified departure from it, and never announces more than it
+implements; a partial pattern promising keys, states, or announcements the widget does not have is the
+failure.
 
 #### Checklist
 
-- [ ] WEBIXN-CK-STRUCTURE-03-01 — A widget that matches a WAI-ARIA Authoring Practices pattern is implemented from that pattern.
+- [ ] WEBIXN-CK-STRUCTURE-03-01 — A widget that matches a WAI-ARIA Authoring Practices pattern is built from that pattern, or the departure records the evidence that it still satisfies ARIA's normative requirements and follows the keyboard conventions of a similar pattern or the native platform widget.
 - [ ] WEBIXN-CK-STRUCTURE-03-02 — The pattern name is recorded beside the implementation.
 - [ ] WEBIXN-CK-STRUCTURE-03-03 — Every deviation from the pattern records the evidence behind it.
-- [ ] WEBIXN-CK-STRUCTURE-03-04 — No key, state, or announcement the matched pattern guarantees is left unimplemented.
+- [ ] WEBIXN-CK-STRUCTURE-03-04 — Where the pattern is followed, no key, state, or announcement it guarantees is left unimplemented.
 
 ## Performance
 
@@ -129,8 +130,8 @@ leaving a reviewer to match them by inspection, is the failure.
 ### WEBIXN-SC-USAGE-01 — Normal case: every pointer affordance has a keyboard path
 
 A behavior is reachable with a mouse. The expected outcome makes it reachable, operable, and observable from
-the keyboard, treating focus as the keyboard's hover; a reveal that only happens on hover, or a behavior that
-only tracks pointer position, is the failure.
+the keyboard through focus and key paths; a reveal that only happens on hover, or a behavior that only
+tracks pointer position, is the failure.
 
 #### Checklist
 
@@ -159,7 +160,7 @@ hidden element, or dropped to the document, is the failure.
 #### Checklist
 
 - [ ] WEBIXN-CK-USAGE-03-01 — Focus entry, containment, and return are decided for every overlay.
-- [ ] WEBIXN-CK-USAGE-03-02 — A modal surface holds focus while it is open and returns focus to the control that opened it.
+- [ ] WEBIXN-CK-USAGE-03-02 — A modal surface holds focus while it is open and returns focus to the invoking control, or moves focus to the element that continues the work flow when the invoking control no longer exists or the work flow continues at a following control or result.
 - [ ] WEBIXN-CK-USAGE-03-03 — Focus is never left on a removed or hidden element.
 - [ ] WEBIXN-CK-USAGE-03-04 — A composite widget exposes one tab stop and moves its inner selection with roving `tabindex` or `aria-activedescendant`.
 

@@ -28,9 +28,9 @@ Preferences select defaults inside it, and a Rule wins every conflict.
 
 ### Pointer and keyboard are one requirement
 
-An affordance is finished when it works by pointer and by keyboard, not when it works by pointer. Focus is
-the keyboard's hover, so a behavior that only appears on hover, only tracks pointer position, or only
-responds to a drag does not exist for the people who never use a mouse.
+An affordance is finished when it works by pointer and by keyboard, not when it works by pointer. A behavior
+that only appears on hover, only tracks pointer position, or only responds to a drag does not exist for the
+people who never use a mouse, so each one needs a focus or key path that produces the same state change.
 
 ### Focus is application state
 
@@ -38,11 +38,12 @@ Where focus sits, where it may travel, and where it returns after a surface clos
 makes deliberately. Left to DOM order and default behavior, focus lands somewhere the person did not ask for
 and often cannot find.
 
-### A published pattern outranks an invented one
+### Normative ARIA binds, a published pattern persuades
 
-When a control matches a WAI-ARIA Authoring Practices pattern, that pattern's key and state model is what
-people have already learned from every other product. Inventing a different model spends that transfer and
-usually drops a key, a state, or an announcement the pattern exists to guarantee.
+WAI-ARIA and WCAG state requirements a widget must meet, while W3C calls the Authoring Practices an
+"informative" resource whose examples are "illustrative, not prescriptive". A matching pattern still carries
+the key and state model people learned from other products, so leaving it costs that transfer and has to be
+justified against the normative requirements the pattern conveys.
 
 ### Listener lifetime is part of the contract
 
@@ -60,12 +61,16 @@ resulting bug appears far from its cause.
   essential, per [WCAG 2.2](https://www.w3.org/TR/WCAG22/) SC 2.5.1 Pointer Gestures (A), SC 2.5.7 Dragging
   Movements (AA), and SC 2.5.8 Target Size (Minimum) (AA, 24 by 24 CSS pixels with that criterion's
   exceptions).
-- **MUST implement a widget from its [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/)
-  pattern when one matches.** Record the pattern name beside the implementation and record any deviation with
-  the evidence behind it; a partial pattern promises behavior the widget does not have.
+- **MUST meet the normative [WAI-ARIA](https://www.w3.org/TR/wai-aria-1.2/) requirements for every role a
+  widget claims, and NEVER announce a role whose keys, states, and announcements the widget does not
+  implement.** When a [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/) pattern
+  matches, record its name beside the implementation, and record each departure with the evidence that it
+  still satisfies ARIA and follows the keyboard conventions of a similar pattern or the native platform
+  widget.
 - **MUST decide focus entry, containment, and return for every overlay, and NEVER leave focus on a removed or
-  hidden element.** A modal surface holds focus while open and returns it to the control that opened it, and
-  a composite widget exposes one tab stop while moving its inner selection with roving `tabindex` or
+  hidden element.** A modal surface holds focus while open and returns it to the invoking control, except
+  when that control no longer exists or the work flow continues at a following control or result, and a
+  composite widget exposes one tab stop while moving its inner selection with roving `tabindex` or
   `aria-activedescendant`.
 - **MUST define each listener's target, phase, default-action handling, and removal point before adding it.**
   NEVER cancel a default action from a passive listener, and treat a `wheel`, `touchstart`, or `touchmove`
@@ -76,6 +81,16 @@ resulting bug appears far from its cause.
   echo, and keep authoritative state updates, validation, and submission on the real event.
 
 ## Preferences
+
+### Prefer a matching published pattern over an invented model
+
+**PREFER** building a control from the matching
+[WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/patterns/) pattern, because that pattern
+conveys requirements from the normative standards and its key and state model is the one people already
+learned. Depart when the design need falls outside the catalog, which W3C says "is not intended to serve as a
+catalog of all possible, valid, and potentially usable ways of building accessible user interfaces", and then
+satisfy ARIA's normative requirements and mimic the keyboard conventions of a similar pattern or the native
+platform widget.
 
 ### Prefer delegation at a stable container
 
