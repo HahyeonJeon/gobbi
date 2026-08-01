@@ -36,8 +36,9 @@ justifying it by intent is the observable failure.
 
 #### Checklist
 
-- [ ] HTMLSEM-CK-PROJECT-02-01 — Every departure from a Preference carries documented evidence and stays inside the Rules.
-- [ ] HTMLSEM-CK-PROJECT-02-02 — A choice without that evidence keeps the preferred default.
+- [ ] HTMLSEM-CK-PROJECT-02-01 — Every departure from a Preference carries documented evidence.
+- [ ] HTMLSEM-CK-PROJECT-02-02 — Every departure from a Preference stays inside the Rules.
+- [ ] HTMLSEM-CK-PROJECT-02-03 — A choice without that evidence keeps the preferred default.
 
 ## Structure
 

@@ -100,7 +100,8 @@ failure.
 
 - [ ] HTMLPLAT-CK-CONSISTENCY-01-01 — Specification status and support tables are used to locate semantics rather than to prove behavior in the declared targets.
 - [ ] HTMLPLAT-CK-CONSISTENCY-01-02 — Every target included in a claim is tested rather than inferred from another target.
-- [ ] HTMLPLAT-CK-CONSISTENCY-01-03 — When sources disagree, each source's identity and date are preserved and the narrowest supported answer or the unresolved difference is reported.
+- [ ] HTMLPLAT-CK-CONSISTENCY-01-03 — When sources disagree, each source's identity and date are preserved.
+- [ ] HTMLPLAT-CK-CONSISTENCY-01-04 — When sources disagree, the narrowest supported answer or the unresolved difference is reported.
 
 ### HTMLPLAT-SC-CONSISTENCY-02 — Edge case: the parsed tree differs from the authored source
 
@@ -124,8 +125,9 @@ because the inspection changed the document or the target state is the failure.
 
 #### Checklist
 
-- [ ] HTMLPLAT-CK-RISK-01-01 — Every inspection of a document or target is read-only or reversible, and any state it changed is restored.
-- [ ] HTMLPLAT-CK-RISK-01-02 — No conclusion depends on a document or target state the inspection itself created.
+- [ ] HTMLPLAT-CK-RISK-01-01 — Every inspection of a document or target is read-only or reversible.
+- [ ] HTMLPLAT-CK-RISK-01-02 — Every state an inspection of a document or target changed is restored.
+- [ ] HTMLPLAT-CK-RISK-01-03 — No conclusion depends on a document or target state the inspection itself created.
 
 ### HTMLPLAT-SC-RISK-02 — Adversarial: a conformance answer stretched into a safety claim
 
