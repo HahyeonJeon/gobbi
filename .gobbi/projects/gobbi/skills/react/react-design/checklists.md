@@ -76,8 +76,9 @@ identity/work problem. Using one without that need fails the scenario.
 
 #### Checklist
 
-- [ ] RDES-CK-PERFORMANCE-01-01 — Each ref states the non-rendered value it owns, and each manual memoization states its measured-work or identity reason.
-- [ ] RDES-CK-PERFORMANCE-01-02 — No ref is used as hidden rendered state.
+- [ ] RDES-CK-PERFORMANCE-01-01 — Each ref states the non-rendered value it owns.
+- [ ] RDES-CK-PERFORMANCE-01-02 — Each manual memoization states its measured-work or identity reason.
+- [ ] RDES-CK-PERFORMANCE-01-03 — No ref is used as hidden rendered state.
 - Also applies: RDES-CK-STRUCTURE-03-01 (each Effect names the external system it solves for).
 
 ## Aesthetics
