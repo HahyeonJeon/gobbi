@@ -119,5 +119,11 @@ Documented examples are code and require a compatible verification profile with 
 - Map every claim to at least one current test and every test to a named contract.
 - Record unavailable hosts, tools, or package modes as limitations.
 - In review-only mode, report findings without mutating the target.
+- When this test work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by
+  an active `typescript` sibling supply the applicable conditions; the general Evaluation operation
+  resolves them and issues any verdict.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

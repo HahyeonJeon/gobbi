@@ -1,6 +1,6 @@
 ---
 name: go-concurrency
-description: "Load when working with goroutines, channels, context.Context, sync, atomics, timers, concurrent ownership, cancellation, shutdown, backpressure, or race safety."
+description: "MUST load when working with goroutines, channels, context.Context, sync, atomics, timers, concurrent ownership, cancellation, shutdown, backpressure, or race safety."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---

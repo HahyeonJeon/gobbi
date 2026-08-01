@@ -46,3 +46,6 @@ Formatting and import order belong to deterministic tools when the project has t
 These are overridable house preferences. A repository may choose different casing, export, layout, import-order, or documentation conventions when the choice is consistent and recorded.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

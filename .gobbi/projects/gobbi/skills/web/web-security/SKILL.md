@@ -136,6 +136,9 @@ Use several evidence classes when the risk requires them, and never turn an unte
   operations in named versions and environments.
 - Return a failed control, shallow scan result, untested real seam, unsupported version, or missing recovery
   evidence to its owner.
+- When this security outcome is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 
 #### 4.2 Reconcile controls and residual risk
 
@@ -148,3 +151,6 @@ Use several evidence classes when the risk requires them, and never turn an unte
 - Hand the result to `web-feature` or the requesting caller without inventing acceptance for residual risk.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

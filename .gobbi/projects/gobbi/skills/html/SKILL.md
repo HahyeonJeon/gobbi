@@ -19,6 +19,6 @@ Electron renderer work also routes through [`electron`](../electron/SKILL.md), w
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`html-authoring`](html-authoring/SKILL.md) | operation | MUST load when creating, repairing, or accepting an emitted HTML artifact. |
+| [`html-development`](html-development/SKILL.md) | operation | MUST load when creating, repairing, or accepting an emitted HTML artifact. |
 | [`html-platform`](html-platform/SKILL.md) | tool | MUST load when looking up HTML conformance, parsing, target support, or evidence meaning. |
 | [`html-semantics`](html-semantics/SKILL.md) | preference | MUST load when choosing or reviewing HTML elements, names, states, language, direction, or accessibility semantics. |

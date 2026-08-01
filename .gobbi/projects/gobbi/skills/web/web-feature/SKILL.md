@@ -1,6 +1,6 @@
 ---
 name: web-feature
-description: "Use when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff."
+description: "MUST load when delivering or reviewing one bounded web application feature across its required layers through a release-ready handoff."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -69,7 +69,7 @@ different things.
 #### 1.2 Route the applicable owners
 
 - Test every sibling trigger and each implementation domain against the locked frame.
-- Load frontend, backend, architecture, platform, convention, security, and testing when their triggers apply.
+- Load frontend, backend, architecture, platform, topology, security, and testing when their triggers apply.
 - Load coding, language, runtime, framework, database, provider, deployment, and other implementation owners
   as needed.
 - Record the owner set and evidence for every omission without copying owner policy; continue only when every
@@ -94,7 +94,9 @@ different things.
 - Route test-system design to `web-testing`, threat and control analysis to `web-security`, and layer-specific
   proof to its owner.
 - Set quality targets from project evidence or an explicit feature decision instead of inventing universal
-  performance, availability, security, or accessibility budgets.
+  performance, availability, security, or accessibility budgets. Define each user-visible success measure's
+  intended and harmful interpretation, the guardrail that detects the harmful one, and the failure or
+  recovery signal beside it; a proxy that can improve while the user outcome worsens never stands alone.
 - Define each claim's required evidence, environment, owner, release condition, monitoring signal, stop
   condition, and rollback proof; pause before any unauthorized external or irreversible action.
 
@@ -132,6 +134,9 @@ different things.
   unresolved risk; a screenshot cannot prove semantics, focus, hidden behavior, or conformance.
 - Run the active evaluation method and return failed claims to their earliest owner, preserving each evidence
   gap instead of widening a weaker signal.
+- When this feature is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an
+  active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them and
+  issues any verdict.
 
 #### 4.2 Prepare the release-ready handoff
 
@@ -139,9 +144,14 @@ different things.
   contracts, implementation, configuration, migrations, tests, security records, telemetry, support, and
   documentation.
 - Assemble compatibility notes, rollout, stop, rollback, diagnostics, support, deployment-authority state,
-  and post-deployment validation for a cold operator.
+  and post-deployment validation for a cold operator, including the user-visible measure set, its owner and
+  review cadence, and the evidence that reopens the design.
 - Report implementation correctness, frontend acceptance, backend effects, release readiness, deployment
   authorization, deployment state, and live outcome validation as separate claims.
-- End at the release-ready handoff; deployment and live validation proceed only under their own authority.
+- End at the release-ready handoff to `web-deployment`; deployment and live validation proceed only under
+  their own authority.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

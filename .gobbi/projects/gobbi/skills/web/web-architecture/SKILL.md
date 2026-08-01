@@ -1,6 +1,6 @@
 ---
 name: web-architecture
-description: "Use when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application."
+description: "MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---
@@ -83,3 +83,6 @@ ownership, isolation, scaling, release, data, failure, or capability needs outwe
 diagnostic, security, performance, maintenance, and removal costs.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

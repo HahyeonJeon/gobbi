@@ -3,6 +3,9 @@
 Use this unchecked `react-testing` source with general `evaluation` when the React root activates the testing
 child; `RTST` is the stable owner prefix.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### RTST-SC-PROJECT-01 — Normal case: The behavior and installed test contract are established
@@ -13,20 +16,20 @@ actually uses. A guessed stack, missing command, or unauthorized migration fails
 #### Checklist
 
 - [ ] RTST-CK-PROJECT-01-01 — The test states one observable behavior.
-- [ ] RTST-CK-PROJECT-01-02 — The test states every activated success state.
-- [ ] RTST-CK-PROJECT-01-03 — The test states every activated failure state.
-- [ ] RTST-CK-PROJECT-01-04 — The test states every activated recovery state.
-- [ ] RTST-CK-PROJECT-01-05 — Project files establish the installed React line.
-- [ ] RTST-CK-PROJECT-01-06 — Project files establish the installed renderer.
-- [ ] RTST-CK-PROJECT-01-07 — Project files establish the installed test runner.
-- [ ] RTST-CK-PROJECT-01-08 — Project files establish the installed query layer.
-- [ ] RTST-CK-PROJECT-01-09 — Project files establish the test environment.
-- [ ] RTST-CK-PROJECT-01-10 — Project files establish the host boundary.
-- [ ] RTST-CK-PROJECT-01-11 — Project files establish the applicable test commands.
-- [ ] RTST-CK-PROJECT-01-12 — The change introduces no unapproved dependency.
-- [ ] RTST-CK-PROJECT-01-13 — The change introduces no unapproved renderer migration.
-- [ ] RTST-CK-PROJECT-01-14 — The change introduces no unapproved runner migration.
-- [ ] RTST-CK-PROJECT-01-15 — The change introduces no unapproved test-architecture migration.
+- [ ] RTST-CK-PROJECT-01-02 — The test states every activated success, failure, and recovery state.
+- [ ] RTST-CK-PROJECT-01-03 — Project files establish the installed React line, renderer, test runner, query layer, test environment, host boundary, and applicable test commands.
+- [ ] RTST-CK-PROJECT-01-04 — The change introduces no unapproved dependency, renderer migration, runner migration, or test-architecture migration.
+
+### RTST-SC-PROJECT-02 — Expected failure: A required test gate cannot run
+
+A selected type, lint, build, browser, server, or host gate is unavailable, blocked, or skipped in the current
+environment. The handoff should keep the affected behavior unproven; presenting the absent gate as evidence
+fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-PROJECT-02-01 — Every unavailable, blocked, and skipped gate remains visible in the handoff as an evidence gap.
+- [ ] RTST-CK-PROJECT-02-02 — No unavailable, blocked, or skipped gate is reported as a passed result.
 
 ## Structure
 
@@ -39,9 +42,8 @@ preload, IPC, navigation, or packaged-runtime claim at the wrong layer fails.
 
 - [ ] RTST-CK-STRUCTURE-01-01 — The selected test layer can directly observe the asserted behavior.
 - [ ] RTST-CK-STRUCTURE-01-02 — Every setup element is necessary to reach the behavior.
-- [ ] RTST-CK-STRUCTURE-01-03 — A project render helper preserves every production provider relevant to the behavior.
-- [ ] RTST-CK-STRUCTURE-01-04 — A project render helper preserves every production setting relevant to the behavior.
-- [ ] RTST-CK-STRUCTURE-01-05 — Each property outside the renderer is assigned to its applicable test owner.
+- [ ] RTST-CK-STRUCTURE-01-03 — A project render helper preserves every production provider and setting relevant to the behavior.
+- [ ] RTST-CK-STRUCTURE-01-04 — Each property outside the renderer is assigned to its applicable test owner.
 
 ## Performance
 
@@ -54,8 +56,7 @@ Timing workarounds, uncontrolled clocks, or an oversized gate fails the scenario
 
 - [ ] RTST-CK-PERFORMANCE-01-01 — No test uses a real sleep to wait for React behavior.
 - [ ] RTST-CK-PERFORMANCE-01-02 — The configured project seam controls behavior-relevant time.
-- [ ] RTST-CK-PERFORMANCE-01-03 — The narrow test runs before the smallest affected suite.
-- [ ] RTST-CK-PERFORMANCE-01-04 — The affected suite runs before broader required gates.
+- [ ] RTST-CK-PERFORMANCE-01-03 — The narrow test runs before the smallest affected suite, which runs before the broader required gates.
 
 ## Aesthetics
 
@@ -66,12 +67,9 @@ details. Excessive nesting or unrelated assertions fails the scenario.
 
 #### Checklist
 
-- [ ] RTST-CK-AESTHETICS-01-01 — The test name states the observable behavior.
-- [ ] RTST-CK-AESTHETICS-01-02 — The test name states the condition that activates the behavior.
-- [ ] RTST-CK-AESTHETICS-01-03 — One coherent setup is visible.
-- [ ] RTST-CK-AESTHETICS-01-04 — One coherent interaction path is visible.
-- [ ] RTST-CK-AESTHETICS-01-05 — One coherent outcome is visible.
-- [ ] RTST-CK-AESTHETICS-01-06 — The test contains no unrelated assertions.
+- [ ] RTST-CK-AESTHETICS-01-01 — The test name states the observable behavior and the condition that activates it.
+- [ ] RTST-CK-AESTHETICS-01-02 — One coherent setup, interaction path, and outcome are each visible.
+- [ ] RTST-CK-AESTHETICS-01-03 — The test contains no unrelated assertions.
 
 ## Usage
 
@@ -82,37 +80,48 @@ implementation-detail query or incomplete state path fails.
 
 #### Checklist
 
-- [ ] RTST-CK-USAGE-01-01 — The test queries each applicable control by semantic role.
-- [ ] RTST-CK-USAGE-01-02 — The test queries each applicable control by accessible name.
-- [ ] RTST-CK-USAGE-01-03 — A test ID is used only when no user-facing query represents the approved surface.
-- [ ] RTST-CK-USAGE-01-04 — Each test using `user-event` creates one `userEvent.setup()` session.
-- [ ] RTST-CK-USAGE-01-05 — The test observes each applicable pending state.
-- [ ] RTST-CK-USAGE-01-06 — The test observes each applicable empty state.
-- [ ] RTST-CK-USAGE-01-07 — The test observes each applicable failure state.
-- [ ] RTST-CK-USAGE-01-08 — The test observes each applicable recovery state.
-- [ ] RTST-CK-USAGE-01-09 — Keyboard behavior is exercised when it is part of the accepted interaction.
-- [ ] RTST-CK-USAGE-01-10 — Focus behavior is exercised when it is part of the accepted interaction.
-- [ ] RTST-CK-USAGE-01-11 — The final assertion observes an approved user-facing or host outcome.
+- [ ] RTST-CK-USAGE-01-01 — The test queries each applicable control by semantic role and accessible name.
+- [ ] RTST-CK-USAGE-01-02 — A test ID is used only when no user-facing query represents the approved surface.
+- [ ] RTST-CK-USAGE-01-03 — Each test using `user-event` creates one `userEvent.setup()` session.
+- [ ] RTST-CK-USAGE-01-04 — The test observes each applicable pending, empty, failure, and recovery state.
+- [ ] RTST-CK-USAGE-01-05 — Keyboard and focus behavior are exercised when they are part of the accepted interaction.
+- [ ] RTST-CK-USAGE-01-06 — The final assertion observes an approved user-facing or host outcome.
 
-## Consistency
+### RTST-SC-USAGE-02 — Adversarial: A test reaches a pass through internals
 
-### RTST-SC-CONSISTENCY-01 — Edge case: Asynchronous React work settles
-
-Interactions, renders, data, and disappearance should settle through the installed helper contract before an
-assertion. Manual flushes, stale APIs, or unawaited helpers fail the scenario.
+A test can pass by driving component instances, private state, or a test-only query while the surface a user
+reaches stays broken. The test must operate what the user operates; a pass obtained through internals fails.
 
 #### Checklist
 
-- [ ] RTST-CK-CONSISTENCY-01-01 — Every asynchronous interaction is awaited.
-- [ ] RTST-CK-CONSISTENCY-01-02 — Every asynchronous query is awaited.
-- [ ] RTST-CK-CONSISTENCY-01-03 — Expected asynchronous appearance uses `findBy` or the installed equivalent.
-- [ ] RTST-CK-CONSISTENCY-01-04 — `waitFor` retries an assertion rather than hiding an arbitrary delay.
-- [ ] RTST-CK-CONSISTENCY-01-05 — Direct `act` uses the import required by the installed test contract.
-- [ ] RTST-CK-CONSISTENCY-01-06 — Direct `act` uses the form required by the installed test contract.
-- [ ] RTST-CK-CONSISTENCY-01-07 — Direct `act` runs only in a configured environment.
-- [ ] RTST-CK-CONSISTENCY-01-08 — Under installed React 19 or an explicitly approved React 19 migration, no test depends on behavior removed from `react-dom/test-utils`.
-- [ ] RTST-CK-CONSISTENCY-01-09 — Under installed React 19 or an explicitly approved React 19 migration, each `react-test-renderer` use is treated as deprecated.
-- [ ] RTST-CK-CONSISTENCY-01-10 — Each shallow-renderer use comes from a separately installed renderer supported by the project.
+- [ ] RTST-CK-USAGE-02-01 — No test drives or asserts a component instance, private state, or implementation call order to reach a passing result.
+- Also applies: RTST-CK-USAGE-01-02 (a test ID is justified only by an absent user-facing query).
+
+## Consistency
+
+### RTST-SC-CONSISTENCY-01 — Rule violation: Asynchronous React work is not awaited
+
+Interactions, renders, data, and disappearance must settle through the installed helper contract before an
+assertion. A manual flush, arbitrary delay, or unawaited helper breaks that contract and fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-CONSISTENCY-01-01 — Every asynchronous interaction and query is awaited.
+- [ ] RTST-CK-CONSISTENCY-01-02 — Expected asynchronous appearance uses `findBy` or the installed equivalent.
+- [ ] RTST-CK-CONSISTENCY-01-03 — `waitFor` retries an assertion rather than hiding an arbitrary delay.
+- [ ] RTST-CK-CONSISTENCY-01-04 — Direct `act` uses the import and form required by the installed test contract.
+- [ ] RTST-CK-CONSISTENCY-01-05 — Direct `act` runs only in a configured environment.
+
+### RTST-SC-CONSISTENCY-02 — Edge case: The installed React line changes the available test API
+
+React 19 removed and deprecated renderer test APIs that earlier lines supported. The suite should follow the
+installed line's contract; depending on a removed or separately unavailable renderer API fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-CONSISTENCY-02-01 — Under installed React 19 or an explicitly approved React 19 migration, no test depends on behavior removed from `react-dom/test-utils`.
+- [ ] RTST-CK-CONSISTENCY-02-02 — Under installed React 19 or an explicitly approved React 19 migration, each `react-test-renderer` use is treated as deprecated.
+- [ ] RTST-CK-CONSISTENCY-02-03 — Each shallow-renderer use comes from a separately installed renderer supported by the project.
 
 ## Risk
 
@@ -124,10 +133,18 @@ packaged-runtime property. Such an unsupported completion claim fails.
 #### Checklist
 
 - [ ] RTST-CK-RISK-01-01 — Every security or privilege assertion is observed at the layer that enforces it.
-- [ ] RTST-CK-RISK-01-02 — Test fixtures expose no secret.
-- [ ] RTST-CK-RISK-01-03 — Test fixtures expose no production-sensitive value.
-- [ ] RTST-CK-RISK-01-04 — Test diagnostics expose no secret.
-- [ ] RTST-CK-RISK-01-05 — Test diagnostics expose no production-sensitive value.
+- [ ] RTST-CK-RISK-01-02 — No simulated-renderer pass is presented as proof of a real server, browser, preload, IPC, origin, or packaged-runtime property.
+
+### RTST-SC-RISK-02 — Normal case: The ordinary test run stays inside its own boundary
+
+A component or Hook test runs in the configured environment on an ordinary developer or continuous-integration
+machine. Its success path should read no protected value and reach no real service; a run that leaks a secret
+or touches a real boundary fails.
+
+#### Checklist
+
+- [ ] RTST-CK-RISK-02-01 — Test fixtures and diagnostics expose no secret or production-sensitive value.
+- [ ] RTST-CK-RISK-02-02 — The ordinary test run reaches no real server, host, or external service.
 
 ## Overall
 

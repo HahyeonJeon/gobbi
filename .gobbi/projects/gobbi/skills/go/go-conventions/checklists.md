@@ -6,6 +6,9 @@ returned outcomes under evaluation.
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### GOCNV-SC-PROJECT-01 — Normal case: Project conventions govern the change
@@ -47,11 +50,8 @@ The selected spelling should remain valid and unambiguous on every project targe
 
 #### Checklist
 
-- [ ] GOCNV-CK-STRUCTURE-02-01 — Every Go identifier is valid under the supported language contract.
-- [ ] GOCNV-CK-STRUCTURE-02-02 — Every source file name is valid on each supported file system.
-- [ ] GOCNV-CK-STRUCTURE-02-03 — Every in-scope name collision is resolved explicitly.
-- [ ] GOCNV-CK-STRUCTURE-02-04 — Every package clause uses a valid package name.
-- [ ] GOCNV-CK-STRUCTURE-02-05 — Every import name is valid in its file.
+- [ ] GOCNV-CK-STRUCTURE-02-01 — Every Go identifier, package clause, import name, and source file name is valid under the supported language contract and on each supported file system.
+- [ ] GOCNV-CK-STRUCTURE-02-02 — Every in-scope name collision is resolved explicitly.
 
 ## Performance
 
@@ -67,8 +67,7 @@ private line-length scheme; formatter drift fails this scenario.
 
 #### Checklist
 
-- [ ] GOCNV-CK-AESTHETICS-01-01 — Every in-scope Go source file is in canonical project format.
-- [ ] GOCNV-CK-AESTHETICS-01-02 — No retained layout depends on hand alignment removed by the formatter.
+- [ ] GOCNV-CK-AESTHETICS-01-01 — Every in-scope Go source file is in canonical project format with no retained hand alignment the formatter removes.
 
 ### GOCNV-SC-AESTHETICS-02 — Poor quality: Names make readers recover intent from implementation
 
@@ -77,9 +76,9 @@ Names should reveal their role at their scope; technically valid but opaque nami
 
 #### Checklist
 
-- [ ] GOCNV-CK-AESTHETICS-02-01 — Every exported name reads naturally after package qualification.
-- [ ] GOCNV-CK-AESTHETICS-02-02 — Every local name carries enough meaning for its scope.
-- [ ] GOCNV-CK-AESTHETICS-02-03 — No accessor uses a redundant `Get` prefix without domain meaning.
+- [ ] GOCNV-CK-AESTHETICS-02-01 — Every local name carries enough meaning for its scope.
+- [ ] GOCNV-CK-AESTHETICS-02-02 — No accessor uses a redundant `Get` prefix without domain meaning.
+- Also applies: GOCNV-CK-USAGE-01-01 (exported names read clearly with their package name).
 
 ### GOCNV-SC-AESTHETICS-03 — Edge case: Initialisms and proper names need exceptional spelling
 
@@ -99,7 +98,7 @@ punctuation so added context remains readable; an unjustified exception fails.
 #### Checklist
 
 - [ ] GOCNV-CK-AESTHETICS-04-01 — Every ordinary error string starts with a lowercase letter.
-- [ ] GOCNV-CK-AESTHETICS-04-02 — Every error string omits trailing punctuation unless the literal content requires it.
+- [ ] GOCNV-CK-AESTHETICS-04-02 — Every ordinary error string omits trailing punctuation.
 
 ## Usage
 
@@ -120,9 +119,20 @@ caller should understand the contract without reading the implementation; decora
 
 #### Checklist
 
-- [ ] GOCNV-CK-USAGE-02-01 — Every package comment states the package purpose.
-- [ ] GOCNV-CK-USAGE-02-02 — Every exported declaration comment identifies its declaration.
+- [ ] GOCNV-CK-USAGE-02-01 — Every package comment and exported declaration comment names its subject.
+- [ ] GOCNV-CK-USAGE-02-02 — Every package comment and exported declaration comment states its purpose.
 - [ ] GOCNV-CK-USAGE-02-03 — Every caller-relevant behavioral condition appears in public documentation.
+
+### GOCNV-SC-USAGE-03 — Adversarial: A conformant name misleads the caller
+
+A declaration is renamed or written to satisfy a naming rule while the resulting name understates what the
+operation does, such as an accessor-shaped name for work that performs I/O, mutation, or blocking. The name
+should describe what the caller actually gets; a rule-conformant name that hides cost or effect fails.
+
+#### Checklist
+
+- [ ] GOCNV-CK-USAGE-03-01 — No name that satisfies a convention rule understates its operation's cost, mutation, or failure behavior.
+- [ ] GOCNV-CK-USAGE-03-02 — Every renamed declaration still describes the result the caller receives.
 
 ## Consistency
 
@@ -134,8 +144,7 @@ output that looks hand-authored or cannot be reproduced fails.
 #### Checklist
 
 - [ ] GOCNV-CK-CONSISTENCY-01-01 — Every generated Go file carries its required generated-source marker.
-- [ ] GOCNV-CK-CONSISTENCY-01-02 — Every generated change corresponds to an owned input.
-- [ ] GOCNV-CK-CONSISTENCY-01-03 — Every generated change corresponds to the declared generator.
+- [ ] GOCNV-CK-CONSISTENCY-01-02 — Every generated change corresponds to an owned input and the declared generator.
 
 ### GOCNV-SC-CONSISTENCY-02 — Rule violation: Documentation contradicts current behavior
 
@@ -144,9 +153,7 @@ describe the exact current behavior; stale or partially updated prose fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-CONSISTENCY-02-01 — Every changed public declaration has current documentation.
-- [ ] GOCNV-CK-CONSISTENCY-02-02 — Every documented error condition matches the current implementation contract.
-- [ ] GOCNV-CK-CONSISTENCY-02-03 — No retained comment describes removed behavior.
+- [ ] GOCNV-CK-CONSISTENCY-02-01 — Every changed public declaration, documented error condition, and retained comment describes the current implementation contract.
 
 ### GOCNV-SC-CONSISTENCY-03 — Poor quality: Imports use decorative aliases or unstable groups
 
@@ -165,8 +172,7 @@ should remain stable across the affected set; unexplained variation fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-CONSISTENCY-04-01 — One receiver name is used throughout each method set.
-- [ ] GOCNV-CK-CONSISTENCY-04-02 — Related declarations use one term for the same concept.
+- [ ] GOCNV-CK-CONSISTENCY-04-01 — One receiver name and one term for each concept are used throughout the affected declarations.
 
 ## Risk
 
@@ -198,7 +204,18 @@ failure instead of claiming formatted output; a false formatting claim fails.
 #### Checklist
 
 - [ ] GOCNV-CK-RISK-03-01 — Invalid Go source is not represented as canonically formatted.
-- [ ] GOCNV-CK-RISK-03-02 — A formatting blocker remains visible in the returned outcome.
+- [ ] GOCNV-CK-RISK-03-02 — The formatting blocker for invalid Go source remains visible in the returned outcome.
+
+### GOCNV-SC-RISK-04 — Normal case: A convention change leaves behavior alone
+
+An ordinary naming, formatting, comment, or import change touches many files at once. Its success path should
+leave observable behavior unchanged so reviewers can trust the size of the diff; a behavioral edit carried
+inside a form-only change fails.
+
+#### Checklist
+
+- [ ] GOCNV-CK-RISK-04-01 — Every convention-only change leaves observable behavior unchanged.
+- [ ] GOCNV-CK-RISK-04-02 — Every behavioral change made alongside a convention change is separately identified.
 
 ## Overall
 

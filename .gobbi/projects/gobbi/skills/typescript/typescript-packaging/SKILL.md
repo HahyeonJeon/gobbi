@@ -9,7 +9,7 @@ skill-type: operation
 
 TypeScript Packaging owns the operation that turns TypeScript sources into a consumable package contract. It covers export maps, JavaScript artifacts, public declarations, compatibility, packed-artifact validation, and publication readiness without prescribing one module format for every package.
 
-Package work also loads TypeScript Compiler, Typing, and Testing when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change target files and create target artifacts within its approved scope. Review-only validation inspects existing artifacts or collects non-target disposable evidence only; it does not edit target files, build or create target artifacts, install into a persistent environment, update documentation or release notes, or publish. It skips mutation steps and reports evidence, findings, and limitations. Publication itself still requires the repository's release authority and credential controls.
+Package work also loads `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change target files and create target artifacts within its approved scope. Review-only validation inspects existing artifacts or collects non-target disposable evidence only; it does not edit target files, build or create target artifacts, install into a persistent environment, update documentation or release notes, or publish. It skips mutation steps and reports evidence, findings, and limitations. Publication itself still requires the repository's release authority and credential controls.
 
 ## Principles
 
@@ -104,6 +104,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Rebuild and recreate the archive from the accepted tree.
 - Re-run package metadata, declaration, consumer, license, provenance, and vulnerability gates required by the repository.
 - Bind all evidence to the exact archive digest or contents being proposed.
+- When this package work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `typescript` sibling supply the applicable conditions in both author and review-only modes;
+  the general Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Confirm release authority
 
@@ -112,3 +115,6 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Verify registry metadata and installation after publication; if publication is not authorized, stop at a publication-ready artifact.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.
