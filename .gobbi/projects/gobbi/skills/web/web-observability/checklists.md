@@ -223,9 +223,19 @@ the process is the failure.
 - [ ] WEBOBS-CK-RISK-04-02 — The stored records are searched for credentials, tokens, session identifiers, and personal data.
 - [ ] WEBOBS-CK-RISK-04-03 — A protected value found at a destination is raised as a `web-security` finding with its own remediation and retention correction.
 - [ ] WEBOBS-CK-RISK-04-04 — A protected field already reaching a destination is corrected before new emission is added on the same path.
-- [ ] WEBOBS-CK-RISK-04-05 — Who can read each destination, and for how long, is recorded.
-- [ ] WEBOBS-CK-RISK-04-06 — The crash-report payload the application cannot redact before transport is redacted and retention-bounded at its destination.
 - Also applies: WEBOBS-CK-RISK-03-03 (the seam allow-lists rather than blocks known-bad keys).
+
+### WEBOBS-SC-RISK-05 — Edge case: the seam cannot redact the payload before it leaves
+
+An out-of-process crash reporter sends a payload the application never sees, so the emission seam cannot
+strip it. The expected outcome moves redaction and retention to the destination and records who can read it
+and for how long; an unredacted payload accepted because the seam could not reach it is the failure.
+
+#### Checklist
+
+- [ ] WEBOBS-CK-RISK-05-01 — Who can read each destination, and for how long, is recorded.
+- [ ] WEBOBS-CK-RISK-05-02 — The crash-report payload the application cannot redact before transport is redacted at its destination.
+- [ ] WEBOBS-CK-RISK-05-03 — The crash-report payload the application cannot redact before transport is retention-bounded at its destination.
 
 ## Overall
 

@@ -55,7 +55,8 @@ outward; a control listed in the contract with no owner or no way to prove it is
 
 - [ ] WEBSEC-CK-STRUCTURE-01-01 — Authentication, authorization, sessions, validation, encoding, privacy, secrets, browser policy, dependencies, logging, alerts, abuse controls, and operations are each bound to one implementation owner.
 - [ ] WEBSEC-CK-STRUCTURE-01-02 — Each control names one proving evidence path.
-- [ ] WEBSEC-CK-STRUCTURE-01-03 — One versioned security contract is produced and implementation is routed to the backend, frontend, platform, provider, dependency, infrastructure, and operations owners.
+- [ ] WEBSEC-CK-STRUCTURE-01-03 — One versioned security contract is produced.
+- [ ] WEBSEC-CK-STRUCTURE-01-04 — Implementation is routed to the backend, frontend, platform, provider, dependency, infrastructure, and operations owners.
 
 ### WEBSEC-SC-STRUCTURE-02 — Normal case: authoritative controls are built before the layers around them
 
@@ -66,8 +67,9 @@ convenience layer attached to an unverified seam is the failure.
 #### Checklist
 
 - [ ] WEBSEC-CK-STRUCTURE-02-01 — Types, schema, canonicalization, validation, encoding, resource policy, and explicit authorization seams are built before convenience layers are connected.
-- [ ] WEBSEC-CK-STRUCTURE-02-02 — Each control is verified locally, and missing authority or unsafe failure is repaired before a convenience layer is connected to it.
-- [ ] WEBSEC-CK-STRUCTURE-02-03 — Requirements, implementation, configuration, tests, documentation, logging, runbooks, and incident recovery are updated together.
+- [ ] WEBSEC-CK-STRUCTURE-02-02 — Each control is verified locally.
+- [ ] WEBSEC-CK-STRUCTURE-02-03 — Missing authority or unsafe failure is repaired before a convenience layer is connected to the control.
+- [ ] WEBSEC-CK-STRUCTURE-02-04 — Requirements, implementation, configuration, tests, documentation, logging, runbooks, and incident recovery are updated together.
 
 ### WEBSEC-SC-STRUCTURE-03 — Normal case: every security lifecycle is defined end to end
 
@@ -117,10 +119,12 @@ inputs, or that dead-ends the person, is the failure.
 
 #### Checklist
 
-- [ ] WEBSEC-CK-USAGE-01-01 — The deny behavior is defined and is the default.
-- [ ] WEBSEC-CK-USAGE-01-02 — Every operation on every resource is authorized rather than only the entry point.
-- [ ] WEBSEC-CK-USAGE-01-03 — The error surfaced on denial is safe and does not disclose the protected decision's inputs.
-- [ ] WEBSEC-CK-USAGE-01-04 — A denied or failed path has a defined recovery route and an alert or incident path where the risk requires one.
+- [ ] WEBSEC-CK-USAGE-01-01 — The deny behavior is defined.
+- [ ] WEBSEC-CK-USAGE-01-02 — The deny behavior is the default.
+- [ ] WEBSEC-CK-USAGE-01-03 — Every operation on every resource is authorized rather than only the entry point.
+- [ ] WEBSEC-CK-USAGE-01-04 — The error surfaced on denial is safe.
+- [ ] WEBSEC-CK-USAGE-01-05 — The error surfaced on denial does not disclose the protected decision's inputs.
+- [ ] WEBSEC-CK-USAGE-01-06 — A denied or failed path has a defined recovery route and an alert or incident path where the risk requires one.
 
 ### WEBSEC-SC-USAGE-02 — Normal case: exceptional and degraded paths are covered
 
@@ -132,7 +136,7 @@ stops at the valid path is the failure.
 
 - [ ] WEBSEC-CK-USAGE-02-01 — Invalid, malicious, stale, duplicated, partially completed, provider-failed, dependency-compromised, exceptional, and operationally degraded paths are modelled.
 - [ ] WEBSEC-CK-USAGE-02-02 — Alerts, incidents, and recovery are defined for the paths whose risk requires them.
-- Also applies: WEBSEC-CK-STRUCTURE-02-03 (runbooks and incident recovery updated with the control).
+- Also applies: WEBSEC-CK-STRUCTURE-02-04 (runbooks and incident recovery updated with the control).
 
 ## Consistency
 
@@ -196,7 +200,7 @@ assurance shaped to close a review rather than to find a weakness is the failure
 
 - [ ] WEBSEC-CK-RISK-03-01 — No scanner result, OWASP Top 10 list, happy path, or single penetration pass is accepted as sufficient assurance.
 - [ ] WEBSEC-CK-RISK-03-02 — A failed control, shallow scan result, untested real seam, unsupported version, or missing recovery evidence is returned to its owner rather than counted as evidence.
-- [ ] WEBSEC-CK-RISK-03-03 — Untested areas, accepted exceptions, residual risk, the remediation owner, and the reopen condition are reported.
+- Also applies: WEBSEC-CK-OVERALL-01-01 (untested areas, accepted exceptions, residual risk, the remediation owner, and the reopen condition are reported).
 
 ### WEBSEC-SC-RISK-04 — Edge case: a required proof cannot be obtained
 
@@ -209,7 +213,9 @@ evidence class quietly substituted is the failure.
 - [ ] WEBSEC-CK-RISK-04-01 — An unsupported requirement or an unavailable proof is returned rather than satisfied with a weaker evidence class.
 - [ ] WEBSEC-CK-RISK-04-02 — The evidence classes combined — source, static, dependency, configuration, unit, integration, dynamic, adversarial, recovery, and alert — are proportional to the risk they support.
 - [ ] WEBSEC-CK-RISK-04-03 — The named versions and environments each inspection ran in are recorded with its result.
-- [ ] WEBSEC-CK-RISK-04-04 — The required suite is implemented and run by `web-testing` while this operation retains the threat-to-evidence contract.
+- [ ] WEBSEC-CK-RISK-04-04 — The required suite is implemented by `web-testing`.
+- [ ] WEBSEC-CK-RISK-04-05 — The required suite is run by `web-testing`.
+- [ ] WEBSEC-CK-RISK-04-06 — This operation retains the threat-to-evidence contract.
 
 ## Overall
 

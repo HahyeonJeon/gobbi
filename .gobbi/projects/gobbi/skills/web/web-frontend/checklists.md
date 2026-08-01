@@ -60,7 +60,8 @@ is the failure.
 
 - [ ] WEBFRNT-CK-STRUCTURE-02-01 — Each specified unit names its purpose, preconditions, inputs, outputs, semantics, accessible name, focus, feedback, error, recovery, responsive and localized behavior, trust effect, and evidence.
 - [ ] WEBFRNT-CK-STRUCTURE-02-02 — The shortest normal path plus an applicable failure and recovery route is complete before further units are added.
-- [ ] WEBFRNT-CK-STRUCTURE-02-03 — The specification is revised before production code, and production code begins only when the whole design is accepted.
+- [ ] WEBFRNT-CK-STRUCTURE-02-03 — The specification is revised before production code.
+- [ ] WEBFRNT-CK-STRUCTURE-02-04 — Production code begins only when the whole design is accepted.
 
 ### WEBFRNT-SC-STRUCTURE-03 — Poor quality: breadth is added over an incomplete scaffold
 
@@ -113,8 +114,9 @@ inferred from a rendering rather than inspected is the failure.
 #### Checklist
 
 - [ ] WEBFRNT-CK-USAGE-01-01 — Native elements are preferred, and each control exposes an accurate name, role, state, and structure.
-- [ ] WEBFRNT-CK-USAGE-01-02 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are specified and implemented.
-- [ ] WEBFRNT-CK-USAGE-01-03 — Live keyboard, pointer, touch, and applicable assistive-technology interaction is inspected in a real browser rather than inferred.
+- [ ] WEBFRNT-CK-USAGE-01-02 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are specified.
+- [ ] WEBFRNT-CK-USAGE-01-03 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are implemented.
+- [ ] WEBFRNT-CK-USAGE-01-04 — Live keyboard, pointer, touch, and applicable assistive-technology interaction is inspected in a real browser rather than inferred.
 
 ### WEBFRNT-SC-USAGE-02 — Expected failure: a person must recover from a failed or unauthorized path
 
@@ -178,7 +180,8 @@ evidence demand the Rule does not make are failures.
 - [ ] WEBFRNT-CK-RISK-01-01 — The current product and the available user evidence are studied before any design is committed.
 - [ ] WEBFRNT-CK-RISK-01-02 — Every material choice that is novel, uncertain, exclusionary, consequential, security- or compatibility-sensitive, hard to reverse, or carries material risk of harm is committed only after an external reference or new representative-user evidence.
 - [ ] WEBFRNT-CK-RISK-01-03 — A material choice matching none of those triggers is committed on the studied current product and available evidence, without an external reference or new representative-user evidence being required of it.
-- [ ] WEBFRNT-CK-RISK-01-04 — Each material question that current evidence does not safely resolve is named, and the risk-proportional direct-user evidence threshold is set against it.
+- [ ] WEBFRNT-CK-RISK-01-04 — Each material question that current evidence does not safely resolve is named.
+- [ ] WEBFRNT-CK-RISK-01-05 — The risk-proportional direct-user evidence threshold is set against each named question.
 
 ### WEBFRNT-SC-RISK-02 — Rule violation: a source is used without being verified
 

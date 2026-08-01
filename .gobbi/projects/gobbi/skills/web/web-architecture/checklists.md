@@ -132,7 +132,8 @@ routing layer happens to do is the failure.
 
 - [ ] WEBARCH-CK-USAGE-01-01 — URL meaning, history, refresh, deep links, multiple tabs, session changes, and degraded operation are each decided deliberately rather than inherited.
 - [ ] WEBARCH-CK-USAGE-01-02 — Meaningful URLs, standard links and forms, and a server fallback are preserved where the product supports them.
-- [ ] WEBARCH-CK-USAGE-01-03 — Offline or degraded behavior is defined and truthful about what is unavailable.
+- [ ] WEBARCH-CK-USAGE-01-03 — Offline or degraded behavior is defined.
+- [ ] WEBARCH-CK-USAGE-01-04 — Offline or degraded behavior is truthful about what is unavailable.
 
 ### WEBARCH-SC-USAGE-02 — Expected failure: a session changes while two tabs are open
 
@@ -176,7 +177,8 @@ stale; treating the document as the architecture because it is written down is t
 
 #### Checklist
 
-- [ ] WEBARCH-CK-CONSISTENCY-02-01 — The disagreement is resolved on inspected running behavior, and the stale record is named as stale.
+- [ ] WEBARCH-CK-CONSISTENCY-02-01 — The disagreement is resolved on inspected running behavior.
+- [ ] WEBARCH-CK-CONSISTENCY-02-02 — The stale record is named as stale.
 
 ## Risk
 

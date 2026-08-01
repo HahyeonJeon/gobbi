@@ -65,9 +65,10 @@ behavior; a transport shaped around an undecided domain is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-STRUCTURE-02-01 — Policy, data, effects, failure, and recovery are specified and built before transport and client-convenience layers.
-- [ ] WEBBACK-CK-STRUCTURE-02-02 — The complete types, schemas, domain, policy, repository, provider, transport, error, migration, diagnostic, fixture, and test-seam scaffold is rendered before production behavior.
-- [ ] WEBBACK-CK-STRUCTURE-02-03 — Types, schema, invariants, policy, authoritative effects, transaction or idempotency, and recovery are implemented in dependency order for the first path.
+- [ ] WEBBACK-CK-STRUCTURE-02-01 — Policy, data, effects, failure, and recovery are specified before transport and client-convenience layers.
+- [ ] WEBBACK-CK-STRUCTURE-02-02 — Policy, data, effects, failure, and recovery are built before transport and client-convenience layers.
+- [ ] WEBBACK-CK-STRUCTURE-02-03 — The complete types, schemas, domain, policy, repository, provider, transport, error, migration, diagnostic, fixture, and test-seam scaffold is rendered before production behavior.
+- [ ] WEBBACK-CK-STRUCTURE-02-04 — Types, schema, invariants, policy, authoritative effects, transaction or idempotency, and recovery are implemented in dependency order for the first path.
 
 ### WEBBACK-SC-STRUCTURE-03 — Poor quality: a fake seam is treated as proof
 

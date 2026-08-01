@@ -30,8 +30,10 @@ still moving is the failure.
 
 - [ ] WEBDEP-CK-PROJECT-01-01 — Work starts from `web-feature`'s release-ready handoff or the caller's equivalent, including its compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
 - [ ] WEBDEP-CK-PROJECT-01-02 — A handoff whose evaluation is unresolved, or whose limitation carries no user disposition, is refused rather than deployed.
-- [ ] WEBDEP-CK-PROJECT-01-03 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are frozen and recorded before anything in the target environment changes.
-- [ ] WEBDEP-CK-PROJECT-01-04 — One build identity is embedded in the build and carried by every later artifact, log, and error report, so a cache entry, a stale client, and an incident report resolve to exactly one build.
+- [ ] WEBDEP-CK-PROJECT-01-03 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are frozen before anything in the target environment changes.
+- [ ] WEBDEP-CK-PROJECT-01-04 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are recorded before anything in the target environment changes.
+- [ ] WEBDEP-CK-PROJECT-01-05 — One build identity is embedded in the build.
+- [ ] WEBDEP-CK-PROJECT-01-06 — That one build identity is carried by every later artifact, log, and error report, so a cache entry, a stale client, and an incident report resolve to exactly one build.
 
 ### WEBDEP-SC-PROJECT-02 — Normal case: adjacent questions reach their owners
 
@@ -54,10 +56,11 @@ reorganisation the release did not require is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-STRUCTURE-01-01 — The working bundler is preserved and only what this release requires is changed.
-- [ ] WEBDEP-CK-STRUCTURE-01-02 — One entry point exists per delivered surface, and code splits at a route, a deferred feature, or a rarely reached dependency.
-- [ ] WEBDEP-CK-STRUCTURE-01-03 — A shared dependency lives in one chunk rather than being duplicated across entries.
-- [ ] WEBDEP-CK-STRUCTURE-01-04 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
+- [ ] WEBDEP-CK-STRUCTURE-01-01 — The working bundler is preserved.
+- [ ] WEBDEP-CK-STRUCTURE-01-02 — Only what this release requires is changed in the build configuration.
+- [ ] WEBDEP-CK-STRUCTURE-01-03 — One entry point exists per delivered surface, and code splits at a route, a deferred feature, or a rarely reached dependency.
+- [ ] WEBDEP-CK-STRUCTURE-01-04 — A shared dependency lives in one chunk rather than being duplicated across entries.
+- [ ] WEBDEP-CK-STRUCTURE-01-05 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
 
 ### WEBDEP-SC-STRUCTURE-02 — Rule violation: a cacheable asset is served under a reusable name
 
@@ -69,8 +72,9 @@ versions from one name is the failure.
 
 - [ ] WEBDEP-CK-STRUCTURE-02-01 — Every cacheable asset filename is derived from its content.
 - [ ] WEBDEP-CK-STRUCTURE-02-02 — A rebuilt but unchanged asset keeps its name, and a changed asset receives a new one.
-- [ ] WEBDEP-CK-STRUCTURE-02-03 — Cacheable assets are served with a long-lived immutable freshness lifetime while the entry document stays revalidated.
-- [ ] WEBDEP-CK-STRUCTURE-02-04 — The naming scheme, the freshness lifetime per class of file, and the entry document's directives are recorded as they are actually served rather than as configured.
+- [ ] WEBDEP-CK-STRUCTURE-02-03 — Cacheable assets are served with a long-lived immutable freshness lifetime.
+- [ ] WEBDEP-CK-STRUCTURE-02-04 — The entry document stays revalidated.
+- [ ] WEBDEP-CK-STRUCTURE-02-05 — The naming scheme, the freshness lifetime per class of file, and the entry document's directives are recorded as they are actually served rather than as configured.
 
 ## Performance
 
@@ -85,7 +89,7 @@ signals it claims to rely on is the failure.
 - [ ] WEBDEP-CK-PERFORMANCE-01-01 — Each rollout stage is the smallest the target supports.
 - [ ] WEBDEP-CK-PERFORMANCE-01-02 — Each stage is held long enough for error, latency, and outcome signals to move before the next advance.
 - [ ] WEBDEP-CK-PERFORMANCE-01-03 — Each stage boundary, its traffic share, the signals observed during the hold, and the decision taken at the end of it are recorded.
-- Also applies: WEBDEP-CK-STRUCTURE-01-04 (chunk graph and first-visit cost recorded).
+- Also applies: WEBDEP-CK-STRUCTURE-01-05 (chunk graph and first-visit cost recorded).
 
 ### WEBDEP-SC-PERFORMANCE-02 — Edge case: a warm cache and an old document still request the previous names
 
@@ -109,7 +113,7 @@ is the failure.
 #### Checklist
 
 - [ ] WEBDEP-CK-AESTHETICS-01-01 — Each deploy step's completion time, the moment the entry document changed, and confirmation that the previous build's assets remain in place are recorded.
-- Also applies: WEBDEP-CK-PROJECT-01-04 (one build identity carried by every artifact, log, and error report).
+- Also applies: WEBDEP-CK-PROJECT-01-06 (one build identity carried by every artifact, log, and error report).
 
 ## Usage
 
@@ -122,9 +126,10 @@ person who may act, and proves the path by running it; a path first run during a
 #### Checklist
 
 - [ ] WEBDEP-CK-USAGE-01-01 — The reverse path names the exact previous artifact, how it is restored, how long its assets are retained, which data changes are reversible and which are not, and who may activate it.
-- [ ] WEBDEP-CK-USAGE-01-02 — The reverse path is defined before any forward step and is executable by a named person without further design.
-- [ ] WEBDEP-CK-USAGE-01-03 — The stop conditions that trigger the reverse path are recorded.
-- [ ] WEBDEP-CK-USAGE-01-04 — The reverse path was exercised on the retained previous artifact before the first forward step, in a pre-production target that mirrors production or through the production target's documented dry run.
+- [ ] WEBDEP-CK-USAGE-01-02 — The reverse path is defined before any forward step.
+- [ ] WEBDEP-CK-USAGE-01-03 — The reverse path is executable by a named person without further design.
+- [ ] WEBDEP-CK-USAGE-01-04 — The stop conditions that trigger the reverse path are recorded.
+- [ ] WEBDEP-CK-USAGE-01-05 — The reverse path was exercised on the retained previous artifact before the first forward step, in a pre-production target that mirrors production or through the production target's documented dry run.
 
 ### WEBDEP-SC-USAGE-02 — Expected failure: verification fails or a stop condition is met
 
@@ -135,8 +140,9 @@ the failure.
 #### Checklist
 
 - [ ] WEBDEP-CK-USAGE-02-01 — The release is reversed without waiting for a diagnosis, and the diagnosis proceeds from the restored state.
-- [ ] WEBDEP-CK-USAGE-02-02 — The previous entry document is restored and its assets are confirmed still served.
-- [ ] WEBDEP-CK-USAGE-02-03 — The restored release is re-verified from the production URL rather than assumed to have succeeded.
+- [ ] WEBDEP-CK-USAGE-02-02 — The previous entry document is restored.
+- [ ] WEBDEP-CK-USAGE-02-03 — The previous entry document's assets are confirmed still served.
+- [ ] WEBDEP-CK-USAGE-02-04 — The restored release is re-verified from the production URL rather than assumed to have succeeded.
 
 ### WEBDEP-SC-USAGE-03 — Edge case: a change has no reverse path
 
@@ -159,8 +165,9 @@ is the failure.
 
 - [ ] WEBDEP-CK-CONSISTENCY-01-01 — Verification is performed against the production URL people actually use, not a preview alias, an origin bypass, or a staging host.
 - [ ] WEBDEP-CK-CONSISTENCY-01-02 — The served build identity read from the entry document matches the frozen identity.
-- [ ] WEBDEP-CK-CONSISTENCY-01-03 — At least one hashed asset, one lazily loaded chunk, and one authoritative round trip are exercised, and the cache directives are read as served.
-- [ ] WEBDEP-CK-CONSISTENCY-01-04 — Every difference between the frozen artifact and the served bytes is returned to the ordering step before the deployment is reported complete.
+- [ ] WEBDEP-CK-CONSISTENCY-01-03 — At least one hashed asset, one lazily loaded chunk, and one authoritative round trip are exercised.
+- [ ] WEBDEP-CK-CONSISTENCY-01-04 — The cache directives are read as served.
+- [ ] WEBDEP-CK-CONSISTENCY-01-05 — Every difference between the frozen artifact and the served bytes is returned to the ordering step before the deployment is reported complete.
 
 ### WEBDEP-SC-CONSISTENCY-02 — Rule violation: the deploy order lets one version reference something absent
 
@@ -171,9 +178,10 @@ a migration incompatible with the currently serving build is the failure.
 #### Checklist
 
 - [ ] WEBDEP-CK-CONSISTENCY-02-01 — Backward-compatible migrations are applied before the code that needs them.
-- [ ] WEBDEP-CK-CONSISTENCY-02-02 — Every asset and chunk is uploaded before the entry document that names them, and the entry document is published last.
-- [ ] WEBDEP-CK-CONSISTENCY-02-03 — The previous and the new entry document can both be served correctly at the same time throughout the rollout.
-- [ ] WEBDEP-CK-CONSISTENCY-02-04 — A migration that is not backward compatible with the currently serving build stops the deploy and triggers the reverse path.
+- [ ] WEBDEP-CK-CONSISTENCY-02-02 — Every asset and chunk is uploaded before the entry document that names them.
+- [ ] WEBDEP-CK-CONSISTENCY-02-03 — The entry document is published last.
+- [ ] WEBDEP-CK-CONSISTENCY-02-04 — The previous and the new entry document can both be served correctly at the same time throughout the rollout.
+- [ ] WEBDEP-CK-CONSISTENCY-02-05 — A migration that is not backward compatible with the currently serving build stops the deploy and triggers the reverse path.
 
 ## Risk
 
@@ -186,9 +194,10 @@ the authority it requires; proceeding on assumed, inherited, or adjacent authori
 
 #### Checklist
 
-- [ ] WEBDEP-CK-RISK-01-01 — No credential is used, and nothing is published, promoted, or advanced, without explicit authority for that exact action.
-- [ ] WEBDEP-CK-RISK-01-02 — A blocked action stops with the artifact, the verification evidence, and the reverse path preserved.
-- [ ] WEBDEP-CK-RISK-01-03 — The first blocked action and the authority it requires are named.
+- [ ] WEBDEP-CK-RISK-01-01 — No credential is used without explicit authority for that exact action.
+- [ ] WEBDEP-CK-RISK-01-02 — Nothing is published, promoted, or advanced without explicit authority for that exact action.
+- [ ] WEBDEP-CK-RISK-01-03 — A blocked action stops with the artifact, the verification evidence, and the reverse path preserved.
+- [ ] WEBDEP-CK-RISK-01-04 — The first blocked action and the authority it requires are named.
 
 ### WEBDEP-SC-RISK-02 — Normal case: source maps are generated and their publication decided
 
@@ -229,4 +238,4 @@ unanswered, or when deployment, verification, and health are reported as one sta
 - [ ] WEBDEP-CK-OVERALL-01-01 — The deployment record answers build identity, cache and naming contract, deploy order, rollout stages, live verification, reverse path, and authority state.
 - [ ] WEBDEP-CK-OVERALL-01-02 — Deployment, live verification, and observed health are reported as separate claims.
 - [ ] WEBDEP-CK-OVERALL-01-03 — Every irreversible data change, retained artifact, retention window, and remaining risk is recorded.
-- Also applies: WEBDEP-CK-RISK-01-03 (first blocked action and its authority named).
+- Also applies: WEBDEP-CK-RISK-01-04 (first blocked action and its authority named).

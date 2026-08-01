@@ -88,7 +88,8 @@ inside a scroll handler, forcing synchronous layout, is the failure.
 
 - [ ] WEBIXN-CK-PERFORMANCE-01-01 — `scroll`, `pointermove`, and `resize` presentation work is coalesced into one `requestAnimationFrame` callback, or the departure names the event that must act immediately and pairs a leading edge with a trailing follow-up.
 - [ ] WEBIXN-CK-PERFORMANCE-01-02 — Work that should run once the input settles uses a trailing debounce.
-- [ ] WEBIXN-CK-PERFORMANCE-01-03 — `IntersectionObserver` answers "is it visible" and `ResizeObserver` answers "did it change size", or the departure names the need for the scroll offset itself.
+- [ ] WEBIXN-CK-PERFORMANCE-01-03 — `IntersectionObserver` answers whether an element is visible, or the departure names the need for the scroll offset itself.
+- [ ] WEBIXN-CK-PERFORMANCE-01-04 — `ResizeObserver` answers whether an element changed size, or the departure names the need for the scroll offset itself.
 
 ### WEBIXN-SC-PERFORMANCE-02 — Rule violation: rate limiting is applied to a handler that owns correctness
 
@@ -135,9 +136,11 @@ tracks pointer position, is the failure.
 
 #### Checklist
 
-- [ ] WEBIXN-CK-USAGE-01-01 — Every pointer-operable affordance can be reached and operated from the keyboard, and produces the same observable state change.
-- [ ] WEBIXN-CK-USAGE-01-02 — No behavior exists only on hover, only from pointer position, or only through a drag.
-- [ ] WEBIXN-CK-USAGE-01-03 — A hover-revealed affordance is also revealed on focus.
+- [ ] WEBIXN-CK-USAGE-01-01 — Every pointer-operable affordance can be reached from the keyboard.
+- [ ] WEBIXN-CK-USAGE-01-02 — Every pointer-operable affordance can be operated from the keyboard.
+- [ ] WEBIXN-CK-USAGE-01-03 — Every pointer-operable affordance produces the same observable state change from the keyboard as from the pointer.
+- [ ] WEBIXN-CK-USAGE-01-04 — No behavior exists only on hover, only from pointer position, or only through a drag.
+- [ ] WEBIXN-CK-USAGE-01-05 — A hover-revealed affordance is also revealed on focus.
 
 ### WEBIXN-SC-USAGE-02 — Rule violation: a gesture or a target falls below the pointer floor
 
@@ -172,7 +175,8 @@ chosen for convenience is the failure.
 
 #### Checklist
 
-- [ ] WEBIXN-CK-USAGE-04-01 — Roving `tabindex` is the default so the active item is the focused element, and `aria-activedescendant` is chosen only when focus must stay in a text field driving the collection or the collection is virtualized.
+- [ ] WEBIXN-CK-USAGE-04-01 — Roving `tabindex` is the default so the active item is the focused element.
+- [ ] WEBIXN-CK-USAGE-04-02 — `aria-activedescendant` is chosen only when focus must stay in a text field driving the collection or the collection is virtualized.
 
 ## Consistency
 
@@ -186,7 +190,7 @@ failure.
 
 - [ ] WEBIXN-CK-CONSISTENCY-01-01 — Pointer Events, `setPointerCapture` for the duration of a drag, and an explicit `touch-action` are used, or the departure names the behavior that genuinely differs by input type.
 - [ ] WEBIXN-CK-CONSISTENCY-01-02 — Parallel mouse and touch paths, where kept, converge on one state update.
-- Also applies: WEBIXN-CK-USAGE-01-01 (the keyboard path produces the same observable state change).
+- Also applies: WEBIXN-CK-USAGE-01-03 (the keyboard path produces the same observable state change).
 
 ## Risk
 

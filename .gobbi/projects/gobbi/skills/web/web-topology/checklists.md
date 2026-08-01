@@ -127,8 +127,9 @@ leaves the rest on one strategy; an undocumented second strategy is the failure.
 
 #### Checklist
 
-- [ ] WEBTOPO-CK-USAGE-02-01 — The exception is documented and names the ownership, compatibility, or lifecycle evidence that earns the difference.
-- [ ] WEBTOPO-CK-USAGE-02-02 — The rest of the project keeps the single placement strategy.
+- [ ] WEBTOPO-CK-USAGE-02-01 — The exception is documented.
+- [ ] WEBTOPO-CK-USAGE-02-02 — The exception names the ownership, compatibility, or lifecycle evidence that earns the difference.
+- [ ] WEBTOPO-CK-USAGE-02-03 — The rest of the project keeps the single placement strategy.
 
 ## Consistency
 

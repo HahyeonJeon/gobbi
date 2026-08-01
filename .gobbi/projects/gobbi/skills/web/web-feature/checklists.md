@@ -71,9 +71,10 @@ endpoint treated as the feature is the failure.
 #### Checklist
 
 - [ ] WEBFEAT-CK-STRUCTURE-02-01 — The smallest safe path runs from a real entry through the required browser, server, and data or provider seams to truthful observable completion.
-- [ ] WEBFEAT-CK-STRUCTURE-02-02 — Every fake or unavailable dependency is marked, and one end-to-end skeleton trace is captured as evidence.
-- [ ] WEBFEAT-CK-STRUCTURE-02-03 — No client-only demo, mock response, or isolated endpoint is treated as the feature.
-- [ ] WEBFEAT-CK-STRUCTURE-02-04 — The earliest missing seam is repaired before another slice is added.
+- [ ] WEBFEAT-CK-STRUCTURE-02-02 — Every fake or unavailable dependency is marked.
+- [ ] WEBFEAT-CK-STRUCTURE-02-03 — One end-to-end skeleton trace is captured as evidence.
+- [ ] WEBFEAT-CK-STRUCTURE-02-04 — No client-only demo, mock response, or isolated endpoint is treated as the feature.
+- [ ] WEBFEAT-CK-STRUCTURE-02-05 — The earliest missing seam is repaired before another slice is added.
 
 ## Performance
 
@@ -149,7 +150,8 @@ previous slice is the failure.
 
 - [ ] WEBFEAT-CK-CONSISTENCY-01-01 — Implementation, contracts, data, configuration, documentation, tests, security evidence, and telemetry are updated together within each slice.
 - [ ] WEBFEAT-CK-CONSISTENCY-01-02 — Contracts, implementation, configuration, migrations, tests, security records, telemetry, support, and documentation are reconciled before the handoff.
-- [ ] WEBFEAT-CK-CONSISTENCY-01-03 — The recorded current behavior matches the application as inspected, and every authorized break is recorded with its evidence.
+- [ ] WEBFEAT-CK-CONSISTENCY-01-03 — The recorded current behavior matches the application as inspected.
+- [ ] WEBFEAT-CK-CONSISTENCY-01-04 — Every authorized break is recorded with its evidence.
 
 ### WEBFEAT-SC-CONSISTENCY-02 — Rule violation: distinct claims are merged into one status
 
@@ -174,9 +176,10 @@ deploys because it could is the failure.
 #### Checklist
 
 - [ ] WEBFEAT-CK-RISK-01-01 — The operation ends at the release-ready handoff to `web-deployment`.
-- [ ] WEBFEAT-CK-RISK-01-02 — Deployment, live validation, and observed health proceed only under their own authority and are not claimed here.
-- [ ] WEBFEAT-CK-RISK-01-03 — Any unauthorized external or irreversible action pauses for authority rather than proceeding.
-- [ ] WEBFEAT-CK-RISK-01-04 — A passing evaluation, or the user's explicit disposition of every limitation, precedes the handoff.
+- [ ] WEBFEAT-CK-RISK-01-02 — Deployment, live validation, and observed health proceed only under their own authority.
+- [ ] WEBFEAT-CK-RISK-01-03 — Deployment, live validation, and observed health are not claimed by this operation.
+- [ ] WEBFEAT-CK-RISK-01-04 — Any unauthorized external or irreversible action pauses for authority rather than proceeding.
+- [ ] WEBFEAT-CK-RISK-01-05 — A passing evaluation, or the user's explicit disposition of every limitation, precedes the handoff.
 
 ### WEBFEAT-SC-RISK-02 — Adversarial: a success measure is gamed
 

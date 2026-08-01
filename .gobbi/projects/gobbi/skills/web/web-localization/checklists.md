@@ -209,7 +209,8 @@ resting on the source locale alone is the failure.
 
 - [ ] WEBLOC-CK-RISK-03-01 — The interface is run against a generated pseudolocale from the first sprint that has a catalog.
 - [ ] WEBLOC-CK-RISK-03-02 — At least one right-to-left locale is in the routine check set from the point localization starts.
-- [ ] WEBLOC-CK-RISK-03-03 — Any departure from continuous right-to-left testing names a declared supported-locale list containing no right-to-left language and records that it reopens when one is added.
+- [ ] WEBLOC-CK-RISK-03-03 — Any departure from continuous right-to-left testing names a declared supported-locale list containing no right-to-left language.
+- [ ] WEBLOC-CK-RISK-03-04 — Any departure from continuous right-to-left testing records that it reopens when a right-to-left language is added.
 
 ## Overall
 
