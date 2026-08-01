@@ -130,7 +130,7 @@ Use this shape:
 - Decide with a placeholder test. Replace only the varying subject or object with a placeholder and leave
   every verb phrase as written. Merge only when the residual verb phrases name the same required state;
   broadening a verb phrase to make two rows match proves two states, not one.
-- Read this boundary with the six-row scenario cap and the fifty-three-row source cap at Step 4.1. A cap alone
+- Read this boundary with the six-row scenario cap and the fifty-five-row source cap at Step 4.1. A cap alone
   invites compound rows, and this boundary alone depends on the author noticing the fan-out.
 
 Use this shape:
@@ -162,15 +162,18 @@ Use this shape:
   merge was missed, not that the cap is wrong.
 - Merge the fanned-out rows first, then split the scenario when more than six different conditions remain.
   Never meet the count by dropping a traced row or by bundling conditions into one row.
-- Count the rows in the whole source. A source carries at most fifty-three rows; a longer list means the bound
-  subject holds more than one source's obligations, not that the cap is wrong. This figure rose from fifty
-  because the Step 3.1 split rule made every compound row atomic: the repaired sources inflated by 1.068, and
-  that ratio applied to fifty gives fifty-three. Where the corpus distribution falls around that figure is a
-  consistency observation on the result rather than a second derivation of it, because that distribution is
-  the same corpus the ceiling is measured on. The count therefore bounds the subject's breadth, not its
+- Count the rows in the whole source. A source carries at most fifty-five rows; a longer list means the bound
+  subject holds more than one source's obligations, not that the cap is wrong. This figure was fifty, then
+  fifty-three, and each was measured before Step 3.1 had finished: a compound row still packed into a source
+  hides the lines its own split will need, so a ceiling derived from a corpus that is not yet atomic always
+  reads too tight. Measured across the complete atomicity repair, the sources it touched inflated by a factor
+  of 1.102, and that factor applied to the original fifty gives fifty-five. Where the corpus distribution
+  falls around that figure is a consistency observation on the result rather than a second derivation of it,
+  because that distribution is the same corpus the ceiling is measured on. Re-derive the figure whenever a
+  further atomicity change moves the corpus. The count therefore bounds the subject's breadth, not its
   coverage.
 - Merge the fanned-out rows across every scenario first, then return to Step 1.1 and bind a narrower subject
-  when more than fifty-three different conditions remain. Never meet either count by dropping a traced row or
+  when more than fifty-five different conditions remain. Never meet either count by dropping a traced row or
   by bundling conditions into one row.
 - Return to the earliest affected phase when a perspective, source obligation, or material situation lacks
   coverage.
