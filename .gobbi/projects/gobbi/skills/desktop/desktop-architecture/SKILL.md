@@ -12,17 +12,18 @@ step: which views exist and how they nest, whether a new surface opens a window 
 content, which process owns each piece of state, and what a person finds after quitting and relaunching. It
 covers the structure inside the application, not the operating-system behavior around it.
 
-`desktop-contract` owns the observable installed-platform promise — targets, entry modes, window and
-lifecycle behavior, native integration, local data, update, and recovery — and this skill owns the view
-structure and state ownership that promise is built from. `desktop-interface` owns identity, evidence, concept
-exploration, and expression; `desktop-delivery` coordinates the outcome and keeps each decision with its
-owner, so it routes here rather than deciding; and
+`desktop-contract` owns the observable installed-platform promise — targets, entry modes including protocol
+and deep-link entry, window and lifecycle behavior, native integration, local data, update, and recovery — and
+this skill owns the view structure and state ownership that promise is built from. `desktop-interface` owns
+identity, evidence, concept exploration, and expression; `desktop-delivery` coordinates the outcome and keeps
+each decision with its owner, so it routes here rather than deciding; and
 [`electron-design`](../../electron/electron-design/SKILL.md) owns the process, privilege, bridge, and IPC
 mechanics that carry these decisions.
 [`web-architecture`](../../web/web-architecture/SKILL.md) is this skill's web peer and does not replace it: it
-reasons from a URL-addressed document delivered over a network, with rendering mode, caching, history, deep
-links, refresh, and multiple tabs. An installed application has none of those, and its server is a main
-process one inter-process call away, so the same questions have different answers here. Rules define the
+reasons from a URL-addressed document delivered over a network, where the browser already supplies rendering
+mode, caching, history, deep links, refresh, and multiple tabs. An installed application inherits none of
+those meanings automatically, and its authoritative state may sit in a main process one inter-process call
+away or in a remote service, so each concept has to be decided here rather than assumed. Rules define the
 boundary, Preferences select defaults inside it, and a Rule wins every conflict.
 
 ## Principles
@@ -61,9 +62,10 @@ nobody decided, it reads as data loss.
   person must be able to tell where they are and return without closing a window, and the same path must work
   from the keyboard alone.
 
-- **MUST assign every piece of application state one owning process and one lifetime — durable, session, or
-  derived — and NEVER let two renderers each hold an authoritative copy.** A renderer's copy is a view of
-  state the main process owns unless the state is genuinely local to that one window.
+- **MUST assign every piece of application state one owner — a process, or a remote service the application
+  depends on — and one lifetime, durable, session, or derived, and NEVER let two renderers each hold an
+  authoritative copy.** A renderer's copy is a view of state its declared owner holds unless the state is
+  genuinely local to that one window.
 
 - **MUST decide, per view, whether reaching it opens a window or changes the current window's content, and
   record the rule.** Route the resulting window's creation, restore, focus, and cleanup promise to
@@ -74,8 +76,10 @@ nobody decided, it reads as data loss.
   explicitly that a class is not restored.
 
 - **NEVER adopt a web application's routing model without deciding what each borrowed concept means when
-  installed.** Refresh, browser history, deep links, and multiple tabs have no installed equivalent, so a
-  router taken for familiarity brings behavior the platform does not provide.
+  installed.** Refresh, browser history, deep links, and multiple tabs carry no automatic installed meaning, so
+  each needs a decided one — a deep link routed to `desktop-contract` as an entry mode, an in-application
+  meaning, or a recorded statement that this application has no equivalent — before a router supplies a
+  default instead.
 
 ## Preferences
 
@@ -89,9 +93,10 @@ document — and record why that surface is separate.
 ### Prefer main-process ownership for anything two surfaces can see
 
 **PREFER** holding shared state in the main process or a bounded utility process with renderers subscribing to
-it, so a second window, a reopened window, and a background task cannot disagree. Depart for state that is
-genuinely per-window, such as scroll position, a transient selection, or an in-progress form, and say so where
-that state is declared.
+it, so a second window, a reopened window, and a background task cannot disagree, including when the authority
+behind that state is a remote service the main process talks to. Depart for state that is genuinely
+per-window, such as scroll position, a transient selection, or an in-progress form, and say so where that
+state is declared.
 
 ### Prefer an explicit location model over a router adopted wholesale
 

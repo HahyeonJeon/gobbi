@@ -60,15 +60,15 @@ control happened to do is the failure.
 
 ### DTARCH-SC-STRUCTURE-02 — Normal case: every state value has one owning process and one lifetime
 
-Application state is spread across the main process and one or more renderers. The expected outcome assigns
-each value one owner and one lifetime; a value two renderers each treat as authoritative is the failure, even
-while only one window is open.
+Application state is spread across the main process, one or more renderers, and any remote service the
+application depends on. The expected outcome assigns each value one owner and one lifetime; a value two
+renderers each treat as authoritative is the failure, even while only one window is open.
 
 #### Checklist
 
-- [ ] DTARCH-CK-STRUCTURE-02-01 — Every piece of application state names one owning process and one lifetime — durable, session, or derived.
+- [ ] DTARCH-CK-STRUCTURE-02-01 — Every piece of application state names one owner — a process, or a remote service the application depends on — and one lifetime: durable, session, or derived.
 - [ ] DTARCH-CK-STRUCTURE-02-02 — No value has an authoritative copy in two renderers.
-- [ ] DTARCH-CK-STRUCTURE-02-03 — Every value a renderer holds is either a view of state the main process owns or state declared genuinely local to that one window.
+- [ ] DTARCH-CK-STRUCTURE-02-03 — Every value a renderer holds is either a view of state its declared owner holds or state declared genuinely local to that one window.
 - [ ] DTARCH-CK-STRUCTURE-02-04 — Every per-window exception — scroll position, transient selection, in-progress form input — is declared as such where that state is declared.
 
 ### DTARCH-SC-STRUCTURE-03 — Edge case: a surface is genuinely used beside the main one
@@ -173,7 +173,7 @@ the platform contract; a window that exists only in the architecture record is t
 #### Checklist
 
 - [ ] DTARCH-CK-CONSISTENCY-02-01 — Every window this structure creates appears in the window and lifecycle promise `desktop-contract` owns.
-- [ ] DTARCH-CK-CONSISTENCY-02-02 — Every state value declared durable appears in the local-data inventory `desktop-contract` owns.
+- [ ] DTARCH-CK-CONSISTENCY-02-02 — Every state value declared durable and held on the device appears in the local-data inventory `desktop-contract` owns.
 
 ## Risk
 
@@ -187,19 +187,19 @@ familiarity is the failure.
 #### Checklist
 
 - [ ] DTARCH-CK-RISK-01-01 — The application's locations and the transitions between them are named before a routing library is selected, or the departure to a framework-idiomatic router is recorded with its reason.
-- [ ] DTARCH-CK-RISK-01-02 — Refresh, browser history, deep links, and multiple tabs each carry a decided installed meaning or an explicit statement that no installed equivalent exists.
+- [ ] DTARCH-CK-RISK-01-02 — Refresh, browser history, deep links, and multiple tabs each carry a decided installed meaning, a routing to `desktop-contract` as an entry mode, or an explicit statement that this application has no equivalent.
 - [ ] DTARCH-CK-RISK-01-03 — No navigation behavior a router supplies by default reaches the person without a decision recording what it means installed.
 
 ### DTARCH-SC-RISK-02 — Adversarial: ownership is declared in the record while a renderer keeps its own copy
 
-The state record assigns each value to the main process, and the application passes a read of that record,
-while a renderer still mutates and reads a local copy of a shared value. The expected outcome makes the
+The state record assigns each value to an owner outside the renderer, and the application passes a read of
+that record, while a renderer still mutates and reads a local copy of a shared value. The expected outcome makes the
 declared owner the only authority; a record that describes ownership the running application does not honor
 is the failure.
 
 #### Checklist
 
-- [ ] DTARCH-CK-RISK-02-01 — No renderer mutates a value the record assigns to the main process.
+- [ ] DTARCH-CK-RISK-02-01 — No renderer mutates a value the record assigns to another owner.
 - [ ] DTARCH-CK-RISK-02-02 — A second window and a reopened window both read a shared value from its declared owner rather than from a local copy.
 - [ ] DTARCH-CK-RISK-02-03 — Every value declared derived is recomputed from its owner rather than stored and edited in place.
 
