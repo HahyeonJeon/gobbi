@@ -164,6 +164,8 @@ P3 · Hand-off
 - Before writing or revising any specialist brief, keep the
   [Delegation](../delegation/SKILL.md) skill loaded and use its `Metadata`, `Task`, `Instructions`,
   `Resources`, and `Return` headings. The workflow adds the fields below; it does not replace that template.
+- Load the [Codex tool skill](../codex/SKILL.md) before dispatching an opposite-system peer, and use its
+  launch and failure procedure for every Codex draft, cross-review, and evaluation assignment.
 - In `Metadata`, name the Gobbi session UUID, active runtime, absolute worktree, absolute evidence root,
   branch, phase, exact current TODO and status, productive step and stage, iteration and cap, stable task ID
   when applicable, assignment ID, prerequisite evidence, and why the assignment is ready.

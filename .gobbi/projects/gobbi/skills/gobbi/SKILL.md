@@ -56,6 +56,12 @@ its owner without copying that owner's procedure or creating a second router.
   reference nothing outside themselves; `wrap-up` may reference only `record` and `memory`, and nothing in
   that isolated set may reference `wrap-up`.
 
+Rule 4 names three linking skills, eight isolated skills, and `wrap-up`. Every skill it does not name is
+unclassified: the rule constrains it in no direction, and it may reference anything. The isolated eight are
+constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
+unclassified skill either. Runtime and project nouns — `Claude`, `Codex`, `Gobbi`, and `git` as a program —
+are not skill references.
+
 ## Procedure
 
 ### Phase 1 — Load the System and Route the Selected Mode
@@ -78,6 +84,10 @@ its owner without copying that owner's procedure or creating a second router.
   [`../wrap-up/SKILL.md`](../wrap-up/SKILL.md), [`../delegation/SKILL.md`](../delegation/SKILL.md),
   [`../discussion/SKILL.md`](../discussion/SKILL.md), [`../record/SKILL.md`](../record/SKILL.md),
   [`../memory/SKILL.md`](../memory/SKILL.md), and [`../git/SKILL.md`](../git/SKILL.md), in that order.
+- Load all nine here even though five of them — `ideation`, `planning`, `wrap-up`, `record`, and `memory` —
+  also declare their own load triggers. The nine are the shared vocabulary every mode needs before the mode is
+  known, so they load before the selection that would otherwise determine them; every other skill still loads
+  from its own trigger.
 - Read applicable project rules, governing repository instructions, and the canonical
   [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
   project rules exist.
@@ -104,7 +114,8 @@ its owner without copying that owner's procedure or creating a second router.
 #### 1.4 Load the selected owner and hand off without mutation
 
 - **General:** continue the user's task from the loaded nine skills and the task-specific skills the work
-  triggers. Load no orchestration owner and create no Gobbi session state.
+  triggers. Load neither orchestration owner — `cowork` and `workflow` — and create no Gobbi session state;
+  the nine-skill floor stays loaded.
 - **Cowork:** load [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner creates or recovers its isolated
   worktree before editing and runs its user-topic loop.
 - **Workflow:** load [`../workflow/SKILL.md`](../workflow/SKILL.md). That owner performs fresh and resume
