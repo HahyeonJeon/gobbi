@@ -180,8 +180,9 @@ target's result standing in for it is the failure.
 #### Checklist
 
 - [ ] DTDLVR-CK-CONSISTENCY-02-01 — Every retained target claim has matching installed-artifact evidence in the claim matrix.
-- [ ] DTDLVR-CK-CONSISTENCY-02-02 — Every target that cannot be exercised and every transition whose predecessor is unavailable are marked unproved and dropped from the supported claim.
-- [ ] DTDLVR-CK-CONSISTENCY-02-03 — No target's result substitutes for another target's proof.
+- [ ] DTDLVR-CK-CONSISTENCY-02-02 — Every target that cannot be exercised and every transition whose predecessor is unavailable are marked unproved.
+- [ ] DTDLVR-CK-CONSISTENCY-02-03 — Every target that cannot be exercised and every transition whose predecessor is unavailable are dropped from the supported claim.
+- [ ] DTDLVR-CK-CONSISTENCY-02-04 — No target's result substitutes for another target's proof.
 
 ### DTDLVR-SC-CONSISTENCY-03 — Edge case: the accepted stack is challenged
 
@@ -220,7 +221,8 @@ leaves the application or its data unusable is the failure.
 - [ ] DTDLVR-CK-RISK-02-01 — Each supported transition is rehearsed through update discovery, download, installation, migration, launch, ordinary use, and relaunch with realistic data.
 - [ ] DTDLVR-CK-RISK-02-02 — An incompatible version refuses explicitly while preserving recoverable data.
 - [ ] DTDLVR-CK-RISK-02-03 — A failed update preserves a usable application and data or enters the declared recovery path.
-- Also applies: DTDLVR-CK-CONSISTENCY-02-02 (an unprovable target or transition is marked unproved and dropped from the claim).
+- Also applies: DTDLVR-CK-CONSISTENCY-02-02 (an unprovable target or transition is marked unproved).
+- Also applies: DTDLVR-CK-CONSISTENCY-02-03 (an unprovable target or transition is dropped from the claim).
 
 ### DTDLVR-SC-RISK-03 — Adversarial: a passing gate presented as authority to publish
 

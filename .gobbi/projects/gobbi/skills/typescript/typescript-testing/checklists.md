@@ -152,8 +152,7 @@ points and resolution modes there. Resolution evidence taken from the source pro
 
 - [ ] TSTEST-CK-USAGE-04-01 — The package is built or packed.
 - [ ] TSTEST-CK-USAGE-04-02 — The built or packed artifact is installed.
-- [ ] TSTEST-CK-USAGE-04-03 — The installed artifact's documented entry points are exercised.
-- [ ] TSTEST-CK-USAGE-04-04 — The installed artifact's documented resolution modes are exercised.
+- [ ] TSTEST-CK-USAGE-04-03 — The installed artifact's documented entry points and documented resolution modes are exercised.
 
 ## Consistency
 
@@ -166,8 +165,7 @@ as built or packed behavior breaks the Rule.
 #### Checklist
 
 - [ ] TSTEST-CK-CONSISTENCY-01-01 — No source-checkout test result is treated as proof of built or packed package behavior.
-- Also applies: TSTEST-CK-USAGE-04-03 (the installed artifact's entry points are exercised).
-- Also applies: TSTEST-CK-USAGE-04-04 (the installed artifact's resolution modes are exercised).
+- Also applies: TSTEST-CK-USAGE-04-03 (the installed artifact's entry points and resolution modes are exercised).
 
 ### TSTEST-SC-CONSISTENCY-02 — Normal case: claims and tests agree in both directions
 
