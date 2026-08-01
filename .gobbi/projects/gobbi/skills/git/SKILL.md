@@ -96,16 +96,26 @@ pull-request head.
 |---|---|
 | Proved identity | One session UUID that matches the UUID segment of the session-branch name and the `AI-Provenance-Record` trailer of every agent-authored commit on that branch. |
 | Immutable base commit | One commit hash the caller confirmed before the branch existed, still resolvable in this repository, and unchanged for the whole session. |
-| Registered worktree outside the main checkout | One absolute path that `git worktree list` reports as registered to that exact branch and that resolves outside the main checkout. |
+| Isolated worktree outside the main checkout | One absolute path resolving outside the main checkout, in whichever lifecycle state the table below matches. |
 | Declared publication intent | One named external outcome — local retention, push, or pull request, with any issue action stated separately — declared before work and bounding every later external action. |
 
-- Reject a missing, null, relative, main-checkout, mismatched, or symbolic-link-escaped worktree path. Confirm
-  `git -C <absolute-worktree> rev-parse --show-toplevel` equals the contract path before the first write and
-  after any context boundary.
+- The worktree property has two lifecycle states, because a session cannot prove a registered worktree before
+  that worktree exists. Every contract is in exactly one state:
+
+| Lifecycle state | What the worktree property must be | Where it is proved |
+|---|---|---|
+| Fresh | The intended absolute path, plus the runtime system and session start date that derive the branch and that path from the UUID. Nothing exists at the path, and no worktree is registered there or to that branch. | Step 2.1 proves that absence, creates the branch and worktree, and upgrades the property to the registered form before the first write. |
+| Recovery | One absolute path that `git worktree list` already reports as registered to that exact branch. | This step, directly, before any write. |
+
+- Reject a missing, null, relative, main-checkout, mismatched, or symbolic-link-escaped worktree path in either
+  state. For a recovery contract, confirm `git -C <absolute-worktree> rev-parse --show-toplevel` equals the
+  contract path before the first write and after any context boundary. For a fresh contract, run that same
+  confirmation immediately after Step 2.1 creates the worktree and after any later context boundary.
 - On resume, require the user to name the retained branch or worktree explicitly and rebuild the contract
-  through Step 1.2; never search other worktrees for an implicit active session.
-- Evidence is the contract source, UUID, base commit, branch, absolute worktree, registered worktree record,
-  head, status, and declared publication intent.
+  through Step 1.2; never search other worktrees for an implicit active session. A rebuilt contract is always
+  in the recovery state.
+- Evidence is the contract source, lifecycle state, UUID, base commit, branch, absolute worktree, registered
+  worktree record once it exists, head, status, and declared publication intent.
 
 #### 1.2 Rebuild an unproved contract from Git evidence
 
@@ -124,9 +134,9 @@ pull-request head.
 
 #### 2.1 Probe posture and create one isolated worktree
 
-- For a fresh session, continue only after the caller declares its publication intent, then inspect the
-  current checkout, branch, head, status, configured worktree root, ignore rule, existing worktrees, and
-  target branch/path before mutation.
+- Enter this step only with a fresh contract, and continue only after the caller declares its publication
+  intent. Inspect the current checkout, branch, head, status, configured worktree root, ignore rule, existing
+  worktrees, and target branch/path before mutation.
 - Recommend the current clean branch and head as the base. Ask the user when the checkout is dirty,
   detached, ambiguous, or conflicts with an existing target; do not silently exclude uncommitted work or
   invent `main`, `master`, `develop`, or a remote default.
@@ -134,8 +144,11 @@ pull-request head.
   requires. Probe remote and GitHub prerequisites only when the declared publication intent or a separate Git
   operation authorizes an external action.
 - Generate the session UUID before using [`conventions.md`](conventions.md) to derive the branch and absolute
-  worktree. Create them once from the proved base, then verify the worktree root, branch, base commit, clean
-  status, ignore posture, and unchanged main checkout.
+  worktree, and confirm both equal the fresh contract's intended values. Create them once from the proved
+  base, then verify the worktree root, branch, base commit, clean status, ignore posture, and unchanged main
+  checkout.
+- Upgrade the fresh contract's worktree property to the registered form from that `git worktree list`
+  evidence. Every later step uses the upgraded contract; no write happens before the upgrade.
 - If the same identity or target already exists, stop for recovery instead of adding a suffix, deleting it, or
   creating another worktree.
 

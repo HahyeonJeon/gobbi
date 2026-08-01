@@ -6,15 +6,13 @@
 #   state that decides whether networked git ops (git push, gh) can run. The
 #   manager reads this BEFORE attempting a push, not after the wall is hit
 #   (git/SKILL.md § 2.1 Probe posture and create one isolated worktree).
-#   Locked by Ideation DD-3 + Planning PIN-1; the runtime-posture concept name
-#   is locked by OQ-7.
 #
-#   HONESTY CONTRACT (PIN-1): report only what is reliably detectable. The one
-#   reliable field is network (via CODEX_SANDBOX_NETWORK_DISABLED on Codex).
-#   sandbox-mode and approval-policy are NOT exposed by any env var or by
-#   `codex sandbox --help` introspection (empirically confirmed in Ideation), so
-#   the probe prints the literal `unknown` for them rather than guessing. The
-#   manager treats every `unknown` field as "ask before assuming push will work."
+#   HONESTY CONTRACT: report only what is reliably detectable. The one reliable
+#   field is network (via CODEX_SANDBOX_NETWORK_DISABLED on Codex). sandbox-mode
+#   and approval-policy are exposed by no env var and by no `codex sandbox
+#   --help` introspection, so the probe prints the literal `unknown` for them
+#   rather than guessing. The manager treats every `unknown` field as "ask
+#   before assuming push will work."
 #
 #   READ-ONLY: this script reads env vars only. It NEVER writes a file, mutates
 #   git / network / config state, or enables anything. It is informational; it
@@ -30,8 +28,8 @@
 #   network          disabled | enabled | unknown   (reliable only when disabled
 #                    via CODEX_SANDBOX_NETWORK_DISABLED=1; unset => unknown, NOT
 #                    enabled — an unset var is not a positive "enabled" signal)
-#   sandbox_mode     unknown   (not introspectable — PIN-1)
-#   approval_policy  unknown   (not introspectable — PIN-1)
+#   sandbox_mode     unknown   (not introspectable)
+#   approval_policy  unknown   (not introspectable)
 #
 # Output: human-readable lines (default) or one JSON object (--json) on stdout.
 # Exit: 0 on success; 2 on bad args. The probe never fails the session.
@@ -89,7 +87,7 @@ else
     network="unknown"
 fi
 
-# --- Sandbox mode + approval policy (PIN-1: not introspectable) --------------
+# --- Sandbox mode + approval policy (not introspectable) ---------------------
 # No env var or CLI introspection exposes these reliably. Report literal unknown.
 sandbox_mode="unknown"
 approval_policy="unknown"

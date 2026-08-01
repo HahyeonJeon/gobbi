@@ -60,11 +60,13 @@ separate user-called judgment, never a substitute for stage quality.
 |---|---|
 | Proved identity | The Gobbi UUID locked in this conversation, checked against the session-branch name and the provenance trailer of every Cowork commit. |
 | Immutable base commit | The clean head the manager inspects and the user confirms before the worktree exists. It never moves afterward. |
-| Registered worktree outside the main checkout | The path derived from the session branch, proved registered to that exact branch and resolving outside the main checkout. |
+| Isolated worktree outside the main checkout | For a fresh session, the intended path derived from the session branch, resolving outside the main checkout with nothing registered there or to that branch. For a recovery, the path the user names, already registered to that exact branch. |
 | Declared publication intent | Local retention. Push, pull request, merge, and cleanup happen only through a separate explicit Git operation with current user authority. |
 
-- Supply that contract, then create one isolated branch and worktree before any tracked edit, or recover only
-  the branch and worktree the user explicitly names.
+- Supply that contract in its matching lifecycle state, then create one isolated branch and worktree before
+  any tracked edit, or recover only the branch and worktree the user explicitly names. For a fresh session,
+  the Git operation proves the intended path is free, creates it, and returns the registered worktree that
+  completes the contract.
 - Verify and report the UUID, repository, base branch and commit, session branch, absolute worktree, head,
   clean status, unchanged main checkout, and recovery point. Stop with exact evidence when identity,
   isolation, provenance, base, writer ownership, or recovery cannot be proved.

@@ -113,10 +113,12 @@ P3 · Hand-off
 |---|---|
 | Proved identity | The session UUID generated in this step and recorded in `configuration.md`, checked against the branch name and every commit trailer. |
 | Immutable base commit | The base revision resolved with the user in this step and recorded in `configuration.md`. It never moves afterward. |
-| Registered worktree outside the main checkout | The path derived from the session branch, proved registered to that exact branch and resolving outside the main checkout. |
+| Isolated worktree outside the main checkout | For a fresh session, the intended path derived from the session branch, resolving outside the main checkout with nothing registered there or to that branch. For a recovered session, the path already registered to that exact branch. |
 | Declared publication intent | The Git finalization resolved with the user in this step and recorded in `configuration.md`. Phase 3 performs only what it authorizes. |
 
-- Create and verify one isolated session branch and worktree from that contract.
+- Create and verify one isolated session branch and worktree from that contract. For a fresh session, the Git
+  operation proves the intended path is free, creates it, and returns the registered worktree that completes
+  the contract before any write.
 - Create the workflow evidence root at
   `{worktree}/.gobbi/projects/{project}/sessions/{date}-{gobbi-session-id}/`. Write `configuration.md` there
   with the UUID, resolved settings, repository, base revision, branch, absolute worktree, runtime system, and
