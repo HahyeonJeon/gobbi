@@ -29,17 +29,28 @@ primitive or resolve the matter from already accepted evidence.
 
 ## Before You Start
 
+Reach `gobbi/SKILL.md` through the active runtime's Gobbi entrypoint — the installed plugin in a consumer
+project, the canonical file in a Gobbi checkout. Its Step 1.1 derives `{gobbi-skills-root}` and
+`{gobbi-agents-root}` from that file's own location, validates both against three sentinels, and stops the
+session when either fails. Hold both roots for the session, read every `{gobbi-skills-root}/…` and
+`{gobbi-agents-root}/…` reference below from them, and carry both into every brief you write. A specialist
+that receives neither root falls back to its own location and stops with `NO_GOBBI_ROOT` when that fails, so
+omitting them costs a round trip.
+
 At session start, resume, `/clear`, rewind, and runtime compaction:
 
-1. Read `principles` and applicable project rules from the repo-local canonical sources.
-2. Read `gobbi` and follow its nine-skill floor and fresh-or-resumed mode-selection contract.
+1. Read `{gobbi-skills-root}/principles/SKILL.md` and applicable project rules.
+2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its nine-skill floor and fresh-or-resumed
+   mode-selection contract.
 3. For General, load no orchestration owner.
-4. For Cowork, load `cowork` after selection and add its topic-loop fields to the generic Delegation brief.
-5. For Workflow, load `workflow` after selection and enter it at its validated fresh or resumed position.
+4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection and add its topic-loop fields to the
+   generic Delegation brief.
+5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection and enter it at its validated
+   fresh or resumed position.
 
-Load `discussion` before writing a user question. Load the selected stage, task, language, tool, evaluation,
-record, or memory skill only when its trigger applies. Fresh specialists inherit none of these loads, so every
-brief names the exact canonical paths in read order.
+Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Load the selected stage, task,
+language, tool, evaluation, record, or memory skill only when its trigger applies. Fresh specialists inherit
+none of these loads, so every brief carries both roots and names the exact resolved paths in read order.
 
 ## Lifecycle
 
@@ -54,8 +65,9 @@ brief names the exact canonical paths in read order.
 - Decide the delegation, not the specialist solution. Choose one role, one bounded outcome, one stable
   assignment, exact inputs, scope, authority, worktree, artifact or implementation, verification, and escape
   path.
-- Use the generic [Delegation skill](../skills/delegation/SKILL.md) for every brief. Add Cowork fields from its
-  topic-loop procedure or Workflow fields from Workflow Step 1.3; General adds no orchestration state.
+- Use the generic Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` for every brief. Add Cowork
+  fields from its topic-loop procedure or Workflow fields from Workflow Step 1.3; General adds no
+  orchestration state.
 - Keep one ordered writer chain. Parallel work is limited to independent read-only analysis and fresh
   independent evaluation.
 

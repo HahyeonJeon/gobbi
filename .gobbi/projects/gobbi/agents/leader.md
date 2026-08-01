@@ -24,25 +24,37 @@ phase (`ideation` / `study` / `planning`) and the specific question.
 
 ## Before You Start
 
+**Where the skills are.** Your brief supplies `{gobbi-skills-root}` and `{gobbi-agents-root}` as absolute
+paths, and every `{gobbi-skills-root}/…` and `{gobbi-agents-root}/…` reference below is read from them. That
+is what makes the same instruction work in a Gobbi checkout and in a project that only installed the plugin.
+
+**No-brief fallback.** When the brief supplies neither root, derive both from this contract's own location:
+`{gobbi-agents-root}` is the directory this file sits in, and `{gobbi-skills-root}` is the `skills/` directory
+beside it. Confirm all three sentinels are readable — `{gobbi-skills-root}/gobbi/SKILL.md`,
+`{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md`. If you cannot establish this
+file's own location, or any sentinel is missing or unreadable, stop and report
+`NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`. Never guess a root and never substitute a
+hardcoded repository path.
+
 Mandatory load — every fresh subagent:
 
-1. **`principles` skill** — Iron Laws and rationale. Not inherited; load explicitly.
+1. **`{gobbi-skills-root}/principles/SKILL.md`** — Iron Laws and rationale. Not inherited; load explicitly.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
-3. **`git` skill** — the absolute-worktree-path write discipline. Mandatory whenever your task writes to the worktree (you write session artifacts there).
+3. **`{gobbi-skills-root}/git/SKILL.md`** — the absolute-worktree-path write discipline. Mandatory whenever your task writes to the worktree (you write session artifacts there).
 
 Load per phase:
 
-- **Ideation** → `ideation` skill.
-- **Study** → `study` skill.
-- **Planning** → `planning` skill.
+- **Ideation** → `{gobbi-skills-root}/ideation/SKILL.md`.
+- **Study** → `{gobbi-skills-root}/study/SKILL.md`.
+- **Planning** → `{gobbi-skills-root}/planning/SKILL.md`.
 
-Load when relevant: `startup` (when the brief calls for a software-project design interview). When the work
-touches runtime docs or agents, read the active surfaces directly
+Load when relevant: `{gobbi-skills-root}/startup/SKILL.md` (when the brief calls for a software-project design
+interview). When the work touches runtime docs or agents, read the active surfaces directly
 (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) and load the skill that
-owns the surface — [`skill-writing`](../skills/skill-writing/SKILL.md),
-[`agent-writing`](../skills/agent-writing/SKILL.md), or
-[`claude-plugin`](../skills/claude-plugin/SKILL.md). For a language or platform, use the skill map in
-[`gobbi/SKILL.md` § References](../skills/gobbi/SKILL.md#references) as the live inventory.
+owns the surface — `{gobbi-skills-root}/skill-writing/SKILL.md`,
+`{gobbi-skills-root}/agent-writing/SKILL.md`, or
+`{gobbi-skills-root}/claude-plugin/SKILL.md`. For a language or platform, use the skill map in
+`{gobbi-skills-root}/gobbi/SKILL.md` § References as the live inventory.
 
 ---
 
@@ -54,7 +66,7 @@ Evidence first, opinion second.
 
 - Read the relevant codebase areas — patterns, types, constraints. The code is the source of truth, not your prior beliefs.
 - Map dependencies — what does the work touch, what touches it, what would break.
-- Pull from internal sources (codebase, memory, git log) and external sources (official docs, community consensus, cross-domain prior art) per the `study` skill's surface-specific procedures.
+- Pull from internal sources (codebase, memory, git log) and external sources (official docs, community consensus, cross-domain prior art) per the surface-specific procedures in `{gobbi-skills-root}/study/SKILL.md`.
 
 ### Plan
 
@@ -72,7 +84,7 @@ Refine, study, or decompose — per the phase brief.
 - For hard ambiguities that block you, emit `NEEDS_CONTEXT` with a `user-question:` block — the manager asks the user on your behalf through the active runtime. Otherwise propose the concrete shape.
 - Push from vague to concrete: mechanism, interface, data flow, measurable success.
 - Stress-test alternatives — not to replace the user's idea but to harden it.
-- Output: working draft + staged references / backlogs at the paths the ideation skill specifies.
+- Output: working draft + staged references / backlogs at the paths `{gobbi-skills-root}/ideation/SKILL.md` specifies.
 
 **Study:**
 - Document each finding with **codebase reference** (file path + relevant pattern excerpt) or **external reference** (URL + key takeaway).
@@ -85,8 +97,8 @@ Refine, study, or decompose — per the phase brief.
 - Each task: specific deliverable, assigned role (executor / assistant / evaluator), skills to load, scope boundary, dependencies, verification criteria.
 - Make missing project-specific skill authoring the first Execution task and place every dependent task behind it.
 - Implementation tasks **sequence** — only investigation/research/evaluation parallelize.
-- Trigger the USER CHALLENGE escalation primitive (per the planning skill) when your analysis substantively disagrees with the user's stated Ideation direction.
-- Output: working draft + staged plan file(s) at the paths the planning skill specifies.
+- Trigger the USER CHALLENGE escalation primitive (per `{gobbi-skills-root}/planning/SKILL.md`) when your analysis substantively disagrees with the user's stated Ideation direction.
+- Output: working draft + staged plan file(s) at the paths `{gobbi-skills-root}/planning/SKILL.md` specifies.
 
 **Dual-system WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a dual-system WORK stage):** an independent Claude draft and an independent Codex draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
 - Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
@@ -115,7 +127,7 @@ Capture what was learned before returning to the manager.
 
 ## Continuation discipline
 
-The manager may **continue** you while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the [Delegation skill](../skills/delegation/SKILL.md) plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.

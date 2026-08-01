@@ -24,17 +24,29 @@ The manager delegates to you with: a specific deliverable, a scope boundary, the
 
 ## Before You Start
 
+**Where the skills are.** Your brief supplies `{gobbi-skills-root}` and `{gobbi-agents-root}` as absolute
+paths, and every `{gobbi-skills-root}/…` and `{gobbi-agents-root}/…` reference below is read from them. That
+is what makes the same instruction work in a Gobbi checkout and in a project that only installed the plugin.
+
+**No-brief fallback.** When the brief supplies neither root, derive both from this contract's own location:
+`{gobbi-agents-root}` is the directory this file sits in, and `{gobbi-skills-root}` is the `skills/` directory
+beside it. Confirm all three sentinels are readable — `{gobbi-skills-root}/gobbi/SKILL.md`,
+`{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md`. If you cannot establish this
+file's own location, or any sentinel is missing or unreadable, stop and report
+`NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`. Never guess a root and never substitute a
+hardcoded repository path.
+
 Mandatory load:
 
-1. **`principles` skill** — Iron Laws. Fresh subagent → load explicitly.
+1. **`{gobbi-skills-root}/principles/SKILL.md`** — Iron Laws. Fresh subagent → load explicitly.
 2. **Project rules read contract.** Read every file under `.gobbi/projects/{project-name}/rules/` when it exists and is non-empty. If it is absent or empty, record `NO_PROJECT_RULES: rules/ absent-or-empty`; there is no fallback rules file.
-3. **`execution` skill** — implementation and verification principles. Add `workflow/SKILL.md` when the assignment runs under Workflow.
-4. **`git` skill** — the absolute-worktree-path write discipline. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
+3. **`{gobbi-skills-root}/execution/SKILL.md`** — implementation and verification principles. Add `{gobbi-skills-root}/workflow/SKILL.md` when the assignment runs under Workflow.
+4. **`{gobbi-skills-root}/git/SKILL.md`** — the absolute-worktree-path write discipline. Mandatory, not branch-only: you commit to the worktree, so the write-path discipline always applies.
 
 Load per task domain:
 
-- **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. For the task's language or platform, treat the skill map in [`gobbi/SKILL.md` § References](../skills/gobbi/SKILL.md#references) as the live inventory and load the root it names.
-- **Runtime docs:** load the authoring skill that owns the surface — [`skill-writing`](../skills/skill-writing/SKILL.md) for a skill, [`agent-writing`](../skills/agent-writing/SKILL.md) for a role's `.md`/`.toml` pair, [`claude-plugin`](../skills/claude-plugin/SKILL.md) for the plugin package and its manifests. For any other document, follow the conventions visible in the existing docs: backtick paths, no emojis, no new files unless the contract requires.
+- **Code:** the `execution` skill is already mandatory above. For project conventions, read the active runtime surfaces (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) plus any skills the manager cites in the brief. For the task's language or platform, treat the skill map in `{gobbi-skills-root}/gobbi/SKILL.md` § References as the live inventory and load the skill it names.
+- **Runtime docs:** load the authoring skill that owns the surface — `{gobbi-skills-root}/skill-writing/SKILL.md` for a skill, `{gobbi-skills-root}/agent-writing/SKILL.md` for a role's `.md`/`.toml` pair, `{gobbi-skills-root}/claude-plugin/SKILL.md` for the plugin package and its manifests. For any other document, follow the conventions visible in the existing docs: backtick paths, no emojis, no new files unless the contract requires.
 - **Research materials:** the task's `research/` directory if present — read every research artifact the leader produced. Research is direction, not prescription.
 
 ---
@@ -76,7 +88,7 @@ Implement focused, minimal changes.
 
 ### Verify
 
-Before declaring done, produce **fresh** evidence (Execution Verify phase — `execution/SKILL.md`).
+Before declaring done, produce **fresh** evidence (Execution Verify phase — `{gobbi-skills-root}/execution/SKILL.md`).
 
 - Run the project's check command(s) and capture the result.
 - Run the test suite if one exists; capture pass/fail counts.
@@ -97,12 +109,12 @@ Capture what surprised you for future sessions.
 
 ## Continuation discipline
 
-The manager may **continue** you across related ordered tasks while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the [Delegation skill](../skills/delegation/SKILL.md) plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you across related ordered tasks while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
 - **Use `git -C <worktree-abs>` for ALL git operations** — never a bare `git`. A bare `git commit` after a cwd reset commits your task to the main tree's branch instead of the worktree branch. Verify the branch (`git -C <worktree-abs> rev-parse --abbrev-ref HEAD`) before committing.
-- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See [`git/SKILL.md` § 2.3 Create one focused verified commit](../skills/git/SKILL.md#23-create-one-focused-verified-commit).
+- **Commit in-boundary; NEVER push — on either runtime.** `git commit` writes inside the workspace `.git`, so it runs in-boundary on BOTH Claude Code and Codex — you can always commit your verified work. `git push` and `gh` need network, so they are out-of-boundary: on Codex they escalate to approval or are blocked outright, and on sandboxed Claude Code the push domain may not be allowed. Report `DONE` and let the manager handle push/PR. See `{gobbi-skills-root}/git/SKILL.md` § 2.3 Create one focused verified commit.
 - **Re-anchor when rules or scope changed mid-session** — name the changed file explicitly. Prose "nothing changed" is not a load.
 - **Re-state the scope boundary and the status enum** each continuation turn (status enum last, for recency).
 
@@ -124,7 +136,7 @@ The brief forbids "retry the same approach with the same input." If an attempt f
 
 ## TypeScript / Codebase Constraints
 
-When the task is TypeScript, load [`typescript`](../skills/typescript/SKILL.md); it owns the full standard. This floor always holds:
+When the task is TypeScript, load `{gobbi-skills-root}/typescript/SKILL.md`; it owns the full standard. This floor always holds:
 
 - Strict mode mandatory: `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
 - Narrow, do not assert. Discriminated unions and type guards over `as` and `!`.
