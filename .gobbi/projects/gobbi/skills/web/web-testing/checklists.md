@@ -28,8 +28,9 @@ diagram or a coverage target is the failure.
 
 - [ ] WEBTEST-CK-PROJECT-01-01 — The suite is derived from contracts, incidents, risks, supported environments, and release claims.
 - [ ] WEBTEST-CK-PROJECT-01-02 — No fixed pyramid or coverage percentage replaces the risk analysis.
-- [ ] WEBTEST-CK-PROJECT-01-03 — The work continues with one bounded evidence outcome, and an undefined contract, unsupported claim, missing environment, or owner conflict is returned rather than assumed.
-- [ ] WEBTEST-CK-PROJECT-01-04 — Each material claim records its owner, risk, supported environment, strongest proving evidence, and current gap.
+- [ ] WEBTEST-CK-PROJECT-01-03 — The work continues with one bounded evidence outcome.
+- [ ] WEBTEST-CK-PROJECT-01-04 — An undefined contract, unsupported claim, missing environment, or owner conflict is returned rather than assumed.
+- [ ] WEBTEST-CK-PROJECT-01-05 — Each material claim records its owner, risk, supported environment, strongest proving evidence, and current gap.
 
 ### WEBTEST-SC-PROJECT-02 — Normal case: claims and facts stay with their owners
 
@@ -39,9 +40,10 @@ behavior should be is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-PROJECT-02-01 — The affected frontend, backend, platform, security, accessibility, performance, coding, language, framework, and test-tool owners are loaded and supply their own claims and facts.
-- [ ] WEBTEST-CK-PROJECT-02-02 — The behavior under test is not decided inside this operation.
-- [ ] WEBTEST-CK-PROJECT-02-03 — Published testing guidance is used as evidence rather than as a universal quota or a fixed suite shape.
+- [ ] WEBTEST-CK-PROJECT-02-01 — The affected frontend, backend, platform, security, accessibility, performance, coding, language, framework, and test-tool owners are loaded.
+- [ ] WEBTEST-CK-PROJECT-02-02 — Each of those owners supplies its own claims and facts.
+- [ ] WEBTEST-CK-PROJECT-02-03 — The behavior under test is not decided inside this operation.
+- [ ] WEBTEST-CK-PROJECT-02-04 — Published testing guidance is used as evidence rather than as a universal quota or a fixed suite shape.
 
 ## Structure
 

@@ -113,10 +113,11 @@ inferred from a rendering rather than inspected is the failure.
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-USAGE-01-01 — Native elements are preferred, and each control exposes an accurate name, role, state, and structure.
-- [ ] WEBFRNT-CK-USAGE-01-02 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are specified.
-- [ ] WEBFRNT-CK-USAGE-01-03 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are implemented.
-- [ ] WEBFRNT-CK-USAGE-01-04 — Live keyboard, pointer, touch, and applicable assistive-technology interaction is inspected in a real browser rather than inferred.
+- [ ] WEBFRNT-CK-USAGE-01-01 — Native elements are preferred.
+- [ ] WEBFRNT-CK-USAGE-01-02 — Each control exposes an accurate name, role, state, and structure.
+- [ ] WEBFRNT-CK-USAGE-01-03 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are specified.
+- [ ] WEBFRNT-CK-USAGE-01-04 — Keyboard behavior, focus movement, form guidance, error association, overlay behavior, responsive reflow, and motion alternatives are implemented.
+- [ ] WEBFRNT-CK-USAGE-01-05 — Live keyboard, pointer, touch, and applicable assistive-technology interaction is inspected in a real browser rather than inferred.
 
 ### WEBFRNT-SC-USAGE-02 — Expected failure: a person must recover from a failed or unauthorized path
 

@@ -233,7 +233,8 @@ permission is the failure.
 #### Checklist
 
 - [ ] DTDLVR-CK-RISK-03-01 — No accepted evaluation, passing gate, or complete proof is treated as publication authority.
-- [ ] DTDLVR-CK-RISK-03-02 — Release-ready is claimed only with accepted evaluation and matching proof for every retained claim, and claims nothing beyond readiness.
+- [ ] DTDLVR-CK-RISK-03-02 — Release-ready is claimed only with accepted evaluation and matching proof for every retained claim.
+- [ ] DTDLVR-CK-RISK-03-03 — A release-ready claim claims nothing beyond readiness.
 
 ## Overall
 

@@ -205,8 +205,9 @@ the request rather than by its authority is the failure.
 #### Checklist
 
 - [ ] WEBBACK-CK-RISK-03-01 — No caller-supplied identifier, sequence, or state selects the resource an operation acts on without an authorization check against that exact resource.
-- [ ] WEBBACK-CK-RISK-03-02 — No retry, cancellation, or concurrent request path applies an effect twice or bypasses a policy check.
-- [ ] WEBBACK-CK-RISK-03-03 — Audit and diagnostic records for a protected effect cannot be suppressed by the caller.
+- [ ] WEBBACK-CK-RISK-03-02 — No retry, cancellation, or concurrent request path applies an effect twice.
+- [ ] WEBBACK-CK-RISK-03-03 — No retry, cancellation, or concurrent request path bypasses a policy check.
+- [ ] WEBBACK-CK-RISK-03-04 — Audit and diagnostic records for a protected effect cannot be suppressed by the caller.
 
 ## Overall
 

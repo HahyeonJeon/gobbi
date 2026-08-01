@@ -49,8 +49,9 @@ closing and receivers should not claim closure authority; send-after-close or do
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-02-01 — The sending owner is the only channel-closing authority, and receiver completion never closes a sender-owned channel.
-- [ ] GOCON-CK-STRUCTURE-02-02 — Channel closure cannot occur while an owned sender remains able to send.
+- [ ] GOCON-CK-STRUCTURE-02-01 — The sending owner is the only channel-closing authority.
+- [ ] GOCON-CK-STRUCTURE-02-02 — Receiver completion never closes a sender-owned channel.
+- [ ] GOCON-CK-STRUCTURE-02-03 — Channel closure cannot occur while an owned sender remains able to send.
 
 ### GOCON-SC-STRUCTURE-03 — Rule violation: Request context loses its propagation contract
 
@@ -106,8 +107,9 @@ should observe cancellation and reach its documented terminal state; indefinite 
 
 #### Checklist
 
-- [ ] GOCON-CK-USAGE-01-01 — Caller cancellation reaches every blocking operation and every request-owned concurrent branch, each of which has a cancellation or bounded completion path.
-- [ ] GOCON-CK-USAGE-01-02 — Cancellation returns the documented caller-visible outcome.
+- [ ] GOCON-CK-USAGE-01-01 — Caller cancellation reaches every blocking operation and every request-owned concurrent branch.
+- [ ] GOCON-CK-USAGE-01-02 — Every blocking operation and every request-owned concurrent branch has a cancellation or bounded completion path.
+- [ ] GOCON-CK-USAGE-01-03 — Cancellation returns the documented caller-visible outcome.
 
 ### GOCON-SC-USAGE-02 — Edge case: Shutdown is called repeatedly or concurrently
 
@@ -116,8 +118,9 @@ remain safe and understandable; double close, panic, or abandoned work fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-USAGE-02-01 — Repeated and concurrent shutdown follow one documented result and cannot close an owned resource twice.
-- [ ] GOCON-CK-USAGE-02-02 — Shutdown completion accounts for every owned goroutine.
+- [ ] GOCON-CK-USAGE-02-01 — Repeated and concurrent shutdown follow one documented result.
+- [ ] GOCON-CK-USAGE-02-02 — Repeated and concurrent shutdown cannot close an owned resource twice.
+- [ ] GOCON-CK-USAGE-02-03 — Shutdown completion accounts for every owned goroutine.
 
 ## Consistency
 
@@ -171,7 +174,8 @@ becoming active. The primitive should remain in one owned object; copied synchro
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-02-01 — Every synchronization primitive stays in one owned object at one stable address and is never copied after first use.
+- [ ] GOCON-CK-RISK-02-01 — Every synchronization primitive stays in one owned object at one stable address.
+- [ ] GOCON-CK-RISK-02-02 — No synchronization primitive is copied after first use.
 
 ### GOCON-SC-RISK-03 — Adversarial: Input amplifies concurrent resource use
 

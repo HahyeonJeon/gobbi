@@ -42,7 +42,17 @@ and closes with findings. Any write inside the review-only classification breaks
 - [ ] TSPKG-CK-PROJECT-02-03 — Under review-only validation, nothing is installed into a persistent environment.
 - [ ] TSPKG-CK-PROJECT-02-04 — Under review-only validation, no documentation or release note is updated.
 - [ ] TSPKG-CK-PROJECT-02-05 — Under review-only validation, nothing is published.
-- [ ] TSPKG-CK-PROJECT-02-06 — A review-only run skips every mutation step and finishes with evidence, findings, and limitations.
+
+### TSPKG-SC-PROJECT-03 — Normal case: a review-only run closes on evidence alone
+
+A review-only run reaches the end of its inspection with no authority to change anything. The expected
+outcome passes over every mutation step and returns evidence, findings, and limitations. A run that performs
+a mutation step, or that ends without returning what it found, is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-PROJECT-03-01 — A review-only run skips every mutation step.
+- [ ] TSPKG-CK-PROJECT-03-02 — A review-only run finishes with evidence, findings, and limitations.
 
 ## Structure
 
@@ -56,8 +66,9 @@ package. A condition pointing at a missing, external, or source-only path is the
 
 - [ ] TSPKG-CK-STRUCTURE-01-01 — Every public entry point defines its runtime file, declaration file, module condition, and supported consumer environment.
 - [ ] TSPKG-CK-STRUCTURE-01-02 — Every export condition maps to an existing built runtime file and declaration file.
-- [ ] TSPKG-CK-STRUCTURE-01-03 — Declarations are decided as emitted, bundled, or maintained, and one configuration owns them.
-- [ ] TSPKG-CK-STRUCTURE-01-04 — Every metadata path resolves inside the package.
+- [ ] TSPKG-CK-STRUCTURE-01-03 — Declarations are decided as emitted, bundled, or maintained.
+- [ ] TSPKG-CK-STRUCTURE-01-04 — One configuration owns the declarations.
+- [ ] TSPKG-CK-STRUCTURE-01-05 — Every metadata path resolves inside the package.
 
 ### TSPKG-SC-STRUCTURE-02 — Rule violation: an internal path becomes reachable
 

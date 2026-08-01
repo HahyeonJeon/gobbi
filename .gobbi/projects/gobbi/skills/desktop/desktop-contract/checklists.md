@@ -216,5 +216,6 @@ evidence is the failure.
 #### Checklist
 
 - [ ] DTCONT-CK-OVERALL-02-01 — No claim about installed behavior rests on a development run, an unpacked build, or source inspection.
-- [ ] DTCONT-CK-OVERALL-02-02 — No native result is inferred from a call that did not throw; the mechanism owner's documented return value, event, state, or installed observation is used.
-- [ ] DTCONT-CK-OVERALL-02-03 — No evidence from one target or delivery state substitutes for another's.
+- [ ] DTCONT-CK-OVERALL-02-02 — No native result is inferred from a call that did not throw.
+- [ ] DTCONT-CK-OVERALL-02-03 — Every native result is read from the mechanism owner's documented return value, event, state, or installed observation.
+- [ ] DTCONT-CK-OVERALL-02-04 — No evidence from one target or delivery state substitutes for another's.

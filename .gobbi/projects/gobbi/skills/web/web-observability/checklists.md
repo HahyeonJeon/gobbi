@@ -70,7 +70,8 @@ whose label set grows with users or URLs is the failure.
 #### Checklist
 
 - [ ] WEBOBS-CK-STRUCTURE-02-01 — Counters, distributions, or gauges are chosen per measured question.
-- [ ] WEBOBS-CK-STRUCTURE-02-02 — Every metric label is low-cardinality, with user identifiers, parameterized URLs, and request identifiers carried on a log or a span instead.
+- [ ] WEBOBS-CK-STRUCTURE-02-02 — Every metric label is low-cardinality.
+- [ ] WEBOBS-CK-STRUCTURE-02-03 — User identifiers, parameterized URLs, and request identifiers are carried on a log or a span instead of a metric label.
 
 ## Performance
 
@@ -82,7 +83,10 @@ measures is the failure.
 
 #### Checklist
 
-- [ ] WEBOBS-CK-PERFORMANCE-01-01 — No telemetry call throws into the user path, blocks an authoritative effect, delays navigation, or retries until the request it measures degrades.
+- [ ] WEBOBS-CK-PERFORMANCE-01-01 — No telemetry call throws into the user path.
+- [ ] WEBOBS-CK-PERFORMANCE-01-02 — No telemetry call blocks an authoritative effect.
+- [ ] WEBOBS-CK-PERFORMANCE-01-03 — No telemetry call delays navigation.
+- [ ] WEBOBS-CK-PERFORMANCE-01-04 — No telemetry call retries until the request it measures degrades.
 
 ### WEBOBS-SC-PERFORMANCE-02 — Normal case: buffered signals leave without holding the document
 
@@ -147,9 +151,10 @@ are the failure.
 #### Checklist
 
 - [ ] WEBOBS-CK-CONSISTENCY-01-01 — One trace context is propagated across every boundary a single user action crosses.
-- [ ] WEBOBS-CK-CONSISTENCY-01-02 — `traceparent` and `tracestate` carry the context on HTTP boundaries and an explicit carried field carries it on worker, IPC, and queue boundaries.
-- [ ] WEBOBS-CK-CONSISTENCY-01-03 — The sampling rule is decided at the entry point so a sampled action stays sampled across every hop.
-- [ ] WEBOBS-CK-CONSISTENCY-01-04 — The build identity is carried by every signal the application emits and by each out-of-process crash report through its annotations or its endpoint URL, so a report resolves to exact bytes.
+- [ ] WEBOBS-CK-CONSISTENCY-01-02 — `traceparent` and `tracestate` carry the context on HTTP boundaries.
+- [ ] WEBOBS-CK-CONSISTENCY-01-03 — An explicit carried field carries the context on worker, IPC, and queue boundaries.
+- [ ] WEBOBS-CK-CONSISTENCY-01-04 — The sampling rule is decided at the entry point so a sampled action stays sampled across every hop.
+- [ ] WEBOBS-CK-CONSISTENCY-01-05 — The build identity is carried by every signal the application emits and by each out-of-process crash report through its annotations or its endpoint URL, so a report resolves to exact bytes.
 
 ### WEBOBS-SC-CONSISTENCY-02 — Normal case: emission, arrival, and live health are separate claims
 

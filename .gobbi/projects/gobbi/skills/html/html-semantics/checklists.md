@@ -19,16 +19,29 @@ that this scenario reuses.
 ### HTMLSEM-SC-PROJECT-01 — Normal case: each choice stays inside markup judgment
 
 An ordinary review decides which element carries the content or action, how it is named, and what state,
-language, and direction it expresses. It fails this scenario when presentation, added interaction, untrusted
-data, source transformation, or privileged process behavior is decided here instead of routed to its owner.
+language, and direction it expresses. It fails this scenario when a choice outside that set, or an authoring
+sequence or platform lookup, is decided here.
 
 #### Checklist
 
 - [ ] HTMLSEM-CK-PROJECT-01-01 — Every decided choice is an HTML element, relationship, name, label, state, language, direction, or accessibility-semantic choice.
-- [ ] HTMLSEM-CK-PROJECT-01-02 — Presentation is routed to CSS, added interaction to JavaScript, untrusted data and dangerous sinks to security, source transforms to the generator, and privileged processes to Electron.
-- [ ] HTMLSEM-CK-PROJECT-01-03 — No authoring sequence or platform-lookup decision is made here.
+- [ ] HTMLSEM-CK-PROJECT-01-02 — No authoring sequence or platform-lookup decision is made here.
 
-### HTMLSEM-SC-PROJECT-02 — Expected failure: a preference departure has no documented evidence
+### HTMLSEM-SC-PROJECT-02 — Rule violation: an adjacent concern is decided here instead of routed
+
+A review meets presentation, added interaction, untrusted data, source transformation, or privileged process
+behavior while it chooses markup. The expected outcome sends each of those to the owner that decides it.
+Deciding any of them inside the semantic review is the observable failure.
+
+#### Checklist
+
+- [ ] HTMLSEM-CK-PROJECT-02-01 — Presentation is routed to CSS.
+- [ ] HTMLSEM-CK-PROJECT-02-02 — Added interaction is routed to JavaScript.
+- [ ] HTMLSEM-CK-PROJECT-02-03 — Untrusted data and dangerous sinks are routed to security.
+- [ ] HTMLSEM-CK-PROJECT-02-04 — Source transforms are routed to the generator.
+- [ ] HTMLSEM-CK-PROJECT-02-05 — Privileged processes are routed to Electron.
+
+### HTMLSEM-SC-PROJECT-03 — Expected failure: a preference departure has no documented evidence
 
 A choice departs from a preferred default, but the evidence that would permit the departure does not exist.
 The expected outcome keeps the preferred default and records the open question; adopting the departure and
@@ -36,9 +49,9 @@ justifying it by intent is the observable failure.
 
 #### Checklist
 
-- [ ] HTMLSEM-CK-PROJECT-02-01 — Every departure from a Preference carries documented evidence.
-- [ ] HTMLSEM-CK-PROJECT-02-02 — Every departure from a Preference stays inside the Rules.
-- [ ] HTMLSEM-CK-PROJECT-02-03 — A choice without that evidence keeps the preferred default.
+- [ ] HTMLSEM-CK-PROJECT-03-01 — Every departure from a Preference carries documented evidence.
+- [ ] HTMLSEM-CK-PROJECT-03-02 — Every departure from a Preference stays inside the Rules.
+- [ ] HTMLSEM-CK-PROJECT-03-03 — A choice without that evidence keeps the preferred default.
 
 ## Structure
 
@@ -109,9 +122,10 @@ markup exposes; a role or a style accepted as behavior is the failure.
 
 #### Checklist
 
-- [ ] HTMLSEM-CK-USAGE-03-01 — No link performs an action in place of a button, and no button navigates in place of a link.
-- [ ] HTMLSEM-CK-USAGE-03-02 — No ARIA role is relied on to supply keyboard or activation behavior.
-- [ ] HTMLSEM-CK-USAGE-03-03 — Every element that appears operable is operable by keyboard.
+- [ ] HTMLSEM-CK-USAGE-03-01 — No link performs an action in place of a button.
+- [ ] HTMLSEM-CK-USAGE-03-02 — No button navigates in place of a link.
+- [ ] HTMLSEM-CK-USAGE-03-03 — No ARIA role is relied on to supply keyboard or activation behavior.
+- [ ] HTMLSEM-CK-USAGE-03-04 — Every element that appears operable is operable by keyboard.
 
 ## Consistency
 
@@ -163,5 +177,6 @@ on proven support; an exact-target path used while a broader claim is made is th
 
 #### Checklist
 
-- [ ] HTMLSEM-CK-OVERALL-02-01 — An essential native path exists across every declared target, with enhancements layered only on proven support.
-- [ ] HTMLSEM-CK-OVERALL-02-02 — An exact-target path is used only where the complete target is one pinned runtime and no broader claim is made.
+- [ ] HTMLSEM-CK-OVERALL-02-01 — An essential native path exists across every declared target.
+- [ ] HTMLSEM-CK-OVERALL-02-02 — Every enhancement is layered only on proven support.
+- [ ] HTMLSEM-CK-OVERALL-02-03 — An exact-target path is used only where the complete target is one pinned runtime and no broader claim is made.

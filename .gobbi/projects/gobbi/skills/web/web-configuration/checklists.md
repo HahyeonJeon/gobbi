@@ -56,9 +56,11 @@ from its cause, is the failure.
 
 #### Checklist
 
-- [ ] WEBCFG-CK-STRUCTURE-01-01 — The process reads its environment once, parses it against a declared shape, and exports the typed values from one module.
-- [ ] WEBCFG-CK-STRUCTURE-01-02 — Consumers import an already-parsed value rather than reading the environment at the call site.
-- [ ] WEBCFG-CK-STRUCTURE-01-03 — A literal `process.env.NAME` reference required for a tool's static replacement stays at the module boundary.
+- [ ] WEBCFG-CK-STRUCTURE-01-01 — The process reads its environment once.
+- [ ] WEBCFG-CK-STRUCTURE-01-02 — The process parses its environment against a declared shape.
+- [ ] WEBCFG-CK-STRUCTURE-01-03 — The process exports the typed values from one module.
+- [ ] WEBCFG-CK-STRUCTURE-01-04 — Consumers import an already-parsed value rather than reading the environment at the call site.
+- [ ] WEBCFG-CK-STRUCTURE-01-05 — A literal `process.env.NAME` reference required for a tool's static replacement stays at the module boundary.
 
 ### WEBCFG-SC-STRUCTURE-02 — Normal case: exposure is visible where the value is used
 
@@ -120,8 +122,9 @@ failure.
 
 #### Checklist
 
-- [ ] WEBCFG-CK-USAGE-01-01 — The process refuses to start and names the absent or invalid required value.
-- [ ] WEBCFG-CK-USAGE-01-02 — No fallback default silently stands in for a missing required value.
+- [ ] WEBCFG-CK-USAGE-01-01 — The process refuses to start.
+- [ ] WEBCFG-CK-USAGE-01-02 — The process names the absent or invalid required value.
+- [ ] WEBCFG-CK-USAGE-01-03 — No fallback default silently stands in for a missing required value.
 - Also applies: WEBCFG-CK-RISK-01-02 (no secret is emitted to a log, error, diagnostic, or crash report).
 
 ### WEBCFG-SC-USAGE-02 — Edge case: an optional capability's value is absent
@@ -203,5 +206,6 @@ is unanswered, or when a supply decision is described as providing a protection 
 
 #### Checklist
 
-- [ ] WEBCFG-CK-OVERALL-01-01 — The record answers, for every value, its classification, its supply path, and its validation, and for every flag its owner, default, and removal or promotion condition.
-- [ ] WEBCFG-CK-OVERALL-01-02 — No supply decision claims to provide a protection that only enforcement can provide.
+- [ ] WEBCFG-CK-OVERALL-01-01 — The record answers, for every value, its classification, its supply path, and its validation.
+- [ ] WEBCFG-CK-OVERALL-01-02 — The record answers, for every flag, its owner, its default, and its removal or promotion condition.
+- [ ] WEBCFG-CK-OVERALL-01-03 — No supply decision claims to provide a protection that only enforcement can provide.

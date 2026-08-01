@@ -113,7 +113,8 @@ communicate stated; decorative motion accepted because it is subtle is the failu
 #### Checklist
 
 - [ ] DTINTF-CK-AESTHETICS-02-01 — Every transition makes a change of state, location, or causality legible.
-- [ ] DTINTF-CK-AESTHETICS-02-02 — Every warranted motion states what it must communicate, and leaves its duration, easing, and safety floor to the renderer's motion and presentation owners.
+- [ ] DTINTF-CK-AESTHETICS-02-02 — Every warranted motion states what it must communicate.
+- [ ] DTINTF-CK-AESTHETICS-02-03 — Every warranted motion leaves its duration, easing, and safety floor to the renderer's motion and presentation owners.
 
 ## Usage
 

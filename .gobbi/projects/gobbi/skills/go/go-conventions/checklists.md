@@ -97,7 +97,8 @@ punctuation so added context remains readable; an unjustified exception fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-AESTHETICS-04-01 — Every ordinary error string starts with a lowercase letter and omits trailing punctuation.
+- [ ] GOCNV-CK-AESTHETICS-04-01 — Every ordinary error string starts with a lowercase letter.
+- [ ] GOCNV-CK-AESTHETICS-04-02 — Every ordinary error string omits trailing punctuation.
 
 ## Usage
 

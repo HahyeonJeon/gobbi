@@ -64,7 +64,8 @@ relationship it preserves and keeps inputs narrow until a real boundary widens t
 - [ ] TSTYPE-CK-STRUCTURE-02-01 — Every generic preserves a visible relationship among inputs, outputs, or members.
 - [ ] TSTYPE-CK-STRUCTURE-02-02 — Every type parameter carries the smallest useful constraint.
 - [ ] TSTYPE-CK-STRUCTURE-02-03 — Every type parameter is actually used.
-- [ ] TSTYPE-CK-STRUCTURE-02-04 — Input types stay narrow, and widening happens only at an intentional abstraction or public boundary.
+- [ ] TSTYPE-CK-STRUCTURE-02-04 — Input types stay narrow.
+- [ ] TSTYPE-CK-STRUCTURE-02-05 — Widening happens only at an intentional abstraction or public boundary.
 
 ## Performance
 
@@ -96,8 +97,11 @@ declaration changes with an unrelated implementation edit is the failure.
 #### Checklist
 
 - [ ] TSTYPE-CK-USAGE-01-01 — The emitted public declarations are inspected.
-- [ ] TSTYPE-CK-USAGE-01-02 — Exported APIs carry explicit return types wherever those types stabilize declarations or compatibility, and inference is left to local implementation details.
-- [ ] TSTYPE-CK-USAGE-01-03 — Annotations are used for stable public contracts, `satisfies` where a value is checked without replacing its useful inferred type, and `as const` for intentionally literal immutable data.
+- [ ] TSTYPE-CK-USAGE-01-02 — Exported APIs carry explicit return types wherever those types stabilize declarations or compatibility.
+- [ ] TSTYPE-CK-USAGE-01-03 — Inference is left to local implementation details.
+- [ ] TSTYPE-CK-USAGE-01-04 — Annotations are used for stable public contracts.
+- [ ] TSTYPE-CK-USAGE-01-05 — `satisfies` is used where a value is checked without replacing its useful inferred type.
+- [ ] TSTYPE-CK-USAGE-01-06 — `as const` is used for intentionally literal immutable data.
 
 ### TSTYPE-SC-USAGE-02 — Edge case: `readonly` reaches the limit of what it guarantees
 
@@ -131,8 +135,9 @@ failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-CONSISTENCY-02-01 — `interface` is used for open object contracts intended for compatible augmentation and `type` for unions, aliases, and closed compositions, following the established project convention.
-- [ ] TSTYPE-CK-CONSISTENCY-02-02 — The project's established declaration style and explicitness level are followed where they exist.
+- [ ] TSTYPE-CK-CONSISTENCY-02-01 — `interface` is used for open object contracts intended for compatible augmentation, following the established project convention.
+- [ ] TSTYPE-CK-CONSISTENCY-02-02 — `type` is used for unions, aliases, and closed compositions, following the established project convention.
+- [ ] TSTYPE-CK-CONSISTENCY-02-03 — The project's established declaration style and explicitness level are followed where they exist.
 
 ## Risk
 

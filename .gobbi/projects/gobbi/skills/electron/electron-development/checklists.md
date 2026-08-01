@@ -56,7 +56,8 @@ failure.
 - [ ] ELECDEV-CK-STRUCTURE-01-02 — The shared contract imports no process-only runtime module across a boundary.
 - [ ] ELECDEV-CK-STRUCTURE-01-03 — Operating-system, filesystem, secret, and process authority stays in main or a bounded utility process.
 - [ ] ELECDEV-CK-STRUCTURE-01-04 — Renderer code stays web-shaped.
-- [ ] ELECDEV-CK-STRUCTURE-01-05 — Every privileged handler is registered once at the correct lifecycle point, with duplicate registration, restart, and teardown behavior explicit.
+- [ ] ELECDEV-CK-STRUCTURE-01-05 — Every privileged handler is registered once at the correct lifecycle point.
+- [ ] ELECDEV-CK-STRUCTURE-01-06 — Every privileged handler's duplicate-registration, restart, and teardown behavior is explicit.
 
 ### ELECDEV-SC-STRUCTURE-02 — Poor quality: placement chosen by import convenience
 
@@ -160,10 +161,11 @@ is the failure.
 
 #### Checklist
 
-- [ ] ELECDEV-CK-RISK-01-01 — Every explicitly set `webPreferences` key is audited against the pinned Electron default and the secure defaults are preserved.
-- [ ] ELECDEV-CK-RISK-01-02 — Every security-reducing deviation carries documented user authority and matching test evidence.
-- [ ] ELECDEV-CK-RISK-01-03 — Secure options and controls are applied through the owning factory and one idempotent `web-contents-created` installer to every existing and later-created web contents and each distinct session or partition.
-- [ ] ELECDEV-CK-RISK-01-04 — Sender evidence and payload data are validated in the privileged process.
+- [ ] ELECDEV-CK-RISK-01-01 — Every explicitly set `webPreferences` key is audited against the pinned Electron default.
+- [ ] ELECDEV-CK-RISK-01-02 — The secure `webPreferences` defaults are preserved.
+- [ ] ELECDEV-CK-RISK-01-03 — Every security-reducing deviation carries documented user authority and matching test evidence.
+- [ ] ELECDEV-CK-RISK-01-04 — Secure options and controls are applied through the owning factory and one idempotent `web-contents-created` installer to every existing and later-created web contents and each distinct session or partition.
+- [ ] ELECDEV-CK-RISK-01-05 — Sender evidence and payload data are validated in the privileged process.
 
 ### ELECDEV-SC-RISK-02 — Adversarial: a security setting relaxed to make the change work
 
@@ -190,7 +192,7 @@ or handoff is left unspecified while the change is reported as done.
 - [ ] ELECDEV-CK-OVERALL-01-01 — Every affected process owns only valid imports and capabilities.
 - [ ] ELECDEV-CK-OVERALL-01-02 — Every long-lived resource the change creates has an owner and a cleanup path.
 - [ ] ELECDEV-CK-OVERALL-01-03 — Completion is not claimed while an in-scope process, integration path, failure case, or required handoff remains unspecified.
-- Also applies: ELECDEV-CK-RISK-01-04 (privileged validation of sender and payload).
+- Also applies: ELECDEV-CK-RISK-01-05 (privileged validation of sender and payload).
 
 ### ELECDEV-SC-OVERALL-02 — Adversarial: construction success presented as runtime proof
 
@@ -201,4 +203,5 @@ result inside what it establishes and routes the rest; static success accepted a
 #### Checklist
 
 - [ ] ELECDEV-CK-OVERALL-02-01 — No construction result is treated as proof of a property it does not establish: a typecheck of IPC authorization, a successful build of preload loading, a development launch of packaged paths, a development launch of lifecycle ordering, and a compiled type of a runtime-validated cross-process payload.
-- [ ] ELECDEV-CK-OVERALL-02-02 — Every behavioral claim is routed to `electron-testing` and every packaged claim to `electron-release` rather than asserted here.
+- [ ] ELECDEV-CK-OVERALL-02-02 — Every behavioral claim is routed to `electron-testing` rather than asserted here.
+- [ ] ELECDEV-CK-OVERALL-02-03 — Every packaged claim is routed to `electron-release` rather than asserted here.

@@ -53,7 +53,8 @@ The command should target the smallest complete owned scope; an unrelated or inc
 #### Checklist
 
 - [ ] GOTCH-CK-STRUCTURE-01-01 — The command role matches the required toolchain operation.
-- [ ] GOTCH-CK-STRUCTURE-01-02 — The command target contains every affected package or module and excludes unrelated project surfaces.
+- [ ] GOTCH-CK-STRUCTURE-01-02 — The command target contains every affected package or module.
+- [ ] GOTCH-CK-STRUCTURE-01-03 — The command target excludes unrelated project surfaces.
 
 ### GOTCH-SC-STRUCTURE-02 — Edge case: Build constraints select a different file set
 
@@ -150,8 +151,9 @@ support still fails; the work should distinguish those boundaries.
 
 #### Checklist
 
-- [ ] GOTCH-CK-USAGE-02-01 — Every cross-build claim stops at the behavior the command exercised and is not represented as target-runtime proof.
-- [ ] GOTCH-CK-USAGE-02-02 — Every required cgo compiler and system input is identified.
+- [ ] GOTCH-CK-USAGE-02-01 — Every cross-build claim stops at the behavior the command exercised.
+- [ ] GOTCH-CK-USAGE-02-02 — No cross-build claim is represented as target-runtime proof.
+- [ ] GOTCH-CK-USAGE-02-03 — Every required cgo compiler and system input is identified.
 
 ### GOTCH-SC-USAGE-03 — Expected failure: Module or checksum resolution cannot complete
 

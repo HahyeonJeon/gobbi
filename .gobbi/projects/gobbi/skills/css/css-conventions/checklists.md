@@ -64,7 +64,8 @@ changed or removed interface with a consumer left behind is the failure.
 
 - [ ] CSSCONV-CK-STRUCTURE-02-01 — Every established public hook and custom-property or token interface the change touches is preserved, or is changed under an authorized migration.
 - [ ] CSSCONV-CK-STRUCTURE-02-02 — No consumer still depends on a name, hook, or token the migration removed or renamed.
-- [ ] CSSCONV-CK-STRUCTURE-02-03 — A value that participates in established reuse, variation, or theming uses the existing custom-property or token interface, and a genuinely local value stays local.
+- [ ] CSSCONV-CK-STRUCTURE-02-03 — A value that participates in established reuse, variation, or theming uses the existing custom-property or token interface.
+- [ ] CSSCONV-CK-STRUCTURE-02-04 — A genuinely local value stays local.
 
 ## Performance
 

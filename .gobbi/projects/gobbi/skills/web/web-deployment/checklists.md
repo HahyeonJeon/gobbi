@@ -58,9 +58,10 @@ reorganisation the release did not require is the failure.
 
 - [ ] WEBDEP-CK-STRUCTURE-01-01 — The working bundler is preserved.
 - [ ] WEBDEP-CK-STRUCTURE-01-02 — Only what this release requires is changed in the build configuration.
-- [ ] WEBDEP-CK-STRUCTURE-01-03 — One entry point exists per delivered surface, and code splits at a route, a deferred feature, or a rarely reached dependency.
-- [ ] WEBDEP-CK-STRUCTURE-01-04 — A shared dependency lives in one chunk rather than being duplicated across entries.
-- [ ] WEBDEP-CK-STRUCTURE-01-05 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
+- [ ] WEBDEP-CK-STRUCTURE-01-03 — One entry point exists per delivered surface.
+- [ ] WEBDEP-CK-STRUCTURE-01-04 — Code splits at a route, a deferred feature, or a rarely reached dependency.
+- [ ] WEBDEP-CK-STRUCTURE-01-05 — A shared dependency lives in one chunk rather than being duplicated across entries.
+- [ ] WEBDEP-CK-STRUCTURE-01-06 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
 
 ### WEBDEP-SC-STRUCTURE-02 — Rule violation: a cacheable asset is served under a reusable name
 
@@ -71,10 +72,11 @@ versions from one name is the failure.
 #### Checklist
 
 - [ ] WEBDEP-CK-STRUCTURE-02-01 — Every cacheable asset filename is derived from its content.
-- [ ] WEBDEP-CK-STRUCTURE-02-02 — A rebuilt but unchanged asset keeps its name, and a changed asset receives a new one.
-- [ ] WEBDEP-CK-STRUCTURE-02-03 — Cacheable assets are served with a long-lived immutable freshness lifetime.
-- [ ] WEBDEP-CK-STRUCTURE-02-04 — The entry document stays revalidated.
-- [ ] WEBDEP-CK-STRUCTURE-02-05 — The naming scheme, the freshness lifetime per class of file, and the entry document's directives are recorded as they are actually served rather than as configured.
+- [ ] WEBDEP-CK-STRUCTURE-02-02 — A rebuilt but unchanged asset keeps its name.
+- [ ] WEBDEP-CK-STRUCTURE-02-03 — A changed asset receives a new name.
+- [ ] WEBDEP-CK-STRUCTURE-02-04 — Cacheable assets are served with a long-lived immutable freshness lifetime.
+- [ ] WEBDEP-CK-STRUCTURE-02-05 — The entry document stays revalidated.
+- [ ] WEBDEP-CK-STRUCTURE-02-06 — The naming scheme, the freshness lifetime per class of file, and the entry document's directives are recorded as they are actually served rather than as configured.
 
 ## Performance
 
@@ -89,7 +91,7 @@ signals it claims to rely on is the failure.
 - [ ] WEBDEP-CK-PERFORMANCE-01-01 — Each rollout stage is the smallest the target supports.
 - [ ] WEBDEP-CK-PERFORMANCE-01-02 — Each stage is held long enough for error, latency, and outcome signals to move before the next advance.
 - [ ] WEBDEP-CK-PERFORMANCE-01-03 — Each stage boundary, its traffic share, the signals observed during the hold, and the decision taken at the end of it are recorded.
-- Also applies: WEBDEP-CK-STRUCTURE-01-05 (chunk graph and first-visit cost recorded).
+- Also applies: WEBDEP-CK-STRUCTURE-01-06 (chunk graph and first-visit cost recorded).
 
 ### WEBDEP-SC-PERFORMANCE-02 — Edge case: a warm cache and an old document still request the previous names
 
@@ -139,10 +141,11 @@ the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-USAGE-02-01 — The release is reversed without waiting for a diagnosis, and the diagnosis proceeds from the restored state.
-- [ ] WEBDEP-CK-USAGE-02-02 — The previous entry document is restored.
-- [ ] WEBDEP-CK-USAGE-02-03 — The previous entry document's assets are confirmed still served.
-- [ ] WEBDEP-CK-USAGE-02-04 — The restored release is re-verified from the production URL rather than assumed to have succeeded.
+- [ ] WEBDEP-CK-USAGE-02-01 — The release is reversed without waiting for a diagnosis.
+- [ ] WEBDEP-CK-USAGE-02-02 — The diagnosis proceeds from the restored state.
+- [ ] WEBDEP-CK-USAGE-02-03 — The previous entry document is restored.
+- [ ] WEBDEP-CK-USAGE-02-04 — The previous entry document's assets are confirmed still served.
+- [ ] WEBDEP-CK-USAGE-02-05 — The restored release is re-verified from the production URL rather than assumed to have succeeded.
 
 ### WEBDEP-SC-USAGE-03 — Edge case: a change has no reverse path
 
@@ -181,7 +184,8 @@ a migration incompatible with the currently serving build is the failure.
 - [ ] WEBDEP-CK-CONSISTENCY-02-02 — Every asset and chunk is uploaded before the entry document that names them.
 - [ ] WEBDEP-CK-CONSISTENCY-02-03 — The entry document is published last.
 - [ ] WEBDEP-CK-CONSISTENCY-02-04 — The previous and the new entry document can both be served correctly at the same time throughout the rollout.
-- [ ] WEBDEP-CK-CONSISTENCY-02-05 — A migration that is not backward compatible with the currently serving build stops the deploy and triggers the reverse path.
+- [ ] WEBDEP-CK-CONSISTENCY-02-05 — A migration that is not backward compatible with the currently serving build stops the deploy.
+- [ ] WEBDEP-CK-CONSISTENCY-02-06 — A migration that is not backward compatible with the currently serving build triggers the reverse path.
 
 ## Risk
 

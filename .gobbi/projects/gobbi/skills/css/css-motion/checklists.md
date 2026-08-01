@@ -143,8 +143,9 @@ element's resting state.
 
 - [ ] CSSMOT-CK-CONSISTENCY-01-01 — A change between two states uses a transition.
 - [ ] CSSMOT-CK-CONSISTENCY-01-02 — A keyframe animation is used only for a sequence of more than two steps, a repeating indicator, or motion with no state change to attach to.
-- [ ] CSSMOT-CK-CONSISTENCY-01-03 — `Element.animate()` is used only for runtime-computed values, motion that must reverse from its current position, or a timeline shared across elements, and the scale, safe-property, and reduced-motion Rules still hold for it.
-- [ ] CSSMOT-CK-CONSISTENCY-01-04 — Entry and exit live in the same declarative source as the element's resting state.
+- [ ] CSSMOT-CK-CONSISTENCY-01-03 — `Element.animate()` is used only for runtime-computed values, motion that must reverse from its current position, or a timeline shared across elements.
+- [ ] CSSMOT-CK-CONSISTENCY-01-04 — The scale, safe-property, and reduced-motion Rules still hold for every `Element.animate()` use.
+- [ ] CSSMOT-CK-CONSISTENCY-01-05 — Entry and exit live in the same declarative source as the element's resting state.
 
 ### CSSMOT-SC-CONSISTENCY-02 — Edge case: a declared target predates `@starting-style` support
 
@@ -168,7 +169,8 @@ motion that conveys information no static state can, with its distance and durat
 #### Checklist
 
 - [ ] CSSMOT-CK-RISK-01-01 — Every movement, scaling, panning, and parallax effect has a reduced substitute.
-- [ ] CSSMOT-CK-RISK-01-02 — Motion kept on the reduced path conveys information no static state can, and its distance and duration are reduced.
+- [ ] CSSMOT-CK-RISK-01-02 — Motion kept on the reduced path conveys information no static state can.
+- [ ] CSSMOT-CK-RISK-01-03 — The distance and duration of motion kept on the reduced path are reduced.
 
 ### CSSMOT-SC-RISK-02 — Rule violation: motion is tied to scroll or pointer position without a recorded reason
 

@@ -34,9 +34,10 @@ casing, Hook naming, nested definitions, or mismatched imports and exports fail 
 
 #### Checklist
 
-- [ ] RCON-CK-STRUCTURE-01-01 — Every component name begins with a capital letter, and every custom Hook name begins with `use` followed by a capital letter.
-- [ ] RCON-CK-STRUCTURE-01-02 — Every component and custom Hook definition is at module scope.
-- [ ] RCON-CK-STRUCTURE-01-03 — Each import form matches the corresponding named or default export.
+- [ ] RCON-CK-STRUCTURE-01-01 — Every component name begins with a capital letter.
+- [ ] RCON-CK-STRUCTURE-01-02 — Every custom Hook name begins with `use` followed by a capital letter.
+- [ ] RCON-CK-STRUCTURE-01-03 — Every component and custom Hook definition is at module scope.
+- [ ] RCON-CK-STRUCTURE-01-04 — Each import form matches the corresponding named or default export.
 
 ## Performance
 

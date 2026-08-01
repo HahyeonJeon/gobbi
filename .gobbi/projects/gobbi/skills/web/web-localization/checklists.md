@@ -119,8 +119,9 @@ language deduced from where the visitor appears to be is the failure.
 #### Checklist
 
 - [ ] WEBLOC-CK-USAGE-01-01 — The active locale is negotiated against a declared, ordered list of supported locales with one defined fallback.
-- [ ] WEBLOC-CK-USAGE-01-02 — An explicit user choice resolves first and the request's stated language preference second.
-- [ ] WEBLOC-CK-USAGE-01-03 — No language is inferred from a country, an IP address, or a time zone.
+- [ ] WEBLOC-CK-USAGE-01-02 — An explicit user choice resolves first.
+- [ ] WEBLOC-CK-USAGE-01-03 — The request's stated language preference resolves second.
+- [ ] WEBLOC-CK-USAGE-01-04 — No language is inferred from a country, an IP address, or a time zone.
 
 ### WEBLOC-SC-USAGE-02 — Normal case: a formatted value carries its own rules alongside the locale
 
@@ -145,7 +146,8 @@ default sort or a split on spaces is the failure.
 - [ ] WEBLOC-CK-USAGE-03-01 — Every list a person reads is ordered through `Intl.Collator` rather than the default sort comparison.
 - [ ] WEBLOC-CK-USAGE-03-02 — Every departure from `Intl.Collator` names an ordering that is not read by a person.
 - [ ] WEBLOC-CK-USAGE-03-03 — Counting or truncating by grapheme, word, or sentence uses `Intl.Segmenter` rather than code units or spaces.
-- [ ] WEBLOC-CK-USAGE-03-04 — Every departure from `Intl.Segmenter` names a supported-browser range reaching before its April 2024 baseline and uses a maintained polyfill.
+- [ ] WEBLOC-CK-USAGE-03-04 — Every departure from `Intl.Segmenter` names a supported-browser range reaching before its April 2024 baseline.
+- [ ] WEBLOC-CK-USAGE-03-05 — Every departure from `Intl.Segmenter` uses a maintained polyfill.
 
 ## Consistency
 
@@ -170,7 +172,8 @@ target; an early adoption with no stated reason is the failure.
 #### Checklist
 
 - [ ] WEBLOC-CK-CONSISTENCY-02-01 — A new catalog uses ICU MessageFormat 1.
-- [ ] WEBLOC-CK-CONSISTENCY-02-02 — Any early adoption of MessageFormat 2 goes through a library and records its migration reason.
+- [ ] WEBLOC-CK-CONSISTENCY-02-02 — Any early adoption of MessageFormat 2 goes through a library.
+- [ ] WEBLOC-CK-CONSISTENCY-02-03 — Any early adoption of MessageFormat 2 records its migration reason.
 
 ## Risk
 
@@ -196,7 +199,7 @@ language, is the failure.
 
 - [ ] WEBLOC-CK-RISK-02-01 — A requested locale outside the declared supported list resolves to the one defined fallback.
 - [ ] WEBLOC-CK-RISK-02-02 — The fallback is the declared one rather than the runtime's ambient default.
-- Also applies: WEBLOC-CK-USAGE-01-03 (no language inferred from country, IP address, or time zone).
+- Also applies: WEBLOC-CK-USAGE-01-04 (no language inferred from country, IP address, or time zone).
 
 ### WEBLOC-SC-RISK-03 — Adversarial: the localized surface is only ever exercised in the source language
 

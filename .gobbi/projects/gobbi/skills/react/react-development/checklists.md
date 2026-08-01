@@ -26,8 +26,9 @@ fails the scenario.
 
 - [ ] RDEV-CK-PROJECT-02-01 — The work stops when a required capability or authority is not established.
 - [ ] RDEV-CK-PROJECT-02-02 — The work names the missing evidence or user-owned decision when a required capability or authority is not established.
-- [ ] RDEV-CK-PROJECT-02-03 — The work pauses and surfaces each material design choice outside the accepted task instead of deciding it.
-- [ ] RDEV-CK-PROJECT-02-04 — No unestablished React capability, framework feature, or authority is assumed to exist.
+- [ ] RDEV-CK-PROJECT-02-03 — The work pauses at each material design choice outside the accepted task instead of deciding it.
+- [ ] RDEV-CK-PROJECT-02-04 — The work surfaces each material design choice outside the accepted task instead of deciding it.
+- [ ] RDEV-CK-PROJECT-02-05 — No unestablished React capability, framework feature, or authority is assumed to exist.
 
 ## Structure
 

@@ -41,8 +41,9 @@ preferred mechanism is absent, is the failure.
 #### Checklist
 
 - [ ] TSASYNC-CK-PROJECT-02-01 — No cancellation, event, or explicit-resource API is used before the supported runtime is confirmed to provide it.
-- [ ] TSASYNC-CK-PROJECT-02-02 — Cleanup uses the host's explicit-resource mechanism where the supported runtime provides it and `try`/`finally` where it does not.
-- [ ] TSASYNC-CK-PROJECT-02-03 — Every ownership and cleanup obligation is still satisfied under the mechanism the host actually provides.
+- [ ] TSASYNC-CK-PROJECT-02-02 — Cleanup uses the host's explicit-resource mechanism where the supported runtime provides it.
+- [ ] TSASYNC-CK-PROJECT-02-03 — Cleanup uses `try`/`finally` where the supported runtime provides no explicit-resource mechanism.
+- [ ] TSASYNC-CK-PROJECT-02-04 — Every ownership and cleanup obligation is still satisfied under the mechanism the host actually provides.
 
 ## Structure
 
@@ -119,7 +120,8 @@ according to what the chosen mechanism actually provides. A silently discarded o
 #### Checklist
 
 - [ ] TSASYNC-CK-USAGE-02-01 — A cancelled operation's outcome is observable by its owner rather than silently discarded.
-- [ ] TSASYNC-CK-USAGE-02-02 — The caller is given the behavior the mechanism actually provides, with stopped work distinguished from a suppressed stale result.
+- [ ] TSASYNC-CK-USAGE-02-02 — The caller is given the behavior the mechanism actually provides.
+- [ ] TSASYNC-CK-USAGE-02-03 — Stopped work is distinguished from a suppressed stale result in what the caller is given.
 - Also applies: TSASYNC-CK-RISK-01-01 (resources released on cancellation).
 
 ## Consistency
@@ -158,6 +160,7 @@ leaves any of them held is the failure.
 
 - [ ] TSASYNC-CK-RISK-01-01 — Every acquired listener, timer, connection, lock, and other cleanup-bearing resource is released on success, failure, cancellation, and early exit.
 - Also applies: TSASYNC-CK-PROJECT-02-02 (the cleanup mechanism matches the supported runtime).
+- Also applies: TSASYNC-CK-PROJECT-02-03 (the cleanup fallback matches the supported runtime).
 
 ### TSASYNC-SC-RISK-02 — Edge case: failure or cancellation arrives during cleanup
 

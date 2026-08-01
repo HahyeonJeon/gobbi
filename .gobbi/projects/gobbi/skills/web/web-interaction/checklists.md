@@ -48,7 +48,8 @@ removal was never chosen is the failure.
 
 - [ ] WEBIXN-CK-STRUCTURE-01-01 — Each listener's target, phase, default-action handling, and removal point are defined before it is added.
 - [ ] WEBIXN-CK-STRUCTURE-01-02 — Every listener an interaction needs is added with a single `AbortController` signal, or a listener that deliberately outlives the component names its owner and removal point where it is added.
-- [ ] WEBIXN-CK-STRUCTURE-01-03 — One listener sits on the nearest container that outlives its children and reads the origin from `event.target`, or the departure names the event that does not bubble.
+- [ ] WEBIXN-CK-STRUCTURE-01-03 — One listener sits on the nearest container that outlives its children, or the departure names the event that does not bubble.
+- [ ] WEBIXN-CK-STRUCTURE-01-04 — That listener reads the origin from `event.target`, or the departure names the event that does not bubble.
 
 ### WEBIXN-SC-STRUCTURE-02 — Normal case: the control's state set is declared before it is styled
 
@@ -163,9 +164,11 @@ hidden element, or dropped to the document, is the failure.
 #### Checklist
 
 - [ ] WEBIXN-CK-USAGE-03-01 — Focus entry, containment, and return are decided for every overlay.
-- [ ] WEBIXN-CK-USAGE-03-02 — A modal surface holds focus while it is open and returns focus to the invoking control, or moves focus to the element that continues the work flow when the invoking control no longer exists or the work flow continues at a following control or result.
-- [ ] WEBIXN-CK-USAGE-03-03 — Focus is never left on a removed or hidden element.
-- [ ] WEBIXN-CK-USAGE-03-04 — A composite widget exposes one tab stop and moves its inner selection with roving `tabindex` or `aria-activedescendant`.
+- [ ] WEBIXN-CK-USAGE-03-02 — A modal surface holds focus while it is open.
+- [ ] WEBIXN-CK-USAGE-03-03 — A modal surface returns focus to the invoking control, or moves focus to the element that continues the work flow when the invoking control no longer exists or the work flow continues at a following control or result.
+- [ ] WEBIXN-CK-USAGE-03-04 — Focus is never left on a removed or hidden element.
+- [ ] WEBIXN-CK-USAGE-03-05 — A composite widget exposes one tab stop.
+- [ ] WEBIXN-CK-USAGE-03-06 — A composite widget moves its inner selection with roving `tabindex` or `aria-activedescendant`.
 
 ### WEBIXN-SC-USAGE-04 — Edge case: focus must stay in a field that drives a collection
 

@@ -25,8 +25,9 @@ sets accessibility policy, or decides an element choice instead of routing it to
 #### Checklist
 
 - [ ] HTMLPLAT-CK-PROJECT-01-01 — The inspected question concerns HTML authoring conformance, element content models, parser behavior, declared-target realization, or evidence meaning.
-- [ ] HTMLPLAT-CK-PROJECT-01-02 — Every artifact-outcome question is routed to `html-development` and every element and accessibility choice to `html-semantics`.
-- [ ] HTMLPLAT-CK-PROJECT-01-03 — No general accessibility policy is set from this lookup.
+- [ ] HTMLPLAT-CK-PROJECT-01-02 — Every artifact-outcome question is routed to `html-development`.
+- [ ] HTMLPLAT-CK-PROJECT-01-03 — Every element and accessibility choice is routed to `html-semantics`.
+- [ ] HTMLPLAT-CK-PROJECT-01-04 — No general accessibility policy is set from this lookup.
 
 ## Structure
 
@@ -162,4 +163,5 @@ unknowns needed to use the answer safely.
 #### Checklist
 
 - [ ] HTMLPLAT-CK-OVERALL-02-01 — The report states the layer, the target, the evidence, the owner, and the unknowns.
-- Also applies: HTMLPLAT-CK-PROJECT-01-02 (every routed question names the owner it went to).
+- Also applies: HTMLPLAT-CK-PROJECT-01-02 (every artifact-outcome question names the owner it went to).
+- Also applies: HTMLPLAT-CK-PROJECT-01-03 (every element and accessibility choice names the owner it went to).

@@ -54,8 +54,10 @@ searching for who owns a value is the failure.
 
 - [ ] WEBARCH-CK-STRUCTURE-01-01 — Each state, policy decision, side effect, cache, and invalidation path names one source of truth and one lifecycle.
 - [ ] WEBARCH-CK-STRUCTURE-01-02 — Secrets, protected policy, authorization, and authoritative shared effects sit behind a trusted server boundary.
-- [ ] WEBARCH-CK-STRUCTURE-01-03 — Navigable state sits in the URL, shared facts in server data, and transient interaction state in local state, or the departure records the verified ownership or lifecycle need behind it.
-- [ ] WEBARCH-CK-STRUCTURE-01-04 — Every cache carries a freshness, isolation, invalidation, stale, capacity, and diagnostic contract.
+- [ ] WEBARCH-CK-STRUCTURE-01-03 — Navigable state sits in the URL, or the departure records the verified ownership or lifecycle need behind it.
+- [ ] WEBARCH-CK-STRUCTURE-01-04 — Shared facts sit in server data, or the departure records the verified ownership or lifecycle need behind it.
+- [ ] WEBARCH-CK-STRUCTURE-01-05 — Transient interaction state sits in local state, or the departure records the verified ownership or lifecycle need behind it.
+- [ ] WEBARCH-CK-STRUCTURE-01-06 — Every cache carries a freshness, isolation, invalidation, stale, capacity, and diagnostic contract.
 
 ### WEBARCH-SC-STRUCTURE-02 — Rule violation: client state becomes an accidental authority
 
@@ -93,7 +95,7 @@ the application because the framework leads with it is the failure.
 
 - [ ] WEBARCH-CK-PERFORMANCE-01-01 — The rendering mode — static, server, streaming, client, or hybrid — is selected per route against that route's outcome.
 - [ ] WEBARCH-CK-PERFORMANCE-01-02 — A departure from the preferred delivery records its evidence, tradeoff, lifecycle cost, preserved semantic, accessibility, navigation, refresh, recovery, trust, and completion obligations, and its reopen condition.
-- Also applies: WEBARCH-CK-STRUCTURE-01-04 (every cache carries its contract).
+- Also applies: WEBARCH-CK-STRUCTURE-01-06 (every cache carries its contract).
 
 ### WEBARCH-SC-PERFORMANCE-02 — Poor quality: client machinery is added ahead of the evidence
 
@@ -201,8 +203,9 @@ routing is decided by whatever the client sends is the failure.
 
 #### Checklist
 
-- [ ] WEBARCH-CK-RISK-02-01 — Every cache that can hold per-principal data names its isolation key and cannot return one principal's entry to another.
-- [ ] WEBARCH-CK-RISK-02-02 — No client-supplied value selects which cache entry, service boundary, or rendering path serves a protected response without a server-side check.
+- [ ] WEBARCH-CK-RISK-02-01 — Every cache that can hold per-principal data names its isolation key.
+- [ ] WEBARCH-CK-RISK-02-02 — No cache that can hold per-principal data returns one principal's entry to another.
+- [ ] WEBARCH-CK-RISK-02-03 — No client-supplied value selects which cache entry, service boundary, or rendering path serves a protected response without a server-side check.
 - Also applies: WEBARCH-CK-STRUCTURE-02-01 (client state is not the authority for a protected effect).
 
 ## Overall

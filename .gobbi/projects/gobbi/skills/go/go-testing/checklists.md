@@ -102,8 +102,9 @@ one noisy sample supports the conclusion. The measurement should isolate the ope
 
 #### Checklist
 
-- [ ] GOTST-CK-PERFORMANCE-02-01 — One benchmark iteration measures the intended operation and excludes its surrounding setup.
-- [ ] GOTST-CK-PERFORMANCE-02-02 — The benchmark consumes the operation's observable result.
+- [ ] GOTST-CK-PERFORMANCE-02-01 — One benchmark iteration measures the intended operation.
+- [ ] GOTST-CK-PERFORMANCE-02-02 — One benchmark iteration excludes the operation's surrounding setup.
+- [ ] GOTST-CK-PERFORMANCE-02-03 — The benchmark consumes the operation's observable result.
 
 ### GOTST-SC-PERFORMANCE-03 — Poor quality: Slow external tests burden the default target
 
@@ -166,8 +167,9 @@ is valid only when the project contract classifies that absence as unsupported; 
 
 #### Checklist
 
-- [ ] GOTST-CK-USAGE-03-01 — Every skip names its missing prerequisite and follows the project support contract.
-- [ ] GOTST-CK-USAGE-03-02 — A skipped required test is not represented as passed.
+- [ ] GOTST-CK-USAGE-03-01 — Every skip names its missing prerequisite.
+- [ ] GOTST-CK-USAGE-03-02 — Every skip follows the project support contract.
+- [ ] GOTST-CK-USAGE-03-03 — A skipped required test is not represented as passed.
 
 ### GOTST-SC-USAGE-04 — Adversarial: An expected value is fitted to the observed output
 
@@ -241,8 +243,9 @@ side-effect amplification fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-01-01 — Untrusted fuzz input cannot bypass the target's resource bound or trigger unauthorized external effects.
-- [ ] GOTST-CK-RISK-01-02 — A discovered crashing input can be rerun deterministically.
+- [ ] GOTST-CK-RISK-01-01 — Untrusted fuzz input cannot bypass the target's resource bound.
+- [ ] GOTST-CK-RISK-01-02 — Untrusted fuzz input cannot trigger unauthorized external effects.
+- [ ] GOTST-CK-RISK-01-03 — A discovered crashing input can be rerun deterministically.
 
 ### GOTST-SC-RISK-02 — Adversarial: Test process state contaminates another test
 

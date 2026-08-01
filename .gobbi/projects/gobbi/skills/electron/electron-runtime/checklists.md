@@ -25,7 +25,8 @@ default, or an implementation, test, or release procedure instead of routing it 
 #### Checklist
 
 - [ ] ELECRUN-CK-PROJECT-01-01 — The inspected question concerns Electron process capability, preload constraint, IPC mechanics, lifecycle behavior, native integration, or platform failure.
-- [ ] ELECRUN-CK-PROJECT-01-02 — Every security-posture and default choice the lookup raises is routed to `electron-design`, and every implementation, test, and release procedure to its owning operation.
+- [ ] ELECRUN-CK-PROJECT-01-02 — Every security-posture and default choice the lookup raises is routed to `electron-design`.
+- [ ] ELECRUN-CK-PROJECT-01-03 — Every implementation, test, and release procedure the lookup raises is routed to its owning operation.
 
 ## Structure
 
@@ -38,9 +39,10 @@ each API in a valid process; an answer inferred from source shape is the failure
 #### Checklist
 
 - [ ] ELECRUN-CK-STRUCTURE-01-01 — Every answer identifies the actual process, pinned Electron major, emitted module format, operating system, URL, and lifecycle point before it diagnoses a symptom.
-- [ ] ELECRUN-CK-STRUCTURE-01-02 — Every capability is placed in the process that can safely own it, and every boundary crossing is described as a narrow contract rather than moved privilege.
-- [ ] ELECRUN-CK-STRUCTURE-01-03 — Main-only, renderer-only, and common Electron APIs are each kept in valid processes.
-- [ ] ELECRUN-CK-STRUCTURE-01-04 — TypeScript process aliases are described as type-surface aids rather than a runtime security boundary.
+- [ ] ELECRUN-CK-STRUCTURE-01-02 — Every capability is placed in the process that can safely own it.
+- [ ] ELECRUN-CK-STRUCTURE-01-03 — Every boundary crossing is described as a narrow contract rather than moved privilege.
+- [ ] ELECRUN-CK-STRUCTURE-01-04 — Main-only, renderer-only, and common Electron APIs are each kept in valid processes.
+- [ ] ELECRUN-CK-STRUCTURE-01-05 — TypeScript process aliases are described as type-surface aids rather than a runtime security boundary.
 
 ## Performance
 

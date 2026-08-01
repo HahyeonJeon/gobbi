@@ -78,7 +78,8 @@ so a slow layer runs only for the behavior that needs it.
 #### Checklist
 
 - [ ] ELECTST-CK-PERFORMANCE-01-01 — Focused unit and contract checks run before Electron integration, lifecycle or native checks, and packaged smoke.
-- [ ] ELECTST-CK-PERFORMANCE-01-02 — Time, process exit, and native results are controlled at the narrow seam wherever the claim allows it, and full Electron launches are reserved for behavior that needs them.
+- [ ] ELECTST-CK-PERFORMANCE-01-02 — Time, process exit, and native results are controlled at the narrow seam wherever the claim allows it.
+- [ ] ELECTST-CK-PERFORMANCE-01-03 — Full Electron launches are reserved for behavior that needs them.
 
 ## Aesthetics
 
@@ -92,7 +93,8 @@ result attributable and every evidence kind distinct.
 
 - [ ] ELECTST-CK-AESTHETICS-01-01 — Every run records the exact command, working-tree commit or digest, Electron version, operating system, architecture, environment prerequisites, exit status, and relevant output.
 - [ ] ELECTST-CK-AESTHETICS-01-02 — Typecheck and compilation results are kept separate from runtime, semantic security, and packaged evidence in the record.
-- [ ] ELECTST-CK-AESTHETICS-01-03 — Every sender fixture states its URL, frame state, and trust classification, and every payload fixture states its valid or invalid reason.
+- [ ] ELECTST-CK-AESTHETICS-01-03 — Every sender fixture states its URL, frame state, and trust classification.
+- [ ] ELECTST-CK-AESTHETICS-01-04 — Every payload fixture states its valid or invalid reason.
 
 ## Usage
 
@@ -170,9 +172,10 @@ proves the rejection happens before the renderer is created.
 
 #### Checklist
 
-- [ ] ELECTST-CK-RISK-02-01 — Absent and permissive `Content-Security-Policy` values are tested as separate cases on every renderer delivery path, and a disallowed script or resource is proven blocked.
-- [ ] ELECTST-CK-RISK-02-02 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each exercised independently.
-- [ ] ELECTST-CK-RISK-02-03 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each rejected before renderer creation.
+- [ ] ELECTST-CK-RISK-02-01 — Absent and permissive `Content-Security-Policy` values are tested as separate cases on every renderer delivery path.
+- [ ] ELECTST-CK-RISK-02-02 — A disallowed script or resource is proven blocked.
+- [ ] ELECTST-CK-RISK-02-03 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each exercised independently.
+- [ ] ELECTST-CK-RISK-02-04 — `webSecurity: false`, `allowRunningInsecureContent: true`, `experimentalFeatures: true`, and `enableBlinkFeatures` are each rejected before renderer creation.
 
 ### ELECTST-SC-RISK-03 — Adversarial: the test environment weakened to produce a pass
 

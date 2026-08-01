@@ -29,8 +29,10 @@ them; a requirement set chosen before the system was inventoried is the failure.
 
 - [ ] WEBSEC-CK-PROJECT-01-01 — Actors, identities, assets, sensitive data, trust zones, entry points, dependencies, privilege, providers, and public exposure are inventoried before requirements are selected.
 - [ ] WEBSEC-CK-PROJECT-01-02 — Applicable requirements are selected from OWASP ASVS 5.0.0 with the exact version and identifiers recorded.
-- [ ] WEBSEC-CK-PROJECT-01-03 — OWASP WSTG 4.2 supplies applicable test ideas through versioned links and NIST SSDF supplies lifecycle practices.
-- [ ] WEBSEC-CK-PROJECT-01-04 — The work continues with one bounded security outcome, and missing asset ownership, unknown authority, contradictory policy, or a scope change is returned rather than resolved here.
+- [ ] WEBSEC-CK-PROJECT-01-03 — OWASP WSTG 4.2 supplies applicable test ideas through versioned links.
+- [ ] WEBSEC-CK-PROJECT-01-04 — NIST SSDF supplies lifecycle practices.
+- [ ] WEBSEC-CK-PROJECT-01-05 — The work continues with one bounded security outcome.
+- [ ] WEBSEC-CK-PROJECT-01-06 — Missing asset ownership, unknown authority, contradictory policy, or a scope change is returned rather than resolved here.
 
 ### WEBSEC-SC-PROJECT-02 — Rule violation: an awareness list stands in for scoped analysis
 

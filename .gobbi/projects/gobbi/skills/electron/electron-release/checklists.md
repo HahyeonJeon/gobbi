@@ -54,9 +54,22 @@ the existing stack; a rebuilt toolchain or a shared build for all three processe
 
 - [ ] ELECREL-CK-STRUCTURE-01-01 — Main, preload, and renderer are built as separate targets for their actual environments and loaders.
 - [ ] ELECREL-CK-STRUCTURE-01-02 — Emitted filenames, extensions, source maps, package type, development URL handling, packaged protocol or file handling, and window preload resolution are each verified.
-- [ ] ELECREL-CK-STRUCTURE-01-03 — The existing packaging and update stack is preserved where it produces maintainable target artifacts, and Electron Forge is recommended only for a new setup or an authorized, evidence-backed migration.
-- [ ] ELECREL-CK-STRUCTURE-01-04 — Native dependencies are rebuilt for the exact Electron application binary, operating system, and architecture, and their inclusion in the package is verified.
-- [ ] ELECREL-CK-STRUCTURE-01-05 — A missing entry, a process-incompatible import, an accidental development server, and a runtime dependency absent from the package each fail the build.
+- [ ] ELECREL-CK-STRUCTURE-01-03 — The existing packaging and update stack is preserved where it produces maintainable target artifacts.
+- [ ] ELECREL-CK-STRUCTURE-01-04 — Electron Forge is recommended only for a new setup or an authorized, evidence-backed migration.
+
+### ELECREL-SC-STRUCTURE-02 — Edge case: native dependencies and build inputs at the packaging boundary
+
+A target carries compiled native dependencies, and a wrong build input can still produce an artifact that
+launches in development. The expected outcome rebuilds each native dependency against the exact Electron
+binary, operating system, and architecture, verifies that it reaches the package, and fails the build on a
+missing entry, a process-incompatible import, an accidental development server, or an absent runtime
+dependency. A build that succeeds while any of those is wrong is the failure.
+
+#### Checklist
+
+- [ ] ELECREL-CK-STRUCTURE-02-01 — Native dependencies are rebuilt for the exact Electron application binary, operating system, and architecture.
+- [ ] ELECREL-CK-STRUCTURE-02-02 — The inclusion of every native dependency in the package is verified.
+- [ ] ELECREL-CK-STRUCTURE-02-03 — A missing entry, a process-incompatible import, an accidental development server, and a runtime dependency absent from the package each fail the build.
 
 ## Performance
 
@@ -136,7 +149,8 @@ moved input, or when handoff-time support evidence is older than the candidate i
 
 - [ ] ELECREL-CK-CONSISTENCY-01-01 — The source commit or digest, lockfile, Electron version, dependency graph, build configuration, tool versions, target matrix, and environment identity are each frozen before the build.
 - [ ] ELECREL-CK-CONSISTENCY-01-02 — Every artifact and every recorded result binds to that frozen identity.
-- [ ] ELECREL-CK-CONSISTENCY-01-03 — Live support and breaking-change evidence is confirmed current at handoff, and every affected check is rerun when the candidate or environment changed.
+- [ ] ELECREL-CK-CONSISTENCY-01-03 — Live support and breaking-change evidence is confirmed current at handoff.
+- [ ] ELECREL-CK-CONSISTENCY-01-04 — Every affected check is rerun when the candidate or environment changed.
 
 ### ELECREL-SC-CONSISTENCY-02 — Rule violation: bytes change after hardening or signing
 
@@ -147,9 +161,11 @@ hardening; patching a signed artifact, however small the change, is the failure.
 #### Checklist
 
 - [ ] ELECREL-CK-CONSISTENCY-02-01 — Entries, resources, ASAR placement, native modules, and Electron fuses are set before signing.
-- [ ] ELECREL-CK-CONSISTENCY-02-02 — No signed or notarized artifact is modified; a required byte change rebuilds from the frozen inputs and repeats hardening.
-- [ ] ELECREL-CK-CONSISTENCY-02-03 — Every intended fuse is set on the packaged Electron binary and its resulting state is recorded.
-- [ ] ELECREL-CK-CONSISTENCY-02-04 — Launch, ASAR expectations, environment behavior, and developer-tool constraints are reinspected after every fuse change.
+- [ ] ELECREL-CK-CONSISTENCY-02-02 — No signed or notarized artifact is modified.
+- [ ] ELECREL-CK-CONSISTENCY-02-03 — A required byte change rebuilds from the frozen inputs.
+- [ ] ELECREL-CK-CONSISTENCY-02-04 — A required byte change repeats hardening.
+- [ ] ELECREL-CK-CONSISTENCY-02-05 — Every intended fuse is set on the packaged Electron binary and its resulting state is recorded.
+- [ ] ELECREL-CK-CONSISTENCY-02-06 — Launch, ASAR expectations, environment behavior, and developer-tool constraints are reinspected after every fuse change.
 
 ## Risk
 
@@ -163,7 +179,8 @@ with platform tools; an unexpected identity, entitlement, or trust result fails 
 
 - [ ] ELECREL-CK-RISK-01-01 — Application binaries, nested code, helpers, native modules, installers, and packages are signed in the target-required order.
 - [ ] ELECREL-CK-RISK-01-02 — Application binaries, nested code, helpers, native modules, installers, and packages are timestamped where required.
-- [ ] ELECREL-CK-RISK-01-03 — Signatures are verified with platform tools on the final bytes, and an unexpected identity, entitlement, nested signature, timestamp, or trust result fails the release.
+- [ ] ELECREL-CK-RISK-01-03 — Signatures are verified with platform tools on the final bytes.
+- [ ] ELECREL-CK-RISK-01-04 — An unexpected identity, entitlement, nested signature, timestamp, or trust result fails the release.
 
 ### ELECREL-SC-RISK-02 — Adversarial: packaging presented as protection
 

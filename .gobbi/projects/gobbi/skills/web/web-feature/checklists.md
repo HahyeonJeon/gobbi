@@ -136,7 +136,8 @@ a silent repair is the failure.
 #### Checklist
 
 - [ ] WEBFEAT-CK-USAGE-02-01 — No path reports false success or hides a repair.
-- [ ] WEBFEAT-CK-USAGE-02-02 — A failed path exposes its recovery route and preserves the person's entered state where the contract requires it.
+- [ ] WEBFEAT-CK-USAGE-02-02 — A failed path exposes its recovery route.
+- [ ] WEBFEAT-CK-USAGE-02-03 — A failed path preserves the person's entered state where the contract requires it.
 
 ## Consistency
 

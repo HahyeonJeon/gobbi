@@ -107,9 +107,10 @@ project's readers and tools expect. Documentation that stops at what the type al
 #### Checklist
 
 - [ ] TSCONV-CK-USAGE-01-01 — Every public API is documented at the level its consumers need, including the behavior, failure, and lifecycle obligations its types cannot express.
-- [ ] TSCONV-CK-USAGE-01-02 — TSDoc-style documentation is used where the repository publishes generated API docs, and ordinary prose comments carry local intent.
-- [ ] TSCONV-CK-USAGE-01-03 — Named exports are used where they improve searchability and refactoring.
-- [ ] TSCONV-CK-USAGE-01-04 — A project's deliberate default-export convention is followed where it is already consistent.
+- [ ] TSCONV-CK-USAGE-01-02 — TSDoc-style documentation is used where the repository publishes generated API docs.
+- [ ] TSCONV-CK-USAGE-01-03 — Ordinary prose comments carry local intent.
+- [ ] TSCONV-CK-USAGE-01-04 — Named exports are used where they improve searchability and refactoring.
+- [ ] TSCONV-CK-USAGE-01-05 — A project's deliberate default-export convention is followed where it is already consistent.
 
 ### TSCONV-SC-USAGE-02 — Adversarial: documentation written to satisfy a coverage check
 

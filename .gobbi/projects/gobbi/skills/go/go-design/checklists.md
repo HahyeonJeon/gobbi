@@ -18,8 +18,9 @@ by current clients and should hide implementation choices; an unnecessary or inc
 
 #### Checklist
 
-- [ ] GODSN-CK-PROJECT-01-01 — Every exported declaration serves a current caller need, and every implementation detail stays unexported unless callers must name it.
-- [ ] GODSN-CK-PROJECT-01-02 — Every caller-dependent behavior is part of the deliberate public contract.
+- [ ] GODSN-CK-PROJECT-01-01 — Every exported declaration serves a current caller need.
+- [ ] GODSN-CK-PROJECT-01-02 — Every implementation detail stays unexported unless callers must name it.
+- [ ] GODSN-CK-PROJECT-01-03 — Every caller-dependent behavior is part of the deliberate public contract.
 
 ### GODSN-SC-PROJECT-02 — Rule violation: A public change ignores compatibility
 
@@ -215,7 +216,8 @@ fails.
 #### Checklist
 
 - [ ] GODSN-CK-RISK-02-01 — Every acquired resource has exactly one owner.
-- [ ] GODSN-CK-RISK-02-02 — Every owner releases its resource on every terminal path and never before the required lifetime ends.
+- [ ] GODSN-CK-RISK-02-02 — Every owner releases its resource on every terminal path.
+- [ ] GODSN-CK-RISK-02-03 — No owner releases its resource before the required lifetime ends.
 
 ### GODSN-SC-RISK-03 — Adversarial: A caller mutates an aliased value after return
 

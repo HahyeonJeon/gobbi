@@ -175,7 +175,8 @@ data; treating in-memory state or a served shell as authoritative is the failure
 - [ ] WEBPLAT-CK-RISK-02-02 — Service-worker installation, activation, control, update, cache-version, fallback, mixed-client, stale, queued-effect, replay, conflict, and removal states are reported where a service worker is present.
 - [ ] WEBPLAT-CK-RISK-02-03 — No cached shell is treated as establishing that protected data or mutations are current.
 - [ ] WEBPLAT-CK-RISK-02-04 — In-memory state is treated as disposable.
-- [ ] WEBPLAT-CK-RISK-02-05 — Diagnostics avoid credentials and unnecessary personal data and remain usable in degraded conditions.
+- [ ] WEBPLAT-CK-RISK-02-05 — Diagnostics avoid credentials and unnecessary personal data.
+- [ ] WEBPLAT-CK-RISK-02-06 — Diagnostics remain usable in degraded conditions.
 
 ### WEBPLAT-SC-RISK-03 — Rule violation: a browser restriction is turned into server authorization
 
