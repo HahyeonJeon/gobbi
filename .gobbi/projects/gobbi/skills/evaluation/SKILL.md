@@ -50,8 +50,8 @@ evidence, and recommend prevention instead of symptom masking.
   judgment is disclosed.
 - **MUST support every reported problem, optional improvement, and strength with inspected evidence.** Inspect
   the actual artifacts and observable state rather than the work's summary or completion claim.
-- **MUST run every applicable checklist row and test and review all eight perspectives.** Record each result
-  with its supporting evidence and justify every not-applicable result.
+- **MUST run every applicable checklist row and test and review the seven perspectives and Overall.** Record
+  each result with its supporting evidence and justify every not-applicable result.
 - **NEVER soften a problem into an optional improvement or record an improvement without evidence.** A problem
   is an unmet outcome, requirement, or acceptance condition and stays reported as one.
 - **MUST derive the verdict only from completed evidence and the acceptance criteria supplied with the work.**

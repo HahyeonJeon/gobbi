@@ -65,10 +65,16 @@ cross-reviews, active-runtime synthesis, and user resolution of material open
 decisions. Every EVALUATION requires fresh Claude and Codex reports covering
 all seven perspectives plus Overall.
 
-The most severe evaluator verdict controls the loop. Findings are presented as
-one disposition batch and are not applied before user approval. Every material
-revision receives another complete dual-system creation and evaluation pass.
-Token cost is never a reason to narrow Ideation, creation, or evaluation.
+Two paths turn the two reports into a loop decision. For an Execution task,
+the more severe evaluator verdict controls the loop: `FAIL` outranks `REVISE`,
+which outranks `PASS`. For Ideation, Planning, and Wrap-up, the verdicts stay
+report evidence and the fast `gate.md` decision controls the loop, passing when
+no unresolved Critical or actual blocking finding remains.
+
+Findings are presented as one disposition batch and are not applied before
+user approval. Every material revision receives another complete dual-system
+creation and evaluation pass. Token cost is never a reason to narrow Ideation,
+creation, or evaluation.
 
 An unavailable or invalid system pauses the workflow with its exact failure.
 Single-system continuation is valid only after the user grants a waiver for

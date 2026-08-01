@@ -104,9 +104,11 @@ Using `allowed-tools` in an agent `.md`, or `tools` in a `SKILL.md`, is a frontm
   (evaluator: `Read, Grep, Glob, Bash`) lists no write tools; an implementer (executor) adds
   `Write, Edit`; the manager uses `"*"`. Size it from the owner — e.g. the assistant carries
   the widest non-manager surface (`Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch`)
-  because it writes session-staging during RECORD / Wrap-up, not because it is read-only.
+  because it writes the session memory tree during RECORD and project memory during Wrap-up WORK, not
+  because it is read-only.
 - **`model`** — `opus` for manager / leader / executor / evaluator; `sonnet` for the
-  lightweight assistant (verified against the Agent Taxonomy table in `gobbi/SKILL.md`).
+  lightweight assistant. Each role's own `.md` frontmatter is the owner of its model; read the five heads
+  to verify. No document holds a combined role table.
 
 Codex model and effort are NOT agent `.md` frontmatter keys. The `.md` frontmatter stays
 exactly four keys; the role's `.toml` wrapper carries `model` and
@@ -174,7 +176,8 @@ the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 ### P4 — The five-role taxonomy + new-role wiring
 
 The role taxonomy is a **closed set of five**: `manager` / `leader` / `executor` / `evaluator`
-/ `assistant` (verified — the Agent Taxonomy table in `gobbi/SKILL.md` and the 5 `.md` files).
+/ `assistant` (verified — the five canonical `.md`/`.toml` pairs under `agents/` and the five
+`Agent({role})` entries in `.claude/settings.json`).
 All specialist assignments use the generic Delegation template. The role document supplies role behavior,
 and Workflow Step 1.3 supplies session-specific assignment fields.
 
@@ -188,11 +191,16 @@ the user's explicit decision. Its FULL wiring set is:
 2. Both mirror symlinks: `.claude/agents/{role}.md` and `.codex/agents/{role}.toml` (P5).
 3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
    time; do not rely on a stored line number).
-4. An Agent Taxonomy table row in `gobbi/SKILL.md` (Role / Model / Effort / Owns / When spawned).
+4. A Roster row in [`workflow/agent-teams.md`](../workflow/agent-teams.md) — only when a persistent team may
+   reuse the role. Evaluators are deliberately excluded from that table.
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
 cannot be spawned in Claude Code. Its canonical role document must remain complete enough for the generic
 Delegation template and Workflow Step 1.3 to load it without a separate role overlay.
+
+**No central role registry exists.** Role name and Claude model live in the `.md` frontmatter, Codex model
+and reasoning effort in the `.toml`, and what the role owns and when it is spawned in the `.md` description
+and body. Do not look for a taxonomy table; no document holds one.
 
 ### P5 — Wiring a role (HAND-OWNED mirrors; verify each)
 
@@ -224,9 +232,9 @@ Wire a role in this order, each step with its verify command. From the worktree 
    bash scripts/sync-plugin-package.sh && bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
    ```
    The `--check` must exit 0.
-5. **For a NEW role only** — add the taxonomy surfaces from P4: the `Agent({role})` permission
-   in `.claude/settings.json` and the Agent Taxonomy row in `gobbi/SKILL.md`. Verify each by reading the final
-   owners and running the source-topology check.
+5. **For a NEW role only** — add the remaining P4 surfaces: the `Agent({role})` permission
+   in `.claude/settings.json`, plus a Roster row in `workflow/agent-teams.md` when a persistent team may
+   reuse the role. Verify each by reading the final owners and running the source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
@@ -288,14 +296,17 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
   `.md`. A new role needs the full P4 wiring set AND the user's explicit decision.
 
-- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` permission or taxonomy
-  row. A new role is loadable only when all of P4 is in place; a missing piece leaves it unspawnable or
-  un-briefable.
+- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` permission or the
+  Roster row a reusable role needs. A new role is loadable only when all of P4 is in place; a missing piece
+  leaves it unspawnable or un-briefable.
 
 ## Cross-references
 
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
 - Generic assignment shape → [`delegation/SKILL.md`](../delegation/SKILL.md)
 - Workflow assignment fields and acceptance → [`workflow/SKILL.md` Step 1.3](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
-- The Agent Taxonomy table (Role / Model / Owns / When spawned) → [`gobbi/SKILL.md`](../gobbi/SKILL.md)
+- Role name, tools, Claude model, what the role owns, and when it is spawned → the five `agents/{role}.md`
+  files themselves; no combined table exists
+- Codex model and reasoning effort → the five `agents/{role}.toml` files
+- Which roles a persistent team may reuse → [`workflow/agent-teams.md`](../workflow/agent-teams.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)

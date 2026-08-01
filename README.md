@@ -41,10 +41,10 @@ Selected Ideation and Planning stages use the canonical skills and may create th
 Leaders commit shaping artifacts; executors commit implementation units. Every stage self-reviews or
 self-verifies, and one ordered writer chain keeps dependent work on verified commits.
 
-Cowork creates or recovers one isolated branch and worktree before the first edit. It is manifest-free: it
+Cowork creates or recovers one isolated branch and worktree before the first edit. It owns its own Git
+contract and evaluation policy, roots its own session locations, and keeps its own session memory tree. It
 never creates a Workflow TODO route, phase checkpoint receipt, RECORD-stage evidence, or Workflow Hand-off.
-It roots its own session locations and keeps its own session memory tree. A user `evaluate` call runs one
-fresh Claude-and-Codex review round over the frozen subject.
+A user `evaluate` call runs one fresh Claude-and-Codex review round over the frozen subject.
 
 A user `wrap up` call applies the canonical Memory operation directly. An assistant reviews durable future
 value, loads the applicable Memory category skills, commits verified memory updates or proves that no update
@@ -78,7 +78,12 @@ Every Workflow WORK stage uses Claude and Codex independently:
 
 Every Workflow EVALUATION uses two fresh independent evaluators. Each report covers Project, Structure,
 Performance, Aesthetics, Usage, Consistency, Risk, and Overall, with a complete finding ledger, checklist,
-and `PASS`, `REVISE`, or `FAIL` verdict. The aggregate takes the more severe result.
+and `PASS`, `REVISE`, or `FAIL` verdict.
+
+Two paths turn those reports into a loop decision. For an Execution task, the more severe of the two verdicts
+is the decision: `FAIL` outranks `REVISE`, which outranks `PASS`. For Ideation, Planning, and Wrap-up, the
+evaluator verdicts stay report evidence and a fast `gate.md` decides: `PASS` when no unresolved Critical or
+actual blocking finding remains, even when a report declares `REVISE` for an accepted nonblocking finding.
 
 Gobbi never applies a finding before the user approves its disposition. A material revision repeats the
 complete Workflow round. If either system fails, Gobbi pauses with the exact failure; a single-system
@@ -147,7 +152,7 @@ claude plugin validate --strict plugins/gobbi
 ## Contract owners
 
 - [Gobbi entry](.gobbi/projects/gobbi/skills/gobbi/SKILL.md) owns bootstrap, mode selection, and handoff.
-- [Cowork](.gobbi/projects/gobbi/skills/cowork/SKILL.md) owns fast manifest-free user-topic orchestration.
+- [Cowork](.gobbi/projects/gobbi/skills/cowork/SKILL.md) owns fast user-led topic-by-topic orchestration.
 - [Workflow](.gobbi/projects/gobbi/skills/workflow/SKILL.md) owns durable five-step orchestration.
 - [Delegation](.gobbi/projects/gobbi/skills/delegation/SKILL.md) owns the generic specialist assignment shape;
   Cowork and Workflow add their mode-specific fields in their own procedures.

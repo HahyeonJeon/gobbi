@@ -106,7 +106,7 @@ its owner without copying that owner's procedure or creating a second router.
 - **General:** continue the user's task from the loaded nine skills and the task-specific skills the work
   triggers. Load no orchestration owner and create no Gobbi session state.
 - **Cowork:** load [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner creates or recovers its isolated
-  manifest-free worktree before editing and runs its user-topic loop.
+  worktree before editing and runs its user-topic loop.
 - **Workflow:** load [`../workflow/SKILL.md`](../workflow/SKILL.md). That owner performs fresh and resume
   classification, Configuration, durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Build every specialist brief through the loaded [Delegation](../delegation/SKILL.md) skill, and let the

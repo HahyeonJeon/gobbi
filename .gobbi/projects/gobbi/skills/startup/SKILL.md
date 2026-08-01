@@ -62,13 +62,16 @@ traceability without turning a design brief into a transcript or question dump.
 
 #### 1.1 Validate or recover the working record
 
-- Receive the accepted Startup request, absolute project root, manifest-declared absolute `{session-root}`, and
+- Receive the accepted Startup request, absolute project root, manager-supplied absolute `{session-root}`, and
   current Ideation iteration `{n}` from the manager. Require the current cursor to be Ideation DISCUSSION at
   iteration `{n}`.
-- Apply the containment and session-tree contract owned by
-  [`../record/SKILL.md`](../record/SKILL.md). Confirm the session root belongs to the current
-  worktree and session, the `research/` directory is authorized, and no root, parent, or target is a symbolic
-  link.
+- Apply the containment contract owned by [`../record/SKILL.md`](../record/SKILL.md): confirm the session
+  root exists, resolves inside the current worktree, and carries no symbolic link and no parent-traversal
+  component on its path.
+- Take the Ideation evidence layout from
+  [`../workflow/SKILL.md`](../workflow/SKILL.md#12-configure-the-session-and-its-evidence), which owns
+  `1-ideation/`, its `working/iteration-{n}/` package, and that package's `research/` directory. Confirm the
+  session root belongs to the current session and that the `research/` directory is authorized.
 - Normalize and require these regular-file targets to remain beneath the supplied session root:
 
 ```text
