@@ -82,7 +82,26 @@ are not skill references.
   repository's governance source as the input.
 - Confirm the governance source, the active runtime, and the trigger, then resolve this canonical skill
   directory through the active entrypoint.
-- Record the canonical source, runtime, trigger, and unchanged repository preimage. Gobbi has written nothing.
+- Derive two roots from that directory and name them `{gobbi-skills-root}` and `{gobbi-agents-root}`.
+  `{gobbi-skills-root}` is the parent of this file's own `gobbi/` directory. `{gobbi-agents-root}` is the
+  `agents/` directory beside that parent. Expand both to absolute paths; a relative or unexpanded value is
+  not a resolved root.
+- Validate each derived root against the sentinels `gobbi/SKILL.md`, `principles/SKILL.md`, and
+  `agents/manager.md`. Each sentinel must exist and be readable at the path its root produces:
+
+| Sentinel path | Root | Proves |
+|---|---|---|
+| `{gobbi-skills-root}/gobbi/SKILL.md` | `{gobbi-skills-root}` | The entry document itself resolves from the root |
+| `{gobbi-skills-root}/principles/SKILL.md` | `{gobbi-skills-root}` | A sibling skill resolves from that same root |
+| `{gobbi-agents-root}/manager.md` | `{gobbi-agents-root}` | Agent contracts resolve independently of skills |
+
+- A runtime may report this file through a generated view or through its canonical location. Either is a
+  valid root when its sentinels validate; the sentinels decide, not the spelling.
+- Record `{gobbi-skills-root}` and `{gobbi-agents-root}` with the canonical source, runtime, trigger, and
+  unchanged repository preimage. Gobbi has written nothing.
+- Treat both validated roots as session-scoped and immutable for the session. The entry persists neither
+  value: the selected mode's owner records them with its own session facts and carries them into every brief
+  it builds. Re-derive and revalidate both at each entry instead of recovering a remembered value.
 - Resolve the project key `<project>` with:
 
 ```text
@@ -117,9 +136,13 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
 - The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
   first record needs it, so a missing directory is not a broken view and is not the failure below.
-- Stop and name the exact broken element when the resolved view is missing, partial, or inconsistent. Repair it
-  by restoring the runtime's Gobbi package or entrypoint from its canonical source; the repository's governing
-  instructions own any repository-local repair command, and no step continues against a partial view.
+- Stop here and name the exact broken element when a root does not derive, a sentinel is missing or
+  unreadable, or the resolved view is otherwise partial or inconsistent. Name the affected root, the exact
+  sentinel path, and whether that path was absent or unreadable. Repair it by restoring the runtime's Gobbi
+  package or entrypoint from its canonical source; the repository's governing instructions own any
+  repository-local repair command, and no step continues against a partial view.
+- This stop fires before the Step 1.3 mode selection, because every later step and every brief depends on the
+  two validated roots. Never select a mode, load an owner, or build a brief without them.
 
 #### 1.2 Load the nine-skill Gobbi system
 
