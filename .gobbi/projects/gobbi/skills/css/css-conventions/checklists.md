@@ -23,9 +23,10 @@ when a choice names neither the boundary it stays inside nor the default it sele
 
 #### Checklist
 
-- [ ] CSSCONV-CK-PROJECT-01-01 — Every decided choice is emitted presentation, and every triggered document-meaning, application-state, product-direction, security, trust, foreign-syntax, generator-mechanics, transform-configuration, and Electron or runtime-process question is routed to its named owner.
-- [ ] CSSCONV-CK-PROJECT-01-02 — Every choice names the applicable Rule boundary it stays inside and the project default it selects within that boundary.
-- [ ] CSSCONV-CK-PROJECT-01-03 — CSS newly emitted by a generator changed for this task is inspected rather than assumed.
+- [ ] CSSCONV-CK-PROJECT-01-01 — Every decided choice is emitted presentation.
+- [ ] CSSCONV-CK-PROJECT-01-02 — Every triggered document-meaning, application-state, product-direction, security, trust, foreign-syntax, generator-mechanics, transform-configuration, and Electron or runtime-process question is routed to its named owner.
+- [ ] CSSCONV-CK-PROJECT-01-03 — Every choice names the applicable Rule boundary it stays inside and the project default it selects within that boundary.
+- [ ] CSSCONV-CK-PROJECT-01-04 — CSS newly emitted by a generator changed for this task is inspected rather than assumed.
 
 ### CSSCONV-SC-PROJECT-02 — Expected failure: the project has no established convention for the choice
 
@@ -167,7 +168,9 @@ default without naming its scope and evidence.
 #### Checklist
 
 - [ ] CSSCONV-CK-CONSISTENCY-01-01 — The change follows the convention observed in neighboring source for cascade, naming, custom properties, and layout.
-- [ ] CSSCONV-CK-CONSISTENCY-01-02 — Every departure from a project default names its scope, preserves the affected contracts, and carries evidence for the choice it changes.
+- [ ] CSSCONV-CK-CONSISTENCY-01-02 — Every departure from a project default names its scope.
+- [ ] CSSCONV-CK-CONSISTENCY-01-03 — Every departure from a project default preserves the affected contracts.
+- [ ] CSSCONV-CK-CONSISTENCY-01-04 — Every departure from a project default carries evidence for the choice it changes.
 
 ### CSSCONV-SC-CONSISTENCY-02 — Rule violation: a default is used to override a Rule
 

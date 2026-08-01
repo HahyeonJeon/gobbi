@@ -127,8 +127,9 @@ itself changed the document is the failure.
 
 #### Checklist
 
-- [ ] CSSPLAT-CK-RISK-01-01 — Every inspection is read-only or reversible, and any state it changed is restored.
-- [ ] CSSPLAT-CK-RISK-01-02 — No conclusion depends on a document state the inspection itself created.
+- [ ] CSSPLAT-CK-RISK-01-01 — Every inspection is read-only or reversible.
+- [ ] CSSPLAT-CK-RISK-01-02 — Every state an inspection changed is restored.
+- [ ] CSSPLAT-CK-RISK-01-03 — No conclusion depends on a document state the inspection itself created.
 
 ### CSSPLAT-SC-RISK-02 — Edge case: the inspected document differs from the authored source
 

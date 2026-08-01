@@ -62,9 +62,11 @@ downstream, or when an increment is large enough to hide an earlier failure.
 #### Checklist
 
 - [ ] CSSDEV-CK-STRUCTURE-01-01 — Every edit lands in the authorized canonical CSS source.
-- [ ] CSSDEV-CK-STRUCTURE-01-02 — A generated-CSS defect is repaired at its source or routed to the generator's owner, and the newly emitted CSS is then inspected.
-- [ ] CSSDEV-CK-STRUCTURE-01-03 — The first increment is the minimal cascade, selector, custom-property, and layout skeleton the framed outcome needs.
-- [ ] CSSDEV-CK-STRUCTURE-01-04 — Each increment is small enough to verify and repair without hiding an earlier failure, and a failing increment is repaired before another is added.
+- [ ] CSSDEV-CK-STRUCTURE-01-02 — A generated-CSS defect is repaired at its source or routed to the generator's owner.
+- [ ] CSSDEV-CK-STRUCTURE-01-03 — The CSS newly emitted after a generated-CSS repair is inspected.
+- [ ] CSSDEV-CK-STRUCTURE-01-04 — The first increment is the minimal cascade, selector, custom-property, and layout skeleton the framed outcome needs.
+- [ ] CSSDEV-CK-STRUCTURE-01-05 — Each increment is small enough to verify and repair without hiding an earlier failure.
+- [ ] CSSDEV-CK-STRUCTURE-01-06 — A failing increment is repaired before another increment is added.
 
 ## Performance
 
@@ -107,7 +109,8 @@ an assessment blurs problems, optional improvements, strengths, and limitations 
 - [ ] CSSDEV-CK-USAGE-01-01 — The handoff records the implemented outcome or assessment, targets and modes exercised, evidence, limitations, unresolved outward-owner decisions, and recovery state.
 - [ ] CSSDEV-CK-USAGE-01-02 — Problems, optional improvements, strengths, and limitations are separated in a review-mode assessment.
 - [ ] CSSDEV-CK-USAGE-01-03 — Every review-mode problem carries evidence, impact, confidence, an owner, and the verification a repair would need.
-- [ ] CSSDEV-CK-USAGE-01-04 — Every optional improvement states its benefit, trade-off, and condition for adoption, and is recorded only where the current result remains valid.
+- [ ] CSSDEV-CK-USAGE-01-04 — Every optional improvement states its benefit, trade-off, and condition for adoption.
+- [ ] CSSDEV-CK-USAGE-01-05 — Every optional improvement is recorded only where the current result remains valid.
 
 ### CSSDEV-SC-USAGE-02 — Expected failure: the review subject or its access is insufficient
 
@@ -173,7 +176,8 @@ itself created, or an assessment that depends on it, is the failure.
 - [ ] CSSDEV-CK-RISK-02-01 — No source, generated output, configuration, fixture, or baseline differs after the review-mode run.
 - [ ] CSSDEV-CK-RISK-02-02 — Every runtime or inspection state the review-mode run touched is restored, leaving no residual declaration, override, or toggled fixture.
 - [ ] CSSDEV-CK-RISK-02-03 — No conclusion in the assessment depends on a state the run itself created.
-- [ ] CSSDEV-CK-RISK-02-04 — Every repair the review identified was routed to its owner and left unmade within this run.
+- [ ] CSSDEV-CK-RISK-02-04 — Every repair the review identified was routed to its owner.
+- [ ] CSSDEV-CK-RISK-02-05 — Every repair the review identified was left unmade within this run.
 - Also applies: CSSDEV-CK-PROJECT-03-02 (a repair requires a newly authorized change-mode run).
 
 ## Overall

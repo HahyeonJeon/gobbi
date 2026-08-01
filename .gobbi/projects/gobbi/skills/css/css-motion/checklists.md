@@ -141,9 +141,10 @@ element's resting state.
 
 #### Checklist
 
-- [ ] CSSMOT-CK-CONSISTENCY-01-01 — A change between two states uses a transition, and a keyframe animation is used only for a sequence of more than two steps, a repeating indicator, or motion with no state change to attach to.
-- [ ] CSSMOT-CK-CONSISTENCY-01-02 — `Element.animate()` is used only for runtime-computed values, motion that must reverse from its current position, or a timeline shared across elements, and the scale, safe-property, and reduced-motion Rules still hold for it.
-- [ ] CSSMOT-CK-CONSISTENCY-01-03 — Entry and exit live in the same declarative source as the element's resting state.
+- [ ] CSSMOT-CK-CONSISTENCY-01-01 — A change between two states uses a transition.
+- [ ] CSSMOT-CK-CONSISTENCY-01-02 — A keyframe animation is used only for a sequence of more than two steps, a repeating indicator, or motion with no state change to attach to.
+- [ ] CSSMOT-CK-CONSISTENCY-01-03 — `Element.animate()` is used only for runtime-computed values, motion that must reverse from its current position, or a timeline shared across elements, and the scale, safe-property, and reduced-motion Rules still hold for it.
+- [ ] CSSMOT-CK-CONSISTENCY-01-04 — Entry and exit live in the same declarative source as the element's resting state.
 
 ### CSSMOT-SC-CONSISTENCY-02 — Edge case: a declared target predates `@starting-style` support
 
