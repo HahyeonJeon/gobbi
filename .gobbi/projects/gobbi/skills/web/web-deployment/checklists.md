@@ -113,17 +113,18 @@ is the failure.
 
 ## Usage
 
-### WEBDEP-SC-USAGE-01 — Normal case: a named person can execute the reverse path
+### WEBDEP-SC-USAGE-01 — Normal case: the reverse path is designed and rehearsed before the deploy
 
-A reverse path is designed while the previous version is still whole. The expected outcome names the artifact,
-the restoration, the retention, the reversible and irreversible data changes, and the person who may act; a
-path that still needs design when it is needed is the failure.
+A reverse path is designed and exercised while the previous version is still whole. The expected outcome
+names the artifact, the restoration, the retention, the reversible and irreversible data changes, and the
+person who may act, and proves the path by running it; a path first run during an incident is the failure.
 
 #### Checklist
 
 - [ ] WEBDEP-CK-USAGE-01-01 — The reverse path names the exact previous artifact, how it is restored, how long its assets are retained, which data changes are reversible and which are not, and who may activate it.
 - [ ] WEBDEP-CK-USAGE-01-02 — The reverse path is defined before any forward step and is executable by a named person without further design.
 - [ ] WEBDEP-CK-USAGE-01-03 — The stop conditions that trigger the reverse path are recorded.
+- [ ] WEBDEP-CK-USAGE-01-04 — The reverse path was exercised on the retained previous artifact before the first forward step, in a pre-production target that mirrors production or through the production target's documented dry run.
 
 ### WEBDEP-SC-USAGE-02 — Expected failure: verification fails or a stop condition is met
 

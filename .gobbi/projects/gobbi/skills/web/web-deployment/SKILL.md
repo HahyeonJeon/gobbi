@@ -71,9 +71,9 @@ disagree while none of them looks wrong.
   published.** A published map re-exposes original source, comments, and file layout to anyone who can fetch
   the bundle, and an unpublished map must still reach the error reporter or no stack trace can be read.
 
-- **MUST verify the release from the production URL and rehearse its reverse path before calling the
-  deployment complete.** Prove the served build identity, the entry document, at least one hashed asset, and
-  one authoritative round trip; a completed upload is not a verified deployment.
+- **MUST rehearse the reverse path before the first forward step and verify the release from the production
+  URL before calling the deployment complete.** Prove the served build identity, the entry document, at
+  least one hashed asset, and one authoritative round trip; a completed upload is not a verified deployment.
 
 - **NEVER use credentials, publish, promote, or advance a rollout without explicit authority for that exact
   action.** Stop at the boundary with the artifact, verification evidence, and reverse path preserved, then
@@ -95,18 +95,22 @@ disagree while none of them looks wrong.
 - Continue with the frozen identity; return an unresolved evaluation, an undisposed limitation, or an absent
   deployment authority to `web-feature` or the user before configuring anything.
 
-#### 1.2 Establish the environment contract and the reverse path
+#### 1.2 Establish the environment contract and rehearse the reverse path
 
 - Take the frozen identity plus the target's current serving arrangement: origin, cache or edge layer, entry
   document, asset paths, currently deployed build, and the data migrations pending against it.
 - Define the reverse path before any forward step — the exact previous artifact, how it is restored, how long
   its assets are retained, which data changes are reversible and which are not, and who may activate the
   path — loading `web-backend` for what an irreversible migration means and `web-architecture` when the
-  rendering or delivery mode itself is changing.
+  rendering or delivery mode itself is changing, then rehearse that path while the previous version is still
+  whole by restoring the named artifact in a pre-production target that mirrors production, or by running the
+  production target's documented dry run when no such target exists.
 - Record the environment contract, the retention window for the previous build, the reverse path with its
-  owner and expected duration, and the stop conditions that trigger it.
-- Continue when a named person could execute the reverse path without further design; treat a change that has
-  no reverse path as a decision needing explicit user authority rather than a step to take carefully.
+  owner and expected duration, the rehearsal's evidence, observed duration, and any step it could not
+  exercise, and the stop conditions that trigger it.
+- Continue when the rehearsal restored the previous build and a named person could repeat it without further
+  design; treat a change that has no reverse path as a decision needing explicit user authority rather than a
+  step to take carefully.
 
 ### Phase 2 — Configure the Production Build
 
