@@ -1,6 +1,6 @@
 ---
 name: typescript-development
-description: "MUST load when implementing or changing TypeScript code. TypeScript Development is an operation skill for studying the code contract, designing the typed surface, building bottom-up, and verifying the completed change."
+description: "MUST load when implementing or changing TypeScript code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -9,7 +9,7 @@ skill-type: operation
 
 TypeScript Development carries an authorized implementation from the existing contract through a typed design, bottom-up construction, and final verification. It applies to mutation work only; read-only review uses the general Evaluation operation with the applicable TypeScript preference children.
 
-This operation composes with TypeScript Conventions and TypeScript Typing for ordinary implementation. Load TypeScript Async, Compiler, Packaging, or Testing whenever their root trigger also applies.
+This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load `typescript-async`, `typescript-toolchain`, `typescript-packaging`, or `typescript-testing` whenever their root trigger also applies.
 
 ## Principles
 
@@ -119,5 +119,11 @@ Type correctness is one gate among runtime behavior, integration, build, packagi
 - Re-run the original defect reproducer last when one exists.
 - Map fresh evidence to every success criterion and inspect the final scope for unrelated changes.
 - Hand off limitations or unavailable gates literally; do not convert missing evidence into a pass.
+- When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
+  owned by an active `typescript` sibling supply the applicable conditions; the general Evaluation
+  operation resolves them and issues any verdict.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

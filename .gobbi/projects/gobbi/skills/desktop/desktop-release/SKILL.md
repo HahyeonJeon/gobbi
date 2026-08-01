@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: "Use when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults."
+description: "MUST load when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
@@ -9,7 +9,7 @@ skill-type: preference
 
 Use this skill when choosing desktop targets and channels, deciding what release evidence supports, or setting data, update, recovery, rollout, support, and publication defaults. It helps agents make bounded release judgments without assuming that one artifact or environment proves another.
 
-`desktop-platform` owns the observable installed-platform contract, and the [`electron`](../../electron/SKILL.md) family owns Electron packaging, signing, update, and platform mechanisms. `desktop-delivery` owns ordered work for a complete outcome; this skill owns only the valid choice space, defaults, exceptions, and authority boundaries for release decisions.
+`desktop-contract` owns the observable installed-platform contract, and the [`electron`](../../electron/SKILL.md) family owns Electron packaging, signing, update, and platform mechanisms. `desktop-delivery` owns ordered work for a complete outcome; this skill owns only the valid choice space, defaults, exceptions, and authority boundaries for release decisions.
 
 ## Principles
 
@@ -61,3 +61,6 @@ A narrow support claim with direct evidence is stronger than a broad claim with 
 **PREFER** a forward fix for machines that may already have installed a faulty release. Choose rollback only when target-specific distribution mechanics and data or schema compatibility prove that rollback preserves user state, reaches the affected machines, and stays inside the supported-version promise.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

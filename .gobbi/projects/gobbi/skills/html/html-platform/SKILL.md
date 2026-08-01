@@ -1,6 +1,6 @@
 ---
 name: html-platform
-description: "MUST load when looking up HTML conformance, parsing, target support, or evidence meaning. HTML Platform is a tool skill for using the WHATWG HTML Living Standard and its browser or Electron realizations."
+description: "MUST load when looking up HTML conformance, parsing, target support, or evidence meaning."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
@@ -11,7 +11,7 @@ Use this manual for the [WHATWG HTML Living Standard](https://html.spec.whatwg.o
 realization in declared browser or Electron renderer targets. It answers conformance, parsing, compatibility,
 and evidence questions.
 
-It does not author artifacts or set general accessibility policy. Use `html-authoring` for the artifact
+It does not author artifacts or set general accessibility policy. Use `html-development` for the artifact
 outcome and `html-semantics` for element and accessibility choices.
 
 ## Principles
@@ -83,3 +83,6 @@ When sources disagree, preserve identity and date. Give the narrowest supported 
 unresolved difference.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

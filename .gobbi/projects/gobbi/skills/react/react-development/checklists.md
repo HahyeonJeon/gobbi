@@ -12,37 +12,35 @@ renderer, or authority boundary. Missing scope or configuration fails the scenar
 
 #### Checklist
 
-- [ ] RDEV-CK-PROJECT-01-01 — The task states one observable outcome.
-- [ ] RDEV-CK-PROJECT-01-02 — The task states its accepted scope.
-- [ ] RDEV-CK-PROJECT-01-03 — The task states the available authority.
-- [ ] RDEV-CK-PROJECT-01-04 — The task states its material constraints.
-- [ ] RDEV-CK-PROJECT-01-05 — The task states the evidence that proves completion.
-- [ ] RDEV-CK-PROJECT-01-06 — Project files establish the target renderer.
-- [ ] RDEV-CK-PROJECT-01-07 — Project files establish the installed React line.
-- [ ] RDEV-CK-PROJECT-01-08 — Project files establish the active framework capabilities.
-- [ ] RDEV-CK-PROJECT-01-09 — Project files establish the affected source language.
-- [ ] RDEV-CK-PROJECT-01-10 — Project files establish the rendering architecture.
-- [ ] RDEV-CK-PROJECT-01-11 — Project files establish the applicable verification commands.
-- [ ] RDEV-CK-PROJECT-01-12 — Every applicable React child trigger is recorded before design or review begins.
+- [ ] RDEV-CK-PROJECT-01-01 — The task states its observable outcome, accepted scope, available authority, material constraints, and completion evidence.
+- [ ] RDEV-CK-PROJECT-01-02 — Project files establish the target renderer, installed React line, active framework capabilities, affected source language, rendering architecture, and applicable verification commands.
+- [ ] RDEV-CK-PROJECT-01-03 — Every applicable React child trigger is recorded before design or review begins.
+
+### RDEV-SC-PROJECT-02 — Expected failure: The work reaches a condition it cannot decide
+
+A required capability, authority, or evidence is missing, or implementation reveals a material design choice
+outside the accepted task. The work should stop and surface the owner's decision; supplying the answer itself
+fails the scenario.
+
+#### Checklist
+
+- [ ] RDEV-CK-PROJECT-02-01 — The work stops when a required capability or authority is not established.
+- [ ] RDEV-CK-PROJECT-02-02 — The work names the missing evidence or user-owned decision when a required capability or authority is not established.
+- [ ] RDEV-CK-PROJECT-02-03 — The work pauses at each material design choice outside the accepted task instead of deciding it.
+- [ ] RDEV-CK-PROJECT-02-04 — The work surfaces each material design choice outside the accepted task instead of deciding it.
+- [ ] RDEV-CK-PROJECT-02-05 — No unestablished React capability, framework feature, or authority is assumed to exist.
 
 ## Structure
 
 ### RDEV-SC-STRUCTURE-01 — Normal case: One model connects behavior to its owners
 
 The user path, React units, state, external systems, tests, and runtime boundaries should form one complete
-model. An unowned concern, missing path, or mutating review fails the scenario.
+model. An unowned concern or missing path fails the scenario.
 
 #### Checklist
 
-- [ ] RDEV-CK-STRUCTURE-01-01 — The model identifies every affected React function.
-- [ ] RDEV-CK-STRUCTURE-01-02 — The model identifies every input boundary.
-- [ ] RDEV-CK-STRUCTURE-01-03 — The model identifies every user or system action.
-- [ ] RDEV-CK-STRUCTURE-01-04 — The model identifies every affected state owner.
-- [ ] RDEV-CK-STRUCTURE-01-05 — The model identifies every affected external system.
-- [ ] RDEV-CK-STRUCTURE-01-06 — The model identifies every affected test layer.
-- [ ] RDEV-CK-STRUCTURE-01-07 — The model identifies every affected runtime boundary.
-- [ ] RDEV-CK-STRUCTURE-01-08 — Each material React concern resolves to one active child or external owner.
-- [ ] RDEV-CK-STRUCTURE-01-09 — A defined review path leaves the reviewed subject unchanged.
+- [ ] RDEV-CK-STRUCTURE-01-01 — The model identifies every affected React function, input boundary, user or system action, affected state owner, affected external system, affected test layer, and affected runtime boundary.
+- [ ] RDEV-CK-STRUCTURE-01-02 — Each material React concern resolves to one active child or external owner.
 
 ## Performance
 
@@ -58,13 +56,7 @@ An opaque summary fails even when the implementation works.
 
 #### Checklist
 
-- [ ] RDEV-CK-AESTHETICS-01-01 — The handoff states the outcome plainly.
-- [ ] RDEV-CK-AESTHETICS-01-02 — The handoff identifies the affected paths plainly.
-- [ ] RDEV-CK-AESTHETICS-01-03 — The handoff lists the verification commands plainly.
-- [ ] RDEV-CK-AESTHETICS-01-04 — The handoff reports each command result plainly.
-- [ ] RDEV-CK-AESTHETICS-01-05 — The handoff states its limitations plainly.
-- [ ] RDEV-CK-AESTHETICS-01-06 — The handoff states its evidence gaps plainly.
-- [ ] RDEV-CK-AESTHETICS-01-07 — The handoff states its remaining risks plainly.
+- [ ] RDEV-CK-AESTHETICS-01-01 — The handoff plainly states the outcome, the affected paths, the verification commands, each command result, its limitations, its evidence gaps, and its remaining risks.
 
 ## Usage
 
@@ -76,10 +68,8 @@ trapped, falsely successful, or source-only result fails the scenario.
 #### Checklist
 
 - [ ] RDEV-CK-USAGE-01-01 — Rendered-surface exercise covers the accepted primary behavior.
-- [ ] RDEV-CK-USAGE-01-02 — Each applicable pending state is observable.
-- [ ] RDEV-CK-USAGE-01-03 — Each applicable empty state is observable.
-- [ ] RDEV-CK-USAGE-01-04 — Each applicable failure state is observable.
-- [ ] RDEV-CK-USAGE-01-05 — Each permitted recovery returns the user to a usable state.
+- [ ] RDEV-CK-USAGE-01-02 — Each applicable pending, empty, and failure state is observable.
+- [ ] RDEV-CK-USAGE-01-03 — Each permitted recovery returns the user to a usable state.
 
 ## Consistency
 
@@ -90,30 +80,33 @@ stale dependent surface or result from an earlier tree fails the scenario.
 
 #### Checklist
 
-- [ ] RDEV-CK-CONSISTENCY-01-01 — Source implements the final behavior.
-- [ ] RDEV-CK-CONSISTENCY-01-02 — Tests describe the final behavior.
-- [ ] RDEV-CK-CONSISTENCY-01-03 — Types describe the final behavior.
-- [ ] RDEV-CK-CONSISTENCY-01-04 — Documents describe the final behavior.
-- [ ] RDEV-CK-CONSISTENCY-01-05 — Affected consumers use the final behavior.
-- [ ] RDEV-CK-CONSISTENCY-01-06 — Every reported command result was produced from the exact final tree.
-- [ ] RDEV-CK-CONSISTENCY-01-07 — Every active sibling checklist is complete.
-- [ ] RDEV-CK-CONSISTENCY-01-08 — Every not-applicable checklist result states its reason.
+- [ ] RDEV-CK-CONSISTENCY-01-01 — Source, tests, types, documents, and affected consumers each match the final behavior.
+- [ ] RDEV-CK-CONSISTENCY-01-02 — Every reported command result was produced from the exact final tree.
+- [ ] RDEV-CK-CONSISTENCY-01-03 — Every active sibling checklist is complete.
+- [ ] RDEV-CK-CONSISTENCY-01-04 — Every not-applicable checklist result states its reason.
 
 ## Risk
 
-### RDEV-SC-RISK-01 — Adversarial: A local change expands authority
+### RDEV-SC-RISK-01 — Rule violation: A change exceeds its accepted authority
 
-A React change must remain inside its accepted scope and consume privileged capabilities only through their
-approved owners. An implicit dependency, architecture, host, or trust-boundary expansion fails.
+A React change must stay inside its accepted scope, and a review path must leave its subject alone. An
+implicit dependency, migration, architecture, publication, or observable scope expansion fails, and so does a
+review that edits the work.
 
 #### Checklist
 
-- [ ] RDEV-CK-RISK-01-01 — The change introduces no unapproved dependency.
-- [ ] RDEV-CK-RISK-01-02 — The change introduces no unapproved migration.
-- [ ] RDEV-CK-RISK-01-03 — The change introduces no unapproved architecture change.
-- [ ] RDEV-CK-RISK-01-04 — The change introduces no unapproved publication action.
-- [ ] RDEV-CK-RISK-01-05 — The change introduces no unapproved observable scope expansion.
-- [ ] RDEV-CK-RISK-01-06 — Every privileged capability remains behind its approved owner.
+- [ ] RDEV-CK-RISK-01-01 — The change introduces no unapproved dependency, migration, architecture change, publication action, or observable scope expansion.
+- [ ] RDEV-CK-RISK-01-02 — A defined review path leaves the reviewed subject unchanged.
+
+### RDEV-SC-RISK-02 — Normal case: Privileged capability is consumed through its owner
+
+An ordinary React change needs browser, framework, Electron, or server capability. It should reach each one
+only through the typed, approved owner; direct access from React fails the scenario.
+
+#### Checklist
+
+- [ ] RDEV-CK-RISK-02-01 — Every privileged capability remains behind its approved owner.
+- [ ] RDEV-CK-RISK-02-02 — Electron renderer code reaches Node and IPC only through the typed preload bridge.
 
 ## Overall
 

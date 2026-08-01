@@ -1,6 +1,6 @@
 ---
 name: go-development
-description: "Load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification."
+description: "MUST load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -171,6 +171,9 @@ or vulnerability evidence when the changed contract can fail on those surfaces.
   applicable. Do not substitute a new unit test for an existing external failure path.
 - If a check fails, repair the root cause and repeat the narrow failure plus every affected downstream check.
   If it cannot run, record the exact prerequisite, error, risk, and first action that would close the gap.
+  When this author-mode tree or review finding set is evaluated, the [evaluation checklist](checklists.md)
+  and every checklist owned by an active `go` sibling supply the applicable conditions; the general
+  Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Audit scope and hand off
 

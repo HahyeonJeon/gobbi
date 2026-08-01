@@ -1,6 +1,6 @@
 ---
 name: css-conventions
-description: MUST load before creating, changing, or reviewing CSS, including debugging expected to produce a CSS change and choosing CSS conventions.
+description: "MUST load when a CSS task must decide whether a choice is valid and which project default applies, covering accessibility, target support, motion, evidence limits, cascade ownership, naming, custom-property and token interfaces, and layout adaptation."
 allowed-tools: Read
 skill-type: preference
 ---
@@ -9,40 +9,66 @@ skill-type: preference
 
 ## Intro
 
-Use this preference skill before creating, changing, or reviewing CSS, debugging toward a CSS change, or choosing CSS conventions. It selects overridable project choices within the CSS constraints.
+Use this preference skill when a CSS task must decide whether a choice is valid and which project default applies. It owns the complete choice space for emitted presentation: the binding boundary every choice stays inside, and the overridable defaults selected within it.
 
-CSS conventions own cascade and selector choices, naming and hooks, custom-property and token interfaces, layout adaptation, and source or ownership seams. CSS constraints and outward domain owners remain authoritative.
+The Rules define that boundary through presentation ownership, accessibility conditions, declared-target support, and evidence limits. The Preferences select cascade, naming, custom-property and token, layout, and source-seam defaults inside it, and a Rule wins every conflict.
+
+Load `css-development` to change or review CSS, and `css-platform` for runtime evidence. Document meaning, application state, product direction, security, and process work belong to their own domain owners.
 
 ## Principles
 
-### Project contracts precede local taste
+### Actual user and content conditions define correctness
 
-Existing public interfaces and nearby conventions provide the default unless an authorized, scoped departure improves the owned outcome.
+Presentation remains correct across applicable content, interaction, user settings, fonts, themes, locale, direction, writing mode, zoom, and reflow. Those same conditions, with containers, writing systems, target modes, and required behavior, choose the layout and adaptation technique.
 
-### Cascade structure expresses ownership
+### Evidence follows the rendering risk
 
-Layers, specificity, scope, inheritance, custom properties, and order should reveal which source controls a rendered value.
+Specification semantics, target support, runtime behavior, performance, and acceptance are different claims with different evidence. CSS evidence can establish presentation behavior and limitations, but cannot alone establish complete product or accessibility acceptance.
 
-### Actual constraints choose layout
+### Ownership decides both the source and the cascade
 
-Content, containers, writing systems, target modes, and required behavior determine the layout and adaptation technique.
+CSS changes belong at the canonical source that owns emitted presentation, and foreign concerns remain with their domain owners. Layers, specificity, scope, inheritance, custom properties, and order should reveal which source controls a rendered value.
 
-### Departures remain bounded
+### Bounded defaults sit inside a binding boundary
 
-A convention departure names its scope, preserves affected contracts, and carries evidence for the choice it changes.
+Existing public interfaces and nearby conventions supply the default, while a Rule below outranks every project default and local preference. A departure names its scope, preserves affected contracts, and carries evidence for the choice it changes.
 
 ## Rules
 
-- **MUST keep every convention choice inside the CSS constraints.** A constraint wins every conflict with a project default or local preference.
-- **MUST preserve established public hooks and custom-property or token interfaces unless an authorized migration updates every affected consumer.**
-- **MUST make declaration, selector, custom-property, layer, and source ownership explicit at the canonical owner.**
-- **NEVER invent a project-wide naming, layer, selector, token, or layout scheme for a local task.** Use an established convention or keep the decision scoped to its actual owner.
-- **MUST route document meaning, application state, product direction, security, foreign syntax, transform configuration, trust, and runtime process decisions outward.**
-- **NEVER treat convention, popularity, lint, or visual appearance as proof of behavior, target support, performance, or acceptance.**
+- **MUST keep CSS within emitted presentation ownership and repair generated CSS at its canonical source.** Route document meaning, application state, product direction, security, trust, foreign syntax, generator mechanics, transform configuration, and Electron or runtime process decisions outward, then inspect any newly emitted CSS.
+- **MUST preserve essential content and operation across applicable content, state, font failure, user settings, text spacing, zoom, reflow, source order, visual order, and focus order.** Keep focus visible and unobscured, preserve non-color cues, maintain required text and non-text contrast in every applicable state, theme, and forced-color mode, and follow the [Flexbox order-accessibility requirements](https://www.w3.org/TR/css-flexbox-1/#order-accessibility) when visual order differs from source order.
+- **MUST keep motion safe and operable.** Avoid unsafe flashing, respect reduced motion, and retain applicable pause, stop, hide, or non-motion behavior under [WCAG 2.2](https://www.w3.org/TR/WCAG22/).
+- **MUST preserve essential outcomes on declared browsers or the pinned Electron renderer.** Use tested fallbacks or progressive enhancement when exact support differs.
+- **MUST preserve established public hooks and custom-property or token interfaces unless an authorized migration updates every affected consumer, and make declaration, selector, custom-property, layer, and source ownership explicit at the canonical owner.** NEVER invent a project-wide naming, layer, selector, token, or layout scheme for a local task; use an established convention or keep the decision scoped to its actual owner.
+- **NEVER accept a specification label, feature query, lint result, screenshot, visual appearance, convention, popularity, or unmeasured claim as proof of behavior, target support, performance, or acceptance.** Use evidence proportional to the affected risk, and never claim complete product or accessibility acceptance from CSS evidence alone.
 
 ## Preferences
 
 Preferences apply only inside the Rules. A Rule wins every conflict.
+
+### Accessible browser behavior
+
+**Default:** **PREFER** browser focus and state defaults, wrapping text, and resilient font fallbacks.
+
+**Applicability:** Use these defaults when the presentation contract leaves the treatment open and native behavior preserves the required outcome across applicable content, themes, font failure, and user modes.
+
+**Departure:** Use custom treatment only when equivalent behavior is directly verified and every Rule still passes.
+
+### Compatibility
+
+**Default:** **PREFER** established features with direct evidence across the declared targets when they express the presentation contract clearly.
+
+**Applicability:** Use this default when established and newer features can both satisfy the target-and-fallback Rule.
+
+**Departure:** Choose a newer feature when it materially improves the implementation and direct target evidence proves the required outcome and fallback.
+
+### Proportional verification
+
+**Default:** **PREFER** the smallest evidence layer that can falsify the risk: parsing for syntax, CSSOM for emitted rules, cascade evidence for ownership, computed values for resolution, geometry and overflow for layout, and target or mode rendering for integrated appearance.
+
+**Applicability:** Use this default when the selected layer can observe the affected claim under representative conditions.
+
+**Departure:** Increase evidence with consequence and variation; for performance, use representative measurement with behavior and accessibility guards.
 
 ### Naming and hooks
 
@@ -85,3 +111,6 @@ Preferences apply only inside the Rules. A Rule wins every conflict.
 **Departure:** Introduce a new seam only when the current owner cannot express the contract, and keep configuration, trust, transform mechanics, and runtime decisions with their owners.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

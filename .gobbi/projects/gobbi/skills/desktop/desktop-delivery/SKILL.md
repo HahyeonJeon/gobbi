@@ -1,6 +1,6 @@
 ---
 name: desktop-delivery
-description: "Use when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness."
+description: "MUST load when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -11,8 +11,9 @@ Use this operation when an agent must coordinate several capability owners or de
 Electron and TypeScript application outcome. It produces one bounded outcome that a person can install,
 launch, use, exit, relaunch, and recover on every operating-system and architecture pair the result claims.
 
-Route the observable installed-platform contract to `desktop-platform`, release judgment to
-`desktop-release`, and bounded Electron mechanics through the [`electron`](../../electron/SKILL.md) root.
+Route the observable installed-platform contract to `desktop-contract`, observable design judgment to
+`desktop-interface`, release judgment to `desktop-release`, and bounded Electron mechanics through the
+[`electron`](../../electron/SKILL.md) root.
 Isolated interface, experience, language, or renderer work stays with its owner; this operation coordinates without replacing owner policy, evaluating independently, or publishing.
 
 ## Principles
@@ -49,10 +50,10 @@ implies another.
 - **MUST preserve the accepted stack unless current evidence materially challenges it.** For a new or
   challenged stack, assess resource and package cost, content trust, native depth, target and update fit, team
   upgrade capacity, migration cost, and release needs; a material conflict pauses for the user's decision.
-- **MUST keep each decision with its current owner.** UI and UX own observable design, coding and applicable
-  language or renderer skills own idiom, `desktop-platform` owns the installed-platform contract, the
-  Electron family owns Electron mechanics, `desktop-release` owns release judgment, and Evaluation owns the
-  independent verdict.
+- **MUST keep each decision with its current owner.** `desktop-interface` owns observable design judgment,
+  `desktop-architecture` owns in-application structure and state ownership, coding and applicable language or
+  renderer skills own idiom, `desktop-contract` owns the installed-platform contract, the Electron family owns Electron mechanics, `desktop-release` owns release judgment, and
+  Evaluation owns the independent verdict.
 - **MUST keep every slice and target internally consistent.** Code, configuration, types, tests,
   documentation, persistent-data behavior, package inputs, and operational evidence move together, and a
   missing target proof narrows the claim rather than becoming an inferred pass.
@@ -97,13 +98,13 @@ implies another.
 
 #### 2.1 Reconcile observable design and implementation ownership
 
-- **Input and precondition:** use the accepted UI and UX contracts, outcome contract, current application
-  structure, and selected implementation owners.
+- **Input and precondition:** use the accepted `desktop-interface` design decisions, outcome contract, current
+  application structure, and selected implementation owners.
 - **Action:** trace every entry mode, state, action, failure, recovery route, accessibility obligation, first
   paint, and touched native behavior to an observable specification. Assign each implementation unit one
   process and one capability owner.
 - **Routing:** apply coding and TypeScript to implementation; load React, HTML, and CSS only when those
-  technologies enter scope. Take installed-platform behavior to `desktop-platform`, and route Electron
+  technologies enter scope. Take installed-platform behavior to `desktop-contract`, and route Electron
   process, bridge, security, lifecycle, native, build, package, test, and release mechanics through the
   Electron root and every applicable child.
 - **Branch and recovery:** if an implementation constraint contradicts the accepted experience, return the
@@ -114,10 +115,11 @@ implies another.
 
 #### 2.2 Lock runtime, local-data, and release contracts
 
-- **Input and precondition:** use the reconciled design, `desktop-platform` contract, the project's selected
-  Electron version, current mechanism-owner facts, persisted formats, and `desktop-release` judgments.
+- **Input and precondition:** use the reconciled design, the installed-platform contract from
+  `desktop-contract`, the project's selected Electron version, current mechanism-owner facts,
+  persisted formats, and `desktop-release` judgments.
 - **Action:** lock the observable target, entry, window, lifecycle, native, installed-resource, and recovery
-  behavior through `desktop-platform`. Obtain process placement, bridge and IPC contracts, caller and payload
+  behavior through `desktop-contract`. Obtain process placement, bridge and IPC contracts, caller and payload
   trust rules, cleanup, and development-versus-packaged load paths from the applicable Electron children.
 - **Action:** lock local-data CRUD, location, retention, export, atomic or detectably incomplete writes,
   schema versions, migration, downgrade or forward compatibility, corrupt-state recovery, and fail-closed
@@ -205,6 +207,9 @@ implies another.
 - **Action:** route the complete frozen subject to independent Evaluation. Return each problem to its earliest
   owner, repair only after its disposition is authorized, and repeat the affected proof plus every dependent
   whole-outcome check.
+- **Checklist:** the [evaluation checklist](checklists.md) and every checklist owned by an active `desktop`
+  sibling or Electron owner supply the applicable conditions; the general Evaluation operation resolves them
+  and issues any verdict.
 - **Handoff:** state the outcome and non-goals, target and artifact matrix, observable contract, process and
   bridge map, data schemas and recovery, update paths, support and forward-fix plan, limitations, and each
   distinct delivery state through release readiness and authority.
@@ -214,3 +219,8 @@ implies another.
 - **Completion:** this operation ends with one reproducible installed outcome, no in-scope gap, a cold
   operator handoff, and literal claim boundaries—or with a recoverable blocked state naming the missing
   owner, evidence, or authority.
+
+## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

@@ -9,7 +9,7 @@ skill-type: operation
 
 Use this operation to deliver one correctly placed, integrated, and locally verified Electron platform change. It begins from the pinned Electron major, target operating systems, existing stack, process authority, and expected behavior.
 
-This operation ends with local implementation evidence and explicit handoffs to `electron-test` and, when packaging is affected, `electron-release`. Product experience, renderer-framework methods, full test design, and release execution remain with their owners.
+This operation ends with local implementation evidence and explicit handoffs to `electron-testing` and, when packaging is affected, `electron-release`. Product experience, renderer-framework methods, full test design, and release execution remain with their owners.
 
 ## Principles
 
@@ -27,14 +27,14 @@ Keep the established package manager, bundler, module format, target split, and 
 
 ### Verification follows the boundary
 
-Static and build checks prove construction, not runtime security or Electron behavior. Route behavioral claims to `electron-test` and packaged claims to `electron-release`.
+Static and build checks prove construction, not runtime security or Electron behavior. Route behavioral claims to `electron-testing` and packaged claims to `electron-release`.
 
 ## Rules
 
 - **MUST bind the change to an observable outcome, pinned Electron major, target operating systems and architectures, existing stack, process owners, trust boundaries, and user authority before implementation.**
 - **MUST inspect current process imports, BrowserWindow or view options, preload exposure, IPC registration, lifecycle hooks, cleanup, build targets, and packaged path assumptions before changing them.**
 - **MUST implement a cross-process change in dependency order: shared contract, privileged owner, preload adapter, renderer consumer, then window, lifecycle, native, configuration, and documentation integration.**
-- **MUST preserve secure defaults and validate sender and payload data in the privileged process.** Load `electron-convention` for the complete non-negotiable posture.
+- **MUST preserve secure defaults and validate sender and payload data in the privileged process.** Load `electron-design` for the complete non-negotiable posture.
 - **NEVER use a successful typecheck or development launch as proof that IPC authorization, preload loading, lifecycle ordering, native outcomes, or packaged paths work.**
 - **MUST finish with current code, configuration, and documentation plus exact local verification and explicit remaining test or release evidence.**
 
@@ -98,7 +98,7 @@ Static and build checks prove construction, not runtime security or Electron beh
 
 - Run the repository's focused formatting, lint, type, unit, and main/preload/renderer build commands that apply to the changed paths.
 - Inspect emitted entries and development loading for the pinned module format; record exact commands, exit status, and relevant output.
-- Treat static success as construction evidence only. Hand IPC, security, lifecycle, native, and Electron integration claims to `electron-test`.
+- Treat static success as construction evidence only. Hand IPC, security, lifecycle, native, and Electron integration claims to `electron-testing`.
 
 #### 4.2 Diagnose boundary failures
 
@@ -113,11 +113,14 @@ Static and build checks prove construction, not runtime security or Electron beh
 - Confirm each affected process owns only valid imports and capabilities, each bridge is narrow, each privileged handler validates trust and data, and each resource has cleanup.
 - Confirm current code, configuration, and documentation agree and that every local construction command has recorded evidence.
 - Return changed paths, process ownership, contract behavior, known platform limits, and unresolved environmental constraints.
+- When this change is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an active `electron` sibling supply the applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 5.2 Route remaining evidence
 
-- Load `electron-test` with the outcome, process map, security claims, failure modes, local commands, and cheapest truthful runtime seams.
+- Load `electron-testing` with the outcome, process map, security claims, failure modes, local commands, and cheapest truthful runtime seams.
 - Load `electron-release` when entries, resources, preload format, native modules, ASAR placement, installers, signing, updates, or per-operating-system artifacts may change.
 - Do not claim completion when an in-scope process, integration path, failure case, or required handoff remains unspecified.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.

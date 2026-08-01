@@ -1,6 +1,6 @@
 ---
 name: web-platform
-description: "Use when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics."
+description: "MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics."
 allowed-tools: Read, Grep, Glob, Bash, WebSearch, WebFetch
 skill-type: tool
 ---
@@ -145,3 +145,6 @@ backgrounding, cancellation, concurrency, retry, and late completion through min
 diagnostics. A degraded interface may narrow capability but cannot establish an effect it did not verify.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

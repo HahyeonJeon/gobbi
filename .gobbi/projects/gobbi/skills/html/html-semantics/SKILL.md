@@ -1,6 +1,6 @@
 ---
 name: html-semantics
-description: "MUST load when choosing or reviewing HTML elements, names, states, language, direction, or accessibility semantics. HTML Semantics is a preference skill for meaning-first, native-first markup judgment."
+description: "MUST load when choosing or reviewing HTML elements, names, states, language, direction, or accessibility semantics."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
@@ -65,3 +65,6 @@ Prefer an essential native path across all declared targets, with enhancements l
 exact-target path may depart when the complete target is one pinned runtime and no broader claim is made.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

@@ -1,6 +1,6 @@
 ---
 name: go-modules
-description: "Load when creating, changing, validating, or releasing a Go module, including layout, go.mod, go.work, dependencies, tools, compatibility, and versions."
+description: "MUST load when creating, changing, validating, or releasing a Go module, including layout, go.mod, go.work, dependencies, tools, compatibility, and versions."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
@@ -150,7 +150,9 @@ before choosing a version or tag.
 - Inspect release contents for licenses, documentation, generated files, cgo assets, embedded files, and
   accidental secrets. Confirm no temporary replacement, workspace dependence, or private path remains.
 - If validation exposes an unsupported floor or hidden dependency, return to the earliest contract or graph
-  step, update the decision, and repeat all affected checks.
+  step, update the decision, and repeat all affected checks. When this module outcome is evaluated, the
+  [evaluation checklist](checklists.md) and every checklist owned by an active `go` sibling supply the
+  applicable conditions; the general Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Classify and prepare the release
 

@@ -6,6 +6,9 @@ returned outcomes under evaluation.
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### GOTCH-SC-PROJECT-01 — Normal case: The active toolchain contract is established
@@ -16,10 +19,8 @@ unrelated local default fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-PROJECT-01-01 — The selected Go version matches the project contract.
-- [ ] GOTCH-CK-PROJECT-01-02 — The active module or workspace matches the evaluated project.
-- [ ] GOTCH-CK-PROJECT-01-03 — The selected target matches the behavior under evaluation.
-- [ ] GOTCH-CK-PROJECT-01-04 — The selected Go version satisfies dependency constraints.
+- [ ] GOTCH-CK-PROJECT-01-01 — The selected Go version, active module or workspace, and selected target each match the project contract and the behavior under evaluation.
+- [ ] GOTCH-CK-PROJECT-01-02 — The selected Go version satisfies dependency constraints.
 
 ### GOTCH-SC-PROJECT-02 — Rule violation: A newer local toolchain rewrites the project contract
 
@@ -29,8 +30,7 @@ newer fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-PROJECT-02-01 — No directive change is justified only by the local Go version.
-- [ ] GOTCH-CK-PROJECT-02-02 — Every toolchain-contract change has project authority.
+- [ ] GOTCH-CK-PROJECT-02-01 — Every toolchain-contract change has project authority rather than justification from the local Go version.
 
 ### GOTCH-SC-PROJECT-03 — Expected failure: A required tool or environment prerequisite is unavailable
 
@@ -41,8 +41,7 @@ verification fails.
 #### Checklist
 
 - [ ] GOTCH-CK-PROJECT-03-01 — Every unavailable prerequisite remains visible.
-- [ ] GOTCH-CK-PROJECT-03-02 — No unavailable command is represented as successful.
-- [ ] GOTCH-CK-PROJECT-03-03 — The unsupported surface remains outside the claimed coverage.
+- [ ] GOTCH-CK-PROJECT-03-02 — No unavailable command or unsupported surface enters the claimed coverage.
 
 ## Structure
 
@@ -64,9 +63,7 @@ The selected inputs should match the supported target; checking only the host fi
 
 #### Checklist
 
-- [ ] GOTCH-CK-STRUCTURE-02-01 — The evaluated build constraints select the intended source files.
-- [ ] GOTCH-CK-STRUCTURE-02-02 — The target platform matches the supported target contract.
-- [ ] GOTCH-CK-STRUCTURE-02-03 — The cgo state matches the intended file-selection boundary.
+- [ ] GOTCH-CK-STRUCTURE-02-01 — The evaluated build constraints, target platform, and cgo state each match the supported target contract.
 
 ### GOTCH-SC-STRUCTURE-03 — Rule violation: A read-only check mutates project files
 
@@ -75,8 +72,7 @@ editor, workspace editor, or output-producing build that changes the project vio
 
 #### Checklist
 
-- [ ] GOTCH-CK-STRUCTURE-03-01 — Every review-mode command leaves tracked project files unchanged.
-- [ ] GOTCH-CK-STRUCTURE-03-02 — Every review-mode command leaves untracked project output unchanged.
+- [ ] GOTCH-CK-STRUCTURE-03-01 — Every review-mode command leaves tracked project files and untracked project output unchanged.
 
 ## Performance
 
@@ -88,9 +84,8 @@ selection fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-PERFORMANCE-01-01 — Automatic toolchain download is classified before use.
-- [ ] GOTCH-CK-PERFORMANCE-01-02 — Module download is classified before package loading.
-- [ ] GOTCH-CK-PERFORMANCE-01-03 — The selected version remains reproducible after download.
+- [ ] GOTCH-CK-PERFORMANCE-01-01 — Every automatic toolchain and module download is classified before the command runs.
+- [ ] GOTCH-CK-PERFORMANCE-01-02 — The selected version remains reproducible after download.
 
 ### GOTCH-SC-PERFORMANCE-02 — Poor quality: Broad commands repeat avoidable work
 
@@ -100,9 +95,8 @@ needless recurring cost fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-PERFORMANCE-02-01 — Package scope avoids unrelated repeated work.
-- [ ] GOTCH-CK-PERFORMANCE-02-02 — Tool installation is not repeated without a version change.
-- [ ] GOTCH-CK-PERFORMANCE-02-03 — Cache bypass has a named diagnostic need.
+- [ ] GOTCH-CK-PERFORMANCE-02-01 — Neither package scanning nor tool installation repeats without a task-specific need.
+- [ ] GOTCH-CK-PERFORMANCE-02-02 — Cache bypass has a named diagnostic need.
 
 ### GOTCH-SC-PERFORMANCE-03 — Normal case: Tool scope matches the changed dependency surface
 
@@ -112,8 +106,8 @@ selection fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-PERFORMANCE-03-01 — The selected scope includes every changed dependency edge.
-- [ ] GOTCH-CK-PERFORMANCE-03-02 — The selected scope follows project exclusions for expensive or special targets.
+- [ ] GOTCH-CK-PERFORMANCE-03-01 — The selected scope follows project exclusions for expensive or special targets.
+- Also applies: GOTCH-CK-STRUCTURE-01-02 (the target contains every affected package or module).
 
 ## Aesthetics
 
@@ -134,8 +128,7 @@ connecting diagnostics to the affected source. The presentation should remain pr
 
 #### Checklist
 
-- [ ] GOTCH-CK-AESTHETICS-02-01 — Every material diagnostic retains its package or file location.
-- [ ] GOTCH-CK-AESTHETICS-02-02 — Unrelated command noise does not obscure the material diagnostic.
+- [ ] GOTCH-CK-AESTHETICS-02-01 — Every material diagnostic remains connectable to its affected package or file through the returned output.
 
 ## Usage
 
@@ -149,7 +142,7 @@ configuration.
 
 - [ ] GOTCH-CK-USAGE-01-01 — The executing Go binary is identified.
 - [ ] GOTCH-CK-USAGE-01-02 — Every requested environment field is relevant to the diagnosis.
-- [ ] GOTCH-CK-USAGE-01-03 — Environment discovery does not change user configuration.
+- Also applies: GOTCH-CK-RISK-01-01 (discovery changes no persistent configuration).
 
 ### GOTCH-SC-USAGE-02 — Edge case: Cross-build or cgo prerequisites differ from the host
 
@@ -158,10 +151,9 @@ support still fails; the work should distinguish those boundaries.
 
 #### Checklist
 
-- [ ] GOTCH-CK-USAGE-02-01 — Cross-compilation claims stop at the behavior the command exercised.
-- [ ] GOTCH-CK-USAGE-02-02 — Every required cgo compiler is identified.
-- [ ] GOTCH-CK-USAGE-02-03 — Every required cgo system input is identified.
-- [ ] GOTCH-CK-USAGE-02-04 — A successful cross-build is not represented as target-runtime proof.
+- [ ] GOTCH-CK-USAGE-02-01 — Every cross-build claim stops at the behavior the command exercised.
+- [ ] GOTCH-CK-USAGE-02-02 — No cross-build claim is represented as target-runtime proof.
+- [ ] GOTCH-CK-USAGE-02-03 — Every required cgo compiler and system input is identified.
 
 ### GOTCH-SC-USAGE-03 — Expected failure: Module or checksum resolution cannot complete
 
@@ -172,8 +164,18 @@ integrity or privacy controls to obtain a pass fails.
 #### Checklist
 
 - [ ] GOTCH-CK-USAGE-03-01 — The failure is classified as graph, network, credential, checksum-policy, or cache related.
-- [ ] GOTCH-CK-USAGE-03-02 — Checksum verification remains enabled unless the project contract changes it.
-- [ ] GOTCH-CK-USAGE-03-03 — Private-module boundaries remain unchanged unless the project contract changes them.
+- Also applies: GOTCH-CK-RISK-05-02 (no integrity or privacy control is weakened to obtain a pass).
+
+### GOTCH-SC-USAGE-04 — Adversarial: The reported command is not the command that ran
+
+The account presents a clean canonical invocation while the actual run used extra flags, a different target, a
+modified environment, or a cached result. A reader following the reported command should obtain the reported
+result; an invocation that only the author can reproduce fails.
+
+#### Checklist
+
+- [ ] GOTCH-CK-USAGE-04-01 — Every reported command, flag, target, and environment value matches the invocation that produced the result.
+- [ ] GOTCH-CK-USAGE-04-02 — Each reported result is reproducible from the reported command alone.
 
 ## Consistency
 
@@ -185,11 +187,7 @@ self-authorizing fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-CONSISTENCY-01-01 — Every tool-written source change belongs to the task.
-- [ ] GOTCH-CK-CONSISTENCY-01-02 — Every tool-written `go.mod` change belongs to the task.
-- [ ] GOTCH-CK-CONSISTENCY-01-03 — Every tool-written `go.sum` change belongs to the task.
-- [ ] GOTCH-CK-CONSISTENCY-01-04 — Every tool-written workspace change belongs to the task.
-- [ ] GOTCH-CK-CONSISTENCY-01-05 — Every tool-written deletion belongs to the task.
+- [ ] GOTCH-CK-CONSISTENCY-01-01 — Every tool-written source, `go.mod`, `go.sum`, workspace, and deletion change belongs to the task.
 
 ### GOTCH-SC-CONSISTENCY-02 — Rule violation: Local, continuous-integration, and release targets disagree
 
@@ -199,8 +197,7 @@ success fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-CONSISTENCY-02-01 — Local toolchain selection agrees with the supported project contract.
-- [ ] GOTCH-CK-CONSISTENCY-02-02 — Local target selection agrees with the evaluated release target.
+- [ ] GOTCH-CK-CONSISTENCY-02-01 — Local toolchain and target selection agree with the supported project contract and the evaluated release target.
 
 ### GOTCH-SC-CONSISTENCY-03 — Normal case: Project-selected helper tools are reproducible
 
@@ -209,9 +206,7 @@ version, configuration, and invocation should come from the project contract; an
 
 #### Checklist
 
-- [ ] GOTCH-CK-CONSISTENCY-03-01 — Every helper tool has a project-selected version.
-- [ ] GOTCH-CK-CONSISTENCY-03-02 — Every helper tool uses the project-selected configuration.
-- [ ] GOTCH-CK-CONSISTENCY-03-03 — Every helper invocation follows the project-owned entrypoint.
+- [ ] GOTCH-CK-CONSISTENCY-03-01 — Every helper tool uses its project-selected version, configuration, and project-owned entrypoint.
 
 ### GOTCH-SC-CONSISTENCY-04 — Edge case: Generated state is checked under a different environment
 
@@ -221,9 +216,7 @@ fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-CONSISTENCY-04-01 — Generated output uses the declared generator version.
-- [ ] GOTCH-CK-CONSISTENCY-04-02 — Generated output corresponds to the current owned inputs.
-- [ ] GOTCH-CK-CONSISTENCY-04-03 — Generated output uses the declared environment contract.
+- [ ] GOTCH-CK-CONSISTENCY-04-01 — Generated output corresponds to the declared generator version, the current owned inputs, and the declared environment contract.
 
 ## Risk
 
@@ -245,11 +238,10 @@ makes it safe fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-RISK-02-01 — Every executed generator directive is attributable to reviewed project source.
-- [ ] GOTCH-CK-RISK-02-02 — Every executed project tool is attributable to a reviewed version.
-- [ ] GOTCH-CK-RISK-02-03 — Every command side effect remains within its authorized boundary.
+- [ ] GOTCH-CK-RISK-02-01 — Every executed generator directive and project tool is attributable to reviewed project source and a reviewed version.
+- [ ] GOTCH-CK-RISK-02-02 — Every command side effect remains within its authorized boundary.
 
-### GOTCH-SC-RISK-03 — Adversarial: Environment output exposes private configuration
+### GOTCH-SC-RISK-03 — Rule violation: Environment output exposes private configuration
 
 Diagnostic collection includes private paths, proxy URLs, module names, credentials, or workstation details.
 The returned material should contain only the fields needed to explain the issue; disclosure through a broad
@@ -257,10 +249,7 @@ environment dump fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-RISK-03-01 — Environment output contains no credential value.
-- [ ] GOTCH-CK-RISK-03-02 — Environment output contains no irrelevant private path.
-- [ ] GOTCH-CK-RISK-03-03 — Environment output contains no irrelevant private module detail.
-- [ ] GOTCH-CK-RISK-03-04 — Environment output contains no irrelevant proxy detail.
+- [ ] GOTCH-CK-RISK-03-01 — Returned environment output carries no credential value and no irrelevant private path, private module detail, or proxy detail.
 
 ### GOTCH-SC-RISK-04 — Adversarial: Tests or analyzers exploit their execution authority
 
@@ -270,11 +259,10 @@ read-only solely because it leaves tracked files unchanged fails.
 
 #### Checklist
 
-- [ ] GOTCH-CK-RISK-04-01 — Executed test code is within the accepted trust boundary.
-- [ ] GOTCH-CK-RISK-04-02 — Executed analyzer code is within the accepted trust boundary.
-- [ ] GOTCH-CK-RISK-04-03 — External effects of executable checks are within task authority.
+- [ ] GOTCH-CK-RISK-04-01 — Executed test code and executed analyzer code are within the accepted trust boundary.
+- Also applies: GOTCH-CK-RISK-02-02 (external effects stay within task authority).
 
-### GOTCH-SC-RISK-05 — Poor quality: Cache clearing or policy weakening masks the cause
+### GOTCH-SC-RISK-05 — Adversarial: Cache clearing or policy weakening masks the cause
 
 A cache is cleared or a security, proxy, checksum, or private-module setting is weakened before the actual
 failure is understood. The remedy should address the classified cause; environmental reset as trial-and-error
@@ -283,8 +271,18 @@ fails.
 #### Checklist
 
 - [ ] GOTCH-CK-RISK-05-01 — Cache invalidation follows a cache-specific diagnosis.
-- [ ] GOTCH-CK-RISK-05-02 — No integrity setting is weakened to suppress a diagnostic.
-- [ ] GOTCH-CK-RISK-05-03 — No privacy setting is weakened to suppress a diagnostic.
+- [ ] GOTCH-CK-RISK-05-02 — No integrity or privacy setting is weakened to suppress a diagnostic.
+
+### GOTCH-SC-RISK-06 — Normal case: An ordinary command keeps its effects inside the expected set
+
+An accepted command builds, tests, analyzes, or lists on the ordinary success path. Its effects should stay
+inside the expected build and module caches and the task's own outputs, with no persistent configuration
+change and no unplanned network use; an ordinary run that reaches beyond that set fails.
+
+#### Checklist
+
+- [ ] GOTCH-CK-RISK-06-01 — Every effect of the ordinary run stays inside the expected caches and task-owned outputs.
+- [ ] GOTCH-CK-RISK-06-02 — The ordinary run needs no elevated privilege and no unplanned network access.
 
 ## Overall
 
@@ -297,13 +295,8 @@ effect fails the whole.
 #### Checklist
 
 - [ ] GOTCH-CK-OVERALL-01-01 — Every tool selection follows the project contract.
-- [ ] GOTCH-CK-OVERALL-01-02 — Every project write is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-03 — Every executed-code effect is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-04 — Every network effect is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-05 — Every download effect is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-06 — Every cache effect is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-07 — Every persistent-configuration effect is accounted for.
-- [ ] GOTCH-CK-OVERALL-01-08 — Every claim stays within the command's actual coverage.
+- [ ] GOTCH-CK-OVERALL-01-02 — Every project write, executed-code effect, network effect, download effect, cache effect, and persistent-configuration effect is accounted for.
+- [ ] GOTCH-CK-OVERALL-01-03 — Every claim stays within the command's actual coverage.
 
 ### GOTCH-SC-OVERALL-02 — Adversarial: Clean vet or build output masks missing assurance
 
@@ -313,9 +306,8 @@ must not replace the missing judgment.
 
 #### Checklist
 
-- [ ] GOTCH-CK-OVERALL-02-01 — A clean build is not the sole basis for behavioral acceptance.
-- [ ] GOTCH-CK-OVERALL-02-02 — A clean vet run is not the sole basis for correctness acceptance.
-- [ ] GOTCH-CK-OVERALL-02-03 — Unexecuted toolchain surfaces remain outside the acceptance claim.
+- [ ] GOTCH-CK-OVERALL-02-01 — A clean build or vet run is not the sole basis for behavioral or correctness acceptance.
+- [ ] GOTCH-CK-OVERALL-02-02 — Unexecuted toolchain surfaces remain outside the acceptance claim.
 
 ### GOTCH-SC-OVERALL-03 — Expected failure: A required toolchain surface remains blocked
 
@@ -324,5 +316,5 @@ retain that gap and its affected obligation; declaring the complete work verifie
 
 #### Checklist
 
-- [ ] GOTCH-CK-OVERALL-03-01 — Every blocked required surface remains explicit.
+- [ ] GOTCH-CK-OVERALL-03-01 — Every blocked required surface remains explicit with its affected obligation.
 - [ ] GOTCH-CK-OVERALL-03-02 — Completion is not claimed across a blocked required surface.

@@ -100,7 +100,10 @@ Compare representative conditions before and after with behavior and accessibili
 ### Diagnosis
 
 Compare working and failing cases at the earliest divergence. Report target, state, evidence,
-owner, and unknowns; route validity constraints to CSS constraints, project-choice judgment
-to CSS conventions, changes to CSS development, and read-only assessment to CSS review.
+owner, and unknowns; route validity constraints and project-choice judgment to
+`css-conventions`, and both changes and read-only assessment to `css-development`.
 
 ## References
+
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+  governed by this skill.

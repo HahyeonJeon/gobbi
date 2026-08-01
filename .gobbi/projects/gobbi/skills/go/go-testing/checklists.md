@@ -6,6 +6,9 @@ returned outcomes under evaluation.
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### GOTST-SC-PROJECT-01 — Normal case: The evidence set follows behavior and risk
@@ -17,9 +20,7 @@ Each selected test kind should answer one material question; habit-driven or unr
 
 - [ ] GOTST-CK-PROJECT-01-01 — Every selected test kind answers a named behavior or risk question.
 - [ ] GOTST-CK-PROJECT-01-02 — Every required behavior has an observable test seam.
-- [ ] GOTST-CK-PROJECT-01-03 — The test scope matches the supported Go contract.
-- [ ] GOTST-CK-PROJECT-01-04 — The test scope matches the supported platform contract.
-- [ ] GOTST-CK-PROJECT-01-05 — The test work declares author mode or read-only review mode.
+- [ ] GOTST-CK-PROJECT-01-03 — The declared author or read-only review mode, supported Go contract, and supported platform contract are each explicit.
 
 ### GOTST-SC-PROJECT-02 — Expected failure: A regression distinguishes defective and corrected behavior
 
@@ -28,9 +29,8 @@ and pass after correction when that comparison is safe; a test that never detect
 
 #### Checklist
 
-- [ ] GOTST-CK-PROJECT-02-01 — The regression test detects the reproduced defective behavior.
-- [ ] GOTST-CK-PROJECT-02-02 — The regression test accepts the corrected behavior.
-- [ ] GOTST-CK-PROJECT-02-03 — The original reproducer remains separately accounted for.
+- [ ] GOTST-CK-PROJECT-02-01 — The regression test separates the reproduced defective behavior from the corrected behavior.
+- [ ] GOTST-CK-PROJECT-02-02 — The original reproducer remains separately accounted for.
 
 ### GOTST-SC-PROJECT-03 — Poor quality: Tests freeze implementation details or chase a score
 
@@ -39,9 +39,8 @@ instead of a promised outcome. The suite should remain stable under valid refact
 
 #### Checklist
 
-- [ ] GOTST-CK-PROJECT-03-01 — Each assertion protects caller-visible or package-owned behavior.
-- [ ] GOTST-CK-PROJECT-03-02 — Valid internal refactoring does not invalidate the asserted contract.
-- [ ] GOTST-CK-PROJECT-03-03 — No test exists solely to raise an unowned coverage percentage.
+- [ ] GOTST-CK-PROJECT-03-01 — Every assertion protects caller-visible or package-owned behavior rather than internal representation or call order.
+- [ ] GOTST-CK-PROJECT-03-02 — No test exists solely to raise an unowned coverage percentage.
 
 ## Structure
 
@@ -52,8 +51,7 @@ choose the narrowest stable boundary; using privileged access for a public contr
 
 #### Checklist
 
-- [ ] GOTST-CK-STRUCTURE-01-01 — Internal-package tests use unexported access only when the contract requires it.
-- [ ] GOTST-CK-STRUCTURE-01-02 — Public-client behavior is exercised from an external consumer position.
+- [ ] GOTST-CK-STRUCTURE-01-01 — Each test takes unexported access or an external consumer position according to the contract it protects.
 
 ### GOTST-SC-STRUCTURE-02 — Poor quality: One table hides different workflows
 
@@ -62,9 +60,8 @@ represent one behavior shape; option-heavy rows that conceal distinct contracts 
 
 #### Checklist
 
-- [ ] GOTST-CK-STRUCTURE-02-01 — Every table row uses the same behavioral action.
-- [ ] GOTST-CK-STRUCTURE-02-02 — Every table row uses the same comparison shape.
-- [ ] GOTST-CK-STRUCTURE-02-03 — Cases with distinct fixture lifecycles are separate tests.
+- [ ] GOTST-CK-STRUCTURE-02-01 — Every row of one table shares the same behavioral action and comparison shape.
+- [ ] GOTST-CK-STRUCTURE-02-02 — Cases with distinct fixture lifecycles are separate tests.
 
 ### GOTST-SC-STRUCTURE-03 — Edge case: A process-wide or file fixture is genuinely required
 
@@ -73,9 +70,8 @@ a real process-wide contract that per-test setup cannot express; convenience-bas
 
 #### Checklist
 
-- [ ] GOTST-CK-STRUCTURE-03-01 — Every `TestMain` responsibility requires process-wide ownership.
-- [ ] GOTST-CK-STRUCTURE-03-02 — Every `testdata` file is a stable input worth retaining.
-- [ ] GOTST-CK-STRUCTURE-03-03 — Per-test state remains outside global fixtures.
+- [ ] GOTST-CK-STRUCTURE-03-01 — Every `TestMain` responsibility, `testdata` file, and other shared fixture is required by a process-wide contract or a stable retained input.
+- [ ] GOTST-CK-STRUCTURE-03-02 — Per-test state remains outside global fixtures.
 
 ### GOTST-SC-STRUCTURE-04 — Rule violation: Production internals are exposed only for tests
 
@@ -85,8 +81,7 @@ fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-STRUCTURE-04-01 — No exported production declaration exists solely for test access.
-- [ ] GOTST-CK-STRUCTURE-04-02 — Every test seam has a production design purpose.
+- [ ] GOTST-CK-STRUCTURE-04-01 — Every test seam has a production design purpose rather than test-only existence.
 
 ## Performance
 
@@ -97,9 +92,8 @@ outside the real domain and keep resource use proportionate; an unbounded target
 
 #### Checklist
 
-- [ ] GOTST-CK-PERFORMANCE-01-01 — The fuzz domain excludes inputs the real contract cannot receive.
-- [ ] GOTST-CK-PERFORMANCE-01-02 — The fuzz run has a bounded duration.
-- [ ] GOTST-CK-PERFORMANCE-01-03 — A seed-only run is not represented as exploratory fuzzing.
+- [ ] GOTST-CK-PERFORMANCE-01-01 — The fuzz target bounds both its input domain and its run duration.
+- [ ] GOTST-CK-PERFORMANCE-01-02 — A seed-only run is not represented as exploratory fuzzing.
 
 ### GOTST-SC-PERFORMANCE-02 — Poor quality: A benchmark measures setup or removable work
 
@@ -109,7 +103,7 @@ one noisy sample supports the conclusion. The measurement should isolate the ope
 #### Checklist
 
 - [ ] GOTST-CK-PERFORMANCE-02-01 — One benchmark iteration measures the intended operation.
-- [ ] GOTST-CK-PERFORMANCE-02-02 — Setup outside the measured operation is excluded from timing.
+- [ ] GOTST-CK-PERFORMANCE-02-02 — One benchmark iteration excludes the operation's surrounding setup.
 - [ ] GOTST-CK-PERFORMANCE-02-03 — The benchmark consumes the operation's observable result.
 
 ### GOTST-SC-PERFORMANCE-03 — Poor quality: Slow external tests burden the default target
@@ -119,9 +113,7 @@ The default target should remain repeatable and proportionate; hidden environmen
 
 #### Checklist
 
-- [ ] GOTST-CK-PERFORMANCE-03-01 — Every slow external test uses the project-selected target or constraint.
-- [ ] GOTST-CK-PERFORMANCE-03-02 — The ordinary test target has no undeclared external-service prerequisite.
-- [ ] GOTST-CK-PERFORMANCE-03-03 — The ordinary test target has no undeclared privilege prerequisite.
+- [ ] GOTST-CK-PERFORMANCE-03-01 — Every expensive, privileged, networked, and external-service test sits behind the project-selected target or constraint rather than in the ordinary target.
 
 ## Aesthetics
 
@@ -133,9 +125,8 @@ wanted value, and useful context without source-level debugging.
 #### Checklist
 
 - [ ] GOTST-CK-AESTHETICS-01-01 — Every subtest name identifies its case stably.
-- [ ] GOTST-CK-AESTHETICS-01-02 — Every behavioral mismatch reports the observed value.
-- [ ] GOTST-CK-AESTHETICS-01-03 — Every behavioral mismatch reports the wanted value.
-- [ ] GOTST-CK-AESTHETICS-01-04 — Every assertion helper marks itself with `t.Helper`.
+- [ ] GOTST-CK-AESTHETICS-01-02 — Every behavioral mismatch reports both the observed and the wanted value.
+- [ ] GOTST-CK-AESTHETICS-01-03 — Every assertion helper marks itself with `t.Helper`.
 
 ### GOTST-SC-AESTHETICS-02 — Poor quality: Failure output is generic or context-free
 
@@ -144,9 +135,8 @@ should not need to reproduce the failure to learn which contract broke; uninform
 
 #### Checklist
 
-- [ ] GOTST-CK-AESTHETICS-02-01 — No failure message relies on an unexplained boolean.
-- [ ] GOTST-CK-AESTHETICS-02-02 — No helper hides the caller location of a failed assertion.
-- [ ] GOTST-CK-AESTHETICS-02-03 — Every failure message names the operation under test.
+- [ ] GOTST-CK-AESTHETICS-02-01 — Every failure message names the operation under test instead of relying on an unexplained boolean.
+- Also applies: GOTST-CK-AESTHETICS-01-03 (helpers do not hide the failing caller location).
 
 ## Usage
 
@@ -157,9 +147,8 @@ and assert output only when that output is deterministic and contractual; decora
 
 #### Checklist
 
-- [ ] GOTST-CK-USAGE-01-01 — The example uses only caller-visible declarations.
-- [ ] GOTST-CK-USAGE-01-02 — The example demonstrates a supported public workflow.
-- [ ] GOTST-CK-USAGE-01-03 — Any asserted example output is deterministic.
+- [ ] GOTST-CK-USAGE-01-01 — The example uses only caller-visible declarations to demonstrate a supported public workflow.
+- Also applies: GOTST-CK-USAGE-02-02 (nondeterministic output is not asserted).
 
 ### GOTST-SC-USAGE-02 — Edge case: Example output varies by environment or version
 
@@ -168,9 +157,8 @@ remain stable under the supported contract; an environment-sensitive assertion f
 
 #### Checklist
 
-- [ ] GOTST-CK-USAGE-02-01 — Asserted example output is stable across supported platforms.
-- [ ] GOTST-CK-USAGE-02-02 — Asserted example output is stable across supported Go versions.
-- [ ] GOTST-CK-USAGE-02-03 — Nondeterministic example output is not used as an execution assertion.
+- [ ] GOTST-CK-USAGE-02-01 — Asserted example output is stable across supported platforms and supported Go versions.
+- [ ] GOTST-CK-USAGE-02-02 — Nondeterministic example output is not used as an execution assertion.
 
 ### GOTST-SC-USAGE-03 — Expected failure: An integration prerequisite is absent
 
@@ -179,9 +167,21 @@ is valid only when the project contract classifies that absence as unsupported; 
 
 #### Checklist
 
-- [ ] GOTST-CK-USAGE-03-01 — Every missing prerequisite is identified.
-- [ ] GOTST-CK-USAGE-03-02 — Every skip condition follows the project support contract.
+- [ ] GOTST-CK-USAGE-03-01 — Every skip names its missing prerequisite.
+- [ ] GOTST-CK-USAGE-03-02 — Every skip follows the project support contract.
 - [ ] GOTST-CK-USAGE-03-03 — A skipped required test is not represented as passed.
+
+### GOTST-SC-USAGE-04 — Adversarial: An expected value is fitted to the observed output
+
+A golden file, `Output:` comment, or expected literal is written or regenerated from what the code currently
+produces rather than from the named behavior it protects. The expectation should come from the contract, so a
+defect in the current output makes the test fail; an expectation fitted to observed output passes forever and
+proves nothing.
+
+#### Checklist
+
+- [ ] GOTST-CK-USAGE-04-01 — Every golden file, example output, and expected literal is derived from the named behavior rather than from the current implementation's output.
+- [ ] GOTST-CK-USAGE-04-02 — Every regenerated expectation was reviewed against the contract before acceptance.
 
 ## Consistency
 
@@ -193,10 +193,7 @@ fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-01-01 — Time-dependent behavior uses a controlled time seam.
-- [ ] GOTST-CK-CONSISTENCY-01-02 — Random-dependent behavior uses a controlled randomness seam.
-- [ ] GOTST-CK-CONSISTENCY-01-03 — Environment-dependent behavior uses test-scoped state.
-- [ ] GOTST-CK-CONSISTENCY-01-04 — Network-dependent behavior uses the project-selected isolation boundary.
+- [ ] GOTST-CK-CONSISTENCY-01-01 — Time-dependent, randomness-dependent, environment-dependent, file-system-dependent, and network-dependent behavior each use a controlled seam.
 
 ### GOTST-SC-CONSISTENCY-02 — Rule violation: Parallel tests share unsafe state
 
@@ -205,9 +202,8 @@ another unsynchronized global. Parallel execution should preserve isolation; ord
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-02-01 — Parallel tests do not mutate shared fixtures without synchronization.
-- [ ] GOTST-CK-CONSISTENCY-02-02 — Parallel tests do not mutate process-wide state.
-- [ ] GOTST-CK-CONSISTENCY-02-03 — Parallel subtests capture loop values correctly for the module language version.
+- [ ] GOTST-CK-CONSISTENCY-02-01 — Parallel tests do not mutate shared fixtures or process-wide state without synchronization.
+- Also applies: GOTST-CK-CONSISTENCY-04-01 (parallel closure behavior follows the module language version).
 
 ### GOTST-SC-CONSISTENCY-03 — Rule violation: Test resources outlive a terminal path
 
@@ -216,9 +212,8 @@ success, failure, skip, and panic; a resource or process-state leak fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-03-01 — Every test-owned resource has one cleanup owner.
+- [ ] GOTST-CK-CONSISTENCY-03-01 — Every test-owned resource and process-state change has one cleanup or restoration owner.
 - [ ] GOTST-CK-CONSISTENCY-03-02 — Cleanup is registered before a later assertion can terminate the test.
-- [ ] GOTST-CK-CONSISTENCY-03-03 — Every process-state change has a matching restoration.
 
 ### GOTST-SC-CONSISTENCY-04 — Edge case: Test APIs or closure semantics vary by Go version
 
@@ -227,8 +222,7 @@ implementation should follow the module language version and toolchain floor; lo
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-04-01 — Every testing API exists at the supported Go floor.
-- [ ] GOTST-CK-CONSISTENCY-04-02 — Parallel closure behavior is correct for the module language version.
+- [ ] GOTST-CK-CONSISTENCY-04-01 — Every used testing API and closure behavior matches the module language version and supported Go floor.
 
 ### GOTST-SC-CONSISTENCY-05 — Rule violation: Returned claims exceed executed evidence
 
@@ -237,12 +231,7 @@ the executed inputs, paths, duration, platform, and configuration; unsupported e
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-05-01 — Coverage claims stay within the generated profile.
-- [ ] GOTST-CK-CONSISTENCY-05-02 — Race claims stay within the executed workload.
-- [ ] GOTST-CK-CONSISTENCY-05-03 — Fuzz claims stay within the recorded duration.
-- [ ] GOTST-CK-CONSISTENCY-05-04 — Fuzz claims stay within the exercised corpus.
-- [ ] GOTST-CK-CONSISTENCY-05-05 — Benchmark claims stay within the recorded environment.
-- [ ] GOTST-CK-CONSISTENCY-05-06 — Benchmark claims stay within the exercised inputs.
+- [ ] GOTST-CK-CONSISTENCY-05-01 — Every coverage, race, fuzz, and benchmark claim stays within the generated profile, executed workload, recorded duration, exercised corpus, recorded environment, and exercised inputs it came from.
 
 ## Risk
 
@@ -266,20 +255,17 @@ parallel order fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-02-01 — A test cannot retain a process-state change after completion.
-- [ ] GOTST-CK-RISK-02-02 — A test cannot retain a temporary file outside its owned location.
-- [ ] GOTST-CK-RISK-02-03 — A test cannot retain a live owned goroutine after completion.
+- [ ] GOTST-CK-RISK-02-01 — A test cannot retain a process-state change, a temporary file outside its owned location, or a live owned goroutine after completion.
 
-### GOTST-SC-RISK-03 — Rule violation: A clean race run is treated as proof
+### GOTST-SC-RISK-03 — Adversarial: A clean race run is treated as proof
 
 The race detector reports no issue on the selected run. That covers only executed paths on supported
 platforms; representing it as proof that all concurrent behavior is race-free fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-03-01 — Race acceptance includes the exact executed workload.
-- [ ] GOTST-CK-RISK-03-02 — Race acceptance includes the exact executed platform.
-- [ ] GOTST-CK-RISK-03-03 — Unexecuted concurrent paths remain outside the race claim.
+- [ ] GOTST-CK-RISK-03-01 — No unexecuted concurrent path or unexercised platform is included in the race-free conclusion.
+- Also applies: GOTST-CK-CONSISTENCY-05-01 (race claims stay within the executed workload).
 
 ### GOTST-SC-RISK-04 — Expected failure: A flaky or unsupported surface remains unresolved
 
@@ -288,9 +274,19 @@ should preserve the resulting evidence gap; retries, exclusions, or another plat
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-04-01 — Every unresolved flaky test remains visible.
-- [ ] GOTST-CK-RISK-04-02 — Every unsupported promised target remains visible.
-- [ ] GOTST-CK-RISK-04-03 — No retry converts an indeterminate test into reliable evidence.
+- [ ] GOTST-CK-RISK-04-01 — Every unresolved flaky test and unsupported promised target remains visible.
+- [ ] GOTST-CK-RISK-04-02 — No retry converts an indeterminate test into reliable evidence.
+
+### GOTST-SC-RISK-05 — Normal case: The ordinary run stays inside the test's own boundary
+
+The default target runs on an ordinary developer or continuous-integration machine. Its success path should
+need no elevated privilege, write only inside test-owned temporary locations, and make no unauthorized
+external call; an ordinary run that touches the real machine or a real service fails.
+
+#### Checklist
+
+- [ ] GOTST-CK-RISK-05-01 — The ordinary test target needs no elevated privilege or undeclared external service.
+- [ ] GOTST-CK-RISK-05-02 — Every file the ordinary test target writes stays inside a test-owned temporary location.
 
 ## Overall
 
@@ -302,8 +298,8 @@ smallest coherent evidence set for the named behavior and risk. Each layer shoul
 #### Checklist
 
 - [ ] GOTST-CK-OVERALL-01-01 — Every selected layer protects a distinct material concern.
-- [ ] GOTST-CK-OVERALL-01-02 — Every selected layer is deterministic within its intended contract.
-- [ ] GOTST-CK-OVERALL-01-03 — Every selected layer has an explicit coverage boundary.
+- [ ] GOTST-CK-OVERALL-01-02 — Every selected layer has an explicit coverage boundary.
+- Also applies: GOTST-CK-CONSISTENCY-01-01 (each layer is deterministic within its intended contract).
 
 ### GOTST-SC-OVERALL-02 — Adversarial: High coverage masks missing behavioral assurance
 
@@ -314,8 +310,7 @@ coverage success fails.
 #### Checklist
 
 - [ ] GOTST-CK-OVERALL-02-01 — Acceptance is not based solely on a coverage percentage.
-- [ ] GOTST-CK-OVERALL-02-02 — Every critical failure path has a behavioral assertion.
-- [ ] GOTST-CK-OVERALL-02-03 — Every material consumer boundary has direct assurance.
+- [ ] GOTST-CK-OVERALL-02-02 — Every critical failure path and material consumer boundary has a direct behavioral assertion.
 
 ### GOTST-SC-OVERALL-03 — Expected failure: A material assurance gap blocks completion
 
@@ -324,6 +319,5 @@ affected behavior and risk as unresolved; declaring the evidence set complete fa
 
 #### Checklist
 
-- [ ] GOTST-CK-OVERALL-03-01 — Every unobservable promised behavior remains explicit.
-- [ ] GOTST-CK-OVERALL-03-02 — Every blocked selected layer remains explicit.
-- [ ] GOTST-CK-OVERALL-03-03 — Completion is not claimed across a material assurance gap.
+- [ ] GOTST-CK-OVERALL-03-01 — Every unobservable promised behavior and blocked selected layer remains explicit.
+- [ ] GOTST-CK-OVERALL-03-02 — Completion is not claimed across a material assurance gap.

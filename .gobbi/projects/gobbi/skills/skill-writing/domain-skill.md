@@ -50,6 +50,63 @@ child identities globally unique when different domains use the same capability 
   trigger from child frontmatter, select every applicable child, cover every root-triggered task, and reject
   stale rows, orphan children, and missing routes.
 
+## Naming Standard
+
+This section adds a capability vocabulary that this document did not define before. It binds every child named
+or renamed from now on, and it declares no existing name incorrect.
+
+### Reserved words
+
+Each word below carries one meaning across the whole project. Use the word only for that meaning, and use no
+other word for that meaning.
+
+| Reserved word | Fixed meaning |
+|---|---|
+| `development` | The author-or-change operation for a domain, including a review mode where the family carries one |
+| `testing` | The evidence operation |
+| `conventions` | The written-form and overridable-choice preference, including the binding boundary those choices sit inside |
+| `design` | The structural-judgment preference |
+| `platform` | A standard or engine you did not write |
+| `runtime` | A framework runtime you execute inside |
+| `toolchain` | Tooling you invoke |
+| `release` | Shipping, at either operation or preference granularity |
+
+### Free words
+
+A capability the domain genuinely owns may take a word that the domain's own authoritative literature uses,
+provided the word collides with no reserved meaning above. A word collides when the capability it names is
+already a reserved meaning; use the reserved word instead. A reserved word and a free synonym for one meaning
+would restore the overload the two tiers remove.
+
+These words qualify today: `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
+`architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
+`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`, and
+`compiler` as the proper noun React Compiler.
+
+### Maintaining the register
+
+The two lists above are the register. Update this section in the same change that changes a reserved meaning or
+admits a new free word, and record the new word beside the others. Without that update the free tier drifts and
+each family invents its own vocabulary again.
+
+### Relation to globally unique identity
+
+The Principle "Keep identity shallow and globally unique" stays true and is not narrowed here. Two domains may
+use one capability word: `go-testing` and `web-testing` are both correct, because each names the same meaning
+inside its own domain. This standard forbids something else — one word carrying two meanings, and one meaning
+carrying two words. The domain prefix keeps identity unique; the tier keeps meaning singular.
+
+### Trigger and routing form
+
+These four form rules bind every child and every root routing table.
+
+| Form rule | Statement |
+|---|---|
+| FR-1 | Every child `description` opens `MUST load when`, matching the `MUST load before` that opens every root `description`. |
+| FR-2 | Every child `description` is exactly one sentence and carries no second identity sentence. |
+| FR-3 | Every root routing row copies its child's `description` byte for byte, so string equality checks it. |
+| FR-4 | Every cross-reference to a sibling child uses the backticked slug, never a prose display name. |
+
 ## Procedure
 
 ### Phase 1 — Design the Domain Family
@@ -68,9 +125,12 @@ child identities globally unique when different domains use the same capability 
 #### 1.2 Lock the family skeleton
 
 - Give the root the domain slug and name every direct child `{domain}-{capability}`, using the same value for
-  its directory and frontmatter `name`.
+  its directory and frontmatter `name`. Take each `{capability}` from the
+  [Naming Standard](#naming-standard), which admits a reserved word for its fixed meaning and a free word its
+  domain's authoritative literature uses.
 - Write each child trigger from the approved routing design and reserve a universal trigger only for a
-  genuine domain-wide floor.
+  genuine domain-wide floor. Apply form rules FR-1 through FR-4 to every child `description`, root routing
+  row, and sibling cross-reference.
 - Render the root skeleton, every direct child `SKILL.md` skeleton, supporting-document paths, and one routing
   row per child before writing substantive prose.
 - Keep all independently loadable children direct and create no `SKILL.md` beneath a direct child.
@@ -144,3 +204,9 @@ trigger applies.}
   policy-free, and independently usable family.
 
 ## References
+
+- [`SKILL.md`](SKILL.md) owns the parent Skill Writing operation, its type classification at Step 1.3, and the
+  Principle and Rule limits every child skill in the family must meet.
+- [`operation-skill.md`](operation-skill.md) owns writing each operation child of the family.
+- [`tool-skill.md`](tool-skill.md) owns writing each tool child of the family.
+- [`preference-skill.md`](preference-skill.md) owns writing each preference child of the family.

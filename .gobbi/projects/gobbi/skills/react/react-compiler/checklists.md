@@ -3,6 +3,9 @@
 Use this unchecked `react-compiler` source with general `evaluation` when the React root activates the compiler
 child; `RCMP` is the stable owner prefix.
 
+A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+that this scenario reuses.
+
 ## Project
 
 ### RCMP-SC-PROJECT-01 — Normal case: The installed compiler contract is established
@@ -12,33 +15,33 @@ configuration. A neighboring version, guessed default, or missing command fails 
 
 #### Checklist
 
-- [ ] RCMP-CK-PROJECT-01-01 — Project files establish the installed React Compiler.
-- [ ] RCMP-CK-PROJECT-01-02 — Project files establish the installed React line.
-- [ ] RCMP-CK-PROJECT-01-03 — Project files establish the installed Hooks linter integration.
-- [ ] RCMP-CK-PROJECT-01-04 — Project files establish the active compiler build-tool integration.
-- [ ] RCMP-CK-PROJECT-01-05 — Project files establish the active framework integration.
-- [ ] RCMP-CK-PROJECT-01-06 — Every active non-default compiler option is recorded.
-- [ ] RCMP-CK-PROJECT-01-07 — Every active compiler option resolves to its owning configuration file.
-- [ ] RCMP-CK-PROJECT-01-08 — The applicable compiler command is known.
-- [ ] RCMP-CK-PROJECT-01-09 — The applicable lint command is known.
-- [ ] RCMP-CK-PROJECT-01-10 — The applicable build command is known.
-- [ ] RCMP-CK-PROJECT-01-11 — The applicable test command is known.
-- [ ] RCMP-CK-PROJECT-01-12 — The applicable measurement command or method is known.
+- [ ] RCMP-CK-PROJECT-01-01 — Project files establish the installed React Compiler, installed React line, installed Hooks linter integration, active compiler build-tool integration, and active framework integration.
+- [ ] RCMP-CK-PROJECT-01-02 — Every active non-default compiler option is recorded.
+- [ ] RCMP-CK-PROJECT-01-03 — Every active compiler option resolves to its owning configuration file.
+- [ ] RCMP-CK-PROJECT-01-04 — The applicable compiler, lint, build, test, and measurement command or method is known.
 
 ## Structure
 
-### RCMP-SC-STRUCTURE-01 — Edge case: Configuration does not equal coverage
+### RCMP-SC-STRUCTURE-01 — Normal case: Each affected function's coverage is established
 
-Candidate selection, compilation, and runtime gating are distinct. Treating a plugin or project switch as
-proof that every affected function is optimized fails the scenario.
+Candidate selection, compilation, and diagnostics decide whether a given component or Hook is optimized. The
+work should record that fact per function; a project-level judgment fails the scenario.
 
 #### Checklist
 
 - [ ] RCMP-CK-STRUCTURE-01-01 — The active `compilationMode` is recorded before function-level judgment.
 - [ ] RCMP-CK-STRUCTURE-01-02 — Each affected component or Hook is classified as compiled, skipped, failed, or not a candidate.
-- [ ] RCMP-CK-STRUCTURE-01-03 — Runtime gating is distinguished from the existence of compiled output.
-- [ ] RCMP-CK-STRUCTURE-01-04 — React compatibility settings match the project's supported React line.
-- [ ] RCMP-CK-STRUCTURE-01-05 — Each diagnostic resolves to its configuration, Rules-of-React, syntax, or library owner.
+- [ ] RCMP-CK-STRUCTURE-01-03 — Each diagnostic resolves to its configuration, Rules-of-React, syntax, or library owner.
+
+### RCMP-SC-STRUCTURE-02 — Edge case: Configuration is present but does not deliver coverage
+
+A configured compiler can still leave compiled output unselected at runtime, and a compatibility setting can
+target another React line. At that boundary the work should record what the configuration actually delivers.
+
+#### Checklist
+
+- [ ] RCMP-CK-STRUCTURE-02-01 — Runtime gating is distinguished from the existence of compiled output.
+- [ ] RCMP-CK-STRUCTURE-02-02 — React compatibility settings match the project's supported React line.
 
 ## Performance
 
@@ -49,14 +52,11 @@ claiming a gain without focused evidence fails the scenario.
 
 #### Checklist
 
-- [ ] RCMP-CK-PERFORMANCE-01-01 — Each performance claim names the measured interaction.
-- [ ] RCMP-CK-PERFORMANCE-01-02 — Each performance claim names its metric.
-- [ ] RCMP-CK-PERFORMANCE-01-03 — Each performance claim names its environment.
-- [ ] RCMP-CK-PERFORMANCE-01-04 — Each performance claim states a before-and-after result.
-- [ ] RCMP-CK-PERFORMANCE-01-05 — Existing manual memoization remains unless focused evidence supports changing it.
-- [ ] RCMP-CK-PERFORMANCE-01-06 — New manual memoization has a measured-work, required-identity, or documented-escape-hatch reason.
-- [ ] RCMP-CK-PERFORMANCE-01-07 — A compiler change preserves the affected behavior.
-- [ ] RCMP-CK-PERFORMANCE-01-08 — A compiler change preserves every required identity contract.
+- [ ] RCMP-CK-PERFORMANCE-01-01 — Each performance claim names the measured interaction, its metric, and its environment.
+- [ ] RCMP-CK-PERFORMANCE-01-02 — Each performance claim states a before-and-after result.
+- [ ] RCMP-CK-PERFORMANCE-01-03 — Existing manual memoization remains unless focused evidence supports changing it.
+- [ ] RCMP-CK-PERFORMANCE-01-04 — New manual memoization has a measured-work, required-identity, or documented-escape-hatch reason.
+- [ ] RCMP-CK-PERFORMANCE-01-05 — A compiler change preserves the affected behavior and every required identity contract.
 
 ## Aesthetics
 
@@ -67,9 +67,8 @@ or unexplained escape hatches fail the scenario.
 
 #### Checklist
 
-- [ ] RCMP-CK-AESTHETICS-01-01 — Every compiler option uses its installed documented name.
-- [ ] RCMP-CK-AESTHETICS-01-02 — Every compiler option uses its installed documented value shape.
-- [ ] RCMP-CK-AESTHETICS-01-03 — Each compiler annotation, directive, gate, or suppression states its bounded reason.
+- [ ] RCMP-CK-AESTHETICS-01-01 — Every compiler option uses its installed documented name and value shape.
+- [ ] RCMP-CK-AESTHETICS-01-02 — Each compiler annotation, directive, gate, or suppression states its bounded reason.
 
 ## Usage
 
@@ -94,10 +93,18 @@ the same final compiler state. Stale evidence fails the scenario.
 #### Checklist
 
 - [ ] RCMP-CK-CONSISTENCY-01-01 — Compiler configuration and lint configuration describe the same intended adoption mode.
-- [ ] RCMP-CK-CONSISTENCY-01-02 — Final lint evidence reports each affected function accurately.
-- [ ] RCMP-CK-CONSISTENCY-01-03 — Final build evidence reports each affected function accurately.
-- [ ] RCMP-CK-CONSISTENCY-01-04 — Final coverage evidence reports each affected function accurately.
-- [ ] RCMP-CK-CONSISTENCY-01-05 — Reported compiler evidence comes from the exact final tree.
+- [ ] RCMP-CK-CONSISTENCY-01-02 — Final lint, build, and coverage evidence each report every affected function accurately.
+- [ ] RCMP-CK-CONSISTENCY-01-03 — Reported compiler evidence comes from the exact final tree.
+
+### RCMP-SC-CONSISTENCY-02 — Adversarial: A silenced diagnostic manufactures a coverage claim
+
+A compiler or Hooks diagnostic can be suppressed, annotated away, or excluded so a function appears compiled.
+Suppression changes the report, not the coverage, so a claim built on it fails the scenario.
+
+#### Checklist
+
+- [ ] RCMP-CK-CONSISTENCY-02-01 — No diagnostic is suppressed, annotated, or excluded in order to present a function as compiled.
+- Also applies: RCMP-CK-USAGE-01-02 (every remaining uncovered function stays visible in the handoff).
 
 ## Risk
 
