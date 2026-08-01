@@ -1,21 +1,21 @@
 # Startup Topics
 
-This seed bank frames a Startup interview for a software project. Each bracketed alias identifies one
-question axis. The bank covers shared software concerns and concrete axes for web, desktop, mobile,
-command-line, library or SDK, service, data, and network projects.
+This question bank frames a Startup interview for a software project. Each bracketed name identifies one
+question. The bank covers shared software concerns and specific questions for web, desktop, mobile,
+command-line, library or software development kit, service, data, and network projects.
 
-The Startup operation owns question order, evidence handling, contextual adaptation, emergent questions,
-and Phase checkpoints. A conditional domain prompt matters only when project evidence activates it.
+The Startup operation owns question order, evidence handling, adaptation to the project, and any question
+this bank does not carry. A conditional question matters only when project evidence shows it applies.
 
 ## Contents
 
 1. [Phase 1 — Problem Definitions](#phase-1--problem-definitions)
    - [Topic 1 — Existing Reality and Evidence](#topic-1--existing-reality-and-evidence)
    - [Topic 2 — Problems, Causes, Outcomes, and Success](#topic-2--problems-causes-outcomes-and-success)
-   - [Topic 3 — People, Jobs, Alternatives, and Adoption](#topic-3--people-jobs-alternatives-and-adoption)
+   - [Topic 3 — People, Tasks, Alternatives, and Adoption](#topic-3--people-tasks-alternatives-and-adoption)
 2. [Phase 2 — Project Design](#phase-2--project-design)
    - [Topic 4 — Scope, Boundaries, External Contracts, and Non-goals](#topic-4--scope-boundaries-external-contracts-and-non-goals)
-   - [Topic 5 — Capabilities and Journeys](#topic-5--capabilities-and-journeys)
+   - [Topic 5 — Features and How Each Feature Runs](#topic-5--features-and-how-each-feature-runs)
    - [Topic 6 — Experience, Interfaces, and Accessibility](#topic-6--experience-interfaces-and-accessibility)
    - [Topic 7 — System Context and Data Direction](#topic-7--system-context-and-data-direction)
 3. [Phase 3 — Project Specification](#phase-3--project-specification)
@@ -34,13 +34,13 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 #### Software form and lifecycle
 
 - [software-type] What type of software, or combination of software types, will deliver the project's intended result?
-- [current-software] What kinds of software already exist for this project?
+- [other-software] Which software made by others, if any, already addresses this problem?
 - [lifecycle-stage] What stage is the project in now—for example, idea, prototype, active development, released, or maintenance?
 - [prior-attempt] What happened in the most recent prior attempt, if any, to solve this problem?
 
 #### Evidence source
 
-- [project-source-of-truth] When project sources disagree, which source has final authority over the project's current purpose and direction?
+- [authoritative-project-source] When project sources disagree, which source has final authority over the project's current purpose and direction?
 
 ### Topic 2 — Problems, Causes, Outcomes, and Success
 
@@ -69,30 +69,30 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [durable-outcome] What result for users or consumers must remain true even if the software is rebuilt in a different way?
 - [current-baseline] What can be observed or measured now as the starting point for later comparison?
 - [success-signal] What measurable real-world change would show that the project achieved its intended result?
-- [false-success] What technical result could meet the stated requirements but still fail users or the project's intended result?
+- [misleading-success] What technical result could meet the stated requirements but still fail users or the project's intended result?
 - [stop-evidence] What evidence would show that the project should stop pursuing its intended result?
 
-### Topic 3 — People, Jobs, Alternatives, and Adoption
+### Topic 3 — People, Tasks, Alternatives, and Adoption
 
-#### People and jobs
+#### People and their tasks
 
 - [first-user] Which person, group, or external system should benefit from or consume the software's result first?
 - [affected-people] Who, if anyone, could be significantly affected by the software or its results without using it directly?
 - [excluded-people] Which people or consumers are intentionally outside the project's current target group?
-- [primary-job] What important task or goal is the first user trying to complete?
-- [job-context] In what real situation does the first user need to complete that task?
-- [job-failure] What happens to the first user when they cannot complete that task?
+- [main-task] What important task or goal is the first user trying to complete?
+- [task-situation] In what real situation does the first user need to complete that task?
+- [task-failure-cost] What happens to the first user when they cannot complete that task?
 
 #### Alternatives and adoption
 
-- [current-alternative] How does the first user complete that task today without the proposed software?
-- [alternative-breakdown] Which part of the current approach prevents or delays completion of the task?
-- [switch-push] What problem with the current approach would motivate the user to stop relying on it?
-- [switch-pull] What benefit of the proposed software would motivate the user to try it?
-- [switch-anxiety] What concern could prevent the user from trying or adopting the proposed software?
-- [switch-habit] What existing habit or workflow makes the current approach difficult to replace?
+- [current-alternative] What steps does the first user personally take today to complete that task without the proposed software?
+- [alternative-obstacle] Which part of the current approach prevents or delays completion of the task?
+- [reason-to-leave] What problem with the current approach would motivate the user to stop relying on it?
+- [reason-to-adopt] What benefit of the proposed software would motivate the user to try it?
+- [adoption-concern] What concern could prevent the user from trying or adopting the proposed software?
+- [established-habit] What existing habit or workflow makes the current approach difficult to replace?
 - [adoption-evidence] What action, if any, has the user already taken that shows a willingness to change from the current approach?
-- [value-advantage] Which result must the proposed software improve compared with the user's current approach?
+- [required-improvement] Which result must the proposed software improve compared with the user's current approach?
 
 ## Phase 2 — Project Design
 
@@ -117,22 +117,22 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [scope-change-evidence] What evidence would justify adding work that is currently outside the project's scope?
 - [irreversible-boundary] Which decision about the project's scope or responsibilities would be most costly to change later?
 
-### Topic 5 — Capabilities and Journeys
+### Topic 5 — Features and How Each Feature Runs
 
-#### Capability shape
+#### Feature set
 
+- [feature-list] Which named features must the software provide for the people or systems that will use it?
 - [minimum-complete-capability] What is the smallest complete software capability that lets a user or consumer complete a useful task?
-- [capability-prerequisite] What must already exist or be true before the next planned software function can work?
 
-#### Primary journey
+#### Each named feature
 
-- [journey-trigger] Which user action, system event, or scheduled event starts the main task that the software must support?
-- [journey-completion] What can a user or connected system observe to know that the main task finished successfully?
-- [journey-handoff] At what point in the main task does responsibility pass to another person or system?
+Ask the questions below once for each feature named in [feature-list].
 
-#### Failure priority
-
-- [highest-cost-failure] Which failure during the main task would have the greatest consequence?
+- [feature-prerequisite] What must already exist or be true before this feature can work?
+- [feature-start] Which user action, system event, or scheduled event starts this feature?
+- [feature-finish] What can a user or connected system observe to know that this feature finished its work successfully?
+- [feature-handoff] At what point in this feature does responsibility pass to another person or system?
+- [feature-worst-failure] Which failure during this feature would have the greatest consequence?
 
 ### Topic 6 — Experience, Interfaces, and Accessibility
 
@@ -182,12 +182,11 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 - [runtime-units] Which major parts of the system run independently—for example, an application, service, background worker, or scheduled job?
 - [unit-responsibility] For each independently running part of the system, what responsibility does it own?
-
 - [primary-runtime-path] When the system produces its main result, which running components handle the work from start to finish?
 - [background-path] Which work that runs without a user waiting for it must succeed for the final result to be correct?
 - [failure-containment] Which part of the system must prevent one failure from affecting other parts or users?
-- [retry-semantics] Which failed operation may be tried again without producing an incorrect or unsafe result?
-- [idempotency-boundary] Which operation must have the same end result when the same request is performed more than once?
+- [safe-retry] Which failed operation may be tried again without producing an incorrect or unsafe result?
+- [same-result-on-repeat] Which operation must have the same end result when the same request is performed more than once?
 - [runtime-recovery] After a runtime failure, which system state must be restored before normal work can continue?
 
 #### Failure contracts
@@ -208,9 +207,9 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [data-export-contract] When the project exports data, which formats, fields, meanings, or behaviors must remain compatible for consumers?
 - [data-lineage] For which data must the project be able to trace its source and every transformation that produced the current result?
 
-#### Conditional data-engineering axes
+#### Conditional data-engineering questions
 
-- [data-time-semantics] When data has multiple timestamps—for example, when an event happened and when it arrived—which timestamp must calculations use?
+- [data-timestamp-choice] When data has multiple timestamps—for example, when an event happened and when it arrived—which timestamp must calculations use?
 - [data-ordering] Which records or events must be processed in a particular order for the result to be correct?
 - [data-lateness] When data arrives after a result has already been produced, how, if at all, should that result change?
 - [data-duplicates] Which input records may be delivered more than once without making the result incorrect?
@@ -218,9 +217,9 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [data-backfill] When missing or corrected historical data is processed later, which previously produced result may change?
 - [data-freshness] What signal tells a data consumer whether the data is recent enough to use?
 
-#### Conditional network-engineering axes
+#### Conditional network-engineering questions
 
-- [network-intended-state] Which configuration or system is the source of truth for how the network is supposed to be configured?
+- [network-intended-state] Which configuration or system has final authority over how the network is supposed to be configured?
 - [network-liveness] Which signal shows that a network component is still running and responding?
 - [network-convergence] After a network change, what observable condition shows that all affected components have reached the intended state?
 - [network-reconciliation] When the network's actual state differs from its intended configuration, how should the project bring them back into agreement?
@@ -237,8 +236,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [data-stores] Which databases or other data stores must future work keep using or remain compatible with?
 - [supported-versions] For each required technology, which versions must the project support, and for how long?
 - [hard-stack-constraint] Which technology choice is mandatory rather than a preference?
-- [tech-stack] Which combination of technologies—for example, languages, frameworks, execution runtimes, and data stores—should future work use?
-- [stack-change-evidence] What evidence would show that the chosen technology stack no longer fits the project?
+- [stack-change-evidence] What evidence would show that the project's chosen programming languages, frameworks, runtimes, or data stores no longer fit the project?
 
 #### Dependencies and platform fit
 
@@ -273,7 +271,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [desktop-target-os] Which desktop operating systems and versions must the application support, and for how long?
 - [mobile-target-os] Which mobile operating systems and versions must the application support, and for how long?
 
-#### Conditional command-line, library, and SDK contracts
+#### Conditional command-line, library, and software development kit contracts
 
 - [cli-invocation-contract] Which command names, arguments, options, and input behaviors must remain compatible for existing users or scripts?
 - [cli-machine-output] Which command output formats are read by scripts or other automation?
@@ -294,7 +292,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 #### Environments and release
 
 - [environment-model] Which differences among the project's operating environments—for example, development, test, staging, or production—can change the software's behavior or risk?
-- [configuration-source] Which file, service, or system is the source of truth for configuration used while the software is running?
+- [configuration-source] Which file, service, or system has final authority over the configuration used while the software is running?
 - [runtime-restriction] Which operating restriction, such as limited network access, local deployment, or regional limits, changes what the software must support?
 - [release-channel] How do the intended users or connected systems receive a release?
 - [deployment-method] How is a released version installed or deployed into the environment where it will run?
@@ -307,7 +305,7 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 
 - [consumer-indicator] What user- or consumer-visible measurement shows whether the running software is delivering its intended result?
 - [service-objective] Which behavior visible to service consumers needs a measurable reliability target, such as availability or successful responses?
-- [service-workload-envelope] What range and pattern of requests or jobs must the service handle correctly?
+- [service-workload-range] What range and pattern of requests or jobs must the service handle correctly?
 - [diagnostic-evidence] When the software fails, which logs, metrics, traces, or other records must be available to determine what happened?
 - [operational-runbook] Which high-risk operating task needs written, tested step-by-step instructions?
 
@@ -332,14 +330,14 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [user-validation] Which claim about user behavior or experience must be tested with people representative of the intended users?
 - [maintenance-scenario] Which realistic future change should a new maintainer be able to complete to show that the project can be maintained?
 
-#### Conditional delivery axes
+#### Conditional delivery questions
 
 - [desktop-install] How is a desktop application installed?
 - [desktop-update] How is a desktop application updated?
-- [desktop-signing] Which code-signing or platform-notarization checks must the desktop release pass before distribution?
+- [desktop-release-approval] Which approval steps must the desktop release pass before an operating system installs it without a security warning—for example, attaching a verified publisher identity to the installer or submitting the build to the platform vendor for review?
 - [mobile-distribution] Through which application store, enterprise channel, or direct method will the mobile application be distributed?
 - [package-distribution] Which package registry or installation channel will distribute the command-line tool, library, or software development kit?
-- [data-pipeline-health] What observable signal shows that a data pipeline's output is usable by its consumers?
+- [data-processing-health] What observable signal shows that the output of the project's scheduled or continuous data processing is complete and correct enough for its consumers to use?
 - [network-deployment] During deployment, how can new network behavior operate safely while devices or peers still use the previous behavior?
 - [network-diagnostics] Which operational data must an engineer be able to collect without interrupting network service?
 
@@ -413,9 +411,9 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [live-example] Which current file or module is the authoritative example of the project's conventions?
 - [counterexample] Which locally common pattern, if any, is misleading and should not be copied?
 
-#### Idioms, rules, and mistakes
+#### Deliberate patterns, rules, and mistakes
 
-- [intentional-idiom] Which unusual-looking pattern in this project is deliberate and should be preserved?
+- [deliberate-pattern] Which unusual-looking pattern in this project is deliberate and should be preserved?
 - [binding-rule] Which project rule is mandatory rather than preferred?
 - [recurring-mistake] What project-specific mistake, if any, do contributors or agents repeatedly make?
 - [corrected-approach] What approved approach should contributors use instead of the project's misleading local pattern?
@@ -437,5 +435,5 @@ and Phase checkpoints. A conditional domain prompt matters only when project evi
 - [primary-maintainer] Who owns ongoing maintenance of the software?
 - [backup-maintainer] Who can continue maintenance when the primary maintainer is unavailable?
 - [hidden-knowledge] Which essential project task or decision depends on knowledge held by only one person?
-- [lifecycle-exit-trigger] What evidence would justify ending active maintenance of the software?
+- [maintenance-end-evidence] What evidence would justify ending active maintenance of the software?
 - [continuity-documentation] Which document must another maintainer be able to follow to continue the project without the current maintainer?

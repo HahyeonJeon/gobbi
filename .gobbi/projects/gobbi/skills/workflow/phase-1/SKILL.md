@@ -113,13 +113,6 @@ whose completion cannot be proved.
 - Load the [Ideation](../../ideation/SKILL.md) skill and give the leader the user's request, prior decisions,
   applicable project rules, durable memory, repository evidence, prior art, constraints, risks, and recovery
   needs.
-- When Startup was accepted and produced a confirmed set, validate the project, session, and iteration
-  identity, `confirmed` status, completion checks, and complete brief register in
-  `1-ideation/working/iteration-{n}/research/startup-design-brief-index.md`. The manager and leader must read
-  that index and every listed subject brief before freezing the Ideation contract and before dual-system
-  WORK. Do not import `startup-interview.tmp.md`; treat the confirmed set only as Startup design evidence
-  inputs, never as an Ideation output, evaluated design, session memory record, implementation plan, or
-  durable-memory artifact.
 - Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
   1.3 fields. Include the phase, TODO, stage, iteration, scope, expected artifact, authority, and accepted
   findings.

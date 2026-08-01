@@ -204,13 +204,6 @@ SKILLS LOADED:
   [Ideation skill](../ideation/SKILL.md) before DISCUSSION. Load the
   [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
   [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
-- When Startup was accepted and produced a confirmed set, validate the project, session, and iteration
-  identity, `confirmed` status, completion checks, and complete brief register in
-  `1-ideation/working/iteration-{n}/research/startup-design-brief-index.md`. The manager and leader must read
-  that index and every listed subject brief before freezing the Ideation contract and before dual-system
-  WORK. Do not import `startup-interview.tmp.md`; treat the confirmed set only as Startup design evidence
-  inputs, never as an Ideation output, evaluated design, session memory record, implementation plan, or
-  durable-memory artifact.
 - In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
   material assumptions, alternatives, authority, and deferrals with the user. Freeze the neutral contract
   only when the user has locked the direction and each material unknown has an owner or decision.

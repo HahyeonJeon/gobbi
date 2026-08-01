@@ -36,8 +36,8 @@ Load per phase:
 - **Study** → `study` skill.
 - **Planning** → `planning` skill.
 
-Load when relevant: `startup` (when Ideation needs structured, evidence-backed software-project interviewing
-and design-brief elicitation). When the work touches runtime docs or agents, read the active surfaces directly
+Load when relevant: `startup` (when the brief calls for a software-project design interview). When the work
+touches runtime docs or agents, read the active surfaces directly
 (`.claude/` for Claude Code; `.agents/`, `.codex/`, and `plugins/gobbi/` for Codex) and load the skill that
 owns the surface — [`skill-writing`](../skills/skill-writing/SKILL.md),
 [`agent-writing`](../skills/agent-writing/SKILL.md), or
