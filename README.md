@@ -132,9 +132,6 @@ agents. It is intentionally hookless. Native Codex role wrappers remain repo-loc
 If an installed Codex cache omits a symlinked component, report the installer limitation and keep the source
 package symlinked.
 
-The new-session contract is intentionally strict, and the package version alone does not describe it. Read
-the [migration guide](MIGRATION.md) before resuming work created by an earlier Gobbi revision.
-
 ## Verify this checkout
 
 ```bash

@@ -32,11 +32,3 @@ packages/*/node_modules/
 # `.gobbi/projects/gobbi/{skills,agents,rules}/`; this copy only exists
 # so `npm pack` can ship it inside the tarball.
 packages/cli/.gobbi/
-
-# TypeScript example-verification harness (examples/typescript/). The harness
-# installs `typescript` as a local devDep to type-check the skill's fenced ts
-# examples; its node_modules / bun cache are never committed and must never be
-# mirrored into .claude/.agents/plugins. (node_modules/ above already matches
-# this by name; these lines are explicit + scoped for the harness surface.)
-examples/typescript/node_modules/
-examples/typescript/.bun/
