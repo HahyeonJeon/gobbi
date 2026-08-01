@@ -28,6 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PR-FIN-1b — CFG-24..28 integration tests: `gobbi config env` stdin-only, stdin+native passthrough, TTY silent exit, `$CLAUDE_ENV_FILE` unset WARN, and idempotent repeat-invocation. (#216)
 - PR-FIN-1b — HOOK-1..6 integration tests: `gobbi hook session-start` chain (env file + session dir), `gobbi hook pre-tool-use` guard fail-open, generic stub session-end, unknown subcommand exit 1, `--help` lists all 28, end-to-end SessionStart payload materialisation. (#216)
 
+- Domain skills — Seven children renamed to the capability-naming standard. Each is breaking for any consumer holding a child path, because `plugins/gobbi/` distributes these skills: `web/web-convention` to `web/web-topology`, `react/react-server-client` to `react/react-server`, `html/html-authoring` to `html/html-development`, `typescript/typescript-compiler` to `typescript/typescript-toolchain`, `desktop/desktop-platform` to `desktop/desktop-contract`, `electron/electron-test` to `electron/electron-testing`, and `electron/electron-convention` to `electron/electron-design`.
+- Domain skills — Two `css` children merged and their paths retired, also breaking for a consumer holding either path: `css/css-review` into `css/css-development`, and `css/css-constraints` into `css/css-conventions`.
+- Domain skills — Added the child capability naming standard to `skill-writing/domain-skill.md`, and widened the reserved definition of a `conventions` child. The seven renames and two merges follow it.
+- Domain skills — `evaluation/checklist/SKILL.md` amended: row splitting is bounded against set fan-out, reuse renders as an `Also applies` line, scenarios cap at six rows, and a per-source ceiling was added and then raised from fifty to fifty-three once the atomicity rule made every compound row atomic.
+- Domain skills — The absorbed user-evidence obligation is a risk-triggered threshold, not the unconditional gate the removed `ui` and `ux` skills carried. This is a deliberate reduction in force decided by the user, not equivalent absorption.
+
 - PR-FIN-1c — `GitSettings` reshaped: `mode`/`workflow`/`cleanup` sub-objects removed; flat shape with per-concern sub-objects (`baseBranch`, `issue.create`, `worktree.autoRemove`, `branch.autoRemove`, `pr.open`, `pr.draft`). Worktrees always created; PR and issue creation are independent opt-in fields. Cross-field check updated to `pr.open=true` requires `baseBranch !== null`; check exempts DEFAULTS-only case (fresh repos). `ProjectsRegistry` interface and `Settings.projects` field removed; project resolution is `basename(repoRoot)` + `--project` flag. `gobbi project list` runs filesystem scan; `gobbi project switch` removed. T2-v1 upgrader extended to also handle Pass-3-current-shape files in place. Workspace seed simplified to `{schemaVersion: 1}`. Closes #179, #212. (#212)
 
 ### Added
@@ -36,6 +42,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Wave B.1 — JIT step-completion footer data-driven: `blocks.footer` field in step specs, `_schema/v1.ts::StepBlocks`, JSON Schema mirror in `_schema/v1.json`, `assembly.ts::renderSpec` pipeline, footer snap tests, operator/agent verb-partition enforcement (#153, #154)
 - Wave A.2 — 9-doc reconciliation: stub-redirect files for retired `deterministic-orchestration.md` and `just-in-time-prompt-injection.md`, reconciled `v050-prompts.md`, `v050-hooks.md`, `v050-cli.md`, `v050-session.md` to post-Wave-A.1 reality (#150, #151)
 - Wave A.1 — Orchestration core: schema v6, `step.advancement.observed` audit event, explicit `EventStore` partition-key constructor params, WAL checkpoint after `workflow.step.exit`, handoff state-machine step (`specs/handoff/spec.json`), `gobbi maintenance migrate-state-db` + `restore-state-db`, memorization path-pointer manifest, `.gobbi/gobbi.db` git-tracked via `.gitignore` exception, 10 Wave A.1 integration tests (#146, #147)
+
+- Domain skills — Nine children covering gaps the eight families left open: `css/css-motion`, `web/web-interaction`, `web/web-observability`, `web/web-configuration`, `web/web-deployment`, `web/web-localization`, `web/web-interface`, `desktop/desktop-architecture`, and `desktop/desktop-interface`. The two interface children host the surface obligations absorbed from `ui` and `ux`.
+- Domain skills — An unchecked `checklists.md` evaluation source for every child across the `css`, `desktop`, `electron`, `go`, `html`, `react`, `typescript`, and `web` families: 52 sources carrying 2,115 rows under the `Perspective → Scenario → Checklist rows` hierarchy.
+
+### Removed
+
+- Domain skills — Removed the cross-surface `ui` and `ux` parent skills. Their obligations were absorbed into the seven target families and the two new interface children first; the skills were deleted only after absorption.
+- Domain skills — Command-line, voice, and mobile interface and experience design have no owner after the `ui` and `ux` removal. No target family hosts those surfaces, so each is recorded as a deferred gap rather than a covered one. `react/SKILL.md` already states that React Native needs project-specific guidance.
 
 ## [0.5.3] - 2026-07-19
 
