@@ -1,33 +1,20 @@
-# Agent Teams
+# Agent Teams in Workflow
 
-This document owns persistent-specialist scheduling and recovery for runtimes that support it. Persistent
-specialists improve continuity but do not change routing, authority, assignment shape, independence, evidence,
-or one-writer rules.
+This document owns only what Workflow adds to persistent-specialist scheduling: TODO-based assignment, the
+evidence walk that rebuilds a route after a context boundary, and Phase 2 and Phase 3 continuity. It does not
+own the teammate mechanism. [`gobbi/agent-teams/SKILL.md`](../gobbi/agent-teams/SKILL.md) owns that mechanism
+for every mode — preflight, spawn, acknowledgement, the single writer chain, reuse, continuation, replacement,
+and lifecycle close. Workflow is one caller of that operation and supplies its five adapter inputs. A reader
+looking for how a teammate is spawned, continued, or replaced is in the wrong file.
 
 Build every fresh or continued brief through the [Delegation](../delegation/SKILL.md) skill with the
-workflow-specific fields in [`SKILL.md` Step 1.3](SKILL.md#13-build-and-accept-specialist-assignments). Native
-Codex uses the matching repository custom-agent role; Claude Code may retain addressable teammates when its
-runtime supports them.
-
-## Roster
-
-The manager is the sole assignment creator, dispatcher, and TODO owner.
-
-Start these specialists lazily:
-
-| Role | Reuse boundary |
-|---|---|
-| leader | A coherent Ideation or Planning chain |
-| executor | Related ordered tasks in one subsystem |
-| assistant | A coherent narrow support or memorization chain |
-
-Evaluators are always fresh and never join a persistent team.
+workflow-specific fields in [`SKILL.md` Step 1.3](SKILL.md#13-build-and-accept-specialist-assignments).
 
 ## TODO-based assignment
 
 The parent Workflow Step 1.3 owns assignment metadata and the response prefix. This document owns only how
-those assignments are scheduled, acknowledged, continued, replaced, and recovered, including addressability
-and idle-state checks. Workflow Step 1.3 alone owns report validation and manager acceptance.
+those assignments move along the TODO route. Workflow Step 1.3 alone owns report validation and manager
+acceptance.
 
 The manager creates, retitles, reorders, and completes TODO items. Specialists may report progress but cannot
 self-claim, reassign, or change progression.
@@ -39,75 +26,10 @@ revision creates a new iteration item rather than erasing the completed pass.
 A task status is scheduling information and never establishes acceptance; Workflow Step 1.3 decides whether
 the report may advance the TODO.
 
-## Allowed concurrency
-
-Parallel work is limited to independent read-only:
-
-- study;
-- factual investigation;
-- competing hypotheses;
-- test interpretation; and
-- critique.
-
-All worktree, record, Git, TODO, and external-system mutations use one ordered writer chain. The manager rejects
-a dispatch that overlaps another writer.
-
-## Direct messages
-
-Specialists may exchange only assigned facts, research results, and critique.
-
-They may not:
-
-- change scope;
-- decide for the user;
-- accept or reassign work;
-- change the TODO route;
-- authorize destructive or external action; or
-- turn an evaluator into a persistent teammate.
-
-Material disagreement returns to the manager. During Phase 2 and Phase 3, the manager resolves routine
-in-contract disagreements from evidence and escalates only a critical blocker.
-
-## Assignment handshake
-
-Use this order:
-
-1. The manager creates a stable assignment through the Delegation skill and parent Workflow Step 1.3.
-2. A persistent specialist acknowledges the assignment ID, scope, and expected artifact.
-3. The specialist performs the bounded work and returns the required status.
-4. The manager applies Workflow Step 1.3 to the report and the TODO transition.
-5. After acceptance, the manager confirms idle and addressable state when reuse is planned.
-6. The next assignment starts only after the prior assignment closes.
-
-An idle notification or lagging task status proves neither success nor failure.
-
-## Continuation and replacement
-
-Continue a specialist only when all of these remain coherent:
-
-- role;
-- scope;
-- subsystem;
-- dependency chain;
-- authority;
-- loaded context;
-- write boundary; and
-- addressability.
-
-Replace the specialist after:
-
-- role or subsystem change;
-- context drift;
-- failed or malformed work;
-- lost addressability;
-- protected-work conflict; or
-- a fresh-independence requirement.
-
-There is no arbitrary task-count limit. Evidence of coherent context decides reuse.
-
 ## Context-boundary recovery
 
-After compact, clear, resume, rewind, lost TODO data, or another context boundary:
+After compact, clear, resume, rewind, lost TODO data, or another context boundary, walk Workflow's own
+evidence:
 
 1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
 2. Inspect the native runtime TODO list when it survives.
@@ -119,8 +41,6 @@ After compact, clear, resume, rewind, lost TODO data, or another context boundar
    verification, and commit all pass.
 6. Create or correct the exact first unproved item and make it the only `in_progress` item.
 7. Leave every later item `pending`.
-8. Verify any surviving specialist's identity, assignment, addressability, and idle state.
-9. Continue that specialist only when every check agrees; otherwise start a fully primed replacement.
 
 Evidence is used to reconstruct a missing or incorrect native list, then the native list resumes sole routing.
 It does not operate as a parallel live route.
@@ -129,8 +49,12 @@ When evidence is incomplete or contradictory, select the earliest safe unproved 
 idempotent checks or work. Stop as a critical blocker when repetition could duplicate an unsafe effect or the
 conflict cannot be resolved inside existing authority.
 
-Do not infer specialist survival from a name or task entry. The latest Hand-off supplies phase, branch,
-worktree, next TODO, and continuation mode; the accepted plan supplies Execution order.
+The latest Hand-off supplies phase, branch, worktree, next TODO, and continuation mode; the accepted plan
+supplies Execution order.
+
+Whether a specialist survived the boundary is decided elsewhere.
+[`gobbi/agent-teams/SKILL.md` Step 4.2](../gobbi/agent-teams/SKILL.md#42-recover-after-a-context-boundary)
+owns that check, and this walk produces the recovery evidence set Workflow hands it.
 
 ## Phase 2 and Phase 3 continuity
 
@@ -154,20 +78,10 @@ protected paths supplied under Workflow Step 1.3.
 Before dispatch or reuse, the manager verifies that the branch and worktree still match the assignment and
 that no writer overlaps. Workflow Step 1.3 owns report and artifact validation.
 
-## Reuse readiness
-
-A persistent specialist is eligible for another assignment only after Workflow Step 1.3 accepts the prior
-report and all of these scheduling conditions hold:
-
-- the specialist is idle and addressable;
-- role, scope, subsystem, dependency chain, authority, loaded context, and write boundary remain coherent; and
-- the next assignment has a new assignment ID and no overlapping writer.
-
-Runtime scheduling supports the workflow. It never replaces Workflow Step 1.3 acceptance, evidence, or manager
-authority.
-
 ## References
 
+- [`gobbi/agent-teams/SKILL.md`](../gobbi/agent-teams/SKILL.md) owns the mode-neutral teammate operation this
+  document adapts.
 - [Delegation](../delegation/SKILL.md) owns the generic assignment shape.
 - [`SKILL.md`](SKILL.md) owns routing, phase continuity, and blocker policy.
 - [`phase-1/SKILL.md`](phase-1/SKILL.md), [`phase-2/SKILL.md`](phase-2/SKILL.md), and
