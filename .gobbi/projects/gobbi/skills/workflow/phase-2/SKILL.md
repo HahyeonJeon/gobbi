@@ -100,7 +100,7 @@ plan, task, receipt, or commit.
 
 #### 1.3 Produce and validate the plan
 
-- Give independent Claude and Codex leaders the same frozen Planning contract and immutable evidence.
+- Give each run of the leader draft round the same frozen Planning contract and immutable evidence.
 - Freeze and verify both system-labeled proposals before reciprocal review. Dispatch each cross-review as a
   later, separate operation and freeze both reviews.
 - Let the active runtime leader synthesize the canonical candidate with:
@@ -118,8 +118,8 @@ plan, task, receipt, or commit.
 
 #### 1.4 Evaluate, record, and expand the task route
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh Claude evaluator and one fresh
-  Codex evaluator. Neither sees the other report.
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh evaluators, one from the active
+  runtime and one from the partner system. Neither sees the other report.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
 - Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
 - Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
@@ -175,12 +175,12 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.4 Produce, implement, verify, and commit
 
-- Give one Claude contributor and one Codex contributor the same task contract and frozen worktree preimage.
+- Give each run of the contributor draft round the same task contract and frozen worktree preimage.
 - Freeze and verify both independent proposals. Run reciprocal cross-review only after both proposals freeze,
   then freeze both reviews.
 - Give the active runtime executor all four frozen inputs. Let that executor synthesize and implement as the
   sole worktree writer.
-- Keep peer processes and read-only helpers from mutating the worktree, TODO route, external systems, scope, or
+- Keep partner runs and read-only helpers from mutating the worktree, TODO route, external systems, scope, or
   user decisions.
 - Run the task's required verification and review the complete diff against allowed and protected paths.
 - Create one focused local task commit. Reread the commit, diff, checks, and complete creation package before
@@ -213,11 +213,14 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 - On FAIL or an exhausted cap, preserve the route, evidence, branch, worktree, and recovery choices. Try every
   safe in-contract recovery before stopping at the critical-blocker boundary.
 
-#### 2.7 Recover a failed system or specialist
+#### 2.7 Recover a failed partner run or specialist
 
-- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check.
-- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist with a fully
-  primed fresh specialist.
+- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
+  [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
+  step decides what the workflow does with the paused round.
+- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist through the
+  [Agent Teams](../../gobbi/agent-teams/SKILL.md) operation, which owns continuation, replacement, and
+  context-boundary recovery.
 - Continue only after the missing output validates. Use a single-system waiver only when existing authority
   names the system, productive step, and iteration.
 - Treat an unavailable required system without that waiver as a critical blocker. Never replay a possibly

@@ -133,12 +133,11 @@ whose completion cannot be proved.
 
 #### 2.2 Produce and validate independent work
 
-- Give independent Claude and Codex leaders the same neutral contract, immutable inputs, exact paths,
+- Give each run of the leader draft round the same neutral contract, immutable inputs, exact paths,
   assignment identity, and verification criteria.
 - Keep the two authors isolated. Freeze and verify both system-labeled drafts before either author or reviewer
   receives the other draft.
-- Dispatch Claude-on-Codex and Codex-on-Claude review as later, separate operations. Freeze and verify both
-  reciprocal reviews.
+- Dispatch each reciprocal cross-review as a later, separate operation. Freeze and verify both reviews.
 - Give the active runtime leader the contract, both drafts, and both cross-reviews. Require a canonical
   synthesis and a complete material-decision ledger.
 - Resolve every remaining user-owned conflict with the user before EVALUATION. Agents may resolve only
@@ -151,8 +150,9 @@ whose completion cannot be proved.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh Claude evaluator and one fresh
-  Codex evaluator. Neither may be a creator, persistent teammate, or recipient of the other report.
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh evaluators, one from the active
+  runtime and one from the partner system. Neither may be a creator, persistent teammate, or recipient of the
+  other report.
 - Give both evaluators the neutral contract, both drafts, both reciprocal reviews, synthesis, decisions,
   settings, authority, project evidence, and named check results.
 - Require complete but concise coverage of Project, Structure, Performance, Aesthetics, Usage, Consistency,
@@ -179,11 +179,14 @@ whose completion cannot be proved.
   critical choices. Never create iteration 3.
 - On PASS, retitle the active item to PASS, complete it, and activate `P1 · Hand-off`.
 
-#### 2.5 Recover a failed system or specialist
+#### 2.5 Recover a failed partner run or specialist
 
-- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check.
-- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist with a fully
-  primed fresh specialist.
+- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
+  [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
+  step decides what the workflow does with the paused round.
+- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist through the
+  [Agent Teams](../../gobbi/agent-teams/SKILL.md) operation, which owns continuation, replacement, and
+  context-boundary recovery.
 - Continue only after the missing output validates. Use a single-system waiver only when existing authority
   names the system, productive step, and iteration.
 - Treat an unavailable required system without that waiver as a critical blocker. Never infer a frozen draft,

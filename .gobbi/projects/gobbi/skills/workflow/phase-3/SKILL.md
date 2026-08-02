@@ -98,7 +98,7 @@ from direct evidence without changing the handoff.
 
 #### 2.1 Produce and cross-review closure drafts
 
-- Give independent Claude and Codex specialists the same frozen contract and immutable evidence. Require
+- Give each run of the specialist draft round the same frozen contract and immutable evidence. Require
   system-labeled Memory-and-handoff drafts that include the complete expected path set and verification.
 - Freeze and verify both drafts before reciprocal review. Run both cross-reviews as later isolated operations,
   then give the active runtime specialist the contract, drafts, and reviews for synthesis.
@@ -119,8 +119,9 @@ from direct evidence without changing the handoff.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load [Evaluation](../../evaluation/SKILL.md) and dispatch one fresh Claude evaluator and one fresh Codex
-  evaluator. Neither may be a creator, persistent teammate, or recipient of the other report.
+- Load [Evaluation](../../evaluation/SKILL.md) and dispatch two fresh evaluators, one from the active runtime
+  and one from the partner system. Neither may be a creator, persistent teammate, or recipient of the other
+  report.
 - Give both the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
   task commits, checks, finalization intent, authority, exclusions, risks, and retained recovery paths.
 - Require Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage with the
@@ -139,6 +140,20 @@ from direct evidence without changing the handoff.
   iteration.
 - On PASS, write and verify canonical closure evidence and retitle the Wrap-up item to PASS. Keep it active
   through authorized Git finalization; do not activate `P3 · Hand-off` yet.
+
+#### 2.5 Recover a failed partner run or specialist
+
+- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
+  [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
+  step decides what the workflow does with the paused round.
+- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist through the
+  [Agent Teams](../../gobbi/agent-teams/SKILL.md) operation, which owns continuation, replacement, and
+  context-boundary recovery.
+- Continue only after the missing output validates. Use a single-system waiver only when existing authority
+  names the system, productive step, and iteration.
+- Treat an unavailable required system without that waiver as a critical blocker. Never let recovery change the
+  frozen pre-Git tree or the tracked handoff bytes; a tracked mutation returns to Step 2.2 and repeats the
+  complete review.
 
 ### Phase 3 — Finalize and finish
 
@@ -176,7 +191,7 @@ from direct evidence without changing the handoff.
 ## References
 
 - [Parent Workflow](../SKILL.md) owns native TODO routing, shared evidence, assignment additions, gates, and
-  dual-system coordination.
+  partner-round coordination.
 - [Wrap-up](../../wrap-up/SKILL.md) owns shared terminal Memory, Git, handoff, display, and recovery order.
 - [Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked operator brief and display-only Git receipt.
 - [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md),
