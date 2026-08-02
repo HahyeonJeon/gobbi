@@ -1,183 +1,205 @@
 ---
 name: codex
-description: Use for native Codex entry surfaces or a structured read-only Codex/Claude peer process.
+description: "MUST load when using the Codex command-line interface or locating Gobbi inside a native Codex session. Codex is a tool skill for the installed `codex` surface, its sandbox, configuration, and plugin controls, and this repository's Codex entry points."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
 
 # Codex
 
-Use this skill to locate Gobbi in native Codex or to invoke one opposite-system command-line peer for a draft, cross-review, or evaluation report. It documents the installed Codex and Claude non-interactive surfaces and the wrapper boundary around them.
+Use this skill to work the Codex command-line interface and to locate Gobbi inside a native Codex session. It
+covers the installed `codex` surface a Gobbi agent reaches for: non-interactive runs, sandbox and approval
+controls, configuration, role wrappers, plugin installation, and diagnosis.
 
-Gobbi workflow order, specialist authority, and finding policy remain with their own skills. This tool never chooses scope, a waiver, a finding disposition, a model, or a workflow route.
+The subject is the `codex` binary and this repository's Codex entry points, and nothing wider.
+[`partner`](../gobbi/partner/SKILL.md) owns every partner round and its launch, envelope, validation, and
+failure handling in both directions. [`claude-plugin`](../claude-plugin/SKILL.md) owns the shared package and
+its manifests. [`gobbi`](../gobbi/SKILL.md) owns the session entry and the root derivation. This skill runs
+nothing on its own and selects no scope, model, route, or waiver.
+
+Every command, flag, and status below was verified against Codex CLI 0.146.0 on Linux. Codex changes quickly,
+so `codex --version` and `codex <command> --help` from the installed binary settle any disagreement with this
+document.
 
 ## Principles
 
 ### Keep Gobbi identity separate from runtime identity
 
-The Gobbi-owned UUID names the session, branch, and worktree. A Codex thread ID or peer-process identity is runtime evidence only. A context boundary may attach a newly observed runtime ID without changing the Gobbi session ID.
+The Gobbi-owned UUID names the session, branch, and worktree. A Codex thread or session identity is runtime
+evidence about one process and never renames the session it runs inside.
 
-### Give every peer a complete neutral input
+### Let the installed help settle a flag
 
-Each peer operation starts a new process. Its prompt contains the complete neutral contract and complete input contents. It does not rely on earlier process context, private runtime state, or follow-up questions.
+Codex ships often, and a flag's presence, spelling, or meaning can change between builds. `--version` and
+`--help` from the binary that will actually run outrank any recorded list, including this one.
 
-### Keep the peer read-only and the wrapper accountable
+### Take the narrowest sandbox and approval the work needs
 
-The peer returns one closed response and never writes the session tree. The active-runtime assistant handles that response, reports what it received, and leaves acceptance of the operation to the manager.
+A Codex run's power to change the machine comes from its sandbox mode and approval policy, not from its
+prompt. Widening either is a permission decision that belongs to the user.
 
-### Treat failure as a visible pause
+### Separate an owner from a view
 
-An unavailable binary, timeout, nonzero exit, empty response, more than one response, or identity mismatch blocks the operation. The wrapper never authors replacement content under the missing system's label.
+Canonical skills and role contracts have exactly one owner. A discovery directory, a package directory, and an
+installed plugin cache are views that can be stale, partial, or silently empty, so a claim about content is
+only as good as the owner it came from.
 
 ## Rules
 
-### Must follow
+### C-1 — Resolve Gobbi sources through the validated roots
 
-- **C-1 — Use canonical Gobbi sources.** Load skills from `.gobbi/projects/gobbi/skills/`. Treat `.agents/skills/` and `plugins/gobbi/skills/` as discovery or package views, not alternate owners.
-- **C-2 — Use repo-local specialists in native Codex.** Role wrappers live under `.codex/agents/` and point to the protected canonical role documents.
-- **C-3 — Resolve settings through their owners.** Repo-local Codex configuration owns the repository-wide runtime defaults, and each role wrapper owns that role's model and instructions. Do not duplicate or change those values here.
-- **C-4 — Keep every peer operation independent.** A draft operation receives nothing from the other draft until both freeze, and an evaluator receives no other evaluator report and no prior evaluator context.
-- **C-5 — Start a fresh peer process for every operation.** Draft, cross-review, and evaluation operations each receive a new runtime identity and no persisted peer session.
-- **C-6 — Enforce read-only execution.** Codex uses its read-only sandbox. Claude uses plan permission mode, safe mode, and only `Read`, `Grep`, and `Glob`.
-- **C-7 — Bind output to the invocation.** The peer states the operation's kind, system, step, iteration, and stable assignment so the manager can bind the response to the assignment it accepts.
-- **C-8 — Require one closed response.** The peer returns exactly one self-contained report and nothing else: no partial response, second response, second output channel, or follow-up turn.
-- **C-9 — Surface exact failures.** Report the command status and immediate diagnostic, change nothing, and return control to workflow for retry, user decision, or abort.
+**MUST load every Gobbi skill and role contract through the `{gobbi-skills-root}` and `{gobbi-agents-root}`
+pair that the entry derives from the location the runtime reports for the skill it loaded and validates
+against three sentinels.** Never substitute a source-checkout path, a user-level copy, an environment
+variable, or a discovery or package view as an alternate owner.
 
-This skill defines no artifact schema, no per-kind response shape, and no digest comparison. The manager's acceptance of the reported response is the only control over peer output.
+### C-2 — Dispatch a native specialist through its role wrapper
 
-### Must not follow
+**MUST start a native Codex specialist from the repo-local wrapper at `.codex/agents/{role}.toml`, which loads
+the canonical role contract that owns that role's instructions.** Never inline a role's instructions into an
+invocation, and never treat a wrapper as a distributable plugin component.
 
-- Do not use a persistent or resumed peer session.
-- Do not give an opposite-system process a write-capable sandbox, write tool, shell tool, or session-tree output path.
-- Do not let one independent draft operation read the other draft before both freeze.
-- Do not let an evaluator read another evaluator report or reuse a prior evaluator context.
-- Do not accept a wrapper summary, reconstructed response, partial response, stale response, or reused runtime identity as peer output.
-- Do not add a second adapter executable, peer surface, or output channel.
-- Do not infer a missing-system waiver. Waiver authority remains with workflow and the user.
+### C-3 — Read every runtime default from its own owner
+
+**MUST take a runtime default from the owner that holds it — `$CODEX_HOME/config.toml` for what the installed
+CLI loads, `.codex/config.toml` for this repository's declared model, effort, and sandbox policy, and each
+role's `.toml` wrapper for that role's model and instructions — and never restate or change one here.** A
+per-invocation flag binds that single run and changes no owner.
 
 ## Manual
 
-### Native Codex entry surfaces
-
-| Need | Surface | Owner consequence |
-|---|---|---|
-| Canonical skill | `.gobbi/projects/gobbi/skills/{skill}/SKILL.md` | Read this source; do not edit a discovery view |
-| Skill discovery | `.agents/skills/{skill}/` | Resolves to the canonical skill directory |
-| Repo-local specialist | `.codex/agents/{role}.toml` | Loads the matching protected role document |
-| Shared plugin package | `plugins/gobbi/` | Package topology is verified by the root sync and smoke commands |
-
-When `CODEX_THREAD_ID` is available, treat it as the observed native runtime ID. The manager supplies the authoritative runtime identity at a context boundary and carries it in the assignment as runtime evidence. Absence of one environment variable never authorizes inventing an identity or changing the Gobbi UUID.
-
-For role selection and model values, read the repo-local Codex configuration and the role wrappers named by the runtime entry documents. This skill adds no model override. For package setup, topology, and installed-cache checks, follow the root runtime instructions rather than copying their commands here.
-
-### Peer operation selection
-
-Use an opposite-system peer only through the workflow-owned WORK or EVALUATION contract:
-
-| Active runtime | Opposite-system process | Response |
-|---|---|---|
-| Claude Code | `codex exec` | One self-contained report on standard output |
-| Native Codex | `claude -p` | One self-contained report on standard output |
-
-This skill defines no artifact schema and never states what a response of a given kind must contain. The manager reads the reported response and accepts or refuses it.
-
-### Common invocation envelope
-
-Before launch, render a neutral prompt in a runtime temporary directory outside the session tree. The prompt includes:
-
-- operation kind: draft, cross-review, or evaluation report;
-- expected output system, step, iteration, stable assignment, and fresh runtime identity;
-- one unique invocation identity for replay detection;
-- the closed-response rule: exactly one self-contained report and nothing else;
-- the complete neutral contract;
-- every binding input as complete inline content with its source label;
-- exact in-scope and out-of-scope boundaries;
-- independence restrictions for the operation;
-- the operation-specific frozen subject; and
-- the exact failure contract: stop without substitute output when required context is absent.
-
-Paths may identify evidence, but they do not replace the complete contents. The wrapper freezes the prompt inputs before launch. A retry receives the same frozen envelope and a new invocation and runtime identity.
-
-### Claude Code to Codex
-
-Use the installed non-interactive surface:
+### Verify the installed surface first
 
 ```bash
-timeout "$peer_timeout" codex exec \
-  -C "$trusted_read_root" \
-  --ephemeral \
-  --sandbox read-only \
-  - < "$prompt_file" > "$response_file" 2> "$stderr_file"
+codex --version        # codex-cli 0.146.0
+codex --help           # subcommand list for this build
+codex exec --help      # the authoritative flag list for non-interactive runs
 ```
 
-The load-bearing command is `codex exec -C "$trusted_read_root" --ephemeral --sandbox read-only -`. The final `-` reads the complete prompt from standard input. `--ephemeral` prevents session persistence. `--sandbox read-only` prevents model-generated writes. Nothing validates the response shape; the prompt states the closed-response rule and the manager reads what came back.
+Exit statuses observed on 0.146.0: a completed run exits `0`; an unknown flag or an invalid value for a known
+flag exits `2` and prints the accepted values; `timeout` reports `124` when it kills the process.
 
-Do not add `--add-dir`, a write-capable sandbox, or a session output path. The parent wrapper owns stdin, stdout, and the immediate stderr diagnostic. These temporary files stay outside the session record.
+### Where a Codex session finds Gobbi
 
-### Native Codex to Claude
+Codex reports a skill's location when it loads that skill, so a Codex agent is told where Gobbi is instead of
+searching for it. [`gobbi`](../gobbi/SKILL.md) Step
+[1.1](../gobbi/SKILL.md#11-establish-the-entry-context-runtime-and-canonical-layout) owns how that reported
+path becomes the two validated roots.
 
-Set the parent process working directory to the trusted read root, then use the installed print surface:
+| Need | Surface | Consequence |
+|---|---|---|
+| Canonical skill | `{gobbi-skills-root}/{skill}/SKILL.md` | The one owner; read and edit here |
+| Canonical role contract | `{gobbi-agents-root}/{role}.md` | The one owner of a role's instructions |
+| Repo-local skill discovery | `.agents/skills/{skill}/` | A view; a symbolic link onto the canonical directory |
+| Repo-local specialist | `.codex/agents/{role}.toml` | A wrapper that loads the canonical role contract |
+| Installed plugin skill | `gobbi:{skill}` | The only identifier a consumer project is offered; no bare name exists there |
+| Shared plugin package | `plugins/gobbi/` | A package view owned by [`claude-plugin`](../claude-plugin/SKILL.md) |
+
+`CODEX_THREAD_ID`, when present, is the observed native runtime identity. Its absence never authorizes
+inventing an identity, and its value never changes the Gobbi session UUID.
+
+### Run Codex non-interactively with `codex exec`
+
+`codex exec` runs one turn without the interactive interface and writes the agent's report to standard output.
 
 ```bash
-timeout "$peer_timeout" claude \
-  -p \
-  --permission-mode plan \
-  --no-session-persistence \
-  --safe-mode \
-  --tools "Read,Grep,Glob" \
-  < "$prompt_file" > "$response_file" 2> "$stderr_file"
+codex exec [OPTIONS] [PROMPT]
 ```
 
-`-p` makes the call non-interactive. `--permission-mode plan` blocks an edit-oriented permission path. `--no-session-persistence` prevents later resume. `--safe-mode` disables project and user customizations for the call. `--tools "Read,Grep,Glob"` removes write and shell capabilities.
+The prompt arrives as the argument, from standard input when the argument is `-` or absent, or from both —
+piped standard input is appended to an argument prompt as a `<stdin>` block.
 
-### Draft input
+| Flag | Effect |
+|---|---|
+| `-C, --cd <DIR>` | Sets the agent's working root |
+| `--ephemeral` | Runs without persisting session files to disk |
+| `-s, --sandbox <MODE>` | Selects `read-only`, `workspace-write`, or `danger-full-access` |
+| `--add-dir <DIR>` | Adds a writable directory beside the primary workspace |
+| `-m, --model <MODEL>` | Sets the model for this run |
+| `-c, --config <key=value>` | Overrides one dotted configuration key; the value parses as TOML and falls back to a literal string |
+| `-p, --profile <NAME>` | Layers `$CODEX_HOME/<name>.config.toml` over the base user configuration |
+| `--ignore-user-config` | Skips `$CODEX_HOME/config.toml`; authentication still uses `CODEX_HOME` |
+| `--strict-config` | Fails the run on a configuration field this build does not recognize |
+| `--json` | Prints events to standard output as JSON Lines instead of a plain report |
+| `-o, --output-last-message <FILE>` | Writes the agent's last message to a file |
+| `--output-schema <FILE>` | Points at a JSON Schema describing the final response shape |
+| `--skip-git-repo-check` | Allows running outside a Git repository |
+| `-i, --image <FILE>` | Attaches an image to the initial prompt |
 
-Both systems receive the same neutral contract and complete evidence. A draft operation receives no content, summary, or hint from the other draft.
+`codex exec resume` continues a saved session and `codex exec review` runs a non-interactive code review.
+`--ephemeral` and `resume` are opposites: an ephemeral run persists nothing to resume from.
 
-Freeze both drafts before either cross-review prompt is constructed. A response from an earlier invocation, step, iteration, or assignment is stale even when its content appears useful.
+Do not assemble a partner launch here. [`partner`](../gobbi/partner/SKILL.md) owns the frozen envelope, the
+read-only launch form for each direction, response validation, and the failure matrix.
 
-### Cross-review input
+### Sandbox and approval
 
-The reviewer receives the complete original neutral contract plus the complete frozen draft from the opposite system. It does not receive its own draft as a comparison target. The wrapper names the expected opposite subject system and states that the contract is the same one both drafts received.
+Two settings decide what a run may do. `--sandbox` bounds what model-generated commands may touch;
+`--ask-for-approval` decides when the run stops for a person.
 
-Claude reviews Codex and Codex reviews Claude. Same-system or same-subject labeling blocks the operation.
+| `-s, --sandbox` | Model-generated commands may |
+|---|---|
+| `read-only` | Read only, and write nowhere |
+| `workspace-write` | Write inside the workspace and any `--add-dir` root |
+| `danger-full-access` | Write anywhere the operating system allows |
 
-### Evaluation input
+| `-a, --ask-for-approval` | Behavior |
+|---|---|
+| `untrusted` | Run only trusted commands unattended, and escalate anything else |
+| `on-request` | Let the model decide when to ask |
+| `never` | Never ask; an execution failure returns to the model instead |
 
-Each evaluator receives the complete frozen evaluation bundle required by the evaluation owner: canonical synthesis or actual tree, both drafts, both cross-reviews, resolved decisions, applicable waiver, locked scope, upstream artifacts, scenarios, checklist source, plan, and verification evidence. It never receives the other evaluator report or a prior evaluator session.
+`--ask-for-approval` is an interactive-session flag only. `codex exec` does not accept it and exits `2` with
+`error: unexpected argument '-a' found`; a non-interactive run reports `approval: never` in its header. So the
+sandbox mode is the whole of a `codex exec` run's permission boundary, and nothing will stop to ask.
 
-The wrapper supplies the exact frozen subject as complete content. The evaluation method owns what an evaluation report contains.
+Never pass `--dangerously-bypass-approvals-and-sandbox` or `--dangerously-bypass-hook-trust`. The first
+executes model-generated commands with no sandbox and no confirmation; the second runs hooks without their
+persisted trust. Neither belongs to any Gobbi surface.
 
-### Response handling
+`codex sandbox <COMMAND>` runs one command under the Codex sandbox without starting a model turn, which is how
+to check what a sandbox mode permits before an agent depends on it.
 
-The active-runtime assistant performs these checks in order:
+### Configuration
 
-1. Confirm the peer binary and required local dependencies exist before launch.
-2. Launch once with a bounded timeout. Capture the exact exit status before inspecting content.
-3. Treat status `124` as timeout and every other nonzero status as failure. Read the immediate stderr diagnostic; do not keep it as session evidence.
-4. Require a non-empty regular response file holding exactly one self-contained report. A truncated response, a second response, and a second output channel fail this check.
-5. Compare kind, system, step, iteration, assignment, and runtime identity with the frozen invocation envelope.
-6. Reject a runtime identity or invocation response already used by an earlier peer operation.
+`codex exec` loads its configuration from `$CODEX_HOME/config.toml`, which defaults to `~/.codex/config.toml`,
+then applies the invocation's `-p` profile layer and its `-c`, `-m`, and sandbox flags.
 
-No later check compensates for a failed earlier check. A failure changes nothing and pauses the workflow. The manager decides whether the reported response is accepted.
+Verified against 0.146.0, the CLI does not load a repository's `.codex/config.toml` — a probe repository whose
+`.codex/config.toml` set a distinct model ran with the user-configuration model from both the process working
+directory and `-C`, while the same value passed as `-c model=…` did take effect. This repository's
+`.codex/config.toml` therefore records the project's intended model, reasoning effort, sandbox, and approval
+policy; an invocation that must follow that policy passes those values itself.
 
-### Failure diagnosis
+### Plugins and skill discovery
 
-| Symptom | Classification | Required response |
-|---|---|---|
-| Peer binary missing or unavailable | availability failure | Pause and name the binary and lookup failure |
-| Exit status `124` | timeout | Pause and report the configured bound |
-| Any other nonzero status | process failure | Pause with status and immediate stderr diagnostic |
-| Empty response | empty output | Pause; do not synthesize missing content |
-| Truncated response, second response, or second output channel | malformed output | Pause with the observed content |
-| Metadata or runtime identity mismatch | stale, replayed, or mislabeled output | Pause and show expected versus observed identity |
+| Command | Effect |
+|---|---|
+| `codex plugin marketplace add <source>` | Registers a local or Git marketplace source |
+| `codex plugin marketplace list` | Lists configured marketplaces and their roots |
+| `codex plugin marketplace upgrade` | Refreshes configured Git marketplace snapshots |
+| `codex plugin list` | Lists plugins from configured marketplaces with install status, version, and path |
+| `codex plugin add <plugin>@<marketplace>` | Installs a plugin into the local cache |
+| `codex plugin remove <plugin>@<marketplace>` | Removes an installed plugin from local config and cache |
 
-Only the manager may offer retry, a bounded input repair, an explicit one-system waiver, return to DISCUSSION, or abort. This tool does not create the decision or mutate the workflow cursor.
+The Codex plugin installer copies a plugin directory without following symbolic links. Installing the current
+`plugins/gobbi/` package delivers exactly two files — `.claude-plugin/plugin.json` and
+`.codex-plugin/plugin.json` — with no skills, no agents, and no error. That silence is
+[openai/codex#24770](https://github.com/openai/codex/issues/24770), not a fault in the package. Codex skill
+*discovery* does follow symbolic links, so `.agents/skills/` resolves inside this repository and needs no
+install.
+
+### Diagnose a failure
+
+| Symptom | Check |
+|---|---|
+| A flag is rejected | `codex exec --help`; an argument error exits `2` and prints the accepted values |
+| Authentication, configuration, or runtime health is unclear | `codex doctor`, `codex doctor --summary`, or `codex doctor --json` for a redacted machine-readable report |
+| A configuration key may be misspelled or retired | Rerun with `--strict-config`, which fails on an unrecognized field |
+| An installed plugin exposes no skill | List the installed cache; a symbolic-linked component installs silently empty |
+| A run must not persist but a session appears | Confirm `--ephemeral` was passed; `resume` and `--ephemeral` cannot both hold |
+
+Report the command, its exact exit status, and its immediate diagnostic. Do not author replacement output for
+a run that failed.
 
 ## References
-
-- [Peer adapter command lookup](peer-adapters.md)
-- [Dual-system WORK and EVALUATION owner](../workflow/SKILL.md), including its [specialist assignment additions](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
-- [Evaluation method](../evaluation/SKILL.md)
-- [Generic specialist delegation owner](../delegation/SKILL.md)
-- [Repository runtime entry contract](../../../../../AGENTS.md)
