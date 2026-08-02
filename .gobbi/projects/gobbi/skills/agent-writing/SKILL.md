@@ -155,9 +155,10 @@ You are the Gobbi {role} role for this repository.
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/{role}.md` and follow it as your role contract.
 
-Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
-At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
-{the role's other minimum skills} before work.
+That contract's "Before You Start" section owns the Gobbi root pair and every skill this role
+loads. Obtain and validate the pair exactly as that section directs, load the skills it names,
+and resolve every Gobbi skill and agent reference through the validated roots. Never substitute
+a hardcoded path or a user-level skill location.
 
 {The role's git/scope guardrail — e.g. for an implementer: stay inside the
 delegated scope, do not evaluate your own work, provide fresh verification
@@ -168,8 +169,8 @@ evidence, commit in-boundary but NEVER push.}
 The `model` and `model_reasoning_effort` values follow Gobbi's current Codex role policy:
 every role uses `gpt-5.6-sol` with `xhigh`. The
 `developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
-then the canonical `.md`, (b) lists the role's MINIMUM `.gobbi/projects/gobbi/skills/...`
-loads (Codex wrappers load from the repo-local canonical skill root, not user-level), and
+then the canonical `.md`, (b) hands the Gobbi root pair and every skill load to that `.md`'s
+`## Before You Start` section instead of naming a skill path itself, and
 (c) states the role's git / scope guardrail. Keep
 the `.toml` thin — substance belongs in the `.md`, so the two never drift.
 
@@ -182,7 +183,8 @@ All specialist assignments use the generic Delegation template. The role documen
 and Workflow Step 1.3 supplies session-specific assignment fields.
 
 **The common case is editing an existing role**, not adding one. To refine a role, edit its
-`agents/{role}.md` (and the `.toml` only if a min-load or guardrail changed). No new wiring.
+`agents/{role}.md` (and the `.toml` only if its description or guardrail changed — a skill-load
+change touches the `.md` alone). No new wiring.
 
 **Adding a SIXTH role is a heavyweight, user-ratified taxonomy change** — never do it without
 the user's explicit decision. Its FULL wiring set is:
@@ -191,8 +193,9 @@ the user's explicit decision. Its FULL wiring set is:
 2. Both mirror symlinks: `.claude/agents/{role}.md` and `.codex/agents/{role}.toml` (P5).
 3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
    time; do not rely on a stored line number).
-4. A Roster row in [`workflow/agent-teams.md`](../workflow/agent-teams.md) — only when a persistent team may
-   reuse the role. Evaluators are deliberately excluded from that table.
+4. A Roster row in [`gobbi/agent-teams/SKILL.md` Step 2.1](../gobbi/agent-teams/SKILL.md#21-spawn-and-assign-a-teammate)
+   — only when a persistent team may reuse the role. Evaluators are deliberately excluded from that
+   table.
 
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
 cannot be spawned in Claude Code. Its canonical role document must remain complete enough for the generic
@@ -233,8 +236,9 @@ Wire a role in this order, each step with its verify command. From the worktree 
    ```
    The `--check` must exit 0.
 5. **For a NEW role only** — add the remaining P4 surfaces: the `Agent({role})` permission
-   in `.claude/settings.json`, plus a Roster row in `workflow/agent-teams.md` when a persistent team may
-   reuse the role. Verify each by reading the final owners and running the source-topology check.
+   in `.claude/settings.json`, plus a Roster row in `gobbi/agent-teams/SKILL.md` Step 2.1 when a
+   persistent team may reuse the role. Verify each by reading the final owners and running the
+   source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
@@ -256,8 +260,8 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   `model` — and no others.
 - **MUST follow the section contract** (P2), varying a section only where the role's work
   demands it; include `## Continuation discipline` only for continuable roles.
-- **MUST keep the `.toml` thin** — it points to the canonical `.md` and lists min skill loads;
-  behavioral substance lives in the `.md`, never duplicated in the `.toml`.
+- **MUST keep the `.toml` thin** — it points to the canonical `.md` and defers every skill load to
+  that `.md`; behavioral substance lives in the `.md`, never duplicated in the `.toml`.
 - **MUST set the Codex wrapper policy exactly** — every role uses
   `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`.
 - **MUST point to each canonical owner, not restate it** — the role spec cites Delegation for the generic
@@ -308,5 +312,5 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - Role name, tools, Claude model, what the role owns, and when it is spawned → the five `agents/{role}.md`
   files themselves; no combined table exists
 - Codex model and reasoning effort → the five `agents/{role}.toml` files
-- Which roles a persistent team may reuse → [`workflow/agent-teams.md`](../workflow/agent-teams.md)
+- Which roles a persistent team may reuse → [`gobbi/agent-teams/SKILL.md` Step 2.1](../gobbi/agent-teams/SKILL.md#21-spawn-and-assign-a-teammate)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
