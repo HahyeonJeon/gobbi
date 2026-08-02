@@ -60,124 +60,209 @@ own.}
 
 #### 1.1 Confirm the preconditions and take the caller's adapter
 
-- {Input or precondition: the active runtime, the caller's five adapter inputs, and the caller's own identity.}
-- {Action and decision rule: confirm the runtime is Claude Code, then check each precondition — the Agent
-  Teams environment variable, the role permissions, and that the caller is the session lead rather than a
-  teammate, because a teammate cannot spawn a teammate.}
-- {Inline lookup: the five caller-supplied adapter inputs — the acceptance signal, the recovery evidence set,
-  the mutation-surface list, the assignment-field set, and the per-role reuse boundaries — each with the step
-  that consumes it.}
-- {Evidence or state change: the confirmed runtime, each precondition's exact result, and the recorded
-  adapter.}
-- {Next branch: continue to Phase 2 when every precondition holds; go to Step 1.2 on the first absence; stop
-  and ask the caller when an adapter input is missing.}
+- Enter with the active runtime named, the caller's five adapter inputs, and the caller's own identity. The
+  caller is the manager of its own work; this operation invents none of those values.
+- Take the five adapter inputs first. Each is supplied by the caller's own model of acceptance and evidence,
+  and each is consumed by a named later step. This operation owns none of them.
+
+| Adapter input | What the caller supplies | Consumed at |
+|---|---|---|
+| Assignment-field set | Every field a brief must carry, including identity, scope, worktree, branch, allowed and protected paths, verification, and expected artifact | Step 2.1 |
+| Per-role reuse boundaries | What one continuous chain of work means for each role in the caller's model | Steps 2.1 and 3.3 |
+| Mutation-surface list | Every surface a write-capable assignment can change | Step 2.2 |
+| Acceptance signal | The one thing that decides whether a returned report is accepted | Step 3.2 |
+| Recovery evidence set | The evidence that rebuilds assignment state after a context boundary | Step 4.2 |
+
+- Check every precondition below and record its exact result. Check all four before reporting, so one report
+  names every gap instead of exposing them one at a time.
+
+| Precondition | How to check it | What supplies it |
+|---|---|---|
+| The active runtime is Claude Code | The runtime the caller named | Nothing. Native Codex has no teammate mechanism and uses its repository custom-agent roles instead |
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` is set in the live session environment | `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | The `env` block of `.claude/settings.json` |
+| An `Agent(<role>)` permission exists for every role the caller may spawn | Read `permissions.allow` in the settings sources that apply, local before project before user | The `permissions.allow` list of `.claude/settings.json` |
+| The caller is the session lead and not itself a teammate | The caller's own identity | Nothing. A teammate cannot spawn a teammate, so a teammate caller has no path to this capability |
+
+- Read the environment variable from the live session environment, not from a settings file. A settings file
+  is one source of that value and an exported shell variable is another, so only the live environment answers
+  whether it is set.
+- Evidence is the confirmed runtime, each precondition's exact recorded result, and the recorded adapter.
+- Continue to Phase 2 when every precondition holds. Go to Step 1.2 when any precondition fails. Stop and ask
+  the caller when an adapter input is missing, because this operation supplies none of the five itself.
 
 #### 1.2 Report the missing prerequisite and continue with fresh subagents
 
-- {Input or precondition: the first failed precondition from Step 1.1.}
-- {Action and decision rule: name the exact missing prerequisite and the setting that supplies it, then
-  continue with fresh non-persistent subagents rather than pausing, because the fallback loses only continuity
-  and no authority, evidence, or single-writer guarantee depends on persistence.}
-- {Evidence or state change: the reported absence and the degraded path the caller now runs on.}
-- {Next branch: run the caller's work with fresh subagents and go to Step 5.2; never continue silently and
-  never pause for a user decision on this absence.}
+- Enter with every precondition Step 1.1 recorded as failed.
+- Name each missing prerequisite individually, with the exact setting or condition that supplies it, and state
+  what the caller loses: continuity across assignments, and nothing else.
+- Continue the caller's work with fresh non-persistent subagents. Persistence changes scheduling only, so
+  authority, assignment shape, the acceptance signal, the caller's evidence, and the single ordered writer
+  chain all survive the fallback unchanged.
+- Never continue silently and never pause for a user decision on this absence. Silence reproduces the failure
+  this preflight exists to catch, and a pause stops the caller's work over a loss of continuity alone.
+- Evidence is each named absence and the degraded path the caller now runs on.
+- This is a terminal state of the operation. A degraded run spawns no teammate, so it creates no teammate
+  lifecycle for Phase 5 to close. Return the report to the caller and run the remaining work with fresh
+  subagents.
 
 ### Phase 2 — Spawn and Assign One Teammate
 
 #### 2.1 Spawn and assign a teammate
 
-- {Input or precondition: one bounded unit of work, the adapter's assignment-field set, and its per-role reuse
-  boundaries.}
-- {Action and decision rule: select the role, start it lazily, spawn it under a stable name, and deliver one
-  brief built through the Delegation skill that carries the resolved skill and agent roots and every skill the
-  role must load, because a subagent definition's preload fields are not applied to a teammate.}
-- {Inline lookup: the Roster — one row per role with its reuse boundary parameterized by the caller's adapter,
-  plus the statement that evaluators are always fresh and never join a persistent team.}
-- {Evidence or state change: the named teammate, its stable assignment identifier, and the delivered brief.}
-- {Next branch: continue to Step 2.2; decide any reuse candidate at Step 4.1 before delivering the brief; the
-  manager alone dispatches, because a teammate cannot assign another teammate.}
+- Enter with one bounded unit of work, the adapter's assignment-field set, and its per-role reuse boundaries.
+- Select the role from the Roster below. Start each role lazily: spawn it at the first assignment that needs
+  it, never in advance. There is no team-creation action to perform; the team exists from the first spawn.
+
+| Role | Reuse boundary |
+|---|---|
+| leader | One coherent shaping chain, as the caller's per-role reuse boundary defines it |
+| executor | Related ordered tasks in one subsystem, as the caller's per-role reuse boundary defines it |
+| assistant | One coherent narrow support chain, as the caller's per-role reuse boundary defines it |
+
+- Evaluators are always fresh and never join a persistent team. An evaluation that must stay independent
+  cannot come from an agent already holding the work's context, so no evaluator appears in the Roster and no
+  teammate is converted into one.
+- Spawn the selected role under a stable name and give its work a stable assignment identifier. When Step 4.1
+  has already decided to continue an existing teammate, address that teammate instead of spawning; every
+  remaining bullet in this step applies unchanged.
+- Deliver one brief built through the [Delegation](../../delegation/SKILL.md) skill, carrying every field in
+  the caller's assignment-field set. State the resolved skill and agent roots and name every skill the role
+  must load, because a subagent definition's preload fields are not applied to a teammate. An unnamed skill is
+  an unloaded skill.
+- Re-anchor the write boundary in every brief, fresh or continued: the exact worktree, branch, allowed paths,
+  and protected paths the assignment-field set carries. A continued teammate's earlier boundary is not its
+  current one.
+- The manager alone dispatches. A teammate can neither spawn nor assign another teammate, so no assignment
+  reaches a teammate except from the manager.
+- Evidence is the named teammate, its stable assignment identifier, and the delivered brief.
+- Continue to Step 2.2.
 
 #### 2.2 Take the acknowledgement and hold the single writer chain
 
-- {Input or precondition: the delivered brief and the adapter's mutation-surface list.}
-- {Action and decision rule: take the teammate's acknowledgement of the assignment identifier, scope, and
-  expected artifact; permit one write-capable assignment at a time across every listed mutation surface;
-  allow parallel work only for independent read-only study, factual investigation, competing hypotheses, test
-  interpretation, and critique; reject a dispatch that overlaps another writer.}
-- {Evidence or state change: the acknowledged assignment and the one ordered writer chain.}
-- {Next branch: continue to Phase 3; go to Step 4.1 when the acknowledgement does not arrive.}
+- Enter with the delivered brief and the adapter's mutation-surface list.
+- Take the teammate's acknowledgement of the assignment identifier, the scope, and the expected artifact
+  before it starts working. A reply that does not restate all three is not an acknowledgement.
+- Permit one write-capable assignment at a time across every surface in the caller's mutation-surface list.
+  Reject a dispatch that would put a second writer on any listed surface.
+- Allow parallel work only for independent read-only work: study, factual investigation, competing hypotheses,
+  test interpretation, and critique. A read-only helper writes to no listed surface.
+- Verify before dispatch that the branch and worktree named in the brief still match the assignment and that
+  no other writer holds them.
+- Evidence is the acknowledged assignment and the one ordered writer chain.
+- Continue to Phase 3. Go to Step 4.1 when the acknowledgement does not arrive, because an unaddressable
+  teammate is a replacement decision rather than a longer wait.
 
 ### Phase 3 — Monitor, Accept, and Reuse One Assignment
 
 #### 3.1 Monitor the working teammate
 
-- {Input or precondition: the acknowledged assignment.}
-- {Action and decision rule: monitor the working teammate, hold direct messages to assigned facts, results,
-  and critique, and return material disagreement to the manager.}
-- {Inline lookup: what a teammate may never do — change scope, decide for the user, accept or reassign work,
-  change the caller's route, or authorize destructive or external action.}
-- {Evidence or state change: the teammate's returned status and artifact.}
-- {Next branch: continue to Step 3.2 on a returned report; go to Step 4.1 on failed, malformed, or unreachable
-  work.}
+- Enter with the acknowledged assignment.
+- Monitor the working teammate actively rather than waiting on it. Send the next bounded assignment as soon as
+  the writer chain allows it.
+- Hold direct messages between teammates to assigned facts, results, and critique. Return material
+  disagreement to the manager, who resolves routine in-contract disagreement from evidence and stops only at
+  the caller's blocker boundary.
+- A teammate may never do any of the following, whoever asks it to:
+
+  - change scope;
+  - decide for the user;
+  - accept or reassign work;
+  - change the caller's route;
+  - authorize destructive or external action; or
+  - spawn, brief, or become another teammate.
+
+- Evidence is the teammate's returned status and artifact.
+- Continue to Step 3.2 on a returned report. Go to Step 4.1 on failed, malformed, or unreachable work.
 
 #### 3.2 Hand the report to the caller's acceptance signal
 
-- {Input or precondition: the returned report and the adapter's acceptance signal.}
-- {Action and decision rule: hand the report to the caller's acceptance signal, which alone decides
-  acceptance; read completion from that signal only, never from an idle notice, a runtime task status, or the
-  teammate's own summary.}
-- {Evidence or state change: the caller's acceptance or rejection, recorded against the assignment
-  identifier.}
-- {Next branch: continue to Step 3.3 on acceptance; go to Step 4.1 on rejection.}
+- Enter with the returned report and the adapter's acceptance signal.
+- Hand the report to the acceptance signal. It alone decides acceptance. This operation schedules work and
+  never accepts it.
+- Read completion from that signal only. An idle notice, a runtime task status, and the teammate's own summary
+  are scheduling information: they report where the runtime believes the work is, not whether the work is
+  right. A lagging or idle status proves neither success nor failure.
+- Evidence is the acceptance or rejection recorded against the assignment identifier.
+- Continue to Step 3.3 on acceptance. Go to Step 4.1 on rejection.
 
 #### 3.3 Verify reuse readiness
 
-- {Input or precondition: the accepted report and the adapter's per-role reuse boundaries.}
-- {Action and decision rule: confirm the teammate is idle and addressable, that its prior assignment closed,
-  and that the next assignment carries a new identifier and overlaps no other writer.}
-- {Evidence or state change: the reuse-eligible teammate, or the exact condition that failed.}
-- {Next branch: go to Step 4.1 for the continuation decision; go to Phase 5 when no further assignment
-  exists.}
+- Enter with the accepted report and the adapter's per-role reuse boundaries.
+- Confirm all four conditions before another assignment goes to the same teammate: the prior assignment is
+  closed by the acceptance signal; the teammate is idle and addressable, proved by a direct exchange rather
+  than by an absence of activity; the next assignment carries a new identifier; and the next assignment
+  overlaps no other writer.
+- Confirm the next unit of work falls inside this role's reuse boundary as the caller defines it.
+- Evidence is the reuse-eligible teammate, or the exact condition that failed.
+- Go to Step 4.1 with that result, whether every condition held or one failed, because Step 4.1 owns the
+  decision either way. Go to Phase 5 when no further assignment exists.
 
 ### Phase 4 — Replace and Recover Teammates
 
 #### 4.1 Decide continuation or replacement
 
-- {Input or precondition: a candidate teammate and the next assignment it would take.}
-- {Inline lookup: the coherence list every continuation requires — role, scope, subsystem, dependency chain,
-  authority, loaded context, write boundary, and addressability — and the replacement triggers.}
-- {Action and decision rule: continue the teammate only when every coherence item holds, and replace it
-  otherwise; there is no task-count limit, so evidence of coherent context decides.}
-- {Evidence or state change: the continuation or replacement decision and the evidence behind it.}
-- {Next branch: return to Step 2.1 to assign the continued teammate or spawn its replacement.}
+- Enter with a candidate teammate and the next assignment it would take.
+- Continue the teammate only when every one of these remains coherent between the two assignments:
+
+  - role;
+  - scope;
+  - subsystem;
+  - dependency chain;
+  - authority;
+  - loaded context;
+  - write boundary; and
+  - addressability.
+
+- Replace the teammate after any of these triggers:
+
+  - a role or subsystem change;
+  - context drift;
+  - failed or malformed work;
+  - lost addressability;
+  - a protected-work conflict; or
+  - a requirement for fresh independence.
+
+- There is no task-count limit. Evidence of coherent context decides reuse, not how many assignments the
+  teammate has already taken.
+- A replacement is a new teammate, spawned under a new name and briefed from nothing. Do not repair a drifted
+  teammate by sending it corrections, because the drifted context stays loaded.
+- Evidence is the continuation or replacement decision and the coherence or trigger evidence behind it.
+- Return to Step 2.1 to assign the continued teammate or to spawn its replacement.
 
 #### 4.2 Recover after a context boundary
 
-- {Input or precondition: the boundary that occurred and the adapter's recovery evidence set.}
-- {Action and decision rule: split by trigger — after `/resume` or `/rewind`, replace every in-process
-  teammate unconditionally, because they do not survive; after compaction, verify identity, assignment,
-  addressability, and idle state and continue only when every check passes. Rebuild assignment state only from
-  the caller's recovery evidence set, and never infer survival from a name.}
-- {Evidence or state change: the verified or replaced teammates and the rebuilt assignment state.}
-- {Next branch: return to Step 2.1 for every replacement; stop and report when the recovery evidence is
-  incomplete or contradictory.}
+- Enter with the boundary that occurred and the adapter's recovery evidence set. The trigger decides the
+  branch, so establish which boundary occurred before checking anything.
+- After `/resume` or `/rewind`, replace every in-process teammate unconditionally. They do not survive those
+  boundaries, so no check can find one; a surviving name is a name, not a teammate.
+- After compaction, verify each teammate's identity, assignment, addressability, and idle state, and continue
+  it only when all four checks pass. One failed check replaces that teammate.
+- Rebuild assignment state only from the caller's recovery evidence set. Never infer a teammate's survival
+  from a name, and never rebuild an assignment from a recollection of it.
+- Evidence is the verified or replaced teammates and the rebuilt assignment state.
+- Return to Step 2.1 for every replacement. Stop and report to the caller when the recovery evidence is
+  incomplete or contradictory, because a wrong rebuild dispatches a writer against the wrong boundary.
 
 ### Phase 5 — Close the Teammate Lifecycle
 
 #### 5.1 Shut down or retain each teammate
 
-- {Input or precondition: a teammate with no further assignment.}
-- {Action and decision rule: shut the teammate down or retain it deliberately, and record which, because a
-  retained teammate holds its loaded context and a shut-down one does not.}
-- {Evidence or state change: the recorded close state for each teammate.}
-- {Next branch: continue to Step 5.2 once every teammate has a recorded close state.}
+- Enter with a teammate that has no further assignment.
+- Decide deliberately and record which decision was taken: shut the teammate down, or retain it against a
+  named later assignment. A retained teammate keeps its loaded context and can be addressed again; a shut-down
+  one cannot.
+- Evidence is the recorded close state for every teammate the session spawned.
+- Continue to Step 5.2 once every teammate has a recorded close state.
 
 #### 5.2 Confirm what the runtime closes automatically
 
-- {Input or precondition: the recorded close states from Step 5.1, or the degraded path from Step 1.2.}
-- {Action and decision rule: state what the runtime removes on its own when the session ends and what the
-  caller still owns, so no step invents a teardown action the platform does not provide.}
-- {Evidence or state change: the closed lifecycle and the state the caller still owns.}
-- {Next branch: the lifecycle is complete; a degraded run has no teammate state to close.}
+- Enter with the recorded close states from Step 5.1.
+- The runtime removes the team itself when the session ends. There is no team-deletion action and no teardown
+  command, so invent neither; a step that claims to tear down a team describes something the platform does not
+  provide.
+- Everything outside the runtime remains the caller's: its branch, worktree, commits, and its own evidence.
+  This operation closes teammates and nothing else.
+- Evidence is the closed lifecycle and the state the caller still owns.
+- The lifecycle is complete.
 
 ## References
