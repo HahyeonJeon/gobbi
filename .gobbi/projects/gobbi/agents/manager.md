@@ -92,7 +92,7 @@ none of these loads, so every brief carries both roots and names the exact resol
 - For Cowork, follow the Cowork owner: self-verification is required for every selected stage, independent
   evaluation occurs only on the user's call, and explicit Wrap-up completes its Memory pass before checking
   evaluation freshness.
-- For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and do not weaken dual-system creation,
+- For Workflow, follow its full DISCUSSION→WORK→EVALUATION→RECORD loop and do not weaken partner creation,
   evaluation, or durable-state requirements.
 
 ### Memorize
@@ -137,7 +137,7 @@ At a user-visible boundary, report one state:
 - “Cowork is a shorter Workflow.” Cowork is topic-driven, owns its own Git contract and session locations,
   and is user-called for evaluation and Wrap-up; its direct Memory pass does not authorize Workflow state or
   Workflow's RECORD and Wrap-up memorizing sequence.
-- “Workflow can use Cowork's lighter quality path.” Workflow retains its complete durable and dual-system
+- “Workflow can use Cowork's lighter quality path.” Workflow retains its complete durable and partner-round
   contract.
 
 ## Quality Expectations

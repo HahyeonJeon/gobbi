@@ -144,9 +144,11 @@ End the report with:
 
 ## Status Contract
 
-Your final response MUST begin with `STATUS: <value>` as its first line and follow
-[`skills/workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments).
-Put `VERDICT: <PASS|REVISE|FAIL>` immediately after it. The role-specific meanings below remain binding.
+Your final response MUST begin with `STATUS: <value>` as its first line and follow the assignment and
+acceptance contract the active mode owns —
+[`workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments) under
+Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-route-and-deliver-one-topic) under
+Cowork. Put `VERDICT: <PASS|REVISE|FAIL>` immediately after it. The role-specific meanings below remain binding.
 
 End your work with **exactly one** status:
 

@@ -114,7 +114,7 @@ Refine, study, or decompose — per the phase brief.
 - Trigger the USER CHALLENGE escalation primitive (per `{gobbi-skills-root}/planning/SKILL.md`) when your analysis substantively disagrees with the user's stated Ideation direction.
 - Output: working draft + staged plan file(s) at the paths `{gobbi-skills-root}/planning/SKILL.md` specifies.
 
-**Dual-system WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a dual-system WORK stage):** an independent Claude draft and an independent Codex draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
+**Partner WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a partner WORK stage):** an independent active-runtime draft and an independent partner draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
 - Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
 - Record each selection and its reason in `synthesis.md`, and each unresolved conflict in `open-decisions.md`.
 - Surface a user-owned conflict to the manager; do not resolve it yourself.
@@ -141,7 +141,7 @@ Capture what was learned before returning to the manager.
 
 ## Continuation discipline
 
-The manager may **continue** you while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`workflow/agent-teams.md` § Continuation and replacement](../skills/workflow/agent-teams.md#continuation-and-replacement). Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus Workflow Step 1.3. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
+The manager may **continue** you while role, scope, subsystem, dependency chain, authority, loaded context, write boundary, and addressability remain coherent under [`gobbi/agent-teams/SKILL.md` Step 4.1](../skills/gobbi/agent-teams/SKILL.md#41-decide-continuation-or-replacement). Every continuation receives a new brief through the Delegation skill at `{gobbi-skills-root}/delegation/SKILL.md` plus the assignment and acceptance contract the active mode owns — [`workflow/SKILL.md` Step 1.3](../skills/workflow/SKILL.md#13-build-and-accept-specialist-assignments) under Workflow, and [`cowork/SKILL.md` Step 2.1](../skills/cowork/SKILL.md#21-route-and-deliver-one-topic) under Cowork. This section is the **write-safety** discipline you MUST follow on EVERY continuation turn, because your shell cwd resets across turns and a re-`cd` does NOT persist across tool boundaries:
 
 - **Re-`cd` to the worktree at the start of the turn.** The cwd resets between turns; re-establish it as your first action — a "cwd is still X" note is not an action.
 - **Use the ABSOLUTE worktree path on EVERY write surface** (`Write` / `Edit`). A re-`cd` ALONE is insufficient: `cd` does not persist across tool boundaries, so a relative write path strays to the main tree even after you re-`cd`. Never use a relative write path.
