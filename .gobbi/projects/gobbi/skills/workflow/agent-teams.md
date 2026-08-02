@@ -70,13 +70,13 @@ During Phase 2 and Phase 3:
 A Hand-off is a clear or compact checkpoint. Phase 1 and Phase 2 Hand-offs do not become idle waits;
 continuation remains automatic unless the user interrupts.
 
-## Write safety
-
-When scheduling a write-capable assignment, re-anchor continued specialists to the exact worktree and
-protected paths supplied under Workflow Step 1.3.
-
-Before dispatch or reuse, the manager verifies that the branch and worktree still match the assignment and
-that no writer overlaps. Workflow Step 1.3 owns report and artifact validation.
+Write safety for a scheduled assignment is likewise not owned here.
+[`gobbi/agent-teams/SKILL.md` Step 2.1](../gobbi/agent-teams/SKILL.md#21-spawn-and-assign-a-teammate)
+re-anchors every brief, fresh or continued, to its exact worktree, branch, allowed paths, and protected paths,
+and [Step 2.2](../gobbi/agent-teams/SKILL.md#22-take-the-acknowledgement-and-hold-the-single-writer-chain)
+verifies before dispatch that no other writer holds them. Workflow supplies those paths through
+[`SKILL.md` Step 1.3](SKILL.md#13-build-and-accept-specialist-assignments), which also owns report and
+artifact validation.
 
 ## References
 
