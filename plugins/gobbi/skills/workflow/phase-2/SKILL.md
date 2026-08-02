@@ -224,9 +224,9 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 - Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
   [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
   step decides what the workflow does with the paused round.
-- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist through the
-  [Agent Teams](../../gobbi/agent-teams/SKILL.md) operation, which owns continuation, replacement, and
-  context-boundary recovery.
+- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist under
+  Workflow's [`agent-teams.md`](../agent-teams.md) policy; use the
+  [Agent Teams manual](../../gobbi/agent-teams/SKILL.md) for Claude Code tool limits.
 - Continue only after the missing output validates. Use a single-system waiver only when existing authority
   names the system, productive step, and iteration.
 - Treat an unavailable required system without that waiver as a critical blocker. Never replay a possibly

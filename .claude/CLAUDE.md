@@ -49,11 +49,9 @@ every finding's disposition.
 ordered writer chain, and the read-only limit on parallel work. Cowork adds its brief fields in the topic-loop
 procedure; Workflow adds them in Workflow Step 1.3.
 
-`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` owns the persistent-teammate lifecycle — preflight,
-spawn, assignment, reuse, replacement, and close — and each mode supplies the adapter inputs it consumes.
-Claude Code may retain stable leader, executor, and assistant teammates while identity, assignment,
-dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team.
-Confirm a teammate's idle and addressable state before assigning more work.
+`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` is the compact tool manual for enabling, creating,
+coordinating, and cleaning up Agent Teams. Cowork and Workflow own assignment fields, role reuse, acceptance,
+recovery evidence, and the single-writer policy. Evaluators remain fresh and outside persistent teams.
 
 ## Plugin topology
 

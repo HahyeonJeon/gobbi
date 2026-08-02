@@ -161,17 +161,11 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 - Name the Step 1.1 `{gobbi-skills-root}` and `{gobbi-agents-root}` pair in every brief, and resolve each
   skill and role the specialist must load as an exact path from that pair. A bare skill or role name is not a
   resource a fresh specialist can reach.
-- Run persistent specialists through [Agent Teams](../gobbi/agent-teams/SKILL.md), which owns the preflight,
-  spawn, acknowledgement, reuse, continuation, replacement, and close checks. Cowork is one caller of that
-  operation and supplies all five adapter inputs, which that operation consumes and never invents:
-
-| Adapter input | What Cowork supplies |
-|---|---|
-| Assignment-field set | Every Delegation heading plus the Cowork fields above, including the resolved root pair. |
-| Per-role reuse boundaries | For a leader, one topic's shaping stages; for an executor, related implementation units inside one topic chain; for an assistant, the Phase 4 memory chain. |
-| Mutation-surface list | The Cowork worktree, the Step 1.2 session memory and work trees, Git objects on the Cowork branch, the native TODO route, and every external system. |
-| Acceptance signal | The manager acceptance below: the reread artifact or implementation, its focused commit, and the reproduced verification. |
-| Recovery evidence set | Cowork evidence only — the session UUID, the immutable base commit, the registered branch and worktree, the native TODO route, the accepted focused commits and their provenance trailers, a clean worktree status, the accepted topic artifacts, and current evaluation coverage. |
+- In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) before using persistent specialists. Its
+  manual owns tool setup and use; Cowork owns assignment fields, reuse boundaries, acceptance, recovery
+  evidence, and the ordered writer chain.
+- Reuse a leader only within one topic's shaping stages, an executor only across related implementation units
+  in one topic chain, and an assistant only within the Phase 4 memory chain.
 
 - Reuse a write-capable specialist only after the manager accepts its focused commit and the Cowork worktree
   is clean. A read-only specialist creates no commit, so its gate is the accepted read-only result and a
@@ -269,5 +263,4 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 
 - [Partner](../gobbi/partner/SKILL.md) owns every partner round Cowork calls, in both launch directions:
   preparation, launch, validation, failure handling, and the labeled frozen content it returns.
-- [Agent Teams](../gobbi/agent-teams/SKILL.md) owns the persistent-teammate lifecycle Cowork drives with the
-  Step 2.1 adapter.
+- [Agent Teams](../gobbi/agent-teams/SKILL.md) explains Claude Code team setup, use, limits, and cleanup.
