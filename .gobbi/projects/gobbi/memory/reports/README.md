@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Review
 
+- [Agent Teams compact tool skill review](review/2026-08-02-agent-teams-tool-skill-review.md)
 - [Locator, partner, and Agent Teams — dual-system review](review/2026-08-02-locator-partner-agentteams-review.md)
 
 ## Analysis

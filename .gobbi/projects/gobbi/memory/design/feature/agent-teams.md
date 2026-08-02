@@ -1,60 +1,37 @@
 # Agent Teams
 
-## Problem
+## Intent
 
-Gobbi's Agent Teams requirement did not work in an installed plugin. Root cause: a plugin cannot ship `env` or
-`permissions`, so the prerequisite `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` setting never arrived in a consumer
-project, and nothing in Gobbi checked for its absence before assuming teammates were available. No skill owned
-Agent Teams at all before this fix. Fixed 2026-08-01/02 in the same session as
-[the locator](../architecture/plugin-skill-locator.md) and [partner](partner.md).
+Agent Teams is Gobbi's compact tool manual for the experimental Claude Code team interface. It explains how
+to enable, choose, create, coordinate, recover, and clean up a team. Native Codex has no Agent Teams interface
+and uses Gobbi's repository custom-agent roles instead.
 
 ## Design
 
-`gobbi/agent-teams/SKILL.md` was built from nothing, 293 lines, mode-neutral: **zero** occurrences of
-`RECORD`, `gate.md`, `Hand-off`, `TODO`, or `Workflow Step` in a document derived entirely from a
-Workflow-coupled source (`workflow/agent-teams.md`). Procedure is 212 of 293 lines (72%).
+[`gobbi/agent-teams/SKILL.md`](../../../skills/gobbi/agent-teams/SKILL.md) is a 101-line, 576-word tool skill.
+Its body is limited to an introduction, Principles, Rules, Manual, and References. It has no Procedure or
+child document.
 
-**Preflight checks the live environment, not a settings file.** It runs
-`printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` rather than reading `.claude/settings.json` alone, because a
-settings file is only one source of that value — a consumer who exports it as a shell variable would produce
-a false negative from a file-only check, the same silent-failure class as the root cause. Settings precedence
-for Claude Code, verified: `.claude/settings.local.json` > `.claude/settings.json` > `~/.claude/settings.json`.
+The manual keeps only Claude Code tool behavior and durable safety constraints:
 
-**Five-phase lifecycle**, each phase reaching an observable completion state — a degraded preflight is a
-terminal state (Step 1.2), not routed into the acceptance-close phase, because a degraded run spawns no
-teammate and creates no lifecycle for that phase to close.
+- enable Agent Teams before starting Claude Code;
+- use teams for independent work that benefits from shared tasks or teammate discussion;
+- give parallel writers separate files or worktrees because the tool does not isolate edits;
+- keep team creation, coordination, shutdown, and cleanup with the lead; and
+- verify returned work independently because task and idle states are scheduling signals, not acceptance
+  evidence.
 
-**An entry configuration gate** was added to `gobbi/SKILL.md` recommending the prefixed skill/agent identifier
-form (`gobbi:principles`, `gobbi:leader`, …) for a consumer project and the bare form for this repository,
-backed by the namespacing measurement in [the locator design](../architecture/plugin-skill-locator.md).
+## Ownership boundary
 
-### 15 Workflow constructs converted to adapter inputs
+The tool skill does not own Gobbi orchestration policy. [`Cowork`](../../../skills/cowork/SKILL.md) and
+[`Workflow`](../../../skills/workflow/SKILL.md) own assignment fields, role reuse boundaries, write ordering,
+acceptance, and recovery evidence for their modes. The manual owns only Agent Teams setup, use, limits, and
+cleanup.
 
-The split's own test: a construct that converts to a caller-supplied input stays; a construct expressible
-through no adapter input is Workflow-coupled and drops. Highlights: `Workflow Step 1.3` → an assignment-field
-set; the TODO route → the caller's route; RECORD receipts + `gate.md` + Hand-off → a recovery evidence set;
-the acceptance decision → an acceptance signal; "worktree, record, Git, TODO, external-system mutations" → the
-caller's mutation-surface list; the leader's "coherent Ideation or Planning chain" → "one coherent shaping
-chain, as the caller's per-role reuse boundary defines it".
-
-**One construct dropped, correctly, not substituted:** "one mutable item per productive-step iteration /
-DISCUSSION→WORK→EVALUATION→RECORD / PASS gate marker" — a route shape no adapter input can express. It still
-lives in `workflow/agent-teams.md`, which retained it deliberately rather than losing it from the tree.
-
-**Rule 5 encodes two of this session's own coordination failures** as binding rules rather than advice: a
-claim that an artifact is complete, frozen, or verified is a claim and not a check; silence is not even a
-claim. See [`learnings/work/mistakes.md`](../../learnings/work/mistakes.md) for the incidents that produced
-this rule.
-
-## Open
-
-- The locator's no-brief fallback path is unverified for a spawned Agent Teams specialist, for the same reason
-  recorded in [the locator design's Open section](../architecture/plugin-skill-locator.md#open): a spawned
-  specialist has no `Skill` tool. Not a defect in this child; the manager's brief is the actual contract.
+This boundary keeps the tool explanation usable outside either mode and prevents mode-specific orchestration
+policy from returning to the manual.
 
 ## References
 
-- `gobbi/agent-teams/SKILL.md` — the canonical owner, mode-neutral
-- `workflow/agent-teams.md` — the Workflow-coupled residue this child was extracted from
-- [`design/architecture/plugin-skill-locator.md`](../architecture/plugin-skill-locator.md) — the namespacing measurement behind the configuration gate
-- [`design/feature/partner.md`](partner.md) — the sibling system built in the same session
+- [Agent Teams compact tool skill review](../../reports/review/2026-08-02-agent-teams-tool-skill-review.md)
+- [Plugin skill and agent locator](../architecture/plugin-skill-locator.md)
