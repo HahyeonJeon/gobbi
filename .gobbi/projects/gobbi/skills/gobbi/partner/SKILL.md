@@ -8,44 +8,70 @@ user-invocable: false
 
 # Partner
 
-{Intro — written by the Principles, Rules, Intro, and References task. Two or three short paragraphs orienting
-a cold reader to the actor, trigger, outcome, boundary, and operating model. Defines both senses at first use:
-"partner" names the system that runs in the runtime the active one is not, and "partner run" names one bounded
-invocation of it. Adds no policy the body does not own.}
+Use this skill when a caller needs a result produced independently of the active runtime. **Partner** names the
+system that runs in the runtime the active one is not: in Claude Code the partner is Codex, and in native Codex
+the partner is Claude Code. A **partner run** is one bounded invocation of that system. A **partner round** is
+the composed set of runs a caller asks for at once — two independent drafts, two reciprocal cross-reviews, or a
+set of isolated evaluation reports.
+
+The operation prepares one run, launches it read-only under a bounded timeout, validates what comes back
+against the envelope it sent, and returns the labeled frozen content of the whole round. Independence is what
+it guarantees. Each run gets a new process and a new identity, receives its complete contract and evidence
+inline, and sees nothing derived from a run it must stay independent of.
+
+The caller keeps everything else. This operation returns content and writes no file, so the caller places every
+returned item. It decides no mode, gate, coverage rule, waiver, finding disposition, or route. A run that
+cannot be completed or validated pauses the round and returns an exact failure instead of substitute content.
 
 ## Principles
 
 ### Keep every partner run independent
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+An independent result is evidence only when nothing derived from the result it will be compared against
+reached it. Independence is built at launch — a fresh process, a new identity, and inputs carrying no content,
+summary, or hint from another run — because it cannot be restored afterwards.
 
 ### Keep the partner read-only and the caller accountable
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+The partner reads and reports. It writes nothing to the repository, the session record, or any external system,
+and its report is one input the caller owns, accepts, places, and acts on.
 
 ### Freeze before comparing
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+Content that can still change is not evidence. Freeze the subject before the first run and both drafts before
+any cross-review, so every comparison runs against the exact content that was sent.
 
 ### Treat failure as a visible pause
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+A missing binary, a timeout, an unusable response, or a mismatched identity ends the round in a reported pause,
+never in repaired or substituted content. Rescuing a round by editing what came back makes this operation the
+author of the result it was asked to obtain independently.
 
 ## Rules
 
-- **MUST {bind each partner run to a fresh read-only process with new runtime and invocation identity}.**
-  {Self-contained pass condition.}
+- **MUST bind each partner run to a fresh read-only process with a new runtime identity and a new invocation
+  identity.** Every launch uses the direction's read-only command form and an identity pair no earlier run
+  used; a reused process or identity is rejected as replay.
 
-- **MUST {supply the complete neutral contract and every input inline}.** {Self-contained pass condition.}
+- **MUST supply the complete neutral contract and every input inline.** Each run receives the same scope,
+  authority, and failure contract plus the complete content of every binding artifact; a path standing in for
+  that content leaves the run unsupplied.
 
-- **MUST {freeze both drafts before any cross-review and isolate every evaluator}.** {Self-contained pass
-  condition.}
+- **MUST freeze both drafts before any cross-review and isolate every evaluator.** No cross-review envelope
+  exists before both drafts are frozen, and no evaluator receives another evaluator's report or prior
+  evaluator context.
 
-- **MUST {return labeled frozen content and write no file}.** {Self-contained pass condition.}
+- **MUST return labeled frozen content and write no file.** Each returned item carries its kind, producing
+  system, assignment, and iteration; the prompt, response, and stderr captures live in a runtime temporary
+  directory outside the session tree and are removed before return.
 
-- **NEVER {transform a response}.** {Self-contained failure condition.}
+- **NEVER transform a response.** Trimming fences, selecting among several responses, extracting a fragment,
+  repairing a field, rerendering, or generating substitute content under a missing system's label each make
+  this operation an author; a response is returned whole or its run is reported as failed.
 
-- **NEVER {infer a waiver, gate, disposition, or route}.** {Self-contained failure condition.}
+- **NEVER infer a waiver, gate, disposition, or route.** This operation reports what a run produced or why it
+  paused and stops there; which mode invokes it, whether coverage is met, whether one system suffices, and what
+  happens to a finding all belong to the caller.
 
 ## Procedure
 
