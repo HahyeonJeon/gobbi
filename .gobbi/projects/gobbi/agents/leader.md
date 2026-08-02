@@ -28,13 +28,27 @@ phase (`ideation` / `study` / `planning`) and the specific question.
 paths, and every `{gobbi-skills-root}/…` and `{gobbi-agents-root}/…` reference below is read from them. That
 is what makes the same instruction work in a Gobbi checkout and in a project that only installed the plugin.
 
-**No-brief fallback.** When the brief supplies neither root, derive both from this contract's own location:
-`{gobbi-agents-root}` is the directory this file sits in, and `{gobbi-skills-root}` is the `skills/` directory
-beside it. Confirm all three sentinels are readable — `{gobbi-skills-root}/gobbi/SKILL.md`,
-`{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md`. If you cannot establish this
-file's own location, or any sentinel is missing or unreadable, stop and report
-`NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`. Never guess a root and never substitute a
-hardcoded repository path.
+**The root pair invariant.** The two roots are one pair, never one value. Either the brief supplies both, or
+it supplies neither and you derive both from this contract's own location — `{gobbi-agents-root}` is the
+directory this file sits in, and `{gobbi-skills-root}` is the `skills/` directory beside it. Validate
+whichever pair you hold, supplied or derived, before the first load: each value must be an absolute expanded
+path, and all three sentinels must exist and be readable, in this order — `{gobbi-skills-root}/gobbi/SKILL.md`,
+`{gobbi-skills-root}/principles/SKILL.md`, and `{gobbi-agents-root}/manager.md`. A supplied root is never
+trusted unvalidated. Use the validated pair for every reference below and hold it unchanged for this
+assignment; the Gobbi entry, not you, fixes the session pair and stops on an ambiguous or diverged one.
+
+Any other state stops you before the first load. Report the exact token so the manager can repair the brief
+and reassign:
+
+- Exactly one root supplied → `NO_GOBBI_ROOT: <missing-root> partial-pair`. Never derive the missing half and
+  never proceed on the supplied half alone.
+- A held value is relative, unexpanded, or still the literal `{gobbi-skills-root}` or `{gobbi-agents-root}`
+  placeholder → `NO_GOBBI_ROOT: <root> <value> not-an-absolute-path`.
+- A sentinel is missing or unreadable → `NO_GOBBI_ROOT: <root> <sentinel-path> absent-or-unreadable`.
+- Neither root supplied and this file's own location cannot be established →
+  `NO_GOBBI_ROOT: both-roots location-underivable`.
+
+Never guess a root and never substitute a hardcoded repository path.
 
 Mandatory load — every fresh subagent:
 

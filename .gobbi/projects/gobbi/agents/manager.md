@@ -30,12 +30,19 @@ primitive or resolve the matter from already accepted evidence.
 ## Before You Start
 
 Reach `gobbi/SKILL.md` through the active runtime's Gobbi entrypoint — the installed plugin in a consumer
-project, the canonical file in a Gobbi checkout. Its Step 1.1 derives `{gobbi-skills-root}` and
-`{gobbi-agents-root}` from that file's own location, validates both against three sentinels, and stops the
-session when either fails. Hold both roots for the session, read every `{gobbi-skills-root}/…` and
-`{gobbi-agents-root}/…` reference below from them, and carry both into every brief you write. A specialist
-that receives neither root falls back to its own location and stops with `NO_GOBBI_ROOT` when that fails, so
-omitting them costs a round trip.
+project, the canonical file in a Gobbi checkout. You are never briefed, so that entry is your only source for
+the roots. Its Step 1.1 takes the location the entrypoint reports, derives the `{gobbi-skills-root}` and
+`{gobbi-agents-root}` pair from it, validates both against three sentinels, and stops the session when a
+sentinel fails or the pair is ambiguous or diverged. Never guess a root or substitute a hardcoded repository
+path.
+
+Hold both roots for the session, read every `{gobbi-skills-root}/…` and `{gobbi-agents-root}/…` reference
+below from them, and carry both into every brief you write as absolute expanded paths. The same pair
+invariant binds a specialist: it accepts both roots or neither, revalidates whatever pair it holds against
+the same three sentinels, and stops with a `NO_GOBBI_ROOT` report instead of proceeding. A brief that carries
+exactly one root, a relative or unexpanded value, or an unfilled placeholder is a defect you repair before
+reassigning. Carrying neither is legal — the specialist derives both from its own location — but that costs a
+round trip whenever its location does not resolve.
 
 At session start, resume, `/clear`, rewind, and runtime compaction:
 
