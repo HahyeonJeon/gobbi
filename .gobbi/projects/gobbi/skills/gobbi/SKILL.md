@@ -80,14 +80,21 @@ are not skill references.
 
 - Take the entry trigger — session start, resume, `/clear`, rewind, or runtime compaction — and the
   repository's governance source as the input.
-- Confirm the governance source, the active runtime, and the trigger, then resolve this canonical skill
-  directory through the active entrypoint.
-- Derive two roots from that directory and name them `{gobbi-skills-root}` and `{gobbi-agents-root}`.
-  `{gobbi-skills-root}` is the parent of this file's own `gobbi/` directory. `{gobbi-agents-root}` is the
-  `agents/` directory beside that parent. Expand both to absolute paths; a relative or unexpanded value is
-  not a resolved root.
-- Validate each derived root against the sentinels `gobbi/SKILL.md`, `principles/SKILL.md`, and
-  `agents/manager.md`. Each sentinel must exist and be readable at the path its root produces:
+- Confirm the governance source, the active runtime, and the trigger. Then take the location the active
+  entrypoint reports for the Gobbi skill it loaded. Every supported entrypoint reports that location as part
+  of loading a skill, so the entry needs no environment variable, configuration file, or filesystem search,
+  and none exists to supply one. That reported path is the only input to the derivation below.
+- The reported path names one of two things: the loaded skill's own directory, or the skills root that
+  contains it. Never decide which from its spelling. The derivation below builds one candidate for each
+  shape, and the sentinels select the true one.
+- Derive two roots from the reported path and name them `{gobbi-skills-root}` and `{gobbi-agents-root}`. The
+  `{gobbi-skills-root}` candidates are the reported path itself and its parent directory.
+  `{gobbi-agents-root}` is the `agents/` directory beside whichever candidate the sentinels confirm. Expand
+  every candidate to an absolute path; a relative or unexpanded value is not a resolved root.
+- Validate the candidates against the sentinels `gobbi/SKILL.md`, `principles/SKILL.md`, and
+  `agents/manager.md`. Each sentinel must exist and be readable at the path its root produces. Exactly one
+  candidate satisfies both skills sentinels; that candidate is `{gobbi-skills-root}`, and its `agents/`
+  sibling must then satisfy the third:
 
 | Sentinel path | Root | Proves |
 |---|---|---|
@@ -95,13 +102,17 @@ are not skill references.
 | `{gobbi-skills-root}/principles/SKILL.md` | `{gobbi-skills-root}` | A sibling skill resolves from that same root |
 | `{gobbi-agents-root}/manager.md` | `{gobbi-agents-root}` | Agent contracts resolve independently of skills |
 
-- A runtime may report this file through a generated view or through its canonical location. Either is a
-  valid root when its sentinels validate; the sentinels decide, not the spelling.
+- A runtime may report the loaded skill through a generated view or through its canonical location. Either is
+  a valid root when its sentinels validate; the sentinels decide, not the spelling.
 - Record `{gobbi-skills-root}` and `{gobbi-agents-root}` with the canonical source, runtime, trigger, and
   unchanged repository preimage. Gobbi has written nothing.
-- Treat both validated roots as session-scoped and immutable for the session. The entry persists neither
-  value: the selected mode's owner records them with its own session facts and carries them into every brief
-  it builds. Re-derive and revalidate both at each entry instead of recovering a remembered value.
+- Treat both validated roots as fixed for the whole session: one session runs against exactly one pair. The
+  entry persists neither value; the selected mode's owner records them with its own session facts and carries
+  them into every brief it builds. Re-derive and revalidate both at every entry instead of recovering a
+  remembered value, then compare the result with the pair the session already recorded whenever that record
+  exists. A difference means the package moved under a running session: neither pair governs, so stop below
+  and report both, because the entry cannot rewrite the records and briefs that already carry the earlier
+  pair.
 - Resolve the project key `<project>` with:
 
 ```text
@@ -136,11 +147,14 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
 - The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
   first record needs it, so a missing directory is not a broken view and is not the failure below.
-- Stop here and name the exact broken element when a root does not derive, a sentinel is missing or
-  unreadable, or the resolved view is otherwise partial or inconsistent. Name the affected root, the exact
-  sentinel path, and whether that path was absent or unreadable. Repair it by restoring the runtime's Gobbi
-  package or entrypoint from its canonical source; the repository's governing instructions own any
-  repository-local repair command, and no step continues against a partial view.
+- Stop here when no candidate resolves a root, when both candidates satisfy the same sentinels, when a
+  sentinel is missing or unreadable, when a re-derived root differs from the pair this session already
+  recorded, or when the resolved view is otherwise partial or inconsistent. Name the exact broken element:
+  for a sentinel failure, the affected root, the exact sentinel path, and whether that path was absent or
+  unreadable; for an ambiguous or a diverged pair, both candidate roots. Repair a sentinel failure by
+  restoring the runtime's Gobbi package or entrypoint from its canonical source; an ambiguous or a diverged
+  pair needs the user's decision instead. The repository's governing instructions own any repository-local
+  repair command, and no step continues against a partial view.
 - This stop fires before the Step 1.3 mode selection, because every later step and every brief depends on the
   two validated roots. Never select a mode, load an owner, or build a brief without them.
 
