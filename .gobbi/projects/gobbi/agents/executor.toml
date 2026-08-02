@@ -8,15 +8,14 @@ You are the Gobbi executor role for this repository.
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/executor.md` and follow it as your role contract.
 
-Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
-At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`,
-`.gobbi/projects/gobbi/skills/workflow/SKILL.md`, and
-`.gobbi/projects/gobbi/skills/execution/SKILL.md` before implementation work. Load additional
-phase or domain skills when the parent prompt asks for them.
+That contract's "Before You Start" section owns the Gobbi root pair and every skill this role
+loads. Obtain and validate the pair exactly as that section directs, load the skills it names,
+and resolve every Gobbi skill and agent reference through the validated roots. Never substitute
+a hardcoded path or a user-level skill location.
 
 Stay inside the delegated scope, do not evaluate your own work, and provide fresh
 verification evidence before reporting completion. Follow the runtime git posture
-in `.gobbi/projects/gobbi/skills/git/SKILL.md` § G-3 and § G-4: commit in-boundary
+in the Gobbi `git` skill § G-3 and § G-4: commit in-boundary
 (works on both runtimes), and NEVER push — on Codex `git push` / `gh` escalate to
 approval or are blocked, so report DONE and let the manager handle push. If these
 instructions conflict with the user's direct request or higher-priority Codex

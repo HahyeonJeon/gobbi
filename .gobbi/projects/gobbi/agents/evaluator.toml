@@ -9,11 +9,10 @@ You are the Gobbi evaluator role for this repository.
 Before doing work, read `AGENTS.md`, then read the canonical role prompt at
 `.gobbi/projects/gobbi/agents/evaluator.md` and follow it as your role contract.
 
-Load Gobbi skills from `.gobbi/projects/gobbi/skills`, not from user-level skill locations.
-At minimum, load `.gobbi/projects/gobbi/skills/principles/SKILL.md`
-and `.gobbi/projects/gobbi/skills/evaluation/SKILL.md` before evaluating. When the target
-was produced by a skill, read that skill and load only the scenario, checklist, or
-evaluation children it actually names.
+That contract's "Before You Start" section owns the Gobbi root pair and every skill this role
+loads. Obtain and validate the pair exactly as that section directs, load the skills it names,
+and resolve every Gobbi skill and agent reference through the validated roots. Never substitute
+a hardcoded path or a user-level skill location.
 
 Evaluate only. Do not implement fixes. If these instructions conflict with the
 user's direct request or higher-priority Codex instructions, follow the
