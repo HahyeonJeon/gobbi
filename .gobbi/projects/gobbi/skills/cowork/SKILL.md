@@ -27,7 +27,7 @@ shaping artifact set and implementation unit becomes a focused verified commit b
 
 ### Separate stage quality from independent evaluation
 
-Every selected stage self-reviews or self-verifies before acceptance. Independent dual-system evaluation is a
+Every selected stage self-reviews or self-verifies before acceptance. Independent partner evaluation is a
 separate user-called judgment, never a substitute for stage quality.
 
 ## Rules
@@ -43,8 +43,9 @@ separate user-called judgment, never a substitute for stage quality.
 - **MUST keep one ordered writer chain with role-bound focused commits and manager acceptance.** Leaders own
   selected Ideation and Planning artifacts, executors own implementation units, and assistants own Wrap-up
   memory updates.
-- **MUST run independent evaluation only after an explicit `evaluate` call.** One call authorizes one fresh
-  Claude-and-Codex round, and a bare call uses the whole clean Cowork branch through its current head.
+- **MUST run independent evaluation only after an explicit `evaluate` call, and let that call authorize
+  evaluation alone.** One call authorizes one fresh partner evaluation round, a bare call uses the whole clean
+  Cowork branch through its current head, and no other partner round runs on that trigger.
 - **MUST run Cowork Wrap-up only after an explicit `wrap up` call.** Apply the canonical Memory operation
   before the final evaluation-freshness decision; never create Workflow TODOs, phase receipts, RECORD-stage
   evidence, or a Workflow Hand-off.
@@ -80,9 +81,11 @@ separate user-called judgment, never a substitute for stage quality.
   session, the Git operation proves the intended path is free, creates it, and returns the registered worktree
   that completes the contract.
 - Verify and report the UUID, repository, base branch and commit, session branch, absolute worktree, head,
-  clean status, the main checkout unchanged apart from an approved bootstrap commit, and recovery point. Stop
-  with exact evidence when identity, isolation, provenance, base, writer ownership, or recovery cannot be
-  proved.
+  clean status, the validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair the
+  [Gobbi](../gobbi/SKILL.md) Step 1.1 entry returned, the main checkout unchanged apart from an approved
+  bootstrap commit, and recovery point. Record that pair with these session facts and carry it into every
+  brief. Stop with exact evidence when identity, isolation, provenance, base, writer ownership, resolved
+  roots, or recovery cannot be proved.
 
 #### 1.2 Establish the Cowork session locations
 
@@ -116,11 +119,39 @@ separate user-called judgment, never a substitute for stage quality.
 - Build each specialist assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic,
   depth, selected stage, stable assignment, absolute worktree, branch, prerequisite commits, allowed and
   protected paths, expected artifact or implementation, verification, commit authority, and escape paths.
+- Name the Step 1.1 `{gobbi-skills-root}` and `{gobbi-agents-root}` pair in every brief, and resolve each
+  skill and role the specialist must load as an exact path from that pair. A bare skill or role name is not a
+  resource a fresh specialist can reach.
+- Run persistent specialists through [Agent Teams](../gobbi/agent-teams/SKILL.md), which owns the preflight,
+  spawn, acknowledgement, reuse, continuation, replacement, and close checks. Cowork is one caller of that
+  operation and supplies all five adapter inputs, which that operation consumes and never invents:
+
+| Adapter input | What Cowork supplies |
+|---|---|
+| Assignment-field set | Every Delegation heading plus the Cowork fields above, including the resolved root pair. |
+| Per-role reuse boundaries | For a leader, one topic's shaping stages; for an executor, related implementation units inside one topic chain; for an assistant, the Phase 4 memory chain. |
+| Mutation-surface list | The Cowork worktree, the Step 1.2 session memory and work trees, Git objects on the Cowork branch, and every external system. |
+| Acceptance signal | The manager acceptance below: the reread artifact or implementation, its focused commit, and the reproduced verification. |
+| Recovery evidence set | Cowork evidence only — the session UUID, the immutable base commit, the registered branch and worktree, the accepted focused commits and their provenance trailers, a clean worktree status, the accepted topic artifacts, and current evaluation coverage. |
+
+- Reuse a write-capable specialist only after the manager accepts its focused commit and the Cowork worktree
+  is clean. A read-only specialist creates no commit, so its gate is the accepted read-only result and a
+  worktree it left unchanged. Retain the team across topics, and give every reuse a fresh assignment
+  identifier and a re-anchored scope, worktree, branch, and path list.
+- Rebuild a specialist assignment after a context boundary only from that Cowork evidence. Cowork has no
+  Workflow Hand-off, TODO route, `gate.md`, or RECORD receipt, so its recovery never looks for one.
 - For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md), self-review its canonical
   artifact set, and create one focused shaping commit. Ideation always evaluates its own result inline;
   Cowork neither suppresses that round nor counts it as Phase 3 coverage. For selected Planning, assign a
   leader to apply [Planning](../planning/SKILL.md) to the accepted design or locked topic contract,
   self-review its canonical artifact set, and create one focused planning commit.
+- When a topic routes to Structured depth and selects Ideation, offer the user one partner creation round for
+  that stage through [Discussion](../discussion/SKILL.md). The offer is never automatic, no `evaluate` call
+  authorizes it, and the round runs only when the user calls for it. On that call, use
+  [Partner](../gobbi/partner/SKILL.md) for one independent draft round and its cross-review round over the
+  frozen topic contract, place the returned labeled content under `{session-root}/work/`, and let the assigned
+  leader synthesize it into the Ideation artifact set it already owns. A creation round is creation, not
+  judgment: it adds no evaluation coverage and is reported separately from coverage.
 - Assign each dependency-ready unit to an executor through [Execution](../execution/SKILL.md). Keep writers
   sequential; after every report, reread the promised artifact or implementation and commit, reproduce the
   relevant verification, and accept, repair, or redispatch it before dependent work begins.
@@ -128,7 +159,9 @@ separate user-called judgment, never a substitute for stage quality.
   conflicting user work, unsafe recovery, or scope drift, stop with the exact failure and return to the
   earliest responsible stage. Complete the topic only when every selected result is accepted in a focused
   verified commit and the worktree is clean; report outcome, scope, artifacts, commits, verification,
-  exclusions, concerns, and current evaluation coverage before waiting for the next topic or user call.
+  exclusions, concerns, any partner creation round, and current evaluation coverage before waiting for the
+  next topic or user call. Report the creation round and the coverage as separate facts, because a creation
+  round never becomes coverage.
 
 ### Phase 3 — Evaluate on User Call
 
@@ -136,15 +169,18 @@ separate user-called judgment, never a substitute for stage quality.
 
 - Cowork owns this evaluation policy. A selected stage evaluates or self-reviews inside its own operation:
   Ideation always runs its inline independent evaluation, and Planning and Execution self-review or
-  self-verify. Cowork runs no automatic dual-system creation and no automatic Phase 3 round. Independent
-  Cowork evaluation happens only on an explicit `evaluate` call, and no inline stage evaluation satisfies it.
+  self-verify. Cowork runs no automatic partner creation round and no automatic Phase 3 round, and the
+  Step 2.1 creation round the user calls is creation rather than coverage. Independent Cowork evaluation
+  happens only on an explicit `evaluate` call, and neither an inline stage evaluation nor a creation round
+  satisfies it.
 - Enter only for an explicit `evaluate`. A bare call requires a clean worktree and freezes the whole Cowork
   subject from the locked base commit through the current head, including all commits, tree changes, topic
   contracts, accepted artifacts, user decisions, verification, status, and exclusions. A user-named narrower
   subject is allowed but is not whole-branch coverage.
-- Run one fresh independent Claude report and one fresh independent Codex report over the same neutral subject
-  through [Evaluation](../evaluation/SKILL.md). Keep reports separate until valid; pause on an unavailable or
-  invalid system unless the user waives that named system for this round.
+- Load [Partner](../gobbi/partner/SKILL.md) and call it for one evaluation round over that frozen subject:
+  two fresh isolated reports, one from the active runtime and one from the partner system, neither holding
+  the other. Each report is a complete [Evaluation](../evaluation/SKILL.md) output. A paused round stops this
+  evaluation unless the user waives that named system for this round.
 - Aggregate with the more severe verdict and present every material finding for user disposition before
   changing work. Accepted corrections return to the owning leader or executor in Phase 2 or the memory
   assistant in Phase 4, create new focused commits, make prior whole-branch coverage stale, and require another
@@ -177,3 +213,8 @@ separate user-called judgment, never a substitute for stage quality.
   objects and route any later publication, merge, or cleanup through a separate explicit Git operation.
 
 ## References
+
+- [Partner](../gobbi/partner/SKILL.md) owns every partner round Cowork calls, in both launch directions:
+  preparation, launch, validation, failure handling, and the labeled frozen content it returns.
+- [Agent Teams](../gobbi/agent-teams/SKILL.md) owns the persistent-teammate lifecycle Cowork drives with the
+  Step 2.1 adapter.
