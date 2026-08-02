@@ -8,51 +8,76 @@ user-invocable: false
 
 # Agent Teams
 
-{Intro — written by the Principles, Rules, Intro, and References task. Two or three short paragraphs orienting
-a cold reader to the actor, trigger, outcome, boundary, and operating model. Names the Claude Code boundary,
-since native Codex uses its repository custom-agent roles instead. Names the adapter-driven operating model:
-the caller supplies the acceptance signal, the recovery evidence set, the mutation-surface list, the
-assignment-field set, and the per-role reuse boundaries, and this operation owns none of them. States every
-prerequisite as a precondition the Procedure checks, never as an assumption. Adds no policy the body does not
-own.}
+Use this skill when a caller needs agents that keep their loaded context across several assignments instead of a
+fresh subagent for each one. A **teammate** is one such persistent agent: it is spawned under a stable name,
+addressed again by that name, and briefed once per assignment. This capability exists only in Claude Code.
+Native Codex has no teammate mechanism and uses its repository custom-agent roles instead.
+
+The **manager** is the caller, and it is the only agent that spawns, briefs, dispatches, continues, replaces,
+and closes a teammate. Persistence changes when work is scheduled and nothing else: authority, assignment
+shape, the evidence that decides acceptance, and the single ordered writer chain are the same whether the work
+runs on teammates or on fresh subagents. The operation ends with a recorded close state for every teammate it
+spawned.
+
+The caller also supplies an **adapter**: five inputs this operation consumes and never invents — the acceptance
+signal, the recovery evidence set, the mutation-surface list, the assignment-field set, and the per-role reuse
+boundaries. Each belongs to the caller's own model of acceptance and evidence, and each is consumed at a named
+step. Everything else this operation needs is a precondition the Procedure checks and records, never an
+assumption it starts from: Phase 1 proves the runtime, the enabling setting, the role permissions, and the
+caller's own standing before any teammate is spawned.
 
 ## Principles
 
 ### Persistence changes scheduling, never authority
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+A teammate keeps its loaded context between assignments, so the next assignment starts sooner and repeats less
+of what the teammate already knows. It gains nothing else by persisting: the manager still owns every dispatch,
+every acceptance, and every user decision, exactly as it would with fresh subagents.
 
 ### Runtime status is scheduling information, not completion evidence
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+An idle notice, a task status, and a teammate's own summary all report where the runtime believes the work is,
+not whether the work is right. Only the caller's acceptance signal decides completion, because a teammate that
+finished correctly and a teammate that stopped reporting look the same from outside.
 
 ### Check the capability before relying on it
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+Teammates depend on a runtime, an environment setting, a per-role permission, and the caller's own standing,
+and any one of them can be absent in a session that otherwise looks normal. Proving all four before the first
+spawn turns a silent mid-work failure into a named prerequisite and a working fallback.
 
 ### Keep one writer regardless of teammate count
 
-{One durable mental model — written by the Principles, Rules, Intro, and References task.}
+Several teammates can hold context at once, but only one may write to a given surface at a time and the rest
+read. A larger team raises the chance of a second writer, so the number of teammates available never relaxes
+the ordered writer chain.
 
 ## Rules
 
-- **MUST {complete the preflight before spawning and report the exact missing prerequisite}.**
-  {Self-contained pass condition.}
+- **MUST record a checked result for the runtime, the enabling environment variable, the per-role permission,
+  and the caller's non-teammate standing before spawning anything.** A spawn before all four are recorded fails
+  this rule, and so does a shortfall report that does not name the exact setting or condition behind each gap.
 
-- **MUST {take the acceptance signal, the recovery evidence set, the mutation-surface list, the
-  assignment-field set, and the per-role reuse boundaries from the caller's adapter}.** {Self-contained pass
-  condition.}
+- **MUST take the acceptance signal, the recovery evidence set, the mutation-surface list, the assignment-field
+  set, and the per-role reuse boundaries from the caller.** Supplying, defaulting, or inferring any of the five
+  inside this operation fails the rule; a missing input stops the operation and returns the question to the
+  caller.
 
-- **MUST {keep every mutation in one ordered writer chain}.** {Self-contained pass condition.}
+- **MUST hold every write-capable assignment in one ordered writer chain, whatever the teammate count.** Two
+  live assignments that may write to the same surface in the caller's mutation-surface list fail this rule even
+  when both teammates are idle, and parallel work is permitted only when it writes to no listed surface.
 
-- **MUST {replace rather than continue a teammate after `/resume` or `/rewind`}.** {Self-contained pass
-  condition.}
+- **MUST replace every in-process teammate after `/resume` or `/rewind`, and carry one across compaction only
+  after its identity, assignment, addressability, and idle state each pass.** Continuing a name that survived a
+  boundary without that proof fails this rule, and one failed check replaces that teammate.
 
-- **NEVER {treat an idle notice, a runtime task status, or a teammate's own summary as completion
-  evidence}.** {Self-contained failure condition.}
+- **NEVER treat an idle notice, a runtime task status, or a teammate's own summary as evidence that the work is
+  done or correct.** A teammate's claim that an artifact is complete, frozen, or verified is a claim and not a
+  check, and silence is not even a claim; only the caller's acceptance signal closes an assignment.
 
-- **NEVER {let a teammate change scope, decide for the user, accept or reassign work, or authorize
-  destructive or external action}.** {Self-contained failure condition.}
+- **NEVER let a teammate change scope, decide for the user, accept or reassign work, or authorize destructive
+  or external action.** The prohibition holds whoever asks, including the manager and another teammate, and it
+  covers spawning, briefing, or becoming a teammate.
 
 ## Procedure
 
