@@ -185,10 +185,11 @@ The smoke creates an isolated `CODEX_HOME`, registers the repository as the `gob
 - the plugin is available, installed, and enabled;
 - both manifests reached the installed cache;
 - no hook field or hook directory reached the cache;
+- both components are materialized directories before the install;
 - the cache top level contains only manifests, skills, and agents; and
-- representative canonical skills are either present or reported as a symlink-dereferencing limitation.
+- representative package paths reached the cache, at both top level and nested depth.
 
-Missing symlinked skills are warnings because Codex may omit component directories whose source is a symlink. A hook component is always a failure.
+A missing installed path is always a failure, never a limitation to note. The installer copies nothing behind a symlink at any depth, which breaks a package two ways, and the check reports them separately because they have different repairs. A symlinked component root delivers no component at all and fails before the install. A symlink left inside a materialized component directory drops exactly that path and fails after it. Both name `--materialize-package`. A hook component is always a failure.
 
 ### Failure diagnosis
 
@@ -198,7 +199,7 @@ Missing symlinked skills are warnings because Codex may omit component directori
 | Stale or missing `.claude/skills` leaf | canonical skill tree plus sync output | Classify mirror drift; never hand-edit the leaf |
 | Manifest or marketplace rejection | failing JSON file plus current CLI validation | Correct the owning schema without changing unrelated metadata |
 | Missing role wrapper | canonical role pair and hand-owned runtime symlink | Restore the exact role symlink; do not create a new role |
-| Installed skill omitted | isolated smoke output and installed path | Report the installer limitation; regenerate the package rather than copying the file |
+| Installed skill omitted | isolated smoke output and installed path | Check the named package path for a symlink, then regenerate the package rather than copying the file |
 | Any hook path or manifest field appears | package, settings, or cache preimage | Stop and remove the unsupported component within the authorized scope |
 | Version disagreement | both manifests and Claude marketplace | Re-align to the user-approved release version |
 
