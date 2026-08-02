@@ -1,7 +1,7 @@
 ---
 name: cowork
 description: "Cowork is a user-led Gobbi orchestration mode for fast stepwise implementation in one isolated worktree, with optional Ideation and Planning and user-called evaluation."
-allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
@@ -11,7 +11,8 @@ Cowork is a user-led Gobbi orchestration mode for fast implementation after the 
 entry.
 
 It takes one topic at a time through the smallest safe combination of optional Ideation, optional Planning,
-and verified Execution, then returns control to the user.
+and verified Execution, then returns control to the user. A native runtime TODO route keeps the current
+session, topic stages, explicit evaluation, and explicit Wrap-up visible without creating Workflow evidence.
 
 ## Principles
 
@@ -30,16 +31,23 @@ shaping artifact set and implementation unit becomes a focused verified commit b
 Every selected stage self-reviews or self-verifies before acceptance. Independent partner evaluation is a
 separate user-called judgment, never a substitute for stage quality.
 
+### Route through one native TODO
+
+The runtime TODO list selects Cowork's current action. Accepted artifacts, commits, and checks prove whether
+the manager may advance it, but never become a second route.
+
 ## Rules
 
 - **MUST establish one verified isolated Cowork worktree before the first tracked edit, except for the one
   user-approved commit that bootstraps the required layout and its ignore file before the base is captured.**
   Use the fully expanded worktree path for every write after that commit and change nothing else in the main
   checkout.
+- **MUST use the native runtime TODO list to select Cowork Configuration, the current topic stage or execution
+  unit, explicit evaluation, and explicit Wrap-up.** Use only `pending`, `in_progress`, and `completed`, with
+  at most one item `in_progress`.
 - **MUST let the manager select and report Direct, Light, or Structured delivery while the user owns every
-  material decision.** Changed evidence or a material user decision reruns topic routing.
-- **MUST apply the canonical Ideation and Planning skills whenever their optional stages are selected.** Their
-  canonical artifact sets are allowed Cowork outputs at exact user-approved project paths.
+  material decision.** Apply canonical Ideation and Planning whenever selected, and reroute when evidence or
+  a material decision changes the contract.
 - **MUST keep one ordered writer chain with role-bound focused commits and manager acceptance.** Leaders own
   selected Ideation and Planning artifacts, executors own implementation units, and assistants own Wrap-up
   memory updates.
@@ -47,15 +55,23 @@ separate user-called judgment, never a substitute for stage quality.
   evaluation alone.** One call authorizes one fresh partner evaluation round, a bare call uses the whole clean
   Cowork branch through its current head, and no other partner round runs on that trigger.
 - **MUST run Cowork Wrap-up only after an explicit `wrap up` call.** Apply the canonical Memory operation
-  before the final evaluation-freshness decision; never create Workflow TODOs, phase receipts, RECORD-stage
-  evidence, or a Workflow Hand-off.
+  before the final evaluation-freshness decision; never create Workflow-formatted TODOs, phase receipts,
+  RECORD-stage evidence, or a Workflow Hand-off.
 
 ## Procedure
 
-### Phase 1 — Establish the Isolated Cowork Session
+### Phase 1 — Establish the Isolated Cowork Session and TODO Route
 
 #### 1.1 Supply the Git contract and create or recover the worktree
 
+- Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
+  [Git](../git/SKILL.md), [Record](../record/SKILL.md), and [Memory](../memory/SKILL.md), in that order, before
+  the first Cowork action. A skill already loaded by Gobbi may satisfy its register entry; confirm all five
+  before continuing.
+- In Claude Code, use `TaskList` and `TaskGet` to inspect tasks, `TaskCreate` to add items, and `TaskUpdate` to
+  change a subject or status. In Codex, use `update_plan` to publish the complete ordered list and statuses.
+- On a fresh session, create only `CW · Configuration` and set it `in_progress` before configuring Git. On
+  recovery, inspect the surviving native list and the user-named branch or worktree before changing either.
 - Enter only after Gobbi records the user's Cowork selection. Cowork owns its Git session contract and states
   it as five properties for the [Git operation](../git/SKILL.md):
 
@@ -84,8 +100,9 @@ separate user-called judgment, never a substitute for stage quality.
   clean status, the validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair the
   [Gobbi](../gobbi/SKILL.md) Step 1.1 entry returned, the main checkout unchanged apart from an approved
   bootstrap commit, and recovery point. Record that pair with these session facts and carry it into every
-  brief. Stop with exact evidence when identity, isolation, provenance, base, writer ownership, resolved
-  roots, or recovery cannot be proved.
+  brief. Complete `CW · Configuration` only after this evidence validates, then leave no item active until the
+  user supplies a topic. Stop with exact evidence when identity, isolation, provenance, base, writer
+  ownership, resolved roots, or recovery cannot be proved.
 
 #### 1.2 Establish the Cowork session locations
 
@@ -98,6 +115,24 @@ separate user-called judgment, never a substitute for stage quality.
   scenarios, and checklists land there unless the user approves another path.
 - Never write a session-only kind inside `memory/`, and never write either location outside the verified
   worktree.
+- Use this exact Cowork title grammar. Items for optional stages, execution units, evaluation, and Wrap-up
+  exist only when their trigger selects them:
+
+```text
+CW · Configuration
+CW · Topic · topic-NN-slug · DISCUSSION
+CW · Topic · topic-NN-slug · IDEATION
+CW · Topic · topic-NN-slug · PLANNING
+CW · Topic · topic-NN-slug · EXECUTION · unit-NN-slug
+CW · Topic · topic-NN-slug · PASS
+CW · Evaluation · <whole-branch|subject-slug>
+CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
+```
+
+- At a context boundary, reconcile the surviving TODO list with the Cowork UUID, registered branch and
+  worktree, accepted focused commits, topic contracts, artifacts, clean status, and evaluation coverage.
+  Activate the earliest item whose completion that evidence does not prove. A missing list is reconstructed
+  from the same evidence; a TODO status without matching evidence is corrected rather than trusted.
 
 ### Phase 2 — Run the User-Topic Loop
 
@@ -106,6 +141,10 @@ separate user-called judgment, never a substitute for stage quality.
 - Inspect the user topic and relevant project evidence. Use [Discussion](../discussion/SKILL.md) to lock the
   outcome, purpose, scope, acceptance proof, material decisions, selected artifact paths, first action, and
   exclusions before dispatch.
+- Assign the next stable `topic-NN-slug`, create its DISCUSSION item, and make that the only active item. After
+  the topic contract and delivery depth lock, complete DISCUSSION and publish only the selected optional
+  stage items, ordered Execution units, and final PASS item. When Planning must still define the units, use
+  one `EXECUTION · unplanned` placeholder and replace it with the canonical ordered units after Planning.
 
 | Depth | Evidence | Topic path |
 |---|---|---|
@@ -130,21 +169,23 @@ separate user-called judgment, never a substitute for stage quality.
 |---|---|
 | Assignment-field set | Every Delegation heading plus the Cowork fields above, including the resolved root pair. |
 | Per-role reuse boundaries | For a leader, one topic's shaping stages; for an executor, related implementation units inside one topic chain; for an assistant, the Phase 4 memory chain. |
-| Mutation-surface list | The Cowork worktree, the Step 1.2 session memory and work trees, Git objects on the Cowork branch, and every external system. |
+| Mutation-surface list | The Cowork worktree, the Step 1.2 session memory and work trees, Git objects on the Cowork branch, the native TODO route, and every external system. |
 | Acceptance signal | The manager acceptance below: the reread artifact or implementation, its focused commit, and the reproduced verification. |
-| Recovery evidence set | Cowork evidence only — the session UUID, the immutable base commit, the registered branch and worktree, the accepted focused commits and their provenance trailers, a clean worktree status, the accepted topic artifacts, and current evaluation coverage. |
+| Recovery evidence set | Cowork evidence only — the session UUID, the immutable base commit, the registered branch and worktree, the native TODO route, the accepted focused commits and their provenance trailers, a clean worktree status, the accepted topic artifacts, and current evaluation coverage. |
 
 - Reuse a write-capable specialist only after the manager accepts its focused commit and the Cowork worktree
   is clean. A read-only specialist creates no commit, so its gate is the accepted read-only result and a
   worktree it left unchanged. Retain the team across topics, and give every reuse a fresh assignment
   identifier and a re-anchored scope, worktree, branch, and path list.
-- Rebuild a specialist assignment after a context boundary only from that Cowork evidence. Cowork has no
-  Workflow Hand-off, TODO route, `gate.md`, or RECORD receipt, so its recovery never looks for one.
+- Rebuild a specialist assignment after a context boundary only from that Cowork evidence. Cowork has its own
+  native TODO route but no Workflow Hand-off, Workflow TODO grammar, `gate.md`, or RECORD receipt, so its
+  recovery never looks for those Workflow records.
 - For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md), self-review its canonical
-  artifact set, and create one focused shaping commit. Ideation always evaluates its own result inline;
-  Cowork neither suppresses that round nor counts it as Phase 3 coverage. For selected Planning, assign a
-  leader to apply [Planning](../planning/SKILL.md) to the accepted design or locked topic contract,
-  self-review its canonical artifact set, and create one focused planning commit.
+  artifact set, and create one focused shaping commit. Load Ideation when its TODO becomes active, not at
+  Cowork entry. Ideation always evaluates its own result inline; Cowork neither suppresses that round nor
+  counts it as Phase 3 coverage. For selected Planning, assign a leader to apply
+  [Planning](../planning/SKILL.md) to the accepted design or locked topic contract. Load Planning when its TODO
+  becomes active, self-review its canonical artifact set, and create one focused planning commit.
 - When a topic routes to Structured depth and selects Ideation, offer the user one partner creation round for
   that stage through [Discussion](../discussion/SKILL.md). The offer is never automatic, no `evaluate` call
   authorizes it, and the round runs only when the user calls for it. On that call, use
@@ -155,13 +196,17 @@ separate user-called judgment, never a substitute for stage quality.
 - Assign each dependency-ready unit to an executor through [Execution](../execution/SKILL.md). Keep writers
   sequential; after every report, reread the promised artifact or implementation and commit, reproduce the
   relevant verification, and accept, repair, or redispatch it before dependent work begins.
+- After an optional stage or Execution unit is accepted, complete its active item and activate the next
+  pending item. Never advance from a specialist report, TODO status, or plausible summary without the
+  accepted artifact or commit and reproduced verification.
 - On missing artifacts, malformed output, failed checks, unavailable capability, wrong-tree evidence,
   conflicting user work, unsafe recovery, or scope drift, stop with the exact failure and return to the
   earliest responsible stage. Complete the topic only when every selected result is accepted in a focused
-  verified commit and the worktree is clean; report outcome, scope, artifacts, commits, verification,
-  exclusions, concerns, any partner creation round, and current evaluation coverage before waiting for the
-  next topic or user call. Report the creation round and the coverage as separate facts, because a creation
-  round never becomes coverage.
+  verified commit and the worktree is clean. Activate PASS, verify the complete topic evidence, complete it,
+  and leave no item active while waiting for the next topic or user call. Report outcome, scope, artifacts,
+  commits, verification, exclusions, concerns, any partner creation round, and current evaluation coverage.
+  Report the creation round and the coverage as separate facts, because a creation round never becomes
+  coverage.
 
 ### Phase 3 — Evaluate on User Call
 
@@ -177,6 +222,8 @@ separate user-called judgment, never a substitute for stage quality.
   subject from the locked base commit through the current head, including all commits, tree changes, topic
   contracts, accepted artifacts, user decisions, verification, status, and exclusions. A user-named narrower
   subject is allowed but is not whole-branch coverage.
+- Create one `CW · Evaluation · <whole-branch|subject-slug>` item and make it the only active item. Load
+  [Evaluation](../evaluation/SKILL.md) before dispatching the fresh evaluators.
 - Load [Partner](../gobbi/partner/SKILL.md) and call it for one evaluation round over that frozen subject:
   two fresh isolated reports, one from the active runtime and one from the partner system, neither holding
   the other. Each report is a complete [Evaluation](../evaluation/SKILL.md) output. A paused round stops this
@@ -184,30 +231,36 @@ separate user-called judgment, never a substitute for stage quality.
 - Aggregate with the more severe verdict and present every material finding for user disposition before
   changing work. Accepted corrections return to the owning leader or executor in Phase 2 or the memory
   assistant in Phase 4, create new focused commits, make prior whole-branch coverage stale, and require another
-  explicit `evaluate` call.
+  explicit `evaluate` call. Complete the Evaluation item after every finding has a disposition; a correction
+  receives its own topic or Wrap-up route rather than silently extending the completed evaluation item.
 
 ### Phase 4 — Wrap Up on User Call
 
 #### 4.1 Update memory and return the retained result
 
-- Enter only for an explicit `wrap up`. Freeze the accepted topics, scope, decisions, artifacts, commits,
-  verification, evaluation coverage, exclusions, risks, current project state, and existing memory as the
-  closure input.
+- Enter only for an explicit `wrap up`. Load [Wrap-up](../wrap-up/SKILL.md), then create the MEMORY,
+  FRESHNESS, and PASS items with only MEMORY active. Freeze the accepted topics, scope, decisions, artifacts,
+  commits, verification, evaluation coverage, exclusions, risks, current project state, and existing memory
+  as the closure input. Cowork still applies its own closure policy below; loading Wrap-up does not create a
+  Workflow Hand-off or authorize Workflow finalization.
 - Assign an assistant through [Delegation](../delegation/SKILL.md) with the Cowork fields from Step 2.1 to
   apply [Memory](../memory/SKILL.md). It must read the Step 1.2 session memory tree together with the frozen
   closure input, review durable future value, load every applicable Memory category skill, update and verify
   only the current project's memory root, and create one focused memory commit through the ordered Cowork
   writer chain.
   Accept an explicit verified no-change result when no durable update is needed.
-- Do not create Workflow TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Stop for missing
-  category guidance, unresolved user decisions, invalid memory paths, failed validation, wrong-tree evidence,
-  or unrelated user work, then repair through the same memory assignment.
-- After the accepted Memory pass, check evaluation coverage against the resulting head. When no independent
-  verdict covers that whole branch, use [Discussion](../discussion/SKILL.md) to ask whether to evaluate or
-  close with self-verification only; name the uncovered commit range and record a decline literally. An
-  evaluation choice runs Phase 3 and then repeats this freshness check without rerunning unchanged Memory work.
+- Do not create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Stop
+  for missing category guidance, unresolved user decisions, invalid memory paths, failed validation,
+  wrong-tree evidence, or unrelated user work, then repair through the same memory assignment.
+- After the accepted Memory pass, complete MEMORY, activate FRESHNESS, and check evaluation coverage against
+  the resulting head. When no independent verdict covers that whole branch, use
+  [Discussion](../discussion/SKILL.md) to ask whether to evaluate or close with self-verification only; name
+  the uncovered commit range and record a decline literally. An evaluation choice returns FRESHNESS to
+  `pending`, inserts and runs Phase 3 as the only active item, then reactivates FRESHNESS and repeats this
+  check without rerunning unchanged Memory work.
 - Require current Execution and Git evidence for accepted focused commits, a clean Cowork worktree, and an
-  unchanged main checkout. Return a conversation-only handoff with outcome, scope, topics, artifacts, commits,
+  unchanged main checkout. Complete FRESHNESS, activate PASS, verify the closure evidence, and complete PASS
+  only when it agrees. Return a conversation-only handoff with outcome, scope, topics, artifacts, commits,
   durable memory changes or verified no-change result, verification, evaluation coverage and dispositions,
   exclusions, risks, UUID, base, branch, worktree, head, status, and first recovery command. Retain local
   objects and route any later publication, merge, or cleanup through a separate explicit Git operation.

@@ -47,17 +47,19 @@ round trip whenever its location does not resolve.
 At session start, resume, `/clear`, rewind, and runtime compaction:
 
 1. Read `{gobbi-skills-root}/principles/SKILL.md` and applicable project rules.
-2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its nine-skill floor and fresh-or-resumed
-   mode-selection contract.
+2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its Principles-only entry load and fresh-or-resumed
+   mode-selection contract. Load Discussion just before Gobbi writes its mode or partner question.
 3. For General, load no orchestration owner.
-4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection and add its topic-loop fields to the
-   generic Delegation brief.
-5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection and enter it at its validated
-   fresh or resumed position.
+4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared five-skill
+   register and native TODO route, and add its topic-loop fields to the generic Delegation brief.
+5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection, establish its shared five-skill
+   register, and enter it at its validated fresh or resumed position.
 
-Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Load the selected stage, task,
-language, tool, evaluation, record, or memory skill only when its trigger applies. Fresh specialists inherit
-none of these loads, so every brief carries both roots and names the exact resolved paths in read order.
+Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Cowork and Workflow load
+Delegation, Discussion, Git, Record, and Memory at owner entry; their phase owners load Ideation, Planning,
+and Wrap-up only when those phases start. Load every other selected task, language, tool, or evaluation skill
+when its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots and
+names the exact resolved paths in read order.
 
 ## Lifecycle
 
@@ -98,8 +100,8 @@ none of these loads, so every brief carries both roots and names the exact resol
 ### Memorize
 
 - Cowork delegates a Memory review during its explicit Wrap-up. The assistant loads applicable Memory
-  category skills, commits verified durable updates or proves no change is needed, and never creates Workflow
-  TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off.
+  category skills, commits verified durable updates or proves no change is needed, and never creates
+  Workflow-formatted TODOs, phase receipts, RECORD evidence, or a Workflow Hand-off.
 - General creates no Gobbi RECORD or durable-memory orchestration output.
 - Workflow delegates RECORD and Wrap-up memory work exactly as its owners require. The manager accepts those
   writes but does not replace their specialist methods.

@@ -43,8 +43,8 @@ whose completion cannot be proved.
   progress.** Stop when the native TODO, prior Hand-off, branch, worktree, or evidence root cannot be reconciled
   safely.
 
-- **MUST load the Git skill before creating or verifying the session branch and worktree.** Generate the Gobbi
-  session UUID before deriving either Git identity.
+- **MUST confirm the parent-loaded Delegation, Discussion, Git, Record, and Memory register before Phase 1
+  acts.** Generate the Gobbi session UUID before deriving either Git identity.
 
 - **MUST resolve every material Ideation unknown with the user or assign it an explicit owner before freezing
   the neutral contract.** Phase 1 cannot pass on an inferred material scope, authority, or success condition.
@@ -67,9 +67,11 @@ whose completion cannot be proved.
 
 - Confirm the parent [Workflow](../SKILL.md) operation is loaded and its `P1 · Configuration` item is the only
   active TODO for a fresh session.
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+  order. Return to the parent entry when any item is absent.
 - Read the repository, branch, registered worktrees, current runtime TODO list, existing workflow evidence,
   and any explicit recovery identity without mutation.
-- Load the [Git](../../git/SKILL.md) skill before any branch or worktree action.
+- Apply the loaded [Git](../../git/SKILL.md) skill before any branch or worktree action.
 - Treat the user's locked Configuration choices and protected user work as trusted boundaries. Stop before
   mutation when either cannot be preserved.
 - Classify the session as fresh only when no verified session identity exists. Otherwise continue to Step 1.3
@@ -120,6 +122,7 @@ whose completion cannot be proved.
 - Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
   1.3 fields. Include the phase, TODO, stage, iteration, scope, expected artifact, authority, and accepted
   findings.
+- Use the loaded [Discussion](../../discussion/SKILL.md) skill for every material user-owned Ideation choice.
 - Resolve with the user:
   - the root problem and affected people;
   - What will change and what will not;
@@ -164,7 +167,8 @@ whose completion cannot be proved.
 
 #### 2.4 Record and route the result
 
-- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
+- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
+  tree.
 - Seal the current creation package, evaluator reports, Configuration receipt, decisions, findings, checks,
   and system provenances.
 - Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking

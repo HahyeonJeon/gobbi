@@ -70,6 +70,10 @@ finalization receipt end Phase 3.
 
 #### 1.1 Initialize or recover the native TODO
 
+- Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
+  [Git](../git/SKILL.md), [Record](../record/SKILL.md), and [Memory](../memory/SKILL.md), in that order, before
+  the first Workflow action. A skill already loaded by Gobbi may satisfy its register entry; confirm all five
+  before continuing.
 - Inspect the current repository, branch, worktrees, native TODO surface, and unfinished work without
   mutation.
 - Load the internal [`phase-1`](phase-1/SKILL.md) operation before acting on `P1 · Configuration`. A phase
@@ -225,10 +229,8 @@ SKILLS LOADED:
 
 #### 1.4 Run user-led Ideation
 
-- Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded and load the
-  [Ideation skill](../ideation/SKILL.md) before DISCUSSION. Load the
-  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
+- Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded. That phase owner defines the Ideation,
+  Evaluation, and Record load points for its stages; the Workflow parent only routes to them.
 - In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
   material assumptions, alternatives, authority, and deferrals with the user. Freeze the neutral contract
   only when the user has locked the direction and each material unknown has an owner or decision.
@@ -266,10 +268,8 @@ SKILLS LOADED:
 
 #### 2.1 Plan continuously from the locked contract
 
-- Load the internal [`phase-2`](phase-2/SKILL.md) operation and the
-  [Planning skill](../planning/SKILL.md) before DISCUSSION. Load the
-  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
+- Load the internal [`phase-2`](phase-2/SKILL.md) operation. That phase owner defines the Planning,
+  Evaluation, Record, and task Execution load points; the Workflow parent only routes to them.
 - Use the canonical Ideation artifact, accepted decisions and findings, repository evidence, authority,
   required skills, dependencies, and writer boundary as Planning inputs.
 - In DISCUSSION, the manager and agents resolve task hierarchy, stable `task-NN-slug` IDs, dependencies,
@@ -286,9 +286,8 @@ SKILLS LOADED:
 - Replace the pending `unplanned` placeholder with the first canonical plan task and add the remaining
   `task-NN-slug` items in plan order. Each task starts at
   `P2 · Execution · <task-NN-slug> · DISCUSSION · 1/<configured-max>`.
-- Load the [Execution skill](../execution/SKILL.md) before task DISCUSSION and WORK, the
-  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION, and the
-  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
+- Follow the loaded Phase 2 owner's task-specific Execution, Evaluation, and Record load points as each task
+  advances.
 - For each task, let agents turn the plan entry, current preimage, exact path scope, dependencies, skills,
   authority, acceptance, and checks into an executable DISCUSSION contract.
 - In WORK, call the [Partner](../gobbi/partner/SKILL.md) operation for a draft and cross-review round over the
@@ -334,11 +333,8 @@ SKILLS LOADED:
 
 #### 3.1 Run Wrap-up continuously
 
-- Load the [Wrap-up](../wrap-up/SKILL.md), [Memory](../memory/SKILL.md), and
-  [Git](../git/SKILL.md) skills plus the internal [`phase-3`](phase-3/SKILL.md) operation before DISCUSSION.
-  Load the
-  [Evaluation skill](../evaluation/SKILL.md) before EVALUATION and the
-  [Record skill](../record/SKILL.md) rooted at the Step 1.2 session memory tree before RECORD.
+- Load the internal [`phase-3`](phase-3/SKILL.md) operation before DISCUSSION. That phase owner defines the
+  Wrap-up, Evaluation, and Record load points and applies the owner-loaded Memory and Git skills.
 - Use canonical step artifacts, decisions, findings, waivers, task commits, verification, current Memory,
   the Wrap-up handoff template, and configured Git authority.
 - In DISCUSSION, apply Wrap-up Phase 1 to freeze the closure inventory without routine user questions, and

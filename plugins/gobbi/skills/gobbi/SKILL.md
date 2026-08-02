@@ -1,20 +1,20 @@
 ---
 name: gobbi
-description: "MUST load at session start and at every boundary that may discard session context. Loads the nine-skill Gobbi system, then obtains and routes the user's General, Cowork, or Workflow mode selection."
+description: "MUST load at session start and at every boundary that may discard session context. Loads Principles, then obtains and routes the user's General, Cowork, or Workflow mode selection."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
 
 # Gobbi
 
-Gobbi is the read-only entry operation for a Gobbi manager. It loads the nine-skill Gobbi system, reports any
-configuration the session is missing, obtains one session mode — General, Cowork, or Workflow — and one
-partner answer from the user, then hands the session to that mode's owner.
+Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, reports any configuration the
+session is missing, obtains one session mode — General, Cowork, or Workflow — and one partner answer from the
+user, then hands the session to that mode's owner.
 
 Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
-every mode inherits. General continues from the loaded system, Cowork uses [`cowork`](../cowork/SKILL.md), and
-Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all mode-specific creation, state,
-routing, execution, evaluation, and closure.
+every mode inherits. General continues from the Principles foundation, Cowork uses
+[`cowork`](../cowork/SKILL.md), and Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all
+mode-specific creation, state, routing, execution, evaluation, and closure.
 
 The entry writes nothing: reading configuration and asking the user are both reads. It runs again at every
 boundary that may discard manager context and keeps an established mode whenever that mode's evidence still
@@ -22,10 +22,10 @@ validates.
 
 ## Principles
 
-### Load the system from its durable sources
+### Load the entry foundation from its durable source
 
-A cold manager reads the nine skills, applicable project rules, and its role from the repository before
-acting. Runtime memory, a task view, or a stale entry document cannot replace those sources.
+A cold manager reads Principles, applicable project rules, and its role from the repository before acting.
+Runtime memory, a task view, or a stale entry document cannot replace those sources.
 
 ### Let the user select the session mode
 
@@ -51,8 +51,9 @@ its owner without copying that owner's procedure or creating a second router.
   runtime's structured user-input request with no automatic resolution; wording may recommend a mode but
   never selects it.
 
-- **MUST load all nine skills before any governed action.** Read `principles` first, then `ideation`,
-  `planning`, `wrap-up`, `delegation`, `discussion`, `record`, `memory`, and `git`.
+- **MUST load Principles before any governed action and defer every other skill to its owner or trigger.**
+  Gobbi may load Discussion just before it asks its own questions; selected mode owners and phases load their
+  shared and phase-specific skills.
 
 - **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
   `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
@@ -76,7 +77,7 @@ are not skill references.
 
 ## Procedure
 
-### Phase 1 — Load the System and Route the Selected Mode
+### Phase 1 — Load Principles and Route the Selected Mode
 
 #### 1.1 Establish the entry context, runtime, and canonical layout
 
@@ -188,27 +189,22 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 - This stop fires before the Step 1.3 mode selection, because every later step and every brief depends on the
   two validated roots. Never select a mode, load an owner, or build a brief without them.
 
-#### 1.2 Load the nine-skill Gobbi system
+#### 1.2 Load the entry foundation
 
-- Read [`../principles/SKILL.md`](../principles/SKILL.md) first, then
-  [`../ideation/SKILL.md`](../ideation/SKILL.md), [`../planning/SKILL.md`](../planning/SKILL.md),
-  [`../wrap-up/SKILL.md`](../wrap-up/SKILL.md), [`../delegation/SKILL.md`](../delegation/SKILL.md),
-  [`../discussion/SKILL.md`](../discussion/SKILL.md), [`../record/SKILL.md`](../record/SKILL.md),
-  [`../memory/SKILL.md`](../memory/SKILL.md), and [`../git/SKILL.md`](../git/SKILL.md), in that order.
-- Load all nine here even though five of them — `ideation`, `planning`, `wrap-up`, `record`, and `memory` —
-  also declare their own load triggers. The nine are the shared vocabulary every mode needs before the mode is
-  known, so they load before the selection that would otherwise determine them; every other skill still loads
-  from its own trigger.
+- Read [`../principles/SKILL.md`](../principles/SKILL.md). Load no other skill in this step.
 - Read applicable project rules, governing repository instructions, and the canonical
   [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
   project rules exist.
-- Confirm the load register holds all nine skills before any governed action, and return to the first unread
-  skill when it does not.
+- Confirm the load register holds Principles before any governed action, and return to it when it does not.
+- Defer the complete Delegation, Discussion, Git, Record, and Memory register to the selected Cowork or
+  Workflow owner; defer Ideation, Planning, and Wrap-up to their named phases. General loads each
+  task-specific skill only when its trigger applies.
 
 #### 1.3 Obtain or preserve the session mode and the partner answer
 
-- Start from the loaded system and the recorded entry trigger.
-- At every fresh entry, use the [Discussion](../discussion/SKILL.md) structure and the active runtime's
+- Start from the loaded Principles foundation and the recorded entry trigger.
+- Load [Discussion](../discussion/SKILL.md) immediately before Gobbi writes a mode or partner question. At
+  every fresh entry, use its structure and the active runtime's
   structured user-input request to ask the user to select exactly one mode. Set no automatic resolution:
 
 | Mode | Select when | Evaluation commitment |
@@ -239,29 +235,29 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 
 #### 1.4 Load the selected owner and hand off without mutation
 
-- **General:** continue the user's task from the loaded nine skills and the task-specific skills the work
-  triggers. Load neither orchestration owner — `cowork` and `workflow` — and create no Gobbi session state;
-  the nine-skill floor stays loaded.
+- **General:** continue the user's task from Principles and load each task-specific skill when its trigger
+  applies. Load neither orchestration owner — `cowork` and `workflow` — and create no Gobbi session state.
 - **Cowork:** load [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner creates or recovers its isolated
   worktree before editing and runs its user-topic loop.
 - **Workflow:** load [`../workflow/SKILL.md`](../workflow/SKILL.md). That owner performs fresh and resume
   classification, Configuration, durable routing, productive steps, evaluation, RECORD, and Wrap-up.
-- Build every specialist brief through the loaded [Delegation](../delegation/SKILL.md) skill, and let the
-  selected mode add its own brief fields. After a specialist reports, reread its artifact or commit and
-  reproduce its verification before assigning further work.
+- Before building a specialist brief, ensure [Delegation](../delegation/SKILL.md) is loaded. Cowork and
+  Workflow load it in their shared owner register; General loads it from this trigger. Let the selected mode
+  add its own brief fields. After a specialist reports, reread its artifact or commit and reproduce its
+  verification before assigning further work.
 - Use the [skill map](#references) to find a further task-specific skill, then load that skill from its own
-  trigger. The map indexes what exists for routing; it loads nothing beyond the nine and gives no skill a
-  second entry point.
+  trigger. The map indexes what exists for routing; it loads nothing itself and gives no skill a second entry
+  point.
 - On missing or invalid mode evidence, owner artifacts, identity, or authority, preserve the prior state and
   report the exact blocker. Never invent a fallback mode, cursor, worktree, or direct specialist route.
 
 ## References
 
 This is the complete map of the canonical Gobbi skill roots, plus the two children `gobbi` owns. Step 1.2
-loads the entry floor; every other skill loads from its own trigger, so this map shows what exists rather than
-what is loaded. Every other root that has children routes to them from its own document.
+loads only Principles; selected owners, phases, and task triggers load every other skill. The map shows what
+exists rather than what is loaded. Every other root that has children routes to them from its own document.
 
-### Entry floor
+### Entry and shared operations
 
 | Skill | Owns |
 |---|---|

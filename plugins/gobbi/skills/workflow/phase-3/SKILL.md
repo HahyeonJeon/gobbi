@@ -65,8 +65,10 @@ from direct evidence without changing the handoff.
 
 - Confirm the parent Workflow is loaded, the Phase 2 Hand-off validates, and
   `P3 · Wrap-up · DISCUSSION · 1/2` is the only active TODO on first entry.
-- Load [Wrap-up](../../wrap-up/SKILL.md), [Memory](../../memory/SKILL.md), and
-  [Git](../../git/SKILL.md), then apply Wrap-up Phase 1 as the closure-discussion method.
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+  order. Return to parent recovery when any item is absent.
+- Load [Wrap-up](../../wrap-up/SKILL.md), then apply its Phase 1 as the closure-discussion method with the
+  owner-loaded [Memory](../../memory/SKILL.md) and [Git](../../git/SKILL.md) skills.
 - After every returned artifact, verify it, update the active item, activate the next stage, and continue in
   the same turn. Ask the user only at the parent critical-blocker boundary.
 - Treat active waiting for a required agent, system, or tool as work. A progress report or checkpoint is not a
@@ -132,7 +134,8 @@ from direct evidence without changing the handoff.
 
 #### 2.4 Record and route the result
 
-- Load [Record](../../record/SKILL.md) rooted at the parent Workflow Step 1.2 session memory tree.
+- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
+  tree.
 - Seal the creation package, evaluator reports, system provenance, Memory verification, tracked handoff path
   and digest, checks, decisions, findings, Git intent, authority, and retained recovery state.
 - Write and verify `gate.md` and `record/iteration-N.md` with their required report, package, gate, output, and

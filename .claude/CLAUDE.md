@@ -19,15 +19,19 @@ conflicting.
 
 | Mode | Contract |
 |---|---|
-| **General** | Ordinary assistance from the Gobbi floor and task-specific skills. No orchestration owner or Gobbi session state. |
+| **General** | Ordinary assistance from the Principles foundation and task-specific skills. No orchestration owner or Gobbi session state. |
 | **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-Cowork owns its own Git contract, evaluation policy, and session locations, and never creates Workflow TODOs,
-phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Its explicit Wrap-up applies `memory` directly,
-commits durable updates or proves none are needed, then checks evaluation freshness. Workflow uses the native
-TODO list as its active route; phase receipts and committed evidence rebuild that route after a context
-boundary.
+Cowork owns its own native TODO route, Git contract, evaluation policy, and session locations, and never
+creates Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Its explicit
+Wrap-up applies `memory` directly, commits durable updates or proves none are needed, then checks evaluation
+freshness. Workflow uses the native TODO list as its active route; phase receipts and committed evidence
+rebuild that route after a context boundary.
+
+Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
+Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
+owners load Ideation, Planning, and Wrap-up when those phases start.
 
 ## Partner quality contract
 
@@ -80,6 +84,6 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 
 ## Navigate deeper
 
-`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the nine-skill system
-load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of every
-canonical skill with what that skill owns.
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the Principles-first
+entry load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of
+every canonical skill with what that skill owns.

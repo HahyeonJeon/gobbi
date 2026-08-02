@@ -68,6 +68,8 @@ plan, task, receipt, or commit.
 
 - Confirm the parent [Workflow](../SKILL.md) operation is loaded, the Phase 1 Hand-off validates, and
   `P2 · Planning · DISCUSSION · 1/2` is the only active TODO on first entry.
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+  order. Return to parent recovery when any item is absent.
 - Read the canonical Ideation artifact, settings, accepted decisions and findings, repository and worktree
   preimages, authority, required skills, dependencies, writer boundary, and prior recovery evidence.
 - Load the [Planning](../../planning/SKILL.md) skill before Planning DISCUSSION.
@@ -123,7 +125,8 @@ plan, task, receipt, or commit.
   [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
   from the active runtime and one from the partner system, which that operation isolates.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
-- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
+- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
+  tree.
 - Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
   findings, and the durable records written into the session memory tree.
 - On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
@@ -185,8 +188,8 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
   sole worktree writer.
 - Keep read-only helpers from mutating the worktree, TODO route, external systems, scope, or user decisions.
 - Run the task's required verification and review the complete diff against allowed and protected paths.
-- Create one focused local task commit. Reread the commit, diff, checks, and complete creation package before
-  activating EVALUATION.
+- Create one focused local task commit through the loaded [Git](../../git/SKILL.md) skill. Reread the commit,
+  diff, checks, and complete creation package before activating EVALUATION.
 
 #### 2.5 Evaluate the task with the normal gate
 
@@ -201,7 +204,8 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.6 Record and route the task result
 
-- Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
+- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
+  tree.
 - Seal both evaluation reports, `gate.md`, findings, dispositions, committed diff, verification, artifact
   pointers, and system provenances.
 - Verify only authorized paths changed, the focused commit exists in the exact worktree, and the required
