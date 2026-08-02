@@ -54,3 +54,15 @@ Cowork and Workflow session is the session branch name, not the project. Use
 
 **Application:** Use the `--git-common-dir` form for any path that must be stable across a project's
 worktrees, such as a project memory root or a project-scoped cache key.
+
+## Restore uncommitted edits from the index, not from HEAD
+
+**Context:** Running a negative-control check that needs to temporarily revert a file to confirm what changed,
+while the file also holds uncommitted edits worth keeping.
+
+**Tip:** `git checkout -- <file>` restores from HEAD, discarding any uncommitted edits including staged ones.
+To run a negative control without losing in-progress work, stage the current edits first (`git add`), then
+`git checkout -- <file>` restores from the index — which now holds those staged edits — rather than from HEAD.
+
+**Application:** Before any negative-control revert, stage first. Restoring from HEAD directly has cost
+in-progress edits mid-verification.
