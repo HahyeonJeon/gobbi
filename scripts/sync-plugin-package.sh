@@ -5,16 +5,35 @@ repo_root_source="${GOBBI_SYNC_REPO_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
 repo_root="$(cd "$repo_root_source" && pwd -P)"
 package_root="$repo_root/plugins/gobbi"
 check_mode=false
+materialize_mode=false
 
-if [[ "${1:-}" == "--check" ]]; then
-  check_mode=true
-elif [[ $# -gt 0 ]]; then
-  printf 'usage: %s [--check]\n' "$0" >&2
+usage_error() {
+  printf 'usage: %s [--check | --materialize-package]\n' "$0" >&2
   exit 2
+}
+
+if [[ $# -gt 1 ]]; then
+  usage_error
+fi
+if [[ $# -eq 1 ]]; then
+  case "$1" in
+    --check) check_mode=true ;;
+    --materialize-package) materialize_mode=true ;;
+    *) usage_error ;;
+  esac
 fi
 
-expected_plugin_skills='../../.gobbi/projects/gobbi/skills'
-expected_plugin_agents='../../.gobbi/projects/gobbi/agents'
+# The package's skills and agents components have two valid shapes. Before the publication
+# generator has run in a checkout, each is a symlink to its canonical owner. After it has
+# run, each is a real directory holding the one generated copy a guard proves byte-equal to
+# that owner, because the Codex installer does not follow a symlinked component and installs
+# nothing behind one. Every assertion below matches the shape it finds and fails only on a
+# genuine mismatch, so --check stays valid on a checkout the generator has not reached yet.
+package_components=(skills agents)
+
+package_component_link_target() {
+  printf '../../.gobbi/projects/gobbi/%s' "$1"
+}
 
 canonical_skills_root="$repo_root/.gobbi/projects/gobbi/skills"
 claude_skills_drift=0
@@ -187,6 +206,11 @@ validate_source_topology() {
       '([.plugins[] | select(.name == "gobbi" and .source == "./plugins/gobbi")] | length) == 1' \
       'Claude marketplace must contain one gobbi entry pointing at ./plugins/gobbi'
   fi
+  # teammateMode is asserted on purpose, and not as a capability gate: Claude Code has
+  # defaulted it to in-process since v2.1.179, so a checkout without the key already runs
+  # in-process teammates. The assertion pins the repository's Agent Teams convention
+  # explicitly, so a future change to that default cannot silently move this project off
+  # in-process teammates. The hooks assertion is the capability gate: Gobbi ships no hooks.
   if [[ -f "$repo_root/.claude/settings.json" ]]; then
     require_json_contract "$repo_root/.claude/settings.json" \
       '.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS == "1" and .teammateMode == "in-process" and (has("hooks") | not)' \
@@ -740,16 +764,246 @@ check_claude_skills_mirror() {
   return 0
 }
 
+# Enumerate one component tree's real regular files, real subdirs, or symlinks, dot-pruned
+# and relative to the tree root. No -L and no -follow: a symlink is never a valid generated
+# file, so it must never appear as a file here and is named by its own guard pass instead.
+component_files() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 0
+  ( cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type f -print ) \
+    | sed 's|^\./||' | LC_ALL=C sort
+}
+
+component_dirs() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 0
+  ( cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type d -print ) \
+    | sed 's|^\./||' | LC_ALL=C sort
+}
+
+component_symlinks() {
+  local dir="$1"
+  [[ -d "$dir" ]] || return 0
+  ( cd "$dir" && find . -mindepth 1 -name '.*' -prune -o -type l -print ) \
+    | sed 's|^\./||' | LC_ALL=C sort
+}
+
+# Prove every file of a generated package component byte-equal to its canonical owner. This
+# guard GATES publication rather than following it: a forgotten --materialize-package run
+# leaves a missing, stale, or differing generated file, and each one is reported here by
+# exact repository-relative path with a non-zero exit. Set-equality runs in both directions,
+# so neither a new canonical file nor a deleted one can pass unnoticed.
+check_generated_component() {
+  local component="$1"
+  local canonical_root="$repo_root/.gobbi/projects/gobbi/$component"
+  local package_dir="$package_root/$component"
+  local drift=0
+  local canonical_files package_files canonical_dirs package_dirs missing stale stale_dirs rel
+
+  if [[ -L "$canonical_root" || ! -d "$canonical_root" ]]; then
+    printf '.gobbi/projects/gobbi/%s is not a real directory\n' "$component" >&2
+    return 1
+  fi
+
+  canonical_files="$(component_files "$canonical_root")"
+  package_files="$(component_files "$package_dir")"
+
+  # comm must use the SAME collation as the LC_ALL=C sort in the enumerators above.
+  missing="$(LC_ALL=C comm -23 <(printf '%s\n' "$canonical_files") <(printf '%s\n' "$package_files"))"
+  stale="$(LC_ALL=C comm -13 <(printf '%s\n' "$canonical_files") <(printf '%s\n' "$package_files"))"
+
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    printf 'plugins/gobbi/%s/%s is missing from the generated copy\n' "$component" "$rel" >&2
+    drift=1
+  done <<< "$missing"
+
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    printf 'plugins/gobbi/%s/%s has no canonical owner (stale generated file)\n' "$component" "$rel" >&2
+    drift=1
+  done <<< "$stale"
+
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    [[ -f "$package_dir/$rel" && ! -L "$package_dir/$rel" ]] || continue
+    if ! cmp -s -- "$canonical_root/$rel" "$package_dir/$rel"; then
+      printf 'plugins/gobbi/%s/%s is not byte-equal to .gobbi/projects/gobbi/%s/%s\n' \
+        "$component" "$rel" "$component" "$rel" >&2
+      drift=1
+    fi
+  done <<< "$canonical_files"
+
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    printf 'plugins/gobbi/%s/%s is a symlink; the generated copy must hold real files\n' \
+      "$component" "$rel" >&2
+    drift=1
+  done <<< "$(component_symlinks "$package_dir")"
+
+  # Directory parity in the stale direction. The file comparison cannot see an EMPTY stale
+  # subdir, which would otherwise ship in the published package.
+  canonical_dirs="$(component_dirs "$canonical_root")"
+  package_dirs="$(component_dirs "$package_dir")"
+  stale_dirs="$(LC_ALL=C comm -13 <(printf '%s\n' "$canonical_dirs") <(printf '%s\n' "$package_dirs"))"
+  while IFS= read -r rel; do
+    [[ -n "$rel" ]] || continue
+    printf 'plugins/gobbi/%s/%s is a stale generated subdir (no canonical dir)\n' "$component" "$rel" >&2
+    drift=1
+  done <<< "$stale_dirs"
+
+  if [[ "$drift" -ne 0 ]]; then
+    printf 'plugins/gobbi/%s is not byte-equal to its canonical owner; regenerate with: bash scripts/sync-plugin-package.sh --materialize-package\n' \
+      "$component" >&2
+    return 1
+  fi
+}
+
+# Assert one package component against the shape it actually has.
+check_package_component() {
+  local component="$1"
+  local package_dir="$package_root/$component"
+
+  if [[ -L "$package_dir" ]]; then
+    check_link "$package_dir" "$(package_component_link_target "$component")"
+    return
+  fi
+  if [[ ! -d "$package_dir" ]]; then
+    printf 'plugins/gobbi/%s is missing; expected the canonical symlink or the generated directory\n' \
+      "$component" >&2
+    return 1
+  fi
+  check_generated_component "$component"
+}
+
+# Generate the one permitted published copy: dereference the component into a real directory
+# of real files taken byte-for-byte from the canonical owner. The canonical tree stays the
+# only editable owner; a wrong generated file means the owner or this generator is wrong.
+# Prove the whole plan safe before the first mutation, then prune stale entries leaf-first
+# and copy every canonical file. Never follow a directory symlink, never delete recursively.
+materialize_package_component() {
+  local component="$1"
+  local canonical_root="$repo_root/.gobbi/projects/gobbi/$component"
+  local package_dir="$package_root/$component"
+  local entry rel preflight_failed=0
+  local -a expected_dirs=() expected_files=() stale_entries=() stale_dirs=() sorted=()
+  local -A expected_dir_set=() expected_file_set=()
+
+  if [[ -L "$canonical_root" || ! -d "$canonical_root" ]]; then
+    printf 'cannot generate plugins/gobbi/%s: .gobbi/projects/gobbi/%s is not a real directory\n' \
+      "$component" "$component" >&2
+    return 1
+  fi
+  if [[ -e "$package_dir" && ! -L "$package_dir" && ! -d "$package_dir" ]]; then
+    printf 'cannot generate plugins/gobbi/%s: it exists and is neither a symlink nor a directory\n' \
+      "$component" >&2
+    return 1
+  fi
+
+  while IFS= read -r -d '' entry; do
+    rel="${entry#"$canonical_root"/}"
+    if ! validate_reconcile_relative_path "$rel"; then
+      printf 'cannot generate plugins/gobbi/%s: .gobbi/projects/gobbi/%s/%s: %s\n' \
+        "$component" "$component" "$rel" "$reconcile_path_reason" >&2
+      preflight_failed=1
+    elif [[ -L "$entry" ]]; then
+      printf 'cannot generate plugins/gobbi/%s: .gobbi/projects/gobbi/%s/%s is a symlink\n' \
+        "$component" "$component" "$rel" >&2
+      preflight_failed=1
+    elif [[ -d "$entry" ]]; then
+      expected_dir_set["$rel"]=1
+      expected_dirs+=("$rel")
+    elif [[ -f "$entry" ]]; then
+      expected_file_set["$rel"]=1
+      expected_files+=("$rel")
+    else
+      printf 'cannot generate plugins/gobbi/%s: .gobbi/projects/gobbi/%s/%s has an unsupported type\n' \
+        "$component" "$component" "$rel" >&2
+      preflight_failed=1
+    fi
+  done < <(find "$canonical_root" -mindepth 1 -name '.*' -prune -o -print0)
+
+  if [[ -d "$package_dir" && ! -L "$package_dir" ]]; then
+    while IFS= read -r -d '' entry; do
+      rel="${entry#"$package_dir"/}"
+      if ! validate_reconcile_relative_path "$rel"; then
+        printf 'cannot generate plugins/gobbi/%s: plugins/gobbi/%s/%s: %s\n' \
+          "$component" "$component" "$rel" "$reconcile_path_reason" >&2
+        preflight_failed=1
+      elif [[ -L "$entry" ]]; then
+        # A symlink is pruned at EVERY path, including an expected one. cp follows a symlink
+        # destination, so copying onto one would write through it, outside the package and
+        # into the canonical owner the generator must never modify.
+        stale_entries+=("$rel")
+      elif [[ -d "$entry" ]]; then
+        [[ -n "${expected_dir_set[$rel]:-}" ]] || stale_dirs+=("$rel")
+      elif [[ -f "$entry" ]]; then
+        [[ -n "${expected_file_set[$rel]:-}" ]] || stale_entries+=("$rel")
+      else
+        stale_entries+=("$rel")
+      fi
+    done < <(find "$package_dir" -mindepth 1 -name '.*' -prune -o -print0)
+  fi
+
+  if [[ "$preflight_failed" -ne 0 ]]; then
+    printf 'plugins/gobbi/%s generation aborted before mutation\n' "$component" >&2
+    return 1
+  fi
+
+  if [[ -L "$package_dir" ]]; then
+    rm -f -- "$package_dir"
+  fi
+
+  if ((${#stale_entries[@]})); then
+    for rel in "${stale_entries[@]}"; do
+      rm -f -- "$package_dir/$rel"
+    done
+  fi
+  if ((${#stale_dirs[@]})); then
+    mapfile -t sorted < <(sort_reconcile_paths deepest "${stale_dirs[@]}")
+    for rel in "${sorted[@]}"; do
+      rmdir -- "$package_dir/$rel"
+    done
+  fi
+
+  mkdir -p "$package_dir"
+  if ((${#expected_dirs[@]})); then
+    mapfile -t sorted < <(sort_reconcile_paths shallowest "${expected_dirs[@]}")
+    for rel in "${sorted[@]}"; do
+      mkdir -p "$package_dir/$rel"
+    done
+  fi
+  for rel in "${expected_files[@]}"; do
+    cp -p -- "$canonical_root/$rel" "$package_dir/$rel"
+  done
+
+  printf 'generated plugins/gobbi/%s from .gobbi/projects/gobbi/%s (%d files)\n' \
+    "$component" "$component" "${#expected_files[@]}"
+}
+
 if ! validate_source_topology; then
   printf '%d source-topology check(s) failed\n' "$source_topology_failures" >&2
   exit 1
 fi
 
+if $materialize_mode; then
+  for component in "${package_components[@]}"; do
+    materialize_package_component "$component"
+  done
+  # The guard gates publication: prove the freshly generated trees before anything ships.
+  for component in "${package_components[@]}"; do
+    check_package_component "$component"
+  done
+  printf 'every generated package file is byte-equal to its canonical owner\n'
+  exit 0
+fi
+
 if $check_mode; then
   check_agents_skill_mirror
 
-  check_link "$package_root/skills" "$expected_plugin_skills"
-  check_link "$package_root/agents" "$expected_plugin_agents"
+  for component in "${package_components[@]}"; do
+    check_package_component "$component"
+  done
 
   # .claude/skills mirror — per-skill bidirectional parity, derived from the canonical
   # tree (no hardcoded skill/file list, no magic count). Catches a missing child, a
@@ -787,7 +1041,15 @@ preflight_agents_skill_reconciliation
 apply_claude_skills_reconciliation
 apply_agents_skill_reconciliation
 
-ensure_link "$package_root/skills" "$expected_plugin_skills"
-ensure_link "$package_root/agents" "$expected_plugin_agents"
+# Normal sync owns the runtime mirrors, not publication. It restores the canonical symlink
+# only where the component is absent or already a symlink, and never converts a generated
+# directory back to one. A stale generated copy is reported by --check, which names
+# --materialize-package, rather than silently repaired or silently discarded here.
+for component in "${package_components[@]}"; do
+  if [[ -d "$package_root/$component" && ! -L "$package_root/$component" ]]; then
+    continue
+  fi
+  ensure_link "$package_root/$component" "$(package_component_link_target "$component")"
+done
 
 printf 'synchronized Codex skill discovery, plugins/gobbi skills and agents, and .claude/skills\n'
