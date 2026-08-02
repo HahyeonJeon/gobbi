@@ -1,13 +1,10 @@
-# --- Repository Codex model/effort policy. ---
+suppress_unstable_features_warning = true
+
 model = "gpt-5.6-sol"
 model_reasoning_effort = "high"
 plan_mode_reasoning_effort = "high"
 model_verbosity = "medium"
 
-# --- Local checkout sandbox/network posture. ---
-# These tracked values are separate from the shipped model/effort policy.
-# See skills/git/SKILL.md § Runtime git environment and
-# skills/git/conventions.md § Runtime git posture.
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
 web_search = "cached"
@@ -16,11 +13,23 @@ web_search = "cached"
 network_access = true
 writable_roots = []
 
-[agents]
+[tui]
+status_line = [
+  "thread-title",
+  "current-dir",
+  "model-with-reasoning",
+  "project-name",
+  "git-branch",
+  "context-window-size",
+  "context-remaining",
+  "five-hour-limit",
+  "weekly-limit",
+  "thread-id",
+  "task-progress",
+  "pull-request-number"
+]
+status_line_use_colors = true
+
+[features.multi_agent_v2]
 enabled = true
 max_concurrent_threads_per_session = 8
-max_depth = 1
-
-[tui]
-status_line = ["thread-title", "current-dir", "model-with-reasoning", "project-name", "git-branch", "context-window-size", "context-remaining", "five-hour-limit", "weekly-limit", "thread-id", "task-progress", "pull-request-number"]
-status_line_use_colors = true
