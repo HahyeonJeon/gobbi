@@ -193,10 +193,6 @@ the user's explicit decision. Its FULL wiring set is:
 2. Both mirror symlinks: `.claude/agents/{role}.md` and `.codex/agents/{role}.toml` (P5).
 3. An `Agent({role})` permission in `.claude/settings.json` (verify the live allowlist at edit
    time; do not rely on a stored line number).
-4. A Roster row in [`gobbi/agent-teams/SKILL.md` Step 2.1](../gobbi/agent-teams/SKILL.md#21-spawn-and-assign-a-teammate)
-   — only when a persistent team may reuse the role. Evaluators are deliberately excluded from that
-   table.
-
 Any one of these missing leaves the role half-wired. A new role without an `Agent()` perm
 cannot be spawned in Claude Code. Its canonical role document must remain complete enough for the generic
 Delegation template and Workflow Step 1.3 to load it without a separate role overlay.
@@ -235,10 +231,9 @@ Wire a role in this order, each step with its verify command. From the worktree 
    bash scripts/sync-plugin-package.sh && bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
    ```
    The `--check` must exit 0.
-5. **For a NEW role only** — add the remaining P4 surfaces: the `Agent({role})` permission
-   in `.claude/settings.json`, plus a Roster row in `gobbi/agent-teams/SKILL.md` Step 2.1 when a
-   persistent team may reuse the role. Verify each by reading the final owners and running the
-   source-topology check.
+5. **For a NEW role only** — add the `Agent({role})` permission in `.claude/settings.json`. Agent Teams can
+   use a permitted subagent definition as a teammate type; the active mode decides whether that role may be
+   reused. Verify the permission and run the source-topology check.
 
 Final verify across the wiring — run the markdown-link guard for zero new broken links. The
 guard REQUIRES at least one path argument (no-arg exits 2) — pass the role's `.md`:
@@ -300,9 +295,9 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   already covers. The taxonomy is closed at five; most "new agent" work edits an existing
   `.md`. A new role needs the full P4 wiring set AND the user's explicit decision.
 
-- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping the `Agent()` permission or the
-  Roster row a reusable role needs. A new role is loadable only when all of P4 is in place; a missing piece
-  leaves it unspawnable or un-briefable.
+- **Half-wiring a new role.** Creating the `.md`/`.toml` pair but skipping a runtime mirror or the `Agent()`
+  permission. A new role is loadable only when all of P4 is in place; a missing piece leaves it unspawnable
+  or un-briefable.
 
 ## Cross-references
 
@@ -312,5 +307,5 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - Role name, tools, Claude model, what the role owns, and when it is spawned → the five `agents/{role}.md`
   files themselves; no combined table exists
 - Codex model and reasoning effort → the five `agents/{role}.toml` files
-- Which roles a persistent team may reuse → [`gobbi/agent-teams/SKILL.md` Step 2.1](../gobbi/agent-teams/SKILL.md#21-spawn-and-assign-a-teammate)
+- How Claude Code uses a role as a teammate type → [`gobbi/agent-teams/SKILL.md`](../gobbi/agent-teams/SKILL.md)
 - Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)

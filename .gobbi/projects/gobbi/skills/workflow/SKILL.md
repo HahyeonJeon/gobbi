@@ -32,9 +32,9 @@ in-contract choices through agent discussion and continue without routine user q
 
 ### Call the operation that owns the mechanism
 
-Workflow gives each supporting operation its contract, its adapter inputs, and its frozen evidence, then
-places, verifies, and accepts what that operation returns. Partner independence and teammate scheduling
-belong to the operations that own them, never to this route.
+Workflow gives each supporting operation its contract and frozen evidence, then places, verifies, and accepts
+what that operation returns. Partner owns partner independence. Workflow owns specialist scheduling and uses
+the Agent Teams manual only for Claude Code tool behavior.
 
 ### Make every phase boundary recoverable
 
@@ -210,18 +210,11 @@ SKILLS LOADED:
 - `VERDICT` is evaluator-only and is omitted for other roles. `ARTIFACT` is omitted only when no artifact is
   required. After a report, the manager validates the assignment, role, prefix, loaded paths, promised
   artifact or commit, named checks, scope, and protected paths before updating the TODO.
-- Run persistent specialists through the [Agent Teams](../gobbi/agent-teams/SKILL.md) operation, which owns
-  the preflight, spawn, acknowledgement, reuse, continuation, replacement, addressability, idle-state, and
-  close checks. Workflow is one caller of that operation and supplies all five adapter inputs, which the
-  operation consumes and never invents:
-
-| Adapter input | What Workflow supplies |
-|---|---|
-| Assignment-field set | Every `Metadata`, `Task`, `Instructions`, `Resources`, and `Return` field above, including the workflow response prefix. |
-| Per-role reuse boundaries | For a leader, one Ideation or Planning chain; for an executor, related ordered tasks in one plan subsystem; for an assistant, one memorization chain. |
-| Mutation-surface list | The session worktree, the session evidence root and its records, Git objects on the session branch, the native TODO route, and every external system. |
-| Acceptance signal | The report validation and manager acceptance in this step. |
-| Recovery evidence set | The evidence walk in [`agent-teams.md`](agent-teams.md): the latest Hand-off, the Configuration receipt, RECORD receipts, `gate.md` decisions, and accepted plan order. |
+- In Claude Code, load the [Agent Teams](../gobbi/agent-teams/SKILL.md) manual before using persistent
+  specialists. The manual owns tool setup and use; Workflow owns assignment fields, role reuse boundaries,
+  mutation surfaces, report acceptance, and the recovery evidence walk in [`agent-teams.md`](agent-teams.md).
+- Reuse a leader only within one Ideation or Planning chain, an executor only across related ordered tasks in
+  one plan subsystem, and an assistant only within one memorization chain.
 
 #### 1.4 Run user-led Ideation
 

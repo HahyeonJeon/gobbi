@@ -58,9 +58,9 @@ ordered writer chain, and the read-only limit on parallel work. Cowork adds its 
 procedure; Workflow adds them in `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3. Confirm a
 specialist's idle and addressable state before another assignment.
 
-`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` owns the persistent-teammate lifecycle, which exists
-in Claude Code only. Native Codex has no teammate mechanism and uses the repo-local custom-agent roles below
-instead.
+`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` is the compact tool manual for enabling and using
+Agent Teams in Claude Code. Cowork and Workflow own their assignment, reuse, acceptance, recovery, and writer
+policies. Native Codex has no Agent Teams mechanism and uses the repo-local custom-agent roles below instead.
 
 When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Fresh briefs include
 exact load directives because specialists do not inherit manager context.

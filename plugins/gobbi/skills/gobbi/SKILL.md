@@ -288,7 +288,7 @@ what is loaded. Every other root that has children routes to them from its own d
 | Skill | Owns |
 |---|---|
 | [`gobbi/partner`](partner/SKILL.md) | One partner round: its preparation, launch, validation, and returned frozen content. |
-| [`gobbi/agent-teams`](agent-teams/SKILL.md) | The persistent-teammate lifecycle: preflight, spawn, assignment, reuse, replacement, and close. |
+| [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
 | [`startup`](../startup/SKILL.md) | The project interview that produces confirmed design briefs. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
