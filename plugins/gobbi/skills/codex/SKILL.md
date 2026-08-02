@@ -1,0 +1,205 @@
+---
+name: codex
+description: "MUST load when using the Codex command-line interface or locating Gobbi inside a native Codex session. Codex is a tool skill for the installed `codex` surface, its sandbox, configuration, and plugin controls, and this repository's Codex entry points."
+allowed-tools: Read, Grep, Glob, Bash
+skill-type: tool
+---
+
+# Codex
+
+Use this skill to work the Codex command-line interface and to locate Gobbi inside a native Codex session. It
+covers the installed `codex` surface a Gobbi agent reaches for: non-interactive runs, sandbox and approval
+controls, configuration, role wrappers, plugin installation, and diagnosis.
+
+The subject is the `codex` binary and this repository's Codex entry points, and nothing wider.
+[`partner`](../gobbi/partner/SKILL.md) owns every partner round and its launch, envelope, validation, and
+failure handling in both directions. [`claude-plugin`](../claude-plugin/SKILL.md) owns the shared package and
+its manifests. [`gobbi`](../gobbi/SKILL.md) owns the session entry and the root derivation. This skill runs
+nothing on its own and selects no scope, model, route, or waiver.
+
+Every command, flag, and status below was verified against Codex CLI 0.146.0 on Linux. Codex changes quickly,
+so `codex --version` and `codex <command> --help` from the installed binary settle any disagreement with this
+document.
+
+## Principles
+
+### Keep Gobbi identity separate from runtime identity
+
+The Gobbi-owned UUID names the session, branch, and worktree. A Codex thread or session identity is runtime
+evidence about one process and never renames the session it runs inside.
+
+### Let the installed help settle a flag
+
+Codex ships often, and a flag's presence, spelling, or meaning can change between builds. `--version` and
+`--help` from the binary that will actually run outrank any recorded list, including this one.
+
+### Take the narrowest sandbox and approval the work needs
+
+A Codex run's power to change the machine comes from its sandbox mode and approval policy, not from its
+prompt. Widening either is a permission decision that belongs to the user.
+
+### Separate an owner from a view
+
+Canonical skills and role contracts have exactly one owner. A discovery directory, a package directory, and an
+installed plugin cache are views that can be stale, partial, or silently empty, so a claim about content is
+only as good as the owner it came from.
+
+## Rules
+
+### C-1 — Resolve Gobbi sources through the validated roots
+
+**MUST load every Gobbi skill and role contract through the `{gobbi-skills-root}` and `{gobbi-agents-root}`
+pair that the entry derives from the location the runtime reports for the skill it loaded and validates
+against three sentinels.** Never substitute a source-checkout path, a user-level copy, an environment
+variable, or a discovery or package view as an alternate owner.
+
+### C-2 — Dispatch a native specialist through its role wrapper
+
+**MUST start a native Codex specialist from the repo-local wrapper at `.codex/agents/{role}.toml`, which loads
+the canonical role contract that owns that role's instructions.** Never inline a role's instructions into an
+invocation, and never treat a wrapper as a distributable plugin component.
+
+### C-3 — Read every runtime default from its own owner
+
+**MUST take a runtime default from the owner that holds it — `$CODEX_HOME/config.toml` for what the installed
+CLI loads, `.codex/config.toml` for this repository's declared model, effort, and sandbox policy, and each
+role's `.toml` wrapper for that role's model and instructions — and never restate or change one here.** A
+per-invocation flag binds that single run and changes no owner.
+
+## Manual
+
+### Verify the installed surface first
+
+```bash
+codex --version        # codex-cli 0.146.0
+codex --help           # subcommand list for this build
+codex exec --help      # the authoritative flag list for non-interactive runs
+```
+
+Exit statuses observed on 0.146.0: a completed run exits `0`; an unknown flag or an invalid value for a known
+flag exits `2` and prints the accepted values; `timeout` reports `124` when it kills the process.
+
+### Where a Codex session finds Gobbi
+
+Codex reports a skill's location when it loads that skill, so a Codex agent is told where Gobbi is instead of
+searching for it. [`gobbi`](../gobbi/SKILL.md) Step
+[1.1](../gobbi/SKILL.md#11-establish-the-entry-context-runtime-and-canonical-layout) owns how that reported
+path becomes the two validated roots.
+
+| Need | Surface | Consequence |
+|---|---|---|
+| Canonical skill | `{gobbi-skills-root}/{skill}/SKILL.md` | The one owner; read and edit here |
+| Canonical role contract | `{gobbi-agents-root}/{role}.md` | The one owner of a role's instructions |
+| Repo-local skill discovery | `.agents/skills/{skill}/` | A view; a symbolic link onto the canonical directory |
+| Repo-local specialist | `.codex/agents/{role}.toml` | A wrapper that loads the canonical role contract |
+| Installed plugin skill | `gobbi:{skill}` | The only identifier a consumer project is offered; no bare name exists there |
+| Shared plugin package | `plugins/gobbi/` | A package view owned by [`claude-plugin`](../claude-plugin/SKILL.md) |
+
+`CODEX_THREAD_ID`, when present, is the observed native runtime identity. Its absence never authorizes
+inventing an identity, and its value never changes the Gobbi session UUID.
+
+### Run Codex non-interactively with `codex exec`
+
+`codex exec` runs one turn without the interactive interface and writes the agent's report to standard output.
+
+```bash
+codex exec [OPTIONS] [PROMPT]
+```
+
+The prompt arrives as the argument, from standard input when the argument is `-` or absent, or from both —
+piped standard input is appended to an argument prompt as a `<stdin>` block.
+
+| Flag | Effect |
+|---|---|
+| `-C, --cd <DIR>` | Sets the agent's working root |
+| `--ephemeral` | Runs without persisting session files to disk |
+| `-s, --sandbox <MODE>` | Selects `read-only`, `workspace-write`, or `danger-full-access` |
+| `--add-dir <DIR>` | Adds a writable directory beside the primary workspace |
+| `-m, --model <MODEL>` | Sets the model for this run |
+| `-c, --config <key=value>` | Overrides one dotted configuration key; the value parses as TOML and falls back to a literal string |
+| `-p, --profile <NAME>` | Layers `$CODEX_HOME/<name>.config.toml` over the base user configuration |
+| `--ignore-user-config` | Skips `$CODEX_HOME/config.toml`; authentication still uses `CODEX_HOME` |
+| `--strict-config` | Fails the run on a configuration field this build does not recognize |
+| `--json` | Prints events to standard output as JSON Lines instead of a plain report |
+| `-o, --output-last-message <FILE>` | Writes the agent's last message to a file |
+| `--output-schema <FILE>` | Points at a JSON Schema describing the final response shape |
+| `--skip-git-repo-check` | Allows running outside a Git repository |
+| `-i, --image <FILE>` | Attaches an image to the initial prompt |
+
+`codex exec resume` continues a saved session and `codex exec review` runs a non-interactive code review.
+`--ephemeral` and `resume` are opposites: an ephemeral run persists nothing to resume from.
+
+Do not assemble a partner launch here. [`partner`](../gobbi/partner/SKILL.md) owns the frozen envelope, the
+read-only launch form for each direction, response validation, and the failure matrix.
+
+### Sandbox and approval
+
+Two settings decide what a run may do. `--sandbox` bounds what model-generated commands may touch;
+`--ask-for-approval` decides when the run stops for a person.
+
+| `-s, --sandbox` | Model-generated commands may |
+|---|---|
+| `read-only` | Read only, and write nowhere |
+| `workspace-write` | Write inside the workspace and any `--add-dir` root |
+| `danger-full-access` | Write anywhere the operating system allows |
+
+| `-a, --ask-for-approval` | Behavior |
+|---|---|
+| `untrusted` | Run only trusted commands unattended, and escalate anything else |
+| `on-request` | Let the model decide when to ask |
+| `never` | Never ask; an execution failure returns to the model instead |
+
+`--ask-for-approval` is an interactive-session flag only. `codex exec` does not accept it and exits `2` with
+`error: unexpected argument '-a' found`; a non-interactive run reports `approval: never` in its header. So the
+sandbox mode is the whole of a `codex exec` run's permission boundary, and nothing will stop to ask.
+
+Never pass `--dangerously-bypass-approvals-and-sandbox` or `--dangerously-bypass-hook-trust`. The first
+executes model-generated commands with no sandbox and no confirmation; the second runs hooks without their
+persisted trust. Neither belongs to any Gobbi surface.
+
+`codex sandbox <COMMAND>` runs one command under the Codex sandbox without starting a model turn, which is how
+to check what a sandbox mode permits before an agent depends on it.
+
+### Configuration
+
+`codex exec` loads its configuration from `$CODEX_HOME/config.toml`, which defaults to `~/.codex/config.toml`,
+then applies the invocation's `-p` profile layer and its `-c`, `-m`, and sandbox flags.
+
+Verified against 0.146.0, the CLI does not load a repository's `.codex/config.toml` — a probe repository whose
+`.codex/config.toml` set a distinct model ran with the user-configuration model from both the process working
+directory and `-C`, while the same value passed as `-c model=…` did take effect. This repository's
+`.codex/config.toml` therefore records the project's intended model, reasoning effort, sandbox, and approval
+policy; an invocation that must follow that policy passes those values itself.
+
+### Plugins and skill discovery
+
+| Command | Effect |
+|---|---|
+| `codex plugin marketplace add <source>` | Registers a local or Git marketplace source |
+| `codex plugin marketplace list` | Lists configured marketplaces and their roots |
+| `codex plugin marketplace upgrade` | Refreshes configured Git marketplace snapshots |
+| `codex plugin list` | Lists plugins from configured marketplaces with install status, version, and path |
+| `codex plugin add <plugin>@<marketplace>` | Installs a plugin into the local cache |
+| `codex plugin remove <plugin>@<marketplace>` | Removes an installed plugin from local config and cache |
+
+The Codex plugin installer copies a plugin directory without following symbolic links. Installing the current
+`plugins/gobbi/` package delivers exactly two files — `.claude-plugin/plugin.json` and
+`.codex-plugin/plugin.json` — with no skills, no agents, and no error. That silence is
+[openai/codex#24770](https://github.com/openai/codex/issues/24770), not a fault in the package. Codex skill
+*discovery* does follow symbolic links, so `.agents/skills/` resolves inside this repository and needs no
+install.
+
+### Diagnose a failure
+
+| Symptom | Check |
+|---|---|
+| A flag is rejected | `codex exec --help`; an argument error exits `2` and prints the accepted values |
+| Authentication, configuration, or runtime health is unclear | `codex doctor`, `codex doctor --summary`, or `codex doctor --json` for a redacted machine-readable report |
+| A configuration key may be misspelled or retired | Rerun with `--strict-config`, which fails on an unrecognized field |
+| An installed plugin exposes no skill | List the installed cache; a symbolic-linked component installs silently empty |
+| A run must not persist but a session appears | Confirm `--ephemeral` was passed; `resume` and `--ephemeral` cannot both hold |
+
+Report the command, its exact exit status, and its immediate diagnostic. Do not author replacement output for
+a run that failed.
+
+## References
