@@ -20,8 +20,9 @@ it guarantees. Each run gets a new process and a new identity, receives its comp
 inline, and sees nothing derived from a run it must stay independent of.
 
 The caller keeps everything else. This operation returns content and writes no file, so the caller places every
-returned item. It decides no mode, gate, coverage rule, waiver, finding disposition, or route. A run that
-cannot be completed or validated pauses the round and returns an exact failure instead of substitute content.
+returned item. It decides no mode, scope, gate, coverage rule, waiver, finding disposition, or route. A run
+that cannot be completed or validated pauses the round and returns an exact failure instead of substitute
+content.
 
 ## Principles
 
@@ -69,9 +70,9 @@ author of the result it was asked to obtain independently.
   repairing a field, rerendering, or generating substitute content under a missing system's label each make
   this operation an author; a response is returned whole or its run is reported as failed.
 
-- **NEVER infer a waiver, gate, disposition, or route.** This operation reports what a run produced or why it
-  paused and stops there; which mode invokes it, whether coverage is met, whether one system suffices, and what
-  happens to a finding all belong to the caller.
+- **NEVER infer a scope, waiver, gate, disposition, or route.** This operation reports what a run produced or
+  why it paused and stops there; what the run's scope covers, which mode invokes it, whether coverage is met,
+  whether one system suffices, and what happens to a finding all belong to the caller.
 
 ## Procedure
 

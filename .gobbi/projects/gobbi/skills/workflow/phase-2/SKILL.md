@@ -183,8 +183,7 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 - Place the returned labeled content in the parent Workflow Step 1.2 package layout.
 - Give the active runtime executor all four frozen inputs. Let that executor synthesize and implement as the
   sole worktree writer.
-- Keep partner runs and read-only helpers from mutating the worktree, TODO route, external systems, scope, or
-  user decisions.
+- Keep read-only helpers from mutating the worktree, TODO route, external systems, scope, or user decisions.
 - Run the task's required verification and review the complete diff against allowed and protected paths.
 - Create one focused local task commit. Reread the commit, diff, checks, and complete creation package before
   activating EVALUATION.
