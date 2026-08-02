@@ -29,10 +29,15 @@ commits durable updates or proves none are needed, then checks evaluation freshn
 TODO list as its active route; phase receipts and committed evidence rebuild that route after a context
 boundary.
 
-## Dual-system quality contract
+## Partner quality contract
 
-`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns each mode's dual-system and evaluation commitment, the
-pause on an unavailable or invalid system, and the user's approval of every finding's disposition.
+`.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md` owns the whole partner system: both launch directions
+and each round's preparation, launch, validation, and returned frozen content. In Claude Code the partner is
+Codex. Each mode owns its own evaluation commitment.
+
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns no partner mechanism itself. It holds the session to the
+selected mode's commitment, pauses on an unavailable or invalid system, and requires the user's approval of
+every finding's disposition.
 
 ## Agent Teams
 
@@ -40,6 +45,8 @@ pause on an unavailable or invalid system, and the user's approval of every find
 ordered writer chain, and the read-only limit on parallel work. Cowork adds its brief fields in the topic-loop
 procedure; Workflow adds them in Workflow Step 1.3.
 
+`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` owns the persistent-teammate lifecycle — preflight,
+spawn, assignment, reuse, replacement, and close — and each mode supplies the adapter inputs it consumes.
 Claude Code may retain stable leader, executor, and assistant teammates while identity, assignment,
 dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team.
 Confirm a teammate's idle and addressable state before assigning more work.
@@ -52,8 +59,9 @@ carries both runtime manifests, and has no lifecycle-hook component. Keep Agent 
 
 Use `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-Codex installed-cache behavior. Do not materialize the symlinked source package to compensate for an
-installed-cache limitation.
+Codex installed-cache behavior. Materialize the source into the package only as the one generated copy a guard
+proves byte-equal to its canonical owner. Any further duplication, and any hand edit of a generated file,
+stays forbidden.
 
 ## Principles
 

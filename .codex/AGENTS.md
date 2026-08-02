@@ -41,10 +41,15 @@ rebuild that route after a context boundary. Configuration creates the isolated 
 Ideation locks what and why, Planning orders tasks, Execution verifies and commits one task at a time, and
 Wrap-up closes and hands off the durable result.
 
-## Dual-system quality contract
+## Partner quality contract
 
-`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns each mode's dual-system and evaluation commitment, the
-pause on an unavailable or invalid system, and the user's approval of every finding's disposition.
+`.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md` owns the whole partner system: both launch directions
+and each round's preparation, launch, validation, and returned frozen content. In native Codex the partner is
+Claude Code. Each mode owns its own evaluation commitment.
+
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns no partner mechanism itself. It holds the session to the
+selected mode's commitment, pauses on an unavailable or invalid system, and requires the user's approval of
+every finding's disposition.
 
 ## Delegation contract
 
@@ -52,6 +57,10 @@ pause on an unavailable or invalid system, and the user's approval of every find
 ordered writer chain, and the read-only limit on parallel work. Cowork adds its brief fields in the topic-loop
 procedure; Workflow adds them in `.gobbi/projects/gobbi/skills/workflow/SKILL.md` Step 1.3. Confirm a
 specialist's idle and addressable state before another assignment.
+
+`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` owns the persistent-teammate lifecycle, which exists
+in Claude Code only. Native Codex has no teammate mechanism and uses the repo-local custom-agent roles below
+instead.
 
 When Codex subagents are explicitly authorized, use the repo-local custom agents by role. Fresh briefs include
 exact load directives because specialists do not inherit manager context.
@@ -79,9 +88,10 @@ A Codex plugin install of Gobbi receives both manifests and no skills, because t
 copies a plugin into its cache without following symlinks. This is an open Codex defect —
 [openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install: support symlinks per the
 cross-agent marketplace contract" — not a packaging error here, and `check-codex-plugin-smoke.sh` reports it
-as a warning. Keep the single canonical source and never materialize it into the package to work around the
-installer. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves and
-needs no install.
+as a warning. Keep the single canonical source, and materialize it into the package only as the one generated
+copy a guard proves byte-equal to that source. Any further duplication, and any hand edit of a generated file,
+stays forbidden. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves
+and needs no install.
 
 ## Principles
 
