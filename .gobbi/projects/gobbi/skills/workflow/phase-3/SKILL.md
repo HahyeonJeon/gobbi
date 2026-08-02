@@ -98,10 +98,12 @@ from direct evidence without changing the handoff.
 
 #### 2.1 Produce and cross-review closure drafts
 
-- Give each run of the specialist draft round the same frozen contract and immutable evidence. Require
-  system-labeled Memory-and-handoff drafts that include the complete expected path set and verification.
-- Freeze and verify both drafts before reciprocal review. Run both cross-reviews as later isolated operations,
-  then give the active runtime specialist the contract, drafts, and reviews for synthesis.
+- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one specialist draft round and its
+  cross-review round over the same frozen contract and immutable evidence. That operation owns each run's
+  independence, freeze order, and validation.
+- Require system-labeled Memory-and-handoff drafts that include the complete expected path set and
+  verification. Place the returned labeled content, then give the active runtime specialist the contract,
+  drafts, and reviews for synthesis.
 - Require one decision-complete Memory plan and tracked handoff candidate. Resolve routine in-contract
   differences agent-to-agent and stop only for the parent critical-blocker boundary.
 
@@ -119,9 +121,9 @@ from direct evidence without changing the handoff.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load [Evaluation](../../evaluation/SKILL.md) and dispatch two fresh evaluators, one from the active runtime
-  and one from the partner system. Neither may be a creator, persistent teammate, or recipient of the other
-  report.
+- Load [Evaluation](../../evaluation/SKILL.md) and call the [Partner](../../gobbi/partner/SKILL.md) operation
+  for one evaluation round with two fresh evaluators, one from the active runtime and one from the partner
+  system. That operation isolates every evaluator; neither may be a creator or persistent teammate.
 - Give both the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
   task commits, checks, finalization intent, authority, exclusions, risks, and retained recovery paths.
 - Require Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage with the

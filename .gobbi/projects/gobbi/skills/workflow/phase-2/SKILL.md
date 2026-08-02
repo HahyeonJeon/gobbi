@@ -100,9 +100,10 @@ plan, task, receipt, or commit.
 
 #### 1.3 Produce and validate the plan
 
-- Give each run of the leader draft round the same frozen Planning contract and immutable evidence.
-- Freeze and verify both system-labeled proposals before reciprocal review. Dispatch each cross-review as a
-  later, separate operation and freeze both reviews.
+- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one leader draft round and its cross-review
+  round over the same frozen Planning contract and immutable evidence. That operation owns each run's
+  independence, freeze order, and validation.
+- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
 - Let the active runtime leader synthesize the canonical candidate with:
   - a complete hierarchy and dependency-valid order;
   - stable task IDs;
@@ -118,8 +119,9 @@ plan, task, receipt, or commit.
 
 #### 1.4 Evaluate, record, and expand the task route
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh evaluators, one from the active
-  runtime and one from the partner system. Neither sees the other report.
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
+  [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
+  from the active runtime and one from the partner system, which that operation isolates.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
 - Load the [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory tree.
 - Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
@@ -175,9 +177,10 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.4 Produce, implement, verify, and commit
 
-- Give each run of the contributor draft round the same task contract and frozen worktree preimage.
-- Freeze and verify both independent proposals. Run reciprocal cross-review only after both proposals freeze,
-  then freeze both reviews.
+- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one contributor draft round and its
+  cross-review round over the same task contract and frozen worktree preimage. That operation owns each run's
+  independence, freeze order, and validation.
+- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
 - Give the active runtime executor all four frozen inputs. Let that executor synthesize and implement as the
   sole worktree writer.
 - Keep partner runs and read-only helpers from mutating the worktree, TODO route, external systems, scope, or

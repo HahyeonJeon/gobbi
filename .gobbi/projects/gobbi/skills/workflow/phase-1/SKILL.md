@@ -52,8 +52,9 @@ whose completion cannot be proved.
 - **MUST apply the parent fast gate and its two-iteration cap to Ideation.** Preserve evaluator verdicts as
   evidence and let only the workflow gate decide the TODO transition.
 
-- **NEVER expose either independent draft before the manager verifies that both draft round trips have
-  frozen.** Reciprocal review begins only in later, separate operations.
+- **MUST obtain every Ideation draft, cross-review, and evaluation report from the
+  [Partner](../../gobbi/partner/SKILL.md) operation and accept only the complete round it returns.** A paused
+  round cannot advance the stage; Step 2.5 owns its recovery.
 
 - **NEVER let a Configuration receipt, runtime identity, specialist report, or plausible summary become a
   second progression authority.** The native TODO remains the only live route.
@@ -133,11 +134,10 @@ whose completion cannot be proved.
 
 #### 2.2 Produce and validate independent work
 
-- Give each run of the leader draft round the same neutral contract, immutable inputs, exact paths,
-  assignment identity, and verification criteria.
-- Keep the two authors isolated. Freeze and verify both system-labeled drafts before either author or reviewer
-  receives the other draft.
-- Dispatch each reciprocal cross-review as a later, separate operation. Freeze and verify both reviews.
+- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one leader draft round and its cross-review
+  round over the same neutral contract, immutable inputs, exact paths, assignment identity, and verification
+  criteria. That operation owns each run's independence, freeze order, and validation.
+- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
 - Give the active runtime leader the contract, both drafts, and both cross-reviews. Require a canonical
   synthesis and a complete material-decision ledger.
 - Resolve every remaining user-owned conflict with the user before EVALUATION. Agents may resolve only
@@ -150,9 +150,10 @@ whose completion cannot be proved.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh evaluators, one from the active
-  runtime and one from the partner system. Neither may be a creator, persistent teammate, or recipient of the
-  other report.
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
+  [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
+  from the active runtime and one from the partner system. That operation isolates every evaluator; neither
+  may be a creator or persistent teammate.
 - Give both evaluators the neutral contract, both drafts, both reciprocal reviews, synthesis, decisions,
   settings, authority, project evidence, and named check results.
 - Require complete but concise coverage of Project, Structure, Performance, Aesthetics, Usage, Consistency,
