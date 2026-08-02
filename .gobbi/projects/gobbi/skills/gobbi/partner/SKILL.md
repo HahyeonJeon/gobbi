@@ -231,7 +231,7 @@ timeout "$partner_timeout" claude \
 - Evidence is the paused round, the classification, the surfaced evidence, and the removed captures.
 - Return the pause to the caller, who owns every recovery choice — retry, a bounded input repair, a
   user-approved one-system waiver, or abort. This operation neither retries nor substitutes content, and it
-  decides no waiver, gate, disposition, or route.
+  decides no scope, waiver, gate, disposition, or route.
 
 ### Phase 3 — Compose the Round and Return It
 
@@ -277,7 +277,7 @@ timeout "$partner_timeout" claude \
   it ran under. The caller places every returned item in its own evidence model.
 - Remove the prompt, response, and stderr captures once the content is returned.
 - State the non-goals with the return: this operation writes no file, defines no package layout, and decides
-  no mode, gate, coverage rule, waiver, finding disposition, or route. Acceptance belongs to the caller.
+  no mode, scope, gate, coverage rule, waiver, finding disposition, or route. Acceptance belongs to the caller.
 - Evidence is the returned labeled content and the removed captures.
 - The round is complete. A paused round returns the Step 2.3 report instead of content.
 
