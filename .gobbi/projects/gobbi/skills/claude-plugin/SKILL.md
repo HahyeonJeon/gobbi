@@ -7,7 +7,7 @@ skill-type: tool
 
 # Claude Plugin
 
-Tool manual for the shared Gobbi package at `plugins/gobbi/`. Use it when a change touches either plugin manifest, either marketplace, the package symlinks, runtime discovery mirrors, or the source and installed-cache checks.
+Tool manual for the shared Gobbi package at `plugins/gobbi/`. Use it when a change touches either plugin manifest, either marketplace, the package components, runtime discovery mirrors, or the source and installed-cache checks.
 
 The package serves two runtimes, but it has one canonical source tree. This manual explains the package boundary and the commands that prove it. Workflow behavior, role authority, and release decisions remain with their own owners.
 
@@ -15,7 +15,7 @@ The package serves two runtimes, but it has one canonical source tree. This manu
 
 ### Keep canonical sources outside the package
 
-Canonical skills and agents live under `.gobbi/projects/gobbi/`. The package exposes them through symlinks. Edit the canonical source once and verify every view; never materialize a second package copy to hide an installer limitation.
+Canonical skills and agents under `.gobbi/projects/gobbi/` are the only editable owners. The package publishes one generated copy of them that a guard proves byte-equal to canonical; any other duplicate, or a hand edit of a generated file, breaks that single-owner rule.
 
 ### Keep source topology separate from installed-cache behavior
 
@@ -34,13 +34,13 @@ Gobbi ships no hook component. The package, both manifests, project Claude setti
 ### Must follow
 
 - **CP-1 — Edit canonical owners.** Change skills under `.gobbi/projects/gobbi/skills/` and agents under `.gobbi/projects/gobbi/agents/`. Do not hand-edit their package or discovery views.
-- **CP-2 — Keep the package bounded.** `plugins/gobbi/` contains the two manifests plus `skills` and `agents` symlinks. It contains no project memory or repository-wide documentation.
+- **CP-2 — Keep the package bounded.** `plugins/gobbi/` contains the two manifests plus the `skills` and `agents` component directories. It contains no project memory or repository-wide documentation.
 - **CP-3 — Keep the Claude manifest metadata-only.** Do not add `skills`, `agents`, or `hooks` keys to `plugins/gobbi/.claude-plugin/plugin.json` for the current conventional layout.
 - **CP-4 — Keep the Codex manifest explicit and supported.** `plugins/gobbi/.codex-plugin/plugin.json` declares `"skills": "./skills/"`. It does not declare agents or hooks.
 - **CP-5 — Keep marketplaces ecosystem-specific.** `.claude-plugin/marketplace.json` uses a string `source`. `.agents/plugins/marketplace.json` uses a local source object with `source.path`.
 - **CP-6 — Preserve the release decision.** Change manifest or marketplace versions only when the user-approved release task requires it. When a version changes, keep both manifests and the Claude marketplace entry equal.
 - **CP-7 — Verify both layers.** Run sync source checks and the isolated Codex smoke. When Claude Code is installed, also run strict Claude plugin validation.
-- **CP-8 — Treat installer omission as evidence.** If Codex omits a symlinked component from its installed cache, report that exact limitation. Do not replace the source symlink with copied files.
+- **CP-8 — Treat installer omission as evidence.** When an installed cache omits a component, report that exact limitation instead of hiding it. The generated package copy is the one permitted answer to the Codex installer not following a symlinked component; add no other copy and hand-edit no generated file.
 
 ### Must not follow
 
@@ -63,9 +63,11 @@ Gobbi ships no hook component. The package, both manifests, project Claude setti
 plugins/gobbi/
 |-- .claude-plugin/plugin.json      Claude metadata
 |-- .codex-plugin/plugin.json       Codex metadata plus skills component
-|-- skills -> ../../.gobbi/projects/gobbi/skills
-`-- agents -> ../../.gobbi/projects/gobbi/agents
+|-- skills/                         generated copy of the canonical skills
+`-- agents/                         generated copy of the canonical agents
 ```
+
+The two component directories hold real files, not symlinks, because the Codex installer does not follow a symlinked component and installs nothing behind one. The sync command generates them from the canonical tree and proves every generated file byte-equal to its owner. A wrong generated file means the canonical owner or the generator is wrong: correct that and regenerate, and never hand-edit the generated file.
 
 The package has no `hooks` entry. Empty untracked directories are not components, but any file, symlink, manifest field, settings block, or installed-cache directory for hooks is invalid.
 
@@ -75,8 +77,8 @@ Runtime views have different shapes:
 |---|---|---|
 | `.agents/skills/{name}` | whole-directory symlink to one canonical skill | sync command |
 | `.claude/skills/{name}/` | real directory with per-file symlinks to one canonical skill | sync command |
-| `plugins/gobbi/skills` | whole-directory symlink to canonical skills | sync command |
-| `plugins/gobbi/agents` | whole-directory symlink to canonical agents | sync command |
+| `plugins/gobbi/skills/` | generated real directory, byte-equal to canonical skills | sync command |
+| `plugins/gobbi/agents/` | generated real directory, byte-equal to canonical agents | sync command |
 | `.claude/agents/{role}.md` | hand-owned symlink to the canonical role Markdown | agent-writing contract |
 | `.codex/agents/{role}.toml` | hand-owned symlink to the canonical role wrapper | agent-writing contract |
 
@@ -196,7 +198,7 @@ Missing symlinked skills are warnings because Codex may omit component directori
 | Stale or missing `.claude/skills` leaf | canonical skill tree plus sync output | Classify mirror drift; never hand-edit the leaf |
 | Manifest or marketplace rejection | failing JSON file plus current CLI validation | Correct the owning schema without changing unrelated metadata |
 | Missing role wrapper | canonical role pair and hand-owned runtime symlink | Restore the exact role symlink; do not create a new role |
-| Installed skill omitted | isolated smoke output and installed path | Report the installer limitation; keep source symlinked |
+| Installed skill omitted | isolated smoke output and installed path | Report the installer limitation; regenerate the package rather than copying the file |
 | Any hook path or manifest field appears | package, settings, or cache preimage | Stop and remove the unsupported component within the authorized scope |
 | Version disagreement | both manifests and Claude marketplace | Re-align to the user-approved release version |
 
