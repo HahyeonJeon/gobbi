@@ -7,16 +7,18 @@ skill-type: operation
 
 # Gobbi
 
-Gobbi is the read-only entry operation for a Gobbi manager. It loads the nine-skill Gobbi system, obtains one
-session mode from the user — General, Cowork, or Workflow — and hands the session to that mode's owner.
+Gobbi is the read-only entry operation for a Gobbi manager. It loads the nine-skill Gobbi system, reports any
+configuration the session is missing, obtains one session mode — General, Cowork, or Workflow — and one
+partner answer from the user, then hands the session to that mode's owner.
 
 Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
 every mode inherits. General continues from the loaded system, Cowork uses [`cowork`](../cowork/SKILL.md), and
 Workflow uses [`workflow`](../workflow/SKILL.md); those owners hold all mode-specific creation, state,
 routing, execution, evaluation, and closure.
 
-The entry writes nothing. It runs again at every boundary that may discard manager context and keeps an
-established mode whenever that mode's evidence still validates.
+The entry writes nothing: reading configuration and asking the user are both reads. It runs again at every
+boundary that may discard manager context and keeps an established mode whenever that mode's evidence still
+validates.
 
 ## Principles
 
@@ -52,10 +54,10 @@ its owner without copying that owner's procedure or creating a second router.
 - **MUST load all nine skills before any governed action.** Read `principles` first, then `ideation`,
   `planning`, `wrap-up`, `delegation`, `discussion`, `record`, `memory`, and `git`.
 
-- **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, and `workflow` may reference any
-  skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`, `planning`, `record`, and `memory` may
-  reference nothing outside themselves; `wrap-up` may reference only `record` and `memory`, and nothing in
-  that isolated set may reference `wrap-up`.
+- **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
+  `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
+  `planning`, `record`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only
+  `record` and `memory`, and nothing in that isolated set may reference `wrap-up`.
 
 - **MUST hold the session to its selected mode's evaluation commitment.** Never apply an evaluator finding
   before the user approves its disposition, and pause with the exact failure when a required evaluation system
@@ -66,7 +68,7 @@ its owner without copying that owner's procedure or creating a second router.
   [`delegation`](../delegation/SKILL.md), keep all worktree writes in one ordered writer chain, and
   parallelize only independent read-only analysis and fresh independent evaluation.
 
-Rule 4 names three linking skills, eight isolated skills, and `wrap-up`. Every skill it does not name is
+Rule 4 names five linking skills, eight isolated skills, and `wrap-up`. Every skill it does not name is
 unclassified: the rule constrains it in no direction, and it may reference anything. The isolated eight are
 constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
 unclassified skill either. Runtime and project nouns — `Claude`, `Codex`, `Gobbi`, and `git` as a program —
@@ -147,6 +149,34 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
 - The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
   first record needs it, so a missing directory is not a broken view and is not the failure below.
+- Check the four configuration items below and report only the ones that are absent. A clean session should
+  read no report at all, so every line the user does see names a real missing prerequisite. Check all four
+  before reporting, so one report names every gap instead of exposing them one at a time.
+
+| Item | How to check it | What its absence costs |
+|---|---|---|
+| `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` | `printenv CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` in the live session environment | No team is set up and no teammate is spawned |
+| An `Agent(...)` permission for each role the session may spawn — `manager`, `leader`, `executor`, `evaluator`, and `assistant` | Read `permissions.allow` in the settings sources that apply, local before project before user | A role without its permission cannot be spawned |
+| A `Skill(...)` permission for each Gobbi skill the session loads | The same `permissions.allow` sources | Skill use stays gated |
+| The `.gobbi/` layout above, in its required tracked-or-ignored state | `git check-ignore --no-index -v <path>` for each path | The project memory root and its ignore posture are missing |
+
+- Check the first three items in Claude Code only. They are Claude Code settings, and native Codex has neither
+  the Agent Teams environment variable nor these permission gates, so reporting them there would name an
+  absence that cannot exist. The `.gobbi/` layout item applies in both runtimes.
+- Check and recommend the namespaced permission form — `Skill(gobbi:principles)` and `Agent(gobbi:leader)` —
+  because the plugin namespaces every component it contributes. A live probe in a fresh consumer project with
+  the plugin installed offered `gobbi:principles` and `gobbi:leader` only, and the bare `Skill(principles)`
+  and `Agent(leader)` were absent. The bare form is correct in one case: a repository that resolves the skill
+  from its own `.claude/skills` rather than from the plugin. This repository resolves them that way, which is
+  why its own settings file lists `Skill(gobbi)` and not the namespaced form.
+- Expect the first three items to be absent in a project that installed Gobbi as a plugin, because a plugin
+  distributes skills and agents but contributes no `env` block and no `permissions` block. Name each absence
+  with the exact setting that supplies it and continue; this check reports a prerequisite and stops nothing.
+- Check no partner binary here. [`partner`](partner/SKILL.md) Step 1.1 owns that check, and a second copy of it
+  would drift from the one that actually runs.
+- Reading configuration is a read, so this check leaves the entry's no-mutation rule intact. Writing the
+  environment variable would not help in any case: the runtime reads `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` at
+  process start, so a mid-session write could not take effect.
 - Stop here when no candidate resolves a root, when both candidates satisfy the same sentinels, when a
   sentinel is missing or unreadable, when a re-derived root differs from the pair this session already
   recorded, or when the resolved view is otherwise partial or inconsistent. Name the exact broken element:
@@ -175,7 +205,7 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 - Confirm the load register holds all nine skills before any governed action, and return to the first unread
   skill when it does not.
 
-#### 1.3 Obtain or preserve the session mode
+#### 1.3 Obtain or preserve the session mode and the partner answer
 
 - Start from the loaded system and the recorded entry trigger.
 - At every fresh entry, use the [Discussion](../discussion/SKILL.md) structure and the active runtime's
@@ -184,8 +214,8 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 | Mode | Select when | Evaluation commitment |
 |---|---|---|
 | **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Only the evaluation its task owner requires. |
-| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | No automatic dual-system creation, and one fresh Claude-and-Codex round for each explicit user `evaluate` call over the frozen requested subject. |
-| **Workflow** | The user wants the durable five-step, dual-system, recorded workflow. | Retained independent Claude and Codex drafts before every EVALUATION, and two fresh isolated evaluators for each EVALUATION. |
+| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | No automatic partner creation round, and one fresh partner evaluation round for each explicit user `evaluate` call over the frozen requested subject. |
+| **Workflow** | The user wants the durable five-step, partner-round, recorded workflow. | Retained independent partner drafts before every EVALUATION, and two fresh isolated evaluators for each EVALUATION. |
 
 - Present the commitment column with the selection so the user chooses a known quality bar. State what each
   mode guarantees, not how it produces that guarantee.
@@ -195,6 +225,17 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   selection control on a fresh entry.
 - At a context boundary, keep the established selection while its mode evidence and identity still validate.
   Ask the three-way question again when no reliable selection survives or two modes appear active.
+- After the mode is recorded, ask one further question through the same [Discussion](../discussion/SKILL.md)
+  structure and control: whether this session uses the partner system for its Ideation and its evaluation
+  rounds.
+- Ask whether to use a partner, never which one. The active runtime fixes the direction — in Claude Code the
+  partner is Codex, and in native Codex the partner is Claude Code — so the runtime leaves no second choice to
+  make.
+- Record the answer beside the mode and hand both to the selected owner. That owner holds the answer against
+  its own evaluation commitment and returns to the user when the two conflict. The entry decides no gate,
+  coverage rule, or waiver and runs no round itself; [`partner`](partner/SKILL.md) owns every round.
+- Keep an established partner answer across a context boundary on the same terms as the mode, and ask again
+  when its evidence is missing, ambiguous, or conflicting.
 
 #### 1.4 Load the selected owner and hand off without mutation
 
@@ -216,9 +257,9 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 
 ## References
 
-This is the complete map of the canonical Gobbi skill roots. Step 1.2 loads the entry floor; every other
-skill loads from its own trigger, so this map shows what exists rather than what is loaded. A root that has
-children routes to them from its own document.
+This is the complete map of the canonical Gobbi skill roots, plus the two children `gobbi` owns. Step 1.2
+loads the entry floor; every other skill loads from its own trigger, so this map shows what exists rather than
+what is loaded. Every other root that has children routes to them from its own document.
 
 ### Entry floor
 
@@ -246,6 +287,8 @@ children routes to them from its own document.
 
 | Skill | Owns |
 |---|---|
+| [`gobbi/partner`](partner/SKILL.md) | One partner round: its preparation, launch, validation, and returned frozen content. |
+| [`gobbi/agent-teams`](agent-teams/SKILL.md) | The persistent-teammate lifecycle: preflight, spawn, assignment, reuse, replacement, and close. |
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
 | [`startup`](../startup/SKILL.md) | The project interview that produces confirmed design briefs. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
@@ -258,7 +301,7 @@ children routes to them from its own document.
 | [`skill-writing`](../skill-writing/SKILL.md) | Authoring or substantively revising one project skill. |
 | [`agent-writing`](../agent-writing/SKILL.md) | Authoring a Gobbi agent's canonical Markdown and TOML pair. |
 | [`claude-plugin`](../claude-plugin/SKILL.md) | The shared Claude Code and Codex plugin package and its manifests. |
-| [`codex`](../codex/SKILL.md) | Native Codex entry surfaces and the read-only peer process. |
+| [`codex`](../codex/SKILL.md) | The Codex CLI and native Codex entry surfaces. |
 
 ### Languages and platforms
 
