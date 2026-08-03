@@ -39,7 +39,8 @@ project type check are the authority for the installed types.
   before applying this manual.** Record JSX mode, DOM libraries, strictness, module behavior, and the project
   type-check command.
 
-- **MUST use `.tsx` for files that contain JSX and a project-supported JSX compiler mode.** Follow React's
+- **MUST use `.tsx` for TypeScript source files that contain JSX and use the project's supported JSX compiler
+  mode.** Project-authorized `.js` and `.jsx` remain valid in mixed-language projects; follow React's
   [TypeScript setup](https://react.dev/learn/typescript#installation) and the installed framework when it narrows
   the configuration.
 

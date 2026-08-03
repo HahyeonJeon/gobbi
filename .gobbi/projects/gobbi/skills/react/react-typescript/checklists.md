@@ -18,6 +18,9 @@ compiler configuration. A copied neighboring-version type or missing type-check 
 - [ ] RTSX-CK-PROJECT-01-01 — Project files establish the exact installed TypeScript version, exact installed React version, installed renderer, active framework, and installed React type definitions.
 - [ ] RTSX-CK-PROJECT-01-02 — The active JSX mode, target libraries, strictness settings, and module configuration are recorded.
 - [ ] RTSX-CK-PROJECT-01-03 — The project type-check command covers the affected React source or test.
+- [ ] RTSX-CK-PROJECT-01-04 — Before this Manual is applied, project records name the exact renderer, framework, and installed React type-definition versions, every source extension, and every generated type file used by the affected compilation.
+- [ ] RTSX-CK-PROJECT-01-05 — Library declarations match each target: DOM declarations appear only for browser or Electron renderer code that uses DOM types, while server-only and shared targets use their actual host libraries.
+- [ ] RTSX-CK-PROJECT-01-06 — The focused type check uses the same TypeScript configuration that builds the affected source.
 
 ## Structure
 
@@ -28,16 +31,18 @@ in that API fails the scenario.
 
 #### Checklist
 
-- [ ] RTSX-CK-STRUCTURE-01-01 — Every file containing JSX uses the project-supported `.tsx` file extension.
+- [ ] RTSX-CK-STRUCTURE-01-01 — Each TypeScript source file that contains JSX and uses the project's supported JSX compiler mode has a `.tsx` extension.
 - [ ] RTSX-CK-STRUCTURE-01-02 — Each public component has a props object that describes every caller-visible input.
 - [ ] RTSX-CK-STRUCTURE-01-03 — Renderable children use the installed `ReactNode` type only when that breadth is intended.
 - [ ] RTSX-CK-STRUCTURE-01-04 — Element-only children use the installed `ReactElement` type only when primitives are invalid.
+- [ ] RTSX-CK-STRUCTURE-01-05 — Project-authorized `.js` and `.jsx` source files remain valid in mixed-language projects.
+- [ ] RTSX-CK-STRUCTURE-01-06 — Every component, including each private component, has a props object that describes every input its callers provide.
 
 ### RTSX-SC-STRUCTURE-02 — Normal case: Hook, ref, and JSX-facing values use installed React types
 
 State, callbacks, refs, events, nodes, elements, and styles have installed React definitions. A handwritten
 approximation, a redundant type argument, or a ref type that hides absence or its exact target element or
-value type fails.
+value type fails. Reading or writing a ref during render also fails.
 
 #### Checklist
 
@@ -45,6 +50,8 @@ value type fails.
 - [ ] RTSX-CK-STRUCTURE-02-02 — Each ref type includes its applicable absent state.
 - [ ] RTSX-CK-STRUCTURE-02-03 — Each ref type names its exact target element or value.
 - [ ] RTSX-CK-STRUCTURE-02-04 — Each JSX-facing event, ref, node, element, or style value uses installed React definitions rather than a handwritten approximation.
+- [ ] RTSX-CK-STRUCTURE-02-05 — No component reads a ref's current value during render.
+- [ ] RTSX-CK-STRUCTURE-02-06 — No component writes a ref's current value during render.
 
 ### RTSX-SC-STRUCTURE-03 — Rule violation: A type claims an invariant JSX cannot enforce
 
@@ -54,6 +61,29 @@ a guarantee the compiler never checks and fails the scenario.
 #### Checklist
 
 - [ ] RTSX-CK-STRUCTURE-03-01 — No TypeScript annotation claims to restrict children to a component type that the JSX type system cannot enforce.
+- [ ] RTSX-CK-STRUCTURE-03-02 — An exact child-structure requirement is enforced through a narrower prop, composition API, or runtime behavior rather than a TypeScript annotation that JSX cannot enforce.
+
+### RTSX-SC-STRUCTURE-04 — Rule violation: Reducer and Hook annotations hide invalid behavior
+
+Reducer state and actions need an explicit typed boundary, and Hook annotations cannot repair invalid call
+placement or naming. A missing reducer variant or an annotation that masks an invalid Hook fails.
+
+#### Checklist
+
+- [ ] RTSX-CK-STRUCTURE-04-01 — Reducer state and actions are typed at the reducer boundary.
+- [ ] RTSX-CK-STRUCTURE-04-02 — Every reducer action variant is handled exhaustively through the `typescript-typing` skill.
+- [ ] RTSX-CK-STRUCTURE-04-03 — Hook call placement and custom Hook naming follow `react-design` and `react-conventions`, respectively.
+- [ ] RTSX-CK-STRUCTURE-04-04 — No type annotation is treated as validation of an invalid Hook call position or invalid Hook name.
+
+### RTSX-SC-STRUCTURE-05 — Normal case: Style and JSX namespace types follow project decisions
+
+An exposed inline-style object and a JSX-facing value should use the types the project permits and installs.
+A disallowed inline-style API or a copied JSX namespace approximation fails.
+
+#### Checklist
+
+- [ ] RTSX-CK-STRUCTURE-05-01 — `React.CSSProperties` types an exposed inline-style object only when the project permits that public API.
+- [ ] RTSX-CK-STRUCTURE-05-02 — Each JSX-facing value uses the project's installed JSX namespace definitions.
 
 ## Performance
 
@@ -71,6 +101,8 @@ unrelated generic machinery. Unnecessary annotations or opaque broad aliases fai
 
 - [ ] RTSX-CK-AESTHETICS-01-01 — Explicit React annotations clarify a public, extracted, nullable, or otherwise incomplete inference boundary.
 - [ ] RTSX-CK-AESTHETICS-01-02 — Generic TypeScript detail remains with the `typescript` skill instead of being restated in the React guidance.
+- [ ] RTSX-CK-AESTHETICS-01-03 — Private-component props and inline event callbacks use inference when callers and the handled element still receive their complete types.
+- [ ] RTSX-CK-AESTHETICS-01-04 — Project CSS policy follows `css-conventions`, and authored style changes follow `css-development`, rather than React TypeScript annotations.
 
 ## Usage
 
@@ -96,6 +128,7 @@ repairing that source fails the scenario.
 #### Checklist
 
 - [ ] RTSX-CK-USAGE-02-01 — Each type failure is repaired in the props, state, event, ref, boundary value, or project configuration that contains the mismatch.
+- [ ] RTSX-CK-USAGE-02-02 — Before a cast is added, the installed declaration and inferred call-site type are inspected.
 - Also applies: RTSX-CK-OVERALL-01-02 (a bypass does not stand in for the repair).
 
 ## Consistency
@@ -111,6 +144,7 @@ Build, editor, test, and documentation disagreement fails.
 - [ ] RTSX-CK-CONSISTENCY-01-02 — The focused type check and affected build resolve the same React and JSX definitions.
 - [ ] RTSX-CK-CONSISTENCY-01-03 — Source and documentation examples compile under the installed project configuration.
 - [ ] RTSX-CK-CONSISTENCY-01-04 — Version-sensitive ref and JSX patterns match the exact installed React version.
+- [ ] RTSX-CK-CONSISTENCY-01-05 — The project's JSX configuration follows every restriction imposed by the installed framework.
 
 ## Risk
 
@@ -135,3 +169,14 @@ The public type API must match the accepted runtime behavior.
 
 - [ ] RTSX-CK-OVERALL-01-01 — The React public type API permits exactly the accepted caller-visible behavior.
 - [ ] RTSX-CK-OVERALL-01-02 — No `any`, broad cast, or copied declaration bypasses the installed React types.
+
+### RTSX-SC-OVERALL-02 — Normal case: Verification and handoff prove the React type contract
+
+The final result needs compiler, test, build, and handoff evidence that names the exact configuration and
+installed definitions. Type-check-only evidence, an unnecessary type-level test, or an incomplete handoff fails.
+
+#### Checklist
+
+- [ ] RTSX-CK-OVERALL-02-01 — The focused type check, affected tests, and affected build all complete successfully.
+- [ ] RTSX-CK-OVERALL-02-02 — A type-level test is added only when ordinary component use sites cannot protect the public React type contract.
+- [ ] RTSX-CK-OVERALL-02-03 — The handoff records the exact configuration, installed type definitions and declarations, command results, known limitations, and every cast whose runtime proof remains external.
