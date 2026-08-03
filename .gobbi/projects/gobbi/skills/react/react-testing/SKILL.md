@@ -209,3 +209,4 @@ work and time explicitly, then repair root causes instead of masking signals.
 ## References
 
 - [React Testing Checklist](checklists.md)
+- [React Testing Lifecycle Checklist](lifecycle-checklists.md)

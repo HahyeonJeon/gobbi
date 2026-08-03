@@ -7,6 +7,9 @@ judgment. `RTST` is the stable checklist prefix.
 A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that the scenario reuses.
 
+The [React Testing Lifecycle Checklist](lifecycle-checklists.md) covers the remaining binding lifecycle
+obligations for this operation.
+
 ## Project
 
 ### RTST-SC-PROJECT-01 — Normal case: The behavior and installed test setup are established
