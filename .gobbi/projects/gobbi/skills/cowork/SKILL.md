@@ -174,12 +174,12 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 - Rebuild a specialist assignment after a context boundary only from that Cowork evidence. Cowork has its own
   native TODO route but no Workflow Hand-off, Workflow TODO grammar, `gate.md`, or RECORD receipt, so its
   recovery never looks for those Workflow records.
-- For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md), self-review its canonical
-  artifact set, and create one focused shaping commit. Load Ideation when its TODO becomes active, not at
-  Cowork entry. Ideation always evaluates its own result inline; Cowork neither suppresses that round nor
-  counts it as Phase 3 coverage. For selected Planning, assign a leader to apply
-  [Planning](../planning/SKILL.md) to the accepted design or locked topic contract. Load Planning when its TODO
-  becomes active, self-review its canonical artifact set, and create one focused planning commit.
+- For selected Ideation, assign a leader to apply [Ideation](../ideation/SKILL.md), self-review and freeze its
+  authoritative `ideation.md` plus any caller-requested subordinate snapshots, and create one focused shaping
+  commit. Load Ideation when its TODO becomes active, not at Cowork entry. For selected Planning, assign a
+  leader to apply [Planning](../planning/SKILL.md) to the accepted design or locked topic contract. Load
+  Planning when its TODO becomes active, self-review its canonical artifact set, and create one focused
+  planning commit.
 - When a topic routes to Structured depth and selects Ideation, offer the user one partner creation round for
   that stage through [Discussion](../discussion/SKILL.md). The offer is never automatic, no `evaluate` call
   authorizes it, and the round runs only when the user calls for it. On that call, use
@@ -206,12 +206,11 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 
 #### 3.1 Evaluate one frozen subject
 
-- Cowork owns this evaluation policy. A selected stage evaluates or self-reviews inside its own operation:
-  Ideation always runs its inline independent evaluation, and Planning and Execution self-review or
-  self-verify. Cowork runs no automatic partner creation round and no automatic Phase 3 round, and the
-  Step 2.1 creation round the user calls is creation rather than coverage. Independent Cowork evaluation
-  happens only on an explicit `evaluate` call, and neither an inline stage evaluation nor a creation round
-  satisfies it.
+- Cowork owns this evaluation policy. Every selected stage self-reviews or self-verifies inside its own
+  operation; Ideation returns a frozen evaluation-ready subject. Cowork runs no automatic partner creation
+  round and no automatic Phase 3 round, and the Step 2.1 creation round the user calls is creation rather than
+  coverage. Independent Cowork evaluation happens only on an explicit `evaluate` call, and a creation round
+  never satisfies it.
 - Enter only for an explicit `evaluate`. A bare call requires a clean worktree and freezes the whole Cowork
   subject from the locked base commit through the current head, including all commits, tree changes, topic
   contracts, accepted artifacts, user decisions, verification, status, and exclusions. A user-named narrower

@@ -164,9 +164,9 @@ P3 · Hand-off
   against the labels the round returned, and refuses the stage when one is missing or unlabeled.
 - Workflow owns this evaluation policy. Every productive step runs its EVALUATION stage as one partner
   evaluation round with two fresh isolated evaluators, one from the active runtime and one from the partner
-  system, neither holding the other report. Ideation additionally runs the inline evaluation its own operation
-  always performs; the workflow accepts that redundant round and never suppresses it. Evaluator verdicts are
-  report evidence, and the `gate.md` decision alone advances the TODO.
+  system, neither holding the other report. For Ideation, that stage independently evaluates the frozen,
+  self-reviewed subject its operation returns. Evaluator verdicts are report evidence, and the `gate.md`
+  decision alone advances the TODO.
 - Each evaluation report is a complete human-readable Evaluation output. Every finding states an ID, severity,
   evidence, impact, cause, confidence, suggested direction, and `blocking: yes|no`.
 - Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
