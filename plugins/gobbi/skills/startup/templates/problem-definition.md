@@ -15,6 +15,11 @@
 The artifact is `confirmed` only when every required current row is confirmed. Any stale required row makes
 the artifact `stale`; otherwise use the earliest incomplete row's state.
 
+This Section Register is the sole owner of each section's current state, Review-evidence reference, and user
+acceptance. Every Review uses exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
+`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`; each finding records
+evidence, consequence, one exact follow-up question, and disposition.
+
 ## Project
 
 ### `{project-key}` — {Project}
@@ -33,8 +38,8 @@ baseline, durable outcome, success evidence, assumptions, constraints, risks, an
 | Vocabulary | `{agreed terms, definitions, scope, and resolved conflicts}` |
 | Risks and owned deferrals | `{item, consequence, owner, resolution method, and reopen condition}` |
 | Corrections | `{earlier decision, current decision, user resolution, and reachable stale sections}` |
-| Review dispositions | `{lens, finding and evidence, resolution or owned deferral, and follow-up question}` |
-| User acceptance | `{draft, reviewed, confirmed, or stale; timestamp; one-sentence acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
 
 ## Products
 
@@ -59,8 +64,8 @@ success evidence, constraints, risks, and non-goals. Keep sibling Product proble
 | Vocabulary | `{terms, definitions, scope, and conflict resolutions}` |
 | Risks and owned deferrals | `{item, consequence, owner, resolution, and reopen condition}` |
 | Corrections | `{old and current decisions, user resolution, and stale sections}` |
-| Review dispositions | `{finding, evidence, disposition, and follow-up question}` |
-| User acceptance | `{state, timestamp, and one-sentence acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
 
 ## Implementations
 
@@ -85,5 +90,5 @@ licensing risks, portability duties, and evidence that would prove the Implement
 | Vocabulary | `{terms, definitions, scope, and conflict resolutions}` |
 | Risks and owned deferrals | `{item, consequence, owner, resolution, and reopen condition}` |
 | Corrections | `{old and current decisions, user resolution, and stale sections}` |
-| Review dispositions | `{finding, evidence, disposition, and follow-up question}` |
-| User acceptance | `{state, timestamp, and one-sentence acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |

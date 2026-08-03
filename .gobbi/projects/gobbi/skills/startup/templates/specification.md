@@ -15,6 +15,11 @@
 Derive the artifact state from required current rows. A stale row makes the artifact `stale`; every row must
 be confirmed before the artifact is `confirmed`; otherwise use the earliest incomplete row's state.
 
+This Section Register is the sole owner of each section's current state, Review-evidence reference, and user
+acceptance. Every Review uses exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
+`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`; each finding records
+evidence, consequence, one exact follow-up question, and disposition.
+
 ## Project
 
 ### `{project-key}` — {Project}
@@ -38,7 +43,8 @@ continuity, and evidence required to change any contract.}
 | Decisions and evidence | `{direction, source, strength, and evidence that would change it}` |
 | Coverage and vocabulary | `{aliases and added questions; status, answer or reason; agreed terms}` |
 | Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, old/current decisions, and stale set}` |
-| Review and acceptance | `{findings, evidence, dispositions, state, timestamp, and explicit acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
 
 ## Products
 
@@ -66,7 +72,8 @@ compatibility, privacy, safety, failure visibility, recovery, supported environm
 | Decisions and evidence | `{direction, source, strength, and change evidence}` |
 | Coverage and vocabulary | `{feature-specific aliases, added questions, status, answer or reason, and terms}` |
 | Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, and stale set}` |
-| Review and acceptance | `{findings, dispositions, state, timestamp, and explicit acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
 
 ## Implementations
 
@@ -95,4 +102,5 @@ exhaustive schemas, algorithms, repository-layout tasks, and implementation task
 | Decisions and evidence | `{direction, source, strength, and change evidence}` |
 | Coverage and vocabulary | `{aliases, added questions, status, answer or reason, and terms}` |
 | Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, and stale set}` |
-| Review and acceptance | `{findings, dispositions, state, timestamp, and explicit acceptance}` |
+| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
+| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |

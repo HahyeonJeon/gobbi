@@ -1,8 +1,9 @@
 # Startup Working Record
 
-This schema-3 file owns identity and evidence for one Startup run. The native TODO owns progression. This
-record contains no future-action cursor. For example, a Web Dashboard Product register row creates exactly
-one Web Dashboard Implementation row even before its categorized stack entries are known.
+This schema-3 file owns active-run identity, subject order and parents, assignments, answers, scenarios,
+blockers, corrections, Review findings, and acceptance/revalidation evidence. The native TODO owns
+progression, each aggregate Section Register owns section state, and `startup.md` `Confirmation` owns
+terminal Finalization state. This record contains no cursor or independently maintained aggregate state.
 
 ## Run Identity
 
@@ -15,37 +16,36 @@ one Web Dashboard Implementation row even before its categorized stack entries a
 
 ## Artifact Register
 
-| Artifact | Phase | State | Required section evidence | Evidence on disk |
-|---|---|---|---|---|
-| `problem-definition.md` | Problem Definition | `{absent, draft, reviewed, stale, or confirmed}` | `{all current subject rows}` | `{evidence}` |
-| `design.md` | Design | `{state}` | `{all current subject rows}` | `{evidence}` |
-| `specification.md` | Specification | `{state}` | `{all current subject rows}` | `{evidence}` |
-| `lifecycle-and-use-cases.md` | Lifecycle and Use Cases | `{state}` | `{all current subject rows}` | `{evidence}` |
-| `startup.md` | Finalization | `{state}` | `{all four aggregate artifacts and current sections}` | `{evidence}` |
+| Artifact | Phase | Required aggregate rows | Stable evidence on disk |
+|---|---|---|---|
+| `problem-definition.md` | Problem Definition | `{all current subject-row links}` | `{evidence}` |
+| `design.md` | Design | `{all current subject-row links}` | `{evidence}` |
+| `specification.md` | Specification | `{all current subject-row links}` | `{evidence}` |
+| `lifecycle-and-use-cases.md` | Lifecycle and Use Cases | `{all current subject-row links}` | `{evidence}` |
 
-Derive each aggregate artifact state from its required Phase Section Register rows. Any stale row makes it
-`stale`; all required rows must be confirmed for `confirmed`; otherwise use the earliest incomplete row's
-state. Never use whole-file presence as confirmation.
+Read current aggregate state only from each aggregate file's Section Register. Derive Finalization readiness
+or staleness from those rows, current Finalization evidence below, and `startup.md` `Confirmation`; do not add
+a maintained `startup.md` state row here.
 
 ## Subject Register
 
-| Order | Level | Stable subject key | Parent key | Description | Status |
-|---|---|---|---|---|---|
-| `0` | Project | `{project-key}` | `none` | `{top-level service or initiative}` | `{current or stale}` |
-| `{Product order}` | Product | `{product-key}` | `{project-key}` | `{independently useful application or platform}` | `{current or stale}` |
-| `{same Product order}` | Implementation | `{implementation-key}` | `{product-key}` | `{the Product's single complete stack; entries may be unknown}` | `{current or stale}` |
+| Order | Level | Stable subject key | Parent key | Description |
+|---|---|---|---|---|
+| `0` | Project | `{project-key}` | `none` | `{top-level service or initiative}` |
+| `{Product order}` | Product | `{product-key}` | `{project-key}` | `{independently useful application or platform}` |
+| `{same Product order}` | Implementation | `{implementation-key}` | `{product-key}` | `{the Product's single complete stack; entries may be unknown}` |
 
 Every Product row requires exactly one Implementation row with a stable one-to-one identity. Categorized
 technology entries belong in the aggregate Design section and never appear as Subject Register rows.
 
 ## Phase Section Register
 
-| Route order | Artifact | Level | Stable subject key | Phase | State | Depends on | Section evidence | User acceptance |
-|---|---|---|---|---|---|---|---|---|
-| `{order}` | `problem-definition.md` | `{Project, Product, or Implementation}` | `{stable key}` | Problem Definition | `{absent, draft, reviewed, stale, or confirmed}` | `{accepted ancestor or none}` | `{disk and assignment evidence}` | `{decision and timestamp or not yet}` |
-| `{order}` | `design.md` | `{level}` | `{stable key}` | Design | `{state}` | `{same-subject Problem Definition and cited ancestor sections}` | `{evidence}` | `{acceptance}` |
-| `{order}` | `specification.md` | `{level}` | `{stable key}` | Specification | `{state}` | `{same-subject earlier phases and cited ancestor sections}` | `{evidence}` | `{acceptance}` |
-| `{order}` | `lifecycle-and-use-cases.md` | `{level}` | `{stable key}` | Lifecycle and Use Cases | `{state}` | `{same-subject earlier phases and cited ancestor sections}` | `{evidence}` | `{acceptance}` |
+| Route order | Artifact | Level | Stable subject key | Phase | Owning aggregate row | Depends on | Stable evidence references |
+|---|---|---|---|---|---|---|---|
+| `{order}` | `problem-definition.md` | `{Project, Product, or Implementation}` | `{stable key}` | Problem Definition | `{Section Register row link}` | `{accepted ancestor or none}` | `{assignment, Review, and acceptance refs}` |
+| `{order}` | `design.md` | `{level}` | `{stable key}` | Design | `{row link}` | `{same-subject Problem Definition and cited ancestor sections}` | `{refs}` |
+| `{order}` | `specification.md` | `{level}` | `{stable key}` | Specification | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
+| `{order}` | `lifecycle-and-use-cases.md` | `{level}` | `{stable key}` | Lifecycle and Use Cases | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
 
 Register the Project's four rows first, then all Product rows in Product order, then one Implementation's four
 rows for each Product in that same order.
@@ -66,9 +66,9 @@ rows for each Product in that same order.
 
 ### Topics and Questions
 
-| Level | Stable subject key | Phase | Topic or question | Adapted wording | Origin | Status | Reason or dependency |
-|---|---|---|---|---|---|---|---|
-| `{level}` | `{stable key}` | `{phase}` | `{topic or [question-name]}` | `{subject-specific wording}` | `{level bank, Study, Interview, or Review}` | `{prepared, to ask, answered, dropped, reopened, or deferred}` | `{reason}` |
+| Level | Stable subject key | Phase | Topic or question | Adapted wording | Origin | Status | Shared answer/evidence reference | Reason or dependency |
+|---|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{topic or [question-name]}` | `{subject-specific wording}` | `{level bank, Study, Interview, or Review}` | `{prepared, evidence-derived, to ask, answered, dropped, reopened, or deferred}` | `{accepted checkpoint or none}` | `{reason}` |
 
 ### Lifecycle Scenario Candidates
 
@@ -102,15 +102,21 @@ rows for each Product in that same order.
 
 ### Corrections and Reopen Effects
 
-| Level | Stable subject key | Phase | Earlier decision | Current decision | User resolution | Earliest reopened tuple | Reachable sections made stale |
+| Level | Stable subject key | Phase | Earlier decision | Current decision | User resolution | Earliest owner work unit | Reachable stale set |
 |---|---|---|---|---|---|---|---|
-| `{level}` | `{stable key}` | `{phase}` | `{earlier}` | `{current}` | `{resolution}` | `{level, stable key, and phase}` | `{sections and startup.md}` |
+| `{level}` | `{stable key}` | `{phase}` | `{earlier}` | `{current}` | `{resolution}` | `{level, stable key, and phase}` | `{later phases, reachable descendants/sections, and synthesis}` |
+
+### Refusals Without Correction
+
+| Level | Stable subject key | Phase | Actual stage | Refusal decision and evidence | Successor | Correction reference |
+|---|---|---|---|---|---|---|
+| `{level or Finalization}` | `{stable key or none}` | `{phase or Finalization}` | `{REVIEW or CONTEXT}` | `{decision, timestamp, and checkpoint}` | `{same work unit or Finalization at STUDY}` | `none` |
 
 ### Review Findings
 
 | Level | Stable subject key | Phase | Iteration | Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
 |---|---|---|---|---|---|---|---|---|
-| `{level or Finalization}` | `{stable key or none}` | `{phase}` | `{iteration}` | `{coverage, specificity, vocabulary, consistency, traceability, or quality}` | `{finding}` | `{effect}` | `{question or none}` | `{open, resolved, or owned deferral}` |
+| `{level or Finalization}` | `{stable key or none}` | `{phase}` | `{iteration}` | `{coverage, specificity, vocabulary, consistency, traceability, unsupported direction, load-bearing open decisions, or cold-reader quality}` | `{finding and evidence}` | `{effect}` | `{one exact question}` | `{open, resolved, or owned deferral}` |
 
 ### Owned Deferrals
 
@@ -118,5 +124,7 @@ rows for each Product in that same order.
 |---|---|---|---|---|---|---|---|---|
 | `{level}` | `{stable key}` | `{phase}` | `{item}` | `nonblocking` | `{owner}` | `{effect}` | `{method}` | `{condition}` |
 
-Keep this record proof-only. It must state no future action or route position. Do not record raw conversation,
-credentials, secrets, or user-marked sensitive values.
+The Review taxonomy is exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
+`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`. Keep this record
+proof-only. It states no future action, route position, aggregate state, or terminal Finalization state. Do
+not record raw conversation, credentials, secrets, or user-marked sensitive values.

@@ -5,6 +5,9 @@
 > **Example:** The synthesis may show one Project with multiple Products and each Product's one complete
 > Implementation; categorized technologies remain entries within their Implementation.
 
+The `Confirmation` section is the sole owner of terminal Finalization state. Read aggregate section state,
+Review evidence, and user acceptance from each child document's Section Register.
+
 ## Phase Document Artifact Register
 
 | Artifact | Role | Required sections | Status | Accepted |
@@ -58,14 +61,18 @@ service operation, Product use and recovery, and Implementation development and 
 
 ### Final Review Findings and Dispositions
 
-| Lens | Finding and evidence | Disposition | Follow-up question |
-|---|---|---|---|
-| `{coverage, specificity, vocabulary, consistency, traceability, or quality}` | `{finding or none}` | `{resolved or owned deferral}` | `{question or none}` |
+| Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
+|---|---|---|---|---|
+| `{coverage, specificity, vocabulary, consistency, traceability, unsupported direction, load-bearing open decisions, or cold-reader quality}` | `{finding and evidence or none}` | `{effect or none}` | `{one exact question or none}` | `{resolved or owned deferral}` |
+
+Use exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`, `unsupported direction`,
+`load-bearing open decisions`, and `cold-reader quality` for Finalization Review.
 
 ## Confirmation
 
 - Startup schema: `3`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
+- Finalization state: `confirmed`
 - Confirmed: `{timestamp}`
 - The user confirmed: `{the complete five-file design set, in one sentence}`

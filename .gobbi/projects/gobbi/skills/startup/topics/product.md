@@ -4,6 +4,11 @@ A Product is one independently useful application or platform owned by the Proje
 dashboard and a CLI are separate Products with separate user, operating, failure, upgrade, and retirement
 contracts; this example is explanatory, not required content.
 
+Keep one coverage record for every alias, but do not repeat an interview when accepted evidence already
+answers it. `[software-type]` and `[application-deliverable-type]` may share one accepted type answer and
+evidence reference. `[building-block-inventory]` and `[building-block-parent]` are deterministically derived
+from the accepted Product and its registered one-to-one Implementation identity.
+
 ## Problem Definition
 
 Adapt these questions to one registered Product and keep answers distinct from its siblings. A Product owns
@@ -34,9 +39,9 @@ TypeScript entries have not yet been selected.
 - [stable-boundary] Which Product connection or consumer-facing behavior must remain stable when its Implementation changes?
 - [web-runtime-boundary] For a web Product, which work must occur in the consumer's browser?
 - [data-processing-model] How should a data Product produce its result—as data arrives, in scheduled batches, or on demand?
-- [application-deliverable-type] What Product type is this, and what complete outcome does it own?
-- [building-block-inventory] What stable identity names this Product's single complete Implementation?
-- [building-block-parent] Which Product owns this Implementation identity?
+- [application-deliverable-type] Which accepted Product-type evidence establishes this Product's type and complete outcome?
+- [building-block-inventory] Which registered stable identity names this Product's single complete Implementation?
+- [building-block-parent] Which accepted Product identity owns that registered Implementation?
 - [interface-type] How will each main consumer interact with this Product—for example, through a screen, command line, or programmatic interface?
 - [domain-concepts] Which Product-specific ideas and terms must have the same meaning in every interface?
 - [representative-users] Which intended consumers should test the most uncertain Product-use assumption?
