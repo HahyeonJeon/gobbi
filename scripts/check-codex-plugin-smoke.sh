@@ -97,6 +97,28 @@ test_materialization_guard() {
   pass 'materialization guard rejects a symlinked or absent component directory'
 }
 
+require_materialized_install_guidance() {
+  local doc
+  local legacy_pattern='through symlinks|receives both manifests and no skills|delivers exactly two files|with no skills, no agents'
+  local -a docs=(
+    "$repo_root/.codex/AGENTS.md"
+    "$repo_root/.gobbi/projects/gobbi/skills/codex/SKILL.md"
+    "$package_root/skills/codex/SKILL.md"
+  )
+
+  for doc in "${docs[@]}"; do
+    [[ -f "$doc" ]] || fail "Codex materialized-install guidance is missing: ${doc#"$repo_root"/}"
+    if grep -Eq "$legacy_pattern" "$doc"; then
+      fail "Codex materialized-install guidance repeats the obsolete manifests-only package state: ${doc#"$repo_root"/}"
+    fi
+    if ! grep -Fq 'complete nested skill tree' "$doc"; then
+      fail "Codex materialized-install guidance does not state the complete nested skill tree reaches installation: ${doc#"$repo_root"/}"
+    fi
+  done
+
+  pass 'Codex runtime guidance matches the materialized installed-cache contract'
+}
+
 check_installed_allow_set() {
   local root="$1" entry name
   local allowed=' .codex-plugin .claude-plugin skills agents '
@@ -126,6 +148,7 @@ fi
 for component in skills agents; do
   require_materialized_component "$component"
 done
+require_materialized_install_guidance
 
 mkdir -p "$codex_home" "$codex_sqlite_home"
 
