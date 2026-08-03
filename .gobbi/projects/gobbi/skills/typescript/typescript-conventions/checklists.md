@@ -15,8 +15,9 @@ unchecked binary condition in this source.
 A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
-A recorded valid departure disables only the displaced Preference row for its recorded scope. Rules and
-unrelated Preference rows remain applicable.
+A row that evaluates only a Preference applies when the project has not recorded a departure under
+`TSCONV-CK-PROJECT-01-05`. A departure that passes that row makes only the displaced Preference row
+inapplicable; it never makes a Rule or unrelated Preference row optional.
 
 ## Project
 

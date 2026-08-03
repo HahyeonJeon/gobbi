@@ -182,4 +182,4 @@ inventory. An omitted field leaves the handoff incomplete.
 
 #### Checklist
 
-- [ ] TSDEV-CK-OVERALL-04-01 — The final handoff contains selected project kinds, named runtimes, exact `tsconfig.json` files, generated outputs, consumer receipt/start/import paths, commands, results, and limitations.
+- [ ] TSDEV-CK-OVERALL-04-01 — The final handoff contains selected project kinds, named runtimes, exact `tsconfig.json` files, generated outputs, how each consumer receives each output and then starts or imports that output, commands, results, and limitations.
