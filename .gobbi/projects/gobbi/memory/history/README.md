@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-03 — Gobbi v1.0.1 released and Codex guidance corrected](2026-08-03-v1-0-1-release-and-codex-guidance-hotfix.md)
 - [2026-08-02 — Agent Teams reduced to a compact tool skill](2026-08-02-agent-teams-tool-skill.md)
 - [2026-08-02 — Locator, partner, and Agent Teams shipped](2026-08-02-locator-partner-agentteams.md)
 - [2026-08-01 — Consumer project bootstrap defined and shipped](2026-08-01-consumer-project-bootstrap.md)
