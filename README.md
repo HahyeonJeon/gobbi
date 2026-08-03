@@ -4,23 +4,24 @@
 
 <p align="center">
   <a href="./LICENSE"><img src="https://img.shields.io/github/license/HahyeonJeon/gobbi" alt="License: MIT"></a>
-  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.0-blue" alt="Version 1.0.0"></a>
+  <a href="./CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.0.1-blue" alt="Version 1.0.1"></a>
   <img src="https://img.shields.io/badge/runtimes-Claude%20Code%20%7C%20Codex-black" alt="Runtimes: Claude Code and Codex">
 </p>
 
 ---
 
 Gobbi lets you choose how much orchestration a task needs. It offers three modes at every entry: General for
-ordinary assistance, Cowork for fast implementation one topic at a time, and Workflow for a durable, recorded,
-dual-system lifecycle. You pick the mode; Gobbi never picks it for you.
+ordinary assistance, Cowork for fast implementation one topic at a time, and Workflow for a durable, recorded
+lifecycle that an independent partner system reviews at every step. You pick the mode; Gobbi never picks it
+for you.
 
 Gobbi ships no binary and no framework. It is 28 top-level skills and 5 agent role prompts that Claude Code
-and Codex already know how to load. With their children, those skills are 90 documents.
+and Codex already know how to load. With their children, those skills are 92 documents.
 
 ## Install
 
 Both marketplace commands below resolve `HahyeonJeon/gobbi` to the repository's default branch. That branch
-serves version 1.0.0 only once this release is merged into it. Until then an install delivers whatever version
+serves version 1.0.1 only once this release is merged into it. Until then an install delivers whatever version
 the default branch currently holds.
 
 ### Claude Code
@@ -33,8 +34,57 @@ Type these in a Claude Code session:
 /reload-plugins
 ```
 
-Gobbi uses Agent Teams. Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before starting Claude Code, or add it
-to the `env` block of your settings file.
+A plugin distributes skills and agents. It contributes no `env` block and no `permissions` block, so the
+settings Gobbi needs are yours to add. Put these in your project's `.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Skill(gobbi:gobbi)",
+      "Skill(gobbi:principles)",
+      "Skill(gobbi:ideation)",
+      "Skill(gobbi:planning)",
+      "Skill(gobbi:wrap-up)",
+      "Skill(gobbi:delegation)",
+      "Skill(gobbi:discussion)",
+      "Skill(gobbi:record)",
+      "Skill(gobbi:memory)",
+      "Skill(gobbi:git)",
+      "Skill(gobbi:cowork)",
+      "Skill(gobbi:workflow)",
+      "Agent(gobbi:manager)",
+      "Agent(gobbi:leader)",
+      "Agent(gobbi:executor)",
+      "Agent(gobbi:evaluator)",
+      "Agent(gobbi:assistant)"
+    ]
+  }
+}
+```
+
+- `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` enables Agent Teams. Without it no team is set up and no teammate is
+  spawned. Claude Code reads the variable when it starts, so set it before the session rather than during one.
+- Each `Skill(...)` entry allows one skill to be loaded without a prompt. The twelve listed are the entry
+  skill, the nine it loads before a mode is chosen, and the two mode owners. Every other Gobbi skill loads
+  from its own trigger and asks the first time; add it here when you want that prompt gone.
+- Each `Agent(...)` entry allows one role to be spawned. A role without its entry cannot be spawned at all.
+- Nothing outside the named component is granted, so this list widens your permissions by exactly the skills
+  and roles it names.
+
+Gobbi's entry reads these at the start of a session and names any that are missing, so a wrong or partial
+settings file reports itself rather than failing silently.
+
+The names are namespaced because the plugin namespaces every component it contributes. In a project whose only
+source of Gobbi is the plugin, `Skill(gobbi:principles)` and `Agent(gobbi:leader)` are what Claude Code
+offers, and the bare `Skill(principles)` and `Agent(leader)` are not offered at all. This repository's own
+[.claude/settings.json](.claude/settings.json) uses the bare form for the same components, because it resolves
+its skills from its own `.claude/skills` directory rather than from the plugin. The two forms are not a
+disagreement: each one names where the skill comes from, so use the namespaced form when Gobbi arrives as a
+plugin and the bare form when it is already in your own tree.
 
 ### Codex
 
@@ -43,24 +93,17 @@ codex plugin marketplace add HahyeonJeon/gobbi
 codex plugin add gobbi@gobbi-workspace
 ```
 
-A Codex install currently receives both manifests and no skills. The Codex plugin installer copies a plugin
-into its cache without following symlinks, and Gobbi's package symlinks to one canonical skill source. This is
-an open Codex defect — [openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install:
-support symlinks per the cross-agent marketplace contract". Gobbi keeps a single canonical source and will not
-copy it into the package to work around an installer bug.
+A Codex install receives both manifests and the whole skill tree, nested children included — an installed
+cache holds `skills/workflow/phase-1/SKILL.md` and `skills/memory/design/SKILL.md` as individual files, not
+only the top-level skills. Native Codex has neither the Agent Teams variable nor the permission gates, so the
+Claude Code settings above have no Codex equivalent to add.
 
-Codex skill discovery does follow symlinks, so until the defect is fixed, clone this repository and link its
-skills into your own project:
-
-```bash
-mkdir -p .agents/skills
-ln -s /path/to/gobbi/.gobbi/projects/gobbi/skills/* .agents/skills/
-```
-
-Link, do not copy. The skills reach outside their own directory — the entry skill loads
-`../../agents/manager.md` — and only a link keeps those paths resolving. A `git pull` in the clone then
-updates every linked skill. `ln -s` refuses any name that already exists and prints it, so nothing of yours is
-replaced. Use `~/.agents/skills` instead to install Gobbi for every project in one shared namespace.
+The package holds real files rather than links. The Codex plugin installer copies a plugin into its cache
+without following symlinks, so the earlier symlinked package arrived as two manifests and nothing else; that
+is an open Codex defect, [openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install:
+support symlinks per the cross-agent marketplace contract". Every skill and agent still has exactly one
+canonical owner in `.gobbi/projects/gobbi/`. The package copy is generated from that owner and a guard proves
+it byte-equal before release, so the copy is never edited by hand and the two cannot drift apart.
 
 Working inside the clone itself needs no install at all. This repository carries its own entry contracts at
 [.claude/CLAUDE.md](.claude/CLAUDE.md) and [AGENTS.md](AGENTS.md).
@@ -92,11 +135,12 @@ established; only missing or conflicting evidence reopens the question.
 ## The Workflow loop
 
 Workflow runs `Configuration → Ideation → Planning → Execution → Wrap-up`. Every productive step inside it
-runs `DISCUSSION → WORK → EVALUATION → RECORD`. Each WORK stage uses Claude and Codex independently:
+runs `DISCUSSION → WORK → EVALUATION → RECORD`. Each WORK stage runs one partner round. The partner is the
+system your runtime is not: in Claude Code the partner is Codex, and in Codex the partner is Claude Code.
 
 1. Both systems receive the same neutral contract and write separate drafts.
 2. Both drafts freeze before either system sees the other.
-3. Claude reviews the Codex draft, and Codex reviews the Claude draft.
+3. Each draft is then reviewed by the system that did not write it.
 4. The active runtime synthesizes the canonical candidate.
 5. You resolve every material open decision before evaluation.
 

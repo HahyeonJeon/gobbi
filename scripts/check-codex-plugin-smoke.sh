@@ -2,12 +2,10 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
-tmp_parent="$repo_root/.gobbi/projects/gobbi/tmp"
-mkdir -p "$tmp_parent"
-tmp_root="$(mktemp -d "$tmp_parent/codex-plugin-smoke.XXXXXX")"
+package_root="$repo_root/plugins/gobbi"
+tmp_root="$(mktemp -d "${TMPDIR:-/tmp}/codex-plugin-smoke.XXXXXX")"
 codex_home="$tmp_root/codex-home"
 codex_sqlite_home="$tmp_root/codex-sqlite"
-warnings=0
 
 cleanup() {
   if [[ -d "$tmp_root" && ! -L "$tmp_root" ]]; then
@@ -19,11 +17,6 @@ trap cleanup EXIT
 
 pass() {
   printf 'PASS %s\n' "$1"
-}
-
-warn() {
-  printf 'WARN %s\n' "$1" >&2
-  warnings=$((warnings + 1))
 }
 
 fail() {
@@ -67,6 +60,43 @@ test_hook_rejection() {
   pass 'installed-cache guard rejects an injected hooks component'
 }
 
+# The Codex installer copies nothing behind a symlink, at any depth. That produces two distinct
+# broken packages, so this check reports them separately, before and after the install:
+#
+#   1. a symlinked component root delivers no component at all;
+#   2. a symlink left inside a materialized component directory drops exactly that path.
+#
+# Neither is a limitation to note in a package meant to ship. Both are failures, and they are
+# kept apart because they have different repairs.
+component_is_materialized() {
+  local component_dir="$1"
+  [[ -d "$component_dir" && ! -L "$component_dir" ]]
+}
+
+require_materialized_component() {
+  local component="$1"
+  if component_is_materialized "$package_root/$component"; then
+    pass "plugins/gobbi/$component is a materialized component directory"
+  else
+    fail "plugins/gobbi/$component is not a materialized directory; the package is not materialized and the Codex installer installs nothing behind a symlinked component (generate it with: bash scripts/sync-plugin-package.sh --materialize-package)"
+  fi
+}
+
+test_materialization_guard() {
+  local fixture="$tmp_root/materialization-fixture"
+  mkdir -p "$fixture/materialized/skills" "$fixture/symlinked" "$fixture/canonical-skills"
+  printf '%s\n' fixture > "$fixture/materialized/skills/SKILL.md"
+  ln -s '../canonical-skills' "$fixture/symlinked/skills"
+
+  component_is_materialized "$fixture/materialized/skills" \
+    || fail 'materialization guard rejected a generated component directory'
+  ! component_is_materialized "$fixture/symlinked/skills" \
+    || fail 'materialization guard accepted a symlinked component directory'
+  ! component_is_materialized "$fixture/absent/skills" \
+    || fail 'materialization guard accepted a missing component directory'
+  pass 'materialization guard rejects a symlinked or absent component directory'
+}
+
 check_installed_allow_set() {
   local root="$1" entry name
   local allowed=' .codex-plugin .claude-plugin skills agents '
@@ -83,12 +113,19 @@ check_installed_allow_set() {
 require_command codex
 require_command jq
 test_hook_rejection
+test_materialization_guard
 
 if hookless_tree "$repo_root/plugins/gobbi"; then
   pass 'source package is hookless before installation'
 else
   fail 'source package contains a hooks field or hooks component'
 fi
+
+# Failure shape 1, caught before the install because it is a source-topology fact and the
+# install would only restate it as every path missing at once.
+for component in skills agents; do
+  require_materialized_component "$component"
+done
 
 mkdir -p "$codex_home" "$codex_sqlite_home"
 
@@ -139,24 +176,22 @@ else
 fi
 check_installed_allow_set "$installed_path"
 
+# Failure shape 2. Two top-level skills prove only that the component root arrived; the nested
+# children are what a skill actually loads. The installer drops any path it cannot copy at any
+# depth, so a materialized component that still hides a symlink loses exactly that path and
+# nothing else. Check both depths.
 for component_path in \
   'skills/codex/SKILL.md' \
-  'skills/principles/SKILL.md'; do
-  if [[ -f "$installed_path/$component_path" ]]; then
+  'skills/principles/SKILL.md' \
+  'skills/gobbi/partner/SKILL.md' \
+  'skills/workflow/phase-1/SKILL.md' \
+  'agents'; do
+  component="${component_path%%/*}"
+  if [[ -e "$installed_path/$component_path" ]]; then
     pass "installed cache contains $component_path"
   else
-    warn "installed cache missing $component_path; Codex did not dereference the symlinked skills component"
+    fail "installed cache missing $component_path; the generated copy of plugins/gobbi/$component is incomplete, so check that path for a symlink and regenerate with: bash scripts/sync-plugin-package.sh --materialize-package"
   fi
 done
 
-if [[ -d "$installed_path/agents" ]]; then
-  pass 'installed cache contains agents directory (Claude package component; native Codex wrappers remain repo-local)'
-else
-  warn 'installed cache omits agents directory; native Codex wrappers remain repo-local'
-fi
-
-if [[ "$warnings" -gt 0 ]]; then
-  printf 'Codex plugin smoke completed with %s installed-cache warning(s)\n' "$warnings"
-else
-  printf 'Codex plugin smoke passed without installed-cache warnings\n'
-fi
+printf 'Codex plugin smoke passed: the materialized package reached the installed cache intact\n'

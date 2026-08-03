@@ -479,6 +479,37 @@ test_entry_mode_contract() {
   pass 'sync source topology rejects runtime entries that omit Cowork'
 }
 
+# Pin the two package-component shapes the installed-cache smoke distinguishes. That smoke fails
+# a symlinked component root as an unmaterialized package, and fails a missing installed path
+# under a real one as an incomplete generated copy. Each message names the shape it found, so
+# both are wrong if sync ever stops producing exactly these two shapes. Assert them here rather
+# than leave the smoke's messages resting on an untested assumption.
+test_package_component_shapes() {
+  local root="$tmp_root/package-shapes" component package_component
+  prepare_synced_fixture "$root"
+
+  for component in skills agents; do
+    package_component="$root/plugins/gobbi/$component"
+    [[ -L "$package_component" ]] \
+      || fail "normal sync did not leave plugins/gobbi/$component a symlink"
+  done
+  run_sync "$root" --check >/dev/null
+
+  run_sync "$root" --materialize-package >/dev/null
+  for component in skills agents; do
+    package_component="$root/plugins/gobbi/$component"
+    [[ -d "$package_component" && ! -L "$package_component" ]] \
+      || fail "generation did not leave plugins/gobbi/$component a real directory"
+    [[ -z "$(find "$package_component" -type l -print -quit)" ]] \
+      || fail "generated plugins/gobbi/$component still holds a symlink"
+  done
+  [[ -f "$root/plugins/gobbi/skills/alpha/SKILL.md" && ! -L "$root/plugins/gobbi/skills/alpha/SKILL.md" ]] \
+    || fail 'generated skills component does not hold a real copy of its canonical file'
+  run_sync "$root" --check >/dev/null
+
+  pass 'package components are symlinks before generation and real files after it'
+}
+
 test_static_deletion_guards() {
   if grep -Eq 'rm[[:space:]]+-[^[:space:]]*r[^[:space:]]*f|rm[[:space:]]+-[^[:space:]]*f[^[:space:]]*r' "$sync_script"; then
     fail 'sync script contains recursive forced deletion'
@@ -490,6 +521,7 @@ test_static_deletion_guards() {
 }
 
 test_static_deletion_guards
+test_package_component_shapes
 test_safe_reconciliation
 test_unsafe_agents_entry
 test_unsafe_agents_wrong_target
