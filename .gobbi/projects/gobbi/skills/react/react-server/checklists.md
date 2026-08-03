@@ -18,6 +18,7 @@ React alone fails.
 
 - [ ] RSRV-CK-PROJECT-01-01 — Project evidence establishes the exact installed React version and a compatible framework or bundler feature.
 - [ ] RSRV-CK-PROJECT-01-02 — Every framework-specific restriction is applied where it narrows React platform behavior.
+- [ ] RSRV-CK-PROJECT-01-03 — The exact installed server integration and its active configuration are recorded before feature judgment.
 
 ## Structure
 
@@ -53,6 +54,16 @@ sets. A value valid in one direction can be invalid in the other, and using it t
 
 - [ ] RSRV-CK-STRUCTURE-03-01 — Each server-to-client prop or result value and each client-to-Server-Function argument is supported in that exact direction.
 
+### RSRV-SC-STRUCTURE-04 — Poor quality: Render hierarchy substitutes for module-boundary evidence
+
+A component may render another component without sharing its execution environment. Treating a parent or
+child relationship as proof of either module's environment produces an unsupported boundary judgment and
+fails the scenario.
+
+#### Checklist
+
+- [ ] RSRV-CK-STRUCTURE-04-01 — A parent/child render relationship is not used as a proxy for a module’s execution environment.
+
 ## Performance
 
 ### RSRV-SC-PERFORMANCE-01 — Normal case: Server/client boundary cost is measured
@@ -69,6 +80,17 @@ conclusion fails the scenario.
 - [ ] RSRV-CK-PERFORMANCE-01-04 — Each performance measurement compares a recorded baseline with a recorded candidate result.
 - [ ] RSRV-CK-PERFORMANCE-01-05 — Each performance conclusion stays within what the recorded comparison supports.
 - Also applies: RSRV-CK-STRUCTURE-02-01 (the client module graph uses the smallest justified interactive subtree).
+
+### RSRV-SC-PERFORMANCE-02 — Poor quality: Performance work uses the wrong owner or incomparable evidence
+
+This tool evaluates server/client graph and transfer cost; ordinary client-render profiling belongs to
+`react-development`. Routing client-only work here or comparing different inputs or units produces an
+unsupported conclusion and fails the scenario.
+
+#### Checklist
+
+- [ ] RSRV-CK-PERFORMANCE-02-01 — Ordinary client-render profiling is assigned to `react-development`, not this Server tool.
+- [ ] RSRV-CK-PERFORMANCE-02-02 — Server/client transfer comparisons use comparable inputs and units.
 
 ## Aesthetics
 
@@ -112,6 +134,7 @@ bounded suppression escape hatch should stay inside its documented extent; drift
 - [ ] RSRV-CK-CONSISTENCY-02-02 — Every avoidable hydration mismatch is repaired at its source.
 - [ ] RSRV-CK-CONSISTENCY-02-03 — Each `suppressHydrationWarning` use covers a genuinely unavoidable text or attribute mismatch on one element.
 - [ ] RSRV-CK-CONSISTENCY-02-04 — Each `suppressHydrationWarning` use relies on suppression only one level deep.
+- [ ] RSRV-CK-CONSISTENCY-02-05 — Server-render/hydration exercise covers each applicable loading, failure, recovery, preservation, and reset path.
 
 ### RSRV-SC-CONSISTENCY-03 — Expected failure: An unsupported boundary crossing is recovered
 
@@ -123,6 +146,7 @@ representation and rebuilt in the receiving module. Passing the unsupported form
 - [ ] RSRV-CK-CONSISTENCY-03-01 — An unsupported inline Server Function direct import is recovered by a marked module or supported reference boundary.
 - [ ] RSRV-CK-CONSISTENCY-03-02 — Each unsupported boundary value is replaced by a supported transfer representation.
 - [ ] RSRV-CK-CONSISTENCY-03-03 — Each transferred representation is reconstructed only in the receiving module that has the required data.
+- [ ] RSRV-CK-CONSISTENCY-03-04 — An unsupported boundary value is replaced by a stable identifier or smaller supported record and reconstructed in the receiving module with the required data.
 
 ## Risk
 
