@@ -129,6 +129,7 @@ failure.
 
 #### Checklist
 
+- [ ] TSTEST-CK-USAGE-02-01 — Representative valid uses compile through the public API.
 - [ ] TSTEST-CK-USAGE-02-02 — The public declarations are emitted or obtained.
 - [ ] TSTEST-CK-USAGE-02-03 — Isolated consumer fixtures are type-checked against the public declarations.
 - [ ] TSTEST-CK-USAGE-02-04 — Public declarations or exported APIs are compared wherever compatibility is a stated requirement.

@@ -49,9 +49,16 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 1.2 Design exports and declarations
 
-- Map every `types` and versioned `types@<selector>` branch to an existing declaration file. Map every runtime branch, such as `import`, `require`, or `default`, to an existing runtime file. A types-only entry has no runtime branch.
-- Place versioned `types@<selector>` branches before the ordinary `types` fallback, and place applicable type branches before runtime branches in the same condition object.
-- Give every supported compiler that misses the versioned selectors an ordinary `types` fallback. Ensure each declaration file's detected ES-module or CommonJS kind matches the runtime branch it describes.
+- Map every leaf `types` and versioned `types@<selector>` condition to an existing declaration file. Map every
+  leaf runtime condition or fallback, such as `import`, `require`, or `default`, to an existing runtime file.
+- When one public entry provides both ESM and CommonJS runtime branches, give each runtime branch its own
+  nested condition object. Within each object, map the matching type conditions to a declaration file whose
+  detected module kind matches that runtime branch.
+- A single-format runtime entry may use one matching declaration route and one runtime route without
+  dual-format nesting. A types-only entry has type conditions and no runtime branch.
+- Place versioned `types@<selector>` branches before the ordinary `types` fallback, and place applicable type
+  conditions before the runtime condition or fallback in the same condition object. Give every supported
+  compiler that misses the versioned selectors an ordinary `types` fallback.
 - Map each `bin` entry to an existing built command file.
 - Keep internal modules unreachable unless they are an intentional public subpath.
 - Decide whether declarations are emitted, bundled, or maintained, and name the exact `tsconfig.json` file that produces or validates them.
@@ -128,9 +135,10 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - If a required pre-publication check fails, do not publish.
 - Return to Phase 1 for an incorrect compatibility requirement, Phase 2 for output or metadata, or Phase 3 for a consumer failure.
 - After repair, recreate the archive and re-run every affected and final check against that archive.
-- When this package change is evaluated, the [package checklist](checklists.md), [installed-command checklist](command-checklists.md), and every checklist provided
-  by an active `typescript` sibling supply the applicable conditions in both author and review-only modes;
-  the general Evaluation operation resolves them and issues any verdict.
+- When this package change is evaluated, the [package checklist](checklists.md),
+  [installed-command checklist](command-checklists.md), [release checklist](release-checklists.md), and every
+  checklist provided by an active `typescript` sibling supply the applicable conditions in both author and
+  review-only modes; the general Evaluation operation resolves them and issues any verdict.
 
 #### 4.2 Confirm release authority
 
@@ -144,3 +152,5 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - [Package checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for package definition, consumers, and publication.
 - [Installed-command checklist](command-checklists.md) supplies reusable unchecked scenarios and atomic conditions for commands installed from a package archive.
+- [Release checklist](release-checklists.md) supplies reusable unchecked scenarios and atomic conditions for
+  release readiness, authority, failure handling, and final archive traceability.

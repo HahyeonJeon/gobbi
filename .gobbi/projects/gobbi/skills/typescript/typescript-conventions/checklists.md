@@ -15,6 +15,9 @@ unchecked binary condition in this source.
 A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
+A recorded valid departure disables only the displaced Preference row for its recorded scope. Rules and
+unrelated Preference rows remain applicable.
+
 ## Project
 
 ### TSCONV-SC-PROJECT-01 — Normal case: each choice is source-level and follows the settled convention
@@ -30,6 +33,7 @@ a foreign concern here, or applying a baseline over a settled convention, is the
 - [ ] TSCONV-CK-PROJECT-01-02 — Every type-semantics, runtime-architecture, and compiler-configuration question is routed to the TypeScript child or product-domain skill that defines it.
 - [ ] TSCONV-CK-PROJECT-01-03 — The project's existing convention is followed wherever it is coherent and tool-enforced.
 - [ ] TSCONV-CK-PROJECT-01-04 — A baseline preference from this skill is applied only where the project has not settled the choice.
+- [ ] TSCONV-CK-PROJECT-01-05 — Every departure from a baseline preference follows a consistent recorded project convention.
 
 ### TSCONV-SC-PROJECT-02 — Rule violation: an established convention changes without a migration
 

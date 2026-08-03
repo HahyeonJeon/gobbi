@@ -1,7 +1,8 @@
 # TypeScript Packaging Evaluation Checklist
 
-This reusable unchecked source evaluates one package definition produced or validated under this operation. It
-is governed by the [`typescript`](../SKILL.md) domain and [`typescript-packaging`](SKILL.md) operation, with
+This reusable unchecked source evaluates package definition, structure, declarations, installed-consumer
+behavior, and compatibility claims for one package produced or validated under this operation. It is governed
+by the [`typescript`](../SKILL.md) domain and [`typescript-packaging`](SKILL.md) operation, with
 [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the build and resolution pipeline and
 [`typescript-testing`](../typescript-testing/SKILL.md) defining the consumer and declaration checks it runs.
 The [installed-command checklist](command-checklists.md) separately evaluates commands supplied by the package.
@@ -88,6 +89,16 @@ intentional subpath. An accidental reachable path breaks the Rule even when noth
 - [ ] TSPKG-CK-STRUCTURE-02-02 — Every module reachable by consumers is an intentional public entry point or subpath.
 - [ ] TSPKG-CK-STRUCTURE-02-03 — Every path named by package metadata resolves inside the package archive.
 
+### TSPKG-SC-STRUCTURE-03 — Normal case: dual runtime branches have matching nested declarations
+
+One public entry can provide both ESM and CommonJS runtime branches, and each branch needs declarations with
+the same detected module kind. The expected outcome nests matching declaration conditions under each runtime
+branch. One flat declaration route shared by both runtime branches is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-STRUCTURE-03-01 — A public entry with both ESM and CommonJS runtime branches gives each runtime branch its own nested matching declaration condition and file.
+
 ### TSPKG-SC-STRUCTURE-04 — Normal case: dependency and declaration-routing fields match consumer needs
 
 Dependency fields and package-manager policy decide what is required, optional, installed automatically,
@@ -169,81 +180,14 @@ on plausibility rather than an exercised path breaks the Rule.
 - [ ] TSPKG-CK-CONSISTENCY-01-01 — No compatibility with a module format, runtime, TypeScript version, or resolver is claimed unless an installed package archive exercised it.
 - [ ] TSPKG-CK-CONSISTENCY-01-02 — Every claimed module and resolution path has a representative consumer fixture.
 
-### TSPKG-SC-CONSISTENCY-02 — Normal case: the API change is classified and carried into the documents
-
-A release changes the public exports, declarations, or runtime behavior, and consumers learn about it from the classification and the notes. The
-expected outcome compares those public elements with the prior released API, classifies what changed, and updates
-the consumer documents. An unclassified or undocumented change is the failure.
-
-#### Checklist
-
-- [ ] TSPKG-CK-CONSISTENCY-02-01 — The public exports and declarations are compared with the prior released API.
-- [ ] TSPKG-CK-CONSISTENCY-02-02 — Additions, deprecations, removals, behavioral changes, and minimum-toolchain changes are classified.
-- [ ] TSPKG-CK-CONSISTENCY-02-03 — Consumer documentation and release notes are updated for the classified change.
-
 ## Risk
 
-### TSPKG-SC-RISK-01 — Rule violation: publication without classification and authority
-
-Publishing is irreversible for consumers, and a compatibility statement changes what they may rely on. The
-expected outcome classifies the change, obtains release authority, and publishes only through the authorized
-workflow. Publishing outside that path, or without the classification, breaks the Rule.
-
-#### Checklist
-
-- [ ] TSPKG-CK-RISK-01-01 — Public API changes are classified before publishing or changing a compatibility statement.
-- [ ] TSPKG-CK-RISK-01-02 — Release authority is obtained before publishing or changing a compatibility statement.
-- [ ] TSPKG-CK-RISK-01-03 — Publication happens only through the repository's authorized release workflow.
-- [ ] TSPKG-CK-RISK-01-04 — Registry metadata and installation are verified after publication, or the task stops at a publication-ready archive when publication is not authorized.
-
-### TSPKG-SC-RISK-02 — Normal case: the archive contains exactly what it should
-
-What is packed is what consumers receive, including anything the working tree left behind. The expected
-outcome builds cleanly, inspects the inventory for missing generated files and unwanted source or secrets, and has
-defined its checks before building. Discovering the contents after publication is the failure.
-
-#### Checklist
-
-- [ ] TSPKG-CK-RISK-02-01 — The build runs clean without relying on stale output.
-- [ ] TSPKG-CK-RISK-02-02 — The archive inventory is inspected for missing generated files and for unwanted source or secrets.
-- [ ] TSPKG-CK-RISK-02-03 — Archive-content, installation, runtime, and rollback checks are defined before building.
-
-### TSPKG-SC-RISK-03 — Expected failure: a required package check fails
-
-A pre-publication build, declaration, metadata, consumer, or final-check failure must keep the archive
-unpublished. A post-publication failure must become a release-authority incident. The expected outcome repairs
-and recreates an unpublished archive or follows an
-authorized rollback, deprecation, or corrective release after publication. Silent publication or republishing
-is the failure.
-
-#### Checklist
-
-- [ ] TSPKG-CK-RISK-03-01 — An archive with any failed pre-publication check remains unpublished.
-- [ ] TSPKG-CK-RISK-03-02 — A repaired package returns to release authority only as a recreated archive that passes every affected final check.
-- [ ] TSPKG-CK-RISK-03-03 — Every post-publication verification failure remains an unresolved release-authority incident until an authorized rollback, deprecation, or corrective release completes.
+Not applicable: This source is bound to package definition and installed-consumer behavior; release risk and
+recovery are evaluated by the
+[release checklist](release-checklists.md).
 
 ## Overall
 
-### TSPKG-SC-OVERALL-01 — Normal case: every result belongs to the package archive being proposed
-
-Command results collected across a long package run can come from several builds. The expected outcome rebuilds from
-the accepted tree, re-runs the required checks, and binds every result to the exact archive being proposed. A
-result carried over from an earlier archive is the failure.
-
-#### Checklist
-
-- [ ] TSPKG-CK-OVERALL-01-01 — The build output is rebuilt from the accepted tree.
-- [ ] TSPKG-CK-OVERALL-01-02 — The archive is recreated from that rebuilt output.
-- [ ] TSPKG-CK-OVERALL-01-03 — The repository's required package metadata, declaration, consumer, license, provenance, and vulnerability checks are re-run.
-- [ ] TSPKG-CK-OVERALL-01-04 — Every command result is bound to the exact archive digest or contents being proposed.
-
-### TSPKG-SC-OVERALL-02 — Expected failure: a claimed named runtime, consumer, or check cannot be run here
-
-An isolated consumer, a named runtime, or a required check is unavailable in this environment, so part of the
-claimed behavior cannot be exercised. The expected outcome withdraws or marks the affected claim and reports the
-limit. Presenting the remaining command results as complete is the failure.
-
-#### Checklist
-
-- [ ] TSPKG-CK-OVERALL-02-01 — Every claim whose required command could not be run is withdrawn or reported as unverified.
-- [ ] TSPKG-CK-OVERALL-02-02 — Unavailable named runtimes, consumers, and checks are reported with the findings as limitations.
+Not applicable: This source is bound to package definition and installed-consumer behavior; final release
+traceability is evaluated by the
+[release checklist](release-checklists.md).

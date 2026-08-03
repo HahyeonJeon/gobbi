@@ -146,11 +146,14 @@ Type correctness is one check among runtime behavior, integration, build, packag
 - Map current-tree command output to every success criterion and inspect the final scope for unrelated changes.
 - Hand off limitations or unavailable checks literally; do not convert a missing result into a pass.
 - Hand off the selected project kinds, named runtimes, exact `tsconfig.json` files, generated outputs, how consumers receive and start or import each output, commands run, results, and remaining limitations.
-- When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
-  provided by an active `typescript` sibling supply the applicable conditions; the general Evaluation
-  operation resolves them and issues any verdict.
+- When this implementation is evaluated, the [evaluation checklist](checklists.md),
+  [verification and handoff checklist](verification-and-handoff-checklists.md), and every checklist provided
+  by an active `typescript` sibling supply the applicable conditions; the general Evaluation operation
+  resolves them and issues any verdict.
 
 ## References
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for changes
   governed by this skill.
+- [Verification and handoff checklist](verification-and-handoff-checklists.md) supplies reusable unchecked
+  scenarios and atomic conditions for consumer-path verification and the final handoff.
