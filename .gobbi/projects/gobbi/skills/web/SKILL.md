@@ -9,7 +9,7 @@ skill-type: domain
 
 Web routes product design, coordinated development, browser-facing work, interaction behavior, authoritative
 backend work, project structure, security assurance, testing, diagnostic emission, per-environment
-configuration and secret supply, production build and deployment, language and region adaptation, Web
+configuration and secret supply, production release and deployment, language and region adaptation, Web
 Platform interpretation, and structural web choices.
 
 The root owns navigation only. Load every row whose trigger applies; each child owns its complete operation,
@@ -22,7 +22,7 @@ manual, or preferences.
 | [`web-architecture`](web-architecture/SKILL.md) | preference | MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application. |
 | [`web-backend`](web-backend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's server, API, domain, data, provider, authorization, or operational behavior. |
 | [`web-configuration`](web-configuration/SKILL.md) | preference | MUST load when choosing or reviewing how a web or Electron surface is supplied with per-environment values, covering build-time versus runtime configuration, secret supply and the client-bundle boundary, feature-flag lifetime, and startup validation. |
-| [`web-deployment`](web-deployment/SKILL.md) | operation | MUST load when configuring a web build for production or when deploying, verifying, or reversing a web release, covering bundler configuration, chunking, asset hashing, production source maps, rollout, and rollback. |
+| [`web-deployment`](web-deployment/SKILL.md) | operation | MUST load when deploying an accepted web release to an authorized environment, verifying the production URL, advancing or stopping a rollout, or rolling back the environment. |
 | [`web-design`](web-design/SKILL.md) | preference | MUST load when choosing or reviewing a web product's design problem, project identity, user-evidence threshold, alternative concepts, accepted design, validation judgment, post-release learning, replacement, or retirement criteria. |
 | [`web-development`](web-development/SKILL.md) | operation | MUST load when coordinating or reviewing one web change across design, implementation, testing, release, deployment, live learning, iteration, and retirement handoffs. |
 | [`web-frontend`](web-frontend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's browser-facing interface and experience. |
@@ -31,5 +31,6 @@ manual, or preferences.
 | [`web-observability`](web-observability/SKILL.md) | operation | MUST load when instrumenting or reviewing what a web or Electron surface emits, covering structured logs, metrics, traces, trace-context propagation, crash and unhandled-error capture, and diagnostic redaction. |
 | [`web-platform`](web-platform/SKILL.md) | tool | MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics. |
 | [`web-project-structure`](web-project-structure/SKILL.md) | preference | MUST load when establishing or reviewing a web project's directory structure, workspace or application roots, source, runtime, test, configuration, asset, migration, shared, generated, build, or deployable-output placement, or a documented placement exception. |
+| [`web-release`](web-release/SKILL.md) | operation | MUST load when producing or reviewing a web production build or release artifact, including frozen inputs, bundler configuration, chunking, asset names and cache policy, build identity, production source maps, or the artifact handoff to deployment. |
 | [`web-security`](web-security/SKILL.md) | operation | MUST load when a web change crosses a trust boundary; handles identity, sessions, protected or sensitive data; accepts untrusted content; changes authorization, providers, dependencies, security configuration, or public exposure; or requires security review. |
 | [`web-testing`](web-testing/SKILL.md) | operation | MUST load when designing, writing, running, diagnosing, or reviewing tests for a web application or feature. |

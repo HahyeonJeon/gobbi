@@ -14,9 +14,10 @@ and for the Node processes that build and serve it.
 
 `web-security` owns enforcement — which decisions are protected, where they are authorized, and what the
 threat model requires. This skill owns supply — how a value reaches the process that enforces them. A secret
-inlined into a client bundle is a supply defect, so enforcement cannot prevent it. `web-deployment` owns
-environment identity, the frozen build inputs, and the release itself, and does not claim per-environment
-values or secret supply; this skill decides what those inputs contain.
+inlined into a client bundle is a supply defect, so enforcement cannot prevent it. `web-release` owns frozen
+production-build inputs and the release artifact, while `web-deployment` owns environment identity and the
+target; neither claims per-environment values or secret supply, and this skill decides what those inputs
+contain.
 
 `web-project-structure` owns where a configuration file sits in the repository, `web-backend` owns the
 authoritative behavior a value drives, `web-architecture` owns which side of the client-server boundary state

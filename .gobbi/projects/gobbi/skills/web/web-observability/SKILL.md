@@ -151,7 +151,7 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   value size limits of 39 bytes per key and 127 bytes per `extra` value.
 - Record, per surface, the in-process error path, the out-of-process failure path, the allow-listed
   annotations and endpoint configured for it, the attached build identity, and the decision that makes a
-  reported stack readable, which `web-deployment` owns.
+  reported stack readable, which `web-release` owns.
 - Continue when both paths exist for every shipped surface; treat the browser Reporting API as newly
   available rather than universal, keep the in-process path as the signal that must always work, and record
   any surface whose unsurvivable failure cannot be captured as an accepted gap with its owner.

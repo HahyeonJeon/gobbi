@@ -140,10 +140,11 @@ deployment state, live verification, observed health, supported operation, and r
 - Require the evaluation or approved limitation disposition the release owner needs. Keep implementation
   correctness, test evidence, frontend acceptance, backend effects, release readiness, and release state as
   separate claims.
-- Route production release preparation and execution to `web-release` when that owner exists. Preserve its
-  artifact, compatibility, migration, rollout, stop, rollback, support, and authority evidence.
-- Hand an accepted release to [`web-deployment`](../web-deployment/SKILL.md). Keep deployment authorization,
-  deployment state, reconciliation, rollback, and live verification as separate deployment-owned claims.
+- Route production release preparation and execution to [`web-release`](../web-release/SKILL.md). Preserve
+  its immutable artifact, manifest, build identity, source-map disposition, and release evidence.
+- Hand an accepted release to [`web-deployment`](../web-deployment/SKILL.md) with the exact target, rollout
+  and stop conditions, reverse path, and authority state. Keep deployment authorization, deployment state,
+  reconciliation, rollback, and live verification as separate deployment-owned claims.
 - Pause an external, destructive, irreversible, release, or deployment action until its owner holds the exact
   required authority.
 

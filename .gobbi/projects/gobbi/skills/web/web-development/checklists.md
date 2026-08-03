@@ -7,7 +7,8 @@ owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-development`](SKILL.md) operation, with [`web-frontend`](../web-frontend/SKILL.md) and
 [`web-backend`](../web-backend/SKILL.md) as the layer operations it routes to,
 [`web-architecture`](../web-architecture/SKILL.md) as the owner of the structural seams it integrates across,
-and [`web-deployment`](../web-deployment/SKILL.md) as the operation that owns deployment actions. The source
+[`web-release`](../web-release/SKILL.md) as the operation that owns production release artifacts, and
+[`web-deployment`](../web-deployment/SKILL.md) as the operation that owns deployment actions. The source
 commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBDEV`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and

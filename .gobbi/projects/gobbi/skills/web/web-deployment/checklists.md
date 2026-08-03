@@ -1,15 +1,14 @@
 # Web Deployment Evaluation Checklist
 
-This reusable unchecked source evaluates one web release turned into a running, verified, reversible
-deployment, against the frozen-identity, asset-naming and cache, publish-order, source-map, live-verification,
-and explicit-authority obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-deployment`](SKILL.md) operation, with [`web-development`](../web-development/SKILL.md) as the caller whose
-accepted release handoff it begins from, [`web-configuration`](../web-configuration/SKILL.md) as the owner of the
-per-environment values inside the frozen inputs, [`web-observability`](../web-observability/SKILL.md) as the
-owner of the signals a rollout is judged by, and
-[`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md) as the owner of compiling, emit, and
-module resolution. The source commit that contains this file identifies the checklist version. Its stable
-owner prefix is `WEBDEP`.
+This reusable unchecked source evaluates one accepted web release deployed to an authorized environment,
+against the target-freeze, reverse-path, migration and publish-order, retained-asset, staged-rollout,
+production-URL verification, immediate-reversal, and authority-stop obligations this operation owns. It is
+governed by the [`web`](../SKILL.md) domain and [`web-deployment`](SKILL.md) operation, with
+[`web-release`](../web-release/SKILL.md) owning the immutable identified artifact and its production evidence,
+[`web-development`](../web-development/SKILL.md) coordinating the handoff,
+[`web-configuration`](../web-configuration/SKILL.md) owning runtime values and secret supply, and
+[`web-observability`](../web-observability/SKILL.md) owning rollout signals. The source commit that contains
+this file identifies the checklist version. Its stable owner prefix is `WEBDEP`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -20,110 +19,65 @@ that this scenario reuses.
 
 ## Project
 
-### WEBDEP-SC-PROJECT-01 — Normal case: the handoff is taken and the build identity is frozen
+### WEBDEP-SC-PROJECT-03 — Normal case: deployment accepts rollout/rollback/authority state and freezes/records the exact target
 
-A release-ready handoff arrives and a deployment begins. The expected outcome refuses an unresolved handoff
-and freezes one recorded build identity before the target environment changes; a deploy whose inputs were
-still moving is the failure.
-
-#### Checklist
-
-- [ ] WEBDEP-CK-PROJECT-01-01 — Work starts from `web-development`'s accepted release handoff or the caller's equivalent, including its compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
-- [ ] WEBDEP-CK-PROJECT-01-02 — A handoff whose evaluation is unresolved, or whose limitation carries no user disposition, is refused rather than deployed.
-- [ ] WEBDEP-CK-PROJECT-01-03 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are frozen before anything in the target environment changes.
-- [ ] WEBDEP-CK-PROJECT-01-04 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are recorded before anything in the target environment changes.
-- [ ] WEBDEP-CK-PROJECT-01-05 — One build identity is embedded in the build.
-- [ ] WEBDEP-CK-PROJECT-01-06 — That one build identity is carried by every later artifact, log, and error report, so a cache entry, a stale client, and an incident report resolve to exactly one build.
-
-### WEBDEP-SC-PROJECT-02 — Normal case: adjacent questions reach their owners
-
-The deployment raises compiler, data, exposure, signal, and value questions. The expected outcome routes each
-to its owner and keeps bundler configuration for the bundle; a toolchain failure worked around in bundler
-options is the failure.
+An accepted release handoff reaches deployment. The expected outcome preserves its bytes, accepts rollout,
+rollback, and exact authority state, and freezes and records the environment identity and target before any
+change; deploying a moving target or settling an adjacent owner's question here is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-PROJECT-02-01 — Every adjacent question is routed to its owner: compiling, emit, and module resolution to `typescript-toolchain`, build-output placement to `web-project-structure`, rendering and delivery strategy to `web-architecture`, what a migration means to the data to `web-backend`, protected-data exposure to `web-security`, rollout signals to `web-observability`, per-environment values and secret supply to `web-configuration`, suite evidence to `web-testing`, and a disputed browser fact to `web-platform`.
-- [ ] WEBDEP-CK-PROJECT-02-02 — No compiler, emit, module-resolution, or type-stripping failure is worked around in bundler configuration.
+- [ ] WEBDEP-CK-PROJECT-03-01 — Deployment work starts from an accepted release handoff that includes rollout and rollback intent and the exact deployment-authority state.
+- [ ] WEBDEP-CK-PROJECT-03-02 — The environment identity and target are frozen before anything in the target environment changes.
+- [ ] WEBDEP-CK-PROJECT-03-03 — The environment identity and target are recorded before anything in the target environment changes.
+- [ ] WEBDEP-CK-PROJECT-03-04 — Every adjacent deployment question is routed to its owner: migration meaning to `web-backend`; rollout signals to `web-observability`; runtime configuration to `web-configuration`; every protected-data exposure question arising from target configuration, migration, rollout, or served behavior to `web-security`; live suite evidence to `web-testing`; and disputed browser verification facts to `web-platform`.
 
 ## Structure
 
-### WEBDEP-SC-STRUCTURE-01 — Normal case: the chunk graph matches the delivery strategy
+### WEBDEP-SC-STRUCTURE-03 — Edge case: retained prior assets keep old documents and in-flight chunks valid through rollback
 
-A production build is configured for the selected delivery strategy. The expected outcome preserves the
-working bundler, splits where people actually cross a boundary, and records the resulting graph; a
-reorganisation the release did not require is the failure.
-
-#### Checklist
-
-- [ ] WEBDEP-CK-STRUCTURE-01-01 — The working bundler is preserved.
-- [ ] WEBDEP-CK-STRUCTURE-01-02 — Only what this release requires is changed in the build configuration.
-- [ ] WEBDEP-CK-STRUCTURE-01-03 — One entry point exists per delivered surface.
-- [ ] WEBDEP-CK-STRUCTURE-01-04 — Code splits at a route, a deferred feature, or a rarely reached dependency.
-- [ ] WEBDEP-CK-STRUCTURE-01-05 — A shared dependency lives in one chunk rather than being duplicated across entries.
-- [ ] WEBDEP-CK-STRUCTURE-01-06 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
-
-### WEBDEP-SC-STRUCTURE-02 — Rule violation: a cacheable asset is served under a reusable name
-
-An asset whose content can change is served under a name that stays the same. The expected outcome derives
-every cacheable filename from its content and keeps the entry document revalidated; one deploy serving two
-versions from one name is the failure.
+During rollout and rollback, old documents and in-flight lazy imports still request predecessor names. The
+expected outcome keeps those exact files served through the rollback window; deleting or renaming them while
+clients still hold their references is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-STRUCTURE-02-01 — Every cacheable asset filename is derived from its content.
-- [ ] WEBDEP-CK-STRUCTURE-02-02 — A rebuilt but unchanged asset keeps its name.
-- [ ] WEBDEP-CK-STRUCTURE-02-03 — A changed asset receives a new name.
-- [ ] WEBDEP-CK-STRUCTURE-02-04 — Cacheable assets are served with a long-lived immutable freshness lifetime.
-- [ ] WEBDEP-CK-STRUCTURE-02-05 — The entry document stays revalidated.
-- [ ] WEBDEP-CK-STRUCTURE-02-06 — The naming scheme, the freshness lifetime per class of file, and the entry document's directives are recorded as they are actually served rather than as configured.
+- [ ] WEBDEP-CK-STRUCTURE-03-01 — The previous build's assets remain retained and served throughout the rollback window.
+- [ ] WEBDEP-CK-STRUCTURE-03-02 — A client holding the old entry document and an in-flight lazy chunk can still fetch the files by the names they already have.
 
 ## Performance
 
 ### WEBDEP-SC-PERFORMANCE-01 — Normal case: the rollout holds long enough for signals to move
 
-The release is advanced in stages against live traffic. The expected outcome uses the smallest stage the
-target supports and holds it until error, latency, and outcome signals can move; an advance faster than the
-signals it claims to rely on is the failure.
+The accepted release advances in stages against live traffic. The expected outcome uses the smallest stage
+the target supports and holds it until error, latency, and outcome signals can move; an advance faster than
+the signals it claims to use is the failure.
 
 #### Checklist
 
 - [ ] WEBDEP-CK-PERFORMANCE-01-01 — Each rollout stage is the smallest the target supports.
 - [ ] WEBDEP-CK-PERFORMANCE-01-02 — Each stage is held long enough for error, latency, and outcome signals to move before the next advance.
 - [ ] WEBDEP-CK-PERFORMANCE-01-03 — Each stage boundary, its traffic share, the signals observed during the hold, and the decision taken at the end of it are recorded.
-- Also applies: WEBDEP-CK-STRUCTURE-01-06 (chunk graph and first-visit cost recorded).
-
-### WEBDEP-SC-PERFORMANCE-02 — Edge case: a warm cache and an old document still request the previous names
-
-Immediately after the cutover, an edge cache, a stale client, and an in-flight lazy chunk all ask for files by
-the names they already hold. The expected outcome keeps the previous build's assets served through the whole
-rollback window; a deleted predecessor breaking clients mid-session is the failure.
-
-#### Checklist
-
-- [ ] WEBDEP-CK-PERFORMANCE-02-01 — The previous build's assets remain retained and served throughout the rollback window.
-- [ ] WEBDEP-CK-PERFORMANCE-02-02 — A client holding the old entry document and an in-flight lazy chunk can still fetch the files by the names they already have.
 
 ## Aesthetics
 
 ### WEBDEP-SC-AESTHETICS-01 — Poor quality: the deployment record cannot be read afterwards
 
-An incident is investigated a week later from the deployment record alone. The expected outcome supplies each
-step's timing and the exact moment the entry document changed; a record that cannot place the cutover in time
-is the failure.
+An incident is investigated from the deployment record alone. The expected outcome supplies each step's
+timing, the exact entry-document cutover, and retained-predecessor state; a record that cannot place the
+cutover in time is the failure.
 
 #### Checklist
 
 - [ ] WEBDEP-CK-AESTHETICS-01-01 — Each deploy step's completion time, the moment the entry document changed, and confirmation that the previous build's assets remain in place are recorded.
-- Also applies: WEBDEP-CK-PROJECT-01-06 (one build identity carried by every artifact, log, and error report).
 
 ## Usage
 
 ### WEBDEP-SC-USAGE-01 — Normal case: the reverse path is designed and rehearsed before the deploy
 
-A reverse path is designed and exercised while the previous version is still whole. The expected outcome
-names the artifact, the restoration, the retention, the reversible and irreversible data changes, and the
-person who may act, and proves the path by running it; a path first run during an incident is the failure.
+A reverse path is designed and exercised while the previous version is whole. The expected outcome names the
+artifact, restoration, retention, reversible and irreversible changes, and actor, then proves that path; a
+path first designed during an incident is the failure.
 
 #### Checklist
 
@@ -135,9 +89,9 @@ person who may act, and proves the path by running it; a path first run during a
 
 ### WEBDEP-SC-USAGE-02 — Expected failure: verification fails or a stop condition is met
 
-The release is serving and a stop condition fires. The expected outcome reverses at once and re-verifies the
-restored release; diagnosing first while the broken build keeps serving, or assuming the reverse worked, is
-the failure.
+The release is serving and verification fails or a stop condition fires. The expected outcome reverses at
+once and re-verifies the restored release; diagnosing first while the broken build serves, or assuming the
+reverse worked, is the failure.
 
 #### Checklist
 
@@ -149,8 +103,8 @@ the failure.
 
 ### WEBDEP-SC-USAGE-03 — Edge case: a change has no reverse path
 
-A step in the release cannot be undone once taken. The expected outcome raises it as a decision needing
-explicit user authority; treating it as an ordinary step to take carefully is the failure.
+A deployment step cannot be undone once taken. The expected outcome raises it as a decision needing explicit
+user authority; treating it as an ordinary step to take carefully is the failure.
 
 #### Checklist
 
@@ -160,23 +114,23 @@ explicit user authority; treating it as an ordinary step to take carefully is th
 
 ### WEBDEP-SC-CONSISTENCY-01 — Normal case: the served bytes match the frozen artifact
 
-The deployment is verified after the cutover. The expected outcome fetches from the production URL people
-actually use and compares what is served against what was frozen; a preview alias standing in for production
-is the failure.
+The deployment is verified after cutover. The expected outcome fetches from the production URL people use
+and compares what is served with the accepted release, including live names and cache directives; a preview
+alias or configured value standing in for live evidence is the failure.
 
 #### Checklist
 
 - [ ] WEBDEP-CK-CONSISTENCY-01-01 — Verification is performed against the production URL people actually use, not a preview alias, an origin bypass, or a staging host.
-- [ ] WEBDEP-CK-CONSISTENCY-01-02 — The served build identity read from the entry document matches the frozen identity.
-- [ ] WEBDEP-CK-CONSISTENCY-01-03 — At least one hashed asset, one lazily loaded chunk, and one authoritative round trip are exercised.
-- [ ] WEBDEP-CK-CONSISTENCY-01-04 — The cache directives are read as served.
-- [ ] WEBDEP-CK-CONSISTENCY-01-05 — Every difference between the frozen artifact and the served bytes is returned to the ordering step before the deployment is reported complete.
+- [ ] WEBDEP-CK-CONSISTENCY-01-02 — The served build identity read from the entry document matches the accepted release identity.
+- [ ] WEBDEP-CK-CONSISTENCY-01-03 — At least one hashed asset, one lazily loaded chunk, and one server-owned round trip are exercised.
+- [ ] WEBDEP-CK-CONSISTENCY-01-04 — The live-served record contains the deployed asset names and cache directives for each release-defined file class and the entry document, observed from the production URL.
+- [ ] WEBDEP-CK-CONSISTENCY-01-05 — Every difference between the accepted artifact and the served bytes is returned to the publish-ordering step before the deployment is reported complete.
 
 ### WEBDEP-SC-CONSISTENCY-02 — Rule violation: the deploy order lets one version reference something absent
 
-Migrations, assets, and the entry document are published in an order that leaves a reference dangling. The
-expected outcome publishes so nothing ever names something not yet present and keeps both versions servable;
-a migration incompatible with the currently serving build is the failure.
+Migrations, assets, and the entry document are published in an order that can name something absent. The
+expected outcome keeps prior and new versions servable throughout overlap; incompatible migration or missing
+asset forces a stop and reverse.
 
 #### Checklist
 
@@ -191,10 +145,9 @@ a migration incompatible with the currently serving build is the failure.
 
 ### WEBDEP-SC-RISK-01 — Rule violation: an action is taken without authority for that exact action
 
-A deployment reaches a step that needs credentials, a publication, a promotion, or a rollout advance, and the
-authority for that exact action was never granted. The expected outcome stops at the boundary with the
-artifact, the verification evidence, and the reverse path preserved, then names the first blocked action and
-the authority it requires; proceeding on assumed, inherited, or adjacent authority is the failure.
+Deployment reaches a credential, publication, promotion, rollout, or reverse action whose exact authority was
+not granted. The expected outcome stops with artifact, evidence, and reverse path preserved and names the
+blocked action and authority; proceeding on assumed or adjacent authority is the failure.
 
 #### Checklist
 
@@ -203,43 +156,36 @@ the authority it requires; proceeding on assumed, inherited, or adjacent authori
 - [ ] WEBDEP-CK-RISK-01-03 — A blocked action stops with the artifact, the verification evidence, and the reverse path preserved.
 - [ ] WEBDEP-CK-RISK-01-04 — The first blocked action and the authority it requires are named.
 
-### WEBDEP-SC-RISK-02 — Normal case: source maps are generated and their publication decided
-
-Every shipped bundle needs a readable stack path, and a published map re-exposes the original source. The
-expected outcome generates a map per bundle and decides its publication deliberately; one global setting
-standing in for that decision is the failure.
-
-#### Checklist
-
-- [ ] WEBDEP-CK-RISK-02-01 — A production source map is generated for every shipped bundle.
-- [ ] WEBDEP-CK-RISK-02-02 — Publication is decided per map rather than by one global setting.
-- [ ] WEBDEP-CK-RISK-02-03 — An unpublished map still reaches the error reporter so a stack trace can be read.
-- [ ] WEBDEP-CK-RISK-02-04 — It is recorded, per bundle, whether its map is published, where an unpublished map is delivered instead, and whether original sources are embedded in it.
-
 ### WEBDEP-SC-RISK-03 — Adversarial: a rollout advances on assumed authority or a stop is bypassed
 
-A stage advances because time passed, an earlier stage looked fine, or a signal was absent rather than good,
-and an upload is described as a deployment. The expected outcome rejects each of those; compliance shaped to
-let the rollout continue rather than to judge it is the failure.
+A stage advances because time passed, an earlier stage succeeded, or a signal was absent rather than good,
+and an upload is called a verified deployment. The expected outcome rejects every substitution; compliance
+shaped to continue the rollout is the failure.
 
 #### Checklist
 
 - [ ] WEBDEP-CK-RISK-03-01 — No rollout stage advances while a stop condition is met.
 - [ ] WEBDEP-CK-RISK-03-02 — No stage advances on elapsed time, an absent signal, or a prior stage's success in place of observed signals.
 - [ ] WEBDEP-CK-RISK-03-03 — No completed upload, green build, or passing preview is counted as a verified deployment.
-- [ ] WEBDEP-CK-RISK-03-04 — A published map on a surface whose source is not public is routed to `web-security` as an exposure question rather than settled here.
 
 ## Overall
 
 ### WEBDEP-SC-OVERALL-01 — Normal case: one running release with a known identity, verification, and reverse path
 
-A complete deployment answers what was built, how it is cached and named, in what order it went out, how it
-was verified live, how it comes back, and what authority remains. The scenario fails when one of those is
-unanswered, or when deployment, verification, and health are reported as one status.
+The environment has reached its deployed or reversed state. The expected outcome reports deployment, live
+verification, and observed health separately and records every irreversible or retained risk; one combined
+status or omitted retention obligation is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-OVERALL-01-01 — The deployment record answers build identity, cache and naming contract, deploy order, rollout stages, live verification, reverse path, and authority state.
 - [ ] WEBDEP-CK-OVERALL-01-02 — Deployment, live verification, and observed health are reported as separate claims.
 - [ ] WEBDEP-CK-OVERALL-01-03 — Every irreversible data change, retained artifact, retention window, and remaining risk is recorded.
-- Also applies: WEBDEP-CK-RISK-01-04 (first blocked action and its authority named).
+
+### WEBDEP-SC-OVERALL-02 — Normal case: the deployment record answers order, stages, live verification, reverse path, and authority
+
+A cold operator reads the completed deployment record. The expected outcome answers publish order, rollout,
+live verification, reversal, and authority state; any unanswered environment-change question is the failure.
+
+#### Checklist
+
+- [ ] WEBDEP-CK-OVERALL-02-01 — The deployment record answers publish order, rollout stages, live verification, reverse path, and authority state.
