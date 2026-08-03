@@ -206,3 +206,4 @@ performance assumptions before implementation receives the design.
 ## References
 
 - [React Design Checklist](checklists.md)
+- [React Design Lifecycle Checklist](lifecycle-checklists.md)

@@ -6,6 +6,9 @@ child; `RDES` is the stable checklist prefix.
 A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.
 
+The [React Design Lifecycle Checklist](lifecycle-checklists.md) covers the remaining binding lifecycle
+obligations for this operation.
+
 ## Project
 
 ### RDES-SC-PROJECT-01 — Rule violation: Browser design is applied to an unsupported renderer
