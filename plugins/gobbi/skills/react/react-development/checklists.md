@@ -14,7 +14,7 @@ guessed API, renderer, or authority boundary. Missing scope, design, or configur
 
 - [ ] RDEV-CK-PROJECT-01-01 — The task states its observable outcome, accepted scope, available authority, material constraints, and completion evidence.
 - [ ] RDEV-CK-PROJECT-01-02 — Project files establish the target renderer, installed React and renderer versions, active framework capabilities, affected source language, rendering architecture, and applicable verification commands.
-- [ ] RDEV-CK-PROJECT-01-03 — Every applicable React child trigger is recorded before implementation design begins.
+- [ ] RDEV-CK-PROJECT-01-03 — The accepted React design reference and every applicable React child trigger are recorded before implementation design begins.
 
 ### RDEV-SC-PROJECT-02 — Expected failure: The work reaches a condition it cannot decide
 
@@ -174,8 +174,8 @@ lifecycle phase. Any such cosmetic completion fails regardless of source appeara
 
 #### Checklist
 
-- [ ] RDEV-CK-OVERALL-01-01 — Every required verification check is reported with its actual result.
-- [ ] RDEV-CK-OVERALL-01-02 — Every in-scope behavior reaches observable completion, a permitted recovery, or an explicit stop condition.
+- [ ] RDEV-CK-OVERALL-01-01 — Every required verification check, including checks for applicable Effect cleanup, cancellation, obsolete-result protection, accessibility behavior, and host-interface behavior, is reported with its actual result.
+- [ ] RDEV-CK-OVERALL-01-02 — Every in-scope behavior, including applicable Effect cleanup, cancellation, obsolete-result protection, accessibility behavior, and host-interface behavior, reaches observable completion, a permitted recovery, or an explicit stop condition.
 - [ ] RDEV-CK-OVERALL-01-03 — The completion record contains evidence for Study, Design, Build, Verify, and Handoff.
 
 ### RDEV-SC-OVERALL-02 — Normal case: Browser and desktop application work has exact handoffs

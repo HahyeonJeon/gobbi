@@ -99,7 +99,7 @@ local style beside them fails the scenario.
 
 #### Checklist
 
-- [ ] RCON-CK-CONSISTENCY-02-01 — Affected files follow the established export, filename, directory, and formatting conventions.
+- [ ] RCON-CK-CONSISTENCY-02-01 — Affected files follow the established project export, filename, directory, import, and formatting conventions.
 
 ## Risk
 

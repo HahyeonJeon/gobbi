@@ -82,7 +82,8 @@ at once or expanding an unproved case fails the scenario.
 #### Checklist
 
 - [ ] RTST-CK-STRUCTURE-03-01 — The complete suite names, test names, setup, render helper, providers, fixtures, substitutes, and cleanup are visible before detailed assertions are filled.
-- [ ] RTST-CK-STRUCTURE-03-02 — Each smallest complete behavior case is implemented and run before the next case is added.
+- [ ] RTST-CK-STRUCTURE-03-02 — Each smallest complete behavior case is implemented before the next case is added.
+- [ ] RTST-CK-STRUCTURE-03-03 — Each smallest complete behavior case has a passing focused run before the next case is added.
 
 ## Performance
 
@@ -102,7 +103,7 @@ Timing workarounds, uncontrolled clocks, or an oversized check fails the scenari
 ### RTST-SC-AESTHETICS-01 — Poor quality: Test structure hides the behavior
 
 A cold reader should see the setup, interaction, and expected outcome without tracing private implementation
-details. Excessive nesting or unrelated assertions fails the scenario.
+details. Excessive nesting or unrelated assertions fail the scenario.
 
 #### Checklist
 
@@ -126,14 +127,15 @@ implementation-detail query or incomplete state sequence fails the scenario.
 - [ ] RTST-CK-USAGE-01-05 — Keyboard and focus behavior are exercised when they are part of the accepted interaction.
 - [ ] RTST-CK-USAGE-01-06 — The final assertion observes an approved user-facing or host outcome.
 
-### RTST-SC-USAGE-02 — Adversarial: A test reaches a pass through internals
+### RTST-SC-USAGE-02 — Adversarial: A test reaches a pass through internals or warning suppression
 
-A test can pass by driving component instances, private state, or a test-only query while the UI stays broken.
-The test must operate what the user operates; a pass obtained through internals fails.
+A test can pass by driving component instances, private state, a test-only query, or suppressed warnings while
+the UI stays broken. The test must operate what the user operates; a pass obtained through internals or
+warning suppression fails.
 
 #### Checklist
 
-- [ ] RTST-CK-USAGE-02-01 — No test drives or asserts a component instance, private state, or implementation call order to reach a passing result.
+- [ ] RTST-CK-USAGE-02-01 — No passing test relies on component instances, private state, implementation call order, or warning suppression.
 - Also applies: RTST-CK-USAGE-01-02 (a test ID is justified only by an absent user-facing query).
 
 ## Consistency

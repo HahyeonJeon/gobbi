@@ -82,7 +82,7 @@ Wrong element events, unusable children, or false non-null guarantees fail.
 #### Checklist
 
 - [ ] RTSX-CK-USAGE-01-01 — Each component call accepts every supported prop combination.
-- [ ] RTSX-CK-USAGE-01-02 — Each component call rejects an invalid prop combination through its generic TypeScript model.
+- [ ] RTSX-CK-USAGE-01-02 — The component prop type rejects every invalid prop combination at each component call.
 - [ ] RTSX-CK-USAGE-01-03 — Each extracted event handler uses the exact element-specific installed React event or handler type.
 - [ ] RTSX-CK-USAGE-01-04 — Each handler reads `currentTarget` when it needs the element whose handler is executing.
 - [ ] RTSX-CK-USAGE-01-05 — Each ref consumer handles absence wherever the lifecycle permits it.
