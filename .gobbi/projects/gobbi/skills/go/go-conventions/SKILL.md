@@ -7,18 +7,23 @@ skill-type: preference
 
 # Go Conventions
 
-Use this preference skill when choosing or reviewing the written form of Go code. It covers names, packages,
-files, imports, documentation, comments, error text, and source formatting.
+Use this preference skill when choosing or reviewing the written form of Go code. It covers package name and
+identifier spelling, source file names and layout, imports, documentation, comments, error text, and formatting.
 
-Project conventions and generated output remain authoritative. This skill supplies Go defaults when the
-project is silent; `go-design` owns API and type shape, while `go-toolchain` owns command behavior.
+Project conventions, generated source ownership, and project-selected formatters remain authoritative. This
+skill supplies written form defaults only when the project is silent.
+
+`go-design` owns each package name, import path, package directory or placement, package boundary, public API
+or CLI, type, and error contract; this skill judges their written form after those decisions. Any exact package
+pattern belongs only to project command selection or evidence, and `go-toolchain` alone owns its semantics and
+all command behavior. `go-development` owns general construction.
 
 ## Principles
 
-### Make code read like its package
+### Make code read like its package name
 
-Go names are short because package qualification supplies context. A name should state its role without
-repeating the package or encoding its type.
+Go names are short because qualification by the package name supplies context. A name should state its role
+without repeating that package name or encoding its type.
 
 ### Let tools own mechanical layout
 
@@ -37,18 +42,19 @@ when correctness, public compatibility, or a clearer project-wide convention jus
 
 ## Rules
 
-- **MUST follow the repository's accepted names, layout, generated-file contract, and formatter configuration
-  before applying this skill's Preferences.** Record or discuss a material project-wide convention change
-  instead of introducing it in one file.
-- **MUST leave Go source in the project's canonical formatted form.** Use `gofmt` or the project wrapper; do
-  not preserve hand alignment or a personal line-length rule that the formatter removes.
-- **MUST keep package clauses, import names, identifiers, and file names valid for the project's supported Go
-  toolchain and target file systems.** Resolve collisions explicitly rather than relying on an invalid or
-  ambiguous spelling.
-- **MUST make generated-source ownership explicit.** A generated Go file must carry the generator's required
+- **MUST follow the repository's accepted written names, source file layout, generated source contract, and
+  formatter configuration before applying this skill's Preferences.** Record or discuss a material
+  project-wide written form change instead of introducing it in one file.
+- **MUST leave Go source in the project's canonical formatted form.** The project selects the formatter;
+  `gofmt` is the default when it is silent, while `go-toolchain` owns exact command behavior and effects.
+- **MUST keep written package clauses, import names, identifiers, and source file names valid for the module's
+  Go language version and each project target file system.** `go-toolchain` owns selected Go toolchain version
+  facts and the command evidence used to establish them; resolve each collision explicitly.
+- **MUST make generated source ownership explicit.** A generated Go file must carry the generator's required
   marker and be changed through its source or generator unless the project contract says otherwise.
-- **MUST keep package and exported-declaration documentation true after a change.** Update or remove prose that
-  no longer matches the declaration, behavior, error contract, or compatibility promise.
+- **MUST keep package documentation and exported-declaration documentation true after a change.** Update or
+  remove prose that no longer matches the declaration, observable behavior, error contract, or compatibility
+  promise.
 - **NEVER use an import solely for its side effects, or use a dot import, without a deliberate package-level
   reason visible to reviewers.** Keep the reason in project documentation or a nearby comment when it is not
   evident from the import path.
@@ -59,23 +65,27 @@ when correctness, public compatibility, or a clearer project-wide convention jus
 
 PREFER the layout produced by `gofmt`; it is the standard mechanical form described by
 [Effective Go](https://go.dev/doc/effective_go#formatting). Let the formatter decide indentation, spacing,
-alignment, and many line breaks. Depart only through an established project formatter or for source that is
-not valid Go input yet.
+alignment, and many line breaks. Depart only through an established project formatter or when invalid Go input
+prevents formatting; `go-toolchain` owns the exact formatter command and its returned diagnostic.
 
 PREFER one coherent responsibility per file and ordinary lowercase `.go` file names. Use suffixes such as
-`_test.go`, platform constraints, or generated names when the Go tool or project contract gives them meaning;
-otherwise choose a short content name instead of encoding an arbitrary layer.
+`_test.go`, platform constraints, or generated names when the project contract or `go-toolchain` establishes
+their meaning; otherwise choose a short content name instead of encoding an arbitrary layer.
 
-### Package names
+### Package name form
 
-PREFER short, lowercase, single-word package names without underscores or mixed capitals, following the
-[Go package-name guidance](https://go.dev/blog/package-names). Avoid `util`, `common`, `misc`, and `base`
-because they describe no cohesive responsibility. A protocol, established abbreviation, or generated package
-may justify a different spelling when it is the clearest local convention.
+After `go-design` resolves the package name, import path, package directory or placement, package boundary, and
+public API or CLI, PREFER the accepted package name's written form to be short, lowercase, and a single word
+without underscores or mixed capitals, following the
+[Go package name guidance](https://go.dev/blog/package-names). Within that accepted design, avoid generic
+spellings such as `util`, `common`, `misc`, and `base` unless the project has established one or no more
+specific word fits the accepted package responsibility. A protocol, established abbreviation, or generated
+source contract may justify a different spelling when it is the clearest local convention.
 
-PREFER names that read naturally after package qualification: `bytes.Buffer`, not
-`bytes.BytesBuffer`. Let a package rename accompany a responsibility change rather than using a broad package
-name to hold unrelated code.
+PREFER exported identifiers that read naturally after qualification by the accepted package name:
+`bytes.Buffer`, not `bytes.BytesBuffer`. When changed responsibility requires a different package name, import
+path, package directory or placement, package boundary, or public API or CLI, route that design decision to
+`go-design` instead of choosing it through a written form edit.
 
 ### Identifiers
 

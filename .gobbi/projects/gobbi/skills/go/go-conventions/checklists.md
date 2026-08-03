@@ -13,8 +13,9 @@ that this scenario reuses.
 
 ### GOCNV-SC-PROJECT-01 — Normal case: Project conventions govern the change
 
-The repository already defines names, layout, formatting, or generated-file practices. The work should follow
-that local contract and use Go defaults only where the project is silent; a mismatch fails this scenario.
+The repository already defines written names, source file layout, formatting, or generated source practices.
+The work should follow that local contract and use Go defaults only where the project is silent; a mismatch
+fails this scenario.
 
 #### Checklist
 
@@ -23,8 +24,9 @@ that local contract and use Go defaults only where the project is silent; a mism
 
 ### GOCNV-SC-PROJECT-02 — Rule violation: A local edit invents a project-wide convention
 
-One change introduces a new naming, layout, or formatting policy without project authority. The work should
-retain the accepted convention or expose the broader decision; silently establishing a new pattern fails.
+One change introduces a new written name, source file layout, or formatting policy without project authority.
+The work should retain the accepted convention or expose the broader decision; silently establishing a new
+pattern fails.
 
 #### Checklist
 
@@ -33,30 +35,47 @@ retain the accepted convention or expose the broader decision; silently establis
 
 ## Structure
 
-### GOCNV-SC-STRUCTURE-01 — Poor quality: Packages and files hide responsibility
+### GOCNV-SC-STRUCTURE-01 — Poor quality: A source file hides responsibility
 
-The code functions, but broad packages such as `util` or unrelated declarations in one file obscure ownership.
-The structure should make package and file responsibilities clear; a merely compiling layout fails.
+The code functions, but unrelated declarations in one source file obscure its responsibility. The file should
+group declarations that change for the same reason; a merely compiling layout fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-STRUCTURE-01-01 — Every package name describes one cohesive responsibility.
 - [ ] GOCNV-CK-STRUCTURE-01-02 — Every file groups declarations that change for the same reason.
 
-### GOCNV-SC-STRUCTURE-02 — Edge case: Names collide or fail on a supported target
+### GOCNV-SC-STRUCTURE-02 — Edge case: Written names collide or fail on a supported target
 
-A package, import alias, identifier, or file name collides in context or is invalid on a supported file system.
-The selected spelling should remain valid and unambiguous on every project target; hidden target failure fails.
+A written package clause, import name, identifier, or source file name collides in context or is invalid under
+the applicable language or file system contract. The accepted spelling should remain valid and unambiguous on
+every project target; hidden target failure fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-STRUCTURE-02-01 — Every Go identifier, package clause, import name, and source file name is valid under the supported language contract and on each supported file system.
 - [ ] GOCNV-CK-STRUCTURE-02-02 — Every in-scope name collision is resolved explicitly.
+- [ ] GOCNV-CK-STRUCTURE-02-03 — Every Go identifier, written package clause, and import name is valid under the module's Go language version.
+- [ ] GOCNV-CK-STRUCTURE-02-04 — Every source file name is valid on each project target file system.
+
+### GOCNV-SC-STRUCTURE-03 — Rule violation: Written form crosses a design, construction, or tool boundary
+
+A conventions review chooses a package design identity, directs general construction, interprets an exact
+package pattern, or defines an exact formatter command, its effects, or its returned diagnostic. Written form
+work should preserve the accepted package design, leave general construction with `go-development`, and leave
+package pattern semantics plus exact formatter command behavior, effects, and returned diagnostics with
+`go-toolchain`; owner drift or an ambiguous identity fails.
+
+#### Checklist
+
+- [ ] GOCNV-CK-STRUCTURE-03-01 — Every package name, import path, package directory or placement, package boundary, public API or CLI, type, and error contract affected by written form work matches the accepted design decision.
+- [ ] GOCNV-CK-STRUCTURE-03-02 — Every exact package pattern named alongside written form work appears only in project command selection or evidence.
+- [ ] GOCNV-CK-STRUCTURE-03-03 — No written form claim defines exact package pattern semantics.
+- [ ] GOCNV-CK-STRUCTURE-03-04 — Every general Go construction decision named alongside written form work remains governed by `go-development`.
+- [ ] GOCNV-CK-STRUCTURE-03-05 — Every exact formatter command named alongside written form work, together with its effects and returned diagnostic, remains governed by `go-toolchain`.
 
 ## Performance
 
-Not applicable: this checklist governs written Go form rather than runtime or build efficiency. Performance
-effects belong to the applicable design, concurrency, modules, testing, or toolchain checklist.
+Not applicable: this checklist governs written Go form rather than runtime or build efficiency. Runtime and
+build performance belong to `go-performance` and other applicable sibling checklists.
 
 ## Aesthetics
 
@@ -88,7 +107,7 @@ the established term without breaking the surrounding convention; inconsistent e
 #### Checklist
 
 - [ ] GOCNV-CK-AESTHETICS-03-01 — Every established initialism has one consistent spelling in related names.
-- [ ] GOCNV-CK-AESTHETICS-03-02 — Every capitalized error-text exception is justified by its literal content.
+- [ ] GOCNV-CK-AESTHETICS-03-02 — Every capitalized error text exception is justified by its literal content.
 
 ### GOCNV-SC-AESTHETICS-04 — Normal case: Error text composes with caller context
 
@@ -99,6 +118,20 @@ punctuation so added context remains readable; an unjustified exception fails.
 
 - [ ] GOCNV-CK-AESTHETICS-04-01 — Every ordinary error string starts with a lowercase letter.
 - [ ] GOCNV-CK-AESTHETICS-04-02 — Every ordinary error string omits trailing punctuation.
+
+### GOCNV-SC-AESTHETICS-05 — Normal case: An accepted package name uses project-appropriate Go form
+
+The package design has selected the package name, and conventions now judge its written form. The Go defaults
+should remain concise, lowercase, a single word, and clear, while an accepted project, protocol, established
+abbreviation, or generated source exception may justify a different form; an unexplained departure fails.
+
+#### Checklist
+
+- [ ] GOCNV-CK-AESTHETICS-05-01 — Every package name departure from lowercase letters has an explicit project, protocol, established abbreviation, or generated source justification.
+- [ ] GOCNV-CK-AESTHETICS-05-02 — Every package name departure from a single word has an explicit project, protocol, established abbreviation, or generated source justification.
+- [ ] GOCNV-CK-AESTHETICS-05-03 — Every underscore in a package name has an explicit project, protocol, established abbreviation, or generated source justification.
+- [ ] GOCNV-CK-AESTHETICS-05-04 — Every package name word not needed to identify its accepted responsibility has an explicit project, protocol, established abbreviation, or generated source justification.
+- [ ] GOCNV-CK-AESTHETICS-05-05 — Every generic package name spelling has an established project or generated source contract, or evidence that no more specific word fits the accepted package responsibility.
 
 ## Usage
 
@@ -126,12 +159,13 @@ caller should understand the contract without reading the implementation; decora
 ### GOCNV-SC-USAGE-03 — Adversarial: A conformant name misleads the caller
 
 A declaration is renamed or written to satisfy a naming rule while the resulting name understates what the
-operation does, such as an accessor-shaped name for work that performs I/O, mutation, or blocking. The name
-should describe what the caller actually gets; a rule-conformant name that hides cost or effect fails.
+declaration does, such as an accessor-shaped name for work that performs I/O, mutation, or blocking. The name
+should describe the observable behavior the caller actually gets; a rule-conformant name that hides an effect
+fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-USAGE-03-01 — No name that satisfies a convention rule understates its operation's cost, mutation, or failure behavior.
+- [ ] GOCNV-CK-USAGE-03-01 — No name that satisfies a convention rule understates its I/O, mutation, blocking, or failure behavior.
 - [ ] GOCNV-CK-USAGE-03-02 — Every renamed declaration still describes the result the caller receives.
 
 ## Consistency
@@ -143,8 +177,9 @@ output that looks hand-authored or cannot be reproduced fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-CONSISTENCY-01-01 — Every generated Go file carries its required generated-source marker.
-- [ ] GOCNV-CK-CONSISTENCY-01-02 — Every generated change corresponds to an owned input and the declared generator.
+- [ ] GOCNV-CK-CONSISTENCY-01-01 — Every generated Go file carries its required generated source marker.
+- [ ] GOCNV-CK-CONSISTENCY-01-03 — Every generated change corresponds to one owned input.
+- [ ] GOCNV-CK-CONSISTENCY-01-04 — Every generated change corresponds to the declared generator.
 
 ### GOCNV-SC-CONSISTENCY-02 — Rule violation: Documentation contradicts current behavior
 
@@ -172,7 +207,8 @@ should remain stable across the affected set; unexplained variation fails.
 
 #### Checklist
 
-- [ ] GOCNV-CK-CONSISTENCY-04-01 — One receiver name and one term for each concept are used throughout the affected declarations.
+- [ ] GOCNV-CK-CONSISTENCY-04-02 — One receiver name is used throughout the affected method set.
+- [ ] GOCNV-CK-CONSISTENCY-04-03 — One term for each concept is used throughout the affected declarations.
 
 ## Risk
 
@@ -193,8 +229,8 @@ regenerated result should carry the fix; an unreproducible cosmetic repair fails
 
 #### Checklist
 
-- [ ] GOCNV-CK-RISK-02-01 — No generated output substitutes for a required owner-source change.
-- [ ] GOCNV-CK-RISK-02-02 — Regeneration would preserve every accepted generated-code correction.
+- [ ] GOCNV-CK-RISK-02-01 — No generated output substitutes for a required owned source change.
+- [ ] GOCNV-CK-RISK-02-02 — Regeneration would preserve every accepted generated source correction.
 
 ### GOCNV-SC-RISK-03 — Expected failure: Invalid source cannot be canonically formatted
 
