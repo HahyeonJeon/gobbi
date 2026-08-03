@@ -73,18 +73,22 @@ named runtime. Development-server success alone is the failure.
 
 ### TSDEV-SC-USAGE-04 — Normal case: a command-line application uses its recorded distribution method
 
-A source entry can run while a package command, bundled executable, installed script, workspace-distributed
-command, or literal other non-package command is wrong. The expected outcome takes npm and package-archive
-commands from `typescript-packaging`, takes non-package commands from `typescript-cli-delivery`, and selects
-both owners for a hybrid. It rejects a source file or unrelated command already on `PATH` as proof.
+A source entry can run while package-backed metadata, a package-archive installation, or direct non-archive
+delivery is wrong. The expected outcome takes command names and entries supplied through `package.json` `bin`,
+package scripts, and workspace package links from `typescript-packaging`. It takes a standalone executable or
+archive, a script copied or linked directly to an install target, and a recorded workspace or repository
+revision plus command from `typescript-cli-delivery`. It selects both owners for a package-backed workspace
+command delivered directly and for a genuine hybrid. It rejects a source file or unrelated command already
+on `PATH` as proof.
 
 #### Checklist
 
 - [ ] TSDEV-CK-USAGE-04-01 — The invoked executable is the output of the recorded command distribution method rather than a source file or unrelated command already on `PATH`.
 - [ ] TSDEV-CK-USAGE-04-02 — Required arguments, standard input, standard output, standard error, exit status, signals, and failure text are verified.
-- [ ] TSDEV-CK-USAGE-04-03 — Every npm or package-archive command consumer entry is supplied through `typescript-packaging`.
-- [ ] TSDEV-CK-USAGE-04-04 — Every bundled executable, installed script, workspace-distributed command, or literal other non-package command consumer entry is supplied through `typescript-cli-delivery`.
-- [ ] TSDEV-CK-USAGE-04-05 — A hybrid command distribution selects both `typescript-packaging` and `typescript-cli-delivery`.
+- [ ] TSDEV-CK-USAGE-04-03 — Every command name or entry supplied by package metadata, including a `package.json` `bin` entry, package script, or workspace package link, is supplied through `typescript-packaging` with its package behavior.
+- [ ] TSDEV-CK-USAGE-04-04 — Every direct non-archive consumer entry is supplied through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another method whose unit, method, and consumer command are recorded by name.
+- [ ] TSDEV-CK-USAGE-04-05 — A package-backed workspace command delivered directly selects `typescript-packaging` for package metadata and `typescript-cli-delivery` for direct non-archive delivery.
+- [ ] TSDEV-CK-USAGE-04-06 — A genuine hybrid that distributes the same command through a package archive and a direct non-archive method selects both owners and preserves separate artifact identities and consumer entries.
 
 ### TSDEV-SC-USAGE-05 — Normal case: a library is verified through its recorded consumer path
 

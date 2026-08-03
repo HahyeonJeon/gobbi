@@ -1,6 +1,6 @@
 # TypeScript CLI Delivery Evaluation Checklist
 
-This reusable unchecked source evaluates one non-package TypeScript command-line delivery produced or
+This reusable unchecked source evaluates one direct non-archive TypeScript command delivery produced or
 validated under this operation. It is governed by the [`typescript`](../SKILL.md) domain and
 [`typescript-cli-delivery`](SKILL.md) operation, with
 [`typescript-toolchain`](../typescript-toolchain/SKILL.md) owning TypeScript compilation and
@@ -15,15 +15,16 @@ unchecked binary condition in this source.
 
 ### TSCLI-SC-PROJECT-01 — Normal case: distribution and authority inputs are bound before delivery
 
-A non-package command can reach consumers as a bundled executable, installed script, workspace-distributed
-command, or literal other non-package method. The expected outcome records the exact method, targets, owners,
-and authority before a unit is produced or a target changes. An inferred target or unowned external action is
-the failure.
+A command can reach consumers without a package-archive installation as a standalone executable or archive,
+a script copied or linked directly to an install target, a recorded workspace or repository revision plus
+command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
+The expected outcome records the exact method, targets, owners, and authority before a unit is produced or a
+target changes. An inferred target or unowned external action is the failure.
 
 #### Checklist
 
 - [ ] TSCLI-CK-PROJECT-01-01 — The work is classified as author delivery or review-only validation before any mutation is planned.
-- [ ] TSCLI-CK-PROJECT-01-02 — Every target's delivery unit is recorded as an executable file or archive, an installed script, a workspace revision and command, or one literal other non-package method.
+- [ ] TSCLI-CK-PROJECT-01-02 — Every target's delivery unit is recorded as a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
 - [ ] TSCLI-CK-PROJECT-01-03 — Every target operating system, architecture, and runtime is recorded.
 - [ ] TSCLI-CK-PROJECT-01-04 — Every target records its distribution or install method, distribution owner, and consumer command.
 - [ ] TSCLI-CK-PROJECT-01-05 — Production, installation, publication, promotion, rollout, rollback, recovery, and credential use each have a recorded authority state.
@@ -49,16 +50,17 @@ new unit, persistent installation, or broader cleanup breaks the Rule.
 
 ### TSCLI-SC-STRUCTURE-01 — Normal case: the delivery unit has one identity on every target
 
-File paths, script names, workspace commands, and same-name commands on `PATH` can refer to different bytes
-or revisions. The expected outcome defines one traceable unit, its prior recoverable unit, and the consumer
-entry for each target. A result whose unit or target cannot be identified is the failure.
+File paths, scripts copied or linked directly to install targets, revision-bound commands, and same-name
+commands on `PATH` can refer to different bytes or revisions. The expected outcome defines one traceable unit,
+its prior recoverable unit, and the consumer entry for each target. A result whose unit or target cannot be
+identified is the failure.
 
 #### Checklist
 
 - [ ] TSCLI-CK-STRUCTURE-01-01 — Every executable file or archive has a recorded path, name, and digest.
-- [ ] TSCLI-CK-STRUCTURE-01-02 — Every installed script has a recorded script identity, install target, and digest.
-- [ ] TSCLI-CK-STRUCTURE-01-03 — Every workspace-distributed command has a recorded workspace revision and command.
-- [ ] TSCLI-CK-STRUCTURE-01-04 — Every literal other non-package method records its unit identity, distribution method, and consumer command.
+- [ ] TSCLI-CK-STRUCTURE-01-02 — Every script copied or linked directly to an install target has a recorded script identity, install target, and digest.
+- [ ] TSCLI-CK-STRUCTURE-01-03 — Every revision-bound direct command has a recorded workspace or repository revision plus command.
+- [ ] TSCLI-CK-STRUCTURE-01-04 — Every other direct non-archive method records its unit identity, distribution method, and consumer command by name.
 - [ ] TSCLI-CK-STRUCTURE-01-05 — Every target records the prior recoverable unit, its retained location or revision, and its authorized restoration method.
 
 ## Performance
@@ -79,13 +81,13 @@ budget, omitting a supplied limit, or measuring another unit is the failure.
 
 ### TSCLI-SC-AESTHETICS-01 — Poor quality: artifact and operator names do not identify the unit
 
-Delivery can work while an executable, archive, script, workspace command, log, or handoff uses an ambiguous
+Delivery can work while an executable, archive, directly copied or linked script, revision-bound command, log, or handoff uses an ambiguous
 name. The expected outcome gives operators stable names that trace to the recorded unit and target. A
 same-name artifact or command that cannot be distinguished from another candidate is the failure.
 
 #### Checklist
 
-- [ ] TSCLI-CK-AESTHETICS-01-01 — Every candidate file, archive, installed script, or workspace command has one recorded operator-facing name.
+- [ ] TSCLI-CK-AESTHETICS-01-01 — Every candidate file, archive, directly copied or linked script, or revision-bound command has one recorded operator-facing name.
 - [ ] TSCLI-CK-AESTHETICS-01-02 — Every operator-facing unit name traces to one digest or workspace revision.
 - [ ] TSCLI-CK-AESTHETICS-01-03 — Target records, logs, and handoff use the same operator-facing unit and command names.
 

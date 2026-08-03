@@ -77,16 +77,18 @@ relationship it preserves and keeps inputs narrow until an intentional abstracti
 
 A recursive conditional, mapped, or otherwise elaborate type can preserve the required relationship while
 making a representative type-check or editor operation exceed the comparison threshold recorded for the
-change. The expected outcome measures the difference under named conditions, identifies the responsible
-expression, and either simplifies it or records an accepted trade-off. Guessing from complexity alone or
-ignoring a result above that threshold is the failure.
+change. The expected outcome records the requirement owner or governing record, measures the difference under
+named conditions, identifies the responsible expression, and either simplifies it or receives explicit
+acceptance from that owner. Guessing from complexity alone, self-assigning acceptance authority, or ignoring a
+result above that threshold is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-PERFORMANCE-01-01 — Before the changed result is reviewed, the comparison threshold is recorded from a project feedback-time limit or measured baseline variance.
+- [ ] TSTYPE-CK-PERFORMANCE-01-01 — Before the changed result is reviewed, the comparison threshold and its requirement owner or governing record are recorded from a project feedback-time limit or measured baseline variance.
 - [ ] TSTYPE-CK-PERFORMANCE-01-02 — The measurement records the exact compiler or editor operation, representative input, TypeScript version, option set, baseline result, and changed result.
 - [ ] TSTYPE-CK-PERFORMANCE-01-03 — Compiler or editor evidence identifies the type expression responsible for the measured regression before it is optimized.
-- [ ] TSTYPE-CK-PERFORMANCE-01-04 — A result above the recorded comparison threshold is simplified or explicitly accepted with its recorded benefit and cost.
+- [ ] TSTYPE-CK-PERFORMANCE-01-04 — A result above the recorded comparison threshold is simplified or explicitly accepted by the recorded requirement owner with its benefit and measured cost.
+- [ ] TSTYPE-CK-PERFORMANCE-01-05 — The author does not infer or self-assign authority to accept a result above the recorded comparison threshold.
 
 ## Aesthetics
 

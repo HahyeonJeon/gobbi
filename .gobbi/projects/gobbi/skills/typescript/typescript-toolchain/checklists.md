@@ -8,7 +8,7 @@ the selected output owner defining bundler strategy, source-map publication, and
 [`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
 [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
 `typescript-packaging` for a package archive,
-[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for direct non-archive command delivery,
 or the recorded project-specific owner for another output. The source commit that contains this file
 identifies the checklist version. Its stable checklist prefix is `TSTOOL`.
 
@@ -32,7 +32,7 @@ web-only owner, or proceeding without a recorded owner, is the failure.
 
 - [ ] TSTOOL-CK-PROJECT-01-01 — The executable that checks types, produces JavaScript, strips types, resolves modules, builds distributable files, lints source, and executes the result is identified for each responsibility.
 - [ ] TSTOOL-CK-PROJECT-01-02 — The source files, generated JavaScript or declarations, and named runtimes are recorded.
-- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment` for a web release, `electron-release` for an installed Electron artifact, `typescript-packaging` for a package archive, `typescript-cli-delivery` for a non-package command-line application, or the recorded project-specific owner for another output.
+- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment` for a web release, `electron-release` for an installed Electron artifact, `typescript-packaging` for a package archive, `typescript-cli-delivery` for direct non-archive command delivery, or the recorded project-specific owner for another output.
 - [ ] TSTOOL-CK-PROJECT-01-04 — The package and version supplying each `tsc` executable are recorded separately from any package used through the TypeScript compiler API.
 
 ### TSTOOL-SC-PROJECT-02 — Poor quality: a universal preset applied to every generated output
@@ -87,13 +87,18 @@ JavaScript producer has that limitation.
 turns that speed into missing or outdated output. The expected outcome resolves an explicit
 `tsBuildInfoFile` first. When that option is absent, it applies the ordered defaults for `outFile`, then the
 combined `rootDir` and `outDir` relative-configuration path, then `outDir`, then the configuration directory.
-Skipping the applicable location or debugging source while build state is wrong is the failure.
+It changes only author-owned state under explicit mutation authority or copied state inside an authorized
+disposable reproduction. Changing reviewed state or inferring a source cause when safe reproduction is
+unavailable is the failure.
 
 #### Checklist
 
 - [ ] TSTOOL-CK-PERFORMANCE-01-01 — Unexplained missing or outdated output is treated as a build-state question before the source is treated as the cause.
 - [ ] TSTOOL-CK-PERFORMANCE-01-02 — The `.tsbuildinfo` location uses explicit `tsBuildInfoFile` first; otherwise it uses `<outFile>.tsbuildinfo`, then `<outDir>/<relative path from rootDir to the configuration directory>/<configuration name>.tsbuildinfo` when both `rootDir` and `outDir` are set, then `<outDir>/<configuration name>.tsbuildinfo`, otherwise `<configuration name>.tsbuildinfo` beside the configuration file.
-- [ ] TSTOOL-CK-PERFORMANCE-01-03 — Stale or shared build state is cleared before a conclusion about the source is drawn.
+- [ ] TSTOOL-CK-PERFORMANCE-01-03 — A build-state file in the authored subject is cleared only when the author owns it and explicit mutation authority covers it.
+- [ ] TSTOOL-CK-PERFORMANCE-01-04 — A copied build-state file is cleared only inside an authorized disposable reproduction.
+- [ ] TSTOOL-CK-PERFORMANCE-01-05 — Build state in a reviewed subject remains unchanged.
+- [ ] TSTOOL-CK-PERFORMANCE-01-06 — When no authorized disposable reproduction is possible, the build-state diagnosis is reported as unavailable rather than as a source cause.
 
 ## Aesthetics
 
@@ -162,6 +167,7 @@ cannot provide an original source is the failure.
 - [ ] TSTOOL-CK-CONSISTENCY-02-01 — Every downstream transform consumes the upstream source map so the final map points at the original TypeScript rather than at intermediate output.
 - [ ] TSTOOL-CK-CONSISTENCY-02-02 — Every final delivered map either resolves each original source in its consumer environment or carries that source's original content in `sourcesContent`.
 - [ ] TSTOOL-CK-CONSISTENCY-02-03 — Every downstream transform preserves the final source-resolution or `sourcesContent` result.
+- [ ] TSTOOL-CK-CONSISTENCY-02-04 — Final-map inspection evidence identifies the exact final map and the generated output it describes before the evidence is handed to the selected release owner.
 
 ## Risk
 

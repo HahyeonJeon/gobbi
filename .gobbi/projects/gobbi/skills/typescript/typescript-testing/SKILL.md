@@ -10,16 +10,25 @@ skill-type: operation
 TypeScript Testing verifies runtime behavior and compile-time requirements. It composes runtime tests, controllable dependencies, type-level assertions, expected failures, public declaration checks, installed-package checks, and checked documentation examples without treating any one layer as a substitute for the others.
 
 This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs
-authorized commands without inheriting authority to change production or test files. For command delivery,
-`typescript-packaging` owns npm and other package-archive command installations, while
-`typescript-cli-delivery` owns bundled executables, installed scripts, workspace-distributed commands, and
-literal other non-package methods. A hybrid loads both; this operation continues to own command behavior tests.
+authorized commands without inheriting authority to change production or test files. Package-backed command
+metadata is a command name or entry supplied by package metadata, including a `package.json` `bin` entry,
+package script, or workspace package link; `typescript-packaging` owns that metadata and its package behavior.
+Direct non-archive delivery gives the consumer a command without a package-archive installation;
+`typescript-cli-delivery` owns a standalone executable or archive, a script copied or linked directly to an
+install target, a workspace or repository revision plus command, and another direct non-archive method whose
+unit, method, and consumer command are recorded by name. A package-backed workspace command delivered directly
+loads both owners for separate obligations. A genuine hybrid distributes the same command through a package
+archive and a direct non-archive method, loads both, and keeps separate artifact identities and consumer
+entries. This operation owns command behavior tests.
 
-When review-only package validation applies, it may inspect existing generated package output and a pre-existing
-package archive. With command authority, it may write only inside a named temporary directory or isolated
-disposable consumer outside reviewed files, remove those writes after review, and install only that pre-existing
-archive into the disposable consumer. It may not change the reviewed subject, install persistently, or publish;
-evidence that needs a new build or archive remains unavailable unless the task changes to author mode.
+`typescript-packaging` is the sole owner that builds, creates, recreates, and identifies a package archive.
+This operation receives that exact identified archive and an applicable isolated consumer setup, then owns
+behavior, type, and declaration assertions against it. When review-only package validation applies, it may
+inspect only existing generated output and a pre-existing archive supplied by `typescript-packaging`. With
+command authority, it may write only inside a named temporary directory or isolated disposable consumer
+outside reviewed files, remove those writes after review, and install only that pre-existing archive into the
+disposable consumer. It may not change the reviewed subject, install persistently, or publish; evidence that
+needs a new build or archive remains unavailable unless the task changes to author mode.
 
 ## Principles
 
@@ -50,7 +59,9 @@ Documented examples are code and require a named compiler version and exact comp
   unused-directive failure.
 - **MUST** test public declarations and resolution from an isolated consumer project rather than only inside the source project.
 - **MUST** control time, randomness, scheduling, I/O, and named-runtime state when deterministic observation is required.
-- **NEVER** treat a source-checkout test as proof of built or packed package behavior.
+- **NEVER** build, pack, create, or recreate a package archive in this operation. Receive the exact identified
+  archive and applicable isolated consumer setup from `typescript-packaging`, and never treat a source-checkout
+  test as proof of that archive's behavior.
 
 ## Procedure
 
@@ -86,8 +97,9 @@ Documented examples are code and require a named compiler version and exact comp
   named temporary directory. When reproduction would require an unauthorized external or irreversible
   effect, record that exact blocked effect and classify failure-power evidence as unavailable.
 - For package validation, inspect only existing declarations and generated package output. Inspect or install
-  only a package archive that existed before the review, and install it only into an isolated disposable
-  consumer when command authority permits.
+  only the exact package archive that `typescript-packaging` identifies as having existed before the review,
+  and install it only into the isolated disposable consumer setup that operation supplies when command
+  authority permits.
 - Return command results, findings, and limitations without changing a reviewed file, creating build output,
   creating an archive, installing persistently, updating documentation or release notes, or publishing. Stop
   before Phase 2; any required mutation of reviewed files or new output requires author mode.
@@ -137,7 +149,10 @@ Continue into Phase 2 only in author mode.
 #### 3.3 Test declarations, packages, and commands
 
 - Emit or obtain the public declarations and type-check isolated consumer fixtures.
-- Build or pack the package, install that archive into an isolated consumer, and exercise its documented entry points and resolution modes.
+- Receive the exact identified package archive and applicable isolated consumer setup from
+  `typescript-packaging`. Do not independently build, pack, create, or recreate the archive.
+- Install that exact archive into the supplied consumer setup, then exercise its documented entry points and
+  resolution modes and own the behavior, type, and declaration assertions against it.
 - For every command supplied through a package archive, capture command-name resolution in the isolated consumer. Prove that it selects the executable created by that archive installation.
 - Invoke the installed command and assert the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - Compare declarations or exported APIs when compatibility is a stated requirement.
@@ -163,13 +178,18 @@ Continue into Phase 2 only in author mode.
 
 - For a web application, test affected browser and server behavior at the layer that exposes it and smoke-test the production build in the named runtime.
 - For a command-line application, use the isolated consumer entry prepared by the applicable delivery owner
-  and invoke its consumer command. For an npm or other package-archive command, `typescript-packaging` owns the
-  archive installation. For a bundled executable, installed script, workspace-distributed command, or literal
-  other non-package method, `typescript-cli-delivery` owns the prepared entry. Load both for a hybrid.
+  and invoke its consumer command. Use `typescript-packaging` for every command name or entry supplied through
+  `package.json` `bin`, a package script, or a workspace package link. Use `typescript-cli-delivery` when the
+  consumer receives the command without installing a package archive, including a standalone executable or
+  archive, a script copied or linked directly to an install target, a workspace or repository revision plus
+  command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
+  A package-backed workspace command delivered directly loads both owners. A genuine hybrid distributes the
+  same command through both methods, loads both, and keeps separate artifact identities and consumer entries.
   Prove the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
   Verify the command specification, including failure and signal paths that apply.
 - For a library, use an isolated representative consumer through the recorded distribution method. Install the
-  package archive when the library is distributed as a package; otherwise use the recorded workspace,
+  exact package archive and isolated consumer setup supplied by `typescript-packaging` when the library is
+  distributed as a package; otherwise use the recorded workspace,
   project-reference, source, or other consumer path. Type-check every supported import, inspect declarations
   that path exposes, and run every runtime entry where runtime code exists.
 - For an SDK, verify external payload parsing, documented client calls, public types, failures, cancellation, and supported consumer compiler configurations.

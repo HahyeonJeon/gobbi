@@ -39,12 +39,30 @@ in the [base package checklist](checklists.md).
 ### TSPKG-SC-USAGE-03 — Normal case: release authority receives the complete evidence bundle
 
 The person or automation authorized to release decides from the proposed version, its compatibility effect,
-the archive contents, current verification, and the recovery path. The expected outcome presents that complete
-bundle to the authorized release actor. An omitted item or a different recipient is the failure.
+the archive contents, current verification, and the method-specific recovery path. The expected outcome
+presents that complete bundle to the authorized release actor. An omitted item or a different recipient is the
+failure.
 
 #### Checklist
 
-- [ ] TSPKG-CK-USAGE-03-01 — The version, compatibility classification, archive contents, verification results, and rollback plan are presented to the person or automation authorized to release.
+- [ ] TSPKG-CK-USAGE-03-01 — The version, compatibility classification, archive contents, verification results, and method-specific recovery plan are presented to the person or automation authorized to release.
+
+### TSPKG-SC-USAGE-04 — Normal case: method-specific recovery is prepared before publication
+
+Registries, package managers, and release methods permit different recovery actions. The expected outcome
+classifies an obligation as rehearsable only when an authorized isolated or staging boundary provides the
+selected method and required capabilities without changing live registry or consumer state. It rehearses
+every such obligation and records the exact block and operator path for the rest. A universal rollback claim
+or a claimed rehearsal of an unrehearsable action is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-USAGE-04-01 — The selected registry, package manager, and release method are recorded.
+- [ ] TSPKG-CK-USAGE-04-02 — The recovery plan records only actions the selected method actually permits.
+- [ ] TSPKG-CK-USAGE-04-03 — A recovery obligation is classified as rehearsable only when an authorized isolated or staging boundary provides the selected method and required capabilities without changing live registry or consumer state.
+- [ ] TSPKG-CK-USAGE-04-04 — Every recovery obligation classified as rehearsable is rehearsed before publication.
+- [ ] TSPKG-CK-USAGE-04-05 — Recovery rehearsal verifies the recorded prior and intended consumer states.
+- [ ] TSPKG-CK-USAGE-04-06 — Every unrehearsable or irreversible recovery action records its exact blocking condition and validated operator path without a rehearsal claim.
 
 ## Consistency
 
@@ -90,16 +108,30 @@ defined its checks before building. Discovering the contents after publication i
 ### TSPKG-SC-RISK-03 — Expected failure: a required package check fails
 
 A pre-publication build, declaration, metadata, consumer, or final-check failure must keep the archive
-unpublished. A post-publication failure must become a release-authority incident. The expected outcome repairs
-and recreates an unpublished archive or follows an
-authorized rollback, deprecation, or corrective release after publication. Silent publication or republishing
-is the failure.
+unpublished. A publication or post-publication failure must become a release-authority incident. The expected
+outcome repairs and recreates an unpublished archive or follows only the authorized recovery path permitted by
+the selected release method after publication. Silent publication, universal rollback, or republishing is the
+failure.
 
 #### Checklist
 
 - [ ] TSPKG-CK-RISK-03-01 — An archive with any failed pre-publication check remains unpublished.
 - [ ] TSPKG-CK-RISK-03-02 — A repaired package returns to release authority only as a recreated archive that passes every affected final check.
-- [ ] TSPKG-CK-RISK-03-03 — Every post-publication verification failure remains an unresolved release-authority incident until an authorized rollback, deprecation, or corrective release completes.
+- [ ] TSPKG-CK-RISK-03-03 — Failure evidence is preserved before a publication or post-publication recovery action changes registry state.
+- [ ] TSPKG-CK-RISK-03-04 — Recovery executes only the authorized path permitted by the selected registry, package manager, and release method.
+- [ ] TSPKG-CK-RISK-03-05 — Recovery verification confirms current registry metadata.
+- [ ] TSPKG-CK-RISK-03-06 — Recovery verification confirms the applicable tag, deprecation, withdrawal, or corrective-version state.
+
+### TSPKG-SC-RISK-04 — Expected failure: registry recovery does not restore a verified consumer path
+
+A method-specific registry action can complete while fresh consumers still receive the failed version or
+cannot install the intended version. The expected outcome verifies a fresh installation and keeps existing
+consumer effects separate. Calling the incident recovered without those results is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-RISK-04-01 — A fresh consumer installation verifies the post-recovery registry state.
+- [ ] TSPKG-CK-RISK-04-02 — Effects on existing consumers are recorded separately from the fresh consumer installation result.
 
 ## Overall
 
@@ -126,3 +158,13 @@ limit. Presenting the remaining command results as complete is the failure.
 
 - [ ] TSPKG-CK-OVERALL-02-01 — Every claim whose required command could not be run is withdrawn or reported as unverified.
 - [ ] TSPKG-CK-OVERALL-02-02 — Unavailable named runtimes, consumers, and checks are reported with the findings as limitations.
+
+### TSPKG-SC-OVERALL-03 — Expected failure: method-specific recovery evidence remains incomplete
+
+An operator action alone does not close a package incident. The expected outcome keeps the incident open until
+the selected method's registry state and fresh consumer path both pass. Closing it from an action log is the
+failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-OVERALL-03-01 — The release-authority incident remains open until every required method-specific recovery result passes.

@@ -62,19 +62,21 @@ affected entries and smoke-tests the production build in each named runtime.
 
 ### TSTESTKIND-SC-USAGE-02 — Normal case: a command-line application is tested through its recorded distribution method
 
-A source entry can run while a package link, bundled executable, installed script, workspace-distributed
-command, or literal other non-package command is wrong. The expected outcome uses
-`typescript-packaging` for package-archive delivery and `typescript-cli-delivery` for non-package delivery,
-selecting both for a hybrid. It proves which executable runs and verifies the process requirements.
+A source entry can run while package-backed metadata, a package-archive installation, or direct non-archive
+delivery is wrong. The expected outcome uses `typescript-packaging` for command names and entries supplied by
+`package.json` `bin`, package scripts, and workspace package links. It uses `typescript-cli-delivery` for a
+standalone executable or archive, a script copied or linked directly to an install target, a recorded
+workspace or repository revision plus command, or another direct non-archive method whose unit, method, and
+consumer command are recorded by name. It proves which executable runs and verifies the process requirements.
 
 #### Checklist
 
-- [ ] TSTESTKIND-CK-USAGE-02-01 — Every npm or package-archive command consumer entry is prepared through `typescript-packaging` in an isolated consumer environment.
+- [ ] TSTESTKIND-CK-USAGE-02-01 — Every package-backed command name or entry, including a `package.json` `bin` entry, package script, or workspace package link, is prepared through `typescript-packaging` with its package behavior.
 - [ ] TSTESTKIND-CK-USAGE-02-02 — The test proves that it invoked the recorded output rather than a source file or unrelated command already on `PATH`.
 - [ ] TSTESTKIND-CK-USAGE-02-03 — Process tests invoke every recorded consumer command through its consumer entry.
 - [ ] TSTESTKIND-CK-USAGE-02-04 — Process tests assert the required arguments, standard input, standard output, standard error, exit status, signals, and cleanup for the applicable success and failure cases.
-- [ ] TSTESTKIND-CK-USAGE-02-05 — Every bundled executable, installed script, workspace-distributed command, or literal other non-package command consumer entry is prepared through `typescript-cli-delivery` in an isolated consumer environment.
-- [ ] TSTESTKIND-CK-USAGE-02-06 — A hybrid command distribution selects both `typescript-packaging` and `typescript-cli-delivery`.
+- [ ] TSTESTKIND-CK-USAGE-02-05 — Every direct non-archive consumer entry is prepared through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another method whose unit, method, and consumer command are recorded by name.
+- [ ] TSTESTKIND-CK-USAGE-02-06 — A genuine hybrid that distributes the same command through a package archive and a direct non-archive method selects both owners and preserves separate artifact identities and consumer entries.
 
 ### TSTESTKIND-SC-USAGE-03 — Normal case: a library is tested through its recorded consumer path
 
@@ -117,6 +119,17 @@ the failure.
 #### Checklist
 
 - [ ] TSTESTKIND-CK-USAGE-06-01 — Tests exercise every named runtime, generated output, and direct consumer recorded for a fallback kind through its recorded consumer path.
+
+### TSTESTKIND-SC-USAGE-07 — Edge case: a package-backed workspace command is delivered directly
+
+A workspace package link can supply the command entry while a direct method supplies its delivery. The
+expected outcome loads `typescript-packaging` for the package metadata and `typescript-cli-delivery` for the
+direct non-archive target and consumer entry. Treating either owner as sufficient for both obligations is the
+failure.
+
+#### Checklist
+
+- [ ] TSTESTKIND-CK-USAGE-07-01 — A package-backed workspace command delivered directly selects `typescript-packaging` for its package metadata and `typescript-cli-delivery` for its direct non-archive delivery.
 
 ## Consistency
 

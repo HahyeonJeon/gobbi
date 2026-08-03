@@ -1,13 +1,18 @@
 ---
 name: typescript-packaging
-description: "MUST load when creating, changing, validating, or publishing a TypeScript package, its exports, declarations, executable commands, or supported consumer environments."
+description: "MUST load when creating, changing, validating, or publishing a TypeScript package, its exports, declarations, package-backed command metadata, or supported consumer environments."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Packaging
 
-TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package. It covers export maps, generated JavaScript, public declarations, executable-command metadata, supported consumers, package-archive validation, and publication readiness without prescribing one module format for every package.
+TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package. It
+covers export maps, generated JavaScript, public declarations, package-backed command metadata, supported
+consumers, package-archive validation, and publication readiness without prescribing one module format for
+every package. Package-backed command metadata means a command name or entry supplied by package metadata,
+including a `package.json` `bin` entry, a package script, or a workspace package link. This operation owns
+that metadata and its package behavior.
 
 Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their
 triggers apply. Classify work as authorized author mode or review-only validation. Author mode may change
@@ -32,10 +37,13 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - **MUST** define whether each public entry point provides runtime code, declarations, or both. Map every leaf
   export-map value to an existing file of the selected kind or an intentional `null` block, verify each block
-  rejects its intended package path, and define every executable command's `bin` name and built entry file.
+  rejects its intended package path, and define every package-backed command name or entry and its supplying
+  metadata, including the built entry file for each `bin` entry.
 - **NEVER** expose an internal path accidentally through a broad file set, wildcard export, declaration leak, or source-only path.
 - **MUST** generate or author public declarations deliberately and inspect them for private types, unstable inferred names, and dependencies on globals unavailable in supported consumer runtimes.
-- **MUST** validate imports, declarations, executable commands, and runtime behavior from the installed package archive in representative consumers.
+- **MUST** validate imports, declarations, commands supplied through a package archive, and runtime behavior
+  from that installed archive in representative consumers. Validate a package script or workspace package
+  link through its applicable package or workspace consumer.
 - **NEVER** claim compatibility with a module format, runtime, TypeScript version, or resolver that the installed package archive has not exercised.
 - **MUST** classify public API changes and obtain release authority before publishing or changing compatibility statements.
 
@@ -56,7 +64,13 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - When review-only evidence needs a new build or archive, report that evidence as unavailable or request author mode. Finish with command results, findings, and limitations.
 - Select every applicable package kind: library, SDK, command-line package, or a literal fallback.
 - Record supported runtimes, module loaders, resolution modes, TypeScript versions, import forms, command names, operating systems, and CPU architectures that apply.
+- Record every package-backed command name or entry and whether `package.json` `bin`, a package script, or a
+  workspace package link supplies it. When a package-backed workspace command is delivered directly without a
+  package archive, load `typescript-cli-delivery` for that distinct delivery obligation.
 - Record the package-manager name and version plus its engine, peer-dependency, optional-dependency, and installation policies.
+- Record the selected registry, package manager, and release method. Bind recovery to the actions that method
+  actually permits, such as a dist-tag change, deprecation, restricted unpublish, withdrawal, or corrective
+  release, including each action's authority and exact limitation.
 - List every public entry point and whether it provides runtime code, types only, or both.
 - Identify compatibility statements, publication authority, and out-of-scope consumers.
 
@@ -82,7 +96,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
   existing runtime files of the intended module formats. Keep those fields aligned with `exports` when both
   define the same entry.
 - When used, define `files` so its selected archive content matches the intended package inventory.
-- Map each `bin` entry to an existing built command file.
+- Map each `bin` entry to an existing built command file. Verify every package script and workspace package
+  link against the command name or entry its package metadata supplies.
 - Keep internal modules unreachable unless they are an intentional public subpath.
 - Decide whether declarations are emitted, bundled, or maintained, and name the exact `tsconfig.json` file that produces or validates them.
 
@@ -91,7 +106,11 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Select representative consumer fixtures for each claimed module and resolution path.
 - Define API-diff or declaration checks for the public exports and declarations.
 - Define archive-content, installation, import, intentional blocked-path, command invocation, runtime, and
-  rollback checks before building.
+  method-specific recovery checks before building.
+- Classify each recovery obligation as rehearsable only when an authorized isolated or staging boundary
+  provides the selected method and required capabilities without changing live registry or consumer state.
+  Otherwise classify it as unrehearsable and record the exact blocking condition and validated operator path.
+  Record the prior and intended consumer state for every rehearsable obligation.
 - Before inspecting the candidate archive, record either the prior accepted archive or a size budget approved
   by the person or document that supplied the package requirements, the total and per-file sizes to compare,
   and the delta threshold whose breach requires explanation.
@@ -103,7 +122,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - In author mode, run the package's clean build without relying on stale output. In review-only validation, inspect only existing generated package output without building or rebuilding it.
 - Inspect extensions, directories, source maps, assets, and rewritten import specifiers.
 - Confirm every local file target named by package metadata resolves inside the package archive.
-- For every command, preserve the required shebang through the build and ensure the archived command file is executable on supported systems.
+- For every archived `bin` command, preserve the required shebang through the build and ensure the archived command file is executable on supported systems.
 
 #### 2.2 Produce public declarations
 
@@ -128,7 +147,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Exercise optional dependencies when installed, omitted, and unavailable or failed during installation. Exercise optional peers when present and absent, including whether the selected package manager installs them automatically.
 - Use `typesVersions` only for an explicit TypeScript-version routing requirement.
 - In resolution modes that read `exports`, use the ordered versioned and fallback type conditions defined in Phase 1.2 because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that selects it.
-- In author mode, create the package archive with the normal packaging command. In review-only validation, inspect only a package archive that existed before the review.
+- In author mode, this operation alone creates and identifies the package archive with the normal packaging
+  command. In review-only validation, inspect only a package archive that existed before the review.
 - Inspect the archive inventory for missing generated files and unwanted source or secrets. Compare its
   recorded total and per-file sizes with the prior accepted archive or approved budget. Trace every delta
   that crosses the Phase 1 threshold to named added, removed, or changed archive entries; continue only when
@@ -141,7 +161,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 3.1 Exercise resolution
 
-- Install the package archive into isolated representative consumers. In review-only validation, install only the pre-existing archive into isolated disposable consumers and never into a persistent environment.
+- Install the exact identified package archive into isolated representative consumers. In review-only validation, install only the pre-existing archive into isolated disposable consumers and never into a persistent environment.
 - Resolve every public entry through each claimed import form and compiler resolution mode.
 - Resolve every intentional `null` export target under each matching condition and confirm the recorded
   package-path rejection. Resolve an adjacent supported export from the same installed consumer so a broken
@@ -153,8 +173,11 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Type-check positive and negative consumer examples against the installed archive.
 - Run each imported runtime entry in every claimed named runtime or module format.
-- Capture how every package-defined command name resolves in the isolated consumer. Prove that it selects the executable link or file created by that archive installation.
+- Capture how every archived `bin` command name resolves in the isolated consumer. Prove that it selects the executable link or file created by that archive installation.
 - Invoke that installed command and verify the required arguments, standard streams, exit status, signals, and failure text.
+- For a package-backed workspace command delivered directly, give its package metadata and package-behavior
+  evidence to `typescript-cli-delivery`. That operation separately owns its direct non-archive identity,
+  target installation or distribution, authority, rollback, recovery, and consumer entry.
 - Test singleton identity and shared state across multiple entry points when dual formats or duplicated bundles are possible.
 
 #### 3.3 Classify the API change
@@ -169,7 +192,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 4.1 Run final package checks
 
-- In author mode, rebuild and recreate the archive from the accepted tree. In review-only validation, inspect only existing generated package output and the pre-existing archive.
+- In author mode, rebuild the output and, as the sole archive producer, recreate and identify the archive from
+  the accepted tree. In review-only validation, inspect only existing generated package output and the
+  pre-existing archive.
 - Re-run package metadata, declaration, consumer, license, provenance, and vulnerability checks required by the repository.
 - Bind all results to the exact archive digest or contents being proposed.
 - If a required pre-publication check fails, do not publish.
@@ -183,11 +208,32 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 #### 4.2 Confirm release authority
 
 - Continue through this step only in author mode. Review-only validation returns its command results, findings, and limitations after Step 4.1 without updating or publishing anything.
-- Present the version, compatibility classification, archive contents, verification results, and rollback plan to the person or automation authorized to release it.
-- Publish only through the authorized release workflow.
-- Verify registry metadata and installation after publication; if publication is not authorized, stop at a publication-ready archive.
-- If post-publication verification fails, preserve the published version and failure evidence, then notify the release authority.
-- Follow only the authorized rollback, deprecation, or corrective-release path. Never silently republish or overwrite the published version.
+- Recheck the selected registry, package manager, release method, and the recovery actions that method actually
+  permits.
+- Before publication, rehearse every obligation classified as rehearsable inside its authorized isolated or
+  staging boundary. Verify the prior consumer state before the rehearsal and the intended consumer state after
+  it.
+- For every unrehearsable or irreversible recovery action, retain its exact blocking condition and validated
+  operator path without claiming rehearsal.
+- Present the version, compatibility classification, archive contents, verification results, and
+  method-specific recovery plan to the person or automation authorized to release it.
+- If publication is not authorized, stop at a publication-ready archive.
+
+#### 4.3 Publish, verify, and recover
+
+- Publish only through the authorized release workflow for the selected registry, package manager, and release
+  method. Never overwrite or silently republish an immutable published version.
+- Verify registry metadata, relevant release-method state, and a fresh consumer installation after
+  publication.
+- If publication or post-publication verification fails, preserve the published version, registry response,
+  command output, consumer result, and exact failure before recovery.
+- Execute only the authorized method-specific recovery path, such as the applicable dist-tag change,
+  deprecation, restricted unpublish, withdrawal, or corrective release.
+- Verify registry metadata, the relevant tag, deprecation, withdrawal, or corrective-version state, and a
+  fresh consumer installation after recovery. Record effects on existing consumers separately from the fresh
+  installation result.
+- Keep the incident open until every required method-specific recovery result passes. Never claim a universal
+  rollback, silently republish, or overwrite the published version.
 
 ## References
 

@@ -52,9 +52,10 @@ Declarations define the types consumers may use and must avoid leaking private i
 - Prefer `interface` for object shapes intended for compatible augmentation and `type` for unions, aliases, and closed compositions, while following established project convention.
 - Prefer utility types only when the transformed type remains easier to understand than a dedicated domain type.
 - Prefer measured compiler or editor evidence before optimizing a type model. Before reviewing the changed
-  result, record a comparison threshold from a project feedback-time limit or measured baseline variance. When
-  the changed result exceeds that threshold, simplify the responsible expression or record why its value
-  justifies the measured cost.
+  result, record a comparison threshold from a project feedback-time limit or measured baseline variance and
+  record that requirement's owner or governing record. When the changed result exceeds that threshold,
+  simplify the responsible expression or obtain explicit acceptance only from that recorded owner, with the
+  benefit and measured cost. The author cannot infer or self-assign acceptance authority.
 
 For an SDK, derive request, response, pagination, error, and cancellation types from supplied service requirements. Treat decoded service responses as `unknown`, validate them at the network adapter, and expose only validated values through the documented client methods. Type declarations do not invent retry behavior, error categories, or service guarantees that the supplied requirements do not state.
 

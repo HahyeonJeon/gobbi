@@ -2,9 +2,10 @@
 
 This reusable unchecked source evaluates one set of TypeScript tests created or reviewed under this operation.
 It is governed by the [`typescript`](../SKILL.md) domain and [`typescript-testing`](SKILL.md) operation, with
-[`typescript-packaging`](../typescript-packaging/SKILL.md) defining the package metadata its consumer checks
-exercise, [`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) defining non-package command
-delivery, and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact `tsconfig.json`
+[`typescript-packaging`](../typescript-packaging/SKILL.md) defining package metadata and supplying the exact
+identified package archive and applicable isolated consumer setup its checks exercise,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) defining direct non-archive command delivery,
+and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact `tsconfig.json`
 files and resolution modes they use. The source commit that contains this file identifies the checklist
 version. Its stable checklist prefix is `TSTEST`.
 
@@ -155,29 +156,30 @@ states what those compiler runs do not prove. An example that drifts from the co
 - Also applies: TSTEST-CK-RISK-02-02 (removing an expectation produces the intended diagnostic).
 - Also applies: TSTEST-CK-RISK-02-03 (an unused expectation fails the run).
 
-### TSTEST-SC-USAGE-04 — Normal case: resolution is proved on the installed package archive
+### TSTEST-SC-USAGE-04 — Normal case: resolution is proved on the one identified package archive
 
 A package archive carries different files, entry points, and resolution conditions than the checkout it came
-from. The expected outcome installs what a consumer would receive and exercises its documented entry
-points and resolution modes there. A resolution result taken from the source project is the failure.
+from. The expected outcome receives the exact archive identity and isolated consumer setup from
+`typescript-packaging`, then exercises behavior, types, and declarations there. Independently producing an
+archive or taking a resolution result from the source project is the failure.
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-04-01 — In author mode the package is built or packed; in review-only package validation generated package output is inspected only when it already exists and is not built or rebuilt.
-- [ ] TSTEST-CK-USAGE-04-02 — In author mode the package archive is installed into an isolated consumer; in review-only package validation every inspected or installed archive existed before the review, is not created or recreated, and is installed only into an isolated disposable consumer rather than a persistent environment.
+- [ ] TSTEST-CK-USAGE-04-01 — `typescript-packaging` alone builds, creates, recreates, and identifies the package archive used by these tests.
+- [ ] TSTEST-CK-USAGE-04-02 — Testing receives the exact identified archive and applicable isolated consumer setup from `typescript-packaging`.
 - [ ] TSTEST-CK-USAGE-04-03 — The installed package's documented entry points and documented resolution modes are exercised.
 
 ## Consistency
 
-### TSTEST-SC-CONSISTENCY-01 — Rule violation: a source-checkout result offered for package behavior
+### TSTEST-SC-CONSISTENCY-01 — Rule violation: a source-checkout result offered for archive behavior
 
 The suite passes in the checkout, and the same code is what the package will ship, so the result looks
-transferable. The expected outcome keeps package claims on installed-package results. A source-checkout pass presented
-as built or packed behavior breaks the Rule.
+transferable. The expected outcome keeps archive claims on results from the exact archive identified by
+`typescript-packaging`. A source-checkout pass presented as archive behavior breaks the Rule.
 
 #### Checklist
 
-- [ ] TSTEST-CK-CONSISTENCY-01-01 — No source-checkout test result is treated as proof of built or packed package behavior.
+- [ ] TSTEST-CK-CONSISTENCY-01-01 — No source-checkout test result is treated as proof of behavior from the exact package archive identified by `typescript-packaging`.
 - Also applies: TSTEST-CK-USAGE-04-03 (the installed package's entry points and resolution modes are exercised).
 
 ### TSTEST-SC-CONSISTENCY-02 — Normal case: claims and tests agree in both directions

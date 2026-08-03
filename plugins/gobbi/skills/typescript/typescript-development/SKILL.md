@@ -143,10 +143,16 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 - For a web application, verify browser and server entries under their exact `tsconfig.json` files, then exercise the production build in each named browser or server runtime that the change affects.
 - For a command-line application, select every applicable delivery owner before exercising the consumer
-  command. Use the isolated archive installation supplied by `typescript-packaging` for an npm or other
-  package-archive command. Use the consumer entry supplied by `typescript-cli-delivery` for a bundled
-  executable, installed script, workspace-distributed command, or literal other non-package method. Load both
-  for a hybrid that distributes commands through both methods.
+  command. Package-backed command metadata means a command name or entry supplied by package metadata,
+  including a `package.json` `bin` entry, package script, or workspace package link; use
+  `typescript-packaging` for that metadata and its package behavior. Direct non-archive delivery means the
+  consumer receives the command without installing a package archive; use the consumer entry supplied by
+  `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an
+  install target, a recorded workspace or repository revision plus command, or another direct non-archive
+  method whose unit, method, and consumer command are recorded by name. A package-backed workspace command
+  delivered directly loads both owners for those separate obligations. A genuine hybrid distributes the same
+  command through both a package archive and a direct non-archive method; load both and preserve separate
+  artifact identities and consumer entries.
   Prove that the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
   Then verify the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - For a library, verify every recorded consumer path from an isolated representative consumer. Install the

@@ -82,7 +82,7 @@ segment, or `.` when they should retain it; omitting the option can produce TS50
 
 Confirm which outputs are needed. A declaration-only package, an application bundle, and a script have different answers.
 
-`incremental` and `composite` write build state to a `.tsbuildinfo` file. An explicit `tsBuildInfoFile` sets its location. When `tsBuildInfoFile` is omitted, TypeScript selects the default in this order: with `outFile`, `<outFile>.tsbuildinfo`; with both `rootDir` and `outDir`, `<outDir>/<relative path from rootDir to the configuration directory>/<configuration name>.tsbuildinfo`; with `outDir`, `<outDir>/<configuration name>.tsbuildinfo`; otherwise `<configuration name>.tsbuildinfo` beside the configuration file. Stale or shared build state can make a rebuild skip files it should have reprocessed, so treat unexplained missing or outdated output as a build-state question and clear that file before concluding the source is at fault.
+`incremental` and `composite` write build state to a `.tsbuildinfo` file. An explicit `tsBuildInfoFile` sets its location. When `tsBuildInfoFile` is omitted, TypeScript selects the default in this order: with `outFile`, `<outFile>.tsbuildinfo`; with both `rootDir` and `outDir`, `<outDir>/<relative path from rootDir to the configuration directory>/<configuration name>.tsbuildinfo`; with `outDir`, `<outDir>/<configuration name>.tsbuildinfo`; otherwise `<configuration name>.tsbuildinfo` beside the configuration file. Stale or shared build state can make a rebuild skip files it should have reprocessed, so treat unexplained missing or outdated output as a build-state question. Clear only an author-owned build-state file under explicit mutation authority, or clear a copied file inside an authorized disposable reproduction. Never delete or change build state in a reviewed subject. When no authorized disposable reproduction is possible, report the build-state diagnosis as unavailable rather than infer that the source is at fault.
 
 When the configured transpiler, bundler, or type-stripping runtime processes one file at a time, it cannot rely on cross-file type information. `isolatedModules` reports TypeScript constructs that can be interpreted incorrectly by that model, including a type re-exported without `export type`. Enable it when the actual JavaScript producer has that single-file limitation; do not infer the requirement merely because `tsc` is not the emitter.
 
@@ -97,8 +97,13 @@ producer-specific way to embed source content; a downstream transform may produc
 [`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
 [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
 [`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive,
-[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for direct non-archive command delivery,
 or the recorded project-specific release owner for another output.
+
+Final-map inspection stays with this tool. Record the exact final map identity, its generated output, whether
+each original source resolves for its intended consumer or is carried in `sourcesContent`, and every preserved
+downstream mapping. Give that evidence to the selected release owner. The release owner binds the maps to its
+unit and target and owns inclusion, upload, withholding, access, retention, and recovery.
 
 ### Diagnose runtime differences
 
@@ -115,7 +120,7 @@ configuration, chunking and code splitting, asset hashing and cache lifetimes, s
 rollout to the selected output's build or release owner: [`web-deployment`](../../web/web-deployment/SKILL.md)
 for a web release, [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron
 artifact, [`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive,
-[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for direct non-archive command delivery,
 or the recorded project-specific owner for another output. Stop and report the missing ownership decision
 when no such owner is recorded.
 
