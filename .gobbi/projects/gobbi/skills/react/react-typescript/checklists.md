@@ -36,7 +36,8 @@ in that API fails the scenario.
 ### RTSX-SC-STRUCTURE-02 — Normal case: Hook, ref, and JSX-facing values use installed React types
 
 State, callbacks, refs, events, nodes, elements, and styles have installed React definitions. A handwritten
-approximation, a redundant type argument, or a ref type that hides absence or ownership fails.
+approximation, a redundant type argument, or a ref type that hides absence or its exact target element or
+value type fails.
 
 #### Checklist
 

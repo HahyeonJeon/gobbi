@@ -101,7 +101,7 @@ using `JSON.stringify` as a proxy.
 
 ### Measure server/client graph and transfer cost
 
-- Ordinary client render profiling remains in `react-development`. This tool owns measurement of server/client
+- Ordinary client render profiling remains in `react-development`. Use this tool to measure server/client
   module graph cost, shipped client bundle or transfer cost caused by boundaries or directives, and comparable
   server/client transfer.
 - Name the build or interaction, environment, baseline, and comparison for every measurement. Record the
