@@ -18,7 +18,7 @@ This root owns navigation only. Load every child whose trigger applies.
 |---|---|---|
 | [`react-compiler`](react-compiler/SKILL.md) | tool | MUST load when React Compiler configuration, diagnostics, coverage, migration, memoization, or compiler-related performance is in scope. |
 | [`react-conventions`](react-conventions/SKILL.md) | preference | MUST load when naming, defining, exporting, moving, organizing, or reviewing React components, Hooks, or JSX files. |
-| [`react-design`](react-design/SKILL.md) | preference | MUST load when choosing or reviewing React-specific component boundaries, props, composition, render, Hooks, state, Effect, identity, native interface, or Error Boundary behavior. |
+| [`react-design`](react-design/SKILL.md) | operation | MUST load when designing React-specific component structure, props, composition, render, Hooks, state, Effects, identity, native interface, or Error Boundary behavior. |
 | [`react-development`](react-development/SKILL.md) | operation | MUST load when implementing or reviewing one scoped React change for a browser application or Electron renderer. |
 | [`react-server`](react-server/SKILL.md) | tool | MUST load when a React browser application or Electron renderer uses server rendering, hydration, Server Components, Server Functions, or client/server directives. |
 | [`react-testing`](react-testing/SKILL.md) | operation | MUST load when creating, revising, or reviewing React tests or selecting React-specific component or Hook test evidence. |
