@@ -30,18 +30,22 @@ fitting claims to it afterwards is the failure.
 - [ ] TSTEST-CK-PROJECT-01-01 — Caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples are enumerated as claims for every selected project kind.
 - [ ] TSTEST-CK-PROJECT-01-02 — Every TypeScript compiler version claimed for package consumers or taught examples is recorded.
 - [ ] TSTEST-CK-PROJECT-01-03 — Every claim is mapped to the layer capable of disproving it.
+- [ ] TSTEST-CK-PROJECT-01-04 — Every applicable ordinary, limit, failure, cancellation, and adversarial case for the tested claims is included.
 
-### TSTEST-SC-PROJECT-02 — Rule violation: a review-only run changes the reviewed files
+### TSTEST-SC-PROJECT-02 — Rule violation: a review-only run crosses its authority boundary
 
-A test review can run and inspect everything, and the tempting next step is to fix what it finds. The expected
-outcome marks review-only mode and reports findings. Editing production or test files under that mode breaks
-the authority the run was given.
+A test review may inspect existing files. When review-only package validation applies, it may also inspect
+existing generated package output and a pre-existing package archive. With command authority, it may create
+disposable command state outside reviewed files and install that archive in an isolated disposable consumer.
+The expected outcome reports results without changing the reviewed subject, installing persistently, or
+publishing. Crossing any of those boundaries is the failure.
 
 #### Checklist
 
 - [ ] TSTEST-CK-PROJECT-02-01 — Review-only mode is marked whenever edits are not authorized.
-- [ ] TSTEST-CK-PROJECT-02-02 — No reviewed production or test file is changed in review-only mode.
-- [ ] TSTEST-CK-PROJECT-02-03 — Every finding from a review-only run is reported rather than applied.
+- [ ] TSTEST-CK-PROJECT-02-02 — The only review-only writes are disposable command state outside all reviewed files, including production, test, package, documentation, and release-note files.
+- [ ] TSTEST-CK-PROJECT-02-03 — Review-only mode returns command results, findings, and limitations rather than applying a finding.
+- [ ] TSTEST-CK-PROJECT-02-04 — Nothing is published in review-only mode.
 
 ## Structure
 
@@ -156,8 +160,8 @@ points and resolution modes there. A resolution result taken from the source pro
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-04-01 — The package is built or packed.
-- [ ] TSTEST-CK-USAGE-04-02 — The built package or package archive is installed.
+- [ ] TSTEST-CK-USAGE-04-01 — In author mode the package is built or packed; in review-only package validation generated package output is inspected only when it already exists and is not built or rebuilt.
+- [ ] TSTEST-CK-USAGE-04-02 — In author mode the package archive is installed into an isolated consumer; in review-only package validation every inspected or installed archive existed before the review, is not created or recreated, and is installed only into an isolated disposable consumer rather than a persistent environment.
 - [ ] TSTEST-CK-USAGE-04-03 — The installed package's documented entry points and documented resolution modes are exercised.
 
 ## Consistency
@@ -185,15 +189,16 @@ outcome traces every claim to a current test and every test back to a named requ
 
 ## Risk
 
-### TSTEST-SC-RISK-01 — Rule violation: a type assertion used as proof of a type relationship
+### TSTEST-SC-RISK-01 — Rule violation: an ordinary type assertion used as proof of a type relationship
 
-Writing `as` inside a test makes the compiler accept the line and proves nothing about the relationship the
-test claims. The expected outcome asserts type relationships with helpers that fail on mismatch. An assertion
-offered as proof of the type relationship breaks the Rule while the test still passes.
+Writing an ordinary type assertion such as `value as Type` or `<Type>value` inside a test makes the compiler
+accept the line and proves nothing about the relationship the test claims. The expected outcome asserts type
+relationships with helpers that fail on mismatch. `as const` may construct precise test input through literal
+and readonly inference, but it does not itself prove a tested type relationship.
 
 #### Checklist
 
-- [ ] TSTEST-CK-RISK-01-01 — No type assertion inside a test is used as proof that the asserted type is true.
+- [ ] TSTEST-CK-RISK-01-01 — No ordinary type assertion such as `value as Type` or `<Type>value` inside a test is used as proof that the asserted type is true; `as const` used only for precise test-input inference is not treated as that escape hatch.
 - [ ] TSTEST-CK-RISK-01-02 — Inferred and declared relationships are asserted with type-level helpers that fail on mismatch.
 
 ### TSTEST-SC-RISK-02 — Expected failure: an invalid program must be rejected
@@ -246,7 +251,7 @@ layer's pass stand in for the missing one is the failure.
 
 #### Checklist
 
-- [ ] TSTEST-CK-OVERALL-02-01 — Every unavailable named runtime, tool, and package mode is recorded as a limitation.
+- [ ] TSTEST-CK-OVERALL-02-01 — Every unavailable named runtime, tool, and package mode, and every review-only package check that needs a new build or archive, is recorded as a limitation or requests author mode.
 - [ ] TSTEST-CK-OVERALL-02-02 — No layer's result is reported as proof of a claim that requires a different, unavailable layer.
 
 ### TSTEST-SC-OVERALL-03 — Expected failure: a verification check runs and fails

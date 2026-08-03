@@ -9,7 +9,9 @@ skill-type: operation
 
 TypeScript Testing verifies runtime behavior and compile-time requirements. It composes runtime tests, controllable dependencies, type-level assertions, expected failures, public declaration checks, installed-package checks, and checked documentation examples without treating any one layer as a substitute for the others.
 
-This operation applies to creating and reviewing tests. A read-only review inspects existing tests and runs authorized commands without inheriting authority to change production or test files.
+This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs authorized commands without inheriting authority to change production or test files.
+
+When review-only package validation applies, it may inspect existing generated package output and a pre-existing package archive. With command authority, it may create disposable command state outside the reviewed files and install only that pre-existing archive into an isolated disposable consumer. It may not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish. Evidence that requires a new build or archive is unavailable in review-only mode unless the task changes to author mode.
 
 ## Principles
 
@@ -32,7 +34,7 @@ Documented examples are code and require a named compiler version and exact comp
 ## Rules
 
 - **MUST** select runtime, type-level, negative, declaration, package, and example checks from the claims being made.
-- **NEVER** use a type assertion inside a test as proof that the asserted type is true.
+- **NEVER** use an ordinary type assertion such as `value as Type` or `<Type>value` inside a test as proof that the asserted type is true. `as const` is a const assertion that may construct precise test input, but it does not itself prove a tested type relationship.
 - **MUST** prove that every expected-error or negative test fails when its expectation is removed or inverted.
 - **MUST** test public declarations and resolution from an isolated consumer project rather than only inside the source project.
 - **MUST** control time, randomness, scheduling, I/O, and named-runtime state when deterministic observation is required.
@@ -52,7 +54,7 @@ Documented examples are code and require a named compiler version and exact comp
 
 #### 1.2 Design discriminating cases
 
-- Include ordinary, limit, failure, cancellation, and adversarial cases that apply.
+- Ensure every applicable ordinary, limit, failure, cancellation, and adversarial case for the tested claims is included.
 - Define what mutation or controlled defect would make each test fail.
 - Avoid assertions tied only to implementation order or private structure unless that structure is an explicit requirement.
 
@@ -100,8 +102,10 @@ Documented examples are code and require a named compiler version and exact comp
 
 #### 3.3 Test declarations, packages, and commands
 
-- Emit or obtain the public declarations and type-check isolated consumer fixtures.
-- Build or pack the package, install that archive, and exercise its documented entry points and resolution modes.
+- In author mode, emit or obtain the public declarations and type-check isolated consumer fixtures.
+- In author mode, build or pack the package, install that archive into an isolated consumer, and exercise its documented entry points and resolution modes.
+- In review-only package validation, inspect only existing declarations and generated package output. Inspect or install only a package archive that existed before the review, and install it only into an isolated disposable consumer when command authority permits.
+- In review-only package validation, do not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish. Report required evidence that needs a new build or archive as unavailable, or request author mode.
 - For every command supplied through a package archive, capture command-name resolution in the isolated consumer. Prove that it selects the executable created by that archive installation.
 - Invoke the installed command and assert the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - Compare declarations or exported APIs when compatibility is a stated requirement.
@@ -117,6 +121,7 @@ Documented examples are code and require a named compiler version and exact comp
 #### 4.2 Run the verification ladder
 
 - Run focused runtime and type checks, then the broader test, declaration, build, and package checks that apply.
+- In review-only mode, run only authorized checks that preserve the review-only package-validation boundary. Report a required check that needs new generated package output or a new archive as unavailable or request author mode.
 - Ensure zero discovered tests or examples fails closed when discovery is part of the claim.
 - Review output from the final-tree run for skipped, quarantined, flaky, or unexpectedly absent cases.
 - When a check fails in author mode, return to Phase 1 for a claim or case-design mismatch, Phase 2 for a runtime-test defect, or Phase 3 for a type, declaration, package, or command-test defect.

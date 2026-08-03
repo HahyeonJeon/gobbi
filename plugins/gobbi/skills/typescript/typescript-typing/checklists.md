@@ -159,14 +159,14 @@ failure.
 ### TSTYPE-SC-RISK-01 — Rule violation: unverified data used as a domain value
 
 Data from a network response, a file, a message, or a decode step carries no guarantee about its shape. The
-expected outcome holds it as `unknown` and narrows it with checks that can fail. An assertion standing in for
-that check breaks the Rule while the program still compiles.
+expected outcome holds it as `unknown` and narrows it with checks that can fail. An ordinary type assertion
+standing in for that check breaks the Rule while the program still compiles.
 
 #### Checklist
 
 - [ ] TSTYPE-CK-RISK-01-01 — External, decoded, and otherwise unverified data is accepted as `unknown`.
 - [ ] TSTYPE-CK-RISK-01-02 — External, decoded, and otherwise unverified data is parsed or narrowed before use.
-- [ ] TSTYPE-CK-RISK-01-03 — No type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
+- [ ] TSTYPE-CK-RISK-01-03 — No ordinary type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
 
 ### TSTYPE-SC-RISK-02 — Rule violation: `any` where uncertainty could have been preserved
 
@@ -179,16 +179,18 @@ an adapter would preserve checking breaks the Rule.
 - [ ] TSTYPE-CK-RISK-02-01 — No `any` is used where the program can preserve uncertainty with `unknown`, a relationship-preserving generic, or a precise input parser.
 - Also applies: TSTYPE-CK-PROJECT-02-01 (uncertainty preserved in a checked form).
 
-### TSTYPE-SC-RISK-03 — Adversarial: an escape hatch dressed as an established fact
+### TSTYPE-SC-RISK-03 — Adversarial: an ordinary assertion escape hatch dressed as an established fact
 
-An `as` with a confident comment, or a double assertion routed through an intermediate type, can present a
-guess as a fact the compiler simply cannot see, and review accepts it. The expected outcome admits an
-assertion only for a fact established outside the compiler and keeps the supporting runtime check or API guarantee visible.
+An ordinary type assertion such as `value as Type` or `<Type>value` can present a guess as a fact the compiler
+cannot see, and review accepts it. The expected outcome admits that assertion only for a fact established
+outside the compiler and keeps the supporting runtime check or API guarantee visible. `as const` is a const
+assertion used for literal and readonly inference, not this ordinary assertion escape hatch.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-RISK-03-01 — Every `as` states a fact established outside the compiler rather than a shape the code expects to hold.
-- [ ] TSTYPE-CK-RISK-03-02 — The runtime check or API guarantee supporting every `as` is recorded or localized where the assertion is made.
+- [ ] TSTYPE-CK-RISK-03-01 — Every ordinary type assertion such as `value as Type` or `<Type>value` states a fact established outside the compiler rather than a shape the code expects to hold.
+- [ ] TSTYPE-CK-RISK-03-02 — The runtime check or API guarantee supporting every ordinary type assertion is recorded or localized where the assertion is made.
+- [ ] TSTYPE-CK-RISK-03-03 — Every `as const` is treated as a const assertion for literal and readonly inference, not as the ordinary assertion escape hatch governed by the external-fact Rule.
 
 ### TSTYPE-SC-RISK-04 — Edge case: a declaration is augmented outside its responsible integration module
 

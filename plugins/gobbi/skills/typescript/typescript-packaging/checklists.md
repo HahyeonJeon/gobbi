@@ -33,30 +33,38 @@ begun before those are recorded is the failure.
 
 ### TSPKG-SC-PROJECT-02 — Rule violation: review-only validation changes the subject
 
-A validation run has no authority to write, and building or installing "just to check" quietly turns it into
-author mode. The expected outcome inspects existing generated output, collects only disposable command results
-outside the reviewed files, and closes with findings. Any write inside the review-only classification exceeds its authority.
+A validation run has no authority to change the reviewed subject. The expected outcome may inspect existing
+generated package output and a pre-existing archive. With command authority, it may create disposable command
+state outside reviewed files and install that archive into an isolated disposable consumer. Editing reviewed
+files, creating output or an archive, installing persistently, or publishing exceeds its authority.
 
 #### Checklist
 
-- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no repository file is edited.
-- [ ] TSPKG-CK-PROJECT-02-02 — Under review-only validation, no package output is built or created.
-- [ ] TSPKG-CK-PROJECT-02-03 — Under review-only validation, nothing is installed into a persistent environment.
+- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no reviewed file is edited.
+- [ ] TSPKG-CK-PROJECT-02-02 — Under review-only validation, existing generated package output may be inspected, but generated package output is not built or rebuilt.
+- [ ] TSPKG-CK-PROJECT-02-03 — Every package archive inspected or installed under review-only validation existed before the review and is not created or recreated by the review.
+- [ ] TSPKG-CK-PROJECT-02-04 — Every command write under review-only validation is disposable command state outside the reviewed files.
 - [ ] TSPKG-CK-PROJECT-02-05 — Under review-only validation, nothing is published.
+- [ ] TSPKG-CK-PROJECT-02-06 — Every review-only archive installation uses the pre-existing archive in an isolated disposable consumer and never a persistent environment.
 
 ### TSPKG-SC-PROJECT-03 — Normal case: a review-only run closes on inspection results alone
 
-A review-only run reaches the end of its inspection with no authority to change anything. The expected
-outcome passes over every mutation step and returns command results, findings, and limitations. A run that performs
-a mutation step, or that ends without returning what it found, is the failure.
+A review-only run reaches the end of its inspection with no authority to change the reviewed subject. The
+expected outcome leaves documentation and release notes unchanged and returns command results, findings, and
+limitations. Evidence that needs a new build or archive remains unavailable or triggers a request for author
+mode. Crossing the mode boundary or omitting that result is the failure.
 
 #### Checklist
 
 - [ ] TSPKG-CK-PROJECT-03-02 — A review-only run finishes with command results, findings, and limitations.
-- Also applies: TSPKG-CK-PROJECT-02-01 (repository files remain unchanged).
-- Also applies: TSPKG-CK-PROJECT-02-02 (package output is not built).
-- Also applies: TSPKG-CK-PROJECT-02-03 (nothing is installed persistently).
+- [ ] TSPKG-CK-PROJECT-03-03 — A review-only run leaves documentation and release notes unchanged.
+- [ ] TSPKG-CK-PROJECT-03-04 — Required evidence that needs a new build or archive is reported as unavailable or requests author mode.
+- Also applies: TSPKG-CK-PROJECT-02-01 (reviewed files remain unchanged).
+- Also applies: TSPKG-CK-PROJECT-02-02 (generated package output is not built or rebuilt).
+- Also applies: TSPKG-CK-PROJECT-02-03 (only a pre-existing archive is used).
+- Also applies: TSPKG-CK-PROJECT-02-04 (command state is disposable and external to reviewed files).
 - Also applies: TSPKG-CK-PROJECT-02-05 (nothing is published).
+- Also applies: TSPKG-CK-PROJECT-02-06 (archive installation is isolated, disposable, and not persistent).
 
 ## Structure
 
@@ -64,15 +72,15 @@ a mutation step, or that ends without returning what it found, is the failure.
 
 An export map has declaration branches and runtime branches rather than one uniform file pair. The expected
 outcome maps each branch to the file kind it selects, orders versioned and fallback type conditions correctly,
-and keeps declaration module kinds aligned with their runtime branches. A missing fallback, wrong file kind,
-or mismatched module kind is the failure.
+and keeps declaration module formats aligned with their runtime branches. A missing fallback, wrong file kind,
+or mismatched module format is the failure.
 
 #### Checklist
 
 - [ ] TSPKG-CK-STRUCTURE-01-01 — Every export condition maps to an existing file of its declared kind: `types` and versioned `types@<selector>` branches to declaration files; runtime branches to runtime files.
 - [ ] TSPKG-CK-STRUCTURE-01-02 — Applicable conditions are ordered from versioned `types@<selector>` branches to the ordinary `types` fallback and then to runtime branches within the same condition object.
 - [ ] TSPKG-CK-STRUCTURE-01-03 — Every supported compiler that misses the versioned type selectors reaches an ordinary `types` fallback.
-- [ ] TSPKG-CK-STRUCTURE-01-04 — Each declaration file's detected ES-module or CommonJS kind matches the runtime branch it describes.
+- [ ] TSPKG-CK-STRUCTURE-01-04 — Each declaration file's detected module format matches the ESM or CommonJS runtime branch it describes.
 - [ ] TSPKG-CK-STRUCTURE-01-05 — Declarations are decided as emitted, bundled, or maintained.
 - [ ] TSPKG-CK-STRUCTURE-01-06 — One exact `tsconfig.json` file produces or validates the declarations.
 - Also applies: TSPKG-CK-PROJECT-01-03 (each entry records whether it provides runtime code, types only, or both).
@@ -92,7 +100,7 @@ intentional subpath. An accidental reachable path breaks the Rule even when noth
 ### TSPKG-SC-STRUCTURE-03 — Normal case: dual runtime branches have matching nested declarations
 
 One public entry can provide both ESM and CommonJS runtime branches, and each branch needs declarations with
-the same detected module kind. The expected outcome nests matching declaration conditions under each runtime
+the same detected module format. The expected outcome nests matching declaration conditions under each runtime
 branch. One flat declaration route shared by both runtime branches is the failure.
 
 #### Checklist
@@ -114,6 +122,17 @@ reading their metadata.
 - [ ] TSPKG-CK-STRUCTURE-04-04 — Every claimed TypeScript-version declaration route resolves from an isolated installed consumer through the package field read by that compiler version and resolution mode.
 - [ ] TSPKG-CK-STRUCTURE-04-05 — `engines`, `os`, and `cpu` produce the warning, acceptance, or rejection behavior stated by the support and package-manager policy.
 - [ ] TSPKG-CK-STRUCTURE-04-06 — Under each supported package-manager version and policy, optional-peer installation has the recorded outcome when the peer is present or absent, including automatic installation behavior.
+
+### TSPKG-SC-STRUCTURE-05 — Normal case: built output and tree-shaking metadata match package requirements
+
+Package output has observable file paths and loader behavior, while `sideEffects` tells consumers what a
+tree-shaker may remove. The expected outcome checks the complete built-output inventory and keeps that metadata
+aligned with actual module effects. A mismatched output or unsafe tree-shaking claim is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-STRUCTURE-05-01 — Built-output extensions, directories, source maps, assets, and rewritten import specifiers match the package requirements.
+- [ ] TSPKG-CK-STRUCTURE-05-02 — `sideEffects` semantics match actual module side effects and the intended tree-shaking behavior.
 
 ## Performance
 

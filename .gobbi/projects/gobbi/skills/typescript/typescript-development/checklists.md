@@ -1,7 +1,7 @@
 # TypeScript Development Evaluation Checklist
 
 This reusable unchecked source evaluates the project boundary, typed structure, build discipline, source
-consistency, and implementation risks of one authorized TypeScript implementation produced under this
+consistency, and implementation risks of one TypeScript implementation authored or reviewed under this
 operation. It is governed by the [`typescript`](../SKILL.md) domain and
 [`typescript-development`](SKILL.md) operation, with
 [`typescript-conventions`](../typescript-conventions/SKILL.md) and
@@ -29,16 +29,20 @@ data, exact `tsconfig.json` files, and verification commands first. Editing beha
 - [ ] TSDEV-CK-PROJECT-01-01 — Scope, purpose, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands are recorded before behavior is edited.
 - [ ] TSDEV-CK-PROJECT-01-03 — Applicable project rules, mistakes, design decisions, and neighboring examples are read before the design.
 
-### TSDEV-SC-PROJECT-02 — Expected failure: the request turns out to be review-only
+### TSDEV-SC-PROJECT-02 — Normal case: implementation review stays in review-only mode
 
-The task arrives as an implementation request but carries no mutation authority, or resolves into an
-assessment of existing code. The expected outcome classifies the request and routes read-only review to the
-general Evaluation operation with every child selected by the TypeScript root's trigger table. Editing the reviewed files anyway is the failure.
+The task asks for implementation review without mutation authority. The expected outcome keeps
+`typescript-development` active, composes with the general Evaluation operation for verdicts, inspects the
+existing typed design and implementation, and returns review evidence without mutation or build output.
+Editing reviewed files, creating build output, or leaving the review without its evidence is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-02-01 — The request is classified as implementation, or routed to the general Evaluation operation when it is read-only review.
-- [ ] TSDEV-CK-PROJECT-02-02 — No reviewed file is edited under a read-only classification.
+- [ ] TSDEV-CK-PROJECT-02-01 — The request is classified as author mode or review-only implementation mode, and `typescript-development` remains active in either mode.
+- [ ] TSDEV-CK-PROJECT-02-02 — Review-only implementation mode composes with the general Evaluation operation for verdicts and inspects the existing typed design and implementation.
+- [ ] TSDEV-CK-PROJECT-02-03 — No reviewed file is edited and no generated build output is created or recreated in review-only implementation mode.
+- [ ] TSDEV-CK-PROJECT-02-04 — Only checks authorized for the review-only implementation task are run.
+- [ ] TSDEV-CK-PROJECT-02-05 — Review-only implementation mode returns command results, findings, and limitations.
 
 ### TSDEV-SC-PROJECT-03 — Rule violation: mutation widens past the authorized set
 
@@ -79,6 +83,7 @@ settles them first. An API that emerges accidentally is the failure.
 - [ ] TSDEV-CK-STRUCTURE-01-02 — Every state value, promise, resource, side effect, and failure transition is assigned to exactly one named function, object, or framework lifecycle callback.
 - [ ] TSDEV-CK-STRUCTURE-01-03 — Each declaration the change introduces is decided as public or as an implementation detail.
 - [ ] TSDEV-CK-STRUCTURE-01-04 — The dependency order runs from foundational types and utilities to integrations and callers.
+- [ ] TSDEV-CK-STRUCTURE-01-05 — Every material API, compatibility, failure, or lifecycle decision is resolved with the user or cites its locked source.
 
 ### TSDEV-SC-STRUCTURE-02 — Edge case: the skeleton exposes a structural mismatch
 

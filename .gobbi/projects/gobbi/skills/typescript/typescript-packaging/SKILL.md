@@ -9,7 +9,7 @@ skill-type: operation
 
 TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package. It covers export maps, generated JavaScript, public declarations, executable-command metadata, supported consumers, package-archive validation, and publication readiness without prescribing one module format for every package.
 
-Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change the approved package files and create approved build output. Review-only validation inspects existing output or collects disposable results outside the reviewed files only; it does not edit the reviewed files, build package output, install into a persistent environment, update documentation or release notes, or publish. It skips mutation steps and reports command results, findings, and limitations. Publication itself still requires the repository's release authority and credential controls.
+Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change approved package files and create approved build output and archives. Review-only validation may inspect existing generated package output and a pre-existing package archive. With command authority, it may create disposable command state outside reviewed files and install only that pre-existing archive into an isolated disposable consumer. It may not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish. When required evidence needs a new build or archive, report it as unavailable or request author mode. Publication itself still requires the repository's release authority and credential controls.
 
 ## Principles
 
@@ -40,7 +40,10 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 1.1 Inventory consumers
 
-- Classify the task as authorized author mode or review-only validation before planning later steps. In review-only validation, skip every mutation step below and finish with command results, findings, and limitations.
+- Classify the task as authorized author mode or review-only validation before planning later steps.
+- In review-only validation, inspect only existing generated package output and a package archive that existed before the review. With command authority, create disposable command state only outside reviewed files and install that pre-existing archive only into an isolated disposable consumer.
+- In review-only validation, do not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish.
+- When review-only evidence needs a new build or archive, report that evidence as unavailable or request author mode. Finish with command results, findings, and limitations.
 - Select every applicable package kind: library, SDK, command-line package, or a literal fallback.
 - Record supported runtimes, module loaders, resolution modes, TypeScript versions, import forms, command names, operating systems, and CPU architectures that apply.
 - Record the package-manager name and version plus its engine, peer-dependency, optional-dependency, and installation policies.
@@ -53,7 +56,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
   leaf runtime condition or fallback, such as `import`, `require`, or `default`, to an existing runtime file.
 - When one public entry provides both ESM and CommonJS runtime branches, give each runtime branch its own
   nested condition object. Within each object, map the matching type conditions to a declaration file whose
-  detected module kind matches that runtime branch.
+  detected module format matches that runtime branch.
 - A single-format runtime entry may use one matching declaration route and one runtime route without
   dual-format nesting. A types-only entry has type conditions and no runtime branch.
 - Place versioned `types@<selector>` branches before the ordinary `types` fallback, and place applicable type
@@ -73,14 +76,14 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 2.1 Produce runtime outputs
 
-- Run the package's clean build without relying on stale output.
+- In author mode, run the package's clean build without relying on stale output. In review-only validation, inspect only existing generated package output without building or rebuilding it.
 - Inspect extensions, directories, source maps, assets, and rewritten import specifiers.
 - Confirm every metadata path resolves inside the package.
 - For every command, preserve the required shebang through the build and ensure the archived command file is executable on supported systems.
 
 #### 2.2 Produce public declarations
 
-- Generate or validate declarations with the package's exact `tsconfig.json`.
+- In author mode, generate or validate declarations with the package's exact `tsconfig.json`. In review-only validation, inspect or validate only existing declarations without generating them.
 - Inspect entry declarations and transitive public types for private paths, globals unavailable in supported consumer runtimes, and accidental widening.
 - Type-check declarations from a consumer project rather than only from their source project.
 
@@ -96,16 +99,17 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Exercise optional dependencies when installed, omitted, and unavailable or failed during installation. Exercise optional peers when present and absent, including whether the selected package manager installs them automatically.
 - Use `typesVersions` only for an explicit TypeScript-version routing requirement.
 - In resolution modes that read `exports`, use the ordered versioned and fallback type conditions defined in Phase 1.2 because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that selects it.
-- Create the package archive with the normal packaging command.
+- In author mode, create the package archive with the normal packaging command. In review-only validation, inspect only a package archive that existed before the review.
 - Inspect the archive inventory for missing generated files, unwanted source or secrets, and unexpected size changes.
-- If a build, declaration, metadata, or archive check fails, stay in Phase 2 and correct the step that owns the cause. Return to Phase 1 when the package requirements conflict.
-- Rebuild the affected output and repeat its Phase 2 checks before entering Phase 3.
+- If a build, declaration, metadata, or archive check fails in author mode, stay in Phase 2 and correct the step that owns the cause. Return to Phase 1 when the package requirements conflict.
+- In review-only validation, stop with failed command evidence. Report evidence that needs new output or a new archive as unavailable or request author mode.
+- In author mode, rebuild the affected output and repeat its Phase 2 checks before entering Phase 3.
 
 ### Phase 3 — Validate consumers
 
 #### 3.1 Exercise resolution
 
-- Install the package archive into isolated representative consumers.
+- Install the package archive into isolated representative consumers. In review-only validation, install only the pre-existing archive into isolated disposable consumers and never into a persistent environment.
 - Resolve every public entry through each claimed import form and compiler resolution mode.
 - Reject source-relative success that bypasses the package metadata.
 
@@ -121,20 +125,20 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Compare the public exports and declarations with the prior released API.
 - Classify additions, deprecations, removals, behavioral changes, and minimum-toolchain changes.
-- Update consumer documentation and release notes for the classified change.
-- If a consumer check fails, return to Phase 1 when the compatibility claim is wrong or Phase 2 when output or metadata is wrong.
-- After repair, recreate the archive and repeat the failed and downstream consumer checks before entering Phase 4.
+- In author mode, update consumer documentation and release notes for the classified change. In review-only validation, leave them unchanged and report any gap as a finding.
+- If a consumer check fails in author mode, return to Phase 1 when the compatibility claim is wrong or Phase 2 when output or metadata is wrong. In review-only validation, stop with the failed command evidence.
+- After an author-mode repair, recreate the archive and repeat the failed and downstream consumer checks before entering Phase 4. Review-only validation reports required new archive evidence as unavailable or requests author mode.
 
 ### Phase 4 — Prepare publication
 
 #### 4.1 Run final package checks
 
-- Rebuild and recreate the archive from the accepted tree.
+- In author mode, rebuild and recreate the archive from the accepted tree. In review-only validation, inspect only existing generated package output and the pre-existing archive.
 - Re-run package metadata, declaration, consumer, license, provenance, and vulnerability checks required by the repository.
 - Bind all results to the exact archive digest or contents being proposed.
 - If a required pre-publication check fails, do not publish.
-- Return to Phase 1 for an incorrect compatibility requirement, Phase 2 for output or metadata, or Phase 3 for a consumer failure.
-- After repair, recreate the archive and re-run every affected and final check against that archive.
+- In author mode, return to Phase 1 for an incorrect compatibility requirement, Phase 2 for output or metadata, or Phase 3 for a consumer failure. In review-only validation, stop with the failed command evidence.
+- After an author-mode repair, recreate the archive and re-run every affected and final check against that archive. Review-only validation does not repair or recreate it.
 - When this package change is evaluated, the [package checklist](checklists.md),
   [installed-command checklist](command-checklists.md), [release checklist](release-checklists.md), and every
   checklist provided by an active `typescript` sibling supply the applicable conditions in both author and
@@ -142,6 +146,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 4.2 Confirm release authority
 
+- Continue through this step only in author mode. Review-only validation returns its command results, findings, and limitations after Step 4.1 without updating or publishing anything.
 - Present the version, compatibility classification, archive contents, verification results, and rollback plan to the person or automation authorized to release it.
 - Publish only through the authorized release workflow.
 - Verify registry metadata and installation after publication; if publication is not authorized, stop at a publication-ready archive.

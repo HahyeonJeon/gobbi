@@ -72,13 +72,15 @@ single-file safety check only where the actual JavaScript producer has that limi
 ### TSTOOL-SC-PERFORMANCE-01 — Edge case: an incremental rebuild skips files it should have reprocessed
 
 `incremental` and `composite` make a rebuild fast by trusting recorded build state, and stale or shared state
-turns that speed into missing or outdated output. The expected outcome treats unexplained output as a
-build-state question first. Debugging the source while the build state is wrong is the failure.
+turns that speed into missing or outdated output. The expected outcome resolves an explicit
+`tsBuildInfoFile` first. When that option is absent, it applies the ordered defaults for `outFile`, then the
+combined `rootDir` and `outDir` relative-configuration path, then `outDir`, then the configuration directory.
+Skipping the applicable location or debugging source while build state is wrong is the failure.
 
 #### Checklist
 
 - [ ] TSTOOL-CK-PERFORMANCE-01-01 — Unexplained missing or outdated output is treated as a build-state question before the source is treated as the cause.
-- [ ] TSTOOL-CK-PERFORMANCE-01-02 — The `.tsbuildinfo` location is resolved from `outDir`, the configuration file, or a `tsBuildInfoFile` override before build state is judged.
+- [ ] TSTOOL-CK-PERFORMANCE-01-02 — The `.tsbuildinfo` location uses explicit `tsBuildInfoFile` first; otherwise it uses `<outFile>.tsbuildinfo`, then `<outDir>/<relative path from rootDir to the configuration directory>/<configuration name>.tsbuildinfo` when both `rootDir` and `outDir` are set, then `<outDir>/<configuration name>.tsbuildinfo`, otherwise `<configuration name>.tsbuildinfo` beside the configuration file.
 - [ ] TSTOOL-CK-PERFORMANCE-01-03 — Stale or shared build state is cleared before a conclusion about the source is drawn.
 
 ## Aesthetics

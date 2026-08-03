@@ -33,8 +33,8 @@ Declarations define the types consumers may use and must avoid leaking private i
 
 - **MUST** accept external, decoded, or otherwise unverified data as `unknown` and parse or narrow it before use.
 - **NEVER** use `any` where the program can preserve uncertainty with `unknown`, a relationship-preserving generic, or a precise input parser. `any` disables checking and spreads that loss through assignment.
-- **MUST** use `as` only to state a fact established outside the compiler and record or localize the supporting runtime check or API guarantee.
-- **NEVER** use a type assertion, non-null assertion, or double assertion as a substitute for validation or control-flow narrowing.
+- **MUST** use an ordinary type assertion such as `value as Type` or `<Type>value` only to state a fact established outside the compiler, and record or localize the supporting runtime check or API guarantee. `as const` is a const assertion for literal and readonly inference, not the ordinary assertion escape hatch governed by this Rule.
+- **NEVER** use an ordinary type assertion, non-null assertion, or double assertion as a substitute for validation or control-flow narrowing.
 - **MUST** make discriminated unions exhaustive with a `never` check when every variant must be handled.
 - **MUST** inspect emitted public declarations and confine module or global augmentation to the integration module responsible for it.
 
@@ -44,7 +44,7 @@ Declarations define the types consumers may use and must avoid leaking private i
 - Prefer narrow input types and inference from precise values; widen only at an intentional abstraction or exported API.
 - Prefer generics that preserve a visible relationship, with the smallest useful constraint and no unused type parameter.
 - Prefer built-in control-flow narrowing, user-defined guards, and parsers over assertions; return validated domain values from one input adapter.
-- Prefer annotations for stable exported APIs, `satisfies` when checking a value without replacing its useful inferred type, and `as const` for intentionally literal immutable data.
+- Prefer annotations for stable exported APIs, `satisfies` when checking a value without replacing its useful inferred type, and `as const` for intentional literal and readonly inference.
 - Prefer `readonly` to state which references may mutate a value while remembering that it is shallow unless the model says otherwise.
 - Prefer explicit return types on exported APIs when they stabilize declarations or compatibility; allow inference for local implementation details.
 - Prefer `interface` for object shapes intended for compatible augmentation and `type` for unions, aliases, and closed compositions, while following established project convention.

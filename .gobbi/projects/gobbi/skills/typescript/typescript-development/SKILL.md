@@ -1,17 +1,17 @@
 ---
 name: typescript-development
-description: "MUST load when implementing or changing TypeScript code."
+description: "MUST load when implementing, changing, or reviewing TypeScript implementation code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Development
 
-TypeScript Development coordinates an authorized TypeScript change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. It applies only when files may change; read-only review uses the general Evaluation operation with every child selected by the TypeScript root's trigger table.
+TypeScript Development coordinates authoring and review of TypeScript implementation code. Author mode takes an authorized change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. Review-only implementation mode keeps this child active, inspects the existing typed design and implementation, and composes with the general Evaluation operation for verdicts.
 
-This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load each of `typescript-async`, `typescript-toolchain`, `typescript-packaging`, and `typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every applicable project kind: web application, command-line application (CLI), library, SDK, and desktop application. If none fits, record a literal fallback such as `server process`, `build script`, or `test utility`.
+This operation composes with `typescript-conventions` and `typescript-typing` whenever their triggers apply. Load each of `typescript-async`, `typescript-toolchain`, `typescript-packaging`, and `typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every applicable project kind: web application, command-line application (CLI), library, SDK, and desktop application. If none fits, record a literal fallback such as `server process`, `build script`, or `test utility`.
 
-The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. This operation implements those inputs in TypeScript through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results.
+The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. Author mode implements those inputs through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results. Review-only implementation mode inspects how the existing code realizes those inputs.
 
 ## Principles
 
@@ -33,12 +33,12 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 ## Rules
 
-- **MUST** lock scope, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands before editing behavior.
-- **MUST** select every applicable project kind and record each named runtime, source entry, generated output, and consumer path before implementation.
+- **MUST** classify the task as author mode or review-only implementation mode before acting. Author mode must lock scope, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands before editing; review-only implementation mode must keep this child active, make no reviewed-file mutation, create no build output, and compose with the general Evaluation operation for verdicts.
+- **MUST** select every applicable project kind and record each named runtime, source entry, generated output, and consumer path before authoring or reviewing implementation.
 - **NEVER** treat a type annotation or assertion as validation of data received from a network, file, process, message, environment variable, or other untyped source.
-- **MUST** build the typed skeleton before behavior and keep each behavior increment type-correct and behaviorally verified.
-- **NEVER** widen mutation beyond the authorized affected set, turn a local change into an unapproved migration, or edit a generated mirror directly. Edit the canonical source and run the sync command responsible for the mirror.
-- **MUST** run every applicable final check from the completed tree and re-run the original reproducer last for a defect.
+- **MUST** build the typed skeleton before behavior in author mode and keep each behavior increment type-correct and behaviorally verified.
+- **NEVER** widen author-mode mutation beyond the authorized affected set, turn a local change into an unapproved migration, or edit a generated mirror directly. Edit the canonical source and run the sync command responsible for the mirror.
+- **MUST** run every applicable final check from the completed tree in author mode and only authorized checks in review-only implementation mode. Re-run the original reproducer last for a defect when the active mode authorizes it.
 
 ## Procedure
 
@@ -46,8 +46,8 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 1.1 Lock the change
 
-- Record what changes, why it changes, how success is observed, and what is out of scope.
-- Classify the request as implementation; for read-only review, stop and route to the general Evaluation operation.
+- Record what changes or is reviewed, why, how success is observed, and what is out of scope.
+- Classify the request as author mode or review-only implementation mode.
 - Read applicable project rules, mistakes, design decisions, and neighboring examples.
 
 #### 1.2 Classify the TypeScript project
@@ -64,14 +64,22 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 1.4 Reproduce or characterize
 
-- Reproduce a defect before changing it, or capture the current caller-visible behavior for a feature change.
+- In author mode, reproduce a defect before changing it or capture the current caller-visible behavior for a feature change. In review-only implementation mode, characterize that behavior and run a reproducer only when authorized.
 - Inspect the effective compiler configuration and runtime behavior rather than inferring either from file extensions.
 - Record assumptions that the repository cannot answer.
+
+#### 1.5 Run review-only implementation mode
+
+- Continue through this step only in review-only implementation mode. Keep `typescript-development` active and compose with the general Evaluation operation for any verdict.
+- Inspect the existing typed design and implementation, including types, interfaces, behavior, callers, external-input boundaries, failures, resources, and lifecycle ownership.
+- Do not edit reviewed files or create or recreate generated build output. Run only checks authorized for the review-only task.
+- Return command results, findings, and limitations. Stop before Phase 2; a needed mutation or new build output requires author mode.
 
 ### Phase 2 — Design
 
 #### 2.1 Shape typed inputs and outputs
 
+- Continue into Phase 2 only in author mode.
 - Define narrow input and output types from the supplied product requirements.
 - Make valid states representable with unions or explicit models and define how every state is consumed.
 - Treat external input as `unknown` until runtime parsing or narrowing establishes the internal type.
