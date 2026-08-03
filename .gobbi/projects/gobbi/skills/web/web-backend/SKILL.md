@@ -62,7 +62,7 @@ Specify and build policy, data, effects, failure, and recovery before transport 
 - Inspect current contracts, schemas, configuration, migrations, code patterns, tests, incidents, telemetry,
   runbooks, support, and release evidence; record behavior, compatibility, failure history, and non-goals.
 - Continue with one evidenced backend boundary; return missing authority, incompatible requirements, or scope
-  change to `web-feature` or the requesting caller.
+  change to `web-development` or the requesting caller.
 
 #### 1.2 Apply material references and route owners
 
@@ -149,7 +149,7 @@ Specify and build policy, data, effects, failure, and recovery before transport 
   runbooks.
 - Report implementation, verified environment, release readiness, external authority, deployment,
   reconciliation, and observed health separately.
-- Hand the result to `web-feature` or the requesting caller, preserving every pending provider, migration,
+- Hand the result to `web-development` or the requesting caller, preserving every pending provider, migration,
   deployment, reconciliation, and live-health claim.
 
 ## References

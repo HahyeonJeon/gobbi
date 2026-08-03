@@ -19,7 +19,7 @@ and state express the meaning; this skill owns the behavior a chosen role promis
 [`css-motion`](../../css/css-motion/SKILL.md) owns declarative motion mechanics and the project motion scale;
 this skill owns motion a script drives from a live input and the listener contract behind it.
 
-`web-interface` and `desktop-interface` decide whether an interaction or a transition is warranted at all,
+`web-design` and `desktop-interface` decide whether an interaction or a transition is warranted at all,
 `web-platform` owns platform facts and evidence, `web-security` owns untrusted input and dangerous sinks, and
 `web-architecture` owns navigation and state ownership above the control. Rules define the boundary,
 Preferences select defaults inside it, and a Rule wins every conflict.

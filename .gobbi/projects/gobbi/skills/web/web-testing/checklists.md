@@ -6,7 +6,7 @@ this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-tes
 with [`web-platform`](../web-platform/SKILL.md) owning browser facts,
 [`web-security`](../web-security/SKILL.md) owning the threat-to-evidence contract,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning the behavior
-under test, and [`web-feature`](../web-feature/SKILL.md) as the caller that binds the outcome. The source
+under test, and [`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The source
 commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBTEST`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and

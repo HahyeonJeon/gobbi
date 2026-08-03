@@ -3,7 +3,7 @@
 This reusable unchecked source evaluates one authoritative backend outcome produced under this operation,
 against the current-study, complete-contract, privileged-boundary, truthful-failure, real-seam, and
 separated-claim obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-backend`](SKILL.md) operation, with [`web-feature`](../web-feature/SKILL.md) as the caller that binds
+[`web-backend`](SKILL.md) operation, with [`web-development`](../web-development/SKILL.md) as the caller that binds
 the outcome, [`web-security`](../web-security/SKILL.md) as the owner of security requirements and threat
 analysis, [`web-testing`](../web-testing/SKILL.md) as the owner of test-system mechanics, and
 [`web-topology`](../web-topology/SKILL.md) as the owner of repository placement. The source commit that
@@ -27,8 +27,8 @@ or security policy because it was nearby is the failure.
 #### Checklist
 
 - [ ] WEBBACK-CK-PROJECT-01-01 — Work starts from one bounded outcome, the project records, the current server surface, and the accepted constraints.
-- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-topology`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-feature`.
-- [ ] WEBBACK-CK-PROJECT-01-03 — Missing authority, an incompatible requirement, or a scope change is returned to `web-feature` or the requesting caller rather than decided here.
+- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-topology`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-development`.
+- [ ] WEBBACK-CK-PROJECT-01-03 — Missing authority, an incompatible requirement, or a scope change is returned to `web-development` or the requesting caller rather than decided here.
 - [ ] WEBBACK-CK-PROJECT-01-04 — Every unowned policy, lifecycle, effect, or recovery path is returned rather than absorbed.
 
 ### WEBBACK-SC-PROJECT-02 — Rule violation: construction begins before the current backend is studied

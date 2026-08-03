@@ -145,7 +145,7 @@ Doubles, automation, captures, emulation, and live observations each prove only 
   migration, recovery, and live evidence without upgrading one signal into another.
 - Record reproduction, owner, impact, disposition, residual risk, and reopen condition for every unresolved
   gap.
-- Hand results to `web-feature` or the requesting caller, keeping release, deployment, conformance, and live
+- Hand results to `web-development` or the requesting caller, keeping release, deployment, conformance, and live
   health separate.
 
 ## References

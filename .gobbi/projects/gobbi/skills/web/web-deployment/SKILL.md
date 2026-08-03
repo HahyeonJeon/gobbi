@@ -12,8 +12,8 @@ covers bundler configuration, chunking and code splitting, asset hashing and cac
 source maps and whether they are published, migration and cutover order, staged rollout, live verification,
 and the reverse path. It stops at the authority boundary rather than crossing it.
 
-`web-feature` ends at a release-ready handoff and keeps deployment, its authorization, and live health as
-separate claims; this operation begins exactly there.
+`web-development` coordinates an accepted release into this operation and keeps deployment authorization,
+deployment state, and live health as separate claims; the deployment action begins exactly here.
 [`electron-release`](../../electron/electron-release/SKILL.md) holds the same lifecycle position for an
 installed desktop artifact, which a person must download, install, and later update; this operation places a
 build behind a URL the same person merely reloads. The discipline transfers, the work does not.
@@ -28,11 +28,11 @@ operation owns the environment's identity and the frozen build inputs, not the v
 
 ## Principles
 
-### Deployment begins where the feature stops
+### Deployment action begins at its owned handoff
 
-`web-feature` deliberately ends at a release-ready handoff and reports deployment authorization, deployment,
-and live health as separate claims. This operation converts that handoff into one running release whose
-identity, verification, and reverse path are all known.
+`web-development` preserves the lifecycle route after release acceptance and reports deployment authority,
+deployment state, and live health as separate claims. This operation converts the accepted release handoff
+into one running release whose identity, verification, and reverse path are all known.
 
 ### The reverse path is designed before the deploy, not after it
 
@@ -85,7 +85,7 @@ disagree while none of them looks wrong.
 
 #### 1.1 Take the handoff and freeze the build identity
 
-- Start from `web-feature`'s release-ready handoff or the requesting caller's equivalent, including its
+- Start from `web-development`'s accepted release handoff or the requesting caller's equivalent, including its
   compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
 - Refuse a handoff whose evaluation is unresolved or whose limitations carry no user disposition, then freeze
   the source commit, lockfile, dependency graph, build configuration, tool and runtime versions, environment
@@ -93,7 +93,7 @@ disagree while none of them looks wrong.
 - Record the frozen input set and one build identity that the build embeds and every later artifact, log, and
   error report carries.
 - Continue with the frozen identity; return an unresolved evaluation, an undisposed limitation, or an absent
-  deployment authority to `web-feature` or the user before configuring anything.
+  deployment authority to `web-development` or the user before configuring anything.
 
 #### 1.2 Establish the environment contract and rehearse the reverse path
 
@@ -202,7 +202,7 @@ disagree while none of them looks wrong.
   assuming the reverse succeeded.
 - Record the deployed or reversed state, the served build identity, the verification and reverse evidence,
   retained artifacts and their retention window, every irreversible data change, and the remaining risk.
-- Report deployment, live verification, and observed health as separate claims to `web-feature` or the
+- Report deployment, live verification, and observed health as separate claims to `web-development` or the
   requesting caller; when a remaining action needs credentials or authority that was not granted, stop with
   everything preserved and name the exact blocked action and the authority it requires.
 

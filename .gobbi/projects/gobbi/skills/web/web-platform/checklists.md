@@ -27,7 +27,7 @@ answer that also chooses product behavior, a control, a test, or an architecture
 #### Checklist
 
 - [ ] WEBPLAT-CK-PROJECT-01-01 — The inspected question concerns a web standard, a target browser or execution context's behavior, or what an observation can establish.
-- [ ] WEBPLAT-CK-PROJECT-01-02 — Every decision the inspection raises is routed to its owner: control requirements to `web-security`, evidence design to `web-testing`, product and browser behavior to `web-feature` and `web-frontend`, and structural choice to `web-architecture`.
+- [ ] WEBPLAT-CK-PROJECT-01-02 — Every decision the inspection raises is routed to its owner: control requirements to `web-security`, evidence design to `web-testing`, product and browser behavior to `web-development` and `web-frontend`, and structural choice to `web-architecture`.
 
 ## Structure
 

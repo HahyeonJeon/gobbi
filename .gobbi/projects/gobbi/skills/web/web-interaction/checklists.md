@@ -6,7 +6,7 @@ this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-int
 preferences, with [`web-frontend`](../web-frontend/SKILL.md) as the ordered operation that applies them,
 [`html-semantics`](../../html/html-semantics/SKILL.md) as the owner of which element, name, role, and state
 express the meaning, [`css-motion`](../../css/css-motion/SKILL.md) as the owner of declarative motion
-mechanics, and [`web-interface`](../web-interface/SKILL.md) and
+mechanics, and [`web-design`](../web-design/SKILL.md) and
 [`desktop-interface`](../../desktop/desktop-interface/SKILL.md) as the owners of whether an interaction is
 warranted at all. The source commit that contains this file identifies the checklist version. Its stable owner
 prefix is `WEBIXN`.
@@ -33,7 +33,7 @@ an element-meaning, motion-mechanics, or navigation decision made here is the fa
 #### Checklist
 
 - [ ] WEBIXN-CK-PROJECT-01-01 — Every decision made here is a choice within the valid space: the event contract, the control's states, focus placement and return, the keyboard path for a pointer behavior, or the applicable widget pattern.
-- [ ] WEBIXN-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: the ordered browser operation and the obligation that each state and recovery path is specified and implemented to `web-frontend`, element, name, role, and state to `html-semantics`, declarative motion mechanics and the project motion scale to `css-motion`, emitted styling to `css-conventions`, whether an interaction is warranted at all to `web-interface` or `desktop-interface`, platform facts and evidence to `web-platform`, untrusted input and dangerous sinks to `web-security`, and navigation and state ownership above the control to `web-architecture`.
+- [ ] WEBIXN-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: the ordered browser operation and the obligation that each state and recovery path is specified and implemented to `web-frontend`, element, name, role, and state to `html-semantics`, declarative motion mechanics and the project motion scale to `css-motion`, emitted styling to `css-conventions`, whether an interaction is warranted at all to `web-design` or `desktop-interface`, platform facts and evidence to `web-platform`, untrusted input and dangerous sinks to `web-security`, and navigation and state ownership above the control to `web-architecture`.
 - [ ] WEBIXN-CK-PROJECT-01-03 — A Rule is applied over a conflicting Preference rather than balanced against it.
 
 ## Structure

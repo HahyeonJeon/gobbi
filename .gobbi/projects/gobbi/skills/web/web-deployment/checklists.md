@@ -3,8 +3,8 @@
 This reusable unchecked source evaluates one web release turned into a running, verified, reversible
 deployment, against the frozen-identity, asset-naming and cache, publish-order, source-map, live-verification,
 and explicit-authority obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-deployment`](SKILL.md) operation, with [`web-feature`](../web-feature/SKILL.md) as the caller whose
-release-ready handoff it begins from, [`web-configuration`](../web-configuration/SKILL.md) as the owner of the
+[`web-deployment`](SKILL.md) operation, with [`web-development`](../web-development/SKILL.md) as the caller whose
+accepted release handoff it begins from, [`web-configuration`](../web-configuration/SKILL.md) as the owner of the
 per-environment values inside the frozen inputs, [`web-observability`](../web-observability/SKILL.md) as the
 owner of the signals a rollout is judged by, and
 [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md) as the owner of compiling, emit, and
@@ -28,7 +28,7 @@ still moving is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-PROJECT-01-01 — Work starts from `web-feature`'s release-ready handoff or the caller's equivalent, including its compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
+- [ ] WEBDEP-CK-PROJECT-01-01 — Work starts from `web-development`'s accepted release handoff or the caller's equivalent, including its compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
 - [ ] WEBDEP-CK-PROJECT-01-02 — A handoff whose evaluation is unresolved, or whose limitation carries no user disposition, is refused rather than deployed.
 - [ ] WEBDEP-CK-PROJECT-01-03 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are frozen before anything in the target environment changes.
 - [ ] WEBDEP-CK-PROJECT-01-04 — The source commit, lockfile, dependency graph, build configuration, tool and runtime versions, artifact digests, environment identity, and target are recorded before anything in the target environment changes.

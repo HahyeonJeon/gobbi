@@ -6,7 +6,7 @@ propagation, and direction obligations this skill owns. It is governed by the [`
 [`web-localization`](SKILL.md) preferences, with [`html-semantics`](../../html/html-semantics/SKILL.md) owning
 the `lang` and `dir` attributes, [`css-conventions`](../../css/css-conventions/SKILL.md) owning logical
 properties and the flow they drive, [`web-frontend`](../web-frontend/SKILL.md) owning the ordered browser
-operation that applies these choices, [`web-interface`](../web-interface/SKILL.md) owning the identity and
+operation that applies these choices, [`web-design`](../web-design/SKILL.md) owning the identity and
 expression judgment behind the words, and [`web-backend`](../web-backend/SKILL.md) owning locale-dependent
 authoritative data. The source commit that contains this file identifies the checklist version. Its stable
 owner prefix is `WEBLOC`.
@@ -29,7 +29,7 @@ a layout property, or an authoritative data question is the failure.
 
 #### Checklist
 
-- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the language-and-region judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-semantics`, logical properties and the flow they drive to `css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-interface`, and locale-dependent authoritative data to `web-backend`.
+- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the language-and-region judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-semantics`, logical properties and the flow they drive to `css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-design`, and locale-dependent authoritative data to `web-backend`.
 - [ ] WEBLOC-CK-PROJECT-01-02 — The localization decisions are taken while the surface still ships in one language rather than after a second locale is required.
 - [ ] WEBLOC-CK-PROJECT-01-03 — Every component that renders text, a number, a date, or a direction-dependent layout is identified as a change site the decisions reach.
 

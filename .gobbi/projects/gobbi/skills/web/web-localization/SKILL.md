@@ -19,7 +19,7 @@ component that renders text, a number, a date, or a direction-dependent layout.
 [`html-semantics`](../../html/html-semantics/SKILL.md) owns the `lang` and `dir` attributes and where each is
 expressed, and [`css-conventions`](../../css/css-conventions/SKILL.md) owns logical properties and the flow
 they drive; this skill decides which language and direction those mechanisms carry. `web-frontend` owns the
-ordered browser operation that applies these choices, `web-interface` owns the identity and expression
+ordered browser operation that applies these choices, `web-design` owns the identity and expression
 judgment behind the words, and `web-backend` owns locale-dependent authoritative data. Rules define the
 boundary, Preferences select defaults inside it, and a Rule wins every conflict.
 

@@ -148,7 +148,7 @@ Use several evidence classes when the risk requires them, and never turn an unte
   remediation owner, and reopen condition.
 - Separate implementation, technical verification, independent review, release readiness, deployment, and
   observed operational effectiveness.
-- Hand the result to `web-feature` or the requesting caller without inventing acceptance for residual risk.
+- Hand the result to `web-development` or the requesting caller without inventing acceptance for residual risk.
 
 ## References
 

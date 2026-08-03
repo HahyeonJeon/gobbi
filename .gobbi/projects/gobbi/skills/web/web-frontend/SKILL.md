@@ -10,7 +10,7 @@ skill-type: operation
 Use this operation for the browser-facing outcome: journey, content, interaction, visual hierarchy, responsive
 behavior, accessibility, trust, recovery, and user-visible measurement.
 
-It owns observable frontend behavior. `web-interface` owns the identity, evidence, concept, and expression
+It owns observable frontend behavior. `web-design` owns the identity, evidence, concept, and expression
 judgments it applies. HTML, CSS, language, framework, platform, backend, topology, testing, and security
 owners load only when their triggers apply.
 
@@ -68,7 +68,7 @@ they act.
 - Record the affected people and contexts, authoritative current behavior, compatibility obligations, known
   gaps, preserved conventions, and deliberate departures in the active project's design material.
 - Continue when outcome, audience, authority, and compatibility are clear; return an unresolved conflict to
-  `web-feature`, the requesting caller, or the user.
+  `web-development`, the requesting caller, or the user.
 
 #### 1.2 Resolve material evidence before committing a design
 
@@ -161,12 +161,12 @@ they act.
 
 - Require resolved verification findings or an explicit disposition of every remaining acceptance gap.
 - Bring the project-native specification into agreement with the implementation and assemble the accepted
-  `web-interface` identity and concept decisions, the complete paths and states, accessibility and
+  `web-design` identity and concept decisions, the complete paths and states, accessibility and
   responsive behavior, material reference decisions, user-evidence limits, degradations, verification
   evidence, outcome signals, and support route.
 - State separately what was specified, implemented, technically verified, evidenced with representative
   users, and observed after release.
-- Hand the result to `web-feature` or the requesting caller, preserving release and live-outcome claims until
+- Hand the result to `web-development` or the requesting caller, preserving release and live-outcome claims until
   their evidence exists.
 
 ## References

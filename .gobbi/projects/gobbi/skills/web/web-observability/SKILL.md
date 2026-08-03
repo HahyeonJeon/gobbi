@@ -17,7 +17,7 @@ standards evidence, [`css-platform`](../../css/css-platform/SKILL.md) owns style
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owns process, preload, and lifecycle failures.
 Load those to diagnose a failure; load this one to decide what the application produces.
 
-`web-feature` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
+`web-development` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
 this operation supplies the signal shape those contracts name. `web-security` owns which data is protected and
 which logging controls are required; this operation owns keeping that data out of a diagnostic before it
 leaves the process, and out of the annotations an out-of-process crash reporter carries on its behalf.
@@ -83,14 +83,14 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
 
 #### 1.1 Name the questions the signals must answer
 
-- Start from the bounded outcome supplied by `web-feature` or the requesting caller, the incident and support
+- Start from the bounded outcome supplied by `web-development` or the requesting caller, the incident and support
   history, and the user-visible success measures the feature already defined.
 - List the questions someone will ask while the product is failing — which user, which request, which build,
   which step, how often, and how badly — then give each question one consumer, one owner, and one retention
   period, and drop any proposed signal that answers none of them.
 - Record a question-to-signal table carrying consumer, owner, retention, and expected volume per row.
 - Continue with that table; return an unowned question, an absent consumer, or an undefined retention period
-  to `web-feature` or the user before designing any signal shape.
+  to `web-development` or the user before designing any signal shape.
 
 #### 1.2 Inventory current emission and its owners
 
@@ -211,7 +211,7 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
 - Reconcile every question with its answering signal, its cost and cardinality, the destination check result,
   the named correlation and coverage limits, and every accepted gap with its owner.
 - Treat a protected value found at a destination as a `web-security` finding with its own remediation and
-  retention correction; hand the reconciled result to `web-feature` or the requesting caller, reporting
+  retention correction; hand the reconciled result to `web-development` or the requesting caller, reporting
   implemented emission, verified arrival, and observed live health as separate claims.
 
 ## References

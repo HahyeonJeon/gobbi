@@ -7,7 +7,7 @@ and assurance obligations this skill owns. It is governed by the [`web`](../SKIL
 policy and implementation, [`web-platform`](../web-platform/SKILL.md) owning browser facts,
 [`web-testing`](../web-testing/SKILL.md) owning harness and suite mechanics,
 [`web-observability`](../web-observability/SKILL.md) owning what a diagnostic emits, and
-[`web-feature`](../web-feature/SKILL.md) as the caller that binds the outcome. The source commit that contains
+[`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The source commit that contains
 this file identifies the checklist version. Its stable owner prefix is `WEBSEC`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
