@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md

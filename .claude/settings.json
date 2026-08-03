@@ -26,7 +26,8 @@
       "Agent(evaluator)",
       "Agent(assistant)",
       "WebSearch"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "enabledPlugins": {
     "codex@openai-codex": true

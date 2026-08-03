@@ -19,20 +19,29 @@ conflicting.
 
 | Mode | Contract |
 |---|---|
-| **General** | Ordinary assistance from the Gobbi floor and task-specific skills. No orchestration owner or Gobbi session state. |
+| **General** | Ordinary assistance from the Principles foundation and task-specific skills. No orchestration owner or Gobbi session state. |
 | **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
-Cowork owns its own Git contract, evaluation policy, and session locations, and never creates Workflow TODOs,
-phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Its explicit Wrap-up applies `memory` directly,
-commits durable updates or proves none are needed, then checks evaluation freshness. Workflow uses the native
-TODO list as its active route; phase receipts and committed evidence rebuild that route after a context
-boundary.
+Cowork owns its own native TODO route, Git contract, evaluation policy, and session locations, and never
+creates Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Its explicit
+Wrap-up applies `memory` directly, commits durable updates or proves none are needed, then checks evaluation
+freshness. Workflow uses the native TODO list as its active route; phase receipts and committed evidence
+rebuild that route after a context boundary.
 
-## Dual-system quality contract
+Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
+Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
+owners load Ideation, Planning, and Wrap-up when those phases start.
 
-`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns each mode's dual-system and evaluation commitment, the
-pause on an unavailable or invalid system, and the user's approval of every finding's disposition.
+## Partner quality contract
+
+`.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md` owns the whole partner system: both launch directions
+and each round's preparation, launch, validation, and returned frozen content. In Claude Code the partner is
+Codex. Each mode owns its own evaluation commitment.
+
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns no partner mechanism itself. It holds the session to the
+selected mode's commitment, pauses on an unavailable or invalid system, and requires the user's approval of
+every finding's disposition.
 
 ## Agent Teams
 
@@ -40,9 +49,9 @@ pause on an unavailable or invalid system, and the user's approval of every find
 ordered writer chain, and the read-only limit on parallel work. Cowork adds its brief fields in the topic-loop
 procedure; Workflow adds them in Workflow Step 1.3.
 
-Claude Code may retain stable leader, executor, and assistant teammates while identity, assignment,
-dependency chain, and addressability remain coherent. Evaluators are always fresh and outside the team.
-Confirm a teammate's idle and addressable state before assigning more work.
+`.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md` is the compact tool manual for enabling, creating,
+coordinating, and cleaning up Agent Teams. Cowork and Workflow own assignment fields, role reuse, acceptance,
+recovery evidence, and the single-writer policy. Evaluators remain fresh and outside persistent teams.
 
 ## Plugin topology
 
@@ -52,8 +61,9 @@ carries both runtime manifests, and has no lifecycle-hook component. Keep Agent 
 
 Use `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-Codex installed-cache behavior. Do not materialize the symlinked source package to compensate for an
-installed-cache limitation.
+Codex installed-cache behavior. Materialize the source into the package only as the one generated copy a guard
+proves byte-equal to its canonical owner. Any further duplication, and any hand edit of a generated file,
+stays forbidden.
 
 ## Principles
 
@@ -72,6 +82,6 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 
 ## Navigate deeper
 
-`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the nine-skill system
-load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of every
-canonical skill with what that skill owns.
+`.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the Principles-first
+entry load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of
+every canonical skill with what that skill owns.
