@@ -26,8 +26,8 @@ compiler configuration. A copied neighboring-version type or missing type-check 
 
 ### RTSX-SC-STRUCTURE-01 — Normal case: Props and children express the real component boundary
 
-Props and children form the component's public TypeScript API. A broad approximation or unintended breadth
-in that API fails the scenario.
+Props and children define the TypeScript contract between each component and its callers. A public or private
+component type that omits or broadens a caller-provided input fails the scenario.
 
 #### Checklist
 
@@ -36,7 +36,7 @@ in that API fails the scenario.
 - [ ] RTSX-CK-STRUCTURE-01-03 — Renderable children use the installed `ReactNode` type only when that breadth is intended.
 - [ ] RTSX-CK-STRUCTURE-01-04 — Element-only children use the installed `ReactElement` type only when primitives are invalid.
 - [ ] RTSX-CK-STRUCTURE-01-05 — Project-authorized `.js` and `.jsx` source files remain valid in mixed-language projects.
-- [ ] RTSX-CK-STRUCTURE-01-06 — Every component, including each private component, has a props object that describes every input its callers provide.
+- [ ] RTSX-CK-STRUCTURE-01-06 — Each private component that accepts props has an inferred or explicit props object type describing every caller-provided input.
 
 ### RTSX-SC-STRUCTURE-02 — Normal case: Hook, ref, and JSX-facing values use installed React types
 
