@@ -103,9 +103,12 @@ buffering to hide a slow consumer or a shutdown deadlock; measure the queue and 
 
 ### Timers, tickers, and shutdown
 
-PREFER `time.NewTimer` or `time.NewTicker` when work may end before the timer source, and stop what the owner no
-longer needs. Account for already-fired values and reset semantics under the module's Go language version;
-avoid creating an unbounded series of timers in a loop.
+PREFER [`time.NewTimer`](https://pkg.go.dev/time#NewTimer) or `time.NewTicker` when work may end before the timer
+source, and stop what the owner no longer needs. Account for already-fired values and reset semantics under the
+module's Go language version, selected Go toolchain version, and any declared applicable `GODEBUG` setting;
+`go-toolchain` owns those facts. The [Go 1.23 timer guidance](https://go.dev/wiki/Go123Timer) and
+[Go 1.26 release notes](https://go.dev/doc/go1.26) describe these compatibility controls and their evolution.
+Avoid creating an unbounded series of timers in a loop.
 
 PREFER shutdown that stops intake, cancels outstanding work, waits for owned goroutines, releases resources,
 and returns an error or timeout to the caller. Make repeated or concurrent shutdown calls safe when the public

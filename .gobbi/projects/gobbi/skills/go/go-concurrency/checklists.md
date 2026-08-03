@@ -59,18 +59,19 @@ closing and receivers should not claim closure authority; send-after-close or do
 
 ### GOCON-SC-STRUCTURE-03 — Rule violation: Request context loses its propagation contract
 
-Request-scoped work stores context in an unrelated struct, passes nil, invents a replacement type, or discards
-the caller's cancellation. Context should remain an explicit first parameter with its request lifetime intact;
-a stored exception belongs to one lifetime-owning API and cannot combine unrelated requests.
+Request-scoped work stores context in an unrelated struct, passes nil, or invents a replacement type. Context
+should remain an explicit first parameter with its request lifetime intact; a stored exception belongs to one
+lifetime-owning API or object and cannot combine unrelated requests. `GOCON-SC-USAGE-01` separately checks that
+caller cancellation reaches blocking work and request-owned concurrent branches.
 
 #### Checklist
 
 - [ ] GOCON-CK-STRUCTURE-03-01 — Every request context is passed explicitly as the first parameter.
-- [ ] GOCON-CK-STRUCTURE-03-02 — No replacement context discards the caller's deadline or cancellation.
+- [ ] GOCON-CK-STRUCTURE-03-02 — No API invents a replacement context type.
 - [ ] GOCON-CK-STRUCTURE-03-03 — No request context is nil.
 - [ ] GOCON-CK-STRUCTURE-03-04 — Every value carried by a context is request-scoped.
 - [ ] GOCON-CK-STRUCTURE-03-05 — Ordinary configuration and dependencies are passed as ordinary parameters.
-- [ ] GOCON-CK-STRUCTURE-03-06 — Any stored context belongs to one explicit lifetime-owning API.
+- [ ] GOCON-CK-STRUCTURE-03-06 — Any stored context belongs to one explicit lifetime-owning API or object.
 
 ### GOCON-SC-STRUCTURE-04 — Poor quality: Synchronization mechanism does not match ownership
 
@@ -84,14 +85,14 @@ fails.
 
 ## Performance
 
-### GOCON-SC-PERFORMANCE-01 — Edge case: Work reaches queue or worker capacity
+### GOCON-SC-PERFORMANCE-01 — Edge case: Work reaches concurrent capacity
 
-Arrival rate reaches the designed concurrent capacity. The system should apply its stated blocking, rejection,
-shedding, replacement, or persistence policy; silent unbounded growth fails.
+Arrival rate reaches a worker, queue, or channel-buffer capacity. The system should apply its stated blocking,
+rejection, shedding, replacement, or persistence policy; silent unbounded growth fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-PERFORMANCE-01-01 — Every worker pool and queue has a deliberate maximum-concurrency or capacity policy.
+- [ ] GOCON-CK-PERFORMANCE-01-01 — Every worker pool, queue, and channel buffer has a deliberate capacity policy tied to a real resource limit, burst-tolerance need, or decoupling need.
 - [ ] GOCON-CK-PERFORMANCE-01-02 — Capacity behavior preserves the stated caller contract.
 
 ### GOCON-SC-PERFORMANCE-02 — Poor quality: Fan-out or timers grow without a resource bound
@@ -144,11 +145,12 @@ remain safe and understandable; double close, panic, or abandoned work fails.
 ### GOCON-SC-USAGE-03 — Edge case: A timer fires while its owner stops or resets it
 
 A timer or ticker fires as its owner stops, drains, or resets it. The lifecycle should account for an
-already-fired value under the module's Go language version; a lost wakeup or duplicate action fails.
+already-fired value under the module's Go language version, selected Go toolchain version, and any declared
+applicable `GODEBUG` setting; a lost wakeup or duplicate action fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-USAGE-03-01 — Timer and ticker stop or reset behavior accounts for already-fired values under the module's Go language version.
+- [ ] GOCON-CK-USAGE-03-01 — Timer and ticker stop or reset behavior accounts for already-fired values and reset semantics under the module's Go language version, selected Go toolchain version, and any declared applicable `GODEBUG` setting.
 
 ## Consistency
 
@@ -242,11 +244,12 @@ without waiting on abandoned work; residue that only a long-running process reve
 ### GOCON-SC-OVERALL-01 — Normal case: The complete concurrent lifecycle is coherent
 
 The work should connect justified concurrency, ownership, cancellation, bounds, synchronization, shutdown, and
-race-safety judgment into one lifecycle. Any owned concurrent resource without a terminal story fails the whole.
+race-safety judgment into one lifecycle. Any concurrent resource without an owner or terminal story fails the
+whole.
 
 #### Checklist
 
-- [ ] GOCON-CK-OVERALL-01-01 — Every concurrent resource belongs to one coherent lifecycle.
+- [ ] GOCON-CK-OVERALL-01-01 — Every goroutine, channel, timer, ticker, queue, and cancellation function in the work has one identifiable owner.
 - [ ] GOCON-CK-OVERALL-01-02 — Every lifecycle reaches completion, cancellation, or an accepted process lifetime.
 
 ### GOCON-SC-OVERALL-02 — Adversarial: A clean race run masks a leak or unexecuted race
