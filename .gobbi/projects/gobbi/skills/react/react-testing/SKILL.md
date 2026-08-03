@@ -102,8 +102,10 @@ work and time explicitly, then repair root causes instead of masking signals.
 - Action: Choose a component or Hook test only when the configured renderer can directly observe the claim.
   Send real-browser, full-application, integration, and end-to-end claims to
   [`web-testing`](../../web/web-testing/SKILL.md). Send Electron process, preload, IPC, security, lifecycle,
-  and native-integration claims to [`electron-testing`](../../electron/electron-testing/SKILL.md). Send
-  packaged-application and release claims to [`electron-release`](../../electron/electron-release/SKILL.md).
+  native-integration, packaged-runtime test, and per-operating-system smoke claims to
+  [`electron-testing`](../../electron/electron-testing/SKILL.md), which hands packaged evidence forward. Send
+  packaging, signing, notarization, update rehearsal, release artifact, and publication handoff claims to
+  [`electron-release`](../../electron/electron-release/SKILL.md).
 - Evidence: Record a claim-to-layer table that names the direct observation, responsible skill, and evidence
   limit for every claim.
 - Recovery: Split a mixed claim and route each part to the layer that can observe it. Do not replace an
@@ -189,10 +191,11 @@ work and time explicitly, then repair root causes instead of masking signals.
 - Action: Return the changed test files, behavior cases, exact commands and results, exact installed versions
   and environment, real dependencies and substitutes, evidence limits, gaps, flakes, and risks. Route any
   remaining real-browser or full-application evidence to
-  [`web-testing`](../../web/web-testing/SKILL.md), Electron process or native evidence to
-  [`electron-testing`](../../electron/electron-testing/SKILL.md), packaged-application evidence to
-  [`electron-release`](../../electron/electron-release/SKILL.md), product-source repair to
-  [`react-development`](../react-development/SKILL.md), and independent read-only judgment to
+  [`web-testing`](../../web/web-testing/SKILL.md). Route Electron process, native, packaged-runtime test, and
+  per-operating-system smoke evidence to [`electron-testing`](../../electron/electron-testing/SKILL.md), which
+  hands packaged evidence forward. Route packaging, signing, notarization, update rehearsal, release
+  artifacts, and publication handoff to [`electron-release`](../../electron/electron-release/SKILL.md);
+  product-source repair to [`react-development`](../react-development/SKILL.md); and independent read-only judgment to
   [`Evaluation`](../../evaluation/SKILL.md).
 - Evidence: Return exactly one status: `DONE` when all required test work and checks pass;
   `DONE_WITH_CONCERNS` when the tests are complete but named risks or evidence gaps remain; `NEEDS_CONTEXT`

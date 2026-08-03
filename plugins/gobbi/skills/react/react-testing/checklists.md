@@ -230,8 +230,8 @@ independent judgment, or publication as part of its own result fails the scenari
 #### Checklist
 
 - [ ] RTST-CK-OVERALL-03-01 — Real-browser, full-application, integration, and end-to-end evidence is assigned to `web-testing`.
-- [ ] RTST-CK-OVERALL-03-02 — Electron process, preload, IPC, security, lifecycle, and native-integration evidence is assigned to `electron-testing`.
-- [ ] RTST-CK-OVERALL-03-03 — Packaged-application and release evidence is assigned to `electron-release`.
+- [ ] RTST-CK-OVERALL-03-02 — Electron process, preload, IPC, security, lifecycle, native-integration, packaged-runtime test, and per-operating-system smoke evidence is routed through `electron-testing` before release handoff.
+- [ ] RTST-CK-OVERALL-03-03 — Packaging, signing, notarization, update rehearsal, release artifacts, and publication handoff are assigned to `electron-release`.
 - [ ] RTST-CK-OVERALL-03-04 — Independent read-only judgment is assigned to general `Evaluation`.
 - [ ] RTST-CK-OVERALL-03-05 — The handoff neither publishes the change nor reports routed evidence as completed.
 - Also applies: RTST-CK-CONSISTENCY-03-03 (product-source repair is assigned to `react-development`).
