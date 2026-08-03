@@ -67,7 +67,18 @@ Product operation and use, and Implementation development and evolution distinct
   1.1: the output directory exists inside the worktree and its resolved path has no symlink or parent traversal.
 - Schema 3 is exactly `problem-definition.md`, `design.md`, `specification.md`,
   `lifecycle-and-use-cases.md`, and `startup.md`. Schema 2 replaces `design.md` and `specification.md` with
-  `project-design.md` and `project-specification.md`. `startup.tmp.md` is schema-3 evidence, not durable output.
+  `project-design.md` and `project-specification.md`. Confirmed schema 2 requires no `startup.tmp.md`, that
+  exact five-file set with no schema-3 mixture, and a `startup.md` that declares schema `2`, records both exact
+  absolute identities, and records terminal user confirmation. Its Phase Document Artifact Register has
+  exactly `problem-definition.md`, `project-design.md`, `project-specification.md`, and
+  `lifecycle-and-use-cases.md` as child rows, with no duplicate, extra, or self row; every linked child exists
+  and is readable, every `Status` resolves to literal `confirmed`, and every `Accepted` value is
+  non-placeholder. Those rows own phase acceptance; do not require acceptance inside the child documents.
+  Confirmed pre-schema 2 requires `startup.md` as the only Startup artifact, no schema 2 or 3 claim, and a
+  `Confirmation` section with both exact identities and user confirmation. Only either completely proved
+  historical shape returns the exact existing `startup.md` unchanged as `legacy-confirmed` before lane
+  inspection; any failed path or field takes the unsafe stop with no write, TODO, cleanup, or migration.
+  `startup.tmp.md` is schema-3 evidence, not durable output.
 - Classify the directory read-only before inspecting or changing the lane:
 
 | Disk state | Required action |
@@ -203,11 +214,16 @@ Startup · <Project|Product|Implementation> · <stable-subject-key> · <Problem 
   accepted audit plus explicit acceptance -> `PASS`; final confirmation plus durable checks -> final `PASS`.
 - On `NEEDS_CONTEXT`, the writer records the blocked assignment and one exact question with work identity,
   stage, and iteration. Set the blocker and change the active stage to `CONTEXT`; specialists never ask or
-  update the lane. The manager asks, the writer checkpoints the answer, and successful verification clears
-  the blocker and opens the same normal work at `STUDY`.
+  update the lane. The manager asks and the writer checkpoints and verifies the answer.
+- Before clearing the blocker or opening a successor, compare that answer with every accepted decision.
+  Ordinary missing context that changes none closes the current action at `CONTEXT`, clears the blocker, and
+  opens the same subject phase or nonterminal Finalization work at fresh `STUDY`.
+- A decision-changing answer takes no ordinary path: use Step 2.7, close the current action at its actual
+  `CONTEXT` stage, reopen the earliest owner, stale only reachable dependents, and keep unaffected siblings
+  confirmed. Refusal without correction remains outside Step 2.7. A terminal Finalization confirmation
+  question retains Step 3.1's correction, refusal, and confirmation branches.
 - Another exact-context need replaces the stored question. An unavailable user, writer, delegation path, or
-  specialist pauses with all blocker evidence and later reconstructs `CONTEXT`. Finalization context waits
-  for Step 3.1's correction, refusal, or confirmation branch.
+  specialist pauses with all blocker evidence and later reconstructs `CONTEXT`.
 - A Review finding opens the same normal work at `STUDY`. Phase refusal without correction does the same and
   records refusal evidence only. Finalization refusal is owned by Step 3.1. `PASS` returns to Step 2.1 for the
   unique next work unit.
