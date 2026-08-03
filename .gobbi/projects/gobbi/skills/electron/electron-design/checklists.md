@@ -11,8 +11,8 @@ Evaluation owns applicability decisions, filled copies, evidence, row results, f
 and verdicts. This source owns only reusable scenario coverage and unchecked binary conditions. It defines no
 test procedure, environment classification, evidence threshold, or remediation.
 
-A row is defined once beneath its owning scenario. An `Also applies` line is one resolvable pointer to a row
-defined elsewhere.
+A row is defined once beneath its owning scenario. Each reuse has the exact one-line form
+`- Also applies: <full row ID> (<short label>).` and points to a row defined elsewhere.
 
 ## Project
 
@@ -67,7 +67,7 @@ teardown path is the failure even when creation succeeds.
 
 - [ ] ELECDSN-CK-STRUCTURE-02-01 — Every window, view, session, listener, shortcut, tray item, menu, and operating-system request names one explicit technical owner.
 - [ ] ELECDSN-CK-STRUCTURE-02-02 — Every long-lived resource names the removal, unregistration, close, destruction, or release action that ends its lifetime.
-- [ ] ELECDSN-CK-STRUCTURE-02-03 — Each resource lifetime states its cancellation, cleanup, restart, startup-order, and relevant operating-system cases.
+- [ ] ELECDSN-CK-STRUCTURE-02-03 — Each resource lifetime states its cancellation, cleanup, restart, startup-order, and operating-system cases that change those decisions.
 
 ### ELECDSN-SC-STRUCTURE-03 — Edge case: one window needs composed web contents
 
@@ -79,7 +79,7 @@ closing `BaseWindow` destroys its child web contents is the failure.
 
 - [ ] ELECDSN-CK-STRUCTURE-03-01 — `BrowserWindow` is chosen for a normal window with one full-size web content.
 - [ ] ELECDSN-CK-STRUCTURE-03-02 — `BaseWindow` with `WebContentsView` is chosen only for an accepted multi-view composition need.
-- Also applies: ELECDSN-CK-STRUCTURE-02-02
+- Also applies: ELECDSN-CK-STRUCTURE-02-02 (long-lived resource disposal path).
 
 ## Performance
 
@@ -91,7 +91,7 @@ or an unmeasured impression is the failure even when the application currently a
 
 #### Checklist
 
-- [ ] ELECDSN-CK-PERFORMANCE-01-01 — Each claim that another process would add no value is supported by measurement of the affected work and analysis of its failure reach.
+- [ ] ELECDSN-CK-PERFORMANCE-01-01 — Each claim that another process would add no value is supported by measurement of the affected work and analysis of which components its failure can affect.
 - [ ] ELECDSN-CK-PERFORMANCE-01-02 — No sustained, blocking, or crash-prone work remains in the main process solely for implementation convenience.
 
 ## Aesthetics
@@ -120,7 +120,7 @@ transport power or an Electron event through the bridge is the failure.
 - [ ] ELECDSN-CK-USAGE-01-01 — Each permitted action is exposed through one narrow application-action method.
 - [ ] ELECDSN-CK-USAGE-01-02 — No raw `ipcRenderer`, internal Electron event, caller-selected channel, or generic send or invoke function is exposed through `contextBridge`.
 - [ ] ELECDSN-CK-USAGE-01-03 — Each exposed callback passes only the data the renderer needs.
-- [ ] ELECDSN-CK-USAGE-01-04 — Each exposed contract defines cancellation, expected errors, startup order, and relevant operating-system differences.
+- [ ] ELECDSN-CK-USAGE-01-04 — Each exposed contract defines cancellation, expected errors, startup order, and operating-system differences that change the contract.
 
 ### ELECDSN-SC-USAGE-02 — Adversarial: a bridge is widened for convenience
 
@@ -131,7 +131,7 @@ Accepting caller-selected authority because the method crosses `contextBridge` i
 #### Checklist
 
 - [ ] ELECDSN-CK-USAGE-02-01 — No exposed method lets a renderer select a channel, file path, command, or destination outside a closed set owned by the privileged side.
-- [ ] ELECDSN-CK-USAGE-02-02 — Each added renderer capability names its required action, admitted inputs, privileged-side validation, and expected failure.
+- [ ] ELECDSN-CK-USAGE-02-02 — Each added renderer capability names its required action, allowed inputs, privileged-side validation, and expected failure.
 
 ## Consistency
 
@@ -146,7 +146,7 @@ changes the posture is the failure.
 
 - [ ] ELECDSN-CK-CONSISTENCY-01-01 — Secure windows, views, sessions, and protocol handlers use central factories unless every call site in a tiny static application is auditable and equivalent.
 - [ ] ELECDSN-CK-CONSISTENCY-01-02 — Each explicitly set `webPreferences` key is compared with the pinned Electron major's documented default.
-- [ ] ELECDSN-CK-CONSISTENCY-01-03 — Every renderer starts with `nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`, `webSecurity: true`, `allowRunningInsecureContent: false`, no `experimentalFeatures`, and no `enableBlinkFeatures`.
+- [ ] ELECDSN-CK-CONSISTENCY-01-03 — Every renderer starts with `nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`, `webSecurity: true`, `allowRunningInsecureContent: false`, and neither `experimentalFeatures` nor `enableBlinkFeatures` enabled.
 - [ ] ELECDSN-CK-CONSISTENCY-01-04 — Each API, version, process-capability, default, and mechanism claim matches the pinned Electron major and current official Electron documentation.
 
 ### ELECDSN-SC-CONSISTENCY-02 — Rule violation: a structure migration crosses a process trust boundary
@@ -166,16 +166,18 @@ or importing a privileged library into renderer content is the Rule violation.
 ### ELECDSN-SC-RISK-01 — Normal case: renderer content and capabilities have separate controls
 
 Permissions, frame navigation, redirects, popups, webview attachment, and external URLs are independent
-surfaces. The expected outcome closes each surface on every relevant and later-created session, partition,
-and `webContents`. Treating one installed control as coverage for another surface is the failure.
+surfaces. The expected outcome closes each surface on every existing and later-created session or partition
+used by renderer content and every existing and later-created `webContents` that loads it. Treating one
+installed control as coverage for another surface is the failure.
 
 #### Checklist
 
-- [ ] ELECDSN-CK-RISK-01-01 — Both `setPermissionCheckHandler` and `setPermissionRequestHandler` default to denial on every relevant and later-created session or partition and use the requesting and embedding origins Electron provides.
-- [ ] ELECDSN-CK-RISK-01-02 — `will-navigate`, `will-frame-navigate`, and `will-redirect` each enforce the admitted navigation set on every relevant and later-created `webContents`.
-- [ ] ELECDSN-CK-RISK-01-03 — `setWindowOpenHandler` enforces the admitted popup set on every relevant and later-created `webContents`.
+- [ ] ELECDSN-CK-RISK-01-01 — Both `setPermissionCheckHandler` and `setPermissionRequestHandler` are installed with default denial on every existing and later-created session or partition used by renderer content.
+- [ ] ELECDSN-CK-RISK-01-02 — `will-navigate`, `will-frame-navigate`, and `will-redirect` each enforce the allowed navigation set on every existing and later-created `webContents` that loads renderer content.
+- [ ] ELECDSN-CK-RISK-01-03 — `setWindowOpenHandler` enforces the allowed popup set on every existing and later-created `webContents` that loads renderer content.
 - [ ] ELECDSN-CK-RISK-01-04 — `will-attach-webview` validates the requested URL, preload, security-relevant `webPreferences`, and intended session or partition before attachment.
-- [ ] ELECDSN-CK-RISK-01-05 — Each URL passed to `shell.openExternal` is parsed and matched by scheme, origin, and admitted path against a closed allowlist.
+- [ ] ELECDSN-CK-RISK-01-05 — Each URL passed to `shell.openExternal` is parsed and matched by scheme, origin, and allowed path against a closed allowlist.
+- [ ] ELECDSN-CK-RISK-01-06 — Permission handlers evaluate the requesting and embedding origins that Electron provides.
 
 ### ELECDSN-SC-RISK-02 — Edge case: a renderer loads secure remote content
 
@@ -185,7 +187,7 @@ Policy through the actual source. Treating an intended policy as delivered is th
 
 #### Checklist
 
-- [ ] ELECDSN-CK-RISK-02-01 — Each renderer document and subresource loads from a packaged local source or an admitted secure-protocol remote source.
+- [ ] ELECDSN-CK-RISK-02-01 — Each renderer document and subresource loads from a packaged local source or an allowed secure-protocol remote source.
 - [ ] ELECDSN-CK-RISK-02-02 — Each renderer document receives a restrictive Content Security Policy through its actual response header or document meta tag.
 
 ### ELECDSN-SC-RISK-03 — Adversarial: a privileged handler trusts caller-controlled identity or data
@@ -226,11 +228,12 @@ Rule conflict or a claim broader than the settled design is the failure.
 #### Checklist
 
 - [ ] ELECDSN-CK-OVERALL-01-01 — Each technical failure names the component that contains it and the component that handles it.
-- [ ] ELECDSN-CK-OVERALL-01-02 — No renderer security reduction remains without accepted user authority and named compensating controls.
+- Also applies: ELECDSN-CK-PROJECT-02-01 (accepted authority for the exact security reduction).
+- Also applies: ELECDSN-CK-PROJECT-02-02 (complete security-exception facts).
 - [ ] ELECDSN-CK-OVERALL-01-03 — The design claim is no broader than the process, trust, contract, state, resource, and failure decisions it settles.
 - [ ] ELECDSN-CK-OVERALL-01-04 — The design states one explicit accept, revise, or reject judgment.
 - [ ] ELECDSN-CK-OVERALL-01-05 — The technical handoff states settled contracts, owners, security exceptions, and open technical facts.
-- [ ] ELECDSN-CK-OVERALL-01-06 — Each material choice names the project, requirement, measurement, or Electron fact whose change reopens it.
+- [ ] ELECDSN-CK-OVERALL-01-06 — Each process, trust, contract, state, resource, window, view, performance, or failure-isolation choice names the project, requirement, measurement, or Electron fact whose change reopens it.
 
 ### ELECDSN-SC-OVERALL-02 — Adversarial: secure defaults are presented as a complete posture
 

@@ -45,14 +45,16 @@ settles, why it is acceptable, and which changed fact would reopen it.
 ## Rules
 
 - **MUST resolve every API, version, process-capability, default, and mechanism claim through Electron Runtime
-  and current official Electron documentation for the pinned Electron major.** Stop on a material conflict
-  between the project, the pinned major, and the current documentation instead of filling the gap from memory.
+  and current official Electron documentation for the pinned Electron major.** Stop when a conflict between
+  the project, pinned major, and current documentation would change an API identifier, default, process
+  placement, capability, security control, or resource lifetime.
 
 - **NEVER approve a renderer security reduction without the exact affected renderer, accepted user authority,
   the incompatible required capability, and compensating controls.** Start each renderer with
   `nodeIntegration: false`, `contextIsolation: true`, `sandbox: true`, `webSecurity: true`,
-  `allowRunningInsecureContent: false`, no `experimentalFeatures`, no `enableBlinkFeatures`, a secure
-  content source, and a restrictive Content Security Policy delivered by that source.
+  `allowRunningInsecureContent: false`, neither `experimentalFeatures` nor `enableBlinkFeatures` enabled,
+  a packaged local source or an allowed secure-protocol remote source, and a restrictive Content Security
+  Policy delivered by that source.
 
 - **NEVER expose raw `ipcRenderer`, an internal Electron event, a caller-selected channel, or a generic send
   or invoke function through `contextBridge`.** Expose one narrow application-action method for each
@@ -63,16 +65,17 @@ settles, why it is acceptable, and which changed fact would reopen it.
   preload wrapper, or renderer-supplied identity is not runtime authorization.
 
 - **MUST give renderer documents, frames, popups, webviews, external URLs, and custom-protocol paths separate
-  default-deny controls on every relevant and later-created session, partition, and `webContents`.** Install
-  both `setPermissionCheckHandler` and `setPermissionRequestHandler`; cover `will-navigate`,
+  default-deny controls on every existing and later-created session or partition that can grant a permission,
+  and every existing and later-created `webContents` that can load renderer content.** Install both
+  `setPermissionCheckHandler` and `setPermissionRequestHandler`; cover `will-navigate`,
   `will-frame-navigate`, `will-redirect`, `setWindowOpenHandler`, and `will-attach-webview`; parse
   external URLs against closed allowlists; and prove decoded, normalized, resolved custom-protocol paths stay
   beneath an allowed canonical root before reading them.
 
 - **MUST assign one technical owner to each state value, long-lived Electron resource, and failure boundary.**
-  The design defines creation, mutation authority, cancellation, cleanup, restart, startup order, and relevant
-  operating-system differences, including explicit destruction of `WebContentsView.webContents` added to a
-  `BaseWindow`.
+  The design defines creation, mutation authority, cancellation, cleanup, restart, startup order, and
+  operating-system differences that change those decisions, including explicit destruction of
+  `WebContentsView.webContents` added to a `BaseWindow`.
 
 ## Preferences
 
@@ -121,7 +124,8 @@ validate the payload in the privileged process. Electron documents this lifetime
 Prefer small factories for windows, views, sessions, and protocol handlers so every creation path receives
 the same defaults and disposal rules. Configure both
 [`setPermissionCheckHandler` and `setPermissionRequestHandler`](https://www.electronjs.org/docs/latest/api/session)
-for each relevant session, using requesting and embedding origins when Electron supplies them. Apply
+for each session used by renderer content, using requesting and embedding origins when Electron supplies
+them. Apply
 navigation and redirect controls to all frames, use `setWindowOpenHandler` for renderer-created windows, and
 validate webview options before attachment. Electron's
 [security guide](https://www.electronjs.org/docs/latest/tutorial/security) defines these controls as separate
@@ -137,7 +141,8 @@ automatically.
 
 ### Make the judgment explicit
 
-For each material choice, state the accepted constraint, considered technical alternatives, selected option,
+For each process, trust, structure, bridge, IPC, state, resource, window, view, performance, or
+failure-isolation choice, state the accepted constraint, considered technical alternatives, selected option,
 and reason. Classify the design as accept, revise, or reject. A justified Preference departure names its
 repository fact or measurement. A Rule conflict is rejected. The handoff states settled contracts, owners,
 security exceptions, open technical facts, and the conditions that reopen the decision.
