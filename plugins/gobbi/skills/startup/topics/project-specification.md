@@ -4,11 +4,9 @@ Adapt these questions into an implementation-guiding design contract. Keep archi
 in Project Design. Do not ask for code-level API signatures, exhaustive schemas, algorithms, repository layout,
 or implementation tasks.
 
-## Capabilities, Interfaces, Contracts, Duties, and Ownership
+## Capabilities and Features
 
 - [initial-capabilities] What must the first useful version of the software be able to do?
-- [external-contract] What behavior, input, output, or interface must remain stable because users or connected systems rely on it?
-- [compatibility-boundary] Which current behavior must continue to work for existing users or connected systems after the project changes?
 - [refused-use] Which attempted uses, if any, must the software reject?
 - [feature-list] Which named features must the software provide for the people or systems that will use it?
 - [minimum-complete-capability] What is the smallest complete software capability that lets a user or consumer complete a useful task?
@@ -21,6 +19,9 @@ every named feature. Record each instance and answer under that feature's distin
 - [feature-finish] What can a user or connected system observe to know that this feature finished its work successfully?
 - [feature-handoff] At what point in this feature does responsibility pass to another person or system?
 - [feature-worst-failure] Which failure during this feature would have the greatest consequence?
+
+## Experience, Interfaces, and Accessibility
+
 - [interface-type] How will each main user or connected system interact with the software—for example, through a screen, command line, or application programming interface?
 - [success-feedback] What should the interface show or return first to confirm that an action succeeded?
 - [domain-concepts] Which project-specific ideas and terms must have the same meaning in every interface?
@@ -33,14 +34,10 @@ every named feature. Record each instance and answer under that feature's distin
 - [representative-tasks] Which realistic tasks should the representative users attempt during testing?
 - [design-reference] Which existing product or interface, if any, demonstrates an approach that this project should emulate?
 - [reference-rejection] Which existing product or interface, if any, may look relevant but should not guide this project's design?
-- [safe-retry] Which failed operation may be tried again without producing an incorrect or unsafe result?
+
+## Behavior, State, and Data
+
 - [same-result-on-repeat] Which operation must have the same end result when the same request is performed more than once?
-- [invalid-input] How must the software respond when it receives invalid input?
-- [partial-state] How must the software respond when only part of an operation succeeds?
-- [dependency-unavailable] When a required dependency is temporarily unavailable, what must the running software do?
-- [failure-visibility] How will the affected user or connected system learn that the main task failed?
-- [failure-recovery] What action returns the failed task to a safe state?
-- [misuse-response] When someone attempts a use that the project explicitly refuses to support, how must the software respond safely?
 - [consistency-promise] When the same data appears in more than one place, what agreement or update-timing guarantee must consumers be able to rely on?
 - [stored-data-evolution] What compatibility must be preserved when the format or meaning of stored data changes?
 - [data-retention] For each important category of stored data, how long must the project keep it available for product or operational needs?
@@ -58,8 +55,20 @@ every named feature. Record each instance and answer under that feature's distin
 - [network-liveness] Which signal shows that a network component is still running and responding?
 - [network-convergence] After a network change, what observable condition shows that all affected components have reached the intended state?
 - [network-reconciliation] When the network's actual state differs from its intended configuration, how should the project bring them back into agreement?
-- [network-partition] If parts of the network cannot communicate with each other, which behavior must still remain safe?
 - [network-stale-state] How old may observed network-state data become before the project must stop relying on it?
+
+## Integration, Compatibility, Failure, and Recovery
+
+- [external-contract] What behavior, input, output, or interface must remain stable because users or connected systems rely on it?
+- [compatibility-boundary] Which current behavior must continue to work for existing users or connected systems after the project changes?
+- [safe-retry] Which failed operation may be tried again without producing an incorrect or unsafe result?
+- [invalid-input] How must the software respond when it receives invalid input?
+- [partial-state] How must the software respond when only part of an operation succeeds?
+- [dependency-unavailable] When a required dependency is temporarily unavailable, what must the running software do?
+- [failure-visibility] How will the affected user or connected system learn that the main task failed?
+- [failure-recovery] What action returns the failed task to a safe state?
+- [misuse-response] When someone attempts a use that the project explicitly refuses to support, how must the software respond safely?
+- [network-partition] If parts of the network cannot communicate with each other, which behavior must still remain safe?
 - [versioning-policy] Which public interface or data format must carry a version so consumers can detect incompatible changes?
 - [deprecation-policy] How must the project notify consumers that a supported interface or data format will be retired?
 - [migration-obligation] When a supported interface, data format, or other external contract changes incompatibly, which consumers must the project help move to its replacement?
@@ -85,6 +94,32 @@ every named feature. Record each instance and answer under that feature's distin
 - [network-peer-compatibility] Which other devices, services, or software implementations must successfully exchange protocol messages with this project?
 - [network-registry] If the protocol defines named or numbered values, which official registry controls how those values are assigned?
 - [network-negotiation] When two protocol peers connect, which supported features or versions must they be able to agree on?
+
+## Security, Privacy, and Safety
+
+- [protected-assets] Which project asset, such as data, credentials, software, or infrastructure, would cause the most harm if compromised?
+- [trust-boundaries] Where does data or control cross between parts of the system with different trust or security levels?
+- [authorization-rule] Which rule decides whether a user or connected system may perform an action?
+- [audit-evidence] Which sensitive action must leave a protected audit record?
+- [threat-actor] Which person, group, or system could realistically try to harm or misuse this project?
+- [abuse-case] Which realistic misuse of the software could cause serious harm?
+- [security-failure] Which security failure would cause the greatest harm to the project or its users?
+- [safe-failure] After a serious failure, what condition must the system preserve to avoid harm?
+- [personal-data] Which personal or sensitive data does the software collect, receive, store, or transmit?
+- [data-minimization] Which collected data, if any, is unnecessary for the project's intended result?
+- [consent-duty] Which collection or use of personal data, if any, requires the person's consent?
+- [privacy-retention] Which privacy law, policy, or user commitment limits how long the project may keep personal or sensitive data?
+- [privacy-deletion] Which user request, policy deadline, or lifecycle event, if any, requires the project to delete personal or sensitive data?
+- [data-disclosure] Under what approved condition may protected data be shared outside the system or organization that currently holds it?
+- [mobile-permission] Which software capability, if any, requires access to sensitive device features or user data?
+- [mobile-permission-purpose] What user-visible benefit justifies requesting each sensitive mobile-platform permission?
+- [mobile-permission-revocation] If a user revokes a sensitive mobile-platform permission, which application capabilities must still work?
+- [network-replay-threat] Which protocol message must be rejected if an attacker captures it and sends the same message again?
+- [network-integrity-threat] Which protocol state must the project treat as invalid if an unauthorized party changes it?
+- [network-denial-threat] Which attempt to exhaust traffic, connections, or computing resources could make the network service unavailable and therefore needs a planned defense?
+
+## Delivery, Operations, Quality, and Verification
+
 - [consumer-indicator] What user- or consumer-visible measurement shows whether the running software is delivering its intended result?
 - [service-objective] Which behavior visible to service consumers needs a measurable reliability target, such as availability or successful responses?
 - [service-workload-range] What range and pattern of requests or jobs must the service handle correctly?
@@ -112,26 +147,9 @@ every named feature. Record each instance and answer under that feature's distin
 - [data-processing-health] What observable signal shows that the output of the project's scheduled or continuous data processing is complete and correct enough for its consumers to use?
 - [network-deployment] During deployment, how can new network behavior operate safely while devices or peers still use the previous behavior?
 - [network-diagnostics] Which operational data must an engineer be able to collect without interrupting network service?
-- [protected-assets] Which project asset, such as data, credentials, software, or infrastructure, would cause the most harm if compromised?
-- [trust-boundaries] Where does data or control cross between parts of the system with different trust or security levels?
-- [authorization-rule] Which rule decides whether a user or connected system may perform an action?
-- [audit-evidence] Which sensitive action must leave a protected audit record?
-- [threat-actor] Which person, group, or system could realistically try to harm or misuse this project?
-- [abuse-case] Which realistic misuse of the software could cause serious harm?
-- [security-failure] Which security failure would cause the greatest harm to the project or its users?
-- [safe-failure] After a serious failure, what condition must the system preserve to avoid harm?
-- [personal-data] Which personal or sensitive data does the software collect, receive, store, or transmit?
-- [data-minimization] Which collected data, if any, is unnecessary for the project's intended result?
-- [consent-duty] Which collection or use of personal data, if any, requires the person's consent?
-- [privacy-retention] Which privacy law, policy, or user commitment limits how long the project may keep personal or sensitive data?
-- [privacy-deletion] Which user request, policy deadline, or lifecycle event, if any, requires the project to delete personal or sensitive data?
-- [data-disclosure] Under what approved condition may protected data be shared outside the system or organization that currently holds it?
-- [mobile-permission] Which software capability, if any, requires access to sensitive device features or user data?
-- [mobile-permission-purpose] What user-visible benefit justifies requesting each sensitive mobile-platform permission?
-- [mobile-permission-revocation] If a user revokes a sensitive mobile-platform permission, which application capabilities must still work?
-- [network-replay-threat] Which protocol message must be rejected if an attacker captures it and sends the same message again?
-- [network-integrity-threat] Which protocol state must the project treat as invalid if an unauthorized party changes it?
-- [network-denial-threat] Which attempt to exhaust traffic, connections, or computing resources could make the network service unavailable and therefore needs a planned defense?
+
+## Binding Policy, Governance, Conventions, and Ownership
+
 - [product-authority] Who has final authority over product direction?
 - [technical-authority] Who has final authority over technical direction?
 - [data-contract-owner] Who may approve a change to a dataset's format or meaning that existing consumers cannot use without changing their systems?
@@ -145,7 +163,7 @@ every named feature. Record each instance and answer under that feature's distin
 - [schedule-constraint] Which required date constrains the project's scope or delivery?
 - [available-time] How much time can each confirmed contributor spend on the project, and during what period?
 - [available-systems] Which required systems, if any, are currently unavailable or inaccessible?
-- [directory-convention] Which parts of the repository's directory structure are deliberate and must be preserved?
+- [directory-convention] Which existing repository-organization constraint is binding for contributors, and what responsibility boundary does it protect?
 - [module-convention] Which responsibilities must contributors keep separated by a module or package boundary?
 - [naming-convention] What mandatory naming patterns apply to files, modules, types, functions, or other project elements?
 - [interface-convention] What mandatory design pattern must contributors follow for user, programmatic, or module interfaces?
@@ -169,7 +187,7 @@ every named feature. Record each instance and answer under that feature's distin
 - [maintenance-end-evidence] What evidence would justify ending active maintenance of the software?
 - [continuity-documentation] Which document must another maintainer be able to follow to continue the project without the current maintainer?
 
-## Binding Policy Detail
+### Binding Policy Detail
 
 - [policy-purpose] What risk or recurring decision makes each binding policy necessary?
 - [policy-scope] Which people, artifacts, environments, and actions does each policy govern?

@@ -1,18 +1,18 @@
 # Startup Working Record
 
-This schema-2 file owns and checkpoints one Startup run. It is not a transcript, evaluation, implementation plan, or memory record. Keep sensitive values out and remove it only after final confirmation.
+This schema-2 file owns the identity and evidence for one Startup run. The native runtime TODO list owns
+progression. This file is not a route cursor, transcript, evaluation, implementation plan, or memory record.
+Keep sensitive values out and remove it only after verified Finalization PASS.
 
-## Run Identity and State
+## Run Identity and Recovery
 
 - Startup schema: `2`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Status: `{in progress | paused}`
-- Current phase: `{Problem Definition | Project Design | Project Specification | Lifecycle and Use-Case Scenarios | Finalization}`
-- Loop step: `{Study | Prepare Topics | Interview | Documentation | Review}`
-- Iteration: `{1 upward}`
-- Next question or assignment: `{exact question, assignment, or none}`
-- First recovery action: `{derived action}`
+- Recovery mode: `{normal | completed-v2 revalidation}`
+- Current blocker: `{none or exact blocker}`
+- First recovery action: `{action derived from the evidence below and the native TODO list}`
 
 ## Artifact Register
 
@@ -23,6 +23,12 @@ This schema-2 file owns and checkpoints one Startup run. It is not a transcript,
 | `project-specification.md` | Project Specification | `{state}` | `problem-definition.md`, `project-design.md` | `{evidence}` |
 | `lifecycle-and-use-cases.md` | Lifecycle and Use-Case Scenarios | `{state}` | `{three earlier documents}` | `{evidence}` |
 | `startup.md` | Finalization | `{state}` | `{four phase documents}` | `{evidence}` |
+
+## Acceptance and Revalidation Evidence
+
+| Phase | Iteration | Run kind | Review assignment and result | User acceptance or confirmation | Evidence status |
+|---|---|---|---|---|---|
+| `{phase}` | `{iteration}` | `{normal or completed-v2 revalidation}` | `{assignment and accepted result}` | `{decision and timestamp}` | `{open or accepted}` |
 
 ## Subject Register
 
@@ -42,6 +48,12 @@ This schema-2 file owns and checkpoints one Startup run. It is not a transcript,
 |---|---|---|---|---|---|---|
 | `{phase}` | `{topic or [question-name]}` | `{project or distinct feature}` | `{project-specific wording}` | `{phase bank, study, interview, or review}` | `{prepared, to ask, answered, dropped, reopened, or deferred}` | `{reason}` |
 
+## Lifecycle Scenario Candidates
+
+| Candidate identity and class | Purpose | Linked accepted decisions and artifacts | Concrete-scenario blocker | Oracle blocker | Status |
+|---|---|---|---|---|---|
+| `{identity; class}` | `{purpose}` | `{decision and artifact links}` | `{blocker or none}` | `{blocker or none}` | `{candidate, ready, deferred, or dropped}` |
+
 ## Answers and Decisions
 
 | Question | Subject | Answer or decision | Kind | Evidence and strength | Recorded iteration |
@@ -60,6 +72,12 @@ This schema-2 file owns and checkpoints one Startup run. It is not a transcript,
 |---|---|---|---|---|---|---|---|
 | `{stable assignment}` | `{phase and step}` | `{iteration}` | `{read-only or ordered writer}` | `{inputs and paths}` | `{result or NEEDS_CONTEXT question}` | `{verification}` | `{assigned, returned, accepted, or blocked}` |
 
+## Context Checkpoints
+
+| Blocked assignment | Phase and stage | Iteration | Exact question | User answer | Answer checkpoint assignment | Status |
+|---|---|---|---|---|---|---|
+| `{assignment}` | `{phase and stage}` | `{iteration}` | `{question}` | `{faithful summary or not yet}` | `{assignment or not yet}` | `{blocked, answered, or accepted}` |
+
 ## Corrections and Reopen Effects
 
 | Earlier decision | Current decision | User resolution | Earliest reopened phase | Artifacts made stale |
@@ -68,9 +86,9 @@ This schema-2 file owns and checkpoints one Startup run. It is not a transcript,
 
 ## Review Findings
 
-| Phase and iteration | Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
-|---|---|---|---|---|---|
-| `{phase}` | `{coverage, specificity, vocabulary, consistency, traceability, or quality}` | `{finding}` | `{effect}` | `{question or none}` | `{open, resolved, or owned deferral}` |
+| Phase | Iteration | Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
+|---|---|---|---|---|---|---|
+| `{phase}` | `{iteration}` | `{coverage, specificity, vocabulary, consistency, traceability, or quality}` | `{finding}` | `{effect}` | `{question or none}` | `{open, resolved, or owned deferral}` |
 
 ## Owned Deferrals
 

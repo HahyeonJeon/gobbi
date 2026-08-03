@@ -3,7 +3,7 @@
 > **Document role:** Confirmed synthesis and index for the complete Startup design set.<br>
 > **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.
 
-## Design Artifact Register
+## Phase Document Artifact Register
 
 | Artifact | Role | Status | Accepted |
 |---|---|---|---|
