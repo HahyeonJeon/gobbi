@@ -40,7 +40,7 @@ that skips one of those foundations or derives render data through an Effect fai
 
 #### Checklist
 
-- [ ] RDES-CK-STRUCTURE-05-01 — Components and Hooks remain pure, and render causes no side effect.
+- [ ] RDES-CK-STRUCTURE-05-01 — Components and Hooks remain pure.
 - [ ] RDES-CK-STRUCTURE-05-02 — No Effect derives render data.
 - [ ] RDES-CK-STRUCTURE-05-03 — The component hierarchy is mapped top-down.
 - [ ] RDES-CK-STRUCTURE-05-04 — A static implementation skeleton is defined before interactivity.
@@ -57,6 +57,15 @@ owns. An omitted decision, overbroad boundary, or boundary without observable re
 - [ ] RDES-CK-STRUCTURE-06-01 — Error Boundary inclusion or exclusion is explicit.
 - [ ] RDES-CK-STRUCTURE-06-02 — Each included Error Boundary owns the smallest recoverable subtree.
 - [ ] RDES-CK-STRUCTURE-06-03 — Each included Error Boundary has an observable recovery path.
+
+### RDES-SC-STRUCTURE-07 — Rule violation: Render causes a side effect
+
+Render may be repeated or discarded, so it must not cause a side effect. A render calculation that changes
+an external system or other nonlocal state fails the scenario.
+
+#### Checklist
+
+- [ ] RDES-CK-STRUCTURE-07-01 — Render causes no side effect.
 
 ## Performance
 

@@ -19,8 +19,17 @@ compiler configuration. A copied neighboring-version type or missing type-check 
 - [ ] RTSX-CK-PROJECT-01-02 — The active JSX mode, target libraries, strictness settings, and module configuration are recorded.
 - [ ] RTSX-CK-PROJECT-01-03 — The project type-check command covers the affected React source or test.
 - [ ] RTSX-CK-PROJECT-01-04 — Before this Manual is applied, project records name the exact renderer, framework, and installed React type-definition versions, every source extension, and every generated type file used by the affected compilation.
-- [ ] RTSX-CK-PROJECT-01-05 — Library declarations match each target: DOM declarations appear only for browser or Electron renderer code that uses DOM types, while server-only and shared targets use their actual host libraries.
+- [ ] RTSX-CK-PROJECT-01-05 — DOM declarations appear only for browser or Electron renderer code that uses DOM types.
 - [ ] RTSX-CK-PROJECT-01-06 — The focused type check uses the same TypeScript configuration that builds the affected source.
+
+### RTSX-SC-PROJECT-02 — Rule violation: Server-only or shared targets use the wrong host libraries
+
+Server-only and shared TypeScript targets should use their actual host library declarations. Including DOM
+declarations merely because another target renders React broadens the type surface and fails the scenario.
+
+#### Checklist
+
+- [ ] RTSX-CK-PROJECT-02-01 — Server-only and shared targets use their actual host libraries.
 
 ## Structure
 

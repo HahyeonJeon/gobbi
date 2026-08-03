@@ -112,9 +112,10 @@ Intuitive optimization or stale measurement fails the scenario.
 
 #### Checklist
 
-- [ ] RDEV-CK-PERFORMANCE-02-01 — Programmatic or production profiling is used only when its overhead and build requirements are deliberate and relevant.
+- [ ] RDEV-CK-PERFORMANCE-02-01 — Programmatic or production profiling is used only when its overhead and build requirements are deliberate.
 - [ ] RDEV-CK-PERFORMANCE-02-02 — Memoization is not added from intuition.
 - [ ] RDEV-CK-PERFORMANCE-02-03 — Performance measurement is repeated when a repair changes a performance premise.
+- [ ] RDEV-CK-PERFORMANCE-02-04 — Programmatic or production profiling is used only when it is relevant to the performance premise.
 
 ## Aesthetics
 
@@ -177,7 +178,8 @@ recoverably. Suppression, weakened assertions, or an endless retry loop fails th
 - [ ] RDEV-CK-RISK-03-01 — Every unavailable or skipped required check remains a completion gap.
 - [ ] RDEV-CK-RISK-03-02 — Repair begins with preserved first-failure evidence.
 - [ ] RDEV-CK-RISK-03-03 — The repair loop ends only in a passing local result or an explicit stop with blocker and recoverable state.
-- [ ] RDEV-CK-RISK-03-04 — Repair never hides a failure or weakens an assertion.
+- [ ] RDEV-CK-RISK-03-04 — Repair never hides a failure.
+- [ ] RDEV-CK-RISK-03-05 — Repair never weakens an assertion.
 
 ## Overall
 

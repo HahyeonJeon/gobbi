@@ -14,7 +14,7 @@ inferred requirement or product-source change fails the scenario.
 #### Checklist
 
 - [ ] RTST-CK-PROJECT-04-01 — Phase 1 takes one accepted React behavior and test-authoring task.
-- [ ] RTST-CK-PROJECT-04-02 — The mutation boundary is limited to React component and Hook tests and their test-local setup, fixtures, substitutes, and configuration; product source remains outside it.
+- [ ] RTST-CK-PROJECT-04-02 — The mutation boundary is limited to React component and Hook tests and their test-local setup, fixtures, substitutes, and configuration.
 - [ ] RTST-CK-PROJECT-04-03 — Test requirements are not inferred from implementation details.
 
 ### RTST-SC-PROJECT-05 — Normal case: Stack inspection makes test design reproducible
@@ -36,8 +36,9 @@ Continuing through an assumption fails the scenario.
 
 #### Checklist
 
-- [ ] RTST-CK-PROJECT-06-01 — Missing or conflicting behavior, scope, authority, or required evidence stops work and returns to the caller.
+- [ ] RTST-CK-PROJECT-06-01 — Missing or conflicting behavior, scope, authority, or required evidence stops work.
 - [ ] RTST-CK-PROJECT-06-02 — A missing required version, environment, helper, command, or current result stops work before design when it prevents truthful testing.
+- [ ] RTST-CK-PROJECT-06-03 — Missing or conflicting behavior, scope, authority, or required evidence is returned to the caller.
 
 ## Structure
 
@@ -49,7 +50,8 @@ unassigned claim fails the scenario.
 #### Checklist
 
 - [ ] RTST-CK-STRUCTURE-04-01 — The claim-to-layer table states direct observation, responsible skill, and evidence limit for every claim.
-- [ ] RTST-CK-STRUCTURE-04-02 — Each mixed claim is split and each part goes to the layer that can observe it.
+- [ ] RTST-CK-STRUCTURE-04-02 — Each mixed claim is split.
+- [ ] RTST-CK-STRUCTURE-04-03 — Each part of a split mixed claim goes to the layer that can observe it.
 
 ## Performance
 
@@ -109,6 +111,15 @@ Expanding around that defect fails the scenario.
 
 - [ ] RTST-CK-CONSISTENCY-05-01 — The earliest wrong setup, query, interaction, wait, assertion, time control, or cleanup is repaired before expansion.
 
+### RTST-SC-CONSISTENCY-07 — Normal case: A test-root-cause repair receives complete reruns
+
+A repair inside the tests needs fresh narrow, affected-suite, and wider evidence. Omitting any required
+rerun leaves the repaired behavior unproved and fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-CONSISTENCY-07-01 — After a root cause inside the tests is repaired, the narrow test, affected suite, and wider required checks are rerun.
+
 ## Risk
 
 ### RTST-SC-RISK-03 — Adversarial: A manufactured pass or retry loop hides missing evidence
@@ -132,3 +143,12 @@ constraint. Multiple statuses or weakened meanings fail the scenario.
 
 - [ ] RTST-CK-OVERALL-04-01 — Handoff returns exactly one terminal status.
 - [ ] RTST-CK-OVERALL-04-02 — Terminal status semantics are exact: `DONE` only when all required test work and checks pass; `DONE_WITH_CONCERNS` only when tests are complete with named risks or gaps; `NEEDS_CONTEXT` only when a missing decision or requirement prevents correct work; `BLOCKED` only when a required command, environment, or dependency prevents completion.
+
+### RTST-SC-OVERALL-05 — Rule violation: Handoff overstates routed evidence
+
+The handoff may route evidence to another owner without proving that evidence. Reporting routed work as
+completed overstates the React Testing result and fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-OVERALL-05-01 — The handoff does not report routed evidence as completed.

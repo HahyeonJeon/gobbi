@@ -176,7 +176,7 @@ a masked signal, or a product edit under this operation fails the scenario.
 #### Checklist
 
 - [ ] RTST-CK-CONSISTENCY-03-01 — Each failing or unreliable result is classified as a product defect, test defect, environment gap, unsupported claim, or flake.
-- [ ] RTST-CK-CONSISTENCY-03-02 — A root cause inside the tests is repaired before the narrow test, affected suite, and wider required checks are rerun.
+- [ ] RTST-CK-CONSISTENCY-03-02 — A root cause inside the tests is repaired.
 - [ ] RTST-CK-CONSISTENCY-03-03 — A product-source defect is returned to `react-development` without changing product code under this operation.
 - Also applies: RTST-CK-PERFORMANCE-01-03 (checks run from narrow to wider).
 - Also applies: RTST-CK-PROJECT-02-01 (unavailable, blocked, and skipped checks remain visible).
@@ -238,5 +238,5 @@ independent judgment, or publication as part of its own result fails the scenari
 - [ ] RTST-CK-OVERALL-03-02 — Electron process, preload, IPC, security, lifecycle, native-integration, packaged-runtime test, and per-operating-system smoke evidence is routed through `electron-testing` before release handoff.
 - [ ] RTST-CK-OVERALL-03-03 — Packaging, signing, notarization, update rehearsal, release artifacts, and publication handoff are assigned to `electron-release`.
 - [ ] RTST-CK-OVERALL-03-04 — Independent read-only judgment is assigned to general `Evaluation`.
-- [ ] RTST-CK-OVERALL-03-05 — The handoff neither publishes the change nor reports routed evidence as completed.
+- [ ] RTST-CK-OVERALL-03-05 — The handoff does not publish the change.
 - Also applies: RTST-CK-CONSISTENCY-03-03 (product-source repair is assigned to `react-development`).
