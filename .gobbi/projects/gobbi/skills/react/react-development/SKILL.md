@@ -10,10 +10,10 @@ skill-type: operation
 React Development turns one accepted React design and bounded implementation task into a verified React-local
 source change. It follows Study → Design → Build → Verify → Handoff and ends with exact final-tree evidence.
 
-This operation owns React components, Hooks, state behavior, Error Boundary behavior, approved host-interface
-use, related tests, types, callers, documents, and ordinary client-render profiling. Complete browser journeys,
-cross-layer integration, production delivery and emission, installed outcomes, Electron platform and runtime
-proof, release work, independent Evaluation, and publication remain separate work.
+This operation covers React components, Hooks, state behavior, Error Boundary behavior, approved host-interface
+use, related tests, types, callers, documents, and ordinary client-render profiling. It does not cover complete
+browser journeys, cross-layer integration, production delivery and emission, installed outcomes, Electron
+platform and runtime proof, release work, independent Evaluation, or publication.
 
 React Native is outside this operation and requires project-specific guidance.
 
@@ -106,8 +106,8 @@ claim requires a measurement of the relevant interaction and component tree.
   cancellation, and obsolete-result protection wherever work can outlive its current input or component.
 - **Evidence / state:** Produce one implementation model that connects every in-scope behavior to its React
   unit, data flow, state owner, failure handling, host interface, test evidence, and observable result.
-- **Next branch / recovery:** Remove duplicate state, render mutation, invalid Hook placement, Effect-owned
-  internal derivation, accidental remounting, or uncontained host access before proceeding; return a new
+- **Next branch / recovery:** Remove duplicate state, render mutation, invalid Hook placement, derivation inside
+  an Effect, accidental remounting, or uncontained host access before proceeding; return a new
   material design choice to `react-design`.
 
 #### 2.2 Plan the skeleton, slices, and verification

@@ -1,9 +1,9 @@
 # React Design Checklist
 
 Use this unchecked `react-design` source with general `evaluation` when the React root activates the design
-child; `RDES` is the stable owner prefix.
+child; `RDES` is the stable checklist prefix.
 
-A row is defined once beneath its owning scenario. An `Also applies` entry points to a row defined elsewhere
+A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.
 
 ## Project
@@ -33,10 +33,11 @@ scenario.
 
 ## Structure
 
-### RDES-SC-STRUCTURE-01 — Normal case: State, derivation, and identity have explicit owners
+### RDES-SC-STRUCTURE-01 — Normal case: State location, derived values, and identity are explicit
 
-State should be minimal, derivable values computed during render, and identity durable across reorder and
-remount. Duplicate state, stored derivation, or positional identity fails the scenario.
+Each state value should have one narrow location, derived values should be computed during render, and keys
+should express durable identity across reorder and remount. Duplicate state, stored derivation, or positional
+identity fails the scenario.
 
 #### Checklist
 
@@ -56,10 +57,11 @@ conditional ordinary Hook, or a `use` call outside a component or inside `try`/`
 - [ ] RDES-CK-STRUCTURE-02-03 — Every conditional or looped `use` call remains inside a component or Hook.
 - [ ] RDES-CK-STRUCTURE-02-04 — No `use` call occurs inside `try`/`catch`.
 
-### RDES-SC-STRUCTURE-03 — Rule violation: An Effect owns internal React causality
+### RDES-SC-STRUCTURE-03 — Rule violation: An Effect derives render data or handles a user action
 
-An Effect is valid only when it synchronizes an external system. Internal derivation, event handling,
-incomplete dependencies, leaked resources, or stale asynchronous results fail the scenario.
+An Effect is valid only when it synchronizes an external system. Using one to derive render data or handle the
+user action that caused a change, or leaving incomplete dependencies, leaked resources, or stale asynchronous
+results, fails the scenario.
 
 #### Checklist
 
@@ -89,7 +91,7 @@ identity/work problem. Using one without that need fails the scenario.
 
 #### Checklist
 
-- [ ] RDES-CK-PERFORMANCE-01-01 — Each ref states the non-rendered value it owns.
+- [ ] RDES-CK-PERFORMANCE-01-01 — Each ref states the non-rendered value it stores.
 - [ ] RDES-CK-PERFORMANCE-01-02 — Each manual memoization states its measured-work or identity reason.
 - [ ] RDES-CK-PERFORMANCE-01-03 — No ref is used as hidden rendered state.
 - Also applies: RDES-CK-STRUCTURE-03-01 (each Effect names the external system it solves for).
@@ -149,7 +151,7 @@ case hides. A state without an expected observable result or a validated route f
 
 ## Consistency
 
-### RDES-SC-CONSISTENCY-01 — Edge case: Ownership or tree position changes
+### RDES-SC-CONSISTENCY-01 — Edge case: State location or tree position changes
 
 Moving a state value or subtree should preserve or intentionally reset the accepted state and identity
 behavior. An
@@ -188,17 +190,17 @@ outside the approved interface fails the scenario.
 
 ### RDES-SC-OVERALL-01 — Adversarial: Correct output hides snapshot mutation
 
-A component can render expected output once while mutating a value React already owns. Any mutation of a
-React-owned snapshot fails despite cosmetic success.
+A component can render expected output once while mutating props, a state snapshot, a context value, a value
+returned by a Hook, or a value already passed to JSX. Any such mutation fails despite cosmetic success.
 
 #### Checklist
 
-- [ ] RDES-CK-OVERALL-01-01 — Props, state snapshots, context values, values returned by Hooks, and values already passed to JSX each remain immutable once React owns them.
+- [ ] RDES-CK-OVERALL-01-01 — Props, state snapshots, context values, values returned by Hooks, and values already passed to JSX remain immutable.
 
 ### RDES-SC-OVERALL-02 — Adversarial: A polished handoff hides an incomplete lifecycle
 
-A design document can look implementation-ready while skipping study, user choice, scenario validation,
-required handoff fields, or exact application ownership. Cosmetic completeness without the full lifecycle
+A design document can look implementation-ready while skipping study, a required user decision, scenario validation,
+required handoff fields, or a required application-skill route. Cosmetic completeness without the full lifecycle
 fails the scenario.
 
 #### Checklist

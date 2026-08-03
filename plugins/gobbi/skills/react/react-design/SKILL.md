@@ -11,9 +11,9 @@ React Design turns an accepted browser or installed-application outcome into a v
 design. It starts after the broader interface and experience outcome is known and ends with an implementation
 handoff to `react-development`.
 
-This operation owns React-specific component structure, props and events, state and data flow, identity,
+This operation covers React-specific component structure, props and events, state and data flow, identity,
 render, Hooks, Effects, Error Boundary behavior, native semantics, accessibility obligations, and performance
-planning. It does not own the complete browser or installed-application experience, application integration,
+planning. It does not cover the complete browser or installed-application experience, application integration,
 deployment, observability, packaging, release, updates, publication, or independent Evaluation.
 
 Route complete browser interface and experience design to `web-frontend` and browser identity, concept, and
@@ -46,13 +46,14 @@ performance assumptions before implementation receives the design.
 ## Rules
 
 - **MUST begin with an accepted product outcome and current product behavior.** Route complete application
-  design to the named application skill, and let Evaluation own any independent verdict.
+  design to the named application skill, and route any independent verdict to Evaluation.
 
 - **MUST present credible, reference-backed alternatives when a material React choice exists.** Explain the
   trade-offs and recommendation, let the user choose, and never infer approval.
 
 - **MUST follow the [Rules of React](https://react.dev/reference/rules).** Keep components and Hooks pure,
-  treat React-owned inputs as immutable, call ordinary Hooks at the top level, and apply the documented
+  keep props, state snapshots, context values, values returned by Hooks, and values passed to JSX immutable,
+  call ordinary Hooks at the top level, and apply the documented
   [`use` exception](https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks) only inside a
   component or Hook and never inside `try`/`catch`.
 
@@ -175,7 +176,7 @@ performance assumptions before implementation receives the design.
   conflict or changed direction to the user for a decision.
 - **Evidence / state:** Update the design and scenario record with prototype limits, observations,
   measurements, and explicit user decisions.
-- **Next branch / recovery:** Stop while a user-owned choice remains unresolved; return a design defect to its
+- **Next branch / recovery:** Stop while a required user decision remains unresolved; return a design defect to its
   earliest step, and enter Phase 4 only when the complete React design self-validates.
 
 ### Phase 4 — Hand Off the Validated Design

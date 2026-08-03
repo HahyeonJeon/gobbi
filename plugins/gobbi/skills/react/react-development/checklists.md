@@ -1,7 +1,7 @@
 # React Development Checklist
 
 Use this unchecked `react-development` source with general Evaluation for every React implementation; `RDEV`
-is the stable prefix. Complete the checklist of every active React sibling as well.
+is the stable checklist prefix. Complete the checklist of every active React sibling as well.
 
 ## Project
 

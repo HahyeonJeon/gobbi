@@ -1,7 +1,7 @@
 # React Server Checklist
 
 Use this unchecked `react-server` source with general `evaluation` when the React root activates the
-`react-server` child; `RSRV` is the stable checklist owner prefix.
+`react-server` child; `RSRV` is the stable checklist prefix.
 
 A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.

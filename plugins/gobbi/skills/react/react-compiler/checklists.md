@@ -1,7 +1,7 @@
 # React Compiler Checklist
 
 Use this unchecked `react-compiler` source with general `evaluation` when the React root activates the compiler
-child; `RCMP` is the stable checklist owner prefix.
+child; `RCMP` is the stable checklist prefix.
 
 A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.

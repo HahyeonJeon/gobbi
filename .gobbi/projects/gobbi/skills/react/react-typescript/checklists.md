@@ -1,7 +1,7 @@
 # React TypeScript Checklist
 
 Use this unchecked `react-typescript` source with general `evaluation` when the React root activates the
-TypeScript child; `RTSX` is the stable checklist owner prefix.
+TypeScript child; `RTSX` is the stable checklist prefix.
 
 A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.

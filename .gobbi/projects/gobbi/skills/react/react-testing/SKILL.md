@@ -11,9 +11,9 @@ Use this implementation operation to create or revise React component and Hook t
 Study → Design → Build → Run → Handoff lifecycle. It converts accepted behavior into verified test changes
 for a browser application or Electron renderer.
 
-This child owns only the tests it changes and their self-verification. Independent read-only judgment belongs
-to [`Evaluation`](../../evaluation/SKILL.md); real-browser, application-system, Electron process, native, and
-packaged-application evidence belongs to the named testing skills in the procedure.
+This child changes only React component and Hook tests and self-verifies them. Route independent read-only
+judgment to [`Evaluation`](../../evaluation/SKILL.md). Route real-browser, application-system, Electron process,
+native, and packaged-application evidence to the named testing skills in the procedure.
 
 Use the project's installed runner, renderer, helpers, and conventions by default. React Native requires
 project-specific guidance, and dependency or test-architecture migration requires separate authority.

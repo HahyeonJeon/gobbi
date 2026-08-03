@@ -1,7 +1,7 @@
 # React Conventions Checklist
 
 Use this unchecked `react-conventions` source with general `evaluation` when the React root activates the
-conventions child; `RCON` is the stable checklist owner prefix.
+conventions child; `RCON` is the stable checklist prefix.
 
 ## Project
 
