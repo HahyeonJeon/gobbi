@@ -147,12 +147,13 @@ Suppressing the symptom or rerunning only the original failure fails the scenari
 ### RDEV-SC-RISK-01 — Rule violation: A change exceeds its accepted authority
 
 A React change must stay inside its accepted scope and local implementation authority. An implicit dependency,
-migration, architecture change, publication action, or observable scope expansion fails the scenario.
+migration, architecture change, publication action, observable scope expansion, or use of React Development
+for independent read-only review fails the scenario.
 
 #### Checklist
 
 - [ ] RDEV-CK-RISK-01-01 — The change introduces no unapproved dependency, migration, architecture change, publication action, or observable scope expansion.
-- [ ] RDEV-CK-RISK-01-02 — React-local development performs no publication action.
+- [ ] RDEV-CK-RISK-01-02 — Independent read-only review is handed to Evaluation instead of being performed inside React Development.
 
 ### RDEV-SC-RISK-02 — Normal case: Privileged capability remains behind an approved interface
 
