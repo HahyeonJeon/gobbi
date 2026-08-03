@@ -172,12 +172,16 @@ is the failure.
 
 Dual formats, duplicated bundles, or several entry points can load the same module twice, so shared state
 diverges and the archive carries the cost twice. The expected outcome tests identity and shared state across
-entry points and accounts for what the archive weighs. Divergent state or unexplained growth is the failure.
+entry points, compares archive sizes with a recorded prior archive or a budget approved by the person or
+document that supplied the package requirements, and applies a threshold recorded before the candidate is
+inspected. Divergent state, an untraced threshold breach, or an unaccepted resulting size is the failure.
 
 #### Checklist
 
 - [ ] TSPKG-CK-PERFORMANCE-01-01 — Singleton identity and shared state are tested across multiple entry points wherever dual formats or duplicated bundles are possible.
-- [ ] TSPKG-CK-PERFORMANCE-01-02 — The archive inventory is inspected for unexpected size changes.
+- [ ] TSPKG-CK-PERFORMANCE-01-02 — Candidate total and per-file archive sizes are compared with the recorded prior accepted archive or a size budget approved by the person or document that supplied the package requirements under a delta threshold recorded before candidate inspection.
+- [ ] TSPKG-CK-PERFORMANCE-01-03 — Every archive-size delta that crosses the pre-recorded threshold is traced to named added, removed, or changed archive entries.
+- [ ] TSPKG-CK-PERFORMANCE-01-04 — The person or document that supplied the package requirements accepts every resulting size that crosses the pre-recorded threshold.
 
 ## Aesthetics
 

@@ -4,9 +4,11 @@ This reusable unchecked source evaluates one pipeline inspection, configuration,
 this tool. It is governed by the [`typescript`](../SKILL.md) domain and [`typescript-toolchain`](SKILL.md)
 manual, with [`typescript-packaging`](../typescript-packaging/SKILL.md) defining installed package behavior,
 [`typescript-testing`](../typescript-testing/SKILL.md) defining the verification layers it receives, and
-[`web-deployment`](../../web/web-deployment/SKILL.md) defining bundler strategy, source-map publication, and
-rollout. The source commit that contains this file identifies the checklist version. Its stable checklist prefix
-is `TSTOOL`.
+the selected output owner defining bundler strategy, source-map publication, and rollout:
+[`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
+[`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
+`typescript-packaging` for a package archive, or the recorded project-specific owner for another output. The
+source commit that contains this file identifies the checklist version. Its stable checklist prefix is `TSTOOL`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -21,13 +23,14 @@ that this scenario reuses.
 
 Checking, JavaScript production, type stripping, module resolution, building, linting, and execution may be
 performed by different tools, and some of them by none. The expected outcome names each responsible tool and
-routes deployment strategy outward. An answer given without knowing who does what is the failure.
+routes build and release decisions to the owner selected for the actual output. Sending a non-web output to a
+web-only owner, or proceeding without a recorded owner, is the failure.
 
 #### Checklist
 
 - [ ] TSTOOL-CK-PROJECT-01-01 — The executable that checks types, produces JavaScript, strips types, resolves modules, builds distributable files, lints source, and executes the result is identified for each responsibility.
 - [ ] TSTOOL-CK-PROJECT-01-02 — The source files, generated JavaScript or declarations, and named runtimes are recorded.
-- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment`.
+- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment` for a web release, `electron-release` for an installed Electron artifact, `typescript-packaging` for a package archive, or the recorded project-specific owner for another output.
 - [ ] TSTOOL-CK-PROJECT-01-04 — The package and version supplying each `tsc` executable are recorded separately from any package used through the TypeScript compiler API.
 
 ### TSTOOL-SC-PROJECT-02 — Poor quality: a universal preset applied to every generated output
@@ -57,10 +60,11 @@ environments their own `tsconfig.json` files. A single configuration stretched a
 ### TSTOOL-SC-STRUCTURE-02 — Normal case: emit outputs are chosen for their consumers
 
 JavaScript is not the only emit: declarations, declaration maps, and build state are separate outputs with
-separate consumers. A TypeScript 6 or 7 configured project that emits from a nested common source directory
-also needs an explicit `rootDir` for its intended output layout. The expected outcome configures each output
-and source root for its consumer and enables the single-file safety check only where the actual JavaScript
-producer has that limitation.
+separate consumers. A declaration map supports source navigation only when the delivered consumer can resolve
+the mapped TypeScript source. A TypeScript 6 or 7 configured project that emits from a nested common source
+directory also needs an explicit `rootDir` for its intended output layout. The expected outcome configures each
+output and source root for its consumer and enables the single-file safety check only where the actual
+JavaScript producer has that limitation.
 
 #### Checklist
 
@@ -68,6 +72,7 @@ producer has that limitation.
 - [ ] TSTOOL-CK-STRUCTURE-02-02 — A TypeScript 6 or 7 configured project that emits files from a common source directory nested below its `tsconfig.json` directory explicitly sets `rootDir` to the intended emission root, such as `./src` to omit or `.` to retain the source-directory segment.
 - [ ] TSTOOL-CK-STRUCTURE-02-03 — `isolatedModules` is enabled when the configured JavaScript producer processes files independently and has the single-file limitation the option diagnoses.
 - [ ] TSTOOL-CK-STRUCTURE-02-04 — Every implementation file in a `composite` project matches `include` or is listed in `files`.
+- [ ] TSTOOL-CK-STRUCTURE-02-05 — Every delivered declaration map used to claim consumer source navigation resolves each mapped TypeScript source from that consumer environment.
 
 ## Performance
 

@@ -64,14 +64,15 @@ is the failure.
 
 ### TSASYNC-SC-PERFORMANCE-01 — Rule violation: concurrent operations start without a defined policy
 
-Fan-out over a collection, queue, or event stream can start as many operations as admission permits. The
-expected outcome defines admission, ordering, and failure behavior and adds a named limit when the admitted
-input is not already known to be finite. Unbounded work started without those decisions breaks the Rule.
+Fan-out over a collection, queue, or event stream can exhaust capacity even when its input is finite. The
+expected outcome defines admission, ordering, and failure behavior and either sets a named limit justified by
+named local and remote capacity constraints or records that maximum admission and per-operation demand fit
+those constraints. A finite count or arbitrary limit without capacity evidence does not satisfy the Rule.
 
 #### Checklist
 
 - [ ] TSASYNC-CK-PERFORMANCE-01-01 — No concurrent operation starts without defined admission, ordering, and failure behavior.
-- [ ] TSASYNC-CK-PERFORMANCE-01-02 — Every fan-out whose admitted input lacks a known finite bound has a named concurrency limit.
+- [ ] TSASYNC-CK-PERFORMANCE-01-02 — Every fan-out has either a named concurrency limit justified by named local and remote capacity constraints or recorded evidence that its maximum admitted operation count and per-operation resource demand fit those constraints.
 
 ### TSASYNC-SC-PERFORMANCE-02 — Poor quality: the group's failure behavior is left to the helper's default
 

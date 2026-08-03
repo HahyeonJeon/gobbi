@@ -92,6 +92,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Define API-diff or declaration checks for the public exports and declarations.
 - Define archive-content, installation, import, intentional blocked-path, command invocation, runtime, and
   rollback checks before building.
+- Before inspecting the candidate archive, record either the prior accepted archive or a size budget approved
+  by the person or document that supplied the package requirements, the total and per-file sizes to compare,
+  and the delta threshold whose breach requires explanation.
 
 ### Phase 2 — Build the package output
 
@@ -126,7 +129,10 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Use `typesVersions` only for an explicit TypeScript-version routing requirement.
 - In resolution modes that read `exports`, use the ordered versioned and fallback type conditions defined in Phase 1.2 because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that selects it.
 - In author mode, create the package archive with the normal packaging command. In review-only validation, inspect only a package archive that existed before the review.
-- Inspect the archive inventory for missing generated files, unwanted source or secrets, and unexpected size changes.
+- Inspect the archive inventory for missing generated files and unwanted source or secrets. Compare its
+  recorded total and per-file sizes with the prior accepted archive or approved budget. Trace every delta
+  that crosses the Phase 1 threshold to named added, removed, or changed archive entries; continue only when
+  the person or document that supplied the package requirements accepts the resulting size.
 - If a build, declaration, metadata, or archive check fails in author mode, stay in Phase 2 and correct the step that owns the cause. Return to Phase 1 when the package requirements conflict.
 - In review-only validation, stop with failed command evidence. Report evidence that needs new output or a new archive as unavailable or request author mode.
 - In author mode, rebuild the affected output and repeat its Phase 2 checks before entering Phase 3.

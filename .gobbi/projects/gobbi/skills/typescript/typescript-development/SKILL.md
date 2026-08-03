@@ -92,7 +92,10 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 2.3 Confirm the typed design
 
-- Compare the proposed public API and internal module interfaces with project prior art and one credible alternative.
+- Compare the proposed public API and internal module interfaces with project prior art and one alternative
+  that satisfies the same locked requirements. Show that alternative's feasibility through existing project
+  code, named platform or library documentation, or a disposable prototype. Compare every applicable
+  difference in public API, compatibility, failure or lifecycle behavior, resource cost, and maintenance.
 - Resolve material API, compatibility, failure, or lifecycle decisions with the user or cite their locked source.
 - End the phase with a bounded file and verification plan.
 
@@ -139,7 +142,10 @@ Type correctness is one check among runtime behavior, integration, build, packag
   installed script, workspace command, or other consumer command.
   Prove that the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
   Then verify the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
-- For a library, inspect public declarations and verify each supported import from an isolated installed consumer.
+- For a library, verify every recorded consumer path from an isolated representative consumer. Install the
+  package archive when the library is distributed as a package; otherwise use the recorded workspace,
+  project-reference, source, or other consumer path. Inspect the declarations that path exposes, type-check
+  every supported import, and run each runtime entry where runtime code exists.
 - For an SDK, validate external service payloads at runtime and verify documented client calls, public declarations, failures, cancellation, and supported consumer configurations against the supplied service requirements.
 - For a desktop application, verify Electron main, preload, and renderer entries separately where present, including typed IPC messages and the packaged application path required by the desktop and Electron skills.
 - For a fallback project kind, verify every named runtime, generated output, and direct consumer recorded in Phase 1.

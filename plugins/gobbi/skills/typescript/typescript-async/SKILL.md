@@ -32,14 +32,19 @@ Where a promise is awaited determines which `try` block or caller observes its r
 - **MUST** distinguish cancellation from stale-result suppression and choose each for the failure and resource behavior it actually provides.
 - **MUST** release listeners, timers, connections, locks, and other resources on success, failure, cancellation, and early exit.
 - **MUST** place an `await` inside the `try` block or function that must catch its rejection or retain its resources until completion.
-- **NEVER** start unbounded concurrent operations without defining admission, ordering, and failure behavior.
+- **MUST** define admission, ordering, and failure behavior for every concurrent group and either set a named
+  concurrency limit justified by named local and remote capacity constraints or record evidence that its
+  maximum admitted operation count and per-operation resource demand fit those constraints.
 
 ## Preferences
 
 - Prefer structured responsibility through `await`, a returned promise, or an aggregate over detached background operations.
 - Prefer a caller-provided cancellation signal when the runtime operation supports cooperative cancellation.
 - Prefer one release path close to acquisition; use the runtime's explicit-resource mechanism when it makes that path clearer, otherwise use `try`/`finally`.
-- Prefer a named concurrency limit when admission is not already bounded by a known finite input. Choose fail-fast, collect-all, or best-effort behavior intentionally.
+- Prefer a named concurrency limit derived from the most restrictive measured local or remote capacity when
+  per-operation demand or available capacity can vary. Depart only when recorded maximum admission and
+  resource measurements establish that the full group fits every named capacity constraint. Choose fail-fast,
+  collect-all, or best-effort behavior intentionally.
 - Prefer typed event adapters that pair subscription with unsubscription and validate payloads received from an external source.
 
 A project may depart from these preferences when another design makes observation or release clearer. The departure must name who observes completion and failure and which code releases each resource.

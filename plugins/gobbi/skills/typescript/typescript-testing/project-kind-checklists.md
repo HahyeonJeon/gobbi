@@ -73,16 +73,16 @@ runs, and verifies the process requirements.
 - [ ] TSTESTKIND-CK-USAGE-02-03 — Process tests invoke every recorded consumer command through its consumer entry.
 - [ ] TSTESTKIND-CK-USAGE-02-04 — Process tests assert the required arguments, standard input, standard output, standard error, exit status, signals, and cleanup for the applicable success and failure cases.
 
-### TSTESTKIND-SC-USAGE-03 — Normal case: a library is tested from an installed consumer
+### TSTESTKIND-SC-USAGE-03 — Normal case: a library is tested through its recorded consumer path
 
-A library source project can resolve declarations and runtime imports that fail after installation. The
-expected outcome type-checks supported imports and runs every supported runtime entry from an isolated
-consumer that installed the package archive.
+A library source project can resolve declarations and runtime imports that fail for its consumer. The expected
+outcome uses an isolated representative consumer through the recorded package, workspace, project-reference,
+source, or other distribution method. Requiring an archive that the library does not distribute is the failure.
 
 #### Checklist
 
-- [ ] TSTESTKIND-CK-USAGE-03-01 — Type tests exercise every supported library import form from an isolated installed consumer.
-- [ ] TSTESTKIND-CK-USAGE-03-02 — From an isolated installed consumer, runtime tests assert caller-visible behavior for every library entry that provides runtime code.
+- [ ] TSTESTKIND-CK-USAGE-03-01 — Type tests exercise every supported library import form from an isolated representative consumer through the recorded distribution method.
+- [ ] TSTESTKIND-CK-USAGE-03-02 — From that isolated representative consumer, runtime tests assert caller-visible behavior for every library entry that provides runtime code.
 
 ### TSTESTKIND-SC-USAGE-04 — Normal case: an SDK tests validation and documented client behavior
 

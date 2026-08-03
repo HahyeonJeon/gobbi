@@ -146,15 +146,17 @@ verification is evaluated by the
 ### TSDEV-SC-CONSISTENCY-01 — Normal case: effective compiler settings and runtime behavior are read rather than inferred
 
 File extensions, editor behavior, and habit suggest what the compiler, runtime, and sibling skills require;
-only the effective configuration says so. The expected outcome inspects those settings and behavior, loads the children
-whose triggers apply, and compares the design with prior art. Inference in place of inspection is the failure.
+only the effective configuration says so. The expected outcome inspects those settings and behavior, loads the
+children whose triggers apply, and compares the design with prior art plus an alternative that meets the same
+locked requirements and has named feasibility evidence. Inference or a comparison with a strawman is the failure.
 
 #### Checklist
 
 - [ ] TSDEV-CK-CONSISTENCY-01-01 — Effective compiler settings and runtime behavior are inspected rather than inferred from file extensions.
 - [ ] TSDEV-CK-CONSISTENCY-01-02 — Every TypeScript child whose trigger applies is recorded.
 - [ ] TSDEV-CK-CONSISTENCY-01-03 — Every TypeScript child whose trigger applies is loaded before the decisions it defines.
-- [ ] TSDEV-CK-CONSISTENCY-01-04 — The proposed public API and internal module interfaces are compared with project prior art and one credible alternative.
+- [ ] TSDEV-CK-CONSISTENCY-01-04 — The proposed public API and internal module interfaces are compared with project prior art and one alternative that meets the same locked requirements and is feasible according to existing project code, named platform or library documentation, or a disposable prototype.
+- [ ] TSDEV-CK-CONSISTENCY-01-05 — The comparison records every applicable difference in public API, compatibility, failure or lifecycle behavior, resource cost, and maintenance.
 
 ### TSDEV-SC-CONSISTENCY-02 — Poor quality: scope and affected files are never traced back
 

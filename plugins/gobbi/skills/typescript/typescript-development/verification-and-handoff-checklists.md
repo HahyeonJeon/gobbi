@@ -82,17 +82,18 @@ method and rejects a source file or unrelated command already on `PATH` as proof
 - [ ] TSDEV-CK-USAGE-04-01 — The invoked executable is the output of the recorded command distribution method rather than a source file or unrelated command already on `PATH`.
 - [ ] TSDEV-CK-USAGE-04-02 — Required arguments, standard input, standard output, standard error, exit status, signals, and failure text are verified.
 
-### TSDEV-SC-USAGE-05 — Normal case: a library is verified from an installed consumer
+### TSDEV-SC-USAGE-05 — Normal case: a library is verified through its recorded consumer path
 
-A library's source project can resolve declarations and imports that consumers cannot. The expected outcome
-inspects the public declarations and verifies every supported import from an isolated project that installed
-the package archive.
+A library's source project can resolve declarations and imports that its consumer cannot. The expected outcome
+uses an isolated representative consumer through the recorded package, workspace, project-reference, source,
+or other distribution method. Substituting an installed archive for a library that has no package distribution
+is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-USAGE-05-01 — Public declarations are inspected for every supported library entry point.
-- [ ] TSDEV-CK-USAGE-05-02 — Every supported import form is type-checked from an isolated installed consumer.
-- [ ] TSDEV-CK-USAGE-05-03 — Every supported library runtime entry is run from an isolated installed consumer where runtime code exists.
+- [ ] TSDEV-CK-USAGE-05-01 — Public declarations are inspected for every supported library entry point whose recorded consumer path exposes declarations.
+- [ ] TSDEV-CK-USAGE-05-02 — Every supported import form is type-checked from an isolated representative consumer through the recorded distribution method.
+- [ ] TSDEV-CK-USAGE-05-03 — Every supported library runtime entry is run from that isolated representative consumer where runtime code exists.
 
 ### TSDEV-SC-USAGE-06 — Normal case: an SDK verifies external data and documented client calls
 

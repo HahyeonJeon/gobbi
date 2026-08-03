@@ -60,7 +60,11 @@ When a runtime performs type stripping, verify that runtime's supported syntax a
 
 ### Emit declarations, source maps, and build state
 
-JavaScript is not the only emit. `declaration` writes `.d.ts` files. `declarationMap` writes maps that let a consumer navigate from a declaration to the original source.
+JavaScript is not the only emit. `declaration` writes `.d.ts` files. `declarationMap` writes maps from a
+declaration to its original source location. Claim consumer source navigation only when every mapped
+TypeScript source is available at the path the delivered map names; for a package consumer, that normally
+requires shipping those source files with the declaration maps, as described by the
+[TypeScript library compiler guidance](https://www.typescriptlang.org/docs/handbook/modules/guides/choosing-compiler-options).
 
 `composite` enables project-reference build information and turns on declaration emit by default.
 It also requires every implementation file to match `include` or be listed in `files`.
@@ -77,7 +81,14 @@ Confirm which outputs are needed. A declaration-only package, an application bun
 
 When the configured transpiler, bundler, or type-stripping runtime processes one file at a time, it cannot rely on cross-file type information. `isolatedModules` reports TypeScript constructs that can be interpreted incorrectly by that model, including a type re-exported without `export type`. Enable it when the actual JavaScript producer has that single-file limitation; do not infer the requirement merely because `tsc` is not the emitter.
 
-A stack trace is only as readable as the last map in the chain. When `tsc` emits JavaScript and a bundler then transforms it, that bundler must consume the upstream map or the final map points at intermediate output instead of the original TypeScript; `inlineSources` embeds the original text when sources cannot be served beside the map. Whether a production map is published is decided by [`web-deployment`](../../web/web-deployment/SKILL.md), not here.
+A stack trace is only as readable as the last map in the chain. When `tsc` emits JavaScript and a bundler then
+transforms it, that bundler must consume the upstream map or the final map points at intermediate output
+instead of the original TypeScript; `inlineSources` embeds the original text when sources cannot be served
+beside the map. Route production-map publication to the selected output's release owner:
+[`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
+[`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
+[`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive, or the recorded
+project-specific release owner for another output.
 
 ### Diagnose runtime differences
 
@@ -89,7 +100,13 @@ Reproduce with the built or shipped entry point when build rewriting, package ex
 
 Run the effective-configuration inspection, type-check, lint, build, and named-runtime smoke tests that apply. For a package, continue with `typescript-packaging` and `typescript-testing` so public imports and declarations are verified from an installed archive rather than only the source checkout.
 
-This tool stops after inspecting emitted JavaScript, declarations, maps, and build state. Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are deployment decisions and belong to [`web-deployment`](../../web/web-deployment/SKILL.md).
+This tool stops after inspecting emitted JavaScript, declarations, maps, and build state. Route bundler
+configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and
+rollout to the selected output's build or release owner: [`web-deployment`](../../web/web-deployment/SKILL.md)
+for a web release, [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron
+artifact, [`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive, or the recorded
+project-specific owner for another output. Stop and report the missing ownership decision when no such owner
+is recorded.
 
 ## References
 
