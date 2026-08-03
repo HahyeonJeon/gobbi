@@ -13,6 +13,7 @@ a second export, filename, directory, import, or formatting convention fails the
 #### Checklist
 
 - [ ] RCON-CK-PROJECT-01-01 — Inspected neighboring source and configured tools establish every applicable project source convention and configured-tool rule.
+- [ ] RCON-CK-PROJECT-01-02 — A file that intentionally groups related units may use the project-supported group filename instead of a primary-export filename.
 
 ### RCON-SC-PROJECT-02 — Expected failure: The project has no established convention
 
@@ -39,6 +40,17 @@ casing, Hook naming, nested definitions, or mismatched imports and exports fail 
 - [ ] RCON-CK-STRUCTURE-01-03 — Every component and custom Hook definition is at module scope.
 - [ ] RCON-CK-STRUCTURE-01-04 — Each import form matches the corresponding named or default export.
 
+### RCON-SC-STRUCTURE-02 — Normal case: Related source remains together until a boundary justifies a split
+
+Private support and small, tightly related components should stay with their owning unit while project
+conventions permit it. Moving them early fails. Keeping them together once scanning cost or an independent
+reuse or change boundary justifies a split also fails.
+
+#### Checklist
+
+- [ ] RCON-CK-STRUCTURE-02-01 — A unit’s private test, style, and narrow helper remain colocated with that unit while the project permits it.
+- [ ] RCON-CK-STRUCTURE-02-02 — Small, tightly related components remain together until scanning cost or an independent reuse or change boundary justifies a split.
+
 ## Performance
 
 Not applicable: source naming, export, file placement, JSX, and formatting conventions have no independent
@@ -55,7 +67,8 @@ Anonymous exports, misleading file names, or hand-format drift fails the scenari
 
 - [ ] RCON-CK-AESTHETICS-01-01 — Every component and custom Hook has a meaningful function name.
 - [ ] RCON-CK-AESTHETICS-01-02 — Each file name not fixed by a framework reveals its primary unit under the project convention.
-- [ ] RCON-CK-AESTHETICS-01-03 — Configured formatter and lint output determines mechanical layout and import order.
+- [ ] RCON-CK-AESTHETICS-01-03 — Configured formatter and lint output determine mechanical layout and import order.
+- [ ] RCON-CK-AESTHETICS-01-04 — Every component file has a meaningful name for its project or framework role, including a framework-fixed file.
 
 ### RCON-SC-AESTHETICS-02 — Edge case: A unit reaches its file boundary
 
@@ -100,6 +113,7 @@ local style beside them fails the scenario.
 #### Checklist
 
 - [ ] RCON-CK-CONSISTENCY-02-01 — Affected files follow the established project export, filename, directory, import, and formatting conventions.
+- [ ] RCON-CK-CONSISTENCY-02-02 — No hand-maintained prose rule replaces configured formatter or lint output.
 
 ## Risk
 
