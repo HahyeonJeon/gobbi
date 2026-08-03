@@ -1,7 +1,7 @@
 # React Development Checklist
 
 Use this unchecked `react-development` source with general Evaluation for every React implementation; `RDEV`
-is the stable checklist prefix. Complete the checklist of every active React sibling as well.
+is the stable checklist prefix. Complete the checklist of every active React child skill as well.
 
 ## Project
 
@@ -29,7 +29,7 @@ answer itself fails the scenario.
 - [ ] RDEV-CK-PROJECT-02-03 — The work pauses at each material design choice outside the accepted task instead of deciding it.
 - [ ] RDEV-CK-PROJECT-02-04 — The work sends each material design choice outside the accepted task to `react-design`.
 - [ ] RDEV-CK-PROJECT-02-05 — No unestablished React capability, framework feature, or authority is assumed to exist.
-- [ ] RDEV-CK-PROJECT-02-06 — A production finding returns as a new scoped `react-development` task instead of changing the completed local task.
+- [ ] RDEV-CK-PROJECT-02-06 — Only a finding traced to React source or local React behavior returns as a new scoped `react-development` task.
 
 ## Structure
 
@@ -41,7 +41,7 @@ complete implementation model. An unassigned concern or missing behavior fails t
 #### Checklist
 
 - [ ] RDEV-CK-STRUCTURE-01-01 — The model identifies every affected React function, input boundary, user or system action, affected state owner, affected external system, affected test layer, and affected runtime boundary.
-- [ ] RDEV-CK-STRUCTURE-01-02 — Each material React concern is assigned to one active React sibling or application skill.
+- [ ] RDEV-CK-STRUCTURE-01-02 — Each material React concern is assigned to one active React child skill or application skill.
 
 ### RDEV-SC-STRUCTURE-02 — Normal case: The complete skeleton precedes detailed behavior
 
@@ -127,7 +127,7 @@ stale dependent file or result from an earlier tree fails the scenario.
 
 - [ ] RDEV-CK-CONSISTENCY-01-01 — Source, tests, types, documents, and affected consumers each match the final behavior.
 - [ ] RDEV-CK-CONSISTENCY-01-02 — Every reported command result was produced from the exact final tree.
-- [ ] RDEV-CK-CONSISTENCY-01-03 — Every active sibling checklist is complete.
+- [ ] RDEV-CK-CONSISTENCY-01-03 — Each checklist for an active React child skill is complete.
 - [ ] RDEV-CK-CONSISTENCY-01-04 — Every not-applicable checklist result states its reason.
 
 ### RDEV-SC-CONSISTENCY-02 — Expected failure: Verification exposes an implementation defect
@@ -194,8 +194,8 @@ application outcome to React Development or omitting the responsible skill fails
 
 ### RDEV-SC-OVERALL-03 — Rule violation: Downstream evidence is claimed as React-local completion
 
-Electron mechanisms, React sibling migrations, independent judgment, and publication require their named
-skills or authority. Claiming any of them from local React implementation fails the scenario.
+Electron mechanisms, migrations owned by React child skills, independent judgment, and publication require
+their named skills or authority. Claiming any of them from local React implementation fails the scenario.
 
 #### Checklist
 

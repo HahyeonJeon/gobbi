@@ -46,7 +46,7 @@ claim requires a measurement of the relevant interaction and component tree.
 
 - **MUST inspect the installed project and record the exact affected set before choosing an API or changing
   source.** Confirm the renderer, React and renderer versions, framework, compiler, Hooks lint, rendering
-  architecture, host interfaces, commands, and every applicable React sibling.
+  architecture, host interfaces, commands, and every applicable React child skill.
 
 - **MUST build the complete implementation skeleton before detailed behavior and grow the result through the
   smallest verified slices.** Keep source, tests, types, callers, configuration, and documents current in
@@ -89,7 +89,7 @@ claim requires a measurement of the relevant interaction and component tree.
   Error Boundaries, host interfaces, and current behavior. Test every React child trigger and load the
   applicable convention, compiler, server, TypeScript, and testing guidance.
 - **Evidence / state:** Produce the exact affected set across source, tests, types, callers, configuration, and
-  documents, plus the applicable React siblings, preserved project patterns, commands, and identified gaps.
+  documents, plus the applicable React child skills, preserved project patterns, commands, and identified gaps.
 - **Next branch / recovery:** Stop when the installed capability, current behavior, affected set, or executable
   command cannot be established; return an unsupported renderer to its project guidance and continue when the
   evidence can support an implementation design.
@@ -166,7 +166,8 @@ claim requires a measurement of the relevant interaction and component tree.
   component or Hook tests, affected suites, Hooks and compiler lint, type checks, builds, and applicable local
   server-render, hydration, or Electron construction checks.
 - **Evidence / state:** Record the exact final tree identity, scenario observations, every command and result,
-  active sibling evidence, unavailable or skipped checks, and the limit of every substitute or local check.
+  evidence from active React child skills, unavailable or skipped checks, and the limit of every substitute
+  or local check.
 - **Next branch / recovery:** Send every failure to Step 4.3, keep an unavailable required check visible as a
   completion gap, and proceed only when the rendered outcome and required local checks agree.
 
@@ -205,7 +206,7 @@ claim requires a measurement of the relevant interaction and component tree.
 #### 5.1 Separate local completion from application evidence
 
 - **Input / precondition:** Require the exact final diff, rendered observations, command results, performance
-  record, active sibling results, limitations, and unresolved application work from Phase 4.
+  record, results from active React child skills, limitations, and unresolved application work from Phase 4.
 - **Action / decision:** Route complete browser journeys to `web-frontend`; cross-layer integration and release
   readiness to `web-feature`; production build, deployment, live verification, and rollback to
   `web-deployment`; production log, metric, trace, crash, and error emission plus destination feedback to
@@ -218,9 +219,11 @@ claim requires a measurement of the relevant interaction and component tree.
 - **Evidence / state:** Return the React-local outcome, changed files, behavior and state coverage, exact
   commands and results, performance evidence, visible gaps, remaining risks, and a routing record that names
   each downstream claim without presenting it as complete.
-- **Next branch / recovery:** Return a production finding as a new scoped `react-development` task with fresh
-  acceptance and evidence; keep publication as a separate explicitly authorized action, and stop while any
-  in-scope local implementation or required check remains unresolved.
+- **Next branch / recovery:** Return only a finding traced to React source or local React behavior as a new
+  scoped `react-development` task with fresh acceptance and evidence.
+- Return every downstream application, desktop, Electron, migration, testing, release, deployment, or
+  observability finding to the exact skill named in the Action map. Keep publication as a separate explicitly
+  authorized action, and stop while any in-scope local implementation or required check remains unresolved.
 
 ## References
 

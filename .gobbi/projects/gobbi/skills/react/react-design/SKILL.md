@@ -190,11 +190,18 @@ performance assumptions before implementation receives the design.
   accessibility obligations, performance hypotheses and measurement plan, acceptance scenarios, decisions,
   limits, and verification plan.
 - **Evidence / state:** Produce one validated implementation handoff whose citations, design record,
-  prototype limits, and scenario results agree and whose remaining application work identifies the named
-  skill from Step 1.1.
-- **Next branch / recovery:** Hand the accepted React design to `react-development`; route application
-  integration and shipping work to their named application skills, and leave any independent judgment to
-  Evaluation.
+  prototype limits, and scenario results agree, plus a routing record for every remaining application claim.
+- **Next branch / recovery:** Hand the accepted React design to `react-development`, and leave independent
+  judgment to Evaluation.
+- Route cross-layer integration and release readiness to `web-feature`; route production build, deployment,
+  live verification, and rollback to `web-deployment`.
+- Route production log, metric, trace, crash, and error emission plus destination feedback to
+  `web-observability`.
+- Route complete installed outcomes to `desktop-delivery`; route desktop target, data, update, and release
+  judgments to `desktop-release`.
+- Route Electron platform changes to `electron-development`; route Electron process, security, lifecycle,
+  native, and packaged-runtime evidence to `electron-testing`; route packaging, signing, notarization, and
+  update rehearsal to `electron-release`.
 
 ## References
 

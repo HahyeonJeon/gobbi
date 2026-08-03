@@ -7,8 +7,8 @@ skill-type: domain
 
 # React
 
-React is the domain for implementing or reviewing browser applications and Electron renderers that use
-React. React Native requires project-specific guidance.
+React covers design, implementation, test creation or revision, and review for browser applications and
+Electron renderers that use React. React Native requires project-specific guidance.
 
 This root provides navigation only. Load every child whose trigger applies.
 
