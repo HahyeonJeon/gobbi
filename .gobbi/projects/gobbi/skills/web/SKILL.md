@@ -10,7 +10,8 @@ skill-type: domain
 Web routes product design, coordinated development, browser and PWA runtime behavior, browser-facing work,
 interaction behavior, authoritative backend work, project structure, security assurance, testing, diagnostic
 emission, per-environment configuration and secret supply, production release and deployment, language and
-region adaptation, Web Platform interpretation, and structural web choices.
+region adaptation, supported live-service operations, Web Platform interpretation, and structural web
+choices.
 
 The root owns navigation only. Load every row whose trigger applies; each child owns its complete operation,
 manual, or preferences.
@@ -30,6 +31,7 @@ manual, or preferences.
 | [`web-interaction`](web-interaction/SKILL.md) | preference | MUST load when choosing or reviewing a browser feature's interaction behavior, covering event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, listener hygiene and rate limiting, and WAI-ARIA widget patterns. |
 | [`web-localization`](web-localization/SKILL.md) | preference | MUST load when choosing or reviewing how a web or Electron surface handles language and region, covering message catalogs, plural and grammatical selection, date, number, and currency formatting, locale negotiation, and right-to-left mirroring. |
 | [`web-observability`](web-observability/SKILL.md) | operation | MUST load when instrumenting or reviewing what a web or Electron surface emits, covering structured logs, metrics, traces, trace-context propagation, crash and unhandled-error capture, and diagnostic redaction. |
+| [`web-operations`](web-operations/SKILL.md) | operation | MUST load when operating or reviewing a live web service, including health and support, incident response, routine maintenance, dependency and compatibility updates, deprecation, or retirement. |
 | [`web-platform`](web-platform/SKILL.md) | tool | MUST load when interpreting or verifying browser and Web Platform behavior, security boundaries, lifecycle, compatibility, accessibility, performance evidence, or diagnostics. |
 | [`web-project-structure`](web-project-structure/SKILL.md) | preference | MUST load when establishing or reviewing a web project's directory structure, workspace or application roots, source, runtime, test, configuration, asset, migration, shared, generated, build, or deployable-output placement, or a documented placement exception. |
 | [`web-release`](web-release/SKILL.md) | operation | MUST load when producing or reviewing a web production build or release artifact, including frozen inputs, bundler configuration, chunking, asset names and cache policy, build identity, production source maps, or the artifact handoff to deployment. |

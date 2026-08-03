@@ -11,8 +11,8 @@ Use this operation to produce and maintain a risk-based web test system, from co
 deterministic suites, real-seam evidence, failure diagnosis, and truthful reporting.
 
 It owns test design and mechanics, not runner-specific syntax or the behavior under test. Product,
-`web-app-lifecycle`, platform, security, accessibility, performance, language, framework, and tool owners
-supply their claims and facts.
+`web-app-lifecycle`, `web-operations`, platform, security, accessibility, performance, language, framework,
+and tool owners supply their claims and facts.
 
 ## Principles
 
@@ -68,8 +68,8 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 
 #### 1.2 Route claim and fact owners
 
-- Load affected browser or PWA lifecycle, frontend, backend, platform, security, accessibility, performance,
-  coding, language, framework, and test-tool owners.
+- Load affected browser or PWA lifecycle, frontend, backend, operations, platform, security, accessibility,
+  performance, coding, language, framework, and test-tool owners.
 - Use behavior and isolation guidance from
   [Testing Library](https://testing-library.com/docs/guiding-principles/),
   [Playwright](https://playwright.dev/docs/best-practices), and
@@ -88,6 +88,8 @@ Doubles, automation, captures, emulation, and live observations each prove only 
   versions, and evidence limits.
 - Cover normal, alternative, exact-boundary, failure, recovery, adversarial, compatibility, concurrency, and
   counterfactual behavior in risk order.
+- For a live-operation capacity, saturation, cost, or dependency-health claim, measure under the named
+  environment and traffic conditions and report those conditions with the result.
 - For accessibility-conformance claims, define scope, representative sampling, evaluation, and reporting
   consistent with [WCAG-EM](https://www.w3.org/WAI/test-evaluate/conformance/wcag-em/).
 
@@ -146,8 +148,8 @@ Doubles, automation, captures, emulation, and live observations each prove only 
   migration, recovery, and live evidence without upgrading one signal into another.
 - Record reproduction, owner, impact, disposition, residual risk, and reopen condition for every unresolved
   gap.
-- Hand results to `web-development` or the requesting caller, keeping release, deployment, conformance, and live
-  health separate.
+- Hand results to `web-development`, `web-operations`, or the requesting caller, keeping release, deployment,
+  conformance, live health, and supported operation separate.
 
 ## References
 

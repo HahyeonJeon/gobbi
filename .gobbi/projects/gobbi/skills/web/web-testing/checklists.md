@@ -7,8 +7,9 @@ with [`web-platform`](../web-platform/SKILL.md) owning browser facts,
 [`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning the browser and PWA runtime contract,
 [`web-security`](../web-security/SKILL.md) owning the threat-to-evidence contract,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning the behavior
-under test, and [`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The source
-commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBTEST`.
+under test, [`web-operations`](../web-operations/SKILL.md) owning live-service thresholds and operational
+acceptance, and [`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The
+source commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBTEST`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -97,6 +98,16 @@ no measured cost is the failure.
 - [ ] WEBTEST-CK-PERFORMANCE-01-01 — Focused, affected, integration, full, and environment-specific execution order, failure triage, quarantine, and recovery are defined.
 - [ ] WEBTEST-CK-PERFORMANCE-01-02 — Suite cost, duration, ownership, and failure history are recorded.
 - Also applies: WEBTEST-CK-STRUCTURE-01-01 (the least expensive proving layer is chosen per claim).
+
+### WEBTEST-SC-PERFORMANCE-02 — Normal case: live-operation capacity, saturation, cost, and dependency health are measured under the named environment and traffic conditions
+
+A live-service claim needs measurement of capacity, saturation, cost, or dependency health. The expected
+outcome binds the measurement to the named environment and traffic conditions; a result reported without
+those conditions is the failure.
+
+#### Checklist
+
+- [ ] WEBTEST-CK-PERFORMANCE-02-01 — Capacity, saturation, cost, and dependency health are measured under the named environment and traffic conditions.
 
 ## Aesthetics
 

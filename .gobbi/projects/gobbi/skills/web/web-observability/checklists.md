@@ -9,7 +9,8 @@ protected and which logging controls are required,
 [`web-platform`](../web-platform/SKILL.md), [`css-platform`](../../css/css-platform/SKILL.md), and
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owning the reading of signals,
 [`web-testing`](../web-testing/SKILL.md) owning behavior under test, and
-[`web-development`](../web-development/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) as the callers whose
+[`web-operations`](../web-operations/SKILL.md) consuming reconciled live-service evidence, while
+[`web-development`](../web-development/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) are callers whose
 contracts name the signal shape. The source commit that contains this file identifies the checklist version.
 Its stable owner prefix is `WEBOBS`.
 

@@ -26,6 +26,9 @@ leaves the process, and out of the annotations an out-of-process crash reporter 
 `web-app-lifecycle` owns product behavior when a document hides, freezes, resumes, or is discarded. This
 operation owns the telemetry delivery and flush behavior required at those transitions.
 
+`web-operations` consumes reconciled arriving signals as live-service evidence. It owns health, support, and
+incident decisions without taking ownership of emission, verified arrival, or the signal's evidence limits.
+
 ## Principles
 
 ### Emission answers a question someone will ask
@@ -214,8 +217,8 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
 - Reconcile every question with its answering signal, its cost and cardinality, the destination check result,
   the named correlation and coverage limits, and every accepted gap with its owner.
 - Treat a protected value found at a destination as a `web-security` finding with its own remediation and
-  retention correction; hand the reconciled result to `web-development` or the requesting caller, reporting
-  implemented emission, verified arrival, and observed live health as separate claims.
+  retention correction; hand the reconciled result to `web-operations`, `web-development`, or the requesting
+  caller, reporting implemented emission, verified arrival, and observed live health as separate claims.
 
 ## References
 
