@@ -1,13 +1,13 @@
 ---
 name: web-observability
-description: "MUST load when instrumenting or reviewing what a web or Electron surface emits, covering structured logs, metrics, traces, trace-context propagation, crash and unhandled-error capture, and diagnostic redaction."
+description: "MUST load when instrumenting or reviewing telemetry from a web app or Electron renderer, including structured logs, metrics, traces, trace-context propagation, crash and unhandled-error capture, or diagnostic redaction."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebFetch
 skill-type: operation
 ---
 
 # Web Observability
 
-Use this operation to make one web or installed-renderer surface emit the signals that explain its behavior in
+Use this operation to make one web app or installed renderer emit the signals that explain its behavior in
 production: structured logs, metrics, traces that correlate across the client and server boundary, crash and
 unhandled-error reports, and the redaction that keeps protected data out of all of them. It ends when every
 signal reaches its destination and has answered the question it was created for.
@@ -17,11 +17,17 @@ standards evidence, [`css-platform`](../../css/css-platform/SKILL.md) owns style
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owns process, preload, and lifecycle failures.
 Load those to diagnose a failure; load this one to decide what the application produces.
 
-`web-feature` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
+`web-development` and `web-backend` require instrumentation inside their own contracts and keep their outcomes;
 this operation supplies the signal shape those contracts name. `web-security` owns which data is protected and
 which logging controls are required; this operation owns keeping that data out of a diagnostic before it
 leaves the process, and out of the annotations an out-of-process crash reporter carries on its behalf.
 `web-testing` proves behavior under test, which is a different claim from what production emits.
+
+`web-app-lifecycle` owns product behavior when a document hides, freezes, resumes, or is discarded. This
+operation owns the telemetry delivery and flush behavior required at those transitions.
+
+`web-operations` consumes reconciled arriving signals as live-service evidence. It owns health, support, and
+incident decisions without taking ownership of emission, verified arrival, or the signal's evidence limits.
 
 ## Principles
 
@@ -34,7 +40,7 @@ evidence.
 ### A signal is evidence only when it correlates
 
 Logs, metrics, traces, and crash reports about one user action become one story only when a shared identifier
-survives every boundary that action crosses. Without propagation each surface holds a fragment, and joining
+survives every boundary that action crosses. Without propagation each component holds a fragment, and joining
 the fragments after the incident is guesswork.
 
 ### The failure you most need to explain cannot report itself
@@ -46,8 +52,8 @@ something that outlives them.
 ### A protected value must never enter the record
 
 Once a diagnostic leaves the process it is transmitted, copied, indexed, and retained beyond the sender's
-control, and a later deletion cannot prove every copy is gone. The application enforces that at the emission
-seam for a signal it builds, and in the annotations it supplies in advance for a report it does not build.
+control, and a later deletion cannot prove every copy is gone. The application enforces that at the telemetry
+boundary for a signal it builds, and in the annotations it supplies in advance for a report it does not build.
 
 ## Rules
 
@@ -69,13 +75,13 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   only the annotations and endpoint it configured in advance.
 
 - **NEVER let a credential, token, authorization header, cookie, session identifier, or personal data field
-  reach a log, metric label, span attribute, crash annotation, or error message.** Redact at the emission seam
+  reach a log, metric label, span attribute, crash annotation, or error message.** Redact at the telemetry boundary
   by allow-listing what each application-emitted signal may carry, apply the same allow-list to the
   annotations supplied to an out-of-process crash reporter, and redact at the destination the crash payload no
-  seam can reach; `web-security` owns which data is protected.
+  application code can inspect before transport; `web-security` owns which data is protected.
 
 - **NEVER let emission change the behavior it observes.** A telemetry call must not throw into the user path,
-  block an authoritative effect, delay navigation, or retry until the request it measures degrades.
+  block a critical operation, delay navigation, or retry until the request it measures degrades.
 
 ## Procedure
 
@@ -83,14 +89,14 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
 
 #### 1.1 Name the questions the signals must answer
 
-- Start from the bounded outcome supplied by `web-feature` or the requesting caller, the incident and support
+- Start from the scoped outcome supplied by `web-development` or the requesting caller, the incident and support
   history, and the user-visible success measures the feature already defined.
 - List the questions someone will ask while the product is failing — which user, which request, which build,
   which step, how often, and how badly — then give each question one consumer, one owner, and one retention
   period, and drop any proposed signal that answers none of them.
 - Record a question-to-signal table carrying consumer, owner, retention, and expected volume per row.
 - Continue with that table; return an unowned question, an absent consumer, or an undefined retention period
-  to `web-feature` or the user before designing any signal shape.
+  to `web-development` or the user before designing any signal shape.
 
 #### 1.2 Inventory current emission and its owners
 
@@ -98,8 +104,8 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   analytics code and configuration.
 - Trace every existing emission point from call site through transport to destination, recording severity
   use, attribute names, sampling, label cardinality, cost, and whether a protected field currently reaches it;
-  load `web-security` for the data classification and `web-backend` for authoritative-effect diagnostics when
-  their triggers apply.
+  load `web-security` for the data classification and, when its trigger applies, `web-backend` for diagnostics
+  about server, data, or provider results.
 - Record the current emission inventory, its destinations and access, and the questions no current signal
   answers.
 - Continue with that gap set; route a protected field already reaching a destination to `web-security` as a
@@ -116,8 +122,8 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   parameterized URL, or a request identifier belongs on a log or a span and never on a metric label.
 - Record the record schema, the severity ladder, the metric list with labels and units, and the span list with
   names and attributes.
-- Continue when every listed question maps to one signal; route a question that depends on an authoritative
-  effect to `web-backend` and one that depends on browser behavior to `web-platform`.
+- Continue when every listed question maps to one signal; route a question that depends on a confirmed backend
+  or provider result to `web-backend` and one that depends on browser behavior to `web-platform`.
 
 #### 2.2 Define correlation and context propagation
 
@@ -130,61 +136,61 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   bytes.
 - Record a boundary-by-boundary propagation map, the sampling decision and where it is made, and the
   build-identity attribute name.
-- Continue when one identifier joins client, server, and crash signals for a single action; confirm with
-  `web-platform` that a cross-origin request carrying `traceparent` is allowed by the receiver, since that
-  header is not safelisted and makes the request preflighted, and record any boundary that cannot carry
-  context as a named correlation limit.
+- Continue when one identifier joins client, server, and crash signals for a single action; route the
+  compatibility fact for a cross-origin request carrying `traceparent` to `web-platform`, since that header
+  is not safelisted and makes the request preflighted, and record any boundary that cannot carry context as a
+  named correlation limit.
 
 #### 2.3 Define crash and unhandled-error capture
 
-- Take the list of shipped surfaces — browser document, worker, and for an installed application the Electron
+- Take the list of shipped runtimes — browser document, worker, and for an installed application the Electron
   main, renderer, and utility processes — and the build identity from Step 2.2.
-- Cover the two failure classes separately: capture errors the surface survives in process through the global
+- Cover the two failure classes separately: capture errors the runtime survives in process through the global
   `error` and `unhandledrejection` handlers and any framework error boundary, and capture failures it does not
   survive from outside it, declaring a `crash-reporting` or `default` endpoint through `Reporting-Endpoints`
   because a `crash` report cannot be observed in JavaScript by the page that crashed
   ([Reporting API](https://developer.mozilla.org/en-US/docs/Web/API/Reporting_API)), and in Electron calling
   [`crashReporter.start()`](https://www.electronjs.org/docs/latest/api/crash-reporter) in the main process
   before `app.on('ready')` — a renderer created before that call is not monitored — with `render-process-gone`
-  and `child-process-gone` handled on `app`; neither out-of-process report passes an application seam, so the
+  and `child-process-gone` handled on `app`; neither out-of-process report passes an application-controlled boundary, so the
   only content control is the allow-listed annotations set before the failure, within the documented key and
   value size limits of 39 bytes per key and 127 bytes per `extra` value.
-- Record, per surface, the in-process error path, the out-of-process failure path, the allow-listed
+- Record, per runtime, the in-process error path, the out-of-process failure path, the allow-listed
   annotations and endpoint configured for it, the attached build identity, and the decision that makes a
-  reported stack readable, which `web-deployment` owns.
-- Continue when both paths exist for every shipped surface; treat the browser Reporting API as newly
+  reported stack readable, which `web-release` owns.
+- Continue when both paths exist for every shipped runtime; treat the browser Reporting API as newly
   available rather than universal, keep the in-process path as the signal that must always work, and record
-  any surface whose unsurvivable failure cannot be captured as an accepted gap with its owner.
+  any runtime whose unsurvivable failure cannot be captured as an accepted gap with its owner.
 
 ### Phase 3 — Implement Emission and Redaction
 
-#### 3.1 Build the redaction seam and the emitter
+#### 3.1 Build the telemetry boundary and the emitter
 
 - Take the designed signal set and the `web-security` classification of protected fields.
-- Implement one emission seam that every application-emitted signal passes through and allow-list the
+- Implement one telemetry boundary that every application-emitted signal passes through and allow-list the
   attributes each signal may carry, so a newly added field is absent until it is added deliberately; strip
-  credentials, tokens, authorization headers, cookies, session identifiers, and personal data at that seam,
+  credentials, tokens, authorization headers, cookies, session identifiers, and personal data at that boundary,
   including inside URLs, query strings, request and response bodies, and exception messages, and govern the
   annotations supplied to an out-of-process crash reporter with the same allow-list.
-- Produce one seam with its allow-list plus a test proving that a record containing a protected field leaves
-  the seam without it.
-- Continue when no application-emitted signal path bypasses the seam and every crash annotation comes from
-  the allow-list; repair a direct call to a transport that skips the seam before instrumenting anything
-  further, and require the crash-report destination to redact and bound the retention of the payload no seam
-  can reach, because a deny-list ships the next unredacted field.
+- Produce one telemetry boundary with its allow-list plus a test proving that a record containing a protected field leaves
+  the boundary without it.
+- Continue when no application-emitted signal path bypasses the boundary and every crash annotation comes from
+  the allow-list; repair a direct call to a transport that skips the boundary before instrumenting anything
+  further, and require the crash-report destination to redact and limit the retention of the payload the
+  application cannot inspect before transport, because a deny-list ships the next unredacted field.
 
 #### 3.2 Instrument the paths and their failures
 
-- Take the seam, the propagation map, and the feature's real code paths.
-- Instrument the shortest complete path first — entry, authoritative effect, truthful completion, and one
+- Take the telemetry boundary, the propagation map, and the feature's real code paths.
+- Instrument the shortest complete path first — entry, confirmed result from its named source of truth, accurate completion, and one
   failure — then add slices in risk order, and deliver from the browser without blocking navigation by using
   [`navigator.sendBeacon()`](https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon) or `fetch()`
   with `keepalive` on `visibilitychange` to hidden rather than on `unload` or `beforeunload`, which are
   unreliable and defeat the back/forward cache.
 - Produce one real action that yields a joined log, metric, span, and, where applicable, error report, with
   buffered signals flushed when the document hides.
-- Continue slice by slice; repair a telemetry call that throws into the user path, blocks an authoritative
-  effect, or retries until the request degrades before adding another slice.
+- Continue slice by slice; repair a telemetry call that throws into the user path, blocks a critical operation,
+  or retries until the request degrades before adding another slice.
 
 ### Phase 4 — Prove the Signals and Hand Off
 
@@ -211,8 +217,8 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
 - Reconcile every question with its answering signal, its cost and cardinality, the destination check result,
   the named correlation and coverage limits, and every accepted gap with its owner.
 - Treat a protected value found at a destination as a `web-security` finding with its own remediation and
-  retention correction; hand the reconciled result to `web-feature` or the requesting caller, reporting
-  implemented emission, verified arrival, and observed live health as separate claims.
+  retention correction; hand the reconciled result to `web-operations`, `web-development`, or the requesting
+  caller, reporting implemented emission, verified arrival, and observed live health as separate claims.
 
 ## References
 

@@ -5,6 +5,14 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Renamed three web skills with no compatibility aliases. Direct or explicit invocation of `web-feature`
+  now breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
+  `web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`.
+
 ## 1.0.0 - 2026-08-01
 
 First stable release of Gobbi, an open-source ClaudeX system for Claude Code and Codex.

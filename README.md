@@ -16,7 +16,12 @@ lifecycle that an independent partner system reviews at every step. You pick the
 for you.
 
 Gobbi ships no binary and no framework. It is 28 top-level skills and 5 agent role prompts that Claude Code
-and Codex already know how to load. With their children, those skills are 92 documents.
+and Codex already know how to load. With their children, those skills are 95 documents.
+
+The web skill renames are not backward compatible. Direct or explicit invocation of `web-feature` now
+breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
+`web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`. No
+aliases remain for the former slugs.
 
 ## Install
 

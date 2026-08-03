@@ -20,7 +20,7 @@ the ordered change or review that applies these choices, and `css-platform` supp
 behind a performance or target claim.
 
 Whether a change deserves motion at all, and what a transition must communicate, belongs to
-[`web-interface`](../../web/web-interface/SKILL.md) or
+[`web-design`](../../web/web-design/SKILL.md) or
 [`desktop-interface`](../../desktop/desktop-interface/SKILL.md). Motion a script drives from a live input —
 a pointer drag, a scroll position, a sequence that must reverse from where it stands — belongs to
 [`web-interaction`](../../web/web-interaction/SKILL.md), which takes the scale, the safe-property limit, and
