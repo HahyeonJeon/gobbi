@@ -23,6 +23,9 @@ which logging controls are required; this operation owns keeping that data out o
 leaves the process, and out of the annotations an out-of-process crash reporter carries on its behalf.
 `web-testing` proves behavior under test, which is a different claim from what production emits.
 
+`web-app-lifecycle` owns product behavior when a document hides, freezes, resumes, or is discarded. This
+operation owns the telemetry delivery and flush behavior required at those transitions.
+
 ## Principles
 
 ### Emission answers a question someone will ask
@@ -130,10 +133,10 @@ seam for a signal it builds, and in the annotations it supplies in advance for a
   bytes.
 - Record a boundary-by-boundary propagation map, the sampling decision and where it is made, and the
   build-identity attribute name.
-- Continue when one identifier joins client, server, and crash signals for a single action; confirm with
-  `web-platform` that a cross-origin request carrying `traceparent` is allowed by the receiver, since that
-  header is not safelisted and makes the request preflighted, and record any boundary that cannot carry
-  context as a named correlation limit.
+- Continue when one identifier joins client, server, and crash signals for a single action; route the
+  compatibility fact for a cross-origin request carrying `traceparent` to `web-platform`, since that header
+  is not safelisted and makes the request preflighted, and record any boundary that cannot carry context as a
+  named correlation limit.
 
 #### 2.3 Define crash and unhandled-error capture
 

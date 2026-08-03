@@ -10,8 +10,9 @@ skill-type: preference
 This preference skill guides structural web decisions: where authority and state live, how documents and code
 are delivered, how navigation survives transitions, and which caches, services, and dependencies are accepted.
 
-It recommends seams without redesigning a sound application. Feature, project structure, frontend, backend,
-platform, security, testing, language, and framework owners keep their own policy and implementation.
+It recommends seams without redesigning a sound application. `web-app-lifecycle` owns user-visible browser
+and PWA states and transitions; development, project structure, frontend, backend, platform, security,
+testing, language, and framework owners keep their own policy and implementation.
 
 ## Principles
 
@@ -64,7 +65,9 @@ operability, compatibility, or maintenance, and change the smallest boundary tha
 PREFER trusted server boundaries for secrets, protected policy, authorization, and authoritative shared
 effects; URLs for navigable state; server data for shared facts; and local state for transient interaction.
 Depart only when verified ownership or lifecycle needs require another placement, and give every cache a
-freshness, isolation, invalidation, stale, capacity, and diagnostic contract.
+freshness, isolation, invalidation, stale, capacity, and diagnostic contract. Set project-approved storage,
+network, and processing limits for offline cache, queued-action, reconnect, service-worker, and update work;
+`web-app-lifecycle` chooses the product state entered when measured work reaches those limits.
 
 ### PREFER durable navigation, progressive enhancement, and evidence-based delivery
 

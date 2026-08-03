@@ -11,8 +11,9 @@ Use this manual to answer what a web standard defines, what a target browser and
 what an observation can establish. It covers lifecycle, navigation, storage, networking, origins,
 compatibility, accessibility evidence, performance evidence, and diagnosis.
 
-It supplies platform facts to feature, frontend, backend, architecture, security, testing, HTML, CSS,
-language, and framework owners. It does not choose product behavior, controls, tests, or architecture.
+It supplies platform facts to `web-app-lifecycle`, development, frontend, backend, architecture, security,
+testing, HTML, CSS, language, and framework owners. It does not choose product behavior, controls, tests, or
+architecture; `web-app-lifecycle` chooses the user-visible browser and PWA state contract.
 
 ## Principles
 
@@ -104,6 +105,9 @@ and recovery from unavailable or corrupt data.
 Service workers add installation, activation, control, update, cache-version, fallback, mixed-client, stale,
 queued-effect, replay, conflict, and removal states. A cached shell does not establish that protected data or
 mutations are current.
+
+Report the supported state set, unavailable capabilities, and version-sensitive observations to
+`web-app-lifecycle`; keep the resulting product behavior and recovery choice with that preference.
 
 ### Network and Origin Security
 

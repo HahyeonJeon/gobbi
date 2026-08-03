@@ -4,6 +4,7 @@ This reusable unchecked source evaluates one web test system produced under this
 risk-derived-suite, owning-boundary, real-seam, determinism, matched-evidence, and unresolved-gap obligations
 this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-testing`](SKILL.md) operation,
 with [`web-platform`](../web-platform/SKILL.md) owning browser facts,
+[`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning the browser and PWA runtime contract,
 [`web-security`](../web-security/SKILL.md) owning the threat-to-evidence contract,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning the behavior
 under test, and [`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The source
@@ -150,6 +151,7 @@ signals distinct; one layer's pass reported as another's is the failure.
 - [ ] WEBTEST-CK-CONSISTENCY-01-01 — Every material claim is reconciled with its result, environment, version, real or doubled seams, skips, flakes, diagnostics, and limitations.
 - [ ] WEBTEST-CK-CONSISTENCY-01-02 — Focused, affected, integration, full, accessibility, security, visual, performance, browser, migration, recovery, and live evidence are reported without upgrading one signal into another.
 - [ ] WEBTEST-CK-CONSISTENCY-01-03 — Release, deployment, conformance, and live health are kept separate at handoff.
+- [ ] WEBTEST-CK-CONSISTENCY-01-04 — Every lifecycle test claim names the exact contract version, state, and transition it evaluates.
 
 ## Risk
 

@@ -5,7 +5,8 @@ this manual, against the fact-class, target-context, evidence-layer, interruptio
 proven-claim obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-platform`](SKILL.md) manual, with [`web-security`](../web-security/SKILL.md) owning control
 requirements, [`web-testing`](../web-testing/SKILL.md) owning evidence design,
-[`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning product
+[`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning the browser and PWA state contract,
+[`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning implementation
 behavior, and [`web-architecture`](../web-architecture/SKILL.md) owning structural choice. The source commit
 that contains this file identifies the checklist version. Its stable owner prefix is `WEBPLAT`.
 
@@ -27,7 +28,7 @@ answer that also chooses product behavior, a control, a test, or an architecture
 #### Checklist
 
 - [ ] WEBPLAT-CK-PROJECT-01-01 — The inspected question concerns a web standard, a target browser or execution context's behavior, or what an observation can establish.
-- [ ] WEBPLAT-CK-PROJECT-01-02 — Every decision the inspection raises is routed to its owner: control requirements to `web-security`, evidence design to `web-testing`, product and browser behavior to `web-development` and `web-frontend`, and structural choice to `web-architecture`.
+- [ ] WEBPLAT-CK-PROJECT-01-02 — Every decision the inspection raises is routed to its owner: control requirements to `web-security`, evidence design to `web-testing`, browser and PWA runtime behavior to `web-app-lifecycle`, other product and browser behavior to `web-development` and `web-frontend`, and structural choice to `web-architecture`.
 
 ## Structure
 
@@ -69,6 +70,7 @@ conditions behind the number; a measurement whose conditions the product never m
 - [ ] WEBPLAT-CK-PERFORMANCE-01-01 — No performance claim rests on a single trace, an emulator label, or a passing happy path alone.
 - [ ] WEBPLAT-CK-PERFORMANCE-01-02 — Lab traces and field distributions are each used for the performance question they can answer.
 - [ ] WEBPLAT-CK-PERFORMANCE-01-03 — Device, network, cache, cold or warm state, population, and attribution across network, main thread, rendering, memory, caching, and third parties are recorded with the measurement.
+- [ ] WEBPLAT-CK-PERFORMANCE-01-04 — Browser/PWA runtime resource use is measured under the named supported-browser, device, network, cache, and version conditions.
 
 ## Aesthetics
 
@@ -189,6 +191,7 @@ browser restriction presented as authorization is the failure.
 - [ ] WEBPLAT-CK-RISK-03-01 — Origin, credential, permission, sandbox, isolation, and trusted-context facts are reported as browser facts.
 - [ ] WEBPLAT-CK-RISK-03-02 — Same-origin policy, CORS, CSP, sandboxing, permissions policy, integrity metadata, cross-origin isolation, and secure contexts are not treated as replacing server authentication, authorization, validation, CSRF defenses, abuse controls, or output handling.
 - [ ] WEBPLAT-CK-RISK-03-03 — Every control requirement the inspection raises is routed to `web-security`.
+- [ ] WEBPLAT-CK-RISK-03-04 — A cross-origin request carrying `traceparent` is confirmed with `web-platform` to be allowed by the receiver, since that header is not safelisted and makes the request preflighted.
 
 ### WEBPLAT-SC-RISK-04 — Adversarial: a plausible artifact stands in for the observation the claim needs
 

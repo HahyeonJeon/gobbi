@@ -4,8 +4,9 @@ This reusable unchecked source evaluates one web or installed-renderer emission 
 operation, against the named-question, structured-record, trace-context, crash-capture, redaction, and
 non-interference obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-observability`](SKILL.md) operation, with [`web-security`](../web-security/SKILL.md) owning which data is
-protected and which logging controls are required, [`web-platform`](../web-platform/SKILL.md),
-[`css-platform`](../../css/css-platform/SKILL.md), and
+protected and which logging controls are required,
+[`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning product behavior at browser lifecycle transitions,
+[`web-platform`](../web-platform/SKILL.md), [`css-platform`](../../css/css-platform/SKILL.md), and
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owning the reading of signals,
 [`web-testing`](../web-testing/SKILL.md) owning behavior under test, and
 [`web-development`](../web-development/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) as the callers whose
@@ -131,13 +132,12 @@ answer reconstructed from the emitter's input or from the source is the failure.
 ### WEBOBS-SC-USAGE-02 — Expected failure: a boundary cannot carry the trace context
 
 A hop refuses or cannot forward the identifier, so the story for one action breaks there. The expected outcome
-names that boundary as a correlation limit and confirms the cross-origin case before relying on it; a joined
-story assumed across a boundary that never carried the context is the failure.
+names that boundary as a correlation limit; a joined story assumed across a boundary that never carried the
+context is the failure.
 
 #### Checklist
 
 - [ ] WEBOBS-CK-USAGE-02-01 — Every boundary that cannot carry the trace context is recorded as a named correlation limit.
-- [ ] WEBOBS-CK-USAGE-02-02 — A cross-origin request carrying `traceparent` is confirmed with `web-platform` to be allowed by the receiver, since that header is not safelisted and makes the request preflighted.
 
 ## Consistency
 

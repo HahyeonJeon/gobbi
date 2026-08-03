@@ -5,7 +5,8 @@ authority-and-ownership, option-comparison, browser-journey, boundary-lifecycle,
 skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-architecture`](SKILL.md) preferences,
 with [`web-development`](../web-development/SKILL.md) as the operation that integrates them,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) as the owners of the
-browser and authoritative behavior these seams carry, and
+browser and server implementation these boundaries carry,
+[`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) as the owner of the browser and PWA state contract, and
 [`web-project-structure`](../web-project-structure/SKILL.md) as the owner of where the resulting code sits. The
 source commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBARCH`.
 
@@ -107,6 +108,16 @@ maintenance evidence; a layer justified by habit is the failure.
 
 - [ ] WEBARCH-CK-PERFORMANCE-02-01 — Every added client machinery or abstraction names the capability, compatibility, delivery, or maintenance evidence that justifies it.
 - [ ] WEBARCH-CK-PERFORMANCE-02-02 — No platform capability that already satisfies the outcome is replaced by added machinery.
+
+### WEBARCH-SC-PERFORMANCE-03 — Normal case: browser/PWA lifecycle storage, network, and processing limits come from approved project evidence
+
+Offline, reconnect, service-worker, and update behavior need resource limits before the lifecycle contract can
+choose its degraded or recovery state. The expected outcome uses project-approved limits; limits invented by
+the lifecycle preference or implementation are the failure.
+
+#### Checklist
+
+- [ ] WEBARCH-CK-PERFORMANCE-03-01 — Offline cache, queued-action, reconnect, service-worker, and update work uses project-approved storage, network, and processing limits.
 
 ## Aesthetics
 

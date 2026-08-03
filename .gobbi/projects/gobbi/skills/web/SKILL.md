@@ -7,10 +7,10 @@ skill-type: domain
 
 # Web
 
-Web routes product design, coordinated development, browser-facing work, interaction behavior, authoritative
-backend work, project structure, security assurance, testing, diagnostic emission, per-environment
-configuration and secret supply, production release and deployment, language and region adaptation, Web
-Platform interpretation, and structural web choices.
+Web routes product design, coordinated development, browser and PWA runtime behavior, browser-facing work,
+interaction behavior, authoritative backend work, project structure, security assurance, testing, diagnostic
+emission, per-environment configuration and secret supply, production release and deployment, language and
+region adaptation, Web Platform interpretation, and structural web choices.
 
 The root owns navigation only. Load every row whose trigger applies; each child owns its complete operation,
 manual, or preferences.
@@ -19,6 +19,7 @@ manual, or preferences.
 
 | Child skill | Type | Load when |
 |---|---|---|
+| [`web-app-lifecycle`](web-app-lifecycle/SKILL.md) | preference | MUST load when choosing or reviewing browser or PWA behavior for startup, readiness, restoration, foreground and background transitions, freeze or discard, offline and reconnect, service-worker updates, mixed versions, browser-managed PWA installation state, cleanup, or removal. |
 | [`web-architecture`](web-architecture/SKILL.md) | preference | MUST load when choosing or reviewing client-server boundaries, rendering and delivery, navigation, state ownership, caching, progressive enhancement, or dependency strategy for a web application. |
 | [`web-backend`](web-backend/SKILL.md) | operation | MUST load when designing, building, or reviewing a web feature's server, API, domain, data, provider, authorization, or operational behavior. |
 | [`web-configuration`](web-configuration/SKILL.md) | preference | MUST load when choosing or reviewing how a web or Electron surface is supplied with per-environment values, covering build-time versus runtime configuration, secret supply and the client-bundle boundary, feature-flag lifetime, and startup validation. |

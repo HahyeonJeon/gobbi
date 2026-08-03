@@ -10,8 +10,9 @@ skill-type: operation
 Use this operation to produce and maintain a risk-based web test system, from contract study through
 deterministic suites, real-seam evidence, failure diagnosis, and truthful reporting.
 
-It owns test design and mechanics, not runner-specific syntax or the behavior under test. Product, platform,
-security, accessibility, performance, language, framework, and tool owners supply their claims and facts.
+It owns test design and mechanics, not runner-specific syntax or the behavior under test. Product,
+`web-app-lifecycle`, platform, security, accessibility, performance, language, framework, and tool owners
+supply their claims and facts.
 
 ## Principles
 
@@ -67,8 +68,8 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 
 #### 1.2 Route claim and fact owners
 
-- Load affected frontend, backend, platform, security, accessibility, performance, coding, language,
-  framework, and test-tool owners.
+- Load affected browser or PWA lifecycle, frontend, backend, platform, security, accessibility, performance,
+  coding, language, framework, and test-tool owners.
 - Use behavior and isolation guidance from
   [Testing Library](https://testing-library.com/docs/guiding-principles/),
   [Playwright](https://playwright.dev/docs/best-practices), and
