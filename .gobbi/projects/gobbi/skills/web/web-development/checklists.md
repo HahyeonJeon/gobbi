@@ -6,7 +6,7 @@ the bound outcome, owner routing, handoff contract, vertical slices, returns, an
 owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-development`](SKILL.md) operation, with [`web-frontend`](../web-frontend/SKILL.md) and
 [`web-backend`](../web-backend/SKILL.md) as the layer operations it routes to,
-[`web-architecture`](../web-architecture/SKILL.md) as the owner of the structural seams it integrates across,
+[`web-architecture`](../web-architecture/SKILL.md) as the owner of the structural boundaries it integrates across,
 [`web-release`](../web-release/SKILL.md) as the operation that owns production release artifacts, and
 [`web-deployment`](../web-deployment/SKILL.md) as the operation that owns deployment actions. The source
 commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBDEV`.
@@ -20,7 +20,7 @@ that this scenario reuses.
 
 ## Project
 
-### WEBDEV-SC-PROJECT-01 — Normal case: one bounded outcome is locked before implementation
+### WEBDEV-SC-PROJECT-01 — Normal case: one scoped outcome is locked before implementation
 
 A feature request arrives and work is about to start. The expected outcome binds one complete observable
 outcome with its signals, scope, and non-goals before any implementation; a frame that names a page, an
@@ -31,7 +31,7 @@ endpoint, or a happy path as the unit of completion is the failure.
 - [ ] WEBDEV-CK-PROJECT-01-01 — The frame names the actors, trigger, entry, observable completion, false completion, side effects, paths, states, failures, recovery, boundary, non-goals, compatibility constraints, and decision authority.
 - [ ] WEBDEV-CK-PROJECT-01-02 — The unit of completion is one complete observable outcome rather than a page, component, endpoint, migration, or green happy path.
 - [ ] WEBDEV-CK-PROJECT-01-03 — A scope change, a contradiction, or missing authority is returned to the user before contract work.
-- [ ] WEBDEV-CK-PROJECT-01-04 — The current entry-to-effect journey is traced through routes, browser state, APIs, domain rules, stored data, providers, access controls, tests, telemetry, configuration, migrations, support, and release controls before the change is selected.
+- [ ] WEBDEV-CK-PROJECT-01-04 — The current entry-to-result journey is traced through routes, browser state, APIs, domain rules, stored data, providers, access controls, tests, telemetry, configuration, migrations, support, and release controls before the change is selected.
 
 ### WEBDEV-SC-PROJECT-02 — Rule violation: an applicable owner is skipped without evidence
 
@@ -61,29 +61,29 @@ its semantic owner, and why it may advance or reopen; a stage inferred from the 
 ### WEBDEV-SC-STRUCTURE-01 — Normal case: one cross-layer contract is locked before building
 
 Several layers must agree before code exists. The expected outcome locks one internally consistent contract
-covering entries, state, effects, authority, data, failures, and release controls; an omission carried by
+covering entries, state and provider changes, authority, data, failures, and release controls; an omission carried by
 assumption rather than by evidence is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-STRUCTURE-01-01 — The contract defines each entry and URL, browser and server state, message and error, domain and provider effect, authority, privacy boundary, completion, failure, and resumption path.
+- [ ] WEBDEV-CK-STRUCTURE-01-01 — The contract defines each entry and URL, browser and server state, message and error, domain and provider change, authority, privacy boundary, completion, failure, and resumption path.
 - [ ] WEBDEV-CK-STRUCTURE-01-02 — The contract maps who can create, read, update, delete, retain, export, and observe each data class.
 - [ ] WEBDEV-CK-STRUCTURE-01-03 — The contract defines applicable configuration, migration, compatibility, instrumentation, support, rollout, stop, and rollback behavior.
 - [ ] WEBDEV-CK-STRUCTURE-01-04 — Every omission from the contract is supported by evidence rather than silence.
 
 ### WEBDEV-SC-STRUCTURE-02 — Poor quality: breadth is added before a real end-to-end path exists
 
-Screens and endpoints multiply while no real entry has yet reached a truthful completion. The expected outcome
-connects the smallest real path first and repairs the earliest missing seam; a mock response or an isolated
+Screens and endpoints multiply while no real entry has yet reached an accurate completion. The expected outcome
+connects the smallest real path first and repairs the earliest missing integration point; a mock response or an isolated
 endpoint treated as the feature is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-STRUCTURE-02-01 — The smallest safe path runs from a real entry through the required browser, server, and data or provider seams to truthful observable completion.
+- [ ] WEBDEV-CK-STRUCTURE-02-01 — The smallest safe path runs from a real entry through the required browser, server, and data or provider integration points to accurate observable completion.
 - [ ] WEBDEV-CK-STRUCTURE-02-02 — Every fake or unavailable dependency is marked.
 - [ ] WEBDEV-CK-STRUCTURE-02-03 — One end-to-end skeleton trace is captured as evidence.
 - [ ] WEBDEV-CK-STRUCTURE-02-04 — No client-only demo, mock response, or isolated endpoint is treated as the feature.
-- [ ] WEBDEV-CK-STRUCTURE-02-05 — The earliest missing seam is repaired before another slice is added.
+- [ ] WEBDEV-CK-STRUCTURE-02-05 — The earliest missing integration point is repaired before another slice is added.
 
 ## Performance
 
@@ -101,12 +101,12 @@ decided, held against the work, is the failure.
 ### WEBDEV-SC-PERFORMANCE-02 — Edge case: the feature runs under duplicates, concurrency, and late results
 
 Real traffic delivers the same request twice, two at once, and one long after it was abandoned. The expected
-outcome keeps success truthful under each of those and emits the contract's signals; a path correct only when
+outcome keeps success accurate under each of those and emits the contract's signals; a path correct only when
 timing is clean is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-PERFORMANCE-02-01 — Truthful success holds under applicable duplicates, concurrency, stale clients, partial mutation, dependency failure, interruption, retries, and late results.
+- [ ] WEBDEV-CK-PERFORMANCE-02-01 — Accurate success holds under applicable duplicates, concurrency, stale clients, partial mutation, dependency failure, interruption, retries, and late results.
 - [ ] WEBDEV-CK-PERFORMANCE-02-02 — The instrumentation and monitoring signals the contract defines are emitted by the implemented path.
 
 ## Aesthetics
@@ -124,15 +124,15 @@ by its author is the failure.
 
 ## Usage
 
-### WEBDEV-SC-USAGE-01 — Normal case: the observable outcome is reachable and truthful
+### WEBDEV-SC-USAGE-01 — Normal case: the observable outcome is reachable and accurate
 
-A person completes the feature end to end. The expected outcome ties what they observe to the authoritative
-effect and distinguishes it from the named false completion; an acknowledgement shown before the effect exists
-is the failure.
+A person completes the feature end to end. The expected outcome ties what they observe to the confirmed result
+from its named source of truth and distinguishes it from the named false completion; an acknowledgement shown
+before the result exists is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-USAGE-01-01 — The completion signal a person observes matches the authoritative effect rather than a client-side acknowledgement.
+- [ ] WEBDEV-CK-USAGE-01-01 — The completion signal a person observes matches the confirmed result from its named source of truth rather than a client-side acknowledgement.
 - [ ] WEBDEV-CK-USAGE-01-02 — The false-completion signal named in the frame is distinguishable from real completion in the built path.
 - [ ] WEBDEV-CK-USAGE-01-03 — Ordinary behavior, alternative-valid paths, exact boundaries, failures and recovery, adversarial cases, compatibility, and counterfactual assumptions are grown one slice at a time until the contract's cases are implemented.
 
@@ -151,7 +151,7 @@ a silent repair is the failure.
 ### WEBDEV-SC-USAGE-03 — Normal case: live evidence reopens the owned lifecycle
 
 Evidence from live use invalidates an accepted decision or outcome. The expected result reopens the earliest
-affected stage and routes the new iteration through each applicable owner; restarting at the surface where the
+affected stage and routes the new iteration through each applicable owner; restarting at the layer where the
 evidence appeared is the failure.
 
 #### Checklist
@@ -182,7 +182,7 @@ evidence widened beyond what it proves, is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-CONSISTENCY-02-01 — Implementation correctness, frontend acceptance, backend effects, release readiness, deployment authorization, deployment state, and live outcome validation are reported as separate claims.
+- [ ] WEBDEV-CK-CONSISTENCY-02-01 — Implementation correctness, frontend acceptance, backend results, release readiness, deployment authorization, deployment state, and live outcome validation are reported as separate claims.
 - [ ] WEBDEV-CK-CONSISTENCY-02-02 — Each claim is matched to its strongest owning evidence rather than to a weaker signal widened to cover it.
 - Also applies: WEBFRNT-CK-RISK-04-02 (browser evidence stays within its proving limits).
 
@@ -211,12 +211,12 @@ measure's harmful interpretation and the guardrail that detects it; a proxy stan
 ### WEBDEV-SC-RISK-03 — Expected failure: a verification finding appears late
 
 Verification exposes a failed claim close to the handoff. The expected outcome returns it to its earliest
-owner and preserves the evidence gap; repairing at the surface where it surfaced, or filling the gap with a
+owner and preserves the evidence gap; repairing at the layer where it appeared, or filling the gap with a
 weaker signal, is the failure.
 
 #### Checklist
 
-- [ ] WEBDEV-CK-RISK-03-01 — A failed claim is returned to its earliest owner rather than repaired at the surface where it appeared.
+- [ ] WEBDEV-CK-RISK-03-01 — A failed claim is returned to its earliest owner rather than repaired at the layer where it appeared.
 - [ ] WEBDEV-CK-RISK-03-02 — Each evidence gap is preserved rather than filled with a weaker signal widened to cover it.
 
 ### WEBDEV-SC-RISK-04 — Rule violation: coordination is treated as action authority

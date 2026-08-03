@@ -1,9 +1,9 @@
 # Web Platform Evaluation Checklist
 
-This reusable unchecked source evaluates one Web Platform interpretation, lookup, or diagnosis produced under
-this manual, against the fact-class, target-context, evidence-layer, interruption, origin-boundary, and
+This reusable unchecked source evaluates one Web Platform interpretation, lookup, or diagnosis produced with
+this tool skill against the fact-class, target-context, evidence-layer, interruption, origin-boundary, and
 proven-claim obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-platform`](SKILL.md) manual, with [`web-security`](../web-security/SKILL.md) owning control
+[`web-platform`](SKILL.md) tool skill, with [`web-security`](../web-security/SKILL.md) owning control
 requirements, [`web-testing`](../web-testing/SKILL.md) owning evidence design,
 [`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning the browser and PWA state contract,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning implementation
@@ -21,7 +21,7 @@ that this scenario reuses.
 
 ### WEBPLAT-SC-PROJECT-01 — Normal case: the question stays on the platform
 
-This manual answers what a standard defines, what a target browser and execution context do, and what an
+This tool skill answers what a standard defines, what a target browser and execution context do, and what an
 observation can establish. The expected outcome supplies those facts and routes every decision to its owner; an
 answer that also chooses product behavior, a control, a test, or an architecture is the failure.
 
@@ -34,19 +34,19 @@ answer that also chooses product behavior, a control, a test, or an architecture
 
 ### WEBPLAT-SC-STRUCTURE-01 — Normal case: the claim is measured at the layer that owns it
 
-DOM, accessibility tree, pixels, network, timings, storage, console, server effects, and user outcomes answer
+DOM, accessibility tree, pixels, network, timings, storage, console, server and provider records, and user outcomes answer
 different questions. The expected outcome inspects the layer that owns each claim and attributes every
 observation to the layer that produced it; evidence borrowed from an adjacent layer is the failure.
 
 #### Checklist
 
 - [ ] WEBPLAT-CK-STRUCTURE-01-01 — Every claim is inspected at the evidence layer that owns it.
-- [ ] WEBPLAT-CK-STRUCTURE-01-02 — Every observation is attributed to the layer that produced it: standards and source inspection for defined semantics and implementation structure, DOM and accessibility tree for exposed structure, names, roles, states, and relationships, rendered frames for pixels at named states, live interaction for focus, input, history, timing, interruption, and recovery behavior, network, storage, and performance traces for requests, caches, lifecycle, scheduling, and measured timings, authoritative server or provider records for effects outside the browser, and field telemetry for observed distributions in the instrumented population.
+- [ ] WEBPLAT-CK-STRUCTURE-01-02 — Every observation is attributed to the layer that produced it: standards and source inspection for defined semantics and implementation structure, DOM and accessibility tree for exposed structure, names, roles, states, and relationships, rendered frames for pixels at named states, live interaction for focus, input, history, timing, interruption, and recovery behavior, network, storage, and performance traces for requests, caches, lifecycle, scheduling, and measured timings, server or provider records for results outside the browser, and field telemetry for observed distributions in the instrumented population.
 - [ ] WEBPLAT-CK-STRUCTURE-01-03 — No observation from one of those layers is exchanged for an observation from another.
 
 ### WEBPLAT-SC-STRUCTURE-02 — Normal case: every materially different target context is identified
 
-Available APIs, DOM access, credentials, lifetime, scheduling, and diagnostic surfaces differ by where code
+Available APIs, DOM access, credentials, lifetime, scheduling, and diagnostic interfaces differ by where code
 runs and under what security state. The expected outcome identifies each materially different context and
 states its limits; a result carried from one context to another is the failure.
 
@@ -122,7 +122,7 @@ the failure.
 
 - [ ] WEBPLAT-CK-USAGE-03-01 — JavaScript, storage, permissions, network requests, providers, and enhancements each have their own unavailability and recovery states reported.
 - [ ] WEBPLAT-CK-USAGE-03-02 — Baseline capabilities from valid documents, standard links, native controls, and form semantics are identified where the product supports them.
-- [ ] WEBPLAT-CK-USAGE-03-03 — No degraded interface is treated as establishing an effect it did not verify.
+- [ ] WEBPLAT-CK-USAGE-03-03 — No degraded interface is treated as establishing a result it did not verify.
 
 ## Consistency
 
@@ -163,18 +163,18 @@ as evidence for them is the failure.
 - [ ] WEBPLAT-CK-RISK-01-01 — Applicable navigation, history, refresh, lifecycle termination, eviction, concurrency, offline, and late-result facts are reported.
 - [ ] WEBPLAT-CK-RISK-01-02 — No clean foreground path is treated as establishing those facts.
 - [ ] WEBPLAT-CK-RISK-01-03 — Late results, cancellation, cleanup, duplicate registration, re-entry, and stale closures or references are guarded.
-- [ ] WEBPLAT-CK-RISK-01-04 — No critical effect depends on unload-time work.
+- [ ] WEBPLAT-CK-RISK-01-04 — No critical operation depends on unload-time work.
 
 ### WEBPLAT-SC-RISK-02 — Normal case: storage and service-worker state are their own facts
 
 Data outlives the document, and a service worker adds a lifecycle the page does not control. The expected
 outcome defines the storage and worker states explicitly and keeps a cached shell from standing for current
-data; treating in-memory state or a served shell as authoritative is the failure.
+data; treating in-memory state or a served shell as proof that source-of-truth data is current is the failure.
 
 #### Checklist
 
 - [ ] WEBPLAT-CK-RISK-02-01 — Origin and user partitioning, capacity and eviction, expiry, schema and version migration, logout and identity-switch cleanup, multi-tab coordination, privacy, and recovery from unavailable or corrupt data are defined for storage.
-- [ ] WEBPLAT-CK-RISK-02-02 — Service-worker installation, activation, control, update, cache-version, fallback, mixed-client, stale, queued-effect, replay, conflict, and removal states are reported where a service worker is present.
+- [ ] WEBPLAT-CK-RISK-02-02 — Service-worker installation, activation, control, update, cache-version, fallback, mixed-client, stale, queued-action, replay, conflict, and removal states are reported where a service worker is present.
 - [ ] WEBPLAT-CK-RISK-02-03 — No cached shell is treated as establishing that protected data or mutations are current.
 - [ ] WEBPLAT-CK-RISK-02-04 — In-memory state is treated as disposable.
 - [ ] WEBPLAT-CK-RISK-02-05 — Diagnostics avoid credentials and unnecessary personal data.
@@ -211,7 +211,7 @@ establishes and leaves the rest unproven; a substitute accepted as the evidence 
 
 A complete platform answer interprets the failure through the owning diagnostics and a minimal reproduction,
 and reports what it found and what it does not know. The scenario fails when the interpretation starts at the
-surface, or when the report omits the target, state, evidence, owner, or unknowns needed to repeat it.
+visible symptom, or when the report omits the target, state, evidence, owner, or unknowns needed to repeat it.
 
 #### Checklist
 

@@ -10,8 +10,8 @@ skill-type: operation
 Use this operation to derive versioned security requirements from assets and threats, bind controls to their
 owners, verify them adversarially, and report residual risk.
 
-Security owns requirements, threat analysis, assurance, and residual-risk handoff. Backend owns authoritative
-domain policy and implementation, platform owns browser facts, and testing owns harness and suite mechanics.
+Security owns requirements, threat analysis, assurance, and residual-risk handoff. Backend owns domain policy
+and its server-side implementation, platform owns browser facts, and testing owns harness and suite mechanics.
 
 ## Principles
 
@@ -19,9 +19,9 @@ domain policy and implementation, platform owns browser facts, and testing owns 
 
 Actors, data, trust boundaries, exposure, and consequences determine which versioned requirements apply.
 
-### Enforcement belongs at authoritative boundaries
+### Enforcement belongs at the boundary that owns the decision
 
-Client behavior can add defense or guidance, but it cannot make a protected decision authoritative.
+Client behavior can add defense or guidance, but it cannot own a protected decision.
 
 ### Security controls have lifecycles
 
@@ -34,9 +34,10 @@ Use several evidence classes when the risk requires them, and never turn an unte
 
 ## Rules
 
-- **MUST derive versioned requirements and tests from assets, threats, exposure, and authoritative sources.**
+- **MUST derive versioned requirements and tests from assets, threats, exposure, versioned standards, and
+  project policies.**
   A generic checklist or awareness list cannot replace scoped analysis.
-- **MUST enforce protected decisions at the authoritative boundary.** Use deny-by-default least privilege and
+- **MUST enforce protected decisions at the boundary that owns each decision.** Use deny-by-default least privilege and
   authorize every operation on every resource.
 - **MUST define identity, session, secret, sensitive-data, privacy, provider, dependency, and exception
   lifecycles.** Include issuance, rotation, revocation, expiry, retention, deletion, failure, and ownership as
@@ -44,7 +45,7 @@ Use several evidence classes when the risk requires them, and never turn an unte
 - **MUST address misuse, replay, concurrency, abuse, resource exhaustion, supply-chain behavior, exceptions,
   recovery, logging, alerts, and operations in proportion to risk.**
 - **MUST bind each control to one implementation owner and one proving evidence path.** Hidden or disabled UI,
-  client validation, and browser policy never substitute for authoritative enforcement.
+  client validation, and browser policy never substitute for enforcement by the named control owner.
 - **NEVER accept a scanner, OWASP Top 10 list, happy path, or one penetration pass as sufficient assurance.**
   Report untested areas, accepted exceptions, residual risk, remediation owner, and reopen condition.
 
@@ -59,7 +60,7 @@ Use several evidence classes when the risk requires them, and never turn an unte
 - Trace authentication, authorization, sessions, validation, encoding, privacy, secrets, browser policy,
   dependencies, logging, alerts, abuse controls, recovery, and incident evidence.
 - Inspect prior incidents, known weaknesses, configuration, deployments, operations, and accepted exceptions.
-- Continue with one bounded security outcome; return missing asset ownership, unknown authority,
+- Continue with one scoped security outcome; return missing asset ownership, unknown authority,
   contradictory policy, or scope change.
 
 #### 1.2 Select versioned requirements and evidence
@@ -86,7 +87,7 @@ Use several evidence classes when the risk requires them, and never turn an unte
 - Continue when every material threat reaches a control, explicit acceptance, or stop condition; return
   ownerless risk to project authority.
 
-#### 2.2 Assign controls to authoritative owners
+#### 2.2 Assign controls to their named owners
 
 - Bind authentication, authorization, sessions, validation, encoding, privacy, secrets, browser policy,
   dependencies, logging, alerts, abuse controls, and operations to one owner each.
@@ -102,12 +103,12 @@ Use several evidence classes when the risk requires them, and never turn an unte
 
 ### Phase 3 — Implement Protections Bottom-Up
 
-#### 3.1 Build authoritative controls first
+#### 3.1 Build controls at their owning boundaries first
 
 - Start with types, schema, canonicalization, validation, encoding, resource policy, and explicit
-  authorization seams.
+  authorization boundaries.
 - Implement deny-by-default operation and resource decisions, protected data handling, secrets, sessions,
-  integrity, and safe failure at authoritative owners.
+  integrity, and safe failure at the named control owners.
 - Implement replay, abuse, resource controls, concurrency, dependency integrity, exception paths, and
   recovery in risk order.
 - Verify each control locally and repair missing authority or unsafe failure before connecting convenience
@@ -116,7 +117,7 @@ Use several evidence classes when the risk requires them, and never turn an unte
 #### 3.2 Connect surrounding layers without weakening authority
 
 - Connect frontend requests, transport, browser policies, provider settings, dependencies, telemetry, alerts,
-  support, and operations to the authoritative controls.
+  support, and operations to the controls at their owning boundaries.
 - Keep client validation, hidden UI, CORS, CSP, cookies, and permission prompts as defense or experience
   layers, never sole enforcement.
 - Update requirements, implementation, configuration, tests, documentation, logging, runbooks, and incident
@@ -132,9 +133,9 @@ Use several evidence classes when the risk requires them, and never turn an unte
   contract.
 - Combine applicable source, static, dependency, configuration, unit, integration, dynamic, adversarial,
   recovery, and alert evidence.
-- Inspect authoritative decisions, data effects, provider settings, browser facts, diagnostics, and
+- Inspect protected decisions, data changes, provider settings, browser facts, diagnostics, and
   operations in named versions and environments.
-- Return a failed control, shallow scan result, untested real seam, unsupported version, or missing recovery
+- Return a failed control, shallow scan result, untested real integration point, unsupported version, or missing recovery
   evidence to its owner.
 - When this security outcome is evaluated, the [evaluation checklist](checklists.md) and every checklist owned
   by an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them

@@ -82,16 +82,16 @@ single-concept decision described as constrained without naming the constraint i
 - [ ] WEBDES-CK-STRUCTURE-02-01 — The single-concept exception records the real constraints that left one viable model.
 - [ ] WEBDES-CK-STRUCTURE-02-02 — The single-concept exception records the evidence behind those constraints.
 
-### WEBDES-SC-STRUCTURE-03 — Rule violation: expression decided over unresolved structure
+### WEBDES-SC-STRUCTURE-03 — Rule violation: visual design decided over unresolved structure
 
 Typography, color, density, and imagery are being settled while a state, a failure path, a recovery route, or
-an accessibility obligation is still open. The expected outcome defers expression until those are settled;
-expression that makes an unfinished structure look finished is the failure.
+an accessibility obligation is still open. The expected outcome defers visual design until those are settled;
+visual design that makes an unfinished structure look finished is the failure.
 
 #### Checklist
 
-- [ ] WEBDES-CK-STRUCTURE-03-01 — No detailed expression is decided while structure, behavior, content, feedback, recovery, adaptation, or accessibility remains unresolved.
-- [ ] WEBDES-CK-STRUCTURE-03-02 — No expressive choice conceals missing structure or inaccessible behavior.
+- [ ] WEBDES-CK-STRUCTURE-03-01 — No detailed visual design is decided while structure, behavior, content, feedback, recovery, adaptation, or accessibility remains unresolved.
+- [ ] WEBDES-CK-STRUCTURE-03-02 — No visual choice conceals missing structure or inaccessible behavior.
 
 ### WEBDES-SC-STRUCTURE-04 — Normal case: the design lifecycle is a revisitable map
 
@@ -119,7 +119,7 @@ proportionate and participation accessible; waste or exclusion presented as rigo
 
 ## Aesthetics
 
-### WEBDES-SC-AESTHETICS-01 — Normal case: each expressive choice earns its place
+### WEBDES-SC-AESTHETICS-01 — Normal case: each visual choice earns its place
 
 Structure is settled, so typography, color, density, spacing, shape, and imagery are decided. The expected
 outcome is that each choice makes hierarchy, state, or affordance easier to read; a choice defended only by
@@ -127,13 +127,13 @@ taste or house style is the failure.
 
 #### Checklist
 
-- [ ] WEBDES-CK-AESTHETICS-01-01 — Every expressive choice improves hierarchy, state recognition, affordance, trust, or identity fit.
-- [ ] WEBDES-CK-AESTHETICS-01-02 — Every departure from expression that carries meaning names the recorded identity obligation behind it.
-- [ ] WEBDES-CK-AESTHETICS-01-03 — No expressive choice falls below the `css-conventions` emitted-presentation floor.
+- [ ] WEBDES-CK-AESTHETICS-01-01 — Every visual choice improves hierarchy, state recognition, affordance, trust, or identity fit.
+- [ ] WEBDES-CK-AESTHETICS-01-02 — Every departure from visual design that carries meaning names the recorded identity obligation behind it.
+- [ ] WEBDES-CK-AESTHETICS-01-03 — No visual choice falls below the `css-conventions` emitted-presentation floor.
 
 ### WEBDES-SC-AESTHETICS-02 — Poor quality: motion added with no state change to explain
 
-A transition is added because the surface felt static, and nothing about location, state, or causality is
+A transition is added because the UI felt static, and nothing about location, state, or causality is
 clearer afterwards. The expected outcome is motion only where it makes a change legible, with what it must
 communicate stated; decorative motion accepted because it is subtle is the failure.
 
@@ -159,7 +159,7 @@ as support is the failure.
 
 ### WEBDES-SC-USAGE-02 — Rule violation: identity is used to justify an exclusionary choice
 
-A brand, tone, or design-system constraint is offered as the reason a surface excludes or harms some of the
+A brand, tone, or design-system constraint is offered as the reason a UI excludes or harms some of the
 people who must use it. The expected outcome keeps identity inside what it may constrain; an exclusion
 defended by identity is the failure.
 
@@ -184,8 +184,8 @@ without changing or retaining the decision is the failure.
 
 ### WEBDES-SC-CONSISTENCY-01 — Normal case: the live product is the identity source
 
-The shipped product already teaches its users a set of patterns, and a new surface must sit beside them. The
-expected outcome prefers what the product teaches over a described intention; a new surface built to an
+The shipped product already teaches its users a set of patterns, and a new browser interface must sit beside them. The
+expected outcome prefers what the product teaches over a described intention; a new browser interface built to an
 intention the product never expressed is the failure.
 
 #### Checklist
@@ -268,15 +268,15 @@ decision without transition evidence is the failure.
 
 ## Overall
 
-### WEBDES-SC-OVERALL-01 — Normal case: identity, evidence, concept, expression, and motion decided together
+### WEBDES-SC-OVERALL-01 — Normal case: identity, evidence, concept, visual design, and motion decided together
 
 A complete design judgment answers which identity governs, what evidence each claim rests on, which concepts
-were compared, when expression was settled, and what each warranted motion must communicate. The scenario
+were compared, when visual design was settled, and what each warranted motion must communicate. The scenario
 fails when one of those five is unanswered, or when the design claims more than it settled.
 
 #### Checklist
 
-- [ ] WEBDES-CK-OVERALL-01-01 — The design record answers identity authority, evidence class, concept comparison, expression ordering, and motion intent.
+- [ ] WEBDES-CK-OVERALL-01-01 — The design record answers identity authority, evidence class, concept comparison, visual-design ordering, and motion intent.
 - [ ] WEBDES-CK-OVERALL-01-02 — The design's claim is no broader than the judgments it actually settles.
 - Also applies: WEBDES-CK-RISK-01-03 (a choice matching no trigger needs no new evidence).
 

@@ -1,6 +1,6 @@
 ---
 name: web-testing
-description: "MUST load when designing, writing, running, diagnosing, or reviewing tests for a web application or feature."
+description: "MUST load when designing, writing, running, diagnosing, or reviewing tests for a web application or change."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,7 +8,7 @@ skill-type: operation
 # Web Testing
 
 Use this operation to produce and maintain a risk-based web test system, from contract study through
-deterministic suites, real-seam evidence, failure diagnosis, and truthful reporting.
+deterministic suites, real-integration-point evidence, failure diagnosis, and accurate reporting.
 
 It owns test design and mechanics, not runner-specific syntax or the behavior under test. Product,
 `web-app-lifecycle`, `web-operations`, platform, security, accessibility, performance, language, framework,
@@ -22,7 +22,7 @@ The suite exists to prove material behavior, not to satisfy a fixed diagram or m
 
 ### Use the least expensive proving layer
 
-Choose the smallest layer that can establish the claim without replacing the real seam it depends on.
+Choose the smallest layer that can establish the claim without replacing the real integration point it depends on.
 
 ### Determinism and diagnosis are correctness
 
@@ -40,7 +40,7 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 - **MUST assert observable behavior at the owning boundary.** Avoid implementation details that turn safe
   refactoring into product failure, following the
   [Testing Library principles](https://testing-library.com/docs/guiding-principles/) where applicable.
-- **MUST use real dependencies for every claim about a real seam.** A mock, fake, stub, screenshot, snapshot,
+- **MUST use real dependencies for every claim about a real integration point.** A mock, fake, stub, screenshot, snapshot,
   or coverage report proves only its explicit limit; use
   [Google's larger-test guidance](https://abseil.io/resources/swe-book/html/ch14.html) to weigh doubles.
 - **MUST control time, randomness, order, concurrency, network, data, cleanup, and environment or report the
@@ -62,8 +62,8 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 - Trace current static, unit, component, contract, integration, browser, end-to-end, accessibility, security,
   performance, migration, recovery, and live evidence.
 - Record suite cost, duration, ownership, failure history, flakes, skips, doubles, diagnostics, environment
-  gaps, and real-seam coverage.
-- Continue with one bounded evidence outcome; return an undefined contract, unsupported claim, missing
+  gaps, and real-integration-point coverage.
+- Continue with one scoped evidence outcome; return an undefined contract, unsupported claim, missing
   environment, or owner conflict.
 
 #### 1.2 Route claim and fact owners
@@ -84,7 +84,7 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 - Map each material claim or risk to the least expensive proving layer: static, unit, component, contract,
   integration, browser, end-to-end, accessibility, security, performance, migration, recovery, or live
   operation.
-- Name the system under test, boundary, inputs, observable outputs, authoritative effects, environment,
+- Name the system under test, boundary, inputs, observable outputs, confirmed results, environment,
   versions, and evidence limits.
 - Cover normal, alternative, exact-boundary, failure, recovery, adversarial, compatibility, concurrency, and
   counterfactual behavior in risk order.
@@ -98,7 +98,7 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 - Define test data, setup, teardown, cleanup, isolation, fixtures, clocks, randomness, concurrency, network,
   order, retries, resources, and diagnostics.
 - Decide where real dependencies are required and where a double provides a narrower valid claim; label every
-  double and unavailable seam.
+  double and unavailable integration point.
 - Define focused, affected, integration, full, and environment-specific execution order, failure triage,
   quarantine, and recovery.
 - Render the suite scaffold, ownership, environments, commands or tool entry points, and claim-to-evidence
@@ -109,13 +109,13 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 #### 3.1 Build deterministic foundations
 
 - Materialize suite structure, fixtures, data builders, environment controls, clocks, randomness controls,
-  diagnostics, cleanup, and test seams.
+  diagnostics, cleanup, and test boundaries.
 - Implement deterministic static, unit, component, and contract tests for high-risk low-level behavior.
-- Assert behavior through stable public or user-visible surfaces instead of private implementation details.
+- Assert behavior through stable public APIs or browser interfaces instead of private implementation details.
 - Run each foundation independently and repeatedly; repair leakage, order dependence, nondeterminism, or
-  unclear diagnosis before connecting broader seams.
+  unclear diagnosis before connecting broader integration points.
 
-#### 3.2 Connect real seams and representative paths
+#### 3.2 Connect real integration points and representative paths
 
 - Connect real contracts, databases, queues, providers, browser contexts, migrations, and other required
   dependencies outward.
@@ -142,7 +142,7 @@ Doubles, automation, captures, emulation, and live observations each prove only 
 
 #### 4.2 Reconcile claims with results
 
-- Reconcile every material claim with result, environment, version, real or doubled seams, skips, flakes,
+- Reconcile every material claim with result, environment, version, real or doubled integration points, skips, flakes,
   diagnostics, and limitations.
 - Report focused, affected, integration, full, accessibility, security, visual, performance, browser,
   migration, recovery, and live evidence without upgrading one signal into another.

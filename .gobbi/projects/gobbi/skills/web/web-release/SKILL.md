@@ -7,7 +7,7 @@ skill-type: operation
 
 # Web Release
 
-Use this operation to turn one evaluated web-development handoff into one immutable, identified production
+Use this operation to turn one evaluated `web-development` handoff into one immutable, identified production
 artifact that deployment can consume unchanged. It owns frozen and recorded inputs, production build and
 bundler configuration, chunking, asset names and cache policy, build identity, manifest and digests,
 production source maps, artifact verification, failure return, and the release-to-deployment handoff.
@@ -19,7 +19,7 @@ it neither grants deployment authority nor changes an environment.
 
 `typescript-toolchain` owns compiling, emit, module resolution, and type stripping;
 `web-project-structure` owns build-output placement; `web-architecture` owns rendering and delivery strategy;
-`web-configuration` owns the values and secret supply inside frozen inputs; `web-security` owns every
+`web-configuration` owns the values and secrets management inside frozen inputs; `web-security` owns every
 protected-data exposure question; and `web-observability` owns telemetry destinations. This operation owns
 the production artifact those decisions produce.
 
@@ -58,7 +58,7 @@ environment action.
   and release record identify the same build.** Deployment consumes those accepted bytes without rebuilding,
   renaming, or modifying them.
 
-- **MUST derive every cacheable asset name from its content, keep changed and unchanged names truthful, give
+- **MUST derive every cacheable asset name from its content, keep changed and unchanged names accurate, give
   cacheable assets a long-lived immutable freshness policy, and keep the entry document revalidated.** One
   reusable name must never address changed content.
 
@@ -112,7 +112,7 @@ environment action.
 - Take the frozen inputs, the delivery strategy `web-architecture` selected, and the project's current
   bundler and configuration.
 - Preserve a working bundler and change only what this release requires: use one entry point per delivered
-  surface, split at boundaries people cross such as a route, deferred feature, or rarely reached dependency,
+  browser interface, split at boundaries people cross such as a route, deferred feature, or rarely reached dependency,
   and keep shared dependencies in one chunk rather than duplicating them across entries.
 - Record the emitted chunk graph, per-entry transferred size, every dynamic-import boundary, and the chunks a
   first visit fetches before the page is usable.

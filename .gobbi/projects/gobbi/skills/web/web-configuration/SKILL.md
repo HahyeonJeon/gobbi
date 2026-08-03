@@ -1,6 +1,6 @@
 ---
 name: web-configuration
-description: "MUST load when choosing or reviewing how a web or Electron surface is supplied with per-environment values, covering build-time versus runtime configuration, secret supply and the client-bundle boundary, feature-flag lifetime, and startup validation."
+description: "MUST load when choosing or reviewing how a web app or Electron renderer receives per-environment values, including build-time versus runtime configuration, secrets management, client-bundle exposure, feature-flag lifetime, or startup validation."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
@@ -9,18 +9,18 @@ skill-type: preference
 
 Use this preference skill when a value's source needs a judgment rather than a step: which values differ per
 environment, whether each is fixed at build time or read at runtime, how a secret reaches the process that
-needs it, and how long a feature flag lives. It holds for any browser surface, including an Electron renderer,
+needs it, and how long a feature flag lives. It holds for any web app, including an Electron renderer,
 and for the Node processes that build and serve it.
 
 `web-security` owns enforcement — which decisions are protected, where they are authorized, and what the
 threat model requires. This skill owns supply — how a value reaches the process that enforces them. A secret
 inlined into a client bundle is a supply defect, so enforcement cannot prevent it. `web-release` owns frozen
 production-build inputs and the release artifact, while `web-deployment` owns environment identity and the
-target; neither claims per-environment values or secret supply, and this skill decides what those inputs
+target; neither claims per-environment values or secrets management, and this skill decides what those inputs
 contain.
 
 `web-project-structure` owns where a configuration file sits in the repository, `web-backend` owns the
-authoritative behavior a value drives, `web-architecture` owns which side of the client-server boundary state
+server-owned behavior a value drives, `web-architecture` owns which side of the client-server boundary state
 lives on, and `web-observability` owns redacting a value that legitimately reaches a log. Rules define the
 boundary, Preferences select defaults inside it, and a Rule wins every conflict.
 
@@ -72,7 +72,7 @@ unexercised. A flag with no removal condition becomes permanent configuration th
   it is created.** Remove a flag whose condition has been met together with the path it disabled.
 
 - **NEVER let a configuration value or a feature flag stand in for an authorization decision.** A flag may
-  hide a surface, but only the authoritative check that `web-security` and `web-backend` own may permit the
+  hide a UI, but only the server-side check that `web-security` and `web-backend` own may permit the
   action behind it.
 
 ## Preferences

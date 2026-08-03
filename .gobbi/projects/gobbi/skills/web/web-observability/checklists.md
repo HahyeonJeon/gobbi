@@ -65,7 +65,7 @@ the failure.
 
 ### WEBOBS-SC-STRUCTURE-02 — Normal case: the metric shape matches the measured question
 
-A question asks how often, how long, or how much, and each answer needs a different instrument and a bounded
+A question asks how often, how long, or how much, and each answer needs a different instrument and a limited
 label set. The expected outcome selects the instrument per question and keeps identifiers off labels; a metric
 whose label set grows with users or URLs is the failure.
 
@@ -86,7 +86,7 @@ measures is the failure.
 #### Checklist
 
 - [ ] WEBOBS-CK-PERFORMANCE-01-01 — No telemetry call throws into the user path.
-- [ ] WEBOBS-CK-PERFORMANCE-01-02 — No telemetry call blocks an authoritative effect.
+- [ ] WEBOBS-CK-PERFORMANCE-01-02 — No telemetry call blocks a critical operation.
 - [ ] WEBOBS-CK-PERFORMANCE-01-03 — No telemetry call delays navigation.
 - [ ] WEBOBS-CK-PERFORMANCE-01-04 — No telemetry call retries until the request it measures degrades.
 
@@ -145,7 +145,7 @@ context is the failure.
 ### WEBOBS-SC-CONSISTENCY-01 — Normal case: one identifier survives every boundary the action crosses
 
 A single user action crosses documents, workers, fetches, preload and IPC, servers, queues, and providers, and
-each surface holds a fragment of the story. The expected outcome carries one trace context through all of
+each component holds a fragment of the story. The expected outcome carries one trace context through all of
 them with a consistent sampling decision and build identity; fragments joined by timestamp after the incident
 are the failure.
 
@@ -174,19 +174,19 @@ failure.
 
 A process dies, a renderer is killed, or a document is discarded, and nothing in it runs afterwards. The
 expected outcome configures capture before the code that can fail runs and collects it from outside the
-failing process, while the in-process path covers what the surface survives; a reporter started late is the
+failing process, while the in-process path covers what the runtime survives; a reporter started late is the
 failure.
 
 #### Checklist
 
 - [ ] WEBOBS-CK-RISK-01-01 — Crash and unsurvivable-failure capture is configured before the code that can fail runs.
 - [ ] WEBOBS-CK-RISK-01-02 — Unsurvivable failures are collected from outside the failing process.
-- [ ] WEBOBS-CK-RISK-01-03 — Failures the surface survives are captured in process through the global `error` and `unhandledrejection` handlers and any framework error boundary.
+- [ ] WEBOBS-CK-RISK-01-03 — Failures the runtime survives are captured in process through the global `error` and `unhandledrejection` handlers and any framework error boundary.
 - [ ] WEBOBS-CK-RISK-01-04 — The in-process path is kept as the signal that must always work.
 
 ### WEBOBS-SC-RISK-02 — Edge case: the out-of-process path is not available everywhere
 
-Some shipped surfaces can report an unsurvivable failure from outside and some cannot, because the browser
+Some shipped runtimes can report an unsurvivable failure from outside and some cannot, because the browser
 mechanism is newly available and the installed mechanism has its own ordering requirement. The expected
 outcome configures each available path correctly and records the rest as accepted gaps; treating the reporting
 mechanism as universal is the failure.
@@ -197,13 +197,13 @@ mechanism as universal is the failure.
 - [ ] WEBOBS-CK-RISK-02-02 — The browser Reporting API is treated as newly available rather than universal.
 - [ ] WEBOBS-CK-RISK-02-03 — In Electron, `crashReporter.start()` is called in the main process before `app.on('ready')`, so no renderer is created before monitoring begins.
 - [ ] WEBOBS-CK-RISK-02-04 — In Electron, `render-process-gone` and `child-process-gone` are handled on `app`.
-- [ ] WEBOBS-CK-RISK-02-05 — Every shipped surface whose unsurvivable failure cannot be captured is recorded as an accepted gap with its owner.
+- [ ] WEBOBS-CK-RISK-02-05 — Every shipped runtime whose unsurvivable failure cannot be captured is recorded as an accepted gap with its owner.
 
 ### WEBOBS-SC-RISK-03 — Rule violation: a protected value reaches a diagnostic
 
 A token, a cookie, a session identifier, or a personal data field is carried into a log, a metric label, a
 span attribute, a crash annotation, or an error message. The expected outcome keeps that value out of the
-record before it leaves the application — at the emission seam for a signal the application builds, and in the
+record before it leaves the application — at the telemetry boundary for a signal the application builds, and in the
 allow-listed annotations for a crash report it does not build — using the classification `web-security` owns;
 an application-emitted signal redacted at the destination instead of before the boundary is the failure.
 
@@ -211,17 +211,17 @@ an application-emitted signal redacted at the destination instead of before the 
 
 - [ ] WEBOBS-CK-RISK-03-01 — No credential, token, authorization header, cookie, session identifier, or personal data field reaches a log, metric label, span attribute, crash annotation, or error message.
 - [ ] WEBOBS-CK-RISK-03-02 — The fields treated as protected are taken from the `web-security` classification rather than decided in this operation.
-- [ ] WEBOBS-CK-RISK-03-03 — One allow-list governs both the attributes each application-emitted signal may carry through the emission seam and the annotations supplied to the out-of-process crash reporter, so a newly added field is absent until it is added deliberately.
-- [ ] WEBOBS-CK-RISK-03-04 — Stripping at the seam covers URLs, query strings, request and response bodies, and exception messages.
-- [ ] WEBOBS-CK-RISK-03-05 — A test proves that a record containing a protected field leaves the seam without it.
-- [ ] WEBOBS-CK-RISK-03-06 — No application-emitted signal path reaches a transport without passing the seam.
+- [ ] WEBOBS-CK-RISK-03-03 — One allow-list governs both the attributes each application-emitted signal may carry through the telemetry boundary and the annotations supplied to the out-of-process crash reporter, so a newly added field is absent until it is added deliberately.
+- [ ] WEBOBS-CK-RISK-03-04 — Stripping at the telemetry boundary covers URLs, query strings, request and response bodies, and exception messages.
+- [ ] WEBOBS-CK-RISK-03-05 — A test proves that a record containing a protected field leaves the telemetry boundary without it.
+- [ ] WEBOBS-CK-RISK-03-06 — No application-emitted signal path reaches a transport without passing the telemetry boundary.
 
 ### WEBOBS-SC-RISK-04 — Adversarial: the emitter's own check stands in for the destination
 
-The seam's test passes and the review shows a list of blocked keys, so the diagnostics are declared clean and
-nobody opens the destination. The expected outcome reads what is actually stored and searches it, and has the
-destination redact and bound what no seam could reach; an emitter-side result accepted as proof of what left
-the process is the failure.
+The telemetry-boundary test passes and the review shows a list of blocked keys, so the diagnostics are declared
+clean and nobody opens the destination. The expected outcome reads what is actually stored and searches it,
+and has the destination redact and limit the payload the application cannot inspect before transport; an
+emitter-side result accepted as proof of what left the process is the failure.
 
 #### Checklist
 
@@ -229,19 +229,20 @@ the process is the failure.
 - [ ] WEBOBS-CK-RISK-04-02 — The stored records are searched for credentials, tokens, session identifiers, and personal data.
 - [ ] WEBOBS-CK-RISK-04-03 — A protected value found at a destination is raised as a `web-security` finding with its own remediation and retention correction.
 - [ ] WEBOBS-CK-RISK-04-04 — A protected field already reaching a destination is corrected before new emission is added on the same path.
-- Also applies: WEBOBS-CK-RISK-03-03 (the seam allow-lists rather than blocks known-bad keys).
+- Also applies: WEBOBS-CK-RISK-03-03 (the telemetry boundary allow-lists rather than blocks known-bad keys).
 
-### WEBOBS-SC-RISK-05 — Edge case: the seam cannot redact the payload before it leaves
+### WEBOBS-SC-RISK-05 — Edge case: the application cannot inspect the payload before transport
 
-An out-of-process crash reporter sends a payload the application never sees, so the emission seam cannot
-strip it. The expected outcome moves redaction and retention to the destination and records who can read it
-and for how long; an unredacted payload accepted because the seam could not reach it is the failure.
+An out-of-process crash reporter sends a payload the application never sees, so the application cannot strip
+it before transport. The expected outcome moves redaction and retention to the destination and records who can
+read it and for how long; an unredacted payload accepted because the application could not inspect it is the
+failure.
 
 #### Checklist
 
 - [ ] WEBOBS-CK-RISK-05-01 — Who can read each destination, and for how long, is recorded.
 - [ ] WEBOBS-CK-RISK-05-02 — The crash-report payload the application cannot redact before transport is redacted at its destination.
-- [ ] WEBOBS-CK-RISK-05-03 — The crash-report payload the application cannot redact before transport is retention-bounded at its destination.
+- [ ] WEBOBS-CK-RISK-05-03 — The crash-report payload the application cannot redact before transport has limited retention at its destination.
 
 ## Overall
 

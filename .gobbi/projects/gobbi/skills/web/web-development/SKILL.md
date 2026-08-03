@@ -29,7 +29,7 @@ preserve or change deliberately.
 
 ### A thin vertical skeleton precedes breadth
 
-Implementation begins with the smallest truthful end-to-end path, then grows one verified behavior slice at a
+Implementation begins with the smallest accurate end-to-end path, then grows one verified behavior slice at a
 time under its implementation owners.
 
 ### Every claim and handoff keeps its semantic owner
@@ -39,7 +39,7 @@ deployment state, live verification, observed health, supported operation, and r
 
 ## Rules
 
-- **MUST bind one bounded change outcome before coordination.** Name its actors, trigger, entry, completion
+- **MUST bind one scoped change outcome before coordination.** Name its actors, trigger, entry, completion
   and false-completion signals, paths, states, side effects, scope, non-goals, and terminal conditions; return
   any scope change to user authority.
 - **MUST inspect the current application and governing records before routing the change.** Record the design,
@@ -65,7 +65,7 @@ deployment state, live verification, observed health, supported operation, and r
 #### 1.1 Study the current product and lock the outcome
 
 - Read project rules and relevant product, design, technical, operational, and support records.
-- Trace the current entry-to-effect journey through browser state, APIs, domain rules, stored data, providers,
+- Trace the current entry-to-result journey through browser state, APIs, domain rules, stored data, providers,
   access controls, tests, telemetry, configuration, release controls, live operation, and retirement policy.
 - Record the actors, trigger, entry, observable completion, false completion, side effects, paths, states,
   failures, recovery, boundary, non-goals, compatibility constraints, decision authority, and terminal states.
@@ -93,7 +93,7 @@ deployment state, live verification, observed health, supported operation, and r
   [`web-design`](../web-design/SKILL.md).
 - Preserve the design owner's identity source, evidence classes, alternative concepts, accepted decision,
   validation threshold, reopen condition, replacement criteria, and retirement criteria.
-- Route browser expression and behavior to frontend, interaction, HTML, CSS, and framework owners as their
+- Route browser visual design and behavior to frontend, interaction, HTML, CSS, and framework owners as their
   triggers require.
 - Accept the design handoff only after its required validation or approved limitation disposition; return a
   failed design claim to the earliest design stage it invalidates.
@@ -101,7 +101,7 @@ deployment state, live verification, observed health, supported operation, and r
 #### 2.2 Coordinate architecture, contracts, and proof
 
 - Route architecture and layer contracts to their owners. Reconcile applicable entries, URLs, states,
-  messages, effects, authority, data lifecycle, failures, instrumentation, configuration, migration, rollout,
+  messages, state and provider changes, authority, data lifecycle, failures, instrumentation, configuration, migration, rollout,
   rollback, support, and retirement behavior without copying owner policy.
 - Map who can create, read, update, delete, retain, export, and observe each data class.
 - Route test-system design to `web-testing`, security analysis to `web-security`, and each layer-specific proof
@@ -115,12 +115,12 @@ deployment state, live verification, observed health, supported operation, and r
 #### 3.1 Establish the thin vertical skeleton
 
 - Ask the implementation owners for the smallest safe path from a real entry through required browser,
-  server, data, or provider seams to truthful observable completion.
-- Require contract shapes, authorization, validation, errors, test seams, instrumentation, and every fake or
+  server, data, or provider integration points to accurate observable completion.
+- Require contract shapes, authorization, validation, errors, test boundaries, instrumentation, and every fake or
   unavailable dependency to remain explicit.
 - Preserve one end-to-end skeleton trace and reconcile it with the accepted design, contract, recovery, and
   proof obligations.
-- Return the path to the earliest missing seam when real required layers do not connect.
+- Return the path to the earliest missing integration point when real required layers do not connect.
 
 #### 3.2 Grow and test verified behavior
 
@@ -138,7 +138,7 @@ deployment state, live verification, observed health, supported operation, and r
 #### 4.1 Accept release readiness and deployment handoffs
 
 - Require the evaluation or approved limitation disposition the release owner needs. Keep implementation
-  correctness, test evidence, frontend acceptance, backend effects, release readiness, and release state as
+  correctness, test evidence, frontend acceptance, backend results, release readiness, and release state as
   separate claims.
 - Route production release preparation and execution to [`web-release`](../web-release/SKILL.md). Preserve
   its immutable artifact, manifest, build identity, source-map disposition, and release evidence.

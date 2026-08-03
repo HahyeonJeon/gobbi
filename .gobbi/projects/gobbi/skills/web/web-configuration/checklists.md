@@ -1,7 +1,7 @@
 # Web Configuration Evaluation Checklist
 
-This reusable unchecked source evaluates one set of configuration-supply choices for a web or Electron
-surface, against the classification, client-bundle-boundary, declared-shape, secret-supply, flag-lifetime, and
+This reusable unchecked source evaluates one set of configuration choices for a web app or Electron
+renderer, against the classification, client-bundle-boundary, declared-shape, secrets-management, flag-lifetime, and
 authorization-separation obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-configuration`](SKILL.md) preferences, with [`web-security`](../web-security/SKILL.md) owning
 enforcement, [`web-release`](../web-release/SKILL.md) owning frozen production-build inputs and the release
@@ -26,14 +26,14 @@ that this scenario reuses.
 
 ### WEBCFG-SC-PROJECT-01 — Normal case: the decision stays on the supply boundary
 
-A configuration question is answered for a surface with several nearby owners. The expected outcome decides
+A configuration question is answered for a web app with several nearby owners. The expected outcome decides
 only supply — which values differ, when each is fixed, how it reaches its process, how long a flag lives — and
 routes the rest; an enforcement or placement rule restated here is the failure.
 
 #### Checklist
 
 - [ ] WEBCFG-CK-PROJECT-01-01 — Every decision made here is a supply decision: which values differ per environment, whether each is fixed at build time or read at runtime, how a secret reaches the process that needs it, and how long a feature flag lives.
-- [ ] WEBCFG-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: which decisions are protected and where they are authorized to `web-security`, frozen production-build inputs and the release artifact to `web-release`, environment identity and the target to `web-deployment`, file placement to `web-project-structure`, the authoritative behavior a value drives to `web-backend`, client-server state placement to `web-architecture`, and redaction of a value that legitimately reaches a log to `web-observability`.
+- [ ] WEBCFG-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: which decisions are protected and where they are authorized to `web-security`, frozen production-build inputs and the release artifact to `web-release`, environment identity and the target to `web-deployment`, file placement to `web-project-structure`, the server-owned behavior a value drives to `web-backend`, client-server state placement to `web-architecture`, and redaction of a value that legitimately reaches a log to `web-observability`.
 - [ ] WEBCFG-CK-PROJECT-01-03 — No enforcement rule `web-security` owns is restated or overridden here.
 
 ### WEBCFG-SC-PROJECT-02 — Rule violation: a value is used before it is classified
@@ -103,7 +103,7 @@ inlined value nobody realised costs a full release is the failure.
 
 ## Aesthetics
 
-### WEBCFG-SC-AESTHETICS-01 — Poor quality: the configuration surface cannot be reviewed
+### WEBCFG-SC-AESTHETICS-01 — Poor quality: the configuration cannot be reviewed
 
 A reviewer opens the project to judge what ships to the browser. The expected outcome lets them answer that
 from names and one declared shape; an answer requiring a trace through call sites and build configuration is
@@ -178,13 +178,13 @@ bundle or the log is the failure.
 
 ### WEBCFG-SC-RISK-02 — Rule violation: a flag decides authority
 
-A surface is hidden behind a configuration switch and the action behind it is treated as protected. The
-expected outcome still requires the authoritative check; a flag counted as authorization is the failure.
+A UI is hidden behind a configuration switch and the action behind it is treated as protected. The
+expected outcome still requires the server-side check; a flag counted as authorization is the failure.
 
 #### Checklist
 
 - [ ] WEBCFG-CK-RISK-02-01 — No configuration value or feature flag permits an action by itself.
-- [ ] WEBCFG-CK-RISK-02-02 — Every action behind a hidden surface is permitted only by the authoritative check `web-security` and `web-backend` own.
+- [ ] WEBCFG-CK-RISK-02-02 — Every action behind a hidden UI is permitted only by the server-side check `web-security` and `web-backend` own.
 
 ### WEBCFG-SC-RISK-03 — Adversarial: a reader extracts a value the project assumed was private
 

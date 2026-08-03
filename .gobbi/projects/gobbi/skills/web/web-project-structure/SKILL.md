@@ -64,7 +64,7 @@ remain clear. Depart only for concrete contrary evidence and change the smallest
 ### PREFER grouping by ownership and reason to change
 
 PREFER colocating feature-specific code, assets, and tests when required paths permit it. Centralize material
-only when it has multiple real consumers, one owner, an explicit public surface, and compatible runtime
+only when it has multiple real consumers, one owner, an explicit public API, and compatible runtime
 authority.
 
 ### PREFER discoverable entry points and authority

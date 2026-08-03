@@ -23,7 +23,7 @@ that this scenario reuses.
 
 ### WEBREL-SC-PROJECT-01 — Normal case: evaluated handoff and frozen/recorded build identity enter release production
 
-An evaluated web-development handoff enters release production. The expected outcome refuses unresolved
+An evaluated `web-development` handoff enters release production. The expected outcome refuses unresolved
 evaluation, freezes and records one input set, and carries one build identity through every output; release
 production from moving or undisposed inputs is the failure.
 
@@ -60,7 +60,7 @@ the release did not require is the failure.
 
 - [ ] WEBREL-CK-STRUCTURE-01-01 — The working bundler is preserved.
 - [ ] WEBREL-CK-STRUCTURE-01-02 — Only what this release requires is changed in the build configuration.
-- [ ] WEBREL-CK-STRUCTURE-01-03 — One entry point exists per delivered surface.
+- [ ] WEBREL-CK-STRUCTURE-01-03 — One entry point exists per delivered browser interface.
 - [ ] WEBREL-CK-STRUCTURE-01-04 — Code splits at a route, a deferred feature, or a rarely reached dependency.
 - [ ] WEBREL-CK-STRUCTURE-01-05 — A shared dependency lives in one chunk rather than being duplicated across entries.
 - [ ] WEBREL-CK-STRUCTURE-01-06 — The emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and the chunks a first visit must fetch before the page is usable are recorded.
@@ -161,7 +161,7 @@ release boundary is the failure.
 - [ ] WEBREL-CK-RISK-01-02 — Publication is decided per source map rather than by one global setting.
 - [ ] WEBREL-CK-RISK-01-03 — An unpublished map still reaches the error reporter so a stack trace can be read.
 - [ ] WEBREL-CK-RISK-01-04 — It is recorded, per bundle, whether its map is published, where an unpublished map is delivered instead, and whether original sources are embedded in it.
-- [ ] WEBREL-CK-RISK-01-05 — A published map on a surface whose source is not public is routed to `web-security` as an exposure question rather than settled here.
+- [ ] WEBREL-CK-RISK-01-05 — A published map for a web app whose source is not public is routed to `web-security` as an exposure question rather than settled here.
 - [ ] WEBREL-CK-RISK-01-06 — Release work uses no deployment credential, publication, promotion, or environment change without authority for that exact action.
 
 ## Overall

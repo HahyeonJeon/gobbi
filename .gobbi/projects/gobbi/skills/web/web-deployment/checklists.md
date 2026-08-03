@@ -6,7 +6,7 @@ production-URL verification, immediate-reversal, and authority-stop obligations 
 governed by the [`web`](../SKILL.md) domain and [`web-deployment`](SKILL.md) operation, with
 [`web-release`](../web-release/SKILL.md) owning the immutable identified artifact and its production evidence,
 [`web-development`](../web-development/SKILL.md) coordinating the handoff,
-[`web-configuration`](../web-configuration/SKILL.md) owning runtime values and secret supply, and
+[`web-configuration`](../web-configuration/SKILL.md) owning runtime values and secrets management, and
 [`web-observability`](../web-observability/SKILL.md) owning rollout signals. The source commit that contains
 this file identifies the checklist version. Its stable owner prefix is `WEBDEP`.
 

@@ -10,7 +10,7 @@ skill-type: preference
 This preference skill guides structural web decisions: where authority and state live, how documents and code
 are delivered, how navigation survives transitions, and which caches, services, and dependencies are accepted.
 
-It recommends seams without redesigning a sound application. `web-app-lifecycle` owns user-visible browser
+It recommends boundaries without redesigning a sound application. `web-app-lifecycle` owns user-visible browser
 and PWA states and transitions; development, project structure, frontend, backend, platform, security,
 testing, language, and framework owners keep their own policy and implementation.
 
@@ -40,7 +40,7 @@ Adoption, mixed versions, rollback, operations, and future removal belong in the
 - **MUST inspect the current architecture and its evidence before proposing a structural change.** Preserve a
   sound shape or name the exact constraint it fails.
 - **MUST assign authority, state ownership, data flow, cache invalidation, and failure recovery explicitly.**
-  Client state may improve interaction but may not become an accidental authority for protected effects.
+  Client state may improve interaction but may not become an accidental authority for a protected action.
 - **MUST compare material options against the same applicable constraints.** Include experience,
   accessibility, security, privacy, compatibility, performance, reliability, deployment, operations,
   migration, team capability, and removal cost.
@@ -62,8 +62,8 @@ operability, compatibility, or maintenance, and change the smallest boundary tha
 
 ### PREFER explicit authority, state, and cache ownership
 
-PREFER trusted server boundaries for secrets, protected policy, authorization, and authoritative shared
-effects; URLs for navigable state; server data for shared facts; and local state for transient interaction.
+PREFER trusted server boundaries for secrets, protected policy, authorization, and server-owned shared state
+changes; URLs for navigable state; server data for shared facts; and local state for transient interaction.
 Depart only when verified ownership or lifecycle needs require another placement, and give every cache a
 freshness, isolation, invalidation, stale, capacity, and diagnostic contract. Set project-approved storage,
 network, and processing limits for offline cache, queued-action, reconnect, service-worker, and update work;
@@ -73,7 +73,7 @@ network, and processing limits for offline cache, queued-action, reconnect, serv
 
 PREFER meaningful URLs, standard links and forms, history, refresh safety, deep links, and server fallbacks
 where the product supports them. Choose static, server, streaming, client, or hybrid rendering per route and
-outcome, and define truthful offline or degraded behavior.
+outcome, and define accurate offline or degraded behavior.
 
 Depart only when verified framework, platform, deployment, compatibility, or project constraints determine
 the mode; record the evidence, tradeoff, lifecycle cost, preserved semantic, accessibility, navigation,

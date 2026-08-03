@@ -1,7 +1,7 @@
 # Web Project Structure Evaluation Checklist
 
 This reusable unchecked source evaluates one web project's directory structure against the decision-order,
-named-root, reserved-path, visible-boundary, path-class, and bounded-claim obligations this skill owns. It is
+named-root, reserved-path, visible-boundary, path-class, and scoped-claim obligations this skill owns. It is
 governed by the [`web`](../SKILL.md) domain and [`web-project-structure`](SKILL.md) preferences, with
 [`web-architecture`](../web-architecture/SKILL.md) owning structural strategy,
 [`web-configuration`](../web-configuration/SKILL.md) owning configuration content,
@@ -77,7 +77,7 @@ shared location because it might be reused is the failure.
 #### Checklist
 
 - [ ] WEBPROJ-CK-STRUCTURE-03-01 — Feature-specific code, assets, and tests are colocated where required paths permit it.
-- [ ] WEBPROJ-CK-STRUCTURE-03-02 — Material is centralized only where it has multiple real consumers, one owner, an explicit public surface, and compatible runtime authority.
+- [ ] WEBPROJ-CK-STRUCTURE-03-02 — Material is centralized only where it has multiple real consumers, one owner, an explicit public API, and compatible runtime authority.
 
 ## Performance
 

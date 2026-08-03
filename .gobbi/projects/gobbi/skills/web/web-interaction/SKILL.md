@@ -1,6 +1,6 @@
 ---
 name: web-interaction
-description: "MUST load when choosing or reviewing a browser feature's interaction behavior, covering event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, listener hygiene and rate limiting, and WAI-ARIA widget patterns."
+description: "MUST load when choosing or reviewing browser interaction behavior, including event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, listener lifetime and rate limiting, or WAI-ARIA widget patterns."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
@@ -10,7 +10,7 @@ skill-type: preference
 Use this preference skill when a browser feature's interaction needs a judgment rather than a step: what an
 event contract must define, which states a control has, where focus goes and where it returns, how a pointer
 behavior is reached from a keyboard, and which published widget pattern applies. It owns the valid choice
-space that `web-frontend` applies, and it holds for any browser surface, including an Electron renderer.
+space that `web-frontend` applies, and it holds for any browser interface, including an Electron renderer.
 
 `web-frontend` owns the ordered browser operation and the obligation that every state, transition,
 interaction, and recovery path is specified and implemented; this skill owns the choices those obligations
@@ -34,7 +34,7 @@ people who never use a mouse, so each one needs a focus or key path that produce
 
 ### Focus is application state
 
-Where focus sits, where it may travel, and where it returns after a surface closes are decisions the feature
+Where focus sits, where it may travel, and where it returns after an overlay closes are decisions the feature
 makes deliberately. Left to DOM order and default behavior, focus lands somewhere the person did not ask for
 and often cannot find.
 
@@ -68,7 +68,7 @@ resulting bug appears far from its cause.
   still satisfies ARIA and follows the keyboard conventions of a similar pattern or the native platform
   widget.
 - **MUST decide focus entry, containment, and return for every overlay, and NEVER leave focus on a removed or
-  hidden element.** A modal surface holds focus while open and returns it to the invoking control, except
+  hidden element.** A modal holds focus while open and returns it to the invoking control, except
   when that control no longer exists or the work flow continues at a following control or result, and a
   composite widget exposes one tab stop while moving its inner selection with roving `tabindex` or
   `aria-activedescendant`.
@@ -78,7 +78,7 @@ resulting bug appears far from its cause.
   [`{ passive: false }`](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener).
 - **NEVER debounce, throttle, or otherwise rate-limit a handler that owns correctness.** Rate-limit only
   presentation work driven by a high-frequency event such as `scroll`, `resize`, `pointermove`, or keystroke
-  echo, and keep authoritative state updates, validation, and submission on the real event.
+  echo, and keep correctness-critical state updates, validation, and submission on the real event.
 
 ## Preferences
 

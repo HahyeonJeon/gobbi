@@ -20,7 +20,7 @@ Rules define the boundary, Preferences select defaults inside it, and a Rule win
 
 ### Identity constrains from the foundation
 
-Identity is the product's promise, character, voice, and recognizable patterns. It shapes allowed expression
+Identity is the product's promise, character, voice, and recognizable patterns. It shapes allowed visual design
 from the first structural choice and never excuses avoidable exclusion or harm.
 
 ### The problem and affected people precede a solution
@@ -58,8 +58,8 @@ earliest decision it invalidates and may lead to refinement, replacement, or ret
   delivery validation judgment; live learning; iteration or reopen; replacement; retirement criteria; and the
   terminal retired design.** Every stage transition names its material input, success output, failure return,
   next handoff, evidence claim, and reopen condition.
-- **NEVER decide detailed expression while structure, behavior, content, feedback, recovery, adaptation, or
-  accessibility is unresolved.** Each expressive choice must improve hierarchy, state recognition,
+- **NEVER decide detailed visual design while structure, behavior, content, feedback, recovery, adaptation, or
+  accessibility is unresolved.** Each visual choice must improve hierarchy, state recognition,
   affordance, trust, or identity fit rather than conceal missing structure or inaccessible behavior.
 - **NEVER claim implementation, release, deployment, live operation, or retirement action from a design
   judgment.** Record the accepted decision and route each action to its semantic owner.
@@ -83,7 +83,7 @@ locked does not satisfy the evidence Rule.
 treatment of one model. Depart when a recorded constraint leaves only one viable model, and state that
 constraint beside the decision.
 
-### Prefer expression that carries meaning
+### Prefer visual design that carries meaning
 
 **PREFER** typography, color, density, spacing, shape, and imagery choices that make hierarchy, state, or
 affordance easier to read. Depart only for a recorded identity obligation, and never below the
@@ -96,7 +96,7 @@ otherwise. This skill decides whether motion is warranted and what it must commu
 stays with [`css-conventions`](../../css/css-conventions/SKILL.md) and the emitted mechanics with
 [`css-motion`](../../css/css-motion/SKILL.md).
 
-### Prefer the earliest truthful return
+### Prefer the earliest accurate return
 
 **PREFER** returning new evidence to the earliest design stage whose accepted input or outcome it invalidates.
 Record exactly one current disposition: retain, refine, replace, retire, or reopen.

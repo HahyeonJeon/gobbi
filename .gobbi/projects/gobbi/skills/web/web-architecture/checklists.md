@@ -30,11 +30,11 @@ from a preferred shape rather than from the application in front of it is the fa
 - [ ] WEBARCH-CK-PROJECT-01-01 — The current architecture and its evidence were inspected before the structural change was proposed.
 - [ ] WEBARCH-CK-PROJECT-01-02 — A sound existing shape is preserved, or the exact constraint it fails is named.
 - [ ] WEBARCH-CK-PROJECT-01-03 — Every material option is compared against the same applicable constraint set: experience, accessibility, security, privacy, compatibility, performance, reliability, deployment, operations, migration, team capability, and removal cost.
-- [ ] WEBARCH-CK-PROJECT-01-04 — Every question outside structural seams is routed to its owner: cross-layer integration to `web-development`, repository placement to `web-project-structure`, browser behavior to `web-frontend`, authoritative server behavior to `web-backend`, platform facts to `web-platform`, threat analysis to `web-security`, and suite mechanics to `web-testing`.
+- [ ] WEBARCH-CK-PROJECT-01-04 — Every question outside structural boundaries is routed to its owner: cross-layer integration to `web-development`, repository placement to `web-project-structure`, server-owned behavior to `web-backend`, browser behavior to `web-frontend`, platform facts to `web-platform`, threat analysis to `web-security`, and suite mechanics to `web-testing`.
 
 ### WEBARCH-SC-PROJECT-02 — Rule violation: the preference becomes an unapproved migration
 
-A recommendation grows from a seam change into a framework migration or a global rewrite. The expected outcome
+A recommendation grows from a boundary change into a framework migration or a global rewrite. The expected outcome
 keeps each recommendation inside authorized scope and changes the smallest boundary that fixes the named
 failure; an architectural preference executed as a rewrite is the failure.
 
@@ -54,7 +54,7 @@ searching for who owns a value is the failure.
 #### Checklist
 
 - [ ] WEBARCH-CK-STRUCTURE-01-01 — Each state, policy decision, side effect, cache, and invalidation path names one source of truth and one lifecycle.
-- [ ] WEBARCH-CK-STRUCTURE-01-02 — Secrets, protected policy, authorization, and authoritative shared effects sit behind a trusted server boundary.
+- [ ] WEBARCH-CK-STRUCTURE-01-02 — Secrets, protected policy, authorization, and server-owned shared state changes sit behind a trusted server boundary.
 - [ ] WEBARCH-CK-STRUCTURE-01-03 — Navigable state sits in the URL, or the departure records the verified ownership or lifecycle need behind it.
 - [ ] WEBARCH-CK-STRUCTURE-01-04 — Shared facts sit in server data, or the departure records the verified ownership or lifecycle need behind it.
 - [ ] WEBARCH-CK-STRUCTURE-01-05 — Transient interaction state sits in local state, or the departure records the verified ownership or lifecycle need behind it.
@@ -62,14 +62,14 @@ searching for who owns a value is the failure.
 
 ### WEBARCH-SC-STRUCTURE-02 — Rule violation: client state becomes an accidental authority
 
-Client state added to improve interaction ends up deciding whether a protected effect may happen. The expected
-outcome keeps the trusted boundary as the authority and re-checks there; a protected effect that depends on
+Client state added to improve interaction ends up deciding whether a protected action may happen. The expected
+outcome keeps the trusted boundary as the authority and re-checks there; a protected action that depends on
 what the browser holds is the failure.
 
 #### Checklist
 
-- [ ] WEBARCH-CK-STRUCTURE-02-01 — No protected effect depends on client state as its authority.
-- [ ] WEBARCH-CK-STRUCTURE-02-02 — Client state that improves interaction is re-derived or re-checked at the trusted boundary before a protected effect.
+- [ ] WEBARCH-CK-STRUCTURE-02-01 — No protected action depends on client state as its authority.
+- [ ] WEBARCH-CK-STRUCTURE-02-02 — Client state that improves interaction is re-derived or re-checked at the trusted boundary before a protected action.
 
 ### WEBARCH-SC-STRUCTURE-03 — Poor quality: a boundary is added without an exit path
 
@@ -124,7 +124,7 @@ the lifecycle preference or implementation are the failure.
 ### WEBARCH-SC-AESTHETICS-01 — Poor quality: the option comparison cannot be reviewed
 
 A structural decision is recorded and a reviewer must judge it. The expected outcome presents every option
-against the same named constraints and puts each obligation beside the seam it governs; a comparison in which
+against the same named constraints and puts each obligation beside the boundary it governs; a comparison in which
 each option is argued on its own favourable terms is the failure.
 
 #### Checklist
@@ -146,7 +146,7 @@ routing layer happens to do is the failure.
 - [ ] WEBARCH-CK-USAGE-01-01 — URL meaning, history, refresh, deep links, multiple tabs, session changes, and degraded operation are each decided deliberately rather than inherited.
 - [ ] WEBARCH-CK-USAGE-01-02 — Meaningful URLs, standard links and forms, and a server fallback are preserved where the product supports them.
 - [ ] WEBARCH-CK-USAGE-01-03 — Offline or degraded behavior is defined.
-- [ ] WEBARCH-CK-USAGE-01-04 — Offline or degraded behavior is truthful about what is unavailable.
+- [ ] WEBARCH-CK-USAGE-01-04 — Offline or degraded behavior is accurate about what is unavailable.
 
 ### WEBARCH-SC-USAGE-02 — Expected failure: a session changes while two tabs are open
 
@@ -217,7 +217,7 @@ routing is decided by whatever the client sends is the failure.
 - [ ] WEBARCH-CK-RISK-02-01 — Every cache that can hold per-principal data names its isolation key.
 - [ ] WEBARCH-CK-RISK-02-02 — No cache that can hold per-principal data returns one principal's entry to another.
 - [ ] WEBARCH-CK-RISK-02-03 — No client-supplied value selects which cache entry, service boundary, or rendering path serves a protected response without a server-side check.
-- Also applies: WEBARCH-CK-STRUCTURE-02-01 (client state is not the authority for a protected effect).
+- Also applies: WEBARCH-CK-STRUCTURE-02-01 (client state is not the authority for a protected action).
 
 ## Overall
 

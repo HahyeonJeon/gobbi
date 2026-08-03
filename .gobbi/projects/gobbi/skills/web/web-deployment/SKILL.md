@@ -19,7 +19,7 @@ handoff and keeps release status, deployment authority, deployment state, live v
 health separate.
 
 `web-backend` owns what a migration means to data; `web-observability` owns rollout signals;
-`web-configuration` owns runtime values and secret supply; `web-security` owns protected-data exposure;
+`web-configuration` owns runtime values and secrets management; `web-security` owns protected-data exposure;
 `web-testing` owns suite evidence; and `web-platform` owns disputed browser facts. Deployment changes and
 verifies the environment, then ends; it does not claim indefinite support or ongoing service operation.
 
@@ -43,7 +43,7 @@ health remains a further claim based on live signals.
 ### The production URL is the live evidence boundary
 
 Preview aliases, origin bypasses, and staging hosts cannot prove a deployment. Verification reads the entry
-document, assets, lazy chunks, authoritative behavior, identity, and cache directives through the same URL
+document, assets, lazy chunks, server-owned behavior, identity, and cache directives through the same URL
 people use.
 
 ## Rules
@@ -135,10 +135,10 @@ people use.
 - Take the deployed release and the production URL people actually use, not a preview alias, origin bypass,
   or staging host.
 - Fetch the entry document and match its served build identity to the accepted release identity; fetch at
-  least one hashed asset and one lazily loaded chunk; exercise one server-owned authoritative round trip; and
+  least one hashed asset and one lazily loaded chunk; exercise one server-owned round trip; and
   read asset names and cache directives as served for every release-defined file class and the entry document.
-- Record the served identity, response headers, live-served asset names and cache directives, authoritative
-  effect, and every difference from the accepted artifact.
+- Record the served identity, response headers, live-served asset names and cache directives, confirmed
+  round-trip result, and every difference from the accepted artifact.
 - Ask `web-testing` for suite evidence and `web-platform` for a disputed browser fact; return a served-byte
   mismatch to Step 2.1 when publication order caused it and to `web-release` when the accepted artifact or
   manifest itself is inconsistent.

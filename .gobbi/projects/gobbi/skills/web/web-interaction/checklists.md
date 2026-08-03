@@ -95,13 +95,13 @@ inside a scroll handler, forcing synchronous layout, is the failure.
 ### WEBIXN-SC-PERFORMANCE-02 — Rule violation: rate limiting is applied to a handler that owns correctness
 
 A debounce or throttle is placed on a handler because the event fires often. The expected outcome rate-limits
-only presentation work and keeps authoritative behavior on the real event; a dropped or delayed submission,
+only presentation work and keeps correctness-critical behavior on the real event; a dropped or delayed submission,
 validation, or state update is the failure.
 
 #### Checklist
 
 - [ ] WEBIXN-CK-PERFORMANCE-02-01 — No handler that owns correctness is debounced, throttled, or otherwise rate-limited.
-- [ ] WEBIXN-CK-PERFORMANCE-02-02 — Authoritative state updates, validation, and submission run on the real event.
+- [ ] WEBIXN-CK-PERFORMANCE-02-02 — Correctness-critical state updates, validation, and submission run on the real event.
 
 ### WEBIXN-SC-PERFORMANCE-03 — Edge case: a passive listener meets a default action
 
@@ -164,8 +164,8 @@ hidden element, or dropped to the document, is the failure.
 #### Checklist
 
 - [ ] WEBIXN-CK-USAGE-03-01 — Focus entry, containment, and return are decided for every overlay.
-- [ ] WEBIXN-CK-USAGE-03-02 — A modal surface holds focus while it is open.
-- [ ] WEBIXN-CK-USAGE-03-03 — A modal surface returns focus to the invoking control, or moves focus to the element that continues the work flow when the invoking control no longer exists or the work flow continues at a following control or result.
+- [ ] WEBIXN-CK-USAGE-03-02 — A modal holds focus while it is open.
+- [ ] WEBIXN-CK-USAGE-03-03 — A modal returns focus to the invoking control, or moves focus to the element that continues the work flow when the invoking control no longer exists or the work flow continues at a following control or result.
 - [ ] WEBIXN-CK-USAGE-03-04 — Focus is never left on a removed or hidden element.
 - [ ] WEBIXN-CK-USAGE-03-05 — A composite widget exposes one tab stop.
 - [ ] WEBIXN-CK-USAGE-03-06 — A composite widget moves its inner selection with roving `tabindex` or `aria-activedescendant`.
@@ -219,7 +219,7 @@ rejects each; compliance shaped to pass a review rather than to work is the fail
 - [ ] WEBIXN-CK-RISK-02-01 — No `role` or `aria-*` attribute names a pattern whose keys, states, and announcements the widget does not implement.
 - [ ] WEBIXN-CK-RISK-02-02 — No keyboard path is counted as equivalent when it reaches the control but cannot produce its state change.
 - [ ] WEBIXN-CK-RISK-02-03 — No target meets the minimum size through a visual affordance larger than its actual hit area.
-- [ ] WEBIXN-CK-RISK-02-04 — No rate limit is described as presentation-only while an authoritative update rides on the coalesced call.
+- [ ] WEBIXN-CK-RISK-02-04 — No rate limit is described as presentation-only while a correctness-critical update rides on the coalesced call.
 
 ## Overall
 
