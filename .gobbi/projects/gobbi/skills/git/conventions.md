@@ -125,17 +125,26 @@ action-specification rows; changing one value creates a different action.
 | `targetObject` | Full object ID the ref must resolve or peel to, plus its expected Git object type. |
 | `remote` | Literal `none` for a local-only action, or one exact configured remote name with its expected fetch and push URL identities. |
 | `tagForm` | Exactly one caller-selected value: `non-tag-ref`, `lightweight-tag`, `annotated-tag`, or `signed-tag`. |
-| `annotationInput` | Literal `none`, or the exact annotation message input and every caller-supplied argument that changes it. |
-| `signingInput` | Literal `none`, or the exact signing mechanism, signature format, signer or key selector, and caller-supplied signing arguments. |
+| `annotationInput` | Literal `none`, or the exact annotation message bytes and caller-supplied annotation arguments. |
+| `taggerIdentity` | Literal `none`, or the exact caller-supplied tagger name and email address. |
+| `taggerTime` | Literal `none`, or the exact caller-supplied tagger timestamp and time-zone offset. |
+| `tagObjectInputs` | Literal `none`, or every other caller-supplied argument or environment input that changes the tag object. |
+| `signingInput` | Literal `none`, or the exact signing mechanism, signature format, signer or key selector, signing arguments, and every other signing input that changes the signed tag object. |
 | `publicationTarget` | Literal `none`, or the exact remote plus one fully qualified source ref and one fully qualified destination ref for a non-force publication. |
-| `expectedLocalState` | Literal `absent`, or the exact compatible ref object, peeled target, tag form, annotation state, and signing state expected before action. |
+| `expectedLocalState` | Literal `absent`, or the exact compatible ref object, peeled target, tag form, annotation, tagger identity, tagger time, other tag-object input state, and signing state expected before action. |
 | `expectedRemoteState` | Literal `not-applicable` for a local-only action, `absent`, or the exact compatible destination ref object and peeled target expected before publication. |
 | `requestedEffects` | Exact set drawn from `ensure-local-ref` and `publish-single-ref`; publication never implies deletion, overwrite, force, or another ref. |
 
-`non-tag-ref` and `lightweight-tag` require `annotationInput: none` and `signingInput: none`.
-`annotated-tag` requires an exact annotation input and `signingInput: none`. `signed-tag` requires exact
-annotation and signing inputs. A local-only action requires `remote: none`, `publicationTarget: none`,
-`expectedRemoteState: not-applicable`, and no `publish-single-ref` effect.
+`lightweight-tag`, `annotated-tag`, and `signed-tag` require one valid fully qualified `refs/tags/...`
+`refName`. `non-tag-ref` requires one valid fully qualified `refName` outside `refs/tags/...`; no narrower
+non-tag namespace is implied.
+
+`non-tag-ref` and `lightweight-tag` require `annotationInput: none`, `taggerIdentity: none`,
+`taggerTime: none`, `tagObjectInputs: none`, and `signingInput: none`. `annotated-tag` requires exact
+annotation, tagger identity, and tagger time inputs; requires `tagObjectInputs` to state exact additional
+inputs or `none`; and requires `signingInput: none`. `signed-tag` has the same annotation and tagger
+requirements and also requires exact signing inputs. A local-only action requires `remote: none`,
+`publicationTarget: none`, `expectedRemoteState: not-applicable`, and no `publish-single-ref` effect.
 Every action includes `ensure-local-ref`; `publish-single-ref` is optional, and its fully qualified source ref
 must equal `refName`.
 
@@ -144,7 +153,7 @@ must equal `refName`.
 | Field | Required value |
 |---|---|
 | `authoritySource` | Exact evidence of the current manager authority and the authority identity. |
-| `authorizedAction` | Verbatim action identity, including caller, repository, ref, target, remote, form, annotation, signing, publication, expected states, and requested effects. |
+| `authorizedAction` | Verbatim action identity, including caller, repository, ref, target, remote, form, annotation, tagger identity and time, other tag-object inputs, signing, publication, expected states, and requested effects. |
 | `networkAuthority` | Literal `none` for a local-only action, or exact authority for the named remote reads and publication. |
 | `credentialAuthority` | Literal `none` when no credential is used, or exact authority for the named credential, scope, destination, and ephemeral use. |
 | `authorityState` | Direct evidence, checked immediately before each mutation, that the authority remains current and unwithdrawn for the unchanged action. |
@@ -157,11 +166,11 @@ authority mismatch, withdrawal, or stale action identity leaves the action unaut
 | Field | Required evidence |
 |---|---|
 | `actionAndAuthority` | Verbatim action specification, authority record, and the last unchanged-input and current-authority checks. |
-| `preflight` | Repository and remote identities; target object and type; local and remote before states; tag, annotation, and signing observations; and credential and network readiness when used. |
+| `preflight` | Repository and remote identities; target object and type; local and remote before states; tag, annotation, tagger identity, tagger time, other tag-object input, and signing observations; and credential and network readiness when used. |
 | `actions` | Exact commands or API actions attempted, in order, with exit status or returned result and redacted credential material. |
-| `localAfter` | Exact ref object, peeled target, tag form, annotation state, signing state, and whether creation or a compatible no-op occurred. |
+| `localAfter` | Exact ref object, peeled target, tag form, annotation, tagger identity, tagger time, other tag-object input state, signing state, and whether creation or a compatible no-op occurred. |
 | `remoteAfter` | Literal `not-applicable`, or the exact destination ref object and peeled target observed after the attempt. |
-| `result` | Literal `completed`, `compatible-no-op`, `failed`, or `verification-mismatch` for each requested effect. |
+| `result` | Per-effect literal `completed`, `compatible-no-op`, `failed`, or `verification-mismatch`, plus the action terminal state; use literal `recoverable partial state` whenever a requested effect is incomplete after mutation. |
 | `evidenceLimits` | Every state not observed or not provable from the available local or authorized remote evidence. |
 | `failure` | First conflict or diagnostic, affected obligation, retained local and remote state, unique objects, and risk. |
 | `recovery` | Recovery owner, first non-mutating recovery action, and the exact separate authority needed before any later mutation. |
