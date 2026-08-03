@@ -51,7 +51,11 @@ project type check are the authority for the installed types.
   Prefer inline inference when no extracted boundary needs an annotation.
 
 - **MUST model ref absence and the exact target element or value type.** Include the initial null state when
-  applicable, avoid render-time reads or writes, and use the exact installed React version's ref API.
+  applicable, follow React's [render-access caveat](https://react.dev/reference/react/useRef#caveats) by
+  prohibiting reads or writes to `ref.current` during render except for
+  [predictable guarded lazy initialization](https://react.dev/reference/react/useRef#avoiding-recreating-the-ref-contents)
+  whose initialized result is stable and whose guarded branch runs only during initialization, and use the
+  exact installed React version's ref API.
 
 - **NEVER use a broad React type to pretend the type system enforces a runtime or child-structure invariant
   it cannot express.** Validate runtime data and enforce exact child structure through component APIs and

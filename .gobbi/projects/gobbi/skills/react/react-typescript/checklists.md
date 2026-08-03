@@ -51,7 +51,10 @@ component type that omits or broadens a caller-provided input fails the scenario
 
 State, callbacks, refs, events, nodes, elements, and styles have installed React definitions. A handwritten
 approximation, a redundant type argument, or a ref type that hides absence or its exact target element or
-value type fails. Reading or writing a ref during render also fails.
+value type fails. Reading or writing `ref.current` during render also fails unless it is limited to
+predictable guarded lazy initialization whose initialized result is stable and whose guarded branch runs
+only during initialization; JSX reads, rendered-state storage, repeated mutation, and input-dependent
+initialization remain failures.
 
 #### Checklist
 
@@ -59,8 +62,8 @@ value type fails. Reading or writing a ref during render also fails.
 - [ ] RTSX-CK-STRUCTURE-02-02 — Each ref type includes its applicable absent state.
 - [ ] RTSX-CK-STRUCTURE-02-03 — Each ref type names its exact target element or value.
 - [ ] RTSX-CK-STRUCTURE-02-04 — Each JSX-facing event, ref, node, element, or style value uses installed React definitions rather than a handwritten approximation.
-- [ ] RTSX-CK-STRUCTURE-02-05 — No component reads a ref's current value during render.
-- [ ] RTSX-CK-STRUCTURE-02-06 — No component writes a ref's current value during render.
+- [ ] RTSX-CK-STRUCTURE-02-05 — No component reads `ref.current` during render outside predictable guarded lazy initialization whose initialized result is stable and whose guarded branch runs only during initialization.
+- [ ] RTSX-CK-STRUCTURE-02-06 — No component writes `ref.current` during render outside predictable guarded lazy initialization whose initialized result is stable and whose guarded branch runs only during initialization.
 
 ### RTSX-SC-STRUCTURE-03 — Rule violation: A type claims an invariant JSX cannot enforce
 
