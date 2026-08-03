@@ -3,6 +3,9 @@
 Use this unchecked `react-development` source with general Evaluation for every React implementation; `RDEV`
 is the stable checklist prefix. Complete the checklist of every active React child skill as well.
 
+The [React Development Lifecycle Checklist](lifecycle-checklists.md) covers the remaining binding lifecycle
+obligations for this operation.
+
 ## Project
 
 ### RDEV-SC-PROJECT-01 — Normal case: The task and project setting are established

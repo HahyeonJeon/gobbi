@@ -228,3 +228,4 @@ claim requires a measurement of the relevant interaction and component tree.
 ## References
 
 - [React Development Checklist](checklists.md)
+- [React Development Lifecycle Checklist](lifecycle-checklists.md)
