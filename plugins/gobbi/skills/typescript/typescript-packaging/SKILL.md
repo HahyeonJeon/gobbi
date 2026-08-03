@@ -62,6 +62,13 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Place versioned `types@<selector>` branches before the ordinary `types` fallback, and place applicable type
   conditions before the runtime condition or fallback in the same condition object. Give every supported
   compiler that misses the versioned selectors an ordinary `types` fallback.
+- For every used `imports` entry, start its key with `#` and map each condition or target to the intended local
+  file or external package. Require each local file target, but not an external package target, to exist in
+  the package archive.
+- When used, map top-level `types` to an existing declaration file and top-level `main` and `module` to
+  existing runtime files of the intended module formats. Keep those fields aligned with `exports` when both
+  define the same entry.
+- When used, define `files` so its selected archive content matches the intended package inventory.
 - Map each `bin` entry to an existing built command file.
 - Keep internal modules unreachable unless they are an intentional public subpath.
 - Decide whether declarations are emitted, bundled, or maintained, and name the exact `tsconfig.json` file that produces or validates them.
@@ -78,7 +85,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - In author mode, run the package's clean build without relying on stale output. In review-only validation, inspect only existing generated package output without building or rebuilding it.
 - Inspect extensions, directories, source maps, assets, and rewritten import specifiers.
-- Confirm every metadata path resolves inside the package.
+- Confirm every local file target named by package metadata resolves inside the package archive.
 - For every command, preserve the required shebang through the build and ensure the archived command file is executable on supported systems.
 
 #### 2.2 Produce public declarations
@@ -90,6 +97,11 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 #### 2.3 Assemble metadata and content
 
 - Verify `exports`, `imports`, `types`, `main`, `module`, `files`, `sideEffects`, and `bin` metadata that the package actually uses.
+- Verify every used `imports` key and target under the intended package condition. Require local file targets
+  to resolve inside the archive, while allowing external package targets under Node's `imports` rules.
+- Verify each used top-level `types`, `main`, and `module` field selects an existing file of the intended kind
+  and agrees with `exports` where both define the same entry.
+- Verify that `files` selects the intended archive inventory.
 - Verify the install behavior of `engines`, `os`, and `cpu` against the support policy.
 - Treat `engines` as advisory unless the selected package-manager policy enables enforcement. Exercise the intended warning or rejection behavior.
 - Place required runtime packages in `dependencies`, runtime packages whose absence or installation failure is supported in `optionalDependencies`, packages supplied by and compatible with the consuming application in `peerDependencies`, and authoring-only tools in `devDependencies`.
@@ -111,6 +123,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Install the package archive into isolated representative consumers. In review-only validation, install only the pre-existing archive into isolated disposable consumers and never into a persistent environment.
 - Resolve every public entry through each claimed import form and compiler resolution mode.
+- Resolve every used package `imports` key from the installed archive under each claimed condition and resolver.
 - Reject source-relative success that bypasses the package metadata.
 
 #### 3.2 Exercise declarations and runtime

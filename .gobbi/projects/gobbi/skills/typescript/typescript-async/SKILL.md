@@ -44,6 +44,10 @@ Where a promise is awaited determines which `try` block or caller observes its r
 
 A project may depart from these preferences when another design makes observation or release clearer. The departure must name who observes completion and failure and which code releases each resource.
 
+The fenced TypeScript example below passes with TypeScript 5.9.3, 6.0.3, and 7.0.2 under
+`--noEmit --strict --target ES2022 --module ESNext --moduleResolution Bundler --lib ES2022`. These compiler
+checks do not prove arbitrary project `tsconfig.json`, runtime, or installed-package behavior.
+
 This self-contained example returns the promise to its caller so the caller observes completion and failure:
 
 ```ts

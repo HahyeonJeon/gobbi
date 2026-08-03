@@ -159,8 +159,9 @@ from the completed tree and treats a silenced check as unrun.
 
 #### Checklist
 
-- [ ] TSDEV-CK-OVERALL-02-01 — Every applicable final check is run from the completed tree rather than from an earlier or partial state.
+- [ ] TSDEV-CK-OVERALL-02-01 — Every applicable final check, including formatting, linting, and each applicable TypeScript project check, is run from the completed tree rather than from an earlier or partial state.
 - [ ] TSDEV-CK-OVERALL-02-02 — No check result is obtained by narrowing, suppressing, or asserting away the condition it depends on.
+- [ ] TSDEV-CK-OVERALL-02-03 — Every TypeScript project check names the exact `tsconfig.json` file it uses.
 - Also applies: TSDEV-CK-AESTHETICS-01-01 (suppressions introduced by the change are removed).
 
 ### TSDEV-SC-OVERALL-03 — Expected failure: a required check runs and fails

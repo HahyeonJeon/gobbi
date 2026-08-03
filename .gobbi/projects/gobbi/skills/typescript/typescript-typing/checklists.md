@@ -95,15 +95,18 @@ the transformed type stops being easier to understand.
 ### TSTYPE-SC-USAGE-01 — Normal case: the public declaration reads as a stable API
 
 Consumers depend on the emitted declaration, not on the source that produced it. The expected outcome inspects
-those emitted declarations and stabilizes them where inference would otherwise decide the exported type. A public API whose
-declaration changes with an unrelated implementation edit is the failure.
+those emitted declarations, uses annotations for stable exported APIs, and gives `satisfies` and `as const`
+their distinct inference roles. A public API whose declaration changes with an unrelated implementation edit
+or a construct used for the wrong inference behavior is the failure.
 
 #### Checklist
 
 - [ ] TSTYPE-CK-USAGE-01-01 — The emitted public declarations are inspected.
 - [ ] TSTYPE-CK-USAGE-01-02 — Exported APIs carry explicit return types wherever those types stabilize declarations or compatibility.
 - [ ] TSTYPE-CK-USAGE-01-03 — Inference is left to local implementation details.
-- [ ] TSTYPE-CK-USAGE-01-04 — Values whose precise inference is part of the requirement remain narrow when they are checked or declared.
+- [ ] TSTYPE-CK-USAGE-01-04 — Annotations are used for stable exported APIs.
+- [ ] TSTYPE-CK-USAGE-01-05 — `satisfies` checks a value without replacing its useful inferred type.
+- [ ] TSTYPE-CK-USAGE-01-06 — `as const` is used for intentional literal and readonly inference.
 
 ### TSTYPE-SC-USAGE-02 — Edge case: `readonly` reaches the limit of what it guarantees
 

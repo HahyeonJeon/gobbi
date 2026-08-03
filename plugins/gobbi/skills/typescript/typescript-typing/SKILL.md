@@ -54,6 +54,10 @@ For an SDK, derive request, response, pagination, error, and cancellation types 
 
 These are overridable house preferences except where a Rule establishes soundness. A project may choose different declaration styles, explicitness levels, or object-type forms while preserving the same honest runtime behavior and public declarations.
 
+The three fenced TypeScript examples below pass with TypeScript 5.9.3, 6.0.3, and 7.0.2 under
+`--noEmit --strict --target ES2022 --module ESNext --moduleResolution Bundler --lib ES2022`. These compiler
+checks do not prove arbitrary project `tsconfig.json`, runtime, or installed-package behavior.
+
 This self-contained example narrows an unknown input before returning a domain value:
 
 ```ts

@@ -1,6 +1,6 @@
 ---
 name: typescript-development
-description: "MUST load when implementing, changing, or reviewing TypeScript implementation code."
+description: "MUST load when studying TypeScript implementation requirements, designing a typed API, or implementing, changing, or reviewing TypeScript implementation code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---

@@ -17,7 +17,7 @@ Load every row whose trigger applies. A task may need several children, and no c
 |---|---|---|
 | [`typescript-async`](typescript-async/SKILL.md) | preference | MUST load when a TypeScript task involves promises, cancellation, concurrency, events, cleanup, or explicit resource management. |
 | [`typescript-conventions`](typescript-conventions/SKILL.md) | preference | MUST load when writing or reviewing TypeScript code to choose names, files, imports, documentation, comments, or formatting. |
-| [`typescript-development`](typescript-development/SKILL.md) | operation | MUST load when implementing, changing, or reviewing TypeScript implementation code. |
+| [`typescript-development`](typescript-development/SKILL.md) | operation | MUST load when studying TypeScript implementation requirements, designing a typed API, or implementing, changing, or reviewing TypeScript implementation code. |
 | [`typescript-packaging`](typescript-packaging/SKILL.md) | operation | MUST load when creating, changing, validating, or publishing a TypeScript package, its exports, declarations, executable commands, or supported consumer environments. |
 | [`typescript-testing`](typescript-testing/SKILL.md) | operation | MUST load when creating or reviewing TypeScript runtime tests, type-level tests, negative tests, declaration checks, package checks, or documented examples. |
 | [`typescript-toolchain`](typescript-toolchain/SKILL.md) | tool | MUST load when a TypeScript task involves compiler configuration, module resolution, imports, emit, type stripping, linting, building, or differences among named runtimes. |

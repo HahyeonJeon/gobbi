@@ -66,7 +66,10 @@ JavaScript is not the only emit. `declaration` writes `.d.ts` files. `declaratio
 It also requires every implementation file to match `include` or be listed in `files`.
 Before TypeScript 6, `composite` changes an omitted `rootDir` from the inferred common input directory to the
 directory containing that `tsconfig.json`. In TypeScript 6 and TypeScript 7, every configured project already
-uses the `tsconfig.json` directory as the default `rootDir`, whether or not `composite` is enabled.
+uses the `tsconfig.json` directory as the default `rootDir`, whether or not `composite` is enabled. A configured
+project that emits files from a common source directory nested below the `tsconfig.json` directory must set
+`rootDir` explicitly to its intended emission root. Use `./src` when emitted paths should omit the `src`
+segment, or `.` when they should retain it; omitting the option can produce TS5011.
 
 Confirm which outputs are needed. A declaration-only package, an application bundle, and a script have different answers.
 

@@ -95,7 +95,7 @@ intentional subpath. An accidental reachable path breaks the Rule even when noth
 
 - [ ] TSPKG-CK-STRUCTURE-02-01 — No internal path is exposed through a broad file set, a wildcard export, a declaration leak, or a source-only path.
 - [ ] TSPKG-CK-STRUCTURE-02-02 — Every module reachable by consumers is an intentional public entry point or subpath.
-- [ ] TSPKG-CK-STRUCTURE-02-03 — Every path named by package metadata resolves inside the package archive.
+- [ ] TSPKG-CK-STRUCTURE-02-03 — Every local file target named by package metadata resolves inside the package archive.
 
 ### TSPKG-SC-STRUCTURE-03 — Normal case: dual runtime branches have matching nested declarations
 
@@ -133,6 +133,22 @@ aligned with actual module effects. A mismatched output or unsafe tree-shaking c
 
 - [ ] TSPKG-CK-STRUCTURE-05-01 — Built-output extensions, directories, source maps, assets, and rewritten import specifiers match the package requirements.
 - [ ] TSPKG-CK-STRUCTURE-05-02 — `sideEffects` semantics match actual module side effects and the intended tree-shaking behavior.
+
+### TSPKG-SC-STRUCTURE-06 — Normal case: used package metadata selects the intended files and targets
+
+A package may use private import mappings, legacy top-level entry fields, and a publish file set alongside
+`exports`. The expected outcome validates each used field according to its own target rules and keeps fields
+that define the same entry aligned. Requiring an external `imports` target inside the archive or leaving any
+used field unverified is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-STRUCTURE-06-01 — Every used `imports` key starts with `#`.
+- [ ] TSPKG-CK-STRUCTURE-06-02 — Every used `imports` target selects the intended local file or permitted external package under each applicable condition.
+- [ ] TSPKG-CK-STRUCTURE-06-03 — Every used top-level `types` field selects an existing declaration file.
+- [ ] TSPKG-CK-STRUCTURE-06-04 — Every used top-level `main` and `module` field selects an existing runtime file of its intended module format.
+- [ ] TSPKG-CK-STRUCTURE-06-05 — Top-level `types`, `main`, and `module` agree with `exports` wherever both define the same entry.
+- [ ] TSPKG-CK-STRUCTURE-06-06 — When `files` is used, its selected archive content matches the intended package inventory.
 
 ## Performance
 

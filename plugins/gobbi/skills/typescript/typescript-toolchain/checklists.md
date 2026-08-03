@@ -57,13 +57,15 @@ environments their own `tsconfig.json` files. A single configuration stretched a
 ### TSTOOL-SC-STRUCTURE-02 — Normal case: emit outputs are chosen for their consumers
 
 JavaScript is not the only emit: declarations, declaration maps, and build state are separate outputs with
-separate consumers. The expected outcome enables each only where a named consumer needs it and enables the
-single-file safety check only where the actual JavaScript producer has that limitation.
+separate consumers. A TypeScript 6 or 7 configured project that emits from a nested common source directory
+also needs an explicit `rootDir` for its intended output layout. The expected outcome configures each output
+and source root for its consumer and enables the single-file safety check only where the actual JavaScript
+producer has that limitation.
 
 #### Checklist
 
 - [ ] TSTOOL-CK-STRUCTURE-02-01 — `declaration`, `declarationMap`, and `composite` are enabled only where a named consumer needs their outputs.
-- [ ] TSTOOL-CK-STRUCTURE-02-02 — Before TypeScript 6, an omitted `rootDir` defaults to the configuration directory only under `composite`; in TypeScript 6 and TypeScript 7, every configured project uses that default.
+- [ ] TSTOOL-CK-STRUCTURE-02-02 — A TypeScript 6 or 7 configured project that emits files from a common source directory nested below its `tsconfig.json` directory explicitly sets `rootDir` to the intended emission root, such as `./src` to omit or `.` to retain the source-directory segment.
 - [ ] TSTOOL-CK-STRUCTURE-02-03 — `isolatedModules` is enabled when the configured JavaScript producer processes files independently and has the single-file limitation the option diagnoses.
 - [ ] TSTOOL-CK-STRUCTURE-02-04 — Every implementation file in a `composite` project matches `include` or is listed in `files`.
 

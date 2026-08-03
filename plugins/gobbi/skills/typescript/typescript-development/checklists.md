@@ -32,17 +32,18 @@ data, exact `tsconfig.json` files, and verification commands first. Editing beha
 ### TSDEV-SC-PROJECT-02 — Normal case: implementation review stays in review-only mode
 
 The task asks for implementation review without mutation authority. The expected outcome keeps
-`typescript-development` active, composes with the general Evaluation operation for verdicts, inspects the
-existing typed design and implementation, and returns review evidence without mutation or build output.
-Editing reviewed files, creating build output, or leaving the review without its evidence is the failure.
+`typescript-development` active, composes with the general Evaluation operation for verdicts, runs only
+authorized checks, and returns review evidence without editing reviewed files. Crossing that authority or
+leaving the review without its evidence is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-02-01 — The request is classified as author mode or review-only implementation mode, and `typescript-development` remains active in either mode.
-- [ ] TSDEV-CK-PROJECT-02-02 — Review-only implementation mode composes with the general Evaluation operation for verdicts and inspects the existing typed design and implementation.
-- [ ] TSDEV-CK-PROJECT-02-03 — No reviewed file is edited and no generated build output is created or recreated in review-only implementation mode.
+- [ ] TSDEV-CK-PROJECT-02-01 — The request is classified as author mode or review-only implementation mode.
+- [ ] TSDEV-CK-PROJECT-02-02 — Review-only implementation mode composes with the general Evaluation operation for verdicts.
+- [ ] TSDEV-CK-PROJECT-02-03 — No reviewed file is edited in review-only implementation mode.
 - [ ] TSDEV-CK-PROJECT-02-04 — Only checks authorized for the review-only implementation task are run.
 - [ ] TSDEV-CK-PROJECT-02-05 — Review-only implementation mode returns command results, findings, and limitations.
+- [ ] TSDEV-CK-PROJECT-02-06 — `typescript-development` remains active in author mode and review-only implementation mode.
 
 ### TSDEV-SC-PROJECT-03 — Rule violation: mutation widens past the authorized set
 
@@ -68,6 +69,17 @@ mutually exclusive is the failure.
 - [ ] TSDEV-CK-PROJECT-04-01 — Every applicable web application, command-line application (CLI), library, SDK, and desktop application has a record of its named runtimes, source entries, exact `tsconfig.json` files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
 - [ ] TSDEV-CK-PROJECT-04-02 — When none of the five named kinds fits, one literal fallback kind records its named runtimes, source entries, exact `tsconfig.json` files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
 - [ ] TSDEV-CK-PROJECT-04-03 — User experience, command semantics, service behavior, operating-system support, deployment, and release decisions are supplied by the task or routed to the applicable product-domain skill before TypeScript encodes them.
+
+### TSDEV-SC-PROJECT-05 — Normal case: review-only inspection preserves the existing build
+
+Review-only implementation mode needs to inspect the typed design and implementation without producing a
+different subject. The expected outcome reads the existing code and leaves generated build output untouched.
+Skipping the typed inspection or creating fresh build output is the failure.
+
+#### Checklist
+
+- [ ] TSDEV-CK-PROJECT-05-01 — Review-only implementation mode inspects the existing typed design and implementation.
+- [ ] TSDEV-CK-PROJECT-05-02 — No generated build output is created or recreated in review-only implementation mode.
 
 ## Structure
 
