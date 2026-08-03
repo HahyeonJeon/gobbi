@@ -1,12 +1,13 @@
 suppress_unstable_features_warning = true
 
 model = "gpt-5.6-sol"
-model_reasoning_effort = "high"
-plan_mode_reasoning_effort = "high"
+model_reasoning_effort = "xhigh"
+plan_mode_reasoning_effort = "xhigh"
 model_verbosity = "medium"
 
 sandbox_mode = "workspace-write"
 approval_policy = "on-request"
+approvals_reviewer = "auto_review"
 web_search = "cached"
 
 [sandbox_workspace_write]
@@ -33,3 +34,6 @@ status_line_use_colors = true
 [features.multi_agent_v2]
 enabled = true
 max_concurrent_threads_per_session = 8
+
+[features]
+default_mode_request_user_input = true
