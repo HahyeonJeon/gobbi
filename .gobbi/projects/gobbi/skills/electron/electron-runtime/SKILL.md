@@ -12,8 +12,9 @@ processes. Start with the actual process, emitted module format, target operatin
 the project's pinned Electron major.
 
 This skill explains mechanism availability, prerequisites, signals, target limits, and the earliest failure
-boundary. It does not define installed product behavior, change source, design or accept tests, design
-diagnostic emission, construct packages, or decide release readiness.
+boundary. It does not own installed product behavior, source implementation, test design, test execution,
+test interpretation, environment classification, evidence acceptance, diagnostic-emission design, packaging
+procedure, or release-readiness decisions.
 
 ## Principles
 
@@ -45,9 +46,10 @@ project's pinned major is the authority for version-sensitive claims.
 - **MUST verify version-sensitive claims against current official Electron documentation and the pinned
   major.** State every prerequisite and unsupported target that affects the answer.
 
-- **MUST keep the answer inside runtime mechanism or diagnosis.** Do not define product behavior, change
-  source, design or accept tests, design diagnostic emission, construct packages, or decide release
-  readiness.
+- **MUST keep the answer inside runtime mechanism or diagnosis.** Keep installed product behavior, source
+  implementation, test design, test execution, test interpretation, environment classification, evidence
+  acceptance, diagnostic-emission design, packaging procedure, and release-readiness decisions outside this
+  manual.
 
 - **MUST account for IPC and `contextBridge` crossings.** Name the value shape, direction, serialization or
   proxy behavior, owner, lifetime, disposal point, and transferred-port state when each applies.
@@ -233,6 +235,14 @@ Check `webContents.isDestroyed()`, the failure reason, the current URL, and the 
 attributing all missing messages to a crash.
 
 ### 9. Read operating-system integration outcomes explicitly
+
+Use the current [`app`](https://www.electronjs.org/docs/latest/api/app),
+[`dialog`](https://www.electronjs.org/docs/latest/api/dialog),
+[`shell`](https://www.electronjs.org/docs/latest/api/shell),
+[`globalShortcut`](https://www.electronjs.org/docs/latest/api/global-shortcut),
+[`Notification`](https://www.electronjs.org/docs/latest/api/notification), and
+[`nativeImage`](https://www.electronjs.org/docs/latest/api/native-image) API pages for the mechanisms below,
+then confirm each claim against the pinned Electron major.
 
 | Mechanism | Truthful success or failure boundary |
 |---|---|

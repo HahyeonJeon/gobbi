@@ -20,7 +20,7 @@ It does not decide installed behavior or work owned outside this manual.
 #### Checklist
 
 - [ ] ELECRUN-CK-PROJECT-01-01 — The subject is one Electron runtime mechanism or one bounded runtime diagnosis.
-- [ ] ELECRUN-CK-PROJECT-01-02 — The conclusion does not define installed product behavior, change source, design or accept tests, design diagnostic emission, construct packages, or decide release readiness.
+- [ ] ELECRUN-CK-PROJECT-01-02 — The conclusion does not cross any owner boundary in this set: installed product behavior, source implementation, test design, test execution, test interpretation, environment classification, evidence acceptance, diagnostic-emission design, packaging procedure, and release-readiness decisions.
 - [ ] ELECRUN-CK-PROJECT-01-03 — The lookup identifies the pinned Electron major, target operating system, executing process, emitted module format, and lifecycle point.
 
 ### ELECRUN-SC-PROJECT-02 — Expected failure: a required runtime fact is missing
@@ -59,7 +59,7 @@ ownership, and termination behavior needed to understand that cost.
 #### Checklist
 
 - [ ] ELECRUN-CK-PERFORMANCE-01-01 — Every streaming answer states the `MessagePort` transfer direction, current endpoint owner, start point, close point, and peer-exit behavior.
-- [ ] ELECRUN-CK-PERFORMANCE-01-02 — Sustained blocking work is identified as a main-process responsiveness risk and located in the actual process that performs it.
+- [ ] ELECRUN-CK-PERFORMANCE-01-02 — The answer states both facts about sustained blocking work: its effect on main-process responsiveness and its actual executing process.
 - [ ] ELECRUN-CK-PERFORMANCE-01-03 — A missing or slow reply is traced through registration, target lifetime, serialization, handler settlement, and disposal before adding retries.
 
 ## Aesthetics
@@ -100,7 +100,7 @@ during operating-system shutdown.
 - [ ] ELECRUN-CK-USAGE-02-01 — Early `open-url` and `open-file` listeners are registered during module evaluation before a cold-launch event can arrive.
 - [ ] ELECRUN-CK-USAGE-02-02 — APIs that require Electron readiness are placed after `app.whenReady()` or its equivalent ready transition.
 - [ ] ELECRUN-CK-USAGE-02-03 — Single-instance ownership is decided before primary-window creation.
-- [ ] ELECRUN-CK-USAGE-02-04 — Teardown removes listeners, closes ports, stops owned children, and settles pending work once.
+- [ ] ELECRUN-CK-USAGE-02-04 — Teardown covers every terminal member in this set: listener removal, port closure, termination of each owned child or utility process, and pending-work settlement.
 - [ ] ELECRUN-CK-USAGE-02-05 — Ordinary quit, operating-system shutdown, suspend, renderer loss, and process crash are not treated as one event source.
 
 ### ELECRUN-SC-USAGE-03 — Normal case: a cold deep link reaches the ready primary
@@ -111,8 +111,10 @@ queues, and later routes the URL.
 #### Checklist
 
 - [ ] ELECRUN-CK-USAGE-03-01 — Windows and Linux cold-launch arguments and macOS `open-url` delivery are distinguished.
-- [ ] ELECRUN-CK-USAGE-03-02 — The external URL is captured and validated before it is queued for routing after readiness.
 - Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
+- Also applies: ELECRUN-CK-USAGE-07-01 (the cold deep-link URL is captured).
+- Also applies: ELECRUN-CK-USAGE-07-02 (the cold deep-link URL is validated before queueing).
+- Also applies: ELECRUN-CK-USAGE-07-03 (the cold deep-link URL remains queued until readiness).
 
 ### ELECRUN-SC-USAGE-04 — Normal case: a running deep link reaches the existing primary
 
@@ -121,7 +123,7 @@ An already-running application receives a different operating-system path than a
 #### Checklist
 
 - [ ] ELECRUN-CK-USAGE-04-01 — Windows and Linux `second-instance` delivery and macOS `open-url` delivery are distinguished.
-- [ ] ELECRUN-CK-USAGE-04-02 — Argument reordering is allowed for `second-instance`, and exact application-supplied data uses validated `additionalData`.
+- [ ] ELECRUN-CK-USAGE-04-02 — The answer states both `second-instance` input rules: possible argument reordering and validated `additionalData` for exact application-supplied data.
 
 ### ELECRUN-SC-USAGE-05 — Normal case: a cold file-open request is retained through readiness
 
@@ -131,8 +133,10 @@ delivery remain separate prerequisites.
 #### Checklist
 
 - [ ] ELECRUN-CK-USAGE-05-01 — Windows `process.argv`, Linux launcher input, and macOS `open-file` delivery are distinguished.
-- [ ] ELECRUN-CK-USAGE-05-02 — The file input is captured, validated, and queued until its owning application state is ready.
 - Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
+- Also applies: ELECRUN-CK-USAGE-07-01 (the cold file-open input is captured).
+- Also applies: ELECRUN-CK-USAGE-07-02 (the cold file-open input is validated before queueing).
+- Also applies: ELECRUN-CK-USAGE-07-03 (the cold file-open input remains queued until readiness).
 
 ### ELECRUN-SC-USAGE-06 — Normal case: a running file-open request reaches the existing primary
 
@@ -143,6 +147,18 @@ Windows and Linux.
 
 - [ ] ELECRUN-CK-USAGE-06-01 — macOS `open-file` and configured Windows or Linux primary-instance routing are distinguished.
 - [ ] ELECRUN-CK-USAGE-06-02 — The existing target window or view is resolved at delivery time instead of reusing a stale `webContents` reference.
+
+### ELECRUN-SC-USAGE-07 — Normal case: cold external input survives the readiness boundary
+
+A cold deep-link URL or file-open input may arrive before the application state that routes it exists. The
+shared path must preserve the input while keeping capture, validation, and readiness retention independently
+checkable.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-07-01 — Each cold external input is captured before launch delivery can be lost.
+- [ ] ELECRUN-CK-USAGE-07-02 — Each captured cold external input is validated before it enters the readiness queue.
+- [ ] ELECRUN-CK-USAGE-07-03 — Each validated cold external input remains queued until its owning application state is ready.
 
 ## Consistency
 
@@ -167,7 +183,7 @@ Power events are distinct from ordinary application quit and have operating-syst
 
 - [ ] ELECRUN-CK-RISK-01-01 — `suspend` and `resume` are treated as signals, not proof that asynchronous cleanup finished or resources survived.
 - [ ] ELECRUN-CK-RISK-01-02 — `shutdown` use is limited to the operating systems documented for the pinned major.
-- [ ] ELECRUN-CK-RISK-01-03 — Preventing the shutdown event is described only as an attempt to delay exit, followed by prompt termination.
+- [ ] ELECRUN-CK-RISK-01-03 — The shutdown-delay conclusion includes both documented limits: an attempted delay from event prevention and a prompt application exit.
 - [ ] ELECRUN-CK-RISK-01-04 — Windows shutdown, restart, and logout do not rely on `before-quit`, `will-quit`, or `quit` being emitted.
 
 ### ELECRUN-SC-RISK-02 — Expected failure: a process or window disappears
@@ -177,9 +193,9 @@ utility, and main-process failure into one callback.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-RISK-02-01 — Renderer exit uses `render-process-gone` on the affected `webContents` and records its reason and exit code.
-- [ ] ELECRUN-CK-RISK-02-02 — Renderer hang uses `unresponsive`, while a later `responsive` is limited to the same target responding again.
-- [ ] ELECRUN-CK-RISK-02-03 — Electron child exit uses `child-process-gone` and does not misclassify renderer processes.
+- [ ] ELECRUN-CK-RISK-02-01 — The renderer-exit diagnosis states the `render-process-gone` signal, affected `webContents`, reason, and exit code.
+- [ ] ELECRUN-CK-RISK-02-02 — The renderer-hang diagnosis distinguishes `unresponsive` from a later `responsive` signal on the same target.
+- [ ] ELECRUN-CK-RISK-02-03 — The child-process diagnosis limits `child-process-gone` to the non-renderer process classes it reports.
 - [ ] ELECRUN-CK-RISK-02-04 — An owned utility process uses its direct `spawn`, `error`, `exit`, and `message` events.
 - [ ] ELECRUN-CK-RISK-02-05 — Main-process crash or exit relies on an external observer because in-process listeners cannot run afterward.
 - [ ] ELECRUN-CK-RISK-02-06 — Crash collection is not treated as a live recovery signal or proof that an owning process remained alive.
