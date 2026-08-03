@@ -182,12 +182,13 @@ policy; an invocation that must follow that policy passes those values itself.
 | `codex plugin add <plugin>@<marketplace>` | Installs a plugin into the local cache |
 | `codex plugin remove <plugin>@<marketplace>` | Removes an installed plugin from local config and cache |
 
-The Codex plugin installer copies a plugin directory without following symbolic links. Installing the current
-`plugins/gobbi/` package delivers exactly two files — `.claude-plugin/plugin.json` and
-`.codex-plugin/plugin.json` — with no skills, no agents, and no error. That silence is
-[openai/codex#24770](https://github.com/openai/codex/issues/24770), not a fault in the package. Codex skill
-*discovery* does follow symbolic links, so `.agents/skills/` resolves inside this repository and needs no
-install.
+The Codex plugin installer copies a plugin directory without following symbolic links. The current
+`plugins/gobbi/` package therefore materializes `skills/` and `agents/` as real files generated from their
+canonical owners. Installing it delivers both manifests, the complete nested skill tree, and the agent
+contracts; `scripts/check-codex-plugin-smoke.sh` proves those files in an isolated installed cache.
+[openai/codex#24770](https://github.com/openai/codex/issues/24770) still affects symlink-only packages but no
+longer leaves a current Gobbi install incomplete. Codex skill *discovery* does follow symbolic links, so
+`.agents/skills/` resolves inside this repository and needs no install.
 
 ### Diagnose a failure
 
@@ -196,7 +197,7 @@ install.
 | A flag is rejected | `codex exec --help`; an argument error exits `2` and prints the accepted values |
 | Authentication, configuration, or runtime health is unclear | `codex doctor`, `codex doctor --summary`, or `codex doctor --json` for a redacted machine-readable report |
 | A configuration key may be misspelled or retired | Rerun with `--strict-config`, which fails on an unrecognized field |
-| An installed plugin exposes no skill | List the installed cache; a symbolic-linked component installs silently empty |
+| An installed plugin exposes no skill | List the installed cache; current Gobbi installs contain real `skills/` and `agents/` files, while a symlinked package can install silently incomplete |
 | A run must not persist but a session appears | Confirm `--ephemeral` was passed; `resume` and `--ephemeral` cannot both hold |
 
 Report the command, its exact exit status, and its immediate diagnostic. Do not author replacement output for
