@@ -1,148 +1,272 @@
 ---
 name: electron-release
-description: "MUST load when packaging, signing, notarizing, upgrading, update-rehearsing, or preparing Electron artifacts for release."
+description: "MUST load when preparing or executing an Electron release from verified packaged artifacts, including support policy, version transitions, update channels, release readiness, publication, rollout, withdrawal, or post-release recovery."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Electron Release
 
-Use this operation to prepare signed, installable, update-compatible Electron artifacts for each authorized operating-system target. It covers live support evidence, packaging, fuses, signing and notarization, installed verification, update and rollback rehearsal, and exact handoff for publication.
+Electron Release takes one accepted immutable Packaging candidate for each target operating system and
+architecture. It prepares, reviews, or executes one release and returns an exact release record or an
+explicit stop.
 
-This operation preserves a sound existing packaging stack and stops before credential use or publication that lacks explicit authority. Application implementation belongs to `electron-development`; Electron-specific test design belongs to `electron-testing`.
+This operation owns support policy, version transitions, update channels, release-readiness acceptance,
+external authority, publication, rollout, withdrawal, and post-release recovery. Packaging keeps ownership
+of candidate construction and final bytes, while Testing keeps ownership of test work and evidence.
+
+Release policy and metadata may change, but accepted candidate bytes remain unchanged throughout this
+operation. Every claim and external action stays specific to its candidate, target, channel, and destination.
 
 ## Principles
 
-### Release evidence comes from artifacts
+### Release starts after candidate acceptance
 
-Source builds and development launches cannot prove packaged entry paths, resources, native modules, signatures, installers, or updates. Inspect and run the exact artifact intended for handoff.
+Release receives an accepted Packaging record rather than source or an unfinished artifact. A missing field
+or changed byte returns to Packaging without reconstruction here.
 
-### Preserve a sound release stack
+### Readiness and authority are separate decisions
 
-Keep the project's established packager, maker, builder, signing, and updater when they meet the target contract. Recommend Electron Forge for a new setup, not as an automatic migration.
+Passing evidence can establish release readiness but cannot authorize an external action. Each publication,
+promotion, rollout, withdrawal, credential use, or store action needs its own recorded authority.
 
-### Hardening precedes identity
+### Update policy is target specific
 
-Set entries, resources, ASAR placement, native modules, and Electron fuses before signing. Any later byte change invalidates the signature and may invalidate notarization or update evidence.
+An update mechanism, channel, predecessor set, and compatibility result apply only to their named target.
+Evidence from another operating system, architecture, channel, or predecessor cannot establish the claim.
 
-### Publication authority is explicit
+### Recovery preserves exact known state
 
-Preparing a verified artifact does not authorize credentials, upload, channel promotion, rollout, or store submission. Preserve the artifact and stop at the exact authority boundary.
+Forward fixes are the ordinary post-release recovery path because installed state may already have changed.
+Rollback is allowed only from current compatibility, updater-path, evidence, and authority records.
 
 ## Rules
 
-- **MUST bind the release to a pinned Electron major, live support evidence, target operating systems and architectures, artifact formats, update channel, version compatibility, rollback plan, credentials authority, and publication authority.**
-- **MUST inspect and preserve a sound existing packaging and update stack.** Recommend Electron Forge only when creating a new setup or when evidence justifies an authorized migration.
-- **MUST build separate main, preload, and renderer targets and verify both development and packaged loading, including preload format, entry paths, resources, ASAR or unpacked content, and rebuilt native modules.**
-- **MUST set and verify intended Electron fuses before signing, then sign platform artifacts and notarize macOS artifacts as required by the target.**
-- **NEVER accept source-only, development-only, or unsigned launch evidence as proof that a distributable installs, launches, updates, rolls back, or meets platform trust requirements.**
-- **MUST stop before using unavailable credentials or performing an unauthorized publication, promotion, rollout, or store action and return exact artifact and recovery evidence.**
+- **MUST start from one complete accepted immutable Packaging candidate per target operating system and
+  architecture.** Recompute or verify its checksum and return any changed bytes, identity mismatch, or
+  missing candidate evidence to Packaging without rebuilding or modifying the artifact.
+
+- **MUST record the complete release policy before requesting readiness evidence.** Include support state,
+  version transition, target and minimum operating-system versions, architecture, distribution target,
+  predecessor set, compatibility, update mechanism and channel, rollout stages, withdrawal criteria,
+  recovery plan, and named decision and external-action authorities.
+
+- **MUST keep Testing as the sole owner of test design, execution, interpretation, environment
+  classification, and evidence.** Release supplies claims and requested scenarios, then accepts readiness or
+  stops from the identity-matched record Testing returns.
+
+- **MUST record readiness before every external action and require exact authority for that action.** Protect
+  credentials and keep each destination, publication, promotion, rollout, feed, store, or withdrawal action
+  inside its recorded candidate, target, channel, and authority.
+
+- **MUST stage rollout against accepted Observability signals and explicit stop thresholds.** Record every
+  stage decision, stop new rollout on a threshold breach, and preserve the exact external state and
+  diagnostic records.
+
+- **NEVER construct, sign, notarize, rebuild, or mutate a candidate or claim work owned by Testing or complete
+  delivery.** Release may prepare policy and metadata, accept readiness, perform authorized external actions,
+  and decide only the recovery established by current observed state.
 
 ## Procedure
 
-### Phase 1 — Bind Support and Authority
+### Phase 1 — Accept the Release Subject
 
-#### 1.1 Bind the release target
+#### 1.1 Classify the request and target set
 
-- Record application version, pinned Electron major, operating systems, minimum supported operating-system versions, architectures, artifact formats, install scope, update channels, and rollout stages.
-- Record required signing identities, notarization credentials, update-feed access, store access, and the person or system authorized to use each.
-- Define success for package, install, first launch, normal launch, uninstall, update, rollback, recovery, and handoff.
+- Classify the work as preparation, read-only review, or execution. Preparation may create release policy,
+  metadata, requests, and readiness records; review changes nothing; execution may perform only the exact
+  external actions authorized later in this procedure.
+- Identify one release subject with its application version and exactly one accepted immutable Packaging
+  candidate for each target operating system and architecture.
+- Record the affected decision makers, credential owners, external-action authorities, operators, users,
+  support staff, distribution destinations, and current external state.
+- Stop on an ambiguous mode, target, actor, or authority. Preserve the candidate records and name the owner
+  that can decide the missing fact.
 
-#### 1.2 Check live Electron support
+#### 1.2 Verify every Packaging candidate
 
-- Read the current [Electron release policy](https://www.electronjs.org/docs/latest/tutorial/electron-timelines), [release schedule](https://releases.electronjs.org/schedule), and [stable releases](https://releases.electronjs.org/?channel=stable) at release time.
-- Confirm the pinned major's support state, bundled platform requirements, and security posture without copying a transient current version into durable documentation.
-- For a major upgrade, read every intervening item in the live [breaking changes](https://www.electronjs.org/docs/latest/breaking-changes), release notes, and support documents; map required code, configuration, native module, packaging, and operating-system changes.
+- Require each candidate record to contain the recorded build-input identity, candidate artifact path and
+  checksum, operating system and architecture, pinned Electron major, manifest, security and signature
+  state, installer metadata, accepted packaged and installed evidence, installation instructions,
+  limitations, diagnostics, and reproduction command.
+- Recompute the checksum from the candidate bytes when they are locally available, or verify the recorded
+  checksum through the accepted artifact store when direct access is unavailable. Record the verification
+  method, time, and result without changing the artifact.
+- Reject a missing field, failed Packaging evidence, target mismatch, identity mismatch, or changed byte.
+  Return the unchanged record and exact failure to Packaging; never repair, rebuild, sign, notarize, or patch
+  the candidate in Release.
+- Keep one candidate identity and checksum through every later policy, evidence, authority, action, and
+  recovery record.
 
-### Phase 2 — Inspect and Preserve the Stack
+### Phase 2 — Define Support, Version, and Update Policy
 
-#### 2.1 Inventory release ownership
+#### 2.1 Record support and transition decisions
 
-- Inspect package manager and lockfile, Electron pin, main, preload, and renderer builds, packager or maker, signing hooks, notarization, fuses, updater, feed, CI, and artifact retention.
-- Trace development and packaged entry paths, resource lookup, custom protocols, ASAR configuration, unpacked files, executable names, icons, identifiers, entitlements, permissions, and installer metadata.
-- Preserve the existing stack when it produces maintainable target artifacts. If no stack exists, use the official [packaging guidance](https://www.electronjs.org/docs/latest/tutorial/tutorial-packaging) and recommend Forge as the supported integrated starting point.
+- Record the application version, pinned Electron major, current support state, target and minimum
+  operating-system versions, architecture, distribution target, and release decision authority.
+- Define the supported predecessor set for each target and channel. State unsupported predecessors and the
+  user-visible path available to them.
+- Record installed-data, settings, and protocol compatibility for fresh install, update, restart, forward
+  fix, and any proposed rollback. Use the accepted Contract record for observable behavior and never infer
+  compatibility from retained files alone.
+- Define rollout stages, stage populations, entry and exit conditions, withdrawal criteria, stop thresholds,
+  the forward-recovery plan, and the authority that may change each decision.
 
-#### 2.2 Freeze inputs and recovery
+#### 2.2 Select one update mechanism and channel per target
 
-- Freeze source commit or digest, lockfile, Electron version, dependency graph, build configuration, tool versions, target matrix, and environment identity.
-- Define reproducible artifact names and checksums plus storage for logs, symbol files, signatures, notarization receipts, update metadata, and test results.
-- Define rollback artifact, compatible data or settings boundary, update-feed recovery, failed-install recovery, and who may activate each path.
+- Use the current [Updating Applications](https://www.electronjs.org/docs/latest/tutorial/updates) guidance
+  and [Distribution Overview](https://www.electronjs.org/docs/latest/tutorial/distribution-overview) beside
+  the project's distribution decision. Record the selected feed, store, package-manager, managed-deployment,
+  or manual update mechanism instead of prescribing one mechanism for every target.
+- Electron's built-in
+  [`autoUpdater`](https://www.electronjs.org/docs/latest/api/auto-updater/) supports macOS and Windows, with
+  target-specific requirements. Linux ordinarily uses its distribution's package manager; record a different
+  accepted mechanism only when the project explicitly selects and supports it.
+- Define each release-metadata identity as its local path or provider object ID, version, and checksum when
+  the metadata has stable bytes. Record that identity with the channel, feed or store destination, target
+  operating system and architecture, accepted predecessor routing, signature expectations, restart behavior,
+  and rejected downgrade or cross-channel paths.
+- Stop on an unsupported mechanism, missing distribution decision, ambiguous channel, or incompatible
+  predecessor. Return a release-policy defect here and a mechanism dispute to Runtime.
 
-### Phase 3 — Build and Package
+#### 2.3 Check current Electron support and transition facts
 
-#### 3.1 Build process targets
+- At the time of the decision, read the current [Electron release
+  policy](https://www.electronjs.org/docs/latest/tutorial/electron-timelines),
+  [release schedule](https://releases.electronjs.org/schedule), and
+  [stable releases](https://releases.electronjs.org/?channel=stable). Record the lookup time, sources, pinned
+  major support state, and affected target constraints without copying a transient current version into this
+  skill.
+- For a major transition, inspect every applicable item in Electron's live
+  [Breaking Changes](https://www.electronjs.org/docs/latest/breaking-changes) between the predecessor and
+  target majors. Record the affected contract, update, compatibility, and support decisions.
+- Reconcile current official facts with the pinned Electron major and Runtime record. Stop on an unresolved
+  contradiction rather than using current documentation as proof for a different major.
 
-- Build main for its Node.js Electron environment, preload for its actual sandbox and CommonJS or ESM loader, and renderer for Chromium.
-- Verify emitted filenames, extensions, source maps, package type, development URL handling, packaged protocol or file handling, and window preload resolution.
-- Fail on missing entries, process-incompatible imports, accidental development servers, or runtime dependencies absent from the package.
+### Phase 3 — Request and Accept Release-Readiness Evidence
 
-#### 3.2 Assemble the application
+#### 3.1 Send the Release to Testing request record
 
-- Package the pinned Electron binary, production dependencies, entries, icons, entitlements, manifests, locales, licenses, resources, and update metadata for each target.
-- Treat ASAR as packaging, not a security boundary. Unpack files that require real filesystem access and verify resolved packaged paths.
-- Follow the official [native module guidance](https://www.electronjs.org/docs/latest/tutorial/using-native-node-modules): rebuild native dependencies for the exact Electron application binary, operating system, and architecture, and verify their inclusion.
+- Use the dynamic `Release ↔ Testing` exchange. Release supplies the request identity, immutable candidate
+  record and checksum, target operating system and architecture, supported predecessor set, update mechanism,
+  release-metadata identity, channel, compatibility policy, rollout and withdrawal claims, recovery claims,
+  and requested update scenarios.
+- Request every applicable successful predecessor, fresh-install, update, download, metadata, install,
+  restart, migration, version-reporting, forward-recovery, and proposed rollback scenario needed by the
+  release policy.
+- Request every material failure path: interrupted download; unavailable feed, store, or update service;
+  invalid, stale, unsigned, or tampered update metadata or artifact where applicable; failed install; failed
+  restart or first launch; and partially applied migration.
+- State the claim and required environment for every scenario. Do not prescribe a method, run a test,
+  classify an environment, interpret a result, or create evidence.
 
-#### 3.3 Create distributables
+#### 3.2 Check the Testing return record
 
-- Produce the authorized installer, archive, package, or store-input format through the preserved stack.
-- Inspect identifiers, executable names, icons, version metadata, architecture, install location, uninstall behavior, protocol registration, file associations, and update configuration.
-- Record artifact paths, sizes, checksums, build logs, target environment, and frozen input identity before hardening and signing.
+- Require the return to match the request identity, candidate checksum, target operating system and
+  architecture, supported predecessor, channel, update mechanism, release-metadata identity, and environment
+  requirements.
+- Require Testing to classify every environment and return predecessor, update, install, restart, migration,
+  recovery, and rejection evidence or an explicit failure for every requested scenario.
+- Check identity, completeness, environment classification, and Testing's recorded result only. Do not
+  reinterpret a failure, substitute a proxy observation, or change the requested claim after seeing the
+  result.
+- Route changed bytes or candidate identity defects to Packaging, release-policy defects to this operation,
+  behavior defects to the earliest owner, and mechanism contradictions to Runtime.
 
-### Phase 4 — Harden, Sign, and Notarize
+#### 3.3 Record readiness or stop
 
-#### 4.1 Set Electron fuses
+- Accept release readiness for a target only when every required scenario has a complete identity-matched,
+  environment-classified, passing Testing record for the same candidate checksum.
+- Record the ready candidate, target, predecessor set, channel, update mechanism, release-metadata identity,
+  compatibility policy, accepted evidence identity, limitations, decision authority, decision time, and
+  invalidation conditions.
+- A changed support fact, release policy, release-metadata identity, update mechanism, channel, target,
+  predecessor set, or required environment invalidates every affected Testing request, readiness decision,
+  and later action. Create a replacement request and record a new readiness decision before any later
+  external action; route changed candidate bytes to Packaging without modifying them here.
+- A failed case or unavailable required environment stops the affected target at its last accepted state.
+  Retain the candidate, request, returned record, limitations, and responsible owner without relabeling the
+  gap as readiness.
+- Readiness authorizes no publication, promotion, rollout, feed mutation, store action, credential access, or
+  withdrawal.
 
-- Review the live official [fuse guidance](https://www.electronjs.org/docs/latest/tutorial/fuses) against the pinned major and application needs.
-- Set each intended fuse on the packaged Electron binary before signing and record the resulting fuse state.
-- Reinspect launch, ASAR expectations, environment behavior, and developer-tool constraints after fuses change.
+### Phase 4 — Authorize and Execute External Release Actions
 
-#### 4.2 Sign target artifacts
+#### 4.1 Record exact external authority
 
-- Follow the official [code-signing guidance](https://www.electronjs.org/docs/latest/tutorial/code-signing) and the preserved toolchain for the target operating system.
-- Sign application binaries, nested code, helpers, native modules, installers, or packages in the target-required order and timestamp where required.
-- Verify signatures using platform tools on the final bytes; fail on an unexpected identity, entitlement, nested signature, timestamp, or trust result.
+- Before each action, recheck the readiness record, unchanged candidate checksum and release-metadata
+  identity, current destination state, and current authority for the exact candidate, version, target,
+  channel, destination, action, and time.
+- Require the recorded credential owner or external-action authority before accessing a protected credential
+  or changing a feed, store, repository, update service, deployment service, or release destination.
+- Keep protected values out of metadata, logs, requests, responses, and release records. If authority,
+  credentials, or a service is unavailable, stop before the action and retain the exact local and external
+  state.
 
-#### 4.3 Notarize where required
+#### 4.2 Publish or promote an authorized release
 
-- Submit the signed macOS artifact through the authorized notarization path, retain the request identity and result, staple where the artifact format supports it, and recheck Gatekeeper assessment.
-- Treat timeout, rejection, unavailable credentials, or an unauthorized credential path as a stop with preserved artifacts and logs.
-- Do not modify a signed or notarized artifact. Rebuild from the frozen inputs and repeat hardening when bytes must change.
+- Publish or promote only the authorized candidate and metadata to the named destination. Do not reuse one
+  target's authority, action, or result for another operating system, architecture, channel, or destination.
+- Record destination, application version, candidate checksum, release-metadata identity, target operating
+  system and architecture, channel, action identity, start time, completion or failure, returned remote
+  identity, and observed remote state.
+- After a partial or failed action, inspect and retain what is present, absent, visible, or still mutable at
+  the destination. Stop before a retry, compensation, deletion, promotion, or second destination unless that
+  exact next action has current authority.
 
-### Phase 5 — Verify Install, Update, and Recovery
+#### 4.3 Roll out, observe, pause, and withdraw
 
-#### 5.1 Test the packaged artifact
+- Advance only through the accepted rollout stages. Before each stage, check the same candidate, target,
+  channel, current stage population, prior stage decision, accepted Observability signals, signal time range,
+  and stop thresholds.
+- Record each stage start, population, diagnostic state, threshold comparison, decision authority, decision,
+  and resulting external state. Missing, stale, mismatched, or unavailable required signals stop advancement.
+- On a threshold breach or material failure, pause or stop new rollout and preserve the release, diagnostic,
+  and external-state records. Withdraw the affected release or update only when that exact action is
+  authorized.
+- Withdrawal prevents or reduces later acquisition where the destination supports it; it does not repair
+  installed machines or prove recovery for any affected user.
 
-- Give `electron-testing` the exact artifact and run the applicable per-operating-system install, first launch, normal launch, main/preload/renderer loading, resources, native modules, protocol, deep-link, single-instance, permissions, and uninstall smoke.
-- Verify the installed application, not only an unpacked directory, when installer behavior is in scope.
-- Record operating system, architecture, artifact checksum, signature state, commands, results, logs, and any environment gap.
+### Phase 5 — Recover and Return the Release Record
 
-#### 5.2 Rehearse update compatibility
+#### 5.1 Choose and observe post-release recovery
 
-- Test a supported prior version updating through the intended feed and channel to the candidate, including signature, metadata, download, restart, migration, and version reporting.
-- Test channel boundaries and reject incompatible downgrade, cross-channel, stale, unsigned, or tampered metadata and artifacts as the updater contract requires.
-- Confirm application data, settings, native state, and protocol ownership remain compatible across the supported upgrade path.
+- Use a forward fix by default after publication or installation. Create a new candidate through Packaging,
+  obtain a new checksum and Testing record, make a new readiness decision, and repeat every affected
+  external-action gate.
+- Consider rollback only when the prior candidate, installed-data and settings compatibility, protocol
+  compatibility, updater path, target, predecessor state, current passing Testing evidence, and rollback
+  authority all support it.
+- Record the recovery population, current installed state, action, diagnostic signals, observed result,
+  unresolved machines, limitations, and next decision. Never describe machines as recovered when they were
+  not observed or repaired.
+- A failed recovery stops new action at the last known state. Preserve current feeds, stores, rollout state,
+  installed-state evidence, diagnostics, and authority limits for the next decision.
 
-#### 5.3 Rehearse rollback and recovery
+#### 5.2 Return a complete record or exact stop
 
-- Exercise the authorized rollback or feed withdrawal path without erasing user data outside the defined compatibility contract.
-- Verify recovery from interrupted download, failed install, failed first launch, unavailable feed, rejected signature, and partially applied migration where applicable.
-- Record time, authority, retained prior artifact, recovery commands, and residual incompatibilities.
-
-### Phase 6 — Prepare the Publication Handoff
-
-#### 6.1 Audit release completeness
-
-- Map every target to frozen inputs, artifact checksum, fuse state, signature verification, notarization receipt, install result, update result, rollback result, and known limitation.
-- Confirm live support and breaking-change evidence remains current at handoff time and rerun affected checks when the candidate or environment changed.
-- Fail the handoff when an in-scope target lacks a reproducible artifact or required platform evidence.
-- When this release work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an active `electron` sibling supply the applicable conditions; the general Evaluation operation resolves them and issues any verdict.
-
-#### 6.2 Stop at the authority boundary
-
-- Return exact artifact locations, checksums, versions, operating systems and architectures, signatures, notarization receipts, update channel, staged rollout plan, rollback path, commands, logs, and unresolved blockers.
-- Name the first publication action, credentials, external destination, and authority it requires.
-- Publish, promote, roll out, submit, or modify an update feed only when a separate explicit authorization grants that action.
+- For each target operating system and architecture, record the immutable candidate identity and checksum;
+  support and version-transition decision; predecessor, channel, release-metadata identity, update-mechanism,
+  and compatibility policy; Testing request and accepted evidence; readiness decision and limitations; and
+  decision, credential, and external-action authorities.
+- Record every publication, promotion, rollout, pause, withdrawal, and recovery action with its destination,
+  action identity, result, current remote state, Observability signals, affected population, and unresolved
+  limitation.
+- Complete the release only when every field has an exact value or explicit not-applicable status and every
+  external state has been rechecked after its last action.
+- For an exact stop, return the failed target and state, last accepted record, candidate and release-metadata
+  identities, retained evidence, local and external state, responsible owner, required decision, and next
+  authorized action.
+- Claim no artifact construction, test ownership, complete delivery, publication beyond an observed
+  destination, rollout beyond an observed stage, or recovery beyond observed machines.
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work governed by this skill.
+- [`Electron Release Checklist`](checklists.md) owns reusable evaluation coverage for this operation.
+- [`Electron Contract`](../electron-contract/SKILL.md) owns observable installed behavior and compatibility
+  promises.
+- [`Electron Observability`](../electron-observability/SKILL.md) owns diagnostic signal emission, arrival,
+  redaction, and retention.
+- [`Electron Packaging`](../electron-packaging/SKILL.md) owns candidate construction, security settings,
+  signatures, notarization, final bytes, and candidate acceptance.
+- [`Electron Runtime`](../electron-runtime/SKILL.md) owns pinned-major and target-specific mechanism facts.
