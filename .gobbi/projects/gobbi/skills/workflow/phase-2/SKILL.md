@@ -86,15 +86,16 @@ plan, task, receipt, or commit.
   Planning iteration.
 - Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
   1.3 fields.
-- Resolve agent-to-agent:
-  - the complete task hierarchy;
-  - stable `task-NN-slug` identities;
-  - foundation-before-dependent order;
-  - one accountable role and output for every task;
-  - required skill loads;
-  - read-only parallel lanes and the one-writer order;
-  - verification and focused-commit requirements; and
+- Have the leader apply Planning, which owns:
+  - the complete fine-grained task hierarchy and exact leaf coverage;
+  - context-coherent execution units with stable `task-NN-slug` identities;
+  - source leaf paths, dependencies, accountable roles, required skills and capabilities;
+  - work, boundaries, outputs, inputs, constraints, writer/change boundaries, verification, and applicable
+    metadata; and
   - coverage of every Ideation obligation.
+- Workflow retains TODO expansion, evaluation, RECORD, iterations, actual writer scheduling, and commit
+  provenance. Translate the accepted execution units into those mechanics without changing their Planning
+  identities or contracts.
 - Use bounded study for unknown facts. Never invent new scope or turn a routine implementation choice into a
   user question.
 - Freeze the neutral Planning contract and retitle the active TODO to WORK only after the hierarchy,
@@ -106,18 +107,14 @@ plan, task, receipt, or commit.
   round over the same frozen Planning contract and immutable evidence. That operation owns each run's
   independence, freeze order, and validation.
 - Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Let the active runtime leader synthesize the canonical candidate with:
-  - a complete hierarchy and dependency-valid order;
-  - stable task IDs;
-  - exact write and read-only lanes;
-  - required skills and roles;
-  - scope boundaries; and
-  - acceptance and verification for every task.
+- Let the active runtime leader synthesize the canonical `tasks.md` and `plan.md` candidates with Planning's
+  complete hierarchy, context-coherent units, stable IDs, dependency-valid order, source paths, roles,
+  skills, boundaries, and verification contracts.
 - Render the complete WORK package at the parent-owned Planning path and read it directly against the parent
   Workflow Step 1.2 written contract: both system-labeled drafts, both cross-reviews, the synthesis, and the
   open decisions. No script enforces this; refuse the stage when one is missing or unlabeled.
-- Reread the canonical candidate and verify every Ideation obligation appears exactly once before activating
-  EVALUATION.
+- Reread both canonical candidates and verify every Ideation obligation appears in the hierarchy and every
+  hierarchy leaf maps to exactly one execution unit before activating EVALUATION.
 
 #### 1.4 Evaluate, record, and expand the task route
 
@@ -131,10 +128,10 @@ plan, task, receipt, or commit.
   findings, and the durable records written into the session memory tree.
 - On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
   FAIL, preserve the recoverable state and stop at the critical-blocker boundary without creating iteration 3.
-- On PASS, verify stable IDs, dependency order, scope coverage, and the absence of overlapping write-capable
-  tasks. Freeze the canonical plan.
-- Replace the pending `unplanned` placeholder with the first plan task and add the remaining task items in plan
-  order. Start each item as:
+- On PASS, verify Planning's six closure invariants and the absence of overlapping write-capable units. Accept
+  the jointly frozen `tasks.md` and `plan.md` without adding a second identity or contract layer.
+- Replace the pending `unplanned` placeholder with the first execution unit and add the remaining task items in
+  plan order. Start each item as:
 
 ```text
 P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>

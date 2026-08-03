@@ -1,123 +1,114 @@
 ---
 name: planning
-description: "MUST load when defined work must be decomposed into an executable plan. Planning is an operation skill for defining a hierarchy of groups and tasks and each task's work, assigned agent, and order."
+description: "MUST load when defined work must be decomposed into an executable plan. Planning produces a traceable task hierarchy and ordered context-coherent execution units."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Planning
 
-Use this skill to turn defined work into an executable plan. Break the work into a hierarchy of groups and
-tasks, decomposing each group until every task is actionable. For every task, define its work, assign one
-accountable agent role, and set its order relative to its dependencies.
+Use this skill to turn defined work into two independently readable artifacts: a fine-grained top-down task
+hierarchy and a flat ordered list of agent execution units. Planning defines executable work contracts; its
+caller owns TODO state, evaluation, records, iterations, commit provenance, and other orchestration mechanics.
 
-The operation runs in three phases. It reads the defined work, its purpose, scope, output, and design; it
-decomposes that work top-down into a frozen task hierarchy in `tasks.md`; and it reorganizes those tasks
-bottom-up into a frozen `plan.md`. Planning ends at that frozen plan, which the assigned agents then execute.
+The operation understands the accepted direction, decomposes it in `tasks.md`, and forms context-coherent
+execution units in `plan.md`. Both artifacts remain revisable until one final validation passes, then freeze
+together and return to the caller.
 
 ## Principles
 
-### Separate task hierarchy from execution order
+### Keep hierarchy and execution as different views
 
-The task hierarchy explains how broad work divides into decomposable groups and bounded tasks, while
-execution order explains how those tasks build on one another and which independent tasks may run in
-parallel. Keeping these views separate prevents parent-child structure from being mistaken for dependency
-order and exposes safe parallel work that can reduce total execution time.
+Hierarchy paths explain how the work decomposes; plan order and `Requires` edges explain how agents execute
+it. A hierarchy leaf is a traceable unit of work, not automatically an agent assignment.
 
-### Bound each task for one accountable agent
+### Aggregate work around reusable context
 
-Planning is complete only when one accountable agent can understand and finish each task from its recorded
-work, boundary, output, context, and required capabilities. If completion requires hidden coordination, the
-task is too broad or its recorded details are incomplete.
+Prefer the fewest execution units that remain dependency-valid, independently verifiable, reviewable, and
+safe for one accountable role. A coherent unit lets one agent reuse its skills, repository context, inputs,
+and writer state across compatible leaves.
+
+### Return material uncertainty to its owner
+
+Planning records supported facts and resolves routine decomposition choices. Missing required input, a
+material user-owned decision, or evidence against the accepted direction returns to the caller with the exact
+evidence and question.
 
 ## Rules
 
-- **MUST preserve scope and coverage.** Every planned task comes from the defined work, and every defined work
-  item appears in the task hierarchy and final plan.
-- **MUST make the execution order dependency-valid.** No task or group precedes its prerequisites, and the
-  dependency relationships contain no cycles.
-- **MUST record facts rather than guesses.** Work metadata comes from the available work and project
-  context; an unknown value remains explicitly unresolved instead of being invented.
+- **MUST preserve exact scope and leaf-to-unit coverage.** Every accepted work item traces into the hierarchy;
+  every leaf maps to exactly one execution unit, every unit traces at least one leaf, and a leaf that needs
+  several units is split in `tasks.md` first.
+- **MUST aggregate only context-coherent leaves.** Combined leaves share one accountable role and
+  capabilities, working context and skills, compatible inputs, one coherent outcome, writer and change
+  boundary, and dependency frontier; fixed-size batches and one-unit-per-leaf defaults are invalid.
+- **NEVER combine incompatible work.** Keep separate any leaves divided by roles, unresolved material
+  decisions, destructive or external authority, conflicting dependencies, or incoherent verification or
+  commit boundaries.
+- **MUST make execution order dependency-valid.** Stable IDs use `task-NN-slug`; explicit `Requires` edges
+  are acyclic and authoritative, while shared order numbers only mark safe parallelism.
+- **MUST record facts and complete unit contracts.** Each unit has one accountable role plus its source paths,
+  skills and capabilities, dependencies, work, boundary, output, inputs, constraints, writer/change boundary,
+  verification, and applicable metadata.
+- **MUST freeze both artifacts only after final validation passes.** Until then, repair the owning phase and
+  repeat the complete validation.
 
 ## Procedure
 
 ### Phase 1 — Understand the Defined Work
 
-#### 1.1 Understand the work, purpose, scope, output, and design
+#### 1.1 Establish the planning inputs
 
-- Understand the work by reading the defined work and its supporting materials.
-- Understand the purpose by identifying why the work is needed and what it is intended to achieve.
-- Understand the scope by identifying what is included, excluded, deferred, or rejected and where the work
-  stops.
-- Understand the output by identifying what must exist or be observable when the work is complete.
-- Understand the design by identifying the chosen structure, responsibilities, relationships, and constraints
-  that shape the work.
+- Read the defined work, purpose, scope, expected output, accepted design, supporting evidence, required
+  skills, authority boundaries, and applicable repository and execution metadata.
+- Separate accepted facts from routine planning choices and from missing required input or material decisions.
+- When required input or a material user-owned decision is missing, or evidence challenges the accepted
+  direction, return the exact evidence and question to the caller. Do not invent an answer or continue on an
+  unsupported premise.
+- Continue with a concrete input set whose scope, output, constraints, and decision owners are clear.
 
-### Phase 2 — Decompose the Work Top-Down
+### Phase 2 — Decompose the Work
 
-#### 2.1 Draft and initialize top-level groups
+#### 2.1 Build a revisable task hierarchy
 
-- For each distinct work item, draft a provisional top-level group whose wide boundary contains the subwork
-  to be decomposed.
-- Treat each top-level group as a decomposition starting point rather than a bounded execution task.
-- Initialize `tasks.tmp.md` with the complete provisional set of top-level groups as a mutable Phase 2 working
-  record that is neither final authority nor returned.
+- Use [the hierarchy template](templates/tasks.md) to draft `tasks.md` directly from the established inputs.
+- Choose top-level groups by coherent decomposition boundaries, not by forcing one group per work item.
+  Preserve each work item's traceability to its hierarchy paths.
+- Decompose groups top-down until every leaf states one bounded work outcome, boundary, and output. Keep
+  splitting distinct responsibilities, capabilities, change boundaries, dependencies, or outputs.
+- Keep the hierarchy revisable and independently readable; do not assign agents or encode execution order in
+  it.
 
-#### 2.2 Decompose each top-level group recursively
+### Phase 3 — Plan the Execution
 
-- Read `tasks.tmp.md` as the current decomposition.
-- Decompose each top-level group recursively into smaller groups and tasks.
-- Separate foundation, layout, structure, interface, or skeleton work that other work must build upon.
-- Continue splitting groups with distinct outcomes, responsibilities, agent capabilities, change boundaries,
-  dependencies, shared resources, handoffs, or independently executable work until each resulting task is
-  bounded enough for one agent role to complete.
-- Write the complete updated decomposition back to `tasks.tmp.md` after each group is decomposed.
+#### 3.1 Form ordered execution units
 
-#### 2.3 Record and freeze the task hierarchy
+- Read the complete hierarchy and use [the plan template](templates/plan.md) to draft `plan.md` directly.
+- Start from the smallest dependency-valid leaf relationships, then combine leaves only when every
+  context-coherence condition in the Rules holds. Prefer the fewest safe coherent units; use no fixed batch
+  size and preserve no automatic one-to-one leaf mapping.
+- If one leaf must cross several roles, outcomes, writer boundaries, or dependency frontiers, return to Step
+  2.1 and split it before continuing.
+- Give each unit its final `task-NN-slug`, source leaf paths, complete execution contract, `Requires` edges,
+  and order number. Shared order numbers may express safe parallelism, but edges control readiness.
+- Keep `plan.md` flat and independently readable. Record shared applicable metadata once and unit-specific
+  differences on the affected units.
 
-- Create an independently readable `tasks.md` from [the task hierarchy template](templates/tasks.md) using
-  the completed `tasks.tmp.md`, with the complete hierarchy and the work, boundary, and output of every group
-  and task.
-- Freeze `tasks.md` as the intermediate decomposition for Phase 3 and do not edit it afterward.
-- Delete `tasks.tmp.md` after the frozen `tasks.md` is complete.
+#### 3.2 Validate, repair, and freeze both artifacts
 
-### Phase 3 — Reorganize and Plan for Bottom-Up Execution
-
-#### 3.1 Group and order tasks for bottom-up execution
-
-- Read the frozen `tasks.md` and initialize `plan.tmp.md` as a mutable Phase 3 working record that is neither
-  final authority nor returned.
-- Group related bounded tasks, using their wider parent groups as the initial group boundaries.
-- Determine the bottom-up order of the task groups before ordering their child tasks.
-- Place foundation, layout, structure, interface, or skeleton groups before dependent groups, and place
-  integration groups after their contributing groups.
-- After the group order is set, order the child tasks within each group by their prerequisites.
-- Write the task order and hierarchy to `plan.tmp.md`.
-
-#### 3.2 Define and detail the ordered tasks
-
-- Annotate each ordered task with its final ID, title, work, boundary, and output, then assign it to one
-  accountable agent role with the required capabilities.
-- Add only the inputs, constraints, and handoffs the assigned agent needs to execute the task.
-- Write the complete ordered task definitions back to `plan.tmp.md`.
-
-#### 3.3 Add work metadata
-
-- Add the repository, project root, working directories, Git base branch, work branch, worktree, required
-  skills, tools, runtimes, platforms, access, environment configuration, and artifact locations to
-  `plan.tmp.md` when applicable.
-- Record shared metadata once for the whole plan and record task-specific differences on the affected tasks.
-
-#### 3.4 Record and freeze the plan
-
-- Create an independently readable `plan.md` from [the plan template](templates/plan.md) using the
-  completed `plan.tmp.md`, with the bottom-up order and each task's complete work, assigned agent, order, and
-  execution details.
-- Update `plan.tmp.md` and regenerate `plan.md` when a task or its order is incomplete.
-- Freeze `plan.md` as the final Planning authority, delete `plan.tmp.md` after the frozen plan is complete, and
-  return `plan.md`.
+- Check six invariants: **coverage** traces every accepted work item and places every leaf in exactly one
+  nonempty execution unit;
+  **acyclicity** has valid `Requires` edges and order; **factual metadata** is supported or explicitly
+  nonblocking and unresolved; **separation** keeps hierarchy out of order and the plan flat; **accountability**
+  gives every unit one role and a complete contract; and **independent consistency** lets a cold reader use
+  either artifact while both agree on paths, work, boundaries, and outputs.
+- Return input, authority, material-decision, or challenged-direction failures to Phase 1 with the exact
+  evidence and question. Return hierarchy, trace, or leaf-boundary failures to Step 2.1; return aggregation,
+  contract, dependency, order, or plan-metadata failures to Step 3.1.
+- Repair the owning phase and rerun all six checks. When all pass, freeze `tasks.md` and `plan.md` together and
+  return both to the caller.
 
 ## References
 
-- [`tasks.md`](templates/tasks.md) defines the frozen top-down task hierarchy.
-- [`plan.md`](templates/plan.md) defines the frozen plan for bottom-up execution.
+- [`tasks.md`](templates/tasks.md) defines the top-down task hierarchy.
+- [`plan.md`](templates/plan.md) defines the ordered execution units.
