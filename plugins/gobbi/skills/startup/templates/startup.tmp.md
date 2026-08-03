@@ -1,90 +1,79 @@
 # Startup Working Record
 
-This file holds the current state of one Startup interview so it can be resumed. It is not a transcript, an
-evaluated design, or an implementation plan. Summarize answers faithfully, leave sensitive values out, and
-keep this file until `startup.md` is confirmed.
+This schema-2 file owns and checkpoints one Startup run. It is not a transcript, evaluation, implementation plan, or memory record. Keep sensitive values out and remove it only after final confirmation.
 
-Two words qualify recorded statements here:
+## Run Identity and State
 
-- **Kind** — what the statement is: `fact`, `user report`, `decision`, `plan`, or `open`. This word is used in
-  the working record only.
-- **Evidence strength** — how well the project's own evidence supports it: `verified`, `supported`,
-  `unverified`, or `disputed`. `startup.md` uses this word with the same meaning and defines it again, so it
-  stays readable after this file is removed.
-
-## Interview state
-
+- Startup schema: `2`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Status: `{in progress | paused}`
-- Next question: `{not shaped, until the question list exists | [question-name], naming the feature when it is
-  a per-feature question | features not recorded, until the Features table holds a row | none, once every
-  question is asked or dropped and every recorded feature has its per-feature answers}`
-- First recovery action: `{what a resuming agent does first}`
+- Current phase: `{Problem Definition | Project Design | Project Specification | Lifecycle and Use-Case Scenarios | Finalization}`
+- Loop step: `{Study | Prepare Topics | Interview | Documentation | Review}`
+- Iteration: `{1 upward}`
+- Next question or assignment: `{exact question, assignment, or none}`
+- First recovery action: `{derived action}`
 
-## Project evidence
+## Artifact Register
 
-### Verified facts
-
-- `{fact}` — Source: `{file, command, or observation}`
-
-### User-reported claims
-
-- `{claim}` — Evidence strength: `{verified | supported | unverified | disputed}`
-
-### Assumptions and open questions
-
-- `{item}` — Owner: `{owner}` — Consequence: `{effect if it stays open}` — How it will be resolved:
-  `{method}`
-
-## Features
-
-One row per feature. When `[feature-list]` was dropped, or the user names no feature separate from the
-project's own outcome, that owned outcome is the single feature.
-
-| Feature | What it does | How it was identified | Questions answered |
-|---|---|---|---|
-| `{feature}` | `{one sentence}` | `{named by the user, or found in project evidence}` | `{question names, or none}` |
-
-## Topics
-
-One row per topic, named from `topics.md`, in the order the topics will be asked. A topic that is not needed
-or dropped records why.
-
-| Order | Topic Phase | Topic | Status | Reason and evidence |
+| Artifact | Phase | State | Depends on | Evidence on disk |
 |---|---|---|---|---|
-| `{ask order, 1 upward}` | `{1 to 4}` | `{topic name}` | `{open, answered, not needed, or dropped}` | `{reason and evidence, or none}` |
+| `problem-definition.md` | Problem Definition | `{absent, draft, reviewed, stale, or confirmed}` | `{none}` | `{evidence}` |
+| `project-design.md` | Project Design | `{state}` | `problem-definition.md` | `{evidence}` |
+| `project-specification.md` | Project Specification | `{state}` | `problem-definition.md`, `project-design.md` | `{evidence}` |
+| `lifecycle-and-use-cases.md` | Lifecycle and Use-Case Scenarios | `{state}` | `{three earlier documents}` | `{evidence}` |
+| `startup.md` | Finalization | `{state}` | `{four phase documents}` | `{evidence}` |
 
-## Question list
+## Subject Register
 
-The starting questions from `topics.md` after they were adapted to this project, in the order they will be
-asked within their topic. A dropped question keeps its row and records why. A question added during the
-interview or the review joins this table before it is asked.
+| Subject | Type | Parent | Description | Owning phase | Status |
+|---|---|---|---|---|---|
+| `{subject}` | `{project, application/deliverable, building block, technology, feature, or scenario}` | `{parent or none}` | `{description}` | `{phase}` | `{current or stale}` |
 
-| Question name | Topic | Scope | Question as adapted | Origin | Status | Reason |
-|---|---|---|---|---|---|---|
-| `{[question-name]}` | `{topic name}` | `{project, or per feature}` | `{the question in this project's own components, users, and terms}` | `{topics.md, or the step that added it}` | `{to ask, asked, or dropped}` | `{why it was dropped or added, or none}` |
+## Evidence
 
-## Answers
+| Evidence | Source | Kind | Strength | Supports or disputes | Phase |
+|---|---|---|---|---|---|
+| `{summary}` | `{source}` | `{fact, user report, decision, plan, or open}` | `{verified, supported, unverified, or disputed}` | `{claim}` | `{phase}` |
 
-One row per material answer. Use the question's bracketed name. For a per-feature question, name the feature
-in `Feature or project`; the same question name appears once for each feature.
+## Topics and Questions
 
-| Question name | Topic | Feature or project | Question as asked | Answer | Kind | Evidence | Evidence strength |
+| Phase | Topic or question | Adapted wording | Origin | Status | Reason or dependency |
+|---|---|---|---|---|---|
+| `{phase}` | `{topic or [question-name]}` | `{project-specific wording}` | `{phase bank, study, interview, or review}` | `{prepared, to ask, answered, dropped, reopened, or deferred}` | `{reason}` |
+
+## Answers and Decisions
+
+| Question | Subject | Answer or decision | Kind | Evidence and strength | Recorded iteration |
+|---|---|---|---|---|---|
+| `{[question-name]}` | `{subject}` | `{faithful summary}` | `{fact, user report, decision, plan, or open}` | `{source and strength}` | `{iteration}` |
+
+## Vocabulary
+
+| Term | Proposed or agreed definition | Status | Conflict or question | Owning phase |
+|---|---|---|---|---|
+| `{term}` | `{definition}` | `{proposed, agreed, or disputed}` | `{issue or none}` | `{phase}` |
+
+## Delegated Assignments
+
+| Assignment | Phase and step | Iteration | Authority | Inputs and allowed paths | Returned result | Manager verification | Status |
 |---|---|---|---|---|---|---|---|
-| `{[question-name]}` | `{topic name}` | `{feature name, or project}` | `{question as it was asked}` | `{answer, summarized}` | `{fact, user report, decision, plan, or open}` | `{source, or none}` | `{verified, supported, unverified, or disputed}` |
+| `{stable assignment}` | `{phase and step}` | `{iteration}` | `{read-only or ordered writer}` | `{inputs and paths}` | `{result or NEEDS_CONTEXT question}` | `{verification}` | `{assigned, returned, accepted, or blocked}` |
 
-## Corrections
+## Corrections and Reopen Effects
 
-One row each time an answer replaces an earlier one. The user decides which answer is current, or under which
-condition each applies.
-
-| What changed | Earlier answer | Current answer | User's resolution | What it affected |
+| Earlier decision | Current decision | User resolution | Earliest reopened phase | Artifacts made stale |
 |---|---|---|---|---|
-| `{[question-name]}` | `{earlier claim}` | `{current claim}` | `{what the user decided}` | `{the questions it reopened, and any other feature or topic affected}` |
+| `{earlier}` | `{current}` | `{resolution}` | `{phase}` | `{artifacts}` |
 
-## Gaps found in review
+## Review Findings
 
-| Gap | Evidence | Question added or changed | Consequence | Owner | How it will be resolved | Status |
-|---|---|---|---|---|---|---|
-| `{missing, vague, or conflicting concern}` | `{source or gap}` | `{[question-name]}` | `{effect if it stays open}` | `{owner}` | `{method}` | `{open, or resolved}` |
+| Phase and iteration | Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
+|---|---|---|---|---|---|
+| `{phase}` | `{coverage, specificity, vocabulary, consistency, traceability, or quality}` | `{finding}` | `{effect}` | `{question or none}` | `{open, resolved, or owned deferral}` |
+
+## Owned Deferrals
+
+| Item | Blocking status | Owner | Consequence | Resolution method | Reopen condition |
+|---|---|---|---|---|---|
+| `{item}` | `{nonblocking only}` | `{owner}` | `{effect}` | `{method}` | `{condition}` |

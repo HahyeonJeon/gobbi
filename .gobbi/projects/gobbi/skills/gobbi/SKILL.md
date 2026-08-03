@@ -286,7 +286,7 @@ exists rather than what is loaded. Every other root that has children routes to 
 | [`gobbi/partner`](partner/SKILL.md) | One partner round: its preparation, launch, validation, and returned frozen content. |
 | [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
-| [`startup`](../startup/SKILL.md) | The project interview that produces confirmed design briefs. |
+| [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces four accepted phase documents and one confirmed synthesis. |
 | [`execution`](../execution/SKILL.md) | Implementing one task and committing the verified result. |
 | [`evaluation`](../evaluation/SKILL.md) | Independent evidence-based judgment of finished work. |
 
