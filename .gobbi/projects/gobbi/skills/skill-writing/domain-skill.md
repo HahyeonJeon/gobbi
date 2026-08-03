@@ -80,8 +80,8 @@ would restore the overload the two tiers remove.
 
 These words qualify today: `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
 `architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
-`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`, and
-`compiler` as the proper noun React Compiler.
+`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`,
+`debugging`, `performance`, and `compiler` as the proper noun React Compiler.
 
 ### Maintaining the register
 
