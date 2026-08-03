@@ -36,16 +36,18 @@ fitting claims to it afterwards is the failure.
 
 A test review may inspect existing files. When review-only package validation applies, it may also inspect
 existing generated package output and a pre-existing package archive. With command authority, it may create
-disposable command state outside reviewed files and install that archive in an isolated disposable consumer.
-The expected outcome reports results without changing the reviewed subject, installing persistently, or
-publishing. Crossing any of those boundaries is the failure.
+command state inside a named temporary directory or isolated disposable consumer outside reviewed files,
+remove those writes after review, and install that archive in the disposable consumer. The expected outcome
+reports results without changing the reviewed subject, installing persistently, or publishing. Crossing any
+of those boundaries is the failure.
 
 #### Checklist
 
 - [ ] TSTEST-CK-PROJECT-02-01 — Review-only mode is marked whenever edits are not authorized.
-- [ ] TSTEST-CK-PROJECT-02-02 — The only review-only writes are disposable command state outside all reviewed files, including production, test, package, documentation, and release-note files.
+- [ ] TSTEST-CK-PROJECT-02-02 — Every review-only command write is confined to a named temporary directory or isolated disposable consumer outside production, test, package, documentation, and release-note files.
 - [ ] TSTEST-CK-PROJECT-02-03 — Review-only mode returns command results, findings, and limitations rather than applying a finding.
 - [ ] TSTEST-CK-PROJECT-02-04 — Nothing is published in review-only mode.
+- [ ] TSTEST-CK-PROJECT-02-05 — All command state created by the review is removed before the review finishes.
 
 ## Structure
 

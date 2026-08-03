@@ -11,7 +11,11 @@ TypeScript Testing verifies runtime behavior and compile-time requirements. It c
 
 This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs authorized commands without inheriting authority to change production or test files.
 
-When review-only package validation applies, it may inspect existing generated package output and a pre-existing package archive. With command authority, it may create disposable command state outside the reviewed files and install only that pre-existing archive into an isolated disposable consumer. It may not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish. Evidence that requires a new build or archive is unavailable in review-only mode unless the task changes to author mode.
+When review-only package validation applies, it may inspect existing generated package output and a pre-existing
+package archive. With command authority, it may write only inside a named temporary directory or isolated
+disposable consumer outside reviewed files, remove those writes after review, and install only that pre-existing
+archive into the disposable consumer. It may not change the reviewed subject, install persistently, or publish;
+evidence that needs a new build or archive remains unavailable unless the task changes to author mode.
 
 ## Principles
 
@@ -35,7 +39,9 @@ Documented examples are code and require a named compiler version and exact comp
 
 - **MUST** select runtime, type-level, negative, declaration, package, and example checks from the claims being made.
 - **NEVER** use an ordinary type assertion such as `value as Type` or `<Type>value` inside a test as proof that the asserted type is true. `as const` is a const assertion that may construct precise test input, but it does not itself prove a tested type relationship.
-- **MUST** prove that every expected-error or negative test fails when its expectation is removed or inverted.
+- **MUST** prove every expected-error or negative test rejects the intended misuse. For directive-based tests,
+  removing the directive must produce the intended diagnostic, and moving it to valid code must produce an
+  unused-directive failure.
 - **MUST** test public declarations and resolution from an isolated consumer project rather than only inside the source project.
 - **MUST** control time, randomness, scheduling, I/O, and named-runtime state when deterministic observation is required.
 - **NEVER** treat a source-checkout test as proof of built or packed package behavior.

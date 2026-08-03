@@ -9,7 +9,10 @@ skill-type: operation
 
 TypeScript Packaging turns TypeScript sources into an installable library, SDK, or command-line package. It covers export maps, generated JavaScript, public declarations, executable-command metadata, supported consumers, package-archive validation, and publication readiness without prescribing one module format for every package.
 
-Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their triggers apply. Classify the task as authorized author mode or review-only validation. Author mode may change approved package files and create approved build output and archives. Review-only validation may inspect existing generated package output and a pre-existing package archive. With command authority, it may create disposable command state outside reviewed files and install only that pre-existing archive into an isolated disposable consumer. It may not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish. When required evidence needs a new build or archive, report it as unavailable or request author mode. Publication itself still requires the repository's release authority and credential controls.
+Package changes also load `typescript-toolchain`, `typescript-typing`, and `typescript-testing` when their
+triggers apply. Classify work as authorized author mode or review-only validation. Author mode may change
+approved package files and produce approved artifacts. Review-only validation follows the non-mutating
+inspection boundary in Phase 1.1, and publication remains separately authorized.
 
 ## Principles
 
@@ -27,7 +30,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 ## Rules
 
-- **MUST** define whether each public entry point provides runtime code, declarations, or both; map each export condition to the file kind it selects; and define each executable command's `bin` name and built entry file.
+- **MUST** define whether each public entry point provides runtime code, declarations, or both. Map every leaf
+  export-map value to an existing file of the selected kind or an intentional `null` block, verify each block
+  rejects its intended package path, and define every executable command's `bin` name and built entry file.
 - **NEVER** expose an internal path accidentally through a broad file set, wildcard export, declaration leak, or source-only path.
 - **MUST** generate or author public declarations deliberately and inspect them for private types, unstable inferred names, and dependencies on globals unavailable in supported consumer runtimes.
 - **MUST** validate imports, declarations, executable commands, and runtime behavior from the installed package archive in representative consumers.
@@ -41,7 +46,12 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 #### 1.1 Inventory consumers
 
 - Classify the task as authorized author mode or review-only validation before planning later steps.
-- In review-only validation, inspect only existing generated package output and a package archive that existed before the review. With command authority, create disposable command state only outside reviewed files and install that pre-existing archive only into an isolated disposable consumer.
+- In review-only validation, inspect only existing generated package output and a package archive that existed
+  before the review. With command authority, create disposable command state only outside reviewed files and
+  install that pre-existing archive only into an isolated disposable consumer. Disposable command state is
+  confined to a named temporary directory or isolated disposable consumer created for the review and removed
+  after the review; it excludes a shared or persistent cache unless the command redirects that cache into the
+  same disposable boundary.
 - In review-only validation, do not edit reviewed files, build or rebuild generated package output, create or recreate an archive, install into a persistent environment, update documentation or release notes, or publish.
 - When review-only evidence needs a new build or archive, report that evidence as unavailable or request author mode. Finish with command results, findings, and limitations.
 - Select every applicable package kind: library, SDK, command-line package, or a literal fallback.
@@ -52,8 +62,11 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 #### 1.2 Design exports and declarations
 
-- Map every leaf `types` and versioned `types@<selector>` condition to an existing declaration file. Map every
-  leaf runtime condition or fallback, such as `import`, `require`, or `default`, to an existing runtime file.
+- Map every leaf file target selected by `types` or versioned `types@<selector>` to an existing declaration
+  file. Map every leaf file target selected by a runtime condition or fallback, such as `import`, `require`,
+  or `default`, to an existing runtime file.
+- Treat every intentional `null` export target as a blocked package path rather than a missing file. Record
+  the conditions under which it matches and the package-path rejection consumers must observe.
 - When one public entry provides both ESM and CommonJS runtime branches, give each runtime branch its own
   nested condition object. Within each object, map the matching type conditions to a declaration file whose
   detected module format matches that runtime branch.
@@ -77,7 +90,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Select representative consumer fixtures for each claimed module and resolution path.
 - Define API-diff or declaration checks for the public exports and declarations.
-- Define archive-content, installation, import, command invocation, runtime, and rollback checks before building.
+- Define archive-content, installation, import, intentional blocked-path, command invocation, runtime, and
+  rollback checks before building.
 
 ### Phase 2 — Build the package output
 
@@ -123,6 +137,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Install the package archive into isolated representative consumers. In review-only validation, install only the pre-existing archive into isolated disposable consumers and never into a persistent environment.
 - Resolve every public entry through each claimed import form and compiler resolution mode.
+- Resolve every intentional `null` export target under each matching condition and confirm the recorded
+  package-path rejection. Resolve an adjacent supported export from the same installed consumer so a broken
+  installation or resolver cannot masquerade as an intentional block.
 - Resolve every used package `imports` key from the installed archive under each claimed condition and resolver.
 - Reject source-relative success that bypasses the package metadata.
 

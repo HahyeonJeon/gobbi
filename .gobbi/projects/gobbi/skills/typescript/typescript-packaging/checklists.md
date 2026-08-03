@@ -35,17 +35,19 @@ begun before those are recorded is the failure.
 
 A validation run has no authority to change the reviewed subject. The expected outcome may inspect existing
 generated package output and a pre-existing archive. With command authority, it may create disposable command
-state outside reviewed files and install that archive into an isolated disposable consumer. Editing reviewed
-files, creating output or an archive, installing persistently, or publishing exceeds its authority.
+state confined to a named temporary directory or isolated disposable consumer outside reviewed files and
+remove it after review. Editing reviewed files, creating output or an archive, installing persistently, or
+publishing exceeds its authority.
 
 #### Checklist
 
 - [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no reviewed file is edited.
 - [ ] TSPKG-CK-PROJECT-02-02 — Under review-only validation, existing generated package output may be inspected, but generated package output is not built or rebuilt.
 - [ ] TSPKG-CK-PROJECT-02-03 — Every package archive inspected or installed under review-only validation existed before the review and is not created or recreated by the review.
-- [ ] TSPKG-CK-PROJECT-02-04 — Every command write under review-only validation is disposable command state outside the reviewed files.
+- [ ] TSPKG-CK-PROJECT-02-04 — Every review-only command write is confined to a named temporary directory or isolated disposable consumer outside reviewed files.
 - [ ] TSPKG-CK-PROJECT-02-05 — Under review-only validation, nothing is published.
 - [ ] TSPKG-CK-PROJECT-02-06 — Every review-only archive installation uses the pre-existing archive in an isolated disposable consumer and never a persistent environment.
+- Also applies: TSPKG-CK-PROJECT-03-05 (review-created command state is removed).
 
 ### TSPKG-SC-PROJECT-03 — Normal case: a review-only run closes on inspection results alone
 
@@ -59,25 +61,26 @@ mode. Crossing the mode boundary or omitting that result is the failure.
 - [ ] TSPKG-CK-PROJECT-03-02 — A review-only run finishes with command results, findings, and limitations.
 - [ ] TSPKG-CK-PROJECT-03-03 — A review-only run leaves documentation and release notes unchanged.
 - [ ] TSPKG-CK-PROJECT-03-04 — Required evidence that needs a new build or archive is reported as unavailable or requests author mode.
+- [ ] TSPKG-CK-PROJECT-03-05 — All command state created by the review is removed before the review finishes.
 - Also applies: TSPKG-CK-PROJECT-02-01 (reviewed files remain unchanged).
 - Also applies: TSPKG-CK-PROJECT-02-02 (generated package output is not built or rebuilt).
 - Also applies: TSPKG-CK-PROJECT-02-03 (only a pre-existing archive is used).
-- Also applies: TSPKG-CK-PROJECT-02-04 (command state is disposable and external to reviewed files).
+- Also applies: TSPKG-CK-PROJECT-02-04 (command writes stay inside a disposable boundary).
 - Also applies: TSPKG-CK-PROJECT-02-05 (nothing is published).
 - Also applies: TSPKG-CK-PROJECT-02-06 (archive installation is isolated, disposable, and not persistent).
 
 ## Structure
 
-### TSPKG-SC-STRUCTURE-01 — Normal case: every entry point resolves to real files
+### TSPKG-SC-STRUCTURE-01 — Normal case: every file-producing export target resolves to a real file
 
-An export map has declaration branches and runtime branches rather than one uniform file pair. The expected
-outcome maps each branch to the file kind it selects, orders versioned and fallback type conditions correctly,
-and keeps declaration module formats aligned with their runtime branches. A missing fallback, wrong file kind,
-or mismatched module format is the failure.
+An export map has declaration file targets and runtime file targets rather than one uniform file pair. The
+expected outcome maps each file-producing branch to the file kind it selects, orders versioned and fallback
+type conditions correctly, and keeps declaration module formats aligned with their runtime branches. A
+missing fallback, missing file, wrong file kind, or mismatched module format is the failure.
 
 #### Checklist
 
-- [ ] TSPKG-CK-STRUCTURE-01-01 — Every export condition maps to an existing file of its declared kind: `types` and versioned `types@<selector>` branches to declaration files; runtime branches to runtime files.
+- [ ] TSPKG-CK-STRUCTURE-01-01 — Every export condition that selects a file maps to an existing file of its declared kind: `types` and versioned `types@<selector>` branches to declaration files; runtime branches to runtime files.
 - [ ] TSPKG-CK-STRUCTURE-01-02 — Applicable conditions are ordered from versioned `types@<selector>` branches to the ordinary `types` fallback and then to runtime branches within the same condition object.
 - [ ] TSPKG-CK-STRUCTURE-01-03 — Every supported compiler that misses the versioned type selectors reaches an ordinary `types` fallback.
 - [ ] TSPKG-CK-STRUCTURE-01-04 — Each declaration file's detected module format matches the ESM or CommonJS runtime branch it describes.
@@ -149,6 +152,19 @@ used field unverified is the failure.
 - [ ] TSPKG-CK-STRUCTURE-06-04 — Every used top-level `main` and `module` field selects an existing runtime file of its intended module format.
 - [ ] TSPKG-CK-STRUCTURE-06-05 — Top-level `types`, `main`, and `module` agree with `exports` wherever both define the same entry.
 - [ ] TSPKG-CK-STRUCTURE-06-06 — When `files` is used, its selected archive content matches the intended package inventory.
+
+### TSPKG-SC-STRUCTURE-07 — Expected failure: an intentional `null` target blocks a package path
+
+An export map may use `null` to make one package path unavailable under named conditions. The expected outcome
+records that block and observes the intended package-path rejection from an installed consumer while a
+supported export still resolves. Treating the block as a missing file, or silently exposing the blocked path,
+is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-STRUCTURE-07-01 — Every intentional `null` export target names the blocked package path and each condition under which the block applies.
+- [ ] TSPKG-CK-STRUCTURE-07-02 — From an installed archive, each blocked path produces the recorded package-path rejection under every matching condition.
+- [ ] TSPKG-CK-STRUCTURE-07-03 — A supported export resolves from the same installed consumer, distinguishing the intentional block from a broken installation or resolver.
 
 ## Performance
 

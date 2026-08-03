@@ -73,9 +73,20 @@ relationship it preserves and keeps inputs narrow until an intentional abstracti
 
 ## Performance
 
-Not applicable: this skill decides compile-time modeling, narrowing, and declaration form. It assigns no
-latency, throughput, capacity, resource, or recurring-cost obligation, and the runtime cost of the modeled
-code is decided by the operation that implements it and by the toolchain that builds it.
+### TSTYPE-SC-PERFORMANCE-01 — Poor quality: a correct type model exceeds a recorded feedback threshold
+
+A recursive conditional, mapped, or otherwise elaborate type can preserve the required relationship while
+making a representative type-check or editor operation exceed the comparison threshold recorded for the
+change. The expected outcome measures the difference under named conditions, identifies the responsible
+expression, and either simplifies it or records an accepted trade-off. Guessing from complexity alone or
+ignoring a result above that threshold is the failure.
+
+#### Checklist
+
+- [ ] TSTYPE-CK-PERFORMANCE-01-01 — Before the changed result is reviewed, the comparison threshold is recorded from a project feedback-time limit or measured baseline variance.
+- [ ] TSTYPE-CK-PERFORMANCE-01-02 — The measurement records the exact compiler or editor operation, representative input, TypeScript version, option set, baseline result, and changed result.
+- [ ] TSTYPE-CK-PERFORMANCE-01-03 — Compiler or editor evidence identifies the type expression responsible for the measured regression before it is optimized.
+- [ ] TSTYPE-CK-PERFORMANCE-01-04 — A result above the recorded comparison threshold is simplified or explicitly accepted with its recorded benefit and cost.
 
 ## Aesthetics
 
@@ -195,15 +206,20 @@ assertion used for literal and readonly inference, not this ordinary assertion e
 - [ ] TSTYPE-CK-RISK-03-02 — The runtime check or API guarantee supporting every ordinary type assertion is recorded or localized where the assertion is made.
 - [ ] TSTYPE-CK-RISK-03-03 — Every `as const` is treated as a const assertion for literal and readonly inference, not as the ordinary assertion escape hatch governed by the external-fact Rule.
 
-### TSTYPE-SC-RISK-04 — Edge case: a declaration is augmented outside its responsible integration module
+### TSTYPE-SC-RISK-04 — Edge case: augmentation ownership differs from augmentation reach
 
-Module and global augmentation changes types for code that never opted in, which is the limit case of
-protecting the public declarations. The expected outcome keeps each augmentation inside the integration module
-responsible for it. An augmentation reaching the whole program is the failure.
+Keeping an augmentation declaration in its responsible integration module identifies its owner; it does not
+by itself limit the augmented type's compiler-program reach. The expected outcome records compiler inclusion,
+the intended module-wide or global reach, runtime activation, collision risk, and consumer behavior. Treating
+file placement as proof of effect reach is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-RISK-04-01 — Every module or global augmentation is confined to the integration module responsible for it.
+- [ ] TSTYPE-CK-RISK-04-01 — Every module or global augmentation declaration is owned by the integration module responsible for it.
+- [ ] TSTYPE-CK-RISK-04-02 — Compiler checks verify the intended module-wide or global type reach at one intended consumer and, when the reach is not global, at one consumer outside it.
+- [ ] TSTYPE-CK-RISK-04-03 — Every runtime patch required by an augmentation has a named activation import or load path.
+- [ ] TSTYPE-CK-RISK-04-04 — Each augmentation is checked for collisions with existing declarations and other augmentations in the compiler program.
+- [ ] TSTYPE-CK-RISK-04-05 — Consumer checks prove that the augmentation's type visibility and runtime availability agree.
 - Also applies: TSTYPE-CK-USAGE-01-01 (the emitted declarations are inspected).
 
 ## Overall

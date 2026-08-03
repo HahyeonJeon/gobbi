@@ -115,14 +115,15 @@ failure.
 ### TSASYNC-SC-USAGE-02 — Expected failure: the caller cancels an operation already in flight
 
 Cancellation arrives after the operation started, so the caller must learn what happened and the operation must
-release what it holds. The expected outcome reports the cancelled result to its named observer and stops or
-suppresses according to what the chosen mechanism actually provides. A silently discarded outcome is the failure.
+release what it holds. The expected outcome states whether cancellation stops the underlying operation or only
+suppresses its result, then asserts the exact value, rejection, callback, or event the named caller observes.
+A silently discarded or undocumented outcome is the failure.
 
 #### Checklist
 
 - [ ] TSASYNC-CK-USAGE-02-01 — A named caller, function, object, or framework callback observes a cancelled operation's result rather than silently discarding it.
-- [ ] TSASYNC-CK-USAGE-02-02 — The caller is given the behavior the mechanism actually provides.
-- [ ] TSASYNC-CK-USAGE-02-03 — A stopped operation is distinguished from a suppressed stale result in what the caller is given.
+- [ ] TSASYNC-CK-USAGE-02-02 — The public API contract states whether cancellation stops the underlying operation or only suppresses its result.
+- [ ] TSASYNC-CK-USAGE-02-03 — A runtime test asserts the exact returned value, rejection, callback, or event observed by the named caller after cancellation.
 - Also applies: TSASYNC-CK-RISK-01-01 (resources released on cancellation).
 
 ## Consistency

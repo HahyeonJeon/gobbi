@@ -36,7 +36,9 @@ Declarations define the types consumers may use and must avoid leaking private i
 - **MUST** use an ordinary type assertion such as `value as Type` or `<Type>value` only to state a fact established outside the compiler, and record or localize the supporting runtime check or API guarantee. `as const` is a const assertion for literal and readonly inference, not the ordinary assertion escape hatch governed by this Rule.
 - **NEVER** use an ordinary type assertion, non-null assertion, or double assertion as a substitute for validation or control-flow narrowing.
 - **MUST** make discriminated unions exhaustive with a `never` check when every variant must be handled.
-- **MUST** inspect emitted public declarations and confine module or global augmentation to the integration module responsible for it.
+- **MUST** inspect emitted public declarations and keep each module or global augmentation declaration in the
+  responsible integration module. Separately verify compiler inclusion, module-wide or global type reach,
+  runtime activation when behavior is patched, collision risk, and intended consumer behavior.
 
 ## Preferences
 
@@ -49,6 +51,10 @@ Declarations define the types consumers may use and must avoid leaking private i
 - Prefer explicit return types on exported APIs when they stabilize declarations or compatibility; allow inference for local implementation details.
 - Prefer `interface` for object shapes intended for compatible augmentation and `type` for unions, aliases, and closed compositions, while following established project convention.
 - Prefer utility types only when the transformed type remains easier to understand than a dedicated domain type.
+- Prefer measured compiler or editor evidence before optimizing a type model. Before reviewing the changed
+  result, record a comparison threshold from a project feedback-time limit or measured baseline variance. When
+  the changed result exceeds that threshold, simplify the responsible expression or record why its value
+  justifies the measured cost.
 
 For an SDK, derive request, response, pagination, error, and cancellation types from supplied service requirements. Treat decoded service responses as `unknown`, validate them at the network adapter, and expose only validated values through the documented client methods. Type declarations do not invent retry behavior, error categories, or service guarantees that the supplied requirements do not state.
 
