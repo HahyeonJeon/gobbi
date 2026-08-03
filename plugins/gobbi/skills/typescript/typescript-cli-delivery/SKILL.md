@@ -29,7 +29,7 @@ behavior test design belongs to `typescript-testing`.
 ### Deliver one identified unit
 
 Every build, installation, verification result, and recovery result must trace to one recorded file, archive,
-script, or workspace revision and command for its target.
+script, or workspace or repository revision and command for its target.
 
 ### Prove the consumer entry
 
@@ -127,8 +127,8 @@ external action needs its exact current authority.
   maps to the unit and target before any include, upload, or withholding decision is executed.
 - Run only the recorded production path. Do not invent signing, package-manager, registry, service, or
   deployment commands.
-- Record the resulting unit identity, file sizes when a budget applies, digests or workspace revision, build
-  logs, target association, and any difference from the frozen plan.
+- Record the resulting unit identity, file sizes when a budget applies, digests or workspace or repository
+  revision, build logs, target association, and any difference from the frozen plan.
 - Return to Phase 1 when the unit or target contract changed. Repair through the owning producer when output
   differs from the contract, then produce and identify a new candidate before continuing.
 

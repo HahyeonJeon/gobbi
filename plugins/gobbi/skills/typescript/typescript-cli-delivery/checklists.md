@@ -88,7 +88,7 @@ same-name artifact or command that cannot be distinguished from another candidat
 #### Checklist
 
 - [ ] TSCLI-CK-AESTHETICS-01-01 — Every candidate file, archive, directly copied or linked script, or revision-bound command has one recorded operator-facing name.
-- [ ] TSCLI-CK-AESTHETICS-01-02 — Every operator-facing unit name traces to one digest or workspace revision.
+- [ ] TSCLI-CK-AESTHETICS-01-02 — Every operator-facing unit name traces to one digest or workspace or repository revision.
 - [ ] TSCLI-CK-AESTHETICS-01-03 — Target records, logs, and handoff use the same operator-facing unit and command names.
 
 ## Usage
@@ -130,7 +130,7 @@ after a repair. Mixed candidate identities or stale results are the failure.
 #### Checklist
 
 - [ ] TSCLI-CK-CONSISTENCY-01-01 — Source identity, lockfile, toolchain and runtime versions, build configuration, and target matrix are frozen before candidate production.
-- [ ] TSCLI-CK-CONSISTENCY-01-02 — The produced candidate's digest or workspace revision is recorded before consumer verification.
+- [ ] TSCLI-CK-CONSISTENCY-01-02 — The produced candidate's digest or workspace or repository revision is recorded before consumer verification.
 - [ ] TSCLI-CK-CONSISTENCY-01-03 — Every consumer, delivery, post-delivery, rollback, and recovery result is bound to its exact unit identity and target.
 - [ ] TSCLI-CK-CONSISTENCY-01-04 — Every repaired unit repeats its affected consumer and delivery checks under the new identity.
 - [ ] TSCLI-CK-CONSISTENCY-01-05 — The unit installed, published, promoted, or rolled out is the candidate authorized for that target stage.
@@ -178,7 +178,7 @@ identity, result, or next action leaves the lifecycle open.
 - [ ] TSCLI-CK-OVERALL-01-01 — Every delivered target proves that its active consumer command resolves to the delivered unit.
 - [ ] TSCLI-CK-OVERALL-01-02 — Every delivered target has current post-delivery installation, activation, identity, and command results.
 - [ ] TSCLI-CK-OVERALL-01-03 — The handoff contains the complete operating-system, architecture, and runtime target matrix.
-- [ ] TSCLI-CK-OVERALL-01-04 — The handoff contains every unit identity, checksum or workspace revision, operator-facing name, and distribution or install method.
+- [ ] TSCLI-CK-OVERALL-01-04 — The handoff contains every unit identity, checksum or workspace or repository revision, operator-facing name, and distribution or install method.
 - [ ] TSCLI-CK-OVERALL-01-05 — The handoff contains every post-delivery, authority, rollback, and recovery result.
 - [ ] TSCLI-CK-OVERALL-01-06 — The handoff contains every limitation, unavailable lifecycle result, retained evidence location, and next blocked action.
 

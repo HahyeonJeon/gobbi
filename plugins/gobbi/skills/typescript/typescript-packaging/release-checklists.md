@@ -103,7 +103,7 @@ defined its checks before building. Discovering the contents after publication i
 
 - [ ] TSPKG-CK-RISK-02-01 — The build runs clean without relying on stale output.
 - [ ] TSPKG-CK-RISK-02-02 — The archive inventory is inspected for missing generated files and for unwanted source or secrets.
-- [ ] TSPKG-CK-RISK-02-03 — Archive-content, installation, runtime, and rollback checks are defined before building.
+- [ ] TSPKG-CK-RISK-02-03 — Archive-content, installation, runtime, and method-specific recovery checks are defined before building.
 
 ### TSPKG-SC-RISK-03 — Expected failure: a required package check fails
 

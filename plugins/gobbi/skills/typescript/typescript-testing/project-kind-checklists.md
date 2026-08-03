@@ -75,7 +75,7 @@ consumer command are recorded by name. It proves which executable runs and verif
 - [ ] TSTESTKIND-CK-USAGE-02-02 — The test proves that it invoked the recorded output rather than a source file or unrelated command already on `PATH`.
 - [ ] TSTESTKIND-CK-USAGE-02-03 — Process tests invoke every recorded consumer command through its consumer entry.
 - [ ] TSTESTKIND-CK-USAGE-02-04 — Process tests assert the required arguments, standard input, standard output, standard error, exit status, signals, and cleanup for the applicable success and failure cases.
-- [ ] TSTESTKIND-CK-USAGE-02-05 — Every direct non-archive consumer entry is prepared through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another method whose unit, method, and consumer command are recorded by name.
+- [ ] TSTESTKIND-CK-USAGE-02-05 — Every direct non-archive consumer entry is prepared through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
 - [ ] TSTESTKIND-CK-USAGE-02-06 — A genuine hybrid that distributes the same command through a package archive and a direct non-archive method selects both owners and preserves separate artifact identities and consumer entries.
 
 ### TSTESTKIND-SC-USAGE-03 — Normal case: a library is tested through its recorded consumer path

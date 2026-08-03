@@ -86,7 +86,7 @@ on `PATH` as proof.
 - [ ] TSDEV-CK-USAGE-04-01 — The invoked executable is the output of the recorded command distribution method rather than a source file or unrelated command already on `PATH`.
 - [ ] TSDEV-CK-USAGE-04-02 — Required arguments, standard input, standard output, standard error, exit status, signals, and failure text are verified.
 - [ ] TSDEV-CK-USAGE-04-03 — Every command name or entry supplied by package metadata, including a `package.json` `bin` entry, package script, or workspace package link, is supplied through `typescript-packaging` with its package behavior.
-- [ ] TSDEV-CK-USAGE-04-04 — Every direct non-archive consumer entry is supplied through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another method whose unit, method, and consumer command are recorded by name.
+- [ ] TSDEV-CK-USAGE-04-04 — Every direct non-archive consumer entry is supplied through `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an install target, a workspace or repository revision plus command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
 - [ ] TSDEV-CK-USAGE-04-05 — A package-backed workspace command delivered directly selects `typescript-packaging` for package metadata and `typescript-cli-delivery` for direct non-archive delivery.
 - [ ] TSDEV-CK-USAGE-04-06 — A genuine hybrid that distributes the same command through a package archive and a direct non-archive method selects both owners and preserves separate artifact identities and consumer entries.
 
