@@ -1,18 +1,18 @@
 # TypeScript Conventions Evaluation Checklist
 
-This reusable unchecked source evaluates one set of source-level TypeScript choices against the boundary and
-defaults this skill owns. It is governed by the [`typescript`](../SKILL.md) domain and
+This reusable unchecked source evaluates one set of source-level TypeScript choices against the scope and
+defaults this skill defines. It is governed by the [`typescript`](../SKILL.md) domain and
 [`typescript-conventions`](SKILL.md) preferences, with
 [`typescript-development`](../typescript-development/SKILL.md) as the operation that applies them,
-[`typescript-typing`](../typescript-typing/SKILL.md) owning type semantics, and
-[`typescript-toolchain`](../typescript-toolchain/SKILL.md) owning compiler and module configuration. The
-source commit that contains this file identifies the checklist version. Its stable owner prefix is `TSCONV`.
+[`typescript-typing`](../typescript-typing/SKILL.md) defining type semantics, and
+[`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining compiler and module configuration. The
+source commit that contains this file identifies the checklist version. Its stable checklist prefix is `TSCONV`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
 unchecked binary condition in this source.
 
-A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
 ## Project
@@ -27,7 +27,7 @@ a foreign concern here, or applying a baseline over a settled convention, is the
 #### Checklist
 
 - [ ] TSCONV-CK-PROJECT-01-01 — Every decided choice is a name, file, export, import, documentation, comment, or formatting choice.
-- [ ] TSCONV-CK-PROJECT-01-02 — Every type-semantics, runtime-architecture, and compiler-configuration question is routed to its owner.
+- [ ] TSCONV-CK-PROJECT-01-02 — Every type-semantics, runtime-architecture, and compiler-configuration question is routed to the TypeScript child or product-domain skill that defines it.
 - [ ] TSCONV-CK-PROJECT-01-03 — The project's existing convention is followed wherever it is coherent and tool-enforced.
 - [ ] TSCONV-CK-PROJECT-01-04 — A baseline preference from this skill is applied only where the project has not settled the choice.
 
@@ -44,16 +44,16 @@ records the result. A convention silently replaced inside an ordinary change bre
 
 ## Structure
 
-### TSCONV-SC-STRUCTURE-01 — Normal case: each definition sits near its owner
+### TSCONV-SC-STRUCTURE-01 — Normal case: each definition sits near the module that uses it
 
-New helpers, types, and tests need a home. The expected outcome keeps them beside the owner that uses them and
+New helpers, types, and tests need a home. The expected outcome keeps them beside the module or component that uses them and
 gives each file one primary responsibility. A helper placed in a shared location before independent consumers
 exist, or a file that accumulates unrelated responsibilities, is the failure.
 
 #### Checklist
 
-- [ ] TSCONV-CK-STRUCTURE-01-01 — Narrow helpers and their tests are colocated with the owner that uses them.
-- [ ] TSCONV-CK-STRUCTURE-01-02 — A definition is promoted to a shared location only after independent consumers demonstrate the shared contract.
+- [ ] TSCONV-CK-STRUCTURE-01-01 — Narrow helpers and their tests are colocated with the module or component that uses them.
+- [ ] TSCONV-CK-STRUCTURE-01-02 — A definition is moved to a shared location only after independent consumers demonstrate the same behavior and type requirements.
 - [ ] TSCONV-CK-STRUCTURE-01-03 — Each file carries one primary responsibility.
 
 ## Performance
@@ -61,7 +61,7 @@ exist, or a file that accumulates unrelated responsibilities, is the failure.
 ### TSCONV-SC-PERFORMANCE-01 — Poor quality: mechanical style maintained by hand
 
 The source is readable and correct, but formatting and import order are maintained by hand or with local
-exceptions while the project owns deterministic tools for both. The expected outcome leaves mechanical style
+exceptions while the project provides deterministic tools for both. The expected outcome leaves mechanical style
 to those tools, so review attention and diff noise are not spent on it repeatedly.
 
 #### Checklist
@@ -72,7 +72,7 @@ to those tools, so review attention and diff noise are not spent on it repeatedl
 
 ## Aesthetics
 
-### TSCONV-SC-AESTHETICS-01 — Normal case: names expose the contract
+### TSCONV-SC-AESTHETICS-01 — Normal case: names expose the requirement
 
 Names are the first thing a reader uses to understand a value's role, unit, and domain meaning. The expected
 outcome distinguishes concepts, units, states, and side effects at the point of use without repeating syntax
@@ -87,7 +87,7 @@ indistinguishable, is the failure.
 
 ### TSCONV-SC-AESTHETICS-02 — Poor quality: comments that restate the code
 
-The comments are accurate and the code works, but they narrate what the reader can already see and omit why
+The comments are accurate and the code behaves correctly, but they narrate what the reader can already see and omit why
 the code is the way it is. The expected outcome spends comments on intent, invariants, tradeoffs, and
 surprising external constraints.
 

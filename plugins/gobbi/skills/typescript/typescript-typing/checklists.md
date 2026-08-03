@@ -1,18 +1,18 @@
 # TypeScript Typing Evaluation Checklist
 
 This reusable unchecked source evaluates one set of type-modeling, narrowing, and declaration choices against
-the preferences this skill owns. It is governed by the [`typescript`](../SKILL.md) domain and
+the preferences this skill defines. It is governed by the [`typescript`](../SKILL.md) domain and
 [`typescript-typing`](SKILL.md) preferences, with
 [`typescript-development`](../typescript-development/SKILL.md) as the operation that applies them,
-[`typescript-testing`](../typescript-testing/SKILL.md) owning the evidence that proves a type relationship,
-and [`typescript-packaging`](../typescript-packaging/SKILL.md) owning the published declaration contract. The
-source commit that contains this file identifies the checklist version. Its stable owner prefix is `TSTYPE`.
+[`typescript-testing`](../typescript-testing/SKILL.md) defining the compiler checks that prove a type relationship,
+and [`typescript-packaging`](../typescript-packaging/SKILL.md) defining the published declarations. The
+source commit that contains this file identifies the checklist version. Its stable checklist prefix is `TSTYPE`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
 unchecked binary condition in this source.
 
-A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
 ## Project
@@ -26,7 +26,7 @@ A model designed from the shape of the code rather than the domain is the failur
 #### Checklist
 
 - [ ] TSTYPE-CK-PROJECT-01-01 — The runtime domain of the modeled values is understood before the type model is chosen.
-- [ ] TSTYPE-CK-PROJECT-01-02 — Every departure from these preferences preserves the same honest runtime and public contracts.
+- [ ] TSTYPE-CK-PROJECT-01-02 — Every departure from these preferences preserves the same honest runtime behavior and public declarations.
 
 ### TSTYPE-SC-PROJECT-02 — Expected failure: the domain has no settled shape yet
 
@@ -36,8 +36,8 @@ Reaching for `any` to make the uncertainty disappear is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-PROJECT-02-01 — Uncertainty is preserved with `unknown`, a relationship-preserving generic, or a precise boundary adapter.
-- [ ] TSTYPE-CK-PROJECT-02-02 — An unsettled shape is resolved at one boundary adapter that returns validated domain values.
+- [ ] TSTYPE-CK-PROJECT-02-01 — Uncertainty is preserved with `unknown`, a relationship-preserving generic, or a precise input parser.
+- [ ] TSTYPE-CK-PROJECT-02-02 — An unsettled shape is resolved at one input adapter that returns validated domain values.
 
 ## Structure
 
@@ -57,7 +57,7 @@ Correlated optional fields or boolean pairs that admit impossible combinations a
 
 The code compiles and the generics look general, but a type parameter appears once, carries no constraint that
 matters, or exists where a concrete type would say more. The expected outcome earns each abstraction from a
-relationship it preserves and keeps inputs narrow until a real boundary widens them.
+relationship it preserves and keeps inputs narrow until an intentional abstraction or exported API widens them.
 
 #### Checklist
 
@@ -65,7 +65,7 @@ relationship it preserves and keeps inputs narrow until a real boundary widens t
 - [ ] TSTYPE-CK-STRUCTURE-02-02 — Every type parameter carries the smallest useful constraint.
 - [ ] TSTYPE-CK-STRUCTURE-02-03 — Every type parameter is actually used.
 - [ ] TSTYPE-CK-STRUCTURE-02-04 — Input types stay narrow.
-- [ ] TSTYPE-CK-STRUCTURE-02-05 — Widening happens only at an intentional abstraction or public boundary.
+- [ ] TSTYPE-CK-STRUCTURE-02-05 — Widening happens only at an intentional abstraction or exported API.
 
 ## Performance
 
@@ -79,19 +79,19 @@ code is decided by the operation that implements it and by the toolchain that bu
 
 The types are correct and even clever, but a reader must evaluate a chain of utility types to learn what the
 value is. The expected outcome keeps the narrowest honest model and prefers a dedicated domain type whenever
-the transformed contract stops being easier to understand.
+the transformed type stops being easier to understand.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-AESTHETICS-01-01 — Utility types are used only where the transformed contract remains easier to understand than a dedicated domain type.
+- [ ] TSTYPE-CK-AESTHETICS-01-01 — Utility types are used only where the transformed type remains easier to understand than a dedicated domain type.
 - [ ] TSTYPE-CK-AESTHETICS-01-02 — The chosen model is the narrowest honest one rather than the most elaborate type expression available.
 
 ## Usage
 
-### TSTYPE-SC-USAGE-01 — Normal case: the public declaration reads as a stable contract
+### TSTYPE-SC-USAGE-01 — Normal case: the public declaration reads as a stable API
 
 Consumers depend on the emitted declaration, not on the source that produced it. The expected outcome inspects
-that emitted surface and stabilizes it where inference would otherwise decide the contract. A public API whose
+those emitted declarations and stabilizes them where inference would otherwise decide the exported type. A public API whose
 declaration changes with an unrelated implementation edit is the failure.
 
 #### Checklist
@@ -99,33 +99,46 @@ declaration changes with an unrelated implementation edit is the failure.
 - [ ] TSTYPE-CK-USAGE-01-01 — The emitted public declarations are inspected.
 - [ ] TSTYPE-CK-USAGE-01-02 — Exported APIs carry explicit return types wherever those types stabilize declarations or compatibility.
 - [ ] TSTYPE-CK-USAGE-01-03 — Inference is left to local implementation details.
-- [ ] TSTYPE-CK-USAGE-01-04 — Annotations are used for stable public contracts.
+- [ ] TSTYPE-CK-USAGE-01-04 — Annotations are used where they stabilize exported API types.
 - [ ] TSTYPE-CK-USAGE-01-05 — `satisfies` is used where a value is checked without replacing its useful inferred type.
 - [ ] TSTYPE-CK-USAGE-01-06 — `as const` is used for intentionally literal immutable data.
 
 ### TSTYPE-SC-USAGE-02 — Edge case: `readonly` reaches the limit of what it guarantees
 
 A `readonly` array or property stops direct reassignment while nested objects inside it stay mutable, which is
-exactly where a consumer's expectation and the type diverge. The expected outcome uses `readonly` for mutation
-ownership and states how deep the guarantee actually goes.
+exactly where a consumer's expectation and the type diverge. The expected outcome uses `readonly` to state
+which references may mutate the value and states how deep the guarantee actually goes.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-USAGE-02-01 — `readonly` is used to express mutation ownership rather than to imply a guarantee the type does not make.
+- [ ] TSTYPE-CK-USAGE-02-01 — `readonly` is used to state which references may mutate a value rather than to imply a guarantee the type does not make.
 - [ ] TSTYPE-CK-USAGE-02-02 — No model relies on `readonly` for nested immutability unless the model states that depth.
+
+### TSTYPE-SC-USAGE-03 — Normal case: SDK types follow supplied service requirements and validated payloads
+
+An SDK can expose precise declarations while inventing service behavior or trusting decoded responses that the
+service does not guarantee. The expected outcome derives public request and result types from supplied service
+requirements and validates decoded data before client methods return it.
+
+#### Checklist
+
+- [ ] TSTYPE-CK-USAGE-03-01 — SDK request, response, pagination, error, and cancellation types are derived from supplied service requirements.
+- [ ] TSTYPE-CK-USAGE-03-02 — Every decoded service response remains `unknown` until the network adapter validates it.
+- [ ] TSTYPE-CK-USAGE-03-03 — Documented client methods expose only values validated into their public response types.
+- [ ] TSTYPE-CK-USAGE-03-04 — SDK declarations do not invent retry behavior, error categories, or service guarantees absent from the supplied requirements.
 
 ## Consistency
 
 ### TSTYPE-SC-CONSISTENCY-01 — Rule violation: a preference used to override a soundness Rule
 
 These preferences are overridable except where a Rule establishes soundness, so a house style cannot license
-an unchecked boundary or an unsupported assertion. The expected outcome resolves the conflict in the Rule's
+unchecked input or an unsupported assertion. The expected outcome resolves the conflict in the Rule's
 favor. A recorded project style presented as sufficient authority breaks the Rule.
 
 #### Checklist
 
 - [ ] TSTYPE-CK-CONSISTENCY-01-01 — No declaration style, explicitness level, or object-type form produces an outcome a soundness Rule forbids.
-- [ ] TSTYPE-CK-CONSISTENCY-01-02 — Every project-level departure keeps the honest runtime and public contracts intact.
+- [ ] TSTYPE-CK-CONSISTENCY-01-02 — Every project-level departure keeps the honest runtime behavior and public declarations intact.
 
 ### TSTYPE-SC-CONSISTENCY-02 — Normal case: the model agrees with the project's established form
 
@@ -135,7 +148,7 @@ failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-CONSISTENCY-02-01 — `interface` is used for open object contracts intended for compatible augmentation, following the established project convention.
+- [ ] TSTYPE-CK-CONSISTENCY-02-01 — `interface` is used for object shapes intended for compatible augmentation, following the established project convention.
 - [ ] TSTYPE-CK-CONSISTENCY-02-02 — `type` is used for unions, aliases, and closed compositions, following the established project convention.
 - [ ] TSTYPE-CK-CONSISTENCY-02-03 — The project's established declaration style and explicitness level are followed where they exist.
 
@@ -153,39 +166,39 @@ that check breaks the Rule while the program still compiles.
 - [ ] TSTYPE-CK-RISK-01-02 — External, decoded, and otherwise unverified data is parsed or narrowed before use.
 - [ ] TSTYPE-CK-RISK-01-03 — No type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
 - [ ] TSTYPE-CK-RISK-01-04 — Built-in control-flow narrowing, user-defined guards, and parsers are used instead of assertions.
-- [ ] TSTYPE-CK-RISK-01-05 — Validated domain values come from one boundary adapter.
+- [ ] TSTYPE-CK-RISK-01-05 — Validated domain values come from one input adapter.
 
 ### TSTYPE-SC-RISK-02 — Rule violation: `any` where uncertainty could have been preserved
 
 `any` disables checking and carries that loss into every value it touches through assignment. The expected
 outcome keeps the uncertainty in a form the compiler still checks. Using `any` where `unknown`, a generic, or
-an adapter would work breaks the Rule.
+an adapter would preserve checking breaks the Rule.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-RISK-02-01 — No `any` is used where the program can preserve uncertainty with `unknown`, a relationship-preserving generic, or a precise boundary adapter.
+- [ ] TSTYPE-CK-RISK-02-01 — No `any` is used where the program can preserve uncertainty with `unknown`, a relationship-preserving generic, or a precise input parser.
 - Also applies: TSTYPE-CK-PROJECT-02-01 (uncertainty preserved in a checked form).
 
-### TSTYPE-SC-RISK-03 — Adversarial: an escape hatch dressed as established evidence
+### TSTYPE-SC-RISK-03 — Adversarial: an escape hatch dressed as an established fact
 
 An `as` with a confident comment, or a double assertion routed through an intermediate type, can present a
 guess as a fact the compiler simply cannot see, and review accepts it. The expected outcome admits an
-assertion only for a fact established outside the compiler and keeps that evidence visible.
+assertion only for a fact established outside the compiler and keeps the supporting runtime check or API guarantee visible.
 
 #### Checklist
 
 - [ ] TSTYPE-CK-RISK-03-01 — Every `as` states a fact established outside the compiler rather than a shape the code expects to hold.
-- [ ] TSTYPE-CK-RISK-03-02 — The evidence for every `as` is recorded or localized where the assertion is made.
+- [ ] TSTYPE-CK-RISK-03-02 — The runtime check or API guarantee supporting every `as` is recorded or localized where the assertion is made.
 
-### TSTYPE-SC-RISK-04 — Edge case: a declaration is augmented from outside its owner
+### TSTYPE-SC-RISK-04 — Edge case: a declaration is augmented outside its responsible integration module
 
 Module and global augmentation changes types for code that never opted in, which is the limit case of
-protecting the public surface. The expected outcome keeps each augmentation inside the integration boundary
-that owns it. An augmentation reaching the whole program is the failure.
+protecting the public declarations. The expected outcome keeps each augmentation inside the integration module
+responsible for it. An augmentation reaching the whole program is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-RISK-04-01 — Every module or global augmentation is confined to the owning integration boundary.
+- [ ] TSTYPE-CK-RISK-04-01 — Every module or global augmentation is confined to the integration module responsible for it.
 - Also applies: TSTYPE-CK-USAGE-01-01 (the emitted declarations are inspected).
 
 ## Overall
@@ -193,7 +206,7 @@ that owns it. An augmentation reaching the whole program is the failure.
 ### TSTYPE-SC-OVERALL-01 — Adversarial: compiler acceptance presented as runtime safety
 
 A clean type-check, an annotation, a non-null assertion, or a `readonly` modifier can each be offered as proof
-that a value is what the program claims. The expected outcome keeps every claim inside what its evidence
+that a value is what the program claims. The expected outcome keeps every claim inside what its compiler result or runtime check
 establishes; compiler agreement accepted as runtime fact is the failure.
 
 #### Checklist
@@ -201,12 +214,12 @@ establishes; compiler agreement accepted as runtime fact is the failure.
 - [ ] TSTYPE-CK-OVERALL-01-01 — No compiler acceptance is treated as proof of a property it does not establish: a passing type-check of external data validity, an annotation of runtime shape, a non-null assertion of presence, and `readonly` of deep immutability.
 - [ ] TSTYPE-CK-OVERALL-01-02 — Every unverified assumption about a runtime value remains an open question rather than an established fact.
 
-### TSTYPE-SC-OVERALL-02 — Expected failure: a value fails validation at the boundary
+### TSTYPE-SC-OVERALL-02 — Expected failure: an external value fails validation
 
-The parser or guard rejects the incoming value, which is the path the boundary exists to produce. The expected
+The parser or guard rejects the incoming value, which is the failure path the input adapter exists to produce. The expected
 outcome stops the value there rather than letting a partially narrowed shape continue into domain code.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-OVERALL-02-01 — A value that fails boundary validation is rejected rather than passed on as a domain value.
+- [ ] TSTYPE-CK-OVERALL-02-01 — A value that fails external-input validation is rejected rather than passed on as a domain value.
 - [ ] TSTYPE-CK-OVERALL-02-02 — No partially narrowed value is used as though narrowing had completed.
