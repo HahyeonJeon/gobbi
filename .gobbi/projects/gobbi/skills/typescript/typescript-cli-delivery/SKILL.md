@@ -1,6 +1,6 @@
 ---
 name: typescript-cli-delivery
-description: "MUST load when producing, installing, releasing, rolling back, or recovering a non-package TypeScript command-line application such as a bundled executable, installed script, or workspace-distributed command."
+description: "MUST load when producing, validating, installing, releasing, rolling back, or recovering a non-package TypeScript command-line application such as a bundled executable, installed script, or workspace-distributed command."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
