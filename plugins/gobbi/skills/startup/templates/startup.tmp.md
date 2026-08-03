@@ -38,9 +38,9 @@ This schema-2 file owns and checkpoints one Startup run. It is not a transcript,
 
 ## Topics and Questions
 
-| Phase | Topic or question | Adapted wording | Origin | Status | Reason or dependency |
-|---|---|---|---|---|---|
-| `{phase}` | `{topic or [question-name]}` | `{project-specific wording}` | `{phase bank, study, interview, or review}` | `{prepared, to ask, answered, dropped, reopened, or deferred}` | `{reason}` |
+| Phase | Topic or question | Subject | Adapted wording | Origin | Status | Reason or dependency |
+|---|---|---|---|---|---|---|
+| `{phase}` | `{topic or [question-name]}` | `{project or distinct feature}` | `{project-specific wording}` | `{phase bank, study, interview, or review}` | `{prepared, to ask, answered, dropped, reopened, or deferred}` | `{reason}` |
 
 ## Answers and Decisions
 

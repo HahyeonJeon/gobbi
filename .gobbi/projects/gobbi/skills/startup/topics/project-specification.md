@@ -12,6 +12,10 @@ or implementation tasks.
 - [refused-use] Which attempted uses, if any, must the software reject?
 - [feature-list] Which named features must the software provide for the people or systems that will use it?
 - [minimum-complete-capability] What is the smallest complete software capability that lets a user or consumer complete a useful task?
+
+The next five feature-contract questions, from prerequisite through worst failure, are instantiated once for
+every named feature. Record each instance and answer under that feature's distinct subject.
+
 - [feature-prerequisite] What must already exist or be true before this feature can work?
 - [feature-start] Which user action, system event, or scheduled event starts this feature?
 - [feature-finish] What can a user or connected system observe to know that this feature finished its work successfully?
@@ -87,7 +91,6 @@ or implementation tasks.
 - [diagnostic-evidence] When the software fails, which logs, metrics, traces, or other records must be available to determine what happened?
 - [operational-runbook] Which high-risk operating task needs written, tested step-by-step instructions?
 - [accessibility-target] Which accessibility standard and conformance level must the user interface meet?
-- [quality-priority] When important qualities conflict, which one, such as correctness, security, speed, or usability, must take priority?
 - [quality-scenario] For the project's highest-priority quality, what specific operating situation shows what that quality must achieve?
 - [quality-threshold] What measurable result marks the minimum acceptable level for the project's highest-priority quality?
 - [threshold-basis] Which evidence or authoritative source justifies the project's chosen quality threshold?

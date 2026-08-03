@@ -64,6 +64,7 @@ engines, table formats, protocols, and languages at one hierarchy level.
 
 ## Strategy and Outcome-Horizon Roadmap
 
+- [quality-priority] When important qualities conflict, which one, such as correctness, security, speed, or usability, must take priority?
 - [build-buy-adopt] Which capabilities will the project build, buy, or adopt, and why?
 - [project-differentiation] Which capability or outcome must remain differentiated rather than delegated to a commodity dependency?
 - [strategy-non-goal] Which attractive technical or product direction is deliberately excluded from the solution strategy?

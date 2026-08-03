@@ -64,10 +64,11 @@ from durable state rather than trusting a cached cursor.
 |---|---|
 | No Startup artifacts | Create `startup.tmp.md` from [`templates/startup.tmp.md`](templates/startup.tmp.md), set schema `2`, record both absolute identities, initialize every artifact as `absent`, and continue to Step 1.2. |
 | Schema-2 `startup.tmp.md` with matching identities | Validate its artifact register against disk, repair only a stale cached cursor, and resume through Step 1.2. |
-| Matching schema-2 record plus a confirmed v2 `startup.md` | Verify all five durable files are confirmed, remove only the matching temporary record if it remains, and return `startup.md`. |
+| No `startup.tmp.md`, a matching confirmed schema-2 `startup.md`, and all four phase documents its register lists | Verify schema `2`; the project-root and output-directory identities; the four exact register links; each linked file's existence and confirmed phase acceptance; and final confirmation. Return the existing `startup.md` unchanged. |
+| Matching schema-2 `startup.tmp.md` plus a confirmed v2 `startup.md` | Verify all five durable files are confirmed, remove only the matching temporary record left by interrupted cleanup, and return `startup.md` unchanged. |
 | Confirmed legacy `startup.md` and no other Startup artifact | Return it unchanged as `legacy-confirmed`. Do not migrate or interview. |
 | Legacy working state, mixed legacy/v2 state, or an unconfirmed legacy draft | Stop with no write and report the exact incompatible paths. |
-| Any v2 phase file without the matching schema-2 ownership record | Stop with no write and report the unowned path. |
+| Any v2 phase file without a matching schema-2 working record or ownership proved by the verified final-index branch above | Stop with no write and report the unowned path. |
 | Identity mismatch, unreadable state, or an artifact Startup cannot prove it owns | Stop with no write and report the failed field and path. |
 
 - A legacy file is a pre-schema-2 Startup artifact. A v2 `startup.md` identifies schema `2`, the project root,
@@ -111,6 +112,9 @@ from durable state rather than trusting a cached cursor.
 - Adapt each applicable baseline question to the project's own people, applications, building blocks, data,
   and vocabulary. Drop an inapplicable question with its reason, add context-derived questions, record each
   question's origin, and order questions by dependency, uncertainty, and consequence.
+- In Project Specification, instantiate the five feature-contract questions once for every named feature.
+  Keep each prepared instance and checkpoint under its distinct feature subject even though the instances
+  share their baseline question name.
 - For Lifecycle and Use-Case Scenarios, first generate scenario candidates from every accepted earlier phase,
   map them to their decisions and artifacts, and identify what prevents a concrete scenario or oracle. Prepare
   interview questions only for those blocking decisions and gaps; never begin from a generic question list.
@@ -127,7 +131,8 @@ from durable state rather than trusting a cached cursor.
 - After each answer, assign the ordered writer a bounded checkpoint: normalize the answer without changing its
   meaning, record its question, subject, kind, evidence, and strength, update vocabulary and corrections,
   calculate reopen effects, and derive the next question. The manager rereads and verifies the checkpoint
-  before asking another question.
+  before asking another question. Never merge answers that share a question name but belong to distinct
+  feature subjects.
 - A correction reopens the earliest owning phase, changes its artifact to `draft` or `stale`, and marks every
   later dependent artifact `stale`. Resume from that phase's Study step. Otherwise repeat this step until no
   prepared question remains, then continue to Step 2.4.
