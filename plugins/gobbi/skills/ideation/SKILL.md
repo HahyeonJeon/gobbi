@@ -17,25 +17,29 @@ snapshots remain optional and subordinate.
 
 ## Principles
 
-### Preserve user authority through the caller
+### Question through the caller without hesitation until the idea is complete
 
-An unresolved material choice is a question, not permission to assume. Return the exact decision to the
-caller with enough evidence and trade-offs for the user to choose.
+An incomplete idea is a set of open topics, not permission to assume. Return relevant, evidence-backed, and
+respectful questions through the caller until every material gap or contradiction is answered, explicitly
+deferred, or removed from scope.
 
-### Study before selecting a direction
+### Study trustworthy prior art before designing
 
-Use project evidence and applicable trustworthy prior art to frame distinct options. Judge them by supported
-fit with the outcome and constraints.
+Study established project patterns, and study trustworthy external prior art when it can materially improve
+a choice; assess every reference by authority, relevance, currency, and applicability. Use the strongest fit
+as the baseline, and combine lessons or deviate only when current constraints justify it.
 
-### Resolve a hierarchy, then reopen it when evidence changes
+### Discuss the design through a hierarchy of topics
 
-Settle parent decisions before dependent details and reconcile effects across sibling branches. Late evidence
-reopens the earliest affected decision and every conclusion that depends on it.
+Root the topic hierarchy in the problem and desired outcome, and derive it from project evidence and any
+applicable prior art. Resolve parents before children, reconcile sibling branches, and reopen the earliest
+affected decision when new evidence changes it.
 
-### Keep one current design
+### Find the best idea by comparing reference-backed alternatives
 
-`ideation.md` integrates the requirements, evidence, decisions, consequences, and design into one
-cold-readable result. Working notes and optional snapshots remain subordinate implementation detail.
+The leading idea is a candidate to compare with genuinely different, reference-backed alternatives by their
+pros, cons, and fit with the outcome and constraints. Use the comparison to improve or replace it, then
+explain why the selected direction wins and what evidence would change it.
 
 ## Rules
 
