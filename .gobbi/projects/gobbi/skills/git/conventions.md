@@ -1,10 +1,10 @@
 # Git Conventions
 
 Deterministic mappings for session branches, worktree paths, focused commits, provenance trailers,
-optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the session contract,
-lifecycle, authority gates, failure handling, and cleanup order.
+optional issues, pull requests, labels, merge format, and caller-supplied tag/ref action records.
+[`SKILL.md`](SKILL.md) owns lifecycle actions, authority gates, failure handling, recovery, and cleanup order.
 
-The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
+The session formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
 ## Session branch naming
 
@@ -108,6 +108,64 @@ A declared publication intent maps to required results without hidden coupling:
 
 A caller that declares only local retention keeps its verified local commits; a later push, pull request,
 issue, merge, or cleanup requires a separate explicit Git operation and current user authority.
+
+## Caller-supplied tag/ref action contract
+
+The caller supplies every value below. Every field is required, and `none` is valid only where the field says
+so. An omitted or empty value is not a default. The action identity is the verbatim ordered value set of all
+action-specification rows; changing one value creates a different action.
+
+### Action specification
+
+| Field | Required value |
+|---|---|
+| `callerIdentity` | Exact caller-supplied identity that receives the result; this field grants no authority. |
+| `repository` | Absolute normalized local repository path and the expected Git common-directory identity. |
+| `refName` | One fully qualified ref name with no wildcard or revision expression. |
+| `targetObject` | Full object ID the ref must resolve or peel to, plus its expected Git object type. |
+| `remote` | Literal `none` for a local-only action, or one exact configured remote name with its expected fetch and push URL identities. |
+| `tagForm` | Exactly one caller-selected value: `non-tag-ref`, `lightweight-tag`, `annotated-tag`, or `signed-tag`. |
+| `annotationInput` | Literal `none`, or the exact annotation message input and every caller-supplied argument that changes it. |
+| `signingInput` | Literal `none`, or the exact signing mechanism, signature format, signer or key selector, and caller-supplied signing arguments. |
+| `publicationTarget` | Literal `none`, or the exact remote plus one fully qualified source ref and one fully qualified destination ref for a non-force publication. |
+| `expectedLocalState` | Literal `absent`, or the exact compatible ref object, peeled target, tag form, annotation state, and signing state expected before action. |
+| `expectedRemoteState` | Literal `not-applicable` for a local-only action, `absent`, or the exact compatible destination ref object and peeled target expected before publication. |
+| `requestedEffects` | Exact set drawn from `ensure-local-ref` and `publish-single-ref`; publication never implies deletion, overwrite, force, or another ref. |
+
+`non-tag-ref` and `lightweight-tag` require `annotationInput: none` and `signingInput: none`.
+`annotated-tag` requires an exact annotation input and `signingInput: none`. `signed-tag` requires exact
+annotation and signing inputs. A local-only action requires `remote: none`, `publicationTarget: none`,
+`expectedRemoteState: not-applicable`, and no `publish-single-ref` effect.
+Every action includes `ensure-local-ref`; `publish-single-ref` is optional, and its fully qualified source ref
+must equal `refName`.
+
+### Authority record
+
+| Field | Required value |
+|---|---|
+| `authoritySource` | Exact evidence of the current manager authority and the authority identity. |
+| `authorizedAction` | Verbatim action identity, including caller, repository, ref, target, remote, form, annotation, signing, publication, expected states, and requested effects. |
+| `networkAuthority` | Literal `none` for a local-only action, or exact authority for the named remote reads and publication. |
+| `credentialAuthority` | Literal `none` when no credential is used, or exact authority for the named credential, scope, destination, and ephemeral use. |
+| `authorityState` | Direct evidence, checked immediately before each mutation, that the authority remains current and unwithdrawn for the unchanged action. |
+
+The authority record is separate from the action specification. It never fills a missing action value. An
+authority mismatch, withdrawal, or stale action identity leaves the action unauthorized.
+
+### Result record
+
+| Field | Required evidence |
+|---|---|
+| `actionAndAuthority` | Verbatim action specification, authority record, and the last unchanged-input and current-authority checks. |
+| `preflight` | Repository and remote identities; target object and type; local and remote before states; tag, annotation, and signing observations; and credential and network readiness when used. |
+| `actions` | Exact commands or API actions attempted, in order, with exit status or returned result and redacted credential material. |
+| `localAfter` | Exact ref object, peeled target, tag form, annotation state, signing state, and whether creation or a compatible no-op occurred. |
+| `remoteAfter` | Literal `not-applicable`, or the exact destination ref object and peeled target observed after the attempt. |
+| `result` | Literal `completed`, `compatible-no-op`, `failed`, or `verification-mismatch` for each requested effect. |
+| `evidenceLimits` | Every state not observed or not provable from the available local or authorized remote evidence. |
+| `failure` | First conflict or diagnostic, affected obligation, retained local and remote state, unique objects, and risk. |
+| `recovery` | Recovery owner, first non-mutating recovery action, and the exact separate authority needed before any later mutation. |
+| `handoff` | Caller, repository, ref, target, terminal state, retained objects, and the next authorized or blocked action. |
 
 ## Commit messages
 
