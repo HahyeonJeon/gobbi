@@ -177,7 +177,7 @@ installed control as coverage for another surface is the failure.
 - [ ] ELECDSN-CK-RISK-01-03 — `setWindowOpenHandler` enforces the allowed popup set on every existing and later-created `webContents` that loads renderer content.
 - [ ] ELECDSN-CK-RISK-01-04 — `will-attach-webview` validates the requested URL, preload, security-relevant `webPreferences`, and intended session or partition before attachment.
 - [ ] ELECDSN-CK-RISK-01-05 — Each URL passed to `shell.openExternal` is parsed and matched by scheme, origin, and allowed path against a closed allowlist.
-- [ ] ELECDSN-CK-RISK-01-06 — Permission handlers evaluate the requesting and embedding origins that Electron provides.
+- [ ] ELECDSN-CK-RISK-01-06 — Each permission handler evaluates the origin fields its own API supplies: `setPermissionRequestHandler` uses `details.requestingUrl`; `setPermissionCheckHandler` uses `requestingOrigin` and optional `details.embeddingOrigin`.
 
 ### ELECDSN-SC-RISK-02 — Edge case: a renderer loads secure remote content
 
@@ -192,15 +192,15 @@ Policy through the actual source. Treating an intended policy as delivered is th
 
 ### ELECDSN-SC-RISK-03 — Adversarial: a privileged handler trusts caller-controlled identity or data
 
-A handler authorizes from a renderer-supplied value or reads `event.senderFrame` after asynchronous work has
-allowed the frame to navigate or disappear. The expected outcome captures sender identity synchronously and
-validates payload values in the privileged process. A caller-shaped or stale authorization fact is the
-failure.
+A handler authorizes from a renderer-supplied value or defers reading `event.senderFrame` until after an
+asynchronous suspension, when navigation or destruction may have made it `null`. The expected outcome
+validates sender identity, URL origin, and frame role before suspension and validates payload values in the
+privileged process. A caller-shaped or unavailable authorization fact is the failure.
 
 #### Checklist
 
-- [ ] ELECDSN-CK-RISK-03-01 — Each privileged handler captures `event.senderFrame` before its first asynchronous suspension.
-- [ ] ELECDSN-CK-RISK-03-02 — Each privileged handler rejects a missing, destroyed, navigated, or untrusted sender frame.
+- [ ] ELECDSN-CK-RISK-03-01 — Each privileged handler reads `event.senderFrame` before its first asynchronous suspension.
+- [ ] ELECDSN-CK-RISK-03-02 — Each privileged handler completes sender authorization before its first asynchronous suspension only when `event.senderFrame` is present and not destroyed and its sender identity, URL origin, and frame role match the handler's trusted-sender allowlist.
 - [ ] ELECDSN-CK-RISK-03-03 — Each privileged handler validates payload values at runtime in the privileged process.
 - [ ] ELECDSN-CK-RISK-03-04 — No authorization decision uses an identity or authority value supplied by the calling renderer.
 

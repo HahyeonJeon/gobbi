@@ -60,9 +60,10 @@ settles, why it is acceptable, and which changed fact would reopen it.
   or invoke function through `contextBridge`.** Expose one narrow application-action method for each
   permitted capability, filter its arguments, and pass callbacks only the data the renderer needs.
 
-- **MUST capture `event.senderFrame` before asynchronous work, reject a missing, destroyed, navigated, or
-  untrusted sender frame, and validate every payload value in the privileged handler.** A TypeScript type,
-  preload wrapper, or renderer-supplied identity is not runtime authorization.
+- **MUST read and validate sender identity, URL origin, and frame role from `event.senderFrame` before
+  asynchronous work, and reject a missing, destroyed, or untrusted frame at that point.** Validate every
+  payload value in the privileged handler; a TypeScript type, preload wrapper, or renderer-supplied identity
+  is not runtime authorization.
 
 - **MUST give renderer documents, frames, popups, webviews, external URLs, and custom-protocol paths separate
   default-deny controls on every existing and later-created session or partition that can grant a permission,
@@ -114,9 +115,11 @@ one filtered method per IPC message, and the
 
 ### Authorize callers and validate values independently
 
-Capture `event.senderFrame` synchronously because Electron may later return `null` after the frame
-navigates or is destroyed. Check the captured frame against the allowed renderer origin and frame role, then
-validate the payload in the privileged process. Electron documents this lifetime on
+Read `event.senderFrame` and validate its sender identity, URL origin, and frame role before the first
+asynchronous suspension. Reject a missing, destroyed, or untrusted frame during that check. Electron may
+return `null` when `senderFrame` is accessed after its frame navigates or is destroyed; retaining a
+`WebFrameMain` object does not prove the frame's later URL or lifecycle state. Validate payload values
+separately in the privileged process. Electron documents this lifetime on
 [`IpcMainInvokeEvent.senderFrame`](https://www.electronjs.org/docs/latest/api/structures/ipc-main-invoke-event/).
 
 ### Centralize renderer security controls
@@ -124,10 +127,11 @@ validate the payload in the privileged process. Electron documents this lifetime
 Prefer small factories for windows, views, sessions, and protocol handlers so every creation path receives
 the same defaults and disposal rules. Configure both
 [`setPermissionCheckHandler` and `setPermissionRequestHandler`](https://www.electronjs.org/docs/latest/api/session)
-for each session used by renderer content, using requesting and embedding origins when Electron supplies
-them. Apply
-navigation and redirect controls to all frames, use `setWindowOpenHandler` for renderer-created windows, and
-validate webview options before attachment. Electron's
+for each session used by renderer content. Validate request origins in `setPermissionRequestHandler` through
+`details.requestingUrl`. In `setPermissionCheckHandler`, validate `requestingOrigin` and optional
+`details.embeddingOrigin`. Apply navigation and redirect controls to all frames, use
+`setWindowOpenHandler` for renderer-created windows, and validate webview options before attachment.
+Electron's
 [security guide](https://www.electronjs.org/docs/latest/tutorial/security) defines these controls as separate
 recommendations.
 
