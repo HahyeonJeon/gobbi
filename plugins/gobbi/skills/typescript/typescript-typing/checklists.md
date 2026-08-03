@@ -15,17 +15,21 @@ unchecked binary condition in this source.
 A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
+A row that evaluates only a Preference applies when the project has not recorded a departure under
+`TSTYPE-CK-PROJECT-01-02`. A departure that passes that row makes the displaced Preference row not applicable;
+it never makes a soundness Rule optional.
+
 ## Project
 
-### TSTYPE-SC-PROJECT-01 — Normal case: the model follows an understood runtime domain
+### TSTYPE-SC-PROJECT-01 — Normal case: the model follows understood runtime values and states
 
-Types describe a runtime domain, so the domain has to be understood before it can be modeled. The expected
-outcome settles what the values are, where they come from, and how they change, then chooses the type model.
-A model designed from the shape of the code rather than the domain is the failure.
+Types describe runtime values and their allowed states, so those facts have to be understood before modeling.
+The expected outcome settles what the values are, where they come from, and how they change, then chooses the
+type model. A model designed only from the existing code shape is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-PROJECT-01-01 — The runtime domain of the modeled values is understood before the type model is chosen.
+- [ ] TSTYPE-CK-PROJECT-01-01 — The runtime values, their sources, allowed states, and state transitions are understood before the type model is chosen.
 - [ ] TSTYPE-CK-PROJECT-01-02 — Every departure from these preferences preserves the same honest runtime behavior and public declarations.
 
 ### TSTYPE-SC-PROJECT-02 — Expected failure: the domain has no settled shape yet
@@ -36,20 +40,20 @@ Reaching for `any` to make the uncertainty disappear is the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-PROJECT-02-01 — Uncertainty is preserved with `unknown`, a relationship-preserving generic, or a precise input parser.
+- [ ] TSTYPE-CK-PROJECT-02-01 — The chosen type records only relationships supported by current runtime evidence and invents no property, state, or transition.
 - [ ] TSTYPE-CK-PROJECT-02-02 — An unsettled shape is resolved at one input adapter that returns validated domain values.
 
 ## Structure
 
 ### TSTYPE-SC-STRUCTURE-01 — Normal case: valid states are modeled directly
 
-A value with distinct modes can be modeled so that invalid combinations are hard to construct and every
-variant is visible. The expected outcome uses discriminated unions and makes exhaustive handling checkable.
-Correlated optional fields or boolean pairs that admit impossible combinations are the failure.
+A value with distinct modes can be modeled so invalid combinations are hard to construct and every variant is
+visible to control-flow analysis. The expected outcome chooses any model that establishes those properties.
+Correlated fields or flags that admit impossible combinations are the failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-STRUCTURE-01-01 — Values with distinct modes are modeled as discriminated unions rather than correlated optional fields or boolean combinations.
+- [ ] TSTYPE-CK-STRUCTURE-01-01 — Every value with distinct modes uses a model that exposes each variant to control-flow analysis.
 - [ ] TSTYPE-CK-STRUCTURE-01-02 — Every discriminated union whose variants must all be handled carries a `never` exhaustiveness check.
 - [ ] TSTYPE-CK-STRUCTURE-01-03 — Invalid combinations of the modeled state are difficult to construct in the chosen model.
 
@@ -99,9 +103,7 @@ declaration changes with an unrelated implementation edit is the failure.
 - [ ] TSTYPE-CK-USAGE-01-01 — The emitted public declarations are inspected.
 - [ ] TSTYPE-CK-USAGE-01-02 — Exported APIs carry explicit return types wherever those types stabilize declarations or compatibility.
 - [ ] TSTYPE-CK-USAGE-01-03 — Inference is left to local implementation details.
-- [ ] TSTYPE-CK-USAGE-01-04 — Annotations are used where they stabilize exported API types.
-- [ ] TSTYPE-CK-USAGE-01-05 — `satisfies` is used where a value is checked without replacing its useful inferred type.
-- [ ] TSTYPE-CK-USAGE-01-06 — `as const` is used for intentionally literal immutable data.
+- [ ] TSTYPE-CK-USAGE-01-04 — Values whose precise inference is part of the requirement remain narrow when they are checked or declared.
 
 ### TSTYPE-SC-USAGE-02 — Edge case: `readonly` reaches the limit of what it guarantees
 
@@ -138,7 +140,7 @@ favor. A recorded project style presented as sufficient authority breaks the Rul
 #### Checklist
 
 - [ ] TSTYPE-CK-CONSISTENCY-01-01 — No declaration style, explicitness level, or object-type form produces an outcome a soundness Rule forbids.
-- [ ] TSTYPE-CK-CONSISTENCY-01-02 — Every project-level departure keeps the honest runtime behavior and public declarations intact.
+- Also applies: TSTYPE-CK-PROJECT-01-02 (preference departures preserve runtime behavior and public declarations).
 
 ### TSTYPE-SC-CONSISTENCY-02 — Normal case: the model agrees with the project's established form
 
@@ -148,8 +150,8 @@ failure.
 
 #### Checklist
 
-- [ ] TSTYPE-CK-CONSISTENCY-02-01 — `interface` is used for object shapes intended for compatible augmentation, following the established project convention.
-- [ ] TSTYPE-CK-CONSISTENCY-02-02 — `type` is used for unions, aliases, and closed compositions, following the established project convention.
+- [ ] TSTYPE-CK-CONSISTENCY-02-01 — Object shapes intended for compatible augmentation follow the established project form and remain augmentable.
+- [ ] TSTYPE-CK-CONSISTENCY-02-02 — Unions, aliases, and closed compositions follow the established project form and remain closed where required.
 - [ ] TSTYPE-CK-CONSISTENCY-02-03 — The project's established declaration style and explicitness level are followed where they exist.
 
 ## Risk
@@ -165,8 +167,6 @@ that check breaks the Rule while the program still compiles.
 - [ ] TSTYPE-CK-RISK-01-01 — External, decoded, and otherwise unverified data is accepted as `unknown`.
 - [ ] TSTYPE-CK-RISK-01-02 — External, decoded, and otherwise unverified data is parsed or narrowed before use.
 - [ ] TSTYPE-CK-RISK-01-03 — No type assertion, non-null assertion, or double assertion is used as a substitute for validation or control-flow narrowing.
-- [ ] TSTYPE-CK-RISK-01-04 — Built-in control-flow narrowing, user-defined guards, and parsers are used instead of assertions.
-- [ ] TSTYPE-CK-RISK-01-05 — Validated domain values come from one input adapter.
 
 ### TSTYPE-SC-RISK-02 — Rule violation: `any` where uncertainty could have been preserved
 

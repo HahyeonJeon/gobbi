@@ -9,7 +9,7 @@ skill-type: preference
 
 TypeScript Typing governs how code models states, narrows values, uses generics and assertions, and exposes declarations. It distinguishes compiler results from runtime validation and keeps unsound escape hatches visible.
 
-These preferences apply after the runtime domain is understood. The goal is the narrowest honest model, not the most elaborate type expression.
+These preferences apply after the runtime values, allowed states, and state transitions are understood. The goal is the narrowest honest model, not the most elaborate type expression.
 
 ## Principles
 

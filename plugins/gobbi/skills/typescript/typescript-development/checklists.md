@@ -21,18 +21,18 @@ that this scenario reuses.
 
 An implementation begins from a request that has to become a bounded change. The expected outcome records what
 changes, why, how success is observed, and what is out of scope, and locks the affected callers, external input
-data, exact compiler files, and verification commands first. Editing behavior before that lock is the failure.
+data, exact `tsconfig.json` files, and verification commands first. Editing behavior before that lock is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-01-01 — Scope, purpose, success criteria, affected callers, external input data, exact compiler files, and verification commands are recorded before behavior is edited.
+- [ ] TSDEV-CK-PROJECT-01-01 — Scope, purpose, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands are recorded before behavior is edited.
 - [ ] TSDEV-CK-PROJECT-01-03 — Applicable project rules, mistakes, design decisions, and neighboring examples are read before the design.
 
 ### TSDEV-SC-PROJECT-02 — Expected failure: the request turns out to be review-only
 
 The task arrives as an implementation request but carries no mutation authority, or resolves into an
 assessment of existing code. The expected outcome classifies the request and routes read-only review to the
-general Evaluation operation with the applicable preference children. Editing the reviewed files anyway is the failure.
+general Evaluation operation with every child selected by the TypeScript root's trigger table. Editing the reviewed files anyway is the failure.
 
 #### Checklist
 
@@ -49,33 +49,33 @@ canonical source. Any of those three widenings breaks the Rule on its own.
 
 - [ ] TSDEV-CK-PROJECT-03-01 — No file outside the authorized affected set is changed.
 - [ ] TSDEV-CK-PROJECT-03-02 — No local change is turned into an unapproved migration.
-- [ ] TSDEV-CK-PROJECT-03-03 — Every generated mirror is changed only by its responsible sync command after the canonical source changes.
+- [ ] TSDEV-CK-PROJECT-03-03 — Every generated-mirror diff is output from its recorded sync command run against the changed canonical source.
 
 ### TSDEV-SC-PROJECT-04 — Normal case: every applicable project kind is selected
 
 A repository can produce more than one kind of TypeScript deliverable, so one primary label can hide required
-compiler files, generated outputs, runtimes, or consumers. The expected outcome selects every applicable named
+`tsconfig.json` files, generated outputs, runtimes, or consumers. The expected outcome selects every applicable named
 kind independently and records where non-TypeScript product decisions come from. Treating the choices as
 mutually exclusive is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-04-01 — Every applicable web application, command-line application (CLI), library, SDK, and desktop application has a record of its named runtimes, source entries, exact compiler files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
-- [ ] TSDEV-CK-PROJECT-04-02 — When none of the five named kinds fits, one literal fallback kind records its named runtimes, source entries, exact compiler files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
+- [ ] TSDEV-CK-PROJECT-04-01 — Every applicable web application, command-line application (CLI), library, SDK, and desktop application has a record of its named runtimes, source entries, exact `tsconfig.json` files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
+- [ ] TSDEV-CK-PROJECT-04-02 — When none of the five named kinds fits, one literal fallback kind records its named runtimes, source entries, exact `tsconfig.json` files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
 - [ ] TSDEV-CK-PROJECT-04-03 — User experience, command semantics, service behavior, operating-system support, deployment, and release decisions are supplied by the task or routed to the applicable product-domain skill before TypeScript encodes them.
 
 ## Structure
 
 ### TSDEV-SC-STRUCTURE-01 — Normal case: typed inputs, outputs, and public declarations are settled before behavior
 
-Inputs, outputs, states, failures, responsible scopes, and public declarations become expensive to change once
-implementation details depend on them. The expected outcome settles them first and assigns every state value and
-side effect to one named function, object, or lifecycle scope. An API that emerges accidentally is the failure.
+Inputs, outputs, states, failures, named functions or objects responsible for state changes and resources, and
+public declarations become expensive to change once implementation details depend on them. The expected outcome
+settles them first. An API that emerges accidentally is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-STRUCTURE-01-01 — Narrow inputs, explicit outputs, representable states, failure behavior, and responsible resource scopes are designed before implementation.
-- [ ] TSDEV-CK-STRUCTURE-01-02 — Every state value, promise, resource, side effect, and failure transition is assigned to exactly one named function, object, or lifecycle scope.
+- [ ] TSDEV-CK-STRUCTURE-01-01 — Narrow inputs, explicit outputs, representable states, failure behavior, and the functions or objects responsible for resources are designed before implementation.
+- [ ] TSDEV-CK-STRUCTURE-01-02 — Every state value, promise, resource, side effect, and failure transition is assigned to exactly one named function, object, or framework lifecycle callback.
 - [ ] TSDEV-CK-STRUCTURE-01-03 — Each declaration the change introduces is decided as public or as an implementation detail.
 - [ ] TSDEV-CK-STRUCTURE-01-04 — The dependency order runs from foundational types and utilities to integrations and callers.
 
@@ -146,7 +146,7 @@ the remaining command results as complete is the failure.
 ### TSDEV-SC-USAGE-03 — Normal case: a web application is verified through its production entries
 
 A web application can type-check while its browser, server, or production-loader path fails. The expected
-outcome verifies each affected entry with its exact compiler file and exercises the production build in the
+outcome verifies each affected entry with its exact `tsconfig.json` file and exercises the production build in the
 named runtime. Development-server success alone is the failure.
 
 #### Checklist
@@ -196,7 +196,7 @@ exercises the packaged-application path required by the desktop and Electron ski
 
 #### Checklist
 
-- [ ] TSDEV-CK-USAGE-07-01 — Electron main, preload, and renderer entries are verified separately under their exact compiler files wherever present, including typed IPC request and response messages.
+- [ ] TSDEV-CK-USAGE-07-01 — Electron main, preload, and renderer entries are verified separately under their exact `tsconfig.json` files wherever present, including typed IPC request and response messages.
 - [ ] TSDEV-CK-USAGE-07-02 — The packaged application path required by the applicable desktop and Electron skills is exercised.
 
 ## Consistency

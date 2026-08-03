@@ -27,7 +27,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 ## Rules
 
-- **MUST** define each public entry point's runtime file, declaration file, module condition, and supported consumer environment, and define each executable command's `bin` name and built entry file.
+- **MUST** define whether each public entry point provides runtime code, declarations, or both; map each export condition to the file kind it selects; and define each executable command's `bin` name and built entry file.
 - **NEVER** expose an internal path accidentally through a broad file set, wildcard export, declaration leak, or source-only path.
 - **MUST** generate or author public declarations deliberately and inspect them for private types, unstable inferred names, and dependencies on globals unavailable in supported consumer runtimes.
 - **MUST** validate imports, declarations, executable commands, and runtime behavior from the installed package archive in representative consumers.
@@ -43,14 +43,18 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Classify the task as authorized author mode or review-only validation before planning later steps. In review-only validation, skip every mutation step below and finish with command results, findings, and limitations.
 - Select every applicable package kind: library, SDK, command-line package, or a literal fallback.
 - Record supported runtimes, module loaders, resolution modes, TypeScript versions, import forms, command names, operating systems, and CPU architectures that apply.
+- Record the package-manager name and version plus its engine, peer-dependency, optional-dependency, and installation policies.
 - List every public entry point and whether it provides runtime code, types only, or both.
 - Identify compatibility statements, publication authority, and out-of-scope consumers.
 
 #### 1.2 Design exports and declarations
 
-- Map each export condition to an existing built runtime file and declaration file, and each `bin` entry to an existing built command file.
+- Map every `types` and versioned `types@<selector>` branch to an existing declaration file. Map every runtime branch, such as `import`, `require`, or `default`, to an existing runtime file. A types-only entry has no runtime branch.
+- Place versioned `types@<selector>` branches before the ordinary `types` fallback, and place applicable type branches before runtime branches in the same condition object.
+- Give every supported compiler that misses the versioned selectors an ordinary `types` fallback. Ensure each declaration file's detected ES-module or CommonJS kind matches the runtime branch it describes.
+- Map each `bin` entry to an existing built command file.
 - Keep internal modules unreachable unless they are an intentional public subpath.
-- Decide whether declarations are emitted, bundled, or maintained, and name the exact compiler file that produces or validates them.
+- Decide whether declarations are emitted, bundled, or maintained, and name the exact `tsconfig.json` file that produces or validates them.
 
 #### 1.3 Plan compatibility checks
 
@@ -78,12 +82,13 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Verify `exports`, `imports`, `types`, `main`, `module`, `files`, `sideEffects`, and `bin` metadata that the package actually uses.
 - Verify the install behavior of `engines`, `os`, and `cpu` against the support policy.
 - Treat `engines` as advisory unless the selected package-manager policy enables enforcement. Exercise the intended warning or rejection behavior.
-- Place required runtime packages in `dependencies`, runtime packages whose absence is supported in `optionalDependencies`, consumer-supplied packages in `peerDependencies`, and authoring-only tools in `devDependencies`.
+- Place required runtime packages in `dependencies`, runtime packages whose absence or installation failure is supported in `optionalDependencies`, packages supplied by and compatible with the consuming application in `peerDependencies`, and authoring-only tools in `devDependencies`.
 - Mark an optional peer in `peerDependenciesMeta` as well as declaring it in `peerDependencies`.
 - List a runtime package in `bundleDependencies` in addition to its dependency declaration when the archive must contain that package.
-- Exercise optional packages and optional peers both present and absent.
+- Under each supported package-manager version and policy, exercise required peers when compatible, missing, and incompatible or conflicting. Verify whether the manager installs, warns, or rejects in each case.
+- Exercise optional dependencies when installed, omitted, and unavailable or failed during installation. Exercise optional peers when present and absent, including whether the selected package manager installs them automatically.
 - Use `typesVersions` only for an explicit TypeScript-version routing requirement.
-- In resolution modes that read `exports`, use versioned `types@<selector>` conditions because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that select it.
+- In resolution modes that read `exports`, use the ordered versioned and fallback type conditions defined in Phase 1.2 because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that selects it.
 - Create the package archive with the normal packaging command.
 - Inspect the archive inventory for missing generated files, unwanted source or secrets, and unexpected size changes.
 - If a build, declaration, metadata, or archive check fails, stay in Phase 2 and correct the step that owns the cause. Return to Phase 1 when the package requirements conflict.
@@ -123,7 +128,7 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - If a required pre-publication check fails, do not publish.
 - Return to Phase 1 for an incorrect compatibility requirement, Phase 2 for output or metadata, or Phase 3 for a consumer failure.
 - After repair, recreate the archive and re-run every affected and final check against that archive.
-- When this package change is evaluated, the [evaluation checklist](checklists.md) and every checklist provided
+- When this package change is evaluated, the [package checklist](checklists.md), [installed-command checklist](command-checklists.md), and every checklist provided
   by an active `typescript` sibling supply the applicable conditions in both author and review-only modes;
   the general Evaluation operation resolves them and issues any verdict.
 
@@ -137,5 +142,5 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for package changes
-  governed by this skill.
+- [Package checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for package definition, consumers, and publication.
+- [Installed-command checklist](command-checklists.md) supplies reusable unchecked scenarios and atomic conditions for commands installed from a package archive.

@@ -7,21 +7,21 @@ skill-type: operation
 
 # TypeScript Development
 
-TypeScript Development coordinates an authorized TypeScript change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. It applies only when files may change; read-only review uses the general Evaluation operation with the applicable TypeScript preference children.
+TypeScript Development coordinates an authorized TypeScript change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. It applies only when files may change; read-only review uses the general Evaluation operation with every child selected by the TypeScript root's trigger table.
 
-This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load `typescript-async`, `typescript-toolchain`, `typescript-packaging`, or `typescript-testing` whenever their root trigger also applies. Select every applicable project kind: web application, command-line application (CLI), library, SDK, and desktop application. If none fits, record a literal fallback such as `server process`, `build script`, or `test utility`.
+This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load each of `typescript-async`, `typescript-toolchain`, `typescript-packaging`, and `typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every applicable project kind: web application, command-line application (CLI), library, SDK, and desktop application. If none fits, record a literal fallback such as `server process`, `build script`, or `test utility`.
 
-The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. This operation implements those inputs in TypeScript through type models, runtime parsing, exact compiler files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results.
+The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. This operation implements those inputs in TypeScript through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results.
 
 ## Principles
 
 ### Study the supplied requirements first
 
-Read the callers, external inputs, exact compiler files, tests, and prior art that determine what the changed code must preserve.
+Read the callers, external inputs, exact `tsconfig.json` files, tests, and prior art that determine what the changed code must preserve.
 
 ### Design the typed API before behavior
 
-Settle inputs, outputs, states, failures, responsible scopes, and public declarations before implementation details make them expensive to change.
+Settle inputs, outputs, states, failures, the functions or objects responsible for each state change and resource, and public declarations before implementation details make them expensive to change.
 
 ### Build from foundations upward
 
@@ -33,7 +33,7 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 ## Rules
 
-- **MUST** lock scope, success criteria, affected callers, external input data, exact compiler files, and verification commands before editing behavior.
+- **MUST** lock scope, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands before editing behavior.
 - **MUST** select every applicable project kind and record each named runtime, source entry, generated output, and consumer path before implementation.
 - **NEVER** treat a type annotation or assertion as validation of data received from a network, file, process, message, environment variable, or other untyped source.
 - **MUST** build the typed skeleton before behavior and keep each behavior increment type-correct and behaviorally verified.
@@ -78,7 +78,7 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 2.2 Place behavior and responsibility
 
-- Assign each state value, promise, resource, side effect, and failure transition to one named function, object, or lifecycle scope.
+- Assign each state value, promise, resource, side effect, and failure transition to one named function, object, or framework lifecycle callback.
 - Decide which declarations are public and which remain implementation details.
 - Map the dependency order from foundational types and utilities to integrations and callers.
 
@@ -125,7 +125,7 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 4.3 Verify each selected project kind
 
-- For a web application, verify browser and server entries under their exact compiler files, then exercise the production build in each named browser or server runtime that the change affects.
+- For a web application, verify browser and server entries under their exact `tsconfig.json` files, then exercise the production build in each named browser or server runtime that the change affects.
 - For a command-line application, exercise its recorded distribution method rather than assuming an npm package.
   Use an isolated archive installation for an npm package. Otherwise use the recorded bundled executable,
   installed script, workspace command, or other consumer command.
@@ -145,7 +145,7 @@ Type correctness is one check among runtime behavior, integration, build, packag
 - Re-run the original defect reproducer last when one exists.
 - Map current-tree command output to every success criterion and inspect the final scope for unrelated changes.
 - Hand off limitations or unavailable checks literally; do not convert a missing result into a pass.
-- Hand off the selected project kinds, named runtimes, exact compiler files, generated outputs, how consumers receive and start or import each output, commands run, results, and remaining limitations.
+- Hand off the selected project kinds, named runtimes, exact `tsconfig.json` files, generated outputs, how consumers receive and start or import each output, commands run, results, and remaining limitations.
 - When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
   provided by an active `typescript` sibling supply the applicable conditions; the general Evaluation
   operation resolves them and issues any verdict.

@@ -3,9 +3,12 @@
 This reusable unchecked source evaluates one set of TypeScript tests created or reviewed under this operation.
 It is governed by the [`typescript`](../SKILL.md) domain and [`typescript-testing`](SKILL.md) operation, with
 [`typescript-packaging`](../typescript-packaging/SKILL.md) defining the package metadata its consumer checks
-exercise and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact compiler files and
+exercise and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact `tsconfig.json` files and
 resolution modes they use. The source commit that contains this file identifies the checklist version. Its
 stable checklist prefix is `TSTEST`.
+
+The [project-kind checklist](project-kind-checklists.md) separately evaluates kind selection and the web,
+command-line, library, SDK, desktop, and fallback consumer paths.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -25,6 +28,7 @@ fitting claims to it afterwards is the failure.
 #### Checklist
 
 - [ ] TSTEST-CK-PROJECT-01-01 — Caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples are enumerated as claims for every selected project kind.
+- [ ] TSTEST-CK-PROJECT-01-02 — Every TypeScript compiler version claimed for package consumers or taught examples is recorded.
 - [ ] TSTEST-CK-PROJECT-01-03 — Every claim is mapped to the layer capable of disproving it.
 
 ### TSTEST-SC-PROJECT-02 — Rule violation: a review-only run changes the reviewed files
@@ -154,19 +158,6 @@ points and resolution modes there. A resolution result taken from the source pro
 - [ ] TSTEST-CK-USAGE-04-01 — The package is built or packed.
 - [ ] TSTEST-CK-USAGE-04-02 — The built package or package archive is installed.
 - [ ] TSTEST-CK-USAGE-04-03 — The installed package's documented entry points and documented resolution modes are exercised.
-
-### TSTEST-SC-USAGE-05 — Normal case: a consumer command is tested as a process
-
-A command can pass unit tests while its package link, bundled executable, installed script, workspace command,
-argument parsing, streams, exit status, or signal handling fails for consumers. The expected outcome prepares
-the recorded distribution method in isolation, proves which executable runs, and asserts its process behavior.
-
-#### Checklist
-
-- [ ] TSTEST-CK-USAGE-05-01 — The output of the recorded command distribution method exists in an isolated consumer environment.
-- [ ] TSTEST-CK-USAGE-05-02 — The invoked executable is proved to be that output rather than a source file or unrelated command already on `PATH`.
-- [ ] TSTEST-CK-USAGE-05-03 — Every recorded consumer command is invoked through its consumer entry.
-- [ ] TSTEST-CK-USAGE-05-04 — Required arguments, standard input, standard output, standard error, exit status, signals, and cleanup are asserted for the applicable success and failure cases.
 
 ## Consistency
 

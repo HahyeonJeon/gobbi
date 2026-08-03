@@ -45,6 +45,7 @@ Documented examples are code and require a named compiler version and exact comp
 #### 1.1 Enumerate claims
 
 - List caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples.
+- Record every TypeScript compiler version claimed for package consumers or taught examples.
 - Map each claim to the layer capable of disproving it.
 - Mark review-only mode when edits are not authorized.
 - Select every applicable project kind: web application, command-line application, library, SDK, desktop application, or a literal fallback.
@@ -110,8 +111,8 @@ Documented examples are code and require a named compiler version and exact comp
 #### 4.1 Verify documented examples
 
 - Extract every fenced `ts` example the documentation presents as valid or intentionally rejected.
-- Compile each self-contained example exactly as displayed; for an `@ts-expect-error` example, also prove that removing or moving the directive produces the intended diagnostic or an unused-directive failure.
-- Record the compiler version and options used. State that this check proves only those examples under those options; it does not prove every named runtime, project `tsconfig.json`, or installed package path.
+- Compile each self-contained example exactly as displayed with every compiler version claimed for it. For an `@ts-expect-error` example, also prove that removing or moving the directive produces the intended diagnostic or an unused-directive failure under each version.
+- Record every compiler version, option set, and result. State that these checks prove only those examples under those versions and options; they do not prove every named runtime, project `tsconfig.json`, or installed package path.
 
 #### 4.2 Run the verification ladder
 
@@ -140,11 +141,11 @@ Documented examples are code and require a named compiler version and exact comp
 - Map every claim to at least one current test and every test to a named requirement.
 - Record unavailable runtimes, tools, or package modes as limitations.
 - In review-only mode, report findings without mutating the reviewed files.
-- When this test change is evaluated, the [evaluation checklist](checklists.md) and every checklist provided by
+- When this test change is evaluated, the [test checklist](checklists.md), [project-kind checklist](project-kind-checklists.md), and every checklist provided by
   an active `typescript` sibling supply the applicable conditions; the general Evaluation operation
   resolves them and issues any verdict.
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for test changes
-  governed by this skill.
+- [Test checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for test design and evidence.
+- [Project-kind checklist](project-kind-checklists.md) supplies reusable unchecked scenarios and atomic conditions for web, CLI, library, SDK, desktop, and fallback verification.

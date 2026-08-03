@@ -44,16 +44,15 @@ expected outcome starts from the closest `tsconfig.json` and chooses settings fr
 
 ## Structure
 
-### TSTOOL-SC-STRUCTURE-01 — Normal case: compiler files are split where environments differ
+### TSTOOL-SC-STRUCTURE-01 — Normal case: `tsconfig.json` files are split where environments differ
 
 One repository can hold application code, library code, tests, build scripts, browser code, server code, and
 preload code with different globals and declarations. The expected outcome gives materially different
-environments their own compiler files. A single `tsconfig.json` stretched across them is the failure.
+environments their own `tsconfig.json` files. A single configuration stretched across them is the failure.
 
 #### Checklist
 
-- [ ] TSTOOL-CK-STRUCTURE-01-01 — Separate compiler files are used wherever runtime, library, application, test, or package outputs have materially different environments.
-- [ ] TSTOOL-CK-STRUCTURE-01-02 — A `tsconfig.json` is split wherever application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need different `lib`, `types`, module, resolution, output, or inclusion settings.
+- [ ] TSTOOL-CK-STRUCTURE-01-01 — Separate `tsconfig.json` files are used wherever application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need materially different `lib`, `types`, module, resolution, output, or inclusion settings.
 
 ### TSTOOL-SC-STRUCTURE-02 — Normal case: emit outputs are chosen for their consumers
 

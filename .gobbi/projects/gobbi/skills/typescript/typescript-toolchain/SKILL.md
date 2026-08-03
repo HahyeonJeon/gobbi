@@ -42,7 +42,7 @@ Record the source files, generated JavaScript or declarations, named runtimes, a
 
 ### Choose exact compiler configurations
 
-Start with the closest existing `tsconfig.json`. Split compiler files when application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need different `lib`, `types`, module, resolution, output, or inclusion settings.
+Start with the closest existing `tsconfig.json`. Split `tsconfig.json` files when application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need different `lib`, `types`, module, resolution, output, or inclusion settings.
 
 Keep shared options in a base `tsconfig.json` only when every extending compiler file truly shares them. A stricter flag may be a useful project choice, but no single maximal set is correct for every output or migration state.
 

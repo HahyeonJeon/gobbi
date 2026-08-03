@@ -15,63 +15,63 @@ unchecked binary condition in this source.
 A row is defined once beneath its defining scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
+A row that evaluates only a Preference applies when the project has not recorded a departure under
+`TSASYNC-CK-PROJECT-01-04`. A departure that passes that row makes the displaced Preference row not
+applicable; it never makes a Rule or cleanup obligation optional.
+
 ## Project
 
-### TSASYNC-SC-PROJECT-01 — Normal case: every started promise and acquired resource has a named responsible scope
+### TSASYNC-SC-PROJECT-01 — Normal case: every result observer and resource release path is named
 
-Ordinary asynchronous operations start promises and acquire resources that something must complete, fail, and
-clean up. The expected outcome assigns each to a function, object, or lifecycle scope that the reader can name. The scenario fails when
-an operation runs detached from any responsible scope, or when a departure from these preferences leaves no lifecycle scope in
-its place.
+Ordinary asynchronous operations start promises and acquire resources. A caller, function, object, or framework
+callback must observe each result, and a named code path must release each resource. The scenario fails when
+either responsibility is missing or a departure from a preference leaves it implicit.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-PROJECT-01-01 — Every started promise is awaited, returned, aggregated, or explicitly caught so a named caller or lifecycle scope observes its rejection.
-- [ ] TSASYNC-CK-PROJECT-01-02 — A detached background operation is used only where `await`, a returned promise, or an aggregate cannot carry the required lifetime.
-- [ ] TSASYNC-CK-PROJECT-01-03 — Every departure from these preferences names the runtime or framework lifecycle scope it relies on.
-- [ ] TSASYNC-CK-PROJECT-01-04 — Every departure from these preferences states how that lifecycle scope observes completion and failure.
-- [ ] TSASYNC-CK-PROJECT-01-05 — Every departure from these preferences keeps the required cleanup inside that lifecycle scope.
+- [ ] TSASYNC-CK-PROJECT-01-01 — Every started promise is awaited, returned, aggregated, or explicitly caught so a named caller, function, object, or framework callback observes its rejection.
+- [ ] TSASYNC-CK-PROJECT-01-02 — Every detached background operation names who observes its completion and failure.
+- [ ] TSASYNC-CK-PROJECT-01-03 — Every acquired resource names the code path that releases it.
+- [ ] TSASYNC-CK-PROJECT-01-04 — Every departure from these preferences states the alternative choice and why it makes observation or release at least as clear.
 
 ### TSASYNC-SC-PROJECT-02 — Expected failure: the supported runtime lacks the mechanism a preference names
 
 These preferences sit above the runtime mechanism, so a supported runtime may provide no cancellation, event, or
-explicit-resource API. The expected outcome selects a mechanism the runtime actually provides and still satisfies
-the completion, failure, and cleanup obligations. Using an unconfirmed API, or dropping an obligation because the
-preferred mechanism is absent, is the failure.
+explicit-resource API. The expected outcome selects a supported mechanism that keeps observation and release
+visible. Using an unconfirmed API, or dropping an obligation because a preferred mechanism is absent, is the failure.
 
 #### Checklist
 
 - [ ] TSASYNC-CK-PROJECT-02-01 — No cancellation, event, or explicit-resource API is used before the supported runtime is confirmed to provide it.
-- [ ] TSASYNC-CK-PROJECT-02-02 — Cleanup uses the runtime's explicit-resource mechanism where the supported runtime provides it.
-- [ ] TSASYNC-CK-PROJECT-02-03 — Cleanup uses `try`/`finally` where the supported runtime provides no explicit-resource mechanism.
-- [ ] TSASYNC-CK-PROJECT-02-04 — Every completion, failure, and cleanup obligation is still satisfied under the mechanism the runtime actually provides.
+- [ ] TSASYNC-CK-PROJECT-02-02 — The selected cleanup mechanism keeps acquisition and release in one visible code path.
+- [ ] TSASYNC-CK-PROJECT-02-03 — Every completion, failure, and cleanup obligation is still satisfied under the mechanism the runtime actually provides.
 
 ## Structure
 
 ### TSASYNC-SC-STRUCTURE-01 — Normal case: the rejection observer is determined by the `await`
 
-Where a promise is awaited decides which `try`, cleanup scope, or caller observes its rejection and which
-scope protects its lifetime. The expected outcome places each `await` in the scope meant to hold it and keeps
-one cleanup scope near each acquisition. An `await` outside its intended scope, or cleanup split across
-scopes, is the failure.
+Where a promise is awaited decides which `try` block or caller observes its rejection and which function retains
+its resources. The expected outcome places each `await` in that block or function and keeps one release path
+near each acquisition. An `await` outside the intended block, or release logic split across unrelated paths,
+is the failure.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-STRUCTURE-01-01 — Every `await` is placed inside the `try` or resource scope intended to catch its rejection or protect its lifetime.
-- [ ] TSASYNC-CK-STRUCTURE-01-02 — One named cleanup scope is defined close to each acquisition.
+- [ ] TSASYNC-CK-STRUCTURE-01-01 — Every `await` is placed inside the `try` block or function that must catch its rejection or retain its resources until completion.
+- [ ] TSASYNC-CK-STRUCTURE-01-02 — One named release path is defined close to each acquisition.
 
 ## Performance
 
 ### TSASYNC-SC-PERFORMANCE-01 — Rule violation: concurrent operations start without a defined policy
 
-Fan-out over a collection, a queue, or an event stream can start as many operations as the input allows. The
-expected outcome defines admission, ordering, and failure behavior and bounds the fan-out by a named limit.
-Operations started without those decisions break the Rule even when the run happens to complete.
+Fan-out over a collection, queue, or event stream can start as many operations as admission permits. The
+expected outcome defines admission, ordering, and failure behavior and adds a named limit when the admitted
+input is not already known to be finite. Unbounded work started without those decisions breaks the Rule.
 
 #### Checklist
 
 - [ ] TSASYNC-CK-PERFORMANCE-01-01 — No concurrent operation starts without defined admission, ordering, and failure behavior.
-- [ ] TSASYNC-CK-PERFORMANCE-01-02 — Every fan-out is bounded by a named concurrency limit rather than by the size of its input.
+- [ ] TSASYNC-CK-PERFORMANCE-01-02 — Every fan-out whose admitted input lacks a known finite bound has a named concurrency limit.
 
 ### TSASYNC-SC-PERFORMANCE-02 — Poor quality: the group's failure behavior is left to the helper's default
 
@@ -88,13 +88,13 @@ observable under it. An unstated failure mode that only the helper's implementat
 
 ### TSASYNC-SC-AESTHETICS-01 — Poor quality: responsibility exists but is not visible where the operation starts
 
-The code completes, fails, and cleans up correctly, but a reader cannot see which scope is responsible at the point the operation
-starts, because that responsibility lives in a distant helper or is implied by the chosen library. The expected outcome
-makes the responsible scope and concurrency policy readable at the call that starts the operation.
+The code completes, fails, and cleans up correctly, but a reader cannot see who observes the result or which
+path releases resources where the operation starts. The expected outcome makes those names and the concurrency
+policy readable at the call that starts the operation.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-AESTHETICS-01-01 — The function, object, or lifecycle scope responsible for completion, failure, and cleanup is identifiable where the promise is started or the resource is acquired.
+- [ ] TSASYNC-CK-AESTHETICS-01-01 — The result observer and resource release path are identifiable where the promise is started or the resource is acquired.
 - [ ] TSASYNC-CK-AESTHETICS-01-02 — The admission, ordering, failure, and limit decisions for concurrent operations are stated in the code rather than implied by the helper chosen.
 
 ## Usage
@@ -108,19 +108,19 @@ failure.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-USAGE-01-01 — A caller-provided cancellation signal is accepted wherever the runtime operation supports cooperative cancellation.
+- [ ] TSASYNC-CK-USAGE-01-01 — An operation that can be cancelled either accepts a caller-provided signal or records an alternative that gives the caller the same control.
 - [ ] TSASYNC-CK-USAGE-01-02 — Every event adapter pairs its subscription with its unsubscription.
 - [ ] TSASYNC-CK-USAGE-01-03 — Every event payload received from an external source is validated by its adapter before use.
 
 ### TSASYNC-SC-USAGE-02 — Expected failure: the caller cancels an operation already in flight
 
 Cancellation arrives after the operation started, so the caller must learn what happened and the operation must
-release what it holds. The expected outcome reports the cancelled result to the responsible caller or lifecycle scope and stops or suppresses
-according to what the chosen mechanism actually provides. A silently discarded outcome is the failure.
+release what it holds. The expected outcome reports the cancelled result to its named observer and stops or
+suppresses according to what the chosen mechanism actually provides. A silently discarded outcome is the failure.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-USAGE-02-01 — A named caller or lifecycle scope observes a cancelled operation's result rather than silently discarding it.
+- [ ] TSASYNC-CK-USAGE-02-01 — A named caller, function, object, or framework callback observes a cancelled operation's result rather than silently discarding it.
 - [ ] TSASYNC-CK-USAGE-02-02 — The caller is given the behavior the mechanism actually provides.
 - [ ] TSASYNC-CK-USAGE-02-03 — A stopped operation is distinguished from a suppressed stale result in what the caller is given.
 - Also applies: TSASYNC-CK-RISK-01-01 (resources released on cancellation).
@@ -141,7 +141,7 @@ whose named intent and actual effect disagree is the failure.
 ### TSASYNC-SC-CONSISTENCY-02 — Adversarial: rejection handling that only looks like handling
 
 A `void` operator, a discarded expression, or a `catch` that observes nothing can make a floating promise
-satisfy a responsibility review while its rejection still reaches no caller or lifecycle scope. The expected outcome accepts only
+satisfy a responsibility review while its rejection still reaches no named observer. The expected outcome accepts only
 handling that actually observes the rejection; the appearance of handling accepted as handling is the failure.
 
 #### Checklist
@@ -153,15 +153,15 @@ handling that actually observes the rejection; the appearance of handling accept
 
 ### TSASYNC-SC-RISK-01 — Normal case: every acquired resource is released on every exit
 
-Listeners, timers, connections, and locks survive the scope that acquired them unless something releases them.
+Listeners, timers, connections, and locks survive the code that acquired them unless something releases them.
 The expected outcome releases each of them on success, failure, cancellation, and early exit. A path that
 leaves any of them held is the failure.
 
 #### Checklist
 
 - [ ] TSASYNC-CK-RISK-01-01 — Every acquired listener, timer, connection, lock, and other cleanup-bearing resource is released on success, failure, cancellation, and early exit.
-- Also applies: TSASYNC-CK-PROJECT-02-02 (the cleanup mechanism matches the supported runtime).
-- Also applies: TSASYNC-CK-PROJECT-02-03 (the cleanup fallback matches the supported runtime).
+- Also applies: TSASYNC-CK-PROJECT-02-01 (the cleanup mechanism exists in the supported runtime).
+- Also applies: TSASYNC-CK-PROJECT-02-02 (the cleanup mechanism keeps release visible).
 
 ### TSASYNC-SC-RISK-02 — Edge case: failure or cancellation arrives during cleanup
 
@@ -172,17 +172,17 @@ partial release that stops at the first cleanup failure is the observable defect
 #### Checklist
 
 - [ ] TSASYNC-CK-RISK-02-01 — A failure raised during cleanup does not prevent the remaining acquired resources from being released.
-- [ ] TSASYNC-CK-RISK-02-02 — Every promise or rejection raised inside a cleanup scope is observed by a named caller or lifecycle scope.
+- [ ] TSASYNC-CK-RISK-02-02 — Every promise or rejection raised by cleanup is observed by a named caller, function, object, or framework callback.
 
 ## Overall
 
-### TSASYNC-SC-OVERALL-01 — Poor quality: locally acceptable choices with no responsible scope for the whole flow
+### TSASYNC-SC-OVERALL-01 — Poor quality: locally acceptable choices with no observer for the whole flow
 
-Each function awaits, catches, and cleans up acceptably, yet the flow across them has no single responsible scope, so
-completion and failure cannot be traced end to end and two scopes both attempt cleanup. The expected outcome
-keeps one traceable responsible scope per flow and one cleanup scope per resource.
+Each function awaits, catches, and cleans up acceptably, yet the flow across them has no single result observer,
+so completion and failure cannot be traced end to end and two paths both attempt cleanup. The expected outcome
+keeps one traceable observer per flow and one release path per resource.
 
 #### Checklist
 
-- [ ] TSASYNC-CK-OVERALL-01-01 — Every asynchronous flow the change introduces can be traced from its start to the scope that observes its completion and failure.
-- [ ] TSASYNC-CK-OVERALL-01-02 — No two scopes claim cleanup for the same resource.
+- [ ] TSASYNC-CK-OVERALL-01-01 — Every asynchronous flow the change introduces can be traced from its start to the caller, function, object, or framework callback that observes its completion and failure.
+- [ ] TSASYNC-CK-OVERALL-01-02 — No two code paths claim cleanup for the same resource.

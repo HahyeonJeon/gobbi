@@ -7,15 +7,15 @@ skill-type: preference
 
 # TypeScript Async
 
-TypeScript Async governs responsibility and lifetime choices for asynchronous operations and resources. It applies to promises, cancellation, concurrent operations, event subscriptions, and values that require cleanup.
+TypeScript Async governs who observes asynchronous results and which code releases acquired resources. It applies to promises, cancellation, concurrent operations, event subscriptions, and values that require cleanup.
 
 These preferences sit above the runtime mechanism in use. They do not assume that every named runtime supports the same cancellation, event, or explicit-resource APIs.
 
 ## Principles
 
-### Name the responsible scope
+### Name who observes and releases
 
-Every started promise and acquired resource has a named function, object, or lifecycle scope responsible for completion, failure, and cleanup.
+Every started promise has a named caller, function, object, or framework callback that observes completion and failure. Every acquired resource has a named code path that releases it.
 
 ### Keep lifetime mechanisms distinct
 
@@ -23,26 +23,26 @@ Cancellation stops an operation when the underlying implementation cooperates; d
 
 ### Preserve the intended rejection observer
 
-Where a promise is awaited determines which `try`, cleanup scope, or caller observes its rejection.
+Where a promise is awaited determines which `try` block or caller observes its rejection.
 
 ## Rules
 
-- **MUST** await, return, aggregate, or explicitly catch every promise so a named caller or lifecycle scope observes its rejection.
+- **MUST** await, return, aggregate, or explicitly catch every promise so a named caller, function, object, or framework callback observes its rejection.
 - **NEVER** treat the `void` operator as rejection handling; it only discards the expression's value.
 - **MUST** distinguish cancellation from stale-result suppression and choose each for the failure and resource behavior it actually provides.
 - **MUST** release listeners, timers, connections, locks, and other resources on success, failure, cancellation, and early exit.
-- **MUST** place an `await` inside the `try` or resource scope that is intended to catch its rejection or protect its lifetime.
+- **MUST** place an `await` inside the `try` block or function that must catch its rejection or retain its resources until completion.
 - **NEVER** start unbounded concurrent operations without defining admission, ordering, and failure behavior.
 
 ## Preferences
 
 - Prefer structured responsibility through `await`, a returned promise, or an aggregate over detached background operations.
 - Prefer a caller-provided cancellation signal when the runtime operation supports cooperative cancellation.
-- Prefer one cleanup scope close to acquisition; use the runtime's explicit-resource mechanism when it fits the supported version, otherwise use `try`/`finally`.
-- Prefer a named concurrency limit and an intentional choice among fail-fast, collect-all, and best-effort behavior.
+- Prefer one release path close to acquisition; use the runtime's explicit-resource mechanism when it makes that path clearer, otherwise use `try`/`finally`.
+- Prefer a named concurrency limit when admission is not already bounded by a known finite input. Choose fail-fast, collect-all, or best-effort behavior intentionally.
 - Prefer typed event adapters that pair subscription with unsubscription and validate payloads received from an external source.
 
-A project may depart from these preferences when its runtime or framework supplies a stronger lifecycle scope, but the responsible scope and cleanup result must remain explicit.
+A project may depart from these preferences when another design makes observation or release clearer. The departure must name who observes completion and failure and which code releases each resource.
 
 This self-contained example returns the promise to its caller so the caller observes completion and failure:
 

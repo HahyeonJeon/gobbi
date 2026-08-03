@@ -4,6 +4,7 @@ This reusable unchecked source evaluates one package definition produced or vali
 is governed by the [`typescript`](../SKILL.md) domain and [`typescript-packaging`](SKILL.md) operation, with
 [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the build and resolution pipeline and
 [`typescript-testing`](../typescript-testing/SKILL.md) defining the consumer and declaration checks it runs.
+The [installed-command checklist](command-checklists.md) separately evaluates commands supplied by the package.
 The source commit that contains this file identifies the checklist version. Its stable checklist prefix is
 `TSPKG`.
 
@@ -25,7 +26,7 @@ begun before those are recorded is the failure.
 #### Checklist
 
 - [ ] TSPKG-CK-PROJECT-01-01 — The task is classified as authorized author mode or review-only validation before later steps are planned.
-- [ ] TSPKG-CK-PROJECT-01-02 — Applicable package kinds, supported runtimes, module loaders, resolution modes, TypeScript versions, import forms, command names, operating systems, and CPU architectures are recorded.
+- [ ] TSPKG-CK-PROJECT-01-02 — Applicable package kinds, supported runtimes, module loaders, resolution modes, TypeScript versions, import forms, command names, operating systems, CPU architectures, package-manager versions, and engine, peer-dependency, optional-dependency, and installation policies are recorded.
 - [ ] TSPKG-CK-PROJECT-01-03 — Every public entry point is listed with whether it provides runtime code, types only, or both.
 - [ ] TSPKG-CK-PROJECT-01-04 — Compatibility statements, publication authority, and out-of-scope consumers are identified.
 
@@ -37,10 +38,9 @@ outside the reviewed files, and closes with findings. Any write inside the revie
 
 #### Checklist
 
-- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no reviewed file is edited.
+- [ ] TSPKG-CK-PROJECT-02-01 — Under review-only validation, no repository file is edited.
 - [ ] TSPKG-CK-PROJECT-02-02 — Under review-only validation, no package output is built or created.
 - [ ] TSPKG-CK-PROJECT-02-03 — Under review-only validation, nothing is installed into a persistent environment.
-- [ ] TSPKG-CK-PROJECT-02-04 — Under review-only validation, no documentation or release note is updated.
 - [ ] TSPKG-CK-PROJECT-02-05 — Under review-only validation, nothing is published.
 
 ### TSPKG-SC-PROJECT-03 — Normal case: a review-only run closes on inspection results alone
@@ -52,27 +52,29 @@ a mutation step, or that ends without returning what it found, is the failure.
 #### Checklist
 
 - [ ] TSPKG-CK-PROJECT-03-02 — A review-only run finishes with command results, findings, and limitations.
-- Also applies: TSPKG-CK-PROJECT-02-01 (reviewed files remain unchanged).
+- Also applies: TSPKG-CK-PROJECT-02-01 (repository files remain unchanged).
 - Also applies: TSPKG-CK-PROJECT-02-02 (package output is not built).
 - Also applies: TSPKG-CK-PROJECT-02-03 (nothing is installed persistently).
-- Also applies: TSPKG-CK-PROJECT-02-04 (documents remain unchanged).
 - Also applies: TSPKG-CK-PROJECT-02-05 (nothing is published).
 
 ## Structure
 
 ### TSPKG-SC-STRUCTURE-01 — Normal case: every entry point resolves to real files
 
-An export map states that a condition leads to a runtime file and a declaration file that exist. The
-expected outcome defines each entry point completely and maps each condition to built output inside the
-package. A condition pointing at a missing, external, or source-only path is the failure.
+An export map has declaration branches and runtime branches rather than one uniform file pair. The expected
+outcome maps each branch to the file kind it selects, orders versioned and fallback type conditions correctly,
+and keeps declaration module kinds aligned with their runtime branches. A missing fallback, wrong file kind,
+or mismatched module kind is the failure.
 
 #### Checklist
 
-- [ ] TSPKG-CK-STRUCTURE-01-01 — Every public entry point defines its runtime file, declaration file, module condition, and supported consumer environment.
-- [ ] TSPKG-CK-STRUCTURE-01-02 — Every export condition maps to an existing built runtime file and declaration file.
-- [ ] TSPKG-CK-STRUCTURE-01-03 — Declarations are decided as emitted, bundled, or maintained.
-- [ ] TSPKG-CK-STRUCTURE-01-04 — One exact compiler file produces or validates the declarations.
-- [ ] TSPKG-CK-STRUCTURE-01-05 — Every metadata path resolves inside the package.
+- [ ] TSPKG-CK-STRUCTURE-01-01 — Every export condition maps to an existing file of its declared kind: `types` and versioned `types@<selector>` branches to declaration files; runtime branches to runtime files.
+- [ ] TSPKG-CK-STRUCTURE-01-02 — Applicable conditions are ordered from versioned `types@<selector>` branches to the ordinary `types` fallback and then to runtime branches within the same condition object.
+- [ ] TSPKG-CK-STRUCTURE-01-03 — Every supported compiler that misses the versioned type selectors reaches an ordinary `types` fallback.
+- [ ] TSPKG-CK-STRUCTURE-01-04 — Each declaration file's detected ES-module or CommonJS kind matches the runtime branch it describes.
+- [ ] TSPKG-CK-STRUCTURE-01-05 — Declarations are decided as emitted, bundled, or maintained.
+- [ ] TSPKG-CK-STRUCTURE-01-06 — One exact `tsconfig.json` file produces or validates the declarations.
+- Also applies: TSPKG-CK-PROJECT-01-03 (each entry records whether it provides runtime code, types only, or both).
 
 ### TSPKG-SC-STRUCTURE-02 — Rule violation: an internal path becomes reachable
 
@@ -84,31 +86,23 @@ intentional subpath. An accidental reachable path breaks the Rule even when noth
 
 - [ ] TSPKG-CK-STRUCTURE-02-01 — No internal path is exposed through a broad file set, a wildcard export, a declaration leak, or a source-only path.
 - [ ] TSPKG-CK-STRUCTURE-02-02 — Every module reachable by consumers is an intentional public entry point or subpath.
-
-### TSPKG-SC-STRUCTURE-03 — Normal case: every installed command maps to an executable built file
-
-An npm `bin` entry can name a missing source file, lose its shebang during compilation, or arrive without the
-permission needed for direct execution. The expected outcome maps every command name to an existing built file
-inside the archive and verifies its executable form before publication.
-
-#### Checklist
-
-- [ ] TSPKG-CK-STRUCTURE-03-01 — Every package-defined command name maps through `bin` to an existing built file inside the package archive.
-- [ ] TSPKG-CK-STRUCTURE-03-02 — Every built command file begins with the shebang required by its supported runtime.
-- [ ] TSPKG-CK-STRUCTURE-03-03 — Every archived command file has executable permissions on supported systems that require them.
-- [ ] TSPKG-CK-STRUCTURE-03-04 — `engines`, `os`, and `cpu` produce the warning, acceptance, or rejection behavior stated by the support and package-manager policy.
+- [ ] TSPKG-CK-STRUCTURE-02-03 — Every path named by package metadata resolves inside the package archive.
 
 ### TSPKG-SC-STRUCTURE-04 — Normal case: dependency and declaration-routing fields match consumer needs
 
-Dependency fields decide what is required, optional, supplied by a consumer, used only for authoring, or
-bundled into the archive. Declaration routing also depends on which package field the compiler's resolution
-mode reads. The expected outcome matches each field to installed behavior and exercises the selected route.
+Dependency fields and package-manager policy decide what is required, optional, installed automatically,
+supplied compatibly, or bundled into the archive. Declaration routing depends on which package field the
+compiler's resolution mode reads. The expected outcome exercises these installed behaviors rather than only
+reading their metadata.
 
 #### Checklist
 
 - [ ] TSPKG-CK-STRUCTURE-04-01 — Each package's dependency declaration and any `bundleDependencies` membership match whether it is required, optional, consumer-supplied, authoring-only, or also packed into the archive.
-- [ ] TSPKG-CK-STRUCTURE-04-02 — Every optional dependency and optional peer is exercised both present and absent.
-- [ ] TSPKG-CK-STRUCTURE-04-03 — Every claimed TypeScript-version declaration route resolves from an isolated installed consumer through the package field read by that compiler version and resolution mode.
+- [ ] TSPKG-CK-STRUCTURE-04-02 — Under each supported package-manager version and peer policy, required-peer installation has the recorded outcome for compatible, missing, and incompatible or conflicting peers.
+- [ ] TSPKG-CK-STRUCTURE-04-03 — Under each supported package-manager version and policy, optional-dependency installation has the recorded outcome when installed, omitted, unavailable, or failed.
+- [ ] TSPKG-CK-STRUCTURE-04-04 — Every claimed TypeScript-version declaration route resolves from an isolated installed consumer through the package field read by that compiler version and resolution mode.
+- [ ] TSPKG-CK-STRUCTURE-04-05 — `engines`, `os`, and `cpu` produce the warning, acceptance, or rejection behavior stated by the support and package-manager policy.
+- [ ] TSPKG-CK-STRUCTURE-04-06 — Under each supported package-manager version and policy, optional-peer installation has the recorded outcome when the peer is present or absent, including automatic installation behavior.
 
 ## Performance
 
