@@ -10,8 +10,8 @@ skill-type: preference
 This preference skill guides structural web decisions: where authority and state live, how documents and code
 are delivered, how navigation survives transitions, and which caches, services, and dependencies are accepted.
 
-It recommends seams without redesigning a sound application. Feature, topology, frontend, backend, platform,
-security, testing, language, and framework owners keep their own policy and implementation.
+It recommends seams without redesigning a sound application. Feature, project structure, frontend, backend,
+platform, security, testing, language, and framework owners keep their own policy and implementation.
 
 ## Principles
 

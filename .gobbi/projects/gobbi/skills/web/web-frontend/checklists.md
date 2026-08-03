@@ -32,7 +32,7 @@ frontend that decides identity, element meaning, or threat analysis for itself i
 #### Checklist
 
 - [ ] WEBFRNT-CK-PROJECT-01-01 — Work starts from the bounded feature outcome, the current product, the governing records, and the available user evidence.
-- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and expression judgments to `web-design`, interaction choices to `web-interaction`, element meaning to the HTML owners, presentation to the CSS owners, repository placement to `web-topology`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
+- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and expression judgments to `web-design`, interaction choices to `web-interaction`, element meaning to the HTML owners, presentation to the CSS owners, repository placement to `web-project-structure`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
 - [ ] WEBFRNT-CK-PROJECT-01-03 — An unresolved conflict is returned to `web-development`, the requesting caller, or the user rather than decided here.
 - [ ] WEBFRNT-CK-PROJECT-01-04 — Accessibility is kept inside frontend behavior rather than routed away as a separate concern.
 

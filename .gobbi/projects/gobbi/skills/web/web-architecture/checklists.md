@@ -5,9 +5,9 @@ authority-and-ownership, option-comparison, browser-journey, boundary-lifecycle,
 skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-architecture`](SKILL.md) preferences,
 with [`web-development`](../web-development/SKILL.md) as the operation that integrates them,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) as the owners of the
-browser and authoritative behavior these seams carry, and [`web-topology`](../web-topology/SKILL.md) as the
-owner of where the resulting code sits. The source commit that contains this file identifies the checklist
-version. Its stable owner prefix is `WEBARCH`.
+browser and authoritative behavior these seams carry, and
+[`web-project-structure`](../web-project-structure/SKILL.md) as the owner of where the resulting code sits. The
+source commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBARCH`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -29,7 +29,7 @@ from a preferred shape rather than from the application in front of it is the fa
 - [ ] WEBARCH-CK-PROJECT-01-01 — The current architecture and its evidence were inspected before the structural change was proposed.
 - [ ] WEBARCH-CK-PROJECT-01-02 — A sound existing shape is preserved, or the exact constraint it fails is named.
 - [ ] WEBARCH-CK-PROJECT-01-03 — Every material option is compared against the same applicable constraint set: experience, accessibility, security, privacy, compatibility, performance, reliability, deployment, operations, migration, team capability, and removal cost.
-- [ ] WEBARCH-CK-PROJECT-01-04 — Every question outside structural seams is routed to its owner: cross-layer integration to `web-development`, repository placement to `web-topology`, browser behavior to `web-frontend`, authoritative server behavior to `web-backend`, platform facts to `web-platform`, threat analysis to `web-security`, and suite mechanics to `web-testing`.
+- [ ] WEBARCH-CK-PROJECT-01-04 — Every question outside structural seams is routed to its owner: cross-layer integration to `web-development`, repository placement to `web-project-structure`, browser behavior to `web-frontend`, authoritative server behavior to `web-backend`, platform facts to `web-platform`, threat analysis to `web-security`, and suite mechanics to `web-testing`.
 
 ### WEBARCH-SC-PROJECT-02 — Rule violation: the preference becomes an unapproved migration
 

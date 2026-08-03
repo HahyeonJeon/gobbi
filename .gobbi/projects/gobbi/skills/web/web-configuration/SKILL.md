@@ -18,10 +18,10 @@ inlined into a client bundle is a supply defect, so enforcement cannot prevent i
 environment identity, the frozen build inputs, and the release itself, and does not claim per-environment
 values or secret supply; this skill decides what those inputs contain.
 
-`web-topology` owns where a configuration file sits in the repository, `web-backend` owns the authoritative
-behavior a value drives, `web-architecture` owns which side of the client-server boundary state lives on, and
-`web-observability` owns redacting a value that legitimately reaches a log. Rules define the boundary,
-Preferences select defaults inside it, and a Rule wins every conflict.
+`web-project-structure` owns where a configuration file sits in the repository, `web-backend` owns the
+authoritative behavior a value drives, `web-architecture` owns which side of the client-server boundary state
+lives on, and `web-observability` owns redacting a value that legitimately reaches a log. Rules define the
+boundary, Preferences select defaults inside it, and a Rule wins every conflict.
 
 ## Principles
 

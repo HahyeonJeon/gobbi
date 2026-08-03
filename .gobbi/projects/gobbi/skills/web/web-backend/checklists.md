@@ -6,8 +6,8 @@ separated-claim obligations this skill owns. It is governed by the [`web`](../SK
 [`web-backend`](SKILL.md) operation, with [`web-development`](../web-development/SKILL.md) as the caller that binds
 the outcome, [`web-security`](../web-security/SKILL.md) as the owner of security requirements and threat
 analysis, [`web-testing`](../web-testing/SKILL.md) as the owner of test-system mechanics, and
-[`web-topology`](../web-topology/SKILL.md) as the owner of repository placement. The source commit that
-contains this file identifies the checklist version. Its stable owner prefix is `WEBBACK`.
+[`web-project-structure`](../web-project-structure/SKILL.md) as the owner of repository placement. The source
+commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBBACK`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -21,13 +21,13 @@ that this scenario reuses.
 ### WEBBACK-SC-PROJECT-01 — Normal case: the backend boundary is bound and its owners routed
 
 One bounded backend outcome is taken from a caller and worked. The expected outcome starts from that bound
-boundary and sends every question outside backend design to its owner; a backend that absorbs topology, test,
-or security policy because it was nearby is the failure.
+boundary and sends every question outside backend design to its owner; a backend that absorbs repository
+placement, test, or security policy because it was nearby is the failure.
 
 #### Checklist
 
 - [ ] WEBBACK-CK-PROJECT-01-01 — Work starts from one bounded outcome, the project records, the current server surface, and the accepted constraints.
-- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-topology`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-development`.
+- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-project-structure`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-development`.
 - [ ] WEBBACK-CK-PROJECT-01-03 — Missing authority, an incompatible requirement, or a scope change is returned to `web-development` or the requesting caller rather than decided here.
 - [ ] WEBBACK-CK-PROJECT-01-04 — Every unowned policy, lifecycle, effect, or recovery path is returned rather than absorbed.
 

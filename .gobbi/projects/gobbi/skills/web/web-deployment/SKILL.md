@@ -19,12 +19,13 @@ installed desktop artifact, which a person must download, install, and later upd
 build behind a URL the same person merely reloads. The discipline transfers, the work does not.
 
 `typescript-toolchain` owns compiling, emit, and module resolution; this operation owns the bundle those tools
-feed and where it goes. `web-topology` owns where build outputs live in the repository, `web-architecture`
-chooses the rendering and delivery strategy this operation ships, `web-backend` owns what a migration means to
-the data while this owns when it runs relative to the cutover, `web-security` owns which data is protected
-while this owns not republishing source through a map, and `web-observability` owns the signals a rollout is
-judged by. `web-configuration` owns per-environment values, secret supply, and feature-flag lifetime; this
-operation owns the environment's identity and the frozen build inputs, not the values inside them.
+feed and where it goes. `web-project-structure` owns where build outputs live in the repository,
+`web-architecture` chooses the rendering and delivery strategy this operation ships, `web-backend` owns what
+a migration means to the data while this owns when it runs relative to the cutover, `web-security` owns which
+data is protected while this owns not republishing source through a map, and `web-observability` owns the
+signals a rollout is judged by. `web-configuration` owns per-environment values, secret supply, and
+feature-flag lifetime; this operation owns the environment's identity and the frozen build inputs, not the
+values inside them.
 
 ## Principles
 

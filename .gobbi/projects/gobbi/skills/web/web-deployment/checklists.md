@@ -43,7 +43,7 @@ options is the failure.
 
 #### Checklist
 
-- [ ] WEBDEP-CK-PROJECT-02-01 — Every adjacent question is routed to its owner: compiling, emit, and module resolution to `typescript-toolchain`, build-output placement to `web-topology`, rendering and delivery strategy to `web-architecture`, what a migration means to the data to `web-backend`, protected-data exposure to `web-security`, rollout signals to `web-observability`, per-environment values and secret supply to `web-configuration`, suite evidence to `web-testing`, and a disputed browser fact to `web-platform`.
+- [ ] WEBDEP-CK-PROJECT-02-01 — Every adjacent question is routed to its owner: compiling, emit, and module resolution to `typescript-toolchain`, build-output placement to `web-project-structure`, rendering and delivery strategy to `web-architecture`, what a migration means to the data to `web-backend`, protected-data exposure to `web-security`, rollout signals to `web-observability`, per-environment values and secret supply to `web-configuration`, suite evidence to `web-testing`, and a disputed browser fact to `web-platform`.
 - [ ] WEBDEP-CK-PROJECT-02-02 — No compiler, emit, module-resolution, or type-stripping failure is worked around in bundler configuration.
 
 ## Structure

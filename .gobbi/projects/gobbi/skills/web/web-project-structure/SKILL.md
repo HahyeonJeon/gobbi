@@ -1,13 +1,13 @@
 ---
-name: web-topology
-description: "MUST load when establishing or reviewing a web project's directory structure, workspace/application roots, source/runtime/test/configuration/asset/migration/shared/generated-output placement, or a topology exception."
+name: web-project-structure
+description: "MUST load when establishing or reviewing a web project's directory structure, workspace or application roots, source, runtime, test, configuration, asset, migration, shared, generated, build, or deployable-output placement, or a documented placement exception."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, WebSearch, WebFetch
 skill-type: preference
 ---
 
-# Web Topology
+# Web Project Structure
 
-This preference skill guides web project topology: roots, applications, packages, source, routes, assets,
+This preference skill guides web project structure: roots, applications, packages, source, routes, assets,
 tests, configuration, migrations, scripts, documentation, shared code, generated content, caches, builds, and
 deployable outputs.
 
@@ -20,11 +20,11 @@ Required framework and tool structure takes precedence over project preferences.
 
 Framework, runtime, workspace, build, and deployment constraints define the valid choice space.
 
-### Sound existing topology is evidence
+### Sound existing project structure is evidence
 
 Preserve a structure that remains clear, compatible, and operable instead of reorganizing it for novelty.
 
-### Topology should expose ownership and authority
+### Project structure should expose ownership and authority
 
 Group material by who owns it and why it changes, while keeping browser, server, and privileged boundaries
 visible.
@@ -36,9 +36,9 @@ interchangeable.
 
 ## Rules
 
-- **MUST settle topology choices in this order: required framework and tool structure, sound existing
-  topology, the smallest ownership-based project structure, then external exemplars.** Use exemplars only
-  when the first three do not settle a material choice.
+- **MUST settle project structure choices in this order: required framework and tool structure, sound
+  existing project structure, the smallest ownership-based project structure, then external exemplars.** Use
+  exemplars only when the first three do not settle a material choice.
 - **MUST name the project or workspace root and every application or package root.** Name the owner of each
   application, package, configuration class, generated output, cache, build output, and deployable output.
 - **MUST preserve framework-, runtime-, workspace-, build-, and deployment-reserved paths.** Official
@@ -50,13 +50,13 @@ interchangeable.
   applicable.** A shared directory may not hide browser-only, server-only, secret, or privileged authority.
 - **MUST distinguish source-controlled, generated, cached, secret, published, and deployable content.** State
   which process creates, consumes, invalidates, cleans, publishes, or deploys each class.
-- **NEVER make a topology departure or code-style claim outside this skill's boundary.** Leave naming,
-  imports, formatting, and internal idioms to their owners, and record departure evidence, blast radius,
-  migration, compatibility, rollback, and reopen condition.
+- **NEVER make a departure from the project structure or a code-style claim outside this skill's boundary.**
+  Leave naming, imports, formatting, and internal idioms to their owners, and record departure evidence, blast
+  radius, migration, compatibility, rollback, and reopen condition.
 
 ## Preferences
 
-### PREFER sound existing topology
+### PREFER sound existing project structure
 
 PREFER the established tree when ownership, runtime boundaries, discovery, compatibility, and operations
 remain clear. Depart only for concrete contrary evidence and change the smallest affected boundary.

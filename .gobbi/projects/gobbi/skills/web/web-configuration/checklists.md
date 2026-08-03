@@ -6,8 +6,9 @@ authorization-separation obligations this skill owns. It is governed by the [`we
 [`web-configuration`](SKILL.md) preferences, with [`web-security`](../web-security/SKILL.md) owning
 enforcement, [`web-deployment`](../web-deployment/SKILL.md) owning environment identity and the frozen build
 inputs, [`web-observability`](../web-observability/SKILL.md) owning redaction of a value that legitimately
-reaches a log, and [`web-topology`](../web-topology/SKILL.md) owning where a configuration file sits. The
-source commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBCFG`.
+reaches a log, and [`web-project-structure`](../web-project-structure/SKILL.md) owning where a configuration
+file sits. The source commit that contains this file identifies the checklist version. Its stable owner prefix
+is `WEBCFG`.
 
 This source tests the supply boundary — how a value reaches the process that enforces a decision — and not the
 enforcement rules `web-security` owns. A secret inlined into a client bundle is a supply defect, so no
@@ -31,7 +32,7 @@ routes the rest; an enforcement or placement rule restated here is the failure.
 #### Checklist
 
 - [ ] WEBCFG-CK-PROJECT-01-01 — Every decision made here is a supply decision: which values differ per environment, whether each is fixed at build time or read at runtime, how a secret reaches the process that needs it, and how long a feature flag lives.
-- [ ] WEBCFG-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: which decisions are protected and where they are authorized to `web-security`, environment identity and the frozen build inputs to `web-deployment`, file placement to `web-topology`, the authoritative behavior a value drives to `web-backend`, client-server state placement to `web-architecture`, and redaction of a value that legitimately reaches a log to `web-observability`.
+- [ ] WEBCFG-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: which decisions are protected and where they are authorized to `web-security`, environment identity and the frozen build inputs to `web-deployment`, file placement to `web-project-structure`, the authoritative behavior a value drives to `web-backend`, client-server state placement to `web-architecture`, and redaction of a value that legitimately reaches a log to `web-observability`.
 - [ ] WEBCFG-CK-PROJECT-01-03 — No enforcement rule `web-security` owns is restated or overridden here.
 
 ### WEBCFG-SC-PROJECT-02 — Rule violation: a value is used before it is classified

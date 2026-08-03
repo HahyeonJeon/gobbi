@@ -11,8 +11,8 @@ Use this operation for the browser-facing outcome: journey, content, interaction
 behavior, accessibility, trust, recovery, and user-visible measurement.
 
 It owns observable frontend behavior. `web-design` owns the identity, evidence, concept, and expression
-judgments it applies. HTML, CSS, language, framework, platform, backend, topology, testing, and security
-owners load only when their triggers apply.
+judgments it applies. HTML, CSS, language, framework, platform, backend, project structure, testing, and
+security owners load only when their triggers apply.
 
 ## Principles
 
@@ -45,8 +45,8 @@ they act.
 - **MUST specify the complete browser journey top-down and its smallest units bottom-up before production
   implementation.** Cover every required state, transition, content, interaction, adaptation, and recovery
   path.
-- **MUST route topology to `web-topology`, suite mechanics to `web-testing`, and security analysis to
-  `web-security` when triggered.** Keep accessibility integral to frontend behavior.
+- **MUST route repository placement to `web-project-structure`, suite mechanics to `web-testing`, and security
+  analysis to `web-security` when triggered.** Keep accessibility integral to frontend behavior.
 - **MUST make semantics and interaction operable without guessing.** Prefer native elements and expose
   accurate names, roles, states, structure, keyboard behavior, focus movement, form guidance, error
   association, overlay behavior, responsive reflow, and motion alternatives.
@@ -116,7 +116,7 @@ they act.
 
 #### 3.1 Materialize the complete scaffold
 
-- Load applicable HTML, CSS, language, framework, platform, topology, testing, and security owners.
+- Load applicable HTML, CSS, language, framework, platform, project structure, testing, and security owners.
 - Materialize routes, semantic document regions, component boundaries, state and data seams, focus targets,
   responsive structure, representative state placeholders, test seams, and explicit labels on simulated data
   or dependencies.

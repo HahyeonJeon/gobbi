@@ -43,8 +43,8 @@ deployment state, live verification, observed health, supported operation, and r
   and false-completion signals, paths, states, side effects, scope, non-goals, and terminal conditions; return
   any scope change to user authority.
 - **MUST inspect the current application and governing records before routing the change.** Record the design,
-  routes, contracts, data, controls, topology, tests, diagnostics, release practices, live evidence, and
-  retirement constraints that stay compatible, plus every authorized break.
+  routes, contracts, data, controls, project structure, tests, diagnostics, release practices, live evidence,
+  and retirement constraints that stay compatible, plus every authorized break.
 - **MUST route every applicable lifecycle stage and specialist.** A material omission needs inspected evidence
   that its trigger is absent, and every stage records its entry condition, exit condition, material input,
   success output, failure return, next owner, evidence claim, and reopen reason.
