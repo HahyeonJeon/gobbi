@@ -1,18 +1,18 @@
 # React Conventions Checklist
 
 Use this unchecked `react-conventions` source with general `evaluation` when the React root activates the
-conventions child; `RCON` is the stable owner prefix.
+conventions child; `RCON` is the stable checklist owner prefix.
 
 ## Project
 
 ### RCON-SC-PROJECT-01 — Normal case: Local conventions are known
 
-React-owned requirements should be separated from project choices before source is named or moved. Inventing
+React requirements should be separated from project choices before source is named or moved. Inventing
 a second export, filename, directory, import, or formatting convention fails the scenario.
 
 #### Checklist
 
-- [ ] RCON-CK-PROJECT-01-01 — Inspected neighboring source and configured tools establish every applicable source and tool-owned convention.
+- [ ] RCON-CK-PROJECT-01-01 — Inspected neighboring source and configured tools establish every applicable project source convention and configured-tool rule.
 
 ### RCON-SC-PROJECT-02 — Expected failure: The project has no established convention
 
@@ -42,7 +42,7 @@ casing, Hook naming, nested definitions, or mismatched imports and exports fail 
 ## Performance
 
 Not applicable: source naming, export, file placement, JSX, and formatting conventions have no independent
-latency, throughput, resource, or measurement contract.
+latency, throughput, resource, or measurement requirement.
 
 ## Aesthetics
 
@@ -54,8 +54,8 @@ Anonymous exports, misleading file names, or hand-format drift fails the scenari
 #### Checklist
 
 - [ ] RCON-CK-AESTHETICS-01-01 — Every component and custom Hook has a meaningful function name.
-- [ ] RCON-CK-AESTHETICS-01-02 — Each non-framework-owned file name reveals its primary unit under the project convention.
-- [ ] RCON-CK-AESTHETICS-01-03 — Configured formatter and tool output owns mechanical layout and import order.
+- [ ] RCON-CK-AESTHETICS-01-02 — Each file name not fixed by a framework reveals its primary unit under the project convention.
+- [ ] RCON-CK-AESTHETICS-01-03 — Configured formatter and lint output determines mechanical layout and import order.
 
 ### RCON-SC-AESTHETICS-02 — Edge case: A unit reaches its file boundary
 
@@ -65,7 +65,7 @@ established independent reuse or scanning boundary; moving earlier or later fail
 #### Checklist
 
 - [ ] RCON-CK-AESTHETICS-02-01 — Each file remains readable or is split at an established independent boundary.
-- [ ] RCON-CK-AESTHETICS-02-02 — A unit-specific file remains with its owning unit until broader ownership is established.
+- [ ] RCON-CK-AESTHETICS-02-02 — A unit-specific file remains with its related unit until another consumer or project rule requires broader placement.
 
 ## Usage
 
@@ -92,7 +92,7 @@ a lost dashed attribute fails the scenario.
 - [ ] RCON-CK-CONSISTENCY-01-03 — JSX uses React attribute names.
 - [ ] RCON-CK-CONSISTENCY-01-04 — JSX preserves dashed `aria-*` and `data-*` attributes.
 
-### RCON-SC-CONSISTENCY-02 — Rule violation: Affected files drift from the project's own conventions
+### RCON-SC-CONSISTENCY-02 — Rule violation: Affected files drift from the project's conventions
 
 The project's established export, filename, directory, and formatting choices govern the affected files. A new
 local style beside them fails the scenario.
@@ -104,16 +104,16 @@ local style beside them fails the scenario.
 ## Risk
 
 Not applicable: React convention changes carry structure, identity, and reviewability risks but introduce no
-independent trust, privacy, safety, or destructive-action contract.
+independent trust, privacy, safety, or destructive-action requirement.
 
 ## Overall
 
 ### RCON-SC-OVERALL-01 — Adversarial: Cosmetic compliance changes behavior
 
 A rename or reorganization can look stylistically consistent while resetting state, changing an import, or
-moving a unit across its owner boundary. Any such semantic drift fails the scenario.
+moving a unit across its project-defined module boundary. Any such semantic drift fails the scenario.
 
 #### Checklist
 
 - [ ] RCON-CK-OVERALL-01-01 — Naming, organization, and convention changes preserve the accepted rendered behavior and state identity.
-- [ ] RCON-CK-OVERALL-01-02 — No convention claim is presented as React-owned when its authority is only the project or a configured tool.
+- [ ] RCON-CK-OVERALL-01-02 — No project or configured-tool convention is presented as a React requirement.

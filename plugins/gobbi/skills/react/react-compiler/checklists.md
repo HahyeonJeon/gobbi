@@ -1,23 +1,23 @@
 # React Compiler Checklist
 
 Use this unchecked `react-compiler` source with general `evaluation` when the React root activates the compiler
-child; `RCMP` is the stable owner prefix.
+child; `RCMP` is the stable checklist owner prefix.
 
-A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
+A row is defined once beneath its defining scenario. An `Also applies` entry points to a row defined elsewhere
 that this scenario reuses.
 
 ## Project
 
-### RCMP-SC-PROJECT-01 — Normal case: The installed compiler contract is established
+### RCMP-SC-PROJECT-01 — Normal case: The installed compiler configuration is established
 
 Compiler decisions should use the project's installed React, compiler, linter, build tool, framework, and
 configuration. A neighboring version, guessed default, or missing command fails the scenario.
 
 #### Checklist
 
-- [ ] RCMP-CK-PROJECT-01-01 — Project files establish the installed React Compiler, installed React line, installed Hooks linter integration, active compiler build-tool integration, and active framework integration.
+- [ ] RCMP-CK-PROJECT-01-01 — Project files establish the installed React Compiler, exact installed React version, installed Hooks linter integration, active compiler build-tool integration, and active framework integration.
 - [ ] RCMP-CK-PROJECT-01-02 — Every active non-default compiler option is recorded.
-- [ ] RCMP-CK-PROJECT-01-03 — Every active compiler option resolves to its owning configuration file.
+- [ ] RCMP-CK-PROJECT-01-03 — Every active compiler option resolves to the configuration file that contains it.
 - [ ] RCMP-CK-PROJECT-01-04 — The applicable compiler, lint, build, test, and measurement command or method is known.
 
 ## Structure
@@ -25,29 +25,29 @@ configuration. A neighboring version, guessed default, or missing command fails 
 ### RCMP-SC-STRUCTURE-01 — Normal case: Each affected function's coverage is established
 
 Candidate selection, compilation, and diagnostics decide whether a given component or Hook is optimized. The
-work should record that fact per function; a project-level judgment fails the scenario.
+work should record the coverage result per function; a project-level judgment fails the scenario.
 
 #### Checklist
 
 - [ ] RCMP-CK-STRUCTURE-01-01 — The active `compilationMode` is recorded before function-level judgment.
 - [ ] RCMP-CK-STRUCTURE-01-02 — Each affected component or Hook is classified as compiled, skipped, failed, or not a candidate.
-- [ ] RCMP-CK-STRUCTURE-01-03 — Each diagnostic resolves to its configuration, Rules-of-React, syntax, or library owner.
+- [ ] RCMP-CK-STRUCTURE-01-03 — Each diagnostic resolves to its configuration source, Rules-of-React rule, syntax, or library.
 
 ### RCMP-SC-STRUCTURE-02 — Edge case: Configuration is present but does not deliver coverage
 
 A configured compiler can still leave compiled output unselected at runtime, and a compatibility setting can
-target another React line. At that boundary the work should record what the configuration actually delivers.
+target another React version. At that boundary the work should record what the configuration actually delivers.
 
 #### Checklist
 
 - [ ] RCMP-CK-STRUCTURE-02-01 — Runtime gating is distinguished from the existence of compiled output.
-- [ ] RCMP-CK-STRUCTURE-02-02 — React compatibility settings match the project's supported React line.
+- [ ] RCMP-CK-STRUCTURE-02-02 — React compatibility settings match the project's supported React version range.
 
 ## Performance
 
 ### RCMP-SC-PERFORMANCE-01 — Poor quality: Optimization is claimed without behavior and measurement evidence
 
-Compiler output may change update work without improving the measured user path. Removing memoization or
+Compiler output may change update work without improving the measured user interaction. Removing memoization or
 claiming a gain without focused evidence fails the scenario.
 
 #### Checklist
@@ -56,26 +56,26 @@ claiming a gain without focused evidence fails the scenario.
 - [ ] RCMP-CK-PERFORMANCE-01-02 — Each performance claim states a before-and-after result.
 - [ ] RCMP-CK-PERFORMANCE-01-03 — Existing manual memoization remains unless focused evidence supports changing it.
 - [ ] RCMP-CK-PERFORMANCE-01-04 — New manual memoization has a measured-work, required-identity, or documented-escape-hatch reason.
-- [ ] RCMP-CK-PERFORMANCE-01-05 — A compiler change preserves the affected behavior and every required identity contract.
+- [ ] RCMP-CK-PERFORMANCE-01-05 — A compiler change preserves the affected behavior and every required identity relationship.
 
 ## Aesthetics
 
-### RCMP-SC-AESTHETICS-01 — Poor quality: Configuration obscures the active contract
+### RCMP-SC-AESTHETICS-01 — Poor quality: Configuration obscures the active settings
 
 Compiler configuration and exceptions should use documented names and expose why they exist. Unknown options
 or unexplained escape hatches fail the scenario.
 
 #### Checklist
 
-- [ ] RCMP-CK-AESTHETICS-01-01 — Every compiler option uses its installed documented name and value shape.
-- [ ] RCMP-CK-AESTHETICS-01-02 — Each compiler annotation, directive, gate, or suppression states its bounded reason.
+- [ ] RCMP-CK-AESTHETICS-01-01 — Every compiler option uses its installed documented name and value type or object structure.
+- [ ] RCMP-CK-AESTHETICS-01-02 — Each compiler annotation, directive, runtime gating condition, or suppression states its bounded reason.
 
 ## Usage
 
 ### RCMP-SC-USAGE-01 — Expected failure: A function does not compile
 
 A skipped or failed function should remain behaviorally correct and give the developer a diagnosable recovery
-path. Hidden coverage loss or an unusable handoff fails the scenario.
+action. Hidden coverage loss or an unusable handoff fails the scenario.
 
 #### Checklist
 
@@ -115,8 +115,8 @@ regresses. Expanding despite a failed slice or lacking a recovery boundary fails
 
 #### Checklist
 
-- [ ] RCMP-CK-RISK-01-01 — Each adoption slice has a known last proven configuration or runtime gate.
-- [ ] RCMP-CK-RISK-01-02 — Every failed required gate stops adoption expansion.
+- [ ] RCMP-CK-RISK-01-01 — Each adoption slice has a known last proven configuration or runtime gating state.
+- [ ] RCMP-CK-RISK-01-02 — Every failed required check stops adoption expansion.
 - [ ] RCMP-CK-RISK-01-03 — A failed adoption slice restores a recoverable state.
 
 ## Overall
@@ -128,5 +128,5 @@ pass claim without function-level evidence fails.
 
 #### Checklist
 
-- [ ] RCMP-CK-OVERALL-01-01 — No project-level enablement fact is used as a proxy for affected-function coverage.
+- [ ] RCMP-CK-OVERALL-01-01 — No project-level enablement state is used as a proxy for affected-function coverage.
 - [ ] RCMP-CK-OVERALL-01-02 — The final result distinguishes configured, compiled, runtime-selected, tested, and measured claims.
