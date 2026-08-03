@@ -1,11 +1,11 @@
 # Electron Interface Evaluation Checklist
 
 This reusable unchecked source evaluates one observable Electron design judgment under the local preference.
-The source commit and every emitted checklist item use the stable prefix `ELECINTF`.
+The source commit identifies its version. Every scenario and checklist row uses the prefix `ELECINTF`.
 
-This file defines coverage only. The caller selects applicable rows, resolves cross-references, and owns any
-evaluation result. Preserve every selected row's stable ID. A row is defined once; an “Also applies” note
-reuses it without creating a duplicate item.
+This file defines reusable coverage only. Evaluation selects applicable rows, resolves cross-references, and
+owns filled copies, evidence, row results, findings, coverage closure, and verdicts. Preserve every selected
+row's stable ID. A row is defined once; an “Also applies” note reuses it without creating a duplicate item.
 
 ## Project
 
@@ -17,7 +17,7 @@ succeeds when every governing fact and evidence class is explicit; it fails when
 #### Checklist
 
 - [ ] ELECINTF-CK-PROJECT-01-01 — The subject is one observable Electron application design judgment.
-- [ ] ELECINTF-CK-PROJECT-01-02 — The judgment names each governing context member: affected actors, decision authority, and accepted outcome.
+- [ ] ELECINTF-CK-PROJECT-01-02 — The judgment names the affected actors, decision authority, and accepted outcome.
 - [ ] ELECINTF-CK-PROJECT-01-03 — Current-product observation is present and limited to what the current application presents or teaches.
 - [ ] ELECINTF-CK-PROJECT-01-04 — The judgment distinguishes every evidence class: current-product observation, representative-user evidence, accessibility evidence, official target guidance, cross-target task evidence, and accepted authority or requirements.
 
@@ -44,8 +44,8 @@ when the accepted outcome stays perceptible throughout; it fails when any applic
 - [ ] ELECINTF-CK-STRUCTURE-01-02 — Every applicable visible state has an explicit presentation.
 - [ ] ELECINTF-CK-STRUCTURE-01-03 — Every content decision states its intended observable meaning.
 - [ ] ELECINTF-CK-STRUCTURE-01-04 — Every feedback decision states its intended observable message.
-- [ ] ELECINTF-CK-STRUCTURE-01-05 — Every applicable failure has a perceptible presentation.
-- [ ] ELECINTF-CK-STRUCTURE-01-06 — Every applicable recovery has a perceptible presentation.
+- [ ] ELECINTF-CK-STRUCTURE-01-05 — Every applicable failure is presented in a way affected actors can perceive.
+- [ ] ELECINTF-CK-STRUCTURE-01-06 — Every applicable recovery is presented in a way affected actors can perceive.
 
 ### ELECINTF-SC-STRUCTURE-02 — Edge case: language and target adaptation
 
@@ -69,8 +69,8 @@ waiting remains understandable and usable; it fails when uncertainty or repeated
 #### Checklist
 
 - [ ] ELECINTF-CK-PERFORMANCE-01-01 — Every accepted wait or long-running action has a visible pending state before uncertainty affects use.
-- [ ] ELECINTF-CK-PERFORMANCE-01-02 — Repeated feedback stays within each accepted load limit: visual attention and assistive-announcement frequency.
-- [ ] ELECINTF-CK-PERFORMANCE-01-03 — The design names the observable responsiveness perception that matters to the accepted outcome.
+- [ ] ELECINTF-CK-PERFORMANCE-01-02 — Repeated feedback respects the specified frequency limits for visual updates and assistive-technology announcements.
+- [ ] ELECINTF-CK-PERFORMANCE-01-03 — The design states how quickly affected actors must perceive a response for the accepted outcome.
 
 ## Aesthetics
 
@@ -82,23 +82,23 @@ weak. It succeeds by exposing that deficit; it fails when polish is accepted as 
 #### Checklist
 
 - [ ] ELECINTF-CK-AESTHETICS-01-01 — Product identity remains recognizable across every applicable surface: windows, menus, tray, shortcuts, notifications, content, feedback, failure, and recovery.
-- [ ] ELECINTF-CK-AESTHETICS-01-02 — Every expressive choice serves at least one observable meaning: hierarchy, state, consequence, affordance, or recovery.
+- [ ] ELECINTF-CK-AESTHETICS-01-02 — Every visual or content choice makes at least one interface property easier to understand: hierarchy, state, consequence, available action, or recovery.
 - [ ] ELECINTF-CK-AESTHETICS-01-03 — Every target operating-system adaptation preserves the coherent product identity.
 - [ ] ELECINTF-CK-AESTHETICS-01-04 — Any tension between product identity and familiarity is resolved from allowed evidence about the accepted outcome.
 
 ## Usage
 
-### ELECINTF-SC-USAGE-01 — Normal case: material concepts remain open
+### ELECINTF-SC-USAGE-01 — Normal case: a decision affecting the accepted outcome remains open
 
-Use this scenario while a consequential interface direction is still open. It succeeds when real alternatives
-expose the tradeoff; it fails when one direction or cosmetic variants preselect the outcome.
+Use this scenario while an interface decision can change the accepted outcome. It succeeds when concepts
+differ in a required dimension; it fails when one concept or visual variants preselect the decision.
 
 #### Checklist
 
-- [ ] ELECINTF-CK-USAGE-01-01 — At least two materially distinct concepts remain available while the material direction is open.
-- [ ] ELECINTF-CK-USAGE-01-02 — The concepts differ in at least one consequential dimension: information structure, task flow, operating-system integration, feedback, recovery, accessibility, modality, language adaptation, or visual hierarchy.
+- [ ] ELECINTF-CK-USAGE-01-01 — At least two concepts remain available while a decision that can change the accepted outcome is open.
+- [ ] ELECINTF-CK-USAGE-01-02 — The concepts differ in information structure, action model, information flow, interaction intent, or state-and-feedback presentation.
 - [ ] ELECINTF-CK-USAGE-01-03 — Every concept is compared against the same affected actors and accepted outcome.
-- [ ] ELECINTF-CK-USAGE-01-04 — The selected concept states both selection grounds: the applicable evidence class and the accepted tradeoff.
+- [ ] ELECINTF-CK-USAGE-01-04 — The selected concept names the evidence class that supports it and the accepted tradeoff.
 
 ### ELECINTF-SC-USAGE-02 — Normal case: modalities and operating-system surfaces
 
@@ -135,7 +135,7 @@ allowed, concrete justification and compliant replacement; it fails when either 
 - [ ] ELECINTF-CK-USAGE-04-02 — Concrete departure evidence exists.
 - [ ] ELECINTF-CK-USAGE-04-03 — The harm to the accepted outcome is identified explicitly.
 - [ ] ELECINTF-CK-USAGE-04-04 — The replacement interaction is explicit.
-- [ ] ELECINTF-CK-USAGE-04-05 — The replacement complies with every controlling boundary: Rules, accepted contract, accessibility, security, and user authority.
+- [ ] ELECINTF-CK-USAGE-04-05 — The replacement follows the Rules, accepted contract, accessibility requirements, security requirements, and user-authority limits.
 
 ### ELECINTF-SC-USAGE-05 — Adversarial: an unjustified or cosmetic departure
 
@@ -168,9 +168,9 @@ distinguishing that proxy from real success; it fails when the proxy alone suppo
 
 #### Checklist
 
-- [ ] ELECINTF-CK-RISK-01-01 — Every measure names its intended user-outcome interpretation.
-- [ ] ELECINTF-CK-RISK-01-02 — Every measure names its harmful-proxy interpretation.
-- [ ] ELECINTF-CK-RISK-01-03 — A proxy improvement cannot support the judgment while the accepted user outcome worsens.
+- [ ] ELECINTF-CK-RISK-01-01 — Every measure states how its value represents the intended user outcome.
+- [ ] ELECINTF-CK-RISK-01-02 — Every measure states how its value could improve while the user outcome worsens.
+- [ ] ELECINTF-CK-RISK-01-03 — An improved measure does not support the judgment when the accepted user outcome worsens.
 
 ### ELECINTF-SC-RISK-02 — Expected failure: accessibility or modality remains unresolved
 
@@ -179,7 +179,7 @@ revision or rejection; it fails when the inaccessible or incomplete design is ac
 
 #### Checklist
 
-- [ ] ELECINTF-CK-RISK-02-01 — A design with an unresolved material accessibility barrier is revised or rejected.
+- [ ] ELECINTF-CK-RISK-02-01 — A design with an accessibility barrier that prevents an affected actor from completing or recovering from the accepted outcome is revised or rejected.
 - [ ] ELECINTF-CK-RISK-02-02 — A design missing a required input modality is revised or rejected.
 
 - Also applies: ELECINTF-CK-USAGE-02-01 (explicit keyboard path).
@@ -199,9 +199,9 @@ when the judgment, handoff, and reopen path stay explicit; it fails when changed
 - [ ] ELECINTF-CK-OVERALL-01-02 — Every success question maps to an observable measure.
 - [ ] ELECINTF-CK-OVERALL-01-03 — Every validation signal states the observable uncertainty it distinguishes.
 - [ ] ELECINTF-CK-OVERALL-01-04 — Given facts accepted by the owning authority, the judgment explicitly accepts, revises, or rejects the design.
-- [ ] ELECINTF-CK-OVERALL-01-05 — The handoff states every governing member: product identity, affected actors, decision authority, accepted outcome, evidence classes, and concepts considered.
-- [ ] ELECINTF-CK-OVERALL-01-06 — The handoff states every observable continuation member: selected structure, visible states, content, feedback, failure, recovery, accessibility, modalities, language, region, writing direction, target adaptation, convention default or departure, success questions, measures, validation signals, judgment, unresolved constraints, reopen conditions, and earliest affected decision.
+- [ ] ELECINTF-CK-OVERALL-01-05 — The handoff states the product identity, affected actors, decision authority, accepted outcome, evidence classes, and concepts considered.
+- [ ] ELECINTF-CK-OVERALL-01-06 — The handoff states the selected structure, visible states, content, feedback, failure, recovery, accessibility, modalities, language, region, writing direction, target adaptation, convention default or departure, success questions, measures, validation signals, judgment, unresolved constraints, reopen conditions, and earliest affected decision.
 
-- Also applies: ELECINTF-CK-RISK-01-01 (intended outcome interpretation).
-- Also applies: ELECINTF-CK-RISK-01-02 (harmful-proxy interpretation).
+- Also applies: ELECINTF-CK-RISK-01-01 (meaning for the intended user outcome).
+- Also applies: ELECINTF-CK-RISK-01-02 (how the measure can hide harm).
 - Also applies: ELECINTF-CK-RISK-01-03 (proxy improvement cannot mask harm).

@@ -32,10 +32,11 @@ Target operating-system adaptation should preserve that identity without disguis
 An observation proves only what its evidence class can establish. Claims about what representative users can
 perceive, operate, complete, or recover from require representative-user or applicable accessibility evidence.
 
-### Material direction needs real alternatives
+### Open decisions that affect the user outcome need real alternatives
 
-Two materially different concepts expose a consequential trade-off before it becomes expensive to reverse.
-Visual variations of one hierarchy or action model are one concept.
+Concepts that differ in information structure, action model, information flow, interaction intent, or
+state-and-feedback presentation show the tradeoff before a decision becomes expensive to reverse. Visual
+variations of one hierarchy or action model are one concept.
 
 ### Complete design includes every observable path
 
@@ -45,13 +46,14 @@ and modality.
 
 ## Rules
 
-- **MUST name the affected actors, decision authority, accepted outcome, and evidence class for each material
-  judgment.** Keep current-product observation, representative-user evidence, accessibility evidence,
-  official target guidance, cross-target task evidence, and accepted authority or requirements distinct.
+- **MUST name the affected actors, decision authority, accepted outcome, and evidence class for each judgment
+  that can change the accepted outcome.** Keep current-product observation, representative-user evidence,
+  accessibility evidence, official target guidance, cross-target task evidence, and accepted authority or
+  requirements distinct.
 
-- **MUST compare at least two materially different observable concepts while a material direction remains
-  open.** Concepts must differ in information structure, action model, information flow, interaction intent,
-  or state and feedback presentation rather than styling alone.
+- **MUST compare at least two observable concepts while a decision that can change the accepted outcome
+  remains open.** Concepts must differ in information structure, action model, information flow, interaction
+  intent, or state-and-feedback presentation rather than styling alone.
 
 - **MUST cover the complete applicable observable surface.** Include information structure, visible states,
   content, feedback, failure and recovery presentation, accessibility, language, region, writing direction,
@@ -75,9 +77,9 @@ and modality.
 
 ### Prefer evidence that matches the claim
 
-**PREFER** the evidence class that directly supports or can change the claim. Require stronger or more direct
-evidence when the choice is novel, uncertain, exclusionary, consequential, hard to reverse, or likely to harm
-the accepted outcome.
+**PREFER** evidence from the class that directly supports the claim or could justify changing it. Require
+stronger or more direct evidence when the choice is new, uncertain, could exclude affected users, changes the
+accepted outcome, is hard to reverse, or could cause harm.
 
 | Evidence class | What it can establish |
 |---|---|
@@ -86,29 +88,28 @@ the accepted outcome.
 | Accessibility evidence | Whether an interaction creates or removes a barrier for affected people and input methods |
 | Official target guidance | A familiar convention for the named operating system, version, or desktop environment |
 | Cross-target task evidence | Whether one target convention harms the same accepted task across claimed targets |
-| Accepted authority or requirements | The binding actors, outcome, scope, constraints, and user-authority limits |
+| Accepted authority or requirements | The decision authority, outcome, scope, constraints, and user-authority limits |
 
 **PREFER** studying the current application, product identity, representative users, official target
-constraints, applicable design systems, and relevant prior art before settling a material judgment. A
-current-product observation does not prove representative-user success, and official guidance does not prove
-that its convention serves this application's accepted outcome.
+constraints, applicable design systems, and relevant prior art before settling a judgment that can change the
+accepted outcome. A current-product observation does not prove representative-user success, and official
+guidance does not prove that its convention serves this application's accepted outcome.
 
 ### Prefer one coherent product identity
 
 **PREFER** one product identity across windows, menus, tray surfaces, shortcuts, notifications, content,
-feedback, failure, and recovery. Depart from an existing expression when current governing identity material
-shows that the live application is stale, or when an observable choice conflicts with a Rule or accepted
-boundary.
+feedback, failure, and recovery. Change the current presentation when approved identity guidance shows it is
+outdated, or when an observable choice conflicts with a Rule or accepted boundary.
 
-**PREFER** expression that makes hierarchy, state, consequence, affordance, and recovery easier to perceive.
-Visual novelty, density, motion, or decoration does not compensate for unresolved structure, content,
-feedback, accessibility, or failure presentation.
+**PREFER** visual and content choices that make hierarchy, state, consequences, available actions, and
+recovery easier to understand. Visual novelty, density, motion, or decoration does not compensate for
+unresolved structure, content, feedback, accessibility, or failure presentation.
 
-### Prefer consequentially different concepts
+### Prefer concepts with clear tradeoffs
 
-**PREFER** concepts that differ in information structure, action model, information flow, interaction intent,
-or state communication. Compare each concept against the same actors, accepted outcome, applicable evidence,
-target differences, accessibility needs, and observable failure and recovery paths.
+**PREFER** concepts whose required differences expose tradeoffs that affected actors can compare. Compare
+each concept against the same actors, accepted outcome, applicable evidence, target differences,
+accessibility needs, and observable failure and recovery paths.
 
 When constraints leave only one valid concept, keep the judgment open until those constraints are established
 by their owners. A technical limitation is an input to observable judgment, not permission for this
@@ -165,10 +166,10 @@ installed promises, and target differences as external inputs; do not select or 
 
 ### Prefer success questions that can reopen the judgment
 
-**PREFER** an observable success question and measure that describe the accepted user outcome. State the
-measure's intended interpretation, the harmful proxy interpretation that could improve while the outcome
-worsens, the validation signal that would distinguish them, and the evidence or requirement change that
-reopens the earliest affected decision.
+**PREFER** an observable success question and measure that describe the accepted user outcome. State what the
+measure indicates about that outcome, how the measure could improve while the outcome worsens, the validation
+signal that distinguishes those cases, and the evidence or requirement change that reopens the earliest
+affected decision.
 
 Given facts accepted by their owning authority, make the observable design judgment explicit as accept,
 revise, or reject. The handoff should state governing identity, actors, authority, outcome, evidence classes,
