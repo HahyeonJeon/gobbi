@@ -1,6 +1,6 @@
 ---
 name: go-modules
-description: "MUST load when creating, changing, validating, or releasing a Go module, including layout, go.mod, go.work, dependencies, tools, compatibility, and versions."
+description: "MUST load when creating, changing, or validating a Go module, including its path, layout, go.mod, go.work, dependencies, tools, external-consumer validation, and compatibility analysis."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---

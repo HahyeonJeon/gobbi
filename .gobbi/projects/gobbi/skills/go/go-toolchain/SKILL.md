@@ -1,6 +1,6 @@
 ---
 name: go-toolchain
-description: "MUST load when using or diagnosing the Go distribution, go command, compiler, formatter, vet, generators, build constraints, platform builds, or project-pinned Go tools."
+description: "MUST load when using or diagnosing the Go distribution, go command, compiler, formatter, vet, generators, build constraints, GOOS/GOARCH targets, or project-pinned Go tools."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: tool
 ---
