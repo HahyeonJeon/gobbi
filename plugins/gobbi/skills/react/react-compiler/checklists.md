@@ -19,6 +19,17 @@ configuration. A neighboring version, guessed default, or missing command fails 
 - [ ] RCMP-CK-PROJECT-01-02 — Every active non-default compiler option is recorded.
 - [ ] RCMP-CK-PROJECT-01-03 — Every active compiler option resolves to the configuration file that contains it.
 - [ ] RCMP-CK-PROJECT-01-04 — The applicable compiler, lint, build, test, and measurement command or method is known.
+- [ ] RCMP-CK-PROJECT-01-05 — The installed compiler record states exact versions for React Compiler, React, Hooks linter, build tool, and framework integration, plus configuration files, plugins, commands, and supported version ranges.
+- [ ] RCMP-CK-PROJECT-01-06 — Installed configuration is classified as no compiler, partial or gated adoption, annotation-driven adoption, or broad adoption.
+
+### RCMP-SC-PROJECT-02 — Expected failure: The build-tool integration is unsupported
+
+The installed integration must be supported by current compiler guidance before it carries compiler claims.
+Treating an unsupported integration as valid configuration fails the scenario.
+
+#### Checklist
+
+- [ ] RCMP-CK-PROJECT-02-01 — The installed build-tool integration is supported by current compiler guidance.
 
 ## Structure
 
@@ -32,6 +43,8 @@ work should record the coverage result per function; a project-level judgment fa
 - [ ] RCMP-CK-STRUCTURE-01-01 — The active `compilationMode` is recorded before function-level judgment.
 - [ ] RCMP-CK-STRUCTURE-01-02 — Each affected component or Hook is classified as compiled, skipped, failed, or not a candidate.
 - [ ] RCMP-CK-STRUCTURE-01-03 — Each diagnostic resolves to its configuration source, Rules-of-React rule, syntax, or library.
+- [ ] RCMP-CK-STRUCTURE-01-04 — The active `compilationMode` record states candidate-selection behavior, not only enabled or disabled.
+- [ ] RCMP-CK-STRUCTURE-01-05 — Actual affected-function coverage is rechecked after an in-scope diagnostic cause is repaired.
 
 ### RCMP-SC-STRUCTURE-02 — Edge case: Configuration is present but does not deliver coverage
 
@@ -57,6 +70,16 @@ claiming a gain without focused evidence fails the scenario.
 - [ ] RCMP-CK-PERFORMANCE-01-03 — Existing manual memoization remains unless focused evidence supports changing it.
 - [ ] RCMP-CK-PERFORMANCE-01-04 — New manual memoization has a measured-work, required-identity, or documented-escape-hatch reason.
 - [ ] RCMP-CK-PERFORMANCE-01-05 — A compiler change preserves the affected behavior and every required identity relationship.
+- [ ] RCMP-CK-PERFORMANCE-01-06 — Existing manual memoization is removed only after focused correctness tests support the change.
+
+### RCMP-SC-PERFORMANCE-02 — Normal case: Each adoption slice is measured before expansion
+
+A bounded slice should measure affected behavior before broader rollout. Expanding from correctness or
+compilation evidence alone fails the scenario.
+
+#### Checklist
+
+- [ ] RCMP-CK-PERFORMANCE-02-01 — Affected behavior is measured before adoption expands.
 
 ## Aesthetics
 
@@ -69,6 +92,7 @@ or unexplained escape hatches fail the scenario.
 
 - [ ] RCMP-CK-AESTHETICS-01-01 — Every compiler option uses its installed documented name and value type or object structure.
 - [ ] RCMP-CK-AESTHETICS-01-02 — Each compiler annotation, directive, runtime gating condition, or suppression states its bounded reason.
+- [ ] RCMP-CK-AESTHETICS-01-03 — Misspelled, unsupported, or wrong-typed options are checked with the official `config` lint when available.
 
 ## Usage
 
@@ -82,6 +106,8 @@ action. Hidden coverage loss or an unusable handoff fails the scenario.
 - [ ] RCMP-CK-USAGE-01-01 — An uncompiled function retains correct unoptimized behavior.
 - [ ] RCMP-CK-USAGE-01-02 — The handoff identifies every remaining uncovered function.
 - [ ] RCMP-CK-USAGE-01-03 — Every remaining uncovered function has a next diagnostic action.
+- [ ] RCMP-CK-USAGE-01-04 — Unrelated diagnostics are not treated as required completion scope.
+- [ ] RCMP-CK-USAGE-01-05 — Skipped functions and their resulting limitations remain visible.
 
 ## Consistency
 
@@ -104,6 +130,7 @@ Suppression changes the report, not the coverage, so a claim built on it fails t
 #### Checklist
 
 - [ ] RCMP-CK-CONSISTENCY-02-01 — No diagnostic is suppressed, annotated, or excluded in order to present a function as compiled.
+- [ ] RCMP-CK-CONSISTENCY-02-02 — Each applicable compiler or Hooks diagnostic either has its cause repaired or records intentional skipped coverage.
 - Also applies: RCMP-CK-USAGE-01-02 (every remaining uncovered function stays visible in the handoff).
 
 ## Risk
@@ -118,6 +145,20 @@ regresses. Expanding despite a failed slice or lacking a recovery boundary fails
 - [ ] RCMP-CK-RISK-01-01 — Each adoption slice has a known last proven configuration or runtime gating state.
 - [ ] RCMP-CK-RISK-01-02 — Every failed required check stops adoption expansion.
 - [ ] RCMP-CK-RISK-01-03 — A failed adoption slice restores a recoverable state.
+- [ ] RCMP-CK-RISK-01-04 — Each adoption slice changes one bounded area.
+- [ ] RCMP-CK-RISK-01-05 — Correctness, lint, and build checks complete before adoption expands.
+- [ ] RCMP-CK-RISK-01-06 — Affected-function coverage is confirmed before adoption expands.
+
+### RCMP-SC-RISK-02 — Expected failure: Expansion or recovery exceeds the last proven boundary
+
+Expansion and recovery must stay within the complete slice gate and last proven boundary. Skipping the gate,
+recovery inspection, or smallest corrected retry fails the scenario.
+
+#### Checklist
+
+- [ ] RCMP-CK-RISK-02-01 — Expansion requires the current bounded slice to satisfy its complete correctness, lint and build, coverage, and measurement gate.
+- [ ] RCMP-CK-RISK-02-02 — Regression recovery inspects configuration, coverage, and identity assumptions after restoring the last proven boundary.
+- [ ] RCMP-CK-RISK-02-03 — Recovery retries only the smallest corrected slice.
 
 ## Overall
 
@@ -130,3 +171,4 @@ pass claim without function-level evidence fails.
 
 - [ ] RCMP-CK-OVERALL-01-01 — No project-level enablement state is used as a proxy for affected-function coverage.
 - [ ] RCMP-CK-OVERALL-01-02 — The final result distinguishes configured, compiled, runtime-selected, tested, and measured claims.
+- [ ] RCMP-CK-OVERALL-01-03 — Handoff records compiler state, affected functions, diagnostics, commands, coverage evidence, measurements, and remaining skips.
