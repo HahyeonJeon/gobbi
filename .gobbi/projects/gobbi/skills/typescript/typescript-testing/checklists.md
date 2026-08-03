@@ -3,9 +3,10 @@
 This reusable unchecked source evaluates one set of TypeScript tests created or reviewed under this operation.
 It is governed by the [`typescript`](../SKILL.md) domain and [`typescript-testing`](SKILL.md) operation, with
 [`typescript-packaging`](../typescript-packaging/SKILL.md) defining the package metadata its consumer checks
-exercise and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact `tsconfig.json` files and
-resolution modes they use. The source commit that contains this file identifies the checklist version. Its
-stable checklist prefix is `TSTEST`.
+exercise, [`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) defining non-package command
+delivery, and [`typescript-toolchain`](../typescript-toolchain/SKILL.md) defining the exact `tsconfig.json`
+files and resolution modes they use. The source commit that contains this file identifies the checklist
+version. Its stable checklist prefix is `TSTEST`.
 
 The [project-kind checklist](project-kind-checklists.md) separately evaluates kind selection and the web,
 command-line, library, SDK, desktop, and fallback consumer paths.
@@ -239,11 +240,10 @@ each test must catch and demonstrates the failure; coverage accepted as failure 
 #### Checklist
 
 - [ ] TSTEST-CK-OVERALL-01-01 — The mutation or controlled defect that would make each test fail is defined.
-- [ ] TSTEST-CK-OVERALL-01-02 — The named defect is introduced or simulated where practical.
-- [ ] TSTEST-CK-OVERALL-01-03 — The test is confirmed to fail for the expected reason.
+- [ ] TSTEST-CK-OVERALL-01-02 — The named defect is introduced or simulated only inside the authorized author-mode affected set or an authorized disposable boundary.
+- [ ] TSTEST-CK-OVERALL-01-03 — The test and every retained snapshot or broad assertion are confirmed to fail for the expected reason under the named defect.
 - [ ] TSTEST-CK-OVERALL-01-04 — The accepted implementation is restored.
 - [ ] TSTEST-CK-OVERALL-01-05 — The focused test is run again after the accepted implementation is restored.
-- [ ] TSTEST-CK-OVERALL-01-06 — No snapshot or broad assertion that passes under the named defect is retained.
 
 ### TSTEST-SC-OVERALL-02 — Expected failure: a named runtime, tool, or package mode is unavailable
 
@@ -266,3 +266,13 @@ when correction is unauthorized or outside scope. Calling the failure an unavail
 
 - [ ] TSTEST-CK-OVERALL-03-01 — Every failed check returns author mode to the earliest phase that owns its cause, or stops with the failed claim when correction is unauthorized or outside scope.
 - [ ] TSTEST-CK-OVERALL-03-02 — A repaired test set passes the failed check and every affected downstream check from the final tree before completion.
+
+### TSTEST-SC-OVERALL-04 — Expected failure: a failure-power challenge would cross the authorized boundary
+
+Reproducing the named defect would require an unauthorized external effect or an irreversible effect. The
+expected outcome records the exact blocked effect and leaves failure-power evidence unavailable. Performing
+the effect, weakening the boundary, or inferring failure power is the failure.
+
+#### Checklist
+
+- [ ] TSTEST-CK-OVERALL-04-01 — Failure-power evidence is classified as unavailable with the exact blocked unauthorized external or irreversible effect recorded.

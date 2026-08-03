@@ -9,7 +9,12 @@ skill-type: operation
 
 TypeScript Development coordinates authoring and review of TypeScript implementation code. Author mode takes an authorized change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. Review-only implementation mode keeps this child active, inspects the existing typed design and implementation, and composes with the general Evaluation operation for verdicts.
 
-This operation composes with `typescript-conventions` and `typescript-typing` whenever their triggers apply. Load each of `typescript-async`, `typescript-toolchain`, `typescript-packaging`, and `typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every applicable project kind: web application, command-line application (CLI), library, SDK, and desktop application. If none fits, record a literal fallback such as `server process`, `build script`, or `test utility`.
+This operation composes with `typescript-conventions` and `typescript-typing` whenever their triggers apply.
+Load each of `typescript-async`, `typescript-cli-delivery`, `typescript-toolchain`, `typescript-packaging`, and
+`typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every
+applicable project kind: web application, command-line application (CLI), library, SDK, and desktop
+application. If none fits, record a literal fallback such as `server process`, `build script`, or `test
+utility`.
 
 The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. Author mode implements those inputs through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results. Review-only implementation mode inspects how the existing code realizes those inputs.
 
@@ -137,9 +142,11 @@ Type correctness is one check among runtime behavior, integration, build, packag
 #### 4.3 Verify each selected project kind
 
 - For a web application, verify browser and server entries under their exact `tsconfig.json` files, then exercise the production build in each named browser or server runtime that the change affects.
-- For a command-line application, exercise its recorded distribution method rather than assuming an npm package.
-  Use an isolated archive installation for an npm package. Otherwise use the recorded bundled executable,
-  installed script, workspace command, or other consumer command.
+- For a command-line application, select every applicable delivery owner before exercising the consumer
+  command. Use the isolated archive installation supplied by `typescript-packaging` for an npm or other
+  package-archive command. Use the consumer entry supplied by `typescript-cli-delivery` for a bundled
+  executable, installed script, workspace-distributed command, or literal other non-package method. Load both
+  for a hybrid that distributes commands through both methods.
   Prove that the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
   Then verify the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - For a library, verify every recorded consumer path from an isolated representative consumer. Install the

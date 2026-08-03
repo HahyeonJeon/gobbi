@@ -9,7 +9,11 @@ skill-type: operation
 
 TypeScript Testing verifies runtime behavior and compile-time requirements. It composes runtime tests, controllable dependencies, type-level assertions, expected failures, public declaration checks, installed-package checks, and checked documentation examples without treating any one layer as a substitute for the others.
 
-This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs authorized commands without inheriting authority to change production or test files.
+This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs
+authorized commands without inheriting authority to change production or test files. For command delivery,
+`typescript-packaging` owns npm and other package-archive command installations, while
+`typescript-cli-delivery` owns bundled executables, installed scripts, workspace-distributed commands, and
+literal other non-package methods. A hybrid loads both; this operation continues to own command behavior tests.
 
 When review-only package validation applies, it may inspect existing generated package output and a pre-existing
 package archive. With command authority, it may write only inside a named temporary directory or isolated
@@ -77,9 +81,10 @@ Documented examples are code and require a named compiler version and exact comp
 
 - Continue through this step only in review-only mode. Inspect the existing runtime, type-level, negative,
   declaration, package, command, and example checks that apply to the recorded claims.
-- Run only authorized existing checks. To challenge a test's failure power, copy the smallest required fixture
-  into a named temporary directory and mutate only that copy; when a disposable copy cannot reproduce the
-  relevant behavior, report the mutation result as unavailable.
+- Run only authorized existing checks. To challenge a test's failure power, introduce or simulate the named
+  defect only inside an authorized disposable boundary, such as the smallest required fixture copied into a
+  named temporary directory. When reproduction would require an unauthorized external or irreversible
+  effect, record that exact blocked effect and classify failure-power evidence as unavailable.
 - For package validation, inspect only existing declarations and generated package output. Inspect or install
   only a package archive that existed before the review, and install it only into an isolated disposable
   consumer when command authority permits.
@@ -105,7 +110,11 @@ Continue into Phase 2 only in author mode.
 
 #### 2.3 Verify the failure power
 
-- Introduce or simulate the named defect when practical and confirm the test fails for the expected reason.
+- Introduce or simulate the named defect only inside the authorized author-mode affected set or an authorized
+  disposable boundary, and confirm the test fails for the expected reason.
+- When reproduction would require an unauthorized external or irreversible effect, record that exact blocked
+  effect and classify failure-power evidence as unavailable instead of crossing the boundary. Keep that
+  result open and do not enter the remaining mutation-specific path for that test.
 - Restore the accepted implementation and run the focused test again.
 - If the test stays green under the defect or stays red after restoration, return to Phase 1.2 for the case design or the owning Phase 2 step for the runtime test.
 - Reject snapshots or broad assertions that pass under the defect.
@@ -153,10 +162,11 @@ Continue into Phase 2 only in author mode.
 #### 4.3 Verify each selected project kind
 
 - For a web application, test affected browser and server behavior at the layer that exposes it and smoke-test the production build in the named runtime.
-- For a command-line application, prepare the recorded distribution method in an isolated consumer and invoke its consumer command.
-  For an npm-style package command, prove command resolution selects the archive installation.
-  For a bundled executable, installed script, workspace command, or other method, prove the invoked executable
-  is the recorded output rather than an unrelated command already on `PATH`.
+- For a command-line application, use the isolated consumer entry prepared by the applicable delivery owner
+  and invoke its consumer command. For an npm or other package-archive command, `typescript-packaging` owns the
+  archive installation. For a bundled executable, installed script, workspace-distributed command, or literal
+  other non-package method, `typescript-cli-delivery` owns the prepared entry. Load both for a hybrid.
+  Prove the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
   Verify the command specification, including failure and signal paths that apply.
 - For a library, use an isolated representative consumer through the recorded distribution method. Install the
   package archive when the library is distributed as a package; otherwise use the recorded workspace,

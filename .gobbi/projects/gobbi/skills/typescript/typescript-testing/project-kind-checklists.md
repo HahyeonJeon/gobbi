@@ -62,16 +62,19 @@ affected entries and smoke-tests the production build in each named runtime.
 
 ### TSTESTKIND-SC-USAGE-02 — Normal case: a command-line application is tested through its recorded distribution method
 
-A source entry can run while a package link, bundled executable, installed script, or workspace command is
-wrong. The expected outcome prepares the recorded distribution method in isolation, proves which executable
-runs, and verifies the process requirements.
+A source entry can run while a package link, bundled executable, installed script, workspace-distributed
+command, or literal other non-package command is wrong. The expected outcome uses
+`typescript-packaging` for package-archive delivery and `typescript-cli-delivery` for non-package delivery,
+selecting both for a hybrid. It proves which executable runs and verifies the process requirements.
 
 #### Checklist
 
-- [ ] TSTESTKIND-CK-USAGE-02-01 — A test fixture produces the output of the recorded command distribution method in an isolated consumer environment.
-- [ ] TSTESTKIND-CK-USAGE-02-02 — The test proves that it invoked that output rather than a source file or unrelated command already on `PATH`.
+- [ ] TSTESTKIND-CK-USAGE-02-01 — Every npm or package-archive command consumer entry is prepared through `typescript-packaging` in an isolated consumer environment.
+- [ ] TSTESTKIND-CK-USAGE-02-02 — The test proves that it invoked the recorded output rather than a source file or unrelated command already on `PATH`.
 - [ ] TSTESTKIND-CK-USAGE-02-03 — Process tests invoke every recorded consumer command through its consumer entry.
 - [ ] TSTESTKIND-CK-USAGE-02-04 — Process tests assert the required arguments, standard input, standard output, standard error, exit status, signals, and cleanup for the applicable success and failure cases.
+- [ ] TSTESTKIND-CK-USAGE-02-05 — Every bundled executable, installed script, workspace-distributed command, or literal other non-package command consumer entry is prepared through `typescript-cli-delivery` in an isolated consumer environment.
+- [ ] TSTESTKIND-CK-USAGE-02-06 — A hybrid command distribution selects both `typescript-packaging` and `typescript-cli-delivery`.
 
 ### TSTESTKIND-SC-USAGE-03 — Normal case: a library is tested through its recorded consumer path
 

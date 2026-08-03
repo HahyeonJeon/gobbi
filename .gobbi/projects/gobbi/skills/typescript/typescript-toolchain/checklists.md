@@ -7,8 +7,10 @@ manual, with [`typescript-packaging`](../typescript-packaging/SKILL.md) defining
 the selected output owner defining bundler strategy, source-map publication, and rollout:
 [`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
 [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
-`typescript-packaging` for a package archive, or the recorded project-specific owner for another output. The
-source commit that contains this file identifies the checklist version. Its stable checklist prefix is `TSTOOL`.
+`typescript-packaging` for a package archive,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+or the recorded project-specific owner for another output. The source commit that contains this file
+identifies the checklist version. Its stable checklist prefix is `TSTOOL`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -30,7 +32,7 @@ web-only owner, or proceeding without a recorded owner, is the failure.
 
 - [ ] TSTOOL-CK-PROJECT-01-01 — The executable that checks types, produces JavaScript, strips types, resolves modules, builds distributable files, lints source, and executes the result is identified for each responsibility.
 - [ ] TSTOOL-CK-PROJECT-01-02 — The source files, generated JavaScript or declarations, and named runtimes are recorded.
-- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment` for a web release, `electron-release` for an installed Electron artifact, `typescript-packaging` for a package archive, or the recorded project-specific owner for another output.
+- [ ] TSTOOL-CK-PROJECT-01-03 — Bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and rollout are routed to `web-deployment` for a web release, `electron-release` for an installed Electron artifact, `typescript-packaging` for a package archive, `typescript-cli-delivery` for a non-package command-line application, or the recorded project-specific owner for another output.
 - [ ] TSTOOL-CK-PROJECT-01-04 — The package and version supplying each `tsc` executable are recorded separately from any package used through the TypeScript compiler API.
 
 ### TSTOOL-SC-PROJECT-02 — Poor quality: a universal preset applied to every generated output
@@ -47,15 +49,18 @@ expected outcome starts from the closest `tsconfig.json` and chooses settings fr
 
 ## Structure
 
-### TSTOOL-SC-STRUCTURE-01 — Normal case: `tsconfig.json` files are split where environments differ
+### TSTOOL-SC-STRUCTURE-01 — Normal case: `tsconfig.json` files split on observable setting differences
 
 One repository can hold application code, library code, tests, build scripts, browser code, server code, and
-preload code with different globals and declarations. The expected outcome gives materially different
-environments their own `tsconfig.json` files. A single configuration stretched across them is the failure.
+preload code that require different `lib`, `types`, module kind or resolution, emit or output, or inclusion
+settings. The expected outcome splits on those observable requirements and keeps shared configuration from
+exposing declarations, capabilities, or inputs an included environment does not own. A configuration that
+blends incompatible requirements is the failure.
 
 #### Checklist
 
-- [ ] TSTOOL-CK-STRUCTURE-01-01 — Separate `tsconfig.json` files are used wherever application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need materially different `lib`, `types`, module, resolution, output, or inclusion settings.
+- [ ] TSTOOL-CK-STRUCTURE-01-01 — Separate `tsconfig.json` files are used wherever outputs require different `lib`, `types`, module kind or resolution, emit or output, or inclusion settings.
+- [ ] TSTOOL-CK-STRUCTURE-01-02 — No shared `tsconfig.json` exposes ambient declarations, module capabilities, or inputs that any included environment does not own.
 
 ### TSTOOL-SC-STRUCTURE-02 — Normal case: emit outputs are chosen for their consumers
 
@@ -146,13 +151,17 @@ the shipped JavaScript separately. Carrying one result into the other's claim br
 ### TSTOOL-SC-CONSISTENCY-02 — Normal case: the source-map chain reaches the original TypeScript
 
 When `tsc` emits JavaScript and a bundler transforms it again, only the last map in the chain decides what a
-stack trace shows. The expected outcome has the downstream tool consume the upstream map so traces point at
-the original TypeScript. A final map pointing at intermediate output is the failure.
+stack trace shows. The expected outcome has each downstream tool preserve mappings to the original TypeScript,
+then delivers maps whose original sources either resolve in the consumer environment or are carried in
+`sourcesContent`. TypeScript's `inlineSources` is one producer option for embedding source content, while a
+downstream transform may produce the required final result. A final map that points at intermediate output or
+cannot provide an original source is the failure.
 
 #### Checklist
 
 - [ ] TSTOOL-CK-CONSISTENCY-02-01 — Every downstream transform consumes the upstream source map so the final map points at the original TypeScript rather than at intermediate output.
-- [ ] TSTOOL-CK-CONSISTENCY-02-02 — `inlineSources` is used wherever the original sources cannot be served beside the map.
+- [ ] TSTOOL-CK-CONSISTENCY-02-02 — Every final delivered map either resolves each original source in its consumer environment or carries that source's original content in `sourcesContent`.
+- [ ] TSTOOL-CK-CONSISTENCY-02-03 — Every downstream transform preserves the final source-resolution or `sourcesContent` result.
 
 ## Risk
 

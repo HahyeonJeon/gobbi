@@ -73,14 +73,18 @@ named runtime. Development-server success alone is the failure.
 
 ### TSDEV-SC-USAGE-04 — Normal case: a command-line application uses its recorded distribution method
 
-A source entry can run while a package command, bundled executable, installed script, workspace command, or
-other consumer command is wrong. The expected outcome invokes the command through the recorded distribution
-method and rejects a source file or unrelated command already on `PATH` as proof.
+A source entry can run while a package command, bundled executable, installed script, workspace-distributed
+command, or literal other non-package command is wrong. The expected outcome takes npm and package-archive
+commands from `typescript-packaging`, takes non-package commands from `typescript-cli-delivery`, and selects
+both owners for a hybrid. It rejects a source file or unrelated command already on `PATH` as proof.
 
 #### Checklist
 
 - [ ] TSDEV-CK-USAGE-04-01 — The invoked executable is the output of the recorded command distribution method rather than a source file or unrelated command already on `PATH`.
 - [ ] TSDEV-CK-USAGE-04-02 — Required arguments, standard input, standard output, standard error, exit status, signals, and failure text are verified.
+- [ ] TSDEV-CK-USAGE-04-03 — Every npm or package-archive command consumer entry is supplied through `typescript-packaging`.
+- [ ] TSDEV-CK-USAGE-04-04 — Every bundled executable, installed script, workspace-distributed command, or literal other non-package command consumer entry is supplied through `typescript-cli-delivery`.
+- [ ] TSDEV-CK-USAGE-04-05 — A hybrid command distribution selects both `typescript-packaging` and `typescript-cli-delivery`.
 
 ### TSDEV-SC-USAGE-05 — Normal case: a library is verified through its recorded consumer path
 

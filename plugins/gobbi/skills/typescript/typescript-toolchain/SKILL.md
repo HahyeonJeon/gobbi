@@ -30,7 +30,9 @@ An import is correct only when the compiler, builder, package metadata, and actu
 - **MUST** identify which executable checks types, produces JavaScript, strips types, resolves modules, builds distributable files, lints source, and executes the result.
 - **NEVER** use a successful type-check as proof that emitted or stripped JavaScript runs in a named runtime.
 - **MUST** align module kind, resolution mode, import specifiers, package metadata, and runtime support with the generated output.
-- **MUST** use separate compiler configurations when runtime, library, application, test, or package outputs have materially different environments.
+- **MUST** use separate compiler configurations when outputs require different `lib`, `types`, module kind or
+  resolution, emit or output, or inclusion settings. A shared configuration must not expose ambient
+  declarations, module capabilities, or inputs that any included environment does not own.
 - **NEVER** assume a compiler option, syntax feature, library declaration, or import form is supported until the pinned toolchain and each named runtime prove it.
 - **MUST** inspect the effective configuration and built output when diagnosing a configuration or resolution failure.
 
@@ -42,7 +44,10 @@ Record the source files, generated JavaScript or declarations, named runtimes, a
 
 ### Choose exact compiler configurations
 
-Start with the closest existing `tsconfig.json`. Split `tsconfig.json` files when application globals, library declarations, tests, build scripts, browser code, server code, preload code, or package emit need different `lib`, `types`, module, resolution, output, or inclusion settings.
+Start with the closest existing `tsconfig.json`. Split `tsconfig.json` files when application globals, library
+declarations, tests, build scripts, browser code, server code, preload code, or package emit require different
+`lib`, `types`, module kind or resolution, emit or output, or inclusion settings. A shared configuration must
+not expose ambient declarations, module capabilities, or inputs that any included environment does not own.
 
 Keep shared options in a base `tsconfig.json` only when every extending compiler file truly shares them. A stricter flag may be a useful project choice, but no single maximal set is correct for every output or migration state.
 
@@ -83,12 +88,17 @@ When the configured transpiler, bundler, or type-stripping runtime processes one
 
 A stack trace is only as readable as the last map in the chain. When `tsc` emits JavaScript and a bundler then
 transforms it, that bundler must consume the upstream map or the final map points at intermediate output
-instead of the original TypeScript; `inlineSources` embeds the original text when sources cannot be served
-beside the map. Route production-map publication to the selected output's release owner:
+instead of the original TypeScript. Every final delivered map must either resolve each original source in its
+consumer environment or carry that original content in `sourcesContent`, as defined by the current
+[ECMA-426 source-map format](https://tc39.es/ecma426/). Every downstream transform must preserve that result.
+TypeScript's [`inlineSources`](https://www.typescriptlang.org/tsconfig/inlineSources.html) option is one
+producer-specific way to embed source content; a downstream transform may produce the required final
+`sourcesContent` instead. Route production-map publication to the selected output's release owner:
 [`web-deployment`](../../web/web-deployment/SKILL.md) for a web release,
 [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron artifact,
-[`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive, or the recorded
-project-specific release owner for another output.
+[`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+or the recorded project-specific release owner for another output.
 
 ### Diagnose runtime differences
 
@@ -104,9 +114,10 @@ This tool stops after inspecting emitted JavaScript, declarations, maps, and bui
 configuration, chunking and code splitting, asset hashing and cache lifetimes, source-map publication, and
 rollout to the selected output's build or release owner: [`web-deployment`](../../web/web-deployment/SKILL.md)
 for a web release, [`electron-release`](../../electron/electron-release/SKILL.md) for an installed Electron
-artifact, [`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive, or the recorded
-project-specific owner for another output. Stop and report the missing ownership decision when no such owner
-is recorded.
+artifact, [`typescript-packaging`](../typescript-packaging/SKILL.md) for a package archive,
+[`typescript-cli-delivery`](../typescript-cli-delivery/SKILL.md) for a non-package command-line application,
+or the recorded project-specific owner for another output. Stop and report the missing ownership decision
+when no such owner is recorded.
 
 ## References
 
