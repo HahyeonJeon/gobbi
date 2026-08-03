@@ -79,23 +79,23 @@ exact load directives because specialists do not inherit manager context.
 
 ## Plugin topology
 
-The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks and
-carries both runtime manifests. `.agents/plugins/marketplace.json` and
+The bounded package at `plugins/gobbi/` carries both runtime manifests plus generated real `skills` and
+`agents` directories that are byte-equal to their canonical owners. `.agents/plugins/marketplace.json` and
 `.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
 repo-local and are not installed as plugin components.
 
-Run `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
+Run `bash scripts/sync-plugin-package.sh --materialize-package` to regenerate the package components,
+`bash scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
 installed-cache behavior. The package has no lifecycle-hook component.
 
-A Codex plugin install of Gobbi receives both manifests and no skills, because the Codex plugin installer
-copies a plugin into its cache without following symlinks. This is an open Codex defect —
-[openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install: support symlinks per the
-cross-agent marketplace contract" — not a packaging error here, and `check-codex-plugin-smoke.sh` reports it
-as a warning. Keep the single canonical source, and materialize it into the package only as the one generated
-copy a guard proves byte-equal to that source. Any further duplication, and any hand edit of a generated file,
-stays forbidden. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves
-and needs no install.
+A Codex plugin install of Gobbi must receive both manifests and every required generated package path. The
+installer does not follow a symlink at any depth, so a symlinked component root or nested package path is a
+package failure. A missing installed path is always a failure, never an expected warning or limitation; check
+the named package path and regenerate with `bash scripts/sync-plugin-package.sh --materialize-package`. Keep
+the single canonical source and its one guarded generated package copy. Any further duplication, and any hand
+edit of a generated file, stays forbidden. Codex skill discovery does follow symlinks, so in this repository
+`.agents/skills/` resolves and needs no install.
 
 ## Principles
 
