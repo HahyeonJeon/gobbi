@@ -11,8 +11,12 @@ Use this preference skill when designing or reviewing goroutines, channels, cont
 atomics, timers, concurrent queues, cancellation, or shutdown. It helps make ownership and completion visible
 at every concurrent boundary.
 
-This skill owns concurrent lifetime and race safety, not general API shape or test procedure. `go-design`
-owns ordinary resources, `go-testing` owns concurrency evidence, and `go-toolchain` owns race-detector commands.
+This skill owns concurrent ownership, lifetime, synchronization, cancellation, bounds, backpressure,
+shutdown, timers, and race-safety judgment. `go-design` owns ordinary API and resource judgment.
+
+`go-architecture`, `go-development`, `go-debugging`, `go-observability`, and `go-performance` own their
+independent results and load this preference when concurrency enters them. `go-testing` owns evidence strategy
+and results; `go-toolchain` owns race-detector and project-command mechanics.
 
 ## Principles
 
@@ -100,22 +104,21 @@ buffering to hide a slow consumer or a shutdown deadlock; measure the queue and 
 ### Timers, tickers, and shutdown
 
 PREFER `time.NewTimer` or `time.NewTicker` when work may end before the timer source, and stop what the owner no
-longer needs. Account for already-fired values and reset semantics under the project's supported Go version;
+longer needs. Account for already-fired values and reset semantics under the module's Go language version;
 avoid creating an unbounded series of timers in a loop.
 
 PREFER shutdown that stops intake, cancels outstanding work, waits for owned goroutines, releases resources,
 and returns an error or timeout to the caller. Make repeated or concurrent shutdown calls safe when the public
 contract permits them.
 
-### Race evidence
+### Race-safety review and evidence limits
 
-PREFER the race detector on tests and executable paths that exercise shared state. Its report is strong
-evidence of a defect, but a clean run covers only executed paths and cannot prove the absence of races; the
-[race detector guide](https://go.dev/doc/articles/race_detector) states this runtime coverage boundary.
+PREFER ownership, lifetime, and synchronization review independently of race-detector output. A reported race
+is direct evidence of a defect, while a clean run covers only executed paths and does not prove race freedom;
+the [race detector guide](https://go.dev/doc/articles/race_detector) states this runtime coverage boundary.
 
-Review ownership and synchronization even when `go test -race` passes. Include production-like workload paths
-when practical, and treat unsupported target platforms or prohibitive runtime cost as explicit evidence gaps
-rather than silent success.
+`go-testing` owns selection and interpretation of race evidence, including exercised workloads and explicit
+evidence gaps. `go-toolchain` owns the race-detector command, platform support, and command effects.
 
 ## References
 

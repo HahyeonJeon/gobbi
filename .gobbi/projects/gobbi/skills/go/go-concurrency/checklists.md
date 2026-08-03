@@ -40,7 +40,11 @@ should have one owner and terminal path; orphaned lifetime fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-01-01 — Every goroutine has one identifiable owner, a bounded stop condition, and a retained or exposed completion observation.
+- [ ] GOCON-CK-STRUCTURE-01-01 — Every goroutine has one identifiable owner.
+- [ ] GOCON-CK-STRUCTURE-01-02 — Every goroutine has a bounded stop condition.
+- [ ] GOCON-CK-STRUCTURE-01-03 — Every goroutine has a retained or exposed completion observation.
+- [ ] GOCON-CK-STRUCTURE-01-04 — Every goroutine lifecycle group reports its first material failure to its owner.
+- [ ] GOCON-CK-STRUCTURE-01-05 — A material failure that ends a goroutine lifecycle group cancels its remaining owned goroutines.
 
 ### GOCON-SC-STRUCTURE-02 — Edge case: Channel closure races with active senders
 
@@ -56,12 +60,27 @@ closing and receivers should not claim closure authority; send-after-close or do
 ### GOCON-SC-STRUCTURE-03 — Rule violation: Request context loses its propagation contract
 
 Request-scoped work stores context in an unrelated struct, passes nil, invents a replacement type, or discards
-the caller's cancellation. Context should remain an explicit first parameter with its request lifetime intact.
+the caller's cancellation. Context should remain an explicit first parameter with its request lifetime intact;
+a stored exception belongs to one lifetime-owning API and cannot combine unrelated requests.
 
 #### Checklist
 
-- [ ] GOCON-CK-STRUCTURE-03-01 — Every request context is passed explicitly as the first parameter and is never nil.
+- [ ] GOCON-CK-STRUCTURE-03-01 — Every request context is passed explicitly as the first parameter.
 - [ ] GOCON-CK-STRUCTURE-03-02 — No replacement context discards the caller's deadline or cancellation.
+- [ ] GOCON-CK-STRUCTURE-03-03 — No request context is nil.
+- [ ] GOCON-CK-STRUCTURE-03-04 — Every value carried by a context is request-scoped.
+- [ ] GOCON-CK-STRUCTURE-03-05 — Ordinary configuration and dependencies are passed as ordinary parameters.
+- [ ] GOCON-CK-STRUCTURE-03-06 — Any stored context belongs to one explicit lifetime-owning API.
+
+### GOCON-SC-STRUCTURE-04 — Poor quality: Synchronization mechanism does not match ownership
+
+The code functions but selects channels, locks, or atomics by habit rather than by communication and state
+semantics. Each mechanism should match the ownership or invariant it represents; accidental mechanism choice
+fails.
+
+#### Checklist
+
+- [ ] GOCON-CK-STRUCTURE-04-01 — Each channel, lock, and atomic operation matches the communication, shared invariant, or independent value it owns.
 
 ## Performance
 
@@ -82,7 +101,7 @@ Resource use should remain bounded by a real capacity; scale-dependent exhaustio
 
 #### Checklist
 
-- [ ] GOCON-CK-PERFORMANCE-02-01 — Per-item goroutine, timer, and ticker creation stays bounded by an explicit resource limit and owner.
+- [ ] GOCON-CK-PERFORMANCE-02-01 — Per-item goroutine, timer, and ticker creation stays within an explicit resource limit.
 - [ ] GOCON-CK-PERFORMANCE-02-02 — Buffering does not conceal an indefinitely slow consumer.
 
 ## Aesthetics
@@ -122,38 +141,37 @@ remain safe and understandable; double close, panic, or abandoned work fails.
 - [ ] GOCON-CK-USAGE-02-02 — Repeated and concurrent shutdown cannot close an owned resource twice.
 - [ ] GOCON-CK-USAGE-02-03 — Shutdown completion accounts for every owned goroutine.
 
+### GOCON-SC-USAGE-03 — Edge case: A timer fires while its owner stops or resets it
+
+A timer or ticker fires as its owner stops, drains, or resets it. The lifecycle should account for an
+already-fired value under the module's Go language version; a lost wakeup or duplicate action fails.
+
+#### Checklist
+
+- [ ] GOCON-CK-USAGE-03-01 — Timer and ticker stop or reset behavior accounts for already-fired values under the module's Go language version.
+
 ## Consistency
 
 ### GOCON-SC-CONSISTENCY-01 — Rule violation: Lifecycle documentation and behavior disagree
 
-The API describes cancellation, channel closure, or shutdown differently from its implementation. Callers,
-tests, and code should share one lifecycle contract; contradiction fails.
+The API describes cancellation, channel closure, or shutdown differently from its implementation.
+Documentation and runtime behavior should share one lifecycle contract; contradiction fails.
 
 #### Checklist
 
 - [ ] GOCON-CK-CONSISTENCY-01-01 — Documented cancellation and channel-closure behavior match runtime behavior.
-- [ ] GOCON-CK-CONSISTENCY-01-02 — Tests exercise the documented shutdown terminal state.
+- [ ] GOCON-CK-CONSISTENCY-01-03 — Every documented shutdown terminal state matches runtime behavior.
 
-### GOCON-SC-CONSISTENCY-02 — Normal case: Race evidence matches the concurrent surface
+### GOCON-SC-CONSISTENCY-03 — Adversarial: Timing tolerance is mistaken for lifecycle completion
 
-The work returns race-detector evidence for concurrent state. Its target, workload, platform, and executed
-paths should correspond to the changed behavior; unrelated or overly broad claims fail.
-
-#### Checklist
-
-- [ ] GOCON-CK-CONSISTENCY-02-01 — Race evidence exercises the changed shared-state paths.
-- [ ] GOCON-CK-CONSISTENCY-02-02 — Race claims stay within the executed platform and workload.
-
-### GOCON-SC-CONSISTENCY-03 — Adversarial: A lifecycle test is fitted to the observed timing
-
-A shutdown, cancellation, or ordering test is made to pass by adding a sleep, widening a tolerance, retrying,
-or accepting the timing the implementation happens to produce. The test should assert the documented lifecycle
-contract, so a wrong lifecycle fails; a test fitted to observed timing agrees with the defect.
+A shutdown, cancellation, or ordering check passes after adding a sleep, widening a tolerance, or retrying,
+although the lifecycle exposes no completion signal. The design should expose observable completion independent
+of scheduling timing; cosmetic timing agreement fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-CONSISTENCY-03-01 — No lifecycle assertion depends on a sleep, retry, or widened tolerance in place of an observable completion signal.
-- [ ] GOCON-CK-CONSISTENCY-03-02 — Every lifecycle assertion states the documented contract rather than the currently observed timing.
+- [ ] GOCON-CK-CONSISTENCY-03-01 — No lifecycle completion claim depends on a sleep, retry, or widened tolerance in place of an observable completion signal.
+- [ ] GOCON-CK-CONSISTENCY-03-02 — Every observed lifecycle terminal state matches the documented contract rather than incidental timing.
 
 ## Risk
 
@@ -174,8 +192,9 @@ becoming active. The primitive should remain in one owned object; copied synchro
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-02-01 — Every synchronization primitive stays in one owned object at one stable address.
+- [ ] GOCON-CK-RISK-02-01 — Every synchronization primitive stays in one owned object.
 - [ ] GOCON-CK-RISK-02-02 — No synchronization primitive is copied after first use.
+- [ ] GOCON-CK-RISK-02-03 — Every synchronization primitive stays at one stable address after first use.
 
 ### GOCON-SC-RISK-03 — Adversarial: Input amplifies concurrent resource use
 
@@ -194,7 +213,8 @@ should prevent both paths structurally; relying on caller goodwill fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-04-01 — The exposed API structurally prevents a receiver from closing a sender-owned channel and a sender from outliving the owner's close decision.
+- [ ] GOCON-CK-RISK-04-01 — The exposed API structurally prevents a receiver from closing a sender-owned channel.
+- [ ] GOCON-CK-RISK-04-02 — The exposed API structurally prevents a sender from outliving the owner's close decision.
 
 ### GOCON-SC-RISK-05 — Rule violation: A returned cancel function has no caller
 
@@ -208,13 +228,13 @@ The creating scope should release the context resources on every terminal path; 
 
 ### GOCON-SC-RISK-06 — Normal case: An ordinary run leaves no concurrent residue
 
-The operation completes normally under its expected load. After it returns, no owned goroutine, timer,
-ticker, channel, lock, or context should remain held, and the process should be able to exit without waiting
-on abandoned work; residue that only a long-running process reveals fails.
+The concurrent work completes normally under its expected load. After its owning call returns, no owned
+goroutine, timer, ticker, channel, lock, or context should remain held, and the process should be able to exit
+without waiting on abandoned work; residue that only a long-running process reveals fails.
 
 #### Checklist
 
-- [ ] GOCON-CK-RISK-06-01 — Every goroutine, timer, ticker, and context the ordinary run created has ended or been released when the operation returns.
+- [ ] GOCON-CK-RISK-06-01 — Every goroutine, timer, ticker, and context the ordinary run created has ended or been released when its owning call returns.
 - [ ] GOCON-CK-RISK-06-02 — Repeating the ordinary run does not accumulate held concurrent resources.
 
 ## Overall
@@ -222,7 +242,7 @@ on abandoned work; residue that only a long-running process reveals fails.
 ### GOCON-SC-OVERALL-01 — Normal case: The complete concurrent lifecycle is coherent
 
 The work should connect justified concurrency, ownership, cancellation, bounds, synchronization, shutdown, and
-evidence into one lifecycle. Any owned concurrent resource without a terminal story fails the whole.
+race-safety judgment into one lifecycle. Any owned concurrent resource without a terminal story fails the whole.
 
 #### Checklist
 
@@ -231,8 +251,8 @@ evidence into one lifecycle. Any owned concurrent resource without a terminal st
 
 ### GOCON-SC-OVERALL-02 — Adversarial: A clean race run masks a leak or unexecuted race
 
-Current race tests pass, but an unexecuted path can race or an ownerless goroutine can leak without a data
-race. Tool success must not replace ownership review; cosmetic race safety fails.
+A race-detector run reports no issue, but an unexecuted path can race or an ownerless goroutine can leak
+without a data race. Tool output must not replace ownership review; cosmetic race safety fails.
 
 #### Checklist
 
