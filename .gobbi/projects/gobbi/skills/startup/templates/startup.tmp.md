@@ -12,7 +12,6 @@ Keep sensitive values out and remove it only after verified Finalization PASS.
 - Status: `{in progress | paused}`
 - Recovery mode: `{normal | completed-v2 revalidation}`
 - Current blocker: `{none or exact blocker}`
-- First recovery action: `{action derived from the evidence below and the native TODO list}`
 
 ## Artifact Register
 

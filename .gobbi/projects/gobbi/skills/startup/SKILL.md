@@ -64,18 +64,14 @@ outcome and an evaluation oracle without prescribing code-level implementation.
 
 #### 1.1 Validate the lane, inputs, and existing artifacts
 
-- Take the caller's sole active TODO lane, absolute project root, and absolute output directory. Apply the
-  location contract in [`../record/SKILL.md`](../record/SKILL.md) Step 1.1: the output directory must exist,
-  resolve inside the working tree, contain no symbolic link in its path, and contain no parent-traversal
-  component.
-- Inspect the native TODO list before writing. In Claude Code, use `TaskList` and `TaskGet` to inspect,
-  `TaskCreate` to add an item, and `TaskUpdate` to retitle or change status. In native Codex, use `update_plan`
-  to publish the complete ordered list and statuses. Stop when the caller cannot provide a lane with no
-  competing `in_progress` item. While Startup runs, only its operating manager updates that lane; route
-  authority returns to the caller after Finalization reaches verified `PASS`.
+- Take the absolute project root and absolute output directory. Apply the location contract in
+  [`../record/SKILL.md`](../record/SKILL.md) Step 1.1: the output directory must exist, resolve inside the
+  working tree, contain no symbolic link in its path, and contain no parent-traversal component.
 - The durable v2 set is exactly `problem-definition.md`, `project-design.md`, `project-specification.md`,
   `lifecycle-and-use-cases.md`, and `startup.md`. `startup.tmp.md` is the schema-2 ownership and evidence
-  record, not a route cursor. Classify the output directory before writing:
+  record, not a route cursor. Before accepting, inspecting, or changing the caller's TODO lane, classify the
+  output directory read-only with this table. A terminal row returns or stops immediately; a nonterminal row
+  only selects the action to run after lane validation.
 
 | State | Action |
 |---|---|
@@ -91,6 +87,13 @@ outcome and an evaluation oracle without prescribing code-level implementation.
 - A legacy file is a pre-schema-2 Startup artifact. A v2 `startup.md` identifies schema `2`, the project root,
   the output directory, and final user confirmation in `Confirmation`; its artifact register contains exactly
   the four phase-document children and no row for `startup.md` itself.
+- Only after pre-route classification selects a nonterminal v2 action, inspect the caller's proposed sole
+  active TODO lane. In Claude Code, use `TaskList` and `TaskGet` to inspect, `TaskCreate` to add an item, and
+  `TaskUpdate` to retitle or change status. In native Codex, use `update_plan` to publish the complete ordered
+  list and statuses. Stop when the caller cannot provide a lane with no competing `in_progress` item. Accept
+  lane authority only after that validation. From then on, only Startup's operating manager updates the lane,
+  and Startup returns it only after verified Finalization `PASS`. After accepting the lane, execute the
+  selected table action.
 
 #### 1.2 Reconstruct or initialize the native TODO
 
@@ -149,8 +152,10 @@ Startup · <Problem Definition|Project Design|Project Specification|Lifecycle an
   instantiate the five feature-contract questions once for every named feature and keep each subject distinct.
 - For Lifecycle and Use-Case Scenarios, first generate scenario candidates from every accepted earlier phase.
   Checkpoint their identity and class, purpose, linked accepted decisions and artifacts, concrete-scenario
-  blocker, oracle blocker, and status in the dedicated evidence table. Prepare questions only for blockers;
-  never begin with a generic interview list.
+  blocker, oracle blocker, and status in the dedicated evidence table. Prepare questions only for a
+  concrete-scenario blocker or an observable-oracle blocker; never begin with a generic interview list.
+  Derive proactive, implementation-neutral development guidance as a required scenario output. Missing
+  guidance is not an independent question trigger.
 - The manager verifies coverage and accepts the prepared set. If the assignment returns `NEEDS_CONTEXT`, go
   to Step 2.6. Otherwise retitle the item to `INTERVIEW` and continue to Step 2.3.
 
@@ -214,12 +219,13 @@ Startup · <Problem Definition|Project Design|Project Specification|Lifecycle an
   assignment and its one exact question, set Current blocker, and retitle the current item to `CONTEXT`.
   Specialists remain unable to question the user or update the TODO.
 - Let only the manager ask that exact question. Delegate a fresh bounded checkpoint of the answer, clear the
-  blocker after verification, complete the partial iteration at `CONTEXT`, and create the next iteration at
-  `STUDY`. If that checkpoint also returns `NEEDS_CONTEXT`, replace the checkpoint with its exact question and
-  repeat this step. Never resume the interrupted step directly.
+  blocker after verification, and complete the partial iteration at `CONTEXT` before creating its next normal
+  iteration at `STUDY`. For a Finalization confirmation question, instead apply Step 3.1's decision branches
+  to the current item at `CONTEXT`. If the checkpoint again returns `NEEDS_CONTEXT`, replace the checkpoint
+  with its exact question and repeat this step. Never resume another interrupted step directly.
 - If the user or a writer is unavailable, keep status `paused`, the blocker, the blocked assignment, the exact
-  question, and the first recovery action in `startup.tmp.md`. On recovery, reconstruct `CONTEXT` from that
-  evidence and continue this step.
+  question, and its checkpoint evidence in `startup.tmp.md`. On recovery, reconstruct `CONTEXT` from that
+  evidence and the native TODO, then continue this step.
 
 #### 2.7 Enforce each phase's design boundary
 
@@ -253,11 +259,19 @@ Startup · <Problem Definition|Project Design|Project Specification|Lifecycle an
   contain a four-child phase-document artifact register, integrated project model, key decisions,
   consolidated vocabulary and risks, and final review dispositions. Keep schema, project root, output
   directory, final confirmation, and its timestamp in `Confirmation`; do not add a self row to the register.
-- Present the five-file set for final confirmation and delegate its checkpoint. Go to Step 2.6 if it returns
-  `NEEDS_CONTEXT`. A correction reopens the earliest owner and starts a normal iteration there at `STUDY`.
-  Confirmation retitles Finalization to `PASS` and continues to Step 3.2. During completed-v2 revalidation,
-  run this step as a review-only Finalization iteration; any finding starts a normal Finalization iteration at
-  `STUDY`.
+- Present the five-file set for final confirmation while the current Finalization item remains at `REVIEW`,
+  and delegate its checkpoint. Go to Step 2.6 if it returns `NEEDS_CONTEXT`; that step may make the current
+  terminal stage `CONTEXT`. After an accepted checkpoint, apply exactly one branch:
+  - A correction, including an answer that confirms while changing an accepted decision, checkpoints the
+    correction, completes the current Finalization item at its existing `REVIEW` or `CONTEXT` stage, reopens
+    the earliest owner, marks its dependents stale, and creates that phase's normal iteration at `STUDY`.
+  - A refusal with no correction checkpoints the refusal, completes the current Finalization item at its
+    existing `REVIEW` or `CONTEXT` stage, and creates a normal Finalization iteration at `STUDY`.
+  - Confirmation with no correction retitles the current Finalization item to `PASS`, completes it, and
+    continues to Step 3.2.
+- Never leave the current Finalization item active when a correction or refusal creates its successor. During
+  completed-v2 revalidation, run this step as a review-only Finalization iteration; any Review finding starts
+  a normal Finalization iteration at `STUDY`, and final confirmation uses the same three branches above.
 
 #### 3.2 Complete, pause, or stop
 
@@ -266,8 +280,9 @@ Startup · <Problem Definition|Project Design|Project Specification|Lifecycle an
   and no other durable Startup output was created. Complete the TODO item, remove `startup.tmp.md`, reread the
   output directory, return all five absolute paths, and return the native TODO lane to the caller.
 - On pause, keep `startup.tmp.md`, set status `paused`, and record the current blocker, blocked evidence, and
-  first recovery action. Do not add a Markdown phase, step, iteration, or next-question cursor. Resume through
-  Step 1.1 and reconstruct the native route from evidence.
+  checkpoint evidence. Do not add a future action or a Markdown phase, step, iteration, or next-question
+  cursor. Resume through Step 1.1 and reconstruct the native route from blocker and checkpoint evidence plus
+  the native TODO.
 - On unsafe state, write nothing further and return the exact blocker and refused path. The caller may record
   confirmed documents as session evidence through [`../record/SKILL.md`](../record/SKILL.md); Startup does
   not evaluate, plan implementation, update memory, publish, or choose a memory destination.

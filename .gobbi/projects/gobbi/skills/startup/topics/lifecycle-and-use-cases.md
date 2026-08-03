@@ -1,8 +1,9 @@
 # Lifecycle and Use-Case Scenario Topics
 
 Do not begin by interviewing from this bank. First generate scenario candidates from the accepted earlier
-phase documents and link them to their decisions. Use these questions only for gaps that prevent a concrete
-scenario, proactive development guidance, or an observable evaluation oracle.
+phase documents and link them to their decisions. Use these questions only to resolve a concrete-scenario
+blocker or an observable-oracle blocker. Derive proactive, implementation-neutral development guidance as a
+required scenario output; missing guidance is not an independent interview trigger.
 
 ## Scenario Inventory and Traceability
 
