@@ -79,8 +79,8 @@ exact load directives because specialists do not inherit manager context.
 
 ## Plugin topology
 
-The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks and
-carries both runtime manifests. `.agents/plugins/marketplace.json` and
+The bounded package at `plugins/gobbi/` distributes one generated, byte-equal real-file copy of the canonical
+`skills` and `agents` and carries both runtime manifests. `.agents/plugins/marketplace.json` and
 `.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
 repo-local and are not installed as plugin components.
 
@@ -88,14 +88,15 @@ Run `scripts/sync-plugin-package.sh --check` for read-only source-topology valid
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
 installed-cache behavior. The package has no lifecycle-hook component.
 
-A Codex plugin install of Gobbi receives both manifests and no skills, because the Codex plugin installer
-copies a plugin into its cache without following symlinks. This is an open Codex defect —
+The Codex plugin installer copies a plugin into its cache without following symlinks. Gobbi therefore
+materializes the canonical `skills` and `agents` into the package as real files, so an installed plugin
+receives both manifests, the complete nested skill tree, and the agent contracts.
 [openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install: support symlinks per the
-cross-agent marketplace contract" — not a packaging error here, and `check-codex-plugin-smoke.sh` reports it
-as a warning. Keep the single canonical source, and materialize it into the package only as the one generated
-copy a guard proves byte-equal to that source. Any further duplication, and any hand edit of a generated file,
-stays forbidden. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves
-and needs no install.
+cross-agent marketplace contract", still affects symlink-only packages but no longer leaves a current Gobbi
+install incomplete. `check-codex-plugin-smoke.sh` fails when the isolated installed cache lacks expected
+components. Keep the single canonical source and only the one generated package copy that the guard proves
+byte-equal; any further duplication or hand edit of a generated file stays forbidden. Codex skill discovery
+does follow symlinks, so in this repository `.agents/skills/` resolves and needs no install.
 
 ## Principles
 
