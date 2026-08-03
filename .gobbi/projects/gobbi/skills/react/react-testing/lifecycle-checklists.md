@@ -100,7 +100,7 @@ result, field, or classified item makes the record incomplete and fails the scen
 - [ ] RTST-CK-CONSISTENCY-04-02 — Per-case evidence records changed test, focused command and result, and observable result proved by each assertion.
 - [ ] RTST-CK-CONSISTENCY-04-03 — The Run record states each exact command, exit result, relevant failure output, checklist result, defect challenge, and unavailable, blocked, or skipped evidence gap.
 - [ ] RTST-CK-CONSISTENCY-04-04 — Every failure, warning, flaky result, and evidence gap is classified.
-- [ ] RTST-CK-CONSISTENCY-04-05 — Each classified item records classification, root cause, test-local repair, and exact rerun result.
+- [ ] RTST-CK-CONSISTENCY-04-05 — Each test defect records its classification, root cause, test-local repair, and exact narrow-test, affected-suite, and wider-required-check rerun results.
 
 ### RTST-SC-CONSISTENCY-05 — Expected failure: An incorrect case blocks expansion
 
@@ -110,6 +110,18 @@ Expanding around that defect fails the scenario.
 #### Checklist
 
 - [ ] RTST-CK-CONSISTENCY-05-01 — The earliest wrong setup, query, interaction, wait, assertion, time control, or cleanup is repaired before expansion.
+
+### RTST-SC-CONSISTENCY-06 — Normal case: Product defects and unresolved results keep branch-specific evidence
+
+Evidence for a product defect must name its product failure evidence and receiving `react-development`. The
+record for each environment gap, unsupported claim, or unresolved flake must be limited to its exact gap or
+stop and matching terminal status. A record that implies test-local repair for one of these classifications
+fails the scenario.
+
+#### Checklist
+
+- [ ] RTST-CK-CONSISTENCY-06-01 — Each product defect records its product failure evidence and receiving `react-development`.
+- [ ] RTST-CK-CONSISTENCY-06-02 — The record for each environment gap, unsupported claim, or unresolved flake is limited to its exact gap or stop and matching terminal status, with no test-local repair claim.
 
 ### RTST-SC-CONSISTENCY-07 — Normal case: A test-root-cause repair receives complete reruns
 

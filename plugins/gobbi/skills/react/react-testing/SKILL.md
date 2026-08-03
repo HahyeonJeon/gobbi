@@ -180,10 +180,14 @@ work and time explicitly, then repair root causes instead of masking signals.
   Repair the root cause when it is inside the tests, setup, fixtures, substitutes, or test configuration, then
   rerun the narrow test, affected suite, and required wider checks. Send a product-source defect to
   [`react-development`](../react-development/SKILL.md) instead of changing product code under this operation.
-- Evidence: Record the classification, root cause, test-local repair, and exact rerun result for each item.
-- Recovery: Keep an environment gap, unsupported claim, or unresolved flake visible. After two or three
-  failed repairs, stop and reassess the design or request missing context; do not loop on retries or suppress
-  the signal.
+- Evidence: For each test defect, record its classification, root cause, test-local repair, and exact
+  narrow-test, affected-suite, and wider-required-check rerun results. For each product defect, record its
+  classification, product failure evidence, and receiving `react-development`; do not claim a test-local
+  repair. For each environment gap, unsupported claim, or unresolved flake, record its classification, exact
+  gap or stop, and matching terminal status without a test-local repair claim.
+- Recovery: Keep each environment gap, unsupported claim, or unresolved flake visible with its exact gap or
+  stop and matching terminal status; do not claim a repair. After two or three failed repairs, stop and
+  reassess the design or request missing context; do not loop on retries or suppress the signal.
 
 ### Phase 5 — Handoff
 
