@@ -44,7 +44,7 @@ Documented examples are code and require a named compiler version and exact comp
 
 #### 1.1 Enumerate claims
 
-- List caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, installed commands, and taught examples.
+- List caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples.
 - Map each claim to the layer capable of disproving it.
 - Mark review-only mode when edits are not authorized.
 - Select every applicable project kind: web application, command-line application, library, SDK, desktop application, or a literal fallback.
@@ -79,6 +79,7 @@ Documented examples are code and require a named compiler version and exact comp
 
 - Introduce or simulate the named defect when practical and confirm the test fails for the expected reason.
 - Restore the accepted implementation and run the focused test again.
+- If the test stays green under the defect or stays red after restoration, return to Phase 1.2 for the case design or the owning Phase 2 step for the runtime test.
 - Reject snapshots or broad assertions that pass under the defect.
 
 ### Phase 3 — Build type and declaration tests
@@ -93,13 +94,15 @@ Documented examples are code and require a named compiler version and exact comp
 
 - Compile intentionally invalid uses with the project's expected-error mechanism.
 - Confirm removing the expectation produces the intended diagnostic and that an unused expectation fails.
+- If either mutation does not discriminate the intended misuse, return to Phase 1.2 or revise the negative case in this step before continuing.
 - Keep diagnostic-sensitive tests narrow enough to reject the targeted misuse rather than any arbitrary error.
 
 #### 3.3 Test declarations, packages, and commands
 
 - Emit or obtain the public declarations and type-check isolated consumer fixtures.
 - Build or pack the package, install that archive, and exercise its documented entry points and resolution modes.
-- Invoke installed command-line entries by command name and assert arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
+- For every command supplied through a package archive, capture command-name resolution in the isolated consumer. Prove that it selects the executable created by that archive installation.
+- Invoke the installed command and assert the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - Compare declarations or exported APIs when compatibility is a stated requirement.
 
 ### Phase 4 — Verify examples and the suite
@@ -115,11 +118,18 @@ Documented examples are code and require a named compiler version and exact comp
 - Run focused runtime and type checks, then the broader test, declaration, build, and package checks that apply.
 - Ensure zero discovered tests or examples fails closed when discovery is part of the claim.
 - Review output from the final-tree run for skipped, quarantined, flaky, or unexpectedly absent cases.
+- When a check fails in author mode, return to Phase 1 for a claim or case-design mismatch, Phase 2 for a runtime-test defect, or Phase 3 for a type, declaration, package, or command-test defect.
+- After repair, re-run the failed check and every affected downstream check from the final tree.
+- In review-only mode, or when repair is unauthorized or outside scope, stop with the failed claim and command evidence. A check that ran and failed is not an unavailable-check limitation.
 
 #### 4.3 Verify each selected project kind
 
 - For a web application, test affected browser and server behavior at the layer that exposes it and smoke-test the production build in the named runtime.
-- For a command-line application, invoke the installed command and verify its command specification, including failure and signal paths that apply.
+- For a command-line application, prepare the recorded distribution method in an isolated consumer and invoke its consumer command.
+  For an npm-style package command, prove command resolution selects the archive installation.
+  For a bundled executable, installed script, workspace command, or other method, prove the invoked executable
+  is the recorded output rather than an unrelated command already on `PATH`.
+  Verify the command specification, including failure and signal paths that apply.
 - For a library, type-check and run representative imports from an isolated installed consumer.
 - For an SDK, verify external payload parsing, documented client calls, public types, failures, cancellation, and supported consumer compiler configurations.
 - For a desktop application, test main, preload, renderer, and typed IPC behavior separately where present, then exercise the packaged application path required by the Electron and desktop skills.

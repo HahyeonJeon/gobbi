@@ -64,7 +64,7 @@ single-file safety check only where the actual JavaScript producer has that limi
 #### Checklist
 
 - [ ] TSTOOL-CK-STRUCTURE-02-01 — `declaration`, `declarationMap`, and `composite` are enabled only where a named consumer needs their outputs.
-- [ ] TSTOOL-CK-STRUCTURE-02-02 — When `composite` omits `rootDir`, its default is treated as the directory containing that `tsconfig.json`.
+- [ ] TSTOOL-CK-STRUCTURE-02-02 — Before TypeScript 6, an omitted `rootDir` defaults to the configuration directory only under `composite`; in TypeScript 6 and TypeScript 7, every configured project uses that default.
 - [ ] TSTOOL-CK-STRUCTURE-02-03 — `isolatedModules` is enabled when the configured JavaScript producer processes files independently and has the single-file limitation the option diagnoses.
 - [ ] TSTOOL-CK-STRUCTURE-02-04 — Every implementation file in a `composite` project matches `include` or is listed in `files`.
 

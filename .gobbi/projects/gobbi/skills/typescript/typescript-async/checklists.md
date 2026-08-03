@@ -29,7 +29,8 @@ its place.
 - [ ] TSASYNC-CK-PROJECT-01-01 — Every started promise is awaited, returned, aggregated, or explicitly caught so a named caller or lifecycle scope observes its rejection.
 - [ ] TSASYNC-CK-PROJECT-01-02 — A detached background operation is used only where `await`, a returned promise, or an aggregate cannot carry the required lifetime.
 - [ ] TSASYNC-CK-PROJECT-01-03 — Every departure from these preferences names the runtime or framework lifecycle scope it relies on.
-- [ ] TSASYNC-CK-PROJECT-01-04 — Every departure from these preferences states how that lifecycle scope observes completion and failure and proves cleanup.
+- [ ] TSASYNC-CK-PROJECT-01-04 — Every departure from these preferences states how that lifecycle scope observes completion and failure.
+- [ ] TSASYNC-CK-PROJECT-01-05 — Every departure from these preferences keeps the required cleanup inside that lifecycle scope.
 
 ### TSASYNC-SC-PROJECT-02 — Expected failure: the supported runtime lacks the mechanism a preference names
 

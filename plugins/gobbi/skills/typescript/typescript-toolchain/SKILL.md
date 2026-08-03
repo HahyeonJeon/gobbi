@@ -60,7 +60,15 @@ When a runtime performs type stripping, verify that runtime's supported syntax a
 
 ### Emit declarations, source maps, and build state
 
-JavaScript is not the only emit. `declaration` writes `.d.ts` files, and `declarationMap` writes maps that let a consumer navigate from a declaration to the original source. `composite` enables project-reference build information, turns on declaration emit by default, changes the default `rootDir` to the directory containing that `tsconfig.json`, and requires every implementation file to match `include` or be listed in `files`. Confirm which outputs are needed; a declaration-only package, an application bundle, and a script have different answers.
+JavaScript is not the only emit. `declaration` writes `.d.ts` files. `declarationMap` writes maps that let a consumer navigate from a declaration to the original source.
+
+`composite` enables project-reference build information and turns on declaration emit by default.
+It also requires every implementation file to match `include` or be listed in `files`.
+Before TypeScript 6, `composite` changes an omitted `rootDir` from the inferred common input directory to the
+directory containing that `tsconfig.json`. In TypeScript 6 and TypeScript 7, every configured project already
+uses the `tsconfig.json` directory as the default `rootDir`, whether or not `composite` is enabled.
+
+Confirm which outputs are needed. A declaration-only package, an application bundle, and a script have different answers.
 
 `incremental` and `composite` write build state to a `.tsbuildinfo` file whose location follows `outDir` or the configuration file unless `tsBuildInfoFile` overrides it. Stale or shared build state can make a rebuild skip files it should have reprocessed, so treat unexplained missing or outdated output as a build-state question and clear that file before concluding the source is at fault.
 

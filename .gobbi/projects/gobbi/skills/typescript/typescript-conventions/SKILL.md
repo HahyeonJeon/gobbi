@@ -15,7 +15,7 @@ Existing project conventions take priority when they are coherent and tool-enfor
 
 ### Let names expose the requirement
 
-Names should reveal the value's role, unit, and domain meaning without repeating syntax or implementation trivia.
+Names should reveal each applicable domain meaning, state, side effect, or otherwise ambiguous numeric unit without repeating syntax or implementation trivia.
 
 ### Keep source organization local
 
@@ -27,7 +27,7 @@ Formatting and import order belong to deterministic tools when the project has t
 
 ## Rules
 
-- **MUST** use names that distinguish domain concepts, units, states, and side effects at the point of use.
+- **MUST** use names that distinguish each applicable domain concept, state, side effect, or otherwise ambiguous numeric unit at the point of use.
 - **NEVER** encode a type in a name when the declaration and surrounding domain already communicate it.
 - **MUST** preserve the project's established file, export, import, documentation, and formatting conventions unless the change explicitly migrates them.
 - **MUST** use `import type` or an equivalent inline type modifier when the configured module pipeline requires a type-only binding.

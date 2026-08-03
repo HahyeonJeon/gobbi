@@ -76,10 +76,18 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 #### 2.3 Assemble metadata and content
 
 - Verify `exports`, `imports`, `types`, `main`, `module`, `files`, `sideEffects`, and `bin` metadata that the package actually uses.
-- Verify `engines`, `os`, and `cpu` against the stated support policy, and place runtime packages in `dependencies`, peer-supplied packages in `peerDependencies`, and authoring-only tools in `devDependencies`.
-- Use `typesVersions` only for an explicit TypeScript-version routing requirement, and verify every mapped declaration path from an installed consumer.
+- Verify the install behavior of `engines`, `os`, and `cpu` against the support policy.
+- Treat `engines` as advisory unless the selected package-manager policy enables enforcement. Exercise the intended warning or rejection behavior.
+- Place required runtime packages in `dependencies`, runtime packages whose absence is supported in `optionalDependencies`, consumer-supplied packages in `peerDependencies`, and authoring-only tools in `devDependencies`.
+- Mark an optional peer in `peerDependenciesMeta` as well as declaring it in `peerDependencies`.
+- List a runtime package in `bundleDependencies` in addition to its dependency declaration when the archive must contain that package.
+- Exercise optional packages and optional peers both present and absent.
+- Use `typesVersions` only for an explicit TypeScript-version routing requirement.
+- In resolution modes that read `exports`, use versioned `types@<selector>` conditions because `typesVersions` is not read. Verify each claimed declaration route from an installed consumer under the compiler version and resolution mode that select it.
 - Create the package archive with the normal packaging command.
 - Inspect the archive inventory for missing generated files, unwanted source or secrets, and unexpected size changes.
+- If a build, declaration, metadata, or archive check fails, stay in Phase 2 and correct the step that owns the cause. Return to Phase 1 when the package requirements conflict.
+- Rebuild the affected output and repeat its Phase 2 checks before entering Phase 3.
 
 ### Phase 3 — Validate consumers
 
@@ -93,7 +101,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 
 - Type-check positive and negative consumer examples against the installed archive.
 - Run each imported runtime entry in every claimed named runtime or module format.
-- Invoke every installed command by its package-defined name and verify the required arguments, standard streams, exit status, signals, and failure text.
+- Capture how every package-defined command name resolves in the isolated consumer. Prove that it selects the executable link or file created by that archive installation.
+- Invoke that installed command and verify the required arguments, standard streams, exit status, signals, and failure text.
 - Test singleton identity and shared state across multiple entry points when dual formats or duplicated bundles are possible.
 
 #### 3.3 Classify the API change
@@ -101,6 +110,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Compare the public exports and declarations with the prior released API.
 - Classify additions, deprecations, removals, behavioral changes, and minimum-toolchain changes.
 - Update consumer documentation and release notes for the classified change.
+- If a consumer check fails, return to Phase 1 when the compatibility claim is wrong or Phase 2 when output or metadata is wrong.
+- After repair, recreate the archive and repeat the failed and downstream consumer checks before entering Phase 4.
 
 ### Phase 4 — Prepare publication
 
@@ -109,6 +120,9 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Rebuild and recreate the archive from the accepted tree.
 - Re-run package metadata, declaration, consumer, license, provenance, and vulnerability checks required by the repository.
 - Bind all results to the exact archive digest or contents being proposed.
+- If a required pre-publication check fails, do not publish.
+- Return to Phase 1 for an incorrect compatibility requirement, Phase 2 for output or metadata, or Phase 3 for a consumer failure.
+- After repair, recreate the archive and re-run every affected and final check against that archive.
 - When this package change is evaluated, the [evaluation checklist](checklists.md) and every checklist provided
   by an active `typescript` sibling supply the applicable conditions in both author and review-only modes;
   the general Evaluation operation resolves them and issues any verdict.
@@ -118,6 +132,8 @@ Module formats, runtime versions, compiler versions, and public API evolution ar
 - Present the version, compatibility classification, archive contents, verification results, and rollback plan to the person or automation authorized to release it.
 - Publish only through the authorized release workflow.
 - Verify registry metadata and installation after publication; if publication is not authorized, stop at a publication-ready archive.
+- If post-publication verification fails, preserve the published version and failure evidence, then notify the release authority.
+- Follow only the authorized rollback, deprecation, or corrective-release path. Never silently republish or overwrite the published version.
 
 ## References
 

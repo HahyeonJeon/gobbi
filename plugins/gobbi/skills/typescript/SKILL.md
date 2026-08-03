@@ -9,7 +9,7 @@ skill-type: domain
 
 TypeScript routes language changes and reviews to focused children. It defines navigation only; each child defines its policy, operation, or compiler-tool guidance.
 
-Load every row whose trigger applies. A task may need several children, and no child is a default for every TypeScript task. For implementation, `typescript-development` selects every applicable project kind—web application, command-line application (CLI), library, SDK, and desktop application—or records a literal fallback. Product-domain skills supply user experience, command semantics, service behavior, deployment, and release decisions; the TypeScript children apply those decisions to types, exact compiler files, generated output, tests, package metadata, and consumer verification.
+Load every row whose trigger applies. A task may need several children, and no child is a default for every TypeScript task. Every task that activates this root must select at least one child.
 
 ## Child Skills
 

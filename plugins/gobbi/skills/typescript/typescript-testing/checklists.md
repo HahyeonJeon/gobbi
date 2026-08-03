@@ -24,8 +24,7 @@ fitting claims to it afterwards is the failure.
 
 #### Checklist
 
-- [ ] TSTEST-CK-PROJECT-01-01 — Caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, installed commands, and taught examples are enumerated as claims for every selected project kind.
-- [ ] TSTEST-CK-PROJECT-01-02 — Runtime, type-level, negative, declaration, package, and example checks are selected from the claims being made.
+- [ ] TSTEST-CK-PROJECT-01-01 — Caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples are enumerated as claims for every selected project kind.
 - [ ] TSTEST-CK-PROJECT-01-03 — Every claim is mapped to the layer capable of disproving it.
 
 ### TSTEST-SC-PROJECT-02 — Rule violation: a review-only run changes the reviewed files
@@ -107,12 +106,13 @@ form and narrows diagnostic expectations to the misuse they identify.
 ### TSTEST-SC-USAGE-01 — Normal case: the test observes what a consumer observes
 
 A consumer sees outputs, state transitions, events, side effects, failures, and released resources. The
-expected outcome reaches the unit through its public API, installed command, or user-visible interface and
-asserts those observations, including cleanup on every exit. A test of private implementation proves something the consumer cannot rely on.
+expected outcome reaches the unit through its public API, recorded consumer command, or user-visible interface.
+It asserts those observations, including cleanup on every exit. A test of private implementation proves
+something the consumer cannot rely on.
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-01-01 — The unit is reached through its public API, installed command, or user-visible interface.
+- [ ] TSTEST-CK-USAGE-01-01 — The unit is reached through its public API, recorded consumer command, or user-visible interface.
 - [ ] TSTEST-CK-USAGE-01-02 — Outputs, state transitions, emitted events, side effects, and failures that consumers observe are asserted.
 - [ ] TSTEST-CK-USAGE-01-03 — Cleanup is verified after success, failure, cancellation, and early exit wherever resources are involved.
 
@@ -125,7 +125,6 @@ failure.
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-02-01 — Public declarations and resolution are tested from an isolated consumer project rather than only inside the source project.
 - [ ] TSTEST-CK-USAGE-02-02 — The public declarations are emitted or obtained.
 - [ ] TSTEST-CK-USAGE-02-03 — Isolated consumer fixtures are type-checked against the public declarations.
 - [ ] TSTEST-CK-USAGE-02-04 — Public declarations or exported APIs are compared wherever compatibility is a stated requirement.
@@ -138,9 +137,11 @@ states what those compiler runs do not prove. An example that drifts from the co
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-03-01 — Every fenced `ts` example presented as valid or intentionally rejected is extracted and compiled exactly as displayed with each named compiler version and the recorded compiler options.
-- [ ] TSTEST-CK-USAGE-03-02 — For every `@ts-expect-error` example, removing or moving the directive produces the intended diagnostic or an unused-directive failure.
+- [ ] TSTEST-CK-USAGE-03-01 — Every fenced `ts` example presented as valid or intentionally rejected is extracted exactly as displayed.
 - [ ] TSTEST-CK-USAGE-03-03 — The check's limit is stated: it proves only those examples under the recorded compiler versions and options, not every named runtime, project `tsconfig.json`, or installed package path.
+- [ ] TSTEST-CK-USAGE-03-04 — Every extracted example is compiled with each named compiler version and the recorded compiler options.
+- Also applies: TSTEST-CK-RISK-02-02 (removing an expectation produces the intended diagnostic).
+- Also applies: TSTEST-CK-RISK-02-03 (an unused expectation fails the run).
 
 ### TSTEST-SC-USAGE-04 — Normal case: resolution is proved on the installed package archive
 
@@ -154,18 +155,18 @@ points and resolution modes there. A resolution result taken from the source pro
 - [ ] TSTEST-CK-USAGE-04-02 — The built package or package archive is installed.
 - [ ] TSTEST-CK-USAGE-04-03 — The installed package's documented entry points and documented resolution modes are exercised.
 
-### TSTEST-SC-USAGE-05 — Normal case: an installed command is tested as a process
+### TSTEST-SC-USAGE-05 — Normal case: a consumer command is tested as a process
 
-A command can pass unit tests while its `bin` mapping, argument parsing, streams, exit status, or signal handling
-fails after installation. The expected outcome invokes the package-defined command from an isolated install and
-asserts its process behavior. Running the TypeScript source entry directly is insufficient.
+A command can pass unit tests while its package link, bundled executable, installed script, workspace command,
+argument parsing, streams, exit status, or signal handling fails for consumers. The expected outcome prepares
+the recorded distribution method in isolation, proves which executable runs, and asserts its process behavior.
 
 #### Checklist
 
-- [ ] TSTEST-CK-USAGE-05-01 — The command-line package archive is installed into an isolated environment.
-- [ ] TSTEST-CK-USAGE-05-02 — Every package-defined command is invoked by its installed command name rather than by a source-file path.
-- [ ] TSTEST-CK-USAGE-05-03 — Required arguments, standard input, standard output, standard error, and exit status are asserted for success and failure cases.
-- [ ] TSTEST-CK-USAGE-05-04 — Signal handling and cleanup are asserted for every signal named by the supplied command specification.
+- [ ] TSTEST-CK-USAGE-05-01 — The output of the recorded command distribution method exists in an isolated consumer environment.
+- [ ] TSTEST-CK-USAGE-05-02 — The invoked executable is proved to be that output rather than a source file or unrelated command already on `PATH`.
+- [ ] TSTEST-CK-USAGE-05-03 — Every recorded consumer command is invoked through its consumer entry.
+- [ ] TSTEST-CK-USAGE-05-04 — Required arguments, standard input, standard output, standard error, exit status, signals, and cleanup are asserted for the applicable success and failure cases.
 
 ## Consistency
 
@@ -211,7 +212,6 @@ in both directions.
 
 #### Checklist
 
-- [ ] TSTEST-CK-RISK-02-01 — Every expected-error or negative test is proved to fail when its expectation is removed or inverted.
 - [ ] TSTEST-CK-RISK-02-02 — Removing an expectation produces the intended diagnostic.
 - [ ] TSTEST-CK-RISK-02-03 — An unused expectation fails the run.
 
@@ -256,3 +256,14 @@ layer's pass stand in for the missing one is the failure.
 
 - [ ] TSTEST-CK-OVERALL-02-01 — Every unavailable named runtime, tool, and package mode is recorded as a limitation.
 - [ ] TSTEST-CK-OVERALL-02-02 — No layer's result is reported as proof of a claim that requires a different, unavailable layer.
+
+### TSTEST-SC-OVERALL-03 — Expected failure: a verification check runs and fails
+
+A check can run and produce valid evidence that a claim does not hold. The expected outcome returns author
+mode to the phase that owns the cause and repeats affected checks after repair, or stops with the failed claim
+when correction is unauthorized or outside scope. Calling the failure an unavailable-check limitation is the defect.
+
+#### Checklist
+
+- [ ] TSTEST-CK-OVERALL-03-01 — Every failed check returns author mode to the earliest phase that owns its cause, or stops with the failed claim when correction is unauthorized or outside scope.
+- [ ] TSTEST-CK-OVERALL-03-02 — A repaired test set passes the failed check and every affected downstream check from the final tree before completion.

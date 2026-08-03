@@ -25,8 +25,7 @@ data, exact compiler files, and verification commands first. Editing behavior be
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-01-01 — Scope, success criteria, affected callers, external input data, exact compiler files, and verification commands are locked before behavior is edited.
-- [ ] TSDEV-CK-PROJECT-01-02 — What changes, why it changes, how success is observed, and what is out of scope are recorded.
+- [ ] TSDEV-CK-PROJECT-01-01 — Scope, purpose, success criteria, affected callers, external input data, exact compiler files, and verification commands are recorded before behavior is edited.
 - [ ] TSDEV-CK-PROJECT-01-03 — Applicable project rules, mistakes, design decisions, and neighboring examples are read before the design.
 
 ### TSDEV-SC-PROJECT-02 — Expected failure: the request turns out to be review-only
@@ -50,9 +49,7 @@ canonical source. Any of those three widenings breaks the Rule on its own.
 
 - [ ] TSDEV-CK-PROJECT-03-01 — No file outside the authorized affected set is changed.
 - [ ] TSDEV-CK-PROJECT-03-02 — No local change is turned into an unapproved migration.
-- [ ] TSDEV-CK-PROJECT-03-03 — No generated mirror is edited directly.
-- [ ] TSDEV-CK-PROJECT-03-04 — The canonical source is edited instead of its generated mirror.
-- [ ] TSDEV-CK-PROJECT-03-05 — The sync command responsible for the generated mirror is run after the canonical source is edited.
+- [ ] TSDEV-CK-PROJECT-03-03 — Every generated mirror is changed only by its responsible sync command after the canonical source changes.
 
 ### TSDEV-SC-PROJECT-04 — Normal case: every applicable project kind is selected
 
@@ -63,8 +60,8 @@ mutually exclusive is the failure.
 
 #### Checklist
 
-- [ ] TSDEV-CK-PROJECT-04-01 — Every applicable kind is selected independently from web application, command-line application (CLI), library, SDK, and desktop application.
-- [ ] TSDEV-CK-PROJECT-04-02 — When none of the five named kinds fits, one literal fallback kind records the named runtimes, source entries, generated outputs, and direct consumers.
+- [ ] TSDEV-CK-PROJECT-04-01 — Every applicable web application, command-line application (CLI), library, SDK, and desktop application has a record of its named runtimes, source entries, exact compiler files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
+- [ ] TSDEV-CK-PROJECT-04-02 — When none of the five named kinds fits, one literal fallback kind records its named runtimes, source entries, exact compiler files, generated outputs, direct consumers, and how each consumer obtains and starts or imports the output.
 - [ ] TSDEV-CK-PROJECT-04-03 — User experience, command semantics, service behavior, operating-system support, deployment, and release decisions are supplied by the task or routed to the applicable product-domain skill before TypeScript encodes them.
 
 ## Structure
@@ -109,7 +106,7 @@ completed tree.
 
 ## Aesthetics
 
-### TSDEV-SC-AESTHETICS-01 — Poor quality: the delivered diff still carries construction debris
+### TSDEV-SC-AESTHETICS-01 — Poor quality: the final diff still carries construction debris
 
 The implementation behaves correctly, but placeholders, dead branches, obsolete suppressions, and temporary diagnostics
 from the build remain in the tree, and the diff was never read end to end. The expected outcome removes what
@@ -157,15 +154,15 @@ named runtime. Development-server success alone is the failure.
 - [ ] TSDEV-CK-USAGE-03-01 — Every affected browser and server entry is checked with the exact `tsconfig.json` that includes it.
 - [ ] TSDEV-CK-USAGE-03-02 — The production build is exercised in every named browser or server runtime affected by the change.
 
-### TSDEV-SC-USAGE-04 — Normal case: a command-line application is invoked as installed
+### TSDEV-SC-USAGE-04 — Normal case: a command-line application uses its recorded distribution method
 
-A source entry can run while package metadata, the built command, or process behavior is wrong. The expected
-outcome installs the package archive when one exists and invokes the package-defined command. Calling the
-source file directly is insufficient.
+A source entry can run while a package command, bundled executable, installed script, workspace command, or
+other consumer command is wrong. The expected outcome invokes the command through the recorded distribution
+method and rejects a source file or unrelated command already on `PATH` as proof.
 
 #### Checklist
 
-- [ ] TSDEV-CK-USAGE-04-01 — The package archive is installed when one exists, and the installed command is invoked by its package-defined name.
+- [ ] TSDEV-CK-USAGE-04-01 — The invoked executable is the output of the recorded command distribution method rather than a source file or unrelated command already on `PATH`.
 - [ ] TSDEV-CK-USAGE-04-02 — Required arguments, standard input, standard output, standard error, exit status, signals, and failure text are verified.
 
 ### TSDEV-SC-USAGE-05 — Normal case: a library is verified from an installed consumer
@@ -177,7 +174,8 @@ the package archive.
 #### Checklist
 
 - [ ] TSDEV-CK-USAGE-05-01 — Public declarations are inspected for every supported library entry point.
-- [ ] TSDEV-CK-USAGE-05-02 — Every supported import form is type-checked and run where applicable from an isolated installed consumer.
+- [ ] TSDEV-CK-USAGE-05-02 — Every supported import form is type-checked from an isolated installed consumer.
+- [ ] TSDEV-CK-USAGE-05-03 — Every supported library runtime entry is run from an isolated installed consumer where runtime code exists.
 
 ### TSDEV-SC-USAGE-06 — Normal case: an SDK verifies external data and documented client calls
 
@@ -277,3 +275,14 @@ from the completed tree and treats a silenced check as unrun.
 - [ ] TSDEV-CK-OVERALL-02-01 — Every applicable final check is run from the completed tree rather than from an earlier or partial state.
 - [ ] TSDEV-CK-OVERALL-02-02 — No check result is obtained by narrowing, suppressing, or asserting away the condition it depends on.
 - Also applies: TSDEV-CK-AESTHETICS-01-01 (suppressions introduced by the change are removed).
+
+### TSDEV-SC-OVERALL-03 — Expected failure: a required check runs and fails
+
+A required check can run against the completed tree and report a real defect. The expected outcome returns to
+the phase that owns the cause and repeats affected verification after repair, or stops with a literal failure
+when repair is not authorized or in scope. Treating a red result as an unavailable check is the failure.
+
+#### Checklist
+
+- [ ] TSDEV-CK-OVERALL-03-01 — Every failed required check returns the change to the earliest phase that owns its cause, or stops with the failed requirement when repair is unauthorized or outside scope.
+- [ ] TSDEV-CK-OVERALL-03-02 — A repaired change passes the failed check, every affected downstream check, and every applicable final check from the repaired tree before successful handoff.

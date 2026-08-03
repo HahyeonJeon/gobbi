@@ -27,7 +27,7 @@ Settle inputs, outputs, states, failures, responsible scopes, and public declara
 
 Materialize types and integration points first, then grow one caller-visible behavior increment at a time with a current type-check and focused test.
 
-### Verify the delivered path
+### Verify the consumer path
 
 Type correctness is one check among runtime behavior, integration, build, packaging, installed-consumer, and documentation results.
 
@@ -53,14 +53,14 @@ Type correctness is one check among runtime behavior, integration, build, packag
 #### 1.2 Classify the TypeScript project
 
 - Select all applicable kinds: web application, command-line application, library, SDK, and desktop application; otherwise record one literal fallback kind.
-- For each selected kind, record its named runtimes, source entries, exact `tsconfig.json` files, JavaScript or declaration outputs, and direct consumers.
+- For each selected kind, record its named runtimes, source entries, exact `tsconfig.json` files, JavaScript or declaration outputs, direct consumers, and how each consumer receives and starts or imports the output.
 - Record which product decisions are supplied by the task, `web`, `desktop`, `electron`, or another applicable domain, and route missing product decisions back to that source before encoding them in TypeScript.
 
 #### 1.3 Map the affected files and consumers
 
 - Trace callers, callees, public exports, external inputs, state-holding modules, asynchronous lifetimes, tests, build entries, packages, and documentation.
 - Record the TypeScript children whose triggers apply and load them before their decisions.
-- Identify the commands and named runtime or installed-consumer paths that will prove each success criterion.
+- Identify the exact command, named runtime, installed-package, packaged-application, import, or command-invocation path that will prove each success criterion.
 
 #### 1.4 Reproduce or characterize
 
@@ -100,6 +100,7 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 - Implement the smallest caller-visible behavior increment and update its affected callers, tests, types, and documentation together.
 - Run the focused type and behavior checks for that behavior increment before starting the next.
+- When a focused check fails, keep the next increment blocked. Repair the current increment or return to Phase 2 when the failure exposes a design mismatch, then repeat the focused checks.
 - Preserve existing behavior outside scope and remove no compatibility path without authorization.
 
 #### 3.3 Complete the affected set
@@ -125,7 +126,11 @@ Type correctness is one check among runtime behavior, integration, build, packag
 #### 4.3 Verify each selected project kind
 
 - For a web application, verify browser and server entries under their exact compiler files, then exercise the production build in each named browser or server runtime that the change affects.
-- For a command-line application, install the package archive when one exists, invoke the installed command, and verify arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
+- For a command-line application, exercise its recorded distribution method rather than assuming an npm package.
+  Use an isolated archive installation for an npm package. Otherwise use the recorded bundled executable,
+  installed script, workspace command, or other consumer command.
+  Prove that the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
+  Then verify the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
 - For a library, inspect public declarations and verify each supported import from an isolated installed consumer.
 - For an SDK, validate external service payloads at runtime and verify documented client calls, public declarations, failures, cancellation, and supported consumer configurations against the supplied service requirements.
 - For a desktop application, verify Electron main, preload, and renderer entries separately where present, including typed IPC messages and the packaged application path required by the desktop and Electron skills.
@@ -133,10 +138,14 @@ Type correctness is one check among runtime behavior, integration, build, packag
 
 #### 4.4 Close traceability and hand off
 
+- Do not enter a successful handoff while a required check is red.
+- Return to Phase 2 for a design mismatch, Phase 3 for an implementation defect, or the applicable product-domain skill for a supplied-requirement mismatch.
+- After a repair, re-run the failed check, every affected downstream check, and the applicable final checks from the repaired tree.
+- When repair is unauthorized or outside scope, stop with the failed requirement and its command evidence. Do not describe it as an unavailable check.
 - Re-run the original defect reproducer last when one exists.
 - Map current-tree command output to every success criterion and inspect the final scope for unrelated changes.
 - Hand off limitations or unavailable checks literally; do not convert a missing result into a pass.
-- Hand off the selected project kinds, named runtimes, exact compiler files, generated outputs, consumer paths, commands run, results, and remaining limitations.
+- Hand off the selected project kinds, named runtimes, exact compiler files, generated outputs, how consumers receive and start or import each output, commands run, results, and remaining limitations.
 - When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
   provided by an active `typescript` sibling supply the applicable conditions; the general Evaluation
   operation resolves them and issues any verdict.

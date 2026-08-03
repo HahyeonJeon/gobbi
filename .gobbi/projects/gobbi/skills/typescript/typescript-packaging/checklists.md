@@ -51,8 +51,12 @@ a mutation step, or that ends without returning what it found, is the failure.
 
 #### Checklist
 
-- [ ] TSPKG-CK-PROJECT-03-01 — A review-only run skips every mutation step.
 - [ ] TSPKG-CK-PROJECT-03-02 — A review-only run finishes with command results, findings, and limitations.
+- Also applies: TSPKG-CK-PROJECT-02-01 (reviewed files remain unchanged).
+- Also applies: TSPKG-CK-PROJECT-02-02 (package output is not built).
+- Also applies: TSPKG-CK-PROJECT-02-03 (nothing is installed persistently).
+- Also applies: TSPKG-CK-PROJECT-02-04 (documents remain unchanged).
+- Also applies: TSPKG-CK-PROJECT-02-05 (nothing is published).
 
 ## Structure
 
@@ -92,21 +96,19 @@ inside the archive and verifies its executable form before publication.
 - [ ] TSPKG-CK-STRUCTURE-03-01 — Every package-defined command name maps through `bin` to an existing built file inside the package archive.
 - [ ] TSPKG-CK-STRUCTURE-03-02 — Every built command file begins with the shebang required by its supported runtime.
 - [ ] TSPKG-CK-STRUCTURE-03-03 — Every archived command file has executable permissions on supported systems that require them.
-- [ ] TSPKG-CK-STRUCTURE-03-04 — `engines`, `os`, and `cpu` agree with the stated runtime, operating-system, and CPU support policy.
+- [ ] TSPKG-CK-STRUCTURE-03-04 — `engines`, `os`, and `cpu` produce the warning, acceptance, or rejection behavior stated by the support and package-manager policy.
 
 ### TSPKG-SC-STRUCTURE-04 — Normal case: dependency and declaration-routing fields match consumer needs
 
-Dependency fields decide what is installed and who supplies it, while `typesVersions` can redirect declarations
-for specific compiler versions. The expected outcome assigns each package to the field matching its runtime use
-and adds declaration routing only for an exercised compatibility need.
+Dependency fields decide what is required, optional, supplied by a consumer, used only for authoring, or
+bundled into the archive. Declaration routing also depends on which package field the compiler's resolution
+mode reads. The expected outcome matches each field to installed behavior and exercises the selected route.
 
 #### Checklist
 
-- [ ] TSPKG-CK-STRUCTURE-04-01 — Every package required when installed is declared in `dependencies`.
-- [ ] TSPKG-CK-STRUCTURE-04-02 — Every package that the consuming project must supply is declared in `peerDependencies` with a supported version range.
-- [ ] TSPKG-CK-STRUCTURE-04-03 — Packages used only to author, build, lint, or test the package are declared in `devDependencies` rather than runtime dependency fields.
-- [ ] TSPKG-CK-STRUCTURE-04-04 — `typesVersions` is present only for a stated TypeScript-version routing requirement.
-- [ ] TSPKG-CK-STRUCTURE-04-05 — Every `typesVersions` mapping resolves to the intended declaration file from an isolated installed consumer using the mapped compiler range.
+- [ ] TSPKG-CK-STRUCTURE-04-01 — Each package's dependency declaration and any `bundleDependencies` membership match whether it is required, optional, consumer-supplied, authoring-only, or also packed into the archive.
+- [ ] TSPKG-CK-STRUCTURE-04-02 — Every optional dependency and optional peer is exercised both present and absent.
+- [ ] TSPKG-CK-STRUCTURE-04-03 — Every claimed TypeScript-version declaration route resolves from an isolated installed consumer through the package field read by that compiler version and resolution mode.
 
 ## Performance
 
@@ -211,6 +213,20 @@ defined its checks before building. Discovering the contents after publication i
 - [ ] TSPKG-CK-RISK-02-01 — The build runs clean without relying on stale output.
 - [ ] TSPKG-CK-RISK-02-02 — The archive inventory is inspected for missing generated files and for unwanted source or secrets.
 - [ ] TSPKG-CK-RISK-02-03 — Archive-content, installation, runtime, and rollback checks are defined before building.
+
+### TSPKG-SC-RISK-03 — Expected failure: a required package check fails
+
+A pre-publication build, declaration, metadata, consumer, or final-check failure must keep the archive
+unpublished. A post-publication failure must become a release-authority incident. The expected outcome repairs
+and recreates an unpublished archive or follows an
+authorized rollback, deprecation, or corrective release after publication. Silent publication or republishing
+is the failure.
+
+#### Checklist
+
+- [ ] TSPKG-CK-RISK-03-01 — An archive with any failed pre-publication check remains unpublished.
+- [ ] TSPKG-CK-RISK-03-02 — A repaired package returns to release authority only as a recreated archive that passes every affected final check.
+- [ ] TSPKG-CK-RISK-03-03 — Every post-publication verification failure remains an unresolved release-authority incident until an authorized rollback, deprecation, or corrective release completes.
 
 ## Overall
 

@@ -74,14 +74,14 @@ to those tools, so review attention and diff noise are not spent on it repeatedl
 
 ### TSCONV-SC-AESTHETICS-01 — Normal case: names expose the requirement
 
-Names are the first thing a reader uses to understand a value's role, unit, and domain meaning. The expected
-outcome distinguishes concepts, units, states, and side effects at the point of use without repeating syntax
+Readers use names first to understand an applicable domain meaning, state, side effect, or
+otherwise ambiguous numeric unit. The expected outcome distinguishes those applicable categories without repeating syntax
 or implementation trivia. A name that restates the declaration, or that leaves two domain concepts
 indistinguishable, is the failure.
 
 #### Checklist
 
-- [ ] TSCONV-CK-AESTHETICS-01-01 — Every introduced name distinguishes its domain concept, unit, state, and side effect at the point of use.
+- [ ] TSCONV-CK-AESTHETICS-01-01 — Every introduced name distinguishes each domain concept, state, side effect, or otherwise ambiguous numeric unit that applies at the point of use.
 - [ ] TSCONV-CK-AESTHETICS-01-02 — No name encodes a type the declaration and surrounding domain already communicate.
 - [ ] TSCONV-CK-AESTHETICS-01-03 — Naming form follows the baseline where the project has not settled it: domain nouns for values and types, verbs for operations, `is`, `has`, or `can` for booleans, and unit-bearing names where a numeric unit is otherwise ambiguous.
 
