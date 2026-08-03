@@ -1,52 +1,62 @@
 # {Project} — Startup Design
 
 > **Document role:** Confirmed synthesis and index for the complete Startup design set.<br>
-> **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.
+> **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.<br>
+> **Example:** The synthesis may show one Project with multiple Products and each Product's one complete
+> Implementation; categorized technologies remain entries within their Implementation.
 
 ## Phase Document Artifact Register
 
-| Artifact | Role | Status | Accepted |
-|---|---|---|---|
-| [`problem-definition.md`](problem-definition.md) | Problem Definition | `{confirmed}` | `{timestamp}` |
-| [`project-design.md`](project-design.md) | Project Design | `{confirmed}` | `{timestamp}` |
-| [`project-specification.md`](project-specification.md) | Project Specification | `{confirmed}` | `{timestamp}` |
-| [`lifecycle-and-use-cases.md`](lifecycle-and-use-cases.md) | Lifecycle and Use-Case Scenarios | `{confirmed}` | `{timestamp}` |
-
-## Executive Summary
-
-{State the problem, affected people, durable outcome, chosen project direction, decisive evidence, and main tradeoffs.}
-
-## Integrated Project Model
-
-{Summarize Project -> Application/Deliverable -> Building Block, external context, and the separate technology/language assignments. Link detail to Project Design.}
-
-## Capabilities and Design Contract
-
-{Summarize capabilities, observable behavior, binding policies, quality obligations, and principal boundaries. Link detail to Project Specification.}
-
-## Lifecycle and Evaluation Guidance
-
-{Summarize the scenario classes, decisive normal and recovery paths, development guidance, and observable evaluation oracles.}
-
-## Key Decisions and Cross-Phase Traceability
-
-| Decision | Problem evidence | Design owner | Specification obligation | Lifecycle scenario |
+| Artifact | Role | Required sections | Status | Accepted |
 |---|---|---|---|---|
-| `{decision}` | `{link}` | `{link}` | `{link}` | `{link}` |
+| [`problem-definition.md`](problem-definition.md) | Problem Definition | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+| [`design.md`](design.md) | Design | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+| [`specification.md`](specification.md) | Specification | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+| [`lifecycle-and-use-cases.md`](lifecycle-and-use-cases.md) | Lifecycle and Use Cases | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
 
-## Consolidated Vocabulary
+## Integrated Design
 
-| Term | Agreed definition | Owning phase | Applies in |
+### Executive Summary
+
+{State the problem, affected people, durable outcome, chosen direction, decisive evidence, and principal
+tradeoffs so a cold reader can understand the Project without opening the child documents.}
+
+### Project, Products, and Implementations
+
+| Level | Stable subject key | Name | Parent | Owned result | Accepted section links |
+|---|---|---|---|---|---|
+| Project | `{project-key}` | `{Project}` | `none` | `{service or initiative result}` | `{four links}` |
+| Product | `{product-key}` | `{Product}` | `{project-key}` | `{independently useful application or platform result}` | `{four links}` |
+| Implementation | `{implementation-key}` | `{Product} Implementation` | `{product-key}` | `{the Product's complete technical realization}` | `{four links}` |
+
+Repeat Product and Implementation rows in accepted Product order. Each Product has exactly one
+Implementation. Summarize categorized stack entries under the owning Implementation; never turn an entry
+into a hierarchy subject.
+
+### Capabilities, Contracts, and Operating Model
+
+{Summarize Product capabilities, Project-wide policy, observable behavior, quality obligations, ownership,
+service operation, Product use and recovery, and Implementation development and evolution.}
+
+### Key Decisions and Cross-Phase Traceability
+
+| Decision | Level and stable subject key | Problem evidence | Design owner | Specification obligation | Lifecycle or use case |
+|---|---|---|---|---|---|
+| `{decision}` | `{level; key}` | `{link}` | `{link}` | `{link}` | `{link}` |
+
+### Consolidated Vocabulary
+
+| Term | Agreed definition | Owning level and phase | Applies in |
 |---|---|---|---|
-| `{term}` | `{definition}` | `{phase}` | `{scope}` |
+| `{term}` | `{definition}` | `{owner}` | `{scope}` |
 
-## Risks and Owned Deferrals
+### Risks and Owned Deferrals
 
-| Item | Consequence | Owner | Resolution method | Reopen condition |
-|---|---|---|---|---|
-| `{item}` | `{effect}` | `{owner}` | `{method}` | `{condition}` |
+| Item | Level and stable subject key | Consequence | Owner | Resolution method | Reopen condition |
+|---|---|---|---|---|---|
+| `{item}` | `{owner}` | `{effect}` | `{person or authority}` | `{method}` | `{condition}` |
 
-## Final Review Findings and Dispositions
+### Final Review Findings and Dispositions
 
 | Lens | Finding and evidence | Disposition | Follow-up question |
 |---|---|---|---|
@@ -54,7 +64,7 @@
 
 ## Confirmation
 
-- Startup schema: `2`
+- Startup schema: `3`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Confirmed: `{timestamp}`

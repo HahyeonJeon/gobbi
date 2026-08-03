@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/startup/templates/project-design.md

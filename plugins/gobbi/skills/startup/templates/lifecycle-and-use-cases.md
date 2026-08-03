@@ -1,75 +1,94 @@
-# {Project} — Lifecycle and Use-Case Scenarios
+# {Project} — Lifecycle and Use Cases
 
-> **Role:** Accepted proactive development guidance and observable evaluation oracles derived from the earlier design phases.
+> **Role:** Accepted proactive development guidance and observable oracles for every current subject.<br>
+> **Example:** Project sections cover service-wide incidents, Product sections cover app recovery and
+> retirement, and Implementation sections cover development, release, dependency migration, and stack
+> deprecation. This example is explanatory.
 
-## Scenario Inventory and Traceability
+## Section Register
 
-| Scenario | Class | Purpose | Linked decisions and contracts | Coverage status |
-|---|---|---|---|---|
-| `{scenario}` | `{normal, alternate, invalid, failure/recovery, abuse, migration, upgrade, rollback, maintenance, deprecation, or end-of-life}` | `{purpose}` | `{links}` | `{covered, deferred, or not applicable}` |
+| Level | Stable subject key | Parent Product key | Required | State | Section | Review evidence | User acceptance |
+|---|---|---|---|---|---|---|---|
+| Project | `{project-key}` | `none` | `yes` | `{absent, draft, reviewed, stale, or confirmed}` | [Project](#project) | `{assignment or none}` | `{timestamp or not yet}` |
+| Product | `{product-key}` | `none` | `yes` | `{state}` | `{Product section}` | `{evidence}` | `{acceptance}` |
+| Implementation | `{implementation-key}` | `{product-key}` | `yes` | `{state}` | `{Product Implementation section}` | `{evidence}` | `{acceptance}` |
 
-## Detailed Scenarios
+Derive the artifact state from required current rows. Any stale row makes it `stale`; all rows must be
+confirmed for `confirmed`; otherwise use the earliest incomplete row's state.
 
-### {Scenario name}
+## Project
 
-- Identity and class: `{stable identity and class}`
-- Purpose and linked contracts: `{purpose and links}`
-- Actors or event source: `{actors/source}`
-- Preconditions and context: `{preconditions}`
-- Trigger or stimulus: `{trigger}`
-- Affected Application/Deliverable and Building Blocks: `{artifacts}`
-- Main flow: `{interaction}`
-- Alternate and invalid paths: `{paths}`
-- Failure and recovery paths: `{paths}`
-- State changes, data changes, and handoffs: `{changes}`
-- Observable outcome or response measure: `{outcome}`
-- Security, privacy, safety, and quality invariants: `{invariants}`
-- Implementation-neutral development guidance: `{guidance}`
-- Evaluation method, pass/fail oracle, and evidence: `{method, oracle, evidence}`
-- Deferral and reopen condition: `{none or owned deferral}`
+### `{project-key}` — {Project}
 
-## Development Guidance and Evaluation Oracles
+#### Service Operation and Project-Wide Use
 
-{Summarize how scenarios guide implementation and how evaluators observe success without prescribing implementation tasks.}
+| Scenario | Class | Purpose | Linked decisions and sections | Observable oracle | Evidence | Status |
+|---|---|---|---|---|---|---|
+| `{cross-Product incident}` | `{normal, alternate, invalid, failure/recovery, abuse, evolution, or end}` | `{purpose}` | `{links}` | `{pass/fail observation}` | `{record}` | `{covered, deferred, or not applicable}` |
 
-## Decisions and Evidence
+{Describe service operation, project-wide use, cross-Product events, evolution, and Project end paths. For
+example, operate the Project during one Product outage and observe which Project result remains available.}
 
-| Decision | Direction | Evidence and strength | Evidence that would change it |
-|---|---|---|---|
-| `{decision}` | `{direction}` | `{source and strength}` | `{condition}` |
+#### Section Evidence and Acceptance
 
-## Topic and Question Coverage
+| Record | Required content |
+|---|---|
+| Decisions and evidence | `{direction, source, strength, and change evidence}` |
+| Coverage and vocabulary | `{scenario/question aliases, status, answer or reason, links, and terms}` |
+| Risks, deferrals, and corrections | `{owners, consequence, resolution, reopen condition, and stale set}` |
+| Review and acceptance | `{findings, dispositions, state, timestamp, and explicit acceptance}` |
 
-| Topic or question | Origin | Status | Answer or exclusion reason |
-|---|---|---|---|
-| `{[question-name]}` | `{scenario derivation, study, interview, or review}` | `{answered, dropped, or deferred}` | `{answer or reason}` |
+## Products
 
-## Vocabulary
+Repeat this subsection once for every Product in register order.
 
-| Term | Agreed definition | Where it applies | Conflicts resolved |
-|---|---|---|---|
-| `{term}` | `{definition}` | `{scope}` | `{resolution}` |
+### `{product-key}` — {Product}
 
-## Risks and Owned Deferrals
+- Parent Project: `{project-key}`
+- Implementation: `{implementation-key}`
 
-| Item | Consequence | Owner | Resolution method | Reopen condition |
-|---|---|---|---|---|
-| `{item}` | `{effect}` | `{owner}` | `{method}` | `{condition}` |
+#### Product Use, Operation, Failure, Recovery, Upgrade, and Retirement
 
-## Corrections
+| Scenario | Class | Preconditions and trigger | Main and alternate paths | Failure and recovery | State and data changes | Observable oracle and evidence |
+|---|---|---|---|---|---|---|
+| `{Product scenario}` | `{class}` | `{context and stimulus}` | `{flows}` | `{safe failure and restored state}` | `{changes and invariants}` | `{oracle and evidence}` |
 
-| Earlier decision | Current decision | User resolution | Stale or reopened artifacts |
-|---|---|---|---|
-| `{earlier}` | `{current}` | `{resolution}` | `{artifacts}` |
+{Record normal use, operating, invalid, abuse, failure, recovery, upgrade, migration of consumer state,
+deprecation, and retirement scenarios. Keep sibling Product scenarios distinct.}
 
-## Review Findings and Dispositions
+#### Section Evidence and Acceptance
 
-| Lens | Finding and evidence | Disposition | Follow-up question |
-|---|---|---|---|
-| `{lens}` | `{finding}` | `{resolved or owned deferral}` | `{question or none}` |
+| Record | Required content |
+|---|---|
+| Decisions and evidence | `{direction, source, strength, and change evidence}` |
+| Coverage and vocabulary | `{scenario/question aliases, status, answer or reason, links, and terms}` |
+| Risks, deferrals, and corrections | `{owners, consequence, resolution, reopen condition, and stale set}` |
+| Review and acceptance | `{findings, dispositions, state, timestamp, and explicit acceptance}` |
 
-## User Acceptance
+## Implementations
 
-- Status: `{draft | reviewed | confirmed | stale}`
-- Accepted: `{timestamp or not yet}`
-- The user accepted: `{one sentence or not yet}`
+Repeat this subsection once per Product in that same order. Stack entries remain inside the scenario and do
+not create further subject sections.
+
+### `{implementation-key}` — {Product} Implementation
+
+- Parent Product: `{product-key}`
+- Relationship: `the Product's single complete Implementation`
+
+#### Development, Build, Test, Release, and Stack Evolution
+
+| Scenario | Class | Stack entries involved | Development guidance | Evaluation method | Observable oracle and evidence | Migration, rollback, or exit path |
+|---|---|---|---|---|---|---|
+| `{dependency upgrade}` | `{development, build, test, release, migration, rollback, maintenance, or deprecation}` | `{categorized entries}` | `{implementation-neutral guidance}` | `{realistic test, review, observation, or rehearsal}` | `{pass/fail result and proof}` | `{safe path}` |
+
+{Record complete-stack development and use, build and test, release and rollback, dependency change,
+migration, maintenance, supported-version retirement, and categorized-entry deprecation scenarios.}
+
+#### Section Evidence and Acceptance
+
+| Record | Required content |
+|---|---|
+| Decisions and evidence | `{direction, source, strength, and change evidence}` |
+| Coverage and vocabulary | `{scenario/question aliases, status, answer or reason, links, and terms}` |
+| Risks, deferrals, and corrections | `{owners, consequence, resolution, reopen condition, and stale set}` |
+| Review and acceptance | `{findings, dispositions, state, timestamp, and explicit acceptance}` |
