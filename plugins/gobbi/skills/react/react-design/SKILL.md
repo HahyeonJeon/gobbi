@@ -46,7 +46,7 @@ performance assumptions before implementation receives the design.
 ## Rules
 
 - **MUST begin with an accepted product outcome and current product behavior.** Route complete application
-  design to its exact owner, and let Evaluation own any independent verdict.
+  design to the named application skill, and let Evaluation own any independent verdict.
 
 - **MUST present credible, reference-backed alternatives when a material React choice exists.** Explain the
   trade-offs and recommendation, let the user choose, and never infer approval.
@@ -78,12 +78,12 @@ performance assumptions before implementation receives the design.
 - **Input / precondition:** Take the accepted user outcome, current product behavior, affected people, scope,
   design authority, and the project-native location for the design record.
 - **Action / decision:** Confirm a browser application or Electron renderer, exclude React Native, and assign
-  broader work to its exact owner: complete browser interface and experience to `web-frontend`, browser
+  broader work to the named application skill: complete browser interface and experience to `web-frontend`, browser
   identity, concept, and aesthetics to `web-interface`, installed-application identity, concept, and
   aesthetics to `desktop-interface`, and installed renderer view and state structure to
   `desktop-architecture`.
 - **Evidence / state:** Record the requested outcome, current behavior, included React design questions,
-  applicable application owners, explicit exclusions, and the accepted design-record location.
+  applicable application skills, explicit exclusions, and the accepted design-record location.
 - **Next branch / recovery:** Ask for the missing outcome, authority, or document location instead of
   inventing it; continue to Step 1.2 only when the React component-design boundary is clear.
 
@@ -100,7 +100,7 @@ performance assumptions before implementation receives the design.
 - **Evidence / state:** Create an evidence register that names each source, its applicability and limits,
   current product behavior, preserved project patterns, conflicts, and the React decisions it constrains.
 - **Next branch / recovery:** Return a material evidence conflict or missing application decision to the user
-  or its exact owner; continue to Phase 2 when the evidence can support React alternatives.
+  or the named application skill; continue to Phase 2 when the evidence can support React alternatives.
 
 ### Phase 2 — Design the React Component System
 
@@ -151,7 +151,7 @@ performance assumptions before implementation receives the design.
 - **Evidence / state:** Produce the Error Boundary and recovery map, accessibility obligations, host limits,
   and performance hypotheses with their interaction, metric, environment, baseline, and comparison method.
 - **Next branch / recovery:** Route a newly exposed application-level experience or structure choice to the
-  exact owner from Step 1.1; continue to Phase 3 when every React behavior has a defined result or owner.
+  named skill from Step 1.1; continue to Phase 3 when every React behavior has a defined result or named skill.
 
 ### Phase 3 — Validate the Complete Design
 
@@ -189,9 +189,10 @@ performance assumptions before implementation receives the design.
   accessibility obligations, performance hypotheses and measurement plan, acceptance scenarios, decisions,
   limits, and verification plan.
 - **Evidence / state:** Produce one validated implementation handoff whose citations, design record,
-  prototype limits, and scenario results agree and whose remaining application work names its exact owner.
+  prototype limits, and scenario results agree and whose remaining application work identifies the named
+  skill from Step 1.1.
 - **Next branch / recovery:** Hand the accepted React design to `react-development`; route application
-  integration and shipping work to their application owners, and leave any independent judgment to
+  integration and shipping work to their named application skills, and leave any independent judgment to
   Evaluation.
 
 ## References
