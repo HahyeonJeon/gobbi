@@ -166,7 +166,7 @@ contract with Windows [Known Folders](https://learn.microsoft.com/en-us/windows/
 and the actual package model. For packaged applications, consult the current
 [MSIX container model](https://learn.microsoft.com/en-us/windows/msix/msix-containerization-overview)
 before interpreting a file or registry path. Electron `safeStorage` currently documents Windows key protection
-through DPAPI, but the exact version and user context still bound the fact; see
+through the Windows Data Protection API (DPAPI), but the exact version and user context still bound the fact; see
 [`safeStorage`](https://www.electronjs.org/docs/latest/api/safe-storage).
 
 For activation facts, compare the exact registered Windows activation kind with Electron's exact-version

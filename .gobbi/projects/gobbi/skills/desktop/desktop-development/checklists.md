@@ -184,7 +184,7 @@ any hidden transfer is the failure.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-12-02 — Installed-application records distinguish exact-version install, optional first use, update, repair or recovery, uninstall, Removed, and intentional residual state from runtime evidence.
+- [ ] DTDLVR-CK-USAGE-12-07 — Every applicable installed-application condition is recorded on the installed-state axis with its exact name — `Not installed`, `Installation in progress`, `Installed at exact version`, `Optional first-use pending/completed`, `Update in progress from A to B`, `Repair or recovery in progress`, `Uninstall in progress`, `Removed`, or `Recovered installed state` — or, for intentional residual state, with its explicit disposition, never as runtime evidence.
 - [ ] DTDLVR-CK-USAGE-12-06 — Each supported launcher, file, protocol, notification, command, and second-instance path, and each applicable runtime transition, names every input or resource it must preserve and how that value survives.
 
 ### DTDLVR-SC-USAGE-13 — Normal case: installation and first launch state the complete entry

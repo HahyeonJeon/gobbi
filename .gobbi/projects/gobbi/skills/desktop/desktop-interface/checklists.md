@@ -59,7 +59,7 @@ record is the failure.
 
 #### Checklist
 
-- [ ] DTINTF-CK-PROJECT-03-01 — Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement each have a result.
+- [ ] DTINTF-CK-PROJECT-03-08 — Each design activity maps to its exact named result: Discovery research — `Discovery evidence reviewed`; Problem framing and design requirements — `Design requirements accepted for the current subject`; Concept alternatives — `Concept decision recorded`; Prototyping — `Prototype evidence reviewed`; Representative-user testing — `Test evidence reviewed`; Design–implementation collaboration — `Design and implementation obligations reconciled for the current subject`; Post-release measurement and improvement — `Post-release design review closed`.
 - [ ] DTINTF-CK-PROJECT-03-02 — Each activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
 - [ ] DTINTF-CK-PROJECT-03-07 — Each activity result names its actor or owner, subject and scope, current inputs, method, evidence, decision state, counterevidence, failure, uncertainty, limitations, dependencies, routes, trace, reopen condition, and evidence location.
 
