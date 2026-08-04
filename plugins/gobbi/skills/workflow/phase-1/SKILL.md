@@ -22,10 +22,10 @@ authority.
 
 ## Principles
 
-### Establish durable identity before dependent work
+### Establish a recoverable session before dependent work
 
 Create and verify the session identity, branch, worktree, settings, and evidence root before Ideation produces
-durable work.
+temporary retained-worktree evidence.
 
 ### Lock direction with the user
 
@@ -34,8 +34,8 @@ without asking again.
 
 ### Recover from the earliest unproved item
 
-When runtime state and durable evidence disagree, preserve verified work and resume from the earliest safe item
-whose completion cannot be proved.
+When runtime state and temporary retained-worktree recovery evidence disagree, preserve verified work and
+resume from the earliest safe item whose completion cannot be proved.
 
 ## Rules
 
@@ -112,7 +112,8 @@ whose completion cannot be proved.
   activate the first item whose completion is not proved.
 - When evidence conflicts, choose the earlier safe item and re-verify it. Stop for the user only when safe
   recovery would change the session contract, require missing authority, or risk protected work.
-- Continue at the active Phase 1 stage after the native TODO, durable evidence, branch, and worktree agree.
+- Continue at the active Phase 1 stage after the native TODO, temporary retained-worktree recovery evidence,
+  branch, and worktree agree.
 
 ### Phase 2 — Run Ideation
 
