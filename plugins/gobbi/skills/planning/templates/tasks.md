@@ -2,14 +2,9 @@
 
 | Document attribute | Definition |
 |---|---|
-| Role | Frozen top-down decomposition |
-| Purpose | Define the complete task hierarchy and the work, boundary, and output of every group and task. |
-| Boundary | This document does not assign agents, set execution order, or record work metadata. |
-
-## Contents
-
-- [Work Summary](#work-summary)
-- [Task Hierarchy](#task-hierarchy)
+| Role | Fine-grained top-down decomposition |
+| Purpose | Define every group and leaf task with its work, boundary, and output. |
+| Boundary | This document does not assign agents, set execution order, or define orchestration state. |
 
 ## Work Summary
 
@@ -17,60 +12,41 @@
 
 | Work aspect | Definition |
 |---|---|
-| Purpose | {State why this work is needed and what it is intended to achieve.} |
-| Scope | {State what is included, excluded, deferred, or rejected and where the work stops.} |
-| Output | {State what must exist or be observable when this work is complete.} |
-| Design | {State the chosen structure, responsibilities, relationships, and constraints that shape this work.} |
-| Top-level group paths | {Hierarchy path or paths, such as 1 and 2} |
+| Purpose | {Why this work is needed.} |
+| Scope | {What is included and excluded, and where the work stops.} |
+| Output | {What must exist or be observable when this work is complete.} |
+| Design | {The accepted structure, responsibilities, relationships, and constraints.} |
+| Hierarchy paths | {Every group or leaf path that traces this work item.} |
 
-{Repeat this section for every distinct work item.}
+{Repeat this work-item section as needed. A work item may trace several paths, and a coherent top-level group
+may contain paths from several work items.}
 
 ## Task Hierarchy
 
-**Hierarchy rule:** The numeric task path identifies the hierarchy. For example, 1.1.1 is a child of
-1.1, which is a child of 1. Record tasks in numeric depth-first order.
+Numeric paths define parent-child structure only. Record nodes in depth-first order; a leaf task is a
+traceable decomposed task and not automatically an agent assignment. Phase 3 combines one or more compatible
+leaf tasks into each assigned task group.
 
-### 1 — {Top-level group title}
-
-**Type:** `Group`
-
-- **Work:** {State the complete work contained by this group.}
-- **Boundary:** {State what belongs to this group and where its responsibility stops.}
-- **Output:** {State what this group and its descendants must produce.}
-
-### 1.1 — {Child group title}
+### 1 — {Group title}
 
 **Type:** `Group`
 
-- **Work:** {State the work contained by this child group.}
-- **Boundary:** {State what belongs to this child group and where its responsibility stops.}
-- **Output:** {State what this child group and its descendants must produce.}
+- **Work items:** {Work items traced through this group.}
+- **Work:** {The complete work contained by this group.}
+- **Boundary:** {What belongs to this group and where its responsibility stops.}
+- **Output:** {What this group and its descendants must produce.}
 
-### 1.1.1 — {Task title}
+{Repeat the group form for each top-level or nested group. Choose top-level groups by coherent decomposition
+boundaries, not one group per work item.}
+
+### 1.1 — {Leaf task title}
 
 **Type:** `Task`
 
-- **Work:** {State the bounded work this task must complete.}
-- **Boundary:** {State the exact responsibility of this task.}
-- **Output:** {State the concrete output this task must produce.}
+- **Work items:** {Work items traced through this leaf.}
+- **Work:** {The bounded work this leaf must complete.}
+- **Boundary:** {The exact responsibility of this leaf.}
+- **Output:** {The concrete output this leaf must produce.}
 
-### 1.2 — {Task title}
-
-**Type:** `Task`
-
-- **Work:** {State the bounded work this task must complete.}
-- **Boundary:** {State the exact responsibility of this task.}
-- **Output:** {State the concrete output this task must produce.}
-
-### 2 — {Additional top-level group title}
-
-**Type:** `Group`
-
-- **Work:** {State the complete work contained by this group.}
-- **Boundary:** {State what belongs to this group and where its responsibility stops.}
-- **Output:** {State what this group and its descendants must produce.}
-
-{Repeat the flat section for every group and task.}
-
-{Use numeric hierarchy paths only to locate nodes in this frozen decomposition. Phase 3 assigns final
-execution task IDs after the tasks are grouped and ordered.}
+{Repeat the task form for every leaf. Keep splitting until one task group can include the whole leaf; if the
+leaf would need several task groups, split it here first.}

@@ -1,130 +1,83 @@
-# {Work Name} — Plan
+# {Work Name} - Plan
 
 | Document attribute | Definition |
 |---|---|
-| Role | Frozen plan for bottom-up execution |
-| Purpose | Order the decomposed tasks, assign each task to an accountable agent role, and provide the context required for execution. |
+| Role | Flat ordered list of combined task groups assigned to agents |
+| Purpose | Combine compatible decomposed leaf tasks into complete agent assignments and order them by dependency. |
 | Source hierarchy | `tasks.md` |
-| Authority | This document is the final Planning authority. |
-| Boundary | This document defines execution but does not track execution progress or results. |
-
-## Contents
-
-- [Plan Summary](#plan-summary)
-- [Work Metadata](#work-metadata)
-- [Task Order and Hierarchy](#task-order-and-hierarchy)
-- [Assumptions, Defaults, and Unresolved Metadata](#assumptions-defaults-and-unresolved-metadata)
+| Boundary | This document defines task groups, not execution progress, evaluation, records, or commit provenance. |
 
 ## Plan Summary
 
 | Aspect | Definition |
 |---|---|
-| Work | {Summarize the defined work represented by this plan.} |
-| Purpose | {State why the work is needed and what it is intended to achieve.} |
-| Scope | {State the included boundary and the material exclusions, deferrals, or rejections.} |
-| Output | {State what must exist or be observable when the complete plan has been executed.} |
-| Design | {Summarize the structure, responsibilities, relationships, and constraints that shape execution.} |
-| Task groups | {List the final task groups in execution-order form.} |
+| Work | {The defined work represented by this plan.} |
+| Purpose | {Why the work is needed.} |
+| Scope | {The included boundary and material exclusions.} |
+| Output | {What must exist or be observable after all task groups execute.} |
+| Design | {The accepted structure, relationships, and constraints that shape execution.} |
+| Task-group strategy | {Why these are the fewest dependency-valid, independently verifiable, reviewable, and safe task groups.} |
 
-## Work Metadata
+## Execution Context
 
-### Workspace and Git
+| Context item | Value | Applies to |
+|---|---|---|
+| {Truly shared repository, path, artifact, runtime, platform, access, environment, tool, or other metadata} | {Supported value} | {All task groups or named task-group IDs} |
 
-| Metadata | Shared value |
-|---|---|
-| Repository | `{Repository name or location}` |
-| Project root | `{Project-root path}` |
-| Working directories | `{Directories used by the work}` |
-| Git base branch | `{Branch from which the work starts}` |
-| Git work branch | `{Branch used for the work}` |
-| Git worktree | `{Worktree path}` |
-| Artifact locations | `{Shared input and output locations}` |
+{Repeat rows only for truly shared context. Use `None` when no shared context is needed; never include secret
+values. Each task group still restates the context needed to understand and execute its grouped work.}
 
-### Capabilities and Environment
+## Task Groups
 
-| Metadata | Shared value |
-|---|---|
-| Required skills | `{Skills shared by the work}` |
-| Required tools | `{Tools shared by the work}` |
-| Runtimes | `{Required runtimes and applicable versions}` |
-| Platforms | `{Required operating systems, deployment targets, or execution platforms}` |
-| Access | `{Required filesystem, service, network, or external-system access}` |
-| Environment configuration | `{Required configuration and environment-variable names; never include secret values}` |
+Lower order numbers execute first. Task groups with the same order may run in parallel only when their
+explicit `Requires` edges and writer/change boundaries permit it; `Requires` remains authoritative.
 
-{Use `Not applicable` when a field has been considered and does not apply. Use `Unresolved` when the value
-is required but not known. Do not invent a value.}
+### `task-NN-slug` — {Task group title}
 
-## Task Order and Hierarchy
-
-**Order rule:** Lower order numbers execute first. Groups with the same group-order number may run in
-parallel. Within a group, tasks with the same task-order number may run in parallel. Shared order numbers
-express safe parallelism.
-
-### `G1` — {Task Group Title}
-
-| Group attribute | Definition |
+| Task-group attribute | Definition |
 |---|---|
 | Order | {Number} |
-| Source hierarchy paths | {Paths from tasks.md, such as 1.1 and 2.2} |
-| Requires | `{Earlier group IDs or None}` |
-| Boundary | {State the related work contained by this group.} |
-| Output | {State what must be available after every task in this group is complete.} |
+| Combined decomposed-task paths | {One or more exact leaf paths from tasks.md, such as 1.1, 1.2, and 2.1.1} |
+| Accountable agent role | {Exactly one role assigned to this task group} |
+| Required skills and capabilities | {Exact skills and capabilities the assigned agent needs} |
+| Requires | {Earlier task-group IDs or `None`} |
 
-#### `T01` — {Final task title}
+#### Decomposed Tasks
 
-| Task attribute | Definition |
-|---|---|
-| Order | {Number within this group} |
-| Source task | {Exact hierarchy path from tasks.md} |
-| Assigned agent | `{One accountable agent role}` |
-| Required capabilities | {State the capabilities the assigned agent must have.} |
-| Requires | `{Earlier task IDs or None}` |
+| Path | Title | Work | Boundary | Output |
+|---|---|---|---|---|
+| {Exact leaf path} | {Decomposed task title} | {Copied or restated leaf work} | {Copied or restated leaf boundary} | {Copied or restated leaf output} |
 
-- **Work:** {State the bounded work this task must complete.}
-- **Boundary:** {State what this task covers and where its responsibility stops.}
-- **Output:** {State the concrete output this task must produce.}
-- **Inputs:** {List only the inputs the assigned agent needs.}
-- **Constraints:** {List only the constraints that govern this task.}
-- **Handoffs:** {State the outputs received from earlier tasks and the outputs passed to later tasks.}
-- **Metadata differences:** {Record only task-specific differences from the shared work metadata, or
-  write `None`.}
+{Add one row for every decomposed leaf task combined into this task group.}
 
-#### `T02` — {Final task title}
+#### Task Group Details
 
-| Task attribute | Definition |
-|---|---|
-| Order | {Number within this group; reuse an order number only when parallel execution is safe} |
-| Source task | {Exact hierarchy path from tasks.md} |
-| Assigned agent | `{One accountable agent role}` |
-| Required capabilities | {State the capabilities the assigned agent must have.} |
-| Requires | `{Earlier task IDs or None}` |
+{Every field below belongs to this task group as a whole, not to an individual decomposed task or task unit.}
 
-- **Work:** {State the bounded work this task must complete.}
-- **Boundary:** {State what this task covers and where its responsibility stops.}
-- **Output:** {State the concrete output this task must produce.}
-- **Inputs:** {List only the inputs the assigned agent needs.}
-- **Constraints:** {List only the constraints that govern this task.}
-- **Handoffs:** {State the outputs received from earlier tasks and the outputs passed to later tasks.}
-- **Metadata differences:** {Record only task-specific differences from the shared work metadata, or
-  write `None`.}
+- **Why combined:** {Why these decomposed tasks belong in one agent assignment and how they form one coherent outcome.}
+- **Execution purpose:** {Why this grouped work is needed and what execution must achieve.}
+- **Accepted design and decisions:** {The relevant accepted design, decisions, and material assumptions.}
+- **Repository context:** {The relevant repository areas, current behavior, conventions, and artifacts.}
+- **Work:** {The complete group-level work across all combined decomposed tasks.}
+- **Boundary:** {What this task group covers and where its responsibility stops.}
+- **Output:** {The complete concrete output this task group must produce.}
+- **Inputs:** {All inputs the assigned accountable agent needs.}
+- **Constraints:** {The accepted constraints and authority limits that govern this task group.}
+- **Writer/change boundary:** {The files, artifacts, state, or external surfaces this task group may change and
+  its coherent commit boundary.}
+- **Handoffs:** {Outputs received from prerequisite task groups and outputs passed to dependent task groups.}
+- **Verification:** {Fresh checks and direct evidence that prove the complete task-group outcome.}
+- **Applicable metadata:** {Task-group metadata differences from Execution Context, or `None`.}
 
-### `G2` — {Additional Task Group Title}
+{Repeat this one task-group schema in flat plan order. Each task group combines at least one leaf, each leaf
+appears in exactly one task group, and no child agent tasks sit under a task group. Do not make an agent infer
+task-group context solely from paths, `tasks.md`, or private discussion.}
 
-| Group attribute | Definition |
-|---|---|
-| Order | {Number; reuse a group-order number only when parallel execution is safe} |
-| Source hierarchy paths | {Paths from tasks.md} |
-| Requires | `{Earlier group IDs or None}` |
-| Boundary | {State the related work contained by this group.} |
-| Output | {State what must be available after every task in this group is complete.} |
+## Nonblocking Unresolved Metadata
 
-{Repeat the flat task section for every task in this group. Repeat the group section for every task group.}
-
-## Assumptions, Defaults, and Unresolved Metadata
-
-| Item | State | Execution effect | Affected groups or tasks |
+| Item | Evidence | Execution effect | Affected task groups |
 |---|---|---|---|
-| `{Assumption, selected default, or unknown metadata value}` | `{Assumption, Default, or Unresolved}` | `{How execution depends on it}` | `{Group or task IDs}` |
+| {Unknown factual value} | {Why it is not currently knowable} | {Why execution can still proceed, or the exact later resolution point} | {Task-group IDs} |
 
-{Record only items that materially affect execution. Write `None` when there are no assumptions, selected
-defaults, or unresolved metadata values.}
+{Record only nonblocking factual metadata. Return missing required input or a material user-owned decision to
+the caller instead; write `None` when this section has no entries.}
