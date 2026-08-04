@@ -163,9 +163,10 @@ effect.
 - [ ] GOARC-CK-USAGE-01-01 — Current-system and applicable-reference study completes before an architecture proposal is recommended.
 - [ ] GOARC-CK-USAGE-01-02 — Every viable design-dependent selection passes the complete material-or-routine classifier before design planning proceeds.
 - [ ] GOARC-CK-USAGE-01-03 — The author-design result contains the literal user-confirmed integrated design with its exact architecture model, alternatives, decisions, trade-offs, compatibility state, migration obligations, and evidence limits.
-- [ ] GOARC-CK-USAGE-01-04 — Every design-artifact or scratch write stays within a separately caller-approved path and content boundary.
 - [ ] GOARC-CK-USAGE-01-05 — The result contains the complete future validation plan required by Procedure 4.3.
 - [ ] GOARC-CK-USAGE-01-06 — The result contains no code skeleton, implementation plan, source implementation, generated edit, or executed project command.
+
+- Also applies: GOARC-CK-PROJECT-01-02 (author-design writes stay within exact approved design-artifact and scratch boundaries).
 
 ### GOARC-SC-USAGE-02 — Normal case: Review mode returns evidence-backed findings
 
@@ -175,9 +176,9 @@ finding lacks its affected architecture object or silently becomes a remediation
 
 #### Checklist
 
-- [ ] GOARC-CK-USAGE-02-01 — Review mode leaves every project path, design output, and local-output path unchanged.
 - [ ] GOARC-CK-USAGE-02-02 — Every finding records the exact architecture object and boundary, current behavior or proposal, architecture evidence, invalid or unsupported assumption, consequence, affected consumer and invariant, compatibility or operational risk, applicable alternative, evidence limit, decision need, and earliest responsible architecture decision.
 
+- Also applies: GOARC-CK-PROJECT-01-03 (review keeps project paths, design outputs, and local outputs within its read-only/no-write boundary).
 - Also applies: GOARC-CK-PROJECT-02-01 (review pauses before an unresolved material judgment or proposed mutation).
 - Also applies: GOARC-CK-RISK-02-02 (the review decision block retains resumable state).
 
@@ -287,6 +288,8 @@ omits an effect, decision, consumer, architecture object, evidence limit, or rec
 - [ ] GOARC-CK-OVERALL-01-02 — The terminal record names operation and mode, accepted result, decision basis, actual owned object, terminal state, changed or reviewed paths, architecture and reference evidence, evidence limits, external reads or effects, compatibility decision, block, recovery, and handoff, or gives an architecture-evidence-based reason a field is not applicable.
 - [ ] GOARC-CK-OVERALL-01-03 — The terminal record names the package identities and boundaries, module and process graph, process roles, public APIs or CLIs, dependency direction, invariants, configuration and flow, ownership and lifetimes, concurrency and shutdown, trust and failure containment, recovery and rollback, budgets, diagnostic signals, alternatives, decisions or findings, consumers, compatibility and migration, validation questions and signals, unresolved questions, artifact-write permission, and non-goals that apply.
 - [ ] GOARC-CK-OVERALL-01-04 — Evaluation applies the unchecked checklist source of every active Go sibling in addition to this source.
+- [ ] GOARC-CK-OVERALL-01-05 — The terminal state is exactly one of `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`.
+- [ ] GOARC-CK-OVERALL-01-06 — The compatibility decision is exactly one of `compatible`, `migration supplied`, `authorized break`, or `unsupported` when applicable; otherwise it is explicitly not applicable.
 
 ### GOARC-SC-OVERALL-02 — Adversarial: A partial architecture result is called success
 

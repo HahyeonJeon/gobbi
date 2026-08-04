@@ -145,6 +145,11 @@ bounds, diagnostic signals, and evidence that could distinguish the promised res
   external prior art. For every used source, record authority, relevance to this exact decision, currency,
   applicability to the project's compatibility target, license or reuse constraint when external text is
   reused, and the separate reuse disposition.
+- Use [Organizing a Go module](https://go.dev/doc/modules/layout) as official Go prior art for module, package
+  directory, library, and command placement; the current project contract selects its architecture.
+- Treat [Go Code Review Comments: Interfaces](https://go.dev/wiki/CodeReviewComments#interfaces) only as
+  Go-maintained community guidance for consumer-defined interfaces, not as a project decision or language
+  requirement.
 - Recheck live official documentation when a claim depends on current Go or platform behavior. Do not freeze a
   current Go release, mandate a third-party framework, or treat community guidance as a project decision.
 - Reject a reference whose context, operational assumptions, trust model, failure model, or consumer needs do
@@ -309,12 +314,3 @@ bounds, diagnostic signals, and evidence that could distinguish the promised res
 ## References
 
 - [Evaluation checklist](checklists.md) is the local unchecked evaluation source for this skill.
-- [Go Design](../go-design/SKILL.md), [Go Concurrency](../go-concurrency/SKILL.md), [Go Modules](../go-modules/SKILL.md),
-  [Go Security](../go-security/SKILL.md), [Go Observability](../go-observability/SKILL.md),
-  [Go Performance](../go-performance/SKILL.md), [Go Testing](../go-testing/SKILL.md), and
-  [Go Toolchain](../go-toolchain/SKILL.md) own the routed specialist judgments.
-- [Go Development](../go-development/SKILL.md) owns later construction or read-only code review.
-- [Organizing a Go module](https://go.dev/doc/modules/layout) is official Go prior art for module, package
-  directory, library, and command placement; the current project contract selects its architecture.
-- [Go Code Review Comments: Interfaces](https://go.dev/wiki/CodeReviewComments#interfaces) is Go-maintained
-  community guidance for consumer-defined interfaces, not a project decision or language requirement.
