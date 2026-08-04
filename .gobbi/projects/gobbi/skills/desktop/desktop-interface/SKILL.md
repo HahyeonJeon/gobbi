@@ -7,20 +7,27 @@ skill-type: preference
 
 # Desktop Interface
 
-Use this preference skill when an installed desktop application's design needs a judgment rather than a step:
-which identity governs, what evidence a design claim may rest on, how many concepts must be compared, when
-expression is decided, how meaning reaches every supported modality, and what a success measure must survive.
-It owns the observable design judgment that `desktop-delivery` coordinates without replacing.
+Use this preference skill to judge an installed desktop application's complete design lifecycle. It owns the
+current results for Discovery research, Problem framing and design requirements, Concept alternatives,
+Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement
+and improvement; [`desktop-development`](../desktop-development/SKILL.md) owns the order and coordination of
+that work.
 
-The evidence Rule below is a risk threshold, not an unconditional gate: it requires new representative-user
-evidence only for the choices it names. This skill owns no mechanics. `desktop-contract` owns the observable
-installed-platform contract, `desktop-release` owns release judgment,
-[`electron-design`](../../electron/electron-design/SKILL.md) owns Electron security boundaries and ownership
-defaults, [`web-interaction`](../../web/web-interaction/SKILL.md) owns the renderer's event, pointer,
-keyboard, focus, and widget-pattern mechanics, [`css-motion`](../../css/css-motion/SKILL.md) owns its
-declarative motion mechanics, and the renderer's remaining markup, presentation, and framework owners keep
-their own policy. Rules define
-the boundary, Preferences select defaults inside it, and a Rule wins every conflict.
+Every activity receives one bounded result, including when current evidence is reused or the activity is not
+applicable. These judgments preserve project identity, keep evidence able to change a choice, compare real
+alternatives, test representative use, settle expression only after the experience contract, and reopen a
+decision when post-release evidence challenges it.
+
+This skill decides whether an interaction or motion is warranted and what state, location, or causality it
+must communicate. It does not own mechanics: event, pointer, keyboard, focus, drag, gesture, widget-pattern,
+and script-driven interaction or motion mechanics route to
+[`web-interaction`](../../web/web-interaction/SKILL.md), while declarative motion mechanics route to
+[`css-motion`](../../css/css-motion/SKILL.md). Product structure and runtime outcomes remain with
+[`desktop-architecture`](../desktop-architecture/SKILL.md), release judgment with
+[`desktop-release`](../desktop-release/SKILL.md), Electron mechanisms with the
+[`electron`](../../electron/SKILL.md) family, current operating-system facts with the matching desktop OS
+owner, and other renderer policy with its web, HTML, CSS, React, or TypeScript owner. Rules define the valid
+choices below; Preferences recommend defaults inside that boundary, and Rules win every conflict.
 
 ## Principles
 
@@ -31,8 +38,8 @@ expression from the first structural choice. It never excuses avoidable exclusio
 
 ### Structure earns expression
 
-Detailed expression is decided after structure, behavior, content, feedback, recovery, and accessibility are
-settled. Expression can strengthen a sound contract; it cannot repair a missing one.
+Detailed expression is decided after structure, behavior, content, feedback, recovery, adaptation, and
+accessibility are settled. Expression can strengthen a sound experience; it cannot repair a missing one.
 
 ### Observed use outranks preference
 
@@ -46,29 +53,41 @@ it is locked.
 
 ## Rules
 
+- **MUST give each of the seven design activities exactly one result with exactly one disposition:**
+  `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
+  Each result names the actor or owner, subject and scope, current inputs, method, evidence, decision state,
+  counterevidence, failure, uncertainty and limitations, dependencies and routes, trace, reopen condition,
+  and evidence location.
+- **MUST prove a non-performed disposition rather than use it as a shortcut.** Reused evidence records the
+  exact subject, affected people, source and date, context and conditions, falsifiability, and current reach;
+  a not-applicable result proves the activity cannot change the scoped decision and that no binding risk
+  trigger applies.
 - **MUST establish project identity through one authority chain:** explicit `DESIGN.md`, brand, product, or
   design-system material, then the live product, system, and tokens, then a user-confirmed run-scoped brief.
   NEVER create or prescribe a project-wide `DESIGN.md`, and record the selected source beside the decisions it
   constrains.
-- **MUST name the evidence class each design claim rests on, and obtain new representative-user evidence
-  before accepting a material choice that is novel, uncertain, exclusionary, consequential, security- or
-  compatibility-sensitive, hard to reverse, or carries material risk of harm.** Standards, expert review,
-  prior research, analytics, and a project owner's familiarity frame a choice but NEVER support a claim about
-  what people can perceive, operate, complete, or recover from.
-- **MUST compare at least two materially different application concepts before selecting one.** Concepts must
-  differ in hierarchy, action model, information flow, interaction strategy, or state communication; a variant
-  of color, type, spacing, icon style, or wording is the same concept, and a single-concept exception records
-  the real constraints and evidence behind it.
+- **MUST name and choose each design claim's evidence class before the choice, prototype at the fidelity
+  needed to falsify it, and compare at least two concepts that differ in hierarchy, action model, information
+  flow, interaction strategy, or state communication.** Color, type, spacing, icon-style, or wording variants
+  are one concept, while a single-concept exception records the real constraints and evidence behind it.
+  Obtain new representative-user evidence before accepting a material choice that is novel, uncertain,
+  exclusionary, consequential, security- or compatibility-sensitive, hard to reverse, or carries material
+  risk of harm; standards, expert review, prior research, analytics, and project-owner familiarity can frame
+  the choice but cannot support what people can perceive, operate, complete, or recover from.
 - **NEVER decide detailed expression while structure, behavior, content, feedback, recovery, adaptation, or
-  accessibility is unresolved.** Each expressive choice must improve hierarchy, state recognition, affordance,
-  trust, or identity fit rather than conceal missing structure or inaccessible behavior.
-- **MUST make every required action, state, and meaning available through each supported desktop modality and
-  legible before a person acts.** Cover window chrome, menus, tray, global and in-window shortcuts,
-  notifications, and keyboard, pointer, and assistive-input paths, and expose consequence, reversibility, and
-  the recovery route at the point of decision.
-- **MUST define each success measure so that a proxy which improves while the user outcome worsens cannot
-  stand alone.** Name the measure's intended and harmful interpretation, the guardrail that detects the
-  harmful one, and the evidence that reopens the design.
+  accessibility is unresolved, and MUST make every required action, state, and meaning available through
+  every supported desktop modality and legible before a person acts.** Each expressive choice improves
+  hierarchy, state recognition, affordance,
+  trust, or identity fit rather than concealing missing structure or inaccessible behavior. Cover window
+  chrome, menus, tray, global and in-window shortcuts, notifications, keyboard, pointer, and assistive-input
+  paths, with consequence, reversibility, and recovery exposed at the point of decision. Decide whether each
+  interaction or motion is warranted and what state, location, or causality it communicates; route event,
+  pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics to `web-interaction`,
+  and declarative motion mechanics to `css-motion`.
+- **MUST define harm-aware success measures and keep their decisions reopenable after release.** Name each
+  measure's intended and harmful interpretation, its guardrail, and the evidence that reopens the design;
+  post-release evidence that crosses a target or guardrail reopens the affected decision, while a no-change
+  result remains dated, bounded, and falsifiable.
 
 ## Preferences
 
@@ -89,6 +108,12 @@ Rule, so select the class before deciding.
 treatment of one model. Depart when a recorded constraint leaves only one viable model, and state that
 constraint beside the decision.
 
+### Prefer the least prototype that can disprove the choice
+
+**PREFER** the lowest-cost prototype that exposes the behavior, content, state, recovery, modality, and
+accessibility properties relevant to the unresolved decision. Increase fidelity only when the lower-fidelity
+form cannot produce the evidence the decision needs.
+
 ### Prefer expression that carries meaning
 
 **PREFER** typography, color, density, spacing, shape, and imagery choices that make hierarchy, state, or
@@ -99,7 +124,7 @@ floor the renderer's presentation owner defines.
 
 **PREFER** a transition when it makes a change of state, location, or causality legible, and no motion
 otherwise. This skill decides only whether motion is warranted and what it must communicate; the safety floor
-stays with the renderer's applicable presentation owner and the emitted mechanics with
+stays with the applicable renderer presentation owner, and declarative mechanics remain with
 [`css-motion`](../../css/css-motion/SKILL.md).
 
 ## References
