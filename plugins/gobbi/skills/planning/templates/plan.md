@@ -1,4 +1,4 @@
-# {Work Name} — Combined Task Group Plan
+# {Work Name} - Plan
 
 | Document attribute | Definition |
 |---|---|
@@ -18,7 +18,7 @@
 | Design | {The accepted structure, relationships, and constraints that shape execution.} |
 | Task-group strategy | {Why these are the fewest dependency-valid, independently verifiable, reviewable, and safe task groups.} |
 
-## Shared Execution Context
+## Execution Context
 
 | Context item | Value | Applies to |
 |---|---|---|
@@ -27,7 +27,7 @@
 {Repeat rows only for truly shared context. Use `None` when no shared context is needed; never include secret
 values. Each task group still restates the context needed to understand and execute its grouped work.}
 
-## Ordered Combined Task Groups
+## Task Groups
 
 Lower order numbers execute first. Task groups with the same order may run in parallel only when their
 explicit `Requires` edges and writer/change boundaries permit it; `Requires` remains authoritative.
@@ -42,13 +42,17 @@ explicit `Requires` edges and writer/change boundaries permit it; `Requires` rem
 | Required skills and capabilities | {Exact skills and capabilities the assigned agent needs} |
 | Requires | {Earlier task-group IDs or `None`} |
 
-#### Combined decomposed task details
+#### Decomposed Tasks
 
 | Path | Title | Work | Boundary | Output |
 |---|---|---|---|---|
 | {Exact leaf path} | {Decomposed task title} | {Copied or restated leaf work} | {Copied or restated leaf boundary} | {Copied or restated leaf output} |
 
 {Add one row for every decomposed leaf task combined into this task group.}
+
+#### Task Group Details
+
+{Every field below belongs to this task group as a whole, not to an individual decomposed task or task unit.}
 
 - **Why combined:** {Why these decomposed tasks belong in one agent assignment and how they form one coherent outcome.}
 - **Execution purpose:** {Why this grouped work is needed and what execution must achieve.}
@@ -63,7 +67,7 @@ explicit `Requires` edges and writer/change boundaries permit it; `Requires` rem
   its coherent commit boundary.}
 - **Handoffs:** {Outputs received from prerequisite task groups and outputs passed to dependent task groups.}
 - **Verification:** {Fresh checks and direct evidence that prove the complete task-group outcome.}
-- **Applicable metadata:** {Task-group metadata differences from Shared Execution Context, or `None`.}
+- **Applicable metadata:** {Task-group metadata differences from Execution Context, or `None`.}
 
 {Repeat this one task-group schema in flat plan order. Each task group combines at least one leaf, each leaf
 appears in exactly one task group, and no child agent tasks sit under a task group. Do not make an agent infer
