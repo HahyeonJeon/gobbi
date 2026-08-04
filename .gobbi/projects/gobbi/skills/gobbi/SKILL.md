@@ -306,8 +306,7 @@ Each of these roots covers work in its language or platform and routes the task 
 | Skill | Covers |
 |---|---|
 | [`web`](../web/SKILL.md) | The web platform |
-| [`html`](../html/SKILL.md) | HTML markup |
-| [`css`](../css/SKILL.md) | CSS styling |
+| [`html-css`](../html-css/SKILL.md) | HTML markup and CSS presentation |
 | [`typescript`](../typescript/SKILL.md) | TypeScript |
 | [`react`](../react/SKILL.md) | React |
 | [`go`](../go/SKILL.md) | Go |

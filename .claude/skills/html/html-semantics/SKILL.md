@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/html/html-semantics/SKILL.md

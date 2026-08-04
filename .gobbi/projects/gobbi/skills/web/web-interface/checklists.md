@@ -5,8 +5,8 @@ evidence-threshold, concept-exploration, expression-ordering, and motion-intent 
 is governed by the [`web`](../SKILL.md) domain and [`web-interface`](SKILL.md) preferences, with
 [`web-frontend`](../web-frontend/SKILL.md) as the operation that applies this choice space,
 [`web-interaction`](../web-interaction/SKILL.md) owning event, pointer, keyboard, focus, and widget mechanics,
-and [`html-semantics`](../../html/html-semantics/SKILL.md), [`css-conventions`](../../css/css-conventions/SKILL.md),
-[`css-motion`](../../css/css-motion/SKILL.md), and [`react-design`](../../react/react-design/SKILL.md) owning the
+and [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md), [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md),
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md), and [`react-design`](../../react/react-design/SKILL.md) owning the
 mechanics these judgments call for. The source commit that contains this file identifies the checklist version.
 Its stable owner prefix is `WEBINTF`.
 
@@ -34,7 +34,7 @@ failure.
 
 - [ ] WEBINTF-CK-PROJECT-01-01 — The identity source is the highest available in the chain: explicit `DESIGN.md`, brand, product, or design-system material, then the live product, system, and tokens, then a user-confirmed run-scoped brief.
 - [ ] WEBINTF-CK-PROJECT-01-02 — The selected identity source is recorded beside the decisions it constrains.
-- [ ] WEBINTF-CK-PROJECT-01-03 — Every mechanism question the design raises is routed to its named owner: element, name, state, and accessibility meaning to `html-semantics`; the emitted-presentation floor and token conventions to `css-conventions`; declarative motion mechanics to `css-motion`; event, pointer, keyboard, focus, and widget-pattern mechanics to `web-interaction`; component boundaries and state ownership to `react-design`; and the ordered browser operation to `web-frontend`.
+- [ ] WEBINTF-CK-PROJECT-01-03 — Every mechanism question the design raises is routed to its named owner: element, name, state, and accessibility meaning to `html-css-semantics`; the emitted-presentation floor and token conventions to `html-css-conventions`; declarative motion mechanics to `html-css-motion`; event, pointer, keyboard, focus, and widget-pattern mechanics to `web-interaction`; component boundaries and state ownership to `react-design`; and the ordered browser operation to `web-frontend`.
 
 ### WEBINTF-SC-PROJECT-02 — Rule violation: a project-wide design authority is created here
 
@@ -87,9 +87,11 @@ expression that makes an unfinished structure look finished is the failure.
 Not applicable: this skill decides which identity governs, what evidence a claim may rest on, which concepts
 are compared, when expression is settled, and whether a motion is warranted. It owns no mechanics, so it
 produces nothing whose latency, throughput, or resource cost can be measured. Motion duration, easing, and
-rendering cost belong to [`css-motion`](../../css/css-motion/SKILL.md) and
-[`css-conventions`](../../css/css-conventions/SKILL.md), and browser-side timing evidence belongs to
-[`web-platform`](../web-platform/SKILL.md) and [`web-frontend`](../web-frontend/SKILL.md).
+motion-source defaults belong to [`html-css-motion`](../../html-css/html-css-motion/SKILL.md); presentation
+source defaults belong to [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md). Direct
+HTML/CSS target observations belong to [`html-css-platform`](../../html-css/html-css-platform/SKILL.md), focused
+comparisons and result claims belong to [`html-css-testing`](../../html-css/html-css-testing/SKILL.md), and
+application-level performance suites belong to [`web-testing`](../web-testing/SKILL.md).
 
 ## Aesthetics
 
@@ -103,7 +105,7 @@ taste or house style is the failure.
 
 - [ ] WEBINTF-CK-AESTHETICS-01-01 — Every expressive choice improves hierarchy, state recognition, affordance, trust, or identity fit.
 - [ ] WEBINTF-CK-AESTHETICS-01-02 — Every departure from expression that carries meaning names the recorded identity obligation behind it.
-- [ ] WEBINTF-CK-AESTHETICS-01-03 — No expressive choice falls below the `css-conventions` emitted-presentation floor.
+- [ ] WEBINTF-CK-AESTHETICS-01-03 — No expressive choice falls below the `html-css-conventions` emitted-presentation floor.
 
 ### WEBINTF-SC-AESTHETICS-02 — Poor quality: motion added with no state change to explain
 
@@ -115,7 +117,7 @@ communicate stated; decorative motion accepted because it is subtle is the failu
 
 - [ ] WEBINTF-CK-AESTHETICS-02-01 — Every transition makes a change of state, location, or causality legible.
 - [ ] WEBINTF-CK-AESTHETICS-02-02 — Every warranted motion states what it must communicate.
-- [ ] WEBINTF-CK-AESTHETICS-02-03 — No motion duration, easing, or safety floor is decided here rather than by `css-motion` and `css-conventions`.
+- [ ] WEBINTF-CK-AESTHETICS-02-03 — No motion duration, easing, or safety floor is decided here rather than by `html-css-motion` and `html-css-conventions`.
 
 ## Usage
 

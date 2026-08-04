@@ -6,7 +6,8 @@ obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain a
 operation, with [`web-interface`](../web-interface/SKILL.md) owning the identity, evidence, concept, and
 expression judgments this operation applies, [`web-interaction`](../web-interaction/SKILL.md) owning the
 interaction choice space it selects from, [`web-feature`](../web-feature/SKILL.md) as the caller that binds
-the outcome, and the HTML and CSS owners holding element meaning and presentation. The source commit that
+the outcome, with [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owning element meaning and
+[`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owning presentation rules. The source commit that
 contains this file identifies the checklist version. Its stable owner prefix is `WEBFRNT`.
 
 The evidence Rule this source checks is a risk threshold, not an unconditional gate. Rows below test the
@@ -32,7 +33,7 @@ frontend that decides identity, element meaning, or threat analysis for itself i
 #### Checklist
 
 - [ ] WEBFRNT-CK-PROJECT-01-01 — Work starts from the bounded feature outcome, the current product, the governing records, and the available user evidence.
-- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and expression judgments to `web-interface`, interaction choices to `web-interaction`, element meaning to the HTML owners, presentation to the CSS owners, repository placement to `web-topology`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
+- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and expression judgments to `web-interface`, interaction choices to `web-interaction`, element meaning to `html-css-semantics`, presentation rules to `html-css-conventions`, repository placement to `web-topology`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
 - [ ] WEBFRNT-CK-PROJECT-01-03 — An unresolved conflict is returned to `web-feature`, the requesting caller, or the user rather than decided here.
 - [ ] WEBFRNT-CK-PROJECT-01-04 — Accessibility is kept inside frontend behavior rather than routed away as a separate concern.
 

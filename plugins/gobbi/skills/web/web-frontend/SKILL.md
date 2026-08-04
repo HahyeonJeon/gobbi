@@ -116,7 +116,7 @@ they act.
 
 #### 3.1 Materialize the complete scaffold
 
-- Load applicable HTML, CSS, language, framework, platform, topology, testing, and security owners.
+- Load the applicable `html-css` children plus language, framework, platform, topology, testing, and security owners.
 - Materialize routes, semantic document regions, component boundaries, state and data seams, focus targets,
   responsive structure, representative state placeholders, test seams, and explicit labels on simulated data
   or dependencies.

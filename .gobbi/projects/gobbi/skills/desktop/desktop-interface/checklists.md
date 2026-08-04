@@ -7,7 +7,7 @@ success-measure obligations this skill owns. It is governed by the [`desktop`](.
 operation that coordinates them, [`desktop-contract`](../desktop-contract/SKILL.md) as the owner of the
 observable installed-platform contract, and the renderer's interaction, presentation, and motion owners —
 including [`web-interaction`](../../web/web-interaction/SKILL.md) and
-[`css-motion`](../../css/css-motion/SKILL.md) — as the owners of the mechanics these judgments call for. The
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md) — as the owner of the declarative motion mechanics these judgments call for. The
 source commit that contains this file identifies the checklist version. Its stable owner prefix is `DTINTF`.
 
 The evidence Rule this source checks is a risk threshold, not an unconditional gate. Rows below test the
@@ -34,7 +34,7 @@ identity assembled from whichever source was nearest is the failure.
 - [ ] DTINTF-CK-PROJECT-01-01 — The identity source is the highest available in the chain: explicit `DESIGN.md`, brand, product, or design-system material, then the live product, system, and tokens, then a user-confirmed run-scoped brief.
 - [ ] DTINTF-CK-PROJECT-01-02 — The selected identity source is recorded beside the decisions it constrains.
 - [ ] DTINTF-CK-PROJECT-01-03 — No identity constraint excuses avoidable exclusion or harm.
-- [ ] DTINTF-CK-PROJECT-01-04 — Every mechanism question the design raises is routed to its named owner: renderer event, pointer, keyboard, focus, and widget patterns to `web-interaction`; declarative motion mechanics to `css-motion`; installed-platform behavior to `desktop-contract`; and Electron security boundaries and ownership defaults to `electron-design`.
+- [ ] DTINTF-CK-PROJECT-01-04 — Every mechanism question the design raises is routed to its named owner: renderer event, pointer, keyboard, focus, and widget patterns to `web-interaction`; declarative motion mechanics to `html-css-motion`; installed-platform behavior to `desktop-contract`; and Electron security boundaries and ownership defaults to `electron-design`.
 
 ### DTINTF-SC-PROJECT-02 — Rule violation: a project-wide design authority is created here
 
@@ -85,10 +85,12 @@ expression that makes an unfinished structure look finished is the failure.
 ## Performance
 
 Not applicable: this skill decides whether an interaction or a motion is warranted and what it must
-communicate, not how it is produced or what it costs. Motion duration, easing, and rendering cost belong to
-[`css-motion`](../../css/css-motion/SKILL.md) and the renderer's presentation owners, and installed
-responsiveness and resource measurement is assigned by [`desktop-delivery`](../desktop-delivery/SKILL.md)
-Step 3.2 and Step 4.1.
+communicate, not how it is produced or what it costs. Motion duration, easing, and motion-source defaults
+belong to [`html-css-motion`](../../html-css/html-css-motion/SKILL.md). Direct HTML/CSS renderer observations
+belong to [`html-css-platform`](../../html-css/html-css-platform/SKILL.md), and focused comparisons and result
+claims belong to [`html-css-testing`](../../html-css/html-css-testing/SKILL.md). Installed responsiveness and
+resource acceptance remains assigned by [`desktop-delivery`](../desktop-delivery/SKILL.md) Step 3.2 and Step
+4.1.
 
 ## Aesthetics
 

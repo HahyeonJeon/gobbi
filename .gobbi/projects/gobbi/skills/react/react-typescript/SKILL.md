@@ -94,7 +94,7 @@ project type check are the authority for the installed seam.
 - Apply the installed React line when a component accepts or forwards a ref; do not copy a neighboring
   version's ref-as-prop or forwarding pattern.
 - Use `React.CSSProperties` for an exposed inline-style object when the project permits that surface. Keep
-  CSS policy and authored styles with the CSS owner.
+  presentation policy and authored styles with `html-css-conventions`.
 - Use the installed React event, element, node, ref, and JSX namespace definitions rather than hand-written
   approximations.
 

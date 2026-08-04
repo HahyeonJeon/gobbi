@@ -87,8 +87,8 @@ component unless extraction creates a clearer testable boundary.
 ### Prefer the native browser surface
 
 PREFER native semantic elements, explicit labels, and required keyboard and focus behavior. Depart only when
-no native element expresses the accepted interaction and the HTML, interface, and accessibility owners
-define the substitute.
+no native element expresses the accepted interaction and `html-css-semantics`, the interface owner, and
+`web-interaction` define the substitute.
 
 ### Prefer the smallest useful Error Boundary
 

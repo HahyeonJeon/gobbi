@@ -3,8 +3,8 @@
 This reusable unchecked source evaluates one browser or Electron-renderer surface's language and region
 handling against the message-integrity, catalog-sourcing, plural-selection, format, locale-negotiation,
 propagation, and direction obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-localization`](SKILL.md) preferences, with [`html-semantics`](../../html/html-semantics/SKILL.md) owning
-the `lang` and `dir` attributes, [`css-conventions`](../../css/css-conventions/SKILL.md) owning logical
+[`web-localization`](SKILL.md) preferences, with [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owning
+the `lang` and `dir` attributes, [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owning logical
 properties and the flow they drive, [`web-frontend`](../web-frontend/SKILL.md) owning the ordered browser
 operation that applies these choices, [`web-interface`](../web-interface/SKILL.md) owning the identity and
 expression judgment behind the words, and [`web-backend`](../web-backend/SKILL.md) owning locale-dependent
@@ -29,7 +29,7 @@ a layout property, or an authoritative data question is the failure.
 
 #### Checklist
 
-- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the language-and-region judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-semantics`, logical properties and the flow they drive to `css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-interface`, and locale-dependent authoritative data to `web-backend`.
+- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the language-and-region judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-css-semantics`, logical properties and the flow they drive to `html-css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-interface`, and locale-dependent authoritative data to `web-backend`.
 - [ ] WEBLOC-CK-PROJECT-01-02 — The localization decisions are taken while the surface still ships in one language rather than after a second locale is required.
 - [ ] WEBLOC-CK-PROJECT-01-03 — Every component that renders text, a number, a date, or a direction-dependent layout is identified as a change site the decisions reach.
 
@@ -161,7 +161,7 @@ attributes and the flow to their owners; a resolved locale that never reaches th
 
 - [ ] WEBLOC-CK-CONSISTENCY-01-01 — The resolved language and direction reach the document.
 - [ ] WEBLOC-CK-CONSISTENCY-01-02 — Every element whose content differs from the document's language or direction carries its own resolved values.
-- [ ] WEBLOC-CK-CONSISTENCY-01-03 — No attribute expression or layout flow mechanic is decided here rather than by `html-semantics` and `css-conventions`.
+- [ ] WEBLOC-CK-CONSISTENCY-01-03 — No attribute expression or layout flow mechanic is decided here rather than by `html-css-semantics` and `html-css-conventions`.
 
 ### WEBLOC-SC-CONSISTENCY-02 — Normal case: one message format the current tooling accepts
 
