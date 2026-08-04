@@ -1,9 +1,7 @@
 # {Project} — Startup Design
 
 > **Document role:** Confirmed synthesis and index for the complete Startup design set.<br>
-> **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.<br>
-> **Example:** The synthesis may show one Project with multiple Products and each Product's one complete
-> Implementation; categorized technologies remain entries within their Implementation.
+> **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.
 
 The `Confirmation` section is the sole owner of terminal Finalization state. Read aggregate section state,
 Review evidence, and user acceptance from each child document's Section Register.
@@ -15,7 +13,8 @@ Review evidence, and user acceptance from each child document's Section Register
 | [`problem-definition.md`](problem-definition.md) | Problem Definition | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
 | [`design.md`](design.md) | Design | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
 | [`specification.md`](specification.md) | Specification | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
-| [`lifecycle-and-use-cases.md`](lifecycle-and-use-cases.md) | Lifecycle and Use Cases | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+| [`product-lifecycle.md`](product-lifecycle.md) | Product Lifecycle | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+| [`development-lifecycle.md`](development-lifecycle.md) | Development Lifecycle | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
 
 ## Integrated Design
 
@@ -28,9 +27,9 @@ tradeoffs so a cold reader can understand the Project without opening the child 
 
 | Level | Stable subject key | Name | Parent | Owned result | Accepted section links |
 |---|---|---|---|---|---|
-| Project | `{project-key}` | `{Project}` | `none` | `{service or initiative result}` | `{four links}` |
-| Product | `{product-key}` | `{Product}` | `{project-key}` | `{independently useful application or platform result}` | `{four links}` |
-| Implementation | `{implementation-key}` | `{Product} Implementation` | `{product-key}` | `{the Product's complete technical realization}` | `{four links}` |
+| Project | `{project-key}` | `{Project}` | `none` | `{service or initiative result}` | `{five links}` |
+| Product | `{product-key}` | `{Product}` | `{project-key}` | `{independently useful application or platform result}` | `{five links}` |
+| Implementation | `{implementation-key}` | `{Product} Implementation` | `{product-key}` | `{the Product's complete technical realization}` | `{five links}` |
 
 Repeat Product and Implementation rows in accepted Product order. Each Product has exactly one
 Implementation. Summarize categorized stack entries under the owning Implementation; never turn an entry
@@ -39,13 +38,13 @@ into a hierarchy subject.
 ### Capabilities, Contracts, and Operating Model
 
 {Summarize Product capabilities, Project-wide policy, observable behavior, quality obligations, ownership,
-service operation, Product use and recovery, and Implementation development and evolution.}
+actor-visible Product Lifecycle promises, and complete-stack Development Lifecycle mechanisms and evidence.}
 
 ### Key Decisions and Cross-Phase Traceability
 
-| Decision | Level and stable subject key | Problem evidence | Design owner | Specification obligation | Lifecycle or use case |
-|---|---|---|---|---|---|
-| `{decision}` | `{level; key}` | `{link}` | `{link}` | `{link}` | `{link}` |
+| Decision | Level and stable subject key | Problem evidence | Design owner | Specification obligation | Product Lifecycle promise | Development Lifecycle mechanism and evidence |
+|---|---|---|---|---|---|---|
+| `{decision}` | `{level; key}` | `{link}` | `{link}` | `{link}` | `{product scenario or decision link}` | `{development scenario, oracle, and evidence link}` |
 
 ### Consolidated Vocabulary
 
@@ -70,9 +69,9 @@ Use exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceabilit
 
 ## Confirmation
 
-- Startup schema: `3`
+- Startup schema: `4`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Finalization state: `confirmed`
 - Confirmed: `{timestamp}`
-- The user confirmed: `{the complete five-file design set, in one sentence}`
+- The user confirmed: `{the complete six-file design set, in one sentence}`

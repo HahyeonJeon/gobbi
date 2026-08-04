@@ -1,17 +1,17 @@
 # Startup Working Record
 
-This schema-3 file owns active-run identity, subject order and parents, assignments, answers, scenarios,
+This schema-4 file owns active-run identity, subject order and parents, assignments, answers, scenarios,
 blockers, corrections, Review findings, and acceptance/revalidation evidence. The native TODO owns
 progression, each aggregate Section Register owns section state, and `startup.md` `Confirmation` owns
 terminal Finalization state. This record contains no cursor or independently maintained aggregate state.
 
 ## Run Identity
 
-- Startup schema: `3`
+- Startup schema: `4`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Status: `{in progress | paused}`
-- Recovery mode: `{normal | completed-v3 revalidation}`
+- Recovery mode: `{normal | completed-v4 revalidation}`
 - Current blocker: `{none or exact blocker}`
 
 ## Artifact Register
@@ -21,7 +21,8 @@ terminal Finalization state. This record contains no cursor or independently mai
 | `problem-definition.md` | Problem Definition | `{all current subject-row links}` | `{evidence}` |
 | `design.md` | Design | `{all current subject-row links}` | `{evidence}` |
 | `specification.md` | Specification | `{all current subject-row links}` | `{evidence}` |
-| `lifecycle-and-use-cases.md` | Lifecycle and Use Cases | `{all current subject-row links}` | `{evidence}` |
+| `product-lifecycle.md` | Product Lifecycle | `{all current subject-row links}` | `{evidence}` |
+| `development-lifecycle.md` | Development Lifecycle | `{all current subject-row links}` | `{evidence}` |
 
 Read current aggregate state only from each aggregate file's Section Register. Derive Finalization readiness
 or staleness from those rows, current Finalization evidence below, and `startup.md` `Confirmation`; do not add
@@ -45,10 +46,12 @@ technology entries belong in the aggregate Design section and never appear as Su
 | `{order}` | `problem-definition.md` | `{Project, Product, or Implementation}` | `{stable key}` | Problem Definition | `{Section Register row link}` | `{accepted ancestor or none}` | `{assignment, Review, and acceptance refs}` |
 | `{order}` | `design.md` | `{level}` | `{stable key}` | Design | `{row link}` | `{same-subject Problem Definition and cited ancestor sections}` | `{refs}` |
 | `{order}` | `specification.md` | `{level}` | `{stable key}` | Specification | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
-| `{order}` | `lifecycle-and-use-cases.md` | `{level}` | `{stable key}` | Lifecycle and Use Cases | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
+| `{order}` | `product-lifecycle.md` | `{level}` | `{stable key}` | Product Lifecycle | `{row link}` | `{same-subject first three phases and cited ancestor Product policy}` | `{refs}` |
+| `{order}` | `development-lifecycle.md` | `{level}` | `{stable key}` | Development Lifecycle | `{row link}` | `{same-subject first three phases and Product Lifecycle; cited ancestor Development policy; linked Product promises}` | `{refs}` |
 
-Register the Project's four rows first, then all Product rows in Product order, then one Implementation's four
-rows for each Product in that same order.
+Register the Project's five rows first, then all Product rows in Product order, then one Implementation's five
+rows for each Product in that same order. Within every subject, Product Lifecycle precedes Development
+Lifecycle.
 
 ## Evidence
 
@@ -56,7 +59,7 @@ rows for each Product in that same order.
 
 | Level | Stable subject key | Phase | Iteration | Run kind | Review assignment and result | User acceptance or confirmation | Evidence status |
 |---|---|---|---|---|---|---|---|
-| `{level or Finalization}` | `{stable key or none}` | `{phase or Finalization}` | `{iteration}` | `{normal or completed-v3 revalidation}` | `{assignment and accepted result}` | `{decision and timestamp}` | `{open or accepted}` |
+| `{level or Finalization}` | `{stable key or none}` | `{phase or Finalization}` | `{iteration}` | `{normal or completed-v4 revalidation}` | `{assignment and accepted result}` | `{decision and timestamp}` | `{open or accepted}` |
 
 ### Sources and Claims
 
@@ -68,13 +71,21 @@ rows for each Product in that same order.
 
 | Level | Stable subject key | Phase | Topic or question | Adapted wording | Origin | Status | Shared answer/evidence reference | Reason or dependency |
 |---|---|---|---|---|---|---|---|---|
-| `{level}` | `{stable key}` | `{phase}` | `{topic or [question-name]}` | `{subject-specific wording}` | `{level bank, Study, Interview, or Review}` | `{prepared, evidence-derived, to ask, answered, dropped, reopened, or deferred}` | `{accepted checkpoint or none}` | `{reason}` |
+| `{level}` | `{stable key}` | `{phase}` | `{topic or [question-name]}` | `{subject-specific wording}` | `{direct phase entry, selected overlay, Study, Interview, or Review}` | `{prepared, evidence-derived, to ask, answered, dropped, reopened, or deferred}` | `{accepted checkpoint or none}` | `{reason}` |
 
-### Lifecycle Scenario Candidates
+### Phase-Tagged Lifecycle Scenario Candidates
 
-| Level | Stable subject key | Phase | Scenario identity and class | Purpose | Linked accepted decisions and sections | Concrete-scenario blocker | Oracle blocker | Status |
-|---|---|---|---|---|---|---|---|---|
-| `{level}` | `{stable key}` | `Lifecycle and Use Cases` | `{identity and class}` | `{purpose}` | `{links}` | `{blocker or none}` | `{blocker or none}` | `{candidate, ready, deferred, or dropped}` |
+| Phase | Level | Stable subject key | Scenario identifier | Model selection | Trigger and context | Linked decisions and records | Selected overlays | Concrete-scenario blocker | Oracle blocker | Status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `Product Lifecycle` | `{level}` | `{stable key}` | `{product-scenario-id}` | `{stage-or-moment; path-variant; perspective}` | `{event, preconditions, and evidence}` | `{Product and Project decision refs; linked Development records or none}` | `{Product overlays or none}` | `{blocker or none}` | `{observable Product oracle blocker or none}` | `{candidate, ready, deferred, or dropped}` |
+| `Development Lifecycle` | `{level}` | `{stable key}` | `{development-scenario-id}` | `{complete-stack dimension or dimensions}` | `{event, preconditions, and evidence}` | `{Product scenario/decision refs; Project policy refs; paired Product record or none}` | `{Development overlays or none}` | `{blocker or none}` | `{Development oracle blocker or none}` | `{candidate, ready, deferred, or dropped}` |
+
+### Lifecycle Scenario and Evidence Records
+
+| Phase | Scenario identifier | Subject and level | Owner and purpose | Product promise or Development mechanism | Observable oracle | State/data invariants or rollback/recovery | Participating entries | Claim-specific evidence | Paired record | Coverage status |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `Product Lifecycle` | `{product-scenario-id}` | `{stable key and level}` | `{Product promise owner and purpose}` | `{actor-visible promise}` | `{success, safe-refusal, failure, or recovery observation}` | `{required changes and invariants}` | `{participating Implementation boundary or none}` | `{source and exact supported claim}` | `{development-scenario-id or none}` | `{asked, evidence-derived, excluded, or not-applicable; answer and evidence refs}` |
+| `Development Lifecycle` | `{development-scenario-id}` | `{stable key and level}` | `{Development owner and purpose}` | `{implementation-neutral mechanism or obligation}` | `{claim-specific pass/fail result}` | `{safe reversal, partial-work handling, and restored state}` | `{categorized entries with category and claim}` | `{source, test, review, rehearsal, or observation and its limit}` | `{product-scenario-id or independent Development policy}` | `{asked, evidence-derived, excluded, or not-applicable; answer and evidence refs}` |
 
 ### Answers and Decisions
 
