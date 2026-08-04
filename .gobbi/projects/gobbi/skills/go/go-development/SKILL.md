@@ -20,8 +20,10 @@ workflow owners retain scope, commit, publication, cleanup, and destructive-acti
 
 ### Start from the live contract
 
-Bind the request, project instructions, accepted decisions, affected consumers, supported Go facts, project
-commands, and release use before designing. One source file or ambient Go installation is not the contract.
+Bind the request, project instructions, accepted decisions, affected consumers, minimum supported Go version,
+selected Go toolchain version, module's Go language version, required project commands, supported
+`GOOS/GOARCH` targets, and intended module, binary, or archive release use before designing. One source file
+or ambient Go installation is not the contract.
 
 ### Keep material decisions with their owner
 
@@ -31,12 +33,14 @@ to edit a path does not grant authority to choose its design.
 ### Grow a compiling skeleton in complete slices
 
 Establish the accepted package identities and signatures before dependent behavior. Grow the smallest slice
-that keeps callers, evidence sources, documentation, generated state, and module state coherent.
+that keeps callers, test sources, documentation, generated inputs and outputs, module and workspace files,
+and dependency declarations coherent.
 
 ### Match verification to the claim
 
-Final evidence must exercise the named result, consumers, project-command target, `GOOS/GOARCH` targets, and
-material risks. A focused green check is bounded evidence, not a substitute for an unexecuted required path.
+Final evidence must exercise the named result and its consumers through required project commands, including
+the project default build command plus named target, applicable `GOOS/GOARCH` targets, and material risks. A
+focused green check is bounded evidence, not a substitute for an unexecuted required path.
 
 ## Rules
 
@@ -79,7 +83,8 @@ material risks. A focused green check is bounded evidence, not a substitute for 
   project commands, exact package patterns passed to them, and supported `GOOS/GOARCH` targets.
 - Map affected packages, public APIs or CLIs, callers, implementations, errors, mutable data and resources,
   concurrency, test sources, examples, documentation, generated inputs and outputs, build constraints, module
-  files, dependency declarations, artifacts, and consumers.
+  and workspace files, dependency declarations, binaries, archives, intended module, binary, or archive
+  release use, and consumers.
 - Record every create, consistency read, update, delete, and dependent co-touch. Name who owns the behavior,
   what changes, when it executes, where it propagates, why it is needed, and how it is built, verified,
   released, and recovered. Preserve unrelated local changes.
@@ -92,9 +97,9 @@ material risks. A focused green check is bounded evidence, not a substitute for 
   named project commands; network access requires separate authority; credential use is none; external
   mutation, including publication, is forbidden. Pause before a material choice, out-of-scope write, cache or
   download, network access, credentialed-read handoff, result-dependent external action, or unsupported
-  verification. The terminal result is a verified project-consistent tree with any exact returned
-  external-owner evidence, or an exact block. Recovery retains changed paths and safe state and names the
-  prerequisite, owner, first recovery action, and handoff.
+  verification. The terminal result is a verified project-consistent tree with returned evidence from the
+  named external-action owner, or an exact block. Recovery retains changed paths and safe retained state and
+  names the prerequisite, owner, first recovery action, and handoff.
 - **Read-only review mode:** project paths are read-only; disposable writes are approved diagnostics only;
   every cache and download effect is classified and separately authorized; execution is limited to authorized
   read-only project commands and named tools; network access requires separate authority; credential use is
@@ -126,14 +131,14 @@ material risks. A focused green check is bounded evidence, not a substitute for 
 
 - Name each affected package name, import path, package directory or placement, package boundary, public API or
   CLI, type, error, mutable-data or resource ownership, concurrency, compatibility position, observable test
-  boundary, and controllable dependency. An exact package pattern is only a project-command selector or
+  boundary, and controllable dependency. An exact package pattern is only a project command selector or
   evidence fact.
 - Load `go-design`, `go-conventions`, `go-source`, `go-documentation`, and `go-concurrency` for matching
-  judgments. Load `go-modules`, `go-testing`, and `go-toolchain` for module, evidence, and project-command
+  judgments. Load `go-modules`, `go-testing`, and `go-toolchain` for module, evidence, and project command
   results. Load `go-architecture` or `go-debugging` when the task requires their design or diagnostic result.
 - Load `go-security`, `go-observability`, or `go-performance` when that concern motivates the change. Load
-  `go-packaging` or `go-release` only when its artifact or release result is requested. General development
-  neither absorbs those results nor executes their external actions.
+  `go-packaging` or `go-release` only when its binary, archive, or release result is requested. General
+  development neither absorbs those results nor executes their external actions.
 - Define the compiling skeleton and ordered complete slices. Every slice names its lowest dependency,
   caller-visible result, affected callers and consistency-bound sources, and verification.
 
@@ -143,11 +148,12 @@ material risks. A focused green check is bounded evidence, not a substitute for 
 
 - In read-only review mode, make no write; reconstruct the intended skeleton from the subject and continue at
   Step 3.3.
-- In author mode, establish the accepted package placement, types, signatures, interfaces, errors, and
-  build-constrained boundaries before dependent behavior. Update direct callers just enough to compile, with
-  no placeholder behavior, unconditional panic, ignored error, or ownerless compatibility shim.
-- Apply authorized project formatter, analysis, and narrow compile or test checks. Repair structural causes
-  before adding dependent logic.
+- In author mode, establish the accepted package name, import path, package directory or placement, package
+  boundary, public API or CLI, types and function/method signatures, errors, and build-constrained source-file
+  boundaries before behavior. Update direct callers just enough to compile, with no placeholder behavior,
+  unconditional panic, ignored error, or ownerless compatibility shim.
+- Apply authorized project commands for formatting, analysis or vet, and narrow build or test checks. Repair
+  structural causes before adding dependent logic.
 
 #### 3.2 Grow complete verified slices
 
@@ -156,15 +162,16 @@ material risks. A focused green check is bounded evidence, not a substitute for 
 - Update affected callers, test sources, examples, documentation, generated inputs and outputs, build
   constraints, `go.mod`, `go.work`, dependency graph, and applicable specialist-owned behavior in that slice.
 - Run the slice's authorized formatter, analysis, narrow build, focused project test command, and any selected
-  race, fuzz, platform, or cgo evidence. On failure, repair the earliest incorrect contract, skeleton,
-  ownership decision, or behavior and repeat affected checks before the next slice.
+  race-detector, fuzz, supported `GOOS/GOARCH` target, or cgo evidence. On failure, repair the earliest
+  incorrect contract, skeleton, ownership decision, or behavior and repeat affected checks before the next
+  slice.
 
 #### 3.3 Review the complete subject
 
 - Compare the final tree or review subject with the accepted design and every active sibling result. Inspect
   package identities, public APIs or CLIs, errors, aliasing, resource lifetime, concurrency, generated
-  provenance, build constraints, `GOOS/GOARCH` target selection, module state, dependencies, documentation,
-  callers, and compatibility.
+  provenance, build constraints, `GOOS/GOARCH` target selection, module and workspace files, dependencies,
+  documentation, callers, and compatibility.
 - Search the affected set for stale symbols, duplicated decisions, temporary replacements, TODOs, hidden
   global state, ignored errors, and unrelated churn.
 - In read-only review mode, report each finding with path, location, evidence, consequence, and earliest
@@ -174,12 +181,13 @@ material risks. A focused green check is bounded evidence, not a substitute for 
 
 #### 4.1 Verify the exact final tree or review subject
 
-- Run the authorized project format check, selected analysis or vet target, project default build command plus
-  named target, project test command, other required project commands, and applicable `GOOS/GOARCH` targets
-  against the exact final tree or unchanged review subject.
-- Add the selected race, fuzz, benchmark, coverage, module graph, generated-state, vulnerability, minimum-Go,
-  platform, cgo, external-consumer, packaging, or release evidence owned by active siblings. Rerun the original
-  reproducer; do not substitute a new focused test for an existing external failure path.
+- Run the authorized project format check, selected project command for analysis or vet, project default build
+  command plus named target, project test command, other required project commands, and applicable
+  `GOOS/GOARCH` targets against the exact final tree or unchanged review subject.
+- Add the selected race-detector, fuzz, benchmark, coverage, module graph, generated-source/output evidence,
+  vulnerability, minimum supported Go version, supported `GOOS/GOARCH` target, cgo, external consumer,
+  packaging, or release evidence owned by active siblings. Rerun the original reproducer; do not substitute a
+  new focused test for an existing external failure path.
 - Repair an author-mode root cause and repeat the narrow failure plus affected downstream checks. In review
   mode, record the finding without mutation. For an unavailable check, record the exact prerequisite or first
   useful diagnostic, affected obligation, current evidence, risk, owner, and first recovery action.
@@ -203,8 +211,9 @@ material risks. A focused green check is bounded evidence, not a substitute for 
   workflow manager, or external-action owner, the authority still required, and the exact input identity.
 - Also return the bound scope; every material-choice and cited-prior-decision gate; compiling skeleton and
   complete slices in author mode; original reproducer; final project verification; unsupported claims;
-  separate no-credential and no-external-mutation facts in author mode; and any result-dependent
-  external-action owner, returned evidence, prerequisite, retained state, first recovery action, and handoff.
+  the literal author-mode statement `author mode used no credentials and performed no external mutation`; and
+  any result-dependent external-action owner, returned evidence, prerequisite, retained state, first recovery
+  action, and handoff.
 - Complete only with a project-consistent verified tree in author mode or an evidence-backed read-only finding
   set in review mode. Otherwise preserve the exact block without calling it success.
 

@@ -23,10 +23,10 @@ own boundary; an inherited or unclassified effect fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-PROJECT-01-01 — Exactly one mode—author or read-only review—and its success criteria, minimum supported Go version, selected Go toolchain version, module's Go language version, and supported `GOOS/GOARCH` targets are explicit.
+- [ ] GODEV-CK-PROJECT-01-01 — One named set records the selected mode; scope and success criteria; governing project instructions; minimum supported Go version; selected Go toolchain version; module's Go language version; module path; `go` directive; dependency graph; workspace; exact public package paths and consumers; project default build command plus named target; project test command; other required project commands and exact package patterns; supported `GOOS/GOARCH` targets; and intended module, binary, or archive release use.
 - [ ] GODEV-CK-PROJECT-01-03 — Every changed or reviewed behavior stays inside the agreed scope.
-- [ ] GODEV-CK-PROJECT-01-04 — Every author-mode project-path write, disposable output, cache or download, project execution, network-access, separately reported credential-use, separately reported external-mutation, pause, terminal, and recovery field matches the accepted author contract.
-- [ ] GODEV-CK-PROJECT-01-05 — Every read-only-review-mode project-path write, disposable output, cache or download, project execution, network-access, separately reported credential-use, separately reported external-mutation, pause, terminal, and recovery field matches the accepted review contract.
+- [ ] GODEV-CK-PROJECT-01-04 — Every author-mode project-path write, disposable output, cache or download, project command or tool execution, network access, separately reported credential use, separately reported external mutation, pause point, terminal result, and recovery field matches the accepted author contract.
+- [ ] GODEV-CK-PROJECT-01-05 — Every read-only-review-mode project-path write, disposable output, cache or download, project command or tool execution, network access, separately reported credential use, separately reported external mutation, pause point, terminal result, and recovery field matches the accepted review contract.
 
 ### GODEV-SC-PROJECT-02 — Expected failure: A material choice remains unresolved
 
@@ -60,12 +60,13 @@ Every path should trace to the accepted outcome; useful but unauthorized work st
 ### GODEV-SC-STRUCTURE-01 — Normal case: The complete affected set is mapped
 
 The change reaches packages, exported declarations, callers, test sources, examples, documentation, generated
-inputs or outputs, build constraints, module state, dependencies, artifacts, release use, or consumers. The
-work should identify every consistency-bound object before design; a source-file-only view fails.
+inputs or outputs, build constraints, module and workspace files, the dependency graph and dependency
+declarations, binaries, archives, intended module, binary, or archive release use, or consumers. The work
+should identify every consistency-bound object before design; a source-file-only view fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-STRUCTURE-01-01 — Every affected package, caller, test source, example, document, generated input or output, build constraint, module file, dependency declaration, artifact, release use, and consumer is identified.
+- [ ] GODEV-CK-STRUCTURE-01-01 — Every affected package, caller, test source, example, document, generated input or output, build constraint, module or workspace file, dependency graph or declaration, binary, archive, intended module, binary, or archive release use, and consumer is identified.
 
 ### GODEV-SC-STRUCTURE-02 — Normal case: CRUD and 5W1H expose propagation
 
@@ -76,11 +77,11 @@ understood; an isolated edit plan fails.
 #### Checklist
 
 - [ ] GODEV-CK-STRUCTURE-02-01 — Every create, consistency-read, update, delete, and dependent co-touch effect across the affected set is identified.
-- [ ] GODEV-CK-STRUCTURE-02-02 — The behavior owner and the runtime, propagation, build, verification, release, and recovery boundaries are identified.
+- [ ] GODEV-CK-STRUCTURE-02-02 — Every affected behavior, design judgment, operation result, project command effect, external action, and build, verification, release, or recovery boundary is handled by a named owner.
 
 ### GODEV-SC-STRUCTURE-03 — Poor quality: A material choice lacks current decision authority
 
-A material package, API, ownership, evidence, effect, or other classified choice reaches the plan without
+A material choice reaches the plan without
 credible alternatives, a recommendation, and current decision authority. Each material choice should compare
 at least two reference-backed alternatives and receive an explicit user or named project-authority decision.
 A cited prior decision is valid only for the same decision while affected context and assumptions still match;
@@ -88,7 +89,7 @@ changed context reopens it. First-draft or stale-prior lock-in fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-STRUCTURE-03-02 — The selected shape is justified by current callers.
+- [ ] GODEV-CK-STRUCTURE-03-02 — The selected design is justified by current callers and consumers.
 - [ ] GODEV-CK-STRUCTURE-03-03 — Every material choice compares at least two credible reference-backed alternatives.
 - [ ] GODEV-CK-STRUCTURE-03-04 — Every material choice has one explicit recommendation.
 - [ ] GODEV-CK-STRUCTURE-03-05 — Every material choice is resolved by an explicit user or named project-authority decision, or by a cited prior decision for the same decision whose affected context and assumptions still match.
@@ -96,39 +97,41 @@ changed context reopens it. First-draft or stale-prior lock-in fails.
 
 ### GODEV-SC-STRUCTURE-04 — Poor quality: Detailed behavior precedes a compiling skeleton
 
-Implementation logic accumulates before package placement, types, signatures, interfaces, errors, and
-build-constrained boundaries compile together. Higher layers should grow from a verified foundation; a large
-non-compiling first increment fails.
+Implementation logic accumulates before the accepted package name, import path, package directory or
+placement, package boundary, public API or CLI, types and function/method signatures, errors, and
+build-constrained source-file boundaries are established and compile. Higher layers should grow from a
+verified foundation; a large non-compiling first increment fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-STRUCTURE-04-01 — Package placement, file placement, caller-visible signatures, and build-constrained boundaries exist before dependent behavior.
-- [ ] GODEV-CK-STRUCTURE-04-02 — Package placement, file placement, caller-visible signatures, and build-constrained boundaries compile before dependent behavior.
+- [ ] GODEV-CK-STRUCTURE-04-01 — The accepted package name, import path, package directory or placement, package boundary, public API or CLI, types and function/method signatures, errors, and build-constrained source-file boundaries are established before dependent behavior.
+- [ ] GODEV-CK-STRUCTURE-04-02 — The accepted package name, import path, package directory or placement, package boundary, public API or CLI, types and function/method signatures, errors, and build-constrained source-file boundaries compile before dependent behavior.
 - Also applies: GODEV-CK-AESTHETICS-02-01 (no placeholder behavior remains).
 
 ## Performance
 
 ### GODEV-SC-PERFORMANCE-01 — Normal case: Verification depth follows the actual risk
 
-The implementation can affect ordinary behavior, concurrency, module resolution, input breadth, platform
-selection, cgo, compatibility, or dependency exposure. The selected verification should cover each material
-risk without substituting an unrelated broad command.
+The implementation can affect ordinary behavior, concurrency, module resolution, input breadth, supported
+`GOOS/GOARCH` target selection, cgo, compatibility, or dependency exposure. The selected verification should
+cover each material risk without substituting an unrelated broad command.
 
 #### Checklist
 
 - [ ] GODEV-CK-PERFORMANCE-01-01 — Focused verification exercises the changed behavior.
-- [ ] GODEV-CK-PERFORMANCE-01-02 — Every material cross-package, platform, cgo, concurrency, and module risk has applicable verification.
+- [ ] GODEV-CK-PERFORMANCE-01-02 — Every material cross-package, supported `GOOS/GOARCH` target, cgo, concurrency, and module risk has applicable verification.
 
 ### GODEV-SC-PERFORMANCE-02 — Poor quality: Verification is blanket or under-scoped
 
 The work runs an expensive repository-wide project command without identifying risk, or only a focused test
-despite cross-package, platform, race, cgo, or module effects. Verification cost and coverage should both
-match the affected package set, inputs, and targets.
+despite affected dependent packages, supported `GOOS/GOARCH` targets, race-detector, cgo, or module and
+workspace effects. Verification cost and coverage should both match the affected package set, inputs,
+supported `GOOS/GOARCH` targets, and the project default build command plus named target.
 
 #### Checklist
 
 - [ ] GODEV-CK-PERFORMANCE-02-01 — Every broad verification layer that was run has a task-specific coverage purpose.
-- [ ] GODEV-CK-PERFORMANCE-02-02 — No affected dependent package or applicable `GOOS/GOARCH`-specific verification layer is omitted.
+- [ ] GODEV-CK-PERFORMANCE-02-02 — No required verification for an affected dependent package or supported `GOOS/GOARCH` target is omitted.
 
 ## Aesthetics
 
@@ -140,8 +143,8 @@ context.
 
 #### Checklist
 
-- [ ] GODEV-CK-AESTHETICS-01-03 — Changed Go source follows the project formatter.
-- [ ] GODEV-CK-AESTHETICS-01-04 — Changed Go source follows the project naming vocabulary.
+- [ ] GODEV-CK-AESTHETICS-01-03 — Changed Go source matches canonical formatter output selected by the project.
+- [ ] GODEV-CK-AESTHETICS-01-04 — Changed Go source follows project naming conventions.
 - [ ] GODEV-CK-AESTHETICS-01-02 — Changed control flow exposes its error and ownership decisions.
 - Also applies: GODEV-CK-PROJECT-03-01 (no unrelated churn in the diff).
 
@@ -171,7 +174,7 @@ without the promised consumer outcome fails.
 
 ### GODEV-SC-USAGE-02 — Expected failure: An unreproduced defect resists a guessed fix
 
-The reported failure cannot be reproduced under the selected Go toolchain version, project-command flags,
+The reported failure cannot be reproduced under the selected Go toolchain version, project command, flags,
 input, or `GOOS/GOARCH` target. Production code should remain unchanged until a diagnostic or test can
 distinguish the leading causes; a speculative workaround fails.
 
@@ -198,12 +201,13 @@ break; accidental incompatibility fails.
 ### GODEV-SC-CONSISTENCY-01 — Rule violation: Dependent objects remain stale
 
 Code changes while one caller, test source, example, document, generated input or output, build constraint,
-module file, dependency declaration, artifact, release use, or consumer still expresses the old behavior. Each
-verified slice should update every consistency-bound object; partial propagation fails.
+module or workspace file, dependency graph or declaration, binary, archive, intended module, binary, or
+archive release use, or consumer still expresses the old behavior. Each verified slice should update every
+consistency-bound object; partial propagation fails.
 
 #### Checklist
 
-- [ ] GODEV-CK-CONSISTENCY-01-01 — Every affected caller, test source, example, document, generated input or output, build constraint, module file, dependency declaration, artifact, release use, and consumer expresses the current contract.
+- [ ] GODEV-CK-CONSISTENCY-01-01 — Every affected caller, test source, example, document, generated input or output, build constraint, module or workspace file, dependency graph or declaration, binary, archive, intended module, binary, or archive release use, and consumer expresses the current contract.
 
 ### GODEV-SC-CONSISTENCY-02 — Rule violation: Read-only review rewrites the subject
 
@@ -225,16 +229,16 @@ before implementation. The final tree and returned account should express those 
 - [ ] GODEV-CK-CONSISTENCY-03-01 — Package name, import path, package directory or placement, package boundary, public API or CLI, ownership, concurrency, error behavior, compatibility, observable test boundary, and controllable dependency match the accepted design.
 - Also applies: GODEV-CK-PERFORMANCE-01-02 (verification covers the accepted risk decisions).
 
-### GODEV-SC-CONSISTENCY-04 — Edge case: Platform and cgo files form one contract
+### GODEV-SC-CONSISTENCY-04 — Edge case: GOOS/GOARCH and cgo source files form one public contract
 
-Build tags, file suffixes, platform-specific implementations, and cgo declarations select different code for
-supported `GOOS/GOARCH` targets. Each selected set should expose compatible behavior and required resources;
-host-only consistency fails.
+Build tags, file suffixes, GOOS-specific implementations, and cgo declarations select different code for
+supported `GOOS/GOARCH` targets. Each selected set should expose the shared public API or CLI and required
+resources; host-only consistency fails.
 
 #### Checklist
 
 - [ ] GODEV-CK-CONSISTENCY-04-01 — Every supported `GOOS/GOARCH` target resolves a complete build input set, including its selected source files and required cgo inputs.
-- [ ] GODEV-CK-CONSISTENCY-04-02 — Platform-specific implementations preserve the shared public contract.
+- [ ] GODEV-CK-CONSISTENCY-04-02 — Every GOOS-specific implementation preserves the shared public API or CLI.
 
 ### GODEV-SC-CONSISTENCY-05 — Adversarial: Documentation is written to match the claim
 
@@ -253,7 +257,7 @@ code fails.
 
 ### GODEV-SC-RISK-01 — Rule violation: Local or sensitive state enters the diff
 
-The change accidentally includes secrets, credentials, private paths, temporary replacements, caches,
+The change accidentally includes secrets, credentials, workstation-local paths, temporary replacements, caches,
 generated scratch output, or unrelated user edits. Task-owned files should contain no workstation or trust
 boundary leakage.
 
@@ -271,7 +275,7 @@ executed project command, package pattern, `GOOS/GOARCH` target, and inputs.
 #### Checklist
 
 - [ ] GODEV-CK-RISK-02-01 — Every unavailable check, skipped check, uselessly cached result, and unsupported `GOOS/GOARCH` target remains classified as such.
-- [ ] GODEV-CK-RISK-02-02 — Every pass claim names the exact package pattern and `GOOS/GOARCH` target it exercised.
+- [ ] GODEV-CK-RISK-02-03 — Every pass claim names the project command, exact package pattern, selected Go toolchain version, flags, `GOOS/GOARCH` target, inputs, duration, and result.
 
 ### GODEV-SC-RISK-03 — Adversarial: A workaround masks the root cause
 
@@ -303,6 +307,8 @@ named owners. A convenient extra action or inferred authority fails.
 #### Checklist
 
 - [ ] GODEV-CK-RISK-05-02 — No staging, commit, publication, cleanup, or persistent toolchain-configuration action is taken from this operation.
+- Also applies: GODEV-CK-STRUCTURE-02-02 (named owner for every affected boundary).
+- Also applies: GODEV-CK-PROJECT-01-04 (author mode uses no credentials and performs no external mutation).
 
 ## Overall
 
@@ -311,19 +317,19 @@ named owners. A convenient extra action or inferred authority fails.
 Author mode should return a scoped, project-consistent verified tree. Read-only review mode should return an
 evidence-backed finding set without mutation. The work should follow `Study -> Design -> Build -> Verify` and
 return the universal terminal core plus development-specific decision, skeleton, slice, effect, reproducer,
-verification, and external-owner facts. A private or incomplete terminal account fails.
+verification, and named external-action owner facts. An implicit or incomplete terminal record fails.
 
 #### Checklist
 
 - [ ] GODEV-CK-OVERALL-01-05 — The final outcome follows `Study -> Design -> Build -> Verify` under the selected mode.
-- [ ] GODEV-CK-OVERALL-01-04 — Every applicable terminal field is explicit: operation and mode, accepted result, decision basis, actual owned object, terminal state, changed or reviewed paths, project-command evidence, evidence limits, external reads or effects, compatibility decision, block, recovery, handoff, bound scope, material-choice and cited-prior-decision gates, author-mode compiling skeleton and complete slices, original reproducer, final project verification, unsupported claims, author-mode no-credential and no-external-mutation facts, and result-dependent external-action owner, returned evidence, prerequisite, retained state, first recovery action, and handoff.
+- [ ] GODEV-CK-OVERALL-01-04 — Every applicable terminal field is explicit: operation and mode, accepted result, decision basis, actual owned object, terminal state, changed or reviewed paths, project command evidence, evidence limits, external reads or effects, compatibility decision, block, recovery, handoff, bound scope, material choice and cited prior decision gates, author-mode compiling skeleton and complete slices, original reproducer, final project verification, unsupported claims, the literal facts `author mode used no credentials` and `author mode performed no external mutation`, and result-dependent external-action owner, returned evidence, prerequisite, retained state, first recovery action, and handoff.
 - [ ] GODEV-CK-OVERALL-01-03 — Every completion claim matches the exact final tree.
 
 ### GODEV-SC-OVERALL-02 — Adversarial: A focused green test masks incomplete work
 
-One narrow test passes while a caller, document, generated artifact, module state, `GOOS/GOARCH` target, race
-path, or original reproducer remains stale or unverified. Local test success must not substitute for whole-task
-completion.
+One narrow test passes while a caller, document, generated input or output, module or workspace file,
+dependency graph, `GOOS/GOARCH` target, race-detector path, or original reproducer remains stale or unverified.
+Local test success must not substitute for whole-task completion.
 
 #### Checklist
 
@@ -333,9 +339,9 @@ completion.
 
 ### GODEV-SC-OVERALL-03 — Expected failure: A required verification gap prevents completion
 
-A required `GOOS/GOARCH` target, dependency, named tool, environment, or reproducer remains unavailable. The
-final account should name the affected obligation and stop the corresponding completion claim; substituting
-another check fails.
+A required supported `GOOS/GOARCH` target, dependency, named tool, exact cgo execution environment or other
+named execution environment, or reproducer remains unavailable. The final account should name the affected
+obligation and stop the corresponding completion claim; substituting another check fails.
 
 #### Checklist
 
