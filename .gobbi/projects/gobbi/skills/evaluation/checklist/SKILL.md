@@ -27,8 +27,9 @@ evidence determine which lifecycle categories and scenarios matter.
 
 ### Categorize lifecycles before writing scenarios
 
-Design, development, and product lifecycles expose different positions and transitions. Derive each view from
-the subject before filling it with scenarios.
+Design, development, and product lifecycles are distinct views of how the same subject changes across
+positions and transitions. They may overlap or recur, so derive each from the subject instead of treating
+them as one fixed sequence.
 
 ### Decompose scenarios from parents to leaves
 
@@ -73,9 +74,10 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 
 #### 2.1 Categorize the design lifecycle
 
-- Derive the design categories that matter from how needs and constraints are understood, evidence is gathered,
-  requirements are framed, alternatives are explored, decisions are made, structures are modeled, and designs
-  are validated, revised, or handed off. These examples prompt study and prescribe no list.
+- The design lifecycle follows how needs and constraints become validated intent that creators can realize.
+  Derive its categories from how needs and constraints are understood, evidence is gathered, requirements are
+  framed, alternatives are explored, decisions are made, structures are modeled, and designs are validated,
+  revised, or handed off. These examples prompt study and prescribe no list.
 - Include a transition or handoff as its own category when it creates a materially different responsibility,
   risk, outcome, or evidence need.
 - Name each category for the subject-specific concern it groups. Record missing support as an unresolved gap
@@ -83,9 +85,9 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 
 #### 2.2 Categorize the development lifecycle
 
-- Derive the development categories that matter from how the result is prepared for implementation, created,
-  integrated, changed, verified, delivered, maintained, or recovered. These examples prompt study and
-  prescribe no list.
+- The development lifecycle follows how design intent becomes and remains a working result. Derive its
+  categories from how the result is prepared for implementation, created, integrated, changed, verified,
+  delivered, maintained, or recovered. These examples prompt study and prescribe no list.
 - Include a transition or handoff as its own category when it creates a materially different responsibility,
   risk, outcome, or evidence need.
 - Name each category for the subject-specific concern it groups. Record missing support as an unresolved gap
@@ -93,8 +95,9 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 
 #### 2.3 Categorize the product lifecycle
 
-- Derive the product categories that matter from how the result is encountered, adopted, configured, used,
-  changed, supported, replaced, or left. These examples also prescribe no list.
+- The product lifecycle follows the relationship between a result and its consumers, from encounter through
+  exit. Derive its categories from how the result is encountered, adopted, configured, used, changed,
+  supported, replaced, or left. These examples prompt study and prescribe no list.
 - Consider each affected position, including developers as product consumers for a library, software
   development kit, application programming interface, or tool.
 - Keep each lifecycle view separate. Compare their category trees for missing, overlapping, or conflicting
