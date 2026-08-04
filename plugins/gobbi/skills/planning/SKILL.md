@@ -16,21 +16,18 @@ Planning decomposes the accepted direction in `tasks.md` and combines tasks into
 
 ## Principles
 
-### Keep hierarchy and execution as different views
+### Separate task hierarchy from execution order
 
-Hierarchy paths show decomposition; plan order and `Requires` edges show execution. A hierarchy leaf is a
-traceable decomposed task, not an agent assignment.
+The task hierarchy explains how broad work divides into decomposable groups and leaf tasks, while execution
+order explains how combined task groups build on one another through `Requires` and which independent groups
+may run in parallel. Keeping these views separate prevents parent-child structure from being mistaken for
+dependency order and exposes safe parallel work.
 
-### Combine tasks around reusable context
+### Bound each task group for one accountable agent
 
-Prefer the fewest task groups that remain dependency-valid, independently verifiable, reviewable, and safe
-for one agent. A combined task group lets that agent reuse skills, repository context, inputs, and writer
-state.
-
-### Return material uncertainty to its owner
-
-Planning records facts and resolves routine choices. Missing required input, a material user decision, or
-evidence against the accepted direction returns to the caller with the exact evidence and question.
+Planning is complete only when one accountable agent can understand and finish each combined task group from
+its recorded decomposed-task details and complete group context. If completion requires hidden coordination,
+the task group is too broad or its recorded details are incomplete.
 
 ## Rules
 
