@@ -182,12 +182,16 @@ policy; an invocation that must follow that policy passes those values itself.
 | `codex plugin add <plugin>@<marketplace>` | Installs a plugin into the local cache |
 | `codex plugin remove <plugin>@<marketplace>` | Removes an installed plugin from local config and cache |
 
-The Codex plugin installer copies no path behind a symbolic link. The current `plugins/gobbi/skills/` and
-`plugins/gobbi/agents/` components are therefore generated real directories whose files must be byte-equal to
-their canonical owners. Regenerate both components with
-`bash scripts/sync-plugin-package.sh --materialize-package`. A symlinked component root or nested package path
-is invalid, and every missing installed path is a failure. Codex skill *discovery* does follow symbolic links,
-so `.agents/skills/` resolves inside this repository and needs no install.
+The Codex plugin installer copies no path behind a symbolic link. The current materialized `plugins/gobbi/`
+package contains both plugin manifests and generated real `skills/` and `agents/` directories whose files
+must be byte-equal to their canonical owners. Regenerate both components with
+`bash scripts/sync-plugin-package.sh --materialize-package`. A valid current install delivers both manifests
+and both component directories. A symlinked component root or nested package path is invalid; an absent or
+incomplete installed component and every missing installed path are failures.
+[openai/codex#24770](https://github.com/openai/codex/issues/24770) describes only the installer's
+symlink-following limitation, not a package exemption or an accepted skills-free install. Codex skill
+*discovery* does follow symbolic links, so `.agents/skills/` resolves inside this repository and needs no
+install.
 
 ### Diagnose a failure
 

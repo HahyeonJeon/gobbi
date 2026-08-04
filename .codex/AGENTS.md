@@ -80,18 +80,21 @@ exact load directives because specialists do not inherit manager context.
 ## Plugin topology
 
 `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/` are the only editable sources for skills
-and agents. The bounded package at `plugins/gobbi/` carries generator-materialized real-file copies of both
-trees plus the Codex and Claude Code manifests. `.agents/plugins/marketplace.json` and
-`.claude-plugin/marketplace.json` point to
-`./plugins/gobbi`. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin
-components. The package has no lifecycle-hook component.
+and agents. In a checkout/source package, `plugins/gobbi/skills/` and `plugins/gobbi/agents/` may be symlinks
+to those canonical trees before generation. A release/installable package carries both the Codex and Claude
+Code manifests plus official generator-materialized real `skills` and `agents` directories whose files are
+byte-equal to their canonical owners. `.agents/plugins/marketplace.json` and
+`.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
+repo-local and are not installed as plugin components. The package has no lifecycle-hook component.
 
 Run `scripts/sync-plugin-package.sh --materialize-package` to regenerate the package copies. Run
 `scripts/sync-plugin-package.sh --check` for the read-only topology guard,
-`scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-installed-cache behavior. The guard fails when a generated file is missing, stale, byte-different, or a
-symlink. An installed Codex cache must receive the full nested skill tree; any missing skill is a failure, not
-a warning.
+`scripts/test-sync-plugin-package.sh` for the 20-fixture suite, and `scripts/check-codex-plugin-smoke.sh` for
+isolated installed-cache behavior. The guard fails when a generated file is missing, stale, byte-different,
+or symlinked. Because the Codex installer copies nothing behind a symlink, a symlinked, absent, or incomplete
+installable `skills` or `agents` component fails, and any missing installed skill fails. Smoke acceptance
+requires a successful exit and an intact installed cache. A nonsemantic environment-specific Codex CLI
+warning may coexist with success but is not acceptance evidence.
 
 Never hand-edit the package copies. Codex skill discovery does follow symlinks, so this repository's
 `.agents/skills/` view continues to resolve from canonical sources and needs no plugin install.
