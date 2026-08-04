@@ -1,94 +1,50 @@
 # {Project} — Problem Definition
 
-> **Role:** Accepted problem evidence and desired outcomes for every current subject.<br>
-> **Example:** `Analytics Workspace` may own several Products, each with one complete Implementation. This
-> example explains section placement and does not prescribe project content.
-
-## Section Register
-
-| Level | Stable subject key | Parent Product key | Required | State | Section link | Review evidence | User acceptance |
-|---|---|---|---|---|---|---|---|
-| Project | `{project-key}` | `none` | `yes` | `{absent, draft, reviewed, stale, or confirmed}` | [Project](#project) | `{assignment or none}` | `{timestamp or not yet}` |
-| Product | `{product-key}` | `none` | `yes` | `{state}` | `{Product section}` | `{evidence}` | `{acceptance}` |
-| Implementation | `{implementation-key}` | `{product-key}` | `yes` | `{state}` | `{Product Implementation section}` | `{evidence}` | `{acceptance}` |
-
-The artifact is `confirmed` only when every required current row is confirmed. Any stale required row makes
-the artifact `stale`; otherwise use the earliest incomplete row's state.
-
-This Section Register is the sole owner of each section's current state, Review-evidence reference, and user
-acceptance. Every Review uses exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
-`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`; each finding records
-evidence, consequence, one exact follow-up question, and disposition.
+Describe the accepted problems, affected people and systems, desired outcomes, and evidence for the Project,
+each Product, and each Product's single complete Implementation.
 
 ## Project
 
-### `{project-key}` — {Project}
+### {Project}
 
-#### Current Reality, Problem, People, and Outcomes
+#### Current reality and problem
 
-{Describe the initiative, service problem, observed events, affected people and systems, cause evidence,
-baseline, durable outcome, success evidence, assumptions, constraints, risks, and non-goals.}
+{Describe the initiative, its current stage, the most recent concrete problem event, affected people and
+systems, consequences, frequency, root-cause evidence, baseline, and why action is timely.}
 
-#### Section Evidence and Acceptance
+#### Outcome, risk, and evidence
 
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{accepted Project decisions, sources, strength, and evidence that would change them}` |
-| Topic and question coverage | `{each alias or added question; answered, dropped, or owned deferral; answer or reason}` |
-| Vocabulary | `{agreed terms, definitions, scope, and resolved conflicts}` |
-| Risks and owned deferrals | `{item, consequence, owner, resolution method, and reopen condition}` |
-| Corrections | `{earlier decision, current decision, user resolution, and reachable stale sections}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+{Describe the durable outcome, observable success and stop evidence, assumptions, highest-consequence risks,
+constraints, target and excluded groups, non-goals, cited sources, and evidence that would change the decision.}
+
+- Accepted: {yes — user and date}
 
 ## Products
 
-Repeat this subsection once for every Product in Subject Register order.
+Repeat this section for every independently useful Product.
 
-### `{product-key}` — {Product}
+### {Product}
 
-- Parent Project: `{project-key}`
-- Implementation: `{implementation-key}`
+- Parent Project: {Project}
+- Implementation: {Product Implementation}
 
-#### Consumer Problem, Alternatives, Adoption, and Outcome
+{Describe the first consumers, their concrete tasks and situations, current alternatives and prior attempts,
+the cost of failure, adoption motives and barriers, the improved result, risks, non-goals, cited sources, and
+evidence that would change the Product problem definition.}
 
-{Describe the Product's consumers, tasks, concrete problem, alternatives, adoption evidence, desired outcome,
-success evidence, constraints, risks, and non-goals. Keep sibling Product problems distinct.}
-
-#### Section Evidence and Acceptance
-
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{accepted Product decisions, sources, strength, and change evidence}` |
-| Topic and question coverage | `{aliases and context-derived questions with status and answer or reason}` |
-| Vocabulary | `{terms, definitions, scope, and conflict resolutions}` |
-| Risks and owned deferrals | `{item, consequence, owner, resolution, and reopen condition}` |
-| Corrections | `{old and current decisions, user resolution, and stale sections}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+- Accepted: {yes — user and date}
 
 ## Implementations
 
-Repeat this subsection once per Product, in the same Product order.
+Repeat this section once per Product.
 
-### `{implementation-key}` — {Product} Implementation
+### {Product} Implementation
 
-- Parent Product: `{product-key}`
-- Relationship: `exactly one complete Implementation for this Product`
+- Parent Product: {Product}
+- Relationship: exactly one complete-stack Implementation for this Product
 
-#### Need, Constraints, Alternatives, Risk, and Success Evidence
+{Describe the complete stack's need, mandatory constraints, essential dependencies, Product impact when a
+dependency fails, license duties, portability needs, alternatives, risks, cited sources, and evidence that
+would prove or disprove the Implementation fit.}
 
-{Explain why this complete stack is needed, mandatory constraints, considered alternatives, dependency and
-licensing risks, portability duties, and evidence that would prove the Implementation fit or disprove it.}
-
-#### Section Evidence and Acceptance
-
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{accepted Implementation decisions, sources, strength, and change evidence}` |
-| Topic and question coverage | `{aliases and context-derived questions with status and answer or reason}` |
-| Vocabulary | `{terms, definitions, scope, and conflict resolutions}` |
-| Risks and owned deferrals | `{item, consequence, owner, resolution, and reopen condition}` |
-| Corrections | `{old and current decisions, user resolution, and stale sections}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+- Accepted: {yes — user and date}
