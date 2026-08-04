@@ -218,6 +218,12 @@ action; and resume condition.
 - Cover normal, alternate, invalid, rejected, interrupted, duplicate, stale, recovery, cleanup, restart,
   compatibility, and target-specific cases that apply. Distinguish product defects from environment gaps and
   preserve every unrun case and limitation.
+- For each applicable completed slice, coordinate measurement of main-process responsiveness and bounded
+  resource use under representative work with the applicable evidence owner. Record the exact artifact or
+  build measured and the conditions for each measurement.
+- Require the applicable evidence owner to measure every claimed installed performance or resource target on
+  the exact installed artifact under its declared conditions. A development run, unpacked build, package,
+  archive, or source build cannot prove installed performance or resource use.
 - Reject any correction or failure repair that weakens a security, accessibility, consent, data, or authority
   boundary; return the failure to its exact owner instead.
 - After a correction, repeat the failed layer and every dependent layer, or prove why an existing result is
@@ -271,6 +277,9 @@ action; and resume condition.
 - Exercise the applicable exact runtime states and transitions: `Not running`, `Launching`, `Activation
   request`, `Running with windows`, `Running with no windows`, `Background/tray mode`, `Window close`, `Normal
   quit`, `Abnormal termination`, `Later relaunch`, and `Qualified restart`.
+- For `Background/tray mode`, coordinate measurement of its declared resource bounds under representative
+  background work on the exact installed artifact and target tuple. Record the conditions, result, and
+  evidence owner.
 - Name each applicable OS power or session event only from the matching Manual result for the exact tuple.
   Never create a universal suspend or resume state from different platform facts.
 - Keep product transitions distinct. Window close does not imply Normal quit; Later relaunch does not prove

@@ -169,7 +169,7 @@ proxy-execution claims, or unauthorized action is the failure.
 
 - [ ] DTLNX-CK-RISK-01-01 — Documentation, repository, metadata, package, bundle, container, and artifact evidence is never described as application, installer, package-manager, runtime, or Linux execution.
 - [ ] DTLNX-CK-RISK-01-02 — A development run, unpacked build, source inspection, non-throwing call, or observation on another Linux variant never proves installed or native behavior for this tuple.
-- [ ] DTLNX-CK-RISK-01-03 — The result makes no product behavior, product support, implementation, software-testing, verification, or release-readiness decision, including when every tuple field is exact.
+- [ ] DTLNX-CK-RISK-01-04 — The result states exactly `Exact-tuple probe not run` when no application, installer, package manager, updater, uninstaller, runtime transition, native integration, or Linux behavior was actually observed.
 - [ ] DTLNX-CK-RISK-01-05 — The lookup performs no credential use, install, update, repair, uninstall, signing, trust-store, repository, package-manager, portal, keyring, sandbox, security-profile, policy, publication, or other mutation.
 
 ### DTLNX-SC-RISK-02 — Rule violation: an adjacent result is assigned to the fact investigator

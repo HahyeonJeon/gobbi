@@ -63,10 +63,11 @@ Expand targets, predecessors, channels, and rollout only when current user need 
 - **MUST use** `Forward fix` only for a later compatible release that corrects a faulty version already
   installed on user machines. Keep it separate from rollback, and prove the reach and compatibility of each
   option at its owner.
-- **MUST keep** packaged, installed, signed or notarized, update-rehearsed, release-ready,
-  release-authorized, published or deployed, and post-release evidence distinct, and require exact destination
-  and resulting-byte evidence for a published or deployed claim. Before readiness, require a supported-version
-  window, monitoring, rollout stop conditions, explicit recovery limits, and a Forward fix.
+- **MUST keep** packaged, installed, signed or notarized, update-rehearsed, release-ready, current
+  point-of-action authority for each named action and target, verified published or deployed, and post-release
+  evidence distinct, and require exact destination and resulting-byte evidence for a published or deployed
+  claim. Before readiness, require a supported-version window, monitoring, rollout stop conditions, explicit
+  recovery limits, and a Forward fix.
 - **MUST choose** rollback only when target-specific distribution reach and data, schema, settings, and native
   integration compatibility prove it safe for affected installed versions. Halting or withdrawing
   distribution never repairs a version already installed on a user's machine.
