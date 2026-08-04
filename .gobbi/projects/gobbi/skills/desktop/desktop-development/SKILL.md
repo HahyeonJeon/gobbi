@@ -48,9 +48,11 @@ roll out. Verify authority immediately before the exact action and preserve a co
   MUST name subject and scope, actor and owner, inputs, action or method, exact result, evidence location,
   dependencies and routes, failures and limitations, applicable authority, return or reopen condition, and
   next branch.
-- **MUST accept the complete product contract in Requirements before dependent work.** A missing product
-  judgment returns to the user or product authority; a missing fact, mechanism, implementation, or evidence
-  returns to its named specialist.
+- **MUST accept the complete mechanism-free product contract in Requirements before dependent work.** Every
+  supported product entry MUST state its product meaning and observable person or operator result without
+  selecting an Electron callback, event, process, IPC channel, permission handler, package format, updater,
+  or signing mechanism; a missing product judgment returns to the user or product authority, while a missing
+  fact, mechanism, implementation, or evidence returns to its named specialist.
 - **MUST assemble only current, agreeing owner results and preserve their exact routes.** NEVER copy
   Architecture, Interface, operating-system, Electron, renderer, release-mechanism, or Evaluation policy into
   this operation.
@@ -85,12 +87,26 @@ action; and resume condition.
 - Take the accepted request, current product and design material, affected people, supported application
   versions, target operating-system and architecture tuples, existing owner results, and known constraints as
   inputs.
-- Record the product problem, actors, target people and contexts, accepted behavior, supported targets, entry
-  modes, and the observable completion, authoritative system completion, and false-completion conditions.
+- Define the product problem, actors, target people and contexts, accepted behavior, supported targets, and
+  entry modes. Give every supported path a product contract entry across all six surfaces: installation and
+  first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and
+  update and recovery.
+- Keep every product entry mechanism-free. State its product meaning and the observable person or operator
+  result, plus observable completion, authoritative system completion, false-completion, failure, and
+  recovery conditions; do not select an Electron callback, event, process, IPC channel, permission handler,
+  package format, updater, or signing mechanism.
 - Record normal and alternate paths across application use, runtime behavior, installation, exact-version
-  update, repair or recovery, and uninstall.
-- For every affected datum, record create, read, update, delete, retention, export, backup, migration,
-  compatibility, corruption, interruption, and recovery behavior.
+  update, repair or recovery, and uninstall. State what the person sees before, during, and after update, the
+  usable state after interruption or failure, and the support route.
+- For each supported launcher, file, protocol, notification, command, and second-instance path, and each
+  applicable runtime transition, name every input or resource it must preserve and how that value survives.
+- For every native integration, record target support, permission or entitlement preconditions, cancellation,
+  duplicate activation, unavailable behavior, returned failure state, cleanup, accessible alternative, and
+  whether its effects are visible, cancellable, and reversible.
+- Inventory every affected datum, including settings, documents, caches, credentials, logs, indexes,
+  downloads, and application resources. For every datum, record its owner and lifecycle, installed location
+  and protection, behavior when absent, corrupt, locked, or incompatible, and create, read, update, delete,
+  retention, export, backup, migration, compatibility, corruption, interruption, and recovery behavior.
 - Record failure and recovery, support, authority, constraints, explicit non-goals, requirement trace, and the
   condition that reopens each material requirement.
 - Route view, navigation, window, application-state, restoration, and activation product judgments to
@@ -185,6 +201,8 @@ action; and resume condition.
 - Cover normal, alternate, invalid, rejected, interrupted, duplicate, stale, recovery, cleanup, restart,
   compatibility, and target-specific cases that apply. Distinguish product defects from environment gaps and
   preserve every unrun case and limitation.
+- Reject any correction or failure repair that weakens a security, accessibility, consent, data, or authority
+  boundary; return the failure to its exact owner instead.
 - After a correction, repeat the failed layer and every dependent layer, or prove why an existing result is
   unaffected for the same subject. A passing source, type, build, or development-run check cannot prove an
   installed-artifact claim.

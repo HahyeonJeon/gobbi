@@ -30,11 +30,7 @@ exact result for its current subject fails this scenario.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PROJECT-10-01 — Requirements ends with exactly `Requirements accepted`.
-- [ ] DTDLVR-CK-PROJECT-10-02 — Design collaboration ends with exactly `Design decisions accepted for the current subject`.
-- [ ] DTDLVR-CK-PROJECT-10-03 — Implementation ends with exactly `Implemented`.
-- [ ] DTDLVR-CK-PROJECT-10-04 — Software testing and verification ends with exactly `Software-tested and verified`.
-- [ ] DTDLVR-CK-PROJECT-10-05 — Packaging ends with exactly `Packaged`.
+- [ ] DTDLVR-CK-PROJECT-10-06 — Each of the first five stages ends with its named exact result: Requirements — `Requirements accepted`; Design collaboration — `Design decisions accepted for the current subject`; Implementation — `Implemented`; Software testing and verification — `Software-tested and verified`; Packaging — `Packaged`.
 
 ### DTDLVR-SC-PROJECT-11 — Normal case: the last five stages return exact results
 
@@ -97,12 +93,14 @@ finite stop. Both conditions fail even when progress reporting looks healthy.
 ### DTDLVR-SC-AESTHETICS-10 — Poor quality: broad words hide the affected object or action
 
 The text sounds plausible but leaves developers unable to identify the object changed or the operation
-performed.
+performed, or identifies a product entry only by a callback, native API, or test. The expected outcome names
+the product meaning and observable person or operator result; mechanism-only wording is the failure.
 
 #### Checklist
 
 - [ ] DTDLVR-CK-AESTHETICS-10-01 — Binding prose names the concrete view, window, page, panel, dialog, control, renderer, or native integration when known.
 - [ ] DTDLVR-CK-AESTHETICS-10-02 — Binding prose distinguishes build, package, distribute, publish, deploy, promote, install, update, repair, and uninstall.
+- [ ] DTDLVR-CK-AESTHETICS-10-03 — Every product entry identifies its product meaning and the result a person or operator can observe, never only a framework callback, native API, or test name.
 
 ### DTDLVR-SC-AESTHETICS-11 — Adversarial: generic exit language hides runtime meaning
 
@@ -112,22 +110,23 @@ runtime behavior.
 #### Checklist
 
 - [ ] DTDLVR-CK-AESTHETICS-11-01 — Runtime records use Not running, Launching, Activation request, Running with windows, Running with no windows, Background/tray mode, Window close, Normal quit, Abnormal termination, Later relaunch, Qualified restart, and exact OS power or session events instead of generic `exit`.
-- [ ] DTDLVR-CK-AESTHETICS-11-03 — Electron `app.exit(code)` remains a mechanism fact.
-- [ ] DTDLVR-CK-AESTHETICS-11-04 — A command or test `exit status` remains a tool or test result.
+- [ ] DTDLVR-CK-AESTHETICS-11-05 — Electron `app.exit(code)` remains a mechanism fact, and a command or test `exit status` remains a tool or test result.
 
 ## Usage
 
 ### DTDLVR-SC-USAGE-10 — Normal case: Requirements accepts the complete product contract
 
-The accepted request becomes a product contract before dependent work. A technically detailed brief still
-fails when it omits a product outcome, data-lifecycle behavior, or recovery obligation.
+The accepted request becomes a mechanism-free product contract before dependent work. A technically detailed
+brief still fails when it omits a supported path on any of the six contract surfaces, a product outcome, a
+native-integration field, a local-data behavior, or an update and recovery obligation.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-10-01 — Requirements names the product problem, actors, supported targets, and entry modes.
+- [ ] DTDLVR-CK-USAGE-10-07 — Requirements defines the product problem, actors, supported targets, entry modes, and a product contract entry for every supported path across installation and first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and update and recovery.
 - [ ] DTDLVR-CK-USAGE-10-02 — Requirements distinguishes observable completion, authoritative system completion, and false completion.
-- [ ] DTDLVR-CK-USAGE-10-06 — Requirements defines normal and alternate paths for application use, runtime behavior, installation, exact-version update, repair or recovery, uninstall, and every affected datum's create, read, update, delete, retention, export, backup, migration, compatibility, corruption, interruption, and recovery behavior.
-- [ ] DTDLVR-CK-USAGE-10-04 — Requirements covers failure, recovery, support, authority, constraints, and explicit non-goals.
+- [ ] DTDLVR-CK-USAGE-10-08 — Requirements defines normal and alternate paths for application use, runtime behavior, installation, exact-version update, repair or recovery, and uninstall, including what the person sees before, during, and after update, the usable state after interruption or failure, and the support route.
+- [ ] DTDLVR-CK-USAGE-10-09 — Requirements records failure, recovery, support, authority, constraints, and explicit non-goals, plus each native integration's target support, permission or entitlement preconditions, cancellation, duplicate activation, unavailable behavior, returned failure state, cleanup, accessible alternative, and whether its effects are visible, cancellable, and reversible.
+- [ ] DTDLVR-CK-USAGE-10-10 — For every affected datum — including each setting, document, cache, credential, log, index, download, and application resource — Requirements records its owner and lifecycle, installed location and protection, absent, corrupt, locked, and incompatible behavior, and create, read, update, delete, retention, export, backup, migration, compatibility, corruption, interruption, and recovery behavior.
 - [ ] DTDLVR-CK-USAGE-10-05 — Requirements records trace, reopen conditions, and exact owner routes.
 
 ### DTDLVR-SC-USAGE-11 — Edge case: design evidence is reused or not applicable
@@ -144,8 +143,10 @@ and improvement without copying Interface policy.
 
 ### DTDLVR-SC-USAGE-12 — Adversarial: a mechanism chooses activation or one state model proves another
 
-An OS event or Electron mechanism selects the product outcome, or packaged, installed, and running states are
-treated as interchangeable.
+An OS event or Electron mechanism selects the product outcome, packaged, installed, and running states are
+treated as interchangeable, or an entry or transition omits an input or resource it must preserve. The
+expected outcome keeps product judgment, state evidence, and preserved input explicit; any hidden transfer is
+the failure.
 
 #### Checklist
 
@@ -153,6 +154,7 @@ treated as interchangeable.
 - [ ] DTDLVR-CK-USAGE-12-04 — Exactly one authoritative application instance and application-state owner applies each Activation request.
 - [ ] DTDLVR-CK-USAGE-12-05 — Exactly one accepted create, reveal, focus, navigate, handle, no-op, or reject Architecture outcome is selected for each Activation request.
 - [ ] DTDLVR-CK-USAGE-12-02 — Installed-application records distinguish exact-version install, optional first use, update, repair or recovery, uninstall, Removed, and intentional residual state from runtime evidence.
+- [ ] DTDLVR-CK-USAGE-12-06 — Each supported launcher, file, protocol, notification, command, and second-instance path, and each applicable runtime transition, names every input or resource it must preserve and how that value survives.
 
 ## Consistency
 
@@ -187,13 +189,17 @@ deployment, promotion, or rollout action lacks exact current authority.
 ### DTDLVR-SC-RISK-11 — Adversarial: coordination claims action, health, or safe progress without proof
 
 Documentation appears complete while a mechanism owner, destination result, blocker record, or bounded
-observation contract is absent.
+observation contract is absent, or a correction hides failure by weakening a protected boundary. The expected
+outcome keeps mechanism ownership and every security, accessibility, consent, data, and authority boundary
+intact; mechanism selection by the contract or coordinator and weakened-boundary repair are failures.
 
 #### Checklist
 
 - [ ] DTDLVR-CK-RISK-11-04 — Every external action is assigned to its mechanism owner rather than the desktop development coordinator.
+- [ ] DTDLVR-CK-RISK-11-05 — No product entry selects an Electron callback, event, process, IPC channel, permission handler, package format, updater, or signing mechanism.
 - [ ] DTDLVR-CK-RISK-11-02 — A proved blocker records the exact blocked result, current states, bounds, missing dependency, retained work, safe stop, required actor and action, and resume condition.
 - [ ] DTDLVR-CK-RISK-11-03 — Post-release work names its questions, signals, owners, consumers, destinations, allowed data, retention, window, thresholds, support, stop, and recovery.
+- [ ] DTDLVR-CK-RISK-11-06 — No correction or failure repair weakens a security, accessibility, consent, data, or authority boundary.
 
 ## Overall
 
