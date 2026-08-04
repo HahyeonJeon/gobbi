@@ -1,140 +1,167 @@
 ---
 name: checklist
-description: "MUST load when creating or revising an evaluation checklist. Checklist authors one reusable, unchecked source for an exact subject and context."
+description: "MUST load when creating or revising an evaluation checklist. Checklist guides lifecycle categorization, recursive scenario decomposition, and unchecked condition authoring for an exact subject."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Evaluation Checklist
 
-A Checklist author uses this operation to create or revise one reusable, unchecked checklist for an exact
-subject and context. The checklist states what later evaluation should be able to answer from evidence.
+A Checklist author uses this operation to create or revise one reusable, unchecked evaluation source for an
+exact subject and context.
 
-Its hierarchy follows the work instead of a fixed template. The development lifecycle and product lifecycle
-help discover relevant scenarios and transitions, but they do not define categories, phases, or required order.
+The author studies the subject, categorizes its development and product lifecycles, builds a complete
+top-down scenario hierarchy, and only then writes checklist conditions for independently evaluable leaves.
+Lifecycle categories follow the subject, while a scenario spectrum helps expose good, bad, and overlooked
+situations without becoming a required taxonomy.
 
 Checklist stops after source authoring. It does not execute conditions or judge the subject, and its delivered
 source remains unchecked and result-free.
 
 ## Principles
 
-### Let context and evidence shape coverage
+### Study before organizing
 
-Actual outcomes, people, interfaces, transitions, risks, and prior failures show what matters. The checklist
-records supported expectations and names gaps where evidence or authority is missing.
+Actual outcomes, affected people and systems, interfaces, transitions, risks, prior failures, and available
+evidence determine which lifecycle categories and scenarios matter.
 
-### Describe scenarios before conditions
+### Categorize lifecycles before writing scenarios
 
-A condition becomes meaningful inside a concrete scenario with a trigger and observable outcome. Start with
-that context, then state the smallest independently answerable expectations.
+Development and product lifecycles expose different positions and transitions. Derive each view from the
+subject before filling either one with scenarios.
 
-### Cover essentials and common mistakes
+### Decompose scenarios from parents to leaves
 
-Check the behavior needed for the outcome and the mistakes most likely to make it fail or disappoint. Include
-deficient-but-functioning quality when inconvenience, confusion, inconsistency, or poor appearance matters.
+Start with broad situations and recursively split them until each leaf can be evaluated independently. Parent
+meaning guides its children, while material differences stay visible in separate branches.
 
-### Keep the source/judgment boundary clear
+### Finish scenarios before writing conditions
 
-Checklist authors an expectation source; Evaluation owns later observations and judgment. Source content stays
-unchecked even after an evaluator uses it.
+Checklist conditions reduce understood leaf scenarios to observable expectations. Writing them before the
+scenario hierarchy closes hides missing or confused situations behind plausible rows.
 
 ## Rules
 
-- **MUST bind the checklist to one exact subject, scope, and context.** State enough identity and evidence for
-  a later evaluator to know what the source covers.
-- **MUST discover context-driven scenarios before writing conditions.** Use lifecycle guidance and relevant
-  perspectives as prompts only, never as required categories, sequences, counts, or coverage credit.
-- **MUST make every condition atomic, observable, and independently answerable from evidence.** Keep each
-  condition contextual to one scenario or to clearly stated shared context.
-- **MUST cover essential behavior and common mistakes.** Include ordinary success, boundaries, failure,
-  recovery, and materially deficient outcomes when they apply.
-- **MUST keep the hierarchy and supporting details adaptable.** Use only the structure, fields, and identifiers
-  that help this subject and caller.
+- **MUST bind the source to one exact subject, scope, and context.** State enough identity and evidence for a
+  later evaluator to know what the source covers.
+- **MUST categorize the development lifecycle and product lifecycle separately before writing scenarios.**
+  Derive categories from inspected context, never from a universal list.
+- **MUST use the scenario spectrum only as discovery guidance.** Its terms are prompts, not required labels,
+  nodes, sequences, counts, quotas, or coverage credit.
+- **MUST recursively decompose broad scenarios parent-first.** Stop only when each leaf describes one
+  independently evaluable situation, and return to lifecycle categorization when a branch exposes a gap.
+- **MUST complete and review the scenario hierarchy before writing checklist conditions.** Give every material
+  leaf one or more atomic, observable, independently answerable conditions.
 - **NEVER write procedures, action logs, answers, results, scores, severity, or remediation into the source.**
-  Deliver every checklist condition unchecked.
+  Deliver every checklist condition unchecked and keep later judgment outside the source.
 
 ## Procedure
 
-### Phase 1 — Frame the Source
+### Phase 1 — Study and Frame the Subject
 
-#### 1.1 Freeze the subject and authoring context
+#### 1.1 Bind and inspect the authoring context
 
 - Identify the exact artifact, state, version, or content hash the checklist concerns.
-- Record its intended outcomes, affected people, scope, governing requirements, known risks, prior failures,
-  expected evidence, and material constraints.
-- Split the work or stop for missing context when one checklist cannot describe a stable subject and outcome.
+- Inspect intended outcomes, affected people and systems, scope, requirements, rules, decisions, risks, prior
+  failures, available evidence, and material constraints.
+- Trace actual behavior, interfaces, dependencies, states, transitions, handoffs, operating conditions, and
+  creator, developer, consumer, or user positions when they affect the outcome.
+- Separate inspected facts from uncertainty and missing evidence. Split the work or stop when one source
+  cannot describe a stable subject and outcome.
 
-### Phase 2 — Discover Relevant Scenarios
+### Phase 2 — Categorize Both Lifecycles
 
-#### 2.1 Study the work across its lifecycles
+#### 2.1 Categorize the development lifecycle
 
-- Inspect actual behavior, intended outcomes, interfaces, dependencies, transitions, handoffs, operating
-  conditions, governing inputs, risks, and available evidence.
-- Use the development lifecycle to think through creation, change, verification, delivery, maintenance, and
-  recovery where relevant.
-- Use the product lifecycle to think through how the outcome is encountered, adopted, used, changed,
-  supported, and left where relevant.
-- Treat both lifecycles as discovery guidance. They are not required phases, fixed sequences, checklist
-  sections, or measures of completeness.
+- Derive the development categories that matter for this subject from how it is conceived, designed, created,
+  changed, verified, delivered, maintained, or recovered. These examples prompt study and prescribe no list.
+- Include a transition or handoff as its own category when it creates a materially different responsibility,
+  risk, outcome, or evidence need.
+- Name each category for the subject-specific concern it groups. Record missing support as an unresolved gap
+  instead of inventing a category or scenario.
 
-#### 2.2 Organize and write context-driven scenarios
+#### 2.2 Categorize the product lifecycle
 
-- Consider ordinary success; boundaries and transitions; failure and recovery; and deficient-but-functioning
-  outcomes such as inconvenience, unintuitive behavior, confusion, inconsistency, or poor appearance.
-- Consider governance, misuse, abuse, or cosmetic compliance when the subject or evidence makes them relevant.
-  These prompts are not scenario classes or quotas.
-- After discovery, choose a free hierarchy that matches the subject. When useful, adapt the optional
-  [starter template](templates/checklist.md); rename, reorder, repeat, nest, or omit its headings and context.
-- State only the context needed for each scenario to be understood and evaluated. Add a trigger, expected
-  outcome, deficient outcome, or evidence need only when it materially clarifies that scenario.
-- Let relevant perspectives challenge evaluation boundaries when useful. Do not name a fixed set or record
-  their use, order, number, or labels.
-- Merge only scenarios that require the same context, evidence, and answer. Split material differences that
-  would otherwise hide a boundary or failure.
-- Keep the resulting source understandable without the template or authoring conversation. Use identifiers
-  only when a caller requires traceability.
+- Derive the product categories that matter from how the result is encountered, adopted, configured, used,
+  changed, supported, replaced, or left. These examples also prescribe no list.
+- Consider each affected position, including developers as product consumers for a library, software
+  development kit, application programming interface, or tool.
+- Keep the product view separate from the development view. Compare the two category trees for missing,
+  overlapping, or conflicting boundaries before writing scenarios.
 
-### Phase 3 — Write the Checklist Conditions
+### Phase 3 — Build the Scenario Hierarchy
 
-#### 3.1 Derive atomic conditions
+#### 3.1 Generate top-level scenarios
 
-- Write one or more unchecked conditions for each material scenario.
-- State the required observable condition, not how to test it. Keep the scenario context close enough that an
-  evaluator can answer the condition from evidence.
-- Split combined conditions when their answers, evidence, triggers, affected people, or consequences can
-  differ.
-- Reuse wording only when its meaning and required evidence remain the same in every stated context.
+- For each supported lifecycle category, derive the materially different situations that the subject should
+  handle or that later evaluation should distinguish.
+- Challenge each category with the applicable parts of this scenario spectrum:
 
-#### 3.2 Review essentials, mistakes, and gaps
+  | Prompt | Ask about |
+  |---|---|
+  | **Positive / Good / normal** | The ordinary valid path produces the intended outcome. |
+  | **Alternative-valid** | A materially different valid input, actor, mode, or route also succeeds. |
+  | **Negative / Bad / expected rejection** | Invalid input, state, authority, or precondition is rejected safely without a prohibited side effect. |
+  | **Boundary / edge / transition** | Behavior at an exact limit or transition remains correct. |
+  | **Failure / recovery** | A dependency, partial operation, timeout, interruption, or internal failure is detected, contained, and recovered. |
+  | **Poor quality** | The result functions but is inconvenient, unintuitive, confusing, inconsistent, or poorly presented. |
+  | **Rule violation** | The result breaks an applicable requirement, rule, decision, or governing constraint. |
+  | **Adversarial / abuse / gaming / cosmetic compliance** | An actor exploits a boundary, or surface compliance hides a missing outcome. |
+  | **Change / regression / compatibility** | Behavior remains correct across a version or lifecycle change. |
+  | **Counterfactual / assumption** | A load-bearing premise is inverted and produces the expected disconfirmation or recovery. |
 
-- Confirm the checklist covers the essential behavior needed for the intended outcome and common mistakes
-  supported by the subject, history, or domain.
-- Challenge apparent success that still produces confusing, inconsistent, inconvenient, unintuitive, or poor
-  quality results.
-- Name unresolved gaps and the evidence, authority, or context needed to close them. Do not invent conditions
-  merely to hide missing knowledge.
-- Remove duplicate, vague, compound, unobservable, procedural, or result-bearing conditions.
+- Instantiate only scenarios supported by the subject, evidence, or a named gap. Do not require a spectrum
+  term in a scenario heading or create a scenario merely to represent a term.
+- Describe each scenario in ordinary subject language so its situation and observable outcome are clear
+  without a required field form.
 
-### Phase 4 — Preserve and Hand Off the Source
+#### 3.2 Recursively decompose each scenario
 
-#### 4.1 Verify the authored source
+- Work parent-first and depth-first. Split every broad scenario into child scenarios that preserve the
+  parent's meaning while making material differences explicit.
+- Split when affected position, precondition or trigger, state or transition, expected or deficient outcome,
+  or required evidence can differ.
+- Continue until each leaf can be evaluated independently without first resolving a sibling. Keep a parent as
+  the summary of its descendants, not as a substitute for their distinct situations.
+- Choose a hierarchy that fits the subject. When useful, adapt the optional
+  [starter template](templates/checklist.md); its rendering and depth are not a schema.
+- Return to Phase 2 when decomposition exposes a missing or incorrect lifecycle category.
 
-- Read the whole source against the frozen subject, intended outcomes, relevant scenarios, available evidence,
-  and unresolved gaps.
-- Confirm that each condition is atomic, observable, independently answerable, contextual, and still unchecked.
-- Confirm that lifecycle guidance and perspectives helped discovery without becoming required organization or
-  recorded coverage.
-- Return to the earliest affected step when the review exposes a missing premise, scenario, condition, or gap.
+#### 3.3 Review and close the scenario hierarchy
 
-#### 4.2 Hand off without judgment
+- Review both lifecycle trees against the subject, governing sources, prior failures, and scenario spectrum.
+- Reconcile parent-child meaning, sibling boundaries, unsupported branches, and unresolved gaps. Merge only
+  scenarios with the same situation, outcome, and evidence need.
+- When the same scenario spans both lifecycle views, define it once and reference its exact path from the
+  other view unless the affected position, trigger, outcome, or evidence differs.
+- Freeze the complete scenario hierarchy before continuing. Write no checklist condition while a material
+  category, branch, leaf boundary, or gap remains unresolved.
 
-- Preserve the exact unchecked source and its subject identity for independent evaluation.
-- Keep later evidence, answers, findings, improvements, strengths, verdicts, and dispositions outside the
-  source.
-- If the subject or a material premise changes, revise the source as a new authoring action before it supports
-  another judgment.
+### Phase 4 — Write and Verify the Checklist Conditions
+
+#### 4.1 Write conditions for the scenario leaves
+
+- Create a checklist section for every material leaf scenario and preserve its exact hierarchy path.
+- Write one or more unchecked conditions that state the required observable result, not how to test it.
+- Split a condition when its answer, evidence, affected position, trigger, or consequence can differ. Reuse
+  wording only when its meaning and evidence remain the same.
+- Use identifiers only when a caller requires traceability. Keep shared context at the nearest useful parent
+  instead of repeating it in every row.
+- Return to Phase 3 when a condition exposes a missing, broad, or ambiguous scenario.
+
+#### 4.2 Review and hand off the completed source
+
+- Read the complete source from subject through lifecycle categories, scenario branches, leaves, and
+  conditions. Confirm every material category reaches an independently evaluable leaf and every material leaf
+  has at least one condition.
+- Confirm the scenario spectrum improved discovery without becoming recorded taxonomy or coverage credit.
+- Remove duplicate, vague, compound, unobservable, procedural, or result-bearing conditions. Confirm every
+  remaining condition is contextual, independently answerable, and unchecked.
+- Return to the earliest affected phase when review exposes a missing premise, category, scenario, leaf,
+  condition, or gap.
+- Preserve the exact unchecked source for independent [Evaluation](../SKILL.md). If the subject or a material
+  premise changes, restart at the earliest affected phase before the source supports another judgment.
 
 ## References
 
-- [Checklist starter](templates/checklist.md) provides one optional, adaptable starting form.
-- [Evaluation](../SKILL.md) owns independent read-only judgment of the frozen subject.
+- [Checklist starter](templates/checklist.md) provides one optional rendering for the hierarchy and leaf conditions.
