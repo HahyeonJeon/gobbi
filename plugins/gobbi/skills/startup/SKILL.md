@@ -29,8 +29,8 @@ separate ledger or metadata structure.
 
 ### Complete dependencies phase by phase
 
-Finish each phase for the Project, every Product, and every Product's complete-stack Implementation before the
-next phase begins. Product Lifecycle promises precede the Development Lifecycle mechanisms that realize them.
+Finish an earlier phase before using its decisions in a later one. Actor-visible Product promises must precede
+the Development mechanisms and evidence that realize them.
 
 ### Study lifecycles before asking
 
@@ -45,7 +45,7 @@ retirement scenarios. Treat unsupported scenarios as questions, never as facts.
 
 - **MUST preserve compact alias lineage when questions change.** Retain a baseline alias for specialization, use source aliases for splits and merges, and use `[derived-<phase>-<intent>]` only for a genuinely new runtime meaning.
 
-- **MUST complete the interview in phase-major order and obtain explicit user acceptance for every subject section.** Within each phase, complete the Project, then every Product and its one Implementation, before starting the next phase.
+- **MUST complete the interview in phase-major order and obtain explicit user acceptance for every subject section.** Start a later phase only after every section in the current phase is accepted.
 
 - **MUST separately imagine and study Product scenarios before Product Lifecycle and Development scenarios before Development Lifecycle.** Product Lifecycle owns actor-visible promises; Development Lifecycle owns implementation-neutral complete-stack mechanisms and evidence.
 
@@ -80,8 +80,12 @@ Use these banks and templates in order:
 
 - A topic bank is a baseline of likely meanings. It neither limits the interview to its questions nor requires
   every question to be asked.
-- Product-form overlays apply from accepted Product evidence. Development overlays apply from accepted
-  categorized-entry or platform evidence. Several overlays may apply; technologies never become subjects.
+- Every phase contains Project, Product, and Implementation sections. Product Lifecycle Implementation
+  sections record implementation-specific conditions on actor-visible promises without owning mechanisms;
+  Development Lifecycle owns implementation-neutral complete-stack mechanisms and evidence.
+- Select only overlays matched by accepted evidence. With no match, use the direct bank. With several matches,
+  union distinct meanings and merge equivalent meanings through the alias lineage rule. Expose a conflict to
+  the user instead of resolving it by overlay precedence; technologies never become subjects.
 
 #### 2.2 Build and modify the working questions
 
@@ -93,10 +97,11 @@ Use these banks and templates in order:
   resolved or inapplicable meaning; split one question when evidence exposes distinct decisions; merge only
   equivalent meanings; add a material meaning absent from the banks; and reorder questions by dependency and
   consequence.
-- Keep the baseline alias when rewriting or specializing its meaning. A split uses deterministic aliases based
-  on its source alias, such as `[source-alias-a]` and `[source-alias-b]`. A merge cites every source alias in
-  lexical order. A genuinely new meaning uses `[derived-<phase>-<intent>]`, where phase and intent are stable
-  lowercase kebab terms. Never mutate the shipped topic banks during an interview.
+- Keep the baseline alias when rewriting or specializing its meaning. A split renders
+  `[source-alias-<intent>]`, where intent is a stable lowercase-kebab semantic name.
+  For a merge, render every source alias in adjacent tags such as `[alias-a] [alias-b]`, in lexical order.
+  For a genuinely new meaning, use `[derived-<phase>-<intent>]`. Keep phase and intent stable lowercase-kebab
+  terms. Never mutate the shipped topic banks during an interview.
 - Retain only a question whose answer can change the current section or a downstream decision. Treat an
   evidence-derived answer as an answer, cite its source and alias, and do not ask it again.
 
@@ -104,6 +109,9 @@ Use these banks and templates in order:
 
 - Ask the earliest unresolved working question. Record the accepted answer with every alias it resolves, then
   rebuild the working set from all accepted evidence before asking again.
+- If the user cannot answer, decide whether the missing answer blocks safe downstream design. If it blocks,
+  stop and name the missing evidence. Otherwise record an aliased assumption or evidence limit, what would
+  resolve it, and continue only after explicit user acceptance.
 - When one answer resolves several equivalent questions, record one statement with all relevant aliases. Do
   not merge distinct decisions merely because their wording is similar.
 - Write the matching subject section with evidence, decisions, vocabulary, risks, constraints, observable
@@ -112,7 +120,9 @@ Use these banks and templates in order:
 - Review the section with the user. On rejection, reshape its unresolved questions and review again. On a
   contradiction, stop, return to the earliest section that owns the disputed meaning, obtain the current or
   conditional truth, reaccept that section, and rebuild only affected later sections; keep unrelated accepted
-  sections intact.
+  sections intact. If corrected evidence changes lifecycle-study inputs, rerun the affected scenario study
+  before rebuilding and reaccepting its downstream lifecycle sections. Then return to the step that invoked
+  the correction, including synthesis.
 - Continue only after explicit user acceptance. Complete the phase for the Project, then each Product and its
   one Implementation, before advancing to the next phase.
 - After Specification, run Step 2.4 before Product Lifecycle. After Product Lifecycle, run Step 2.5 before
@@ -152,7 +162,7 @@ Use these banks and templates in order:
 - Write [`startup.md`](templates/startup.md) as an independently readable synthesis. Connect decisive aliases
   from problem evidence through Design, Specification, Product promises, and Development evidence.
 - Present all six documents together. Correct rejected content in its owning document, reread the complete set,
-  and obtain final explicit user acceptance in `startup.md`.
+  and obtain the user's final explicit acceptance of `startup.md`.
 
 #### 3.2 Return the complete design
 
@@ -162,10 +172,6 @@ Use these banks and templates in order:
 
 ## References
 
-- [`topics/problem-definition.md`](topics/problem-definition.md)
-- [`topics/design.md`](topics/design.md)
-- [`topics/specification.md`](topics/specification.md)
-- [`topics/product-lifecycle.md`](topics/product-lifecycle.md)
 - [`topics/product-lifecycle/web.md`](topics/product-lifecycle/web.md)
 - [`topics/product-lifecycle/desktop.md`](topics/product-lifecycle/desktop.md)
 - [`topics/product-lifecycle/cli.md`](topics/product-lifecycle/cli.md)
@@ -173,15 +179,8 @@ Use these banks and templates in order:
 - [`topics/product-lifecycle/sdk.md`](topics/product-lifecycle/sdk.md)
 - [`topics/product-lifecycle/mobile.md`](topics/product-lifecycle/mobile.md)
 - [`topics/product-lifecycle/data.md`](topics/product-lifecycle/data.md)
-- [`topics/development-lifecycle.md`](topics/development-lifecycle.md)
 - [`topics/development-lifecycle/tool.md`](topics/development-lifecycle/tool.md)
 - [`topics/development-lifecycle/framework.md`](topics/development-lifecycle/framework.md)
 - [`topics/development-lifecycle/language.md`](topics/development-lifecycle/language.md)
 - [`topics/development-lifecycle/desktop.md`](topics/development-lifecycle/desktop.md)
 - [`topics/development-lifecycle/network.md`](topics/development-lifecycle/network.md)
-- [`templates/problem-definition.md`](templates/problem-definition.md)
-- [`templates/design.md`](templates/design.md)
-- [`templates/specification.md`](templates/specification.md)
-- [`templates/product-lifecycle.md`](templates/product-lifecycle.md)
-- [`templates/development-lifecycle.md`](templates/development-lifecycle.md)
-- [`templates/startup.md`](templates/startup.md)
