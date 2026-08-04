@@ -11,9 +11,13 @@ Use this operation to coordinate one accepted scoped change across the complete 
 Electron desktop application written in TypeScript. The desktop development coordinator joins current owner
 results and keeps their actors, evidence, failures, recovery, and authority boundaries distinct.
 
-The operation begins with an accepted request and a current product contract, or creates that contract in
-Requirements. It loads only the specialist owners required by the change and never replaces their policy,
-facts, implementation, test work, release judgment, or independent evaluation.
+A product contract is the accepted, mechanism-free set of product entries for every supported path across
+six categories: installation and first launch; ordinary and alternate entry; windows and lifecycle; native
+integration; local data; and update and recovery. Each entry states its product meaning and the observable
+person or operator result without choosing an Electron or operating-system mechanism. The operation begins
+with an accepted request and a current product contract, or creates that contract in Requirements. It loads
+only the specialist owners required by the change and never replaces their policy, facts, implementation,
+test work, release judgment, or independent evaluation.
 
 Every retained target claim reaches `Release-ready` or a proved blocker. A cold handoff is the complete
 transfer record a new operator needs to resume at the first unproved action without private or session
@@ -94,10 +98,9 @@ action; and resume condition.
   versions, target operating-system and architecture tuples, existing owner results, and known constraints as
   inputs.
 - Define the product problem, actors, target people and contexts, accepted behavior, supported targets, and
-  entry modes. Give every supported path a product contract entry across all six product-contract
-  categories: installation and first launch; ordinary and alternate entry; windows and lifecycle; native
-  integration; local data; and update and recovery. Record no product-contract entry for a path or
-  product-contract category the product does not support.
+  entry modes. Give every supported path a product contract entry across the six product-contract categories
+  defined in the introduction. Record no product-contract entry for a path or product-contract category the
+  product does not support.
 - Keep every product entry mechanism-free. State its product meaning and the observable person or operator
   result, plus observable completion, authoritative system completion, false-completion, failure, and
   recovery conditions; do not select an Electron callback, event, process, IPC channel, permission handler,
@@ -282,11 +285,11 @@ action; and resume condition.
 
 #### 7.1 Assemble the release-readiness judgment
 
+- `Forward fix` means a later compatible release that corrects a faulty version already installed on user
+  machines. Keep it separate from a compatible rollback and prove either path at its owner.
 - Ask `desktop-release` to judge the exact artifact and target using current package identity, installed
   evidence, transition and data compatibility, recovery, support, observation and stop plan, applicable
   Evaluation, rollback or Forward fix, and known limitations.
-- Define Forward fix at first use as a later compatible release that corrects a faulty version already
-  installed on user machines. Keep it separate from a compatible rollback and prove either path at its owner.
 - Confirm every retained target claim has current, agreeing Architecture, Interface, OS Manual, Electron
   runtime, implementation, testing, release-mechanism, and desktop release results as applicable.
 - Record exactly `Release-ready` only for the exact artifact, target, version, channel, environment, recovery

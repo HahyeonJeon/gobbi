@@ -17,6 +17,14 @@ owns family-wide Overall closure by requiring current, accepted where needed, an
 The source is governed by the [`desktop`](../SKILL.md) domain and [Desktop Development](SKILL.md) operation.
 The source commit identifies its version, and its stable owner prefix is `DTDLVR`.
 
+A product contract is the accepted, mechanism-free set of product entries for every supported path across
+six categories: installation and first launch; ordinary and alternate entry; windows and lifecycle; native
+integration; local data; and update and recovery. Each entry states its product meaning and the observable
+person or operator result without choosing an Electron or operating-system mechanism.
+
+`Forward fix` means a later compatible release that corrects a faulty version already installed on user
+machines.
+
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects
 applicable rows, records evidence and findings, and issues the verdict. Preserve every row as an unchecked
 binary condition.
