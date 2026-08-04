@@ -24,8 +24,9 @@ help future work understand or decide something; transient state and operational
 
 ### Write simply and compactly
 
-Use simple words and the smallest cold-readable Markdown shape that preserves the full meaning. Point to
-existing evidence instead of copying logs, transcripts, or other operational detail.
+Give each memory file a short, descriptive title and write compactly with short, direct sentences in plain
+language. Organize it with clear sections and headings, using lists for parallel points and tables for
+repeated fields or comparisons.
 
 ### Keep memory up to date
 
@@ -54,9 +55,9 @@ content while preserving completed point-in-time records under their category ru
 
 #### 1.1 Select and validate the action
 
-- Determine the action and verified worktree from the active task. Resolve `{project-root}` as the current
-  `.gobbi/projects/<project>/`, `{session-root}` as its active `sessions/<session>/`, and `{memory-root}` as
-  its tracked `memory/` tree.
+- Determine the action and verified worktree from the active task. Inside that worktree, use
+  `.gobbi/projects/<project>/sessions/<session>/` as `{session-root}` and
+  `.gobbi/projects/<project>/memory/` as `{memory-root}`.
 - For `Temporary Record`, use the exact output Cowork or Workflow owns below `{session-root}`. For `Memorize`,
   use the full `{session-root}`, frozen closure evidence, and `{memory-root}`.
 - Resolve each path without parent traversal or symbolic-link escape. Stop without writing when a path falls
@@ -95,6 +96,57 @@ content while preserving completed point-in-time records under their category ru
 | Durable sources and supporting inputs | [`materials/SKILL.md`](materials/SKILL.md) | `materials/` |
 | Deferred project or feature outcomes | [`backlogs/SKILL.md`](backlogs/SKILL.md) | `backlogs/` |
 
+- Use this durable memory directory structure:
+
+```text
+.gobbi/projects/<project>/memory/
+├── design/
+│   ├── README.md
+│   ├── architecture/
+│   ├── feature/
+│   ├── process/
+│   └── roadmap/
+├── learnings/
+│   ├── design/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── work/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── memory/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   ├── dev/
+│   │   ├── tips.md
+│   │   └── mistakes.md
+│   └── {domain}/
+│       ├── tips.md
+│       └── mistakes.md
+├── reports/
+│   ├── README.md
+│   ├── note/
+│   │   └── YYYY-MM-DD-{descriptive-title}.md
+│   ├── review/
+│   │   └── YYYY-MM-DD-{descriptive-title}.md
+│   └── analysis/
+│       └── YYYY-MM-DD-{descriptive-title}.md
+├── history/
+│   ├── README.md
+│   └── YYYY-MM-DD-{descriptive-title}.md
+├── materials/
+│   ├── README.md
+│   ├── references/
+│   ├── assets/
+│   ├── docs/
+│   └── data/
+└── backlogs/
+    ├── README.md
+    ├── project.md
+    └── {feature}.md
+```
+
+  The tree shows valid homes, not a scaffold; create only paths that hold real memory. Each category skill
+  remains the exact structure and naming owner.
 - Load each applicable category skill, review related records and navigation, then decide the exact create,
   update, move, or delete set. At session close, create history only when the session produced durable change.
 
