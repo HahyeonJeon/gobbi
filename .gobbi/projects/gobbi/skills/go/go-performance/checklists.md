@@ -4,8 +4,8 @@ Unchecked evaluation source for Go performance work governed by [Go Performance]
 
 Apply these scenarios to the exact operation and returned outcome under evaluation. [Evaluation](../../evaluation/SKILL.md)
 owns filled results, evidence, findings, and verdicts. This source owns only reusable scenarios and unchecked
-conditions. A row is defined once beneath its owning scenario. An `Also applies` line points to an earlier row
-that the scenario reuses.
+conditions. A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined
+elsewhere in this source that the scenario reuses.
 
 ## Project
 
@@ -17,9 +17,10 @@ observable when both modes remain possible, one mode is implicit, or an effect f
 
 #### Checklist
 
-- [ ] GOPRF-CK-PROJECT-01-01 — The operation selects exactly one of diagnosis/verification mode or change mode and inherits no authority from another operation.
-- [ ] GOPRF-CK-PROJECT-01-02 — Diagnosis/verification mode records project source as read-only; disposable diagnostic outputs as approved and bounded; cache effects as authorized; downloads as separately authorized; execution as authorized project commands for the representative workload and named diagnostic tools; and network requests as separately authorized.
-- [ ] GOPRF-CK-PROJECT-01-03 — Change mode records project-source writes as owned by `go-development`; disposable diagnostic outputs as approved and bounded; cache effects as authorized; downloads as separately authorized; execution as authorized project commands for the representative workload and verification; and network requests as separately authorized.
+- [ ] GOPRF-CK-PROJECT-01-01 — The operation selects exactly one of diagnosis/verification mode or change mode.
+- [ ] GOPRF-CK-PROJECT-01-02 — Each diagnosis/verification boundary for project source, disposable diagnostic outputs, cache effects, downloads, project-command execution, and network requests matches its exact state in Procedure 1.2.
+- [ ] GOPRF-CK-PROJECT-01-03 — Each change-mode boundary for project source, disposable diagnostic outputs, cache effects, downloads, project-command execution, and network requests matches its exact state in Procedure 1.2.
+- [ ] GOPRF-CK-PROJECT-01-04 — The selected mode inherits no authority from another operation or sibling.
 
 ### GOPRF-SC-PROJECT-02 — Expected failure: A required effect boundary is unavailable
 
@@ -34,7 +35,18 @@ recovery path.
 - [ ] GOPRF-CK-PROJECT-02-02 — External mutation is a separate recorded fact: none in diagnosis/verification mode and forbidden in change mode.
 - [ ] GOPRF-CK-PROJECT-02-03 — Release effect is a separate recorded fact and is none in both modes.
 - [ ] GOPRF-CK-PROJECT-02-04 — Each mode pauses before a project execution, cache write, diagnostic output, protected-data exposure, download, network request, or project-source write that lacks the exact authority or bound required by that mode.
-- [ ] GOPRF-CK-PROJECT-02-05 — The block names the missing prerequisite, affected obligation, current evidence, risk, proof that no unauthorized effect occurred, and handoff; diagnosis/verification recovery retains exact evidence and comparison limits at approved paths and names its recovery owner and first action; change recovery retains baseline inputs and evidence at approved paths and names its rollback or recovery owner and first action.
+- [ ] GOPRF-CK-PROJECT-02-05 — The block record contains the missing prerequisite, affected obligation, current evidence, risk, proof that no unauthorized effect occurred, and handoff.
+
+### GOPRF-SC-PROJECT-03 — Edge case: Each mode preserves its own recovery state
+
+A blocked diagnosis/verification or change result must retain the state that its selected mode needs to resume.
+The expected outcome keeps diagnosis evidence and comparison limits separate from change baselines and rollback
+state. Failure is observable when one mode borrows the other mode's recovery record or loses its first action.
+
+#### Checklist
+
+- [ ] GOPRF-CK-PROJECT-03-01 — The diagnosis/verification recovery record contains exact evidence and comparison limits at approved paths, its recovery owner, and its first action.
+- [ ] GOPRF-CK-PROJECT-03-02 — The change recovery record contains baseline inputs and evidence at approved paths, its rollback or recovery owner, and its first action.
 
 ## Structure
 
@@ -133,9 +145,9 @@ Failure is observable when headings or plausible examples create confidence with
 
 #### Checklist
 
-- [ ] GOPRF-CK-AESTHETICS-01-01 — Each claim names the exact project command, `GOOS/GOARCH` target, metric, unit, and CPU profile, heap profile, goroutine profile, block profile, mutex profile, execution trace, benchmark result, runtime metric, build measurement, or binary measurement it uses.
-- [ ] GOPRF-CK-AESTHETICS-01-02 — Binary size and startup time remain separate measurements and are not inferred from a CPU profile.
+- [ ] GOPRF-CK-AESTHETICS-01-01 — Each claim names its exact project command, `GOOS/GOARCH` target, metric, unit, and applicable CPU profile, heap profile, goroutine profile, block profile, mutex profile, Go execution trace, runtime-statistic report, workload measurement, binary-size inventory, startup-time measurement, or PGO CPU pprof input.
 - [ ] GOPRF-CK-AESTHETICS-01-03 — Compliant headings, examples, or terminology never substitute for baseline, result, uncertainty, and causal evidence.
+- Also applies: GOPRF-CK-STRUCTURE-02-01 (the named evidence is exact and question-matched).
 
 ## Usage
 
@@ -150,7 +162,8 @@ large stack sample is treated as causation by itself.
 
 - [ ] GOPRF-CK-USAGE-01-01 — Diagnosis records the accepted question, representative workload, comparable baseline, and question-matched evidence before naming a bottleneck.
 - [ ] GOPRF-CK-USAGE-01-02 — The named causal bottleneck is supported by a controlled comparison or discriminating observation that connects it to the accepted cost.
-- [ ] GOPRF-CK-USAGE-01-03 — A representative-profile diagnosis or comparable verification result is returned only when its causal proof, comparison evidence, and limits are recorded.
+- Also applies: GOPRF-CK-PERFORMANCE-01-03 (diagnosis and verification use a comparable baseline and result contract).
+- Also applies: GOPRF-CK-OVERALL-01-02 (the terminal result uses an accepted performance result boundary).
 
 ### GOPRF-SC-USAGE-02 — Normal case: An accepted change is verified and guarded
 
@@ -245,7 +258,7 @@ implicit.
 
 - [ ] GOPRF-CK-OVERALL-01-01 — The terminal state is exactly one of `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`.
 - [ ] GOPRF-CK-OVERALL-01-02 — The accepted result boundary is exactly one of a representative-profile diagnosis, comparable verification, verified performance change with a regression guard, bounded investigation, or exact block.
-- [ ] GOPRF-CK-OVERALL-01-03 — The universal terminal record names the operation and selected mode; accepted result; decision basis; actual owned object; terminal state; changed or reviewed paths; project-command evidence; evidence limits; external reads or effects with credential use, external mutation, and release effect as separate facts; compatibility decision; block; recovery; and handoff, naming why a field does not apply when it is omitted.
+- [ ] GOPRF-CK-OVERALL-01-03 — Every universal terminal field is present or explicitly marked not applicable: operation and selected mode; accepted result; decision basis; actual owned object; terminal state; changed or reviewed paths; project-command evidence; evidence limits; external reads or effects with credential use, external mutation, and release effect as separate facts; compatibility decision; block; recovery; and handoff.
 - [ ] GOPRF-CK-OVERALL-01-04 — The performance terminal record names the performance question; consumer; metric and unit; accepted budget or comparison question; representative workload and proof or limits; baseline source, build identity, and exact evidence kind and identity; bottleneck or bounded hypotheses; accepted design; comparison method; result source, build identity, and exact evidence kind and identity; absolute values and units; relative comparison; uncertainty or noise; sample basis; environment; resource trade-offs; unsupported `GOOS/GOARCH` targets; regression guard when a change was accepted; PGO CPU pprof input and refresh fields when PGO was selected; and next action or handoff.
 
 ### GOPRF-SC-OVERALL-02 — Expected failure: The investigation cannot establish a recognized result
@@ -257,8 +270,13 @@ unmatched improvement claim escapes those limits.
 
 #### Checklist
 
-- [ ] GOPRF-CK-OVERALL-02-01 — Absent, noisy, nonrepresentative, proxy-only, materially perturbed, unsupported for the accepted `GOOS/GOARCH` target, or incomparable evidence reaches a bounded investigation or exact block.
 - [ ] GOPRF-CK-OVERALL-02-02 — A bounded investigation records the first useful diagnostic and the leading hypotheses that diagnostic supports or excludes.
 - [ ] GOPRF-CK-OVERALL-02-03 — Each live hypothesis has exactly one next discriminating measurement with its prerequisite, expected result on each side, execution and output bounds, and stop condition.
 - [ ] GOPRF-CK-OVERALL-02-04 — The terminal record names evidence limits, owner, retained inputs and approved diagnostic outputs, first recovery action, and handoff.
 - [ ] GOPRF-CK-OVERALL-02-05 — No improvement claim is returned when the accepted baseline, result, workload, environment, or comparison method cannot be matched.
+- Also applies: GOPRF-CK-PERFORMANCE-02-01 (an absent baseline reaches a bounded investigation or exact block).
+- Also applies: GOPRF-CK-PERFORMANCE-02-02 (noisy or incomparable evidence reaches its bounded result).
+- Also applies: GOPRF-CK-STRUCTURE-02-04 (material diagnostic interference bounds the result).
+- Also applies: GOPRF-CK-USAGE-03-01 (a nonrepresentative workload reaches its bounded result).
+- Also applies: GOPRF-CK-USAGE-03-02 (unsupported accepted-target evidence reaches its bounded result).
+- Also applies: GOPRF-CK-RISK-01-01 (a proxy improvement cannot establish success).

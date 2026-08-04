@@ -60,10 +60,10 @@ causal evidence connects the measured cost to the performance question and compa
 - **MUST verify the accepted result with absolute values, units, uncertainty or noise, workload and environment
   identity, and resource trade-offs, and give every accepted change a regression guard.** A relative percentage
   or local improvement without baseline and result values cannot prove completion.
-- **NEVER mandate one budget, workload, diagnostic tool, production diagnostic-collection path, or PGO path
-  for every project, and NEVER claim improvement from absent, noisy, nonrepresentative, proxy-only,
-  profiler-distorted, unsupported evidence for the accepted `GOOS/GOARCH` target, or incomparable evidence.**
-  Return a bounded investigation or exact block instead.
+- **NEVER generalize beyond the scope of the selected project contract and matched evidence.** Unselected
+  budgets, workloads, diagnostic tools, production diagnostic-collection paths, and PGO paths stay outside
+  universal mandates, while absent, noisy, nonrepresentative, proxy-only, profiler-distorted, unsupported, or
+  incomparable evidence stays outside improvement claims.
 
 ## Procedure
 
