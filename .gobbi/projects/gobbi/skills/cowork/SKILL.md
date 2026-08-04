@@ -12,7 +12,7 @@ entry.
 
 It takes one topic at a time through the smallest safe combination of optional Ideation, optional Planning,
 and verified Execution, then returns control to the user. A native runtime TODO route keeps the current
-session, topic stages, explicit evaluation, and explicit Wrap-up visible without creating Workflow evidence.
+session, topic stages, explicit evaluation, and explicit closure visible without creating Workflow evidence.
 
 ## Principles
 
@@ -28,8 +28,9 @@ remain recoverable in the retained worktree; implementation and durable Memory c
 
 ### Separate stage quality from independent evaluation
 
-Every selected stage self-reviews or self-verifies before acceptance. Independent partner evaluation is a
-separate user-called judgment, never a substitute for stage quality.
+Every selected stage self-reviews or self-verifies before acceptance. Independent evaluation is a
+separate user-called judgment, never a substitute for stage quality. The active runtime always supplies the
+fresh evaluator; an enabled partner policy adds the external evaluator.
 
 ### Route through one native TODO
 
@@ -43,19 +44,21 @@ the manager may advance it, but never become a second route.
   Use the fully expanded worktree path for every write after that commit and change nothing else in the main
   checkout.
 - **MUST use the native runtime TODO list to select Cowork Configuration, the current topic stage or execution
-  task, explicit evaluation, and explicit Wrap-up.** Use only `pending`, `in_progress`, and `completed`, with
+  task, explicit evaluation, and explicit closure.** Use only `pending`, `in_progress`, and `completed`, with
   at most one item `in_progress`.
 - **MUST let the manager select and report Direct, Light, or Structured delivery while the user owns every
   material decision.** Apply canonical Ideation and Planning whenever selected, and reroute when evidence or
   a material decision changes the contract.
 - **MUST keep one ordered writer chain with role-bound acceptance.** Leaders own ignored Ideation and Planning
-  artifacts, executors own focused implementation commits, and assistants own focused Wrap-up memory commits.
+  artifacts, executors own focused implementation commits, and assistants own focused direct-Memory closure
+  commits.
 - **MUST run independent evaluation only after an explicit `evaluate` call, and let that call authorize
-  evaluation alone.** One call authorizes one fresh partner evaluation round, a bare call uses the whole clean
-  Cowork branch through its current head, and no other partner round runs on that trigger.
-- **MUST run Cowork Wrap-up only after an explicit `wrap up` call.** Apply the canonical Memory operation
-  before the final evaluation-freshness decision; never create Workflow-formatted TODOs, phase receipts,
-  RECORD-stage evidence, or a Workflow Hand-off.
+  evaluation alone.** One call authorizes one fresh isolated active-runtime evaluator and, only when the
+  session partner policy is enabled, one fresh external evaluator. A bare call uses the whole clean Cowork
+  branch through its current head.
+- **MUST run Cowork closure only after an explicit `wrap up` call.** Apply the canonical Memory operation
+  directly before the final evaluation-freshness decision; never load the Wrap-up skill or create
+  Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, a tracked handoff, or a Workflow Hand-off.
 
 ## Procedure
 
@@ -70,15 +73,19 @@ the manager may advance it, but never become a second route.
 - In Claude Code, use `TaskList` and `TaskGet` to inspect tasks, `TaskCreate` to add items, and `TaskUpdate` to
   change a subject or status. In Codex, use `update_plan` to publish the complete ordered list and statuses.
 - On a fresh session, create only `CW · Configuration` and set it `in_progress` before configuring Git. On
-  recovery, inspect the surviving native list and the user-named branch or worktree before changing either.
-- Enter only after Gobbi records the user's Cowork selection. Cowork owns its Git session contract and states
-  it as five properties for the [Git operation](../git/SKILL.md):
+  recovery, inspect the surviving native list and the recorded identity evidence before changing anything.
+- Enter only after Gobbi hands off `mode: Cowork`, the applicable normalized slug or legacy
+  `slug: not-applicable`, and the session-wide `partner: enabled|disabled` policy. Record both values with the
+  session facts. For a fresh session, generate one full lowercase hyphenated UUID and capture the real UTC
+  session-start date before deriving any name. Retain that original date across every later context boundary.
+  Recovery reuses the proved UUID and date. Cowork owns its Git session contract and states it as five
+  properties for the [Git operation](../git/SKILL.md):
 
 | Contract property | Where Cowork gets it |
 |---|---|
-| Proved identity | The Gobbi UUID locked in this conversation, checked against the session-branch name and the provenance trailer of every Cowork commit. |
+| Proved identity | The runtime, original UTC date, normalized slug, and generated full UUID for a fresh identity, checked against the separately derived names and every Cowork commit trailer. A recovered legacy identity records `slug: not-applicable`. |
 | Immutable base commit | The clean head the manager inspects and the user confirms before the worktree exists, which is the bootstrap commit when the preflight below creates one. It never moves afterward. |
-| Isolated worktree outside the main checkout | For a fresh session, the intended path derived from the session branch, resolving outside the main checkout with nothing registered there or to that branch. For a recovery, the path the user names, already registered to that exact branch. |
+| Isolated worktree outside the main checkout | For a fresh session, the intended path uses the separately derived new leaf and resolves outside the main checkout, with nothing registered there or to the separately derived branch. Recovery accepts one exact registered new pair or permanent legacy pair. |
 | Declared publication intent | Local retention. Push, pull request, merge, and cleanup happen only through a separate explicit Git operation with current user authority. |
 | Required layout | The canonical `.gobbi/` paths, their tracked-or-ignored states, and the ignore-rule content that achieves them, defined by [Gobbi](../gobbi/SKILL.md) Step 1.1 and resolved for this repository's `<project>`. |
 
@@ -91,12 +98,22 @@ the manager may advance it, but never become a second route.
   the immutable base commit; stop without that approval.
 - The bootstrap is the only tracked write outside the session worktree. It covers only the required layout and
   its ignore file, happens at most once per repository, and never writes a repository's root `.gitignore`.
+- For fresh creation, have [Git conventions](../git/conventions.md) derive the branch and worktree leaf
+  separately from the same `(runtime, date, slug, UUID)` tuple. The branch is
+  `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and the leaf is
+  `<YYYY-MM-DD>-<slug>-<full-uuid>`. Never derive the leaf from the branch.
+- For recovery, parse the branch, worktree leaf, and session leaf with the separate new and permanent legacy
+  validators in Git and Memory. Require one byte-reproducible matching shape and tuple. Record whether the
+  matched identity is `new` or `legacy`; a legacy identity has `slug: not-applicable`. Never rename, migrate,
+  or rewrite a live legacy or active object. Stop on a mixed shape, competing tuple, collision, or unproved
+  path instead of creating a replacement.
 - Supply that contract in its matching lifecycle state, then create one isolated branch and worktree before
-  any other tracked edit, or recover only the branch and worktree the user explicitly names. For a fresh
-  session, the Git operation proves the intended path is free, creates it, and returns the registered worktree
-  that completes the contract.
+  any other tracked edit, or recover only the exact proved branch and worktree. For a fresh session, the Git
+  operation proves both intended targets are free, creates them, and returns the registered worktree that
+  completes the contract.
 - Verify and report the UUID, repository, base branch and commit, session branch, absolute worktree, head,
-  clean status, the validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair the
+  clean status, original UTC date, slug or `not-applicable`, matched shape, partner policy, the validated
+  `{gobbi-skills-root}` and `{gobbi-agents-root}` pair the
   [Gobbi](../gobbi/SKILL.md) Step 1.1 entry returned, the main checkout unchanged apart from an approved
   bootstrap commit, and recovery point. Record that pair with these session facts and carry it into every
   brief. Complete `CW · Configuration` only after this evidence validates, then leave no item active until the
@@ -105,7 +122,10 @@ the manager may advance it, but never become a second route.
 
 #### 1.2 Establish the Cowork session locations
 
-- Root the session at `{worktree}/.gobbi/projects/{project}/sessions/{date}-{uuid}/` and report that path with
+- Root a new session at
+  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`. The new session leaf is
+  byte-identical to the new worktree leaf, not to the branch. A recovered legacy session keeps its permanent
+  `<YYYY-MM-DD>-<full-uuid>` leaf. Apply Memory's separate validators and report the exact retained root with
   the Step 1.1 evidence.
 - Use these exact ignored temporary paths. Create a directory only when its first output needs it:
 
@@ -190,14 +210,14 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   Planning when its TODO becomes active, self-review
   `work/topic-NN-slug/planning/{tasks.md,plan.md}`, remove its temporary scratch files, and prove the tracked
   tree unchanged.
-- When a topic routes to Structured depth and selects Ideation, offer the user one partner creation round for
-  that stage through [Discussion](../discussion/SKILL.md). The offer is never automatic, no `evaluate` call
-  authorizes it, and the round runs only when the user calls for it. On that call, use
-  [Partner](../gobbi/partner/SKILL.md) for one independent draft round and its cross-review round over the
-  frozen topic contract, place the returned labeled content under
-  `{session-root}/work/topic-NN-slug/partner/creation/round-N/`, and let the assigned
-  leader synthesize it into the Ideation artifact set it already owns. A creation round is creation, not
-  judgment: it adds no evaluation coverage and is reported separately from coverage.
+- When a topic routes to Structured depth and selects Ideation, the assigned active-runtime leader first
+  produces and self-reviews one frozen local draft. When the session partner policy is enabled, call
+  [Partner](../gobbi/partner/SKILL.md) once for the applicable independent external draft and once for the
+  external cross-review over the already frozen local draft. Place each returned labeled response under
+  `{session-root}/work/topic-NN-slug/partner/creation/round-N/`, and let the assigned leader assemble and
+  synthesize the complete creation round. Disabled runs no external invocation and the self-reviewed local
+  draft is the complete WORK evidence. The manager owns every local participant, freeze order, round assembly,
+  acceptance, and next action. Creation adds no evaluation coverage and is reported separately from coverage.
 - Assign each dependency-ready task to an executor through [Execution](../execution/SKILL.md). Keep writers
   sequential; after every report, reread the promised artifact or implementation and commit, reproduce the
   relevant verification, and accept, repair, or redispatch it before dependent work begins.
@@ -209,8 +229,8 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   earliest responsible stage. Complete the topic only when every selected result has its required ignored
   artifact or focused commit and the tracked tree is clean. Activate PASS, verify the complete topic evidence, complete it,
   and leave no item active while waiting for the next topic or user call. Report outcome, scope, artifacts,
-  commits, verification, exclusions, concerns, any partner creation round, and current evaluation coverage.
-  Report the creation round and the coverage as separate facts, because a creation round never becomes
+  commits, verification, exclusions, concerns, any enabled external creation evidence, and current evaluation
+  coverage. Report creation evidence and coverage as separate facts, because creation evidence never becomes
   coverage.
 
 ### Phase 3 — Evaluate on User Call
@@ -218,10 +238,8 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 #### 3.1 Evaluate one frozen subject
 
 - Cowork owns this evaluation policy. Every selected stage self-reviews or self-verifies inside its own
-  operation; Ideation returns a frozen evaluation-ready subject. Cowork runs no automatic partner creation
-  round and no automatic Phase 3 round, and the Step 2.1 creation round the user calls is creation rather than
-  coverage. Independent Cowork evaluation happens only on an explicit `evaluate` call, and a creation round
-  never satisfies it.
+  operation; Ideation returns a frozen evaluation-ready subject. Independent Cowork evaluation happens only
+  on an explicit `evaluate` call, and creation evidence never satisfies it.
 - Enter only for an explicit `evaluate`. A bare call requires a clean worktree and freezes the whole Cowork
   subject from the locked base commit through the current head, including all commits, tree changes, topic
   contracts, accepted artifacts, user decisions, verification, status, and exclusions. A user-named narrower
@@ -230,32 +248,35 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   [Evaluation](../evaluation/SKILL.md) before dispatching the fresh evaluators. Place the round under
   `{session-root}/work/evaluation/{whole-branch|subject-slug}/round-N/` and apply Memory `Temporary Record` to
   each caller-named output.
-- Load [Partner](../gobbi/partner/SKILL.md) and call it for one evaluation round over that frozen subject:
-  two fresh isolated reports, one from the active runtime and one from the partner system, neither holding
-  the other. Each report is a complete [Evaluation](../evaluation/SKILL.md) output. A paused round stops this
-  evaluation unless the user waives that named system for this round.
-- Aggregate with the more severe verdict and present every material finding for user disposition before
-  changing work. Accepted corrections return to the owning leader or executor in Phase 2 or the memory
-  assistant in Phase 4, create new focused commits, make prior whole-branch coverage stale, and require another
-  explicit `evaluate` call. Complete the Evaluation item after every finding has a disposition; a correction
-  receives its own topic or Wrap-up route rather than silently extending the completed evaluation item.
+- Dispatch one fresh isolated active-runtime evaluator over the frozen subject. When partner is enabled, call
+  [Partner](../gobbi/partner/SKILL.md) once for a second fresh isolated external evaluator over the same frozen
+  subject; neither evaluator receives the other report. Disabled invokes no external runtime. Each report is
+  a complete [Evaluation](../evaluation/SKILL.md) output. The manager assembles the round and uses the more
+  severe available verdict.
+- Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside
+  the locked contract; and the correction is reversible, authority-neutral, non-destructive, and non-external.
+  Every Critical, blocking, scope, design, authority, external, or destructive finding goes to the user for
+  accept, reject, or defer disposition. A correction returns to the owning Phase 2 writer or Phase 4 Memory
+  assistant, creates a focused commit when tracked work changes, makes prior coverage stale, and requires a
+  fresh explicit evaluation. Only PASS continues automatically. Complete the Evaluation item only after all
+  findings have dispositions and no correction remains unevaluated.
 
-### Phase 4 — Wrap Up on User Call
+### Phase 4 — Close on User Call
 
 #### 4.1 Update memory and return the retained result
 
-- Enter only for an explicit `wrap up`. Load [Wrap-up](../wrap-up/SKILL.md), then create the MEMORY,
-  FRESHNESS, and PASS items with only MEMORY active. Freeze the accepted topics, scope, decisions, artifacts,
-  commits, verification, evaluation coverage, exclusions, risks, current project state, and existing memory
-  as the closure input. Cowork still applies its own closure policy below; loading Wrap-up does not create a
-  Workflow Hand-off or authorize Workflow finalization.
+- Enter only for an explicit `wrap up`. Create the MEMORY, FRESHNESS, and PASS items with only MEMORY active.
+  Freeze the accepted topics, scope, decisions, artifacts, commits, verification, evaluation coverage,
+  exclusions, risks, current project state, and existing memory as the closure input. Apply Memory directly;
+  do not load Wrap-up or create Workflow closure state.
 - Assign an assistant through [Delegation](../delegation/SKILL.md) with the Cowork fields from Step 2.1 to
   apply [Memory](../memory/SKILL.md) `Memorize`. It must read the full Step 1.2 session root together with the
   frozen closure input, review durable future value, load every applicable Memory category skill, update and verify
   only the current project's memory root, and create one focused memory commit through the ordered Cowork
   writer chain.
   Accept an explicit verified no-change result when no durable update is needed.
-- Do not create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow Hand-off. Stop
+- Do not create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, a tracked handoff, or a
+  Workflow Hand-off. Stop
   for missing category guidance, unresolved user decisions, invalid memory paths, failed validation,
   wrong-tree evidence, or unrelated user work, then repair through the same memory assignment.
 - After the accepted Memory pass, complete MEMORY, activate FRESHNESS, and check evaluation coverage against
@@ -273,6 +294,7 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 
 ## References
 
-- [Partner](../gobbi/partner/SKILL.md) owns every partner round Cowork calls, in both launch directions:
-  preparation, launch, validation, failure handling, and the labeled frozen content it returns.
+- [Partner](../gobbi/partner/SKILL.md) owns each enabled external invocation Cowork requests: direction,
+  preparation, launch, validation, failure handling, and the labeled frozen response it returns. Cowork owns
+  local participants, complete-round assembly, acceptance, and routing.
 - [Agent Teams](../gobbi/agent-teams/SKILL.md) explains Claude Code team setup, use, limits, and cleanup.

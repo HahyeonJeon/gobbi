@@ -49,12 +49,15 @@ resume from the earliest safe item whose completion cannot be proved.
 - **MUST resolve every material Ideation unknown with the user or assign it an explicit owner before freezing
   the neutral contract.** Phase 1 cannot pass on an inferred material scope, authority, or success condition.
 
-- **MUST apply the parent fast gate and its two-iteration cap to Ideation.** Preserve evaluator verdicts as
-  evidence and let only the workflow gate decide the TODO transition.
+- **MUST apply the parent fast gate and its two-iteration cap to Ideation.** Automatically correct only a
+  High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,
+  non-external finding, then require fresh evaluation. Send every other finding to the user. Preserve every
+  verdict as evidence; only a workflow PASS continues automatically.
 
-- **MUST obtain every Ideation draft, cross-review, and evaluation report from the
-  [Partner](../../gobbi/partner/SKILL.md) operation and accept only the complete round it returns.** A paused
-  round cannot advance the stage; Step 2.5 owns its recovery.
+- **MUST apply the parent participant matrix.** Disabled uses one assigned active-runtime self-reviewed WORK
+  draft and one fresh isolated active-runtime evaluator with no external invocation. Enabled adds each
+  applicable external draft, cross-review, and evaluator through one
+  [Partner](../../gobbi/partner/SKILL.md) invocation. Step 2.5 owns a failed enabled invocation.
 
 - **NEVER let a Configuration receipt, runtime identity, specialist report, or plausible summary become a
   second progression authority.** The native TODO remains the only live route.
@@ -85,12 +88,16 @@ resume from the earliest safe item whose completion cannot be proved.
 - Run the parent Workflow Step 1.2 bootstrap preflight before the base is captured. When the posture requires
   it, the one user-approved bootstrap commit is the verified base; when it does not, the base is the current
   clean head.
-- Generate the Gobbi session UUID before deriving the branch or worktree. Create exactly one isolated branch
-  and worktree from that verified base through the Git skill.
+- Consume the normalized slug and partner policy that Gobbi handed to Configuration. Generate the full Gobbi
+  session UUID and capture the original UTC date before deriving names. Through Git, derive the new branch and
+  worktree leaf separately from `(runtime, date, slug, UUID)` and create exactly one isolated branch and
+  worktree from the verified base.
 - Verify the absolute worktree, branch, base revision, clean initial state, registration, and the ignore
   posture [Git](../../git/SKILL.md) Step 2.1 defines, before writing workflow evidence.
-- Create the parent-owned evidence root and write `configuration.md` with the UUID, resolved settings,
-  repository, base revision, branch, absolute worktree, runtime system, and creation checks.
+- Create the parent-owned new evidence root with the same leaf bytes as the new worktree. Write
+  `configuration.md` with mode, identity shape, original UTC date, slug, UUID, partner policy, resolved
+  settings, repository, base revision, separately derived branch, worktree and session leaves, absolute
+  worktree, runtime system, and creation checks.
 - Verify the initial TODO route, evidence directories, and Configuration receipt against the parent Workflow
   Step 1.2 contract.
 - Apply [Memory](../../memory/SKILL.md) `Temporary Record` to `configuration.md`; prove it ignored and the
@@ -102,10 +109,18 @@ resume from the earliest safe item whose completion cannot be proved.
 
 #### 1.3 Recover an existing session
 
-- Verify the exact session UUID, repository, branch, worktree registration, absolute worktree, resolved
-  settings, `configuration.md`, and latest verified Hand-off before changing a TODO.
-- Reuse the resolved settings unless the user explicitly changes them during Phase 1. Never create a second
-  branch, worktree, or evidence root for the same session identity.
+- Read `configuration.md`, the latest verified Hand-off, and the live branch, worktree registration, absolute
+  worktree, and session root before changing a TODO. Parse branch, worktree leaf, and session leaf through the
+  separate new and permanent legacy validators. Require one matching byte-reproducible tuple. New identities
+  retain their normalized slug; legacy identities retain `slug: not-applicable` and their original names.
+- When older evidence lacks an explicit shape, slug field, or partner policy, reconstruct those fields only
+  from the matched live tuple and the valid Gobbi entry state. Record mode, runtime, original UTC date, shape,
+  slug or `not-applicable`, UUID, partner policy, repository, base, names, absolute worktree, resolved settings,
+  and checks in `configuration.md`; apply Memory `Temporary Record` and verify the tracked tree is unchanged.
+  Never infer a legacy slug or change live names while reconstructing evidence.
+- Reuse the resolved settings and partner policy. Return to Gobbi entry when mode, applicable slug, or partner
+  evidence is missing, ambiguous, or conflicting. Never rename or migrate a live legacy or active object or
+  create a second branch, worktree, or evidence root for the same UUID.
 - Walk Configuration, Ideation WORK packages, evaluation gates, RECORD receipts, and the Phase 1 Hand-off in
   workflow order.
 - Recreate completed TODO items only from the strongest verified evidence. Keep later work pending and
@@ -138,35 +153,40 @@ resume from the earliest safe item whose completion cannot be proved.
 - Freeze one neutral contract only after every material unknown has a decision or named owner. Retitle the
   active TODO to WORK only after rereading that contract.
 
-#### 2.2 Produce and validate independent work
+#### 2.2 Produce and validate policy-selected work
 
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one leader draft round and its cross-review
-  round over the same neutral contract, immutable inputs, exact paths, assignment identity, and verification
-  criteria. That operation owns each run's independence, freeze order, and validation.
-- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Give the active runtime leader the contract, both drafts, and both cross-reviews. Require a canonical
-  synthesis and a complete material-decision ledger.
+- Assign one active-runtime leader to produce and self-review a local draft over the neutral contract,
+  immutable inputs, exact paths, assignment identity, and verification criteria.
+- When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for each applicable independent
+  external draft and external cross-review over already frozen input. Place each returned labeled response in
+  the parent Workflow Step 1.2 package. Disabled invokes no external runtime.
+- Give the assigned active-runtime leader the policy-selected artifacts. Require a canonical synthesis and a
+  complete material-decision ledger. The manager owns local participants, freeze order, round assembly,
+  acceptance, and routing; Partner owns only each external invocation.
 - Resolve every remaining user-owned conflict with the user before EVALUATION. Agents may resolve only
   evidence-backed implementation detail already inside the locked contract.
 - Render the complete WORK package at the parent-owned path through the manager-side writer, then read it
-  directly against the parent Workflow Step 1.2 written contract: both system-labeled drafts, both
-  cross-reviews, the synthesis, and the open decisions. No script enforces this; refuse the stage when one is
-  missing or unlabeled.
+  directly against the parent Workflow Step 1.2 written contract: the local draft and self-review, each
+  enabled external artifact, the synthesis, and the open decisions. No script enforces this; refuse the stage
+  when a required artifact is missing or unlabeled.
 - Reread the package and decisions. Retitle the active TODO to EVALUATION only after that reading passes.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
-  [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
-  from the active runtime and one from the partner system. That operation isolates every evaluator; neither
-  may be a creator or persistent teammate.
-- Give both evaluators the neutral contract, both drafts, both reciprocal reviews, synthesis, decisions,
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh isolated active-runtime
+  evaluator. When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated
+  external evaluator over the same frozen subject. Neither evaluator may be a creator or persistent teammate,
+  and neither receives the other report. Disabled invokes no external runtime.
+- Give each evaluator the neutral contract, policy-selected creation evidence, synthesis, decisions,
   settings, authority, project evidence, and named check results.
 - Require complete but concise coverage of Project, Structure, Performance, Aesthetics, Usage, Consistency,
   Risk, and Overall. Each finding uses the parent-owned finding fields and states `blocking: yes|no`.
-- Preserve both declared evaluator verdicts without rewriting them. Apply the parent fast-gate definition and
-  two-iteration cap to derive the separate workflow decision.
-- Retitle the active TODO to RECORD after both independent reports and the workflow decision validate.
+- Preserve every declared evaluator verdict without rewriting it. Classify every finding through the parent
+  automatic-correction predicate. A correction returns to WORK and requires fresh EVALUATION; a Critical,
+  blocking, scope, design, authority, external, or destructive finding requires user disposition. Apply the
+  parent fast gate and two-iteration cap to derive the separate workflow decision. Only PASS continues
+  automatically.
+- Retitle the active TODO to RECORD after every required report, disposition, and workflow decision validates.
 
 #### 2.4 Record and route the result
 
@@ -174,8 +194,9 @@ resume from the earliest safe item whose completion cannot be proved.
   path.
 - Seal the current creation package, evaluator reports, Configuration receipt, decisions, findings, checks,
   and system provenances.
-- Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking
-  IDs, accepted nonblocking IDs, and the workflow decision.
+- Write `gate.md` with partner policy, required participants, report paths and hashes, declared verdicts,
+  unresolved Critical IDs, actual blocking IDs, automatically correctable IDs, user dispositions, pending
+  reevaluation IDs, and the workflow decision.
 - Write `1-ideation/outputs/ideation.md` only after fast-gate PASS. Keep it ignored and uncommitted.
 - Write `record/iteration-N.md` with only the exact TODO and decision, source artifact and report hashes, gate
   hash, verification result, accepted finding dispositions, and next or recovery state. Reread the receipt
@@ -203,7 +224,7 @@ resume from the earliest safe item whose completion cannot be proved.
 
 #### 3.1 Verify Workflow Phase 1 completion
 
-- Verify Configuration, the canonical Ideation artifact, both evaluator reports, `gate.md`, the RECORD receipt,
+- Verify Configuration, the canonical Ideation artifact, every policy-required evaluator report, `gate.md`, the RECORD receipt,
   accepted findings, branch, worktree, and the active `P1 · Hand-off` item.
 - Confirm the locked contract is concrete enough for Planning without an inferred material decision.
 - Confirm no later TODO is active and no unverified artifact is presented as completed evidence.
@@ -219,7 +240,7 @@ Outcome: <locked Ideation outcome>
 Completed: <Configuration and Ideation completion>
 Evidence: <Configuration receipt, canonical artifact, and verification>
 Decisions: <resolved settings and material user decisions>
-Accepted nonblocking findings: <findings or none>
+Finding dispositions: <automatic corrections and user dispositions or none>
 Branch: <exact branch>
 Worktree: <absolute worktree>
 Next TODO: P2 · Planning · DISCUSSION · 1/2

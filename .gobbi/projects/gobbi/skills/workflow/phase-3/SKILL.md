@@ -45,8 +45,10 @@ from direct evidence without changing the handoff.
 - **MUST evaluate and record the complete Wrap-up Phase 2 result before Git begins.** Any tracked mutation
   after the evaluated tree freezes returns to WORK and repeats the complete review.
 
-- **MUST apply the parent fast gate and its two-iteration cap.** Preserve both evaluator verdicts and let only
-  the parent workflow decision route the TODO.
+- **MUST apply the parent participant matrix, finding predicate, fast gate, and two-iteration cap.** Correct
+  only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,
+  non-external finding, then require fresh evaluation. Send every other finding to the user. Preserve every
+  evaluator verdict and let only PASS route the TODO automatically.
 
 - **MUST use Wrap-up and its `handoff.md` child without copying their tracked brief or receipt schemas.** This
   adapter supplies Workflow inputs, evaluation, RECORD evidence, and TODO transitions only.
@@ -100,12 +102,14 @@ from direct evidence without changing the handoff.
 
 #### 2.1 Produce and cross-review closure drafts
 
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one specialist draft round and its
-  cross-review round over the same frozen contract and immutable evidence. That operation owns each run's
-  independence, freeze order, and validation.
-- Require system-labeled Memory-and-handoff drafts that include the complete expected path set and
-  verification. Place the returned labeled content, then give the active runtime specialist the contract,
-  drafts, and reviews for synthesis.
+- Assign one active-runtime assistant to produce and self-review one Memory-and-handoff draft over the frozen
+  contract and immutable evidence. When partner is enabled, call
+  [Partner](../../gobbi/partner/SKILL.md) once for each applicable independent external draft and external
+  cross-review over frozen input. Disabled invokes no external runtime.
+- Require the local draft and every enabled external response to be system-labeled and include the complete
+  expected path set and verification. Place each external response, then give the assigned active-runtime
+  assistant every policy-selected artifact for synthesis. The manager owns local participants, round
+  assembly, acceptance, and routing.
 - Require one decision-complete Memory plan and tracked handoff candidate. Resolve routine in-contract
   differences agent-to-agent and stop only for the parent critical-blocker boundary.
 
@@ -118,19 +122,22 @@ from direct evidence without changing the handoff.
 - Freeze the tracked handoff repository path, exact bytes, SHA-256 digest, actual pre-Git tree, and current Git
   intent. Do not start Wrap-up Phase 3 or add a factual receipt.
 - Render the parent-owned Wrap-up WORK package and read it directly against the parent Workflow Step 1.2
-  written contract before activating EVALUATION. No script enforces this; refuse the stage when a
-  system-labeled draft, cross-review, synthesis, or open-decisions record is missing.
+  written contract before activating EVALUATION. No script enforces this; refuse the stage when a required
+  local draft, self-review, enabled external artifact, synthesis, or open-decisions record is missing.
 
 #### 2.3 Evaluate and apply the fast gate
 
-- Load [Evaluation](../../evaluation/SKILL.md) and call the [Partner](../../gobbi/partner/SKILL.md) operation
-  for one evaluation round with two fresh evaluators, one from the active runtime and one from the partner
-  system. That operation isolates every evaluator; neither may be a creator or persistent teammate.
-- Give both the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
+- Load [Evaluation](../../evaluation/SKILL.md) and dispatch one fresh isolated active-runtime evaluator. When
+  partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for one fresh isolated external
+  evaluator over the same frozen subject. Neither may be a creator or persistent teammate, and neither
+  receives the other report. Disabled invokes no external runtime.
+- Give each evaluator the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
   task commits, checks, finalization intent, authority, exclusions, risks, and retained recovery paths.
 - Require Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage with the
-  parent finding fields. Preserve both verdicts and apply the parent Wrap-up fast gate.
-- Retitle the active item to RECORD only after both reports and the workflow decision validate.
+  parent finding fields. Preserve every verdict and classify every finding through the parent predicate. An
+  eligible correction returns to WORK and requires fresh evaluation; every other finding requires user
+  disposition. Apply the parent Wrap-up fast gate; only PASS continues automatically.
+- Retitle the active item to RECORD only after every required report, disposition, and workflow decision validates.
 
 #### 2.4 Record and route the result
 
@@ -196,8 +203,8 @@ from direct evidence without changing the handoff.
 
 ## References
 
-- [Parent Workflow](../SKILL.md) owns native TODO routing, shared evidence, assignment additions, gates, and
-  partner-round coordination.
+- [Parent Workflow](../SKILL.md) owns native TODO routing, shared evidence, assignment additions, gates,
+  participant selection, and complete-round assembly.
 - [Wrap-up](../../wrap-up/SKILL.md) owns shared terminal Memory, Git, handoff, display, and recovery order.
 - [Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked operator brief and display-only Git receipt.
 - [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md), and

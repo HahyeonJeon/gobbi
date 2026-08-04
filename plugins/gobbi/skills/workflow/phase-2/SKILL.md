@@ -47,7 +47,7 @@ plan, task, receipt, or commit.
   commit evidence.** Do not create an alternate task identity for a revision or recovery pass.
 
 - **MUST apply the parent fast gate to Planning and the parent normal more-severe gate to every Execution
-  task.** Preserve both evaluator verdicts and never convert a normal non-PASS decision to PASS because its
+  task.** Preserve every policy-required evaluator verdict and never convert a normal non-PASS decision to PASS because its
   correction is inconvenient or its cap is near.
 
 - **MUST continue immediately after every verified nonterminal stage, task PASS, and Phase 2 Hand-off.** Waiting
@@ -57,8 +57,10 @@ plan, task, receipt, or commit.
   in-contract plan defect found during Execution.** Preserve completed commits and amend only the pending route
   or add a compensating pending task.
 
-- **NEVER ask the user about a routine in-contract choice or nonblocking finding.** Escalate only through the
-  parent critical-blocker boundary after safe agent-to-agent recovery is exhausted.
+- **MUST apply the parent finding predicate and participant matrix.** Automatically correct only a High,
+  Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive, non-external
+  finding, then obtain fresh evaluation. Send every other finding to the user. Only PASS continues
+  automatically.
 
 ## Procedure
 
@@ -105,25 +107,30 @@ plan, task, receipt, or commit.
 
 #### 1.3 Produce and validate the plan
 
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one leader draft round and its cross-review
-  round over the same frozen Planning contract and immutable evidence. That operation owns each run's
-  independence, freeze order, and validation.
-- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Let the active runtime leader synthesize the canonical `tasks.md` and `plan.md` candidates with Planning's
+- Assign one active-runtime leader to produce and self-review one local draft over the frozen Planning
+  contract and immutable evidence. When partner is enabled, call
+  [Partner](../../gobbi/partner/SKILL.md) once for each applicable independent external draft and external
+  cross-review over frozen input, then place each labeled response in the parent Workflow Step 1.2 package.
+  Disabled invokes no external runtime. The manager owns local participants, round assembly, and acceptance.
+- Let the assigned active-runtime leader synthesize the canonical `tasks.md` and `plan.md` candidates with Planning's
   complete hierarchy, combined task groups, stable IDs, dependency-valid order, complete task details,
   assigned roles, execution context, skills, boundaries, handoffs, and verification.
 - Render the complete WORK package at the parent-owned Planning path and read it directly against the parent
-  Workflow Step 1.2 written contract: both system-labeled drafts, both cross-reviews, the synthesis, and the
-  open decisions. No script enforces this; refuse the stage when one is missing or unlabeled.
+  Workflow Step 1.2 written contract: the local draft and self-review, every enabled external artifact, the
+  synthesis, and the open decisions. No script enforces this; refuse the stage when a required artifact is
+  missing or unlabeled.
 - Reread both canonical candidates and verify every Ideation obligation appears in the hierarchy and every
   hierarchy leaf maps to exactly one task group before activating EVALUATION.
 
 #### 1.4 Evaluate, record, and expand the task route
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
-  [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
-  from the active runtime and one from the partner system, which that operation isolates.
-- Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh isolated active-runtime
+  evaluator. When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated
+  external evaluator over the same frozen subject. Neither receives the other report. Disabled invokes no
+  external runtime.
+- Preserve every declared verdict, classify findings through the parent predicate, require fresh evaluation
+  after correction, obtain user disposition outside the predicate, and apply the parent Planning fast gate
+  and two-iteration cap. Only PASS continues automatically.
 - Apply loaded [Memory](../../memory/SKILL.md) `Temporary Record` to the parent Workflow Step 1.2 exact receipt
   path.
 - Seal in `record/iteration-N.md` only the exact TODO and decision, creation package, report, and gate hashes,
@@ -180,12 +187,13 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.4 Produce, implement, verify, and commit
 
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one contributor draft round and its
-  cross-review round over the same task contract and frozen worktree preimage. That operation owns each run's
-  independence, freeze order, and validation.
-- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Give the active runtime executor all four frozen inputs. Let that executor synthesize and implement as the
-  sole worktree writer.
+- Assign one active-runtime executor to produce and self-review one local draft over the same task contract
+  and frozen worktree preimage. When partner is enabled, call
+  [Partner](../../gobbi/partner/SKILL.md) once for each applicable independent external draft and external
+  cross-review over frozen input. Place each returned labeled response in the parent Workflow Step 1.2
+  package. Disabled invokes no external runtime.
+- Give the assigned executor every policy-selected frozen input. Let that executor synthesize and implement
+  as the sole worktree writer. The manager owns local participants, round assembly, acceptance, and routing.
 - Keep read-only helpers from mutating the worktree, TODO route, external systems, scope, or user decisions.
 - Run the task's required verification and review the complete diff against allowed and protected paths.
 - Create one focused local task commit through the loaded [Git](../../git/SKILL.md) skill. Reread the commit,
@@ -193,14 +201,19 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.5 Evaluate the task with the normal gate
 
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh independent evaluators.
-- Give both evaluators the task and scope contract, frozen drafts and cross-reviews, resolved decisions,
+- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch one fresh isolated active-runtime
+  evaluator. When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated
+  external evaluator over the same frozen task subject. Neither receives the other report. Disabled invokes
+  no external runtime.
+- Give each evaluator the task and scope contract, policy-selected creation evidence, resolved decisions,
   implementation diff, tests, focused commit, repository state, and findings relevant to the current pass.
 - Require complete Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall coverage
   and the parent-owned finding fields.
-- Preserve both declared verdicts and write normal-mode `gate.md`. Derive the workflow decision by severity:
-  FAIL outranks REVISE, which outranks PASS.
-- Retitle the task item to RECORD only after both reports and the normal gate validate.
+- Preserve every declared verdict and write normal-mode `gate.md`. Derive the workflow decision by severity:
+  FAIL outranks REVISE, which outranks PASS. Classify every finding through the parent predicate. Route an
+  automatic correction back to WORK for fresh evaluation and every finding outside the predicate to the user.
+- Retitle the task item to RECORD only after every required report and disposition validates. Only PASS
+  continues automatically.
 
 #### 2.6 Record and route the task result
 
@@ -253,7 +266,7 @@ Outcome: <planned and executed outcome>
 Completed: <Planning and stable task IDs>
 Evidence: <plan, task commits, tests, and evaluations>
 Decisions: <autonomous in-contract decisions and material authorities>
-Accepted nonblocking findings: <findings or none>
+Finding dispositions: <automatic corrections and user dispositions or none>
 Branch: <exact branch>
 Worktree: <absolute worktree>
 Next TODO: P3 · Wrap-up · DISCUSSION · 1/2

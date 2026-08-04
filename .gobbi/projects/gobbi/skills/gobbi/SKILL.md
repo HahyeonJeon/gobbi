@@ -8,8 +8,8 @@ skill-type: operation
 # Gobbi
 
 Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, reports any configuration the
-session is missing, obtains one session mode — General, Cowork, or Workflow — and one partner answer from the
-user, then hands the session to that mode's owner.
+session is missing, obtains one session mode — General, Cowork, or Workflow — an applicable session slug, and
+one session-wide `partner: enabled|disabled` policy, then hands the complete entry state to that mode's owner.
 
 Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
 every mode inherits. General continues from the Principles foundation, Cowork uses
@@ -60,9 +60,11 @@ its owner without copying that owner's procedure or creating a second router.
   `planning`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only `memory`,
   and nothing in that isolated set may reference `wrap-up`.
 
-- **MUST hold the session to its selected mode's evaluation commitment.** Never apply an evaluator finding
-  before the user approves its disposition, and pause with the exact failure when a required evaluation system
-  is unavailable or invalid unless the user waives that named system for the round.
+- **MUST hold the session to its selected mode's participant and finding commitments.** Automatically correct
+  a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside the locked contract;
+  and the correction is reversible, authority-neutral, non-destructive, and non-external. Send every other
+  finding to the user, require fresh evaluation after every correction, and continue automatically only from
+  PASS. A disabled partner policy invokes no external runtime.
 
 - **MUST keep the manager the session's only authority for assignment, scope, user decisions, acceptance, and
   destructive or external action.** Build every specialist brief through
@@ -123,8 +125,9 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 ```
 
 - Use `--git-common-dir` because it names the shared repository directory. Every Cowork and Workflow session
-  runs inside a session worktree whose own top level is the session branch name, so any form that reads the
-  current worktree's root yields the branch instead of the project. Validate the key against
+  runs inside a session worktree whose top-level leaf is a session identity, not the project key. New leaves
+  deliberately omit the runtime prefix and therefore differ from their branch names; legacy leaves may equal
+  their branches. Validate the key against
   `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$` at up to 64 characters, and ask the user before deriving any path when
   it does not match.
 - Gobbi defines these paths:
@@ -197,50 +200,67 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   project rules exist.
 - Confirm the load register holds Principles before any governed action, and return to it when it does not.
 - Defer the complete Delegation, Discussion, Git, and Memory register to the selected Cowork or
-  Workflow owner; defer Ideation, Planning, and Wrap-up to their named phases. General loads each
-  task-specific skill only when its trigger applies.
+  Workflow owner. Defer Ideation and Planning to their selected stages and defer Wrap-up only to Workflow
+  Phase 3. General loads each task-specific skill only when its trigger applies.
 
-#### 1.3 Obtain or preserve the session mode and the partner answer
+#### 1.3 Obtain or preserve mode, applicable slug, and partner policy
 
 - Start from the loaded Principles foundation and the recorded entry trigger.
-- Load [Discussion](../discussion/SKILL.md) immediately before Gobbi writes a mode or partner question. At
+- Load [Discussion](../discussion/SKILL.md) immediately before Gobbi writes a mode, slug, or partner question. At
   every fresh entry, use its structure and the active runtime's
   structured user-input request to ask the user to select exactly one mode. Set no automatic resolution:
 
-| Mode | Select when | Evaluation commitment |
+| Mode | Select when | Participant and evaluation commitment |
 |---|---|---|
-| **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Only the evaluation its task owner requires. |
-| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | No automatic partner creation round, and one fresh partner evaluation round for each explicit user `evaluate` call over the frozen requested subject. |
-| **Workflow** | The user wants the durable five-step, partner-round, recorded workflow. | Retained independent partner drafts before every EVALUATION, and two fresh isolated evaluators for each EVALUATION. |
+| **General** | The user wants ordinary assistance without a Gobbi orchestration lifecycle. | Local participants and evaluation come only from the task owner; the partner policy applies only when that owner requires an external run. |
+| **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | Every selected stage self-reviews; explicit evaluation always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when partner is enabled. |
+| **Workflow** | The user wants the durable five-step recorded workflow. | Every WORK uses one assigned active-runtime draft with self-review and adds the applicable external draft or review only when partner is enabled; every EVALUATION always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when enabled. |
 
 - Present the commitment column with the selection so the user chooses a known quality bar. State what each
   mode guarantees, not how it produces that guarantee.
 - Name the commitment only. [`cowork`](../cowork/SKILL.md) and [`workflow`](../workflow/SKILL.md) own the
-  mechanism behind their own commitment, and the entry never runs, schedules, or repeats an evaluation.
+  local participants, round assembly, and mechanism behind their commitments. The entry never runs,
+  schedules, or repeats a draft or evaluation.
 - A request may support a recommendation, but even explicit words such as "use Cowork" do not replace the
   selection control on a fresh entry.
-- At a context boundary, keep the established selection while its mode evidence and identity still validate.
-  Ask the three-way question again when no reliable selection survives or two modes appear active.
-- After the mode is recorded, ask one further question through the same [Discussion](../discussion/SKILL.md)
-  structure and control: whether this session uses the partner system for its Ideation and its evaluation
-  rounds.
+- At a context boundary, keep the established selection while its mode evidence still validates. Ask the
+  three-way question again only when the evidence is missing, ambiguous, or conflicting.
+- After recording fresh Cowork or Workflow, warn that the session slug enters branch names and paths and must
+  not contain sensitive information. Ask for the slug through the same [Discussion](../discussion/SKILL.md)
+  structure and control. Normalize it by taking each maximal ASCII alphanumeric sequence as one word,
+  lowercasing it, joining the words with one hyphen, and trimming separators. Do not transliterate, truncate,
+  or add a suffix. Accept only 1–20 characters matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject `con`, `prn`,
+  `aux`, `nul`, `com1` through `com9`, and `lpt1` through `lpt9`, case-insensitively. Re-ask with the failed
+  condition when normalization is empty, longer than 20 characters, or reserved. General skips this question
+  and records `slug: not-applicable`; it creates no Gobbi identity. A recovered new session preserves its
+  recorded normalized slug. A recovered legacy session preserves `slug: not-applicable` and receives no slug
+  question.
+- After the applicable slug is recorded, ask one further question through the same
+  [Discussion](../discussion/SKILL.md) structure and control: whether the session-wide partner policy is
+  `enabled` or `disabled`.
 - Ask whether to use a partner, never which one. The active runtime fixes the direction — in Claude Code the
   partner is Codex, and in native Codex the partner is Claude Code — so the runtime leaves no second choice to
   make.
-- Record the answer beside the mode and hand both to the selected owner. That owner holds the answer against
-  its own evaluation commitment and returns to the user when the two conflict. The entry decides no gate,
-  coverage rule, or waiver and runs no round itself; [`partner`](partner/SKILL.md) owns every round.
-- Keep an established partner answer across a context boundary on the same terms as the mode, and ask again
-  when its evidence is missing, ambiguous, or conflicting.
+- Record mode, applicable normalized slug, and partner policy together and hand the complete entry state to
+  the selected owner. Cowork and Workflow consume all three; General consumes mode and policy without creating
+  session state. Enabled authorizes the owner to call [`partner`](partner/SKILL.md) for every external run its
+  mode requires without another per-round prompt. Disabled authorizes none. The entry decides no participant,
+  gate, coverage rule, waiver, or route and runs no invocation itself.
+- At a context boundary, preserve each established value whose evidence validates. Ask only for a value that
+  is missing, ambiguous, or conflicting, in the same mode → applicable slug → partner order. Never regenerate
+  or rename a slug that an existing session object already uses.
 
 #### 1.4 Load the selected owner and hand off without mutation
 
-- **General:** continue the user's task from Principles and load each task-specific skill when its trigger
-  applies. Load neither orchestration owner — `cowork` and `workflow` — and create no Gobbi session state.
-- **Cowork:** load [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner creates or recovers its isolated
-  worktree before editing and runs its user-topic loop.
-- **Workflow:** load [`../workflow/SKILL.md`](../workflow/SKILL.md). That owner performs fresh and resume
-  classification, Configuration, durable routing, productive steps, evaluation, RECORD, and Wrap-up.
+- **General:** hand `mode: General`, `slug: not-applicable`, and the partner policy to the task owner. Continue
+  from Principles and load each task-specific skill when its trigger applies. Load neither orchestration owner
+  — `cowork` and `workflow` — and create no Gobbi identity or session state.
+- **Cowork:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
+  [`../cowork/SKILL.md`](../cowork/SKILL.md). That owner generates or recovers its identity, creates or
+  recovers its isolated worktree before editing, and runs its user-topic loop.
+- **Workflow:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
+  [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
+  the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
 - Before building a specialist brief, ensure [Delegation](../delegation/SKILL.md) is loaded. Cowork and
   Workflow load it in their shared owner register; General loads it from this trigger. Let the selected mode
   add its own brief fields. After a specialist reports, reread its artifact or commit and reproduce its
@@ -282,7 +302,7 @@ exists rather than what is loaded. Every other root that has children routes to 
 
 | Skill | Owns |
 |---|---|
-| [`gobbi/partner`](partner/SKILL.md) | One partner round: its preparation, launch, validation, and returned frozen content. |
+| [`gobbi/partner`](partner/SKILL.md) | One external invocation: its preparation, launch, validation, and returned frozen content. |
 | [`gobbi/agent-teams`](agent-teams/SKILL.md) | Claude Code Agent Teams setup, use, limits, and cleanup. |
 | [`study`](../study/SKILL.md) | Bounded internal or external study that answers one question from sources. |
 | [`startup`](../startup/SKILL.md) | The delegated project-design interview that produces four accepted phase documents and one confirmed synthesis. |
