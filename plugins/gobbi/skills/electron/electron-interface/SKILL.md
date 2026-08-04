@@ -66,7 +66,7 @@ and modality.
   interpretation, environment classification, and evidence acceptance; and delivery coordination outside.
 
 - **MUST reconcile observable choices with accepted external constraints without selecting their policy.**
-  Use the lower-tier [Electron runtime manual](../electron-runtime/SKILL.md) only for target mechanism and
+  Use the lower-tier [`electron-runtime`](../electron-runtime/SKILL.md) only for target mechanism and
   version facts; it supplies no interface preference or installed promise.
 
 - **NEVER accept an interface judgment or convention departure that conflicts with any Rule, accepted product

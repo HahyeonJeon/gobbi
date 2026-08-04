@@ -17,9 +17,9 @@ identity, starting state, trigger, result, the state change the application or o
 final, preservation behavior, failure, recovery, diagnostics requirement, and evidence required to establish
 the observable result.
 
-This skill owns installed behavior judgments only. [Electron Interface](../electron-interface/SKILL.md) owns
-observable interface judgment, [Electron Design](../electron-design/SKILL.md) owns technical architecture,
-and [Electron Runtime](../electron-runtime/SKILL.md) supplies current mechanism facts. Rules define the valid
+This skill owns installed behavior judgments only. [`electron-interface`](../electron-interface/SKILL.md) owns
+observable interface judgment, [`electron-design`](../electron-design/SKILL.md) owns technical architecture,
+and [`electron-runtime`](../electron-runtime/SKILL.md) supplies current mechanism facts. Rules define the valid
 choice space and override every conflicting Preference.
 
 ## Principles
@@ -80,7 +80,7 @@ data compatibility limit continuity rather than silently weakening it.
 ### Prefer a complete target record
 
 **PREFER** one explicit record for each claimed operating-system and architecture combination. Reuse a
-promise across targets only when current [Electron Runtime](../electron-runtime/SKILL.md) facts and accepted
+promise across targets only when current [`electron-runtime`](../electron-runtime/SKILL.md) facts and accepted
 evidence from the installed application establish the same availability and result.
 
 Record application identity separately from installed artifact identity. Application identity names the
@@ -136,7 +136,7 @@ recovery on the named target.
 
 Closing the last window, hiding windows, entering a supported background or tray-only state, and quitting the
 application are separate decisions. **PREFER** the familiar operating-system convention selected by
-[Electron Interface](../electron-interface/SKILL.md) when it stays inside this installed contract; record an
+[`electron-interface`](../electron-interface/SKILL.md) when it stays inside this installed contract; record an
 explicit target difference when the accepted behavior differs.
 
 ### Prefer four complete external-entry paths
@@ -190,8 +190,8 @@ evidence. A Rule or accepted product, accessibility, security, or user-authority
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [Electron Interface](../electron-interface/SKILL.md) owns observable interface judgment and target
+- [`electron-interface`](../electron-interface/SKILL.md) owns observable interface judgment and target
   convention choices.
-- [Electron Design](../electron-design/SKILL.md) owns technical architecture, security, process, window, and
+- [`electron-design`](../electron-design/SKILL.md) owns technical architecture, security, process, window, and
   resource judgments.
-- [Electron Runtime](../electron-runtime/SKILL.md) owns current mechanism and pinned-major lookup.
+- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism and pinned-major lookup.

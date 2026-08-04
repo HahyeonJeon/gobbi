@@ -244,8 +244,10 @@ next owner, dependencies, acceptance or stop, and invalidation condition.
 
 #### 3.4 Advance behavior evidence and diagnostics
 
-- Send Development's exact source and environment identities to Testing. Testing alone defines the claim,
-  evidence class, environment, result, limitation, and strength.
+- Send Development's exact source and environment identities to Testing. The requesting lower-tier owner
+  supplies and retains the product claim and product judgment. Testing alone owns the test layer and method,
+  test design and implementation, execution, environment classification, result, limitations,
+  interpretation, reruns, and evidence strength.
 - Advance to `behavior-verified` only from Testing's passing identity-matched behavior evidence.
 - Route diagnostic emission and arrival needs to Observability. Route Electron runtime facts and causal
   diagnosis to Runtime, then return the diagnosis to the earliest affected owner.
@@ -401,15 +403,15 @@ the static ownership order from highest lower tier to foundation.
 
 | Tier | Owner | Unique authority used by Delivery |
 |---|---|---|
-| 6 | [Electron Testing](../electron-testing/SKILL.md) | Test design, execution, interpretation, environment classification, and evidence strength |
-| 5 | [Electron Release](../electron-release/SKILL.md) | Release policy, readiness, and authorized external release actions |
-| 4 | [Electron Packaging](../electron-packaging/SKILL.md) | Produced bytes, immutable candidate identity, and candidate acceptance |
-| 3 | [Electron Observability](../electron-observability/SKILL.md) | Diagnostic emission, arrival, identity, and signal limitations |
-| 3 | [Electron Development](../electron-development/SKILL.md) | Source implementation, construction, and source-check acceptance |
-| 2 | [Electron Contract](../electron-contract/SKILL.md) | Installed behavior, target differences, lifecycle obligations, and safe recovery |
-| 1 | [Electron Design](../electron-design/SKILL.md) | Process, trust, bridge, state, resource, performance, and isolation decisions |
-| 1 | [Electron Interface](../electron-interface/SKILL.md) | Observable structure, states, content, feedback, recovery, accessibility, locale, and modality |
-| 0 | [Electron Runtime](../electron-runtime/SKILL.md) | Current Electron facts and causal runtime diagnosis |
+| 6 | [`electron-testing`](../electron-testing/SKILL.md) | Test design, execution, interpretation, environment classification, and evidence strength |
+| 5 | [`electron-release`](../electron-release/SKILL.md) | Release policy, readiness, and authorized external release actions |
+| 4 | [`electron-packaging`](../electron-packaging/SKILL.md) | Produced bytes, immutable candidate identity, and candidate acceptance |
+| 3 | [`electron-observability`](../electron-observability/SKILL.md) | Diagnostic emission, arrival, identity, and signal limitations |
+| 3 | [`electron-development`](../electron-development/SKILL.md) | Source implementation, construction, and source-check acceptance |
+| 2 | [`electron-contract`](../electron-contract/SKILL.md) | Installed behavior, target differences, lifecycle obligations, and safe recovery |
+| 1 | [`electron-design`](../electron-design/SKILL.md) | Process, trust, bridge, state, resource, performance, and isolation decisions |
+| 1 | [`electron-interface`](../electron-interface/SKILL.md) | Observable structure, states, content, feedback, recovery, accessibility, locale, and modality |
+| 0 | [`electron-runtime`](../electron-runtime/SKILL.md) | Current Electron facts and causal runtime diagnosis |
 
 The exchanges named in the Procedure are dynamic work records. They do not create new static ownership links
 or transfer a lower owner's authority to Delivery.
