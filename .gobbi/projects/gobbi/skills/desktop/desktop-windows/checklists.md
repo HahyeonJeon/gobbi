@@ -22,20 +22,21 @@ architecture, or installation field is the failure.
 - [ ] DTWIN-CK-PROJECT-01-01 — The tuple records the exact question and native integration or input involved.
 - [ ] DTWIN-CK-PROJECT-01-02 — The tuple records the application identity, version, and build and the Electron version and build.
 - [ ] DTWIN-CK-PROJECT-01-03 — The tuple records the artifact or package identity, version or digest, distribution channel, and installed state.
-- [ ] DTWIN-CK-PROJECT-01-04 — The tuple records the Windows family, release, edition, and build and both application and Windows architectures.
+- [ ] DTWIN-CK-PROJECT-01-04 — The tuple records the Windows family, exact release, build, application architecture, and Windows architecture.
 - [ ] DTWIN-CK-PROJECT-01-05 — The tuple records the install form, user or machine scope, resolved location, and current installed version.
 
 ### DTWIN-SC-PROJECT-02 — Edge case: conditional context can change the answer
 
-Policy, trust, isolation, emulation, or session conditions differ while the application and Windows version
-appear unchanged. The expected outcome records each applicable condition and explains each inapplicable one;
-an implicit environment or unexplained omission is the failure.
+Windows edition, build, application identity, distribution path, policy, trust, isolation, emulation, or
+session conditions differ while the application appears unchanged. The expected outcome records each
+applicable condition and explains each inapplicable one; an implicit environment or unexplained omission is
+the failure.
 
 #### Checklist
 
 - [ ] DTWIN-CK-PROJECT-02-01 — The tuple records the exact runtime and session environment when either can change the answer.
 - [ ] DTWIN-CK-PROJECT-02-02 — The tuple records the user or privilege, applied policy, signing or trust state, and sandbox or container context when relevant.
-- [ ] DTWIN-CK-PROJECT-02-03 — The Windows-specific fields record packaged or unpackaged application identity and the exact Store, MSIX, installer, portable, or package-manager path.
+- [ ] DTWIN-CK-PROJECT-02-03 — The Windows-specific fields record the exact Windows edition and build, packaged or unpackaged application identity, and distribution path: Microsoft Store, MSIX, a named installer, a portable archive, or a named package manager.
 - [ ] DTWIN-CK-PROJECT-02-04 — The Windows-specific fields record per-user or per-machine effect, elevation and policy, native or emulated execution, and interactive or remote session conditions.
 - [ ] DTWIN-CK-PROJECT-02-05 — Every common field and applicable Windows-specific field is recorded as exact, `Unknown`, or `Not applicable: <exact reason>`.
 
@@ -104,7 +105,7 @@ route-only answer or missing applicable question group is the failure.
 - [ ] DTWIN-CK-USAGE-01-02 — The Manual directly covers installation, first launch, update, repair, rollback facts, uninstall, residual state, and recovery facts.
 - [ ] DTWIN-CK-USAGE-01-03 — The Manual directly covers launch and activation delivery, process and window lifetime, background state, close and quit facts, power and session events, and native integration.
 - [ ] DTWIN-CK-USAGE-01-04 — The Manual directly covers resolved data, configuration, cache, log, temporary, document, package, resource, and credential-store locations.
-- [ ] DTWIN-CK-USAGE-01-05 — The Manual directly covers Store, MSIX, installer, portable, and package-manager paths plus identity, trust, sandbox, permission, privilege, and policy facts.
+- [ ] DTWIN-CK-USAGE-01-05 — The Manual directly covers each distribution path—Microsoft Store, MSIX, a named installer, a portable archive, and a named package manager—plus identity, trust, sandbox, permission, privilege, and policy facts.
 - [ ] DTWIN-CK-USAGE-01-06 — The Manual directly covers process, resource, native, installer, updater, package, trust, and session failure signals and diagnostics.
 
 ### DTWIN-SC-USAGE-02 — Expected failure: one observed failure has several possible causes

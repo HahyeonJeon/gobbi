@@ -84,7 +84,7 @@ that the field cannot change this answer.
 | Application | Application identity, exact version, and build |
 | Electron | Exact Electron version and build |
 | Artifact/package | Artifact or package identity, version or digest, distribution channel, and installed state |
-| Windows | Windows family, exact release, edition, and build |
+| Windows | Windows family, exact release, and build |
 | Architecture | Application architecture and Windows architecture |
 | Installation | Install form, user or machine scope, resolved location, and current installed version |
 | Runtime/session | Exact runtime and session environment when it can change the answer |
@@ -92,15 +92,19 @@ that the field cannot change this answer.
 
 #### Which Windows-specific fields apply?
 
-The common fields already carry Windows build, architecture, installation scope, and trust context. Add the
-following Windows-specific detail instead of repeating those fields:
+The common fields already carry Windows build, architecture, installation scope, and trust context. The
+Windows-specific record repeats build beside edition and adds the exact choices below:
 
 | Windows-specific field | Exact detail to record |
 |---|---|
+| Edition and build | Exact Windows edition and build |
 | Application identity | Packaged or unpackaged; package identity and application identity when present |
-| Delivery path | Microsoft Store, MSIX, named installer technology, portable archive, or named package manager |
+| Distribution path | Microsoft Store, MSIX, named installer technology, portable archive, or named package manager |
 | Installation authority | Per-user or per-machine effect, elevation state, and applicable installer or organization policy |
 | Execution environment | Native or emulated process, interactive or remote session, and relevant session state |
+
+Microsoft's current [Windows app distribution guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/choose-distribution-path)
+uses `distribution path` for this choice. Re-open the page during each lookup for its exact current options.
 
 Microsoft distinguishes package identity from application identity, including the application user model ID
 used for runtime association. Consult the current [package identity overview](https://learn.microsoft.com/en-us/windows/apps/desktop/modernize/package-identity-overview)
@@ -136,7 +140,7 @@ lookup and record its current update or access date:
 |---|---|---|
 | Windows release, edition, build, servicing, and known issue | [Windows release health](https://learn.microsoft.com/en-us/windows/release-health/) and the exact release page | Exact release, edition, build, update, and publication date |
 | Electron release and dependency versions | [Electron Releases](https://releases.electronjs.org/) and the exact release notes | Exact Electron build plus Chromium, Node.js, and release date when relevant |
-| Windows packaging, install, update, and servicing model | [Package and deploy Windows apps](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/) | Exact delivery path and package or installer technology |
+| Windows packaging, distribution, install, update, and servicing model | [Package and deploy Windows apps](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/) and [Windows app distribution guidance](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/choose-distribution-path) | Exact distribution path and package or installer technology |
 | MSIX identity, isolation, trust, and deployment failure | [MSIX documentation](https://learn.microsoft.com/en-us/windows/msix/), exact manifest schema, and exact package metadata | Exact package identity, trust level, signature, deployment method, and Windows build |
 | Electron application, process, path, and native integration behavior | Exact-version [Electron API documentation](https://www.electronjs.org/docs/latest/api/app), source, and release notes | Exact Electron build and application state |
 
