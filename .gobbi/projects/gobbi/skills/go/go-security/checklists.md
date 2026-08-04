@@ -153,7 +153,7 @@ result; a partial control or focused-only pass fails.
 - [ ] GOSEC-CK-USAGE-02-02 — Verification covers every accepted attack path and control on the exact final tree.
 - Also applies: GOSEC-CK-PROJECT-01-04 (change mode performs no external mutation).
 - Also applies: GOSEC-CK-PROJECT-01-05 (change mode performs no publication).
-- Also applies: GOSEC-CK-USAGE-04-01 (required external-owner evidence matches the exact action).
+- Also applies: GOSEC-CK-USAGE-04-01 (required evidence returned by the named external-action owner matches the exact action).
 
 ### GOSEC-SC-USAGE-03 — Expected failure: Protected-value handling is incomplete
 
@@ -170,7 +170,7 @@ and non-persistence field is exact; a generic secret-handling statement fails.
 - [ ] GOSEC-CK-USAGE-03-05 — Every cache, retention, and cleanup boundary excludes credential values and private settings from retained data.
 - [ ] GOSEC-CK-USAGE-03-06 — Non-persistence evidence covers project files, generated output, diagnostic output, logs, command arguments, command history, environment files, process inheritance, and retained caches.
 
-### GOSEC-SC-USAGE-04 — Expected failure: Required external-owner evidence is absent
+### GOSEC-SC-USAGE-04 — Expected failure: Required evidence returned by the named external-action owner is absent
 
 The accepted Go change depends on secret rotation or another provider, policy, or destination action. The
 security operation should verify current returned evidence or preserve an exact block; an assertion that the
@@ -179,7 +179,7 @@ action happened fails.
 #### Checklist
 
 - [ ] GOSEC-CK-USAGE-04-01 — Returned evidence names the external-action owner, exact action, input identity, destination, redacted before and after state, result, time or action identity, and evidence limits.
-- [ ] GOSEC-CK-USAGE-04-02 — Missing, stale, changed, or mismatched external-owner evidence produces a block naming the owner, prerequisite, affected obligation, risk, retained paths and redacted evidence, first recovery action, and handoff.
+- [ ] GOSEC-CK-USAGE-04-02 — Missing, stale, changed, or mismatched evidence returned by the named external-action owner produces a block naming the owner, prerequisite, affected obligation, risk, retained paths and redacted evidence, first recovery action, and handoff.
 
 ## Consistency
 
@@ -241,15 +241,15 @@ or verbose scanner output. Functional success should not authorize exposure or p
 - [ ] GOSEC-CK-RISK-02-02 — Every authority, purpose, scope, source, destination, delivery, injection, process, inheritance, redaction, cache, or retention change pauses before protected-value use.
 - [ ] GOSEC-CK-RISK-02-03 — Every changed protected-value field has a new exact current-authority decision before use resumes.
 
-### GOSEC-SC-RISK-03 — Edge case: Returned external-owner evidence is stale or mismatched
+### GOSEC-SC-RISK-03 — Edge case: Evidence returned by the named external-action owner is stale or mismatched
 
 The external action was verified for another credential version, input checksum, provider account, policy,
 destination, or earlier time. Evidence for a different action identity cannot complete the current result.
 
 #### Checklist
 
-- [ ] GOSEC-CK-RISK-03-01 — Every returned external-owner result matches the current owner, action, input identity, destination, required before and after state, and evidence boundary.
-- [ ] GOSEC-CK-RISK-03-02 — Changed or stale external-owner evidence remains outside the completion claim until its named owner returns evidence for the current exact action.
+- [ ] GOSEC-CK-RISK-03-01 — Evidence returned by the named external-action owner matches the current owner, action, input identity, destination, required before and after state, and evidence boundary.
+- [ ] GOSEC-CK-RISK-03-02 — Changed or stale evidence returned by the named external-action owner remains outside the completion claim until that owner returns evidence for the current exact action.
 
 ## Overall
 
@@ -261,7 +261,7 @@ threats, controls, evidence, ownership, effect boundary, and residual risk for t
 #### Checklist
 
 - [ ] GOSEC-CK-OVERALL-01-01 — Review completion includes verified findings, control evidence, evidence limits, residual risk, protected-value handling when used, and explicit absence of external mutation and publication.
-- [ ] GOSEC-CK-OVERALL-01-02 — Change completion includes the authorized final tree, verified controls, project-command evidence, protected-value handling when used, exact current external-owner evidence when required, residual risk, and explicit absence of external mutation and publication by this operation.
+- [ ] GOSEC-CK-OVERALL-01-02 — Change completion includes the authorized final tree, verified controls, project-command evidence, protected-value handling when used, exact current evidence returned by the named external-action owner when required, residual risk, and explicit absence of external mutation and publication by this operation.
 
 ### GOSEC-SC-OVERALL-02 — Adversarial: Cosmetic security language masks an incomplete result
 
@@ -271,4 +271,4 @@ the owned result should fail.
 
 #### Checklist
 
-- [ ] GOSEC-CK-OVERALL-02-01 — No heading set, scanner result, control label, or polished terminal record substitutes for the exact attack paths, control evidence, mode effects, protected-value handling, external-owner boundary, and residual risk required by the accepted result.
+- [ ] GOSEC-CK-OVERALL-02-01 — No heading set, scanner result, control label, or polished terminal record substitutes for the exact attack paths, control evidence, mode effects, protected-value handling, boundary around the named external-action owner, and residual risk required by the accepted result.

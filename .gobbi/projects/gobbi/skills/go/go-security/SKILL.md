@@ -98,9 +98,9 @@ an exact block.
   delivery, redacted evidence, declared cache state, and no credential or private-setting persistence.
   External mutation and publication are forbidden. Pause before a material trust choice, credential use,
   download, network access, external mutation, or publication request. The terminal result is a verified Go
-  security change with residual risk and exact returned external-owner evidence, or an exact block. Recovery
-  retains redacted evidence, declared cache state, and authorized changed paths, and names the external-action
-  owner, prerequisite, first recovery action, and handoff.
+  security change with residual risk and exact evidence returned by the named external-action owner, or an
+  exact block. Recovery retains redacted evidence, declared cache state, and authorized changed paths, and
+  names the external-action owner, prerequisite, first recovery action, and handoff.
 
 #### 1.3 Bind sibling owners and material decisions
 
@@ -157,7 +157,9 @@ an exact block.
 
 - Use the `go-modules` result to identify each affected direct or transitive module, selected version,
   replacement, `GOOS/GOARCH` or cgo constraint, provenance, and consumer. Use `go-toolchain` for the project-selected
-  vulnerability scanner, database or advisory snapshot, invocation, and observed effects.
+  vulnerability scanner, database or advisory snapshot, invocation, and observed effects. Use the official
+  [Go vulnerability management guidance](https://go.dev/doc/security/vuln/) as context for findings and
+  reachability without selecting a scanner for the project.
 - For every vulnerability finding, record the advisory identity, affected module and version range, observed
   selected version, scanner or source timestamp, severity as reported by its owner, vulnerable symbol or
   behavior, build selection, call reachability, deployed reachability, exploit prerequisites, affected asset,
@@ -202,17 +204,19 @@ an exact block.
 
 #### 3.3 Verify the complete security result
 
-- Use `go-testing` to select evidence for the modeled threats and accepted controls. Applicable evidence may
-  include focused tests, fuzzing, race detection, integration checks, authorization matrices, malformed-input
-  cases, dependency analysis, or scanner results; select only what answers the named risk.
+- Use `go-testing` to select evidence for the modeled threats and accepted controls. The official
+  [Go security best practices](https://go.dev/doc/security/best-practices) supply context for source,
+  dependency, fuzzing, race, and analysis evidence without replacing the project contract. Applicable evidence
+  may include focused tests, fuzzing, race detection, integration checks, authorization matrices,
+  malformed-input cases, dependency analysis, or scanner results; select only what answers the named risk.
 - Use `go-toolchain` to bind every project command, exact package pattern, selected Go toolchain version, flags,
   `GOOS/GOARCH` target, inputs, duration, standard output, standard error, exit status, first useful diagnostic,
   caches, downloads, network effects, and evidence limits. Verify the exact unchanged review subject or exact
   final changed tree.
 - Recheck trust boundaries, attack paths, identity, authentication, authorization, cryptography, protected-data
-  handling, dependency reachability, network exposure, external-owner evidence, and residual risk. Keep every
-  unexecuted path, unsupported `GOOS/GOARCH` target, unavailable scanner database, and blocked external action outside the
-  completion claim.
+  handling, dependency reachability, network exposure, any evidence returned by the named external-action
+  owner, and residual risk. Keep every unexecuted path, unsupported `GOOS/GOARCH` target, unavailable scanner
+  database, and blocked external action outside the completion claim.
 - When this result enters Evaluation, apply the [evaluation checklist](checklists.md) and every active Go sibling
   checklist. General Evaluation owns evidence resolution and verdicts.
 
@@ -222,9 +226,9 @@ an exact block.
 
 - Stop before a missing trust or deployment context, unresolved material choice, unapproved project write or
   diagnostic output, unavailable scanner or advisory evidence, unauthorized cache or download, network request,
-  credential use, protected-value exposure, external mutation, publication, stale external-owner result, or
-  required verification gap. Do not substitute another scope, destination, credential, tool, target, or weaker
-  claim.
+  credential use, protected-value exposure, external mutation, publication, stale evidence returned by the
+  named external-action owner, or required verification gap. Do not substitute another scope, destination,
+  credential, tool, target, or weaker claim.
 - Return the missing prerequisite or first useful diagnostic, affected obligation, current redacted evidence,
   evidence limits, risk, owner, approved retained paths, declared cache state, authorized changed paths,
   protected-value non-persistence evidence, first recovery action, and handoff. Retain no actual credential,
@@ -251,13 +255,9 @@ an exact block.
 - For an external-action handoff, return the owner, action, exact input identity, destination, authority still
   required, returned evidence or its absence, retained project paths and redacted evidence, first recovery
   action, and handoff. Complete only with a verified review and residual risk in review mode, or a complete
-  verified security change, exact returned external-owner evidence when required, and residual risk in change
-  mode. Otherwise return the exact block without calling it success.
+  verified security change, exact evidence returned by the named external-action owner when required, and
+  residual risk in change mode. Otherwise return the exact block without calling it success.
 
 ## References
 
-- [Go security best practices](https://go.dev/doc/security/best-practices) supplies official Go context for
-  source, dependency, fuzzing, race, and analysis decisions without replacing the project contract.
-- [Go vulnerability management](https://go.dev/security/vuln/) supplies official context for vulnerability
-  findings and reachability analysis without making one scanner mandatory.
 - [Evaluation checklist](checklists.md) is the local unchecked evaluation source for this skill.
