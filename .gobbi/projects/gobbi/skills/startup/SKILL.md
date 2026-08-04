@@ -1,6 +1,6 @@
 ---
 name: startup
-description: "Use when a caller needs one evidence-backed software-project design interview that produces five accepted phase documents and one accepted synthesis."
+description: "Use when a caller needs one evidence-backed software-project design interview that produces six accepted phase documents and one accepted synthesis."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, WebSearch, WebFetch
 skill-type: operation
 ---
@@ -8,12 +8,12 @@ skill-type: operation
 # Startup
 
 Startup turns current project evidence and user decisions into a complete software-project design. It returns
-five accepted phase documents and one accepted `startup.md` synthesis to the caller.
+six accepted phase documents and one accepted `startup.md` synthesis to the caller.
 
 The interview uses `Project -> Product -> Implementation`. A Project owns one or more independently useful
 Products. Each Product owns exactly one complete-stack Implementation; technologies remain categorized entries
-inside it. Startup produces design guidance and does not produce implementation tasks, plans, evaluation,
-memory, publication, or delivery work.
+inside it. Visual artifact forms remain evidence-selected overlays, never subjects. Startup produces design guidance
+and does not produce implementation tasks, plans, evaluation, memory, publication, or delivery work.
 
 ## Principles
 
@@ -30,7 +30,7 @@ separate ledger or metadata structure.
 ### Complete dependencies phase by phase
 
 Finish an earlier phase before using its decisions in a later one. Actor-visible Product promises must precede
-the Development mechanisms and evidence that realize them.
+the visual-production direction and Development mechanisms that realize them.
 
 ### Study lifecycles before asking
 
@@ -47,7 +47,7 @@ retirement scenarios. Treat unsupported scenarios as questions, never as facts.
 
 - **MUST complete the interview in phase-major order and obtain explicit user acceptance for every subject section.** Start a later phase only after every section in the current phase is accepted.
 
-- **MUST separately imagine and study Product scenarios before Product Lifecycle and Development scenarios before Development Lifecycle.** Product Lifecycle owns actor-visible promises; Development Lifecycle owns implementation-neutral complete-stack mechanisms and evidence.
+- **MUST separately imagine and study Product, Design, and Development Lifecycle scenarios before each matching phase.** Product Lifecycle owns actor-visible promises; Design Lifecycle owns visual production; Development Lifecycle owns implementation-neutral complete-stack mechanisms and evidence.
 
 - **NEVER turn Startup into implementation planning or persistent interview machinery.** Exclude task order, code signatures, exhaustive schemas, algorithms, metadata rows, alias ledgers, route or lifecycle state, Record dependencies, repository edits, publication, and delivery instructions.
 
@@ -64,7 +64,7 @@ retirement scenarios. Treat unsupported scenarios as questions, never as facts.
   datastores, protocols, platforms, infrastructure, services, libraries, and tools as categorized entries.
 - Present the hierarchy and correct it until the user accepts the Project, Products, and Implementations.
 
-### Phase 2 — Generate, interview, and accept five phase documents
+### Phase 2 — Generate, interview, and accept six phase documents
 
 #### 2.1 Use the ordered baseline banks
 
@@ -76,13 +76,16 @@ Use these banks and templates in order:
 | 2 | Design | [`topics/design.md`](topics/design.md) | [`templates/design.md`](templates/design.md) | `design.md` |
 | 3 | Specification | [`topics/specification.md`](topics/specification.md) | [`templates/specification.md`](templates/specification.md) | `specification.md` |
 | 4 | Product Lifecycle | [`topics/product-lifecycle.md`](topics/product-lifecycle.md) | [`templates/product-lifecycle.md`](templates/product-lifecycle.md) | `product-lifecycle.md` |
-| 5 | Development Lifecycle | [`topics/development-lifecycle.md`](topics/development-lifecycle.md) | [`templates/development-lifecycle.md`](templates/development-lifecycle.md) | `development-lifecycle.md` |
+| 5 | Design Lifecycle | [`topics/design-lifecycle.md`](topics/design-lifecycle.md) | [`templates/design-lifecycle.md`](templates/design-lifecycle.md) | `design-lifecycle.md` |
+| 6 | Development Lifecycle | [`topics/development-lifecycle.md`](topics/development-lifecycle.md) | [`templates/development-lifecycle.md`](templates/development-lifecycle.md) | `development-lifecycle.md` |
 
 - A topic bank is a baseline of likely meanings. It neither limits the interview to its questions nor requires
   every question to be asked.
 - Every phase contains Project, Product, and Implementation sections. Product Lifecycle Implementation
-  sections record implementation-specific conditions on actor-visible promises without owning mechanisms;
-  Development Lifecycle owns implementation-neutral complete-stack mechanisms and evidence.
+  sections record implementation-specific conditions on actor-visible promises without owning mechanisms.
+  Design Lifecycle owns visual-production direction, critique, approval, handoff, quality evidence, adaptation,
+  evolution, and retirement without owning Project structure or technical delivery. Development Lifecycle owns
+  implementation-neutral complete-stack mechanisms and evidence.
 - Select only overlays matched by accepted evidence. With no match, use the direct bank. With several matches,
   union distinct meanings and merge equivalent meanings through the alias lineage rule. Expose a conflict to
   the user instead of resolving it by overlay precedence; technologies never become subjects.
@@ -125,8 +128,9 @@ Use these banks and templates in order:
   the correction, including synthesis.
 - Continue only after explicit user acceptance. Complete the phase for the Project, then each Product and its
   one Implementation, before advancing to the next phase.
-- After Specification, run Step 2.4 before Product Lifecycle. After Product Lifecycle, run Step 2.5 before
-  Development Lifecycle. After other accepted phases, continue to the next ordered phase.
+- After Specification, run Step 2.4 before Product Lifecycle. After Product Lifecycle, run Step 2.5 before Design Lifecycle.
+  After Design Lifecycle, run Step 2.6 before Development Lifecycle. After other accepted
+  phases, continue to the next ordered phase.
 
 #### 2.4 Study Product Lifecycle scenarios before its interview
 
@@ -140,34 +144,50 @@ Use these banks and templates in order:
 - Use evidenced findings to reshape the Product working questions. Keep unsupported imagined scenarios as
   candidate questions or explicit assumptions and ask only those that can change actor-visible promises.
 
-#### 2.5 Study Development Lifecycle scenarios before its interview
+#### 2.5 Study Design Lifecycle scenarios before its interview
 
-- After every Product Lifecycle section is accepted and immediately before Development Lifecycle, run a
-  separate study using accepted Product promises, categorized entries, environments, build and release
-  constraints, current evidence, and applicable secure-development practice.
+- After every Product Lifecycle section is accepted and immediately before Design Lifecycle, independently
+  imagine and study applicable visual-production scenarios from accepted evidence, artifact forms, audience
+  contexts, current identity and design systems, evidence-backed references, constraints, prior failures, and
+  applicable accessibility practice.
+- Challenge audience and purpose, concept, theme, color and vibe, style, typography, layout, imagery, relevant
+  motion, accessibility, content and format stress, critique, approval, handoff, visual quality checks,
+  adaptation, evolution, and retirement. Consider ordinary, alternate, failing, recovery, change, and
+  cross-format paths for UI, presentation, report, or comparable visual artifacts when applicable.
+- Use evidenced findings to reshape the Design Lifecycle working questions and select only evidence-matched
+  overlays. Keep unsupported imagined scenarios as candidate questions or explicit assumptions, and do not
+  turn artifact forms into subjects or new acceptance boundaries.
+
+#### 2.6 Study Development Lifecycle scenarios before its interview
+
+- After every Design Lifecycle section is accepted and immediately before Development Lifecycle, run a
+  separate study using accepted Product promises, visual handoff and quality obligations, categorized entries,
+  environments, build and release constraints, current evidence, and applicable secure-development practice.
 - Challenge clean setup, routine and emergency change, partial failure, dependency upgrade or compromise,
   reproducible build, verification topology, release identity, distribution, deployment, mixed-version
   rollout and rollback, migration, contributor onboarding, maintainer handoff, replacement, deprecation, and
   retirement.
 - Generate or reshape complete-stack Development questions from each applicable Product promise and scenario.
-  Let risk determine depth. Ask about one categorized entry only when evidence shows a material difference
-  from the complete-stack answer.
+  Include applicable accepted visual handoff obligations without taking ownership of visual direction. Let risk
+  determine depth. Ask about one categorized entry only when evidence shows a material difference from the
+  complete-stack answer.
 
 ### Phase 3 — Synthesize and return the accepted design
 
 #### 3.1 Write, review, and accept the synthesis
 
-- Read the five accepted phase documents together. Resolve inconsistent terms, missing links, unsupported
+- Read the six accepted phase documents together. Resolve inconsistent terms, missing links, unsupported
   conclusions, and contradictions through the targeted correction in Step 2.3.
 - Write [`startup.md`](templates/startup.md) as an independently readable synthesis. Connect decisive aliases
-  from problem evidence through Design, Specification, Product promises, and Development evidence.
-- Present all six documents together. Correct rejected content in its owning document, reread the complete set,
+  from problem evidence through Design, Specification, Product promises, visual-production direction, and
+  Development evidence.
+- Present all seven documents together. Correct rejected content in its owning document, reread the complete set,
   and obtain the user's final explicit acceptance of `startup.md`.
 
 #### 3.2 Return the complete design
 
 - Return the accepted contents of `problem-definition.md`, `design.md`, `specification.md`,
-  `product-lifecycle.md`, `development-lifecycle.md`, and `startup.md` to the caller.
+  `product-lifecycle.md`, `design-lifecycle.md`, `development-lifecycle.md`, and `startup.md` to the caller.
 - State remaining evidence limits. Do not continue into implementation planning or delivery.
 
 ## References
@@ -179,6 +199,9 @@ Use these banks and templates in order:
 - [`topics/product-lifecycle/sdk.md`](topics/product-lifecycle/sdk.md)
 - [`topics/product-lifecycle/mobile.md`](topics/product-lifecycle/mobile.md)
 - [`topics/product-lifecycle/data.md`](topics/product-lifecycle/data.md)
+- [`topics/design-lifecycle/ui.md`](topics/design-lifecycle/ui.md)
+- [`topics/design-lifecycle/presentation.md`](topics/design-lifecycle/presentation.md)
+- [`topics/design-lifecycle/report.md`](topics/design-lifecycle/report.md)
 - [`topics/development-lifecycle/tool.md`](topics/development-lifecycle/tool.md)
 - [`topics/development-lifecycle/framework.md`](topics/development-lifecycle/framework.md)
 - [`topics/development-lifecycle/language.md`](topics/development-lifecycle/language.md)

@@ -1,8 +1,8 @@
 # {Project} — Startup Design
 
 This document is an independently readable synthesis of the accepted Problem Definition, Design,
-Specification, Product Lifecycle, and Development Lifecycle. It contains the decisions and evidence needed to
-understand the Project without reading the phase documents first.
+Specification, Product Lifecycle, Design Lifecycle, and Development Lifecycle. It contains the decisions and
+evidence needed to understand the Project without reading the phase documents first.
 
 Retain decisive `[alias]` tags and connect them across phases wherever they clarify the accepted reasoning.
 
@@ -28,7 +28,8 @@ Repeat this section for every Product in the accepted order.
 - Implementation: {Product Implementation}
 
 {Summarize the independently useful consumer outcome, boundary, capabilities, interfaces, observable behavior,
-data and safety contracts, actor-visible lifecycle promises, risks, and decisive evidence.}
+data and safety contracts, actor-visible lifecycle promises, visual-production direction and approval, risks,
+and decisive evidence.}
 
 ## Implementations
 
@@ -40,16 +41,17 @@ Repeat this section once per Product.
 - Relationship: the Product's single complete-stack Implementation
 
 {Summarize runtime units, interfaces, data flow, categorized entries and their roles, supported environments,
-complete-stack Development mechanisms, verification evidence, security and license duties, migration and
-rollback, retirement and handoff, risks, and evidence that would change the design.}
+accepted visual artifacts, handoff and visual quality evidence, complete-stack Development mechanisms,
+verification evidence, security and license duties, migration and rollback, retirement and handoff, risks,
+and evidence that would change the design.}
 
 ## Integrated Design
 
 ### Decisions and traceability
 
 {Connect each decisive aliased problem fact to its Design choice, Specification obligation, Product Lifecycle
-promise, and Development Lifecycle mechanism and evidence. Explain cross-Product dependencies and accepted
-tradeoffs.}
+promise, Design Lifecycle direction and evidence, and Development Lifecycle mechanism and evidence. Explain
+cross-Product dependencies and accepted tradeoffs.}
 
 ### Vocabulary
 
@@ -62,6 +64,6 @@ require the accepted design to change.}
 
 ## Final Acceptance
 
-{Confirm that the user reviewed the complete six-document design and accepted it as coherent design guidance.}
+{Confirm that the user reviewed the complete seven-document design and accepted it as coherent design guidance.}
 
 - Accepted: {yes — user and date}
