@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: "MUST load when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults."
+description: "MUST load when judging target support, artifact and installed evidence, update and data compatibility, recovery, release readiness, rollout controls, or rollback and forward-fix options for an installable Electron desktop application written in TypeScript."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---

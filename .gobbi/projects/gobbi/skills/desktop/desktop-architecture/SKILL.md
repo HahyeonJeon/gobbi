@@ -1,6 +1,6 @@
 ---
 name: desktop-architecture
-description: "MUST load when choosing or reviewing an installed desktop application's in-application information architecture or renderer state architecture, covering view hierarchy, navigation without URLs, state ownership across processes and windows, and what a relaunch restores."
+description: "MUST load when choosing or reviewing view hierarchy, navigation, window model, activation request behavior, application-state ownership, or state restoration for an installable Electron desktop application written in TypeScript."
 allowed-tools: Read, Grep, Glob
 skill-type: preference
 ---

@@ -1,6 +1,6 @@
 ---
 name: desktop-interface
-description: "MUST load when choosing or reviewing an installed desktop application's project identity, design-evidence threshold, interface concept exploration, aesthetic system, or interaction and motion intent."
+description: "MUST load when choosing or reviewing research evidence, interface requirements, product identity, interface concepts, prototypes, representative-user evidence, visual style, interaction or motion intent, accessibility, adaptation, success measures, or interface improvement decisions for an installable Electron desktop application written in TypeScript."
 allowed-tools: Read, Grep, Glob, WebSearch, WebFetch
 skill-type: preference
 ---
