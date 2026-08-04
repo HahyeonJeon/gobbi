@@ -12,7 +12,7 @@ trust boundaries, project structure, preload bridges, IPC contracts, state and r
 view ownership, performance placement, and technical failure isolation.
 
 Start from the accepted application intent and repository constraints. Resolve current API, version, process
-capability, and mechanism facts through [Electron Runtime](../electron-runtime/SKILL.md) and current official
+capability, and mechanism facts through [`electron-runtime`](../electron-runtime/SKILL.md) and current official
 Electron documentation before making a technical choice.
 
 This skill excludes product and interface judgment, installed application behavior and recovery promises,

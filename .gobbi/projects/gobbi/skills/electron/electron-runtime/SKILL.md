@@ -225,10 +225,12 @@ Use [`webContents`](https://www.electronjs.org/docs/latest/api/web-contents),
 | Owned utility process | Its direct `spawn`, `error`, `exit`, and `message` events |
 | Main-process crash or exit | An external observer or supervisor; in-process listeners cannot run after the main process exits |
 
-`crashReporter` uses Crashpad and should start early in each process that needs it. A main-process start can
-establish collection for subsequent Electron process crashes, but collection is not a live recovery signal.
-Confirm where reports are stored or uploaded and what the pinned major supports without designing a logging
-or reporting policy.
+`crashReporter` uses Crashpad. The main process should initialize it early, before any monitored child
+process is created. Main-process initialization monitors subsequently created child processes. A Node child
+calls `process.crashReporter.start()` only when the main process did not initialize the crash reporter.
+Renderer-process startup is deprecated and unavailable in current Electron; reconcile that boundary with the
+project's pinned Electron major. Crash collection is not a live recovery signal. Confirm where reports are
+stored or uploaded without designing a logging or reporting policy.
 
 A renderer crash, a navigation, a destroyed window, and a hung renderer require different interpretations.
 Check `webContents.isDestroyed()`, the failure reason, the current URL, and the owning window or view before

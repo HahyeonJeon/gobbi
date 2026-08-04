@@ -369,21 +369,21 @@ responsible owner, and rerun every affected and dependent case after an authoriz
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [Electron Release](../electron-release/SKILL.md) owns release policy, readiness decisions, and external
+- [`electron-release`](../electron-release/SKILL.md) owns release policy, readiness decisions, and external
   actions.
-- [Electron Packaging](../electron-packaging/SKILL.md) owns artifact construction, immutable candidate
+- [`electron-packaging`](../electron-packaging/SKILL.md) owns artifact construction, immutable candidate
   records, and candidate acceptance.
-- [Electron Observability](../electron-observability/SKILL.md) owns diagnostic emission, correlation,
+- [`electron-observability`](../electron-observability/SKILL.md) owns diagnostic emission, correlation,
   redaction, arrival, and retention.
-- [Electron Development](../electron-development/SKILL.md) owns product source implementation and
+- [`electron-development`](../electron-development/SKILL.md) owns product source implementation and
   construction evidence.
-- [Electron Contract](../electron-contract/SKILL.md) owns installed application lifecycle and
+- [`electron-contract`](../electron-contract/SKILL.md) owns installed application lifecycle and
   operating-system behavior claims.
-- [Electron Design](../electron-design/SKILL.md) owns process, bridge, security, window, session, and resource
+- [`electron-design`](../electron-design/SKILL.md) owns process, bridge, security, window, session, and resource
   policy.
-- [Electron Interface](../electron-interface/SKILL.md) owns application identity, interaction intent,
+- [`electron-interface`](../electron-interface/SKILL.md) owns application identity, interaction intent,
   accessibility, and operating-system convention preferences.
-- [Electron Runtime](../electron-runtime/SKILL.md) owns current Electron mechanism facts and version
+- [`electron-runtime`](../electron-runtime/SKILL.md) owns current Electron mechanism facts and version
   reconciliation.
 
 These are static claim sources. The `Packaging ↔ Testing` and `Release ↔ Testing` exchanges above are dynamic

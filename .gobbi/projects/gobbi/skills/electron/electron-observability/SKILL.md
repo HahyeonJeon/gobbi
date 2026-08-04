@@ -44,9 +44,9 @@ materially degrade the behavior it records.
 ## Rules
 
 - **MUST start from accepted records owned by
-  [Electron Contract](../electron-contract/SKILL.md) and
-  [Electron Design](../electron-design/SKILL.md), with current mechanism and pinned-major facts from
-  [Electron Runtime](../electron-runtime/SKILL.md).** Return a contradiction, missing decision, or disputed
+  [`electron-contract`](../electron-contract/SKILL.md) and
+  [`electron-design`](../electron-design/SKILL.md), with current mechanism and pinned-major facts from
+  [`electron-runtime`](../electron-runtime/SKILL.md).** Return a contradiction, missing decision, or disputed
   mechanism to its earliest owner before dependent emission work continues.
 
 - **MUST name each diagnostic question, consumer, signal owner, source commit or digest, installed artifact
@@ -233,8 +233,8 @@ materially degrade the behavior it records.
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [Electron Contract](../electron-contract/SKILL.md) owns installed diagnostics requirements and recovery
+- [`electron-contract`](../electron-contract/SKILL.md) owns installed diagnostics requirements and recovery
   promises.
-- [Electron Design](../electron-design/SKILL.md) owns process, trust, resource, and failure decisions.
-- [Electron Runtime](../electron-runtime/SKILL.md) owns current mechanism, pinned-major, operating-system and
+- [`electron-design`](../electron-design/SKILL.md) owns process, trust, resource, and failure decisions.
+- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism, pinned-major, operating-system and
   architecture support, and final runtime-diagnosis facts.

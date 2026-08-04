@@ -41,10 +41,10 @@ only. Later owners establish behavior and artifact claims.
 ## Rules
 
 - **MUST start from accepted records owned by
-  [Electron Contract](../electron-contract/SKILL.md),
-  [Electron Interface](../electron-interface/SKILL.md), and
-  [Electron Design](../electron-design/SKILL.md), with current mechanism facts from
-  [Electron Runtime](../electron-runtime/SKILL.md).** Return a contradiction or missing authority to the
+  [`electron-contract`](../electron-contract/SKILL.md),
+  [`electron-interface`](../electron-interface/SKILL.md), and
+  [`electron-design`](../electron-design/SKILL.md), with current mechanism facts from
+  [`electron-runtime`](../electron-runtime/SKILL.md).** Return a contradiction or missing authority to the
   earliest affected owner before source work continues.
 
 - **MUST choose implementation or read-only review and record the exact affected set.** A review request
@@ -190,8 +190,8 @@ only. Later owners establish behavior and artifact claims.
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [Electron Contract](../electron-contract/SKILL.md) owns installed application behavior and recovery claims.
-- [Electron Interface](../electron-interface/SKILL.md) owns observable interface decisions.
-- [Electron Design](../electron-design/SKILL.md) owns technical process, trust, bridge, state, resource, and
+- [`electron-contract`](../electron-contract/SKILL.md) owns installed application behavior and recovery claims.
+- [`electron-interface`](../electron-interface/SKILL.md) owns observable interface decisions.
+- [`electron-design`](../electron-design/SKILL.md) owns technical process, trust, bridge, state, resource, and
   lifecycle decisions.
-- [Electron Runtime](../electron-runtime/SKILL.md) owns current mechanism and pinned-major facts.
+- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism and pinned-major facts.
