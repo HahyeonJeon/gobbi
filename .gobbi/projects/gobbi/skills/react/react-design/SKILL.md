@@ -45,30 +45,20 @@ performance assumptions before implementation receives the design.
 
 ## Rules
 
-- **MUST begin with an accepted product outcome and current product behavior.** Route complete application
-  design to the named application skill, and route any independent verdict to Evaluation.
+- **MUST begin with an accepted product outcome and current product behavior.**
 
-- **MUST present credible, reference-backed alternatives when a material React choice exists.** Explain the
-  trade-offs and recommendation, let the user choose, and never infer approval.
+- **MUST obtain the user's accepted choice for every material React decision.**
 
-- **MUST follow the [Rules of React](https://react.dev/reference/rules).** Keep components and Hooks pure,
-  keep props, state snapshots, context values, values returned by Hooks, and values passed to JSX immutable,
-  call ordinary Hooks at the top level, and apply the documented
-  [`use` exception](https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks) only inside a
-  component or Hook and never inside `try`/`catch`.
+- **MUST follow the [Rules of React](https://react.dev/reference/rules).**
 
-- **MUST keep state minimal and give each state value one owner.** Compute renderable values during render,
-  use keys that express durable identity, and lift state only to the narrowest state owner that coordinates
-  its consumers.
+- **MUST keep persistent state minimal and give each state value one owner.**
 
-- **NEVER use an Effect to derive render data or handle the user action that caused a change.** Synchronize a
-  named external system with complete dependencies, cleanup, and obsolete-result protection.
+- **NEVER use an Effect to derive render data or handle the user action that caused a change.**
 
-- **MUST model runtime access and failure boundaries accurately.** Keep privileged capabilities behind typed,
-  approved interfaces; an Error Boundary catches descendant render failures and errors thrown inside a
-  function passed to the `startTransition` function returned by `useTransition`, but not ordinary
-  event-handler, server-rendering, self-boundary, or unrelated asynchronous failures, and it must define an
-  observable fallback and recovery path.
+- **MUST model Error Boundary behavior from official documentation for the exact installed React release.**
+  Model descendant render failures as caught by an included boundary; include errors thrown inside a function
+  passed to the `startTransition` function returned by `useTransition` only when that exact release supports
+  them.
 
 ## Procedure
 
@@ -93,13 +83,20 @@ performance assumptions before implementation receives the design.
 - **Input / precondition:** Use the bound outcome and readable project source, configuration, and design
   material from Step 1.1.
 - **Action / decision:** Inspect the active React project, existing components, design system, data model,
-  installed React version and configuration, available user evidence, internal prior art, and current official
-  guidance for [component design](https://react.dev/learn/thinking-in-react),
+  exact installed React and renderer versions and configuration, available user evidence, internal prior art,
+  and current official guidance for [component design](https://react.dev/learn/thinking-in-react),
   [state](https://react.dev/learn/managing-state), [escape hatches](https://react.dev/learn/escape-hatches),
   [React Developer Tools](https://react.dev/learn/react-developer-tools), and
-  [`Profiler`](https://react.dev/reference/react/Profiler).
+  [`Profiler`](https://react.dev/reference/react/Profiler). Verify Error Boundary behavior against the
+  official [Component](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary)
+  and [`useTransition`](https://react.dev/reference/react/useTransition#displaying-an-error-to-users-with-an-error-boundary)
+  documentation for that exact React release: stable React 19 supports transition-function errors, while the
+  [stable React 18.3 documentation](https://18.react.dev/reference/react/useTransition#displaying-an-error-to-users-with-an-error-boundary)
+  marks that behavior as canary-only.
 - **Evidence / state:** Create an evidence register that names each source, its applicability and limits,
   current product behavior, preserved project patterns, conflicts, and the React decisions it constrains.
+  Record the exact installed React and renderer versions and whether the official documentation for that React
+  release supports transition-function Error Boundary handling.
 - **Next branch / recovery:** Return a material evidence conflict or missing application decision to the user
   or the named application skill; continue to Phase 2 when the evidence can support React alternatives.
 
@@ -131,11 +128,16 @@ performance assumptions before implementation receives the design.
 
 - **Input / precondition:** Start from the accepted component map, props-and-events table, and every required
   interactive state.
-- **Action / decision:** Identify the minimal state, place each value at its narrowest state owner, derive
-  renderable values, map one-way data and event flow, and decide component identity plus intended state
-  preservation or reset. Keep render pure, Hooks in valid positions, custom Hooks focused on reusable stateful
-  behavior, and each Effect limited to a named external system with dependencies, cleanup, and
-  obsolete-result protection.
+- **Action / decision:** Identify the minimal persistent state, place each value at its narrowest state owner,
+  derive renderable values during render, map one-way data and event flow, and decide component identity plus
+  intended state preservation or reset. Use keys that express durable identity and lift state only to the
+  narrowest owner that coordinates its consumers. Keep components and Hooks pure, and keep props, state
+  snapshots, context values, values returned by Hooks, and values passed to JSX immutable. Call ordinary Hooks
+  at the top level; apply the documented
+  [`use` exception](https://react.dev/reference/eslint-plugin-react-hooks/lints/rules-of-hooks) only inside a
+  component or Hook and never inside `try`/`catch`. Keep custom Hooks focused on reusable stateful behavior,
+  and limit each Effect to a named external system with complete dependencies, cleanup, and obsolete-result
+  protection.
 - **Evidence / state:** Produce the state and data-flow map, identity and preserve-or-reset decisions, render
   and Hook obligations, and the Effect and external-system map.
 - **Next branch / recovery:** Remove duplicate state, render mutation, invalid Hook placement, internal React
@@ -146,11 +148,17 @@ performance assumptions before implementation receives the design.
 - **Input / precondition:** Use the complete component, state, data-flow, identity, and Effect maps plus the
   accepted host and privilege limits.
 - **Action / decision:** Decide Error Boundary inclusion or exclusion, the smallest recoverable subtree,
-  fallback, recovery, and failure routes outside the boundary. Specify native semantics, labels, keyboard and
-  focus behavior, approved host interfaces, performance hypotheses, and a measurement plan using React
-  Developer Tools or `Profiler` when render measurement is required.
-- **Evidence / state:** Produce the Error Boundary and recovery map, accessibility obligations, host limits,
-  and performance hypotheses with their interaction, metric, environment, baseline, and comparison method.
+  fallback, and recovery. Model descendant render failures as caught by an included boundary. Model an error
+  thrown inside a function passed to the `startTransition` function returned by `useTransition` as caught only
+  when the official documentation for the exact installed React release supports it. Route ordinary
+  event-handler, server-rendering, self-boundary, and unrelated asynchronous failures to their responsible
+  handlers. Specify native semantics, labels, keyboard and focus behavior, typed, approved host interfaces,
+  performance hypotheses, and a measurement plan using React Developer Tools or `Profiler` when render
+  measurement is required.
+- **Evidence / state:** Produce the Error Boundary and recovery map with the exact installed React release,
+  transition-function support decision, fallback, recovery, and uncaught routes; also record accessibility
+  obligations, host limits, and performance hypotheses with their interaction, metric, environment, baseline,
+  and comparison method.
 - **Next branch / recovery:** Route a newly exposed application-level experience or structure choice to the
   named skill from Step 1.1; continue to Phase 3 when every React behavior has a defined result or named skill.
 

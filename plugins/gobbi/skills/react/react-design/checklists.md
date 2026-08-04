@@ -76,14 +76,16 @@ results, fails the scenario.
 
 ### RDES-SC-STRUCTURE-04 — Expected failure: A render subtree fails
 
-An Error Boundary should contain only the failures React routes to it and expose a usable fallback. Claiming
-unrelated failure types or omitting recovery fails the scenario.
+An Error Boundary should contain descendant render failures and, only when official documentation for the
+exact installed React release supports it, errors thrown inside a function passed to the `startTransition`
+function returned by `useTransition`. Claiming transition-function support for an unsupported release,
+claiming unrelated failure types, or omitting fallback or recovery fails the scenario.
 
 #### Checklist
 
-- [ ] RDES-CK-STRUCTURE-04-01 — The boundary catches a render failure from its descendant tree and an error thrown inside a function passed to the `startTransition` function returned by `useTransition`.
+- [ ] RDES-CK-STRUCTURE-04-01 — The boundary catches a render failure from its descendant tree and, when official documentation for the exact installed React release supports it, an error thrown inside a function passed to the `startTransition` function returned by `useTransition`.
 - [ ] RDES-CK-STRUCTURE-04-02 — The caught failure produces an observable fallback.
-- [ ] RDES-CK-STRUCTURE-04-03 — An ordinary event-handler failure, a server-rendering failure, a failure thrown by the boundary itself, and an unrelated asynchronous callback failure each reach the responsible error handler instead of that boundary.
+- [ ] RDES-CK-STRUCTURE-04-03 — An ordinary event-handler failure, a server-rendering failure, a failure thrown by the boundary itself, an unrelated asynchronous callback failure, and a transition-function failure when the exact installed React release does not support Error Boundary handling each reach the responsible error handler instead of that boundary.
 
 ## Performance
 

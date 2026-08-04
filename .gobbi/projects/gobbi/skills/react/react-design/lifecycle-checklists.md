@@ -13,11 +13,11 @@ or record ownership makes later design choices unsupported and fails the scenari
 
 #### Checklist
 
-- [ ] RDES-CK-PROJECT-03-01 — Step 1.1 records the affected people.
-- [ ] RDES-CK-PROJECT-03-02 — Step 1.1 records the included React design questions and explicit exclusions.
-- [ ] RDES-CK-PROJECT-03-03 — Step 1.1 records the accepted design authority.
-- [ ] RDES-CK-PROJECT-03-04 — Step 1.1 records the project-native design-record location.
-- [ ] RDES-CK-PROJECT-03-05 — Step 1.1 continues only after the React component-design boundary is clear.
+- [ ] RDES-CK-PROJECT-03-01 — The bound React design context records the affected people.
+- [ ] RDES-CK-PROJECT-03-02 — The bound React design context records the included React design questions and explicit exclusions.
+- [ ] RDES-CK-PROJECT-03-03 — The bound React design context records the accepted design authority.
+- [ ] RDES-CK-PROJECT-03-04 — The bound React design context records the project-native design-record location.
+- [ ] RDES-CK-PROJECT-03-05 — The React component-design boundary is clear before project and reference study begins.
 - [ ] RDES-CK-PROJECT-03-06 — The evidence register names each source, applicability and limits, current behavior, preserved patterns, conflicts, and constrained React decisions.
 
 ### RDES-SC-PROJECT-04 — Expected failure: Context or evidence cannot support design
@@ -29,7 +29,7 @@ component design without returning the gap to its owner fails the scenario.
 
 - [ ] RDES-CK-PROJECT-04-01 — Missing outcome, authority, or record location is requested instead of invented.
 - [ ] RDES-CK-PROJECT-04-02 — A material evidence conflict or missing application decision returns to the user or named application skill.
-- [ ] RDES-CK-PROJECT-04-03 — Phase 2 starts only when evidence supports credible React alternatives.
+- [ ] RDES-CK-PROJECT-04-03 — The evidence register supports credible React alternatives before component design begins.
 
 ## Structure
 
@@ -76,7 +76,7 @@ Unneeded construction, missing inspection, or unrecorded measurement limits fail
 
 #### Checklist
 
-- [ ] RDES-CK-PERFORMANCE-03-01 — Step 3.2 runs only for uncertain behavior, unresolved evidence, or a material conflict.
+- [ ] RDES-CK-PERFORMANCE-03-01 — Prototype work is limited to uncertain behavior, unresolved evidence, or a material conflict.
 - [ ] RDES-CK-PERFORMANCE-03-02 — A static implementation or bounded prototype is built only when an evidence gap requires it.
 - [ ] RDES-CK-PERFORMANCE-03-03 — Each prototype is inspected with project tools.
 - [ ] RDES-CK-PERFORMANCE-03-04 — Render behavior is measured when the performance plan requires it.
@@ -119,15 +119,15 @@ an isolated validation defect leaves the design inconsistent and fails the scena
 
 ## Consistency
 
-### RDES-SC-CONSISTENCY-03 — Rule violation: Lifecycle gates or handoff evidence disagree
+### RDES-SC-CONSISTENCY-03 — Rule violation: Lifecycle completion conditions or handoff evidence disagree
 
-Each phase gate and the final handoff must describe the same validated design state. Advancing early or
-handing off conflicting records fails the scenario.
+Each phase's completion conditions and the final handoff must describe the same validated design state.
+Advancing early or handing off conflicting records fails the scenario.
 
 #### Checklist
 
-- [ ] RDES-CK-CONSISTENCY-03-01 — Phase 3 starts only after every React behavior has a defined result or named application skill.
-- [ ] RDES-CK-CONSISTENCY-03-02 — Phase 4 starts only after the complete React design self-validates and required user decisions are resolved.
+- [ ] RDES-CK-CONSISTENCY-03-01 — Every React behavior has a defined result or named application owner before design validation begins.
+- [ ] RDES-CK-CONSISTENCY-03-02 — The complete React design self-validates and required user decisions are resolved before handoff preparation begins.
 - [ ] RDES-CK-CONSISTENCY-03-03 — Handoff citations, design record, prototype limits, and scenario results agree.
 
 ## Risk
