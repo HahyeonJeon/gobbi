@@ -1,264 +1,223 @@
-# Desktop Delivery Evaluation Checklist
+# Desktop Development Evaluation Checklist
 
-This reusable unchecked source evaluates one coordination run against the trigger, owner-map, contract-lock,
-slice-consistency, proof, and authority obligations this skill owns. It evaluates coordination and handoffs,
-not the policies this operation routes elsewhere: the observable design judgment belongs to
-[`desktop-interface`](../desktop-interface/SKILL.md), the in-application structure to
-[`desktop-architecture`](../desktop-architecture/SKILL.md), the installed-platform contract to
-[`desktop-contract`](../desktop-contract/SKILL.md), release judgment to
-[`desktop-release`](../desktop-release/SKILL.md), and Electron mechanics to the
-[`electron`](../../electron/SKILL.md) family, and each of those owners supplies its own checklist. It is
-governed by the [`desktop`](../SKILL.md) domain and [`desktop-delivery`](SKILL.md) rules. The source commit
-that contains this file identifies the checklist version. Its stable owner prefix is `DTDLVR`.
+This reusable unchecked source evaluates one Desktop Development coordination run across its ten lifecycle
+results, owner routes, evidence states, authority boundaries, recovery, and closure. It evaluates the
+coordinator's result assembly; it does not copy specialist policy or independently certify the application.
 
-This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
-resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
-unchecked binary condition in this source.
+Architecture judgments belong to
+[`desktop-architecture`](../desktop-architecture/SKILL.md), Interface judgments to
+[`desktop-interface`](../desktop-interface/SKILL.md), current target facts to the applicable
+[`desktop-windows`](../desktop-windows/SKILL.md),
+[`desktop-macos`](../desktop-macos/SKILL.md), or
+[`desktop-linux`](../desktop-linux/SKILL.md) Manual, and release judgments to
+[`desktop-release`](../desktop-release/SKILL.md). Electron lifecycle facts, implementation, tests, and
+release mechanisms remain with their exact [`electron`](../../electron/SKILL.md) children. This checklist
+owns family-wide Overall closure by requiring current, accepted where needed, and agreeing owner results.
 
-A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
-that this scenario reuses.
+The source is governed by the [`desktop`](../SKILL.md) domain and [Desktop Development](SKILL.md) operation.
+The source commit identifies its version, and its stable owner prefix is `DTDLVR`.
+
+This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects
+applicable rows, records evidence and findings, and issues the verdict. Preserve every row as an unchecked
+binary condition.
 
 ## Project
 
-### DTDLVR-SC-PROJECT-01 — Normal case: the trigger fits and every obligation has one owner
+### DTDLVR-SC-PROJECT-10 — Normal case: the first five stages return exact results
 
-The request needs more than one capability owner or makes a complete installed, packaged, or release-ready
-claim, so this operation runs. The expected outcome names every active owner and what each must return; an
-in-scope obligation with no owner, or with two, is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-PROJECT-01-01 — The trigger is recorded as multi-capability coordination or a complete installed, packaged, or release-ready claim.
-- [ ] DTDLVR-CK-PROJECT-01-02 — Every in-scope obligation has exactly one named owner.
-- [ ] DTDLVR-CK-PROJECT-01-03 — Every named owner has the artifact or decision it must return recorded with it.
-- [ ] DTDLVR-CK-PROJECT-01-04 — The source set, authority boundary, and explicit non-goals are recorded.
-
-### DTDLVR-SC-PROJECT-02 — Rule violation: a single-owner request run through the whole operation
-
-The request changes one thing inside one owner's boundary, and the operation runs anyway because it is the
-familiar route. The expected outcome routes the request directly and stops after recording the handoff; a
-coordination run built around a bounded change is the failure.
+The scoped change advances through the first five evidence boundaries. A status-only stage list without the
+exact result for its current subject fails this scenario.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PROJECT-02-01 — A bounded single-owner request is routed directly to that owner.
-- [ ] DTDLVR-CK-PROJECT-02-02 — The operation stops after recording that handoff rather than continuing into its later phases.
+- [ ] DTDLVR-CK-PROJECT-10-01 — Requirements ends with exactly `Requirements accepted`.
+- [ ] DTDLVR-CK-PROJECT-10-02 — Design collaboration ends with exactly `Design decisions accepted for the current subject`.
+- [ ] DTDLVR-CK-PROJECT-10-03 — Implementation ends with exactly `Implemented`.
+- [ ] DTDLVR-CK-PROJECT-10-04 — Software testing and verification ends with exactly `Software-tested and verified`.
+- [ ] DTDLVR-CK-PROJECT-10-05 — Packaging ends with exactly `Packaged`.
 
-### DTDLVR-SC-PROJECT-03 — Expected failure: an owner, source, or authority is missing
+### DTDLVR-SC-PROJECT-11 — Normal case: the last five stages return exact results
 
-A required owner, source document, or decision authority cannot be reached, so the coordination cannot be
-framed. The expected outcome preserves the request and returns `NEEDS_CONTEXT`; inventing the missing policy
-to keep moving is the failure.
+The run proves the installed artifact, reaches release readiness or its exact terminal branch, and continues
+only when matching authority exists. Every continued authorized run closes through Maintenance.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PROJECT-03-01 — A missing owner, required source, or decision authority produces a `NEEDS_CONTEXT` return rather than an invented policy.
-- [ ] DTDLVR-CK-PROJECT-03-02 — The original request is preserved intact through that return.
+- [ ] DTDLVR-CK-PROJECT-11-01 — Installation and installed-artifact verification ends with exactly `Installed and verified`.
+- [ ] DTDLVR-CK-PROJECT-11-02 — Release readiness ends with `Release-ready` or its exact blocker or cold handoff.
+- [ ] DTDLVR-CK-PROJECT-11-03 — Authorized publication/deployment ends with exactly `Published/deployed for the authorized action` when that stage runs.
+- [ ] DTDLVR-CK-PROJECT-11-04 — Post-release operations ends with `Post-release operation observed` or its exact observation blocker or stop result when that stage runs.
+- [ ] DTDLVR-CK-PROJECT-11-05 — Maintenance ends with exactly `Maintenance decision recorded` when an authorized run continues through closure.
 
 ## Structure
 
-### DTDLVR-SC-STRUCTURE-01 — Normal case: the skeleton precedes behavior and one thin path is installed
+### DTDLVR-SC-STRUCTURE-10 — Normal case: each stage record identifies its work
 
-Construction begins from a locked contract. The expected outcome establishes the whole source, process,
-bridge, data, build, package, test, documentation, and instrumentation skeleton, then proves one real path
-end to end from an installed artifact; behavior built on a partial skeleton is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-STRUCTURE-01-01 — The complete source, process, bridge, data, build, package, test, documentation, and instrumentation skeleton exists before detailed behavior.
-- [ ] DTDLVR-CK-STRUCTURE-01-02 — Each configuration and type boundary sits with the process it governs.
-- [ ] DTDLVR-CK-STRUCTURE-01-03 — One smallest real path runs from a supported entry through the observable interface and narrow bridge to its authoritative effect, truthful completion, and applicable persisted state.
-- [ ] DTDLVR-CK-STRUCTURE-01-04 — That path is packaged for one explicitly named target.
-- [ ] DTDLVR-CK-STRUCTURE-01-05 — The packaged path is installed on that named target.
-- [ ] DTDLVR-CK-STRUCTURE-01-06 — The installed path is exercised on that named target with no development-only assumption.
-
-### DTDLVR-SC-STRUCTURE-02 — Rule violation: the coordinator decided a routed policy itself
-
-An owner's answer was slow or absent, so the coordination settled a design, structure, platform, mechanism, or
-release question directly. The expected outcome returns the question to its owner; a coordination record that
-contains an owner's decision is the failure even when the decision is defensible.
+Every completed or blocked stage has one current record. Each required field is explicit in that record;
+inference from another stage does not satisfy it.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-STRUCTURE-02-01 — No routed decision is settled in this coordination rather than by its owner: observable design judgment by `desktop-interface`, in-application structure and state ownership by `desktop-architecture`, installed-platform contract entries by `desktop-contract`, language and renderer idiom by coding and the applicable language or renderer skills, Electron mechanics by the Electron family, release judgment by `desktop-release`, and the independent verdict by Evaluation.
-- [ ] DTDLVR-CK-STRUCTURE-02-02 — Every conflict is returned to the earliest owner whose decision must change, rather than resolved in the coordination.
+- [ ] DTDLVR-CK-STRUCTURE-10-07 — Every stage record contains subject/scope, actor/owner, current inputs, action/method, exact result, and evidence location.
 
-### DTDLVR-SC-STRUCTURE-03 — Normal case: every observable obligation traces to one implementation unit
+### DTDLVR-SC-STRUCTURE-11 — Expected failure: a stage record cannot explain dependency or recovery
 
-The accepted design must reach code without losing a state, a failure, or an accessibility obligation. The
-expected outcome traces each one to an observable specification and assigns each implementation unit one
-process and one capability owner; an untraced obligation is the failure.
+A cold reader must be able to identify why the stage stopped, who owns the next decision, and where the run
+continues. Missing fields fail even when the displayed stage result looks successful.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-STRUCTURE-03-01 — Every entry mode, state, action, failure, recovery route, accessibility obligation, first paint, and touched native behavior traces to an observable specification.
-- [ ] DTDLVR-CK-STRUCTURE-03-02 — Every implementation unit is assigned one process and one capability owner.
-- [ ] DTDLVR-CK-STRUCTURE-03-03 — An implementation constraint that contradicts the accepted experience is returned to the owning design decision with its evidence rather than silently changing behavior.
+- [ ] DTDLVR-CK-STRUCTURE-11-06 — Every stage record contains dependencies/routes, failures/limitations, applicable authority, return/reopen condition, and next branch.
 
 ## Performance
 
-### DTDLVR-SC-PERFORMANCE-01 — Normal case: responsiveness and resource use are measured under real work
+### DTDLVR-SC-PERFORMANCE-10 — Edge case: independent slices proceed concurrently
 
-A slice is complete, and the application must stay responsive while doing the work it claims. The expected
-outcome measures main-process responsiveness and bounded resource use under representative work, and measures
-installed performance against declared conditions; an unmeasured claim is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-PERFORMANCE-01-01 — Main-process responsiveness and bounded resource use are measured under representative work for each completed slice.
-- [ ] DTDLVR-CK-PERFORMANCE-01-02 — Installed performance and resource targets are measured under the declared conditions for each claimed target.
-
-### DTDLVR-SC-PERFORMANCE-02 — Poor quality: a development measurement stands for the installed one
-
-Timings and memory figures were captured from a development run because the packaged build was slower to
-produce. The expected outcome measures the installed artifact under the declared conditions; a plausible
-development number carried into an installed claim is the failure.
+Two complete slices have no unstable shared premise or overlapping writer. Concurrency is valid only while
+the coordination boundary remains explicit.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PERFORMANCE-02-01 — No installed performance or resource figure originates from a development run or an unpacked build.
-- [ ] DTDLVR-CK-PERFORMANCE-02-02 — Every recorded measurement names the artifact and conditions it was taken under.
+- [ ] DTDLVR-CK-PERFORMANCE-10-01 — Concurrent work has stable requirements, authority, owner, write boundary, and evidence subject.
+- [ ] DTDLVR-CK-PERFORMANCE-10-02 — Each concurrent slice advances only from its own current dependencies.
+- [ ] DTDLVR-CK-PERFORMANCE-10-03 — A later contradiction returns to the earliest owning decision.
+
+### DTDLVR-SC-PERFORMANCE-11 — Adversarial: stale evidence and indefinite work appear current
+
+A later change invalidates a dependency while the old result stays green, or post-release observation has no
+finite stop. Both conditions fail even when progress reporting looks healthy.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-PERFORMANCE-11-01 — Dependent evidence stays stale until repeated or proved unaffected for the same subject.
+- [ ] DTDLVR-CK-PERFORMANCE-11-02 — Post-release observation has a finite window, named threshold, stop condition, and bounded recovery action.
 
 ## Aesthetics
 
-### DTDLVR-SC-AESTHETICS-01 — Poor quality: delivery states collapsed into one word
+### DTDLVR-SC-AESTHETICS-10 — Poor quality: broad words hide the affected object or action
 
-The handoff says the work is done, complete, or shipped, so a reader cannot tell whether it is packaged,
-installed, rehearsed, ready, or published. The expected outcome names each state literally; a summary that
-reads well but hides which state was reached is the failure.
+The text sounds plausible but leaves developers unable to identify the object changed or the operation
+performed.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-AESTHETICS-01-01 — Development, code-verified, packaged, installed, signed or notarized, update-rehearsed, release-ready, release-authorized, published, and post-release are used as distinct named states.
-- [ ] DTDLVR-CK-AESTHETICS-01-02 — No completion word in the record or handoff stands for a state the evidence does not establish.
+- [ ] DTDLVR-CK-AESTHETICS-10-01 — Binding prose names the concrete view, window, page, panel, dialog, control, renderer, or native integration when known.
+- [ ] DTDLVR-CK-AESTHETICS-10-02 — Binding prose distinguishes build, package, distribute, publish, deploy, promote, install, update, repair, and uninstall.
+
+### DTDLVR-SC-AESTHETICS-11 — Adversarial: generic exit language hides runtime meaning
+
+An unqualified `exit` is presented as a desktop product state, or a command result is confused with product
+runtime behavior.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-AESTHETICS-11-01 — Runtime records use Not running, Launching, Activation request, Running with windows, Running with no windows, Background/tray mode, Window close, Normal quit, Abnormal termination, Later relaunch, Qualified restart, and exact OS power or session events instead of generic `exit`.
+- [ ] DTDLVR-CK-AESTHETICS-11-03 — Electron `app.exit(code)` remains a mechanism fact.
+- [ ] DTDLVR-CK-AESTHETICS-11-04 — A command or test `exit status` remains a tool or test result.
 
 ## Usage
 
-### DTDLVR-SC-USAGE-01 — Normal case: the handoff serves a cold operator
+### DTDLVR-SC-USAGE-10 — Normal case: Requirements accepts the complete product contract
 
-Someone who did not run the coordination must take the result forward. The expected outcome states the
-outcome and non-goals, the target and artifact matrix, the observable contract, the process and bridge map,
-data schemas and recovery, update paths, the support and forward-fix plan, limitations, and each delivery
-state; a handoff that assumes the session's context is the failure.
+The accepted request becomes a product contract before dependent work. A technically detailed brief still
+fails when it omits a product outcome or recovery obligation.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-01-01 — The handoff states the outcome, non-goals, target and artifact matrix, observable contract, process and bridge map, data schemas and recovery, update paths, support and forward-fix plan, limitations, and each distinct delivery state through release readiness and authority.
-- [ ] DTDLVR-CK-USAGE-01-02 — The handoff is understandable without the coordination session's private context.
+- [ ] DTDLVR-CK-USAGE-10-01 — Requirements names the product problem, actors, supported targets, and entry modes.
+- [ ] DTDLVR-CK-USAGE-10-02 — Requirements distinguishes observable completion, authoritative system completion, and false completion.
+- [ ] DTDLVR-CK-USAGE-10-03 — Requirements covers normal and alternate application, runtime, install, update, repair, uninstall, and data paths.
+- [ ] DTDLVR-CK-USAGE-10-04 — Requirements covers failure, recovery, support, authority, constraints, and explicit non-goals.
+- [ ] DTDLVR-CK-USAGE-10-05 — Requirements records trace, reopen conditions, and exact owner routes.
 
-### DTDLVR-SC-USAGE-02 — Normal case: the locked outcome describes a person's whole path
+### DTDLVR-SC-USAGE-11 — Edge case: design evidence is reused or not applicable
 
-The outcome contract must cover what a person does, not only what the system produces. The expected outcome
-locks actors, entry modes, paths, completion, failure, recovery, data effects, and the support route; a
-contract that stops at system completion is the failure.
+No fresh design activity is performed for some accepted decisions. The coordinator must still assemble a
+current result for Discovery research, Problem framing and design requirements, Concept alternatives,
+Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement
+and improvement without copying Interface policy.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-02-01 — The locked contract names the primary and supporting actors, trigger, entry modes, normal and alternative paths, visible completion, system completion, false completion, failure, recovery, data effects, support route, operating-system and architecture claims, scope, non-goals, and publication authority.
+- [ ] DTDLVR-CK-USAGE-11-03 — A current result exists for Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement.
+- [ ] DTDLVR-CK-USAGE-11-04 — Each design-activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
+
+### DTDLVR-SC-USAGE-12 — Adversarial: a mechanism chooses activation or one state model proves another
+
+An OS event or Electron mechanism selects the product outcome, or packaged, installed, and running states are
+treated as interchangeable.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-USAGE-12-03 — Each Activation request's class, trust, target tuple, and current process, instance, and window state are classified before product state changes.
+- [ ] DTDLVR-CK-USAGE-12-04 — Exactly one authoritative application instance and application-state owner applies each Activation request.
+- [ ] DTDLVR-CK-USAGE-12-05 — Exactly one accepted create, reveal, focus, navigate, handle, no-op, or reject Architecture outcome is selected for each Activation request.
+- [ ] DTDLVR-CK-USAGE-12-02 — Installed-application records distinguish exact-version install, optional first use, update, repair or recovery, uninstall, Removed, and intentional residual state from runtime evidence.
 
 ## Consistency
 
-### DTDLVR-SC-CONSISTENCY-01 — Normal case: each slice moves with everything that depends on it
+### DTDLVR-SC-CONSISTENCY-10 — Rule violation: one lifecycle result is used as proof of another
 
-A user-visible capability is implemented, and its code, tests, documentation, and package inputs must arrive
-together. The expected outcome verifies the complete affected slice before the next begins; a slice that
-leaves its tests or documentation for later is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-CONSISTENCY-01-01 — Code, configuration, types, tests, documentation, persistent-data behavior, package inputs, and operational evidence move together for each slice.
-- [ ] DTDLVR-CK-CONSISTENCY-01-02 — Each slice is verified complete before the next slice begins.
-- [ ] DTDLVR-CK-CONSISTENCY-01-03 — A slice trace links each locked path to its implementation and its fresh checks.
-- [ ] DTDLVR-CK-CONSISTENCY-01-04 — No in-scope path is left with a placeholder or a deferred layer.
-
-### DTDLVR-SC-CONSISTENCY-02 — Edge case: a claimed target cannot be exercised
-
-A required build environment, signing identity, or store obligation is unavailable, so one claimed target
-cannot be proved. The expected outcome marks that target unproved and narrows the claim; a neighbouring
-target's result standing in for it is the failure.
+The run closes a later gate with a cheaper proxy. Each distinction below must remain visible in the stage
+records and evidence routes.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-CONSISTENCY-02-01 — Every retained target claim has matching installed-artifact evidence in the claim matrix.
-- [ ] DTDLVR-CK-CONSISTENCY-02-02 — Every target that cannot be exercised and every transition whose predecessor is unavailable are marked unproved.
-- [ ] DTDLVR-CK-CONSISTENCY-02-03 — Every target that cannot be exercised and every transition whose predecessor is unavailable are dropped from the supported claim.
-- [ ] DTDLVR-CK-CONSISTENCY-02-04 — No target's result substitutes for another target's proof.
-
-### DTDLVR-SC-CONSISTENCY-03 — Edge case: the accepted stack is challenged
-
-New evidence or a new requirement puts the accepted stack in question. The expected outcome assesses the
-named factors and pauses for the user's decision on a material conflict; a stack changed or defended without
-that assessment is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-CONSISTENCY-03-01 — The accepted stack is preserved unless current evidence materially challenges it.
-- [ ] DTDLVR-CK-CONSISTENCY-03-02 — A new or challenged stack is assessed for resource and package cost, content trust, native depth, target and update fit, team upgrade capacity, migration cost, and release needs.
-- [ ] DTDLVR-CK-CONSISTENCY-03-03 — A material stack conflict, or a target with no credible delivery path, pauses for an explicit user decision.
+- [ ] DTDLVR-CK-CONSISTENCY-10-01 — Software testing observations remain distinct from verification of the bounded claim.
+- [ ] DTDLVR-CK-CONSISTENCY-10-02 — A package, archive, source build, or development run never proves installed-artifact behavior.
+- [ ] DTDLVR-CK-CONSISTENCY-10-03 — Release readiness never grants authority for an external action.
+- [ ] DTDLVR-CK-CONSISTENCY-10-04 — An upload response or control-plane label never proves the destination bytes or deployed state.
+- [ ] DTDLVR-CK-CONSISTENCY-10-06 — Launching remains distinct from an Activation request.
+- [ ] DTDLVR-CK-CONSISTENCY-10-07 — No operating-system delivery fact or Electron delivery mechanism selects the activation product outcome.
 
 ## Risk
 
-### DTDLVR-SC-RISK-01 — Normal case: publication stays a separate explicit user action
+### DTDLVR-SC-RISK-10 — Expected failure: matching authority is absent at the action boundary
 
-Every technical gate has passed and the artifacts are ready. The expected outcome hands off the ready
-artifacts and stops before any external effect until the user authorizes that action; proceeding on the
-strength of readiness is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-RISK-01-01 — No installer, update, store release, feed change, or rollout occurs without explicit user authority for that action.
-- [ ] DTDLVR-CK-RISK-01-02 — Release readiness and release authority are recorded as separate states.
-- [ ] DTDLVR-CK-RISK-01-03 — Without publication authority, the operation hands off the ready artifacts and stops before any external effect.
-
-### DTDLVR-SC-RISK-02 — Expected failure: an update or version transition fails part-way
-
-An update is interrupted, a migration refuses, or a person is running an older release. The expected outcome
-preserves a usable application and recoverable data or enters the declared recovery path; a transition that
-leaves the application or its data unusable is the failure.
+The artifact may be release-ready, but the next signing, notarization, credential, store, feed, publication,
+deployment, promotion, or rollout action lacks exact current authority.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-RISK-02-01 — Each supported transition is rehearsed through update discovery, download, installation, migration, launch, ordinary use, and relaunch with realistic data.
-- [ ] DTDLVR-CK-RISK-02-02 — An incompatible version refuses explicitly while preserving recoverable data.
-- [ ] DTDLVR-CK-RISK-02-03 — A failed update preserves a usable application and data or enters the declared recovery path.
-- Also applies: DTDLVR-CK-CONSISTENCY-02-02 (an unprovable target or transition is marked unproved).
-- Also applies: DTDLVR-CK-CONSISTENCY-02-03 (an unprovable target or transition is dropped from the claim).
+- [ ] DTDLVR-CK-RISK-10-01 — Point-of-action authority binds the exact action, artifact, target, version, channel, environment, destination, credential or identity, actor, evidence, and recovery boundary.
+- [ ] DTDLVR-CK-RISK-10-02 — Missing, declined, expired, or narrower authority returns artifact, target, next action and actor, credential boundary, checks, thresholds, recovery route, retained work, and resume point before action.
+- [ ] DTDLVR-CK-RISK-10-04 — A failed external action stops every later external action.
+- [ ] DTDLVR-CK-RISK-10-05 — Every retry, withdrawal, pause, rollback, Forward fix, or other recovery has its own matching point-of-action authority.
 
-### DTDLVR-SC-RISK-03 — Adversarial: a passing gate presented as authority to publish
+### DTDLVR-SC-RISK-11 — Adversarial: coordination claims action, health, or safe progress without proof
 
-Evaluation is accepted, every target is proved, and the release is described as authorized because nothing is
-outstanding. The expected outcome keeps authority a separate explicit act by the user; readiness reframed as
-permission is the failure.
+Documentation appears complete while a mechanism owner, destination result, blocker record, or bounded
+observation contract is absent.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-RISK-03-01 — No accepted evaluation, passing gate, or complete proof is treated as publication authority.
-- [ ] DTDLVR-CK-RISK-03-02 — Release-ready is claimed only with accepted evaluation and matching proof for every retained claim.
-- [ ] DTDLVR-CK-RISK-03-03 — A release-ready claim claims nothing beyond readiness.
+- [ ] DTDLVR-CK-RISK-11-04 — Every external action is assigned to its mechanism owner rather than the desktop development coordinator.
+- [ ] DTDLVR-CK-RISK-11-02 — A proved blocker records the exact blocked result, current states, bounds, missing dependency, retained work, safe stop, required actor and action, and resume condition.
+- [ ] DTDLVR-CK-RISK-11-03 — Post-release work names its questions, signals, owners, consumers, destinations, allowed data, retention, window, thresholds, support, stop, and recovery.
 
 ## Overall
 
-### DTDLVR-SC-OVERALL-01 — Normal case: one reproducible installed outcome with no in-scope gap
+### DTDLVR-SC-OVERALL-10 — Normal case: current owner results close the family-wide claim
 
-The operation ends. The expected outcome is a reproducible installed result whose claim boundaries are
-literal, or a recoverable blocked state naming the missing owner, evidence, or authority; an ending that is
-neither is the failure.
-
-#### Checklist
-
-- [ ] DTDLVR-CK-OVERALL-01-01 — The operation ends with either a reproducible installed outcome or a recoverable blocked state naming the missing owner, evidence, or authority.
-- [ ] DTDLVR-CK-OVERALL-01-02 — The stated claim boundaries are literal rather than implied by the absence of a limitation.
-- Also applies: DTDLVR-CK-CONSISTENCY-01-04 (no placeholder or deferred layer).
-
-### DTDLVR-SC-OVERALL-02 — Adversarial: a rebuilt artifact presented as the evaluated candidate
-
-A small repair was made after the candidate was frozen, and the same evaluation result is carried forward
-because the change looked harmless. The expected outcome repeats the affected proof and every dependent
-whole-outcome check; a result inherited across a changed subject is the failure.
+The coordinator reaches release readiness and, when authorized, Maintenance without turning another owner's
+policy into a local checklist.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-OVERALL-02-01 — The subject routed to Evaluation is the exact frozen candidate, artifacts, matrices, records, and trace.
-- [ ] DTDLVR-CK-OVERALL-02-02 — Every repair is made only after its disposition is authorized.
-- [ ] DTDLVR-CK-OVERALL-02-03 — Every repair repeats the affected proof and every dependent whole-outcome check.
-- [ ] DTDLVR-CK-OVERALL-02-04 — No evaluation or proof result carries forward across a material change to the candidate.
+- [ ] DTDLVR-CK-OVERALL-10-04 — Every retained claim has each required Architecture, Interface, applicable OS Manual, Electron runtime, Electron development, and Electron testing result.
+- [ ] DTDLVR-CK-OVERALL-10-05 — Each required owner result is current for the exact evidence subject.
+- [ ] DTDLVR-CK-OVERALL-10-06 — Each required owner result is accepted when its owner requires acceptance.
+- [ ] DTDLVR-CK-OVERALL-10-07 — Required owner results agree with their dependencies and support the retained claim.
+- [ ] DTDLVR-CK-OVERALL-10-02 — Release readiness includes current artifact, installed, transition, compatibility, recovery, support, observation, stop, Evaluation, rollback or Forward fix, and limitation results.
+- [ ] DTDLVR-CK-OVERALL-10-03 — Maintenance records exactly one of `no change`, `new accepted scoped change returning Requirements`, or `retirement trigger produces separate Retirement handoff`.
+
+### DTDLVR-SC-OVERALL-11 — Adversarial: Maintenance is omitted or Retirement becomes an eleventh stage
+
+Post-release status is treated as closure without a decision, or retirement actions are appended to the
+current run.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-OVERALL-11-01 — A new accepted scoped change returns to Requirements with its own scope and authority.
+- [ ] DTDLVR-CK-OVERALL-11-03 — The separate Retirement handoff contains affected people and installed versions, target, channel/store/feed, usage/support evidence, data export/retention/deletion/migration, replacement/update/uninstall effects, communication/support obligations, external systems, stop conditions, first irreversible action, authority, and resume point.
+- [ ] DTDLVR-CK-OVERALL-11-04 — Retirement is not Stage 11, and this operation executes no Retirement action.
