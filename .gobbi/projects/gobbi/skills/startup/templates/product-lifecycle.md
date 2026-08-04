@@ -3,6 +3,9 @@
 Describe accepted actor-visible promises across access, adoption, use, support, compatibility, continuity,
 migration, deprecation, and retirement. Keep these promises separate from Development Lifecycle mechanisms.
 
+Base this document on the required Product scenario study. Append the relevant `[alias]` tag or tags to every
+material evidence-derived or user-decided statement.
+
 For each material scenario, state the concrete trigger and context, affected actor, normal or alternate path,
 observable result, safe refusal or failure behavior, recovery, protected work or data, decisive evidence, and
 evidence-selected Product overlays. Use the Web, Desktop, CLI, Library, SDK, Mobile, and Data overlays only

@@ -139,15 +139,46 @@ for name in "${expected_templates[@]}"; do
 done
 
 question_count="$(grep -RhE --include='*.md' '^- .+\?[[:space:]]*$' "$topics_root" | wc -l | tr -d '[:space:]')"
-[[ "$question_count" == 342 ]] || fail "$(relative_path "$topics_root")" 'question preservation' "expected 342 question bullets, found $question_count"
-distinct_questions="$(grep -RhE --include='*.md' '^- .+\?[[:space:]]*$' "$topics_root" | LC_ALL=C sort -u | wc -l | tr -d '[:space:]')"
-[[ "$distinct_questions" == 342 ]] || fail "$(relative_path "$topics_root")" 'question preservation' "expected 342 distinct question meanings, found $distinct_questions"
+[[ "$question_count" == 394 ]] || fail "$(relative_path "$topics_root")" 'question inventory' "expected 394 question bullets, found $question_count"
+valid_alias_count="$(grep -RhE --include='*.md' '^- \[[a-z0-9]+(-[a-z0-9]+)*\] .+\?[[:space:]]*$' "$topics_root" | wc -l | tr -d '[:space:]')"
+[[ "$valid_alias_count" == 394 ]] || fail "$(relative_path "$topics_root")" 'question aliases' "expected 394 questions with one lowercase-kebab alias, found $valid_alias_count"
+distinct_questions="$(grep -RhE --include='*.md' '^- \[[a-z0-9]+(-[a-z0-9]+)*\] .+\?[[:space:]]*$' "$topics_root" | sed -E 's/^- \[[^]]+\] //' | LC_ALL=C sort -u | wc -l | tr -d '[:space:]')"
+[[ "$distinct_questions" == 394 ]] || fail "$(relative_path "$topics_root")" 'question inventory' "expected 394 distinct question meanings, found $distinct_questions"
+distinct_aliases="$(grep -RhE --include='*.md' '^- \[[a-z0-9]+(-[a-z0-9]+)*\] .+\?[[:space:]]*$' "$topics_root" | sed -E 's/^- \[([^]]+)\].*/\1/' | LC_ALL=C sort -u | wc -l | tr -d '[:space:]')"
+[[ "$distinct_aliases" == 394 ]] || fail "$(relative_path "$topics_root")" 'question aliases' "expected 394 globally unique aliases, found $distinct_aliases"
+while IFS= read -r violation; do
+  [[ -n "$violation" ]] || continue
+  content="${violation#*:*:}"
+  if [[ ! "$content" =~ ^-\ \[[a-z0-9]+(-[a-z0-9]+)*\]\ .+\?$ ]] ||
+     [[ "$content" =~ ^-\ \[[a-z0-9]+(-[a-z0-9]+)*\]\ \[[a-z0-9]+(-[a-z0-9]+)*\]\  ]]; then
+    fail "${violation%%:*}" 'question aliases' 'question must have exactly one lowercase-kebab alias'
+  fi
+done < <(grep -RInE --include='*.md' '^- .+\?[[:space:]]*$' "$topics_root" || true)
+while IFS= read -r violation; do
+  [[ -n "$violation" ]] && fail "${violation%%:*}" 'question aliases' 'static derived aliases are reserved for runtime meanings'
+done < <(grep -RInE --include='*.md' '^- \[derived-' "$topics_root" || true)
+
+pair_digest="$({
+  find "$topics_root" -type f -name '*.md' -print0 |
+    LC_ALL=C sort -z |
+    xargs -0 awk 'match($0,/^- \[([a-z0-9-]+)\] (.*\?)$/,m){print m[1] "\t" m[2]}' |
+    LC_ALL=C sort
+} | sha256sum | awk '{print $1}')"
+expected_pair_digest='d7961e3b120d64abf6ac73e1af135a780c1c316efaac62b0f7dfe4d0a2a5d5f5'
+[[ "$pair_digest" == "$expected_pair_digest" ]] || fail "$(relative_path "$topics_root")" 'question pair integrity' "expected $expected_pair_digest, found $pair_digest"
+
+product_question_count="$(grep -hE '^- \[[a-z0-9-]+\] .+\?$' "$topics_root/product-lifecycle.md" "$topics_root/product-lifecycle"/*.md | wc -l | tr -d '[:space:]')"
+[[ "$product_question_count" == 91 ]] || fail "$(relative_path "$topics_root/product-lifecycle.md")" 'Product Lifecycle coverage' "expected 91 family questions, found $product_question_count"
+development_question_count="$(grep -hE '^- \[[a-z0-9-]+\] .+\?$' "$topics_root/development-lifecycle.md" "$topics_root/development-lifecycle"/*.md | wc -l | tr -d '[:space:]')"
+[[ "$development_question_count" == 59 ]] || fail "$(relative_path "$topics_root/development-lifecycle.md")" 'Development Lifecycle coverage' "expected 59 family questions, found $development_question_count"
+specification_question_count="$(grep -cE '^- \[[a-z0-9-]+\] .+\?$' "$topics_root/specification.md" || true)"
+[[ "$specification_question_count" == 152 ]] || fail "$(relative_path "$topics_root/specification.md")" 'Specification coverage' "expected 152 questions, found $specification_question_count"
 example_count="$(grep -RhE --include='*.md' '^  - \*\*Example:\*\*' "$topics_root" | wc -l | tr -d '[:space:]')"
-[[ "$example_count" == 20 ]] || fail "$(relative_path "$topics_root")" examples "expected 20, found $example_count"
+[[ "$example_count" == 25 ]] || fail "$(relative_path "$topics_root")" examples "expected 25, found $example_count"
 
 while IFS= read -r violation; do
-  [[ -n "$violation" ]] && fail "${violation%%:*}" 'forbidden question metadata' 'bracket key prefix or metadata row remains'
-done < <(grep -RInE --include='*.md' '^- \[[^]]+\][[:space:]]|^  - \*\*(Owner|Purpose|Oracle|Activation evidence|Source aliases):\*\*' "$topics_root" || true)
+  [[ -n "$violation" ]] && fail "${violation%%:*}" 'forbidden question metadata' 'metadata row remains'
+done < <(grep -RInE --include='*.md' '^  - \*\*(Owner|Purpose|Oracle|Activation evidence|Source aliases):\*\*' "$topics_root" || true)
 
 for topic in "${expected_topics[@]}"; do
   topic_file="$topics_root/$topic"
@@ -202,7 +233,28 @@ required_skill_phrases=(
   'Project -> Product -> Implementation'
   'exactly one complete-stack Implementation'
   'technologies remain categorized entries'
-  'evidence-derived answer'
+  'reusable baselines, not closed questionnaires'
+  'accepted earlier-phase sections'
+  'accepted current-phase sections'
+  'Retain a still-material question'
+  'rewrite it with accepted vocabulary'
+  'resolved or inapplicable meaning'
+  'split one question'
+  'equivalent meanings; add a material meaning'
+  'add a material meaning'
+  'reorder questions'
+  'after every accepted answer'
+  '[derived-<phase>-<intent>]'
+  'every source alias in'
+  'lexical order'
+  'earliest unresolved working question'
+  'run Step 2.4 before Product Lifecycle'
+  'run Step 2.5 before'
+  'immediately before Product Lifecycle'
+  'immediately before Development Lifecycle'
+  'unsupported imagined scenarios'
+  'return to the earliest section that owns the disputed meaning'
+  'rebuild only affected later sections'
   'ask one user question at a time'
   'explicit user acceptance'
   'Product Lifecycle owns actor-visible promises'
@@ -256,4 +308,4 @@ if (( ${#failures[@]} > 0 )); then
   exit 1
 fi
 
-printf 'PASS: compact Startup interview contract is valid (342 questions, 20 examples, 17 topic banks, 6 templates)\n'
+printf 'PASS: adaptive Startup interview contract is valid (394 aliased questions, 25 examples, 17 topic banks, 6 templates)\n'

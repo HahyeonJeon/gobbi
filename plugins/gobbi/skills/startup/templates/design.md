@@ -3,6 +3,8 @@
 Describe the accepted responsibility boundaries, structure, interfaces, data direction, and design choices for
 the Project, each Product, and each Product's single complete Implementation.
 
+Append the relevant `[alias]` tag or tags to every material evidence-derived or user-decided statement.
+
 ## Project
 
 ### {Project}

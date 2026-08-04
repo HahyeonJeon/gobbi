@@ -3,6 +3,9 @@
 Describe accepted implementation-neutral Development mechanisms and claim-specific evidence for the complete
 stack. Link them to Product Lifecycle promises without restating or taking ownership of actor-visible promises.
 
+Base this document on the separate required Development scenario study. Append the relevant `[alias]` tag or
+tags to every material evidence-derived or user-decided statement.
+
 Cover applicable change authority and readiness; environment, bootstrap, toolchain, and dependencies; build
 and generation; verification and integration; package, release, and provenance; distribution and observation;
 maintenance and security response; upgrade, migration, and rollback; retirement; and contributor handoff.

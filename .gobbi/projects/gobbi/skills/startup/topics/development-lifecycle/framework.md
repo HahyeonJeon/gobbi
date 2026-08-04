@@ -9,8 +9,10 @@ framework-specific Development mechanism and evidence questions.
 
 ## Implementation
 
-- Which framework start, stop, resource, and state boundaries must this Development scenario preserve?
+- [framework-initialization-boundary] Which framework start, stop, resource, and state boundaries must this Development scenario preserve?
 
-- Which renderer, server, compiler, or host seams must the framework exercise?
+- [framework-host-integration] Which renderer, server, compiler, or host seams must the framework exercise?
 
-- Which state, generated, runtime, host, and build seams are affected by framework upgrade or replacement?
+- [framework-transition-impact] Which state, generated, runtime, host, and build seams are affected by framework upgrade or replacement?
+
+- [framework-convention-precedence] Which framework-owned layout, naming, generated-source, and lifecycle conventions govern, and where may the Project override them?

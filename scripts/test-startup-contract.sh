@@ -65,11 +65,27 @@ mutate_missing_topic() {
 }
 
 mutate_question_count() {
-  sed -i '0,/^- .*?$/s//Question removed from the bank./' "$1/.gobbi/projects/gobbi/skills/startup/topics/problem-definition.md"
+  sed -i '0,/^- \[[^]]*\] .*?$/s//Question removed from the bank./' "$1/.gobbi/projects/gobbi/skills/startup/topics/problem-definition.md"
 }
 
-mutate_alias_prefix() {
-  sed -i '0,/^- /s//- [restored-key] /' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
+mutate_missing_alias() {
+  sed -i '0,/^- \[[^]]*\] /s//- /' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
+}
+
+mutate_duplicate_alias() {
+  sed -i '0,/^- \[[^]]*\] /s//- [lifecycle-stage] /' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
+}
+
+mutate_invalid_alias() {
+  sed -i '0,/^- \[[^]]*\] /s//- [Invalid_Alias] /' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
+}
+
+mutate_derived_alias() {
+  sed -i '0,/^- \[[^]]*\] /s//- [derived-design-extra] /' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
+}
+
+mutate_question_pair() {
+  sed -i '0,/What complete result is the Project responsible for delivering?/s//What complete result is the Project responsible for providing?/' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
 }
 
 mutate_metadata_row() {
@@ -91,6 +107,30 @@ mutate_template_shape() {
 
 mutate_phase_order() {
   sed -i 's/^| 1 | Problem Definition/| 2 | Problem Definition/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_closed_bank() {
+  sed -i 's/reusable baselines, not closed questionnaires/reusable question lists/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_earlier_evidence() {
+  sed -i 's/accepted earlier-phase sections/prior notes/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_answer_rebuild() {
+  sed -i 's/after every accepted answer/after a section ends/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_product_prestudy() {
+  sed -i 's/immediately before Product Lifecycle/before final synthesis/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_development_prestudy() {
+  sed -i 's/immediately before Development Lifecycle/before final synthesis/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
+}
+
+mutate_targeted_correction() {
+  sed -i 's/return to the earliest section that owns the disputed meaning/restart the whole interview/' "$1/.gobbi/projects/gobbi/skills/startup/SKILL.md"
 }
 
 mutate_schema_behavior() {
@@ -127,7 +167,7 @@ run_zero_mutation_case() {
   run_checker "$root" >/dev/null || fail 'zero-mutation valid fixture failed'
   snapshot_tree "$root" "$after"
   cmp -s "$before" "$after" || fail 'checker mutated a valid fixture'
-  mutate_alias_prefix "$root"
+  mutate_duplicate_alias "$root"
   snapshot_tree "$root" "$before"
   set +e
   run_checker "$root" >/dev/null 2>&1
@@ -151,13 +191,23 @@ run_bad_root_case() {
 
 run_valid_case valid
 run_failure_case missing-topic mutate_missing_topic 'expected 17 Markdown files'
-run_failure_case question-count mutate_question_count 'expected 342 question bullets'
-run_failure_case alias-prefix mutate_alias_prefix 'forbidden question metadata'
+run_failure_case question-count mutate_question_count 'expected 394 question bullets'
+run_failure_case missing-alias mutate_missing_alias 'expected 394 questions with one lowercase-kebab alias'
+run_failure_case duplicate-alias mutate_duplicate_alias 'expected 394 globally unique aliases'
+run_failure_case invalid-alias mutate_invalid_alias 'expected 394 questions with one lowercase-kebab alias'
+run_failure_case derived-alias mutate_derived_alias 'static derived aliases are reserved for runtime meanings'
+run_failure_case question-pair mutate_question_pair 'question pair integrity'
 run_failure_case metadata-row mutate_metadata_row 'forbidden question metadata'
 run_failure_case lifecycle-scenario-model mutate_lifecycle_scenario_model 'obsolete lifecycle topic machinery'
 run_failure_case temporary-template mutate_temporary_template 'expected 6 Markdown files'
 run_failure_case template-shape mutate_template_shape "missing exact '## Products' heading"
 run_failure_case phase-order mutate_phase_order 'missing exact ordered row for Problem Definition'
+run_failure_case closed-bank mutate_closed_bank "missing 'reusable baselines, not closed questionnaires'"
+run_failure_case earlier-evidence mutate_earlier_evidence "missing 'accepted earlier-phase sections'"
+run_failure_case answer-rebuild mutate_answer_rebuild "missing 'after every accepted answer'"
+run_failure_case product-prestudy mutate_product_prestudy "missing 'immediately before Product Lifecycle'"
+run_failure_case development-prestudy mutate_development_prestudy "missing 'immediately before Development Lifecycle'"
+run_failure_case targeted-correction mutate_targeted_correction "missing 'return to the earliest section that owns the disputed meaning'"
 run_failure_case schema-behavior mutate_schema_behavior 'obsolete Startup behavior'
 run_failure_case broken-link mutate_broken_link 'Markdown links'
 run_failure_case final-acceptance mutate_final_acceptance 'expected 1 marker'

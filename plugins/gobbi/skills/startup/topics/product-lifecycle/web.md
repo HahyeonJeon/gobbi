@@ -7,12 +7,16 @@ creating another Product or changing the owning Product Lifecycle acceptance.
 
 ## Product
 
-- Across direct URL, history navigation, refresh, tabs, and session change, what remains correct and recoverable?
+- [web-session-navigation] Across direct URL, history navigation, refresh, tabs, and session change, what remains correct and recoverable?
 
-- When browser connectivity changes or a request outlives its page or session, what remains truthful, usable, and resumable?
+- [web-connectivity-degradation] When browser connectivity changes or a request outlives its page or session, what remains truthful, usable, and resumable?
 
-- While cached pages, open tabs, and old and new served versions coexist, which work and contracts remain usable?
+- [web-version-overlap] While cached pages, open tabs, and old and new served versions coexist, which work and contracts remain usable?
 
-- Which production-URL user-journey signal identifies the served Web build and maps healthy or degraded outcomes to an owned action?
+- [web-live-operation] Which production-URL user-journey signal identifies the served Web build and maps healthy or degraded outcomes to an owned action?
+
+- [web-session-expiry] When authentication expires or is revoked during work, what is preserved and how does reauthentication resume or safely refuse the task?
+
+- [web-storage-restriction] When browser storage, cookies, or cache are blocked, cleared, or full, which journey remains usable and how does the consumer recover?
 
 ## Implementation

@@ -9,8 +9,8 @@ desktop artifact. Actor-visible install and update promises remain in Product Li
 
 ## Implementation
 
-- Which publisher-identity, platform-trust, signing, notarization, or review steps must the Desktop artifact pass?
+- [desktop-release-approval] Which publisher-identity, platform-trust, signing, notarization, or review steps must the Desktop artifact pass?
 
-- Which OS, architecture, format, native-module, and installer combinations must install and launch?
+- [desktop-artifact-matrix] Which OS, architecture, format, native-module, and installer combinations must install and launch?
 
-- What proves installed Desktop update, downgrade, feed withdrawal, interruption recovery, and compatible rollback?
+- [desktop-update-recovery-evidence] What proves installed Desktop update, downgrade, feed withdrawal, interruption recovery, and compatible rollback?

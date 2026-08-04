@@ -4,6 +4,8 @@ This document is an independently readable synthesis of the accepted Problem Def
 Specification, Product Lifecycle, and Development Lifecycle. It contains the decisions and evidence needed to
 understand the Project without reading the phase documents first.
 
+Retain decisive `[alias]` tags and connect them across phases wherever they clarify the accepted reasoning.
+
 ## Summary
 
 {State the current problem, affected people and systems, durable outcome, chosen direction, decisive evidence,
@@ -45,8 +47,9 @@ rollback, retirement and handoff, risks, and evidence that would change the desi
 
 ### Decisions and traceability
 
-{Connect each decisive problem fact to its Design choice, Specification obligation, Product Lifecycle promise,
-and Development Lifecycle mechanism and evidence. Explain cross-Product dependencies and accepted tradeoffs.}
+{Connect each decisive aliased problem fact to its Design choice, Specification obligation, Product Lifecycle
+promise, and Development Lifecycle mechanism and evidence. Explain cross-Product dependencies and accepted
+tradeoffs.}
 
 ### Vocabulary
 
