@@ -105,7 +105,7 @@ route-only answer or missing applicable question group is the failure.
 
 - [ ] DTLNX-CK-USAGE-01-01 — The Manual directly covers target and compatibility inputs plus application, Electron, artifact, repository, package, bundle, container, and installed identities.
 - [ ] DTLNX-CK-USAGE-01-02 — The Manual directly covers installation, first launch, update, repair, rollback facts, uninstall, residual state, and recovery facts.
-- [ ] DTLNX-CK-USAGE-01-03 — The Manual directly covers launch and activation input, process and window lifetime, background state, close and quit facts, power and session events, and native integration.
+- [ ] DTLNX-CK-USAGE-01-03 — The Manual directly covers launch and activation delivery, process and window lifetime, background state, close and quit facts, power and session events, and native integration.
 - [ ] DTLNX-CK-USAGE-01-04 — The Manual directly covers resolved XDG and Electron data, configuration, cache, state, runtime, log, temporary, document, package, resource, portal-document, keyring, and credential-store locations.
 - [ ] DTLNX-CK-USAGE-01-05 — The Manual directly covers named distribution repositories and package managers, Flatpak, Snap, AppImage, other exact bundles, containers, archives, or installers, plus portal, keyring, signature, trust, sandbox, confinement, permission, security-profile, identity, privilege, and policy facts.
 - [ ] DTLNX-CK-USAGE-01-06 — The Manual directly covers process, resource, native, repository, package-manager, installer, updater, portal, keyring, trust, sandbox, security-profile, architecture, kernel, C-library, Electron, and session failure signals and diagnostics.
