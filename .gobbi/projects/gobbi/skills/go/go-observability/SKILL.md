@@ -179,10 +179,11 @@ timeout, panic, latency, or resource behavior it describes.
   decision owner. A missing parent or unpropagated boundary remains a correlation limit.
 - **Crash-report schema:** name the crash class and schema version; process and build identity; selected Go
   toolchain version; occurrence time; termination or recovered-panic result; correlation identity when it is
-  safely available; stack or runtime output kind; allow-listed annotations with types and bounds; collection
-  path; report identifier; destination; access owner; retention; redaction disposition; and symbolization or
-  readability limit. Do not place a credential, request body, personal field, session identifier, arbitrary
-  error string, or unbounded process state in an annotation.
+  obtained before termination and its field is permitted by the accepted redaction allow-list; stack or runtime
+  output kind; allow-listed annotations with types and bounds; collection path; report identifier; destination;
+  access owner; retention; redaction disposition; and symbolization or readability limit. Do not place a
+  credential, request body, personal field, session identifier, arbitrary error string, or unbounded process
+  state in an annotation.
 - For every schema, define compatibility and versioning, required and optional fields, serialization failure
   behavior, maximum record size, and the test that rejects an undeclared or wrongly typed field. A heading or
   example payload is not an exact schema.
