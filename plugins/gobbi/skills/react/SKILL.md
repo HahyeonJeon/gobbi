@@ -7,7 +7,7 @@ skill-type: domain
 
 # React
 
-React covers design, implementation, test creation or revision, and review for browser applications and
+React covers design, implementation, and test creation or revision for browser applications and
 Electron renderers that use React. React Native requires project-specific guidance.
 
 This root provides navigation only. Load every child whose trigger applies.
