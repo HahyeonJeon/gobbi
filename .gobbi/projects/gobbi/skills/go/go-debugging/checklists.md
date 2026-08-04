@@ -14,29 +14,35 @@ in this source that the scenario reuses.
 ### GODBG-SC-PROJECT-01 — Normal case: Diagnosis mode and its complete effect contract are bound
 
 The operation must select its sole diagnosis mode and classify every possible effect before execution.
-Project source remains read-only, outputs and caches remain approved and bounded, downloads and network access
-need separate authority, credentials and external mutation remain absent, and execution stays inside the exact
-project reproducer command and named diagnostic tools.
+Project source remains read-only, outputs and caches remain approved and bounded, and execution stays inside
+the exact project reproducer command and named diagnostic tools. Each download needs current authority naming
+its exact source, requested module, tool, or content scope, cache path, and retention boundary. Each network
+request needs current authority naming its exact destination, request or read purpose and scope, diagnostic
+data allowed to leave the process or repository, redaction, and retention boundary. Credentials and external
+mutation remain absent.
 
 #### Checklist
 
 - [ ] GODBG-CK-PROJECT-01-01 — The operation selects exactly one diagnosis mode and selects no author, review, or change mode.
 - [ ] GODBG-CK-PROJECT-01-02 — Every project source path remains read-only throughout diagnosis.
 - [ ] GODBG-CK-PROJECT-01-03 — Every disposable diagnostic output has an approved path and a named retention or cleanup boundary.
-- [ ] GODBG-CK-PROJECT-01-04 — Every cache write, download, project reproducer command or named-tool execution, and network request matches the bound diagnosis effect contract.
+- [ ] GODBG-CK-PROJECT-01-04 — The bound diagnosis effect contract identifies every cache write and project reproducer command or named-tool execution; the current authority for each download's exact source, requested module, tool, or content scope, cache path, and retention boundary; and the current authority for each network request's exact destination, request or read purpose and scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary.
 - [ ] GODBG-CK-PROJECT-01-05 — Credential use is recorded as none.
 - [ ] GODBG-CK-PROJECT-01-06 — External mutation is recorded as none.
 
 ### GODBG-SC-PROJECT-02 — Expected failure: Required authority is unavailable
 
-A download, network request, cache write, diagnostic output, project execution, or protected-data read lacks
-its exact authority or required execution, repetition, process, destination, or output bound. Diagnosis should
-pause before the effect and return a recoverable block; silent substitution or authority inherited from
-another operation fails.
+A download lacks current authority for its exact source, requested module, tool, or content scope, cache path,
+or retention boundary; a network request lacks current authority for its exact destination, request or read
+purpose and scope, diagnostic data allowed to leave the process or repository, redaction, or retention
+boundary; or a cache write, diagnostic output, project execution, or protected-data read lacks its exact
+approval or required execution, repetition, process, destination, or output bound. Diagnosis should pause
+before the effect and return a recoverable block; silent substitution or authority inherited from another
+operation fails.
 
 #### Checklist
 
-- [ ] GODBG-CK-PROJECT-02-01 — Diagnosis pauses before every unsafe or unbounded run, download, network request, source fix, unapproved diagnostic output, protected-data exposure, missing authority, or changed execution bound.
+- [ ] GODBG-CK-PROJECT-02-01 — Diagnosis pauses before every unsafe or unbounded run, project-source fix, unapproved diagnostic output, protected-data exposure, missing project-execution authority or cache approval, download lacking current authority for its exact source, requested module, tool, or content scope, cache path, and retention boundary, network request lacking current authority for its exact destination, request or read purpose and scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary, or changed execution bound.
 - [ ] GODBG-CK-PROJECT-02-02 — The authority block names the missing prerequisite, affected obligation, current evidence, risk, owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, first recovery action, and handoff.
 
 ### GODBG-SC-PROJECT-03 — Rule violation: Diagnosis mutates project source
@@ -53,10 +59,10 @@ project-source write path; even a plausible fix fails this operation boundary.
 ### GODBG-SC-STRUCTURE-01 — Normal case: The original symptom and reproducer are exact
 
 The result must remain bound to the report that initiated diagnosis. A changed input, consumer, process,
-environment, minimum supported Go version when the affected promise depends on it, selected Go toolchain
-version, module's Go language version when language behavior matters, exact package pattern passed to the
-project command, or expected behavior creates a different claim and cannot silently replace the original
-symptom.
+environment, minimum supported Go version when task acceptance or consumer compatibility depends on it,
+selected Go toolchain version, module's Go language version when language behavior matters, exact package
+pattern passed to the project command, or expected behavior creates a different claim and cannot silently
+replace the original symptom.
 
 #### Checklist
 
@@ -73,7 +79,7 @@ ownership for project commands, evidence strength, concurrency judgment, special
 
 - [ ] GODBG-CK-STRUCTURE-02-01 — Project command syntax and effects, named-tool behavior, exact package-pattern semantics, selected Go toolchain version, and `GOOS/GOARCH` support route to `go-toolchain`.
 - [ ] GODBG-CK-STRUCTURE-02-02 — Evidence design and strength route to `go-testing`, while ownership, lifetime, synchronization, deadlock, goroutine-leak, and race-safety judgment route to `go-concurrency`.
-- [ ] GODBG-CK-STRUCTURE-02-03 — Trust or protected-data work routes to `go-security`, diagnostic-signal work routes to `go-observability`, performance diagnosis routes to `go-performance`, and every accepted source fix routes to `go-development` with each applicable specialist.
+- [ ] GODBG-CK-STRUCTURE-02-03 — Trust or protected-data work routes to `go-security`, diagnostic-signal work routes to `go-observability`, performance diagnosis routes to `go-performance`, and every accepted project-source fix routes to `go-development` with each applicable specialist.
 
 ### GODBG-SC-STRUCTURE-03 — Poor quality: Headings hide a missing terminal branch
 
@@ -175,17 +181,20 @@ step for every supported leading cause and must not present any leading cause as
 ### GODBG-SC-USAGE-03 — Expected failure: Diagnosis stops at an exact block
 
 A required environment, input, consumer, process, project reproducer command, named tool, execution,
-repetition, process, destination, or output bound, project-execution authority, cache approval, download or
-network authority, approved output path, or protected-data handling rule is absent. An error, cancellation, or
-timeout that prevents diagnosis also enters this exact-block result boundary. The operation must preserve the
-bounded work and identify how its owner can resume.
+repetition, process, destination, or output bound, project-execution authority, cache approval, approved output
+path, or protected-data handling rule is absent. A download lacks current authority for its exact source,
+requested module, tool, or content scope, cache path, or retention boundary, or network access lacks current
+authority for its exact destination, request or read purpose and scope, diagnostic data allowed to leave the
+process or repository, redaction, or retention boundary. An error, cancellation, or timeout that prevents
+diagnosis also enters this exact-block result boundary. The operation must preserve the bounded work and
+identify how its owner can resume.
 
 #### Checklist
 
 - [ ] GODBG-CK-USAGE-03-01 — The block names the missing prerequisite or first useful diagnostic.
 - [ ] GODBG-CK-USAGE-03-02 — The block names the affected obligation, current evidence, and risk.
 - [ ] GODBG-CK-USAGE-03-03 — The block names the owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, first recovery action, and handoff.
-- [ ] GODBG-CK-USAGE-03-04 — The blocked path does not substitute another environment, consumer, process, input, project command, output path, or broader authority.
+- [ ] GODBG-CK-USAGE-03-04 — The blocked path substitutes no different environment, consumer, process, input, project command, output path, project-execution authority, cache approval, current authority for the exact download source, requested module, tool, or content scope, cache path, and retention boundary, or current authority for the exact network destination, request or read purpose and scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary.
 
 ## Consistency
 
@@ -221,7 +230,7 @@ request to repeat the work. The handoff also preserves every authority that is s
 
 #### Checklist
 
-- [ ] GODBG-CK-CONSISTENCY-03-01 — The handoff preserves the original symptom, exact reproducer, environment, first useful diagnostic, evidence limits, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, recovery owner and action, next owner, and authority still required.
+- [ ] GODBG-CK-CONSISTENCY-03-01 — The handoff preserves the original symptom, exact reproducer, environment, first useful diagnostic, evidence limits, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, recovery owner and action, next owner, and any still-required project-execution authority, cache approval, current authority for the exact download source, requested module, tool, or content scope, cache path, and retention boundary, or current authority for the exact network destination, request or read purpose and scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary.
 
 ## Risk
 

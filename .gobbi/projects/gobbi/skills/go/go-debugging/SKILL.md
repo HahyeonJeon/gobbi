@@ -14,8 +14,8 @@ It never turns an unproven cause into a fix recommendation.
 This operation owns the original symptom, exact reproducer, environment, first useful diagnostic, causal
 analysis, and diagnostic handoff. Project source remains read-only. `go-toolchain` owns project command and
 named-tool facts, `go-testing` owns evidence strength and design, `go-concurrency` owns race, deadlock, and
-concurrent-lifetime judgment, and each accepted source fix belongs to `go-development` and any applicable
-specialist.
+concurrent-lifetime judgment, and each accepted project-source fix belongs to `go-development` and any
+applicable specialist.
 
 ## Principles
 
@@ -50,8 +50,9 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
   author, review, or change mode in this operation, and authority from another operation does not transfer.
 - **MUST bind the reported failure before running it.** Record the original symptom, expected and observed
   behavior, environment, exact project reproducer command, exact package pattern, flags, `GOOS/GOARCH` target,
-  inputs, affected consumer or process, minimum supported Go version when the affected promise depends on it,
-  selected Go toolchain version, and module's Go language version when language behavior matters.
+  inputs, affected consumer or process, minimum supported Go version when task acceptance or consumer
+  compatibility depends on it, selected Go toolchain version, and module's Go language version when language
+  behavior matters.
 - **MUST make every root-cause claim trace a causal chain from the symptom through discriminating evidence to
   the earliest cause whose removal ends the failure.** A correlated observation, contributing condition, or
   intermediate cause cannot be relabeled as the root cause.
@@ -74,10 +75,11 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
 - Record the accepted result, original symptom, expected behavior, observed behavior, applicable success,
   error, cancellation, timeout, or panic exit path, and the affected consumer or process. Preserve the first
   report separately from later observations so a changed symptom cannot silently replace it.
-- Record the minimum supported Go version when the affected promise depends on it, the selected Go toolchain
-  version, the module's Go language version when language behavior matters, the exact `GOOS/GOARCH` target,
-  environment variables with protected values redacted, inputs, dependency or service prerequisites, relevant
-  process topology, and applicable execution, repetition, process, destination, and output bounds.
+- Record the minimum supported Go version when task acceptance or consumer compatibility depends on it, the
+  selected Go toolchain version, the module's Go language version when language behavior matters, the exact
+  `GOOS/GOARCH` target, environment variables with protected values redacted, inputs, dependency or service
+  prerequisites, relevant process topology, and applicable execution, repetition, process, destination, and
+  output bounds.
 - Bind the exact project reproducer command, exact package pattern only as project-command selection or
   evidence, flags, working directory, inputs, repetition or duration bound, expected result, and observed
   result. If no authorized project reproducer command exists, name the affected obligation and continue only
@@ -91,11 +93,14 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
 
 - Select diagnosis mode only. Project-path writes are none and project source is read-only. Disposable writes
   are limited to approved diagnostic paths with named retention or cleanup boundaries. Go cache writes require
-  approval, and every download requires separate authority.
+  approval. Every download requires current authority for the exact download source, requested module, tool,
+  or content scope, cache path, and retention boundary.
 - Project execution is limited to the authorized project reproducer command and named diagnostic tools.
-  Network access requires separate authority. Credential use is none. External mutation is none. Stop before
-  an unsafe or unbounded run, download, network request, source fix, unapproved diagnostic output, protected-
-  data exposure, missing authority, or changed execution bound.
+  Network access requires current authority for the exact network destination, request or read purpose and
+  scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary.
+  Credential use is none. External mutation is none. Stop before an unsafe or unbounded run, download, network
+  request, project-source fix, unapproved diagnostic output, protected-data exposure, missing authority, or
+  changed execution bound.
 - Every terminal record has exactly one result boundary: reproduced root cause, bounded diagnostic plan, or
   exact block. It separately has exactly one universal terminal state selected from `success`, `error`,
   `cancellation`, `timeout`, `blocked`, or `user-decision pause`. An error, cancellation, or timeout that
@@ -119,8 +124,8 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
 - Load `go-security` for trust boundaries or protected diagnostic data, `go-observability` for log, metric,
   trace, correlation, redaction, crash-capture, access, or retention decisions, and `go-performance` for
   representative workloads and CPU profile, heap profile, block profile, mutex profile, or execution-trace
-  interpretation directed at a performance question. Hand every accepted source fix to `go-development` with
-  the applicable specialist.
+  interpretation directed at a performance question. Hand every accepted project-source fix to
+  `go-development` with the applicable specialist.
 
 ### Phase 2 — Reproduce and Discriminate
 
@@ -131,15 +136,19 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
   `GOOS/GOARCH` target, inputs, duration or repetition limit, and approved output paths.
 - Record project command, exact package pattern, selected Go toolchain version, flags, `GOOS/GOARCH` target,
   inputs, duration, and result. Record cache writes, disposable outputs, exit code or signal, expected behavior,
-  observed behavior, and the first output that narrows the cause.
-- If the original symptom occurs, preserve the smallest reproducer that stays inside the bound effect contract
-  and continue to causal proof. If it does not occur, keep the mismatch explicit and proceed to the bounded
-  non-reproduction branch; do not alter
-  expected behavior, inputs, or environment until the proposed change is itself the selected discriminating
-  diagnostic.
-- Stop immediately when execution exceeds its bound, produces an unapproved output, requires broader network
-  or download authority, exposes protected data, or reaches a different affected process than the accepted
-  reproducer.
+  observed behavior, and the first diagnostic output that excludes at least one leading cause.
+- If the original symptom occurs, preserve the smallest reproducer that uses only the approved project
+  command. It must stay inside the approved execution, repetition, process, destination, and output bounds;
+  use only approved diagnostic-output paths; stay within cache and download limits; and obey the network
+  prohibition or exact authorized network request. Continue to causal proof. If the symptom does not occur,
+  keep the mismatch explicit and proceed to the bounded non-reproduction branch. Do not alter expected
+  behavior, inputs, or environment until the proposed change is the selected discriminating diagnostic.
+- Stop immediately when execution exceeds its bound or produces an unapproved output. Also stop when a
+  download lacks current authority for its exact source, requested module, tool, or content scope, cache path,
+  or retention boundary; when a network request lacks current authority for its exact destination, request or
+  read purpose and scope, diagnostic data allowed to leave the process or repository, redaction, or retention
+  boundary; when protected data is exposed; or when execution reaches a different affected process than the
+  accepted reproducer.
 
 #### 2.2 Capture the first useful diagnostic
 
@@ -199,9 +208,12 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
 #### 3.3 Stop at an exact block
 
 - Stop when a required environment, input, consumer, process, project reproducer command, named tool, execution,
-  repetition, process, destination, or output bound, project-execution authority, cache approval, download or
-  network authority, approved output path, or protected-data handling rule is missing. Do not substitute a
-  different environment or broaden an effect to make progress.
+  repetition, process, destination, or output bound, project-execution authority, cache approval, approved
+  output path, or protected-data handling rule is missing. Also stop when a download lacks current authority
+  for the exact source, requested module, tool, or content scope, cache path, and retention boundary, or when
+  network access lacks current authority for the exact destination, request or read purpose and scope,
+  diagnostic data allowed to leave the process or repository, redaction, and retention boundary. Do not
+  substitute a different environment or broaden an effect to make progress.
 - Return the missing prerequisite or first useful diagnostic, affected obligation, current evidence, risk,
   owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer
   inputs, first recovery action, and exact handoff. Report each external read or effect requested, authorized,
@@ -223,9 +235,14 @@ reproducer inputs so the fix owner does not need to rediscover the failure.
   or successful retry unless discriminating evidence connects it to the symptom. Reject a recommendation that
   merely suppresses the panic, retries the request, adds buffering, increases a timeout, or ignores an error
   without removing the proven cause.
-- Confirm that project source stayed unchanged; each diagnostic output, cache write, execution, download, and
-  network request matched its authority; credentials and external mutation were absent; and the handoff names
-  every sibling owner whose concern remains active.
+- Confirm that project source stayed unchanged, each diagnostic output stayed within its approved path and
+  retention boundary, each cache write matched its cache approval and limits, and each execution matched its
+  authorized project command or named tool and execution bounds. Confirm that each download matched its
+  authorized exact source, requested module, tool, or content scope, cache path, and retention boundary.
+  Confirm that each network request matched its authorized exact destination, request or read purpose and
+  scope, diagnostic data allowed to leave the process or repository, redaction, and retention boundary.
+  Credentials and external mutation remain absent. Confirm that the handoff names every sibling owner whose
+  concern remains active.
 - Apply [the evaluation checklist](checklists.md) and every active `go` sibling checklist when the result enters
   Evaluation. General Evaluation owns evidence resolution and verdicts.
 
