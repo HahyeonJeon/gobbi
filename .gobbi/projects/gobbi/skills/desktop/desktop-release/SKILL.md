@@ -9,7 +9,6 @@ skill-type: preference
 
 Use this skill to judge target support, artifact and installed evidence, compatibility, recovery, readiness,
 rollout controls, support, rollback, and publication authority.
-Forward fix: Uses a later compatible release to correct a faulty version already installed on user machines.
 
 [`desktop-development`](../desktop-development/SKILL.md) coordinates ordered lifecycle work. The applicable
 [`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
@@ -48,12 +47,12 @@ Expand targets, predecessors, channels, and rollout only when current user need 
   through the Electron family; no evidence transfers across an application build, artifact, target,
   predecessor, or state.
 - **MUST protect** persisted data, schemas, settings, native integration state, and secrets across supported
-  updates and recovery. Require atomic or detectably incomplete writes, explicit schema versions, forward
+  updates and recovery by requiring atomic or detectably incomplete writes, explicit schema versions, forward
   compatibility or explicit refusal, downgrade or round-trip behavior, corruption and interruption recovery,
-  and fail-closed secret protection.
-- **MUST rehearse** updates from previously released installed artifacts with realistic data, including the
-  immediate predecessor, every materially different supported path, and interruption and recovery. An
-  unavailable predecessor or unproved transition remains outside the support claim.
+  and fail-closed secret protection. Rehearse updates from previously released installed artifacts with
+  realistic data across the immediate predecessor, every materially different supported path, and interruption
+  and recovery; an unavailable predecessor or unproved transition remains outside the support claim.
+- **MUST define** the installed-version correction term exactly as follows. Forward fix: Uses a later compatible release to correct a faulty version already installed on user machines.
 - **MUST keep** packaged, installed, signed or notarized, update-rehearsed, release-ready,
   release-authorized, published or deployed, and post-release evidence distinct, and require exact destination
   and resulting-byte evidence for a published or deployed claim. Before readiness, require a supported-version

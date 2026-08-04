@@ -29,7 +29,7 @@ reader can apply it anywhere, is the failure.
 
 - [ ] DTRLSE-CK-PROJECT-01-01 — Every claim names its exact artifact, operating system, architecture, version, channel, environment, and evidence class.
 - [ ] DTRLSE-CK-PROJECT-01-02 — No confidence from one target, artifact, or state is transferred to another.
-- [ ] DTRLSE-CK-PROJECT-01-03 — Every mechanism this judgment relies on — packaging, signing, update, and platform behavior — is left to the Electron family and the installed-platform contract to `desktop-contract`.
+- [ ] DTRLSE-CK-PROJECT-01-04 — Every release claim assigns release judgment to `desktop-release`, ordered coordination to `desktop-development`, current target facts to the matching `desktop-windows`, `desktop-macos`, or `desktop-linux` child, and packaging, signing, notarization, update, and platform mechanisms to the Electron family.
 
 ### DTRLSE-SC-PROJECT-02 — Poor quality: a broad target matrix carried without need or evidence
 
