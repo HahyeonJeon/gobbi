@@ -337,36 +337,39 @@ validate_lifecycle_semantics() {
     '[Partner](../gobbi/partner/SKILL.md) once for the applicable independent external draft' \
     'Disabled runs no external invocation' \
     'The manager owns every local participant'
-  require_semantic_sequence "$cowork" 7 \
-    'Cowork evaluation must always use a fresh local evaluator and conditionally use Partner' \
-    'Dispatch one fresh isolated active-runtime evaluator over the frozen subject' \
-    'Disabled invokes no external runtime' \
-    'The manager assembles the round'
-  require_semantic_text "$cowork" \
-    'When partner is enabled, call' \
-    'Cowork enabled evaluation must route the external evaluator through Partner'
+  require_semantic_sequence "$cowork" 18 \
+    'Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled and assembly ownership' \
+    '#### 3.1 Evaluate one frozen subject' \
+    'Dispatch one fresh isolated active-runtime evaluator over the frozen subject. When partner is enabled, call' \
+    '[Partner](../gobbi/partner/SKILL.md) once for a second fresh isolated external evaluator over the same frozen' \
+    'subject; neither evaluator receives the other report. Disabled invokes no external runtime.' \
+    'a complete [Evaluation](../evaluation/SKILL.md) output. The manager assembles the round'
   require_semantic_text "$workflow" \
     'MUST apply the recorded session-wide partner policy to every productive step.' \
     'Workflow must consume the recorded partner policy'
-  require_semantic_text "$workflow" \
+  require_semantic_sequence "$workflow" 12 \
+    'Workflow disabled policy must select local-only participants' \
+    '## Rules' \
     'Disabled invokes no' \
-    'Workflow disabled policy must select local-only participants'
+    'external runtime: WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh' \
+    'isolated active-runtime evaluator.'
   require_semantic_sequence "$workflow" 3 \
     'Workflow enabled policy must use Partner while retaining assembly ownership' \
     'Enabled adds each applicable external draft' \
     'through one [Partner](../gobbi/partner/SKILL.md) invocation while Workflow assembles the complete round'
-  require_semantic_text "$workflow" \
-    'WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh' \
-    'Workflow disabled policy must retain one assigned local draft and one fresh local evaluator'
-  require_semantic_text "$phase_2" \
-    'When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated' \
-    'Workflow Phase 2 enabled evaluator must route through Partner'
-  require_semantic_text "$phase_2" \
-    'external evaluator over the same frozen task subject.' \
-    'Workflow Phase 2 must request an external evaluator over the frozen task subject'
-  require_semantic_text "$phase_2" \
+  require_semantic_sequence "$phase_2" 5 \
+    'Workflow Phase 2 enabled evaluator must route through Partner' \
+    '#### 2.5 Evaluate the task with the normal gate' \
+    'evaluator. When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated'
+  require_semantic_sequence "$phase_2" 5 \
+    'Workflow Phase 2 must request an external evaluator over the frozen task subject' \
+    '#### 2.5 Evaluate the task with the normal gate' \
+    'external evaluator over the same frozen task subject.'
+  require_semantic_sequence "$phase_2" 5 \
+    'Workflow Phase 2 disabled evaluation must invoke no external runtime' \
+    '#### 2.5 Evaluate the task with the normal gate' \
     'task subject. Neither receives the other report. Disabled invokes' \
-    'Workflow Phase 2 disabled evaluation must invoke no external runtime'
+    'no external runtime.'
 
   require_semantic_text "$manager" \
     'severity is High, Medium, or Low;' \
@@ -392,20 +395,37 @@ validate_lifecycle_semantics() {
   require_semantic_text "$manager" \
     'Only a verified PASS continues automatically.' \
     'only a verified PASS may continue automatically'
-  for path in "$cowork" "$workflow" "$phase_1" "$phase_2" "$phase_3"; do
-    require_semantic_text "$path" 'Medium, or Low' \
-      'every lifecycle owner must preserve finding severity eligibility'
-    require_semantic_text "$path" '`blocking: no`' \
-      'every lifecycle owner must preserve the nonblocking finding gate'
-    require_semantic_text "$path" 'reversible, authority-neutral' \
-      'every lifecycle owner must preserve reversible authority-neutral correction'
-    require_semantic_text "$path" 'non-destructive' \
-      'every lifecycle owner must preserve non-destructive correction'
-    require_semantic_text "$path" 'non-external' \
-      'every lifecycle owner must preserve non-external correction'
-    require_semantic_text "$path" 'user' \
-      'every lifecycle owner must preserve the user finding boundary'
-  done
+  require_semantic_sequence "$cowork" 7 \
+    'Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
+    'Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside' \
+    'the locked contract; and the correction is reversible, authority-neutral, non-destructive, and non-external.' \
+    'Every Critical, blocking, scope, design, authority, external, or destructive finding goes to the user' \
+    'makes prior coverage stale, and requires a' \
+    'fresh explicit evaluation. Only PASS continues automatically.'
+  require_semantic_sequence "$workflow" 5 \
+    'Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
+    'MUST continue only from a verified PASS after every correction receives fresh evaluation.' \
+    'correct only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral,' \
+    'non-destructive, non-external finding. Send Critical, blocking, scope, design, authority, external, and' \
+    'destructive findings to the user.'
+  require_semantic_sequence "$phase_1" 5 \
+    'Workflow Phase 1 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
+    'MUST apply the parent fast gate and its two-iteration cap to Ideation.** Automatically correct only a' \
+    'High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,' \
+    'non-external finding, then require fresh evaluation. Send every other finding to the user.' \
+    'verdict as evidence; only a workflow PASS continues automatically.'
+  require_semantic_sequence "$phase_2" 5 \
+    'Workflow Phase 2 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
+    'MUST apply the parent finding predicate and participant matrix.** Automatically correct only a High,' \
+    'Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive, non-external' \
+    'finding, then obtain fresh evaluation. Send every other finding to the user. Only PASS continues' \
+    'automatically.'
+  require_semantic_sequence "$phase_3" 5 \
+    'Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
+    'MUST apply the parent participant matrix, finding predicate, fast gate, and two-iteration cap.** Correct' \
+    'only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,' \
+    'non-external finding, then require fresh evaluation. Send every other finding to the user.' \
+    'evaluator verdict and let only PASS route the TODO automatically.'
 
   require_semantic_sequence "$cowork" 24 \
     'Cowork closure must apply Memory directly and return only a conversation handoff' \
