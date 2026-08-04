@@ -65,7 +65,7 @@ from direct evidence without changing the handoff.
 
 - Confirm the parent Workflow is loaded, the Phase 2 Hand-off validates, and
   `P3 · Wrap-up · DISCUSSION · 1/2` is the only active TODO on first entry.
-- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, and Memory in that
   order. Return to parent recovery when any item is absent.
 - Load [Wrap-up](../../wrap-up/SKILL.md), then apply its Phase 1 as the closure-discussion method with the
   owner-loaded [Memory](../../memory/SKILL.md) and [Git](../../git/SKILL.md) skills.
@@ -134,12 +134,13 @@ from direct evidence without changing the handoff.
 
 #### 2.4 Record and route the result
 
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
+- Apply loaded [Memory](../../memory/SKILL.md) `Temporary Record` to the parent Workflow Step 1.2 exact receipt
+  path.
 - Seal the creation package, evaluator reports, system provenance, Memory verification, tracked handoff path
   and digest, checks, decisions, findings, Git intent, authority, and retained recovery state.
-- Write and verify `gate.md` and `record/iteration-N.md` with their required report, package, gate, output, and
-  check hashes before updating the TODO.
+- Write and verify `gate.md`. Write `record/iteration-N.md` with only the exact TODO and decision, report,
+  package, gate, and output hashes, verification result, accepted finding dispositions, Git intent, and next
+  or recovery state before updating the TODO.
 - On iteration-1 REVISE, create Wrap-up iteration 2 at DISCUSSION and repeat the complete cycle. On an
   iteration-2 blocking result, preserve the evidence, branch, worktree, and recovery choices with no third
   iteration.
@@ -199,5 +200,5 @@ from direct evidence without changing the handoff.
   partner-round coordination.
 - [Wrap-up](../../wrap-up/SKILL.md) owns shared terminal Memory, Git, handoff, display, and recovery order.
 - [Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked operator brief and display-only Git receipt.
-- [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md),
-  [Record](../../record/SKILL.md), and [Git](../../git/SKILL.md) own their respective mechanisms.
+- [Memory](../../memory/SKILL.md), [Evaluation](../../evaluation/SKILL.md), and
+  [Git](../../git/SKILL.md) own their respective mechanisms.

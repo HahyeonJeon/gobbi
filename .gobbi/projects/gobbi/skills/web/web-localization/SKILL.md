@@ -1,15 +1,15 @@
 ---
 name: web-localization
-description: "MUST load when choosing or reviewing how a web or Electron surface handles language and region, covering message catalogs, plural and grammatical selection, date, number, and currency formatting, locale negotiation, and right-to-left mirroring."
+description: "MUST load when choosing or reviewing how a web app or Electron renderer handles language and region, including message catalogs, plural and grammatical selection, date, number, and currency formatting, locale negotiation, or right-to-left layout."
 allowed-tools: Read, Grep, Glob, WebFetch
 skill-type: preference
 ---
 
 # Web Localization
 
-Use this preference skill when a surface's language and region need a judgment rather than a step: where a
+Use this preference skill when a web app's language and region need a judgment rather than a step: where a
 user-visible string comes from, how a sentence survives a language whose grammar differs, which locale a
-visitor is served, and what changes when the writing direction reverses. It holds for any browser surface,
+visitor is served, and what changes when the writing direction reverses. It holds for any browser interface,
 including an Electron renderer.
 
 Read this before a product ships in one language, not after it needs a second. Localization is the cheapest
@@ -19,8 +19,8 @@ component that renders text, a number, a date, or a direction-dependent layout.
 [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owns the `lang` and `dir` attributes and where each is
 expressed, and [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owns logical properties and the flow
 they drive; this skill decides which language and direction those mechanisms carry. `web-frontend` owns the
-ordered browser operation that applies these choices, `web-interface` owns the identity and expression
-judgment behind the words, and `web-backend` owns locale-dependent authoritative data. Rules define the
+ordered browser operation that applies these choices, `web-design` owns the identity and wording
+judgment behind the words, and `web-backend` owns locale-dependent server-owned data. Rules define the
 boundary, Preferences select defaults inside it, and a Rule wins every conflict.
 
 ## Principles
@@ -77,7 +77,7 @@ application.
   Rule binds only that the negotiated values actually reach them.
 
 - **NEVER hard-code a physical direction, a fixed text width, or an unmirrored direction-dependent asset into
-  a localized surface.** Leave room for translated text to grow, decide per asset whether it mirrors, and
+  a localized browser interface.** Leave room for translated text to grow, decide per asset whether it mirrors, and
   route the layout mechanics to `html-css-conventions`.
 
 ## Preferences
@@ -100,8 +100,8 @@ status labels rendered independently, where no entry is ever part of another sen
 ### Prefer loading only the active locale's catalog
 
 **PREFER** shipping one locale's messages per request or per session, because catalogs grow with the product
-and a visitor reads one language. Depart for a surface that must render several locales at once, such as a
-picker showing each language in its own name, and load only the small set that surface needs.
+and a visitor reads one language. Depart for a browser interface that must render several locales at once, such as a
+picker showing each language in its own name, and load only the small set that interface needs.
 
 ### Prefer `Intl.Collator` for any list a person reads
 
@@ -122,9 +122,9 @@ since April 2024, so depart to a maintained polyfill when the supported-browser 
 
 ### Prefer pseudolocalization from the first sprint that has a catalog
 
-**PREFER** running the interface against a generated pseudolocale that lengthens strings, marks their
+**PREFER** running the browser interface against a generated pseudolocale that lengthens strings, marks their
 boundaries, and reverses direction, because it exposes concatenation, hard-coded text, and overflow before any
-translator is engaged. Depart only for a surface with no user-visible text at all.
+translator is engaged. Depart only for a UI with no user-visible text at all.
 
 ### Prefer testing one right-to-left locale continuously
 

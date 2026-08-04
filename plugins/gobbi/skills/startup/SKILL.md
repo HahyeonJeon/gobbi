@@ -1,244 +1,298 @@
 ---
 name: startup
-description: "Use when a caller needs one software-project design interview that turns project evidence and the user's answers into one confirmed `startup.md` design record."
-allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
+description: "Use when a caller needs one evidence-backed software-project design interview that produces four accepted phase documents and one confirmed `startup.md`."
+allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion, Agent, Task, TaskCreate, TaskGet, TaskUpdate, TaskList, WebSearch, WebFetch
 skill-type: operation
 ---
 
 # Startup
 
-Startup runs one software-project design interview and produces one confirmed `startup.md`. A caller supplies
-the absolute project root and one absolute output directory. The user owns every design answer, every conflict
-resolution, and the confirmation that ends the run.
+Startup turns project evidence and user decisions into five durable design documents. The caller supplies an
+absolute project root, an absolute output directory, and its sole native TODO lane. The manager owns the
+route, delegation, interview, acceptance, verification, and every user decision.
 
-The operating agent reads the project's own evidence first, then adapts the starting questions in
-[`topics.md`](topics.md) to this project and to each feature the user names, and asks them one at a time. It
-keeps the current state in `startup.tmp.md` inside the output directory, reviews the developing design for
-gaps, writes `startup.md` from that record, and removes the working record once the user confirms the result.
+Schema 3 uses `Project -> Product -> Implementation`. A Project owns one or more independently useful
+Products. Each Product owns exactly one Implementation for its complete stack; technologies are categorized
+entries inside that Implementation, not subjects.
 
-`startup.md` holds the confirmed design only. It is not an evaluated design, an implementation plan, or
-durable memory, and it names no memory destination. Startup returns its path and stops.
+The route completes the Project, every Product, and one Implementation per Product before Finalization. Each
+subject runs four phases through delegated Study, Prepare Topics, Documentation, and Review around the
+manager's Interview. Startup produces design evidence, not implementation planning, formal evaluation,
+memory, publication, or a memory-destination decision.
 
 ## Principles
 
-### Let evidence lead the interview
+### Let evidence and dependency order shape the design
 
-Start each topic from verified project facts and concrete events rather than from the question list. Treat a
-preference or a forecast as a gap in evidence, not as a fact.
+Resolve ancestors and earlier phases before using them downstream. Treat each level bank as adaptable
+coverage, not a script.
 
-### Fit every question to this project and to each feature
+### Keep one native route and separate its proof
 
-The starting questions are an editable list, not required coverage: reword each one in this project's own
-components, users, and terms, drop what does not apply, and add what the project needs. Ask the per-feature
-questions once for each named feature, wording each one for that feature.
+The TODO selects the current action. Durable section registers and `startup.tmp.md` evidence prove progress
+without creating a second route.
 
-### Never let a later answer silently replace an earlier one
+### Keep subject identity separate from stack entries
 
-Show both answers and their evidence, and let the user state which is current or under which condition each
-applies. Then revisit every answer that depended on the replaced one.
+Model one Project, its Products, and one complete Implementation per Product. Record technologies only as
+categorized entries inside the owning Implementation.
 
-### Write the result for a reader who was not in the interview
+### Make lifecycle guidance observable at its owning level
 
-Organize `startup.md` by design subject rather than by the order the questions were asked. A reader must be
-able to follow it without the working record.
+Derive scenarios from accepted decisions and give each an observable oracle. Keep Project service use,
+Product operation and use, and Implementation development and evolution distinct.
 
 ## Rules
 
-- **MUST validate the caller-supplied absolute output directory before the first write.** The directory must
-  exist and resolve inside the working tree, with no symbolic link and no parent-traversal component on its
-  path.
-- **MUST ask one question at a time and record its answer, kind, evidence, and evidence strength in the
-  working record.** Present a fact the project already proves for confirmation or correction instead of
-  asking the user to rediscover it.
-- **MUST ask the per-feature questions once for each feature the user named.** A project that names no
-  separate feature records its one owned outcome as the single feature.
-- **MUST resolve a conflicting answer with the user before treating either answer as current.** Record the
-  correction and ask again every question whose answer depended on the replaced one.
-- **MUST obtain the user's confirmation of the complete `startup.md` before removing the working record.**
-  Reread both paths afterwards and confirm that `startup.md` is the only Startup artifact left.
-- **NEVER record raw conversation, secrets, credentials, or user-marked sensitive values.** Startup writes no
-  evaluation, no implementation plan, no durable memory, and no path outside the supplied output directory.
+- **MUST use the native TODO as Startup's sole progression owner.** Keep at most one item `in_progress`;
+  evidence, not its title, proves progress.
+- **MUST delegate Study, Prepare Topics, Documentation, and Review in every subject phase and Finalization.**
+  Only the manager interviews, asks the user, updates the lane, and accepts results.
+- **MUST keep one ordered writer and allow parallel work only for independent read-only Study.** Every
+  assignment and checkpoint uses a fresh identity, current evidence, exact authority, and absolute paths.
+- **MUST ask one user question at a time and obtain explicit acceptance for every subject phase.** Route every
+  decision-changing answer through Step 2.7; a refusal without correction remains a separate branch.
+- **MUST apply the exact Review taxonomy in Step 2.5.** A finding needs evidence, consequence, one exact
+  follow-up question, and disposition; only owned nonblocking deferrals may remain.
+- **NEVER write when ownership, project/output identity, schema, or section ownership is unproved.** Do not
+  record raw conversation, secrets, sensitive values, implementation tasks, evaluation, or memory targets.
 
 ## Procedure
 
-### Phase 1 — Prepare the Interview
+### Phase 1 — Classify, Open, or Recover the Design Route
 
-#### 1.1 Validate the output directory and open the working record
+#### 1.1 Validate inputs and classify disk before the lane
 
-- Take the absolute project root and the caller-supplied absolute output directory as the input.
-- Apply the location requirement owned by [`../record/SKILL.md`](../record/SKILL.md) Step 1.1: the directory
-  must be absolute, must exist, and must resolve inside the working tree, with no symbolic link and no
-  parent-traversal component on its path.
-- Read the directory. A `startup.md` is confirmed when its `Confirmation` section records the user's
-  confirmation, and unconfirmed otherwise. The two artifacts give six states; take the one matching action.
+- Take the absolute project root and output directory. Require both paths to exist inside the verified
+  worktree, resolve without a symbolic-link escape or parent-traversal component, and keep every Startup
+  output below the resolved output directory.
+- Schema 3 is exactly `problem-definition.md`, `design.md`, `specification.md`,
+  `lifecycle-and-use-cases.md`, and `startup.md`. Schema 2 replaces `design.md` and `specification.md` with
+  `project-design.md` and `project-specification.md`. Confirmed schema 2 requires no `startup.tmp.md`, that
+  exact five-file set with no schema-3 mixture, and a `startup.md` that declares schema `2`, records both exact
+  absolute identities, and records terminal user confirmation. Its Phase Document Artifact Register has
+  exactly `problem-definition.md`, `project-design.md`, `project-specification.md`, and
+  `lifecycle-and-use-cases.md` as child rows, with no duplicate, extra, or self row; every linked child exists
+  and is readable, every `Status` resolves to literal `confirmed`, and every `Accepted` value is
+  non-placeholder. Those rows own phase acceptance; do not require acceptance inside the child documents.
+  Confirmed pre-schema 2 requires `startup.md` as the only Startup artifact, no schema 2 or 3 claim, and a
+  `Confirmation` section with both exact identities and user confirmation. Only either completely proved
+  historical shape returns the exact existing `startup.md` unchanged as `legacy-confirmed` before lane
+  inspection; any failed path or field takes the unsafe stop with no write, TODO, cleanup, or migration.
+  `startup.tmp.md` is schema-3 evidence, not durable output.
+- Classify the directory read-only before inspecting or changing the lane:
 
-| `startup.tmp.md` | `startup.md` | Action |
+| Disk state | Required action |
+|---|---|
+| No Startup artifact | Select schema-3 creation; validate the lane before creating evidence. |
+| Matching schema-3 temporary record | Validate identities, registers, evidence, and disk; then validate the lane and recover from evidence. |
+| Complete confirmed schema 3 without temporary state | Validate it; after lane validation start `completed-v3 revalidation`. |
+| Matching temporary state plus complete confirmed schema 3 | Resume the earliest unproved normal or revalidation work. |
+| Complete confirmed schema 2 without temporary state | Return its `startup.md` unchanged as `legacy-confirmed` before lane inspection. |
+| Confirmed pre-schema-2 `startup.md` alone | Return it unchanged as `legacy-confirmed` before lane inspection. |
+| Partial, working, unconfirmed, or mixed legacy/current state | Stop before lane inspection with no write, migration, cleanup, or TODO creation; report every path. |
+| Unowned, mismatched, unreadable, or ambiguously owned state | Stop before lane inspection with no write; report the exact path and field. |
+
+- A confirmed schema-3 `startup.md` has schema `3`, both absolute identities, terminal confirmation, and
+  exactly four aggregate child links with no self row. Each child has a Section Register plus exact
+  `Project`, `Products`, and `Implementations` sections.
+- For a nonterminal schema-3 action, inspect the caller's sole lane. Use `TaskList`, `TaskGet`, `TaskCreate`,
+  and `TaskUpdate` in Claude Code or `update_plan` in Codex. Stop if another item is `in_progress`.
+- For new work, create `startup.tmp.md` from its template after lane validation. Record schema `3`, both
+  identities, `normal` recovery mode, no blocker, the Project, and stable evidence references; add no cursor.
+
+#### 1.2 Validate owners, evidence, and the native route
+
+- Apply this ownership map. Stop when the same transition or evidence fact has another maintained owner:
+
+| Fact | Canonical owner | Other surfaces may contain |
 |---|---|---|
-| absent | absent | Create `{output-directory}/startup.tmp.md` from [`templates/startup.tmp.md`](templates/startup.tmp.md), write the absolute project root, the resolved output directory, the status `in progress`, and the next question `not shaped` into its `Interview state`, and continue to Step 1.2. |
-| absent | unconfirmed | Stop. A draft with no working record can be neither resumed nor proved to belong to this run. |
-| absent | confirmed | Reread `startup.md`, confirm its `Confirmation` section records this project root and this output directory, and return its path without interviewing again. |
-| present | absent | Resume the interview. |
-| present | unconfirmed | Resume the interview. The draft is this run's own regenerable output, and Step 3.2 rewrites it from the working record. |
-| present | confirmed | Finish the completion Step 3.3 left interrupted: confirm that `startup.md` records this project root and this output directory, then confirm that `startup.tmp.md` records the same pair, and only then remove `startup.tmp.md`, reread the directory, and return the confirmed path. Never interview again and never rewrite the file. |
+| Current route and progression | Native TODO | Derived display only |
+| Active run identity, subject order and parents, checkpoints, answers, scenarios, blockers, corrections, Review findings, and acceptance/revalidation evidence | `startup.tmp.md` | Stable references or accepted synthesis |
+| Current section state, Review-evidence reference, and user acceptance | Aggregate phase file's Section Register | Derived state or links |
+| Accepted phase content | Owning aggregate subject section | Evidence references and synthesis |
+| Alias and question coverage | Topic banks | Coverage records, never route or acceptance state |
+| Terminal Finalization state | `startup.md` `Confirmation` | Readiness derived from aggregate rows and Finalization evidence |
 
-- To resume, first confirm that the working record's `Interview state` records this project root and this
-  output directory. `Next question` takes four forms: `not shaped`, a `[question-name]` that also names its
-  feature when the question is per-feature, `features not recorded`, and `none`.
-- Then run Step 2.4 and continue from the value it derives: Step 1.2 for `not shaped`, Step 2.1 for a project
-  question, Step 2.2 for a per-feature question and the feature that value names and for `features not
-  recorded`, or Step 3.1 for `none`. Step 2.4 rewrites `Interview state` whenever the derived value differs
-  from the recorded one, so a write interrupted mid-interview cannot misroute the resume.
-- Treat `Next question` as unreadable when it is missing, still an unfilled template placeholder, or written
-  in none of the four forms above; Step 2.4 derives its value from the working record in that case as well.
-  Never read an unreadable field as `none`.
-- Stop before any write, change nothing, and report the exact path and the failing requirement when the
-  location check fails, when a recorded project root or output directory does not match this run, or when the
-  directory holds a Startup artifact this skill does not own. Startup regenerates only the unconfirmed
-  `startup.md` its own working record covers; it never overwrites a confirmed `startup.md` or an artifact it
-  cannot prove it owns, and it never migrates one automatically.
+- Validate every identity, stable key, parent, dependency, section, assignment, and evidence reference against
+  disk. `startup.tmp.md` contains one Project, Products in accepted order, and one stable Implementation per
+  Product; no technology is a subject. Its Phase Section Register is a derived index into aggregate rows.
+- Each aggregate Section Register owns `absent`, `draft`, `reviewed`, `stale`, or `confirmed`. A file is
+  `confirmed` only when all required current rows are confirmed, `stale` when any is stale, and otherwise has
+  the earliest incomplete row's state. Whole-file wording never overrides those rows.
+- Use this normal title grammar and `Startup · Finalization · <stage> · <iteration>` for Finalization:
 
-#### 1.2 Read the project and shape the question list
+```text
+Startup · <Project|Product|Implementation> · <stable-subject-key> · <Problem Definition|Design|Specification|Lifecycle and Use Cases> · <STUDY|PREPARE TOPICS|INTERVIEW|DOCUMENTATION|REVIEW|CONTEXT|PASS> · <iteration>
+```
 
-- Take the open working record and the absolute project root as the input.
-- Read the project's memory, documentation, source, configuration, tests, history, and conventions, and sort
-  what is found into verified facts, user-reported claims, and open questions. Verify external material
-  against its own source before recording it; material that cannot be verified becomes an open question with
-  an owner, a consequence, and a resolution method instead of a stated fact.
-- Write the sorted evidence into the working record's `Project evidence` section, giving each user-reported
-  claim its evidence strength and each open item an owner, a consequence, and a resolution method.
-- Take the starting questions from [`topics.md`](topics.md) and adapt them to this project: drop what does not
-  apply, add what the project needs, and reword every remaining question so it names this project's own
-  components, users, and terms. Order the topics by dependency, uncertainty, and consequence.
-- Record one row per topic in the working record's `Topics` section and one row per question in its
-  `Question list` section, both in that order. Each question row carries its adapted wording, whether it is
-  asked once for the project or once per feature, and where it came from; a per-feature row is recorded after
-  the question that names the features, and a dropped question keeps its row and records why.
-- Run Step 2.4 and continue from the value it wrote. A material direction the project's own evidence does not
-  settle becomes an open question carried into the interview.
+- On missing, stale, or cosmetically advanced TODO text—text that names a later stage without its proof—use
+  disk and evidence to derive and repair the earliest unproved action. The temporary record states no route
+  position, next action, next question, or first recovery action.
+- In `completed-v3 revalidation`, Review and explicitly re-accept every current section in route order, then
+  Finalization. Apply Step 2.6 to any finding before returning to normal work.
+- An addressable specialist is available through the current delegation mechanism for a bounded assignment.
+  Give one a fresh ID, current action and iteration, evidence, dependencies, absolute paths, allowed/protected
+  files, result, checks, authority, and stops. Re-anchored scope means these paths and current evidence are
+  restated in the assignment. If delegation or an addressable specialist is unavailable, use Step 2.6's
+  unavailable path and never substitute the manager.
 
-### Phase 2 — Interview the User
+### Phase 2 — Complete Every Subject Cycle
 
-#### 2.1 Ask and record one question at a time
+#### 2.1 Select the earliest work unit
 
-- Take the working record's `Question list` and its recorded project evidence as the input.
-- Ask one question about one subject, in plain words fitted to this project, under its lowercase hyphenated
-  bracketed name. When the project already answers it, present that fact for confirmation or correction
-  instead of asking. Seek a concrete event, behavior, alternative, cost, or constraint before accepting a
-  preference or a forecast.
-- Record one row in the working record's `Answers` table carrying the question name, its topic, `project` or
-  the feature name, the question as asked, the answer, its kind, its evidence, and that evidence's strength,
-  then mark the question asked in the `Question list`.
-- Compare each new answer against every recorded answer it could contradict. Two recorded answers that cannot
-  both be current go to Step 2.3 before either one is treated as current.
-- An answer that raises a new material concern adds its row to the `Question list` before this step ends. Then
-  run Step 2.4 and continue from the value it wrote, which returns here for the next project question, goes to
-  Step 2.2 for the per-feature loop, or goes to Step 3.1 only when it wrote `none`.
+- A work unit means one level + subject + phase. Complete the singular Project, all Products in register
+  order, one Implementation per Product in the same order, then Finalization. Each subject runs Problem
+  Definition, Design, Specification, and Lifecycle and Use Cases.
+- One Product still gets one Product and one Implementation cycle. Do not begin Products before the Project,
+  Implementations before all Products, or Finalization before every aggregate row is confirmed.
+- If Project Design has zero Products, keep that work unit at `CONTEXT` and checkpoint only this manager-owned
+  question: `Which independently useful Product must this Project own first?` Invent no placeholder.
+- An accepted answer is checkpointed, registers the Product and its one Implementation, clears the blocker,
+  closes the current action at `CONTEXT`, and opens the same Project Design work at fresh `STUDY`. A repeated
+  exact-context need replaces the question. If the user or writer is unavailable, or no Product is accepted,
+  pause with the blocker and resume at `CONTEXT`; create no Product, Implementation, or Finalization successor.
+- Open every selected normal work unit at `STUDY`; never skip a stage because evidence looks complete.
 
-#### 2.2 Ask the feature questions once for each feature
+#### 2.2 Run delegated Study and Prepare Topics
 
-- Take the working record's `Features` table as the input, together with the answer to `[feature-list]` when
-  that question was asked.
-- Record one `Features` row for each feature the user named. When `[feature-list]` was dropped, or the user
-  names no feature separate from the project's own outcome, record that owned outcome as the single feature
-  and record in `How it was identified` where it came from. The table therefore always holds at least one
-  feature, and this loop always runs at least once.
-- Ask the per-feature questions in [`topics.md`](topics.md) Topic 5 once for each recorded feature, naming
-  that feature in every question and wording each question for that feature. Record one `Answers` row for each
-  feature and each per-feature question, scoped by the feature name, and add that question's name to that
-  feature's `Questions answered` column in the same write. A per-feature row in the `Question list` is marked
-  asked only once every recorded feature has its answer to it.
-- After each answer, run Step 2.4 and continue from the value it wrote.
-- A feature discovered later joins the `Features` table and, in that same write, sets every per-feature row in
-  the `Question list` back to `to ask`, so it receives the same questions before the design can be reviewed.
+- At `STUDY`, delegate read-only review of current project evidence, accepted dependencies, and the working
+  record. Require sources, verified facts, contradictions, missing evidence, vocabulary, and material questions.
+  Parallelize only independent read-only Study; accept a fresh checkpoint before the next stage.
+- At `PREPARE TOPICS`, the ordered writer reads the exact phase in [`topics/project.md`](topics/project.md),
+  [`topics/product.md`](topics/product.md), or [`topics/implementation.md`](topics/implementation.md). Adapt
+  wording, retain applicable aliases, justify exclusions, add evidence-derived questions, and order by
+  dependency, uncertainty, and consequence.
+- Keep one coverage record per alias. Mark it `evidence-derived` when accepted evidence determines its answer;
+  equivalent aliases may share one answer and evidence reference and produce at most one user question.
+  Product `[software-type]` and `[application-deliverable-type]` share type evidence. Product
+  `[building-block-inventory]` and `[building-block-parent]` derive from accepted Product/Implementation identity.
+- Keep Products and named Product features distinct. Stack questions stay categorized entries inside one
+  Implementation. Preserve all distinct unresolved questions.
+- For Lifecycle and Use Cases, derive level-specific scenario candidates first. Ask only for a
+  concrete-scenario or observable-oracle blocker, and always produce proactive implementation-neutral
+  development guidance; missing guidance alone is not a user question.
+- Apply Step 2.6 after each delegated result.
 
-#### 2.3 Resolve a conflicting answer with the user
+#### 2.3 Interview and checkpoint answers
 
-- Take two recorded answers that cannot both be current as the input.
-- Show both answers, their evidence, and what depends on them, and ask the user which one is current or under
-  which condition each applies. Never replace an answer silently.
-- Record the user's decision in the current `Answers` row and one row in the working record's `Corrections`
-  table. In that same write, name in `What it affected` every question whose answer depended on the replaced
-  one, set each of those rows in the `Question list` back to `to ask`, and clear each one's `Answers` rows and
-  its name from every `Features` row's `Questions answered`, so no invalidated answer stays recorded.
-- Then run Step 2.4 and continue from the value it wrote, which reaches those reopened questions before the
-  design can be reviewed.
+- Only the manager asks one prepared question about the current subject. Confirm verified facts; otherwise ask
+  for a concrete event, constraint, observable behavior, tradeoff, authority, or evidence threshold.
+- When claims conflict, show each claim, evidence, and dependent and let the user decide what is current or
+  when each applies. The writer checkpoints each answer with level, key, phase, alias, answer kind, evidence,
+  strength, correction effects, and iteration; equivalent aliases may point to that same accepted checkpoint.
+- Use Step 2.7 for every decision-changing answer. After all other answers are accepted, apply Step 2.6.
 
-#### 2.4 Derive and write the next question and feature
+#### 2.4 Document the accepted phase content
 
-- Take the working record as the input. Every step that changes the `Question list`, the `Features` table, the
-  `Answers` table, or the `Corrections` table runs this step before it ends, and Step 1.1 runs it on every
-  resume. The one exception is Step 1.1's create row, which writes `not shaped` before any `Question list`
-  exists. No other step writes `Interview state`'s `Next question`.
-- Derive from the reopened state, never from the state before it. A step that adds a feature or records a
-  correction sets the affected `Question list` rows back to `to ask` in the same write that records the
-  change, so those rows are already open here.
-- Derive the successor from the `Question list` in its recorded order: a `Question list` holding no row
-  derives `not shaped`; otherwise take the first row marked `to ask`; otherwise take the first row that is
-  scoped per feature, is not dropped, and lacks an `Answers` row for some recorded feature; otherwise derive
-  `none`.
-- Resolve the derived row's scope into a pair. A row scoped `project` derives that question alone. A row
-  scoped per feature derives that question together with the first feature in the `Features` table that has no
-  `Answers` row for it.
-- Derive `features not recorded` instead whenever the derivation selects a per-feature row while the `Features`
-  table holds no row, and whenever it reaches `none` while that table holds no row. Step 2.2 then records the
-  feature set, and this step runs again.
-- Write the derived value into `Interview state`'s `Next question`, naming the feature for a per-feature pair,
-  before the calling step ends. The field is then current after any interruption, not only after a pause.
-- Continue from the value just written: Step 1.2 for `not shaped`, Step 2.1 for a project question, Step 2.2
-  for a per-feature question with the feature it names and for `features not recorded`, or Step 3.1 for
-  `none`.
+- The ordered writer changes only the current subject section in the matching aggregate template. Preserve
+  its Section Register and exact Project, Products, and Implementations sections.
+- Record accepted decisions, evidence references, coverage, vocabulary, risks, owned deferrals, corrections,
+  Review dispositions, and section content. The Section Register alone records state, Review evidence, and
+  user acceptance. State `none found` when applicable.
+- Keep Specification at design-contract level and lifecycle guidance implementation-neutral. Exclude code
+  signatures, exhaustive schemas, algorithms, repository tasks, and implementation tasks. Apply Step 2.6.
 
-### Phase 3 — Confirm and Complete the Design
+#### 2.5 Review and obtain phase acceptance
 
-#### 3.1 Review the design for gaps
+- Prefer a fresh read-only specialist who did not author the section. Supply the exact bank section, Study
+  evidence, working evidence, aggregate section, and accepted dependencies.
+- Use exactly these eight lenses: `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
+  `unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`. A load-bearing open
+  decision is unresolved and blocks a safe downstream choice. Every finding records evidence, consequence,
+  one exact follow-up question, and disposition.
+- The manager validates and checkpoints the audit. A finding follows Step 2.6. With no finding, record
+  `reviewed`, ask for explicit acceptance, and give the writer a fresh acceptance checkpoint.
+- A correction uses Step 2.7. A refusal without correction uses Step 2.6 and creates no correction evidence.
+  Acceptance changes only the aggregate Section Register row to `confirmed`, then Step 2.6 selects the route.
 
-- Take the complete working record as the input.
-- Read it as a whole against this project and mark every material design concern with no clear owner, every
-  vague answer, every contradiction, and every unsupported direction.
-- Record each one in the working record's `Gaps found in review` table with its evidence, the question it
-  produced, its consequence, its owner, how it will be resolved, and its status.
-- Each gap joins the `Question list` as a new or reworded row; then run Step 2.4 and continue from the value
-  it wrote. An item may stay open only with an owner, a consequence, and a resolution method.
-- Before continuing to Step 3.2, confirm that every row in the `Topics` table carries a status, that a topic
-  recorded as not needed or dropped records why, that every row in the `Question list` is marked asked or
-  records why it was dropped, and that every recorded feature has an answer to every per-feature question that
-  was not dropped. Record a missing topic status here; any other failure runs Step 2.4 and continues from the
-  value it wrote. Continue when no gap is unowned.
+#### 2.6 Apply the shared stage, context, finding, refusal, and success transitions
 
-#### 3.2 Write `startup.md` and confirm it with the user
+- This step is the sole owner of common transition mechanics. Before any successor, validate the result and
+  its checkpoint, close the current action at its actual stage, and keep at most one item `in_progress`.
+- Accepted stage proof advances as follows: Study checkpoint -> `PREPARE TOPICS`; prepared-set checkpoint ->
+  `INTERVIEW`; all answer checkpoints -> `DOCUMENTATION`; verified exact-section checkpoint -> `REVIEW`;
+  accepted audit plus explicit acceptance -> `PASS`; final confirmation plus durable checks -> final `PASS`.
+- On `NEEDS_CONTEXT`, the writer records the blocked assignment and one exact question with work identity,
+  stage, and iteration. Set the blocker and change the active stage to `CONTEXT`; specialists never ask or
+  update the lane. The manager asks and the writer checkpoints and verifies the answer.
+- Before clearing the blocker or opening a successor, compare that answer with every accepted decision.
+  Ordinary missing context that changes none closes the current action at `CONTEXT`, clears the blocker, and
+  opens the same subject phase or nonterminal Finalization work at fresh `STUDY`.
+- A decision-changing answer takes no ordinary path: use Step 2.7, close the current action at its actual
+  `CONTEXT` stage, reopen the earliest owner, stale only reachable dependents, and keep unaffected siblings
+  confirmed. Refusal without correction remains outside Step 2.7. A terminal Finalization confirmation
+  question retains Step 3.1's correction, refusal, and confirmation branches.
+- Another exact-context need replaces the stored question. An unavailable user, writer, delegation path, or
+  specialist pauses with all blocker evidence and later reconstructs `CONTEXT`.
+- A Review finding opens the same normal work at `STUDY`. Phase refusal without correction does the same and
+  records refusal evidence only. Finalization refusal is owned by Step 3.1. `PASS` returns to Step 2.1 for the
+  unique next work unit.
 
-- Take the reviewed working record as the input.
-- Write `{output-directory}/startup.md` from [`templates/startup.md`](templates/startup.md), organized by
-  design subject rather than by the order the questions were asked, readable without the working record, and
-  keeping every heading so a reader can tell an empty answer from a question that was never asked. Present the
-  file to the user.
-- Write the confirmed design only. `startup.md` carries no evaluation of that design, no implementation plan,
-  and no ordered task list; whoever evaluates or plans the design does that work outside Startup.
-- The written `startup.md` and the user's response are the evidence.
-- A correction returns to Step 2.3 or Step 2.1, then repeats Step 3.1 and this step. A confirmation continues
-  to Step 3.3.
+#### 2.7 Reopen the earliest owner after any correction
 
-#### 3.3 Complete, pause, or stop
+- This is the only correction procedure. Use it for decision-changing Interview answers, phase-acceptance and
+  Finalization-confirmation corrections, late Product discovery, lower-level contradictions, Product-contract
+  corrections, and technology-entry corrections; refusal without correction never enters this step.
+- Record old and current decisions, user resolution, the exact owning level/subject/phase, and its reachable
+  stale set. Close the current action at its actual stage before changing any dependent state.
+- Reopen the earliest owner. Mark only its later phases, reachable descendant and aggregate sections, and
+  synthesis stale; keep unaffected siblings confirmed. Recalculate derived artifact readiness and open the
+  owner at fresh `STUDY`.
+- A new Product reopens Project Design and registers its Implementation. A technology-entry change normally
+  reopens that Product's Implementation Design. A Product-contract contradiction reopens its actual Product
+  owner; a lower-level contradiction reopens the ancestor that owns the contradicted decision.
 
-- Take the user's confirmation, or the reason the interview cannot continue, as the input.
-- On confirmation, record it in the `Confirmation` section of `startup.md` together with the absolute project
-  root and the output directory, reread the file, remove `startup.tmp.md`, then reread the directory. Startup
-  is complete when `startup.md` exists at the validated path, records the confirmation with this project
-  root, and the working record is gone.
-- On a pause, keep the working record current, set its status to `paused`, confirm that its next question is
-  the one Step 2.4 last wrote, and name its first recovery action; the run resumes at Step 1.1. On a state
-  Startup cannot safely change, write nothing further and report the exact blocker and the path it refused to
-  use.
-- Return the absolute path of the confirmed `startup.md`, the path of the current working record, or the
-  blocker, and stop.
-- The caller records the confirmed `startup.md` as session evidence through
-  [`../record/SKILL.md`](../record/SKILL.md), and the design it holds is later reorganized and memorized
-  through [`../memory/SKILL.md`](../memory/SKILL.md). Startup performs neither and names no memory
-  destination.
+#### 2.8 Enforce level, phase, and example boundaries
+
+- Project phases own initiative reality, outcomes, Product inventory, cross-Product design, governance,
+  policy, quality, service operation, and Project-wide lifecycle. Product phases own one app/platform's
+  consumer problem, boundary, interfaces, capabilities, behavior, data, safety, recovery, operation, use,
+  upgrade, and retirement. Implementation phases own one complete stack's need, design, categorized entries,
+  support, configuration, compatibility, testing, security, licensing, development, release, migration, and end.
+- For example, `Analytics Workspace` may own `Web Dashboard`, `CLI`, and `Data Platform`. Web Dashboard's one
+  Implementation may contain React and TypeScript; Data Platform's may contain Spark, Trino, Iceberg, and
+  Python. The same technology under several Products is a separate categorized entry in each Implementation,
+  never a subject. These examples prescribe no project content.
+
+### Phase 3 — Finalize and Hand Off
+
+#### 3.1 Run Finalization through the same route
+
+- Enter after every aggregate Section Register row is confirmed. Run Finalization through Study, Prepare
+  Topics, Interview, Documentation, and Review using Steps 2.2–2.6. Limit topics to contradictions, missing
+  cross-phase decisions, stale links, vocabulary, unowned deferrals, traceability, and synthesis choices.
+- Write [`startup.md`](templates/startup.md) as an independent synthesis with exactly four aggregate child
+  links, no self row, the integrated hierarchy, decisions, traceability, vocabulary, risks, and Review
+  dispositions. Its `Confirmation` section is the sole owner of terminal Finalization state, schema `3`, both
+  identities, confirmation decision, and timestamp.
+- Present the five-file set at `REVIEW` and delegate the confirmation checkpoint. Missing context uses Step
+  2.6. A decision-changing correction closes Finalization at `REVIEW` or `CONTEXT` and uses Step 2.7. Refusal
+  without correction closes that stage and opens Finalization at `STUDY`, with refusal evidence only.
+  Confirmation without correction writes `Confirmation`, changes the active stage to `PASS`, and proceeds.
+- In completed-v3 revalidation, Review Finalization only. Apply Step 2.6 to a finding; the same correction,
+  refusal, and confirmation branches apply.
+
+#### 3.2 Complete, pause, or stop
+
+- At verified Finalization `PASS`, confirm current acceptance in every aggregate row, four confirmed
+  aggregate files, a current sole terminal `Confirmation`, both identities, exactly four child links, all
+  five durable files, and no other durable Startup output. Remove the matching `startup.tmp.md`, reread the
+  directory, return all five absolute paths, and return the uncontested lane.
+- On pause, keep proof-only temporary evidence, set `paused`, and retain the blocker. Resume through Step 1.1
+  and reconstruct from evidence. On unsafe state, write nothing further and return the exact blocker/path.
+- The caller may capture confirmed documents through [Memory](../memory/SKILL.md) `Temporary Record` only when
+  it supplies an exact session root and output. Startup does not implement, plan implementation, evaluate,
+  update durable memory, publish, or choose a memory destination.
 
 ## References
 
-- [`topics.md`](topics.md) — the starting questions, grouped into four Topic Phases and thirteen topics.
-- [`templates/startup.tmp.md`](templates/startup.tmp.md) — the working record's shape, held during the
-  interview and removed at completion.
-- [`templates/startup.md`](templates/startup.md) — the confirmed design record's shape.
+- [`topics/project.md`](topics/project.md)
+- [`topics/product.md`](topics/product.md)
+- [`topics/implementation.md`](topics/implementation.md)
+- [`templates/problem-definition.md`](templates/problem-definition.md)
+- [`templates/design.md`](templates/design.md)
+- [`templates/specification.md`](templates/specification.md)
+- [`templates/lifecycle-and-use-cases.md`](templates/lifecycle-and-use-cases.md)
+- [`templates/startup.tmp.md`](templates/startup.tmp.md)
+- [`templates/startup.md`](templates/startup.md)

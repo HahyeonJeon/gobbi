@@ -1,7 +1,9 @@
 # {Title} - Topics
 
-> **Role:** Discussion agenda<br>
-> **Purpose:** Organize completed requirements and study into topics for discussion.
+> **Document role:** Optional supporting snapshot<br>
+> **Purpose:** Preserve the study and decision agenda the caller requested during Ideation.<br>
+> **Authority:** Subordinate to the current `ideation.md`; this agenda is neither a live tracker nor an
+> authoritative design.
 
 ## Contents
 
@@ -14,7 +16,7 @@
 
 ## Requirements
 
-{Restate the completed goal, supported problem, result, material requirements, scope statuses, and open questions completely enough to understand this document without opening `requirements.md`. Use exact descriptive requirement headings.}
+{Restate the completed goal, supported problem, result, material requirements, scope statuses, and open questions completely enough to understand this document without relying on a supporting requirements snapshot. Use exact descriptive requirement headings.}
 
 ## Study
 

@@ -42,7 +42,7 @@ Ideation locks what and why, Planning orders tasks, Execution verifies and commi
 Wrap-up closes and hands off the durable result.
 
 Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
-Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
+Cowork and Workflow then load Delegation, Discussion, Git, and Memory at owner entry; their phase
 owners load Ideation, Planning, and Wrap-up when those phases start.
 
 ## Partner quality contract
@@ -82,8 +82,9 @@ exact load directives because specialists do not inherit manager context.
 `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/` are the only editable sources for skills
 and agents. The bounded package at `plugins/gobbi/` carries generator-materialized real-file copies of both
 trees plus the Codex and Claude Code manifests. `.agents/plugins/marketplace.json` and
-`.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
-repo-local and are not installed as plugin components. The package has no lifecycle-hook component.
+`.claude-plugin/marketplace.json` point to
+`./plugins/gobbi`. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin
+components. The package has no lifecycle-hook component.
 
 Run `scripts/sync-plugin-package.sh --materialize-package` to regenerate the package copies. Run
 `scripts/sync-plugin-package.sh --check` for the read-only topology guard,

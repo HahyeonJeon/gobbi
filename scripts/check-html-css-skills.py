@@ -238,8 +238,8 @@ check("cmp -s" in smoke_text and "omitted and byte-different leaves" in smoke_te
 
 routing_text = (FAMILY / "routing.md").read_text()
 check("`html-css-platform` owns direct target observations and diagnosis" in routing_text and "`html-css-testing` owns focused comparison" in routing_text, "performance evidence ownership split")
-web_interface_text = (SKILLS / "web/web-interface/checklists.md").read_text()
-check("Direct\nHTML/CSS target observations belong to [`html-css-platform`]" in web_interface_text and "application-level performance suites belong to [`web-testing`]" in web_interface_text, "Web Interface performance handoff")
+web_design_text = (SKILLS / "web/web-design/checklists.md").read_text()
+check("Direct HTML/CSS target observations belong to [`html-css-platform`]" in web_design_text and "application-level performance suites belong to [`web-testing`]" in web_design_text, "Web Design performance handoff")
 desktop_interface_text = (SKILLS / "desktop/desktop-interface/checklists.md").read_text()
 check("Direct HTML/CSS renderer observations\nbelong to [`html-css-platform`]" in desktop_interface_text and "Installed responsiveness and\nresource acceptance remains assigned by [`desktop-delivery`]" in desktop_interface_text, "Desktop Interface performance handoff")
 

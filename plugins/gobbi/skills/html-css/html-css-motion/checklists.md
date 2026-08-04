@@ -7,7 +7,7 @@ Each condition is defined once, and a complete evaluation keeps its evidence and
 
 ### HCMOT-SC-PROJECT-01 — Normal case: motion intent and specialist ownership
 
-An approved interface state change may need declarative motion, direct target facts, measurement, or scripted interaction. It passes when the interface owner supplies intent and each standards, target, measurement, pointer, or scroll claim routes to its exact owner; it fails when Motion decides product intent or cites the wrong evidence owner.
+An approved interface state change may need declarative motion, direct target facts, measurement, or scripted interaction. It passes when `web-design` or `desktop-interface` supplies intent and each standards, target, measurement, pointer, or scroll claim routes to its exact owner; it fails when Motion decides product intent or cites the wrong evidence owner.
 
 #### Checklist
 

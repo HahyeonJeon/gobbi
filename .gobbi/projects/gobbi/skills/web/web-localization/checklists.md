@@ -1,14 +1,14 @@
 # Web Localization Evaluation Checklist
 
-This reusable unchecked source evaluates one browser or Electron-renderer surface's language and region
-handling against the message-integrity, catalog-sourcing, plural-selection, format, locale-negotiation,
+This reusable unchecked source evaluates language and region handling for one web app or Electron renderer
+against the message-integrity, catalog-sourcing, plural-selection, format, locale-negotiation,
 propagation, and direction obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
 [`web-localization`](SKILL.md) preferences, with [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owning
 the `lang` and `dir` attributes, [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owning logical
 properties and the flow they drive, [`web-frontend`](../web-frontend/SKILL.md) owning the ordered browser
-operation that applies these choices, [`web-interface`](../web-interface/SKILL.md) owning the identity and
-expression judgment behind the words, and [`web-backend`](../web-backend/SKILL.md) owning locale-dependent
-authoritative data. The source commit that contains this file identifies the checklist version. Its stable
+operation that applies these choices, [`web-design`](../web-design/SKILL.md) owning the identity and
+wording judgment behind the words, and [`web-backend`](../web-backend/SKILL.md) owning locale-dependent
+server-owned data. The source commit that contains this file identifies the checklist version. Its stable
 owner prefix is `WEBLOC`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
@@ -20,17 +20,17 @@ that this scenario reuses.
 
 ## Project
 
-### WEBLOC-SC-PROJECT-01 — Normal case: the language-and-region judgment stays inside its boundary
+### WEBLOC-SC-PROJECT-01 — Normal case: the localization judgment stays inside its boundary
 
-A surface needs its language and region decisions taken, and several neighbouring owners hold the mechanisms
+A browser interface needs its language and region decisions taken, and several neighbouring owners hold the mechanisms
 those decisions drive. The expected outcome decides which language and direction the mechanisms carry, routes
 each mechanism outward, and reaches every change site; a localization decision that also settles an attribute,
-a layout property, or an authoritative data question is the failure.
+a layout property, or a question about server-owned data is the failure.
 
 #### Checklist
 
-- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the language-and-region judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-css-semantics`, logical properties and the flow they drive to `html-css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-interface`, and locale-dependent authoritative data to `web-backend`.
-- [ ] WEBLOC-CK-PROJECT-01-02 — The localization decisions are taken while the surface still ships in one language rather than after a second locale is required.
+- [ ] WEBLOC-CK-PROJECT-01-01 — Every question outside the localization judgment is routed to its named owner: the `lang` and `dir` attributes and where each is expressed to `html-css-semantics`, logical properties and the flow they drive to `html-css-conventions`, the ordered browser operation to `web-frontend`, identity and wording judgment to `web-design`, and locale-dependent server-owned data to `web-backend`.
+- [ ] WEBLOC-CK-PROJECT-01-02 — The localization decisions are taken while the browser interface still ships in one language rather than after a second locale is required.
 - [ ] WEBLOC-CK-PROJECT-01-03 — Every component that renders text, a number, a date, or a direction-dependent layout is identified as a change site the decisions reach.
 
 ### WEBLOC-SC-PROJECT-02 — Rule violation: a user-visible string exists outside the catalog
@@ -83,16 +83,16 @@ the form through the locale's plural categories, which a locale may draw from `z
 
 ## Performance
 
-### WEBLOC-SC-PERFORMANCE-01 — Normal case: only the catalogs the surface renders are loaded
+### WEBLOC-SC-PERFORMANCE-01 — Normal case: only the catalogs the browser interface renders are loaded
 
 Catalogs grow with the product while a visitor reads one language, so shipping every locale costs bytes no one
-uses. The expected outcome ships one locale's messages per request or session and widens only where a surface
+uses. The expected outcome ships one locale's messages per request or session and widens only where a browser interface
 genuinely renders several at once; every catalog shipped by default is the failure.
 
 #### Checklist
 
 - [ ] WEBLOC-CK-PERFORMANCE-01-01 — One locale's messages are shipped per request or per session.
-- [ ] WEBLOC-CK-PERFORMANCE-01-02 — A surface that must render several locales at once loads only the small set that surface needs.
+- [ ] WEBLOC-CK-PERFORMANCE-01-02 — A browser interface that must render several locales at once loads only the small set that interface needs.
 
 ## Aesthetics
 
@@ -161,7 +161,7 @@ attributes and the flow to their owners; a resolved locale that never reaches th
 
 - [ ] WEBLOC-CK-CONSISTENCY-01-01 — The resolved language and direction reach the document.
 - [ ] WEBLOC-CK-CONSISTENCY-01-02 — Every element whose content differs from the document's language or direction carries its own resolved values.
-- [ ] WEBLOC-CK-CONSISTENCY-01-03 — No attribute expression or layout flow mechanic is decided here rather than by `html-css-semantics` and `html-css-conventions`.
+- [ ] WEBLOC-CK-CONSISTENCY-01-03 — No attribute markup or layout flow mechanic is decided here rather than by `html-css-semantics` and `html-css-conventions`.
 
 ### WEBLOC-SC-CONSISTENCY-02 — Normal case: one message format the current tooling accepts
 
@@ -180,12 +180,12 @@ target; an early adoption with no stated reason is the failure.
 ### WEBLOC-SC-RISK-01 — Rule violation: a physical direction, width, or asset is hard-coded
 
 A layout pins a side, a container fixes a text width, or a direction-dependent icon ships unmirrored. The
-expected outcome leaves room for translated text to grow and decides mirroring per asset; a surface that only
+expected outcome leaves room for translated text to grow and decides mirroring per asset; a browser interface that only
 holds together in the source language is the failure.
 
 #### Checklist
 
-- [ ] WEBLOC-CK-RISK-01-01 — No physical direction, fixed text width, or unmirrored direction-dependent asset is hard-coded into a localized surface.
+- [ ] WEBLOC-CK-RISK-01-01 — No physical direction, fixed text width, or unmirrored direction-dependent asset is hard-coded into a localized browser interface.
 - [ ] WEBLOC-CK-RISK-01-02 — Every direction-dependent asset records the per-asset decision of whether it mirrors.
 - [ ] WEBLOC-CK-RISK-01-03 — Translated text has room to grow beyond its source-language length.
 
@@ -201,11 +201,11 @@ language, is the failure.
 - [ ] WEBLOC-CK-RISK-02-02 — The fallback is the declared one rather than the runtime's ambient default.
 - Also applies: WEBLOC-CK-USAGE-01-04 (no language inferred from country, IP address, or time zone).
 
-### WEBLOC-SC-RISK-03 — Adversarial: the localized surface is only ever exercised in the source language
+### WEBLOC-SC-RISK-03 — Adversarial: the localized browser interface is only ever exercised in the source language
 
 Every check passes because every check ran in English, so concatenation, hard-coded text, overflow, and
 mirroring defects stay invisible until a translator or a right-to-left reader meets them. The expected outcome
-exercises the surface against a pseudolocale and a right-to-left locale continuously; a localization claim
+exercises the browser interface against a pseudolocale and a right-to-left locale continuously; a localization claim
 resting on the source locale alone is the failure.
 
 #### Checklist
@@ -227,5 +227,5 @@ more locales than it exercised.
 #### Checklist
 
 - [ ] WEBLOC-CK-OVERALL-01-01 — The supported-locale list, fallback, catalog, message format, plural handling, format inputs, propagation targets, and direction handling are decided together.
-- [ ] WEBLOC-CK-OVERALL-01-02 — No localization claim extends beyond the locales the surface was actually exercised in.
+- [ ] WEBLOC-CK-OVERALL-01-02 — No localization claim extends beyond the locales the browser interface was actually exercised in.
 - Also applies: WEBLOC-CK-RISK-03-02 (one right-to-left locale kept in the routine check set).

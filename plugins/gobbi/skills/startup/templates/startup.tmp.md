@@ -1,90 +1,130 @@
 # Startup Working Record
 
-This file holds the current state of one Startup interview so it can be resumed. It is not a transcript, an
-evaluated design, or an implementation plan. Summarize answers faithfully, leave sensitive values out, and
-keep this file until `startup.md` is confirmed.
+This schema-3 file owns active-run identity, subject order and parents, assignments, answers, scenarios,
+blockers, corrections, Review findings, and acceptance/revalidation evidence. The native TODO owns
+progression, each aggregate Section Register owns section state, and `startup.md` `Confirmation` owns
+terminal Finalization state. This record contains no cursor or independently maintained aggregate state.
 
-Two words qualify recorded statements here:
+## Run Identity
 
-- **Kind** — what the statement is: `fact`, `user report`, `decision`, `plan`, or `open`. This word is used in
-  the working record only.
-- **Evidence strength** — how well the project's own evidence supports it: `verified`, `supported`,
-  `unverified`, or `disputed`. `startup.md` uses this word with the same meaning and defines it again, so it
-  stays readable after this file is removed.
-
-## Interview state
-
+- Startup schema: `3`
 - Project root: `{absolute-project-root}`
 - Output directory: `{absolute-output-directory}`
 - Status: `{in progress | paused}`
-- Next question: `{not shaped, until the question list exists | [question-name], naming the feature when it is
-  a per-feature question | features not recorded, until the Features table holds a row | none, once every
-  question is asked or dropped and every recorded feature has its per-feature answers}`
-- First recovery action: `{what a resuming agent does first}`
+- Recovery mode: `{normal | completed-v3 revalidation}`
+- Current blocker: `{none or exact blocker}`
 
-## Project evidence
+## Artifact Register
 
-### Verified facts
-
-- `{fact}` — Source: `{file, command, or observation}`
-
-### User-reported claims
-
-- `{claim}` — Evidence strength: `{verified | supported | unverified | disputed}`
-
-### Assumptions and open questions
-
-- `{item}` — Owner: `{owner}` — Consequence: `{effect if it stays open}` — How it will be resolved:
-  `{method}`
-
-## Features
-
-One row per feature. When `[feature-list]` was dropped, or the user names no feature separate from the
-project's own outcome, that owned outcome is the single feature.
-
-| Feature | What it does | How it was identified | Questions answered |
+| Artifact | Phase | Required aggregate rows | Stable evidence on disk |
 |---|---|---|---|
-| `{feature}` | `{one sentence}` | `{named by the user, or found in project evidence}` | `{question names, or none}` |
+| `problem-definition.md` | Problem Definition | `{all current subject-row links}` | `{evidence}` |
+| `design.md` | Design | `{all current subject-row links}` | `{evidence}` |
+| `specification.md` | Specification | `{all current subject-row links}` | `{evidence}` |
+| `lifecycle-and-use-cases.md` | Lifecycle and Use Cases | `{all current subject-row links}` | `{evidence}` |
 
-## Topics
+Read current aggregate state only from each aggregate file's Section Register. Derive Finalization readiness
+or staleness from those rows, current Finalization evidence below, and `startup.md` `Confirmation`; do not add
+a maintained `startup.md` state row here.
 
-One row per topic, named from `topics.md`, in the order the topics will be asked. A topic that is not needed
-or dropped records why.
+## Subject Register
 
-| Order | Topic Phase | Topic | Status | Reason and evidence |
+| Order | Level | Stable subject key | Parent key | Description |
 |---|---|---|---|---|
-| `{ask order, 1 upward}` | `{1 to 4}` | `{topic name}` | `{open, answered, not needed, or dropped}` | `{reason and evidence, or none}` |
+| `0` | Project | `{project-key}` | `none` | `{top-level service or initiative}` |
+| `{Product order}` | Product | `{product-key}` | `{project-key}` | `{independently useful application or platform}` |
+| `{same Product order}` | Implementation | `{implementation-key}` | `{product-key}` | `{the Product's single complete stack; entries may be unknown}` |
 
-## Question list
+Every Product row requires exactly one Implementation row with a stable one-to-one identity. Categorized
+technology entries belong in the aggregate Design section and never appear as Subject Register rows.
 
-The starting questions from `topics.md` after they were adapted to this project, in the order they will be
-asked within their topic. A dropped question keeps its row and records why. A question added during the
-interview or the review joins this table before it is asked.
+## Phase Section Register
 
-| Question name | Topic | Scope | Question as adapted | Origin | Status | Reason |
-|---|---|---|---|---|---|---|
-| `{[question-name]}` | `{topic name}` | `{project, or per feature}` | `{the question in this project's own components, users, and terms}` | `{topics.md, or the step that added it}` | `{to ask, asked, or dropped}` | `{why it was dropped or added, or none}` |
-
-## Answers
-
-One row per material answer. Use the question's bracketed name. For a per-feature question, name the feature
-in `Feature or project`; the same question name appears once for each feature.
-
-| Question name | Topic | Feature or project | Question as asked | Answer | Kind | Evidence | Evidence strength |
+| Route order | Artifact | Level | Stable subject key | Phase | Owning aggregate row | Depends on | Stable evidence references |
 |---|---|---|---|---|---|---|---|
-| `{[question-name]}` | `{topic name}` | `{feature name, or project}` | `{question as it was asked}` | `{answer, summarized}` | `{fact, user report, decision, plan, or open}` | `{source, or none}` | `{verified, supported, unverified, or disputed}` |
+| `{order}` | `problem-definition.md` | `{Project, Product, or Implementation}` | `{stable key}` | Problem Definition | `{Section Register row link}` | `{accepted ancestor or none}` | `{assignment, Review, and acceptance refs}` |
+| `{order}` | `design.md` | `{level}` | `{stable key}` | Design | `{row link}` | `{same-subject Problem Definition and cited ancestor sections}` | `{refs}` |
+| `{order}` | `specification.md` | `{level}` | `{stable key}` | Specification | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
+| `{order}` | `lifecycle-and-use-cases.md` | `{level}` | `{stable key}` | Lifecycle and Use Cases | `{row link}` | `{same-subject earlier phases and cited ancestor sections}` | `{refs}` |
 
-## Corrections
+Register the Project's four rows first, then all Product rows in Product order, then one Implementation's four
+rows for each Product in that same order.
 
-One row each time an answer replaces an earlier one. The user decides which answer is current, or under which
-condition each applies.
+## Evidence
 
-| What changed | Earlier answer | Current answer | User's resolution | What it affected |
-|---|---|---|---|---|
-| `{[question-name]}` | `{earlier claim}` | `{current claim}` | `{what the user decided}` | `{the questions it reopened, and any other feature or topic affected}` |
+### Acceptance and Revalidation
 
-## Gaps found in review
+| Level | Stable subject key | Phase | Iteration | Run kind | Review assignment and result | User acceptance or confirmation | Evidence status |
+|---|---|---|---|---|---|---|---|
+| `{level or Finalization}` | `{stable key or none}` | `{phase or Finalization}` | `{iteration}` | `{normal or completed-v3 revalidation}` | `{assignment and accepted result}` | `{decision and timestamp}` | `{open or accepted}` |
 
-| Gap | Evidence | Question added or changed | Consequence | Owner | How it will be resolved | Status |
+### Sources and Claims
+
+| Level | Stable subject key | Phase | Evidence | Source | Kind | Strength | Supports or disputes |
+|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{summary}` | `{source}` | `{fact, user report, decision, plan, or open}` | `{verified, supported, unverified, or disputed}` | `{claim}` |
+
+### Topics and Questions
+
+| Level | Stable subject key | Phase | Topic or question | Adapted wording | Origin | Status | Shared answer/evidence reference | Reason or dependency |
+|---|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{topic or [question-name]}` | `{subject-specific wording}` | `{level bank, Study, Interview, or Review}` | `{prepared, evidence-derived, to ask, answered, dropped, reopened, or deferred}` | `{accepted checkpoint or none}` | `{reason}` |
+
+### Lifecycle Scenario Candidates
+
+| Level | Stable subject key | Phase | Scenario identity and class | Purpose | Linked accepted decisions and sections | Concrete-scenario blocker | Oracle blocker | Status |
+|---|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `Lifecycle and Use Cases` | `{identity and class}` | `{purpose}` | `{links}` | `{blocker or none}` | `{blocker or none}` | `{candidate, ready, deferred, or dropped}` |
+
+### Answers and Decisions
+
+| Level | Stable subject key | Phase | Question | Answer or decision | Kind | Evidence and strength | Recorded iteration |
+|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{[question-name]}` | `{faithful summary}` | `{fact, user report, decision, plan, or open}` | `{source and strength}` | `{iteration}` |
+
+### Vocabulary
+
+| Level | Stable subject key | Phase | Term | Proposed or agreed definition | Status | Conflict or question |
 |---|---|---|---|---|---|---|
-| `{missing, vague, or conflicting concern}` | `{source or gap}` | `{[question-name]}` | `{effect if it stays open}` | `{owner}` | `{method}` | `{open, or resolved}` |
+| `{level}` | `{stable key}` | `{phase}` | `{term}` | `{definition}` | `{proposed, agreed, or disputed}` | `{issue or none}` |
+
+### Delegated Assignments
+
+| Assignment | Level | Stable subject key | Phase and stage | Iteration | Authority | Inputs and allowed paths | Returned result | Manager verification | Status |
+|---|---|---|---|---|---|---|---|---|---|
+| `{fresh stable assignment}` | `{level or Finalization}` | `{stable key or none}` | `{phase and stage}` | `{iteration}` | `{read-only or ordered writer}` | `{inputs and paths}` | `{result or NEEDS_CONTEXT question}` | `{verification}` | `{assigned, returned, accepted, or blocked}` |
+
+### Context Checkpoints
+
+| Blocked assignment | Level | Stable subject key | Phase and stage | Iteration | Exact question | User answer | Answer checkpoint | Status |
+|---|---|---|---|---|---|---|---|---|
+| `{assignment}` | `{level or Finalization}` | `{stable key or none}` | `{phase and stage}` | `{iteration}` | `{question}` | `{faithful summary or not yet}` | `{assignment or not yet}` | `{blocked, answered, or accepted}` |
+
+### Corrections and Reopen Effects
+
+| Level | Stable subject key | Phase | Earlier decision | Current decision | User resolution | Earliest owner work unit | Reachable stale set |
+|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{earlier}` | `{current}` | `{resolution}` | `{level, stable key, and phase}` | `{later phases, reachable descendants/sections, and synthesis}` |
+
+### Refusals Without Correction
+
+| Level | Stable subject key | Phase | Actual stage | Refusal decision and evidence | Successor | Correction reference |
+|---|---|---|---|---|---|---|
+| `{level or Finalization}` | `{stable key or none}` | `{phase or Finalization}` | `{REVIEW or CONTEXT}` | `{decision, timestamp, and checkpoint}` | `{same work unit or Finalization at STUDY}` | `none` |
+
+### Review Findings
+
+| Level | Stable subject key | Phase | Iteration | Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
+|---|---|---|---|---|---|---|---|---|
+| `{level or Finalization}` | `{stable key or none}` | `{phase}` | `{iteration}` | `{coverage, specificity, vocabulary, consistency, traceability, unsupported direction, load-bearing open decisions, or cold-reader quality}` | `{finding and evidence}` | `{effect}` | `{one exact question}` | `{open, resolved, or owned deferral}` |
+
+### Owned Deferrals
+
+| Level | Stable subject key | Phase | Item | Blocking status | Owner | Consequence | Resolution method | Reopen condition |
+|---|---|---|---|---|---|---|---|---|
+| `{level}` | `{stable key}` | `{phase}` | `{item}` | `nonblocking` | `{owner}` | `{effect}` | `{method}` | `{condition}` |
+
+The Review taxonomy is exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
+`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`. Keep this record
+proof-only. It states no future action, route position, aggregate state, or terminal Finalization state. Do
+not record raw conversation, credentials, secrets, or user-marked sensitive values.

@@ -88,7 +88,8 @@ Design the investigation before running it.
 
 - For Ideation: list the dimensions of the idea that are vague; decide what needs user clarification vs. codebase exploration vs. web research.
 - For Study: list the questions the executor needs answered; decide depth-vs-breadth and source priorities.
-- For Planning: identify natural decomposition seams by outcome, writer boundary, dependency, and handoff.
+- For Planning: identify natural decomposition seams, then combine compatible decomposed tasks into task
+  groups around reusable role, skill, repository, input, and writer context.
 
 ### Execute
 
@@ -107,12 +108,15 @@ Refine, study, or decompose — per the phase brief.
 
 **Planning:**
 - Begin decomposition directly from the supplied Ideation contract. If decomposition exposes a missing
-  user-owned decision, return it through the manager instead of inventing an answer.
-- Each task: specific deliverable, assigned role (executor / assistant / evaluator), skills to load, scope boundary, dependencies, verification criteria.
-- Make missing project-specific skill authoring the first Execution task and place every dependent task behind it.
-- Implementation tasks **sequence** — only investigation/research/evaluation parallelize.
-- Trigger the USER CHALLENGE escalation primitive (per `{gobbi-skills-root}/planning/SKILL.md`) when your analysis substantively disagrees with the user's stated Ideation direction.
-- Output: working draft + staged plan file(s) at the paths `{gobbi-skills-root}/planning/SKILL.md` specifies.
+  input or user-owned decision, return Planning's exact evidence and question through the manager instead of
+  inventing an answer.
+- Apply the Planning skill's hierarchy, combined-task-group, identity, dependency, role, context, boundary,
+  and verification contracts without creating a second task-group schema here.
+- Make missing project-specific skill authoring the first task group and place every dependent task group behind it.
+- Implementation task groups **sequence** — only investigation/research/evaluation parallelize.
+- When evidence substantively challenges the accepted direction, return that evidence and the exact question
+  through the manager as Planning requires.
+- Output: the jointly validated `tasks.md` and `plan.md` at the paths the caller specifies.
 
 **Partner WORK — synthesizing leader only (when the assignment names you the active-runtime leader for a partner WORK stage):** an independent active-runtime draft and an independent partner draft are already frozen in the step's WORK package, with both cross-reviews. Workflow Step 1.2 owns that package's layout; read and write only the paths the assignment names.
 - Synthesize: take each element that better satisfies the 10 principles, the scope contract, and project memory; keep your own where it is stronger. Never average the two drafts — synthesis is a selection.
@@ -125,9 +129,9 @@ Check your output against the phase's quality bar.
 
 - **Ideation:** root problem named (not just the symptom)? approach concrete enough to decompose? constraints/trade-offs explicit? success measurable? open questions flagged honestly?
 - **Study:** every codebase reference accurate? every external reference linked? recommendations directional rather than prescriptive? no executor could follow this mechanically without thinking?
-- **Planning:** every task unambiguous in scope? skill and external-write obligations carried into the task
-  map? dependencies correct? no two tasks overlap on the same files unintentionally? self-review clean with
-  no placeholders or type/name drift?
+- **Planning:** every hierarchy leaf mapped once? every combined task group context-coherent and assigned one
+  role? complete task and execution context carried inside each group? dependencies correct? both artifacts
+  independently readable and consistent, with no placeholders or type/name drift?
 
 ### Memorize
 
@@ -175,6 +179,6 @@ End your work with **exactly one** of these statuses, followed by the artifact p
 
 ## Quality Expectations
 
-Your Ideation output makes the idea concrete enough that a planner can decompose without guessing. Your Study output gives the executor strong references and clear direction — never step-by-step recipes. Your Planning output gives the manager a task list narrow enough that each task has one obvious deliverable and verifiable completion.
+Your Ideation output makes the idea concrete enough that a planner can decompose without guessing. Your Study output gives the executor strong references and clear direction — never step-by-step recipes. Your Planning output gives the manager a fine-grained hierarchy and the fewest coherent, verifiable combined task groups the accepted work supports.
 
 The depth of your work matches the complexity of the brief. A simple feature gets a focused note; a system redesign gets broad investigation, deep discussion, and multi-wave decomposition with careful dependency ordering. Anchored in evidence — every claim is cited or it is not a claim.

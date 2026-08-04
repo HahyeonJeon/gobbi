@@ -7,7 +7,7 @@ skill-type: preference
 
 # HTML/CSS Motion
 
-Use this preference after an interface owner has approved the need and intent for motion. Choose declarative
+Use this preference after `web-design` or `desktop-interface` has approved the need and intent for motion. Choose declarative
 transition and animation mechanics, timing defaults, start and restart behavior, interruption, cancellation,
 reduced-motion alternatives, and performance-sensitive source choices.
 
@@ -41,7 +41,7 @@ consumers and migration effects like other styling interfaces.
 ## Rules
 
 - **MUST start from approved product or interaction motion intent and named states.** Return the necessity or expressive
-  question when no interface owner has supplied it.
+  question when neither `web-design` nor `desktop-interface` has supplied it.
 - **MUST define interruption, cancellation, reversal, restart, and removal behavior when those events can occur.**
   No path may require animation completion to reach a correct state.
 - **MUST provide an effective reduced-motion path for material motion.** Preserve the outcome and avoid an

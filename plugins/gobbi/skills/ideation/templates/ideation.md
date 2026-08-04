@@ -1,7 +1,8 @@
 # {Idea or Problem Name} — Ideation
 
-> **Document role:** Integrated Ideation result<br>
-> **Purpose:** Preserve the finalized problem, study foundation, hierarchical decisions, and integrated design as one independently readable result.
+> **Document role:** Current authoritative Ideation result<br>
+> **Purpose:** Preserve the finalized problem, study foundation, hierarchical decisions, and integrated design as one independently readable result.<br>
+> **Authority:** This document supersedes conflicting or stale optional requirements and topics snapshots.
 > **Output boundary:** Do not include ordered implementation tasks, an implementation diff, or any produced realization such as a prototype, code spike, benchmark, experiment, or completed study. Record unperformed realization work only as future validation.
 
 ## Contents
@@ -61,7 +62,7 @@
 
 | Question | Resolution | Effect |
 |---|---|---|
-| `{question from requirements.md or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
+| `{question established during requirements work or added later}` | `{answer or explicit deferral}` | `{effect on the final design}` |
 
 ## Study
 

@@ -198,6 +198,31 @@ test_safe_reconciliation() {
   pass 'safe reconciliation prunes stale owned leaves and dirs, fills gaps, and is idempotent'
 }
 
+test_canonical_skill_deletion() {
+  local root="$tmp_root/canonical-skill-deletion"
+  make_fixture "$root"
+  write_skill_file "$root" alpha SKILL.md '# Alpha'
+  write_skill_file "$root" record SKILL.md '# Record'
+
+  run_sync "$root" >/dev/null
+  run_sync "$root" --materialize-package >/dev/null
+  [[ -L "$root/.agents/skills/record" ]] || fail 'precondition missing Codex record discovery link'
+  [[ -L "$root/.claude/skills/record/SKILL.md" ]] || fail 'precondition missing Claude record discovery link'
+  [[ -f "$root/plugins/gobbi/skills/record/SKILL.md" ]] || fail 'precondition missing generated record skill'
+
+  find "$root/.gobbi/projects/gobbi/skills/record" -depth -mindepth 1 -delete
+  rmdir "$root/.gobbi/projects/gobbi/skills/record"
+  run_sync "$root" >/dev/null
+  [[ ! -e "$root/.agents/skills/record" && ! -L "$root/.agents/skills/record" ]] \
+    || fail 'canonical deletion left the Codex record discovery link'
+  [[ ! -e "$root/.claude/skills/record" ]] || fail 'canonical deletion left the Claude record discovery tree'
+  run_sync "$root" --materialize-package >/dev/null
+  run_sync "$root" --check >/dev/null
+  [[ ! -e "$root/plugins/gobbi/skills/record" ]] || fail 'materialization recreated deleted record content'
+  [[ -f "$root/plugins/gobbi/skills/alpha/SKILL.md" ]] || fail 'materialization lost surviving nested skill content'
+  pass 'canonical skill deletion prunes both runtime mirrors and generated package content'
+}
+
 test_unsafe_agents_entry() {
   local root="$tmp_root/unsafe-agents-entry" log="$tmp_root/unsafe-agents-entry.log"
   prepare_synced_fixture "$root"
@@ -523,6 +548,7 @@ test_static_deletion_guards() {
 test_static_deletion_guards
 test_package_component_shapes
 test_safe_reconciliation
+test_canonical_skill_deletion
 test_unsafe_agents_entry
 test_unsafe_agents_wrong_target
 test_unsafe_agents_trailing_newline_target

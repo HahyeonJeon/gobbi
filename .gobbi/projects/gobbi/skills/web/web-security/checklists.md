@@ -1,13 +1,14 @@
 # Web Security Evaluation Checklist
 
-This reusable unchecked source evaluates one bounded web security outcome produced under this operation,
-against the scoped-requirement, authoritative-enforcement, lifecycle, proportional-threat, control-binding,
-and assurance obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-security`](SKILL.md) operation, with [`web-backend`](../web-backend/SKILL.md) owning authoritative domain
-policy and implementation, [`web-platform`](../web-platform/SKILL.md) owning browser facts,
+This reusable unchecked source evaluates one scoped web security outcome produced under this operation
+against its scoped requirements, enforcement at each named owner's boundary, control lifecycles,
+proportional threat analysis, control binding, and assurance obligations. It is governed by the
+[`web`](../SKILL.md) domain and
+[`web-security`](SKILL.md) operation, with [`web-backend`](../web-backend/SKILL.md) owning domain policy and
+its server-side implementation, [`web-platform`](../web-platform/SKILL.md) owning browser facts,
 [`web-testing`](../web-testing/SKILL.md) owning harness and suite mechanics,
 [`web-observability`](../web-observability/SKILL.md) owning what a diagnostic emits, and
-[`web-feature`](../web-feature/SKILL.md) as the caller that binds the outcome. The source commit that contains
+[`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The source commit that contains
 this file identifies the checklist version. Its stable owner prefix is `WEBSEC`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
@@ -31,7 +32,7 @@ them; a requirement set chosen before the system was inventoried is the failure.
 - [ ] WEBSEC-CK-PROJECT-01-02 — Applicable requirements are selected from OWASP ASVS 5.0.0 with the exact version and identifiers recorded.
 - [ ] WEBSEC-CK-PROJECT-01-03 — OWASP WSTG 4.2 supplies applicable test ideas through versioned links.
 - [ ] WEBSEC-CK-PROJECT-01-04 — NIST SSDF supplies lifecycle practices.
-- [ ] WEBSEC-CK-PROJECT-01-05 — The work continues with one bounded security outcome.
+- [ ] WEBSEC-CK-PROJECT-01-05 — The work continues with one scoped security outcome.
 - [ ] WEBSEC-CK-PROJECT-01-06 — Missing asset ownership, unknown authority, contradictory policy, or a scope change is returned rather than resolved here.
 
 ### WEBSEC-SC-PROJECT-02 — Rule violation: an awareness list stands in for scoped analysis
@@ -60,15 +61,15 @@ outward; a control listed in the contract with no owner or no way to prove it is
 - [ ] WEBSEC-CK-STRUCTURE-01-03 — One versioned security contract is produced.
 - [ ] WEBSEC-CK-STRUCTURE-01-04 — Implementation is routed to the backend, frontend, platform, provider, dependency, infrastructure, and operations owners.
 
-### WEBSEC-SC-STRUCTURE-02 — Normal case: authoritative controls are built before the layers around them
+### WEBSEC-SC-STRUCTURE-02 — Normal case: controls are built at their owning boundaries before the layers around them
 
 Convenience layers are easy to add and easy to mistake for enforcement. The expected outcome builds the
-authoritative seams first, verifies each locally, and connects the surrounding layers afterwards; a
-convenience layer attached to an unverified seam is the failure.
+boundaries that own protected decisions first, verifies each locally, and connects the surrounding layers afterwards; a
+convenience layer attached to an unverified boundary is the failure.
 
 #### Checklist
 
-- [ ] WEBSEC-CK-STRUCTURE-02-01 — Types, schema, canonicalization, validation, encoding, resource policy, and explicit authorization seams are built before convenience layers are connected.
+- [ ] WEBSEC-CK-STRUCTURE-02-01 — Types, schema, canonicalization, validation, encoding, resource policy, and explicit authorization boundaries are built before convenience layers are connected.
 - [ ] WEBSEC-CK-STRUCTURE-02-02 — Each control is verified locally.
 - [ ] WEBSEC-CK-STRUCTURE-02-03 — Missing authority or unsafe failure is repaired before a convenience layer is connected to the control.
 - [ ] WEBSEC-CK-STRUCTURE-02-04 — Requirements, implementation, configuration, tests, documentation, logging, runbooks, and incident recovery are updated together.
@@ -115,8 +116,8 @@ identity and the full threat record; a defensible outcome nobody can re-derive i
 
 ### WEBSEC-SC-USAGE-01 — Expected failure: an operation is denied
 
-A request arrives that the actor is not allowed to make. The expected outcome denies it at the authoritative
-boundary, tells the person something safe, and leaves a route forward; a denial that leaks the decision's
+A request arrives that the actor is not allowed to make. The expected outcome denies it at the boundary that
+owns the protected decision, tells the person something safe, and leaves a route forward; a denial that leaks the decision's
 inputs, or that dead-ends the person, is the failure.
 
 #### Checklist
@@ -124,8 +125,8 @@ inputs, or that dead-ends the person, is the failure.
 - [ ] WEBSEC-CK-USAGE-01-01 — The deny behavior is defined.
 - [ ] WEBSEC-CK-USAGE-01-02 — The deny behavior is the default.
 - [ ] WEBSEC-CK-USAGE-01-03 — Every operation on every resource is authorized rather than only the entry point.
-- [ ] WEBSEC-CK-USAGE-01-04 — The error surfaced on denial is safe.
-- [ ] WEBSEC-CK-USAGE-01-05 — The error surfaced on denial does not disclose the protected decision's inputs.
+- [ ] WEBSEC-CK-USAGE-01-04 — The error returned on denial is safe.
+- [ ] WEBSEC-CK-USAGE-01-05 — The error returned on denial does not disclose the protected decision's inputs.
 - [ ] WEBSEC-CK-USAGE-01-06 — A denied or failed path has a defined recovery route and an alert or incident path where the risk requires one.
 
 ### WEBSEC-SC-USAGE-02 — Normal case: exceptional and degraded paths are covered
@@ -167,16 +168,16 @@ disposition is the failure.
 
 ## Risk
 
-### WEBSEC-SC-RISK-01 — Rule violation: a protected decision is enforced outside the authoritative boundary
+### WEBSEC-SC-RISK-01 — Rule violation: a protected decision is enforced outside its owning boundary
 
-A control lives in the interface, the request shape, or a browser policy, and the authoritative boundary
-accepts whatever reaches it. The expected outcome enforces the decision where it is authoritative and keeps
+A control lives in the interface, the request shape, or a browser policy, and the boundary that owns the decision
+accepts whatever reaches it. The expected outcome enforces the decision where its named authority resides and keeps
 the surrounding layers as defense; a client-side or browser-side check treated as the enforcement is the
 failure.
 
 #### Checklist
 
-- [ ] WEBSEC-CK-RISK-01-01 — Every protected decision is enforced at the authoritative boundary under deny-by-default least privilege.
+- [ ] WEBSEC-CK-RISK-01-01 — Every protected decision is enforced at the boundary that owns it under deny-by-default least privilege.
 - [ ] WEBSEC-CK-RISK-01-02 — Client validation, hidden or disabled UI, CORS, CSP, cookies, and permission prompts are kept as defense or experience layers and never as sole enforcement.
 - [ ] WEBSEC-CK-RISK-01-03 — The work stops on a privilege bypass, sensitive-data exposure, false safety, or unrecoverable ambiguity rather than growing the next slice.
 
@@ -184,13 +185,14 @@ failure.
 
 An attacker holds a valid request and sends it again, or sends two at once, or arrives through a compromised
 dependency. The expected outcome models those capabilities against this system's assets and resolves them at
-the authoritative boundary; an effect that depends on request ordering or single delivery is the failure.
+the boundary that owns each protected decision; a protected action, including any provider action, that
+depends on request ordering or single delivery is the failure.
 
 #### Checklist
 
 - [ ] WEBSEC-CK-RISK-02-01 — Spoofing, tampering, disclosure, privilege escalation, denial, replay, concurrency, abuse, resource exhaustion, and supply-chain behavior are each modelled against this system's assets.
-- [ ] WEBSEC-CK-RISK-02-02 — A replayed legitimate request produces no second authoritative effect.
-- [ ] WEBSEC-CK-RISK-02-03 — Two concurrent instances of the same operation are resolved at the authoritative boundary rather than by arrival order.
+- [ ] WEBSEC-CK-RISK-02-02 — A replayed legitimate request does not apply a protected action, including a provider action, twice.
+- [ ] WEBSEC-CK-RISK-02-03 — Two concurrent instances of the same operation are resolved at the boundary that owns the protected decision rather than by arrival order.
 
 ### WEBSEC-SC-RISK-03 — Adversarial: cosmetic assurance is offered as proof
 
@@ -201,7 +203,7 @@ assurance shaped to close a review rather than to find a weakness is the failure
 #### Checklist
 
 - [ ] WEBSEC-CK-RISK-03-01 — No scanner result, OWASP Top 10 list, happy path, or single penetration pass is accepted as sufficient assurance.
-- [ ] WEBSEC-CK-RISK-03-02 — A failed control, shallow scan result, untested real seam, unsupported version, or missing recovery evidence is returned to its owner rather than counted as evidence.
+- [ ] WEBSEC-CK-RISK-03-02 — A failed control, shallow scan result, untested real integration point, unsupported version, or missing recovery evidence is returned to its owner rather than counted as evidence.
 - Also applies: WEBSEC-CK-OVERALL-01-01 (untested areas, accepted exceptions, residual risk, the remediation owner, and the reopen condition are reported).
 
 ### WEBSEC-SC-RISK-04 — Edge case: a required proof cannot be obtained

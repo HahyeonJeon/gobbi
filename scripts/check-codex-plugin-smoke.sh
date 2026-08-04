@@ -230,4 +230,10 @@ else
   fail 'installed cache file inventory or bytes differ from plugins/gobbi; check the mismatched package path for a symlink or stale generated copy, then regenerate with: bash scripts/sync-plugin-package.sh --materialize-package'
 fi
 
+if [[ ! -e "$installed_path/skills/record" && ! -L "$installed_path/skills/record" ]]; then
+  pass 'installed cache contains no standalone record skill'
+else
+  fail 'installed cache unexpectedly contains skills/record'
+fi
+
 printf 'Codex plugin smoke passed: the materialized package reached the installed cache intact\n'
