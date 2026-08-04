@@ -79,23 +79,22 @@ exact load directives because specialists do not inherit manager context.
 
 ## Plugin topology
 
-The bounded package at `plugins/gobbi/` carries both runtime manifests plus generated real `skills` and
-`agents` directories that are byte-equal to their canonical owners. `.agents/plugins/marketplace.json` and
-`.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
-repo-local and are not installed as plugin components.
+`.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/` are the only editable sources for skills
+and agents. The bounded package at `plugins/gobbi/` carries generator-materialized real-file copies of both
+trees plus the Codex and Claude Code manifests. `.agents/plugins/marketplace.json` and
+`.claude-plugin/marketplace.json` point to
+`./plugins/gobbi`. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin
+components. The package has no lifecycle-hook component.
 
-Run `bash scripts/sync-plugin-package.sh --materialize-package` to regenerate the package components,
-`bash scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
+Run `scripts/sync-plugin-package.sh --materialize-package` to regenerate the package copies. Run
+`scripts/sync-plugin-package.sh --check` for the read-only topology guard,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-installed-cache behavior. The package has no lifecycle-hook component.
+installed-cache behavior. The guard fails when a generated file is missing, stale, byte-different, or a
+symlink. An installed Codex cache must receive the full nested skill tree; any missing skill is a failure, not
+a warning.
 
-A Codex plugin install of Gobbi must receive both manifests and every required generated package path. The
-installer does not follow a symlink at any depth, so a symlinked component root or nested package path is a
-package failure. A missing installed path is always a failure, never an expected warning or limitation; check
-the named package path and regenerate with `bash scripts/sync-plugin-package.sh --materialize-package`. Keep
-the single canonical source and its one guarded generated package copy. Any further duplication, and any hand
-edit of a generated file, stays forbidden. Codex skill discovery does follow symlinks, so in this repository
-`.agents/skills/` resolves and needs no install.
+Never hand-edit the package copies. Codex skill discovery does follow symlinks, so this repository's
+`.agents/skills/` view continues to resolve from canonical sources and needs no plugin install.
 
 ## Principles
 
