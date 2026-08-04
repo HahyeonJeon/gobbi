@@ -1,92 +1,75 @@
 ---
 name: workflow
-description: How a manager runs one durable Gobbi session through three checkpointed phases using native TODO routing, policy-selected local and external participants, verified records, and a terminal hand-off.
+description: How a manager runs one durable Gobbi session through three checkpointed phases using native TODO routing, policy-selected participants, verified records, and a terminal hand-off.
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 ---
 
 # Workflow
 
-A Gobbi manager loads this skill to start, recover, route, and close one isolated session. The result is a
-verified branch and worktree, a native runtime TODO route, evidence for every completed step, and a hand-off
-that a cold manager can continue or close.
+A Gobbi manager loads this skill to create or recover one isolated Workflow session and route it through
+Configuration, Ideation, Planning, Execution, Wrap-up, and Hand-off. The result is verified local history,
+recoverable evidence, and an exact terminal handoff.
 
-The workflow has three phases: Configuration → Ideation → Hand-off; Planning → Execution → Hand-off; and
-Wrap-up → Hand-off. Every productive step runs DISCUSSION → WORK → EVALUATION → RECORD.
+This parent owns the shared state machine: native TODOs, evidence, participants, assignments, gates, records,
+recovery, checkpoints, and transitions. Its internal phase children own phase-specific actions. Supporting
+operations own their mechanisms.
 
 The manager owns user discussion, routing, assignments, acceptance, and authority checks. The user owns Phase 1
 direction, changes outside its locked contract, new safety or external authority, destructive actions,
-publication, and merge authority. Specialists own only their bounded work.
+publication, merge, and cleanup. Specialists own only their bounded work.
 
 ## Principles
 
 ### Route through one native TODO
 
-The runtime TODO list is the sole progression authority. Artifacts, tests, commits, and reports prove whether
-the manager may update it; they never become a concurrent route.
+The native TODO list is the sole progression authority. Evidence proves a transition; it never becomes a
+second route.
 
 ### Lock direction before autonomous delivery
 
-Phase 1 locks the problem, purpose, scope, and approach with the user. Phase 2 and Phase 3 then resolve routine
-in-contract choices through agent discussion and continue without routine user questions.
+Phase 1 locks material direction with the user. Later phases resolve routine in-contract choices without
+routine user questions.
 
-### Call the operation that owns the mechanism
+### Keep shared contracts in the parent
 
-Workflow gives each supporting operation its contract and frozen evidence, then places, verifies, and accepts
-what that operation returns. Partner owns one external invocation. Workflow owns local participants, round
-assembly, specialist scheduling, and the Agent Teams manual only for Claude Code tool behavior.
+Every productive step uses the same participant, evidence, gate, and record contracts. Phase children supply
+only their role, subject, output, gate, cap, and phase-specific checks.
 
-### Make every phase boundary recoverable
+### Make every boundary recoverable
 
-Each nonterminal Hand-off names the completed evidence, Git location, and exact next TODO. Phase 1 and Phase 2
-continue immediately unless the user interrupts; the Wrap-up-owned terminal Hand-off body and Git-owned
-finalization receipt end Phase 3.
+Every nonterminal checkpoint names verified evidence, Git location, and the exact next TODO. Phase 3 ends only
+after the Wrap-up handoff and factual Git receipt agree with current evidence.
 
 ## Rules
 
-- **MUST use the native runtime TODO list to select the current phase, productive step, stage, task, and
-  iteration.** Use only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
-
+- **MUST use the native runtime TODO list to select the current phase, step, stage, task, and iteration.** Use
+  only `pending`, `in_progress`, and `completed`, with at most one item `in_progress`.
 - **MUST run DISCUSSION → WORK → EVALUATION → RECORD for Ideation, Planning, every Execution task, and
-  Wrap-up.** Reread and verify the required evidence before changing the active item to its next stage.
-
+  Wrap-up.** Verify the current stage evidence before changing the TODO.
 - **MUST apply the recorded session-wide partner policy to every productive step.** Disabled invokes no
-  external runtime: WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh
-  isolated active-runtime evaluator. Enabled adds each applicable external draft, cross-review, or evaluator
-  through one [Partner](../gobbi/partner/SKILL.md) invocation while Workflow assembles the complete round.
-
-- **MUST keep worktree mutations in one ordered writer chain.** Parallel work is limited to independent
-  read-only study, factual analysis, and critique.
-
-- **MUST continue only from a verified PASS after every correction receives fresh evaluation.** Automatically
-  correct only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral,
-  non-destructive, non-external finding. Send Critical, blocking, scope, design, authority, external, and
-  destructive findings to the user. Ask also for missing safety or authority or an enabled required-system
-  failure without waiver authority.
-
-- **NEVER accept a specialist report, idle signal, TODO status, or plausible summary as completion evidence
-  by itself.** The manager must reread the promised artifact or commit and run its named verification.
+  external runtime; enabled adds each applicable external result through one
+  [Partner](../gobbi/partner/SKILL.md) invocation while Workflow retains round assembly and acceptance.
+- **MUST keep worktree mutations in one ordered writer chain.** Parallel work is read-only study, factual
+  analysis, or critique.
+- **MUST apply Gobbi's [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).**
+  Every correction receives fresh evaluation, and only a verified PASS continues automatically.
+- **NEVER accept a report, idle signal, TODO status, or summary as completion evidence by itself.** Reread the
+  promised artifact or commit and run its named verification.
 
 ## Procedure
 
-### Phase 1 — Configure, ideate, and hand off
+### Phase 1 — Establish the shared Workflow contracts
 
 #### 1.1 Initialize or recover the native TODO
 
 - Load [Delegation](../delegation/SKILL.md), [Discussion](../discussion/SKILL.md),
-  [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order, before
-  the first Workflow action. A skill already loaded by Gobbi may satisfy its register entry; confirm all four
-  before continuing.
-- Inspect the current repository, branch, worktrees, native TODO surface, and unfinished work without
-  mutation.
-- Load the internal [`phase-1`](phase-1/SKILL.md) operation before acting on `P1 · Configuration`. A phase
-  child is loaded by this exact path after the parent routes to it; it is never invoked independently by name.
-- In Claude Code, use `TaskList` and `TaskGet` to inspect tasks, `TaskCreate` to add items, and `TaskUpdate` to
-  change a subject or status. In Codex, use `update_plan` to publish the complete ordered list and statuses.
-- On a fresh session, create one item for Configuration, one mutable item for each productive-step iteration,
-  and one item for each Hand-off before doing other progression work. Start with only `P1 · Configuration` in
-  progress and keep later items pending.
-- Use this exact title grammar:
+  [Git](../git/SKILL.md), and [Memory](../memory/SKILL.md), in that order. Inspect repository, branch,
+  worktrees, TODO state, and unfinished evidence without mutation.
+- In Claude Code, use `TaskList`, `TaskGet`, `TaskCreate`, and `TaskUpdate`. In Codex, publish the complete
+  ordered list and statuses with `update_plan`.
+- On a fresh session, create Configuration, one mutable item for each productive-step iteration, and each
+  Hand-off. Start only Configuration. Use this exact title grammar:
 
 ```text
 P1 · Configuration
@@ -99,63 +82,46 @@ P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
 P3 · Hand-off
 ```
 
-- Retitle the active productive-step item as it enters each stage. `PASS` is the verified gate marker after
-  RECORD, not a fifth stage.
-- When an iteration needs revision, complete its item at RECORD, create the next iteration at DISCUSSION, and
-  leave the prior item as evidence of the completed pass. Ideation, Planning, and Wrap-up never receive a
-  third item.
-- For recovery, apply the algorithm in [`agent-teams.md`](agent-teams.md): begin at the latest verified
-  Hand-off, walk canonical records and task commits in workflow order, reconstruct the first unproved TODO,
-  and continue only after the native list has been corrected. Load the internal phase operation that matches
-  the reconstructed item before continuing.
+- Retitle an item at each stage. `PASS` is the verified gate marker after RECORD. On revision, complete the
+  recorded iteration and create the next at DISCUSSION; Ideation, Planning, and Wrap-up allow two total
+  iterations, while Execution uses its configured cap.
+- Recover through [`agent-teams.md`](agent-teams.md): start at the latest verified Hand-off, walk records and
+  task commits in order, reconstruct the first unproved TODO, correct the native list, and load its phase child.
 
-#### 1.2 Configure the session and its evidence
+#### 1.2 Configure identity, isolation, and evidence
 
-- Enter Configuration with Gobbi's applicable normalized slug or legacy `slug: not-applicable` and the
-  session-wide `partner: enabled|disabled` policy.
-  Resolve other defaults or customization with the user, including the Execution `maxIterations` value,
-  which defaults to three total passes per task, role selections, Git finalization, enabled-system
-  availability, and any narrow waiver authority.
-- For a fresh session, generate a full lowercase hyphenated Gobbi session UUID and capture the real UTC
-  session-start date before deriving names. Retain that original date across context boundaries. Derive the
-  branch and worktree leaf separately through [Git conventions](../git/conventions.md):
-  `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and
-  `<YYYY-MM-DD>-<slug>-<full-uuid>`. Never derive the leaf from the branch. Workflow owns its Git session contract
-  and states it as five properties for the [Git skill](../git/SKILL.md):
+- Enter Configuration with Gobbi's normalized slug or recovered `slug: not-applicable`, partner policy, and
+  validated `{gobbi-skills-root}` / `{gobbi-agents-root}` pair. Resolve the Execution cap, roles, required-system
+  availability, narrow waivers, base revision, publication intent, merge authority, and cleanup authority. The
+  Execution cap defaults to three total passes per task.
+- Supply [Git](../git/SKILL.md) these five contract properties:
 
-| Contract property | Where Workflow gets it |
+| Property | Workflow value |
 |---|---|
-| Proved identity | The runtime, original UTC date, normalized slug, generated full UUID, and partner policy recorded in `configuration.md`, checked against separately derived new names and every commit trailer. A recovered legacy identity records `slug: not-applicable`. |
-| Immutable base commit | The base revision resolved with the user in this step and recorded in `configuration.md`, which is the bootstrap commit when the preflight below creates one. It never moves afterward. |
-| Isolated worktree outside the main checkout | For a fresh session, the intended path uses the separately derived new leaf and resolves outside the main checkout, with nothing registered there or to the separate branch. Recovery accepts one exact registered new pair or permanent legacy pair. |
-| Declared publication intent | The Git finalization resolved with the user in this step and recorded in `configuration.md`. Phase 3 performs only what it authorizes. |
-| Required layout | The canonical `.gobbi/` paths, their tracked-or-ignored states, and the ignore-rule content that achieves them, defined by [Gobbi](../gobbi/SKILL.md) Step 1.1 and resolved for this repository's `<project>`. |
+| Proved identity | Runtime, original UTC start date, slug or `not-applicable`, full UUID, partner policy, and separately derived names. |
+| Immutable base commit | The user-resolved clean head, or the one approved layout-bootstrap commit. |
+| Isolated worktree | A fresh free path or one exact registered new or permanent legacy pair outside the main checkout. |
+| Publication intent | The configured local, push, or pull-request outcome; later actions cannot exceed it. |
+| Required layout | Gobbi Step 1.1 paths, tracked/ignored states, and exact ignore bytes. |
 
-- Bootstrap the required layout before the base is captured. Resolve and validate `<project>` through the
-  [Gobbi](../gobbi/SKILL.md) Step 1.1 resolver, require a clean current checkout, and let the Git operation
-  verify the posture and stop on the conditions it names.
-- When the posture is already correct, create nothing, commit nothing, and leave the main checkout unchanged.
-  Otherwise create the required directories, write `.gobbi/.gitignore`, and obtain the user's explicit
-  approval for exactly one bootstrap commit of those paths on the current branch. That commit's clean head is
-  the immutable base commit; stop without that approval.
-- The bootstrap is the only tracked write outside the session worktree. It covers only the required layout and
-  its ignore file, happens at most once per repository, and never writes a repository's root `.gitignore`.
-- On recovery, parse the branch, worktree leaf, and session leaf with Git and Memory's separate new and
-  permanent legacy validators. Require a byte-reproducible matching shape and tuple. Record `identity-shape:
-  new|legacy`; never infer a legacy slug or rename, migrate, or rewrite a live legacy or active object. Stop on
-  a mixed shape, competing tuple, collision, or unproved path.
-- Create and verify one isolated session branch and worktree from that contract. For a fresh session, the Git
-  operation proves the intended path is free, creates it, and returns the registered worktree that completes
-  the contract before any other write.
-- Create a new workflow evidence root at
-  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`; its leaf is byte-identical
-  to the new worktree leaf, not the branch. Keep a recovered legacy root at its permanent
-  `<YYYY-MM-DD>-<full-uuid>` leaf. Write `configuration.md` there with mode, identity shape, original UTC date,
-  slug or `not-applicable`, UUID, partner policy, resolved settings, repository, base revision, branch,
-  worktree leaf, session leaf, absolute worktree, runtime system, the
-  validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair the [Gobbi](../gobbi/SKILL.md) Step 1.1 entry
-  returned, and creation checks.
-- Use these fixed evidence owners:
+- For a fresh session, generate one full lowercase hyphenated UUID and capture the original UTC start date
+  before deriving names. Derive branch and leaf separately through [Git conventions](../git/conventions.md):
+  `<runtime-prefix>-<YYYY-MM-DD>-<slug>-<full-uuid>` and `<YYYY-MM-DD>-<slug>-<full-uuid>`.
+- Run Gobbi's layout resolver and Git bootstrap preflight before capturing the base. If repair is required,
+  obtain explicit user approval for the sole tracked main-checkout write: one commit containing only the
+  required directories and `.gobbi/.gitignore`. Never write the repository root `.gitignore`.
+- On recovery, require separately parsed branch, worktree, and session leaves to reproduce one new or legacy
+  tuple. Record `identity-shape: new|legacy`; never infer a legacy slug, rename or migrate live state, accept a
+  mixed shape, or choose among competing tuples.
+- Create or verify the isolated worktree through Git. Create the evidence root at
+  `{worktree}/.gobbi/projects/{project}/sessions/<YYYY-MM-DD>-<slug>-<full-uuid>/`; the new worktree and session
+  leaves are byte-identical. Keep a recovered legacy `<YYYY-MM-DD>-<full-uuid>` root unchanged.
+- Write `configuration.md` with mode, identity shape, original UTC date, slug or `not-applicable`, UUID, partner
+  policy, settings, repository, base, branch, worktree leaf, session leaf, absolute worktree, runtime, validated
+  root pair, and creation checks. Apply Memory `Temporary Record`, prove it ignored, and verify the tracked tree
+  is unchanged.
+
+Use these fixed evidence owners:
 
 | Productive work | Evidence directory |
 |---|---|
@@ -164,65 +130,55 @@ P3 · Hand-off
 | Execution | `3-execution/task-NN-slug/` |
 | Wrap-up | `4-wrap-up/` |
 
-- Each owner uses `working/iteration-N/` for the WORK package and `record/iteration-N.md` for the RECORD
-  receipt. Its `evaluation/iteration-N/` holds `gate.md` plus only the policy-required runtime reports:
-  `claude.md` for a Claude evaluator and `codex.md` for a Codex evaluator. On PASS, Ideation writes
-  `1-ideation/outputs/ideation.md`
-  and Planning writes `2-planning/outputs/{tasks.md,plan.md}`. Execution implementation outputs remain at
-  their planned tracked paths. `{evidence-root}/work/` receives other session-only work.
-- Every path below the evidence root is ignored temporary session evidence. Apply
-  [Memory](../memory/SKILL.md) `Temporary Record` to `configuration.md`, each package artifact, gate, output,
-  and receipt named by Workflow. Never stage or commit these paths. On Wrap-up, apply `Memorize` to the full
-  evidence root; readable legacy `{evidence-root}/memory/` content remains temporary input.
-- A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
-  `open-decisions.md`. Local specialists write their caller-named local artifacts. The
-  [Partner](../gobbi/partner/SKILL.md) operation returns one labeled frozen external response and writes no
-  durable file, so the manager places each enabled external response at its path before acceptance.
-- Manager acceptance is a written contract and no script enforces it. The manager reads the placed package
-  directly and confirms the required local draft, its self-review, synthesis, and open decisions. With partner
-  enabled, it also confirms each applicable system-labeled external draft or cross-review against the label
-  Partner returned. It refuses any missing, unexpected, or unlabeled participant artifact.
-- Workflow owns this evaluation policy. Every productive step runs EVALUATION with one fresh isolated
-  active-runtime evaluator. With partner enabled, Partner adds one fresh isolated external evaluator over the
-  same frozen subject; neither receives the other report. Disabled invokes no external runtime. Evaluator
-  verdicts are report evidence, and a validated `gate.md` PASS alone advances the TODO.
-- Each evaluation report is a complete human-readable Evaluation output. Every finding states an ID, severity,
-  evidence, impact, cause, confidence, suggested direction, and `blocking: yes|no`.
-- Each `gate.md` records mode, partner policy, required participant set, report paths and hashes, every
-  declared verdict, unresolved Critical finding IDs, actual blocking finding IDs, automatically correctable
-  finding IDs, user-owned finding dispositions, pending reevaluation IDs, and the workflow decision. Each RECORD
-  receipt records only the exact TODO and decision, source artifact, report, gate, or commit identifiers and
-  hashes, verification result, accepted finding dispositions, and next or recovery state.
-- Gates and receipts are recovery evidence. Only the native TODO selects the next action.
-- Complete Configuration only after rereading `configuration.md`, verifying the evidence root, branch,
-  worktree, settings, and TODO route, and then activate `P1 · Ideation · DISCUSSION · 1/2`.
+Each owner uses `working/iteration-N/`, `evaluation/iteration-N/`, and `record/iteration-N.md`.
+`evaluation/iteration-N/` contains `gate.md` and only required `claude.md` or `codex.md` reports. PASS writes
+Ideation to `1-ideation/outputs/ideation.md` and Planning to `2-planning/outputs/{tasks.md,plan.md}`; Execution
+outputs stay at tracked planned paths. `{evidence-root}/work/` holds other session-only work. Every evidence-root
+path is ignored, receives Memory `Temporary Record`, and is never staged. Wrap-up later applies `Memorize` to
+the full root, including readable legacy `memory/` input.
 
-#### 1.3 Build and accept specialist assignments
+#### 1.3 Apply the shared productive-step cycle
 
-- Before writing or revising any specialist brief, keep the
-  [Delegation](../delegation/SKILL.md) skill loaded and use its `Metadata`, `Task`, `Instructions`,
-  `Resources`, and `Return` headings. The workflow adds the fields below; it does not replace that template.
-- Load the [Partner](../gobbi/partner/SKILL.md) operation only before an enabled external invocation. Use its
-  preparation, launch, validation, and failure procedure once for each external draft, cross-review, or
-  evaluation report. Workflow remains the owner of local assignments and complete-round assembly.
-- In `Metadata`, name the Gobbi session UUID, active runtime, absolute worktree, absolute evidence root,
-  branch, phase, exact current TODO and status, productive step and stage, iteration and cap, stable task ID
-  when applicable, assignment ID, prerequisite evidence, and why the assignment is ready.
-- In `Task`, name one role, one bounded outcome, why the current TODO needs it, the locked Phase 1 terms, and
-  exact acceptance criteria.
-- In `Instructions`, state the manager's retained user, scope, routing, acceptance, reassignment, destructive,
-  and external-action authority. Give the exact scope, write root, allowed and protected paths, mutation and
-  commit authority, external-effect authority, one-writer boundary, applicable independence rules, and stop
-  conditions. Specialists never update the workflow TODO or ask the user directly. Every RECORD assignment
-  names the Step 1.2 evidence layout and session locations as the paths it writes into.
-- In `Resources`, name the `{gobbi-skills-root}` and `{gobbi-agents-root}` pair Step 1.2 recorded as absolute
-  paths, then list every resource as an exact path resolved from them and never as a bare skill or role name.
-  Use this read order: Principles; every project rule or `NO_PROJECT_RULES`; the canonical role prompt; this
-  Workflow skill; the active phase operation; the productive-step and task-specific skills; then the primary
-  artifacts. Fresh specialists inherit no loaded skill. A continued specialist receives a new assignment ID,
-  current TODO, changed inputs, mandatory rereads, full current scope, and any changed independence rule.
-- In `Return`, name the expected artifacts, paths, system labels, checks, evidence, and exact escape responses.
-  Require this workflow prefix:
+Each phase child invokes this cycle with a local role, frozen subject, canonical output, gate, cap, and unique
+acceptance checks.
+
+1. **DISCUSSION:** Load the step operation, study current evidence, resolve decisions within the current
+   authority, and freeze one neutral contract. User-owned choices return to the user.
+2. **WORK:** Assign one active-runtime creator to produce and self-review a local draft. With partner enabled,
+   call Partner for each applicable independent external draft and cross-review over frozen input. Place labeled
+   returns, give the creator all selected artifacts, synthesize, and accept the complete package before mutation
+   or evaluation.
+3. **EVALUATION:** Load [Evaluation](../evaluation/SKILL.md). Dispatch one fresh isolated active-runtime
+   evaluator and, when enabled, one fresh isolated external evaluator through Partner over the same frozen
+   subject. Neither receives the other report. Preserve each complete report and verdict.
+4. **RECORD:** Classify every finding through Gobbi's finding gate, derive the applicable Workflow gate, and
+   apply Memory `Temporary Record` to the package, gate, canonical output, and receipt. Reread all promised
+   evidence before routing.
+
+A WORK package contains only `drafts/`, `cross-reviews/`, `research/`, `synthesis.md`, and
+`open-decisions.md`. The manager confirms the required local draft and self-review, synthesis, open decisions,
+and every enabled system-labeled external artifact. Missing, unexpected, or unlabeled content rejects the
+package; no script substitutes for this reading.
+
+The participant matrix is:
+
+| Policy | WORK | EVALUATION |
+|---|---|---|
+| Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |
+| Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |
+
+#### 1.4 Build and accept specialist assignments
+
+- Build every brief through Delegation's `Metadata`, `Task`, `Instructions`, `Resources`, and `Return` headings.
+  Add session UUID, runtime, absolute worktree and evidence root, branch, phase, exact TODO/status, step/stage,
+  iteration/cap, task and assignment IDs, prerequisite evidence, role, outcome, locked Phase 1 terms, acceptance,
+  authority, scope, allowed/protected paths, writer and external-effect boundaries, independence, stops, outputs,
+  checks, and escape responses.
+- In `Resources`, provide the validated absolute root pair, then exact paths in this order: Principles; all
+  project rules or `NO_PROJECT_RULES`; canonical role; this parent; active phase child; step/task skills; primary
+  artifacts. Fresh specialists inherit no loaded skill. A continuation receives a new assignment ID, current
+  TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
+- Require this return prefix; omit `VERDICT` for non-evaluators and omit `ARTIFACT` only when none is required:
 
 ```text
 STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
@@ -232,174 +188,91 @@ SKILLS LOADED:
   - <exact path, in read order>
 ```
 
-- `VERDICT` is evaluator-only and is omitted for other roles. `ARTIFACT` is omitted only when no artifact is
-  required. After a report, the manager validates the assignment, role, prefix, loaded paths, promised
-  artifact or commit, named checks, scope, and protected paths before updating the TODO.
-- In Claude Code, load the [Agent Teams](../gobbi/agent-teams/SKILL.md) manual before using persistent
-  specialists. The manual owns tool setup and use; Workflow owns assignment fields, role reuse boundaries,
-  mutation surfaces, report acceptance, and the recovery evidence walk in [`agent-teams.md`](agent-teams.md).
-- Reuse a leader only within one Ideation or Planning chain, an executor only across related ordered tasks in
-  one plan subsystem, and an assistant only within one memorization chain.
+- Validate assignment, role, prefix, loaded paths, artifact or commit, checks, scope, and protected paths before
+  routing. In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader
+  only within one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem,
+  and an assistant only within one memorization chain.
 
-#### 1.4 Run user-led Ideation
+#### 1.5 Gate, record, and recover
 
-- Keep the internal [`phase-1`](phase-1/SKILL.md) operation loaded. That phase owner defines the Ideation,
-  Evaluation, and Memory `Temporary Record` load points for its stages; the Workflow parent only routes to them.
-- In DISCUSSION, study the request and evidence with a leader, then resolve What, Why, How, scope, success,
-  material assumptions, alternatives, authority, and deferrals with the user. Freeze the neutral contract
-  only when the user has locked the direction and each material unknown has an owner or decision.
-- In WORK, assign one active-runtime leader to produce and self-review a local draft over the frozen contract.
-  When partner is enabled, call [Partner](../gobbi/partner/SKILL.md) for each applicable independent external
-  draft and external cross-review, place the returned labeled content in the Step 1.2 package, then let the
-  same assigned local leader synthesize. Resolve user-owned conflicts and read the complete policy-selected
-  package before accepting it.
-- In EVALUATION, dispatch one fresh isolated active-runtime evaluator and, when partner is enabled, call
-  Partner for one fresh isolated external evaluator over the same complete creation package. The reports
-  cover Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall; each finding
-  states severity and whether it is an actual blocker.
-- In RECORD, seal the creation package, every policy-required report, decisions, findings, checks, and
-  Configuration receipt.
-  Write `1-ideation/outputs/ideation.md` only after PASS, verify it, and keep the tracked tree unchanged before
-  updating the TODO.
+- Every evaluator report is a complete Evaluation result. Every finding states ID, severity, evidence, impact,
+  cause, confidence, suggested direction, and `blocking: yes|no`.
+- A fast gate applies to Ideation, Planning, and Wrap-up with two total iterations. Preserve evaluator verdicts
+  as report evidence. PASS requires no unresolved Critical or actual blocking finding, every user-owned finding
+  disposition, no pending reevaluation, and a satisfied contract. Otherwise iteration 1 is REVISE when repair is
+  authorized; iteration 2 is FAIL. Never create a third iteration.
+- A normal gate applies to each Execution task with its configured cap. Its decision is the most severe required
+  verdict: FAIL outranks REVISE, which outranks PASS. REVISE creates the next iteration below the cap; FAIL or
+  cap exhaustion preserves recovery evidence and stops after safe in-contract recovery.
+- Each `gate.md` records mode, partner policy, required participants, report paths and hashes, all declared
+  verdicts, unresolved Critical IDs, actual blocking IDs, automatically correctable IDs, user dispositions,
+  pending reevaluation IDs, and Workflow decision.
+- Each `record/iteration-N.md` contains only exact TODO and decision; source artifact, package, report, gate,
+  commit, or output identifiers and hashes as applicable; verification; accepted finding dispositions; and next
+  or recovery state. Gates and receipts prove recovery; only the native TODO routes.
+- On a failed partner run or specialist, preserve valid evidence, identify the exact failed system, assignment,
+  operation, and check, and retry only that bounded operation when safe. Replace a stale specialist through
+  [`agent-teams.md`](agent-teams.md). Continue only after the missing output validates. A waiver must already
+  name the system, step, and iteration; otherwise an unavailable required system is a critical blocker. Never
+  replay a possibly side-effecting operation until its prior effect is proved absent or safely reusable.
 
-#### 1.5 Apply the fast gate and hand off
+#### 1.6 Verify checkpoints and transition
 
-- Ideation has two total iterations. Evaluator verdicts remain independent report evidence; the fast
-  `gate.md`, not their more-severe aggregate, controls the TODO.
-- Classify every finding through the Rules predicate. Route automatically correctable findings back to WORK,
-  then require a fresh EVALUATION before routing again. Route Critical, blocking, scope, design, authority,
-  external, or destructive findings to the user for disposition. A rejected or deferred user-owned finding
-  remains literal gate evidence and cannot be silently corrected.
-- Set the fast-gate decision to PASS only when no unresolved Critical or actual blocking finding remains, all
-  user-owned findings have dispositions, no correction awaits fresh evaluation, and the current evaluated
-  subject otherwise satisfies the contract. Set iteration 1 to REVISE when repair is authorized and possible;
-  set iteration 2 to FAIL and stop when a non-PASS result remains. Only PASS continues automatically.
-- After a blocking first pass, complete RECORD, obtain any required Phase 1 user decision, create iteration
-  2/2 at DISCUSSION, and repeat the complete cycle. After a blocking second pass, keep the current route
-  recoverable and present the exact choices; never create iteration 3.
-- On PASS, retitle the item to `PASS`, complete it, and activate `P1 · Hand-off`.
-- Render the Phase 1 checkpoint receipt defined by the internal
-  [`phase-1`](phase-1/SKILL.md) operation. Set its next route to
-  `P2 · Planning · DISCUSSION · 1/2` with automatic continuation unless the user interrupts for clear or
-  compact.
-- Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 2 in the
-  same turn.
+Before every Hand-off, verify the phase output, gates, receipts, commits and checks when applicable, findings,
+branch, worktree, and active Hand-off TODO. Return to the earliest responsible stage on failure.
 
-### Phase 2 — Plan, execute, and hand off
+Render nonterminal checkpoints with this schema:
 
-#### 2.1 Plan continuously from the locked contract
+```text
+Phase: <Phase 1|Phase 2>
+Outcome: <verified outcome>
+Completed: <completed steps and stable task IDs when applicable>
+Evidence: <artifacts, receipts, commits, tests, and evaluations>
+Decisions: <material authorities and in-contract decisions>
+Finding dispositions: <automatic corrections and user dispositions or none>
+Branch: <exact branch>
+Worktree: <absolute worktree>
+Next TODO: <exact next TODO>
+Continuation: automatic unless the user interrupts for clear or compact
+```
 
-- Load the internal [`phase-2`](phase-2/SKILL.md) operation. That phase owner defines the Planning,
-  Evaluation, Memory `Temporary Record`, and task Execution load points; the Workflow parent only routes to them.
-- Use the canonical Ideation artifact, accepted decisions and findings, repository evidence, authority,
-  required skills, dependencies, and writer boundary as Planning inputs.
-- In DISCUSSION, the manager and agents resolve task hierarchy, stable `task-NN-slug` IDs, dependencies,
-  assignment, read-only lanes, one-writer order, acceptance, and verification without routine user questions.
-- Run WORK with the same policy-selected local draft, self-review, enabled external invocations, placement,
-  active-runtime synthesis, and direct manager reading used in Ideation.
-- Run EVALUATION with the same policy-selected fresh evaluator set and the fast two-iteration gate. Run RECORD after every
-  verdict; on PASS, verify that `2-planning/outputs/{tasks.md,plan.md}` covers every Ideation obligation in
-  dependency-valid order and that no shaping artifact was committed.
-- Resolve routine, contract-preserving gaps agent-to-agent. Stop only at the critical-blocker boundary stated
-  in the Rules.
+Reread every field, complete the Hand-off, activate `Next TODO`, display the checkpoint, and continue in the
+same turn. A context boundary preserves established mode, slug, partner policy, identity, route, and evidence.
 
-#### 2.2 Expand and execute the task route
+### Phase 2 — Dispatch the phase operations
 
-- Replace the pending `unplanned` placeholder with the first canonical plan task and add the remaining
-  `task-NN-slug` items in plan order. Each task starts at
-  `P2 · Execution · <task-NN-slug> · DISCUSSION · 1/<configured-max>`.
-- Follow the loaded Phase 2 owner's task-specific Execution, Evaluation, and Memory `Temporary Record` load points as each task
-  advances.
-- For each task, let agents turn the plan entry, current preimage, exact path scope, dependencies, skills,
-  authority, acceptance, and checks into an executable DISCUSSION contract.
-- In WORK, assign one active-runtime executor to produce and self-review the local draft over the frozen
-  contract and preimage. When partner is enabled, call Partner for each applicable external draft or
-  cross-review, place the returned content, and let the assigned executor synthesize and implement as the sole
-  writer. Run the required checks and create one focused local task commit.
-- In EVALUATION, give one fresh isolated active-runtime evaluator the task contract, complete creation package,
-  diff, tests, commit, and repository evidence. When partner is enabled, call Partner for one external
-  evaluator over the same frozen subject. Record all available verdicts in `gate.md` and use the more severe
-  verdict as the workflow decision: FAIL outranks REVISE, which outranks PASS.
-- In RECORD, seal the verdict, findings, dispositions, verification, and artifact pointers through Memory
-  `Temporary Record`. PASS only after
-  the manager rereads the committed diff, verifies allowed paths, and reruns or directly checks the named
-  evidence.
+#### 2.1 Dispatch Phase 1
 
-#### 2.3 Route revisions and continue
+- Load [`phase-1/SKILL.md`](phase-1/SKILL.md) before `P1 · Configuration` or any recovered Phase 1 item.
+- Require a configured or safely recovered isolated session, a user-locked Ideation contract, fast-gate PASS,
+  canonical Ideation output, and a verified Phase 1 checkpoint.
+- Return phase-specific failure to its earliest unproved Configuration or Ideation step. On success, activate
+  `P2 · Planning · DISCUSSION · 1/2` and continue automatically.
 
-- On REVISE below the configured cap, complete RECORD, create the next iteration at DISCUSSION, and continue
-  immediately. Apply the Rules finding predicate; every correction receives fresh evaluation and every
-  finding outside it receives user disposition.
-- On PASS, retitle and complete the task item, then activate the next task immediately.
-- A FAIL or exhausted cap is an actual blocker after every safe in-contract recovery is exhausted. Preserve
-  the current item, exact evidence, branch, worktree, and recovery choices rather than adding an unauthorized
-  pass or accepting failed work.
-- For an unavailable or invalid system response, retry only the failed bounded operation when safe. Continue
-  with one system only when the existing waiver authority names the missing system, productive step, and
-  iteration.
-- When Execution exposes an in-contract plan defect, preserve the completed Planning item and write a
-  numbered plan amendment during the current task's DISCUSSION. The amendment records the cause, affected
-  pending tasks, revised order or contracts, and verification; retitle or reorder only pending Execution
-  items and never consume another Planning iteration.
-- Preserve completed task commits. Add a compensating pending task when an in-contract amendment must alter a
-  completed result; stop at the critical-blocker boundary when safe compensation is impossible or the change
-  exceeds the locked contract.
+#### 2.2 Dispatch Phase 2
 
-#### 2.4 Hand off and continue
+- Load [`phase-2/SKILL.md`](phase-2/SKILL.md) only after the verified Phase 1 Hand-off activates Planning, or
+  when recovery selects an unfinished Phase 2 item.
+- Require fast-gate PASS for the canonical plan and normal-gate PASS plus one focused commit for every task.
+  Preserve completed plan and task history during amendments and recovery.
+- Return failure to the earliest unproved Planning or Execution step. On success, activate
+  `P3 · Wrap-up · DISCUSSION · 1/2` and continue automatically.
 
-- After every planned task has verified PASS evidence and a focused commit, activate `P2 · Hand-off` and
-  render the Phase 2 checkpoint receipt defined by the internal [`phase-2`](phase-2/SKILL.md) operation.
-- Set its next route to `P3 · Wrap-up · DISCUSSION · 1/2` with automatic continuation unless the user
-  interrupts for clear or compact.
-- Complete the Hand-off, activate its `Next TODO`, display the checkpoint, and continue into Phase 3 in the
-  same turn.
+#### 2.3 Dispatch Phase 3 and terminate
 
-### Phase 3 — Wrap up and finish
-
-#### 3.1 Run Wrap-up continuously
-
-- Load the internal [`phase-3`](phase-3/SKILL.md) operation before DISCUSSION. That phase owner defines the
-  Wrap-up, Evaluation, and Memory `Temporary Record` load points and applies the owner-loaded Memory and Git skills.
-- Use canonical step artifacts, decisions, findings, waivers, task commits, verification, current Memory,
-  the Wrap-up handoff template, and configured Git authority.
-- In DISCUSSION, apply Wrap-up Phase 1 to freeze the closure inventory without routine user questions, and
-  supply its four properties from this workflow: the full Step 1.2 evidence root as the memorization source,
-  the current project's memory root as the bounded destination, a tracked report path under
-  `.gobbi/projects/{project}/memory/reports/note/YYYY-MM-DD-{descriptive-title}.md`, and the Step 1.2 declared
-  publication intent as the authorized finalization sequence.
-- In WORK, assign one active-runtime assistant to produce and self-review a Memory-and-handoff draft. When
-  partner is enabled, call Partner for each applicable external draft or cross-review, place the returned
-  content, synthesize, and let that authorized writer apply Wrap-up Phase 2 inside the isolated worktree.
-  Freeze the actual pre-Git tree and tracked handoff bytes.
-- In EVALUATION, give one fresh isolated active-runtime evaluator the actual pre-Git tree, Memory changes,
-  handoff, checks, and finalization plan. When partner is enabled, call Partner for one external evaluator over
-  the same frozen subject. In RECORD, seal every verdict, finding, closure artifact, handoff digest, and
-  authorized Git intent.
-- Wrap-up has two total iterations and uses the fast `gate.md` decision from Step 1.5. A blocking first pass
-  receives one complete revision; a blocking second pass stops with exact evidence and no third iteration.
-
-#### 3.2 Finalize authorized work
-
-- After PASS, verify the canonical closure evidence, every local commit, the tracked handoff digest, and the
-  worktree state.
-- Resume Wrap-up Phase 3 and perform only Git actions already configured and authorized. If publication,
-  merge, or cleanup is not authorized or does not complete, retain the branch and worktree and record the
-  exact recovery action rather than asking a routine question or claiming success.
-- Retitle and complete the Wrap-up item, then activate `P3 · Hand-off`.
-
-#### 3.3 Render the terminal Hand-off
-
-- Resume Wrap-up Phase 4 and display the verified tracked Hand-off byte-for-byte.
-- Append the display-only factual Git receipt defined by
-  [`wrap-up/handoff.md`](../wrap-up/handoff.md). Report only actions that occurred.
-- Leave no next TODO after `P3 · Hand-off`; this is the terminal workflow checkpoint.
-- Complete `P3 · Hand-off` only after the handoff, TODO route, local evidence, and retained recovery state
-  agree. Display the terminal checkpoint and end the workflow.
+- Load [`phase-3/SKILL.md`](phase-3/SKILL.md) only after the verified Phase 2 Hand-off activates Wrap-up, or
+  when recovery selects an unfinished Phase 3 item.
+- Require fast-gate PASS over the actual frozen pre-Git closure before authorized finalization begins. Perform
+  only configured, currently authorized Git actions; retain exact recovery state for incomplete finalization.
+- End only after Wrap-up displays the immutable tracked handoff and factual Git receipt, `P3 · Hand-off` is
+  completed, all facts match direct evidence, and no next TODO remains.
 
 ## References
 
-- [`phase-1/SKILL.md`](phase-1/SKILL.md) owns the complete Phase 1 operation.
-- [`phase-2/SKILL.md`](phase-2/SKILL.md) owns the complete Phase 2 operation.
-- [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the complete Phase 3 operation.
-- [`agent-teams.md`](agent-teams.md) owns TODO-based assignment, the context-boundary evidence walk, and
-  Phase 2 and Phase 3 continuity.
+- [`phase-1/SKILL.md`](phase-1/SKILL.md) owns Phase 1 Configuration and Ideation actions.
+- [`phase-2/SKILL.md`](phase-2/SKILL.md) owns Phase 2 Planning and Execution actions.
+- [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the Phase 3 Workflow adapter to Wrap-up.
+- [`agent-teams.md`](agent-teams.md) owns TODO-based assignment recovery and context-boundary continuity.
+- [Git](../git/SKILL.md), [Memory](../memory/SKILL.md), [Delegation](../delegation/SKILL.md),
+  [Partner](../gobbi/partner/SKILL.md), [Evaluation](../evaluation/SKILL.md), and
+  [Wrap-up](../wrap-up/SKILL.md) own their named mechanisms.

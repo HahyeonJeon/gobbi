@@ -364,12 +364,22 @@ validate_lifecycle_semantics() {
     '#### 1.2 Establish the Cowork session locations' \
     'For a fresh identity, generate one full lowercase hyphenated UUID and capture the original UTC session-start date before deriving names. Retain both across boundaries.' \
     'Cowork must supply a fresh UUID and original UTC session identity'
-  require_semantic_sequence "$workflow" 55 \
-    'Workflow Configuration must record complete identity evidence' \
-    'For a fresh session, generate a full lowercase hyphenated Gobbi session UUID' \
-    'branch and worktree leaf separately through' \
-    'Write `configuration.md` there with mode, identity shape, original UTC date' \
-    'validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair'
+  require_semantic_section_words "$workflow" \
+    '#### 1.2 Configure identity, isolation, and evidence' \
+    '#### 1.3 Apply the shared productive-step cycle' \
+    'Write `configuration.md` with mode, identity shape, original UTC date, slug or `not-applicable`, UUID, partner policy, settings, repository, base, branch, worktree leaf, session leaf, absolute worktree, runtime, validated root pair, and creation checks.' \
+    'Workflow Configuration must record complete identity evidence'
+  require_semantic_text "$workflow" \
+    'Execution cap defaults to three total passes per task.' \
+    'Workflow must retain the default three-pass Execution cap'
+  require_semantic_sequence "$workflow" 10 \
+    'Workflow must retain the exact native TODO title grammar' \
+    'P1 · Configuration' \
+    'P1 · Ideation · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
+    'P2 · Planning · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
+    'P2 · Execution · <unplanned|task-NN-slug> · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/<configured-max>' \
+    'P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
+    'P3 · Hand-off'
   require_semantic_sequence "$memory" 25 \
     'Memory must validate caller identity against the exact session root' \
     "Require the caller's full lowercase" \
@@ -414,29 +424,21 @@ validate_lifecycle_semantics() {
   require_semantic_text "$workflow" \
     'MUST apply the recorded session-wide partner policy to every productive step.' \
     'Workflow must consume the recorded partner policy'
-  require_semantic_sequence "$workflow" 12 \
-    'Workflow disabled policy must select local-only participants' \
-    '## Rules' \
-    'Disabled invokes no' \
-    'external runtime: WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh' \
-    'isolated active-runtime evaluator.'
-  require_semantic_sequence "$workflow" 3 \
-    'Workflow enabled policy must use Partner while retaining assembly ownership' \
-    'Enabled adds each applicable external draft' \
-    'through one [Partner](../gobbi/partner/SKILL.md) invocation while Workflow assembles the complete round'
-  require_semantic_sequence "$phase_2" 5 \
-    'Workflow Phase 2 enabled evaluator must route through Partner' \
-    '#### 2.5 Evaluate the task with the normal gate' \
-    'evaluator. When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated'
-  require_semantic_sequence "$phase_2" 5 \
-    'Workflow Phase 2 must request an external evaluator over the frozen task subject' \
-    '#### 2.5 Evaluate the task with the normal gate' \
-    'external evaluator over the same frozen task subject.'
-  require_semantic_sequence "$phase_2" 5 \
-    'Workflow Phase 2 disabled evaluation must invoke no external runtime' \
-    '#### 2.5 Evaluate the task with the normal gate' \
-    'task subject. Neither receives the other report. Disabled invokes' \
-    'no external runtime.'
+  require_semantic_section_words "$workflow" \
+    'The participant matrix is:' \
+    '#### 1.4 Build and accept specialist assignments' \
+    '| Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |' \
+    'Workflow disabled policy must select local-only participants'
+  require_semantic_section_words "$workflow" \
+    'The participant matrix is:' \
+    '#### 1.4 Build and accept specialist assignments' \
+    '| Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |' \
+    'Workflow enabled policy must use Partner while retaining assembly ownership'
+  require_semantic_section_words "$phase_2" \
+    '#### 2.4 Evaluate, record, and route the task' \
+    '### Phase 3 — Hand off to Wrap-up' \
+    'Enabled routes the external evaluator through [Partner](../../gobbi/partner/SKILL.md); disabled invokes no external runtime.' \
+    'Workflow Phase 2 must consume the parent participant policy for task evaluation'
 
   require_semantic_text "$manager" \
     'severity is High, Medium, or Low;' \
@@ -470,30 +472,85 @@ validate_lifecycle_semantics() {
   forbid_semantic_text "$cowork" \
     'Automatically correct a finding only when its severity is High, Medium, or Low' \
     'Cowork must not duplicate the Gobbi finding predicate'
-  require_semantic_sequence "$workflow" 5 \
-    'Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
-    'MUST continue only from a verified PASS after every correction receives fresh evaluation.' \
-    'correct only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral,' \
-    'non-destructive, non-external finding. Send Critical, blocking, scope, design, authority, external, and' \
-    'destructive findings to the user.'
-  require_semantic_sequence "$phase_1" 5 \
-    'Workflow Phase 1 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
-    'MUST apply the parent fast gate and its two-iteration cap to Ideation.** Automatically correct only a' \
-    'High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,' \
-    'non-external finding, then require fresh evaluation. Send every other finding to the user.' \
-    'verdict as evidence; only a workflow PASS continues automatically.'
-  require_semantic_sequence "$phase_2" 5 \
-    'Workflow Phase 2 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
-    'MUST apply the parent finding predicate and participant matrix.** Automatically correct only a High,' \
-    'Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive, non-external' \
-    'finding, then obtain fresh evaluation. Send every other finding to the user. Only PASS continues' \
-    'automatically.'
-  require_semantic_sequence "$phase_3" 5 \
-    'Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
-    'MUST apply the parent participant matrix, finding predicate, fast gate, and two-iteration cap.** Correct' \
-    'only a High, Medium, or Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive,' \
-    'non-external finding, then require fresh evaluation. Send every other finding to the user.' \
-    'evaluator verdict and let only PASS route the TODO automatically.'
+  require_semantic_section_words "$workflow" \
+    '## Rules' \
+    '## Procedure' \
+    "Gobbi's [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate)" \
+    'Workflow must consume the Gobbi finding gate through its canonical owner edge'
+  forbid_semantic_text "$workflow" \
+    'Automatically correct only a High, Medium, or Low' \
+    'Workflow must not duplicate the Gobbi finding predicate'
+  for path in "$phase_1" "$phase_2" "$phase_3"; do
+    require_semantic_section_words "$path" \
+      '## Rules' \
+      '## Procedure' \
+      "Apply Gobbi's finding gate through the parent; only PASS continues." \
+      "${path#"$skills/workflow/"} must consume the Gobbi finding gate through Workflow"
+    require_semantic_section_words "$path" \
+      '# Workflow Phase ' \
+      '## Principles' \
+      'The parent remains loaded' \
+      "${path#"$skills/workflow/"} must declare the parent precondition"
+    forbid_semantic_text "$path" \
+      'Automatically correct only a High, Medium, or Low' \
+      "${path#"$skills/workflow/"} must not duplicate the Gobbi finding predicate"
+  done
+
+  require_semantic_section_words "$workflow" \
+    '#### 1.3 Apply the shared productive-step cycle' \
+    '#### 1.4 Build and accept specialist assignments' \
+    'Each phase child invokes this cycle with a local role, frozen subject, canonical output, gate, cap, and unique acceptance checks.' \
+    'Workflow must own the shared productive-step contract'
+  require_semantic_section_words "$workflow" \
+    '#### 1.5 Gate, record, and recover' \
+    '#### 1.6 Verify checkpoints and transition' \
+    'A fast gate applies to Ideation, Planning, and Wrap-up with two total iterations.' \
+    'Workflow must own the fast two-iteration gate'
+  require_semantic_section_words "$workflow" \
+    '#### 1.5 Gate, record, and recover' \
+    '#### 1.6 Verify checkpoints and transition' \
+    'A normal gate applies to each Execution task with its configured cap. Its decision is the most severe required verdict: FAIL outranks REVISE, which outranks PASS.' \
+    'Workflow must own the normal aggregate gate and configured cap'
+  require_semantic_section_words "$workflow" \
+    '#### 1.5 Gate, record, and recover' \
+    '#### 1.6 Verify checkpoints and transition' \
+    'Each `gate.md` records mode, partner policy, required participants, report paths and hashes, all declared verdicts, unresolved Critical IDs, actual blocking IDs, automatically correctable IDs, user dispositions, pending reevaluation IDs, and Workflow decision.' \
+    'Workflow must own the exact gate schema'
+  require_semantic_section_words "$workflow" \
+    '#### 1.5 Gate, record, and recover' \
+    '#### 1.6 Verify checkpoints and transition' \
+    'Each `record/iteration-N.md` contains only exact TODO and decision; source artifact, package, report, gate, commit, or output identifiers and hashes as applicable; verification; accepted finding dispositions; and next or recovery state.' \
+    'Workflow must own the exact RECORD receipt schema'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.2 Run the shared productive-step cycle' \
+    '### Phase 3 — Hand off to Planning' \
+    'Invoke parent Step 1.3 with local role `leader`' \
+    'Workflow Phase 1 must consume the shared cycle as an Ideation adapter'
+  require_semantic_section_words "$phase_2" \
+    '#### 1.2 Run the Planning cycle and expand the route' \
+    '### Phase 2 — Execute the ordered task route' \
+    'Invoke parent Step 1.3 with local role `leader`' \
+    'Workflow Phase 2 must consume the shared cycle as a Planning adapter'
+  require_semantic_section_words "$phase_3" \
+    '#### 2.2 Evaluate and record the actual closure' \
+    '### Phase 3 — Finalize and finish' \
+    'Apply the parent fast gate and RECORD schema.' \
+    'Workflow Phase 3 must consume the parent gate and record contracts'
+  require_semantic_section_words "$phase_2" \
+    '## Rules' \
+    '## Procedure' \
+    'NEVER replay a possibly side-effecting operation until its prior effect is proved absent or safely reusable.' \
+    'Workflow Phase 2 must retain side-effect replay safety'
+  require_semantic_section_words "$phase_3" \
+    '## Rules' \
+    '## Procedure' \
+    'MUST prohibit Git finalization before EVALUATION and RECORD accept the frozen pre-Git tree.' \
+    'Workflow Phase 3 must prohibit Git before the frozen closure passes RECORD'
+  require_semantic_section_words "$phase_3" \
+    '#### 3.1 Revalidate the immutable PASS subject' \
+    '#### 3.2 Resume authorized finalization' \
+    'Require the current tracked tree to equal the evaluated tree exactly; otherwise return to the earliest responsible Wrap-up step.' \
+    'Workflow Phase 3 must invalidate PASS when the pre-Git tree changes'
 
   require_semantic_section_words "$cowork" \
     '#### 4.1 Update memory and return the retained result' \
@@ -528,11 +585,19 @@ validate_lifecycle_semantics() {
   require_semantic_section_words "$cowork" '## References' '' \
     '[Evaluation](../evaluation/SKILL.md) | Owns each complete evaluator report' \
     'Cowork must name Evaluation as its report owner'
-  require_semantic_sequence "$workflow" 30 \
+  require_semantic_sequence "$workflow" 70 \
     'Workflow closure must retain durable Wrap-up and a tracked handoff' \
-    '### Phase 3 — Wrap up and finish' \
-    'Run Wrap-up continuously' \
-    'tracked handoff'
+    '#### 2.3 Dispatch Phase 3 and terminate' \
+    'Wrap-up displays the immutable tracked handoff' \
+    'no next TODO remains'
+  require_semantic_section_words "$phase_3" \
+    '## References' '' \
+    '[Wrap-up](../../wrap-up/SKILL.md) owns Memory-to-Git order, tracked handoff, finalization, display, and recovery.' \
+    'Workflow Phase 3 must name Wrap-up as the closure mechanism owner'
+  require_semantic_section_words "$phase_3" \
+    '## References' '' \
+    '[Wrap-up handoff](../../wrap-up/handoff.md) owns the tracked report and display-only Git receipt schemas.' \
+    'Workflow Phase 3 must name handoff.md as the terminal schema owner'
   require_semantic_sequence "$assistant" 20 \
     'assignment-authorized assistant must support Cowork direct-Memory closure only' \
     '**Cowork Memory mode** enters only from an explicit Cowork closure assignment' \
