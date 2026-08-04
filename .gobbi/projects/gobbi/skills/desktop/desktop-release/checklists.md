@@ -19,6 +19,9 @@ unchecked binary condition in this source.
 A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
 that this scenario reuses.
 
+`Forward fix` means a later compatible release that corrects a faulty version already installed on user
+machines. It is separate from rollback, whose reach and compatibility must be proved.
+
 ## Project
 
 ### DTRLSE-SC-PROJECT-01 — Normal case: every claim is bound to what supports it
@@ -101,11 +104,11 @@ state is the failure.
 
 A release is about to be called ready, so its behavior in the field must be observable and its spread
 controllable. The expected outcome defines monitoring, stop conditions, a supported-version window, recovery
-limits, and a forward-fix path before readiness; readiness declared without them is the failure.
+limits, and a Forward fix path before readiness; readiness declared without them is the failure.
 
 #### Checklist
 
-- [ ] DTRLSE-CK-PERFORMANCE-01-01 — Monitoring, rollout stop conditions, a supported-version window, explicit recovery limits, and a forward-fix path are defined before the release is called ready.
+- [ ] DTRLSE-CK-PERFORMANCE-01-01 — Monitoring, rollout stop conditions, a supported-version window, explicit recovery limits, and a Forward fix path are defined before the release is called ready.
 - [ ] DTRLSE-CK-PERFORMANCE-01-03 — The rollout is staged when the distribution channel can control audience growth.
 
 ### DTRLSE-SC-PERFORMANCE-02 — Edge case: the channel cannot control audience growth
@@ -117,7 +120,7 @@ unstaged rollout treated as normal is the failure.
 #### Checklist
 
 - [ ] DTRLSE-CK-PERFORMANCE-02-01 — Every departure from staged rollout evidences the offline, private, manual, or owner-constrained channel limitation behind it.
-- [ ] DTRLSE-CK-PERFORMANCE-02-02 — Every departure from staged rollout states its support, monitoring, and forward-fix consequences.
+- [ ] DTRLSE-CK-PERFORMANCE-02-02 — Every departure from staged rollout states its support, monitoring, and Forward fix consequences.
 
 ## Aesthetics
 
@@ -160,7 +163,7 @@ data is the failure.
 
 Something goes wrong after installation, and the person needs to know whether their version is still
 supported and where to turn. The expected outcome states the supported-version window, the recovery limits,
-and the forward-fix route; a release whose support boundary is undocumented is the failure.
+and the Forward fix route; a release whose support boundary is undocumented is the failure.
 
 #### Checklist
 
@@ -208,15 +211,15 @@ only on explicit user authority at that point; acting on a general approval give
 
 ### DTRLSE-SC-RISK-02 — Edge case: a faulty release is already on people's machines
 
-A defect is found after distribution, and some machines have installed it. The expected outcome is a forward
-fix unless rollback is proven to preserve user state, reach the affected machines, and stay inside the
+A defect is found after distribution, and some machines have installed it. The expected outcome is a
+Forward fix unless rollback is proven to preserve user state, reach the affected machines, and stay inside the
 supported-version promise; treating rollback as the default remedy is the failure.
 
 #### Checklist
 
-- [ ] DTRLSE-CK-RISK-02-01 — A forward fix is chosen for machines that may already have installed the faulty release.
+- [ ] DTRLSE-CK-RISK-02-01 — A Forward fix is chosen for machines that may already have installed the faulty release.
 - [ ] DTRLSE-CK-RISK-02-02 — Rollback is chosen only where target-specific distribution mechanics and data or schema compatibility prove it preserves user state, reaches the affected machines, and stays inside the supported-version promise.
-- [ ] DTRLSE-CK-RISK-02-03 — Recovery for installed machines works through a later compatible release or an explicitly proven safe rollback.
+- [ ] DTRLSE-CK-RISK-02-03 — Recovery for installed machines reaches an exact usable installed version through a later compatible release or a separately proved safe rollback.
 
 ### DTRLSE-SC-RISK-03 — Adversarial: withdrawal presented as the remedy
 

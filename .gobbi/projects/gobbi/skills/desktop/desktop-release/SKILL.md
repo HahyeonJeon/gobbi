@@ -1,6 +1,6 @@
 ---
 name: desktop-release
-description: "MUST load when judging target support, artifact and installed evidence, update and data compatibility, recovery, release readiness, rollout controls, or rollback and forward-fix options for an installable Electron desktop application written in TypeScript."
+description: "MUST load when judging target support, artifact and installed evidence, update and data compatibility, recovery, release readiness, rollout controls, or rollback and installed-version correction options for an installable Electron desktop application written in TypeScript."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: preference
 ---
@@ -8,11 +8,14 @@ skill-type: preference
 # Desktop Release
 
 Use this skill to judge target support, artifact and installed evidence, compatibility, recovery, readiness,
-rollout controls, support, rollback, and publication authority.
+rollout controls, support, rollback, and publication authority. `Forward fix` means a later compatible release
+that corrects a faulty version already installed on user machines. It is separate from rollback, whose reach
+and compatibility must be proved.
 
 [`desktop-development`](../desktop-development/SKILL.md) coordinates ordered lifecycle work. The applicable
 [`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
 [`desktop-linux`](../desktop-linux/SKILL.md) child owns current target facts.
+
 [`electron-release`](../../electron/electron-release/SKILL.md) owns packaging, signing, notarization, update,
 and platform release mechanisms, and [`electron-testing`](../../electron/electron-testing/SKILL.md) owns
 packaged and installed evidence; this skill owns only release judgments, defaults, exceptions, and authority
@@ -57,7 +60,9 @@ Expand targets, predecessors, channels, and rollout only when current user need 
   and fail-closed secret protection. Rehearse updates from previously released installed artifacts with
   realistic data across the immediate predecessor, every materially different supported path, and interruption
   and recovery; an unavailable predecessor or unproved transition remains outside the support claim.
-- **MUST define** the installed-version correction term exactly as follows. Forward fix: Uses a later compatible release to correct a faulty version already installed on user machines.
+- **MUST use** `Forward fix` only for a later compatible release that corrects a faulty version already
+  installed on user machines. Keep it separate from rollback, and prove the reach and compatibility of each
+  option at its owner.
 - **MUST keep** packaged, installed, signed or notarized, update-rehearsed, release-ready,
   release-authorized, published or deployed, and post-release evidence distinct, and require exact destination
   and resulting-byte evidence for a published or deployed claim. Before readiness, require a supported-version
