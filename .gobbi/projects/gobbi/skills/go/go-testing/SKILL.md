@@ -177,10 +177,19 @@ evidence needed for the risk and state every untested path or unsupported `GOOS/
 
 #### 4.2 Return completion, block, and recovery records
 
-- Return the mode; evidence question and test kind; observable test boundary or controllable dependency; cases;
-  changed or reviewed paths; project test command; exact package pattern; `GOOS/GOARCH` target; flags, inputs,
-  duration, repetitions, and result; cache, temporary, fuzz, coverage, and failure outputs; flakes; evidence
-  limits; and any production-design handoff. State why any listed field is not applicable.
+- Return the universal fields, naming why any is not applicable: operation and mode; accepted result; decision
+  basis; actual owned object; terminal state selected from exactly `success`, `error`, `cancellation`,
+  `timeout`, `blocked`, or `user-decision pause`; changed or reviewed paths; project-command evidence; evidence
+  limits; external reads or effects; compatibility decision selected from `compatible`, `migration supplied`,
+  `authorized break`, or `unsupported` when applicable; block; recovery; and handoff. A Go panic is program
+  behavior and an exercised exit-path fact, not an operation terminal state.
+- Project-command evidence names the project command, exact package pattern, selected Go toolchain version,
+  flags, `GOOS/GOARCH` target, inputs, duration, and result. External reads or effects name the network
+  destination, cache or download scope, credential-use fact, external-mutation fact, current authority,
+  redaction, and retained state.
+- Add the evidence question and test kind; observable test boundary or controllable dependency; cases; project
+  test command; cache, temporary, fuzz, coverage, and failure outputs; flakes; repetitions; exercised success,
+  error, cancellation, timeout, or panic exit paths; and any production-design handoff.
 - In author mode, return the focused repeatable evidence source and result or the exact production-design block.
   In execution mode, return exact evidence and limits or the exact blocked or flaky result. Record whether every
   applicable success, error, cancellation, timeout, or panic exit path was exercised.

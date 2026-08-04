@@ -197,11 +197,19 @@ consumer and return a module consumer compatibility analysis without making a re
 
 #### 4.2 Return completion, block, recovery, and handoff records
 
-- Return the mode; module path; layout; graph; workspace; `go` directive; module's Go language version; minimum
-  supported Go version; dependencies; tools; exact public package paths and project commands; selected Go
-  toolchain version, exact package pattern only as project-command evidence, and other project command evidence;
-  external-consumer result; module consumer compatibility analysis; changed or reviewed paths; evidence limits;
-  and exact facts release needs. State why any field is not applicable.
+- Return the universal fields, naming why any is not applicable: operation and mode; accepted result; decision
+  basis; actual owned object; terminal state selected from exactly `success`, `error`, `cancellation`,
+  `timeout`, `blocked`, or `user-decision pause`; changed or reviewed paths; project-command evidence; evidence
+  limits; external reads or effects; compatibility decision selected from `compatible`, `migration supplied`,
+  `authorized break`, or `unsupported` when applicable; block; recovery; and handoff. A Go panic is program
+  behavior, not an operation terminal state.
+- Project-command evidence names the project command, exact package pattern, selected Go toolchain version,
+  flags, `GOOS/GOARCH` target, inputs, duration, and result. External reads or effects name the network
+  destination, cache or download scope, credential-use fact, external-mutation fact, current authority,
+  redaction, and retained state.
+- Add the module path; layout; graph; workspace; `go` directive; module's Go language version; minimum supported
+  Go version; dependencies; tools; exact public package paths and project commands; external-consumer result;
+  module consumer compatibility analysis; and exact facts release needs.
 - For a private read, also return the named private module or import-path scope, proxy or
   version-control-system destination, authorized network and credential reads, redacted evidence and limits,
   declared cache/download effects, credential/destination owner, retained safe state, and first recovery

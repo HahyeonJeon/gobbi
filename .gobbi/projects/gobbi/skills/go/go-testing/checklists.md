@@ -311,7 +311,7 @@ assurance and return its exact evidence and limits in the operation terminal rec
 #### Checklist
 
 - [ ] GOTST-CK-OVERALL-01-01 — Every selected layer protects a distinct material concern.
-- [ ] GOTST-CK-OVERALL-01-02 — Every applicable testing terminal field is explicit: evidence question and test kind, observable test boundary or controllable dependency, cases, changed or reviewed paths, project test command, exact package pattern, flags, `GOOS/GOARCH` target, inputs, duration, repetitions, result, cache, temporary, fuzz, coverage, and failure outputs, flakes, evidence limits, and production-design handoff.
+- [ ] GOTST-CK-OVERALL-01-02 — Every applicable terminal field is explicit: operation and mode, accepted result, decision basis, actual owned object, terminal state selected from exactly `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`, changed or reviewed paths, project-command evidence, evidence limits, external reads or effects, compatibility decision, block, recovery, handoff, evidence question and test kind, observable test boundary or controllable dependency, cases, project test command, exact package pattern, flags, `GOOS/GOARCH` target, inputs, duration, repetitions, result, cache, temporary, fuzz, coverage, and failure outputs, flakes, exercised success, error, cancellation, timeout, or panic exit paths, and production-design handoff.
 - Also applies: GOTST-CK-CONSISTENCY-01-01 (each layer is deterministic within its intended contract).
 
 ### GOTST-SC-OVERALL-02 — Adversarial: High coverage masks missing behavioral assurance
