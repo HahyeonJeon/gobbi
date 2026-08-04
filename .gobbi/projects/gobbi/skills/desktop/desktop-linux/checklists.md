@@ -89,7 +89,9 @@ failure.
 
 - [ ] DTLNX-CK-AESTHETICS-01-01 — `Compatibility tuple` is defined at first use as the exact application, artifact, Linux distribution, and environment record that bounds one lookup.
 - [ ] DTLNX-CK-AESTHETICS-01-02 — The result distinguishes distribution, repository, package, bundle, container, installer, package manager, desktop environment, display protocol, display server, compositor, session, portal, keyring, sandbox, confinement, security profile, kernel, and C library.
-- [ ] DTLNX-CK-AESTHETICS-01-03 — Every use of `platform`, `environment`, `package`, `works`, `supported`, `installed`, `secure`, or `sandboxed` names its exact object, state, condition, or owner, and field states and outcomes use the exact Manual terms.
+- [ ] DTLNX-CK-AESTHETICS-01-03 — Every use of `platform`, `environment`, `package`, `works`, `supported`, `installed`, `secure`, or `sandboxed` names its exact object, state, condition, or owner.
+- Also applies: DTLNX-CK-STRUCTURE-02-01 (exact field states).
+- Also applies: DTLNX-CK-STRUCTURE-01-02 (exact outcome terms).
 
 ## Usage
 
@@ -120,7 +122,8 @@ environment gap is the failure.
 - [ ] DTLNX-CK-USAGE-02-01 — The diagnosis preserves the exact error, event, log, absence, or state signal with its identity and timestamp.
 - [ ] DTLNX-CK-USAGE-02-02 — The diagnosis compares documented prerequisites and observed state only within the same compatibility tuple.
 - [ ] DTLNX-CK-USAGE-02-03 — One failed attempt, missing prerequisite, package defect, product defect, or environment gap is not reported as `Not supported` without exact evidence of unavailability.
-- [ ] DTLNX-CK-USAGE-02-04 — The next probe is the smallest exact check that can distinguish the remaining causes and names its authority and owner.
+- [ ] DTLNX-CK-USAGE-02-04 — The next probe distinguishes the remaining causes.
+- Also applies: DTLNX-CK-STRUCTURE-01-05 (smallest probe, authority, and owner).
 
 ## Consistency
 
@@ -136,7 +139,7 @@ the failure.
 - [ ] DTLNX-CK-CONSISTENCY-01-02 — Exact repository, package-manager, package, bundle or container, artifact, signature, and trust metadata is collected second.
 - [ ] DTLNX-CK-CONSISTENCY-01-03 — A reproducible exact-tuple observation or probe is collected third when available and authorized.
 - [ ] DTLNX-CK-CONSISTENCY-01-04 — Exact project artifacts and logs are collected fourth.
-- [ ] DTLNX-CK-CONSISTENCY-01-05 — Qualified secondary material is collected only fifth and only to state uncertainty or identify the next probe.
+- [ ] DTLNX-CK-CONSISTENCY-01-05 — Qualified secondary material is collected fifth.
 
 ### DTLNX-SC-CONSISTENCY-02 — Rule violation: weaker or stale evidence is made conclusive
 
@@ -146,10 +149,10 @@ visible and refreshes answer-changing stale evidence; hiding it behind a confide
 
 #### Checklist
 
-- [ ] DTLNX-CK-CONSISTENCY-02-01 — Secondary material never replaces missing, inaccessible, or insufficient primary evidence for `Supported` or `Not supported`.
+- [ ] DTLNX-CK-CONSISTENCY-02-01 — Secondary material has no conclusive role beyond stating uncertainty or identifying the next probe.
 - [ ] DTLNX-CK-CONSISTENCY-02-02 — Every conflict remains visible in the result.
-- [ ] DTLNX-CK-CONSISTENCY-02-03 — Every conflict narrows the established bounds or forces `Unknown for this compatibility tuple`.
-- [ ] DTLNX-CK-CONSISTENCY-02-04 — Every observation is bounded to its exact tuple and no result is inferred across distributions, releases, repositories, packages, bundles, containers, desktops, display protocols, display servers, compositors, sessions, portals, keyrings, sandboxes, security profiles, architectures, kernels, C libraries, Electron builds, users, policies, trust states, or installed states.
+- [ ] DTLNX-CK-CONSISTENCY-02-03 — Every conflict produces narrower established bounds or `Unknown for this compatibility tuple`.
+- [ ] DTLNX-CK-CONSISTENCY-02-04 — Each observation and result is bounded to its exact compatibility tuple, including that tuple's distribution, release, repository, package, bundle, container, desktop, display protocol, display server, compositor, session, portal, keyring, sandbox, security profile, architecture, kernel, C library, Electron build, user, policy, trust state, and installed state.
 - [ ] DTLNX-CK-CONSISTENCY-02-05 — Every source and observation has a date and an exact refresh condition.
 - [ ] DTLNX-CK-CONSISTENCY-02-06 — Answer-changing stale evidence forces a refreshed lookup or `Unknown for this compatibility tuple`.
 
@@ -167,7 +170,7 @@ proxy-execution claims, or unauthorized action is the failure.
 - [ ] DTLNX-CK-RISK-01-01 — Documentation, repository, metadata, package, bundle, container, and artifact evidence is never described as application, installer, package-manager, runtime, or Linux execution.
 - [ ] DTLNX-CK-RISK-01-02 — A development run, unpacked build, source inspection, non-throwing call, or observation on another Linux variant never proves installed or native behavior for this tuple.
 - [ ] DTLNX-CK-RISK-01-03 — The result makes no product behavior, product support, implementation, software-testing, verification, or release-readiness decision, including when every tuple field is exact.
-- [ ] DTLNX-CK-RISK-01-04 — The lookup uses no credential and performs no install, update, repair, uninstall, signing, trust-store, repository, package-manager, portal, keyring, sandbox, security-profile, policy, publication, or other mutation without separate authority.
+- [ ] DTLNX-CK-RISK-01-04 — The lookup performs no credential use, install, update, repair, uninstall, signing, trust-store, repository, package-manager, portal, keyring, sandbox, security-profile, policy, publication, or other mutation without separate authority.
 
 ### DTLNX-SC-RISK-02 — Rule violation: an adjacent result is assigned to the fact investigator
 
@@ -193,4 +196,10 @@ unproved fact visible; an internally contradictory, Linux-wide, or adjacent-owne
 
 - [ ] DTLNX-CK-OVERALL-01-01 — The tuple, Linux discriminators, evidence, outcome, behavior, diagnostic signals, next probe, limits, conflicts, routes, freshness, and non-decisions describe the same exact subject without contradiction.
 - [ ] DTLNX-CK-OVERALL-01-02 — The outcome is no broader than the complete tuple and the strongest current evidence that directly applies to it.
-- [ ] DTLNX-CK-OVERALL-01-03 — Every unproved or unobserved fact remains explicit and no Linux-wide, cross-variant, proxy-execution, or adjacent-owner decision is presented as a Linux fact result.
+- [ ] DTLNX-CK-OVERALL-01-03 — No Linux-wide claim is presented as a Linux fact result.
+- Also applies: DTLNX-CK-STRUCTURE-02-03 (explicit unknown evidence).
+- Also applies: DTLNX-CK-CONSISTENCY-02-04 (cross-variant inference).
+- Also applies: DTLNX-CK-RISK-01-01 (proxy execution).
+- Also applies: DTLNX-CK-RISK-02-01 (desktop behavior and release owner routes).
+- Also applies: DTLNX-CK-RISK-02-02 (coordination and security owner routes).
+- Also applies: DTLNX-CK-RISK-02-03 (Electron owner routes).
