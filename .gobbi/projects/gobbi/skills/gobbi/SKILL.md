@@ -57,8 +57,8 @@ its owner without copying that owner's procedure or creating a second router.
 
 - **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
   `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
-  `planning`, `record`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only
-  `record` and `memory`, and nothing in that isolated set may reference `wrap-up`.
+  `planning`, and `memory` may reference nothing outside themselves; `wrap-up` may reference only `memory`,
+  and nothing in that isolated set may reference `wrap-up`.
 
 - **MUST hold the session to its selected mode's evaluation commitment.** Never apply an evaluator finding
   before the user approves its disposition, and pause with the exact failure when a required evaluation system
@@ -69,8 +69,8 @@ its owner without copying that owner's procedure or creating a second router.
   [`delegation`](../delegation/SKILL.md), keep all worktree writes in one ordered writer chain, and
   parallelize only independent read-only analysis and fresh independent evaluation.
 
-Rule 4 names five linking skills, eight isolated skills, and `wrap-up`. Every skill it does not name is
-unclassified: the rule constrains it in no direction, and it may reference anything. The isolated eight are
+Rule 4 names five linking skills, seven isolated skills, and `wrap-up`. Every skill it does not name is
+unclassified: the rule constrains it in no direction, and it may reference anything. The isolated seven are
 constrained on every outbound reference, not only on the skills Rule 4 names, so they may not reference an
 unclassified skill either. Runtime and project nouns — `Claude`, `Codex`, `Gobbi`, and `git` as a program —
 are not skill references.
@@ -145,8 +145,8 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   `projects/*/worktrees/`. The middle slash anchors each pattern; a slashless pattern such as `sessions/`
   matches at any depth and would ignore durable memory under `memory/design/sessions/`.
 - Bootstrap creates the namespace roots only: never a `memory/` category directory, never a session directory,
-  and no marker file under `memory/`. An empty directory asserts a record that does not exist
-  ([`record`](../record/SKILL.md) Step 2.2). `rules/` is not bootstrapped, because every agent contract already
+  and no marker file under `memory/`. An empty directory asserts memory that does not exist.
+  `rules/` is not bootstrapped, because every agent contract already
   reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
 - The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
   first record needs it, so a missing directory is not a broken view and is not the failure below.
@@ -196,7 +196,7 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
   project rules exist.
 - Confirm the load register holds Principles before any governed action, and return to it when it does not.
-- Defer the complete Delegation, Discussion, Git, Record, and Memory register to the selected Cowork or
+- Defer the complete Delegation, Discussion, Git, and Memory register to the selected Cowork or
   Workflow owner; defer Ideation, Planning, and Wrap-up to their named phases. General loads each
   task-specific skill only when its trigger applies.
 
@@ -267,8 +267,7 @@ exists rather than what is loaded. Every other root that has children routes to 
 | [`wrap-up`](../wrap-up/SKILL.md) | Closing accepted work with durable memory and an exact handoff. |
 | [`delegation`](../delegation/SKILL.md) | The brief shape every specialist assignment uses. |
 | [`discussion`](../discussion/SKILL.md) | The shape of a question put to the user. |
-| [`record`](../record/SKILL.md) | Session evidence and the session memory tree. |
-| [`memory`](../memory/SKILL.md) | Durable project memory. |
+| [`memory`](../memory/SKILL.md) | Temporary session records and durable project memory. |
 | [`git`](../git/SKILL.md) | Branch, worktree, commit, publication, merge, and recovery. |
 
 ### Entry and mode owners
@@ -306,8 +305,7 @@ Each of these roots covers work in its language or platform and routes the task 
 | Skill | Covers |
 |---|---|
 | [`web`](../web/SKILL.md) | The web platform |
-| [`html`](../html/SKILL.md) | HTML markup |
-| [`css`](../css/SKILL.md) | CSS styling |
+| [`html-css`](../html-css/SKILL.md) | HTML markup and CSS presentation |
 | [`typescript`](../typescript/SKILL.md) | TypeScript |
 | [`react`](../react/SKILL.md) | React |
 | [`go`](../go/SKILL.md) | Go |

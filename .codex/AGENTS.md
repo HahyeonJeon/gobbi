@@ -42,7 +42,7 @@ Ideation locks what and why, Planning orders tasks, Execution verifies and commi
 Wrap-up closes and hands off the durable result.
 
 Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
-Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
+Cowork and Workflow then load Delegation, Discussion, Git, and Memory at owner entry; their phase
 owners load Ideation, Planning, and Wrap-up when those phases start.
 
 ## Partner quality contract
@@ -79,23 +79,22 @@ exact load directives because specialists do not inherit manager context.
 
 ## Plugin topology
 
-The bounded package at `plugins/gobbi/` distributes canonical `skills` and `agents` through symlinks and
-carries both runtime manifests. `.agents/plugins/marketplace.json` and
-`.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
-repo-local and are not installed as plugin components.
+`.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/` are the only editable sources for skills
+and agents. The bounded package at `plugins/gobbi/` carries generator-materialized real-file copies of both
+trees plus the Codex and Claude Code manifests. `.agents/plugins/marketplace.json` and
+`.claude-plugin/marketplace.json` point to
+`./plugins/gobbi`. Native Codex custom-agent wrappers remain repo-local and are not installed as plugin
+components. The package has no lifecycle-hook component.
 
-Run `scripts/sync-plugin-package.sh --check` for read-only source-topology validation,
+Run `scripts/sync-plugin-package.sh --materialize-package` to regenerate the package copies. Run
+`scripts/sync-plugin-package.sh --check` for the read-only topology guard,
 `scripts/test-sync-plugin-package.sh` for fixtures, and `scripts/check-codex-plugin-smoke.sh` for isolated
-installed-cache behavior. The package has no lifecycle-hook component.
+installed-cache behavior. The guard fails when a generated file is missing, stale, byte-different, or a
+symlink. An installed Codex cache must receive the full nested skill and agent trees; any missing file is a
+failure, not a warning.
 
-A Codex plugin install of Gobbi receives both manifests and no skills, because the Codex plugin installer
-copies a plugin into its cache without following symlinks. This is an open Codex defect —
-[openai/codex#24770](https://github.com/openai/codex/issues/24770), "Plugin install: support symlinks per the
-cross-agent marketplace contract" — not a packaging error here, and `check-codex-plugin-smoke.sh` reports it
-as a warning. Keep the single canonical source, and materialize it into the package only as the one generated
-copy a guard proves byte-equal to that source. Any further duplication, and any hand edit of a generated file,
-stays forbidden. Codex skill discovery does follow symlinks, so in this repository `.agents/skills/` resolves
-and needs no install.
+Never hand-edit the package copies. Codex skill discovery does follow symlinks, so this repository's
+`.agents/skills/` view continues to resolve from canonical sources and needs no plugin install.
 
 ## Principles
 

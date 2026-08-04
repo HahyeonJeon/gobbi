@@ -7,31 +7,31 @@ skill-type: tool
 
 # React TypeScript
 
-Use this lookup tool for the React-specific TypeScript seam in browser applications and Electron renderers:
+Use this lookup tool for React-specific TypeScript in browser applications and Electron renderers:
 TSX, component props, children, events, Hooks, refs, JSX-facing values, and installed React types.
 
 This child does not teach generic TypeScript. Load the `typescript` skill for strictness, narrowing, modules,
 async behavior, resource handling, packaging, conventions, and type-level tests.
 
-Apply the project's installed TypeScript, React, renderer, framework, and type-definition contract. Do not
+Apply the project's installed TypeScript, React, renderer, framework, configuration, and type definitions. Do not
 substitute examples from another version for the types the project compiles.
 
 ## Principles
 
-### Let the JSX boundary expose the contract
+### Let the JSX boundary expose the public API
 
-Props and children form the component's public TypeScript surface. Model the values callers may actually
-provide and keep invalid variants out of that surface.
+Props and children form the component's public TypeScript API. Model the values callers may actually provide
+and keep invalid variants out of that API.
 
 ### Prefer inference until a boundary needs a name
 
 React's installed types infer many Hook callbacks and inline events. Add an explicit type where extraction,
-an incomplete initializer, a public prop, or a ref boundary makes the contract clearer.
+an incomplete initializer, a public prop, or a ref boundary makes the type clearer.
 
 ### Treat installed definitions as executable evidence
 
 React APIs and their types can change independently of remembered examples. Hover, declarations, and the
-project type check are the authority for the installed seam.
+project type check are the authority for the installed types.
 
 ## Rules
 
@@ -39,18 +39,23 @@ project type check are the authority for the installed seam.
   before applying this manual.** Record JSX mode, DOM libraries, strictness, module behavior, and the project
   type-check command.
 
-- **MUST use `.tsx` for files that contain JSX and a project-supported JSX compiler mode.** Follow React's
-  [TypeScript setup](https://react.dev/learn/typescript#installation) and the owning framework when it narrows
+- **MUST use `.tsx` for TypeScript source files that contain JSX and use the project's supported JSX compiler
+  mode.** Project-authorized `.js` and `.jsx` remain valid in mixed-language projects; follow React's
+  [TypeScript setup](https://react.dev/learn/typescript#installation) and the installed framework when it narrows
   the configuration.
 
-- **MUST type component props as an object contract and use installed React types for React-shaped values.**
+- **MUST type component props as an object and use installed React types for React values.**
   Keep generic unions, narrowing, and public-type design with the `typescript` skill.
 
-- **MUST type extracted event handlers for the exact element and read the stable `currentTarget` contract.**
+- **MUST type extracted event handlers for the exact element and read the stable `currentTarget` type.**
   Prefer inline inference when no extracted boundary needs an annotation.
 
-- **MUST model ref absence and ownership honestly.** Include the initial null state when applicable, avoid
-  render-time reads or writes, and use the installed React line's ref contract.
+- **MUST model ref absence and the exact target element or value type.** Include the initial null state when
+  applicable, follow React's [render-access caveat](https://react.dev/reference/react/useRef#caveats) by
+  prohibiting reads or writes to `ref.current` during render except for
+  [predictable guarded lazy initialization](https://react.dev/reference/react/useRef#avoiding-recreating-the-ref-contents)
+  whose initialized result is stable and whose guarded branch runs only during initialization, and use the
+  exact installed React version's ref API.
 
 - **NEVER use a broad React type to pretend the type system enforces a runtime or child-structure invariant
   it cannot express.** Validate runtime data and enforce exact child structure through component APIs and
@@ -58,30 +63,30 @@ project type check are the authority for the installed seam.
 
 ## Manual
 
-### Establish TSX and installed type ownership
+### Establish TSX configuration and installed type authority
 
 - Inspect `tsconfig`, source extensions, React and renderer packages, installed React definitions, and
   framework-generated types.
 - Require the DOM library only for browser or Electron renderer code that uses DOM types. Keep server-only
-  and shared modules within their actual target contract.
+  and shared modules within their configured compilation target.
 - Use the project's type-check command against the same configuration that builds the affected source.
 
 ### Type components and children
 
-- Give a public component an explicit props object when that surface benefits callers or review. Let a small
+- Give a public component an explicit props object when that public API benefits callers or review. Let a small
   private component use clear local inference when it does not hide the boundary.
 - Use `ReactNode` for the broad set of renderable children and `ReactElement` when the value must be an
   element, following React's [children guidance](https://react.dev/learn/typescript#typing-children).
 - Do not claim TypeScript can restrict children to one component type; express that requirement with a
   narrower prop or composition API.
-- Keep optional props optional and model mutually exclusive variants with the generic TypeScript owner.
+- Keep optional props optional and model mutually exclusive variants with the `typescript` skill.
 
 ### Type Hooks and events
 
 - Let `useState` infer from a complete initializer. Add a type argument when the initial value is incomplete,
   such as a nullable value or a discriminated state not represented by the first value.
-- Type reducer state and actions at their boundary, then require exhaustive handling through the TypeScript
-  owner.
+- Type reducer state and actions at their boundary, then require exhaustive handling through the
+  `typescript` skill.
 - Let inline event callbacks infer their element type. For an extracted handler, use the installed
   element-specific React event or handler type and read `currentTarget`.
 - Preserve Hook call and naming rules with `react-design` and `react-conventions`; a type annotation cannot
@@ -91,20 +96,21 @@ project type check are the authority for the installed seam.
 
 - Model DOM refs with the exact element type and their absent initial state. Avoid non-null assertions unless
   a proven lifecycle invariant makes absence impossible at that use.
-- Apply the installed React line when a component accepts or forwards a ref; do not copy a neighboring
+- Apply the exact installed React version when a component accepts or forwards a ref; do not copy a neighboring
   version's ref-as-prop or forwarding pattern.
-- Use `React.CSSProperties` for an exposed inline-style object when the project permits that surface. Keep
-  CSS policy and authored styles with the CSS owner.
+- Use `React.CSSProperties` for an exposed inline-style object when the project permits that public API. Keep
+  presentation policy and authored styles with `html-css-conventions` and source changes with
+  `html-css-development`.
 - Use the installed React event, element, node, ref, and JSX namespace definitions rather than hand-written
   approximations.
 
 ### Verify and recover
 
 - Run the focused type check, affected tests, and build. Add a type-level test only when a public React type
-  contract cannot be protected by ordinary use sites.
+  cannot be protected by ordinary use sites.
 - When a type fails, inspect the installed declaration and the inferred call site before adding a cast.
-  Repair the props, state, event, ref, boundary value, or project configuration that owns the mismatch.
-- Record the exact configuration, installed type owners, command results, limitations, and any cast whose
+  Repair the props, state, event, ref, boundary value, or project configuration that contains the mismatch.
+- Record the exact configuration, installed type sources, command results, limitations, and any cast whose
   runtime proof remains external.
 
 ## References

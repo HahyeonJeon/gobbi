@@ -1,82 +1,106 @@
 ---
 name: typescript-development
-description: "MUST load when implementing or changing TypeScript code."
+description: "MUST load when studying TypeScript implementation requirements, designing a typed API, or implementing, changing, or reviewing TypeScript implementation code."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # TypeScript Development
 
-TypeScript Development carries an authorized implementation from the existing contract through a typed design, bottom-up construction, and final verification. It applies to mutation work only; read-only review uses the general Evaluation operation with the applicable TypeScript preference children.
+TypeScript Development coordinates authoring and review of TypeScript implementation code. Author mode takes an authorized change from supplied product requirements through typed design, bottom-up construction, project-kind verification, and handoff. Review-only implementation mode keeps this child active, inspects the existing typed design and implementation, and composes with the general Evaluation operation for verdicts.
 
-This operation composes with `typescript-conventions` and `typescript-typing` for ordinary implementation. Load `typescript-async`, `typescript-toolchain`, `typescript-packaging`, or `typescript-testing` whenever their root trigger also applies.
+This operation composes with `typescript-conventions` and `typescript-typing` whenever their triggers apply.
+Load each of `typescript-async`, `typescript-cli-delivery`, `typescript-toolchain`, `typescript-packaging`, and
+`typescript-testing` when that child's row in the TypeScript root's trigger table applies. Select every
+applicable project kind: web application, command-line application (CLI), library, SDK, and desktop
+application. If none fits, record a literal fallback such as `server process`, `build script`, or `test
+utility`.
+
+The applicable product domain supplies user experience, command semantics, service behavior, operating-system support, deployment, and release decisions. Author mode implements those inputs through type models, runtime parsing, exact `tsconfig.json` files, JavaScript and declaration output, tests, package metadata, consumer checks, and final-tree command results. Review-only implementation mode inspects how the existing code realizes those inputs.
 
 ## Principles
 
-### Study the executable contract first
+### Study the supplied requirements first
 
-Read the callers, boundaries, configurations, tests, and prior art that determine what the changed code must preserve.
+Read the callers, external inputs, exact `tsconfig.json` files, tests, and prior art that determine what the changed code must preserve.
 
-### Design the typed surface before behavior
+### Design the typed API before behavior
 
-Settle inputs, outputs, states, failures, ownership, and public declarations before implementation details make them expensive to change.
+Settle inputs, outputs, states, failures, the functions or objects responsible for each state change and resource, and public declarations before implementation details make them expensive to change.
 
 ### Build from foundations upward
 
-Materialize types and structural seams first, then grow one observable slice at a time with fresh evidence.
+Materialize types and integration points first, then grow one caller-visible behavior increment at a time with a current type-check and focused test.
 
-### Verify the delivered path
+### Verify the consumer path
 
-Type correctness is one gate among runtime behavior, integration, build, packaging, and documentation evidence.
+Type correctness is one check among runtime behavior, integration, build, packaging, installed-consumer, and documentation results.
 
 ## Rules
 
-- **MUST** lock scope, success criteria, affected callers, boundary data, configuration, and verification commands before editing behavior.
-- **MUST** design narrow inputs, explicit outputs, representable states, failure behavior, and resource ownership before implementation.
-- **NEVER** treat a type annotation or assertion as validation of data that entered from an external boundary.
-- **MUST** build the typed skeleton before behavior and keep each implementation slice type-correct and behaviorally verified.
-- **NEVER** widen mutation beyond the authorized affected set, turn a local change into an unapproved migration, or edit a generated mirror directly. Edit the canonical owner and run its owning sync mechanism.
-- **MUST** run every applicable final gate from the completed tree and re-run the original reproducer last for a defect.
+- **MUST** classify the task as author mode or review-only implementation mode before acting. Author mode must lock scope, success criteria, affected callers, external input data, exact `tsconfig.json` files, and verification commands before editing; review-only implementation mode must keep this child active, make no reviewed-file mutation, create no build output, and compose with the general Evaluation operation for verdicts.
+- **MUST** select every applicable project kind and record each named runtime, source entry, generated output, and consumer path before authoring or reviewing implementation.
+- **NEVER** treat a type annotation or assertion as validation of data received from a network, file, process, message, environment variable, or other untyped source.
+- **MUST** build the typed skeleton before behavior in author mode and keep each behavior increment type-correct and behaviorally verified.
+- **NEVER** widen author-mode mutation beyond the authorized affected set, turn a local change into an unapproved migration, or edit a generated mirror directly. Edit the canonical source and run the sync command responsible for the mirror.
+- **MUST** run every applicable final check from the completed tree in author mode and only authorized checks in review-only implementation mode. Re-run the original reproducer last for a defect when the active mode authorizes it.
 
 ## Procedure
 
 ### Phase 1 — Study
 
-#### 1.1 Lock the task
+#### 1.1 Lock the change
 
-- Record what changes, why it changes, how success is observed, and what is out of scope.
-- Classify the work as implementation; for review-only work, stop and route to the general Evaluation owner.
+- Record what changes or is reviewed, why, how success is observed, and what is out of scope.
+- Classify the request as author mode or review-only implementation mode.
 - Read applicable project rules, mistakes, design decisions, and neighboring examples.
 
-#### 1.2 Map the affected system
+#### 1.2 Classify the TypeScript project
 
-- Trace callers, callees, public exports, boundary inputs, state owners, async lifetimes, tests, build entries, packages, and documentation.
+- Select all applicable kinds: web application, command-line application, library, SDK, and desktop application; otherwise record one literal fallback kind.
+- For each selected kind, record its named runtimes, source entries, exact `tsconfig.json` files, JavaScript or declaration outputs, direct consumers, and how each consumer receives and starts or imports the output.
+- Record which product decisions are supplied by the task, `web`, `desktop`, `electron`, or another applicable domain, and route missing product decisions back to that source before encoding them in TypeScript.
+
+#### 1.3 Map the affected files and consumers
+
+- Trace callers, callees, public exports, external inputs, state-holding modules, asynchronous lifetimes, tests, build entries, packages, and documentation.
 - Record the TypeScript children whose triggers apply and load them before their decisions.
-- Identify the commands and runtime paths that will prove each success criterion.
+- Identify the exact command, named runtime, installed-package, packaged-application, import, or command-invocation path that will prove each success criterion.
 
-#### 1.3 Reproduce or characterize
+#### 1.4 Reproduce or characterize
 
-- Reproduce a defect before changing it, or capture the current observable behavior for feature work.
-- Inspect the effective compiler and runtime contracts rather than inferring them from file extensions.
+- In author mode, reproduce a defect before changing it or capture the current caller-visible behavior for a feature change. In review-only implementation mode, characterize that behavior and run a reproducer only when authorized.
+- Inspect the effective compiler configuration and runtime behavior rather than inferring either from file extensions.
 - Record assumptions that the repository cannot answer.
+
+#### 1.5 Run review-only implementation mode
+
+- Continue through this step only in review-only implementation mode. Keep `typescript-development` active and compose with the general Evaluation operation for any verdict.
+- Inspect the existing typed design and implementation, including types, interfaces, behavior, callers, external-input boundaries, failures, resources, and lifecycle ownership.
+- Do not edit reviewed files or create or recreate generated build output. Run only checks authorized for the review-only task.
+- Return command results, findings, and limitations. Stop before Phase 2; a needed mutation or new build output requires author mode.
 
 ### Phase 2 — Design
 
-#### 2.1 Shape the typed boundary
+#### 2.1 Shape typed inputs and outputs
 
-- Define narrow input and output types from the domain contract.
+- Continue into Phase 2 only in author mode.
+- Define narrow input and output types from the supplied product requirements.
 - Make valid states representable with unions or explicit models and define how every state is consumed.
 - Treat external input as `unknown` until runtime parsing or narrowing establishes the internal type.
 
-#### 2.2 Place behavior and ownership
+#### 2.2 Place behavior and responsibility
 
-- Assign each state fact, promise, resource, side effect, and failure boundary one owner.
+- Assign each state value, promise, resource, side effect, and failure transition to one named function, object, or framework lifecycle callback.
 - Decide which declarations are public and which remain implementation details.
 - Map the dependency order from foundational types and utilities to integrations and callers.
 
-#### 2.3 Confirm the design
+#### 2.3 Confirm the typed design
 
-- Compare the proposed surface with project prior art and one credible alternative.
+- Compare the proposed public API and internal module interfaces with project prior art and one alternative
+  that satisfies the same locked requirements. Show that alternative's feasibility through existing project
+  code, named platform or library documentation, or a disposable prototype. Compare every applicable
+  difference in public API, compatibility, failure or lifecycle behavior, resource cost, and maintenance.
 - Resolve material API, compatibility, failure, or lifecycle decisions with the user or cite their locked source.
 - End the phase with a bounded file and verification plan.
 
@@ -84,46 +108,79 @@ Type correctness is one gate among runtime behavior, integration, build, packagi
 
 #### 3.1 Materialize the skeleton
 
-- Add or change types, interfaces, signatures, modules, and structural seams without filling behavior.
-- Type-check the skeleton with the project profile that owns the artifact.
+- Add or change types, interfaces, signatures, modules, and integration interfaces without filling behavior.
+- Type-check the skeleton with the exact `tsconfig.json` that includes the changed source entry.
 - Return to design when the skeleton exposes a structural mismatch.
 
-#### 3.2 Grow verified slices
+#### 3.2 Grow verified behavior increments
 
-- Implement the smallest observable slice and update its affected callers, tests, types, and docs together.
-- Run the focused type and behavior checks for that slice before starting the next.
+- Implement the smallest caller-visible behavior increment and update its affected callers, tests, types, and documentation together.
+- Run the focused type and behavior checks for that behavior increment before starting the next.
+- When a focused check fails, keep the next increment blocked. Repair the current increment or return to Phase 2 when the failure exposes a design mismatch, then repeat the focused checks.
 - Preserve existing behavior outside scope and remove no compatibility path without authorization.
 
 #### 3.3 Complete the affected set
 
 - Trace each scope item to an implementation and each affected file to a change or justified no-op.
-- Remove placeholders, dead branches, obsolete suppressions, and temporary diagnostics introduced by the work.
+- Remove placeholders, dead branches, obsolete suppressions, and temporary diagnostics introduced by the change.
 - Inspect the complete diff before final verification.
 
-### Phase 4 — Verify
+### Phase 4 — Verify and hand off
 
-#### 4.1 Run static gates
+#### 4.1 Run static checks
 
-- Run formatting, linting, and every applicable TypeScript project check on the final tree.
+- Run formatting, linting, and every applicable TypeScript project check on the final tree, naming the exact `tsconfig.json` used by each check.
 - Inspect effective configuration or declaration output when the change depends on it.
-- Fail on warnings or suppressions that invalidate the claimed contract.
+- Fail on warnings or suppressions that invalidate the claimed requirement.
 
-#### 4.2 Run behavioral gates
+#### 4.2 Run behavioral checks
 
-- Run focused tests, then the broader suite and build paths the delivered artifact requires.
-- Exercise cancellation, failure, cleanup, boundary validation, and runtime-host differences when applicable.
-- Use the built or packed artifact when source-checkout success cannot prove the consumer path.
+- Run focused tests, then the broader suite and build paths required by the generated JavaScript, declarations, package archive, or executable.
+- Exercise cancellation, failure, cleanup, external-input validation, and differences among the named runtimes when applicable.
+- Use the built output, installed package archive, or installed command when source-checkout success cannot prove the consumer path.
 
-#### 4.3 Close traceability
+#### 4.3 Verify each selected project kind
 
+- For a web application, verify browser and server entries under their exact `tsconfig.json` files, then exercise the production build in each named browser or server runtime that the change affects.
+- For a command-line application, select every applicable delivery owner before exercising the consumer
+  command. Package-backed command metadata means a command name or entry supplied by package metadata,
+  including a `package.json` `bin` entry, package script, or workspace package link; use
+  `typescript-packaging` for that metadata and its package behavior. Direct non-archive delivery means the
+  consumer receives the command without installing a package archive; use the consumer entry supplied by
+  `typescript-cli-delivery` for a standalone executable or archive, a script copied or linked directly to an
+  install target, a recorded workspace or repository revision plus command, or another direct non-archive
+  method whose unit, method, and consumer command are recorded by name. A package-backed workspace command
+  delivered directly loads both owners for those separate obligations. A genuine hybrid distributes the same
+  command through both a package archive and a direct non-archive method; load both and preserve separate
+  artifact identities and consumer entries.
+  Prove that the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
+  Then verify the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
+- For a library, verify every recorded consumer path from an isolated representative consumer. Install the
+  package archive when the library is distributed as a package; otherwise use the recorded workspace,
+  project-reference, source, or other consumer path. Inspect the declarations that path exposes, type-check
+  every supported import, and run each runtime entry where runtime code exists.
+- For an SDK, validate external service payloads at runtime and verify documented client calls, public declarations, failures, cancellation, and supported consumer configurations against the supplied service requirements.
+- For a desktop application, verify Electron main, preload, and renderer entries separately where present, including typed IPC messages and the packaged application path required by the desktop and Electron skills.
+- For a fallback project kind, verify every named runtime, generated output, and direct consumer recorded in Phase 1.
+
+#### 4.4 Close traceability and hand off
+
+- Do not enter a successful handoff while a required check is red.
+- Return to Phase 2 for a design mismatch, Phase 3 for an implementation defect, or the applicable product-domain skill for a supplied-requirement mismatch.
+- After a repair, re-run the failed check, every affected downstream check, and the applicable final checks from the repaired tree.
+- When repair is unauthorized or outside scope, stop with the failed requirement and its command evidence. Do not describe it as an unavailable check.
 - Re-run the original defect reproducer last when one exists.
-- Map fresh evidence to every success criterion and inspect the final scope for unrelated changes.
-- Hand off limitations or unavailable gates literally; do not convert missing evidence into a pass.
-- When this implementation is evaluated, the [evaluation checklist](checklists.md) and every checklist
-  owned by an active `typescript` sibling supply the applicable conditions; the general Evaluation
-  operation resolves them and issues any verdict.
+- Map current-tree command output to every success criterion and inspect the final scope for unrelated changes.
+- Hand off limitations or unavailable checks literally; do not convert a missing result into a pass.
+- Hand off the selected project kinds, named runtimes, exact `tsconfig.json` files, generated outputs, how consumers receive and start or import each output, commands run, results, and remaining limitations.
+- When this implementation is evaluated, the [evaluation checklist](checklists.md),
+  [verification and handoff checklist](verification-and-handoff-checklists.md), and every checklist provided
+  by an active `typescript` sibling supply the applicable conditions; the general Evaluation operation
+  resolves them and issues any verdict.
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
+- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for changes
   governed by this skill.
+- [Verification and handoff checklist](verification-and-handoff-checklists.md) supplies reusable unchecked
+  scenarios and atomic conditions for consumer-path verification and the final handoff.

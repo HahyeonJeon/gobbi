@@ -1,1 +1,0 @@
-../../../../.gobbi/projects/gobbi/skills/web/web-feature/checklists.md

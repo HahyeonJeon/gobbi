@@ -48,11 +48,16 @@ For Electron work, load the Electron root and then select every applicable child
 
 | Electron concern | Owner |
 |---|---|
-| Security boundaries, project organization, bridge and IPC contracts, window ownership, native defaults, and errors | [`electron-design`](../../electron/electron-design/SKILL.md) |
-| Main, preload, renderer, utility, window, lifecycle, or native implementation and review | [`electron-development`](../../electron/electron-development/SKILL.md) |
-| Process capabilities, preload and IPC mechanics, lifecycle, native behavior, and platform failure lookup | [`electron-runtime`](../../electron/electron-runtime/SKILL.md) |
-| Process, trust, lifecycle, native, packaged, and installed evidence | [`electron-testing`](../../electron/electron-testing/SKILL.md) |
-| Packaging, signing, notarization, upgrades, updates, and release artifacts | [`electron-release`](../../electron/electron-release/SKILL.md) |
+| Observable installed behavior across targets, entries, windows, lifecycle, operating-system integration, local data, installation, updates, and recovery | [`electron-contract`](../../electron/electron-contract/SKILL.md) |
+| Complete or multi-capability coordination across design, development, testing, diagnostics, packaging, installed verification, and release readiness | [`electron-delivery`](../../electron/electron-delivery/SKILL.md) |
+| Process architecture, security boundaries, project structure, bridges, IPC, state, windows and views, resources, and failure isolation | [`electron-design`](../../electron/electron-design/SKILL.md) |
+| Bounded source implementation and review across Electron processes, windows, lifecycle, and operating-system integration | [`electron-development`](../../electron/electron-development/SKILL.md) |
+| Application identity, design evidence, interface concepts, information structure, interaction intent, accessibility, modalities, and success measures | [`electron-interface`](../../electron/electron-interface/SKILL.md) |
+| Diagnostic emission, including logs, metrics, traces, crash and hang capture, correlation, redaction, delivery, and retention | [`electron-observability`](../../electron/electron-observability/SKILL.md) |
+| Packaged application construction, resources, ASAR placement, compiled modules, fuses, signing, notarization, installers, and candidate verification | [`electron-packaging`](../../electron/electron-packaging/SKILL.md) |
+| Support policy, version transitions, update channels, readiness, publication, rollout, withdrawal, and post-release recovery | [`electron-release`](../../electron/electron-release/SKILL.md) |
+| Process capabilities, preload constraints, IPC mechanics, lifecycle, power events, failures, operating-system integrations, and version-specific behavior | [`electron-runtime`](../../electron/electron-runtime/SKILL.md) |
+| Electron-specific test design, implementation, execution, interpretation, environment classification, reruns, and evidence | [`electron-testing`](../../electron/electron-testing/SKILL.md) |
 
 ### Contract matrix
 

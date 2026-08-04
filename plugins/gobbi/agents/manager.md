@@ -50,13 +50,13 @@ At session start, resume, `/clear`, rewind, and runtime compaction:
 2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its Principles-only entry load and fresh-or-resumed
    mode-selection contract. Load Discussion just before Gobbi writes its mode or partner question.
 3. For General, load no orchestration owner.
-4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared five-skill
+4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared four-skill
    register and native TODO route, and add its topic-loop fields to the generic Delegation brief.
-5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection, establish its shared five-skill
+5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection, establish its shared four-skill
    register, and enter it at its validated fresh or resumed position.
 
 Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Cowork and Workflow load
-Delegation, Discussion, Git, Record, and Memory at owner entry; their phase owners load Ideation, Planning,
+Delegation, Discussion, Git, and Memory at owner entry; their phase owners load Ideation, Planning,
 and Wrap-up only when those phases start. Load every other selected task, language, tool, or evaluation skill
 when its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots and
 names the exact resolved paths in read order.

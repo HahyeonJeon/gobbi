@@ -1,13 +1,13 @@
 # Web Backend Evaluation Checklist
 
-This reusable unchecked source evaluates one authoritative backend outcome produced under this operation,
-against the current-study, complete-contract, privileged-boundary, truthful-failure, real-seam, and
-separated-claim obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and
-[`web-backend`](SKILL.md) operation, with [`web-feature`](../web-feature/SKILL.md) as the caller that binds
+This reusable unchecked source evaluates one server-owned backend outcome produced under this operation. It
+checks current-system study, complete contracts, privileged-boundary enforcement, accurate failure reporting,
+real-dependency integration evidence, and separated claims. It is governed by the [`web`](../SKILL.md) domain and
+[`web-backend`](SKILL.md) operation, with [`web-development`](../web-development/SKILL.md) as the caller that binds
 the outcome, [`web-security`](../web-security/SKILL.md) as the owner of security requirements and threat
 analysis, [`web-testing`](../web-testing/SKILL.md) as the owner of test-system mechanics, and
-[`web-topology`](../web-topology/SKILL.md) as the owner of repository placement. The source commit that
-contains this file identifies the checklist version. Its stable owner prefix is `WEBBACK`.
+[`web-project-structure`](../web-project-structure/SKILL.md) as the owner of repository placement. The source
+commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBBACK`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -20,16 +20,16 @@ that this scenario reuses.
 
 ### WEBBACK-SC-PROJECT-01 — Normal case: the backend boundary is bound and its owners routed
 
-One bounded backend outcome is taken from a caller and worked. The expected outcome starts from that bound
-boundary and sends every question outside backend design to its owner; a backend that absorbs topology, test,
-or security policy because it was nearby is the failure.
+One scoped backend outcome is taken from a caller and worked. The expected outcome starts from that scope
+boundary and sends every question outside backend design to its owner; a backend that absorbs repository
+placement, test, or security policy because it was nearby is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-PROJECT-01-01 — Work starts from one bounded outcome, the project records, the current server surface, and the accepted constraints.
-- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-topology`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-feature`.
-- [ ] WEBBACK-CK-PROJECT-01-03 — Missing authority, an incompatible requirement, or a scope change is returned to `web-feature` or the requesting caller rather than decided here.
-- [ ] WEBBACK-CK-PROJECT-01-04 — Every unowned policy, lifecycle, effect, or recovery path is returned rather than absorbed.
+- [ ] WEBBACK-CK-PROJECT-01-01 — Work starts from one scoped outcome, the project records, the current server and API behavior, and the accepted constraints.
+- [ ] WEBBACK-CK-PROJECT-01-02 — Every question outside backend design and implementation is routed to its owner: repository placement to `web-project-structure`, test-system mechanics to `web-testing`, security requirements and threat analysis to `web-security`, and cross-layer integration to `web-development`.
+- [ ] WEBBACK-CK-PROJECT-01-03 — Missing authority, an incompatible requirement, or a scope change is returned to `web-development` or the requesting caller rather than decided here.
+- [ ] WEBBACK-CK-PROJECT-01-04 — Every unowned policy, lifecycle, server-state change, stored-data change, provider action, or recovery path is returned rather than absorbed.
 
 ### WEBBACK-SC-PROJECT-02 — Rule violation: construction begins before the current backend is studied
 
@@ -45,47 +45,47 @@ change that breaks behavior nobody looked at is the failure.
 
 ## Structure
 
-### WEBBACK-SC-STRUCTURE-01 — Normal case: the authoritative contract and data lifecycle are complete
+### WEBBACK-SC-STRUCTURE-01 — Normal case: the server-owned contract and data lifecycle are complete
 
 A contract is being specified for the bound boundary. The expected outcome names every actor, operation,
-error, effect, and data-lifecycle rule the outcome touches; a contract that specifies request and response
+error, server-state change, stored-data change, provider action, and data-lifecycle rule the outcome touches; a contract that specifies request and response
 while leaving retention, export, and reconciliation unowned is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-STRUCTURE-01-01 — The contract names actors and principals, resources, operations, domain invariants, inputs, outputs, schemas, versions, authentication, authorization, validation, errors, effects, audit needs, and completion.
+- [ ] WEBBACK-CK-STRUCTURE-01-01 — The contract names actors and principals, resources, operations, domain invariants, inputs, outputs, schemas, versions, authentication, authorization, validation, errors, server-state changes, stored-data changes, provider actions, audit needs, and completion.
 - [ ] WEBBACK-CK-STRUCTURE-01-02 — Every applicable data class defines creation, read, update, deletion, retention, export, observation, ownership, privacy, integrity, and reconciliation behavior.
-- [ ] WEBBACK-CK-STRUCTURE-01-03 — Caching, invalidation, consistency, transaction, idempotency, ordering, conflict, and concurrency behavior is defined at the seam that owns it.
+- [ ] WEBBACK-CK-STRUCTURE-01-03 — Caching, invalidation, consistency, transaction, idempotency, ordering, conflict, and concurrency behavior is defined at the boundary that owns it.
 
-### WEBBACK-SC-STRUCTURE-02 — Rule violation: transports are built before the authoritative foundations
+### WEBBACK-SC-STRUCTURE-02 — Rule violation: transports are built before the server-side foundations
 
 Endpoints and client-convenience layers are built while policy, data, and recovery remain unsettled. The
-expected outcome settles the authoritative foundations first and renders the full scaffold before production
+expected outcome settles the server-side foundations first and renders the full scaffold before production
 behavior; a transport shaped around an undecided domain is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-STRUCTURE-02-01 — Policy, data, effects, failure, and recovery are specified before transport and client-convenience layers.
-- [ ] WEBBACK-CK-STRUCTURE-02-02 — Policy, data, effects, failure, and recovery are built before transport and client-convenience layers.
-- [ ] WEBBACK-CK-STRUCTURE-02-03 — The complete types, schemas, domain, policy, repository, provider, transport, error, migration, diagnostic, fixture, and test-seam scaffold is rendered before production behavior.
-- [ ] WEBBACK-CK-STRUCTURE-02-04 — Types, schema, invariants, policy, authoritative effects, transaction or idempotency, and recovery are implemented in dependency order for the first path.
+- [ ] WEBBACK-CK-STRUCTURE-02-01 — Policy, server state, stored data, provider actions, failure, and recovery are specified before transport and client-convenience layers.
+- [ ] WEBBACK-CK-STRUCTURE-02-02 — Policy, server state, stored data, provider actions, failure, and recovery are built before transport and client-convenience layers.
+- [ ] WEBBACK-CK-STRUCTURE-02-03 — The complete types, schemas, domain, policy, repository, provider, transport, error, migration, diagnostic, fixture, and test-boundary scaffold is rendered before production behavior.
+- [ ] WEBBACK-CK-STRUCTURE-02-04 — Types, schema, invariants, policy, server-state changes, stored-data changes, provider actions, transaction or idempotency, and recovery are implemented in dependency order for the first path.
 
-### WEBBACK-SC-STRUCTURE-03 — Poor quality: a fake seam is treated as proof
+### WEBBACK-SC-STRUCTURE-03 — Poor quality: a fake integration point is treated as proof
 
 The feature passes end to end while its database, provider, or queue is simulated. The expected outcome labels
-every substitute and proves one real authoritative effect before breadth; a green path resting on a fake seam
+every substitute and proves one real result from the named source of truth or provider before breadth; a green path resting on a fake integration point
 is the failure.
 
 #### Checklist
 
 - [ ] WEBBACK-CK-STRUCTURE-03-01 — Every stub, fake, simulated dependency, and unavailable dependency is labeled.
-- [ ] WEBBACK-CK-STRUCTURE-03-02 — No fake database, provider, queue, migration, or external effect is used as evidence for its real seam.
-- [ ] WEBBACK-CK-STRUCTURE-03-03 — One real authoritative effect, response, failure, and recovery path is proven before breadth.
+- [ ] WEBBACK-CK-STRUCTURE-03-02 — No simulated database, provider, queue, migration, or external service is used as evidence that the corresponding real integration works.
+- [ ] WEBBACK-CK-STRUCTURE-03-03 — One real result from the named source of truth or provider, plus its response, failure, and recovery path, is proven before breadth.
 - [ ] WEBBACK-CK-STRUCTURE-03-04 — A failed slice is repaired before another slice is added.
 
 ## Performance
 
-### WEBBACK-SC-PERFORMANCE-01 — Normal case: bounds and signals are defined at their seams
+### WEBBACK-SC-PERFORMANCE-01 — Normal case: limits and signals are defined at their boundaries
 
 The backend calls dependencies, queues work, and is operated by someone. The expected outcome defines bounds
 for every outbound call and the signals an operator needs; work that waits without a bound and fails without a
@@ -94,18 +94,18 @@ signal is the failure.
 #### Checklist
 
 - [ ] WEBBACK-CK-PERFORMANCE-01-01 — Timeout, cancellation, retry bounds, compensation, and dead-letter or operator reconciliation are defined for every outbound dependency and queued work.
-- [ ] WEBBACK-CK-PERFORMANCE-01-02 — Metrics, traces, alerts, health, capacity, and escalation behavior are defined for the operated surface.
+- [ ] WEBBACK-CK-PERFORMANCE-01-02 — Metrics, traces, alerts, health, capacity, and escalation behavior are defined for the operated service.
 
 ### WEBBACK-SC-PERFORMANCE-02 — Expected failure: a dependency is slow or unavailable
 
 An external dependency stops answering or answers after the caller gave up. The expected outcome applies the
-defined fail-closed or degraded behavior and refuses the late result's authority; an unbounded wait, or a late
+defined fail-closed or degraded behavior and refuses the late result's authority; an unlimited wait, or a late
 answer overwriting current truth, is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-PERFORMANCE-02-01 — An unavailable or slow dependency produces the defined fail-closed or degraded behavior rather than an unbounded wait.
-- [ ] WEBBACK-CK-PERFORMANCE-02-02 — A late result arriving after a timeout does not overwrite an authoritative state established in the meantime.
+- [ ] WEBBACK-CK-PERFORMANCE-02-01 — An unavailable or slow dependency produces the defined fail-closed or degraded behavior rather than an unlimited wait.
+- [ ] WEBBACK-CK-PERFORMANCE-02-02 — A late result arriving after a timeout does not overwrite server-owned state established in the meantime.
 - [ ] WEBBACK-CK-PERFORMANCE-02-03 — Poison work is contained rather than retried without bound.
 
 ## Aesthetics
@@ -184,34 +184,34 @@ counted as a control is the failure.
 - [ ] WEBBACK-CK-RISK-01-02 — No client-side check, hidden field, or omitted interface control is treated as enforcement.
 - [ ] WEBBACK-CK-RISK-01-03 — Authorization decides whether the exact identity may perform the exact operation on the exact resource rather than only that the identity is authenticated.
 
-### WEBBACK-SC-RISK-02 — Expected failure: an external effect is applied and the response is lost
+### WEBBACK-SC-RISK-02 — Expected failure: a provider change is applied and the response is lost
 
 A provider call succeeds while the connection drops, and the caller retries. The expected outcome establishes
-the authoritative effect before claiming success and keeps a duplicate from applying twice; a success reported
-ahead of its effect, or a silent double charge, is the failure.
+the confirmed provider result before claiming success and keeps a duplicate from applying twice; a success
+reported ahead of its provider result, or a silent double charge, is the failure.
 
 #### Checklist
 
-- [ ] WEBBACK-CK-RISK-02-01 — No path reports success before its authoritative effect is established.
-- [ ] WEBBACK-CK-RISK-02-02 — A duplicate, out-of-order, or retried request produces one authoritative effect rather than several.
-- [ ] WEBBACK-CK-RISK-02-03 — A partial external effect leaves a recorded, reconcilable state rather than an unrecoverable ambiguity.
+- [ ] WEBBACK-CK-RISK-02-01 — No path reports success before its provider result is confirmed.
+- [ ] WEBBACK-CK-RISK-02-02 — A duplicate, out-of-order, or retried request performs one provider action rather than several.
+- [ ] WEBBACK-CK-RISK-02-03 — A partial provider change leaves a recorded, reconcilable state rather than an unrecoverable ambiguity.
 
-### WEBBACK-SC-RISK-03 — Adversarial: a caller games the contract to reach an effect it is not entitled to
+### WEBBACK-SC-RISK-03 — Adversarial: a caller games the contract to reach a protected action it is not entitled to
 
 Someone supplies another principal's identifier, races two requests, or replays a cancelled one. The expected
-outcome authorizes against the exact resource and holds the effect to once; a policy satisfied by the shape of
+outcome authorizes against the exact resource and holds the protected action to once; a policy satisfied by the shape of
 the request rather than by its authority is the failure.
 
 #### Checklist
 
 - [ ] WEBBACK-CK-RISK-03-01 — No caller-supplied identifier, sequence, or state selects the resource an operation acts on without an authorization check against that exact resource.
-- [ ] WEBBACK-CK-RISK-03-02 — No retry, cancellation, or concurrent request path applies an effect twice.
+- [ ] WEBBACK-CK-RISK-03-02 — No retry, cancellation, or concurrent request path performs a protected action twice.
 - [ ] WEBBACK-CK-RISK-03-03 — No retry, cancellation, or concurrent request path bypasses a policy check.
-- [ ] WEBBACK-CK-RISK-03-04 — Audit and diagnostic records for a protected effect cannot be suppressed by the caller.
+- [ ] WEBBACK-CK-RISK-03-04 — Audit and diagnostic records for a protected action cannot be suppressed by the caller.
 
 ## Overall
 
-### WEBBACK-SC-OVERALL-01 — Normal case: the backend outcome is complete and truthfully bounded
+### WEBBACK-SC-OVERALL-01 — Normal case: the backend outcome is complete and accurately scoped
 
 A finished backend outcome covers contract, data, authority, failure, migration, recovery, diagnostics, and
 operations for its boundary and stops there. The scenario fails when one of those is missing, or when a
