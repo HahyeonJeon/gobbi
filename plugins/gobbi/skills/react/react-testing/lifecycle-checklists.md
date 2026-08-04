@@ -13,7 +13,7 @@ inferred requirement or product-source change fails the scenario.
 
 #### Checklist
 
-- [ ] RTST-CK-PROJECT-04-01 — Phase 1 takes one accepted React behavior and test-authoring task.
+- [ ] RTST-CK-PROJECT-04-01 — The React behavior and test-authoring task are accepted before stack inspection begins.
 - [ ] RTST-CK-PROJECT-04-02 — The mutation boundary is limited to React component and Hook tests and their test-local setup, fixtures, substitutes, and configuration.
 - [ ] RTST-CK-PROJECT-04-03 — Test requirements are not inferred from implementation details.
 
@@ -78,9 +78,9 @@ shared state or incomplete cleanup fails the scenario.
 
 ## Usage
 
-### RTST-SC-USAGE-03 — Normal case: Each case renders through the project test surface
+### RTST-SC-USAGE-03 — Normal case: Each case renders through the installed project test helper
 
-Each case should enter the component or Hook through the installed project helper. Bypassing that surface
+Each case should enter the component or Hook through the installed project helper. Bypassing that helper
 can omit production-relevant setup and fails the scenario.
 
 #### Checklist

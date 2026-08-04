@@ -44,27 +44,17 @@ work and time explicitly, then repair root causes instead of masking signals.
 
 ## Rules
 
-- **MUST begin with accepted behavior and a test-authoring task.** Record scope, authority, cases, risks,
-  required evidence, and completion conditions; send independent read-only judgment to
-  [`Evaluation`](../../evaluation/SKILL.md).
+- **MUST begin with accepted React behavior and explicit test-authoring authority.**
 
-- **MUST inspect the implementation and exact installed test stack before design.** Observe current behavior
-  and keep the runner, renderer, dependencies, and test architecture unchanged unless migration is explicitly
-  authorized.
+- **MUST inspect the implementation and exact installed test stack before design.**
 
-- **MUST design every applicable case and the complete test skeleton before detailed assertions.** Add and
-  run one smallest complete behavior case before expanding to the next.
+- **MUST design every applicable case and the complete test skeleton before detailed assertions.**
 
-- **MUST use the installed user-facing query, interaction, asynchronous, timer, and React APIs.** Await
-  interactions and observable outcomes; do not use component instances, private state, implementation call
-  order, real sleeps, warning suppression, or unjustified mocks to obtain a pass.
+- **MUST use installed user-facing APIs to exercise and assert observable outcomes.**
 
-- **MUST route each claim to a test that can directly observe it.** A simulated renderer never proves a real
-  browser, server, Electron process, native integration, security boundary, or packaged application.
+- **MUST assign every claim to the lowest evidence layer that can directly observe it.**
 
-- **MUST self-verify and return exact evidence.** Run narrow, affected, and wider required checks in order;
-  challenge the failure signal, classify every failure, repair causes inside the tests, rerun affected checks,
-  complete the checklist, and never overstate or publish the result.
+- **MUST self-verify the exact final test tree and return complete handoff evidence.**
 
 ## Procedure
 
@@ -148,10 +138,12 @@ work and time explicitly, then repair root causes instead of masking signals.
   installed; use a test ID only when no user-facing query can represent the element. Await supported
   interactions and observable asynchronous outcomes. With Testing Library, use `findBy` for expected
   asynchronous appearance and use `waitFor` only to retry an assertion under its
-  [asynchronous-method guidance](https://testing-library.com/docs/dom-testing-library/api-async/). Prefer helpers already
-  wrapped with [`act`](https://react.dev/reference/react/act); when direct `act` is necessary, use the import
-  and asynchronous form supported by the exact installed React and renderer versions in a configured
-  environment. Add one coherent case, run its focused command, and only then add the next case.
+  [asynchronous-method guidance](https://testing-library.com/docs/dom-testing-library/api-async/). Use the exact
+  installed fake-clock or fake-timer mechanism, or the injected clock dependency selected in Step 2.2, for
+  behavior-relevant time. Prefer helpers already wrapped with
+  [`act`](https://react.dev/reference/react/act); when direct `act` is necessary, use the import and
+  asynchronous form supported by the exact installed React and renderer versions in a configured environment.
+  Add one coherent case, run its focused command, and only then add the next case.
 - Evidence: Keep the changed test, its focused command and result, and the observable result that each
   assertion proves. When the installed version is React 19, confirm removed or deprecated test APIs against
   the [React 19 upgrade guide](https://react.dev/blog/2024/04/25/react-19-upgrade-guide).
