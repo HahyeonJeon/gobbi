@@ -54,6 +54,14 @@ The final closure was self-verification, not a fresh independent Evaluation verd
 - canonical and materialized skills and agents were byte-equal; and
 - the retained worktree was clean at final head.
 
+## Factual correction — 2026-08-04
+
+The 18 `Also applies` lines reported above were syntactically resolved, but two were invalid same-scenario
+references to rows already defined by that scenario. The later correction removed only those two lines,
+leaving 16 valid cross-scenario references without changing any scenario, checkbox row, or ID. The
+[final evaluation correction review](2026-08-04-react-skill-family-final-evaluation-corrections.md) records
+that later event and the resulting current state.
+
 ## Coverage limits
 
 - Independent coverage is stale after `67a4b07bdcc23e15a11646d317e499d9e1192e3f`; it does not cover
