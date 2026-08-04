@@ -83,19 +83,12 @@ are not skill references.
 
 #### 1.1 Establish the entry context, runtime, and canonical layout
 
-- Take the entry trigger — session start, resume, `/clear`, rewind, or runtime compaction — and the
-  repository's governance source as the input.
-- Confirm the governance source, the active runtime, and the trigger. Then take the location the active
-  entrypoint reports for the Gobbi skill it loaded. Every supported entrypoint reports that location as part
-  of loading a skill, so the entry needs no environment variable, configuration file, or filesystem search,
-  and none exists to supply one. That reported path is the only input to the derivation below.
-- The reported path names one of two things: the loaded skill's own directory, or the skills root that
-  contains it. Never decide which from its spelling. The derivation below builds one candidate for each
-  shape, and the sentinels select the true one.
-- Derive two roots from the reported path and name them `{gobbi-skills-root}` and `{gobbi-agents-root}`. The
-  `{gobbi-skills-root}` candidates are the reported path itself and its parent directory.
-  `{gobbi-agents-root}` is the `agents/` directory beside whichever candidate the sentinels confirm. Expand
-  every candidate to an absolute path; a relative or unexpanded value is not a resolved root.
+- Take the entry trigger — session start, resume, `/clear`, rewind, or runtime compaction — plus the governance
+  source, runtime, unchanged repository preimage, and loaded Gobbi skill path. The runtime-reported path is the
+  only root input; use no search, environment variable, or configuration fallback.
+- Treat the reported path and its parent as the two possible `{gobbi-skills-root}` values. For each candidate,
+  derive `{gobbi-agents-root}` as its sibling `agents/` directory. Expand both roots to absolute paths and let
+  the sentinels decide which candidate is valid; never decide from path spelling.
 - Validate the candidates against the sentinels `gobbi/SKILL.md`, `principles/SKILL.md`, and
   `agents/manager.md`. Each sentinel must exist and be readable at the path its root produces. Exactly one
   candidate satisfies both skills sentinels; that candidate is `{gobbi-skills-root}`, and its `agents/`
@@ -107,29 +100,18 @@ are not skill references.
 | `{gobbi-skills-root}/principles/SKILL.md` | `{gobbi-skills-root}` | A sibling skill resolves from that same root |
 | `{gobbi-agents-root}/manager.md` | `{gobbi-agents-root}` | Agent contracts resolve independently of skills |
 
-- A runtime may report the loaded skill through a generated view or through its canonical location. Either is
-  a valid root when its sentinels validate; the sentinels decide, not the spelling.
-- Record `{gobbi-skills-root}` and `{gobbi-agents-root}` with the canonical source, runtime, trigger, and
-  unchanged repository preimage. Gobbi has written nothing.
-- Treat both validated roots as fixed for the whole session: one session runs against exactly one pair. The
-  entry persists neither value; the selected mode's owner records them with its own session facts and carries
-  them into every brief it builds. Re-derive and revalidate both at every entry instead of recovering a
-  remembered value, then compare the result with the pair the session already recorded whenever that record
-  exists. A difference means the package moved under a running session: neither pair governs, so stop below
-  and report both, because the entry cannot rewrite the records and briefs that already carry the earlier
-  pair.
+- A canonical or generated view is valid when exactly one candidate satisfies all sentinels. Record that fixed
+  root pair with the source, runtime, trigger, and preimage. At every later entry, re-derive it and compare it
+  with the owner's recorded pair. Stop and report both pairs if they differ; Gobbi cannot rewrite existing
+  session facts or briefs.
 - Resolve the project key `<project>` with:
 
 ```text
 basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 ```
 
-- Use `--git-common-dir` because it names the shared repository directory. Every Cowork and Workflow session
-  runs inside a session worktree whose top-level leaf is a session identity, not the project key. New leaves
-  deliberately omit the runtime prefix and therefore differ from their branch names; legacy leaves may equal
-  their branches. Validate the key against
-  `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$` at up to 64 characters, and ask the user before deriving any path when
-  it does not match.
+- `--git-common-dir` resolves the shared repository even from a session worktree. Validate the key against
+  `^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$` at up to 64 characters; ask before deriving paths when it fails.
 - Gobbi defines these paths:
 
 ```text
@@ -141,18 +123,20 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
     └── worktrees/               ignored
 ```
 
-- `tracked` means git must not ignore the path. `ignored` means git must ignore the directory and every
-  descendant. Git stores no empty directory, so a tracked directory holds nothing until its first real record.
-- `.gobbi/.gitignore` is the only file that carries Gobbi's ignore rules, and Gobbi never writes a repository's
-  root `.gitignore`. Its canonical content is one comment line plus `projects/*/sessions/` and
-  `projects/*/worktrees/`. The middle slash anchors each pattern; a slashless pattern such as `sessions/`
-  matches at any depth and would ignore durable memory under `memory/design/sessions/`.
-- Bootstrap creates the namespace roots only: never a `memory/` category directory, never a session directory,
-  and no marker file under `memory/`. An empty directory asserts memory that does not exist.
-  `rules/` is not bootstrapped, because every agent contract already
-  reads an absent or empty `rules/` as `NO_PROJECT_RULES`.
-- The entry defines this shape and creates none of it. The selected mode's owner creates each path when its
-  first record needs it, so a missing directory is not a broken view and is not the failure below.
+- `tracked` means not ignored; `ignored` covers the directory and every descendant. `.gobbi/.gitignore` is the
+  only owner of these exact bytes:
+
+```text
+# Gobbi runtime state. Session evidence and linked worktrees are never tracked.
+projects/*/sessions/
+projects/*/worktrees/
+```
+
+  The middle slash prevents accidental matches inside durable memory. Never write the repository root
+  `.gitignore`.
+- Bootstrap only the namespace roots and ignore file. Create no category, session, marker, or `rules/` path.
+  Gobbi defines this layout but writes none of it; the selected owner creates a path when its first record
+  needs it.
 - Check the four configuration items below and report only the ones that are absent. A clean session should
   read no report at all, so every line the user does see names a real missing prerequisite. Check all four
   before reporting, so one report names every gap instead of exposing them one at a time.
@@ -164,23 +148,10 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 | A `Skill(...)` permission for each Gobbi skill the session loads | The same `permissions.allow` sources | Skill use stays gated |
 | The `.gobbi/` layout above, in its required tracked-or-ignored state | `git check-ignore --no-index -v <path>` for each path | The project memory root and its ignore posture are missing |
 
-- Check the first three items in Claude Code only. They are Claude Code settings, and native Codex has neither
-  the Agent Teams environment variable nor these permission gates, so reporting them there would name an
-  absence that cannot exist. The `.gobbi/` layout item applies in both runtimes.
-- Check and recommend the namespaced permission form — `Skill(gobbi:principles)` and `Agent(gobbi:leader)` —
-  because the plugin namespaces every component it contributes. A live probe in a fresh consumer project with
-  the plugin installed offered `gobbi:principles` and `gobbi:leader` only, and the bare `Skill(principles)`
-  and `Agent(leader)` were absent. The bare form is correct in one case: a repository that resolves the skill
-  from its own `.claude/skills` rather than from the plugin. This repository resolves them that way, which is
-  why its own settings file lists `Skill(gobbi)` and not the namespaced form.
-- Expect the first three items to be absent in a project that installed Gobbi as a plugin, because a plugin
-  distributes skills and agents but contributes no `env` block and no `permissions` block. Name each absence
-  with the exact setting that supplies it and continue; this check reports a prerequisite and stops nothing.
-- Check no partner binary here. [`partner`](partner/SKILL.md) Step 1.1 owns that check, and a second copy of it
-  would drift from the one that actually runs.
-- Reading configuration is a read, so this check leaves the entry's no-mutation rule intact. Writing the
-  environment variable would not help in any case: the runtime reads `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` at
-  process start, so a mid-session write could not take effect.
+- Check the first three items only in Claude Code and the layout in both runtimes. For plugin consumers,
+  recommend namespaced permissions such as `Skill(gobbi:principles)` and `Agent(gobbi:leader)`; use bare names
+  only for repository-local `.claude/skills`. Report all missing items together without stopping. Do not write
+  configuration or probe the partner binary; [`partner`](partner/SKILL.md) Step 1.1 owns that probe.
 - Stop here when no candidate resolves a root, when both candidates satisfy the same sentinels, when a
   sentinel is missing or unreadable, when a re-derived root differs from the pair this session already
   recorded, or when the resolved view is otherwise partial or inconsistent. Name the exact broken element:
@@ -189,8 +160,8 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   restoring the runtime's Gobbi package or entrypoint from its canonical source; an ambiguous or a diverged
   pair needs the user's decision instead. The repository's governing instructions own any repository-local
   repair command, and no step continues against a partial view.
-- This stop fires before the Step 1.3 mode selection, because every later step and every brief depends on the
-  two validated roots. Never select a mode, load an owner, or build a brief without them.
+- This stop fires before Step 1.3. Never select a mode, load an owner, or build a brief without the validated
+  pair.
 
 #### 1.2 Load the entry foundation
 
@@ -198,17 +169,12 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 - Read applicable project rules, governing repository instructions, and the canonical
   [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
   project rules exist.
-- Confirm the load register holds Principles before any governed action, and return to it when it does not.
-- Defer the complete Delegation, Discussion, Git, and Memory register to the selected Cowork or
-  Workflow owner. Defer Ideation and Planning to their selected stages and defer Wrap-up only to Workflow
-  Phase 3. General loads each task-specific skill only when its trigger applies.
+- Confirm Principles before governed action. Defer every other skill to the selected owner or its task trigger.
 
 #### 1.3 Obtain or preserve mode, applicable slug, and partner policy
 
-- Start from the loaded Principles foundation and the recorded entry trigger.
-- Load [Discussion](../discussion/SKILL.md) immediately before Gobbi writes a mode, slug, or partner question. At
-  every fresh entry, use its structure and the active runtime's
-  structured user-input request to ask the user to select exactly one mode. Set no automatic resolution:
+- Load [Discussion](../discussion/SKILL.md) immediately before a mode, slug, or partner question. At every fresh
+  entry, use the active runtime's structured user-input request with no automatic resolution:
 
 | Mode | Select when | Participant and evaluation commitment |
 |---|---|---|
@@ -216,15 +182,9 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 | **Cowork** | The user wants fast, stepwise implementation topics with optional Ideation and Planning. | Every selected stage self-reviews; explicit evaluation always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when partner is enabled. |
 | **Workflow** | The user wants the durable five-step recorded workflow. | Every WORK uses one assigned active-runtime draft with self-review and adds the applicable external draft or review only when partner is enabled; every EVALUATION always uses one fresh isolated active-runtime evaluator and adds one external evaluator only when enabled. |
 
-- Present the commitment column with the selection so the user chooses a known quality bar. State what each
-  mode guarantees, not how it produces that guarantee.
-- Name the commitment only. [`cowork`](../cowork/SKILL.md) and [`workflow`](../workflow/SKILL.md) own the
-  local participants, round assembly, and mechanism behind their commitments. The entry never runs,
-  schedules, or repeats a draft or evaluation.
-- A request may support a recommendation, but even explicit words such as "use Cowork" do not replace the
-  selection control on a fresh entry.
-- At a context boundary, keep the established selection while its mode evidence still validates. Ask the
-  three-way question again only when the evidence is missing, ambiguous, or conflicting.
+- Present the commitment column. A request may support a recommendation but never records a fresh selection.
+  On a boundary, preserve a validated selection and ask again only when its evidence is missing, ambiguous, or
+  conflicting. The selected owner, not Gobbi, supplies each commitment's mechanism.
 - After recording fresh Cowork or Workflow, warn that the session slug enters branch names and paths and must
   not contain sensitive information. Ask for the slug through the same [Discussion](../discussion/SKILL.md)
   structure and control. Normalize it by taking each maximal ASCII alphanumeric sequence as one word,
@@ -235,22 +195,23 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
   and records `slug: not-applicable`; it creates no Gobbi identity. A recovered new session preserves its
   recorded normalized slug. A recovered legacy session preserves `slug: not-applicable` and receives no slug
   question.
-- After the applicable slug is recorded, ask one further question through the same
-  [Discussion](../discussion/SKILL.md) structure and control: whether the session-wide partner policy is
-  `enabled` or `disabled`.
-- Ask whether to use a partner, never which one. The active runtime fixes the direction — in Claude Code the
-  partner is Codex, and in native Codex the partner is Claude Code — so the runtime leaves no second choice to
-  make.
-- Record mode, applicable normalized slug, and partner policy together and hand the complete entry state to
-  the selected owner. Cowork and Workflow consume all three; General consumes mode and policy without creating
-  session state. Enabled authorizes the owner to call [`partner`](partner/SKILL.md) for every external run its
-  mode requires without another per-round prompt. Disabled authorizes none. The entry decides no participant,
-  gate, coverage rule, waiver, or route and runs no invocation itself.
-- At a context boundary, preserve each established value whose evidence validates. Ask only for a value that
-  is missing, ambiguous, or conflicting, in the same mode → applicable slug → partner order. Never regenerate
-  or rename a slug that an existing session object already uses.
+- After the applicable slug is recorded, ask whether the session-wide partner policy is `enabled` or
+  `disabled`. Ask whether to use a partner, never which runtime; the active runtime fixes the direction.
+- Record mode, applicable normalized slug, and partner policy together. Cowork and Workflow consume all three;
+  General consumes mode and policy without creating session state. Enabled authorizes the owner to call
+  [`partner`](partner/SKILL.md) whenever its mode requires; disabled authorizes none.
+- At a boundary, preserve every validated value and ask only for missing, ambiguous, or conflicting evidence,
+  in mode → applicable slug → partner order. Never rename a slug used by an existing session object.
 
-#### 1.4 Load the selected owner and hand off without mutation
+#### 1.4 Apply the session-wide finding gate
+
+- Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it remains
+  inside the locked contract; and the correction is reversible, authority-neutral, non-destructive, and
+  non-external.
+- Send every other finding to the user for accept, reject, or defer disposition. Every correction requires
+  fresh evaluation, and only a verified PASS continues automatically.
+
+#### 1.5 Load the selected owner and hand off without mutation
 
 - **General:** hand `mode: General`, `slug: not-applicable`, and the partner policy to the task owner. Continue
   from Principles and load each task-specific skill when its trigger applies. Load neither orchestration owner
@@ -261,15 +222,14 @@ basename(dirname(git rev-parse --path-format=absolute --git-common-dir))
 - **Workflow:** hand mode, the applicable normalized slug or legacy `not-applicable`, and partner policy to
   [`../workflow/SKILL.md`](../workflow/SKILL.md). Configuration generates or recovers the identity and records
   the complete entry state before durable routing, productive steps, evaluation, RECORD, and Wrap-up.
-- Before building a specialist brief, ensure [Delegation](../delegation/SKILL.md) is loaded. Cowork and
-  Workflow load it in their shared owner register; General loads it from this trigger. Let the selected mode
-  add its own brief fields. After a specialist reports, reread its artifact or commit and reproduce its
-  verification before assigning further work.
+- Before a specialist brief, load [Delegation](../delegation/SKILL.md), add the selected mode's fields, and
+  resolve every required skill and role from the validated root pair. After the report, reread the result and
+  reproduce its verification before another assignment.
 - Use the [skill map](#references) to find a further task-specific skill, then load that skill from its own
   trigger. The map indexes what exists for routing; it loads nothing itself and gives no skill a second entry
   point.
-- On missing or invalid mode evidence, owner artifacts, identity, or authority, preserve the prior state and
-  report the exact blocker. Never invent a fallback mode, cursor, worktree, or direct specialist route.
+- On missing or invalid mode evidence, owner artifacts, identity, or authority, preserve state and report the
+  exact blocker. Never invent a fallback mode, cursor, worktree, or specialist route.
 
 ## References
 

@@ -107,6 +107,23 @@ replace_literal_once() {
   mv "$output" "$path"
 }
 
+replace_block_once() {
+  local path="$1" old="$2" new="$3" output
+  output="$(mktemp "$tmp_root/rewrite-block.XXXXXX")"
+  if ! awk -v old="$old" -v new="$new" '
+    BEGIN { RS = "\0" }
+    {
+      offset = index($0, old)
+      if (!offset) exit 42
+      print substr($0, 1, offset - 1) new substr($0, offset + length(old))
+    }
+  ' "$path" > "$output"; then
+    find "$output" -depth -mindepth 0 -delete
+    fail "semantic block mutation source is absent from $path: $old"
+  fi
+  mv "$output" "$path"
+}
+
 swap_literals_once() {
   local path="$1" first="$2" second="$3"
   local marker='GOBBI_SEMANTIC_SWAP_MARKER'
@@ -239,17 +256,31 @@ expect_semantic_failure() {
   pass "$name rejects one changed semantic edge: $expected"
 }
 
-test_semantic_positive_recovery_and_cosmetic_change() {
+test_semantic_positive_recovery_and_reflow() {
   local root="$tmp_root/semantic-positive"
   prepare_semantic_fixture "$root"
   assert_file_contains "$root/.gobbi/projects/gobbi/skills/git/conventions.md" \
     'Recovery permanently accepts these legacy formats'
   assert_file_contains "$root/.gobbi/projects/gobbi/skills/git/conventions.md" \
     'New creation uses only the new formats'
-  printf '\n<!-- Cosmetic fixture note: semantics unchanged. -->\n' \
-    >> "$root/.gobbi/projects/gobbi/skills/cowork/SKILL.md"
+  replace_block_once "$root/.gobbi/projects/gobbi/skills/cowork/SKILL.md" \
+    $'Apply Gobbi\x27s [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate). A\n  correction' \
+    $'Apply Gobbi\x27s [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).\n  A correction'
   run_sync "$root" --check >/dev/null
-  pass 'finding-m preserves semantic parity while accepting a cosmetic-only change'
+  pass 'finding-m preserves semantic parity across equivalent paragraph reflow'
+}
+
+test_semantic_cowork_forbidden_wrapup_edge() {
+  local root="$tmp_root/semantic-cowork-forbidden-wrapup" log="$tmp_root/semantic-cowork-forbidden-wrapup.log"
+  local expected='Cowork must not link to the Workflow Wrap-up operation'
+  prepare_semantic_fixture "$root"
+  printf '\n[Forbidden owner](../wrap-up/SKILL.md)\n' \
+    >> "$root/.gobbi/projects/gobbi/skills/cowork/SKILL.md"
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail 'Cowork forbidden Wrap-up edge unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$log" "$expected"
+  pass "Cowork forbidden owner edge fails with one named diagnostic: $expected"
 }
 
 test_semantic_entry_order() {
@@ -276,6 +307,11 @@ test_semantic_contract_failures() {
 entry-general-slug^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^records `slug: not-applicable`^records `slug: omitted`^General entry must record slug: not-applicable
 entry-general-identity^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^creates no Gobbi identity^creates one Gobbi identity^General entry must create no Gobbi identity
 entry-general-policy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^General consumes mode and policy without creating^General ignores mode and policy without creating^General owner must consume partner policy without creating session state
+gobbi-root-candidates^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^reported path and its parent as the two possible `{gobbi-skills-root}` values^reported path as the only possible `{gobbi-skills-root}` value^Gobbi root resolution must retain both candidates
+gobbi-root-sentinels^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^`agents/manager.md`. Each sentinel^`agents/leader.md`. Each sentinel^Gobbi root resolution must retain all three sentinels
+gobbi-layout-session-wire^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^projects/*/sessions/^projects/*/session/^Gobbi layout must retain the exact ignore wire values
+gobbi-cowork-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../cowork/SKILL.md`](../cowork/SKILL.md)^[`../cowork/SKILL.md`](../workflow/SKILL.md)^Gobbi must hand Cowork to its canonical owner
+gobbi-workflow-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../workflow/SKILL.md`](../workflow/SKILL.md)^[`../workflow/SKILL.md`](../cowork/SKILL.md)^Gobbi must hand Workflow to its canonical owner
 slug-privacy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^warn that the session slug enters branch names and paths^state that the session slug enters branch names and paths^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^maximal ASCII alphanumeric sequence as one word^maximal locale alphanumeric sequence as one word^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-no-transliteration^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Do not transliterate, truncate^Transliterate, then truncate^session slug must be privacy-warned, deterministically normalized, and strictly rejected
@@ -293,7 +329,7 @@ recovery-separate-parsers^.gobbi/projects/gobbi/skills/git/conventions.md^Parse 
 recovery-no-migration^.gobbi/projects/gobbi/skills/git/SKILL.md^silently migrate a legacy identity^silently migrate an old identity^Git recovery must never migrate a legacy identity
 recovery-same-uuid-conflict^.gobbi/projects/gobbi/skills/git/conventions.md^Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict^Two different slugs, dates, runtimes, or paths carrying the same UUID are allowed^same-UUID competing session evidence must fail as an identity conflict
 finding-d-recovery-evidence-first^.gobbi/projects/gobbi/skills/git/SKILL.md^take the retained branch or worktree from current caller, session, and registered-worktree^search all branches for a convenient worktree^recovery must use current evidence and ask only for unresolved facts
-finding-c-cowork-uuid^.gobbi/projects/gobbi/skills/cowork/SKILL.md^For a fresh session, generate one full lowercase hyphenated UUID^For a fresh session, reuse one runtime identifier^Cowork must own a fresh UUID and original UTC session identity
+finding-c-cowork-uuid^.gobbi/projects/gobbi/skills/cowork/SKILL.md^For a fresh identity, generate one full lowercase hyphenated UUID^For a fresh identity, reuse one runtime identifier^Cowork must supply a fresh UUID and original UTC session identity
 finding-l-workflow-configuration^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Write `configuration.md` there with mode, identity shape, original UTC date^Write `configuration.md` there with mode and branch only^Workflow Configuration must record complete identity evidence
 finding-l-memory-root^.gobbi/projects/gobbi/skills/memory/SKILL.md^original UTC session-start date, and exact session root^current date and inferred session root^Memory must validate caller identity against the exact session root
 finding-f-partner-one-run^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^One **partner run** is one bounded^One **partner run** is an unbounded^Partner must own one external invocation while callers own local participants and assembly
@@ -301,10 +337,10 @@ finding-f-caller-assembly^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^Th
 finding-i-temp-captures^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^live in one private runtime-temporary directory outside every project and session root^live in the project session root^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
 finding-i-success-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^before a successful return or after failure evidence is surfaced^after a successful return only^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
 finding-i-failure-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private^Retain captures after the exact diagnostic is read and surfaced. Keep the complete private^Partner failure handling must remove private captures after surfacing evidence
-finding-e-cowork-enabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^When the session partner policy is enabled, call^When the session partner policy is enabled, skip^Cowork enabled and disabled partner policies must select external or local-only creation
-finding-e-cowork-disabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Disabled runs no external invocation^Disabled may run one external invocation^Cowork enabled and disabled partner policies must select external or local-only creation
-cowork-fresh-local-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Dispatch one fresh isolated active-runtime evaluator over the frozen subject^Reuse the creation writer as evaluator over the frozen subject^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled and assembly ownership
-cowork-enabled-external-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Partner](../gobbi/partner/SKILL.md) once for a second fresh isolated external evaluator over the same frozen^[Partner](../gobbi/partner/SKILL.md) once for an external reviewer over the same frozen^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled and assembly ownership
+finding-e-cowork-enabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Enabled then calls^Enabled then skips^Cowork enabled creation must route through Partner
+finding-e-cowork-disabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Disabled invokes no external runtime.^Disabled may invoke an external runtime.^Cowork disabled creation must remain local while the manager owns assembly
+cowork-fresh-local-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Dispatch one fresh isolated active-runtime evaluator.^Reuse the creation writer as evaluator.^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled behavior
+cowork-enabled-external-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^one fresh isolated external evaluator over the same frozen subject^one external reviewer over the same frozen subject^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled behavior
 workflow-partner-consumption^.gobbi/projects/gobbi/skills/workflow/SKILL.md^MUST apply the recorded session-wide partner policy to every productive step.^MAY ignore the recorded session-wide partner policy for productive steps.^Workflow must consume the recorded partner policy
 workflow-disabled-local-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh^WORK may reuse any draft and EVALUATION may reuse its author^Workflow disabled policy must select local-only participants
 workflow-enabled-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Enabled adds each applicable external draft^Enabled may omit applicable external drafts^Workflow enabled policy must use Partner while retaining assembly ownership
@@ -321,10 +357,16 @@ finding-a-user-boundary^.gobbi/projects/gobbi/agents/manager.md^Present every Cr
 finding-a-fresh-evaluation^.gobbi/projects/gobbi/agents/manager.md^Require a fresh evaluation after the correction.^Reuse prior evaluation after the correction.^every automatic correction must receive fresh evaluation
 finding-a-pass-only^.gobbi/projects/gobbi/agents/manager.md^Only a verified PASS continues automatically.^PASS or REVISE continues automatically.^only a verified PASS may continue automatically
 finding-a-owner-parity^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^Medium, or Low^Medium, Low, or Informational^Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
-cowork-owner-inside-contract^.gobbi/projects/gobbi/skills/cowork/SKILL.md^`blocking: no`; it is inside^`blocking: no`; it is outside^Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
-cowork-owner-user-boundary^.gobbi/projects/gobbi/skills/cowork/SKILL.md^finding goes to the user^finding is corrected automatically^Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
-cowork-owner-fresh-evaluation^.gobbi/projects/gobbi/skills/cowork/SKILL.md^fresh explicit evaluation.^prior evaluation.^Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
-cowork-owner-pass-only^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Only PASS continues automatically.^PASS or REVISE continues automatically.^Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
+gobbi-owner-inside-contract^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^it remains^it may not remain^Gobbi must own the complete session-wide finding predicate
+gobbi-owner-user-boundary^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Send every other finding to the user for accept, reject, or defer disposition.^Correct every other finding automatically.^Gobbi finding gate must retain user disposition, fresh evaluation, and PASS-only continuation
+gobbi-owner-fresh-evaluation^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Every correction requires^Every correction skips^Gobbi finding gate must retain user disposition, fresh evaluation, and PASS-only continuation
+gobbi-owner-pass-only^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^only a verified PASS continues automatically.^PASS or REVISE continues automatically.^Gobbi finding gate must retain user disposition, fresh evaluation, and PASS-only continuation
+cowork-gobbi-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Apply Gobbi's [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate).^Apply Workflow's [session-wide finding gate](../workflow/SKILL.md#14-apply-the-session-wide-finding-gate).^Cowork must consume the Gobbi finding gate through its canonical owner edge
+cowork-git-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Git](../git/SKILL.md) | Owns identity and isolation validation^[Git](../git/SKILL.md) | Merely describes identity and isolation validation^Cowork must name Git as its mechanism owner
+cowork-memory-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Memory](../memory/SKILL.md) | Owns session identity and containment validation^[Memory](../memory/SKILL.md) | Merely describes session identity and containment validation^Cowork must name Memory as its mechanism owner
+cowork-delegation-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Delegation](../delegation/SKILL.md) | Owns the base specialist brief^[Delegation](../delegation/SKILL.md) | Merely describes the base specialist brief^Cowork must name Delegation as its mechanism owner
+cowork-partner-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Partner](../gobbi/partner/SKILL.md) | Owns each enabled external invocation and frozen return^[Partner](../gobbi/partner/SKILL.md) | Merely describes each enabled external invocation and frozen return^Cowork must name Partner as its invocation owner
+cowork-evaluation-owner-edge^.gobbi/projects/gobbi/skills/cowork/SKILL.md^[Evaluation](../evaluation/SKILL.md) | Owns each complete evaluator report^[Evaluation](../evaluation/SKILL.md) | Merely describes each complete evaluator report^Cowork must name Evaluation as its report owner
 workflow-owner-in-contract^.gobbi/projects/gobbi/skills/workflow/SKILL.md^`blocking: no`, in-contract, reversible^`blocking: no`, out-of-contract, reversible^Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
 workflow-owner-user-boundary^.gobbi/projects/gobbi/skills/workflow/SKILL.md^destructive findings to the user.^destructive findings are corrected automatically.^Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
 workflow-owner-fresh-evaluation^.gobbi/projects/gobbi/skills/workflow/SKILL.md^MUST continue only from a verified PASS after every correction receives fresh evaluation.^MUST continue only from a verified PASS after reusing prior evaluation.^Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
@@ -341,9 +383,9 @@ phase3-owner-in-contract^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^
 phase3-owner-user-boundary^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^Send every other finding to the user.^Correct every other finding automatically.^Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
 phase3-owner-fresh-evaluation^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^non-external finding, then require fresh evaluation.^non-external finding, then reuse prior evaluation.^Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
 phase3-owner-pass-only^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^let only PASS route the TODO automatically.^let PASS or REVISE route the TODO automatically.^Workflow Phase 3 finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation
-finding-b-cowork-memory^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Apply Memory directly^Apply Wrap-up indirectly^Cowork closure must apply Memory directly and return only a conversation handoff
-finding-b-cowork-no-wrapup^.gobbi/projects/gobbi/skills/cowork/SKILL.md^do not load Wrap-up or create Workflow closure state^load Wrap-up and create Workflow closure state^Cowork closure must apply Memory directly and return only a conversation handoff
-finding-b-cowork-conversation^.gobbi/projects/gobbi/skills/cowork/SKILL.md^conversation-only handoff^tracked handoff^Cowork closure must apply Memory directly and return only a conversation handoff
+finding-b-cowork-memory^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Apply [Memory](../memory/SKILL.md) directly^Apply [Memory](../memory/SKILL.md) indirectly^Cowork closure must apply Memory directly without Workflow closure state
+finding-b-cowork-no-workflow-evidence^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Never create Workflow-formatted TODOs^Always create Workflow-formatted TODOs^Cowork closure must forbid Workflow evidence
+finding-b-cowork-conversation^.gobbi/projects/gobbi/skills/cowork/SKILL.md^returns a conversation-only handoff^returns a tracked handoff^Cowork closure must return only a conversation handoff
 workflow-durable-wrapup^.gobbi/projects/gobbi/skills/workflow/SKILL.md^### Phase 3 — Wrap up and finish^### Phase 3 — Return conversation only^Workflow closure must retain durable Wrap-up and a tracked handoff
 finding-h-assistant-mode^.gobbi/projects/gobbi/agents/assistant.md^**Cowork Memory mode** enters only from an explicit Cowork closure assignment^**Cowork Memory mode** enters without an assignment^assignment-authorized assistant must support Cowork direct-Memory closure only
 finding-h-assistant-boundary^.gobbi/projects/gobbi/agents/assistant.md^Never load Wrap-up, create Workflow receipts or a tracked handoff^Load Wrap-up, create Workflow receipts and a tracked handoff^assignment-authorized assistant must support Cowork direct-Memory closure only
@@ -773,7 +815,8 @@ test_hook_component_rejection
 test_manifest_hook_rejection
 test_marketplace_and_role_contracts
 test_entry_mode_contract
-test_semantic_positive_recovery_and_cosmetic_change
+test_semantic_positive_recovery_and_reflow
+test_semantic_cowork_forbidden_wrapup_edge
 test_semantic_entry_order
 test_semantic_contract_failures
 test_semantic_permissions

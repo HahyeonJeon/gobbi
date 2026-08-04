@@ -173,6 +173,31 @@ require_semantic_text() {
   grep -Fq -- "$text" "$path" || topology_fail "$label"
 }
 
+require_semantic_section_words() {
+  local path="$1" start="$2" end="$3" text="$4" label="$5"
+  [[ -f "$path" ]] || return 0
+  if ! awk -v start="$start" -v end="$end" -v needle="$text" '
+    index($0, start) { active = 1 }
+    active && end != "" && index($0, end) { active = 0 }
+    active { section = section " " $0 }
+    END {
+      gsub(/[[:space:]]+/, " ", section)
+      gsub(/[[:space:]]+/, " ", needle)
+      exit(index(section, needle) ? 0 : 1)
+    }
+  ' "$path"; then
+    topology_fail "$label"
+  fi
+}
+
+forbid_semantic_text() {
+  local path="$1" text="$2" label="$3"
+  [[ -f "$path" ]] || return 0
+  if grep -Fq -- "$text" "$path"; then
+    topology_fail "$label"
+  fi
+}
+
 require_semantic_sequence() {
   local path="$1" max_span="$2" label="$3"
   local first_line=0 previous_line=0 line token
@@ -245,7 +270,22 @@ validate_lifecycle_semantics() {
     'After recording fresh Cowork or Workflow' \
     'After the applicable slug is recorded' \
     'Record mode, applicable normalized slug, and partner policy together' \
-    '#### 1.4 Load the selected owner and hand off without mutation'
+    '#### 1.5 Load the selected owner and hand off without mutation'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.1 Establish the entry context, runtime, and canonical layout' \
+    '#### 1.2 Load the entry foundation' \
+    'reported path and its parent as the two possible `{gobbi-skills-root}` values' \
+    'Gobbi root resolution must retain both candidates'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.1 Establish the entry context, runtime, and canonical layout' \
+    '#### 1.2 Load the entry foundation' \
+    '`gobbi/SKILL.md`, `principles/SKILL.md`, and `agents/manager.md`' \
+    'Gobbi root resolution must retain all three sentinels'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.1 Establish the entry context, runtime, and canonical layout' \
+    '#### 1.2 Load the entry foundation' \
+    '# Gobbi runtime state. Session evidence and linked worktrees are never tracked. projects/*/sessions/ projects/*/worktrees/' \
+    'Gobbi layout must retain the exact ignore wire values'
   require_semantic_text "$gobbi" 'General skips this question' \
     'General entry must skip the slug question'
   require_semantic_text "$gobbi" 'records `slug: not-applicable`' \
@@ -261,6 +301,26 @@ validate_lifecycle_semantics() {
     'Do not transliterate, truncate' \
     'Accept only 1–20 characters' \
     'normalization is empty, longer than 20 characters, or reserved'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.4 Apply the session-wide finding gate' \
+    '#### 1.5 Load the selected owner and hand off without mutation' \
+    'severity is High, Medium, or Low; `blocking: no`; it remains inside the locked contract; and the correction is reversible, authority-neutral, non-destructive, and non-external' \
+    'Gobbi must own the complete session-wide finding predicate'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.4 Apply the session-wide finding gate' \
+    '#### 1.5 Load the selected owner and hand off without mutation' \
+    'Send every other finding to the user for accept, reject, or defer disposition. Every correction requires fresh evaluation, and only a verified PASS continues automatically.' \
+    'Gobbi finding gate must retain user disposition, fresh evaluation, and PASS-only continuation'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.5 Load the selected owner and hand off without mutation' \
+    '## References' \
+    '[`../cowork/SKILL.md`](../cowork/SKILL.md)' \
+    'Gobbi must hand Cowork to its canonical owner'
+  require_semantic_section_words "$gobbi" \
+    '#### 1.5 Load the selected owner and hand off without mutation' \
+    '## References' \
+    '[`../workflow/SKILL.md`](../workflow/SKILL.md)' \
+    'Gobbi must hand Workflow to its canonical owner'
 
   require_semantic_sequence "$git_conventions" 10 \
     'new session identity must retain original UTC date and full UUID before name derivation' \
@@ -299,11 +359,11 @@ validate_lifecycle_semantics() {
     'Ask the user only when that evidence is missing' \
     'never search for a convenient alternative session'
 
-  require_semantic_sequence "$cowork" 5 \
-    'Cowork must own a fresh UUID and original UTC session identity' \
-    'For a fresh session, generate one full lowercase hyphenated UUID' \
-    'session-start date before deriving any name' \
-    'Recovery reuses the proved UUID and date'
+  require_semantic_section_words "$cowork" \
+    '#### 1.1 Create or recover the Cowork worktree' \
+    '#### 1.2 Establish the Cowork session locations' \
+    'For a fresh identity, generate one full lowercase hyphenated UUID and capture the original UTC session-start date before deriving names. Retain both across boundaries.' \
+    'Cowork must supply a fresh UUID and original UTC session identity'
   require_semantic_sequence "$workflow" 55 \
     'Workflow Configuration must record complete identity evidence' \
     'For a fresh session, generate a full lowercase hyphenated Gobbi session UUID' \
@@ -331,19 +391,26 @@ validate_lifecycle_semantics() {
     'Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private' \
     'capture directory. Report a cleanup failure'
 
-  require_semantic_sequence "$cowork" 10 \
-    'Cowork enabled and disabled partner policies must select external or local-only creation' \
-    'When the session partner policy is enabled, call' \
-    '[Partner](../gobbi/partner/SKILL.md) once for the applicable independent external draft' \
-    'Disabled runs no external invocation' \
-    'The manager owns every local participant'
-  require_semantic_sequence "$cowork" 18 \
-    'Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled and assembly ownership' \
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    'Enabled then calls [Partner](../gobbi/partner/SKILL.md) for the independent external draft and external cross-review' \
+    'Cowork enabled creation must route through Partner'
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    'Disabled invokes no external runtime. The manager owns local participants, freeze order, assembly, acceptance, and routing.' \
+    'Cowork disabled creation must remain local while the manager owns assembly'
+  require_semantic_section_words "$cowork" \
     '#### 3.1 Evaluate one frozen subject' \
-    'Dispatch one fresh isolated active-runtime evaluator over the frozen subject. When partner is enabled, call' \
-    '[Partner](../gobbi/partner/SKILL.md) once for a second fresh isolated external evaluator over the same frozen' \
-    'subject; neither evaluator receives the other report. Disabled invokes no external runtime.' \
-    'a complete [Evaluation](../evaluation/SKILL.md) output. The manager assembles the round'
+    '### Phase 4 — Close on User Call' \
+    'Dispatch one fresh isolated active-runtime evaluator. Enabled calls [Partner](../gobbi/partner/SKILL.md) for one fresh isolated external evaluator over the same frozen subject; neither sees the other report. Disabled invokes no external runtime.' \
+    'Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled behavior'
+  require_semantic_section_words "$cowork" \
+    '#### 3.1 Evaluate one frozen subject' \
+    '### Phase 4 — Close on User Call' \
+    'Each produces a complete [Evaluation](../evaluation/SKILL.md) report; the manager assembles the round and uses the more severe available verdict.' \
+    'Cowork must consume Evaluation reports while retaining round assembly'
   require_semantic_text "$workflow" \
     'MUST apply the recorded session-wide partner policy to every productive step.' \
     'Workflow must consume the recorded partner policy'
@@ -395,13 +462,14 @@ validate_lifecycle_semantics() {
   require_semantic_text "$manager" \
     'Only a verified PASS continues automatically.' \
     'only a verified PASS may continue automatically'
-  require_semantic_sequence "$cowork" 7 \
-    'Cowork finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
-    'Automatically correct a finding only when its severity is High, Medium, or Low; `blocking: no`; it is inside' \
-    'the locked contract; and the correction is reversible, authority-neutral, non-destructive, and non-external.' \
-    'Every Critical, blocking, scope, design, authority, external, or destructive finding goes to the user' \
-    'makes prior coverage stale, and requires a' \
-    'fresh explicit evaluation. Only PASS continues automatically.'
+  require_semantic_section_words "$cowork" \
+    '#### 3.1 Evaluate one frozen subject' \
+    '### Phase 4 — Close on User Call' \
+    "Apply Gobbi's [session-wide finding gate](../gobbi/SKILL.md#14-apply-the-session-wide-finding-gate)." \
+    'Cowork must consume the Gobbi finding gate through its canonical owner edge'
+  forbid_semantic_text "$cowork" \
+    'Automatically correct a finding only when its severity is High, Medium, or Low' \
+    'Cowork must not duplicate the Gobbi finding predicate'
   require_semantic_sequence "$workflow" 5 \
     'Workflow finding gate must preserve the full predicate, user boundary, fresh evaluation, and PASS-only continuation' \
     'MUST continue only from a verified PASS after every correction receives fresh evaluation.' \
@@ -427,12 +495,39 @@ validate_lifecycle_semantics() {
     'non-external finding, then require fresh evaluation. Send every other finding to the user.' \
     'evaluator verdict and let only PASS route the TODO automatically.'
 
-  require_semantic_sequence "$cowork" 24 \
-    'Cowork closure must apply Memory directly and return only a conversation handoff' \
-    'Apply Memory directly' \
-    'do not load Wrap-up or create Workflow closure state' \
-    'Do not create Workflow-formatted TODOs' \
-    'conversation-only handoff'
+  require_semantic_section_words "$cowork" \
+    '#### 4.1 Update memory and return the retained result' \
+    '## References' \
+    'Apply [Memory](../memory/SKILL.md) directly; do not load Wrap-up or create Workflow closure state.' \
+    'Cowork closure must apply Memory directly without Workflow closure state'
+  require_semantic_section_words "$cowork" \
+    '#### 4.1 Update memory and return the retained result' \
+    '## References' \
+    'Never create Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, a tracked handoff, or a Workflow Hand-off.' \
+    'Cowork closure must forbid Workflow evidence'
+  require_semantic_section_words "$cowork" \
+    '#### 4.1 Update memory and return the retained result' \
+    '## References' \
+    'PASS returns a conversation-only handoff' \
+    'Cowork closure must return only a conversation handoff'
+  forbid_semantic_text "$cowork" '](../wrap-up/SKILL.md)' \
+    'Cowork must not link to the Workflow Wrap-up operation'
+
+  require_semantic_section_words "$cowork" '## References' '' \
+    '[Git](../git/SKILL.md) | Owns identity and isolation validation' \
+    'Cowork must name Git as its mechanism owner'
+  require_semantic_section_words "$cowork" '## References' '' \
+    '[Memory](../memory/SKILL.md) | Owns session identity and containment validation' \
+    'Cowork must name Memory as its mechanism owner'
+  require_semantic_section_words "$cowork" '## References' '' \
+    '[Delegation](../delegation/SKILL.md) | Owns the base specialist brief' \
+    'Cowork must name Delegation as its mechanism owner'
+  require_semantic_section_words "$cowork" '## References' '' \
+    '[Partner](../gobbi/partner/SKILL.md) | Owns each enabled external invocation and frozen return' \
+    'Cowork must name Partner as its invocation owner'
+  require_semantic_section_words "$cowork" '## References' '' \
+    '[Evaluation](../evaluation/SKILL.md) | Owns each complete evaluator report' \
+    'Cowork must name Evaluation as its report owner'
   require_semantic_sequence "$workflow" 30 \
     'Workflow closure must retain durable Wrap-up and a tracked handoff' \
     '### Phase 3 — Wrap up and finish' \
