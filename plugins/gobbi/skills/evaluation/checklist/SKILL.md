@@ -10,7 +10,7 @@ skill-type: operation
 A Checklist author uses this operation to create or revise one reusable, unchecked evaluation source for an
 exact subject and context.
 
-The author studies the subject, categorizes its development and product lifecycles, builds a complete
+The author studies the subject, categorizes its design, development, and product lifecycles, builds a complete
 top-down scenario hierarchy, and only then writes checklist conditions for independently evaluable leaves.
 Lifecycle categories follow the subject, while a scenario spectrum helps expose good, bad, and overlooked
 situations without becoming a required taxonomy.
@@ -27,8 +27,8 @@ evidence determine which lifecycle categories and scenarios matter.
 
 ### Categorize lifecycles before writing scenarios
 
-Development and product lifecycles expose different positions and transitions. Derive each view from the
-subject before filling either one with scenarios.
+Design, development, and product lifecycles expose different positions and transitions. Derive each view from
+the subject before filling it with scenarios.
 
 ### Decompose scenarios from parents to leaves
 
@@ -44,7 +44,7 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 
 - **MUST bind the source to one exact subject, scope, and context.** State enough identity and evidence for a
   later evaluator to know what the source covers.
-- **MUST categorize the development lifecycle and product lifecycle separately before writing scenarios.**
+- **MUST categorize the design, development, and product lifecycles separately before writing scenarios.**
   Derive categories from inspected context, never from a universal list.
 - **MUST use the scenario spectrum only as discovery guidance.** Its terms are prompts, not required labels,
   nodes, sequences, counts, quotas, or coverage credit.
@@ -65,29 +65,40 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 - Inspect intended outcomes, affected people and systems, scope, requirements, rules, decisions, risks, prior
   failures, available evidence, and material constraints.
 - Trace actual behavior, interfaces, dependencies, states, transitions, handoffs, operating conditions, and
-  creator, developer, consumer, or user positions when they affect the outcome.
+  creator, designer, developer, consumer, or user positions when they affect the outcome.
 - Separate inspected facts from uncertainty and missing evidence. Split the work or stop when one source
   cannot describe a stable subject and outcome.
 
-### Phase 2 — Categorize Both Lifecycles
+### Phase 2 — Categorize the Lifecycles
 
-#### 2.1 Categorize the development lifecycle
+#### 2.1 Categorize the design lifecycle
 
-- Derive the development categories that matter for this subject from how it is conceived, designed, created,
-  changed, verified, delivered, maintained, or recovered. These examples prompt study and prescribe no list.
+- Derive the design categories that matter from how needs and constraints are understood, evidence is gathered,
+  requirements are framed, alternatives are explored, decisions are made, structures are modeled, and designs
+  are validated, revised, or handed off. These examples prompt study and prescribe no list.
 - Include a transition or handoff as its own category when it creates a materially different responsibility,
   risk, outcome, or evidence need.
 - Name each category for the subject-specific concern it groups. Record missing support as an unresolved gap
   instead of inventing a category or scenario.
 
-#### 2.2 Categorize the product lifecycle
+#### 2.2 Categorize the development lifecycle
+
+- Derive the development categories that matter from how the result is prepared for implementation, created,
+  integrated, changed, verified, delivered, maintained, or recovered. These examples prompt study and
+  prescribe no list.
+- Include a transition or handoff as its own category when it creates a materially different responsibility,
+  risk, outcome, or evidence need.
+- Name each category for the subject-specific concern it groups. Record missing support as an unresolved gap
+  instead of inventing a category or scenario.
+
+#### 2.3 Categorize the product lifecycle
 
 - Derive the product categories that matter from how the result is encountered, adopted, configured, used,
   changed, supported, replaced, or left. These examples also prescribe no list.
 - Consider each affected position, including developers as product consumers for a library, software
   development kit, application programming interface, or tool.
-- Keep the product view separate from the development view. Compare the two category trees for missing,
-  overlapping, or conflicting boundaries before writing scenarios.
+- Keep each lifecycle view separate. Compare their category trees for missing, overlapping, or conflicting
+  boundaries before writing scenarios.
 
 ### Phase 3 — Build the Scenario Hierarchy
 
@@ -129,11 +140,11 @@ scenario hierarchy closes hides missing or confused situations behind plausible 
 
 #### 3.3 Review and close the scenario hierarchy
 
-- Review both lifecycle trees against the subject, governing sources, prior failures, and scenario spectrum.
+- Review all lifecycle trees against the subject, governing sources, prior failures, and scenario spectrum.
 - Reconcile parent-child meaning, sibling boundaries, unsupported branches, and unresolved gaps. Merge only
   scenarios with the same situation, outcome, and evidence need.
-- When the same scenario spans both lifecycle views, define it once and reference its exact path from the
-  other view unless the affected position, trigger, outcome, or evidence differs.
+- When the same scenario spans more than one lifecycle view, define it once and reference its exact path from
+  each other view unless the affected position, trigger, outcome, or evidence differs.
 - Freeze the complete scenario hierarchy before continuing. Write no checklist condition while a material
   category, branch, leaf boundary, or gap remains unresolved.
 

@@ -4,6 +4,13 @@
 
 ## Scenario Hierarchy
 
+### Design lifecycle
+
+- {Context-derived lifecycle category}
+  - {Top-level scenario in the subject's own language}
+    - {Child scenario}
+      - {Independently evaluable leaf scenario}
+
 ### Development lifecycle
 
 - {Context-derived lifecycle category}
@@ -18,8 +25,8 @@
     - {Child scenario}
       - {Independently evaluable leaf scenario}
 
-{Create both category trees before adding scenarios. Repeat, nest, rename, reference, or omit branches as the
-subject requires. Name an unresolved gap instead of inventing a branch.}
+{Create the lifecycle category trees before adding scenarios. Repeat, nest, rename, reference, or omit
+branches as the subject requires. Name an unresolved gap instead of inventing a branch.}
 
 ## Checklist Conditions
 
