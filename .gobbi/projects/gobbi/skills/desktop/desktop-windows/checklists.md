@@ -120,7 +120,8 @@ failure.
 - [ ] DTWIN-CK-USAGE-02-01 — The diagnosis preserves the exact error, event, log, absence, or state signal with its identity and timestamp.
 - [ ] DTWIN-CK-USAGE-02-02 — The diagnosis compares documented prerequisites and observed state only within the same compatibility tuple.
 - [ ] DTWIN-CK-USAGE-02-03 — One failed attempt, missing prerequisite, or product defect is not reported as `Not supported` without exact evidence of unavailability.
-- [ ] DTWIN-CK-USAGE-02-04 — The next probe is the smallest exact check that can distinguish the remaining causes and names its authority and owner.
+- [ ] DTWIN-CK-USAGE-02-05 — The next probe distinguishes the remaining causes.
+- Also applies: DTWIN-CK-STRUCTURE-01-05 (smallest probe, authority, and owner).
 
 ## Consistency
 
@@ -167,7 +168,7 @@ failure.
 - [ ] DTWIN-CK-RISK-01-01 — Documentation, repository, metadata, package, and artifact evidence is never described as application, installer, runtime, or Windows execution.
 - [ ] DTWIN-CK-RISK-01-02 — A development run, unpacked build, source inspection, or non-throwing call never proves installed or native behavior.
 - [ ] DTWIN-CK-RISK-01-03 — The result makes no product behavior, product support, implementation, software-testing, verification, or release-readiness decision.
-- [ ] DTWIN-CK-RISK-01-04 — The lookup uses no credential and performs no install, update, repair, uninstall, signing, trust-store, policy, publication, or other mutation without separate authority.
+- [ ] DTWIN-CK-RISK-01-05 — The lookup uses no credential and performs no install, update, repair, uninstall, signing, trust-store, policy, publication, or other mutation.
 
 ### DTWIN-SC-RISK-02 — Rule violation: an adjacent result is assigned to the fact investigator
 
@@ -193,4 +194,5 @@ an internally contradictory or adjacent-owner claim is the failure.
 
 - [ ] DTWIN-CK-OVERALL-01-01 — The tuple, evidence, outcome, behavior, diagnostic signals, next probe, limits, conflicts, routes, freshness, and non-decisions describe the same exact subject without contradiction.
 - [ ] DTWIN-CK-OVERALL-01-02 — The outcome is no broader than the complete tuple and the strongest current evidence that directly applies to it.
-- [ ] DTWIN-CK-OVERALL-01-03 — Every unproved or unobserved fact remains explicit and no adjacent-owner decision is presented as a Windows fact result.
+- [ ] DTWIN-CK-OVERALL-01-04 — Every unproved or unobserved fact remains explicit.
+- Also applies: DTWIN-CK-RISK-01-03 (adjacent-owner decision boundary).
