@@ -17,9 +17,10 @@ planning. It does not cover the complete browser or installed-application experi
 deployment, observability, packaging, release, updates, publication, or independent Evaluation.
 
 Route complete browser interface and experience design to `web-frontend` and browser identity, concept, and
-aesthetic judgment to `web-interface`. Route installed-application identity, concept, and aesthetic judgment
-to `desktop-interface`, and installed renderer view and state structure to `desktop-architecture`. React Native
-is outside this operation and requires project-specific guidance.
+aesthetic judgment to `web-design`. Route authored element meaning to `html-css-semantics`, and keyboard,
+focus, and activation behavior to `web-interaction`. Route installed-application identity, concept, and
+aesthetic judgment to `desktop-interface`, and installed renderer view and state structure to
+`desktop-architecture`. React Native is outside this operation and requires project-specific guidance.
 
 ## Principles
 
@@ -70,9 +71,9 @@ performance assumptions before implementation receives the design.
   design authority, and the project-native location for the design record.
 - **Action / decision:** Confirm a browser application or Electron renderer, exclude React Native, and assign
   broader work to the named application skill: complete browser interface and experience to `web-frontend`, browser
-  identity, concept, and aesthetics to `web-interface`, installed-application identity, concept, and
-  aesthetics to `desktop-interface`, and installed renderer view and state structure to
-  `desktop-architecture`.
+  identity, concept, and aesthetics to `web-design`, authored element meaning to `html-css-semantics`,
+  keyboard, focus, and activation behavior to `web-interaction`, installed-application identity, concept, and
+  aesthetics to `desktop-interface`, and installed renderer view and state structure to `desktop-architecture`.
 - **Evidence / state:** Record the requested outcome, current behavior, included React design questions,
   applicable application skills, explicit exclusions, and the accepted design-record location.
 - **Next branch / recovery:** Ask for the missing outcome, authority, or document location instead of
@@ -152,7 +153,8 @@ performance assumptions before implementation receives the design.
   thrown inside a function passed to the `startTransition` function returned by `useTransition` as caught only
   when the official documentation for the exact installed React release supports it. Route ordinary
   event-handler, server-rendering, self-boundary, and unrelated asynchronous failures to their responsible
-  handlers. Specify native semantics, labels, keyboard and focus behavior, typed, approved host interfaces,
+  handlers. Specify native semantics and labels with `html-css-semantics`, keyboard and focus behavior with
+  `web-interaction`, typed and approved host interfaces,
   performance hypotheses, and a measurement plan using React Developer Tools or `Profiler` when render
   measurement is required.
 - **Evidence / state:** Produce the Error Boundary and recovery map with the exact installed React release,

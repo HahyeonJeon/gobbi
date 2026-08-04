@@ -13,7 +13,7 @@ unhandled-error reports, and the redaction that keeps protected data out of all 
 signal reaches its destination and has answered the question it was created for.
 
 This operation owns emission. Reading a signal already has owners: `web-platform` interprets browser and
-standards evidence, [`css-platform`](../../css/css-platform/SKILL.md) owns style diagnosis, and
+standards evidence, [`html-css-platform`](../../html-css/html-css-platform/SKILL.md) owns direct HTML/CSS diagnosis, and
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owns process, preload, and lifecycle failures.
 Load those to diagnose a failure; load this one to decide what the application produces.
 

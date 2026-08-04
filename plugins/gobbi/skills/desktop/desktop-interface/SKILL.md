@@ -17,7 +17,7 @@ evidence only for the choices it names. This skill owns no mechanics. `desktop-c
 installed-platform contract, `desktop-release` owns release judgment,
 [`electron-design`](../../electron/electron-design/SKILL.md) owns Electron security boundaries and ownership
 defaults, [`web-interaction`](../../web/web-interaction/SKILL.md) owns the renderer's event, pointer,
-keyboard, focus, and widget-pattern mechanics, [`css-motion`](../../css/css-motion/SKILL.md) owns its
+keyboard, focus, and widget-pattern mechanics, [`html-css-motion`](../../html-css/html-css-motion/SKILL.md) owns its
 declarative motion mechanics, and the renderer's remaining markup, presentation, and framework owners keep
 their own policy. Rules define
 the boundary, Preferences select defaults inside it, and a Rule wins every conflict.
@@ -100,7 +100,7 @@ floor the renderer's presentation owner defines.
 **PREFER** a transition when it makes a change of state, location, or causality legible, and no motion
 otherwise. This skill decides only whether motion is warranted and what it must communicate; the safety floor
 stays with the renderer's applicable presentation owner and the emitted mechanics with
-[`css-motion`](../../css/css-motion/SKILL.md).
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md).
 
 ## References
 

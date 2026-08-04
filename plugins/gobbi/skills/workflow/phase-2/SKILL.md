@@ -1,6 +1,6 @@
 ---
 name: phase-2
-description: "MUST load when Workflow enters Phase 2. Phase 2 is an operation skill for turning the locked Ideation contract into an ordered plan, executing every task in one writer chain, and handing verified work to Wrap-up."
+description: "MUST load when Workflow enters Phase 2. Turns the locked Ideation contract into an ordered plan, executes every task through one writer chain, and hands verified work to Wrap-up."
 allowed-tools: Read, Grep, Glob, Bash, Write, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskUpdate, TaskList
 skill-type: operation
 user-invocable: false
@@ -8,262 +8,149 @@ user-invocable: false
 
 # Workflow Phase 2
 
-The manager loads this child skill after the parent [Workflow](../SKILL.md) operation activates
-`P2 · Planning · DISCUSSION · 1/2`, or when recovery selects an unfinished Phase 2 item. Entry requires a
-verified Phase 1 Hand-off and the locked Ideation contract.
+The manager loads this child only after the parent [Workflow](../SKILL.md) activates
+`P2 · Planning · DISCUSSION · 1/2`, or when recovery selects an unfinished Phase 2 item. Entry requires the
+verified Phase 1 Hand-off and locked Ideation contract. The parent remains loaded and owns all shared Workflow
+contracts.
 
-Phase 2 produces a dependency-valid plan and completes every planned task through one ordered writer chain.
-It completes when Planning and every Execution task have verified PASS evidence and the Phase 3 Wrap-up TODO
-is active.
-
-This child owns Phase 2 actions, decisions, evidence, revisions, recovery, and completion checks. It applies
-the parent's shared route, evidence, gate, and transition contracts and never reopens Phase 1 or a completed
-Planning item.
+Phase 2 produces a dependency-valid plan, executes every task through one ordered writer chain, and proves the
+complete result ready for Wrap-up.
 
 ## Principles
 
 ### Continue through routine in-contract decisions
 
-Agents resolve ordinary Planning and Execution choices from evidence and continue immediately without routine
-user questions or deliberate idle.
+Agents resolve ordinary Planning and Execution choices from evidence without routine user questions.
 
 ### Preserve one ordered writer chain
 
-Only one authorized writer mutates the worktree, workflow evidence, TODO route, Git state, or an external
-system at a time.
+Only one authorized writer may mutate the worktree, evidence, TODOs, Git, or external systems at a time.
 
 ### Amend pending work without rewriting history
 
-An in-contract plan defect changes only pending work or adds a compensating task; it never erases a completed
-plan, task, receipt, or commit.
+An in-contract plan defect changes pending work or adds a compensating task. It never erases a completed plan,
+receipt, task, or commit.
 
 ## Rules
 
-- **MUST enter through the parent Workflow route with a verified Phase 1 Hand-off and exactly one unfinished
-  Phase 2 item in progress.** Return to recovery when the native TODO, plan evidence, commits, branch, or
-  worktree disagree.
-
-- **MUST use each canonical `task-NN-slug` in the TODO title, delegation, WORK package, RECORD receipt, and
-  commit evidence.** Do not create an alternate task identity for a revision or recovery pass.
-
-- **MUST apply the parent fast gate to Planning and the parent normal more-severe gate to every Execution
-  task.** Preserve both evaluator verdicts and never convert a normal non-PASS decision to PASS because its
-  correction is inconvenient or its cap is near.
-
-- **MUST continue immediately after every verified nonterminal stage, task PASS, and Phase 2 Hand-off.** Waiting
-  is valid only while an assigned agent, required system, or tool is actively running.
-
-- **NEVER reopen Planning, consume another Planning iteration, or mutate the canonical plan artifact for an
-  in-contract plan defect found during Execution.** Preserve completed commits and amend only the pending route
-  or add a compensating pending task.
-
-- **NEVER ask the user about a routine in-contract choice or nonblocking finding.** Escalate only through the
-  parent critical-blocker boundary after safe agent-to-agent recovery is exhausted.
+- **MUST enter through the parent route with the verified Phase 1 Hand-off and exactly one Phase 2 item
+  active.** Return to recovery when TODO, plan, commits, branch, worktree, or evidence disagree.
+- **MUST use each canonical `task-NN-slug` in TODO, delegation, package, receipt, and commit evidence.** A
+  revision or recovery pass never creates a second identity.
+- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle),
+  fast gate to Planning, and normal gate to Execution.** Apply Gobbi's finding gate through the parent; only
+  PASS continues.
+- **MUST continue after every verified nonterminal stage, task PASS, and checkpoint.** Waiting is valid only
+  while an assigned agent, required system, or tool is running.
+- **MUST preserve completed Planning and task history when Execution exposes an in-contract plan defect.**
+  Amend only pending route or add a compensating task.
+- **NEVER replay a possibly side-effecting operation until its prior effect is proved absent or safely
+  reusable.** Preserve exact recovery evidence on ambiguity.
 
 ## Procedure
 
 ### Phase 1 — Plan the locked outcome
 
-#### 1.1 Enter and operate continuously
+#### 1.1 Enter and freeze the Planning contract
 
-- Confirm the parent [Workflow](../SKILL.md) operation is loaded, the Phase 1 Hand-off validates, and
-  `P2 · Planning · DISCUSSION · 1/2` is the only active TODO on first entry.
-- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
-  order. Return to parent recovery when any item is absent.
-- Read the canonical Ideation artifact, settings, accepted decisions and findings, repository and worktree
-  preimages, authority, required skills, dependencies, writer boundary, and prior recovery evidence.
-- Load the [Planning](../../planning/SKILL.md) skill before Planning DISCUSSION.
-- After every returned artifact, verify it directly, retitle or complete the active item, activate the next
-  item, and dispatch or perform the next bounded action immediately.
-- Treat a progress message or Hand-off as evidence to inspect, never as a pause request. Stop only for missing
-  safety or authority, an unavailable required system without waiver, or an extremely material change outside
-  the locked Ideation contract.
+- Confirm the parent and its owner-skill register, Phase 1 Hand-off, active Planning TODO, canonical Ideation
+  output, settings, decisions, accepted findings, repository/worktree preimages, authority, skills, dependencies,
+  writer boundary, and recovery evidence.
+- Load [Planning](../../planning/SKILL.md). Build the leader brief through
+  [Delegation](../../delegation/SKILL.md) and
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments).
+- Give Planning the complete Ideation contract and require: a fine-grained hierarchy with exact leaf coverage;
+  context-coherent groups with stable `task-NN-slug` IDs; each leaf's path, title, work, boundary, and output;
+  combination reason and outcome; accepted design and repository context; dependencies, roles, skills, inputs,
+  constraints, writer boundaries, handoffs, verification, and coverage of every Ideation obligation.
+- Workflow retains TODO expansion, evaluation, RECORD, scheduling, and commit provenance. Freeze the Planning
+  contract only after hierarchy, dependencies, scope, acceptance, and authority are explicit.
 
-#### 1.2 Lock the Planning discussion contract
+#### 1.2 Run the Planning cycle and expand the route
 
-- Give the leader the Ideation contract, Phase 1 evidence, settings, decisions, accepted findings, repository
-  and worktree preimages, relevant memory, required skills, external-write authority, dependencies, and
-  Planning iteration.
-- Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
-  1.3 fields.
-- Have the leader apply Planning, which owns:
-  - the complete fine-grained task hierarchy and exact leaf coverage;
-  - context-coherent combined task groups with stable `task-NN-slug` identities;
-  - exact combined leaf paths and each leaf's title, work, boundary, and output;
-  - why each group is combined, its coherent outcome, accepted design and decisions, repository context, and
-    execution purpose;
-  - dependencies, accountable roles, required skills and capabilities, group work, inputs, constraints,
-    writer/change boundaries, handoffs, verification, and applicable metadata; and
-  - coverage of every Ideation obligation.
-- Workflow retains TODO expansion, evaluation, RECORD, iterations, actual writer scheduling, and commit
-  provenance. Translate the accepted task groups into those mechanics without changing their Planning
-  identities or contracts.
-- Use bounded study for unknown facts. Never invent new scope or turn a routine implementation choice into a
-  user question.
-- Freeze the neutral Planning contract and retitle the active TODO to WORK only after the hierarchy,
-  dependencies, scope, acceptance, and authority are explicit.
-
-#### 1.3 Produce and validate the plan
-
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one leader draft round and its cross-review
-  round over the same frozen Planning contract and immutable evidence. That operation owns each run's
-  independence, freeze order, and validation.
-- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Let the active runtime leader synthesize the canonical `tasks.md` and `plan.md` candidates with Planning's
-  complete hierarchy, combined task groups, stable IDs, dependency-valid order, complete task details,
-  assigned roles, execution context, skills, boundaries, handoffs, and verification.
-- Render the complete WORK package at the parent-owned Planning path and read it directly against the parent
-  Workflow Step 1.2 written contract: both system-labeled drafts, both cross-reviews, the synthesis, and the
-  open decisions. No script enforces this; refuse the stage when one is missing or unlabeled.
-- Reread both canonical candidates and verify every Ideation obligation appears in the hierarchy and every
-  hierarchy leaf maps to exactly one task group before activating EVALUATION.
-
-#### 1.4 Evaluate, record, and expand the task route
-
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
-  [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
-  from the active runtime and one from the partner system, which that operation isolates.
-- Require each evaluator to apply the complete
-  [Evaluation guidelines](../../evaluation/SKILL.md#procedure) to the full frozen Planning subject.
-- Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
-- Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
-  findings, and the durable records written into the session memory tree.
-- On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
-  FAIL, preserve the recoverable state and stop at the critical-blocker boundary without creating iteration 3.
-- On PASS, verify Planning's six closure invariants and the absence of overlapping write-capable task groups.
-  Accept the jointly frozen `tasks.md` and `plan.md` without adding a second identity or contract layer.
-- Replace the pending `unplanned` placeholder with the first task group and add the remaining task items in
-  plan order. Start each item as:
+- Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the locked Ideation contract and project preimage as subject;
+  `2-planning/outputs/{tasks.md,plan.md}` as outputs; fast gate; cap `2`; and Planning's six closure invariants as
+  unique checks.
+- Require the local leader to synthesize complete independently readable candidates. Before EVALUATION, verify
+  every Ideation obligation appears in the hierarchy, every leaf maps to exactly one nonempty task group, IDs
+  are stable, dependencies are acyclic, roles and contexts are complete, and write-capable groups do not overlap.
+- Run every RECORD pass. On first-pass REVISE, return to DISCUSSION. On second-pass FAIL, preserve recovery state
+  and stop at the parent critical-blocker boundary. Never create iteration 3.
+- On PASS, freeze both ignored outputs without a second contract layer and prove the tracked tree unchanged.
+  Replace the pending `unplanned` placeholder with the first task and add the rest in plan order as:
 
 ```text
 P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 ```
 
-- Complete Planning at PASS and activate only the first Execution task.
+- Complete Planning at PASS and activate only the first task.
 
 ### Phase 2 — Execute the ordered task route
 
-#### 2.1 Start one task iteration
+#### 2.1 Freeze one dependency-ready task
 
-- Select the first unproved task in plan order and confirm all of its prerequisites have verified PASS
-  evidence.
-- Load the [Execution](../../execution/SKILL.md) skill before task DISCUSSION and WORK.
-- Give the executor the stable task-group ID, canonical task-group plan entry, absolute worktree, current
-  preimage, allowed and protected paths, upstream artifacts, required skills, acceptance, checks, commit
-  authority, and accepted findings.
-- Keep later tasks pending. Only one task iteration may be active, and only one writer may hold mutation
-  authority.
+- Select the first unproved task in plan order and require verified PASS for every prerequisite. Keep later
+  tasks pending and one writer authorized.
+- Load [Execution](../../execution/SKILL.md). Give the executor the stable task entry, absolute worktree,
+  current preimage, allowed/protected paths, upstream artifacts, skills, acceptance, checks, commit authority,
+  and accepted findings through a
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments) brief.
+- Resolve routine implementation detail without changing scope or user authority. Freeze exact paths,
+  prerequisites, outputs, verification, side-effect boundary, and focused commit contract before WORK.
 
-#### 2.2 Lock the task discussion contract
+#### 2.2 Amend an in-contract plan defect
 
-- Let agents resolve ordinary implementation detail through evidence and peer discussion without changing the
-  locked scope or user authority.
-- Freeze the exact task contract, path boundary, prerequisites, expected artifacts, verification, and focused
-  commit before WORK.
-- When the plan is correct, retitle the task item to WORK and continue to Step 2.4.
-- When Execution exposes an in-contract plan defect, stay in the current task's DISCUSSION and continue to
-  Step 2.3.
+- If the plan is correct, continue to Step 2.3. Otherwise stay in the current task's DISCUSSION and write a
+  numbered amendment with defect, cause, affected pending tasks, revised order/contracts, and verification.
+- Preserve completed Planning, canonical plan, receipts, tasks, and commits. Retitle or reorder only pending
+  items. Add a compensating pending task when a completed result needs an in-contract change.
+- Stop at the parent critical-blocker boundary when compensation is unsafe or the change exceeds the locked
+  Ideation contract. Otherwise verify the amended route and refreeze the current task; an amendment consumes no
+  Planning iteration.
 
-#### 2.3 Amend an in-contract plan defect
+#### 2.3 Produce, implement, verify, and commit
 
-- Write a numbered plan amendment that records the defect, cause, affected pending tasks, revised order or
-  contracts, and verification.
-- Preserve the completed Planning item, canonical plan artifact, completed task receipts, and completed task
-  commits.
-- Retitle or reorder only pending Execution items. Add a compensating pending task when an in-contract change
-  must alter a completed result.
-- Stop at the parent critical-blocker boundary when safe compensation is impossible or the required change
-  exceeds the locked Ideation contract.
-- Verify the amended pending route, return to Step 2.2, and freeze the current task contract. The amendment
-  never consumes another Planning iteration.
+- Invoke the parent WORK stage with local role `executor`, the frozen task contract and worktree preimage, the
+  planned tracked outputs, and task verification. The assigned executor synthesizes and implements as sole
+  writer; all helpers remain read-only.
+- Run required checks, inspect the complete diff against allowed/protected paths, and create one focused local
+  task commit through [Git](../../git/SKILL.md). Reread commit, diff, checks, and creation package before
+  EVALUATION.
 
-#### 2.4 Produce, implement, verify, and commit
+#### 2.4 Evaluate, record, and route the task
 
-- Call the [Partner](../../gobbi/partner/SKILL.md) operation for one contributor draft round and its
-  cross-review round over the same task contract and frozen worktree preimage. That operation owns each run's
-  independence, freeze order, and validation.
-- Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Give the active runtime executor all four frozen inputs. Let that executor synthesize and implement as the
-  sole worktree writer.
-- Keep read-only helpers from mutating the worktree, TODO route, external systems, scope, or user decisions.
-- Run the task's required verification and review the complete diff against allowed and protected paths.
-- Create one focused local task commit through the loaded [Git](../../git/SKILL.md) skill. Reread the commit,
-  diff, checks, and complete creation package before activating EVALUATION.
-
-#### 2.5 Evaluate the task with the normal gate
-
-- Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh independent evaluators.
-- Give both evaluators the task and scope contract, frozen drafts and cross-reviews, resolved decisions,
-  implementation diff, tests, focused commit, repository state, and findings relevant to the current pass.
-- Require each evaluator to apply the complete
-  [Evaluation guidelines](../../evaluation/SKILL.md#procedure) to the full frozen Execution subject and use
-  the parent-owned finding fields.
-- Preserve both declared verdicts and write normal-mode `gate.md`. Derive the workflow decision by severity:
-  FAIL outranks REVISE, which outranks PASS.
-- Retitle the task item to RECORD only after both reports and the normal gate validate.
-
-#### 2.6 Record and route the task result
-
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
-- Seal both evaluation reports, `gate.md`, findings, dispositions, committed diff, verification, artifact
-  pointers, and system provenances.
-- Verify only authorized paths changed, the focused commit exists in the exact worktree, and the required
-  checks describe the committed tree.
-- Write `record/iteration-N.md` with the exact TODO, package and report hashes, gate hash, checks, commit,
-  output, and the durable records written into the session memory tree. Reread the receipt before changing
-  the TODO.
-- On PASS, retitle and complete the task item and activate the next planned task immediately.
-- On REVISE below the configured cap, complete the recorded pass, create the next iteration at DISCUSSION, and
-  continue immediately.
-- On FAIL or an exhausted cap, preserve the route, evidence, branch, worktree, and recovery choices. Try every
-  safe in-contract recovery before stopping at the critical-blocker boundary.
-
-#### 2.7 Recover a failed partner run or specialist
-
-- Preserve the last valid evidence and identify the exact failed system, assignment, operation, and check. The
-  [Partner](../../gobbi/partner/SKILL.md) operation classifies a failed run and surfaces its evidence; this
-  step decides what the workflow does with the paused round.
-- Retry only the failed bounded operation when safe. Replace a stale or unaddressable specialist under
-  Workflow's [`agent-teams.md`](../agent-teams.md) policy; use the
-  [Agent Teams manual](../../gobbi/agent-teams/SKILL.md) for Claude Code tool limits.
-- Continue only after the missing output validates. Use a single-system waiver only when existing authority
-  names the system, productive step, and iteration.
-- Treat an unavailable required system without that waiver as a critical blocker. Never replay a possibly
-  side-effecting operation without first proving whether its effect occurred.
+- Complete parent EVALUATION and RECORD with the normal gate and configured cap. The frozen subject includes
+  task/scope contract, creation package, decisions, diff, tests, focused commit, repository state, and current
+  findings. Enabled routes the external evaluator through
+  [Partner](../../gobbi/partner/SKILL.md); disabled invokes no external runtime.
+- Verify only authorized paths changed, the focused commit exists in the exact worktree, and checks describe
+  the committed tree. Seal package, reports, gate, findings, dispositions, commit, verification, output pointers,
+  and provenances in the parent receipt schema.
+- On PASS, complete the task and activate the next. On REVISE below cap, create the next iteration at
+  DISCUSSION. On FAIL or cap exhaustion, try every safe in-contract recovery, then preserve route, evidence,
+  branch, worktree, and choices at the critical-blocker boundary.
+- Apply parent Step 1.5 to a failed partner run or specialist. Before any side-effecting retry, prove whether the
+  prior effect occurred; reuse proved effects idempotently or stop.
 
 ### Phase 3 — Hand off to Wrap-up
 
-#### 3.1 Verify Workflow Phase 2 completion
+#### 3.1 Verify Phase 2 completion
 
-- Verify the canonical plan, every planned task ID, every task PASS gate and RECORD receipt, focused commits,
-  required checks, plan amendments, accepted findings, branch, worktree, and the active `P2 · Hand-off` item.
-- Confirm no planned obligation remains pending, no two commits claim the same task pass, and no unverified
-  result is reported as complete.
-- Return to the earliest responsible Planning or Execution step when any check fails, without reopening a
-  completed Planning item.
+- Verify canonical plan, every task ID, PASS gate and receipt, focused commit, check, amendment, accepted
+  finding, branch, worktree, and active `P2 · Hand-off`. Require no pending obligation, no duplicate task-pass
+  commit, and no unsupported completion claim. Return to the earliest responsible Planning or Execution step
+  without reopening completed Planning.
 
-#### 3.2 Render the checkpoint and continue
+#### 3.2 Render and continue
 
-- Render this Phase 2 checkpoint receipt:
-
-```text
-Phase: Phase 2
-Outcome: <planned and executed outcome>
-Completed: <Planning and stable task IDs>
-Evidence: <plan, task commits, tests, and evaluations>
-Decisions: <autonomous in-contract decisions and material authorities>
-Accepted nonblocking findings: <findings or none>
-Branch: <exact branch>
-Worktree: <absolute worktree>
-Next TODO: P3 · Wrap-up · DISCUSSION · 1/2
-Continuation: automatic unless the user interrupts for clear or compact
-```
-
-- Reread the Hand-off and verify each field against direct evidence.
-- Complete `P2 · Hand-off`, activate `P3 · Wrap-up · DISCUSSION · 1/2`, display the checkpoint, and continue
-  into Phase 3 in the same turn without asking whether to proceed.
+- Apply parent Step 1.6 with Phase `Phase 2`; completed Planning and stable task IDs; plan, commits, tests, and
+  evaluations; autonomous in-contract decisions and material authorities; and
+  `Next TODO: P3 · Wrap-up · DISCUSSION · 1/2`.
+- Reread every field, complete `P2 · Hand-off`, activate the next TODO, display the checkpoint, and continue in
+  the same turn unless the user interrupts for clear or compact.
 
 ## References
+
+- [Parent Workflow](../SKILL.md) owns shared Workflow contracts and transitions.
+- [Planning](../../planning/SKILL.md) owns hierarchy and execution-plan construction.
+- [Execution](../../execution/SKILL.md) and [Git](../../git/SKILL.md) own implementation and focused commits.

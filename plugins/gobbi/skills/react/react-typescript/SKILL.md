@@ -99,7 +99,8 @@ project type check are the authority for the installed types.
 - Apply the exact installed React version when a component accepts or forwards a ref; do not copy a neighboring
   version's ref-as-prop or forwarding pattern.
 - Use `React.CSSProperties` for an exposed inline-style object when the project permits that public API. Keep
-  CSS policy and authored styles with the CSS skill.
+  presentation policy and authored styles with `html-css-conventions` and source changes with
+  `html-css-development`.
 - Use the installed React event, element, node, ref, and JSX namespace definitions rather than hand-written
   approximations.
 

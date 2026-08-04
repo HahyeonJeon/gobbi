@@ -4,8 +4,8 @@ This reusable unchecked source evaluates one browser feature's interaction choic
 keyboard-parity, pointer-floor, role-and-pattern, focus-decision, listener-contract, and rate-limit obligations
 this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-interaction`](SKILL.md)
 preferences, with [`web-frontend`](../web-frontend/SKILL.md) as the ordered operation that applies them,
-[`html-semantics`](../../html/html-semantics/SKILL.md) as the owner of which element, name, role, and state
-express the meaning, [`css-motion`](../../css/css-motion/SKILL.md) as the owner of declarative motion
+[`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) as the owner of which element, name, role, and state
+express the meaning, [`html-css-motion`](../../html-css/html-css-motion/SKILL.md) as the owner of declarative motion
 mechanics, and [`web-design`](../web-design/SKILL.md) and
 [`desktop-interface`](../../desktop/desktop-interface/SKILL.md) as the owners of whether an interaction is
 warranted at all. The source commit that contains this file identifies the checklist version. Its stable owner
@@ -33,7 +33,7 @@ an element-meaning, motion-mechanics, or navigation decision made here is the fa
 #### Checklist
 
 - [ ] WEBIXN-CK-PROJECT-01-01 — Every decision made here is a choice within the valid space: the event contract, the control's states, focus placement and return, the keyboard path for a pointer behavior, or the applicable widget pattern.
-- [ ] WEBIXN-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: the ordered browser operation and the obligation that each state and recovery path is specified and implemented to `web-frontend`, element, name, role, and state to `html-semantics`, declarative motion mechanics and the project motion scale to `css-motion`, emitted styling to `css-conventions`, whether an interaction is warranted at all to `web-design` or `desktop-interface`, platform facts and evidence to `web-platform`, untrusted input and dangerous sinks to `web-security`, and navigation and state ownership above the control to `web-architecture`.
+- [ ] WEBIXN-CK-PROJECT-01-02 — Every adjacent question is routed to its owner: the ordered browser operation and the obligation that each state and recovery path is specified and implemented to `web-frontend`, element, name, role, and state to `html-css-semantics`, declarative motion mechanics and the project motion scale to `html-css-motion`, emitted styling to `html-css-conventions`, whether an interaction is warranted at all to `web-design` or `desktop-interface`, platform facts and evidence to `web-platform`, untrusted input and dangerous sinks to `web-security`, and navigation and state ownership above the control to `web-architecture`.
 - [ ] WEBIXN-CK-PROJECT-01-03 — A Rule is applied over a conflicting Preference rather than balanced against it.
 
 ## Structure
@@ -119,12 +119,12 @@ the browser's default. The expected outcome registers it with `{ passive: false 
 ### WEBIXN-SC-AESTHETICS-01 — Poor quality: state names drift between the layers that use them
 
 The same control state is referred to in the specification, in the assistive exposure, and in the styling hook
-handed to the CSS owner. The expected outcome uses one name across all three; three names for one state,
+handed to `html-css-conventions`. The expected outcome uses one name across all three; three names for one state,
 leaving a reviewer to match them by inspection, is the failure.
 
 #### Checklist
 
-- [ ] WEBIXN-CK-AESTHETICS-01-01 — The declared state names are used consistently across the specification, the assistive exposure, and the styling hook handed to `css-conventions`.
+- [ ] WEBIXN-CK-AESTHETICS-01-01 — The declared state names are used consistently across the specification, the assistive exposure, and the styling hook handed to `html-css-conventions`.
 - Also applies: WEBIXN-CK-STRUCTURE-03-02 (pattern name recorded beside the implementation).
 
 ## Usage

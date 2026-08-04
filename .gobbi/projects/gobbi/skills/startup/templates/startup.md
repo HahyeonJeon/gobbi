@@ -1,78 +1,67 @@
 # {Project} — Startup Design
 
-> **Document role:** Confirmed synthesis and index for the complete Startup design set.<br>
-> **Boundary:** This is not a formal evaluation, implementation plan, ordered task list, or memory destination.<br>
-> **Example:** The synthesis may show one Project with multiple Products and each Product's one complete
-> Implementation; categorized technologies remain entries within their Implementation.
+This document is an independently readable synthesis of the accepted Problem Definition, Design,
+Specification, Product Lifecycle, and Development Lifecycle. It contains the decisions and evidence needed to
+understand the Project without reading the phase documents first.
 
-The `Confirmation` section is the sole owner of terminal Finalization state. Read aggregate section state,
-Review evidence, and user acceptance from each child document's Section Register.
+Retain decisive `[alias]` tags and connect them across phases wherever they clarify the accepted reasoning.
 
-## Phase Document Artifact Register
+## Summary
 
-| Artifact | Role | Required sections | Status | Accepted |
-|---|---|---|---|---|
-| [`problem-definition.md`](problem-definition.md) | Problem Definition | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
-| [`design.md`](design.md) | Design | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
-| [`specification.md`](specification.md) | Specification | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
-| [`lifecycle-and-use-cases.md`](lifecycle-and-use-cases.md) | Lifecycle and Use Cases | `Project, all Products, all Implementations` | `confirmed` | `{timestamp}` |
+{State the current problem, affected people and systems, durable outcome, chosen direction, decisive evidence,
+principal constraints and tradeoffs, and the most important evidence limit.}
+
+## Project
+
+### {Project}
+
+{Summarize the Project outcome and boundary, accepted Product inventory, cross-Product relationships,
+authoritative contracts, governance, quality priorities, operating model, lifecycle policy, risks, and evidence.}
+
+## Products
+
+Repeat this section for every Product in the accepted order.
+
+### {Product}
+
+- Parent Project: {Project}
+- Implementation: {Product Implementation}
+
+{Summarize the independently useful consumer outcome, boundary, capabilities, interfaces, observable behavior,
+data and safety contracts, actor-visible lifecycle promises, risks, and decisive evidence.}
+
+## Implementations
+
+Repeat this section once per Product.
+
+### {Product} Implementation
+
+- Parent Product: {Product}
+- Relationship: the Product's single complete-stack Implementation
+
+{Summarize runtime units, interfaces, data flow, categorized entries and their roles, supported environments,
+complete-stack Development mechanisms, verification evidence, security and license duties, migration and
+rollback, retirement and handoff, risks, and evidence that would change the design.}
 
 ## Integrated Design
 
-### Executive Summary
+### Decisions and traceability
 
-{State the problem, affected people, durable outcome, chosen direction, decisive evidence, and principal
-tradeoffs so a cold reader can understand the Project without opening the child documents.}
+{Connect each decisive aliased problem fact to its Design choice, Specification obligation, Product Lifecycle
+promise, and Development Lifecycle mechanism and evidence. Explain cross-Product dependencies and accepted
+tradeoffs.}
 
-### Project, Products, and Implementations
+### Vocabulary
 
-| Level | Stable subject key | Name | Parent | Owned result | Accepted section links |
-|---|---|---|---|---|---|
-| Project | `{project-key}` | `{Project}` | `none` | `{service or initiative result}` | `{four links}` |
-| Product | `{product-key}` | `{Product}` | `{project-key}` | `{independently useful application or platform result}` | `{four links}` |
-| Implementation | `{implementation-key}` | `{Product} Implementation` | `{product-key}` | `{the Product's complete technical realization}` | `{four links}` |
+{Define the terms a cold reader needs and resolve conflicting uses.}
 
-Repeat Product and Implementation rows in accepted Product order. Each Product has exactly one
-Implementation. Summarize categorized stack entries under the owning Implementation; never turn an entry
-into a hierarchy subject.
+### Risks and evidence limits
 
-### Capabilities, Contracts, and Operating Model
+{State remaining nonblocking risks, uncertain claims, responsible decision-makers, and the evidence that would
+require the accepted design to change.}
 
-{Summarize Product capabilities, Project-wide policy, observable behavior, quality obligations, ownership,
-service operation, Product use and recovery, and Implementation development and evolution.}
+## Final Acceptance
 
-### Key Decisions and Cross-Phase Traceability
+{Confirm that the user reviewed the complete six-document design and accepted it as coherent design guidance.}
 
-| Decision | Level and stable subject key | Problem evidence | Design owner | Specification obligation | Lifecycle or use case |
-|---|---|---|---|---|---|
-| `{decision}` | `{level; key}` | `{link}` | `{link}` | `{link}` | `{link}` |
-
-### Consolidated Vocabulary
-
-| Term | Agreed definition | Owning level and phase | Applies in |
-|---|---|---|---|
-| `{term}` | `{definition}` | `{owner}` | `{scope}` |
-
-### Risks and Owned Deferrals
-
-| Item | Level and stable subject key | Consequence | Owner | Resolution method | Reopen condition |
-|---|---|---|---|---|---|
-| `{item}` | `{owner}` | `{effect}` | `{person or authority}` | `{method}` | `{condition}` |
-
-### Final Review Findings and Dispositions
-
-| Lens | Finding and evidence | Consequence | Follow-up question | Disposition |
-|---|---|---|---|---|
-| `{coverage, specificity, vocabulary, consistency, traceability, unsupported direction, load-bearing open decisions, or cold-reader quality}` | `{finding and evidence or none}` | `{effect or none}` | `{one exact question or none}` | `{resolved or owned deferral}` |
-
-Use exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`, `unsupported direction`,
-`load-bearing open decisions`, and `cold-reader quality` for Finalization Review.
-
-## Confirmation
-
-- Startup schema: `3`
-- Project root: `{absolute-project-root}`
-- Output directory: `{absolute-output-directory}`
-- Finalization state: `confirmed`
-- Confirmed: `{timestamp}`
-- The user confirmed: `{the complete five-file design set, in one sentence}`
+- Accepted: {yes — user and date}

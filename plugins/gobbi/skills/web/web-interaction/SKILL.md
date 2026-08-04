@@ -14,9 +14,9 @@ space that `web-frontend` applies, and it holds for any browser interface, inclu
 
 `web-frontend` owns the ordered browser operation and the obligation that every state, transition,
 interaction, and recovery path is specified and implemented; this skill owns the choices those obligations
-are satisfied from. [`html-semantics`](../../html/html-semantics/SKILL.md) owns which element, name, role,
+are satisfied from. [`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owns which element, name, role,
 and state express the meaning; this skill owns the behavior a chosen role promises.
-[`css-motion`](../../css/css-motion/SKILL.md) owns declarative motion mechanics and the project motion scale;
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md) owns declarative motion mechanics and the project motion scale;
 this skill owns motion a script drives from a live input and the listener contract behind it.
 
 `web-design` and `desktop-interface` decide whether an interaction or a transition is warranted at all,
@@ -109,8 +109,8 @@ that genuinely differs by input type, and keep both paths converging on one stat
 **PREFER** naming the states a control can enter — rest, hover, focus-visible, active, pending, disabled,
 error, and where they apply selected or expanded — before any of them is styled, and expose each to assistive
 technology as well as to sight. Depart by removing a state the control cannot enter, never by leaving one
-undefined; the emitted styling belongs to [`css-conventions`](../../css/css-conventions/SKILL.md) and its
-motion to [`css-motion`](../../css/css-motion/SKILL.md).
+undefined; the emitted styling belongs to [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) and its
+motion to [`html-css-motion`](../../html-css/html-css-motion/SKILL.md).
 
 ### Prefer roving `tabindex` for a composite widget
 

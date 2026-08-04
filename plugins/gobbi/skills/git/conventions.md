@@ -6,33 +6,81 @@ lifecycle, authority gates, failure handling, and cleanup order.
 
 The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
-## Session branch naming
+## Session identity and naming
 
-A session branch is derived once from the active runtime system, session start date, and session UUID:
-
-```text
-<runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
-```
-
-The complete validator is:
-
-```regex
-^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-```
+One future session identity is the immutable tuple `(runtime, date, slug, UUID)`. `runtime` is the active
+runtime system. `date` is the original session-start date in UTC, formatted as a real `YYYY-MM-DD` Gregorian
+calendar date, and never changes at a context boundary. `UUID` is the full 36-character lowercase hyphenated
+Gobbi session UUID. Generate the UUID before deriving either name.
 
 | Runtime system | Prefix |
 |---|---|
 | `claude-code` | `claude` |
 | `codex` | `codex` |
 
-Examples:
+### Slug normalization
 
-- `claude-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
-- `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+Before accepting slug input, warn the user that the slug enters branch names and paths and must contain no
+sensitive information. Normalize the input by taking each maximal ASCII alphanumeric sequence as one word,
+lowercasing it, joining the words with one hyphen, and trimming separators. Do not transliterate, truncate,
+or add a suffix.
 
-The UUID is the proved identity the caller's contract supplies, verified against the branch name and commit
-provenance during recovery. It is never a runtime ID, issue number, pull-request number, or task slug, and a
-runtime context boundary never renames the session branch.
+Accept the normalized slug only when it is 1-20 characters, matches
+`^[a-z0-9]+(?:-[a-z0-9]+)*$`, and is not a reserved name. The reserved names are exactly `con`, `prn`, `aux`,
+`nul`, `com1` through `com9`, and `lpt1` through `lpt9`, compared case-insensitively after normalization.
+Re-ask with the failed condition when normalization is empty, longer than 20 characters, or reserved. Once a
+session object uses the normalized slug, the slug is immutable.
+
+### New formats
+
+Derive the branch and leaf separately from the same tuple:
+
+```text
+branch: <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
+leaf:   <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
+```
+
+The complete new-format validators are:
+
+```regex
+branch: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+leaf:   ^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+Apply the 20-character slug limit and reserved-name rule after parsing; the regex alone does not enforce
+them. The worktree and session leaves are byte-identical for a new identity. For example:
+
+- branch: `codex-2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+- leaf: `2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+
+### Permanent legacy formats
+
+Recovery permanently accepts these legacy formats:
+
+```text
+branch and worktree leaf: <runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
+session leaf:             <YYYY-MM-DD>-<gobbi-session-uuid>
+```
+
+```regex
+legacy branch and worktree leaf: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+legacy session leaf:             ^\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+New creation uses only the new formats. Parse new and legacy names with separate validators and preserve the
+matched shape. Never infer a slug for a legacy identity, rename a legacy or active object, or convert one
+shape to another.
+
+Every successful new parse returns the exact `(runtime, date, slug, UUID)` tuple; a leaf parser receives the
+runtime from the caller's contract because a leaf does not encode it. A legacy parse returns its encoded
+runtime when present, date, and UUID, with `slug: not-applicable`. Re-deriving the matched branch or leaf from
+that result must reproduce the original bytes. The UUID is never a runtime ID, issue number, pull-request
+number, or task slug.
+
+Creation and recovery reject any existing branch, worktree leaf, or session leaf that conflicts with the
+tuple. Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict, not a
+second session. Stop and inspect every collision; never add a suffix, rename an object, or choose a convenient
+match.
 
 ### Non-session branches
 
@@ -63,23 +111,24 @@ The description slug after the optional issue number is 3–50 characters. An is
 The session worktree path is:
 
 ```text
-<repo-root>/.gobbi/projects/<project>/worktrees/<session-branch>/
+<repo-root>/.gobbi/projects/<project>/worktrees/<session-leaf>/
 ```
 
-For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`:
+For project `gobbi` and the new example identity above:
 
 ```text
-<repo-root>/.gobbi/projects/gobbi/worktrees/codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/
+<repo-root>/.gobbi/projects/gobbi/worktrees/2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/
 ```
 
 | Property | Mapping |
 |---|---|
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
-| Leaf | exact session branch |
+| New leaf | `<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>` |
+| Legacy leaf | exact legacy session branch; recovery only |
 | Source | the absolute normalized path the caller's contract supplies as its registered worktree |
 | Ignore check | `git check-ignore --no-index -v .gobbi/projects/<project>/worktrees`, with no trailing slash and only after that directory exists |
 | Project memory root | `.gobbi/projects/<project>/memory/`, tracked; git must never ignore it |
-| Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
+| Collision behavior | reject any occupied target or same-UUID competing identity; never add a suffix, rename, or remove automatically |
 
 ## Base branch and commit
 

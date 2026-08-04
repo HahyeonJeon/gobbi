@@ -11,8 +11,8 @@ Use this operation for the browser-facing outcome: journey, content, interaction
 behavior, accessibility, trust, recovery, and user-visible measurement.
 
 It owns observable frontend behavior. `web-design` owns the identity, evidence, concept, and visual-design
-judgments it applies. HTML, CSS, language, framework, platform, backend, project structure, testing, and
-security owners load only when their triggers apply.
+judgments it applies. The applicable `html-css` children plus language, framework, platform, backend, project
+structure, testing, and security owners load only when their triggers apply.
 
 ## Principles
 
@@ -116,7 +116,8 @@ they act.
 
 #### 3.1 Materialize the complete scaffold
 
-- Load applicable HTML, CSS, language, framework, platform, project structure, testing, and security owners.
+- Load the applicable `html-css` children plus language, framework, platform, project structure, testing, and
+  security owners.
 - Materialize routes, semantic document regions, component boundaries, state and data boundaries, focus targets,
   responsive structure, representative state placeholders, test boundaries, and explicit labels on simulated data
   or dependencies.

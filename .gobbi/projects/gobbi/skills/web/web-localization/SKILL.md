@@ -16,8 +16,8 @@ Read this before a product ships in one language, not after it needs a second. L
 of the coverage decisions to take early and the most expensive to take late, because the change site is every
 component that renders text, a number, a date, or a direction-dependent layout.
 
-[`html-semantics`](../../html/html-semantics/SKILL.md) owns the `lang` and `dir` attributes and where each is
-expressed, and [`css-conventions`](../../css/css-conventions/SKILL.md) owns logical properties and the flow
+[`html-css-semantics`](../../html-css/html-css-semantics/SKILL.md) owns the `lang` and `dir` attributes and where each is
+expressed, and [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) owns logical properties and the flow
 they drive; this skill decides which language and direction those mechanisms carry. `web-frontend` owns the
 ordered browser operation that applies these choices, `web-design` owns the identity and wording
 judgment behind the words, and `web-backend` owns locale-dependent server-owned data. Rules define the
@@ -73,12 +73,12 @@ application.
   NEVER infer a language from a country, an IP address, or a time zone.
 
 - **MUST propagate the resolved language and direction to the document and to any element whose content
-  differs from it.** `html-semantics` owns the attributes and `css-conventions` owns the flow they drive; this
+  differs from it.** `html-css-semantics` owns the attributes and `html-css-conventions` owns the flow they drive; this
   Rule binds only that the negotiated values actually reach them.
 
 - **NEVER hard-code a physical direction, a fixed text width, or an unmirrored direction-dependent asset into
   a localized browser interface.** Leave room for translated text to grow, decide per asset whether it mirrors, and
-  route the layout mechanics to `css-conventions`.
+  route the layout mechanics to `html-css-conventions`.
 
 ## Preferences
 

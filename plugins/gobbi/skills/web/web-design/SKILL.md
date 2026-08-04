@@ -87,14 +87,14 @@ constraint beside the decision.
 
 **PREFER** typography, color, density, spacing, shape, and imagery choices that make hierarchy, state, or
 affordance easier to read. Depart only for a recorded identity obligation, and never below the
-[`css-conventions`](../../css/css-conventions/SKILL.md) floor.
+[`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) floor.
 
 ### Prefer motion that explains a state change
 
 **PREFER** a transition when it makes a change of state, location, or causality legible, and no motion
 otherwise. This skill decides whether motion is warranted and what it must communicate; the safety floor
-stays with [`css-conventions`](../../css/css-conventions/SKILL.md) and the emitted mechanics with
-[`css-motion`](../../css/css-motion/SKILL.md).
+stays with [`html-css-conventions`](../../html-css/html-css-conventions/SKILL.md) and the emitted mechanics with
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md).
 
 ### Prefer the earliest accurate return
 

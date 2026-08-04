@@ -114,7 +114,7 @@ unrelated generic machinery. Unnecessary annotations or opaque broad aliases fai
 - [ ] RTSX-CK-AESTHETICS-01-01 — Explicit React annotations clarify a public, extracted, nullable, or otherwise incomplete inference boundary.
 - [ ] RTSX-CK-AESTHETICS-01-02 — Generic TypeScript detail remains with the `typescript` skill instead of being restated in the React guidance.
 - [ ] RTSX-CK-AESTHETICS-01-03 — Private-component props and inline event callbacks use inference when callers and the handled element still receive their complete types.
-- [ ] RTSX-CK-AESTHETICS-01-04 — Project CSS policy follows `css-conventions`, and authored style changes follow `css-development`, rather than React TypeScript annotations.
+- [ ] RTSX-CK-AESTHETICS-01-04 — Project CSS policy follows `html-css-conventions`, and authored style changes follow `html-css-development`, rather than React TypeScript annotations.
 
 ## Usage
 

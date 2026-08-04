@@ -21,39 +21,48 @@ Gobbi offers three modes:
 `General | Cowork | Workflow`
 
 At every fresh Gobbi entry, present all three through the structured user-input control with no automatic
-resolution. Task wording may support a recommendation but never records the selection. At a valid resume,
-`/clear`, rewind, or runtime compaction, preserve the established mode; ask again only when mode evidence is
-missing, ambiguous, or conflicting.
+resolution. Task wording may support a recommendation but never records the selection. After the mode, ask a
+privacy-warned normalized session slug for Cowork or Workflow; General skips it. Then ask one session-wide
+`partner: enabled|disabled` policy before handing off to the owner. At a valid resume, `/clear`, rewind, or
+runtime compaction, preserve each established value and ask only when its evidence is missing, ambiguous, or
+conflicting.
 
 | Mode | Contract |
 |---|---|
 | **General** | Ordinary assistance from the Principles foundation and task-specific skills. No orchestration owner or Gobbi session state. |
-| **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or memory-updating Wrap-up only on the user's call. |
+| **Cowork** | User-led fast implementation topics through optional Ideation, optional Planning, and verified Execution. Cowork creates or recovers one isolated worktree before editing, permits canonical shaping artifacts, and runs independent evaluation or direct-Memory closure only on the user's call. |
 | **Workflow** | Durable `Configuration → Ideation → Planning → Execution → Wrap-up` orchestration. Every productive step uses `DISCUSSION → WORK → EVALUATION → RECORD`. |
 
 `cowork` owns Cowork, including its own native TODO route, Git contract, evaluation policy, and session
-locations. It never creates Workflow-formatted TODOs, phase receipts, RECORD-stage evidence, or a Workflow
-Hand-off. Its explicit Wrap-up applies `memory` directly, commits durable updates or proves none are needed,
-then checks evaluation freshness.
+locations. Its explicit closure applies `memory` directly, commits durable updates or proves none are needed,
+then checks evaluation freshness. It never loads `wrap-up` or creates Workflow-formatted TODOs, phase receipts,
+RECORD-stage evidence, a tracked handoff, or a Workflow Hand-off.
 
 `workflow` owns Workflow. The native TODO list is its active route; phase receipts and committed evidence
 rebuild that route after a context boundary. Configuration creates the isolated branch and worktree.
 Ideation locks what and why, Planning orders tasks, Execution verifies and commits one task at a time, and
 Wrap-up closes and hands off the durable result.
 
-Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
-Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
-owners load Ideation, Planning, and Wrap-up when those phases start.
+Gobbi entry loads Principles first and Discussion only when it must write its mode, slug, or partner question.
+Cowork and Workflow then load Delegation, Discussion, Git, and Memory at owner entry; their phase
+owners load Ideation, Planning, and Workflow Wrap-up when those phases start.
+
+New Cowork and Workflow identities use one generated full UUID, the original UTC start date, and the accepted
+slug. Git derives the branch and worktree leaf separately; the worktree and session leaves are byte-identical.
+Recovery permanently accepts matching legacy shapes and never renames a live legacy or active object.
 
 ## Partner quality contract
 
-`.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md` owns the whole partner system: both launch directions
-and each round's preparation, launch, validation, and returned frozen content. In native Codex the partner is
-Claude Code. Each mode owns its own evaluation commitment.
+`.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md` owns one bounded external invocation: its direction,
+preparation, launch, validation, and returned frozen content. In native Codex the partner is Claude Code.
+Each mode owner owns local participants, complete-round assembly, acceptance, and its evaluation commitment.
+Disabled invokes no external runtime; enabled calls Partner for every applicable external run without another
+per-round prompt.
 
 `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` owns no partner mechanism itself. It holds the session to the
-selected mode's commitment, pauses on an unavailable or invalid system, and requires the user's approval of
-every finding's disposition.
+selected mode's commitment and shared finding gate. Automatic correction is limited to a High, Medium, or
+Low, `blocking: no`, in-contract, reversible, authority-neutral, non-destructive, non-external finding. Every
+other finding goes to the user, every correction receives fresh evaluation, and only PASS auto-continues.
 
 ## Delegation contract
 
@@ -82,8 +91,8 @@ exact load directives because specialists do not inherit manager context.
 `.gobbi/projects/gobbi/skills/` and `.gobbi/projects/gobbi/agents/` are the only editable sources for skills
 and agents. In a checkout/source package, `plugins/gobbi/skills/` and `plugins/gobbi/agents/` may be symlinks
 to those canonical trees before generation. A release/installable package carries both the Codex and Claude
-Code manifests plus official generator-materialized real `skills` and `agents` directories whose files are
-byte-equal to their canonical owners. `.agents/plugins/marketplace.json` and
+Code manifests plus generator-materialized real-file copies of the `skills` and `agents` trees. Those files
+are byte-equal to their canonical owners. `.agents/plugins/marketplace.json` and
 `.claude-plugin/marketplace.json` point to `./plugins/gobbi`. Native Codex custom-agent wrappers remain
 repo-local and are not installed as plugin components. The package has no lifecycle-hook component.
 
@@ -94,7 +103,7 @@ isolated installed-cache behavior. The guard fails when a generated file is miss
 or symlinked. Because the Codex installer copies nothing behind a symlink, a symlinked, absent, or incomplete
 installable `skills` or `agents` component fails, and any missing installed skill fails. Smoke acceptance
 requires a successful exit and an intact installed cache. A nonsemantic environment-specific Codex CLI
-warning may coexist with success but is not acceptance evidence.
+warning may coexist with success but is not acceptance evidence; any missing file is a failure, not a warning.
 
 Never hand-edit the package copies. Codex skill discovery does follow symlinks, so this repository's
 `.agents/skills/` view continues to resolve from canonical sources and needs no plugin install.
@@ -117,5 +126,5 @@ The full authority is `.gobbi/projects/gobbi/skills/principles/SKILL.md`:
 ## Navigate deeper
 
 `.gobbi/projects/gobbi/skills/gobbi/SKILL.md` is the entry and the skill map. It owns the Principles-first
-entry load, the three-mode selection, the session-wide authority and evaluation commitments, and the index of
-every canonical skill with what that skill owns.
+entry load, mode → applicable slug → partner selection, session-wide authority and evaluation commitments,
+and the index of every canonical skill with what that skill owns.

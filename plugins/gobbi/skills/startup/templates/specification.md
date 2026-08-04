@@ -1,106 +1,70 @@
 # {Project} — Specification
 
-> **Role:** Accepted implementation-guiding contracts for every current subject.<br>
-> **Example:** A Product may specify a saved-work recovery promise while its one Implementation specifies
-> supported runtime versions and verification duties. This example is explanatory, not required content.
+State the accepted design contracts, observable behavior, quality thresholds, and verification evidence for the
+Project, each Product, and each Product's single complete Implementation.
 
-## Section Register
-
-| Level | Stable subject key | Parent Product key | Required | State | Section | Review evidence | User acceptance |
-|---|---|---|---|---|---|---|---|
-| Project | `{project-key}` | `none` | `yes` | `{absent, draft, reviewed, stale, or confirmed}` | [Project](#project) | `{assignment or none}` | `{timestamp or not yet}` |
-| Product | `{product-key}` | `none` | `yes` | `{state}` | `{Product section}` | `{evidence}` | `{acceptance}` |
-| Implementation | `{implementation-key}` | `{product-key}` | `yes` | `{state}` | `{Product Implementation section}` | `{evidence}` | `{acceptance}` |
-
-Derive the artifact state from required current rows. A stale row makes the artifact `stale`; every row must
-be confirmed before the artifact is `confirmed`; otherwise use the earliest incomplete row's state.
-
-This Section Register is the sole owner of each section's current state, Review-evidence reference, and user
-acceptance. Every Review uses exactly `coverage`, `specificity`, `vocabulary`, `consistency`, `traceability`,
-`unsupported direction`, `load-bearing open decisions`, and `cold-reader quality`; each finding records
-evidence, consequence, one exact follow-up question, and disposition.
+Append the relevant `[alias]` tag or tags to every material evidence-derived or user-decided statement.
 
 ## Project
 
-### `{project-key}` — {Project}
+### {Project}
 
-#### Project Contracts, Governance, Policy, Quality, and Operations
+#### Contracts, authority, and constraints
 
-{State Project-wide external and data contracts, authority, governance, legal and operating constraints,
-binding policies, quality priorities and thresholds, service objectives, verification duties, ownership,
-continuity, and evidence required to change any contract.}
+{State Project-wide external and data contracts, decision authorities, governance, legal and license limits,
+distribution rules, budgets, dates, capacity, unavailable systems, security threats, protected assets,
+operating ownership, continuity, maintenance, and stop evidence.}
 
-#### Binding Policies
+#### Quality and policy
 
-| Policy | Purpose and scope | Authority and binding rule | Enforcement evidence | Exception | Review trigger | Retirement condition |
-|---|---|---|---|---|---|---|
-| `{policy}` | `{purpose and scope}` | `{authority and rule}` | `{evidence}` | `{process}` | `{trigger}` | `{condition}` |
+| Quality or policy | Purpose and scope | Binding rule or threshold | Authority | Verification evidence | Exception or change evidence |
+|---|---|---|---|---|---|
+| {item} | {why and where} | {measurable obligation} | {decision-maker} | {test, review, observation, or rehearsal} | {condition and evidence} |
 
-#### Section Evidence and Acceptance
-
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{direction, source, strength, and evidence that would change it}` |
-| Coverage and vocabulary | `{aliases and added questions; status, answer or reason; agreed terms}` |
-| Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, old/current decisions, and stale set}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+- Accepted: {yes — user and date}
 
 ## Products
 
-Repeat this subsection once for every Product in register order. Keep each named feature contract distinct.
+Repeat this section for every Product. Keep each named feature contract distinct.
 
-### `{product-key}` — {Product}
+### {Product}
 
-- Parent Project: `{project-key}`
-- Implementation: `{implementation-key}`
+- Parent Project: {Project}
+- Implementation: {Product Implementation}
 
-#### Capability and Feature Contracts
+#### Capabilities and behavior
 
-{State the minimum complete capability and each named feature's prerequisites, trigger, observable result,
-handoffs, refused uses, and consequential failures.}
+{State the smallest complete useful capability and each named feature's prerequisites, trigger, observable
+result, handoffs, safe refusals, consequential failures, explanations, feedback, and recovery.}
 
-#### Experience, Behavior, Data, Security, and Recovery
+#### Experience, data, compatibility, and safety
 
-{State consumer interactions, accessibility, feedback, state and data behavior, external interfaces,
-compatibility, privacy, safety, failure visibility, recovery, supported environments, and evidence.}
+{State accessibility, supported consumers and environments, stable interfaces and versions, navigation and
+in-progress work behavior, privacy and consent, retention and deletion, permissions, authorization, audit,
+misuse protection, performance range, release access, and the evidence required for each material claim.}
 
-#### Section Evidence and Acceptance
-
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{direction, source, strength, and change evidence}` |
-| Coverage and vocabulary | `{feature-specific aliases, added questions, status, answer or reason, and terms}` |
-| Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, and stale set}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+- Accepted: {yes — user and date}
 
 ## Implementations
 
-Repeat this subsection once per Product in the same order.
+Repeat this section once per Product.
 
-### `{implementation-key}` — {Product} Implementation
+### {Product} Implementation
 
-- Parent Product: `{product-key}`
-- Relationship: `the Product's single complete Implementation`
+- Parent Product: {Product}
+- Relationship: the Product's single complete-stack Implementation
 
-#### Support, Configuration, Compatibility, and Data Behavior
+#### Runtime and data contracts
 
-{State supported stack-entry versions, environments, configuration authority, runtime restrictions, data
-consistency and evolution, network behavior, retry and restore contracts, and dependency compatibility.}
+{State supported categorized-entry versions, environments, configuration authority, operating restrictions,
+data consistency and evolution, event time and ordering, duplicate and late input behavior, restore evidence,
+network intent and health, retries, degraded operation, compatibility, and observability.}
 
-#### Testing, Security, Licensing, Quality, and Contributor Contracts
+#### Engineering constraints and evidence
 
-{State verification evidence, trust boundaries, threat duties, license constraints, performance and operating
-evidence, repository and interface conventions, and safe contribution requirements. Exclude code signatures,
-exhaustive schemas, algorithms, repository-layout tasks, and implementation tasks.}
+{State trust boundaries, threat duties, license constraints, performance evidence, repository and interface
+conventions, error and documentation rules, test rules, contribution requirements, authoritative examples,
+misleading patterns to avoid, deliberate unusual patterns to preserve, and evidence for every binding claim.
+Keep this at design-contract level; exclude code signatures, exhaustive schemas, algorithms, and implementation tasks.}
 
-#### Section Evidence and Acceptance
-
-| Record | Required content |
-|---|---|
-| Decisions and evidence | `{direction, source, strength, and change evidence}` |
-| Coverage and vocabulary | `{aliases, added questions, status, answer or reason, and terms}` |
-| Risks, deferrals, and corrections | `{owners, resolution, reopen conditions, and stale set}` |
-| Review dispositions | `{finding evidence, consequence, exact follow-up question, and disposition}` |
-| Section Register reference | `{stable link to the row that owns state, Review evidence, and user acceptance}` |
+- Accepted: {yes — user and date}

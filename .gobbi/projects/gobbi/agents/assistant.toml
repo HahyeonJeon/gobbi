@@ -1,5 +1,5 @@
 name = "assistant"
-description = "Gobbi support agent for narrow factual lookup, reference gathering, and RECORD support."
+description = "Gobbi support agent for narrow factual lookup, temporary Workflow records, Workflow Wrap-up, and caller-bounded Cowork direct-Memory closure."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "xhigh"
 developer_instructions = '''

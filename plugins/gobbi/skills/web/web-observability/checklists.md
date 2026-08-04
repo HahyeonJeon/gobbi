@@ -6,7 +6,7 @@ non-interference obligations this skill owns. It is governed by the [`web`](../S
 [`web-observability`](SKILL.md) operation, with [`web-security`](../web-security/SKILL.md) owning which data is
 protected and which logging controls are required,
 [`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning product behavior at browser lifecycle transitions,
-[`web-platform`](../web-platform/SKILL.md), [`css-platform`](../../css/css-platform/SKILL.md), and
+[`web-platform`](../web-platform/SKILL.md), [`html-css-platform`](../../html-css/html-css-platform/SKILL.md), and
 [`electron-runtime`](../../electron/electron-runtime/SKILL.md) owning the reading of signals,
 [`web-testing`](../web-testing/SKILL.md) owning behavior under test, and
 [`web-operations`](../web-operations/SKILL.md) consuming reconciled live-service evidence, while
@@ -48,7 +48,7 @@ reads signals; an emission outcome that also diagnoses a browser, style, or proc
 #### Checklist
 
 - [ ] WEBOBS-CK-PROJECT-02-01 — The outcome decides what the application produces rather than diagnosing a failure from what it produced.
-- [ ] WEBOBS-CK-PROJECT-02-02 — Every question outside emission is routed to its named owner: browser and standards evidence to `web-platform`, style diagnosis to `css-platform`, process, preload, and lifecycle failures to `electron-runtime`, and behavior under test to `web-testing`.
+- [ ] WEBOBS-CK-PROJECT-02-02 — Every question outside emission is routed to its named owner: browser and standards evidence to `web-platform`, style diagnosis to `html-css-platform`, process, preload, and lifecycle failures to `electron-runtime`, and behavior under test to `web-testing`.
 
 ## Structure
 
