@@ -1,169 +1,255 @@
 ---
 name: evaluation
-description: "MUST load when finished work needs an independent, evidence-based judgment. Evaluation is an operation skill for a fresh, independent review through checklists, tests, seven perspectives, and Overall, producing problems, optional improvements, strengths, and an evidence-derived verdict."
+description: "MUST load when finished work needs an independent, evidence-based judgment. Evaluation is an operation skill for lifecycle-boundary investigation, source execution, causal results, completion, and criteria-derived verdicts."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
 
 # Evaluation
 
-An independent evaluator uses this skill when a design, plan, implementation, document, interface, process,
-or other work needs an evidence-based judgment. Evaluation applies to the work itself and the outcomes it
-returned.
+A fresh independent evaluator uses this operation when a design, plan, implementation, document, interface,
+process, or other finished work needs an evidence-based judgment. The outcome is one reproducible evaluation
+of the exact frozen subject and its observable results.
 
-The evaluator understands the work, runs applicable pre-built checklists and tests, and reviews the whole work
-through Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall. The result separates
-problems, optional improvements, strengths, and an evidence-derived verdict.
+Evaluation first inventories the actual subject, then classifies and executes complete lifecycle-first or
+legacy sources, challenges prepared coverage, reconciles evidence, and closes or stops without a verdict. Its
+eight checkpoints prevent a prepared source from becoming the coverage ceiling.
 
-Evaluation reports the judgment without changing the work or deciding how the owner responds.
+Evaluation is read-only. It reports lifecycle coverage, Problems, Optional Improvements, Strengths and
+Must-Preserve Conditions, and verdict derivation without changing the subject, source, criteria, result
+disposition, or workflow gate.
 
 ## Principles
 
-### Evaluate critically
+### Inspect actual work before prepared coverage can close it
 
-Evaluate to discover what prevents, weakens, or could improve the intended outcome, not to confirm the
-creator's conclusion. Challenge claims, assumptions, evidence, and apparent passes, but report only supported
-problems and optional improvements; be skeptical and exact, not hostile.
+Prepared sources and tests are evidence, not a ceiling. A provisional lifecycle inventory and a later
+source-independent challenge keep the actual subject and its affected actors central.
 
-### Use an independent evaluator
+### Require fresh independent judgment
 
-Independent evaluation requires an evaluator who did not design, author, or implement the work and has no
-stake in defending it. Self-checks may support the evidence but cannot supply the independent verdict; disclose
-any conflict or limitation that could bias the judgment.
+The evaluator did not design, author, or implement the subject and has no stake in defending it. Conflicts,
+limitations, missing evidence, and uncertainty stay visible rather than being filled with assumptions.
 
-### Find problems and optional improvements
+### Keep one evidence graph with distinct owners
 
-A problem is an unmet outcome, requirement, or acceptance condition; an optional improvement is an
-evidence-backed way to make acceptable work better. Keep them separate: never soften a problem into an
-optional improvement or manufacture an improvement without evidence.
+Checklist owns authored source assertions and source closure; Evaluation owns observations, execution,
+challenges, reconciliation, completion, results, and verdict evidence. Acceptance and workflow routing remain
+separate from both.
 
-### Find the root cause
+### Explain causes only as far as evidence supports
 
-Trace each problem from expectation and observation to impact and cause, testing plausible alternatives before
-naming the root cause. If evidence remains incomplete, record the leading hypothesis, uncertainty, and missing
-evidence, and recommend prevention instead of symptom masking.
+A Problem connects an inspected observation to an expected outcome, impact, and supported cause or leading
+hypothesis. Alternatives, evidence limits, missing evidence, and confidence make unknown causality explicit.
 
 ## Rules
 
-- **MUST evaluate as an evaluator who did not design, author, or implement the work.** A self-check may support
-  the evidence but never supplies the independent verdict, and any conflict or limitation that could bias the
-  judgment is disclosed.
-- **MUST support every reported problem, optional improvement, and strength with inspected evidence.** Inspect
-  the actual artifacts and observable state rather than the work's summary or completion claim.
-- **MUST run every applicable checklist row and test and review the seven perspectives and Overall.** Record
-  each result with its supporting evidence and justify every not-applicable result.
-- **NEVER soften a problem into an optional improvement or record an improvement without evidence.** A problem
-  is an unmet outcome, requirement, or acceptance condition and stays reported as one.
-- **MUST derive the verdict only from completed evidence and the acceptance criteria supplied with the work.**
-  Issue no verdict while a required result, material evidence gap, causal uncertainty, or coverage gap remains
-  unresolved.
-- **NEVER change the work, implement a correction, alter the criteria, or decide how the owner responds.**
-  Repeat all three phases when the work changes materially, because a prior result is history, not proof.
+- **MUST freeze exact inputs and establish independence before judging.** Inspect actual artifacts and state
+  within a read-only boundary, and disclose every material conflict or limitation.
+- **MUST classify each source by content in the exact Step 2.1 order.** Execute only a complete
+  lifecycle-first or complete legacy signature and fail closed without repair, translation, or guessing for
+  every other result.
+- **MUST inspect every applicable condition, reuse context, test, lifecycle boundary, actor/form outcome, and
+  material challenge.** Record exact supporting evidence and justify every exclusion or uncertainty.
+- **MUST set `Evaluation completion: Complete` before deriving a verdict.** While a material coverage,
+  identity, evidence, test, limitation, or unreconciled uncertainty remains open, name the blocker and issue
+  no verdict.
+- **MUST keep Problems, Optional Improvements, and Strengths distinct and evidenced.** Optional Improvements
+  never contribute to a verdict, Strengths never cancel Problems, and each result has one semantic owner.
+- **NEVER change the subject, source, tests, criteria, finding disposition, or workflow state.** A material
+  premise change makes affected evidence historical and returns evaluation to the earliest invalidated
+  checkpoint.
 
 ## Procedure
 
-### Phase 1 — Understand the Work and Its Outcomes
+### Phase 1 — Freeze the Subject and Build a Provisional Inventory
 
-#### 1.1 Understand the work
+#### 1.1 Checkpoint 1 — Establish independence and freeze exact inputs
 
-- Read the complete work, its supporting material, relevant history, known risks, prior failures, and supplied
-  evidence.
-- Understand its purpose, intended outcome, scope, requirements, decisions, and constraints.
-- Map its actors, inputs, outputs, boundaries, structure, responsibilities, interfaces, dependencies,
-  information or data flow, state, failure, recovery, compatibility, and operational effects.
-- Record any material uncertainty that limits the evaluation, then use this understanding to inspect the
-  returned outcomes.
+- Confirm that the evaluator did not design, author, or implement the subject and has no producer role or
+  stake in defending it. Disclose any relationship, conflict, access limit, sampling limit, or missing
+  capability that could affect judgment.
+- Freeze the exact subject identity and version or content hash; actual deliverables and observable state;
+  supplied sources and tests with identities and hashes; intended outcomes; scope; requirements; governing
+  evidence; known risks and prior failures; acceptance criteria, thresholds, and aggregation rules; and the
+  read-only boundary.
+- Separate produced outcomes from summaries, completion claims, missing results, and deferred work. Bind each
+  supplied artifact or test to its provenance instead of trusting a label, filename, report, or status.
+- Record material unknowns and the exact evidence or authority needed to resolve them. Stop when independence,
+  identity, criteria, or a safe read-only boundary cannot be established.
 
-#### 1.2 Understand the returned outcomes
+#### 1.2 Checkpoint 2 — Inspect actual work and inventory lifecycle coverage
 
-- Identify what the work returned: deliverables, changes, decisions, reports, test results, evidence, side
-  effects, and completion claims.
-- Inspect actual artifacts and observable state, not only the summary.
-- Separate produced outcomes from claims, missing results, and deferred work. Trace each outcome to the work
-  that produced it and the evidence that supports it.
-- Carry the traced outcomes and any gaps into Phase 2.
+- Inspect the actual subject and returned outcomes before prepared source details may close coverage. Map
+  actors, responsibilities, needs, interfaces, handoffs, product forms, boundaries, data or information flow,
+  dependencies, state, failures, recovery, compatibility, operation, and terminal effects.
+- Build a provisional inventory across Intent/Acquisition, Creation/Delivery, Adoption/Integration,
+  Use/Operation, Change/Evolution, Support/Recovery, and Deprecation/Exit/Retirement. For each material
+  boundary, record actor/form context, `development`, `product`, or `both`, `Applicable`, `N/A`, or
+  `Uncertain`, and an inspected basis.
+- Treat `both` as one normalized boundary and one coverage credit. Actor and form identities provide context;
+  they do not create quotas, scenario ownership, or duplicate obligations.
+- Inspect complete development and product lifecycle outcomes, including stages, transitions, handoffs,
+  alternatives, failures, deficient-but-functioning behavior, recovery paths, exit, and terminal states.
+  Unsupported `N/A` and material `Uncertain` records remain open.
+- Keep the inventory provisional. Prepared sources and tests may support, contradict, refine, or add to it,
+  but cannot erase an actual-subject obligation without inspected evidence.
 
-### Phase 2 — Evaluate Checklists, Tests, and Perspectives
+### Phase 2 — Classify, Execute, and Challenge Prepared Coverage
 
-#### 2.1 Evaluate checklists and tests
+#### 2.1 Checkpoint 3 — Bind and classify every source and test
 
-- Collect the applicable pre-built checklists and tests supplied by the work, governing guidance and standards,
-  prior failures, and accepted project practices.
-- Run every applicable checklist row and test against the work and its returned outcomes.
-- Record each result with supporting evidence. Analyze failures and distinguish problems from optional
-  improvements and strengths.
-- Carry the results and unresolved evidence gaps into Step 2.2.
+- Bind each source and test to its exact identity, version, content hash, applicable subject, and collected
+  source set. Record every passed and failed classification clause; path, filename, caller label,
+  familiarity, or a word such as `lifecycle` never decides source kind.
+- Classify each source in this exact order:
 
-#### 2.2 Review each perspective
+  1. **Lifecycle-first.** Require the exclusive `Source kind: lifecycle-first` marker, the exact H1 and front
+     records, and all required sections once and ordered as Checklist's
+     [physical source contract](checklist/SKILL.md#12-render-the-lifecycle-first-source-skeleton). Validate
+     Checklist-owned [family and applicability meanings](checklist/SKILL.md#22-build-the-applicability-matrix),
+     actor/form context, fields, IDs, conditional lines, exact `Views` enum, statuses with same-record bases,
+     reference domains, warning rendering, and
+     [source-closure coherence](checklist/SKILL.md#52-close-or-keep-open-the-source), with no legacy marker or
+     legacy-only structure. A structurally valid Open source classifies as lifecycle-first and may be
+     inspected, but its open source closure blocks Evaluation completion and verdict.
+  2. **Legacy.** Require no lifecycle marker or lifecycle-only structure and every exact legacy clause below.
+  3. **Mixed.** Classify as Mixed when any lifecycle-exclusive structure and any legacy-exclusive structure
+     coexist; fail closed.
+  4. **Partial/malformed.** Classify as Partial/malformed when one kind is declared or uniquely indicated but
+     any required physical, semantic, conditional, status, identity, reference, or closure clause fails;
+     report every failed clause and fail closed.
+  5. **Ambiguous.** Classify as Ambiguous when bytes satisfy both full signatures, declarations conflict, or
+     the content does not yield one unique result; report the conflict and fail closed.
+  6. **Unknown.** Classify as Unknown when neither signature is complete and exclusive structure is
+     insufficient; report observed markers and the exact evidence or authority needed, then fail closed.
 
-- Review the complete work through each perspective in this order:
+- A complete legacy signature satisfies every clause:
 
-  | Perspective | Inspect |
-  | --- | --- |
-  | **Project** | The outcome, scope, requirements, decisions, obligations, deferred work, and completion. |
-  | **Structure** | Decomposition, ownership, interfaces, dependencies, information, data, state, schemas, test seams, and maintainability. |
-  | **Performance** | Latency, throughput, capacity, reliability, external calls, batching, timeouts, retries, caching, resources, recurring cost, and measurement. |
-  | **Aesthetics** | Clarity, concision, naming, presentation, conventions, hierarchy, placeholders, formatting, comments, and reviewability. |
-  | **Usage** | Real user or consumer paths, interfaces, instructions, errors, preconditions, next actions, accessibility, locale, input methods, assistive use, and recovery. |
-  | **Consistency** | Agreement among scope, design, obligations, tasks, behavior, implementation, tests, types, documentation, examples, schemas, validators, manifests, migrations, runtime references, commits, evidence, status, and handoff claims. |
-  | **Risk** | Security, authorization, input trust, privacy, retention, safety, destructive actions, concurrency, rollback, dependencies, licenses, publication authority, sensitive data, compliance, cost, blast radius, and recovery. |
-  | **Overall — General Review** | The complete work or implementation result without limiting the review to one perspective. Find material problems, optional improvements, strengths, and interactions the seven perspectives missed. |
+  - It has exactly these H2 headings once and in this order: `Project`, `Structure`, `Performance`,
+    `Aesthetics`, `Usage`, `Consistency`, `Risk`, and `Overall`, with no lifecycle-family or matrix heading.
+  - Every scenario appears under its matching perspective, has
+    `<OWNER>-SC-<PERSPECTIVE>-NN`, names exactly one literal class from `Normal case`, `Edge case`,
+    `Expected failure`, `Poor quality`, `Rule violation`, or `Adversarial`, and retains the current prose form
+    for context, expected outcome, and observable failure.
+  - Every scenario has `#### Checklist`. Every unchecked row uses
+    `<OWNER>-CK-<PERSPECTIVE>-NN-NN` matching its owner, perspective, and scenario ordinal, and every
+    `Also applies` target resolves to an existing owner row in the collected applicable legacy source set,
+    including valid cross-file references.
+  - A perspective with no scenario has an evidence-based literal `Not applicable:` reason.
+  - No lifecycle matrix field, family-owned new ID, source-closure field, or other lifecycle-first structure
+    is mixed into the source.
 
-- Inspect the actual work and evidence from each perspective.
-- Look for missed actors, states, dependencies, assumptions, harms, failures, incompatibilities, regressions,
-  and optional improvements.
-- Record evidence-backed problems, optional improvements, and strengths for each perspective.
-- Carry the completed perspective records into Phase 3.
+- Only complete lifecycle-first and complete legacy sources proceed. Classification never repairs,
+  normalizes, translates, drops, reorders, relocates, reclassifies, or guesses source content; a byte change
+  makes earlier recognition evidence historical.
+- Bind applicable tests by exact identity and status after source classification. A missing, substituted,
+  stale, or indeterminate test identity stays open and cannot be silently excluded.
 
-### Phase 3 — Organize and Validate the Evaluation Results
+#### 2.2 Checkpoint 4 — Execute applicable source contexts and tests
 
-#### 3.1 Reconcile the evidence
+- Execute every applicable lifecycle-first condition, actual reuse context, and expected test against the
+  frozen subject. Preserve the source's live IDs and assertions, and write answers, evidence, limitations,
+  and test results only in the Evaluation-owned view.
+- Execute every recognized legacy source unchanged in its original order. Preserve its path, hash, headings,
+  scenarios, literal classes, IDs, checklist rows, `Also applies` references, `Not applicable:` meaning,
+  prose, governing context, and cross-file reuse; do not translate any element into lifecycle-first source
+  identity.
+- Inspect the actual state needed to answer each condition and test. Record exact supporting evidence,
+  actual reuse context, and any sampling or access limit; do not treat the producer's completion claim or a
+  prior report as an answer.
+- Justify each Evaluation-side `N/A` from inspected exclusion evidence. Carry failures, conflicts,
+  indeterminate answers, missing evidence, and contradictions into reconciliation without changing the
+  source.
 
-- Reconcile checklist, test, and perspective results with their evidence, problems, optional improvements,
-  strengths, limitations, and evidence gaps.
-- Link every failed check or test to a problem and justify every not-applicable result.
-- Keep problems, optional improvements, and strengths separate.
-- Return to Phase 2 when a material result or evidence gap cannot be reconciled.
+#### 2.3 Checkpoint 5 — Challenge the actual subject independently
 
-#### 3.2 Challenge the evaluation
+- Return to the actual subject after source execution and challenge the provisional seven-family inventory
+  without treating a prepared source or passing test as complete coverage.
+- Ask about successful outcomes; limits and transitions; failure, rejection, containment, and recovery;
+  materially deficient yet functioning outcomes; governing-constraint violations; and abuse, gaming, or
+  cosmetic compliance. Split material differences in actor/form contract, boundary, trigger, expected or
+  deficient outcome, or evidence measure.
+- Optionally consult Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall as one
+  weak unordered prompt card. Store no card use, order, provenance, completion, heading, tag, count, result
+  class, or verdict input; a concern matters only after it enters the ordinary lifecycle/evidence view.
+- For a legacy source, build a separate evaluator-owned lifecycle applicability and gap view that may
+  reference unchanged legacy IDs. Never translate, rewrite, impersonate, or assign lifecycle-first source
+  identities to legacy content.
+- Add source-independent lifecycle gaps, evidence needs, and challenged exclusions to the Evaluation view.
+  Return to Checkpoint 2 when the challenge exposes a missing actual-subject boundary or context premise.
 
-- Check for false positives and false negatives, proxy evidence, cosmetic compliance, unsupported causes, weak
-  sampling, contradictions, and missing interactions.
-- Keep problems separate when their causes differ. Consolidate only the same observed condition with the same
-  supported cause, and preserve its provenance.
-- Return to the earliest affected step when this challenge exposes missing or contradictory evidence, coverage,
-  or causal reasoning.
+### Phase 3 — Reconcile, Complete, Organize, Derive, and Hand Off
 
-#### 3.3 Derive the verdict
+#### 3.1 Checkpoint 6 — Reconcile the complete evidence graph
 
-- Checklist completion proves coverage closure, not acceptance.
-- Do not issue a verdict while a required result, material evidence gap, causal uncertainty, or coverage gap
-  remains unresolved.
-- Apply only the acceptance criteria, thresholds, and aggregation rules provided with the work or evaluation
-  request. Derive each perspective result, Overall, and the final verdict from completed evidence.
-- Keep every problem visible, and never lower a verdict for an optional improvement. If the derivation is
-  incomplete, contradictory, or irreproducible, return to Step 3.1 instead of issuing a verdict.
+- Reconcile the provisional inventory, authored source assertions, condition answers, actual reuse contexts,
+  test results, source-independent additions, governing inputs, evidence, limitations, `N/A`, `Uncertain`,
+  gaps, and causal uncertainty. Checklist assertions remain source-owned references; Evaluation owns its
+  observations and reconciliation.
+- Trace every material family, actor/form, boundary, expected and deficient outcome, live lifecycle-first or
+  unchanged legacy ID, evaluator addition, test, governing input, evidence item, limitation, missing evidence,
+  and result identity through one reproducible graph.
+- When evidence conflicts, test the source assertion and plausible alternatives against actual state. Keep
+  unsupported explanations as hypotheses with explicit uncertainty and confidence.
+- Return to the earliest invalidated checkpoint when reconciliation exposes a wrong frozen premise,
+  provisional boundary, classification, execution answer, test result, gap challenge, exclusion, or causal
+  claim. Repeat every dependent checkpoint rather than patching only the final report.
 
-#### 3.4 Organize and hand off
+#### 3.2 Checkpoint 7 — Set completion or stop without a verdict
 
-- Organize the result with:
-  - Final verdict and concise outcome summary.
-  - Problems.
-  - Optional improvements.
-  - Strengths and what later work must preserve.
-  - Results for Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall.
-  - Completed checklist scenarios and rows, and tests.
-  - Evaluation context, independence, criteria, methods, evidence, limitations, uncertainties, derivation, and
-    reproduction details.
-  - Corrective directions, reopen conditions, and the handoff boundary.
-- Make the result understandable without private discussion context. Whoever receives the result may wrap it
-  in a required schema or storage format without changing the evaluation.
-- Hand off the result without editing the work, implementing a correction, changing the criteria, or deciding
-  how the owner responds.
-- If the work changes materially, repeat all three phases for the changed work and its returned outcomes. Prior
-  results remain history, not proof.
+- Set `Evaluation completion: Complete` only when every material obligation, source context, test, lifecycle
+  challenge, identity, reference, exclusion, uncertainty, evidence need, limitation, and causal question is
+  reconciled enough for the supplied criteria to apply reproducibly.
+- Keep `Evaluation completion: Open` when source closure is Open; a material boundary is `Uncertain`; an
+  `N/A` lacks inspected support; an `Applicable` obligation is untraced; an identity, reuse target, or source
+  kind is unresolved; required evidence or a test is missing; or a material coverage or causal uncertainty
+  remains unreconciled.
+- For Open completion, name every blocker, affected lifecycle references, present evidence, missing evidence
+  or authority, and the earliest checkpoint for recovery. Issue no verdict, not even a provisional one.
+- Completion does not mean acceptance and does not close a workflow gate. Counts, percentages, source
+  closure, producer approval, evaluator confidence alone, or a passing subset cannot substitute for literal
+  Evaluation completion.
+
+#### 3.3 Checkpoint 8 — Organize results, derive the verdict, and hand off
+
+- After completion is Complete, organize one human-readable result in this order:
+
+  1. **Evaluation Identity and Independence** — frozen subject, sources/tests and hashes, evaluator
+     independence, criteria, methods, read-only boundary, limitations, uncertainties, reproduction details,
+     and `Evaluation completion: Complete`.
+  2. **Lifecycle Coverage Summary** — family, actor/form, boundary, expected/deficient outcome, source/test,
+     evidence, limitation, and result-ID references without duplicating result definitions.
+  3. **Problems** — unmet outcomes, requirements, or acceptance conditions.
+  4. **Optional Improvements** — evidenced ways to improve work that is currently acceptable.
+  5. **Strengths and Must-Preserve Conditions** — verified outcomes and the exact conditions later work must
+     retain.
+  6. **Verdict Derivation** — supplied criteria, contributing Problem IDs, thresholds, aggregation, and the
+     reproducible result.
+
+- Define each result once and reference it from every affected lifecycle entry. Split results when the
+  observation or supported cause differs; consolidate only the same observation with the same supported
+  cause while retaining all provenance.
+- For each Problem, state the expectation, inspected observation, impact, supported cause or leading
+  hypothesis, challenged alternatives, evidence limits, missing evidence, calibrated confidence, and a
+  prevention-oriented suggested direction. Unknown causality stays explicit and never becomes a convenient
+  root-cause claim.
+- For each Optional Improvement, state the acceptable current condition and evidenced benefit and cost. For
+  each Strength, state the verified outcome, evidence, and exact Must-Preserve Condition.
+- Derive a verdict only from supplied acceptance criteria, thresholds, and aggregation rules. When the current
+  evaluator-role defaults apply, a contributing Critical Problem with confidence at least 75 yields `FAIL`;
+  otherwise a contributing High Problem with confidence at least 50 yields `REVISE`; otherwise the
+  problem-derived verdict is `PASS`.
+- Keep every contributing Problem visible. Optional Improvements never contribute to a verdict, Strengths
+  never cancel Problems, and a workflow's separate gate remains authoritative for its own routing.
+- Hand off the complete result without changing the subject, source, tests, criteria, findings, dispositions,
+  acceptance state, or workflow state. A caller may wrap the human-readable result in its owned report or
+  storage contract without changing Evaluation meaning.
+- If any frozen subject, source byte, test, governing input, criterion, artifact, or observable state changes
+  materially before use, mark affected evidence and verdict history, freeze the changed premise, and resume
+  at the earliest affected checkpoint.
 
 ## References
 
-- [Checklist](checklist/SKILL.md) owns perspective-led scenario and checklist-source construction, review, and
-  improvement.
+- [Checklist](checklist/SKILL.md) owns lifecycle-first unchecked source authoring, exact source grammar,
+  applicability meanings, live-reference rules, warning review, and source closure.
