@@ -140,8 +140,8 @@ that exists only through the pointer, or only by closing the window, is the fail
 #### Checklist
 
 - [ ] DTARCH-CK-USAGE-01-01 — Each window has one identifiable current location and one defined way back.
-- [ ] DTARCH-CK-USAGE-01-02 — The way back works without closing a window.
-- [ ] DTARCH-CK-USAGE-01-03 — Reaching the current location and returning from it both work from the keyboard alone.
+- [ ] DTARCH-CK-USAGE-01-02 — The defined way back returns a person to the prior view without closing a window.
+- [ ] DTARCH-CK-USAGE-01-03 — A person can reach the current location and return using the keyboard alone.
 
 ### DTARCH-SC-USAGE-02 — Edge case: Later relaunch after Normal quit and Abnormal termination
 
