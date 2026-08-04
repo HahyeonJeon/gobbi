@@ -24,7 +24,7 @@ service decision. The manager makes the topic concrete, returns accepted evidenc
 ### Keep one inspectable local history
 
 One linked worktree and one ordered writer chain keep every result attributable and recoverable. Each selected
-shaping artifact set and implementation unit becomes a focused verified commit before dependent work starts.
+shaping artifact set and implementation task becomes a focused verified commit before dependent work starts.
 
 ### Separate stage quality from independent evaluation
 
@@ -43,13 +43,13 @@ the manager may advance it, but never become a second route.
   Use the fully expanded worktree path for every write after that commit and change nothing else in the main
   checkout.
 - **MUST use the native runtime TODO list to select Cowork Configuration, the current topic stage or execution
-  unit, explicit evaluation, and explicit Wrap-up.** Use only `pending`, `in_progress`, and `completed`, with
+  task, explicit evaluation, and explicit Wrap-up.** Use only `pending`, `in_progress`, and `completed`, with
   at most one item `in_progress`.
 - **MUST let the manager select and report Direct, Light, or Structured delivery while the user owns every
   material decision.** Apply canonical Ideation and Planning whenever selected, and reroute when evidence or
   a material decision changes the contract.
 - **MUST keep one ordered writer chain with role-bound focused commits and manager acceptance.** Leaders own
-  selected Ideation and Planning artifacts, executors own implementation units, and assistants own Wrap-up
+  selected Ideation and Planning artifacts, executors own implementation tasks, and assistants own Wrap-up
   memory updates.
 - **MUST run independent evaluation only after an explicit `evaluate` call, and let that call authorize
   evaluation alone.** One call authorizes one fresh partner evaluation round, a bare call uses the whole clean
@@ -115,7 +115,7 @@ the manager may advance it, but never become a second route.
   scenarios, and checklists land there unless the user approves another path.
 - Never write a session-only kind inside `memory/`, and never write either location outside the verified
   worktree.
-- Use this exact Cowork title grammar. Items for optional stages, execution units, evaluation, and Wrap-up
+- Use this exact Cowork title grammar. Items for optional stages, execution tasks, evaluation, and Wrap-up
   exist only when their trigger selects them:
 
 ```text
@@ -123,7 +123,7 @@ CW · Configuration
 CW · Topic · topic-NN-slug · DISCUSSION
 CW · Topic · topic-NN-slug · IDEATION
 CW · Topic · topic-NN-slug · PLANNING
-CW · Topic · topic-NN-slug · EXECUTION · unit-NN-slug
+CW · Topic · topic-NN-slug · EXECUTION · task-NN-slug
 CW · Topic · topic-NN-slug · PASS
 CW · Evaluation · <whole-branch|subject-slug>
 CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
@@ -143,28 +143,32 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   exclusions before dispatch.
 - Assign the next stable `topic-NN-slug`, create its DISCUSSION item, and make that the only active item. After
   the topic contract and delivery depth lock, complete DISCUSSION and publish only the selected optional
-  stage items, ordered Execution units, and final PASS item. When Planning must still define the units, use
-  one `EXECUTION · unplanned` placeholder and replace it with the canonical ordered units after Planning.
+  stage items, ordered Execution tasks, and final PASS item. When Planning must still define the tasks, use
+  one `EXECUTION · unplanned` placeholder. After Planning, replace it with TODO items that copy each canonical
+  `task-NN-slug` unchanged and keep the plan's order and `Requires` dependencies.
 
 | Depth | Evidence | Topic path |
 |---|---|---|
-| **Direct** | Outcome, root cause when applicable, acceptance proof, and one low-risk reversible unit are clear. | Execute the locked topic without Ideation or Planning. |
+| **Direct** | Outcome, root cause when applicable, acceptance proof, and one low-risk reversible task are clear. | Execute the locked topic without Ideation or Planning. |
 | **Light** | One bounded design choice or modest decomposition remains. | Run only the optional shaping stage the evidence requires, then execute. |
 | **Structured** | Work is broad, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation, Planning, then ordered Execution. |
 
-- Require Ideation for material design work and Planning for multiple dependent implementation units. Report
+- Direct and Light topics assign each execution task a stable `task-NN-slug` when publishing the route. Carry
+  the same task ID through TODO expansion, delegation, verification, focused commit evidence, and recovery.
+- Require Ideation for material design work and Planning for multiple dependent implementation tasks. Report
   the selected depth and reason; return to this decision when new evidence, changed stage selection, or a
   material user decision changes the contract.
 - Build each specialist assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic,
-  depth, selected stage, stable assignment, absolute worktree, branch, prerequisite commits, allowed and
-  protected paths, expected artifact or implementation, verification, commit authority, and escape paths.
+  depth, selected stage, stable assignment, the exact `task-NN-slug` for Execution, absolute worktree, branch,
+  prerequisite commits, allowed and protected paths, expected artifact or implementation, verification,
+  commit authority, and escape paths.
 - Name the Step 1.1 `{gobbi-skills-root}` and `{gobbi-agents-root}` pair in every brief, and resolve each
   skill and role the specialist must load as an exact path from that pair. A bare skill or role name is not a
   resource a fresh specialist can reach.
 - In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) before using persistent specialists. Its
   manual owns tool setup and use; Cowork owns assignment fields, reuse boundaries, acceptance, recovery
   evidence, and the ordered writer chain.
-- Reuse a leader only within one topic's shaping stages, an executor only across related implementation units
+- Reuse a leader only within one topic's shaping stages, an executor only across related implementation tasks
   in one topic chain, and an assistant only within the Phase 4 memory chain.
 
 - Reuse a write-capable specialist only after the manager accepts its focused commit and the Cowork worktree
@@ -187,10 +191,10 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   frozen topic contract, place the returned labeled content under `{session-root}/work/`, and let the assigned
   leader synthesize it into the Ideation artifact set it already owns. A creation round is creation, not
   judgment: it adds no evaluation coverage and is reported separately from coverage.
-- Assign each dependency-ready unit to an executor through [Execution](../execution/SKILL.md). Keep writers
+- Assign each dependency-ready task to an executor through [Execution](../execution/SKILL.md). Keep writers
   sequential; after every report, reread the promised artifact or implementation and commit, reproduce the
   relevant verification, and accept, repair, or redispatch it before dependent work begins.
-- After an optional stage or Execution unit is accepted, complete its active item and activate the next
+- After an optional stage or Execution task is accepted, complete its active item and activate the next
   pending item. Never advance from a specialist report, TODO status, or plausible summary without the
   accepted artifact or commit and reproduced verification.
 - On missing artifacts, malformed output, failed checks, unavailable capability, wrong-tree evidence,
