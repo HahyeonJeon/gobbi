@@ -14,7 +14,7 @@ and integration checks, with every evidence limit explicit.
 This operation owns the evidence question, test kind, observable test boundary or controllable dependency,
 cases, execution choice, and interpretation. `go-design` owns production design, `go-development` owns
 production code changes, `go-concurrency` owns synchronization design, and `go-toolchain` owns project command
-syntax, exact package pattern semantics, environment facts, and command effects.
+syntax, exact package pattern semantics, environment facts, and project command effects.
 
 ## Principles
 
@@ -106,7 +106,7 @@ evidence needed for the risk and state every untested path or unsupported `GOOS/
 - Cover ordinary behavior, boundary values, invalid input, material failure paths, compatibility cases, and every
   applicable termination exit path. For a defect, first define the narrowest regression that distinguishes the
   reproduced defective behavior from the corrected result.
-- Keep expensive, privileged, networked, or external-service tests behind a named target or constraint in the
+- Keep expensive, privileged, networked, or external-service tests behind a named project target or constraint in the
   project test command. Name each prerequisite, and skip only when the project contract makes its absence
   unsupported rather than required.
 - If no selected test kind can observe the promised result, stop with the affected obligation and production-

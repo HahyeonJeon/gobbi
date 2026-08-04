@@ -15,7 +15,7 @@ that this scenario reuses.
 
 The work protects a named behavior, failure mode, compatibility promise, regression, or performance question.
 Each selected test kind should answer one material question under exactly one author or execution contract;
-habit-driven evidence or a mode with incomplete effects, pauses, terminal state, or recovery fails.
+habit-driven evidence or a mode with incomplete effects, pauses, terminal result, or recovery fails.
 Author mode limits project writes to authorized evidence sources and returns a repeatable source and result or
 production-design block. Execution mode keeps project source read-only and returns exact evidence and limits or
 a blocked or flaky result. Both modes contain declared outputs and caches, require separate download and network
@@ -122,7 +122,7 @@ The ordinary project test command should remain repeatable and proportionate; hi
 
 #### Checklist
 
-- [ ] GOTST-CK-PERFORMANCE-03-01 — Every expensive, privileged, networked, and external-service test sits behind a named target or constraint in the project test command rather than in its ordinary path.
+- [ ] GOTST-CK-PERFORMANCE-03-01 — Every expensive, privileged, networked, and external-service test sits behind a named project target or constraint in the project test command rather than in its ordinary path.
 
 ## Aesthetics
 
@@ -171,7 +171,7 @@ output should remain stable under the supported contract; an environment-sensiti
 
 ### GOTST-SC-USAGE-03 — Expected failure: An integration prerequisite is absent
 
-A selected test needs an external service, privilege, build tag, tool, named target in the project test
+A selected test needs an external service, privilege, build tag, tool, named project target in the project test
 command, or `GOOS/GOARCH` target that is unavailable. Skipping is valid only when the project contract
 classifies that absence as unsupported; silent success fails.
 
@@ -249,7 +249,7 @@ the executed inputs, paths, duration, `GOOS/GOARCH` target, and configuration; u
 ### GOTST-SC-RISK-01 — Adversarial: Fuzz input amplifies memory, time, or external effects
 
 A generated input intentionally triggers large allocation, recursion, path expansion, subprocesses, or remote
-calls. The fuzz target should contain exploration inside the real contract and test boundary; resource or
+calls. The fuzz target should contain exploration inside the real contract and observable test boundary; resource or
 side-effect amplification fails.
 
 #### Checklist
@@ -282,7 +282,7 @@ The race detector reports no issue on the selected run. That covers only execute
 
 A required project test command is nondeterministic or prohibitively expensive, or one promised
 `GOOS/GOARCH` target is unsupported. The work should preserve the resulting evidence gap; retries, exclusions,
-or another target's pass do not close it.
+or another `GOOS/GOARCH` target's pass do not close it.
 
 #### Checklist
 
