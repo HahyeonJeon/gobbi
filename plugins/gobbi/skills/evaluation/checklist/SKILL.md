@@ -64,16 +64,6 @@ unchecked even after an evaluator uses it.
   expected evidence, and material constraints.
 - Split the work or stop for missing context when one checklist cannot describe a stable subject and outcome.
 
-#### 1.2 Choose a useful source structure
-
-- Build a free hierarchy that matches the subject. Prefer short descriptive headings over mechanical
-  organization.
-- Use an illustrative structure only where it helps: subject, scope, and evidence; scenario, context, trigger,
-  expected and deficient outcomes; unchecked conditions; and unresolved gaps.
-- The author may adapt or omit those fields. An evaluator may also adapt them in evaluation-owned notes, and
-  identifiers are needed only when a caller requires traceability.
-- Keep the source understandable without a separate schema or authoring conversation.
-
 ### Phase 2 — Discover Relevant Scenarios
 
 #### 2.1 Study the work across its lifecycles
@@ -87,18 +77,22 @@ unchecked even after an evaluator uses it.
 - Treat both lifecycles as discovery guidance. They are not required phases, fixed sequences, checklist
   sections, or measures of completeness.
 
-#### 2.2 Write context-driven scenarios
+#### 2.2 Organize and write context-driven scenarios
 
 - Consider ordinary success; boundaries and transitions; failure and recovery; and deficient-but-functioning
   outcomes such as inconvenience, unintuitive behavior, confusion, inconsistency, or poor appearance.
 - Consider governance, misuse, abuse, or cosmetic compliance when the subject or evidence makes them relevant.
   These prompts are not scenario classes or quotas.
-- State enough context, trigger, expected outcome, deficient outcome, and evidence boundary for each scenario
-  to be understood and evaluated.
+- After discovery, choose a free hierarchy that matches the subject. When useful, adapt the optional
+  [starter template](templates/checklist.md); rename, reorder, repeat, nest, or omit its headings and context.
+- State only the context needed for each scenario to be understood and evaluated. Add a trigger, expected
+  outcome, deficient outcome, or evidence need only when it materially clarifies that scenario.
 - Let relevant perspectives challenge evaluation boundaries when useful. Do not name a fixed set or record
   their use, order, number, or labels.
 - Merge only scenarios that require the same context, evidence, and answer. Split material differences that
   would otherwise hide a boundary or failure.
+- Keep the resulting source understandable without the template or authoring conversation. Use identifiers
+  only when a caller requires traceability.
 
 ### Phase 3 — Write the Checklist Conditions
 
@@ -142,4 +136,5 @@ unchecked even after an evaluator uses it.
 
 ## References
 
+- [Checklist starter](templates/checklist.md) provides one optional, adaptable starting form.
 - [Evaluation](../SKILL.md) owns independent read-only judgment of the frozen subject.
