@@ -64,7 +64,9 @@ other word for that meaning.
 |---|---|
 | `development` | The author-or-change operation for a domain, including a review mode where the family carries one |
 | `testing` | The evidence operation |
-| `conventions` | The written-form and overridable-choice preference, including the binding boundary those choices sit inside |
+| `conventions` | The project-overridable naming and error-text preference, including authority and departure boundaries for written-form choices. |
+| `source` | The source-file organization, formatter layout, import-form, and generated provenance preference. |
+| `documentation` | The public documentation and implementation-comment preference. |
 | `design` | The structural-judgment preference |
 | `platform` | A standard or engine you did not write |
 | `runtime` | A framework runtime you execute inside |
