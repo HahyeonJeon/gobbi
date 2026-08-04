@@ -106,7 +106,7 @@ limits, and a forward-fix path before readiness; readiness declared without them
 #### Checklist
 
 - [ ] DTRLSE-CK-PERFORMANCE-01-01 — Monitoring, rollout stop conditions, a supported-version window, explicit recovery limits, and a forward-fix path are defined before the release is called ready.
-- [ ] DTRLSE-CK-PERFORMANCE-01-02 — The rollout is staged where the distribution channel can control audience growth and the release has observable stop conditions.
+- [ ] DTRLSE-CK-PERFORMANCE-01-03 — The rollout is staged when the distribution channel can control audience growth.
 
 ### DTRLSE-SC-PERFORMANCE-02 — Edge case: the channel cannot control audience growth
 
