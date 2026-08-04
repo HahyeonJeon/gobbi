@@ -13,15 +13,16 @@ only the external and destructive actions the supplied contract and the user aut
 
 The caller supplies one session contract with five properties: proved identity, an immutable base commit, a
 registered worktree outside the main checkout, declared publication intent, and the required repository layout.
-The manager owns session-level setup, acceptance, publication, merge, cleanup, and recovery; a leader or
-executor owns only the writes and local commit granted by one assignment.
+The manager owns session-level setup, acceptance, publication, merge, cleanup, and recovery. Any
+assignment-named writer role, including an assistant, owns only the writes and local commit that its focused
+assignment grants.
 [`conventions.md`](conventions.md) owns deterministic formats.
 
 ## Principles
 
 ### Keep one identity and one isolated writer history
 
-One session UUID identifies one session branch and one linked worktree. Every accepted commit extends that
+One session tuple identifies one session branch and one linked worktree. Every accepted commit extends that
 history through one ordered writer chain; a second writer or a fallback to the main checkout breaks isolation.
 
 ### Make local delivery the invariant
@@ -42,45 +43,34 @@ is missing, stale, or contradictory, retain unique work and stop at an exact rec
 ## Rules
 
 <a id="g-1"></a>
-### G-1 — Bind one isolated session identity
-
-**MUST bind every session to one proved contract, session UUID, base commit, branch, and isolated worktree.**
-Generate the UUID before deriving the branch or worktree, and never create a per-task worktree.
+- **MUST bind every session to one proved contract, immutable identity tuple, base commit, branch, and isolated
+worktree.** Generate the full UUID before deriving the branch and leaf separately, preserve the original UTC
+session-start date and normalized slug when applicable, and never create a per-task worktree.
 
 <a id="g-2"></a>
-### G-2 — Validate every writer root
-
-**MUST resolve every write against the validated fully expanded worktree path and keep one ordered writer
+- **MUST resolve every write against the validated fully expanded worktree path and keep one ordered writer
 chain, allowing one user-approved bootstrap of the contract's required layout and its ignore file in the main
 checkout before the session worktree exists.** Use `git -C <absolute-worktree>` for Git commands, revalidate
 after context boundaries, never use `git stash` to compare or preserve work, and commit that bootstrap before
 capturing the immutable base commit.
 
 <a id="g-3"></a>
-### G-3 — Commit one verified assignment
-
-**MUST create focused verified commits through the writer role the contract authorizes.** Stage only
+- **MUST create focused verified commits through the writer role the contract authorizes.** Stage only
 assignment-owned paths, inspect the staged diff, attach the canonical provenance trailer, and reread the
 commit before manager acceptance.
 
 <a id="g-4"></a>
-### G-4 — Separate external authority
-
-**MUST separate local commits from publication, merge, cleanup, and configuration authority.** Perform only
+- **MUST separate local commits from publication, merge, cleanup, and configuration authority.** Perform only
 what the declared publication intent authorizes, and retain local objects unless a separate explicit Git
 operation receives current user authority.
 
 <a id="g-5"></a>
-### G-5 — Recheck evidence and retain recovery
-
-**MUST recheck mutable Git and GitHub evidence immediately before every dependent action and retain an exact
+- **MUST recheck mutable Git and GitHub evidence immediately before every dependent action and retain an exact
 recovery path on failure or ambiguity.** Resume from the first unproved action and report completed, deferred,
 failed, not-configured, and retained states literally.
 
 <a id="g-6"></a>
-### G-6 — Reject destructive shortcuts
-
-**NEVER force-push, hard-reset, mass-restore, rewrite published history, force-remove a worktree, delete
+- **NEVER force-push, hard-reset, mass-restore, rewrite published history, force-remove a worktree, delete
 unproved unique work, or modify Git or runtime configuration without exact user authority.** The sole narrow
 exception is post-squash local `git branch -D` after direct proof that the branch was the confirmed merged
 pull-request head.
@@ -97,7 +87,7 @@ pull-request head.
 
 | Property | What it must be |
 |---|---|
-| Proved identity | One session UUID that matches the UUID segment of the session-branch name and the `AI-Provenance-Record` trailer of every agent-authored commit on that branch. |
+| Proved identity | One runtime, original UTC session-start date, full session UUID, and normalized slug for a new identity. New names match that tuple; a legacy identity has no slug and retains its legacy names. The UUID matches every agent-authored commit trailer on the branch. |
 | Immutable base commit | One commit hash the caller confirmed before the branch existed, still resolvable in this repository, and unchanged for the whole session. |
 | Isolated worktree outside the main checkout | One absolute path resolving outside the main checkout, in whichever lifecycle state the table below matches. |
 | Declared publication intent | One named external outcome — local retention, push, or pull request, with any issue action stated separately — declared before work and bounding every later external action. |
@@ -110,31 +100,44 @@ pull-request head.
 
 | Lifecycle state | What the worktree property must be | Where it is proved |
 |---|---|---|
-| Fresh | The intended absolute path, plus the runtime system and session start date that derive the branch and that path from the UUID. Nothing exists at the path, and no worktree is registered there or to that branch. | Step 2.1 proves that absence, creates the branch and worktree, and upgrades the property to the registered form before the first write. |
+| Fresh | The intended absolute path, plus the runtime system, original UTC session-start date, normalized slug, and full UUID from which `conventions.md` derives the new branch and leaf separately. Nothing exists at the path, and no worktree is registered there or to that branch. | Step 2.1 proves that absence, creates the branch and worktree, and upgrades the property to the registered form before the first write. |
 | Recovery | One absolute path that `git worktree list` already reports as registered to that exact branch. | This step, directly, before any write. |
 
 - Reject a missing, null, relative, main-checkout, mismatched, or symbolic-link-escaped worktree path in either
   state. For a recovery contract, confirm `git -C <absolute-worktree> rev-parse --show-toplevel` equals the
   contract path before the first write and after any context boundary. For a fresh contract, run that same
   confirmation immediately after Step 2.1 creates the worktree and after any later context boundary.
-- On resume, require the user to name the retained branch or worktree explicitly and rebuild the contract
-  through Step 1.2; never search other worktrees for an implicit active session. A rebuilt contract is always
+- On resume, take the retained branch or worktree from current caller, session, and registered-worktree
+  evidence and rebuild the contract through Step 1.2. Ask the user only when that evidence is missing,
+  ambiguous, or conflicting; never search for a convenient alternative session. A rebuilt contract is always
   in the recovery state.
-- Evidence is the contract source, lifecycle state, UUID, base commit, branch, absolute worktree, registered
-  worktree record once it exists, head, status, and declared publication intent.
+- Parse the supplied branch and worktree leaf separately through the new or legacy validators in
+  [`conventions.md`](conventions.md). Require both to return one matching identity. For a new identity, require
+  exact runtime, date, slug, and UUID equality. For a legacy identity, require exact runtime, date, and UUID
+  equality with `slug: not-applicable`. Reject a mixed new/legacy pair, changed tuple, parse ambiguity, or
+  same-UUID competing branch, worktree, or session evidence.
+- Evidence is the contract source, lifecycle state, identity tuple and matched format, base commit, branch,
+  absolute worktree, registered worktree record once it exists, head, status, and declared publication
+  intent.
 
 #### 1.2 Rebuild an unproved contract from Git evidence
 
-- Validate the named branch against the session-branch format and extract its runtime prefix, start date, and
-  UUID. Confirm the named worktree is registered to that exact branch and remains outside the main checkout.
+- Parse the named branch and worktree leaf separately against both permanent formats in
+  [`conventions.md`](conventions.md). Confirm they produce one matching new tuple or one matching legacy
+  identity, the named worktree is registered to that exact branch, and it remains outside the main checkout.
+- Collect current branch, worktree registration, session evidence, commit trailers, and retained caller
+  records before asking for a fact. Reject multiple plausible parses or roots and any evidence that associates
+  the same UUID with a different runtime, date, slug, branch, worktree, or session leaf. Never rename an
+  object, add a suffix, silently migrate a legacy identity, or create a second object for the UUID.
 - Inspect first-parent history for the earliest contiguous agent-authored commit whose `AI-Provenance-Record`
   carries the same session UUID. Its parent is the base commit; before the first session commit, the current
   clean head is the provisional base.
-- Recover the base branch only from unambiguous repository evidence or a current user confirmation. Stop when
-  manual commits, missing or malformed provenance, multiple plausible bases, a dirty conflicting worktree, a
-  branch/path mismatch, or another writer makes reconstruction ambiguous.
-- Require the user to restate the publication intent, because Git evidence cannot prove it. Report the
-  rebuilt contract and the exact recovery point before work.
+- Recover the base branch and publication intent from unambiguous current repository, session, or caller
+  evidence. Ask only for the first fact that is missing, ambiguous, or conflicting. Stop when manual commits,
+  missing or malformed provenance, multiple plausible bases or intents, a dirty conflicting worktree, an
+  identity mismatch, or another writer makes reconstruction ambiguous.
+- Report the rebuilt contract, every evidence source used, any user-supplied missing fact, and the exact
+  recovery point before work.
 
 ### Phase 2 — Create, Re-anchor, and Commit Local Work
 
@@ -171,10 +174,12 @@ pull-request head.
 - Run [`scripts/git-posture-probe.sh`](scripts/git-posture-probe.sh) for the local prerequisites every session
   requires. Probe remote and GitHub prerequisites only when the declared publication intent or a separate Git
   operation authorizes an external action.
-- Generate the session UUID before using [`conventions.md`](conventions.md) to derive the branch and absolute
-  worktree, and confirm both equal the fresh contract's intended values. Create them once from the proved
-  base, then verify the worktree root, branch, base commit, clean status, ignore posture, and unchanged main
-  checkout.
+- Generate the full session UUID before using [`conventions.md`](conventions.md). Normalize and validate the
+  caller-supplied slug, retain the original UTC session-start date, then derive the new branch and worktree
+  leaf separately from the same tuple. Confirm both equal the fresh contract's intended values. Before
+  creation, search current branch, worktree, and session evidence for the UUID and reject any competing
+  identity or occupied target. Create the branch and worktree once from the proved base, then verify the
+  tuple, worktree root, branch, base commit, clean status, ignore posture, and unchanged main checkout.
 - Upgrade the fresh contract's worktree property to the registered form from that `git worktree list`
   evidence. Every later step uses the upgraded contract; no write happens before the upgrade.
 - If the same identity or target already exists, stop for recovery instead of adding a suffix, deleting it, or
