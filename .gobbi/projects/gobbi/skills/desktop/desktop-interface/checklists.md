@@ -149,7 +149,7 @@ the design permanently is the failure.
 #### Checklist
 
 - [ ] DTINTF-CK-PERFORMANCE-01-01 — Post-release measurement identifies the exact design subject, affected people, observation conditions, date, current reach, and applicable success target and harm guardrail.
-- [ ] DTINTF-CK-PERFORMANCE-01-02 — Evidence crossing a target or harm guardrail reopens the affected decision for an improvement judgment, while a no-change result remains bounded and falsifiable.
+- [ ] DTINTF-CK-PERFORMANCE-01-04 — Crossing a success target or harm guardrail reopens the affected decision for an improvement judgment.
 - [ ] DTINTF-CK-PERFORMANCE-01-03 — The Post-release measurement and improvement result returns without closing when a signal is missing or unanswerable, a proxy has a harmful interpretation, monitoring is unbounded, an owner or consumer is missing, a guardrail is crossed, an explicit improvement-or-no-change decision or Maintenance decision is absent, or a no-change result is not dated, bounded, and falsifiable.
 
 ## Aesthetics
@@ -168,7 +168,7 @@ taste or house style is the failure.
 
 ### DTINTF-SC-AESTHETICS-02 — Poor quality: motion added with no state change to explain
 
-A transition is added because the surface felt static, and nothing about location, state, or causality is
+A transition is added because the interface felt static, and nothing about location, state, or causality is
 clearer afterwards. The expected outcome is motion only where it makes a change legible, with what it must
 communicate stated; decorative motion accepted because it is subtle is the failure.
 
@@ -228,9 +228,10 @@ unspecified state, location, or cause is the failure.
 
 ### DTINTF-SC-CONSISTENCY-01 — Normal case: the live product is the identity source
 
-The shipped application already teaches its users a set of patterns, and a new surface must sit beside them.
-The expected outcome prefers what the application teaches over a described intention; a new surface built to
-an intention the product never expressed is the failure.
+The shipped application already teaches its users a set of patterns, and a new view, window, page, panel,
+dialog, or control must sit beside them. The expected outcome prefers what the application teaches over a
+described intention; a new view, window, page, panel, dialog, or control built to an intention the product
+never expressed is the failure.
 
 #### Checklist
 
