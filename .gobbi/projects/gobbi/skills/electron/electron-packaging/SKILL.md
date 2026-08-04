@@ -80,9 +80,12 @@ and accepts or rejects the candidate.
 - Identify the packaged application outcome and each target operating system and architecture. Name the
   expected artifact form, installer form, installed behavior claims, and recorded credential owner or
   external-action authority.
-- Accept current records from Contract, Design, Development, Observability, and Runtime. Confirm that their
-  application identity, Electron version, process entry expectations, resources, diagnostics, and operating
-  system facts agree.
+- Accept current records from [`electron-contract`](../electron-contract/SKILL.md),
+  [`electron-design`](../electron-design/SKILL.md),
+  [`electron-development`](../electron-development/SKILL.md),
+  [`electron-observability`](../electron-observability/SKILL.md), and
+  [`electron-runtime`](../electron-runtime/SKILL.md). Confirm that their application identity, Electron
+  version, process entry expectations, resources, diagnostics, and operating-system facts agree.
 - Stop when a required record is missing or contradictory. Preserve the last accepted state and return the
   issue to the owner that can decide it.
 
@@ -251,8 +254,3 @@ and accepts or rejects the candidate.
 ## References
 
 - [`Electron Packaging Checklist`](checklists.md) owns reusable evaluation coverage for this operation.
-- [`Electron Contract`](../electron-contract/SKILL.md) owns observable installed-application behavior.
-- [`Electron Design`](../electron-design/SKILL.md) owns technical placement and security decisions.
-- [`Electron Development`](../electron-development/SKILL.md) owns the bounded source and build-input record.
-- [`Electron Observability`](../electron-observability/SKILL.md) owns diagnostic-emission requirements.
-- [`Electron Runtime`](../electron-runtime/SKILL.md) owns pinned Electron mechanism facts.

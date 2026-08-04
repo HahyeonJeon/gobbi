@@ -23,7 +23,6 @@ stands in for an installed promise.
 
 - [ ] ELECCONT-CK-PROJECT-01-01 — The subject is one installed Electron application contract.
 - [ ] ELECCONT-CK-PROJECT-01-02 — The contract names every affected actor and the decision authority.
-- Also applies: ELECCONT-CK-OVERALL-01-01 (target and installed identities).
 
 ### ELECCONT-SC-PROJECT-02 — Rule violation: the contract claims another owner's work
 
@@ -139,12 +138,6 @@ the receiver can accept it.
 - Also applies: ELECCONT-CK-USAGE-01-04 (visible success and failure).
 - Also applies: ELECCONT-CK-USAGE-01-05 (accepted input and current data preservation).
 - Also applies: ELECCONT-CK-USAGE-01-06 (recovery or support).
-- Also applies: ELECCONT-CK-OVERALL-01-01 (target and installed identities).
-- Also applies: ELECCONT-CK-OVERALL-01-02 (entry and outcome fields).
-- Also applies: ELECCONT-CK-OVERALL-01-03 (continuity and cancellation fields).
-- Also applies: ELECCONT-CK-OVERALL-01-04 (timeout and retry fields).
-- Also applies: ELECCONT-CK-OVERALL-01-05 (failure and diagnostics fields).
-- Also applies: ELECCONT-CK-OVERALL-01-06 (recovery, support, and evidence fields).
 
 ### ELECCONT-SC-USAGE-03 — Normal case: running-application deep-link entry
 
@@ -155,19 +148,13 @@ the effect.
 #### Checklist
 
 - [ ] ELECCONT-CK-USAGE-03-01 — The running-application deep-link path states running delivery support and current application state for the exact target.
-- [ ] ELECCONT-CK-USAGE-03-02 — The running-application deep-link path rejects routing to a superseded, destroyed, or unintended window.
+- [ ] ELECCONT-CK-USAGE-03-02 — Each running-application deep-link or file-open path rejects routing to a superseded, destroyed, or unintended window.
 - Also applies: ELECCONT-CK-USAGE-01-01 (target availability and start state).
 - Also applies: ELECCONT-CK-USAGE-01-02 (validation before a final state change).
 - Also applies: ELECCONT-CK-USAGE-01-03 (correct instance and window).
 - Also applies: ELECCONT-CK-USAGE-01-04 (visible success and failure).
 - Also applies: ELECCONT-CK-USAGE-01-05 (accepted input and current data preservation).
 - Also applies: ELECCONT-CK-USAGE-01-06 (recovery or support).
-- Also applies: ELECCONT-CK-OVERALL-01-01 (target and installed identities).
-- Also applies: ELECCONT-CK-OVERALL-01-02 (entry and outcome fields).
-- Also applies: ELECCONT-CK-OVERALL-01-03 (continuity and cancellation fields).
-- Also applies: ELECCONT-CK-OVERALL-01-04 (timeout and retry fields).
-- Also applies: ELECCONT-CK-OVERALL-01-05 (failure and diagnostics fields).
-- Also applies: ELECCONT-CK-OVERALL-01-06 (recovery, support, and evidence fields).
 
 ### ELECCONT-SC-USAGE-04 — Normal case: cold-start file-open entry
 
@@ -186,12 +173,6 @@ is skipped or late.
 - Also applies: ELECCONT-CK-USAGE-01-04 (visible success and failure).
 - Also applies: ELECCONT-CK-USAGE-01-05 (accepted input and current data preservation).
 - Also applies: ELECCONT-CK-USAGE-01-06 (recovery or support).
-- Also applies: ELECCONT-CK-OVERALL-01-01 (target and installed identities).
-- Also applies: ELECCONT-CK-OVERALL-01-02 (entry and outcome fields).
-- Also applies: ELECCONT-CK-OVERALL-01-03 (continuity and cancellation fields).
-- Also applies: ELECCONT-CK-OVERALL-01-04 (timeout and retry fields).
-- Also applies: ELECCONT-CK-OVERALL-01-05 (failure and diagnostics fields).
-- Also applies: ELECCONT-CK-OVERALL-01-06 (recovery, support, and evidence fields).
 
 ### ELECCONT-SC-USAGE-05 — Normal case: running-application file-open entry
 
@@ -202,19 +183,13 @@ stale routing, or destructive replacement.
 #### Checklist
 
 - [ ] ELECCONT-CK-USAGE-05-01 — The running-application file-open path states running file-open support and current application state for the exact target.
-- [ ] ELECCONT-CK-USAGE-05-02 — The running-application file-open path rejects routing to a superseded, destroyed, or unintended window.
+- Also applies: ELECCONT-CK-USAGE-03-02 (running external input rejects a stale or unintended window).
 - Also applies: ELECCONT-CK-USAGE-01-01 (target availability and start state).
 - Also applies: ELECCONT-CK-USAGE-01-02 (validation before a final state change).
 - Also applies: ELECCONT-CK-USAGE-01-03 (correct instance and window).
 - Also applies: ELECCONT-CK-USAGE-01-04 (visible success and failure).
 - Also applies: ELECCONT-CK-USAGE-01-05 (accepted input and current data preservation).
 - Also applies: ELECCONT-CK-USAGE-01-06 (recovery or support).
-- Also applies: ELECCONT-CK-OVERALL-01-01 (target and installed identities).
-- Also applies: ELECCONT-CK-OVERALL-01-02 (entry and outcome fields).
-- Also applies: ELECCONT-CK-OVERALL-01-03 (continuity and cancellation fields).
-- Also applies: ELECCONT-CK-OVERALL-01-04 (timeout and retry fields).
-- Also applies: ELECCONT-CK-OVERALL-01-05 (failure and diagnostics fields).
-- Also applies: ELECCONT-CK-OVERALL-01-06 (recovery, support, and evidence fields).
 
 ## Consistency
 
@@ -240,7 +215,8 @@ succeeds by maintaining continuity; it fails when ordinary recovery silently dis
 #### Checklist
 
 - [ ] ELECCONT-CK-RISK-01-01 — The safe-recovery default applies only to a recoverable lifecycle interruption when accepted input or usable state can be preserved safely.
-- [ ] ELECCONT-CK-RISK-01-02 — An applicable safe-recovery default preserves accepted user input and restores a usable state.
+- [ ] ELECCONT-CK-RISK-01-02 — An applicable safe-recovery default preserves accepted user input.
+- [ ] ELECCONT-CK-RISK-01-03 — An applicable safe-recovery default restores a usable state.
 
 ### ELECCONT-SC-RISK-02 — Expected failure: safe recovery is unsafe or impossible
 

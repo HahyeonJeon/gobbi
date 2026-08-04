@@ -161,6 +161,19 @@ authority and actors established
 
 - Create the smallest dependency-ready work units. For each unit, name one substantive owner, its accepted
   inputs, output identity, limitations, next owner, and stop condition.
+- Use this strict static ownership order from the highest lower tier to the Runtime foundation:
+
+  | Tier | Owner | Unique authority used by Delivery |
+  |---|---|---|
+  | 6 | [`electron-testing`](../electron-testing/SKILL.md) | Test design, execution, interpretation, environment classification, and evidence strength |
+  | 5 | [`electron-release`](../electron-release/SKILL.md) | Release policy, readiness, and authorized external release actions |
+  | 4 | [`electron-packaging`](../electron-packaging/SKILL.md) | Produced bytes, immutable candidate identity, and candidate acceptance |
+  | 3 | [`electron-observability`](../electron-observability/SKILL.md) | Diagnostic emission, arrival, identity, and signal limitations |
+  | 3 | [`electron-development`](../electron-development/SKILL.md) | Source implementation, construction, and source-check acceptance |
+  | 2 | [`electron-contract`](../electron-contract/SKILL.md) | Installed behavior, target differences, lifecycle obligations, and safe recovery |
+  | 1 | [`electron-design`](../electron-design/SKILL.md) | Process, trust, bridge, state, resource, performance, and isolation decisions |
+  | 1 | [`electron-interface`](../electron-interface/SKILL.md) | Observable structure, states, content, feedback, recovery, accessibility, locale, and modality |
+  | 0 | [`electron-runtime`](../electron-runtime/SKILL.md) | Current Electron facts and causal runtime diagnosis |
 - Use these dynamic work-record flows without treating them as static ownership links:
   - Interface and Design records flow to Contract reconciliation;
   - accepted design and contract records flow to Development;
@@ -393,25 +406,16 @@ next owner, dependencies, acceptance or stop, and invalidation condition.
   - explicit exclusions and the exact first resume point.
 - A full release path ends at `maintained`, `reopened`, or an explicit recoverable stop. A narrower requested
   terminal ends at its literal accepted state with no claim that full delivery occurred.
-- Use [the Delivery checklist](checklists.md) to inspect the complete record. The checklist supplies
-  evaluation prompts; it does not give Delivery authority to issue a verdict.
+- Use the applicable Delivery evaluation sources in References to inspect the record. Those sources supply
+  evaluation prompts; they do not give Delivery authority to issue a verdict.
 
 ## References
 
-Delivery may read every lower Electron owner because it coordinates their accepted records. This table lists
-the static ownership order from highest lower tier to foundation.
-
-| Tier | Owner | Unique authority used by Delivery |
+| Source | Bound subject | Apply |
 |---|---|---|
-| 6 | [`electron-testing`](../electron-testing/SKILL.md) | Test design, execution, interpretation, environment classification, and evidence strength |
-| 5 | [`electron-release`](../electron-release/SKILL.md) | Release policy, readiness, and authorized external release actions |
-| 4 | [`electron-packaging`](../electron-packaging/SKILL.md) | Produced bytes, immutable candidate identity, and candidate acceptance |
-| 3 | [`electron-observability`](../electron-observability/SKILL.md) | Diagnostic emission, arrival, identity, and signal limitations |
-| 3 | [`electron-development`](../electron-development/SKILL.md) | Source implementation, construction, and source-check acceptance |
-| 2 | [`electron-contract`](../electron-contract/SKILL.md) | Installed behavior, target differences, lifecycle obligations, and safe recovery |
-| 1 | [`electron-design`](../electron-design/SKILL.md) | Process, trust, bridge, state, resource, performance, and isolation decisions |
-| 1 | [`electron-interface`](../electron-interface/SKILL.md) | Observable structure, states, content, feedback, recovery, accessibility, locale, and modality |
-| 0 | [`electron-runtime`](../electron-runtime/SKILL.md) | Current Electron facts and causal runtime diagnosis |
+| [Coordination checklist](checklists.md) | Request classification, missing-input stops, work maps, dependency-ready coordination, handoff acceptance, recoverable stops, and terminal coordination records | Load for every full Delivery evaluation and for a narrow evaluation unless the explicit subject excludes coordination records. |
+| [State checklist](state/checklists.md) | Lower-owner authority, literal Delivery states and history, installed lifecycle transitions, invalidation and reopen routing, release authority, and external-action or verdict prohibitions | Load for every full Delivery evaluation and for a narrow evaluation unless the explicit subject excludes lifecycle state and authority. |
 
-The exchanges named in the Procedure are dynamic work records. They do not create new static ownership links
-or transfer a lower owner's authority to Delivery.
+A full Delivery evaluation loads both sources. A narrow evaluation may omit one only when its explicit
+subject excludes that source's bound concern. Evaluation selects applicable rows, records results, and owns
+findings and the verdict.

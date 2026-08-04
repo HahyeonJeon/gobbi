@@ -140,8 +140,9 @@ or a reported arrival without a stored record are the failure.
 #### Checklist
 
 - [ ] ELECOBS-CK-USAGE-02-01 — Missing arrival is traced through emitter, process startup, correlation, queue, transport, destination configuration, access, retention, and storage in earliest-boundary order.
-- [ ] ELECOBS-CK-USAGE-02-02 — An implementation repair corrects the earliest owned cause and repeats the affected construction check and stored-record inspection.
+- [ ] ELECOBS-CK-USAGE-02-02 — An implementation repair corrects only the earliest owned cause.
 - [ ] ELECOBS-CK-USAGE-02-03 — A mechanism dispute, contract or design contradiction, or unauthorized destination decision returns to its earliest owner without an observability-owned replacement.
+- [ ] ELECOBS-CK-USAGE-02-04 — An implementation repair repeats every affected construction check.
 - Also applies: ELECOBS-CK-USAGE-01-02 (the stored record is inspected at the destination).
 
 ## Consistency
@@ -155,7 +156,7 @@ result; advancing from configuration or arrival to live-health proof is the fail
 #### Checklist
 
 - [ ] ELECOBS-CK-CONSISTENCY-01-01 — Configured emission is reported separately from observed stored arrival.
-- [ ] ELECOBS-CK-CONSISTENCY-01-02 — The result states literally that live health is not established by the Electron Observability operation and remains outside the result.
+- [ ] ELECOBS-CK-CONSISTENCY-01-02 — The result states literally that live health is not established by the Electron Observability operation.
 - [ ] ELECOBS-CK-CONSISTENCY-01-03 — The completion claim is no broader than the recorded emission and arrival statuses, limitations, and unavailable fields.
 
 ### ELECOBS-SC-CONSISTENCY-02 — Rule violation: observability claims another owner's outcome
@@ -168,7 +169,7 @@ inside this operation is the Rule violation.
 
 - [ ] ELECOBS-CK-CONSISTENCY-02-01 — Observability performs neither final diagnosis nor runtime-mechanism interpretation.
 - [ ] ELECOBS-CK-CONSISTENCY-02-02 — Observability performs no test design, execution, interpretation, environment classification, evidence acceptance, or test verdict.
-- [ ] ELECOBS-CK-CONSISTENCY-02-03 — Observability claims no live health, complete delivery, package state, release state, publication, or rollout outcome.
+- [ ] ELECOBS-CK-CONSISTENCY-02-03 — Observability claims no live health, recovery, complete delivery, package state, release state, publication, or rollout outcome.
 - [ ] ELECOBS-CK-CONSISTENCY-02-04 — Static sibling references are limited to `electron-contract`, `electron-design`, and `electron-runtime`.
 
 ## Risk
@@ -181,11 +182,11 @@ treated as universal capture is the failure.
 
 #### Checklist
 
-- [ ] ELECOBS-CK-RISK-01-01 — The crash-capture record states an early-enough `crashReporter.start()` point for every subsequently created monitored process and assigns startup and later-parameter constraints to Electron Runtime for the pinned major.
+- [ ] ELECOBS-CK-RISK-01-01 — The crash-capture record states an early-enough `crashReporter.start()` point for every subsequently created monitored process.
 - [ ] ELECOBS-CK-RISK-01-02 — Main-process exit uses an external collector or supervisor or previously configured crash collection because in-process main code cannot report after exit.
 - [ ] ELECOBS-CK-RISK-01-03 — Renderer disappearance uses `render-process-gone` on the affected `webContents`.
 - [ ] ELECOBS-CK-RISK-01-04 — Renderer hang and recovery use `unresponsive` and a later `responsive` on the same affected `webContents`.
-- [ ] ELECOBS-CK-RISK-01-05 — `child-process-gone` excludes renderer processes and is not used as a renderer-loss signal.
+- [ ] ELECOBS-CK-RISK-01-05 — `child-process-gone` excludes renderer processes.
 - [ ] ELECOBS-CK-RISK-01-06 — An owned utility process retains direct `error` and `exit` observation instead of replacing both with `child-process-gone`.
 
 ### ELECOBS-SC-RISK-02 — Adversarial: protected data reaches an emitted or stored diagnostic
@@ -212,8 +213,12 @@ or relabeling absence as arrival is the adversarial failure.
 #### Checklist
 
 - [ ] ELECOBS-CK-RISK-03-01 — No diagnostic control in this set is changed to obtain a passing result: required-signal coverage, security controls, retention limits, or sensitive-capture authority.
-- [ ] ELECOBS-CK-RISK-03-02 — A configured reporter, clean construction result, or emitter invocation is not treated as proof of stored arrival, live health, recovery, or final diagnosis.
 - [ ] ELECOBS-CK-RISK-03-03 — Backpressure, destination unavailability, missing correlation, reporter startup gaps, and protected-data failure remain explicit statuses rather than successful arrival.
+- Also applies: ELECOBS-CK-USAGE-01-01 (a construction result is not arrival or behavior proof).
+- Also applies: ELECOBS-CK-CONSISTENCY-01-01 (configured reporting or emitter invocation is not stored-arrival proof).
+- Also applies: ELECOBS-CK-CONSISTENCY-01-02 (live health is not established).
+- Also applies: ELECOBS-CK-CONSISTENCY-02-01 (final diagnosis stays outside Observability).
+- Also applies: ELECOBS-CK-CONSISTENCY-02-03 (recovery and other owner outcomes stay outside Observability).
 
 ## Overall
 
@@ -228,5 +233,4 @@ deciding their cause; a missing field or higher-owner claim is the failure.
 - [ ] ELECOBS-CK-OVERALL-01-01 — The final record contains questions, consumers, source and artifact fields, target operating system and architecture, process map, signal definitions and owners, correlation map and limits, capture timing, redaction allowlists, volume controls, transports, destinations, stored arrival, access and retention, cleanup, non-interference, limitations, unresolved facts, and later test needs.
 - [ ] ELECOBS-CK-OVERALL-01-02 — The dynamic arrived-record handoff contains only records and limits for Electron Runtime diagnosis, never a decided cause or policy change.
 - Also applies: ELECOBS-CK-CONSISTENCY-01-03 (completion claim remains bounded).
-- Also applies: ELECOBS-CK-CONSISTENCY-02-01 (final diagnosis stays outside Observability).
 - Also applies: ELECOBS-CK-RISK-01-02 (main-process failure capture survives main exit).

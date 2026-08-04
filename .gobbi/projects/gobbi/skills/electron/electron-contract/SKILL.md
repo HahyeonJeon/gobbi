@@ -17,9 +17,9 @@ identity, starting state, trigger, result, the state change the application or o
 final, preservation behavior, failure, recovery, diagnostics requirement, and evidence required to establish
 the observable result.
 
-This skill owns installed behavior judgments only. [`electron-interface`](../electron-interface/SKILL.md) owns
-observable interface judgment, [`electron-design`](../electron-design/SKILL.md) owns technical architecture,
-and [`electron-runtime`](../electron-runtime/SKILL.md) supplies current mechanism facts. Rules define the valid
+This skill owns installed behavior judgments only. Interface owns observable interface judgment,
+[`electron-design`](../electron-design/SKILL.md) owns technical architecture, and Runtime supplies current
+mechanism facts. Rules define the valid
 choice space and override every conflicting Preference.
 
 ## Principles
@@ -190,8 +190,3 @@ evidence. A Rule or accepted product, accessibility, security, or user-authority
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [`electron-interface`](../electron-interface/SKILL.md) owns observable interface judgment and target
-  convention choices.
-- [`electron-design`](../electron-design/SKILL.md) owns technical architecture, security, process, window, and
-  resource judgments.
-- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism and pinned-major lookup.
