@@ -7,20 +7,21 @@ skill-type: operation
 
 # Go Testing
 
-Use this operation to design, implement, review, or execute evidence for Go behavior. It produces a focused,
-repeatable test result using the smallest applicable mix of tests, examples, fuzzing, benchmarks, coverage,
-race detection, and integration checks.
+Go Testing designs, authors, reviews, or executes focused evidence for a named Go behavior or risk. It returns
+the smallest repeatable result supported by tests, examples, fuzzing, benchmarks, coverage, race detection,
+and integration checks, with every evidence limit explicit.
 
-The operation owns test strategy and interpretation, not general code implementation or command lookup.
-`go-development` owns production changes, `go-concurrency` owns synchronization design, and `go-toolchain`
-owns command side effects and environment diagnosis.
+This operation owns the evidence question, test kind, observable test boundary or controllable dependency,
+cases, execution choice, and interpretation. `go-design` owns production design, `go-development` owns
+production code changes, `go-concurrency` owns synchronization design, and `go-toolchain` owns project command
+syntax, exact package pattern semantics, environment facts, and command effects.
 
 ## Principles
 
-### Test behavior at its narrowest stable seam
+### Test behavior at its narrowest stable boundary
 
 A test should fail when promised behavior breaks and remain stable when implementation details change. Select
-the package boundary, inputs, and observations from the contract being protected.
+an observable test boundary or controllable dependency from the contract being protected.
 
 ### Make failures explain the broken contract
 
@@ -35,134 +36,158 @@ flaky assertion hides uncertainty instead of producing evidence.
 ### Match each tool to its claim
 
 Unit tests, fuzzing, benchmarks, coverage, and the race detector answer different questions. Combine only the
-evidence needed for the risk and state every untested path or unsupported target.
+evidence needed for the risk and state every untested path or unsupported `GOOS/GOARCH` target.
 
 ## Rules
 
-- **MUST establish author or read-only review mode and derive every test from a named behavior, failure mode,
-  compatibility promise, or regression.** Review mode may run authorized non-writing checks but must not edit,
-  format, generate, or update retained corpora.
+- **MUST select exactly one author or execution mode before action and bind its complete effect contract.** Every
+  project-path write, disposable output, cache or download, project execution, network effect, credential-use
+  fact, external-mutation fact, pause point, terminal result, and recovery field must match that mode.
 - **MUST make tests deterministic, isolated, and repeatable under the project's supported execution order.**
-  Control time, randomness, environment, files, network, and shared state at an explicit seam.
+  Control time, randomness, environment, files, network, and shared state at an observable test boundary or
+  controllable dependency.
 - **MUST make each failure identify the case and show useful `got` and `want` evidence or an equivalent
   behavioral comparison.** Mark helpers with `t.Helper` so locations point to the failed contract.
-- **MUST release test resources and restore process state on success, failure, skip, and panic paths.** Use
-  `t.Cleanup`, temporary directories, test-scoped environment helpers, contexts, and server close functions
-  when the selected Go version and fixture require them.
+- **MUST release test resources and restore process state on every applicable exit path.** Cover success, error,
+  cancellation, timeout, skip, and panic exit paths with `t.Cleanup`, temporary directories, test-scoped
+  environment helpers, contexts, and close functions as the selected Go toolchain version and fixture require.
 - **MUST prevent concurrent tests and subtests from mutating shared fixtures or process-wide state without
-  synchronization.** Confirm loop-variable and closure behavior against the module's language version before
+  synchronization.** Confirm loop-variable and closure behavior against the module's Go language version before
   using parallel subtests.
 - **NEVER present a pass, coverage percentage, benchmark sample, fuzz run, or race-detector run as proof beyond
-  the inputs, paths, duration, platform, and configuration it exercised.** Report the evidence boundary with
-  the result.
+  the inputs, paths, duration, `GOOS/GOARCH` target, and configuration it exercised.** Report the evidence
+  boundary with the result.
 
 ## Procedure
 
-### Phase 1 — Plan the Evidence
+### Phase 1 — Bind the Evidence Contract
 
-#### 1.1 Define the behavior and risk
+#### 1.1 Bind the evidence question and boundary
 
-- Read the requested outcome, public or package contract, existing tests, defect report, supported Go version,
-  build constraints, platforms, concurrency, and compatibility obligations.
-- Name the behavior, observable result, relevant failures, and risk that needs evidence. Decide whether this is
-  author mode or a read-only review.
-- Map nondeterminism, side effects, private dependencies, and slow or external systems. If the production
-  design exposes no stable seam, return that design gap to `go-development` instead of compensating with a
-  fragile test.
-- Record the package, test kinds, focused command scope, and success evidence before writing or running tests.
+- Read the accepted result, public or package contract, existing evidence, defect report, minimum supported Go
+  version, selected Go toolchain version, module's Go language version, build constraints, compatibility
+  obligations, supported `GOOS/GOARCH` targets, and applicable success, error, cancellation, timeout, or panic
+  exit paths.
+- Name the evidence question, observable behavior or risk, test kind, and success condition. Bind the narrowest
+  observable test boundary or controllable dependency that can distinguish the promised result.
+- Map time, randomness, environment, files, network, process state, concurrency, private dependencies, and slow
+  or external systems. If production design supplies no valid boundary, stop and hand the design need to
+  `go-design` or the production change to `go-development`; do not add a test-only public hook.
+- Record the project test command, exact package pattern only as project-command selection or evidence, flags,
+  `GOOS/GOARCH` target, and expected evidence. Use `go-toolchain` for their syntax, semantics, environment, and
+  effect classification.
 
-#### 1.2 Select the smallest sufficient evidence set
+#### 1.2 Bind author or execution mode and effects
 
-- Use an ordinary test for deterministic examples, a package-level integration test for component boundaries,
-  an executable example for user-visible documentation, fuzzing for broad input exploration, and a benchmark
-  only for a performance question.
-- Add coverage when it can reveal unexercised behavior, the race detector when concurrent access is in scope,
-  and platform or build-tag runs when file selection or target behavior can differ.
-- Keep expensive, privileged, networked, or external-service tests behind the project's established target or
-  constraint. State their prerequisites and skip only when the contract defines that absence as unsupported.
-- If no test kind can observe the claimed result, revise the claim or the seam before continuing.
+- Select exactly one mode. A writing task uses author mode; a review or run that leaves project source unchanged
+  uses execution mode. Authority in one mode or sibling never transfers to another effect.
+- **Author mode:** project-path writes are limited to authorized test, example, fuzz, or benchmark sources;
+  disposable writes are limited to approved temporary, fuzz-corpus, and failure outputs; test and fuzz caches
+  require approval; downloads require separate authority; execution is limited to the authorized project test
+  command and other named project commands for evidence; network access requires separate authority; credential
+  use is none; external mutation is none. Pause before a production-source change, undeclared output, network
+  access, or download. The terminal result is a focused repeatable evidence source and result or a production-
+  design block; recovery hands production design to its owner and retains evidence limits.
+- **Execution mode:** project source is read-only; disposable writes are contained temporary, fuzz, coverage,
+  and failure outputs; test and fuzz caches remain contained; downloads require separate authority; execution is
+  limited to the authorized project test command, named fuzz targets and benchmarks, coverage, and race checks;
+  network access requires separate authority; credential use is none; external mutation is none. Pause before
+  source mutation, uncontrolled fuzz output, network access, or download. The terminal result is exact evidence
+  and limits or a blocked or flaky result; recovery retains the failing input and first recovery action.
 
-### Phase 2 — Design Cases and Seams
+### Phase 2 — Design the Evidence
 
-#### 2.1 Choose package and fixture boundaries
+#### 2.1 Select test kinds and cases
 
-- Use the package under test for necessary access to unexported behavior; use an external `_test` package when
-  the public client experience is the contract. Do not expose production internals solely for tests.
-- Isolate clocks, randomness, I/O, network clients, and dependencies at the narrowest production seam. Prefer a
-  small function or consumer-defined interface over a broad mock framework.
-- Use `t.TempDir`, `t.Cleanup`, and test-scoped environment helpers where supported. Use `TestMain` only for a
-  real process-wide fixture or setup contract that per-test cleanup cannot express.
-- Put file fixtures under `testdata` when they are stable inputs worth reading; generate small cases in the test
-  when that makes intent clearer.
+- Use an ordinary test for deterministic behavior, a package-level integration test for component boundaries,
+  an executable example for caller-visible documentation, fuzzing for input exploration, and a benchmark only
+  for a performance question. Add coverage, race detection, build tags, or `GOOS/GOARCH` target checks only for
+  the risk they can answer.
+- Cover ordinary behavior, boundary values, invalid input, material failure paths, compatibility cases, and every
+  applicable termination exit path. For a defect, first define the narrowest regression that distinguishes the
+  reproduced defective behavior from the corrected result.
+- Keep expensive, privileged, networked, or external-service tests behind a named target or constraint in the
+  project test command. Name each prerequisite, and skip only when the project contract makes its absence
+  unsupported rather than required.
+- If no selected test kind can observe the promised result, stop with the affected obligation and production-
+  design handoff instead of weakening the claim.
 
-#### 2.2 Design cases and failure output
+#### 2.2 Design fixtures, isolation, and failure output
 
-- Cover the ordinary case, boundary values, invalid input, important failure paths, and compatibility cases
-  supported by the contract. For a defect, first create the narrowest regression that fails for the reproduced
-  cause.
-- Use a table when cases share one behavior, setup, action, and comparison. Split cases that need different
-  control flow, fixtures, or explanations rather than forcing them into a large option table.
-- Give subtests stable case names and capture loop values according to the selected language version before
-  parallel execution. Call `t.Parallel` only when every fixture and process-level dependency is safe to share.
-- Design messages from the failure backward: name the operation, input or case, `got`, `want`, and any
-  comparison detail needed to act.
+- Use the package under test only when its contract requires unexported access; use an external `_test` package
+  for the public caller contract. Prefer a small natural function or consumer-defined interface when a
+  controllable dependency is needed.
+- Use `t.TempDir`, `t.Cleanup`, test-scoped environment helpers, contexts, and close functions. Use `TestMain`
+  only for a real process-wide contract, and keep stable retained file inputs under `testdata`.
+- Use a table only when every case shares one setup, behavioral action, and comparison. Give subtests stable
+  names, capture loop values according to the module's Go language version, and call `t.Parallel` only when no
+  fixture or process-wide state can race.
+- Design each failure to name the operation and case and report `got`, `want`, and useful context. Mark assertion
+  helpers with `t.Helper`.
 
-### Phase 3 — Implement the Evidence
+### Phase 3 — Produce the Evidence
 
-#### 3.1 Write focused tests and examples
+#### 3.1 Author evidence sources when selected
 
-- Build the smallest test that reaches the chosen seam, performs one behavioral action, and asserts the
-  complete result. Keep setup helpers small, mark them with `t.Helper`, and return useful values rather than
-  hiding assertions in a generic helper.
-- Compare structured values in a way that reports meaningful differences. Use project-selected comparison
-  tools only when they reduce test complexity enough to justify the dependency.
-- Write examples for public usage that benefits from rendered documentation. Add an output assertion only when
-  the output is deterministic and should be executed as a test, following the
-  [`testing` package example rules](https://pkg.go.dev/testing#hdr-Examples).
-- Run the focused test after each complete increment. If the failure contradicts the planned contract, stop
-  and resolve the contract or seam instead of loosening the assertion.
+- In author mode, build the smallest source that reaches the selected boundary, performs one behavioral action,
+  and compares the complete result. Make structured differences useful, keep helpers narrow, and use project-
+  selected comparison tools only when they reduce current complexity enough to justify their dependency. After
+  each complete increment, run the focused project test command; stop when its result contradicts the contract
+  instead of loosening the assertion. In execution mode, skip source authoring and keep every project source
+  read-only.
+- Write examples only for supported caller-visible workflows. Add an output assertion only when it is stable and
+  contractual under the [`testing` package example rules](https://pkg.go.dev/testing#hdr-Examples).
+- Seed each fuzz target with representative valid, boundary, and regression inputs, constrain inputs outside the
+  real domain, test one observable behavior per target, and preserve an authorized failure corpus for regression;
+  follow the [Go fuzzing guide](https://go.dev/doc/security/fuzz/). A seed-only run is not exploratory fuzzing.
+- Benchmark only the operation whose cost matters, keep setup outside the measured region, consume the result,
+  and use APIs supported by the selected Go toolchain version. Gate newer forms such as `B.Loop` instead of
+  assuming they exist.
 
-#### 3.2 Add fuzz or benchmark evidence when selected
+#### 3.2 Execute the selected evidence
 
-- Seed a fuzz target with representative valid, boundary, and regression inputs before allowing generated
-  cases. Validate one behavior per target, reject or normalize inputs outside the real domain, and preserve any
-  failure corpus needed for regression; follow the [Go fuzzing guide](https://go.dev/doc/security/fuzz/).
-- Fuzz for a bounded, recorded duration and rerun discovered failures deterministically. A seed-only test run
-  checks the retained corpus but does not replace exploratory fuzzing.
-- Benchmark the operation whose cost matters, control setup outside the measured region, and consume results
-  so work is not optimized away. Use the benchmark APIs supported by the selected project toolchain; gate
-  newer forms such as `B.Loop` rather than assuming they exist.
-- Record environment, inputs, count, and comparison method. Prefer repeated before-and-after samples and a
-  project-approved statistical comparison tool over one timing.
+- Run the focused project test command first, then the broader project test command with the exact package
+  pattern selected by the project. Include only the build tags, prerequisites, and `GOOS/GOARCH` targets bound
+  in Phase 1.
+- Run retained fuzz seeds, bounded fuzzing, benchmarks, coverage, and race checks only when Phase 2 selected
+  them. Record fuzz duration, benchmark repetitions and comparison method, coverage outputs, race workload, and
+  every contained cache, temporary, fuzz, coverage, or failure output. Prefer repeated before-and-after
+  benchmark samples and a project-approved statistical comparison method over one timing.
+- For a regression, prove the evidence fails for the reproduced defective behavior and passes for the corrected
+  result when that comparison is safely reproducible. Keep the original reproducer as separate evidence.
+- Use `go-toolchain` to bind the exact invocation and effects before execution. On failure, preserve the project
+  command, environment, result, and first useful diagnostic; never mutate production source from this operation.
 
-### Phase 4 — Verify and Interpret
+### Phase 4 — Interpret and Return the Result
 
-#### 4.1 Run the applicable verification layers
+#### 4.1 Interpret and challenge the evidence
 
-- Run the focused package tests first, then the project test target or applicable `go test ./...` scope.
-  Include selected build tags, integration prerequisites, and supported platforms that can change behavior.
-- Run fuzz seed corpora, bounded fuzzing, benchmarks, coverage, and `-race` only when Phase 1 selected them.
-  Use `go-toolchain` to confirm flags, environment, downloads, and platform support before execution.
-- For a regression, prove the test failed against the defective behavior before the fix and passes afterward
-  when that comparison is safely reproducible. Rerun the original reproducer as separate evidence.
-- If a check fails, preserve its command, environment, and first useful diagnostic; repair the test or return
-  a production defect to its owner, then repeat every affected layer. When this test evidence is evaluated,
-  the [evaluation checklist](checklists.md) and every checklist owned by an active `go` sibling supply the
-  applicable conditions; the general Evaluation operation resolves them and issues any verdict.
+- Treat coverage as an executed-statement or profile map, not a universal quality score; see the
+  [Go coverage overview](https://go.dev/blog/cover). Treat a race report as a defect in an executed path and a
+  clean run as limited evidence; see the [race detector](https://go.dev/doc/articles/race_detector). Investigate
+  material uncovered behavior without inventing an unowned coverage percentage.
+- Treat one benchmark sample, a seed-only fuzz run, a retry, a skip, or another `GOOS/GOARCH` target's pass as
+  bounded evidence. Keep flakes, unsupported `GOOS/GOARCH` targets, prohibitive cost, unexecuted paths, and
+  unexercised exit paths outside the completion claim.
+- Review authored sources and executed evidence for contract focus, useful failures, deterministic resources,
+  safe parallelism, resource cleanup, and unnecessary coupling. Repair only authorized evidence sources and
+  repeat every affected layer.
+- Apply [the evaluation checklist](checklists.md) and every active `go` sibling checklist when the result enters
+  Evaluation; the general Evaluation operation owns evidence resolution and verdicts.
 
-#### 4.2 Interpret and hand off the result
+#### 4.2 Return completion, block, and recovery records
 
-- Treat coverage as a map of executed statements or profiles, not a fixed quality score. Investigate important
-  uncovered behavior and reject a universal percentage when the project has not established one; see the
-  [Go coverage overview](https://go.dev/blog/cover).
-- Treat race reports as defects in an executed path and clean runs as limited evidence, as documented by the
-  [race detector](https://go.dev/doc/articles/race_detector). Record unsupported platforms, prohibitive cost,
-  or unexercised workloads.
-- Review the final tests for contract focus, useful failures, deterministic resources, safe parallelism, and
-  unnecessary coupling. In read-only review mode, report proposed checks without editing or formatting files.
-- Hand off the behavior protected, changed test paths, exact commands and results, evidence limits, remaining
-  gaps, and any production design issue. Completion means every selected layer has passed or has an explicit
-  in-scope blocker.
+- Return the mode; evidence question and test kind; observable test boundary or controllable dependency; cases;
+  changed or reviewed paths; project test command; exact package pattern; `GOOS/GOARCH` target; flags, inputs,
+  duration, repetitions, and result; cache, temporary, fuzz, coverage, and failure outputs; flakes; evidence
+  limits; and any production-design handoff. State why any listed field is not applicable.
+- In author mode, return the focused repeatable evidence source and result or the exact production-design block.
+  In execution mode, return exact evidence and limits or the exact blocked or flaky result. Record whether every
+  applicable success, error, cancellation, timeout, or panic exit path was exercised.
+- For a block, name the missing prerequisite or first useful diagnostic, affected obligation, current evidence,
+  risk, owner, retained state, first recovery action, and handoff. Retain the failing input when one exists, and
+  never convert an unobservable behavior, flaky project test command, unsupported promised `GOOS/GOARCH` target,
+  skipped required test, or unavailable selected layer into completion.
 
 ## References
 
