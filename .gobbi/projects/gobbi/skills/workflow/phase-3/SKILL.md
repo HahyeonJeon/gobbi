@@ -128,10 +128,9 @@ from direct evidence without changing the handoff.
   system. That operation isolates every evaluator; neither may be a creator or persistent teammate.
 - Give both the complete creation package, actual pre-Git tree, Memory diff, tracked handoff bytes and digest,
   task commits, checks, finalization intent, authority, exclusions, risks, and retained recovery paths.
-- Require each evaluator to apply
-  [complete Evaluation-defined lifecycle-boundary coverage](../../evaluation/SKILL.md#procedure) to the full
-  frozen Wrap-up subject and use the parent finding fields. Preserve both verdicts and apply the parent
-  Wrap-up fast gate.
+- Require each evaluator to apply the complete
+  [Evaluation guidelines](../../evaluation/SKILL.md#procedure) to the full frozen Wrap-up subject and use the
+  parent finding fields. Preserve both verdicts and apply the parent Wrap-up fast gate.
 - Retitle the active item to RECORD only after both reports and the workflow decision validate.
 
 #### 2.4 Record and route the result

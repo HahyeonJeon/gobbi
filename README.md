@@ -149,7 +149,7 @@ system your runtime is not: in Claude Code the partner is Codex, and in Codex th
 4. The active runtime synthesizes the canonical candidate.
 5. You resolve every material open decision before evaluation.
 
-Every EVALUATION uses two fresh independent evaluators applying the complete lifecycle-boundary Evaluation method; no finding is applied before you approve its disposition.
+Every EVALUATION uses two fresh independent evaluators applying the Evaluation guidelines; no finding is applied before you approve its disposition.
 
 Cowork and Workflow each keep one isolated branch, one linked worktree, and focused verified local commits.
 Push, pull request, merge, and cleanup are separate actions you authorize.

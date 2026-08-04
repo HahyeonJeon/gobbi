@@ -123,9 +123,8 @@ plan, task, receipt, or commit.
 - Load the [Evaluation](../../evaluation/SKILL.md) skill and call the
   [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
   from the active runtime and one from the partner system, which that operation isolates.
-- Require each evaluator to apply
-  [complete Evaluation-defined lifecycle-boundary coverage](../../evaluation/SKILL.md#procedure) to the full
-  frozen Planning subject.
+- Require each evaluator to apply the complete
+  [Evaluation guidelines](../../evaluation/SKILL.md#procedure) to the full frozen Planning subject.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
 - Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
   tree.
@@ -198,9 +197,9 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 - Load the [Evaluation](../../evaluation/SKILL.md) skill and dispatch two fresh independent evaluators.
 - Give both evaluators the task and scope contract, frozen drafts and cross-reviews, resolved decisions,
   implementation diff, tests, focused commit, repository state, and findings relevant to the current pass.
-- Require each evaluator to apply
-  [complete Evaluation-defined lifecycle-boundary coverage](../../evaluation/SKILL.md#procedure) to the full
-  frozen Execution subject and use the parent-owned finding fields.
+- Require each evaluator to apply the complete
+  [Evaluation guidelines](../../evaluation/SKILL.md#procedure) to the full frozen Execution subject and use
+  the parent-owned finding fields.
 - Preserve both declared verdicts and write normal-mode `gate.md`. Derive the workflow decision by severity:
   FAIL outranks REVISE, which outranks PASS.
 - Retitle the task item to RECORD only after both reports and the normal gate validate.

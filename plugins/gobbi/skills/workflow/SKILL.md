@@ -167,20 +167,15 @@ P3 · Hand-off
   system, neither holding the other report. For Ideation, that stage independently evaluates the frozen,
   self-reviewed subject its operation returns. Evaluator verdicts are report evidence, and the `gate.md`
   decision alone advances the TODO.
-- Every fresh evaluator applies
-  [complete Evaluation-defined lifecycle-boundary coverage](../evaluation/SKILL.md#procedure) to the full
-  frozen subject. Each evaluation report wraps that complete human-readable output in this exact order:
-
-  1. **Evaluation Identity and Independence**
-  2. **Lifecycle Coverage Summary**
-  3. **Problems**
-  4. **Optional Improvements**
-  5. **Strengths and Must-Preserve Conditions**
-  6. **Verdict Derivation**
-
-  Lifecycle Coverage Summary entries reference result IDs and never duplicate result definitions. Every
-  Problem retains exactly these Workflow fields: `ID`, `Severity`, `Evidence`, `Impact`, `Cause`,
-  `Confidence`, `Suggested direction`, and `blocking` with value `yes` or `no`.
+- Every fresh evaluator applies the complete [Evaluation guidelines](../evaluation/SKILL.md#procedure) to the
+  full frozen subject. Each report conveys the subject identity and independence, investigated coverage and
+  gaps, evidence and reproduction, distinct Problems, Optional Improvements, Strengths and Must-Preserve
+  Conditions, and criteria and verdict reasoning when applicable. Workflow requires those meanings without
+  prescribing one report order or set of section labels.
+- Every Problem retains exactly these Workflow fields: `ID`, `Severity`, `Evidence`, `Impact`, `Cause`,
+  `Confidence`, `Suggested direction`, and `blocking` with value `yes` or `no`. A completed evaluator report
+  declares a criteria-derived verdict. Evidence insufficiency names the gaps, issues no verdict, and pauses
+  the evaluation round before `gate.md` validation.
 - Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
   IDs, actual blocking finding IDs, accepted nonblocking finding IDs, and the workflow decision. Each RECORD
   receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and the
@@ -217,15 +212,16 @@ P3 · Hand-off
 
 ```text
 STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
-VERDICT: PASS | REVISE | FAIL
 ARTIFACT: <path or response-only>
 SKILLS LOADED:
   - <exact path, in read order>
 ```
 
-- `VERDICT` is evaluator-only and is omitted for other roles. `ARTIFACT` is omitted only when no artifact is
-  required. After a report, the manager validates the assignment, role, prefix, loaded paths, promised
-  artifact or commit, named checks, scope, and protected paths before updating the TODO.
+- A successful evaluator report inserts `VERDICT: PASS | REVISE | FAIL` immediately after `STATUS`.
+  An evaluator omits it for `NEEDS_CONTEXT`, `BLOCKED`, or an evidence gap that prevents a verdict. Other
+  roles omit it. `ARTIFACT` is omitted only when no artifact is required. After a report, the manager validates
+  the assignment, role, prefix, loaded paths, promised artifact or commit, named checks, scope, and protected
+  paths before updating the TODO.
 - In Claude Code, load the [Agent Teams](../gobbi/agent-teams/SKILL.md) manual before using persistent
   specialists. The manual owns tool setup and use; Workflow owns assignment fields, role reuse boundaries,
   mutation surfaces, report acceptance, and the recovery evidence walk in [`agent-teams.md`](agent-teams.md).
