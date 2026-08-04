@@ -1,163 +1,226 @@
 # Electron Runtime Evaluation Checklist
 
-This reusable unchecked source evaluates one Electron runtime lookup or diagnosis produced under this manual.
-It is governed by the [`electron`](../SKILL.md) domain and [`electron-runtime`](SKILL.md) manual, with
-[`electron-design`](../electron-design/SKILL.md) owning security posture and default choices and
-[`electron-development`](../electron-development/SKILL.md), [`electron-testing`](../electron-testing/SKILL.md),
-and [`electron-release`](../electron-release/SKILL.md) owning their procedures. The source commit that
-contains this file identifies the checklist version. Its stable owner prefix is `ELECRUN`.
+This reusable unchecked source evaluates one Electron runtime lookup or diagnosis produced under the local
+manual. The source commit that contains this file identifies the checklist version. Its stable owner prefix
+is `ELECRUN`.
 
-This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
-resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
-unchecked binary condition in this source.
+This file defines coverage only. The caller selects and resolves applicable rows, records its supporting
+observations, and judges the work. Preserve every row as an unchecked binary condition in this source.
 
 A row is defined once beneath its owning scenario. An `Also applies` line points to a row defined elsewhere
-that this scenario reuses.
+that the scenario reuses.
 
 ## Project
 
-### ELECRUN-SC-PROJECT-01 — Normal case: the question stays on runtime mechanism
+### ELECRUN-SC-PROJECT-01 — Normal case: the answer stays inside runtime mechanism
 
-This manual explains process capability, preload constraint, IPC mechanics, lifecycle behavior, native
-integration, and platform failure. The scenario fails when the answer decides a security posture, a project
-default, or an implementation, test, or release procedure instead of routing it to the owner who holds it.
+The lookup explains availability, prerequisites, signals, target limits, or an earliest failure boundary.
+It does not decide installed behavior or work owned outside this manual.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-PROJECT-01-01 — The inspected question concerns Electron process capability, preload constraint, IPC mechanics, lifecycle behavior, native integration, or platform failure.
-- [ ] ELECRUN-CK-PROJECT-01-02 — Every security-posture and default choice the lookup raises is routed to `electron-design`.
-- [ ] ELECRUN-CK-PROJECT-01-03 — Every implementation, test, and release procedure the lookup raises is routed to its owning operation.
+- [ ] ELECRUN-CK-PROJECT-01-01 — The subject is one Electron runtime mechanism or one bounded runtime diagnosis.
+- [ ] ELECRUN-CK-PROJECT-01-02 — The conclusion does not cross any owner boundary in this set: installed product behavior, source implementation, test design, test execution, test interpretation, environment classification, evidence acceptance, diagnostic-emission design, packaging procedure, and release-readiness decisions.
+- [ ] ELECRUN-CK-PROJECT-01-03 — The lookup identifies the pinned Electron major, target operating system, executing process, emitted module format, and lifecycle point.
+
+### ELECRUN-SC-PROJECT-02 — Expected failure: a required runtime fact is missing
+
+One fact needed to distinguish the available mechanisms cannot be established from the project or target.
+The answer remains bounded instead of filling the gap from source appearance or another target.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-PROJECT-02-01 — Every unavailable fact needed for the conclusion remains an explicit unresolved fact.
+- Also applies: ELECRUN-CK-PROJECT-01-03 (the known compatibility facts are still recorded).
 
 ## Structure
 
-### ELECRUN-SC-STRUCTURE-01 — Normal case: the answer names the process that owns the capability
+### ELECRUN-SC-STRUCTURE-01 — Normal case: process, loader, readiness, and owner form one trace
 
-Placement, privilege, and API availability depend on the actual process rather than on the source that
-appears to use them. The expected outcome identifies the runtime facts before explaining a symptom and keeps
-each API in a valid process; an answer inferred from source shape is the failure.
+The expected explanation follows the mechanism from its executing process through module loading and
+readiness to the object or process that owns its lifetime.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-STRUCTURE-01-01 — Every answer identifies the actual process, pinned Electron major, emitted module format, operating system, URL, and lifecycle point before it diagnoses a symptom.
-- [ ] ELECRUN-CK-STRUCTURE-01-02 — Every capability is placed in the process that can safely own it.
-- [ ] ELECRUN-CK-STRUCTURE-01-03 — Every boundary crossing is described as a narrow contract rather than moved privilege.
-- [ ] ELECRUN-CK-STRUCTURE-01-04 — Main-only, renderer-only, and common Electron APIs are each kept in valid processes.
-- [ ] ELECRUN-CK-STRUCTURE-01-05 — TypeScript process aliases are described as type-surface aids rather than a runtime security boundary.
+- [ ] ELECRUN-CK-STRUCTURE-01-01 — Every Electron API is assigned to a process in which the pinned major documents it.
+- [ ] ELECRUN-CK-STRUCTURE-01-02 — Every preload conclusion states its sandbox state, context-isolation boundary, emitted format, and bundle boundary.
+- [ ] ELECRUN-CK-STRUCTURE-01-03 — TypeScript path aliases and type declarations are not treated as runtime module resolution.
+- [ ] ELECRUN-CK-STRUCTURE-01-04 — Every listener is paired with its registration point, owner, removal point, and end condition.
+- [ ] ELECRUN-CK-STRUCTURE-01-05 — Every window or view diagnosis identifies the current owning object and `webContents` identity.
+- [ ] ELECRUN-CK-STRUCTURE-01-06 — Cold launch, ready state, an already-running application, quit, and process failure remain distinct lifecycle points.
 
 ## Performance
 
-### ELECRUN-SC-PERFORMANCE-01 — Normal case: a high-volume crossing described with its cost contract
+### ELECRUN-SC-PERFORMANCE-01 — Normal case: sustained cross-process work has an explicit lifetime
 
-Streaming and high-volume messaging use transferred ports whose ownership, handshake, close behavior, and
-backpressure decide whether the application keeps up. The expected outcome states those terms with the
-mechanism, and keeps sustained blocking computation out of main; naming only the transport is the failure.
+High-volume messaging and long work can affect main-process responsiveness. The lookup names the transfer,
+ownership, and termination behavior needed to understand that cost.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-PERFORMANCE-01-01 — Every high-volume or streaming IPC answer names port ownership, startup handshake, close behavior, backpressure, and process-exit recovery.
-- [ ] ELECRUN-CK-PERFORMANCE-01-02 — Sustained blocking computation is placed in a utility process rather than in main or a renderer.
+- [ ] ELECRUN-CK-PERFORMANCE-01-01 — Every streaming answer states the `MessagePort` transfer direction, current endpoint owner, start point, close point, and peer-exit behavior.
+- [ ] ELECRUN-CK-PERFORMANCE-01-02 — The answer states both facts about sustained blocking work: its effect on main-process responsiveness and its actual executing process.
+- [ ] ELECRUN-CK-PERFORMANCE-01-03 — A missing or slow reply is traced through registration, target lifetime, serialization, handler settlement, and disposal before adding retries.
 
 ## Aesthetics
 
-### ELECRUN-SC-AESTHETICS-01 — Poor quality: mechanism and version fact mixed in one answer
+### ELECRUN-SC-AESTHETICS-01 — Poor quality: exact mechanisms are blurred by broad wording
 
-The answer is correct today but does not separate the durable mechanism from the fact that depends on the
-pinned major, so a later reader cannot tell which part needs rechecking. The expected outcome records
-observations before inferences and keeps transient version facts out of durable text.
+The answer may be broadly correct but hard to reuse because it mixes durable mechanics with transient facts
+or replaces exact runtime identifiers with vague terms.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-AESTHETICS-01-01 — Observations are recorded before any inference drawn from them.
-- [ ] ELECRUN-CK-AESTHETICS-01-02 — Every answer separates the durable mechanism from the fact that depends on the pinned Electron major.
-- [ ] ELECRUN-CK-AESTHETICS-01-03 — No transient current Electron version is written into durable documentation as a fixed fact.
+- [ ] ELECRUN-CK-AESTHETICS-01-01 — Exact identifiers such as `process.platform`, `nativeImage`, `contextBridge`, `powerMonitor`, `webContents`, `render-process-gone`, and `child-process-gone` retain their documented spelling and scope.
+- [ ] ELECRUN-CK-AESTHETICS-01-02 — Common words state the target operating system, executing process, owner, input, and lifecycle point without overloaded shorthand.
+- [ ] ELECRUN-CK-AESTHETICS-01-03 — Durable mechanism statements are separated from version-dependent or environment-dependent facts that require rechecking.
 
 ## Usage
 
-### ELECRUN-SC-USAGE-01 — Normal case: an answer the caller can act on and repeat
+### ELECRUN-SC-USAGE-01 — Normal case: an IPC or bridge path can be traced end to end
 
-A lookup is used to make a decision elsewhere, so it must carry its authority and its limits. The scenario
-fails when the answer states a behavior without naming the official document or the observation behind it, or
-when what remains unverified for the pinned major is left out.
-
-#### Checklist
-
-- [ ] ELECRUN-CK-USAGE-01-01 — Every answer names its authority: the current official Electron document for the mechanism, or an observation on the pinned major for availability and behavior.
-- [ ] ELECRUN-CK-USAGE-01-02 — Every answer states what remains unverified for the pinned major.
-- Also applies: ELECRUN-CK-STRUCTURE-01-01 (the answer states its process, major, format, target, and lifecycle point).
-
-### ELECRUN-SC-USAGE-02 — Expected failure: the required runtime observation is unavailable
-
-Protocol registration needs a packaged application, macOS notification events need a signed application, and
-secure storage needs a known Linux backend, so some answers cannot be observed in the available environment.
-The expected outcome reports the conclusion as unavailable with its condition; an inferred answer is the
-failure.
+The answer identifies the sender, crossing, receiver, value behavior, and lifetime rather than naming only a
+channel or bridge.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-USAGE-02-01 — Every conclusion depending on an unavailable target, packaged build, signature, or platform backend is reported as unavailable rather than inferred.
-- [ ] ELECRUN-CK-USAGE-02-02 — Every protocol-registration, notification, and secure-storage answer states the packaging, signing, or backend condition its evidence requires.
+- [ ] ELECRUN-CK-USAGE-01-01 — The sender and receiver processes, channel direction, and registration time are explicit.
+- [ ] ELECRUN-CK-USAGE-01-02 — The crossing states whether values are structured-cloned, copied and frozen, proxied, or transferred.
+- [ ] ELECRUN-CK-USAGE-01-03 — Unsupported functions, DOM objects, Electron objects, and custom prototypes have an explicit representation or bridge operation.
+- [ ] ELECRUN-CK-USAGE-01-04 — Request channels have one owning handler and a defined settlement path for both returned values and thrown errors.
+- [ ] ELECRUN-CK-USAGE-01-05 — Listener and port cleanup is tied to the owning renderer, `webContents`, window, view, utility process, or main process.
+
+### ELECRUN-SC-USAGE-02 — Normal case: readiness and teardown are traced separately
+
+The answer shows when registration must happen, when a ready-only API can run, and which events may be absent
+during operating-system shutdown.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-02-01 — Early `open-url` and `open-file` listeners are registered during module evaluation before a cold-launch event can arrive.
+- [ ] ELECRUN-CK-USAGE-02-02 — APIs that require Electron readiness are placed after `app.whenReady()` or its equivalent ready transition.
+- [ ] ELECRUN-CK-USAGE-02-03 — Single-instance ownership is decided before primary-window creation.
+- [ ] ELECRUN-CK-USAGE-02-04 — Teardown covers every terminal member in this set: listener removal, port closure, termination of each owned child or utility process, and pending-work settlement.
+- [ ] ELECRUN-CK-USAGE-02-05 — Ordinary quit, operating-system shutdown, suspend, renderer loss, and process crash are not treated as one event source.
+
+### ELECRUN-SC-USAGE-03 — Normal case: a cold deep link reaches the ready primary
+
+The launch input may arrive before windows and ready-only APIs exist. The expected path captures, validates,
+queues, and later routes the URL.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-03-01 — Windows and Linux cold-launch arguments and macOS `open-url` delivery are distinguished.
+- Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
+- Also applies: ELECRUN-CK-USAGE-07-01 (the cold deep-link URL is captured).
+- Also applies: ELECRUN-CK-USAGE-07-02 (the cold deep-link URL is validated before queueing).
+- Also applies: ELECRUN-CK-USAGE-07-03 (the cold deep-link URL remains queued until readiness).
+
+### ELECRUN-SC-USAGE-04 — Normal case: a running deep link reaches the existing primary
+
+An already-running application receives a different operating-system path than a cold launch.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-04-01 — Windows and Linux `second-instance` delivery and macOS `open-url` delivery are distinguished.
+- [ ] ELECRUN-CK-USAGE-04-02 — The answer states both `second-instance` input rules: possible argument reordering and validated `additionalData` for exact application-supplied data.
+
+### ELECRUN-SC-USAGE-05 — Normal case: a cold file-open request is retained through readiness
+
+File activation can be delivered through launch arguments or an early macOS event. Registration and launch
+delivery remain separate prerequisites.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-05-01 — Windows `process.argv`, Linux launcher input, and macOS `open-file` delivery are distinguished.
+- Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
+- Also applies: ELECRUN-CK-USAGE-07-01 (the cold file-open input is captured).
+- Also applies: ELECRUN-CK-USAGE-07-02 (the cold file-open input is validated before queueing).
+- Also applies: ELECRUN-CK-USAGE-07-03 (the cold file-open input remains queued until readiness).
+
+### ELECRUN-SC-USAGE-06 — Normal case: a running file-open request reaches the existing primary
+
+The answer distinguishes macOS event delivery from the configured launcher or secondary-instance path on
+Windows and Linux.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-06-01 — macOS `open-file` and configured Windows or Linux primary-instance routing are distinguished.
+- [ ] ELECRUN-CK-USAGE-06-02 — The existing target window or view is resolved at delivery time instead of reusing a stale `webContents` reference.
+
+### ELECRUN-SC-USAGE-07 — Normal case: cold external input survives the readiness boundary
+
+A cold deep-link URL or file-open input may arrive before the application state that routes it exists. The
+shared path must preserve the input while keeping capture, validation, and readiness retention independently
+checkable.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-USAGE-07-01 — Each cold external input is captured before launch delivery can be lost.
+- [ ] ELECRUN-CK-USAGE-07-02 — Each captured cold external input is validated before it enters the readiness queue.
+- [ ] ELECRUN-CK-USAGE-07-03 — Each validated cold external input remains queued until its owning application state is ready.
 
 ## Consistency
 
-### ELECRUN-SC-CONSISTENCY-01 — Rule violation: this manual used in place of live documentation
+### ELECRUN-SC-CONSISTENCY-01 — Rule violation: current prose replaces pinned-major authority
 
-The pinned major differs from the major the code was written against, or observed behavior conflicts with
-this manual, and the answer is given from the manual alone. The expected outcome consults the live official
-API and breaking-change documents; a stale mechanism repeated with confidence is the failure.
+The pinned major differs from current documentation, observed behavior conflicts with the manual, or a
+version-sensitive claim lacks a live source.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-CONSISTENCY-01-01 — The live official API and breaking-change documents are consulted whenever the pinned major differs from the major the code was written against.
-- [ ] ELECRUN-CK-CONSISTENCY-01-02 — The live official documents are consulted whenever observed behavior conflicts with this manual.
-- [ ] ELECRUN-CK-CONSISTENCY-01-03 — No behavior is asserted for the pinned major from this manual alone where the manual points to a live official source.
+- [ ] ELECRUN-CK-CONSISTENCY-01-01 — Current official Electron API, tutorial, and breaking-change documents are consulted for every version-sensitive claim.
+- [ ] ELECRUN-CK-CONSISTENCY-01-02 — Current documentation is reconciled with the project's pinned Electron major before availability is asserted.
+- [ ] ELECRUN-CK-CONSISTENCY-01-03 — A conflict between observed behavior and this manual remains visible until the runtime version, target, loader, and live documentation explain it.
 
 ## Risk
 
-### ELECRUN-SC-RISK-01 — Normal case: cross-process values described as data
+### ELECRUN-SC-RISK-01 — Normal case: power transitions use the signals the target supplies
 
-Inter-process communication moves cloneable values, and a bridge can proxy a function without making the
-handle behind it safe. The expected outcome describes each crossing as an explicit data and method contract
-with disposal and clone limits; describing a value as safe because it crossed a bridge is the failure.
+Power events are distinct from ordinary application quit and have operating-system limits.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-RISK-01-01 — Every IPC or context-bridge crossing is described with explicit data and method contracts, including callback disposal and structured-clone limits.
-- [ ] ELECRUN-CK-RISK-01-02 — Functions, symbols, weak collections, Electron event objects, and custom prototypes are described as values that do not survive the crossing as safe domain instances.
-- [ ] ELECRUN-CK-RISK-01-03 — Every sender-trust answer captures sender facts before the first asynchronous suspension.
+- [ ] ELECRUN-CK-RISK-01-01 — `suspend` and `resume` are treated as signals, not proof that asynchronous cleanup finished or resources survived.
+- [ ] ELECRUN-CK-RISK-01-02 — `shutdown` use is limited to the operating systems documented for the pinned major.
+- [ ] ELECRUN-CK-RISK-01-03 — The shutdown-delay conclusion includes both documented limits: an attempted delay from event prevention and a prompt application exit.
+- [ ] ELECRUN-CK-RISK-01-04 — Windows shutdown, restart, and logout do not rely on `before-quit`, `will-quit`, or `quit` being emitted.
 
-### ELECRUN-SC-RISK-02 — Adversarial: one installed control offered as complete closure
+### ELECRUN-SC-RISK-02 — Expected failure: a process or window disappears
 
-A caller asks whether a window is safe after installing a single handler, and an answer that says yes leaves
-an open surface behind a confident conclusion. The expected outcome keeps the activated-content controls
-independent and requires closed allowlists and canonical-root containment rather than a string check.
+Each failure class has a different direct signal and owner. The answer does not collapse renderer, child,
+utility, and main-process failure into one callback.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-RISK-02-01 — No activated-content control is described as closing another surface: a permission check for a permission request, a navigation handler for a window-open handler, a window-open handler for webview attachment, a default-session configuration for a secondary partition, and a first-window configuration for later-created web contents.
-- [ ] ELECRUN-CK-RISK-02-02 — Every external-URL and custom-protocol answer requires parsed, closed allowlists and canonical-root containment rather than a string check.
+- [ ] ELECRUN-CK-RISK-02-01 — The renderer-exit diagnosis states the `render-process-gone` signal, affected `webContents`, reason, and exit code.
+- [ ] ELECRUN-CK-RISK-02-02 — The renderer-hang diagnosis distinguishes `unresponsive` from a later `responsive` signal on the same target.
+- [ ] ELECRUN-CK-RISK-02-03 — The child-process diagnosis limits `child-process-gone` to the non-renderer process classes it reports.
+- [ ] ELECRUN-CK-RISK-02-04 — An owned utility process uses its direct `spawn`, `error`, `exit`, and `message` events.
+- [ ] ELECRUN-CK-RISK-02-05 — Main-process crash or exit relies on an external observer because in-process listeners cannot run afterward.
+- [ ] ELECRUN-CK-RISK-02-06 — Crash collection is not treated as a live recovery signal or proof that an owning process remained alive.
+
+### ELECRUN-SC-RISK-03 — Adversarial: a plausible success signal is offered as proof
+
+The API did not throw, the type exists, development worked, or another operating system succeeded. None of
+those observations proves the required target outcome.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-RISK-03-01 — A non-throwing call is not accepted when the API reports failure through a Boolean, rejection, cancellation value, error string, event, or query.
+- [ ] ELECRUN-CK-RISK-03-02 — An available type or successful typecheck is not accepted as proof of runtime process validity or module loading.
+- [ ] ELECRUN-CK-RISK-03-03 — Development behavior or success on another operating system is not accepted as proof of installed target behavior.
 
 ## Overall
 
-### ELECRUN-SC-OVERALL-01 — Adversarial: a plausible signal accepted as the missing evidence
+### ELECRUN-SC-OVERALL-01 — Edge case: several boundaries can explain the same symptom
 
-A similar-looking source file, an absent exception, a development launch, or a passing typecheck can be
-offered as the evidence the question needs, producing an answer that looks settled. The expected outcome
-keeps each observation inside what it establishes and leaves the missing part unknown.
-
-#### Checklist
-
-- [ ] ELECRUN-CK-OVERALL-01-01 — No observation is treated as proof of a property it does not establish: source similarity of runtime privilege, an absent exception of a successful native call, a development launch of packaged behavior, a passing typecheck of process validity, and a documentation statement of pinned-major behavior.
-- [ ] ELECRUN-CK-OVERALL-01-02 — Every unavailable observation remains an open unknown rather than an inferred result.
-
-### ELECRUN-SC-OVERALL-02 — Edge case: a symptom with several plausible boundaries
-
-A handler never fires, a bridge is missing, or a deep link is dropped, and process, loader, readiness, and
-ownership could each explain it. The expected outcome inspects the earliest boundary that can explain the
-symptom and reports the remaining unknowns; a retry or a global variable added in place of a diagnosis is the
-failure.
+A missing bridge, dropped deep link, absent event, or vanished message can come from process, loader,
+readiness, ownership, target support, or an external prerequisite.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-OVERALL-02-01 — The earliest boundary that can explain the symptom is inspected before any retry or global state is added.
-- [ ] ELECRUN-CK-OVERALL-02-02 — Readiness, duplicate registration, window or view ownership, and cleanup are each inspected for a lifecycle failure.
-- [ ] ELECRUN-CK-OVERALL-02-03 — The report states the inspected boundary, the evidence, and the remaining unknowns.
+- [ ] ELECRUN-CK-OVERALL-01-01 — The diagnosis inspects process, loader, readiness, ownership, target support, and external environment in earliest-boundary order.
+- [ ] ELECRUN-CK-OVERALL-01-02 — Each rejected cause names the observation that rules it out.
+- [ ] ELECRUN-CK-OVERALL-01-03 — The first boundary that explains all downstream symptoms is stated as the cause rather than one symptom among many.
+- [ ] ELECRUN-CK-OVERALL-01-04 — The conclusion names the mechanism, prerequisite, direct signal, target or version limit, and next unresolved fact.

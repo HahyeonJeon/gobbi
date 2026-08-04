@@ -69,7 +69,7 @@ nobody decided, it reads as data loss.
 
 - **MUST decide, per view, whether reaching it opens a window or changes the current window's content, and
   record the rule.** Route the resulting window's creation, restore, focus, and cleanup promise to
-  `desktop-contract` and its implementation to [`electron-design`](../../electron/electron-design/SKILL.md).
+  `desktop-contract` and its implementation to [`electron-development`](../../electron/electron-development/SKILL.md).
 
 - **MUST define separately what a relaunch after an ordinary quit restores and what a relaunch after a crash
   restores.** Name the location, selection, unsaved input, and scroll position each case restores, or state
