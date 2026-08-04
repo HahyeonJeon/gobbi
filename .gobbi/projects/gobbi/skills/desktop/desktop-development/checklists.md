@@ -120,13 +120,13 @@ runtime behavior.
 ### DTDLVR-SC-USAGE-10 — Normal case: Requirements accepts the complete product contract
 
 The accepted request becomes a product contract before dependent work. A technically detailed brief still
-fails when it omits a product outcome or recovery obligation.
+fails when it omits a product outcome, data-lifecycle behavior, or recovery obligation.
 
 #### Checklist
 
 - [ ] DTDLVR-CK-USAGE-10-01 — Requirements names the product problem, actors, supported targets, and entry modes.
 - [ ] DTDLVR-CK-USAGE-10-02 — Requirements distinguishes observable completion, authoritative system completion, and false completion.
-- [ ] DTDLVR-CK-USAGE-10-03 — Requirements covers normal and alternate application, runtime, install, update, repair, uninstall, and data paths.
+- [ ] DTDLVR-CK-USAGE-10-06 — Requirements defines normal and alternate paths for application use, runtime behavior, installation, exact-version update, repair or recovery, uninstall, and every affected datum's create, read, update, delete, retention, export, backup, migration, compatibility, corruption, interruption, and recovery behavior.
 - [ ] DTDLVR-CK-USAGE-10-04 — Requirements covers failure, recovery, support, authority, constraints, and explicit non-goals.
 - [ ] DTDLVR-CK-USAGE-10-05 — Requirements records trace, reopen conditions, and exact owner routes.
 

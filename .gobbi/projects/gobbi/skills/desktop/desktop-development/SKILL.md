@@ -88,7 +88,9 @@ action; and resume condition.
 - Record the product problem, actors, target people and contexts, accepted behavior, supported targets, entry
   modes, and the observable completion, authoritative system completion, and false-completion conditions.
 - Record normal and alternate paths across application use, runtime behavior, installation, exact-version
-  update, repair or recovery, uninstall, and every affected data lifecycle.
+  update, repair or recovery, and uninstall.
+- For every affected datum, record create, read, update, delete, retention, export, backup, migration,
+  compatibility, corruption, interruption, and recovery behavior.
 - Record failure and recovery, support, authority, constraints, explicit non-goals, requirement trace, and the
   condition that reopens each material requirement.
 - Route view, navigation, window, application-state, restoration, and activation product judgments to
