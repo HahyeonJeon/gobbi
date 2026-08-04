@@ -7,7 +7,9 @@ preferences, with [`desktop-development`](../desktop-development/SKILL.md) as th
 the outcome. The applicable [`desktop-windows`](../desktop-windows/SKILL.md),
 [`desktop-macos`](../desktop-macos/SKILL.md), or [`desktop-linux`](../desktop-linux/SKILL.md) child owns current
 target facts, and the [`electron`](../../electron/SKILL.md) family owns packaging, signing, update, and
-platform mechanisms. The source commit that contains this file identifies the checklist version. Its stable
+platform mechanisms. More specifically, [`electron-release`](../../electron/electron-release/SKILL.md) owns
+release mechanisms and [`electron-testing`](../../electron/electron-testing/SKILL.md) owns packaged and
+installed evidence. The source commit that contains this file identifies the checklist version. Its stable
 owner prefix is `DTRLSE`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
@@ -28,8 +30,7 @@ reader can apply it anywhere, is the failure.
 #### Checklist
 
 - [ ] DTRLSE-CK-PROJECT-01-01 — Every claim names its exact artifact, operating system, architecture, version, channel, environment, and evidence class.
-- [ ] DTRLSE-CK-PROJECT-01-02 — No confidence from one target, artifact, or state is transferred to another.
-- [ ] DTRLSE-CK-PROJECT-01-04 — Every release claim assigns release judgment to `desktop-release`, ordered coordination to `desktop-development`, current target facts to the matching `desktop-windows`, `desktop-macos`, or `desktop-linux` child, and packaging, signing, notarization, update, and platform mechanisms to the Electron family.
+- [ ] DTRLSE-CK-PROJECT-01-05 — Every release claim assigns release judgment to `desktop-release`, ordered coordination to `desktop-development`, current target facts to the matching `desktop-windows`, `desktop-macos`, or `desktop-linux` child, packaging, signing, notarization, update, and platform release mechanisms to `electron-release`, and packaged and installed evidence to `electron-testing`.
 
 ### DTRLSE-SC-PROJECT-02 — Poor quality: a broad target matrix carried without need or evidence
 
@@ -282,6 +283,7 @@ inference is reasonable.
 
 - [ ] DTRLSE-CK-OVERALL-01-01 — Every retained support claim rests on direct evidence rather than inferred coverage.
 - [ ] DTRLSE-CK-OVERALL-01-02 — Every target, predecessor, channel, and rollout retained is justified by its continuing user need and cost.
+- [ ] DTRLSE-CK-OVERALL-01-03 — Every exact-artifact target evidence row verifies its named data fixtures, packaged resources, writable data, native dependencies, protocol identities, and permissions.
 
 ### DTRLSE-SC-OVERALL-02 — Adversarial: a rehearsal shaped to pass
 

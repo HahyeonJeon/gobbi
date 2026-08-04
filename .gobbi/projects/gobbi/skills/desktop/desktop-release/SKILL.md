@@ -12,9 +12,11 @@ rollout controls, support, rollback, and publication authority.
 
 [`desktop-development`](../desktop-development/SKILL.md) coordinates ordered lifecycle work. The applicable
 [`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
-[`desktop-linux`](../desktop-linux/SKILL.md) child owns current target facts, and the
-[`electron`](../../electron/SKILL.md) family owns packaging, signing, notarization, update, and platform
-mechanisms; this skill owns only release judgments, defaults, exceptions, and authority boundaries.
+[`desktop-linux`](../desktop-linux/SKILL.md) child owns current target facts.
+[`electron-release`](../../electron/electron-release/SKILL.md) owns packaging, signing, notarization, update,
+and platform release mechanisms, and [`electron-testing`](../../electron/electron-testing/SKILL.md) owns
+packaged and installed evidence; this skill owns only release judgments, defaults, exceptions, and authority
+boundaries.
 
 ## Principles
 
@@ -42,10 +44,13 @@ Expand targets, predecessors, channels, and rollout only when current user need 
 
 - **MUST bound** every claim to the exact application version and build, artifact and checksum, operating-system
   release and build, application and operating-system architecture, install form, scope, and state, channel and
-  environment, signature, notarization, and trust state, and evidence class. Resolve Windows facts through
-  `desktop-windows`, macOS facts through `desktop-macos`, Linux facts through `desktop-linux`, and mechanisms
-  through the Electron family; no evidence transfers across an application build, artifact, target,
-  predecessor, or state.
+  environment, signature, notarization, and trust state, and evidence class, and require every exact-artifact
+  target evidence row to verify its named data fixtures, packaged resources, writable data, native
+  dependencies, protocol identities, and permissions. Resolve Windows facts through `desktop-windows`, macOS
+  facts through `desktop-macos`, Linux facts through `desktop-linux`, packaging and release mechanisms through
+  `electron-release`, packaged and installed evidence through `electron-testing`, and coordination through
+  `desktop-development`; no evidence transfers across an application build, artifact, target, predecessor, or
+  state.
 - **MUST protect** persisted data, schemas, settings, native integration state, and secrets across supported
   updates and recovery by requiring atomic or detectably incomplete writes, explicit schema versions, forward
   compatibility or explicit refusal, downgrade or round-trip behavior, corruption and interruption recovery,
