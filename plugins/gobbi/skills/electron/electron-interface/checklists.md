@@ -18,8 +18,9 @@ succeeds when every governing fact and evidence class is explicit; it fails when
 
 - [ ] ELECINTF-CK-PROJECT-01-01 — The subject is one observable Electron application design judgment.
 - [ ] ELECINTF-CK-PROJECT-01-02 — The judgment names the affected actors, decision authority, and accepted outcome.
-- [ ] ELECINTF-CK-PROJECT-01-03 — Current-product observation is present and limited to what the current application presents or teaches.
+- [ ] ELECINTF-CK-PROJECT-01-03 — Current-product observation is present.
 - [ ] ELECINTF-CK-PROJECT-01-04 — The judgment distinguishes every evidence class: current-product observation, representative-user evidence, accessibility evidence, official target guidance, cross-target task evidence, and accepted authority or requirements.
+- [ ] ELECINTF-CK-PROJECT-01-05 — Current-product observation is limited to what the current application presents or teaches.
 
 ### ELECINTF-SC-PROJECT-02 — Rule violation: interface judgment claims another owner
 
@@ -54,10 +55,7 @@ It succeeds through explicit adaptation; it fails when a claimed difference has 
 
 #### Checklist
 
-- [ ] ELECINTF-CK-STRUCTURE-02-01 — Every applicable language difference has an explicit adaptation.
-- [ ] ELECINTF-CK-STRUCTURE-02-02 — Every applicable regional format or convention has an explicit adaptation.
-- [ ] ELECINTF-CK-STRUCTURE-02-03 — Every applicable writing-direction difference has an explicit adaptation.
-- [ ] ELECINTF-CK-STRUCTURE-02-04 — Every claimed target operating-system difference has an explicit adaptation.
+- [ ] ELECINTF-CK-STRUCTURE-02-01 — Every applicable member of the adaptation set has an explicit treatment: language, regional format or convention, writing direction, and claimed target operating-system difference.
 
 ## Performance
 

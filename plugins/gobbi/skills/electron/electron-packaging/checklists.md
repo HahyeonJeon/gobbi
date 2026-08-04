@@ -180,7 +180,8 @@ mutable contents or notarizing an unsigned application is the failure.
 - [ ] ELECPKG-CK-CONSISTENCY-02-01 — Process entries, resources, ASAR placement, unpacked files, compiled Node modules, fuses, and metadata are set before signing.
 - [ ] ELECPKG-CK-CONSISTENCY-02-02 — Each signature applies to the final bytes of its signable artifact.
 - [ ] ELECPKG-CK-CONSISTENCY-02-03 — A required macOS notarization submission follows successful code signing.
-- [ ] ELECPKG-CK-CONSISTENCY-02-04 — Inner executables and libraries are signed before their enclosing packaged application, and the completed installer is signed last where required.
+- [ ] ELECPKG-CK-CONSISTENCY-02-04 — Inner executables and libraries are signed before their enclosing packaged application.
+- [ ] ELECPKG-CK-CONSISTENCY-02-05 — The completed installer is signed last where required.
 
 ## Risk
 
@@ -192,9 +193,8 @@ secret exposure, bypass, or unverified success is the failure.
 
 #### Checklist
 
-- [ ] ELECPKG-CK-RISK-01-01 — The recorded credential owner or external-action authority approves each signing-credential use before access.
+- [ ] ELECPKG-CK-RISK-01-01 — The recorded credential owner or external-action authority approves every member of the credentialed external-action set before action: each signing-credential use and each Apple notarization submission.
 - [ ] ELECPKG-CK-RISK-01-02 — Signing credentials and notarization secrets are absent from artifacts and logs.
-- [ ] ELECPKG-CK-RISK-01-03 — The recorded credential owner or external-action authority approves each Apple notarization submission before the external action.
 - [ ] ELECPKG-CK-RISK-01-04 — Missing authority, credentials, or service availability stops with retained artifacts and sanitized logs.
 - [ ] ELECPKG-CK-RISK-01-05 — Required signature and notarization results are verified with operating-system mechanisms.
 

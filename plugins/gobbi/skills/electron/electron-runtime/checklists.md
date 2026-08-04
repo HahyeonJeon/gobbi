@@ -110,11 +110,8 @@ queues, and later routes the URL.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-USAGE-03-01 — Windows and Linux cold-launch arguments and macOS `open-url` delivery are distinguished.
+- [ ] ELECRUN-CK-USAGE-03-01 — The cold external-entry operating-system mapping distinguishes Windows launch arguments, Linux launcher input, macOS `open-url` deep-link delivery, and macOS `open-file` file-open delivery.
 - Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
-- Also applies: ELECRUN-CK-USAGE-07-01 (the cold deep-link URL is captured).
-- Also applies: ELECRUN-CK-USAGE-07-02 (the cold deep-link URL is validated before queueing).
-- Also applies: ELECRUN-CK-USAGE-07-03 (the cold deep-link URL remains queued until readiness).
 
 ### ELECRUN-SC-USAGE-04 — Normal case: a running deep link reaches the existing primary
 
@@ -122,21 +119,8 @@ An already-running application receives a different operating-system path than a
 
 #### Checklist
 
-- [ ] ELECRUN-CK-USAGE-04-01 — Windows and Linux `second-instance` delivery and macOS `open-url` delivery are distinguished.
+- [ ] ELECRUN-CK-USAGE-04-01 — The running external-entry operating-system mapping distinguishes Windows and Linux configured primary-instance routing, macOS `open-url` deep-link delivery, and macOS `open-file` file-open delivery.
 - [ ] ELECRUN-CK-USAGE-04-02 — The answer states both `second-instance` input rules: possible argument reordering and validated `additionalData` for exact application-supplied data.
-
-### ELECRUN-SC-USAGE-05 — Normal case: a cold file-open request is retained through readiness
-
-File activation can be delivered through launch arguments or an early macOS event. Registration and launch
-delivery remain separate prerequisites.
-
-#### Checklist
-
-- [ ] ELECRUN-CK-USAGE-05-01 — Windows `process.argv`, Linux launcher input, and macOS `open-file` delivery are distinguished.
-- Also applies: ELECRUN-CK-USAGE-02-01 (the macOS listener is registered before a cold event can arrive).
-- Also applies: ELECRUN-CK-USAGE-07-01 (the cold file-open input is captured).
-- Also applies: ELECRUN-CK-USAGE-07-02 (the cold file-open input is validated before queueing).
-- Also applies: ELECRUN-CK-USAGE-07-03 (the cold file-open input remains queued until readiness).
 
 ### ELECRUN-SC-USAGE-06 — Normal case: a running file-open request reaches the existing primary
 
@@ -145,8 +129,8 @@ Windows and Linux.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-USAGE-06-01 — macOS `open-file` and configured Windows or Linux primary-instance routing are distinguished.
 - [ ] ELECRUN-CK-USAGE-06-02 — The existing target window or view is resolved at delivery time instead of reusing a stale `webContents` reference.
+- Also applies: ELECRUN-CK-USAGE-04-01 (running deep-link and file-open operating-system mapping).
 
 ### ELECRUN-SC-USAGE-07 — Normal case: cold external input survives the readiness boundary
 
@@ -207,9 +191,22 @@ those observations proves the required target outcome.
 
 #### Checklist
 
-- [ ] ELECRUN-CK-RISK-03-01 — A non-throwing call is not accepted when the API reports failure through a Boolean, rejection, cancellation value, error string, event, or query.
-- [ ] ELECRUN-CK-RISK-03-02 — An available type or successful typecheck is not accepted as proof of runtime process validity or module loading.
-- [ ] ELECRUN-CK-RISK-03-03 — Development behavior or success on another operating system is not accepted as proof of installed target behavior.
+- [ ] ELECRUN-CK-RISK-03-01 — Every proxy-to-outcome member remains explicit: a non-throwing call cannot prove success reported through a Boolean, rejection, cancellation value, error string, event, or query; an available type or successful typecheck cannot prove runtime-process validity or module loading; and development behavior or success on another operating system cannot prove installed target behavior.
+
+### ELECRUN-SC-RISK-04 — Edge case: crash reporting starts across Electron process boundaries
+
+Crash collection must begin at the process boundary supported by the pinned Electron major. The expected
+result states each startup fact independently; treating crash collection as live health or recovery is the
+failure.
+
+#### Checklist
+
+- [ ] ELECRUN-CK-RISK-04-01 — Main-process `crashReporter.start()` initialization occurs before a monitored child process is created.
+- [ ] ELECRUN-CK-RISK-04-02 — Main-process crash-reporter initialization monitors subsequently created child processes.
+- [ ] ELECRUN-CK-RISK-04-03 — A Node child calls `process.crashReporter.start()` only when the main process did not initialize crash reporting for it.
+- [ ] ELECRUN-CK-RISK-04-04 — Renderer-process crash-reporter startup is deprecated or unavailable in current Electron documentation.
+- Also applies: ELECRUN-CK-CONSISTENCY-01-02 (current documentation is reconciled with the pinned Electron major).
+- Also applies: ELECRUN-CK-RISK-02-06 (crash collection is neither live recovery nor liveness proof).
 
 ## Overall
 

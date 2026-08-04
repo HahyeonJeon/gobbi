@@ -78,9 +78,13 @@ responsible owner, and rerun every affected and dependent case after an authoriz
 
 #### 1.1 Classify the request source and authority
 
-- Accept a direct lower-tier request from Runtime, Interface, Design, Contract, Development, or Observability
-  when it supplies a claim that needs Electron-specific evidence. Treat those skills as static claim
-  authorities, not as test authorities.
+- Accept a direct lower-tier request from [`electron-runtime`](../electron-runtime/SKILL.md),
+  [`electron-interface`](../electron-interface/SKILL.md),
+  [`electron-design`](../electron-design/SKILL.md),
+  [`electron-contract`](../electron-contract/SKILL.md),
+  [`electron-development`](../electron-development/SKILL.md), or
+  [`electron-observability`](../electron-observability/SKILL.md) when it supplies a claim that needs
+  Electron-specific evidence. Treat those skills as static claim authorities, not as test authorities.
 - Accept a Packaging request only through a labeled `Packaging ↔ Testing` work record. Accept a Release
   request only through a labeled `Release ↔ Testing` work record. These are dynamic request and return
   exchanges, not static skill references and not transfers of test ownership.
@@ -330,9 +334,9 @@ responsible owner, and rerun every affected and dependent case after an authoriz
 - Return the same request, build-input, candidate, target, and case identities. Add each environment
   classification, commands, observations, classifications, evidence locations, failures, limitations,
   unrun blockers, rerun links, and the narrowest reproduction.
-- Packaging alone checks completeness and identity, then accepts or rejects the candidate. Testing neither
-  changes the artifact nor makes that decision. A failed case or unavailable required environment returns an
-  explicit stop for the affected installed claim.
+- [`electron-packaging`](../electron-packaging/SKILL.md) alone checks completeness and identity, then accepts
+  or rejects the candidate. Testing neither changes the artifact nor makes that decision. A failed case or
+  unavailable required environment returns an explicit stop for the affected installed claim.
 
 #### 6.2 Complete the dynamic Release exchange
 
@@ -343,9 +347,10 @@ responsible owner, and rerun every affected and dependent case after an authoriz
 - Return matching request, candidate, target, predecessor, mechanism, metadata, channel, policy, scenario, and
   environment identities. Add predecessor, update, install, restart, migration, version-reporting, recovery,
   rejection, interruption, and tamper evidence or an explicit classification for every requested scenario.
-- Release alone interprets its policy, checks the identity-matched returned record, and accepts readiness or
-  stops. Testing neither changes release metadata nor makes that decision. A failed case or unavailable
-  required environment stops the affected target at its last accepted state.
+- [`electron-release`](../electron-release/SKILL.md) alone interprets its policy, checks the identity-matched
+  returned record, and accepts readiness or stops. Testing neither changes release metadata nor makes that
+  decision. A failed case or unavailable required environment stops the affected target at its last accepted
+  state.
 
 #### 6.3 Return the terminal Testing record
 
@@ -361,30 +366,17 @@ responsible owner, and rerun every affected and dependent case after an authoriz
 - Complete only when every requested case has one exact classification and every field has a value or explicit
   not-applicable status. Otherwise return an explicit stopped result with the failed request and case, last
   accepted state, retained evidence, responsible owner, required next input, and narrowest resume point.
-- When this test work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by an
-  active `electron` sibling supply the applicable conditions. The general Evaluation operation resolves them
-  and issues any verdict.
+- When this test work is evaluated, use the applicable Testing evaluation sources in References and every
+  checklist owned by an active `electron` sibling. The general Evaluation operation resolves them and issues
+  any verdict.
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
-  governed by this skill.
-- [`electron-release`](../electron-release/SKILL.md) owns release policy, readiness decisions, and external
-  actions.
-- [`electron-packaging`](../electron-packaging/SKILL.md) owns artifact construction, immutable candidate
-  records, and candidate acceptance.
-- [`electron-observability`](../electron-observability/SKILL.md) owns diagnostic emission, correlation,
-  redaction, arrival, and retention.
-- [`electron-development`](../electron-development/SKILL.md) owns product source implementation and
-  construction evidence.
-- [`electron-contract`](../electron-contract/SKILL.md) owns installed application lifecycle and
-  operating-system behavior claims.
-- [`electron-design`](../electron-design/SKILL.md) owns process, bridge, security, window, session, and resource
-  policy.
-- [`electron-interface`](../electron-interface/SKILL.md) owns application identity, interaction intent,
-  accessibility, and operating-system convention preferences.
-- [`electron-runtime`](../electron-runtime/SKILL.md) owns current Electron mechanism facts and version
-  reconciliation.
+| Source | Bound subject | Apply |
+|---|---|---|
+| [Behavior and evidence checklist](checklists.md) | Request and evidence identity, layer selection, environment gaps, ordinary lifecycle and external-entry evidence, process failures, dynamic exchanges, classifications, invalidation, rerun, terminal records, and non-security proxy limits | Load for every full Testing evaluation and for a narrow evaluation unless the explicit subject excludes general behavior and evidence. |
+| [Security checklist](security/checklists.md) | Adversarial real-Electron observations at preload privilege, CSP, renderer preferences, session permission, navigation, redirect, child-window, guest, external-URL, protocol, IPC, malformed-input, and diagnostic trust boundaries | Load for every full Testing evaluation and for a narrow evaluation unless the explicit subject excludes adversarial security decision points. |
 
-These are static claim sources. The `Packaging ↔ Testing` and `Release ↔ Testing` exchanges above are dynamic
-work records, not static reference edges.
+A full Testing evaluation loads both sources. A narrow evaluation may omit one only when its explicit subject
+excludes that source's bound concern. Evaluation selects applicable rows, records results, and owns findings
+and the verdict.

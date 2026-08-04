@@ -173,11 +173,11 @@ installed control as coverage for another surface is the failure.
 #### Checklist
 
 - [ ] ELECDSN-CK-RISK-01-01 — Both `setPermissionCheckHandler` and `setPermissionRequestHandler` are installed with default denial on every existing and later-created session or partition used by renderer content.
-- [ ] ELECDSN-CK-RISK-01-02 — `will-navigate`, `will-frame-navigate`, and `will-redirect` each enforce the allowed navigation set on every existing and later-created `webContents` that loads renderer content.
-- [ ] ELECDSN-CK-RISK-01-03 — `setWindowOpenHandler` enforces the allowed popup set on every existing and later-created `webContents` that loads renderer content.
+- [ ] ELECDSN-CK-RISK-01-02 — Every member of the navigation-and-popup handler set enforces its closed allowed set on every existing and later-created `webContents` that loads renderer content: `will-navigate`, `will-frame-navigate`, `will-redirect`, and `setWindowOpenHandler`.
 - [ ] ELECDSN-CK-RISK-01-04 — `will-attach-webview` validates the requested URL, preload, security-relevant `webPreferences`, and intended session or partition before attachment.
-- [ ] ELECDSN-CK-RISK-01-05 — Each URL passed to `shell.openExternal` is parsed and matched by scheme, origin, and allowed path against a closed allowlist.
+- [ ] ELECDSN-CK-RISK-01-05 — Each URL passed to `shell.openExternal` is parsed before external opening.
 - [ ] ELECDSN-CK-RISK-01-06 — Each permission handler evaluates the origin fields its own API supplies: `setPermissionRequestHandler` uses `details.requestingUrl`; `setPermissionCheckHandler` uses `requestingOrigin` and optional `details.embeddingOrigin`.
+- [ ] ELECDSN-CK-RISK-01-07 — Each parsed external URL matches its scheme, origin, and allowed path against a closed allowlist.
 
 ### ELECDSN-SC-RISK-02 — Edge case: a renderer loads secure remote content
 

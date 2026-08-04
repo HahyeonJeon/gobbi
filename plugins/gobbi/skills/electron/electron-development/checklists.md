@@ -194,8 +194,9 @@ check as complete is the failure.
 #### Checklist
 
 - [ ] ELECDEV-CK-RISK-03-01 — The diagnosis identifies the earliest source, process, loader, lifecycle, configuration, or build boundary that explains the failure.
-- [ ] ELECDEV-CK-RISK-03-02 — An implementation repair changes the bounded source cause and repeats every affected construction check.
+- [ ] ELECDEV-CK-RISK-03-02 — An implementation repair changes only the bounded source cause.
 - [ ] ELECDEV-CK-RISK-03-03 — A failed or unrun construction check is not reported as complete.
+- [ ] ELECDEV-CK-RISK-03-04 — An implementation repair repeats every affected construction check.
 
 ## Overall
 
@@ -223,5 +224,5 @@ the adversarial failure.
 #### Checklist
 
 - [ ] ELECDEV-CK-OVERALL-02-01 — No construction result is treated as proof of runtime behavior.
-- [ ] ELECDEV-CK-OVERALL-02-02 — Development neither creates nor accepts testing-owned environment-classified evidence.
 - [ ] ELECDEV-CK-OVERALL-02-03 — A build or emitted-entry inspection is not treated as proof of packaged behavior, candidate acceptance, or release readiness.
+- Also applies: ELECDEV-CK-CONSISTENCY-02-03 (Testing-owned evidence creation and acceptance remain outside Development).

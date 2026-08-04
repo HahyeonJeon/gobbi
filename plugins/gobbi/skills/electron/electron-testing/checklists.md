@@ -1,6 +1,7 @@
 # Electron Testing Evaluation Checklist
 
-This reusable unchecked source evaluates one body of Electron-specific test work and its returned evidence.
+This reusable unchecked source evaluates Electron behavior-and-evidence test work outside the narrower
+adversarial security-decision-point subject.
 It is governed by the [`electron` domain](../SKILL.md) and [`electron-testing` operation](SKILL.md). Runtime,
 Interface, Design, Contract, Development, Observability, Packaging, and Release retain the claims and
 decisions tested here. Testing alone owns Electron-specific test design, test implementation, execution,
@@ -26,7 +27,7 @@ does and does not establish.
 
 #### Checklist
 
-- [ ] ELECTST-CK-PROJECT-01-01 — The request records one unique request identity, requesting owner, exchange type, lower-tier claim, and lower-tier record identity.
+- [ ] ELECTST-CK-PROJECT-01-01 — Every Packaging or Release Testing request and return preserves one unique request identity, requesting owner, exchange type, lower-tier claim, and lower-tier record identity.
 - [ ] ELECTST-CK-PROJECT-01-02 — The request records the exact source or candidate subject, target operating system, architecture, Electron major, test inputs, and required environment.
 - [ ] ELECTST-CK-PROJECT-01-03 — Every requested scenario states its starting state, trigger, expected observation, pass condition, material risks, and failure conditions.
 
@@ -66,7 +67,8 @@ disprove the claim and records why a higher layer is required.
 - [ ] ELECTST-CK-STRUCTURE-01-01 — Every claim maps to the lowest-cost test layer that can observe its pass condition.
 - [ ] ELECTST-CK-STRUCTURE-01-02 — Every selected higher-cost layer names the observation that all lower layers cannot make.
 - [ ] ELECTST-CK-STRUCTURE-01-03 — The existing test framework, helpers, fixtures, launchers, and commands are preserved when they can observe the claim.
-- [ ] ELECTST-CK-STRUCTURE-01-04 — Every test double exposes only the requested contract and does not recreate Electron internals.
+- [ ] ELECTST-CK-STRUCTURE-01-04 — Every test double exposes only the requested contract.
+- [ ] ELECTST-CK-STRUCTURE-01-05 — No test double recreates Electron internals.
 
 ### ELECTST-SC-STRUCTURE-02 — Edge case: construction evidence is offered as behavior evidence
 
@@ -102,8 +104,9 @@ reproduce a failure. The expected result is concise, labeled, sanitized, and att
 #### Checklist
 
 - [ ] ELECTST-CK-AESTHETICS-01-01 — Every case record shows the request, subject, target, test, fixture, runner, configuration, environment, command, time, exit status, and classification identities.
-- [ ] ELECTST-CK-AESTHETICS-01-02 — Relevant output is sanitized without removing diagnostic facts, and each retained item has an evidence location.
+- [ ] ELECTST-CK-AESTHETICS-01-02 — Output sanitization retains every relevant diagnostic fact.
 - [ ] ELECTST-CK-AESTHETICS-01-03 — Construction, real-Electron runtime, security, application-lifecycle, diagnostics, packaged, installed, and update evidence use distinct labels.
+- [ ] ELECTST-CK-AESTHETICS-01-04 — Every retained output item has an evidence location.
 
 ## Usage
 
@@ -137,8 +140,8 @@ user effect, containment, recovery, and diagnostics instead of reporting one gen
 
 #### Checklist
 
-- [ ] ELECTST-CK-USAGE-03-01 — Renderer `unresponsive` and `responsive` transitions remain separate from renderer `render-process-gone` evidence, and each applicable path proves its visible effect and recovery.
-- [ ] ELECTST-CK-USAGE-03-02 — Utility-process `exit`, `child-process-gone`, and main-process exit with external crash capture remain separate evidence paths, and each applicable path proves containment or visible stop.
+- [ ] ELECTST-CK-USAGE-03-01 — Every member of this process-signal set remains a separate evidence path: renderer `unresponsive` and `responsive`, renderer `render-process-gone`, utility-process `exit`, `child-process-gone`, and main-process exit with external crash capture.
+- [ ] ELECTST-CK-USAGE-03-02 — Every member of the process-signal set proves its applicable outcome: visible effect and recovery for a renderer hang or exit, and containment or visible stop for utility, child, or main-process exit.
 
 ### ELECTST-SC-USAGE-04 — Normal case: the Packaging and Testing work records round-trip unchanged
 
@@ -148,8 +151,11 @@ returns evidence for the same candidate and lets Packaging alone accept or rejec
 #### Checklist
 
 - [ ] ELECTST-CK-USAGE-04-01 — The `Packaging ↔ Testing` request records its request identity, build-input identity, candidate checksum, artifact path, target operating system and architecture, installation instructions, claims, cases, required environments, and pass conditions.
-- [ ] ELECTST-CK-USAGE-04-02 — The Testing return repeats the request, build-input, candidate, target, and case identities and adds environment classifications, commands, observations, classifications, evidence locations, failures, limitations, blockers, rerun links, and narrowest reproduction.
-- [ ] ELECTST-CK-USAGE-04-03 — Packaging alone checks completeness and identity and accepts or rejects the candidate; Testing does not alter the artifact or make that decision.
+- [ ] ELECTST-CK-USAGE-04-03 — Packaging alone checks the returned record for completeness and identity.
+- [ ] ELECTST-CK-USAGE-04-04 — The Testing return adds environment classifications, commands, observations, classifications, evidence locations, failures, limitations, blockers, rerun links, and narrowest reproduction.
+- [ ] ELECTST-CK-USAGE-04-05 — Packaging alone accepts or rejects the candidate.
+- Also applies: ELECTST-CK-PROJECT-01-01 (Packaging request and return identities remain unchanged).
+- Also applies: ELECTST-CK-PROJECT-02-02 (Testing neither mutates an artifact nor decides candidate acceptance).
 - Also applies: ELECTST-CK-PROJECT-03-02 (an unavailable required environment returns an explicit stop).
 
 ### ELECTST-SC-USAGE-05 — Normal case: the Release and Testing work records round-trip unchanged
@@ -160,8 +166,9 @@ returns evidence for those exact identities and lets Release alone decide readin
 #### Checklist
 
 - [ ] ELECTST-CK-USAGE-05-01 — The `Release ↔ Testing` request records its request and candidate identities, checksum, target operating system and architecture, predecessor set, update mechanism, release-metadata identity, channel, compatibility policy, rollout, withdrawal, recovery, scenarios, required environments, and pass conditions.
-- [ ] ELECTST-CK-USAGE-05-02 — The Testing return repeats every request identity and classifies every requested predecessor, update, install, restart, migration, version-reporting, recovery, rejection, interruption, and tamper case.
-- [ ] ELECTST-CK-USAGE-05-03 — Release alone interprets release policy, checks the identity-matched returned record, and accepts readiness or stops.
+- [ ] ELECTST-CK-USAGE-05-03 — Release alone interprets release policy.
+- [ ] ELECTST-CK-USAGE-05-04 — The Testing return classifies every requested predecessor, update, install, restart, migration, version-reporting, recovery, rejection, interruption, and tamper case.
+- [ ] ELECTST-CK-USAGE-05-05 — Release alone checks the identity-matched returned record.
 - Also applies: ELECTST-CK-PROJECT-03-01 (an unavailable required environment cannot become a pass).
 
 ## Consistency
@@ -187,55 +194,12 @@ evidence.
 
 - [ ] ELECTST-CK-CONSISTENCY-02-01 — A subject, test, fixture, configuration, environment, Electron-major, candidate, release-metadata, target, predecessor, channel, update-mechanism, policy, or required-environment change invalidates every affected and dependent result.
 - [ ] ELECTST-CK-CONSISTENCY-02-02 — Every affected and dependent case reruns with a new run identity that links to the preserved invalidated result.
-- [ ] ELECTST-CK-CONSISTENCY-02-03 — A proved `test defect` is corrected only in authorized test code, fixtures, runner settings, or test configuration, with the failed and corrected test identities retained.
+- [ ] ELECTST-CK-CONSISTENCY-02-03 — A proved `test defect` is corrected only in authorized test code, fixtures, runner settings, or test configuration.
+- [ ] ELECTST-CK-CONSISTENCY-02-04 — The failed and corrected test identities remain in the evidence history.
 
 ## Risk
 
-### ELECTST-SC-RISK-01 — Normal case: privilege rejection is observed at the responsible process
-
-A renderer reaches a privileged capability through a preload bridge. The expected result proves exact bridge
-shape and rejection before side effects rather than relying on types or a renderer-only assertion.
-
-#### Checklist
-
-- [ ] ELECTST-CK-RISK-01-01 — The privileged process rejects missing or detached `event.senderFrame`, wrong sender origin, and malformed payload before any side effect.
-- [ ] ELECTST-CK-RISK-01-02 — The preload exposes only accepted domain methods, sends data-only callbacks, serializes accepted values, reports unavailable capabilities, and removes subscriptions through its disposer.
-- [ ] ELECTST-CK-RISK-01-03 — Every activated trust surface has its own observable adversarial case, so one installed handler cannot substitute for another control.
-
-### ELECTST-SC-RISK-02 — Adversarial: content policy and renderer preferences are attacked independently
-
-An unsafe renderer can arrive through content delivery or an explicit preference. The expected result attacks
-each route and each key separately and observes the created renderer or pre-creation rejection.
-
-#### Checklist
-
-- [ ] ELECTST-CK-RISK-02-01 — Absent and weak `Content-Security-Policy` values are separate cases on every renderer delivery path.
-- [ ] ELECTST-CK-RISK-02-02 — Every content-policy case observes the response header or document policy and proves a disallowed script or resource is blocked.
-- [ ] ELECTST-CK-RISK-02-03 — `nodeIntegration`, `contextIsolation`, `sandbox`, `webSecurity`, `allowRunningInsecureContent`, `experimentalFeatures`, and `enableBlinkFeatures` each have an independent real-Electron observation.
-- [ ] ELECTST-CK-RISK-02-04 — Every security-reducing value is rejected before renderer creation or has an authority record and a limited real-Electron exception case.
-
-### ELECTST-SC-RISK-03 — Adversarial: session, navigation, window, and guest paths evade one central check
-
-An attacker uses a secondary session, later-created contents, a redirect, a child window, or guest attachment.
-The expected result reaches each distinct decision point and proves denial before the protected effect.
-
-#### Checklist
-
-- [ ] ELECTST-CK-RISK-03-01 — `setPermissionCheckHandler` and `setPermissionRequestHandler` are exercised separately on the default and every secondary session or partition with varied requesting origin, embedding origin, frame facts, and permission, asserting the accepted default denial.
-- [ ] ELECTST-CK-RISK-03-02 — Allowed and denied main-frame, subframe, and redirect navigation are exercised through `will-navigate`, `will-frame-navigate`, and `will-redirect` on initial and later-created `webContents`.
-- [ ] ELECTST-CK-RISK-03-03 — Initial, later-created, and secondary-session child-window requests are decided by `setWindowOpenHandler` before any denied child is created.
-- [ ] ELECTST-CK-RISK-03-04 — Disallowed guest URL, preload, preferences, and requested partition values are each denied at `will-attach-webview` before any guest is created.
-
-### ELECTST-SC-RISK-04 — Adversarial: denied external input or diagnostics hide a security failure
-
-An external URL, protocol path, IPC request, or malformed payload bypasses validation, or the test weakens a
-security control to expose diagnostics. The expected result attempts each reachable path and retains
-diagnostics without altering the control.
-
-#### Checklist
-
-- [ ] ELECTST-CK-RISK-04-01 — Every reachable denied external-URL, custom-protocol traversal, wrong-origin IPC, and malformed-payload path is attempted independently.
-- [ ] ELECTST-CK-RISK-04-02 — Renderer, main-process, crash, hang, and operating-system diagnostics are recorded through the accepted Observability mechanism without weakening a security control or changing production emission.
+Adversarial security decision-point observation is outside this narrower behavior-and-evidence subject.
 
 ## Overall
 
@@ -248,7 +212,9 @@ result returns one complete record or an exact stop to every affected lower-tier
 
 - [ ] ELECTST-CK-OVERALL-01-01 — The terminal record contains every evidence, request, claim, subject, source, configuration, candidate, release, target, test, fixture, runner, environment, prerequisite, scenario, command, result, classification, output, evidence-location, failure, correction, invalidation, dependency, rerun, blocker, limitation, risk, owner, reproduction, predecessor-evidence, and replacement-evidence field that applies.
 - [ ] ELECTST-CK-OVERALL-01-02 — Every requested case has one exact classification, or the stopped result names the failed request and case, last accepted state, retained evidence, responsible owner, required next input, and narrowest resume point.
-- [ ] ELECTST-CK-OVERALL-01-03 — The record is returned to every affected lower-tier owner with the dynamic Packaging and Release identities unchanged and every evidence class labeled distinctly.
+- [ ] ELECTST-CK-OVERALL-01-03 — The record is returned to every affected lower-tier owner.
+- [ ] ELECTST-CK-OVERALL-01-04 — The dynamic Packaging and Release identities remain unchanged in the terminal record.
+- Also applies: ELECTST-CK-AESTHETICS-01-03 (every evidence class has a distinct label).
 - Also applies: ELECTST-CK-AESTHETICS-01-02 (retained output is sanitized and attributable).
 
 ### ELECTST-SC-OVERALL-02 — Adversarial: proxy evidence is generalized into complete assurance

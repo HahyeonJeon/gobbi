@@ -233,8 +233,3 @@ materially degrade the behavior it records.
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [`electron-contract`](../electron-contract/SKILL.md) owns installed diagnostics requirements and recovery
-  promises.
-- [`electron-design`](../electron-design/SKILL.md) owns process, trust, resource, and failure decisions.
-- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism, pinned-major, operating-system and
-  architecture support, and final runtime-diagnosis facts.

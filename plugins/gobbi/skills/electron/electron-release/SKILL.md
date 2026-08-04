@@ -76,8 +76,9 @@ Rollback is allowed only from current compatibility, updater-path, evidence, and
 - Classify the work as preparation, read-only review, or execution. Preparation may create release policy,
   metadata, requests, and readiness records; review changes nothing; execution may perform only the exact
   external actions authorized later in this procedure.
-- Identify one release subject with its application version and exactly one accepted immutable Packaging
-  candidate for each target operating system and architecture.
+- Identify one release subject with its application version and exactly one accepted immutable candidate
+  owned by [`electron-packaging`](../electron-packaging/SKILL.md) for each target operating system and
+  architecture.
 - Record the affected decision makers, credential owners, external-action authorities, operators, users,
   support staff, distribution destinations, and current external state.
 - Stop on an ambiguous mode, target, actor, or authority. Preserve the candidate records and name the owner
@@ -107,8 +108,8 @@ Rollback is allowed only from current compatibility, updater-path, evidence, and
 - Define the supported predecessor set for each target and channel. State unsupported predecessors and the
   user-visible path available to them.
 - Record installed-data, settings, and protocol compatibility for fresh install, update, restart, forward
-  fix, and any proposed rollback. Use the accepted Contract record for observable behavior and never infer
-  compatibility from retained files alone.
+  fix, and any proposed rollback. Use the accepted [`electron-contract`](../electron-contract/SKILL.md)
+  record for observable behavior and never infer compatibility from retained files alone.
 - Define rollout stages, stage populations, entry and exit conditions, withdrawal criteria, stop thresholds,
   the forward-recovery plan, and the authority that may change each decision.
 
@@ -140,8 +141,9 @@ Rollback is allowed only from current compatibility, updater-path, evidence, and
 - For a major transition, inspect every applicable item in Electron's live
   [Breaking Changes](https://www.electronjs.org/docs/latest/breaking-changes) between the predecessor and
   target majors. Record the affected contract, update, compatibility, and support decisions.
-- Reconcile current official facts with the pinned Electron major and Runtime record. Stop on an unresolved
-  contradiction rather than using current documentation as proof for a different major.
+- Reconcile current official facts with the pinned Electron major and the
+  [`electron-runtime`](../electron-runtime/SKILL.md) record. Stop on an unresolved contradiction rather than
+  using current documentation as proof for a different major.
 
 ### Phase 3 — Request and Accept Release-Readiness Evidence
 
@@ -217,8 +219,9 @@ Rollback is allowed only from current compatibility, updater-path, evidence, and
 #### 4.3 Roll out, observe, pause, and withdraw
 
 - Advance only through the accepted rollout stages. Before each stage, check the same candidate, target,
-  channel, current stage population, prior stage decision, accepted Observability signals, signal time range,
-  and stop thresholds.
+  channel, current stage population, prior stage decision, accepted
+  [`electron-observability`](../electron-observability/SKILL.md) signals, signal time range, and stop
+  thresholds.
 - Record each stage start, population, diagnostic state, threshold comparison, decision authority, decision,
   and resulting external state. Missing, stale, mismatched, or unavailable required signals stop advancement.
 - On a threshold breach or material failure, pause or stop new rollout and preserve the release, diagnostic,
@@ -263,10 +266,3 @@ Rollback is allowed only from current compatibility, updater-path, evidence, and
 ## References
 
 - [`Electron Release Checklist`](checklists.md) owns reusable evaluation coverage for this operation.
-- [`Electron Contract`](../electron-contract/SKILL.md) owns observable installed behavior and compatibility
-  promises.
-- [`Electron Observability`](../electron-observability/SKILL.md) owns diagnostic signal emission, arrival,
-  redaction, and retention.
-- [`Electron Packaging`](../electron-packaging/SKILL.md) owns candidate construction, security settings,
-  signatures, notarization, final bytes, and candidate acceptance.
-- [`Electron Runtime`](../electron-runtime/SKILL.md) owns pinned-major and target-specific mechanism facts.

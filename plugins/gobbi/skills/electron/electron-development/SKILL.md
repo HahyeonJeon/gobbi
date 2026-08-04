@@ -190,8 +190,3 @@ only. Later owners establish behavior and artifact claims.
 
 - [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
   governed by this skill.
-- [`electron-contract`](../electron-contract/SKILL.md) owns installed application behavior and recovery claims.
-- [`electron-interface`](../electron-interface/SKILL.md) owns observable interface decisions.
-- [`electron-design`](../electron-design/SKILL.md) owns technical process, trust, bridge, state, resource, and
-  lifecycle decisions.
-- [`electron-runtime`](../electron-runtime/SKILL.md) owns current mechanism and pinned-major facts.
