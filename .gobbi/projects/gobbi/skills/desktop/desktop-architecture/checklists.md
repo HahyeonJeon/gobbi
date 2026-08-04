@@ -35,11 +35,11 @@ missing Architecture selection or one owner claiming the whole cross-owner outco
 
 #### Checklist
 
-- [ ] DTARCH-CK-PROJECT-03-01 — Every local choice is a view-hierarchy, navigation, window-model, application-state, restoration, or Activation request product-outcome judgment.
 - [ ] DTARCH-CK-PROJECT-03-02 — A pure Activation request product judgment selects `desktop-architecture`, and a multi-owner Activation request keeps that selection while adding every applicable adjacent owner.
 - [ ] DTARCH-CK-PROJECT-03-03 — Electron security or structure judgment routes to `electron-design`, current lifecycle, event, delivery, or mechanism facts to `electron-runtime`, implementation to `electron-development`, and evidence to `electron-testing`.
 - [ ] DTARCH-CK-PROJECT-03-04 — Current target facts route to the applicable `desktop-windows`, `desktop-macos`, or `desktop-linux` Manual; product intent to `desktop-interface`; coordination to `desktop-development`; and release or data-compatibility judgment to `desktop-release`.
 - [ ] DTARCH-CK-PROJECT-03-05 — No OS convention, Electron event, or available mechanism selects a create, reveal, focus, navigate, handle, no-op, or reject product outcome.
+- Also applies: DTARCH-CK-OVERALL-02-01 (Architecture product-choice boundary).
 
 ## Structure
 
@@ -261,3 +261,19 @@ those five is unanswered, or when the record claims more than it settled.
 
 - [ ] DTARCH-CK-OVERALL-01-01 — The record answers view hierarchy, current location and way back, state ownership and lifetime, window-versus-content per view, and Later relaunch restoration.
 - [ ] DTARCH-CK-OVERALL-01-02 — The record's claim is no broader than the decisions it actually settles.
+
+### DTARCH-SC-OVERALL-02 — Normal case: the complete Architecture integrates Activation with existing product boundaries
+
+A current Architecture already settles the view, navigation, state, window, and restoration decisions and
+also must settle applicable Activation requests through those same boundaries. The expected outcome
+integrates every applicable Activation outcome with the complete window model, current location, state
+lifetime, restoration, and one authoritative application instance and state owner; a pre-Activation record
+or an outcome that bypasses one of those boundaries is the failure.
+
+#### Checklist
+
+- [ ] DTARCH-CK-OVERALL-02-01 — Every local choice is a view-hierarchy, navigation, window-model, application-state, restoration, or Activation request product-outcome judgment.
+- Also applies: DTARCH-CK-OVERALL-01-01 (view, navigation, state, window, and restoration decisions).
+- Also applies: DTARCH-CK-STRUCTURE-05-01 (complete window model).
+- Also applies: DTARCH-CK-STRUCTURE-06-01 (one Activation authority).
+- Also applies: DTARCH-CK-USAGE-04-03 (accepted Activation outcomes).
