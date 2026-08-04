@@ -159,8 +159,9 @@ whose completion cannot be proved.
   may be a creator or persistent teammate.
 - Give both evaluators the neutral contract, both drafts, both reciprocal reviews, synthesis, decisions,
   settings, authority, project evidence, and named check results.
-- Require complete but concise coverage of Project, Structure, Performance, Aesthetics, Usage, Consistency,
-  Risk, and Overall. Each finding uses the parent-owned finding fields and states `blocking: yes|no`.
+- Require each evaluator to apply
+  [complete Evaluation-defined lifecycle-boundary coverage](../../evaluation/SKILL.md#procedure) to the full
+  frozen Ideation subject. Each finding uses the parent-owned finding fields and states `blocking: yes|no`.
 - Preserve both declared evaluator verdicts without rewriting them. Apply the parent fast-gate definition and
   two-iteration cap to derive the separate workflow decision.
 - Retitle the active TODO to RECORD after both independent reports and the workflow decision validate.

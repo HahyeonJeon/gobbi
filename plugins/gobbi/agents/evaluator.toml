@@ -1,5 +1,5 @@
 name = "evaluator"
-description = "Gobbi adversarial assessor for one delegated evaluation system, covering all seven perspectives plus Overall."
+description = "Gobbi adversarial assessor applying complete Evaluation-defined lifecycle-boundary coverage for one delegated evaluation system."
 model = "gpt-5.6-sol"
 model_reasoning_effort = "xhigh"
 sandbox_mode = "read-only"

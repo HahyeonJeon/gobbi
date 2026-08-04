@@ -167,8 +167,20 @@ P3 · Hand-off
   system, neither holding the other report. For Ideation, that stage independently evaluates the frozen,
   self-reviewed subject its operation returns. Evaluator verdicts are report evidence, and the `gate.md`
   decision alone advances the TODO.
-- Each evaluation report is a complete human-readable Evaluation output. Every finding states an ID, severity,
-  evidence, impact, cause, confidence, suggested direction, and `blocking: yes|no`.
+- Every fresh evaluator applies
+  [complete Evaluation-defined lifecycle-boundary coverage](../evaluation/SKILL.md#procedure) to the full
+  frozen subject. Each evaluation report wraps that complete human-readable output in this exact order:
+
+  1. **Evaluation Identity and Independence**
+  2. **Lifecycle Coverage Summary**
+  3. **Problems**
+  4. **Optional Improvements**
+  5. **Strengths and Must-Preserve Conditions**
+  6. **Verdict Derivation**
+
+  Lifecycle Coverage Summary entries reference result IDs and never duplicate result definitions. Every
+  Problem retains exactly these Workflow fields: `ID`, `Severity`, `Evidence`, `Impact`, `Cause`,
+  `Confidence`, `Suggested direction`, and `blocking` with value `yes` or `no`.
 - Each `gate.md` records mode, report paths and hashes, both declared verdicts, unresolved Critical finding
   IDs, actual blocking finding IDs, accepted nonblocking finding IDs, and the workflow decision. Each RECORD
   receipt records the exact TODO, input and output hashes, gate hash, checks, canonical output, and the
@@ -232,8 +244,8 @@ SKILLS LOADED:
   Step 1.2 package layout, let the active runtime leader synthesize, resolve user-owned conflicts, and read
   the complete package against the Step 1.2 written contract before accepting it.
 - In EVALUATION, call that operation for one evaluation round over the complete creation package. Both reports
-  cover Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall; each finding
-  states severity and whether it is an actual blocker.
+  follow the shared evaluation policy in Step 1.2; each finding states severity and whether it is an actual
+  blocker.
 - In RECORD, seal the creation package, both reports, decisions, findings, checks, and Configuration receipt.
   Write the canonical Ideation artifact only after PASS and verify it before updating the TODO.
 
