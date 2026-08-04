@@ -1,326 +1,145 @@
 ---
 name: checklist
-description: "MUST load when creating or revising an evaluation checklist. Checklist is an operation sub-skill for authoring one lifecycle-first, reusable, unchecked source with evidenced coverage closure."
+description: "MUST load when creating or revising an evaluation checklist. Checklist authors one reusable, unchecked source for an exact subject and context."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Evaluation Checklist
 
-A Checklist author uses this operation to create or revise one reusable, unchecked lifecycle-first source for
-an exact subject and version. The result records evidenced lifecycle applicability, expected scenarios,
-atomic conditions, governing traces, expected tests, and authored source closure.
+A Checklist author uses this operation to create or revise one reusable, unchecked checklist for an exact
+subject and context. The checklist states what later evaluation should be able to answer from evidence.
 
-Seven nonlinear lifecycle families own coverage. Development and product views, actors, product forms,
-scenario-spectrum questions, standards, and optional perspective prompts inform that coverage without
-becoming parallel owners or quotas.
+Its hierarchy follows the work instead of a fixed template. The development lifecycle and product lifecycle
+help discover relevant scenarios and transitions, but they do not define categories, phases, or required order.
 
-Checklist preserves the unchecked source and stops at source closure. It never executes conditions, records
-results, judges the subject, or decides acceptance.
+Checklist stops after source authoring. It does not execute conditions or judge the subject, and its delivered
+source remains unchecked and result-free.
 
 ## Principles
 
-### Let lifecycle boundaries own coverage
+### Let context and evidence shape coverage
 
-Material stages, transitions, handoffs, alternatives, failures, recovery paths, and terminal states define
-coverage. The seven families organize those nonlinear boundaries without prescribing one sequence.
+Actual outcomes, people, interfaces, transitions, risks, and prior failures show what matters. The checklist
+records supported expectations and names gaps where evidence or authority is missing.
 
-### Derive applicability from subject evidence
+### Describe scenarios before conditions
 
-Actual actors, responsibilities, interfaces, product forms, governing inputs, and observable state determine
-what applies. An unsupported exclusion or unresolved uncertainty is an open gap, not convenience.
+A condition becomes meaningful inside a concrete scenario with a trigger and observable outcome. Start with
+that context, then state the smallest independently answerable expectations.
 
-### Turn material outcomes into atomic contracts
+### Cover essentials and common mistakes
 
-One family-owned scenario states one boundary, trigger, expected outcome, and deficient outcome. Each nested
-condition is independently answerable from evidence in that scenario context.
+Check the behavior needed for the outcome and the mistakes most likely to make it fail or disappoint. Include
+deficient-but-functioning quality when inconvenience, confusion, inconsistency, or poor appearance matters.
 
-### Keep source closure separate from judgment
+### Keep the source/judgment boundary clear
 
-Source closure means the authored baseline is traceable and materially complete. Evaluation completion,
-acceptance, finding disposition, and workflow routing remain later and separate states.
+Checklist authors an expectation source; Evaluation owns later observations and judgment. Source content stays
+unchecked even after an evaluator uses it.
 
 ## Rules
 
-- **MUST use the exact lifecycle-first physical contract in Step 1.2.** Keep its front records, ordered
-  sections, record labels, identity domains, conditional lines, and closure renderings literal.
-- **MUST give every scenario one primary owner from the seven lifecycle families.** Treat development and
-  product views as one inline boundary property and every other lens as subordinate evidence or questions.
-- **MUST evidence every applicability and test status.** Unsupported `N/A`, material `Uncertain`, and
-  untraced `Applicable` records keep source closure open.
-- **MUST keep identities, references, reuse, and supersession resolvable.** Give each live condition one
-  scenario owner, never reuse an ID, and count a shared `both` boundary once.
-- **MUST keep the preserved source unchecked and result-free.** Do not add execution evidence, answers,
-  findings, severity, scoring, remediation, completion judgments, verdicts, or finding dispositions.
-- **NEVER use prompts or counts as coverage credit or failure thresholds.** The optional perspective card and
-  scenario spectrum only ask questions, while six and 55 only trigger a recorded semantic review.
+- **MUST bind the checklist to one exact subject, scope, and context.** State enough identity and evidence for
+  a later evaluator to know what the source covers.
+- **MUST discover context-driven scenarios before writing conditions.** Use lifecycle guidance and relevant
+  perspectives as prompts only, never as required categories, sequences, counts, or coverage credit.
+- **MUST make every condition atomic, observable, and independently answerable from evidence.** Keep each
+  condition contextual to one scenario or to clearly stated shared context.
+- **MUST cover essential behavior and common mistakes.** Include ordinary success, boundaries, failure,
+  recovery, and materially deficient outcomes when they apply.
+- **MUST keep the hierarchy and supporting details adaptable.** Use only the structure, fields, and identifiers
+  that help this subject and caller.
+- **NEVER write procedures, action logs, answers, results, scores, severity, or remediation into the source.**
+  Deliver every checklist condition unchecked.
 
 ## Procedure
 
-### Phase 1 — Bind the Exact Subject
+### Phase 1 — Frame the Source
 
-#### 1.1 Freeze the subject and authoring inputs
+#### 1.1 Freeze the subject and authoring context
 
-- Bind one stable subject identity and version or content hash, its intended outcomes, scope, governing
-  requirements, rules, decisions, risks, prior failures, expected tests, observable state, and available
-  evidence.
-- Identify material changes, missing authority, and evidence limits before authoring. Stop when the subject is
-  substituted, unstable, too broad to support one closure claim, or too imprecise for stable references.
-- Treat the source as an unchecked expectation baseline for that exact subject. A changed material premise
-  makes affected authoring evidence historical and returns work to the earliest affected step.
+- Identify the exact artifact, state, version, or content hash the checklist concerns.
+- Record its intended outcomes, affected people, scope, governing requirements, known risks, prior failures,
+  expected evidence, and material constraints.
+- Split the work or stop for missing context when one checklist cannot describe a stable subject and outcome.
 
-#### 1.2 Render the lifecycle-first source skeleton
+#### 1.2 Choose a useful source structure
 
-- Create the complete skeleton before writing substantive records. A valid source has exactly one H1, the
-  three front records below, and each named H2 exactly once in this order.
-- Use this exact physical grammar; literal pipes cannot appear inside record values:
+- Build a free hierarchy that matches the subject. Prefer short descriptive headings over mechanical
+  organization.
+- Use an illustrative structure only where it helps: subject, scope, and evidence; scenario, context, trigger,
+  expected and deficient outcomes; unchecked conditions; and unresolved gaps.
+- The author may adapt or omit those fields. An evaluator may also adapt them in evaluation-owned notes, and
+  identifiers are needed only when a caller requires traceability.
+- Keep the source understandable without a separate schema or authoring conversation.
 
-```markdown
-# <subject> — Lifecycle Checklist
+### Phase 2 — Discover Relevant Scenarios
 
-Subject: <stable subject identity>
-Version: <version or content hash>
-Source kind: lifecycle-first
+#### 2.1 Study the work across its lifecycles
 
-## Actor Profiles
-- ACT-01 | Role: <name> | Responsibilities: <text> | Needs / Outcomes: <text> | Interfaces / Handoffs: <text> | Evidence: <GOV refs or exact evidence>
+- Inspect actual behavior, intended outcomes, interfaces, dependencies, transitions, handoffs, operating
+  conditions, governing inputs, risks, and available evidence.
+- Use the development lifecycle to think through creation, change, verification, delivery, maintenance, and
+  recovery where relevant.
+- Use the product lifecycle to think through how the outcome is encountered, adopted, used, changed,
+  supported, and left where relevant.
+- Treat both lifecycles as discovery guidance. They are not required phases, fixed sequences, checklist
+  sections, or measures of completeness.
 
-## Product Forms
-- FORM-01 | Form: <application|library/package|SDK|API|service/backend|CLI/tool|development-workflow|release/delivery|documentation/information|other:<name>> | Relationship / Interfaces: <text> | Evidence: <GOV refs or exact evidence>
+#### 2.2 Write context-driven scenarios
 
-## Applicability Matrix
-- BND-01 | Family: <exact family> | Boundary: <text> | Context: <ACT/FORM refs> | Views: <development|product|both> | Status: <Applicable|N/A|Uncertain> | Basis: <inspected basis> | Scenarios: <SCN refs|—> | Related: <BND refs|—>
+- Consider ordinary success; boundaries and transitions; failure and recovery; and deficient-but-functioning
+  outcomes such as inconvenience, unintuitive behavior, confusion, inconsistency, or poor appearance.
+- Consider governance, misuse, abuse, or cosmetic compliance when the subject or evidence makes them relevant.
+  These prompts are not scenario classes or quotas.
+- State enough context, trigger, expected outcome, deficient outcome, and evidence boundary for each scenario
+  to be understood and evaluated.
+- Let relevant perspectives challenge evaluation boundaries when useful. Do not name a fixed set or record
+  their use, order, number, or labels.
+- Merge only scenarios that require the same context, evidence, and answer. Split material differences that
+  would otherwise hide a boundary or failure.
 
-## Expected Scenarios
-### SCN-<family-code>-01 — <title>
-Family: <exact family>
-Matrix: <Applicable BND refs>
-Actors / Forms: <ACT refs>; <FORM refs>
-Supersedes: <prior SCN ref> <!-- only for a genuine family move; otherwise absent -->
-Boundary / condition: <semantic prose>
-Trigger: <semantic prose>
-Expected outcome: <observable prose>
-Deficient outcome: <observable material deficiency>
-Evidence / Measure: <basis or boundary> <!-- only when material; otherwise absent -->
+### Phase 3 — Write the Checklist Conditions
 
-#### Checklist
-- [ ] CHK-<family-code>-01-01 — <one atomic condition>
-  - Also applies: <SCN/BND refs> <!-- only for valid reuse; otherwise absent -->
-  - Supersedes: <prior CHK refs> <!-- only for split/owner move; otherwise absent -->
+#### 3.1 Derive atomic conditions
 
-## Governing Traces
-- GOV-01 | Input: <requirement|rule|decision|risk|prior-failure>:<stable identity> | Covers: <live BND/SCN/CHK/TEST refs> | Basis: <coverage explanation>
+- Write one or more unchecked conditions for each material scenario.
+- State the required observable condition, not how to test it. Keep the scenario context close enough that an
+  evaluator can answer the condition from evidence.
+- Split combined conditions when their answers, evidence, triggers, affected people, or consequences can
+  differ.
+- Reuse wording only when its meaning and required evidence remain the same in every stated context.
 
-## Expected Tests
-- TEST-01 | Test: <stable command, artifact, or test identity> | Status: <Applicable|N/A|Uncertain> | Basis: <inspected basis> | Covers: <live BND/SCN/CHK refs|—>
+#### 3.2 Review essentials, mistakes, and gaps
 
-## Source Closure
-Source closure: <Open|Closed>
-Open gaps: None
-Warning review: Not triggered
-```
+- Confirm the checklist covers the essential behavior needed for the intended outcome and common mistakes
+  supported by the subject, history, or domain.
+- Challenge apparent success that still produces confusing, inconsistent, inconvenient, unintuitive, or poor
+  quality results.
+- Name unresolved gaps and the evidence, authority, or context needed to close them. Do not invent conditions
+  merely to hide missing knowledge.
+- Remove duplicate, vague, compound, unobservable, procedural, or result-bearing conditions.
 
-- Keep `Supersedes`, `Evidence / Measure`, `Also applies`, and condition-level `Supersedes` absent unless
-  their stated condition applies. Do not emit their comments or empty placeholders in a completed source.
-- Stable source-local identity domains are exactly `ACT-NN`, `FORM-NN`, `BND-NN`, `GOV-NN`, `TEST-NN`, and
-  `GAP-NN`, plus the family-coded `SCN` and `CHK` forms above. Every `NN` is exactly two digits, ordinals
-  increase monotonically within their owner, and no live or superseded identity is ever reused.
+### Phase 4 — Preserve and Hand Off the Source
 
-### Phase 2 — Build Lifecycle Applicability
+#### 4.1 Verify the authored source
 
-#### 2.1 Define evidenced actor profiles and product forms
+- Read the whole source against the frozen subject, intended outcomes, relevant scenarios, available evidence,
+  and unresolved gaps.
+- Confirm that each condition is atomic, observable, independently answerable, contextual, and still unchecked.
+- Confirm that lifecycle guidance and perspectives helped discovery without becoming required organization or
+  recorded coverage.
+- Return to the earliest affected step when the review exposes a missing premise, scenario, condition, or gap.
 
-- Inspect responsibilities, decisions, needs, outcomes, interfaces, dependencies, handoffs, and recovery
-  duties. Author stable profiles only for materially affected roles supported by exact evidence.
-- Examine development-side actors such as developers, creators, and maintainers and product-side actors such
-  as consumers, operators, and integrators. These examples are discovery prompts, not a universal actor list;
-  omit unsupported roles and include other evidenced roles.
-- Author each profile as one `ACT-NN` record in the exact Step 1.2 form. Keep distinct roles separate when
-  their responsibilities, interfaces, handoffs, needs, outcomes, or evidence materially differ.
-- Select only evidenced forms and relationships: application, library/package, SDK, API, service/backend,
-  CLI/tool, development-workflow, release/delivery, documentation/information, or `other:<name>`.
-- Author each form as one `FORM-NN` record. Profiles and forms provide context only; they create no
-  applicability, scenario owner, quota, or coverage credit by themselves.
+#### 4.2 Hand off without judgment
 
-#### 2.2 Build the applicability matrix
-
-- Inspect all material development stages, transitions, handoffs, alternatives, failures, recovery paths,
-  and terminal states. Inspect product acquisition, creation, delivery, adoption, integration, use,
-  operation, evolution, support, recovery, exit, and retirement outcomes with the same evidence standard.
-- Assign each material boundary to exactly one primary nonlinear family:
-
-  | Family | Code |
-  | --- | --- |
-  | Intent/Acquisition | `IA` |
-  | Creation/Delivery | `CD` |
-  | Adoption/Integration | `AI` |
-  | Use/Operation | `UO` |
-  | Change/Evolution | `CE` |
-  | Support/Recovery | `SR` |
-  | Deprecation/Exit/Retirement | `DER` |
-
-- Write one `BND-NN` record per normalized material boundary. `Boundary` and `Basis` remain
-  subject-specific, and `Context` resolves only live `ACT-NN` and `FORM-NN` identities.
-- Set `Views` to exactly `development`, `product`, or `both`. `both` means one normalized boundary shared by
-  both views, with one `BND-NN`, one scenario obligation, and one coverage credit; `Views` is not an identity
-  or reference target.
-- Set `Status` to `Applicable`, `N/A`, or `Uncertain` and give the same record an inspected `Basis`.
-  `Applicable` requires scenario traces before closure; `N/A` requires inspected exclusion evidence;
-  `Uncertain` names the missing evidence and possible effect.
-- An `Applicable` boundary may use `—` for `Scenarios` only while the source is Open and an exact `GAP-NN`
-  cites it. An `N/A` boundary uses `—` and cites inspected exclusion evidence; an `Uncertain` boundary uses
-  `—`, names its missing evidence and possible effect, and keeps source closure Open.
-- Use `Related` for real cross-family relationships without creating a second owner. Treat restoration or
-  re-entry as a separate Support/Recovery scenario only when it is an independently evaluable outcome.
-
-#### 2.3 Challenge applicability with non-owning prompts
-
-- Challenge the complete matrix for successful outcomes; limits and transitions; failure, rejection,
-  containment, and recovery; materially deficient yet functioning outcomes; governing-constraint violations;
-  and abuse, gaming, or cosmetic compliance.
-- Optionally consult this unordered prompt card: Project, Structure, Performance, Aesthetics, Usage,
-  Consistency, Risk, and Overall. Consult none, some, or all as useful questions only after lifecycle,
-  actor/form, and matrix derivation.
-- Store no prompt use, order, provenance, completion, heading, ID, tag, field, count, result class, or coverage
-  credit. A concern matters only after it enters the ordinary actor/form, matrix, scenario, condition, trace,
-  test, or gap model.
-- Return to Step 2.1 or 2.2 when a prompt exposes a missing actor, form, boundary, status basis, or
-  relationship.
-
-### Phase 3 — Derive Expected Scenarios
-
-#### 3.1 Create family-owned scenarios
-
-- Turn every `Applicable` matrix outcome into one or more compact expected scenarios. Each scenario has one
-  family owner and references every applicable matrix entry and live actor/form context that gives its
-  contract meaning.
-- Use `SCN-<family-code>-NN`, with the exact family codes in Step 2.2 and a two-digit ordinal that increases
-  monotonically within that family. The ID stays stable through wording and trace edits while the family
-  owner and scenario contract remain the same.
-- Write `Boundary / condition`, `Trigger`, `Expected outcome`, and `Deficient outcome` as independently
-  interpretable semantic prose. The deficient outcome names observable material inadequacy even when the
-  subject still functions.
-- Add `Evidence / Measure` when thresholds, variability, quality or compatibility boundaries, repeatability,
-  causality, uncertainty, or consistent condition answers require it. Otherwise omit the line.
-
-#### 3.2 Apply the expected-scenario spectrum
-
-- Ask whether each applicable boundary and the complete scenario inventory covers success; limits and
-  transitions; failure, rejection, containment, and recovery; deficient-but-functioning behavior;
-  governing violations; and abuse, gaming, or cosmetic compliance.
-- Treat those questions as a generalized spectrum, never scenario classes, headings, fields, IDs, quotas,
-  completion data, or result classes.
-- Deduplicate semantically identical contracts. Split scenarios when family, actor/form contract, boundary,
-  trigger, expected outcome, deficient outcome, or `Evidence / Measure` contract materially differs.
-- Return to Phase 2 when a scenario exposes a missing boundary or unsupported applicability assertion.
-
-#### 3.3 Preserve scenario identity and relationships
-
-- Keep one live family owner for each scenario and use matrix `Related` references for cross-family meaning.
-- When a genuine family move changes ownership, allocate the next destination-family ID and add the exact
-  scenario `Supersedes` line. Never reuse or silently move the prior ID.
-- Confirm that every live `Applicable` boundary traces to at least one live scenario and that no scenario
-  claims a `N/A` or `Uncertain` boundary as applicable coverage.
-
-### Phase 4 — Derive Executable Atomic Conditions
-
-#### 4.1 Write atomic checklist conditions
-
-- Add `#### Checklist` directly beneath every scenario and write at least one unchecked condition in the
-  exact Step 1.2 form. Use `CHK-<family-code>-<scenario-ordinal>-NN` with a two-digit condition ordinal that
-  increases monotonically within that scenario.
-- Give each condition one live scenario owner and enough scenario context for a binary, independently
-  evidenced answer. State the required condition, not an action log, result, test procedure, severity,
-  score, or remediation.
-- Split a condition when its answer, required evidence, affected actor, trigger or environment, or acceptance
-  effect can differ. Keep one condition when the same required state applies to several explicitly named
-  members of a set.
-- Never generalize named members or broaden a verb phrase merely to merge conditions. A wording change does
-  not make different evidence meanings or acceptance effects identical.
-
-#### 4.2 Use reuse and supersession precisely
-
-- Define a condition once. Add its nested `Also applies` line only when the wording, required evidence,
-  answer semantics, and governing threshold are identical in every referenced scenario or boundary context.
-- Resolve every reuse reference to a live `SCN` or `BND` identity and preserve the owning `CHK` definition.
-  An alias, prompt, relationship, or repeated test earns no extra coverage credit.
-- When a split or owner move replaces a condition, allocate the next live owner ID and add the nested
-  `Supersedes` line. Keep superseded IDs resolvable and never reuse them.
-
-#### 4.3 Add governing traces and expected tests
-
-- Author `GOV-NN` records for applicable requirements, rules, decisions, risks, and prior failures. Each
-  `Covers` field resolves only the named live `BND`, `SCN`, `CHK`, or `TEST` domains and explains the coverage
-  basis once.
-- Author stable `TEST-NN` records for expected commands, artifacts, or test identities. Give each test
-  `Applicable`, `N/A`, or `Uncertain` plus same-record inspected `Basis`, and resolve `Covers` only to live
-  `BND`, `SCN`, or `CHK` identities.
-- Use `—` for an `N/A` test's `Covers`. An `Uncertain` test names missing evidence and possible effect, uses
-  `—`, and keeps closure open; an `Applicable` test may use `—` only while the source is Open and a gap cites
-  it.
-- Trace every material governing input and expected test to live coverage or an exact open gap. Counts and
-  percentages do not establish traceability or closure.
-
-### Phase 5 — Close, Preserve, and Hand Off the Source
-
-#### 5.1 Review source boundaries and warning tripwires
-
-- Split the source when subjects have independent versions, decisions, authorities, disjoint matrices or
-  profiles, or no reproducible single closure claim. Preserve explicit cross-source relationships without
-  duplicating semantic ownership.
-- More than six live conditions in one scenario or 55 live conditions in one source triggers a semantic
-  split review. Review condition atomicity, scenario coherence, subject breadth, and candidate splits; do not
-  fail, split, merge, drop, bundle, or award coverage merely to satisfy a count.
-- When neither tripwire triggers, write exactly `Warning review: Not triggered`. When either triggers,
-  replace it with exactly:
-
-```markdown
-Warning review: Triggered | Counts: <scenario/source counts> | Tripwires: <checked semantic boundaries> | Candidate splits: <considered splits> | Rationale: <why the retained unit is coherent>
-```
-
-#### 5.2 Close or keep open the source
-
-- Resolve every actual reference inside the explicitly named domain of its field. `Views` is never resolved as
-  an identity, `Context` resolves only `ACT` and `FORM`, and live/superseded/reuse references must retain one
-  unambiguous owner.
-- Keep source closure Open for material `Uncertain`, unsupported `N/A`, untraced `Applicable` boundaries,
-  unresolved references, missing governing or test traces, incomplete scenario or condition contracts, or
-  any other material authored gap.
-- For an Open source, render:
-
-```markdown
-Source closure: Open
-Open gaps:
-- GAP-NN | References: <BND/SCN/CHK/GOV/TEST refs> | Reason: <unresolved material gap> | Evidence needed: <exact evidence or authority>
-```
-
-- An Open source requires at least one valid `GAP-NN` record and forbids `Open gaps: None`. Each gap cites the
-  affected live domains and names the exact missing evidence or authority needed for recovery.
-- Set `Source closure: Closed` only after all material authored obligations and references are supported and
-  traced. A Closed source requires exactly `Open gaps: None` and forbids every `GAP-NN` record.
-- A missing or invalid `Views` value, invalid `Context` domain, malformed required record, or invalid
-  conditional rendering is a physical defect. An Open gap cannot repair it.
-
-#### 5.3 Challenge the source and recover from change
-
-- Walk representative ordinary, boundary, failing, recovery, deficient-but-functioning, governing-violation,
-  abuse, gaming, and cosmetic-compliance cases against the authored scenarios and conditions.
-- Confirm that a superficially compliant but materially broken subject fails an applicable condition and
-  that supported exclusions do not invent work for absent actors or forms.
-- Return to the earliest affected step when the challenge reveals a missing premise, actor, form, boundary,
-  scenario, condition, trace, test, gap, or incorrect closure state. Repeat every dependent check after the
-  repair.
-- When the subject, version, governing input, evidence, actor/form context, or expected outcome changes
-  materially, keep prior evidence historical and rebuild from the earliest changed premise.
-
-#### 5.4 Preserve and hand off the unchecked source
-
-- Re-read the exact source, confirm every checklist condition remains unchecked, and verify that it contains
-  no evaluation answer, execution evidence, finding, severity, improvement, strength, verdict, disposition,
-  acceptance state, or workflow gate state.
-- Preserve its exact identity, version/hash, source kind, references, closure state, and any open evidence or
-  authority needs. Hand the unchanged source to [Evaluation](../SKILL.md#procedure) for independent,
-  read-only execution and judgment.
-- Stop after the handoff. Checklist neither executes the source nor records Evaluation completion or results.
+- Preserve the exact unchecked source and its subject identity for independent evaluation.
+- Keep later evidence, answers, findings, improvements, strengths, verdicts, and dispositions outside the
+  source.
+- If the subject or a material premise changes, revise the source as a new authoring action before it supports
+  another judgment.
 
 ## References
+
+- [Evaluation](../SKILL.md) owns independent read-only judgment of the frozen subject.
