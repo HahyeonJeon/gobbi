@@ -13,7 +13,7 @@ task that leaves its target, design relationship, or authority decisions implici
 
 #### Checklist
 
-- [ ] RDEV-CK-PROJECT-03-01 — Phase 1 takes an accepted implementation task.
+- [ ] RDEV-CK-PROJECT-03-01 — The implementation task is accepted before React project study begins.
 - [ ] RDEV-CK-PROJECT-03-02 — The bound task records preserved behavior.
 - [ ] RDEV-CK-PROJECT-03-03 — The target is confirmed as a browser application or Electron renderer.
 - [ ] RDEV-CK-PROJECT-03-04 — The implementation task is compared with the accepted design.
@@ -30,7 +30,7 @@ its owner. Continuing by assumption fails the scenario.
 - [ ] RDEV-CK-PROJECT-04-02 — React Native or another unsupported renderer returns to project-specific guidance.
 - [ ] RDEV-CK-PROJECT-04-03 — Work stops when installed capability, current behavior, affected set, or an executable command cannot be established.
 
-### RDEV-SC-PROJECT-05 — Normal case: Inspection establishes the exact implementation surface
+### RDEV-SC-PROJECT-05 — Normal case: Inspection establishes the exact affected set
 
 API choice and source editing require a complete installed-project and affected-set inspection. A missing
 input, trigger decision, or active child guide makes the inspection incomplete and fails the scenario.
@@ -52,7 +52,7 @@ starts. Advancing without those facts fails the scenario.
 #### Checklist
 
 - [ ] RDEV-CK-PROJECT-06-01 — The affected-set record includes preserved project patterns and identified gaps.
-- [ ] RDEV-CK-PROJECT-06-02 — Phase 2 starts only when evidence supports an implementation design.
+- [ ] RDEV-CK-PROJECT-06-02 — Project evidence supports an implementation design before behavior modeling begins.
 
 ## Structure
 
@@ -89,10 +89,10 @@ owner before detailed work starts. Continuing around the gap fails the scenario.
 
 #### Checklist
 
-- [ ] RDEV-CK-STRUCTURE-06-01 — A structural contradiction returns to Step 2.1.
+- [ ] RDEV-CK-STRUCTURE-06-01 — A structural contradiction returns the work to implementation behavior modeling.
 - [ ] RDEV-CK-STRUCTURE-06-02 — A missing test mechanism goes to `react-testing`.
 - [ ] RDEV-CK-STRUCTURE-06-03 — Build starts only when no in-scope layer is deferred.
-- [ ] RDEV-CK-STRUCTURE-06-04 — A missing or contradictory skeleton unit is repaired through Phase 2 before detail is added.
+- [ ] RDEV-CK-STRUCTURE-06-04 — A missing or contradictory skeleton unit is repaired in implementation design before detail is added.
 
 ### RDEV-SC-STRUCTURE-07 — Normal case: The materialized skeleton implements the accepted design
 
@@ -164,7 +164,7 @@ the slice remains invalid fails the scenario.
 #### Checklist
 
 - [ ] RDEV-CK-CONSISTENCY-04-01 — A failing slice stops expansion.
-- [ ] RDEV-CK-CONSISTENCY-04-02 — A design defect exposed by a slice returns to Phase 2.
+- [ ] RDEV-CK-CONSISTENCY-04-02 — A design defect exposed by a slice returns to implementation design.
 
 ## Risk
 

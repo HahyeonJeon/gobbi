@@ -41,28 +41,18 @@ claim requires a measurement of the relevant interaction and component tree.
 
 ## Rules
 
-- **MUST begin with an accepted implementation task and React design.** Hand a missing or materially changed
-  design to `react-design` before implementation proceeds.
+- **MUST begin with an accepted implementation task and React design.**
 
 - **MUST inspect the installed project and record the exact affected set before choosing an API or changing
-  source.** Confirm the renderer, React and renderer versions, framework, compiler, Hooks lint, rendering
-  architecture, host interfaces, commands, and every applicable React child skill.
+  source.**
 
-- **MUST build the complete implementation skeleton before detailed behavior and grow the result through the
-  smallest verified slices.** Keep source, tests, types, callers, configuration, and documents current in
-  every slice.
+- **MUST build the complete implementation skeleton before detailed behavior.**
 
-- **MUST preserve the accepted component, Hook, state owner, identity, Effect, Error Boundary, and host-interface
-  model.** Implement required loading, empty, failure, recovery, preservation, reset, cleanup, cancellation,
-  and obsolete-result protection.
+- **MUST grow the result through the smallest verified behavior slices.**
 
-- **MUST verify the exact final tree through rendered behavior and every applicable test, lint, type, and build
-  check.** Measure material client-render behavior, repair root causes, repeat affected checks, and report every
-  unavailable or skipped check as a gap.
+- **MUST verify rendered behavior and every applicable check against the exact final tree.**
 
-- **NEVER claim independent judgment, downstream application evidence, or publication from React-local
-  implementation.** Route each remaining claim to its named skill and leave external publication to separate
-  explicit authority.
+- **NEVER claim downstream proof from React-local completion.**
 
 ## Procedure
 
