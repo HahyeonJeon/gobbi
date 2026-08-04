@@ -36,7 +36,7 @@ missing Architecture selection or one owner claiming the whole cross-owner outco
 
 #### Checklist
 
-- [ ] DTARCH-CK-PROJECT-03-02 — A pure Activation request product judgment selects `desktop-architecture`, and a multi-owner Activation request keeps that selection while adding every applicable adjacent owner.
+- [ ] DTARCH-CK-PROJECT-03-06 — Every pure or multi-owner Activation request product judgment selects `desktop-architecture`.
 - [ ] DTARCH-CK-PROJECT-03-03 — Electron security or structure judgment routes to `electron-design`, current lifecycle, event, delivery, or mechanism facts to `electron-runtime`, implementation to `electron-development`, and evidence to `electron-testing`.
 - [ ] DTARCH-CK-PROJECT-03-04 — Current target facts route to the applicable `desktop-windows`, `desktop-macos`, or `desktop-linux` Manual; product intent to `desktop-interface`; coordination to `desktop-development`; and release or data-compatibility judgment to `desktop-release`.
 - [ ] DTARCH-CK-PROJECT-03-05 — No OS convention, Electron event, or available mechanism selects a create, reveal, focus, navigate, handle, no-op, or reject product outcome.
@@ -211,9 +211,11 @@ persisted as an implementation detail outside any data inventory is the failure.
 
 ### DTARCH-SC-CONSISTENCY-03 — Rule violation: lifecycle terms collapse different product states
 
-An architecture uses one unqualified lifecycle synonym for several distinct conditions. The expected outcome
-names each product state and keeps mechanism or command outcomes separate; wording that lets one condition
-stand in for another violates the governing runtime vocabulary.
+An architecture uses one unqualified lifecycle synonym for several distinct conditions. A Qualified restart
+is a named stop-then-start trigger whose stop and subsequent start, versions, input and state effects,
+authority, and failure are all proved; a label without that proof is not a Qualified restart. The expected
+outcome names each product state and keeps mechanism or command outcomes separate; wording that lets one
+condition stand in for another violates the governing runtime vocabulary.
 
 #### Checklist
 

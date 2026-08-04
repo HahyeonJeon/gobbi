@@ -39,9 +39,10 @@ application state.
 
 ### Runtime transitions carry product meaning
 
-Launching, Activation request, Window close, Normal quit, Abnormal termination, Later relaunch, and a
-Qualified restart are different product conditions. Restoration and activation choices remain explicit even
-when a platform event or Electron mechanism makes one path convenient.
+Launching, Activation request, Window close, Normal quit, Abnormal termination, and Later relaunch are
+different product conditions; a Qualified restart is a named stop-then-start trigger whose stop and
+subsequent start, versions, input and state effects, authority, and failure are all proved. Restoration and
+activation choices remain explicit even when a platform event or Electron mechanism makes one path convenient.
 
 ## Rules
 
