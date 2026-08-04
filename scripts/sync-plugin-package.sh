@@ -366,7 +366,7 @@ validate_lifecycle_semantics() {
     'Cowork must supply a fresh UUID and original UTC session identity'
   require_semantic_section_words "$workflow" \
     '#### 1.2 Configure identity, isolation, and evidence' \
-    '#### 1.3 Apply the shared productive-step cycle' \
+    '#### 1.3 Build and accept specialist assignments' \
     'Write `configuration.md` with mode, identity shape, original UTC date, slug or `not-applicable`, UUID, partner policy, settings, repository, base, branch, worktree leaf, session leaf, absolute worktree, runtime, validated root pair, and creation checks.' \
     'Workflow Configuration must record complete identity evidence'
   require_semantic_text "$workflow" \
@@ -424,14 +424,17 @@ validate_lifecycle_semantics() {
   require_semantic_text "$workflow" \
     'MUST apply the recorded session-wide partner policy to every productive step.' \
     'Workflow must consume the recorded partner policy'
+  require_semantic_text "$workflow" \
+    '#### 1.3 Build and accept specialist assignments' \
+    'Workflow must retain the stable Step 1.3 assignment owner anchor'
   require_semantic_section_words "$workflow" \
     'The participant matrix is:' \
-    '#### 1.4 Build and accept specialist assignments' \
+    '#### 1.5 Gate, record, and recover' \
     '| Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |' \
     'Workflow disabled policy must select local-only participants'
   require_semantic_section_words "$workflow" \
     'The participant matrix is:' \
-    '#### 1.4 Build and accept specialist assignments' \
+    '#### 1.5 Gate, record, and recover' \
     '| Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |' \
     'Workflow enabled policy must use Partner while retaining assembly ownership'
   require_semantic_section_words "$phase_2" \
@@ -491,16 +494,36 @@ validate_lifecycle_semantics() {
       '## Principles' \
       'The parent remains loaded' \
       "${path#"$skills/workflow/"} must declare the parent precondition"
+    require_semantic_section_words "$path" \
+      '## Rules' \
+      '## Procedure' \
+      '[shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle)' \
+      "${path#"$skills/workflow/"} must consume the shared cycle through the exact parent Step 1.4 anchor"
     forbid_semantic_text "$path" \
       'Automatically correct only a High, Medium, or Low' \
       "${path#"$skills/workflow/"} must not duplicate the Gobbi finding predicate"
   done
 
   require_semantic_section_words "$workflow" \
-    '#### 1.3 Apply the shared productive-step cycle' \
-    '#### 1.4 Build and accept specialist assignments' \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
     'Each phase child invokes this cycle with a local role, frozen subject, canonical output, gate, cap, and unique acceptance checks.' \
     'Workflow must own the shared productive-step contract'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.1 Freeze the discussion contract' \
+    '#### 2.2 Run the shared productive-step cycle' \
+    '[parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments)' \
+    'Workflow Phase 1 assignment briefs must consume the stable parent Step 1.3 owner anchor'
+  require_semantic_section_words "$phase_2" \
+    '#### 1.1 Enter and freeze the Planning contract' \
+    '#### 1.2 Run the Planning cycle and expand the route' \
+    '[parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments)' \
+    'Workflow Phase 2 assignment briefs must consume the stable parent Step 1.3 owner anchor'
+  require_semantic_section_words "$phase_3" \
+    "#### 1.2 Supply Workflow's Wrap-up inputs" \
+    '### Phase 2 — Materialize, evaluate, and record closure' \
+    '[parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments)' \
+    'Workflow Phase 3 assignment briefs must consume the stable parent Step 1.3 owner anchor'
   require_semantic_section_words "$workflow" \
     '#### 1.5 Gate, record, and recover' \
     '#### 1.6 Verify checkpoints and transition' \
@@ -524,12 +547,12 @@ validate_lifecycle_semantics() {
   require_semantic_section_words "$phase_1" \
     '#### 2.2 Run the shared productive-step cycle' \
     '### Phase 3 — Hand off to Planning' \
-    'Invoke parent Step 1.3 with local role `leader`' \
+    'Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`' \
     'Workflow Phase 1 must consume the shared cycle as an Ideation adapter'
   require_semantic_section_words "$phase_2" \
     '#### 1.2 Run the Planning cycle and expand the route' \
     '### Phase 2 — Execute the ordered task route' \
-    'Invoke parent Step 1.3 with local role `leader`' \
+    'Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`' \
     'Workflow Phase 2 must consume the shared cycle as a Planning adapter'
   require_semantic_section_words "$phase_3" \
     '#### 2.2 Evaluate and record the actual closure' \

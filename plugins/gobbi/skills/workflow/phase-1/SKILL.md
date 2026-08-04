@@ -38,7 +38,7 @@ prove.
   the UUID before deriving either Git name.
 - **MUST resolve every material Ideation unknown with the user or assign an explicit owner.** Never infer
   scope, authority, success, or a material design choice.
-- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#13-apply-the-shared-productive-step-cycle)
+- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle)
   with the fast two-iteration gate.** Apply Gobbi's finding gate through the parent; only PASS continues.
 - **MUST use the parent's participant matrix, evidence schemas, assignment additions, and recovery rule.** This
   child supplies only Phase 1 inputs, roles, outputs, and checks.
@@ -87,7 +87,8 @@ prove.
 #### 2.1 Freeze the discussion contract
 
 - Load [Ideation](../../ideation/SKILL.md). Build the leader brief through
-  [Delegation](../../delegation/SKILL.md) plus parent Step 1.4, using request, rules, memory, repository evidence,
+  [Delegation](../../delegation/SKILL.md) plus
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments), using request, rules, memory, repository evidence,
   prior art, constraints, risks, recovery needs, accepted findings, and exact output path.
 - Use [Discussion](../../discussion/SKILL.md) to resolve with the user:
   - the root problem and affected people;
@@ -103,7 +104,7 @@ prove.
 
 #### 2.2 Run the shared productive-step cycle
 
-- Invoke parent Step 1.3 with local role `leader`; the frozen Ideation contract and immutable project evidence
+- Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the frozen Ideation contract and immutable project evidence
   as subject; `1-ideation/outputs/ideation.md` as canonical output; the fast gate; cap `2`; and complete
   material-decision coverage as the unique check.
 - The local leader produces, self-reviews, and synthesizes. Resolve user-owned conflicts before EVALUATION.

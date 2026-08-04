@@ -37,7 +37,7 @@ receipt, task, or commit.
   active.** Return to recovery when TODO, plan, commits, branch, worktree, or evidence disagree.
 - **MUST use each canonical `task-NN-slug` in TODO, delegation, package, receipt, and commit evidence.** A
   revision or recovery pass never creates a second identity.
-- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#13-apply-the-shared-productive-step-cycle),
+- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle),
   fast gate to Planning, and normal gate to Execution.** Apply Gobbi's finding gate through the parent; only
   PASS continues.
 - **MUST continue after every verified nonterminal stage, task PASS, and checkpoint.** Waiting is valid only
@@ -57,7 +57,8 @@ receipt, task, or commit.
   output, settings, decisions, accepted findings, repository/worktree preimages, authority, skills, dependencies,
   writer boundary, and recovery evidence.
 - Load [Planning](../../planning/SKILL.md). Build the leader brief through
-  [Delegation](../../delegation/SKILL.md) and parent Step 1.4.
+  [Delegation](../../delegation/SKILL.md) and
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments).
 - Give Planning the complete Ideation contract and require: a fine-grained hierarchy with exact leaf coverage;
   context-coherent groups with stable `task-NN-slug` IDs; each leaf's path, title, work, boundary, and output;
   combination reason and outcome; accepted design and repository context; dependencies, roles, skills, inputs,
@@ -67,7 +68,7 @@ receipt, task, or commit.
 
 #### 1.2 Run the Planning cycle and expand the route
 
-- Invoke parent Step 1.3 with local role `leader`; the locked Ideation contract and project preimage as subject;
+- Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the locked Ideation contract and project preimage as subject;
   `2-planning/outputs/{tasks.md,plan.md}` as outputs; fast gate; cap `2`; and Planning's six closure invariants as
   unique checks.
 - Require the local leader to synthesize complete independently readable candidates. Before EVALUATION, verify
@@ -92,7 +93,8 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
   tasks pending and one writer authorized.
 - Load [Execution](../../execution/SKILL.md). Give the executor the stable task entry, absolute worktree,
   current preimage, allowed/protected paths, upstream artifacts, skills, acceptance, checks, commit authority,
-  and accepted findings through a parent Step 1.4 brief.
+  and accepted findings through a
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments) brief.
 - Resolve routine implementation detail without changing scope or user authority. Freeze exact paths,
   prerequisites, outputs, verification, side-effect boundary, and focused commit contract before WORK.
 

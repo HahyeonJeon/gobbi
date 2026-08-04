@@ -137,7 +137,33 @@ outputs stay at tracked planned paths. `{evidence-root}/work/` holds other sessi
 path is ignored, receives Memory `Temporary Record`, and is never staged. Wrap-up later applies `Memorize` to
 the full root, including readable legacy `memory/` input.
 
-#### 1.3 Apply the shared productive-step cycle
+#### 1.3 Build and accept specialist assignments
+
+- Build every brief through Delegation's `Metadata`, `Task`, `Instructions`, `Resources`, and `Return` headings.
+  Add session UUID, runtime, absolute worktree and evidence root, branch, phase, exact TODO/status, step/stage,
+  iteration/cap, task and assignment IDs, prerequisite evidence, role, outcome, locked Phase 1 terms, acceptance,
+  authority, scope, allowed/protected paths, writer and external-effect boundaries, independence, stops, outputs,
+  checks, and escape responses.
+- In `Resources`, provide the validated absolute root pair, then exact paths in this order: Principles; all
+  project rules or `NO_PROJECT_RULES`; canonical role; this parent; active phase child; step/task skills; primary
+  artifacts. Fresh specialists inherit no loaded skill. A continuation receives a new assignment ID, current
+  TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
+- Require this return prefix; omit `VERDICT` for non-evaluators and omit `ARTIFACT` only when none is required:
+
+```text
+STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
+VERDICT: PASS | REVISE | FAIL
+ARTIFACT: <path or response-only>
+SKILLS LOADED:
+  - <exact path, in read order>
+```
+
+- Validate assignment, role, prefix, loaded paths, artifact or commit, checks, scope, and protected paths before
+  routing. In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader
+  only within one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem,
+  and an assistant only within one memorization chain.
+
+#### 1.4 Apply the shared productive-step cycle
 
 Each phase child invokes this cycle with a local role, frozen subject, canonical output, gate, cap, and unique
 acceptance checks.
@@ -166,32 +192,6 @@ The participant matrix is:
 |---|---|---|
 | Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |
 | Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |
-
-#### 1.4 Build and accept specialist assignments
-
-- Build every brief through Delegation's `Metadata`, `Task`, `Instructions`, `Resources`, and `Return` headings.
-  Add session UUID, runtime, absolute worktree and evidence root, branch, phase, exact TODO/status, step/stage,
-  iteration/cap, task and assignment IDs, prerequisite evidence, role, outcome, locked Phase 1 terms, acceptance,
-  authority, scope, allowed/protected paths, writer and external-effect boundaries, independence, stops, outputs,
-  checks, and escape responses.
-- In `Resources`, provide the validated absolute root pair, then exact paths in this order: Principles; all
-  project rules or `NO_PROJECT_RULES`; canonical role; this parent; active phase child; step/task skills; primary
-  artifacts. Fresh specialists inherit no loaded skill. A continuation receives a new assignment ID, current
-  TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
-- Require this return prefix; omit `VERDICT` for non-evaluators and omit `ARTIFACT` only when none is required:
-
-```text
-STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
-VERDICT: PASS | REVISE | FAIL
-ARTIFACT: <path or response-only>
-SKILLS LOADED:
-  - <exact path, in read order>
-```
-
-- Validate assignment, role, prefix, loaded paths, artifact or commit, checks, scope, and protected paths before
-  routing. In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader
-  only within one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem,
-  and an assistant only within one memorization chain.
 
 #### 1.5 Gate, record, and recover
 

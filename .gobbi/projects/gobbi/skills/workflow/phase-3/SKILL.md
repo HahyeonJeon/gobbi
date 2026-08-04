@@ -37,7 +37,7 @@ The tracked handoff contains only pre-finalization facts. The display-only recei
 
 - **MUST enter through the parent route with a verified Phase 2 Hand-off and exactly one Phase 3 item active.**
   Return to recovery when tasks, authority, branch, worktree, TODO, or evidence disagree.
-- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#13-apply-the-shared-productive-step-cycle)
+- **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle)
   and fast two-iteration gate to the actual closure.** Apply Gobbi's finding gate through the parent; only PASS
   continues.
 - **MUST prohibit Git finalization before EVALUATION and RECORD accept the frozen pre-Git tree.** Any tracked
@@ -67,7 +67,8 @@ The tracked handoff contains only pre-finalization facts. The display-only recei
 
 #### 1.2 Supply Workflow's Wrap-up inputs
 
-- Build the assistant brief through [Delegation](../../delegation/SKILL.md) and parent Step 1.4. Apply Wrap-up
+- Build the assistant brief through [Delegation](../../delegation/SKILL.md) and
+  [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments). Apply Wrap-up
   Phase 1 using these four fixed properties:
 
 | Property | Workflow value |
