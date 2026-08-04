@@ -72,7 +72,7 @@ The pair is mirrored to the two runtimes at DIFFERENT file granularity — Claud
 |---|---|---|
 | `.claude/agents/{role}.md` | per-role symlink → `../../.gobbi/projects/gobbi/agents/{role}.md` (`.md` only) | **HAND-CREATED** |
 | `.codex/agents/{role}.toml` | per-role symlink → `../../.gobbi/projects/gobbi/agents/{role}.toml` (`.toml` only) | **HAND-CREATED** |
-| `plugins/gobbi/agents` | ONE whole-dir symlink for ALL roles → `../../.gobbi/projects/gobbi/agents` | **SCRIPT-OWNED** |
+| `plugins/gobbi/agents/` | generated real directory for ALL roles, byte-equal to canonical agents | **SCRIPT-OWNED** |
 
 The canonical `.md` is the single source of truth; the metadata note at the top of every
 `.md` states this in its own words ("In Codex, `.codex/agents/{role}.toml` controls runtime
@@ -203,13 +203,12 @@ and body. Do not look for a taxonomy table; no document holds one.
 
 ### P5 — Wiring a role (HAND-OWNED mirrors; verify each)
 
-**The agent mirrors are HAND-CREATED — the sync script does NOT manage them.** Read
-`scripts/sync-plugin-package.sh` to confirm: it manages `.agents/skills/{name}`, the two
-`plugins/gobbi/{skills,agents}` whole-dir symlinks, and the per-file `.claude/skills` mirror.
-It verifies but does not create `.claude/agents/` or `.codex/agents/`. So running the sync script
-refreshes only the plugin's whole-dir `agents` symlink; the two per-role runtime mirrors are yours
-to create by hand. (This is the OPPOSITE of the skill case, where `.agents/skills/{name}` IS
-script-owned — do not assume the agent wiring parallels it.)
+**The agent runtime mirrors are HAND-CREATED — the sync script does NOT manage them.** Read
+`scripts/sync-plugin-package.sh` to confirm: normal sync manages `.agents/skills/{name}` and the per-file
+`.claude/skills` mirror, while `--materialize-package` owns the generated real
+`plugins/gobbi/{skills,agents}` directories. The script verifies but does not create `.claude/agents/` or
+`.codex/agents/`, so the two per-role runtime mirrors are yours to create by hand. (This is the OPPOSITE of
+the skill case, where `.agents/skills/{name}` IS script-owned — do not assume the agent wiring parallels it.)
 
 Wire a role in this order, each step with its verify command. From the worktree root:
 
@@ -225,12 +224,14 @@ Wire a role in this order, each step with its verify command. From the worktree 
    ln -s ../../.gobbi/projects/gobbi/agents/{role}.toml .codex/agents/{role}.toml
    ```
    Verify: `readlink -e .codex/agents/{role}.toml` resolves to the canonical `.toml`.
-4. **Refresh the plugin whole-dir `agents` symlink** (no per-role action; the new file is
-   picked up through the existing whole-dir symlink):
+4. **Regenerate the package components** (no per-role package action; the generator copies the complete
+   canonical agent tree into the generated real `plugins/gobbi/agents/` directory):
    ```bash
-   bash scripts/sync-plugin-package.sh && bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
+   bash scripts/sync-plugin-package.sh --materialize-package
+   bash scripts/sync-plugin-package.sh --check
    ```
-   The `--check` must exit 0.
+   Both commands must exit 0. A missing installed path is a package failure, never an expected warning or
+   limitation.
 5. **For a NEW role only** — add the `Agent({role})` permission in `.claude/settings.json`. Agent Teams can
    use a permitted subagent definition as a teammate type; the active mode decides whether that role may be
    reused. Verify the permission and run the source-topology check.
@@ -264,9 +265,9 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   role behavior and status meanings. Do not create or copy a separate role overlay.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read
   `.claude/settings.json`, read the sync script — never assert a mirror or permission exists.
-- **MUST verify loadability empirically** before declaring a role done — both `readlink`
-  mirrors resolve AND `sync-plugin-package.sh --check` exits 0; for a new role, the `Agent()`
-  perm is present.
+- **MUST verify loadability empirically** before declaring a role done — both `readlink` mirrors resolve,
+  package materialization and `sync-plugin-package.sh --check` exit 0, and for a new role the `Agent()` perm
+  is present.
 - **MUST get the user's explicit decision before adding a sixth role** — the taxonomy is a
   closed five-role set; a new role is a heavyweight, user-ratified change.
 - **NEVER expect the sync script to create the agent mirrors** — `.claude/agents/{role}.md`
@@ -308,4 +309,4 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   files themselves; no combined table exists
 - Codex model and reasoning effort → the five `agents/{role}.toml` files
 - How Claude Code uses a role as a teammate type → [`gobbi/agent-teams/SKILL.md`](../gobbi/agent-teams/SKILL.md)
-- Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
+- Plugin package layout + the generated `agents` directory → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)

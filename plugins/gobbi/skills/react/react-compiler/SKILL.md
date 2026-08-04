@@ -10,16 +10,16 @@ skill-type: tool
 Use this lookup tool when a React browser application or Electron renderer configures, evaluates, migrates,
 or troubleshoots React Compiler or changes memoization under compiler coverage.
 
-This child owns compiler configuration, diagnostics, coverage, incremental adoption, and the compiler-facing
+This child covers compiler configuration, diagnostics, coverage, incremental adoption, and the compiler-facing
 memoization boundary. React design, generic build tooling, framework integration, and performance measurement
-remain with their own owners.
+remain with their responsible skills.
 
-Apply the installed compiler, React, linter, and build-tool contract. Do not infer configuration or coverage
-from a neighboring project or version.
+Apply the installed compiler, React, linter, and build-tool configuration with their supported versions. Do
+not infer configuration or coverage from a neighboring project or version.
 
 ## Principles
 
-### Coverage is a function-level fact
+### Establish coverage for each function
 
 A configured compiler is not proof that every component or Hook is compiled. Establish the actual coverage
 of each affected function before changing code on that assumption.
@@ -38,7 +38,7 @@ compiler output or identity behavior. Migrate in measured, reversible slices.
 
 - **MUST inspect the installed React Compiler, React, linter, build tool, and framework integration before
   applying this manual.** Record their versions, configuration files, plugins, commands, and supported
-  compatibility path.
+  version range.
 
 - **MUST validate configuration against the installed
   [compiler options](https://react.dev/reference/react-compiler/configuration).** Record the active
@@ -62,7 +62,7 @@ compiler output or identity behavior. Migrate in measured, reversible slices.
 
 ## Manual
 
-### Establish the compiler contract
+### Establish the installed compiler configuration
 
 - Locate the compiler plugin or framework switch, React compatibility setting, lint preset, and build command.
 - Read the live option values rather than assuming defaults. Distinguish no compiler, partial or gated
@@ -81,18 +81,18 @@ compiler output or identity behavior. Migrate in measured, reversible slices.
 
 ### Inspect diagnostics and coverage
 
-- Use the installed lint, compiler, build output, or supported inspection surface to establish whether each
+- Use the installed lint, compiler, build output, or supported inspection output to establish whether each
   affected component or Hook compiled, skipped, or failed.
 - Trace a diagnostic to the applicable Rules-of-React, unsupported syntax, incompatible library, or
-  configuration owner. Repair the cause when in scope and recheck actual coverage.
+  configuration source. Repair the cause when in scope and recheck actual coverage.
 - Do not require immediate cleanup of every unrelated diagnostic; keep skipped functions and resulting
   limitations visible.
 
-### Choose memoization under the real contract
+### Choose memoization under the installed compiler configuration
 
 - For new code proven to compile, prefer compiler optimization and add `memo`, `useMemo`, or `useCallback`
   only for measured work, a required identity consumer, or a documented escape hatch.
-- For uncompiled code, use the ordinary React design and measurement path; compiler availability elsewhere
+- For uncompiled code, use the ordinary React design and measurement guidance; compiler availability elsewhere
   does not optimize the function.
 - For existing manual memoization, keep it until focused tests and measurement show that removal preserves
   behavior, identity requirements, compiler coverage, and performance.

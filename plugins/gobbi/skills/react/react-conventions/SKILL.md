@@ -10,8 +10,8 @@ skill-type: preference
 Use this preference skill when a React change creates, names, exports, moves, or reorganizes components,
 Hooks, or JSX files in a browser application or Electron renderer.
 
-This child owns React-specific source conventions. The project and its language, formatter, linter, framework,
-and module owners decide generic layout and tooling conventions.
+This child defines React-specific source conventions. The project and its language, formatter, linter,
+framework, and module rules decide generic layout and tooling conventions.
 
 React Native is outside this skill. Use the project's React Native convention instead.
 
@@ -59,13 +59,13 @@ unit when independent reuse or scanning cost supplies evidence.
 ### Prefer a file name that reveals its primary unit
 
 PREFER naming a component or Hook file for its primary named export when the project has no conflicting
-filename convention. Depart when a framework owns the filename or the file intentionally groups related
+filename convention. Depart when a framework requires the filename or the file intentionally groups related
 units.
 
 ### Prefer local colocation
 
 PREFER keeping a unit's private test, style, and narrow helper beside the unit when the project permits it.
-Move shared material only after another consumer or a project boundary proves broader ownership.
+Move shared material only after another consumer or a project rule proves it belongs elsewhere.
 
 ### Prefer a readable file boundary
 
