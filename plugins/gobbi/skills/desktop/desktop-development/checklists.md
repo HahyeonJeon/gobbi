@@ -102,6 +102,26 @@ finite stop. Both conditions fail even when progress reporting looks healthy.
 - [ ] DTDLVR-CK-PERFORMANCE-11-01 — Dependent evidence stays stale until repeated or proved unaffected for the same subject.
 - [ ] DTDLVR-CK-PERFORMANCE-11-02 — Post-release observation has a finite window, named threshold, stop condition, and bounded recovery action.
 
+### DTDLVR-SC-PERFORMANCE-12 — Normal case: representative work proves responsiveness and resource use
+
+A completed slice is exercised under representative work. The expected outcome measures both main-process
+responsiveness and bounded resource use; either unmeasured result fails this scenario.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-PERFORMANCE-12-01 — Main-process responsiveness is measured under representative work for each completed slice.
+- [ ] DTDLVR-CK-PERFORMANCE-12-02 — Bounded resource use is measured under representative work for each completed slice.
+
+### DTDLVR-SC-PERFORMANCE-13 — Poor quality: installed targets lack exact measurement evidence
+
+An installed performance or resource claim is recorded without measurement under its declared conditions or
+without the measurement's exact artifact and conditions. Either omission fails this scenario.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-PERFORMANCE-13-01 — Every claimed installed performance target and every claimed installed resource target is measured under its declared conditions.
+- [ ] DTDLVR-CK-PERFORMANCE-13-02 — Every recorded performance or resource measurement names the exact artifact measured and the conditions under which it was taken.
+
 ## Aesthetics
 
 ### DTDLVR-SC-AESTHETICS-10 — Poor quality: broad words hide the affected object or action
@@ -156,18 +176,14 @@ and improvement without copying Interface policy.
 - [ ] DTDLVR-CK-USAGE-11-03 — A current result exists for Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement.
 - [ ] DTDLVR-CK-USAGE-11-04 — Each design-activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
 
-### DTDLVR-SC-USAGE-12 — Adversarial: a mechanism chooses activation or one state model proves another
+### DTDLVR-SC-USAGE-12 — Adversarial: one state model proves another or required input is lost
 
-An OS event or Electron mechanism selects the product outcome, packaged, installed, and running states are
-treated as interchangeable, or an entry or transition omits an input or resource it must preserve. The
-expected outcome keeps product judgment, state evidence, and preserved input explicit; any hidden transfer is
-the failure.
+Packaged, installed, and running states are treated as interchangeable, or an entry or transition omits an
+input or resource it must preserve. The expected outcome keeps state evidence and preserved input explicit;
+any hidden transfer is the failure.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-12-03 — Each Activation request's class, trust, target tuple, and current process, instance, and window state are classified before product state changes.
-- [ ] DTDLVR-CK-USAGE-12-04 — Exactly one authoritative application instance and application-state owner applies each Activation request.
-- [ ] DTDLVR-CK-USAGE-12-05 — Exactly one accepted create, reveal, focus, navigate, handle, no-op, or reject Architecture outcome is selected for each Activation request.
 - [ ] DTDLVR-CK-USAGE-12-02 — Installed-application records distinguish exact-version install, optional first use, update, repair or recovery, uninstall, Removed, and intentional residual state from runtime evidence.
 - [ ] DTDLVR-CK-USAGE-12-06 — Each supported launcher, file, protocol, notification, command, and second-instance path, and each applicable runtime transition, names every input or resource it must preserve and how that value survives.
 
@@ -200,11 +216,10 @@ records and evidence routes.
 #### Checklist
 
 - [ ] DTDLVR-CK-CONSISTENCY-10-01 — Software testing observations remain distinct from verification of the bounded claim.
-- [ ] DTDLVR-CK-CONSISTENCY-10-02 — A package, archive, source build, or development run never proves installed-artifact behavior.
+- [ ] DTDLVR-CK-CONSISTENCY-10-02 — A development run, unpacked build, package, archive, or source build never proves installed performance, installed resource use, or any other installed-artifact behavior.
 - [ ] DTDLVR-CK-CONSISTENCY-10-03 — Release readiness never grants authority for an external action.
 - [ ] DTDLVR-CK-CONSISTENCY-10-04 — An upload response or control-plane label never proves the destination bytes or deployed state.
 - [ ] DTDLVR-CK-CONSISTENCY-10-06 — Launching remains distinct from an Activation request.
-- [ ] DTDLVR-CK-CONSISTENCY-10-07 — No operating-system delivery fact or Electron delivery mechanism selects the activation product outcome.
 
 ### DTDLVR-SC-CONSISTENCY-11 — Rule violation: a platform capability rewrites an accepted product decision
 
