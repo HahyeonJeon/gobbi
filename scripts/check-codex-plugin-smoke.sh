@@ -194,4 +194,10 @@ for component_path in \
   fi
 done
 
+if [[ ! -e "$installed_path/skills/record" && ! -L "$installed_path/skills/record" ]]; then
+  pass 'installed cache contains no standalone record skill'
+else
+  fail 'installed cache unexpectedly contains skills/record'
+fi
+
 printf 'Codex plugin smoke passed: the materialized package reached the installed cache intact\n'

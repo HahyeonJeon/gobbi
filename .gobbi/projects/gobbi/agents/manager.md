@@ -56,7 +56,7 @@ At session start, resume, `/clear`, rewind, and runtime compaction:
    register, and enter it at its validated fresh or resumed position.
 
 Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Cowork and Workflow load
-Delegation, Discussion, Git, Record, and Memory at owner entry; their phase owners load Ideation, Planning,
+Delegation, Discussion, Git, and Memory at owner entry; their phase owners load Ideation, Planning,
 and Wrap-up only when those phases start. Load every other selected task, language, tool, or evaluation skill
 when its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots and
 names the exact resolved paths in read order.

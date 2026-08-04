@@ -15,13 +15,16 @@ ordinary assistance, Cowork for fast implementation one topic at a time, and Wor
 lifecycle that an independent partner system reviews at every step. You pick the mode; Gobbi never picks it
 for you.
 
-Gobbi ships no binary and no framework. It is 28 top-level skills and 5 agent role prompts that Claude Code
+Gobbi ships no binary and no framework. It is 27 top-level skills and 5 agent role prompts that Claude Code
 and Codex already know how to load. With their children, those skills are 95 documents.
 
 The web skill renames are not backward compatible. Direct or explicit invocation of `web-feature` now
 breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
 `web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`. No
 aliases remain for the former slugs.
+
+The standalone `record` skill is also removed without an alias. Use Memory's `Temporary Record` action for
+ignored session evidence and `Memorize` for tracked project memory. Workflow still calls its stage `RECORD`.
 
 ## Install
 
@@ -56,7 +59,6 @@ settings Gobbi needs are yours to add. Put these in your project's `.claude/sett
       "Skill(gobbi:wrap-up)",
       "Skill(gobbi:delegation)",
       "Skill(gobbi:discussion)",
-      "Skill(gobbi:record)",
       "Skill(gobbi:memory)",
       "Skill(gobbi:git)",
       "Skill(gobbi:cowork)",
@@ -73,8 +75,8 @@ settings Gobbi needs are yours to add. Put these in your project's `.claude/sett
 
 - `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` enables Agent Teams. Without it no team is set up and no teammate is
   spawned. Claude Code reads the variable when it starts, so set it before the session rather than during one.
-- Each `Skill(...)` entry allows one skill to be loaded without a prompt. The twelve listed are the entry
-  skill, the nine it loads before a mode is chosen, and the two mode owners. Every other Gobbi skill loads
+- Each `Skill(...)` entry allows one skill to be loaded without a prompt. The eleven listed cover the entry,
+  shared operations, phase operations, and two mode owners. Every other Gobbi skill loads
   from its own trigger and asks the first time; add it here when you want that prompt gone.
 - Each `Agent(...)` entry allows one role to be spawned. A role without its entry cannot be spawned at all.
 - Nothing outside the named component is granted, so this list widens your permissions by exactly the skills
@@ -152,8 +154,9 @@ system your runtime is not: in Claude Code the partner is Codex, and in Codex th
 Every EVALUATION then uses two fresh independent evaluators covering Project, Structure, Performance,
 Aesthetics, Usage, Consistency, Risk, and Overall. No finding is applied before you approve its disposition.
 
-Cowork and Workflow each keep one isolated branch, one linked worktree, and focused verified local commits.
-Push, pull request, merge, and cleanup are separate actions you authorize.
+Cowork and Workflow each keep one isolated branch and one linked worktree. Their shaping artifacts and receipts
+stay ignored and uncommitted under `sessions/`; implementation and durable Memory changes use focused verified
+local commits. Push, pull request, merge, and cleanup are separate actions you authorize.
 
 ## What's inside
 
@@ -161,7 +164,7 @@ Push, pull request, merge, and cleanup are separate actions you authorize.
 |---|---|
 | Session | `gobbi` `cowork` `workflow` |
 | Method | `ideation` `planning` `execution` `evaluation` `discussion` `delegation` `study` `startup` |
-| Record | `memory` `record` `wrap-up` `git` |
+| Memory | `memory` `wrap-up` `git` |
 | Craft | `typescript` `go` `react` `css` `html` `web` `desktop` `electron` |
 | Authoring | `skill-writing` `agent-writing` `claude-plugin` `codex` |
 | Floor | `principles` |

@@ -104,7 +104,7 @@ Using `allowed-tools` in an agent `.md`, or `tools` in a `SKILL.md`, is a frontm
   (evaluator: `Read, Grep, Glob, Bash`) lists no write tools; an implementer (executor) adds
   `Write, Edit`; the manager uses `"*"`. Size it from the owner — e.g. the assistant carries
   the widest non-manager surface (`Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch`)
-  because it writes the session memory tree during RECORD and project memory during Wrap-up WORK, not
+  because it writes caller-named temporary receipts during RECORD and project memory during Wrap-up WORK, not
   because it is read-only.
 - **`model`** — `opus` for manager / leader / executor / evaluator; `sonnet` for the
   lightweight assistant. Each role's own `.md` frontmatter is the owner of its model; read the five heads

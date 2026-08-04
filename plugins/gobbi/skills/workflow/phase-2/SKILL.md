@@ -68,7 +68,7 @@ plan, task, receipt, or commit.
 
 - Confirm the parent [Workflow](../SKILL.md) operation is loaded, the Phase 1 Hand-off validates, and
   `P2 · Planning · DISCUSSION · 1/2` is the only active TODO on first entry.
-- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, and Memory in that
   order. Return to parent recovery when any item is absent.
 - Read the canonical Ideation artifact, settings, accepted decisions and findings, repository and worktree
   preimages, authority, required skills, dependencies, writer boundary, and prior recovery evidence.
@@ -125,14 +125,15 @@ plan, task, receipt, or commit.
   [Partner](../../gobbi/partner/SKILL.md) operation for one evaluation round with two fresh evaluators, one
   from the active runtime and one from the partner system, which that operation isolates.
 - Preserve both declared verdicts and apply the parent Planning fast gate and two-iteration cap.
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
-- Seal in `record/iteration-N.md` the creation package, reports, `gate.md`, checks, canonical output,
-  findings, and the durable records written into the session memory tree.
+- Apply loaded [Memory](../../memory/SKILL.md) `Temporary Record` to the parent Workflow Step 1.2 exact receipt
+  path.
+- Seal in `record/iteration-N.md` only the exact TODO and decision, creation package, report, and gate hashes,
+  verification result, accepted finding dispositions, and next or recovery state.
 - On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
   FAIL, preserve the recoverable state and stop at the critical-blocker boundary without creating iteration 3.
 - On PASS, verify stable IDs, dependency order, scope coverage, and the absence of overlapping write-capable
-  tasks. Freeze the canonical plan.
+  tasks. Freeze `2-planning/outputs/{tasks.md,plan.md}`, keep both ignored and uncommitted, and prove the
+  tracked tree unchanged.
 - Replace the pending `unplanned` placeholder with the first plan task and add the remaining task items in plan
   order. Start each item as:
 
@@ -204,15 +205,15 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 #### 2.6 Record and route the task result
 
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
+- Apply loaded [Memory](../../memory/SKILL.md) `Temporary Record` to the parent Workflow Step 1.2 exact receipt
+  path.
 - Seal both evaluation reports, `gate.md`, findings, dispositions, committed diff, verification, artifact
   pointers, and system provenances.
 - Verify only authorized paths changed, the focused commit exists in the exact worktree, and the required
   checks describe the committed tree.
-- Write `record/iteration-N.md` with the exact TODO, package and report hashes, gate hash, checks, commit,
-  output, and the durable records written into the session memory tree. Reread the receipt before changing
-  the TODO.
+- Write `record/iteration-N.md` with only the exact TODO and decision, package and report hashes, gate hash,
+  verification result, commit and output identifiers, accepted finding dispositions, and next or recovery
+  state. Reread the receipt before changing the TODO.
 - On PASS, retitle and complete the task item and activate the next planned task immediately.
 - On REVISE below the configured cap, complete the recorded pass, create the next iteration at DISCUSSION, and
   continue immediately.

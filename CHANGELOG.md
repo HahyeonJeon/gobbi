@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Removed the standalone `record` skill with no compatibility alias. Use Memory `Temporary Record` for
+  ignored, uncommitted session evidence and Memory `Memorize` for tracked project memory. Workflow retains
+  its `RECORD` stage name.
 - Renamed three web skills with no compatibility aliases. Direct or explicit invocation of `web-feature`
   now breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
   `web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`.

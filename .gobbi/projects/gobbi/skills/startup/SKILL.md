@@ -63,8 +63,9 @@ Product operation and use, and Implementation development and evolution distinct
 
 #### 1.1 Validate inputs and classify disk before the lane
 
-- Take the absolute project root and output directory. Apply [`../record/SKILL.md`](../record/SKILL.md) Step
-  1.1: the output directory exists inside the worktree and its resolved path has no symlink or parent traversal.
+- Take the absolute project root and output directory. Require both paths to exist inside the verified
+  worktree, resolve without a symbolic-link escape or parent-traversal component, and keep every Startup
+  output below the resolved output directory.
 - Schema 3 is exactly `problem-definition.md`, `design.md`, `specification.md`,
   `lifecycle-and-use-cases.md`, and `startup.md`. Schema 2 replaces `design.md` and `specification.md` with
   `project-design.md` and `project-specification.md`. Confirmed schema 2 requires no `startup.tmp.md`, that
@@ -280,8 +281,9 @@ Startup · <Project|Product|Implementation> · <stable-subject-key> · <Problem 
   directory, return all five absolute paths, and return the uncontested lane.
 - On pause, keep proof-only temporary evidence, set `paused`, and retain the blocker. Resume through Step 1.1
   and reconstruct from evidence. On unsafe state, write nothing further and return the exact blocker/path.
-- The caller may record confirmed documents through [`../record/SKILL.md`](../record/SKILL.md). Startup does
-  not implement, plan implementation, evaluate, update memory, publish, or choose a memory destination.
+- The caller may capture confirmed documents through [Memory](../memory/SKILL.md) `Temporary Record` only when
+  it supplies an exact session root and output. Startup does not implement, plan implementation, evaluate,
+  update durable memory, publish, or choose a memory destination.
 
 ## References
 

@@ -30,7 +30,7 @@ freshness. Workflow uses the native TODO list as its active route; phase receipt
 rebuild that route after a context boundary.
 
 Gobbi entry loads Principles first and Discussion only when it must write its mode or partner question.
-Cowork and Workflow then load Delegation, Discussion, Git, Record, and Memory at owner entry; their phase
+Cowork and Workflow then load Delegation, Discussion, Git, and Memory at owner entry; their phase
 owners load Ideation, Planning, and Wrap-up when those phases start.
 
 ## Partner quality contract

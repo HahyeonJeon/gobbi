@@ -43,7 +43,7 @@ whose completion cannot be proved.
   progress.** Stop when the native TODO, prior Hand-off, branch, worktree, or evidence root cannot be reconciled
   safely.
 
-- **MUST confirm the parent-loaded Delegation, Discussion, Git, Record, and Memory register before Phase 1
+- **MUST confirm the parent-loaded Delegation, Discussion, Git, and Memory register before Phase 1
   acts.** Generate the Gobbi session UUID before deriving either Git identity.
 
 - **MUST resolve every material Ideation unknown with the user or assign it an explicit owner before freezing
@@ -67,7 +67,7 @@ whose completion cannot be proved.
 
 - Confirm the parent [Workflow](../SKILL.md) operation is loaded and its `P1 · Configuration` item is the only
   active TODO for a fresh session.
-- Confirm the parent Workflow load register contains Delegation, Discussion, Git, Record, and Memory in that
+- Confirm the parent Workflow load register contains Delegation, Discussion, Git, and Memory in that
   order. Return to the parent entry when any item is absent.
 - Read the repository, branch, registered worktrees, current runtime TODO list, existing workflow evidence,
   and any explicit recovery identity without mutation.
@@ -93,6 +93,8 @@ whose completion cannot be proved.
   repository, base revision, branch, absolute worktree, runtime system, and creation checks.
 - Verify the initial TODO route, evidence directories, and Configuration receipt against the parent Workflow
   Step 1.2 contract.
+- Apply [Memory](../../memory/SKILL.md) `Temporary Record` to `configuration.md`; prove it ignored and the
+  tracked tree unchanged.
 - Treat the receipt as lifecycle evidence only. No runtime identity may replace the Gobbi session UUID, and no
   receipt may select the next action.
 - Reread `configuration.md`, verify every recorded value directly, complete `P1 · Configuration`, and activate
@@ -167,17 +169,16 @@ whose completion cannot be proved.
 
 #### 2.4 Record and route the result
 
-- Apply the loaded [Record](../../record/SKILL.md) skill rooted at the parent Workflow Step 1.2 session memory
-  tree.
+- Apply loaded [Memory](../../memory/SKILL.md) `Temporary Record` to the parent Workflow Step 1.2 exact receipt
+  path.
 - Seal the current creation package, evaluator reports, Configuration receipt, decisions, findings, checks,
   and system provenances.
 - Write `gate.md` with report paths and hashes, declared verdicts, unresolved Critical IDs, actual blocking
   IDs, accepted nonblocking IDs, and the workflow decision.
-- Write a canonical Ideation artifact only after fast-gate PASS. Write into the session memory tree only
-  durable records supported by evidence; an empty result is valid.
-- Write `record/iteration-N.md` with the exact TODO, input and output hashes, gate hash, checks, canonical
-  output, and the durable records written into the session memory tree. Reread the receipt and every promised
-  artifact before updating the TODO.
+- Write `1-ideation/outputs/ideation.md` only after fast-gate PASS. Keep it ignored and uncommitted.
+- Write `record/iteration-N.md` with only the exact TODO and decision, source artifact and report hashes, gate
+  hash, verification result, accepted finding dispositions, and next or recovery state. Reread the receipt
+  and every promised artifact, prove the tracked tree unchanged, then update the TODO.
 - On iteration-1 REVISE, complete the recorded item, create iteration 2 at DISCUSSION, and repeat the complete
   cycle. Resolve any new user-owned Phase 1 decision before the revised contract freezes.
 - On iteration-2 FAIL, preserve the recoverable route, exact evidence, branch, and worktree and present the
