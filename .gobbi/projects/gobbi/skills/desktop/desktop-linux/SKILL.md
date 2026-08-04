@@ -164,7 +164,7 @@ Use the mainstream developer noun that names the actual object. Do not collapse 
 | Desktop environment | The named desktop shell and integrated session components presented to the user |
 | Display protocol | X11 or Wayland, the client-server protocol used by the application session |
 | Display server | The process that implements the display protocol for clients |
-| Compositor | The process that combines application windows and other rendered image buffers into the final image shown on a display. |
+| Compositor | The process that combines application windows and other rendered image buffers into the final image shown on a display |
 | Session | The exact login or user runtime instance that supplies environment and services |
 | Portal | An XDG Desktop Portal interface and selected backend used to cross a containment boundary |
 | Keyring | A named secret-storage implementation or collection available to a user session |
