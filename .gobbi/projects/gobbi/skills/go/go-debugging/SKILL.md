@@ -41,8 +41,8 @@ each link causal.
 ### Keep diagnosis separate from repair
 
 Diagnosis may identify the change that another owner should assess, but it does not edit project source or
-recommend a symptom patch as completion. Retain a safely reproducible handoff so the fix owner does not need
-to rediscover the failure.
+recommend a symptom patch as completion. Retain the exact reproducer, approved diagnostic paths, and
+reproducer inputs so the fix owner does not need to rediscover the failure.
 
 ## Rules
 
@@ -50,7 +50,8 @@ to rediscover the failure.
   author, review, or change mode in this operation, and authority from another operation does not transfer.
 - **MUST bind the reported failure before running it.** Record the original symptom, expected and observed
   behavior, environment, exact project reproducer command, exact package pattern, flags, `GOOS/GOARCH` target,
-  inputs, affected consumer or process, and the applicable Go version facts.
+  inputs, affected consumer or process, minimum supported Go version when the affected promise depends on it,
+  selected Go toolchain version, and module's Go language version when language behavior matters.
 - **MUST make every root-cause claim trace a causal chain from the symptom through discriminating evidence to
   the earliest cause whose removal ends the failure.** A correlated observation, contributing condition, or
   intermediate cause cannot be relabeled as the root cause.
@@ -75,15 +76,16 @@ to rediscover the failure.
   report separately from later observations so a changed symptom cannot silently replace it.
 - Record the minimum supported Go version when the affected promise depends on it, the selected Go toolchain
   version, the module's Go language version when language behavior matters, the exact `GOOS/GOARCH` target,
-  environment variables with protected values redacted, operating constraints, inputs, dependency or service
-  prerequisites, and relevant process topology.
+  environment variables with protected values redacted, inputs, dependency or service prerequisites, relevant
+  process topology, and applicable execution, repetition, process, destination, and output bounds.
 - Bind the exact project reproducer command, exact package pattern only as project-command selection or
   evidence, flags, working directory, inputs, repetition or duration bound, expected result, and observed
   result. If no authorized project reproducer command exists, name the affected obligation and continue only
   to a bounded diagnostic plan or exact block.
-- Identify the first useful diagnostic already available, its source, collection conditions, affected process
-  or consumer, authority, integrity limit, retention owner, and evidence limit. Do not ask a later run to prove
-  more than its environment and inputs can show.
+- Identify the first useful diagnostic already available, its producing project command, named tool, process,
+  service, or consumer; collection conditions; exact reproducer-run identity when available; collection
+  authority; retention owner; and evidence limit. Do not ask a later run to prove more than its environment
+  and inputs can show.
 
 #### 1.2 Bind diagnosis mode and effects
 
@@ -94,9 +96,14 @@ to rediscover the failure.
   Network access requires separate authority. Credential use is none. External mutation is none. Stop before
   an unsafe or unbounded run, download, network request, source fix, unapproved diagnostic output, protected-
   data exposure, missing authority, or changed execution bound.
-- The only terminal results are a reproduced root cause, a bounded diagnostic plan, or an exact block.
-  Recovery retains the exact reproducer and first useful diagnostic safely, names the recovery owner, and
-  names the first recovery action.
+- Every terminal record has exactly one result boundary: reproduced root cause, bounded diagnostic plan, or
+  exact block. It separately has exactly one universal terminal state selected from `success`, `error`,
+  `cancellation`, `timeout`, `blocked`, or `user-decision pause`. An error, cancellation, or timeout that
+  prevents diagnosis uses the exact-block result boundary; it is not a fourth result boundary. A panic is
+  diagnosed program behavior, never an operation terminal state.
+- Recovery records that project source remained unchanged; retains the exact reproducer inputs and first
+  useful diagnostic only in approved diagnostic paths with named retention boundaries; and names the recovery
+  owner and first recovery action.
 
 #### 1.3 Select sibling owners and evidence authority
 
@@ -125,8 +132,9 @@ to rediscover the failure.
 - Record project command, exact package pattern, selected Go toolchain version, flags, `GOOS/GOARCH` target,
   inputs, duration, and result. Record cache writes, disposable outputs, exit code or signal, expected behavior,
   observed behavior, and the first output that narrows the cause.
-- If the original symptom occurs, preserve the smallest safe reproducer and continue to causal proof. If it
-  does not occur, keep the mismatch explicit and proceed to the bounded non-reproduction branch; do not alter
+- If the original symptom occurs, preserve the smallest reproducer that stays inside the bound effect contract
+  and continue to causal proof. If it does not occur, keep the mismatch explicit and proceed to the bounded
+  non-reproduction branch; do not alter
   expected behavior, inputs, or environment until the proposed change is itself the selected discriminating
   diagnostic.
 - Stop immediately when execution exceeds its bound, produces an unapproved output, requires broader network
@@ -167,11 +175,12 @@ to rediscover the failure.
 - Challenge temporal proximity, shared dependencies, retries, scheduling changes, logging changes, and other
   correlations. A condition that changes frequency or severity without ending the failure is contributing; a
   symptom-level guard that hides the observation without removing the cause is not causal completion.
-- Prove the root-cause boundary with a safe controlled variation, repeated reproduction, contradictory-case
-  comparison, or equally direct observation under the bound environment. If removing the proposed cause would
-  require a project-source change, do not make it here; return the proof and exact reproducer to the change
-  owner. If the boundary cannot be proven, retain the candidates as leading causes and use the bounded-plan
-  branch.
+- Repeated reproduction establishes recurrence or stability only; it cannot prove causation by itself.
+- Prove the root-cause boundary with a controlled variation or contradictory-case comparison that changes or
+  removes the proposed cause, or with equally direct evidence that the proposed cause's removal ends the
+  failure. When that causal removal requires a project-source change, return the bounded proof, exact
+  reproducer, and fix-owner handoff without implementing the change. If the boundary cannot be proven, retain
+  the candidates as leading causes and use the bounded-plan branch.
 - State the evidence limits and alternative causes not excluded. Never infer a broader environment,
   `GOOS/GOARCH` target, input, package, process, exit path, or consumer claim from the reproduced run.
 
@@ -183,20 +192,25 @@ to rediscover the failure.
   project command or named tool or observation, expected distinguishing result, execution and output bound,
   and stop condition. Do not give one cause several interchangeable next actions or one vague action for all
   causes.
-- Name the retained safe project-source condition, approved retained diagnostic paths, reproducer inputs, first
-  useful diagnostic, recovery owner, first recovery action, and handoff. The plan is complete only when the
-  next owner can execute one named diagnostic without reconstructing the report.
+- Confirm that project source remained unchanged. Name the approved retained diagnostic paths, reproducer
+  inputs, first useful diagnostic, recovery owner, first recovery action, and handoff. The plan is complete
+  only when the next owner can execute one named diagnostic without reconstructing the report.
 
 #### 3.3 Stop at an exact block
 
-- Stop when a required environment, input, consumer, process, project reproducer command, named tool,
-  permission, safe bound, download, network authority, approved output path, or protected-data handling rule is
-  missing. Do not substitute a different environment or broaden an effect to make progress.
+- Stop when a required environment, input, consumer, process, project reproducer command, named tool, execution,
+  repetition, process, destination, or output bound, project-execution authority, cache approval, download or
+  network authority, approved output path, or protected-data handling rule is missing. Do not substitute a
+  different environment or broaden an effect to make progress.
 - Return the missing prerequisite or first useful diagnostic, affected obligation, current evidence, risk,
-  owner, retained safe project-source condition and approved diagnostic paths, first recovery action, and
-  exact handoff. Report each external read or effect requested, authorized, attempted, or absent.
-- An execution error, cancellation, or timeout is not automatically the diagnosed program failure. Record it
-  as the selected operation terminal state and preserve the difference from the original symptom.
+  owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer
+  inputs, first recovery action, and exact handoff. Report each external read or effect requested, authorized,
+  attempted, or absent.
+- An execution error, cancellation, or timeout is not automatically the diagnosed program failure. When it
+  prevents diagnosis, use the exact-block result boundary and separately select `error`, `cancellation`, or
+  `timeout` as the universal terminal state; none is a fourth result boundary. Preserve the difference from
+  the original symptom. A panic remains diagnosed program behavior and never becomes an operation terminal
+  state.
 
 ### Phase 4 — Challenge and Return the Diagnosis
 
@@ -224,19 +238,26 @@ to rediscover the failure.
   `authorized break`, or `unsupported`; block; recovery; and handoff. Project command evidence means the project
   command, exact package pattern, selected Go toolchain version, flags,
   `GOOS/GOARCH` target, inputs, duration, and result. A panic is diagnosed program behavior, not an operation
-  terminal state.
+  terminal state. The actual owned object is the applicable package name, import path, package directory or
+  placement, package boundary, public API or CLI, project command, goroutine, process, input, consumer,
+  compiler or vet diagnostic, error or panic value, stack trace, goroutine dump, race-detector report,
+  execution trace, CPU profile, heap profile, block profile, mutex profile, core dump, log record, metric, or
+  failing test or fuzz input.
 - Add the debugging fields: original symptom; exact reproducer; environment; first useful diagnostic; causal
   chain; root cause or leading causes; and distinguishing diagnostic plan. Record project-path writes as none,
   exact reviewed paths, every approved disposable diagnostic path and retention boundary, cache and download
   effects, project execution, network access, credential use as none, and external mutation as none.
 - For a reproduced result, return the exact reproducer and environment, first useful diagnostic, proven causal
-  chain, root cause, evidence and limits, retained recovery inputs, recovery owner and action, and fix handoff.
+  chain, root cause, evidence and limits, approved retained diagnostic paths and reproducer inputs, recovery
+  owner and action, and fix handoff.
   For impossible reproduction, return the leading causes and exactly one fully bound discriminating diagnostic
-  per cause. For an exact block, return its prerequisite, affected obligation, current evidence, risk, retained
-  safe condition, first recovery action, and owner.
-- Every path ends in a reproduced root cause, bounded diagnostic plan, or exact block. A clean unrelated project
-  command, a successful retry, a cosmetic terminal record, an unsupported inference, or headings without the
-  required branch fields never count as completion.
+  per cause. For an exact block, return its prerequisite, affected obligation, current evidence, risk,
+  diagnostic paths approved for retention and reproducer inputs, proof that project source remained unchanged,
+  first recovery action, and owner.
+- Every path selects exactly one reproduced-root-cause, bounded-diagnostic-plan, or exact-block result boundary
+  and separately selects exactly one universal terminal state. A clean unrelated project command, a successful
+  retry, a cosmetic terminal record, an unsupported inference, or headings without the required branch fields
+  never count as completion.
 
 ## References
 

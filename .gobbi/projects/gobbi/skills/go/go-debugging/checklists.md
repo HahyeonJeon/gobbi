@@ -30,13 +30,14 @@ project reproducer command and named diagnostic tools.
 ### GODBG-SC-PROJECT-02 — Expected failure: Required authority is unavailable
 
 A download, network request, cache write, diagnostic output, project execution, or protected-data read lacks
-the exact authority or safe bound it needs. Diagnosis should pause before the effect and return a recoverable
-block; silent substitution or authority inherited from another operation fails.
+its exact authority or required execution, repetition, process, destination, or output bound. Diagnosis should
+pause before the effect and return a recoverable block; silent substitution or authority inherited from
+another operation fails.
 
 #### Checklist
 
 - [ ] GODBG-CK-PROJECT-02-01 — Diagnosis pauses before every unsafe or unbounded run, download, network request, source fix, unapproved diagnostic output, protected-data exposure, missing authority, or changed execution bound.
-- [ ] GODBG-CK-PROJECT-02-02 — The authority block names the missing prerequisite, affected obligation, current evidence, risk, owner, retained safe project-source condition and approved diagnostic paths, first recovery action, and handoff.
+- [ ] GODBG-CK-PROJECT-02-02 — The authority block names the missing prerequisite, affected obligation, current evidence, risk, owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, first recovery action, and handoff.
 
 ### GODBG-SC-PROJECT-03 — Rule violation: Diagnosis mutates project source
 
@@ -52,14 +53,16 @@ project-source write path; even a plausible fix fails this operation boundary.
 ### GODBG-SC-STRUCTURE-01 — Normal case: The original symptom and reproducer are exact
 
 The result must remain bound to the report that initiated diagnosis. A changed input, consumer, process,
-environment, Go version fact, package selector, or expected behavior creates a different claim and cannot
-silently replace the original symptom.
+environment, minimum supported Go version when the affected promise depends on it, selected Go toolchain
+version, module's Go language version when language behavior matters, exact package pattern passed to the
+project command, or expected behavior creates a different claim and cannot silently replace the original
+symptom.
 
 #### Checklist
 
 - [ ] GODBG-CK-STRUCTURE-01-01 — One named set records the original symptom; expected and observed behavior; applicable program exit path; environment; minimum supported Go version when relevant; selected Go toolchain version; module's Go language version when relevant; exact project reproducer command; exact package pattern; flags; `GOOS/GOARCH` target; inputs; duration or repetition bound; and affected consumer or process.
-- [ ] GODBG-CK-STRUCTURE-01-02 — The first useful diagnostic records its source, collection conditions, authority, integrity limit, retention owner, and evidence limit.
-- [ ] GODBG-CK-STRUCTURE-01-03 — The actual owned object names the affected package, project command, goroutine, process, input, consumer, or diagnostic output instead of a generic noun.
+- [ ] GODBG-CK-STRUCTURE-01-02 — The first useful diagnostic names its producing project command, named tool, process, service, or consumer; collection conditions; exact reproducer-run identity when available; collection authority; retention owner; and evidence limit.
+- [ ] GODBG-CK-STRUCTURE-01-03 — The actual owned object uses the applicable package name, import path, package directory or placement, package boundary, public API or CLI, project command, goroutine, process, input, consumer, compiler or vet diagnostic, error or panic value, stack trace, goroutine dump, race-detector report, execution trace, CPU profile, heap profile, block profile, mutex profile, core dump, log record, metric, or failing test or fuzz input.
 
 ### GODBG-SC-STRUCTURE-02 — Normal case: Each sibling-owned concern reaches its owner
 
@@ -121,12 +124,13 @@ and reserves root cause for the earliest cause whose removal ends the failure.
 
 ### GODBG-SC-AESTHETICS-02 — Poor quality: The diagnosis uses vague substitutes
 
-Vague nouns or action phrases conceal the affected object, owner, selector, command, or proof. The report must
-use the accepted Go and operation vocabulary where the claim appears.
+Vague nouns or action phrases conceal the package identity, owner, exact package pattern passed to the project
+command, project command, or proof. The report must use the accepted Go and operation vocabulary where the
+claim appears.
 
 #### Checklist
 
-- [ ] GODBG-CK-AESTHETICS-02-01 — Every package identity names the package name, import path, package directory or placement, package boundary, or public API or CLI that the claim means, while every command selector is labeled an exact package pattern.
+- [ ] GODBG-CK-AESTHETICS-02-01 — Every package-related claim uses its applicable exact term: package name, import path, package directory or placement, package boundary, public API or CLI, or exact package pattern when it is passed to a project command.
 - [ ] GODBG-CK-AESTHETICS-02-02 — Every owner, project command, `GOOS/GOARCH` target, affected consumer or process, diagnostic, causal classification, terminal state, and recovery action is named literally enough to answer without private context.
 
 ### GODBG-SC-AESTHETICS-03 — Adversarial: A polished terminal record lacks causal proof
@@ -143,15 +147,17 @@ cosmetic match must fail when no discriminating evidence proves the causal links
 ### GODBG-SC-USAGE-01 — Normal case: Reproduction ends in a proven root cause
 
 The original symptom occurs under the exact bound environment, and the work proves the causal boundary without
-editing source. The terminal record must preserve enough evidence and limits for the fix owner to resume.
+editing source. Repeated reproduction establishes recurrence or stability only and cannot prove causation by
+itself. The terminal record must preserve enough evidence and limits for the fix owner to resume.
 
 #### Checklist
 
 - [ ] GODBG-CK-USAGE-01-01 — The original symptom is reproduced with the exact project reproducer command, environment, inputs, affected consumer or process, and first useful diagnostic.
 - [ ] GODBG-CK-USAGE-01-02 — The causal chain connects the reproduced symptom through discriminating evidence to every named cause.
-- [ ] GODBG-CK-USAGE-01-03 — A safe controlled variation, repeated reproduction, contradictory-case comparison, or equally direct observation proves the root-cause boundary.
+- [ ] GODBG-CK-USAGE-01-03 — A controlled variation or contradictory-case comparison changes or removes the proposed cause, or equally direct evidence shows that the proposed cause's removal ends the failure.
 - [ ] GODBG-CK-USAGE-01-04 — Evidence limits exclude every unexecuted environment, input, exact package pattern, `GOOS/GOARCH` target, exit path, process, and consumer from the completion claim.
-- [ ] GODBG-CK-USAGE-01-05 — Recovery and handoff retain the exact reproducer, first useful diagnostic, recovery owner, first recovery action, and fix-owner input without applying the fix.
+- [ ] GODBG-CK-USAGE-01-05 — Recovery and handoff retain the exact reproducer, first useful diagnostic, recovery owner, first recovery action, and fix-owner input.
+- Also applies: GODBG-CK-PROJECT-03-01 (diagnosis performs no project-source write).
 
 ### GODBG-SC-USAGE-02 — Edge case: Impossible reproduction returns a bounded diagnostic plan
 
@@ -164,19 +170,21 @@ step for every supported leading cause and must not present any leading cause as
 - [ ] GODBG-CK-USAGE-02-02 — Every listed leading cause is supported by a recorded observation.
 - [ ] GODBG-CK-USAGE-02-03 — Exactly one discriminating diagnostic is assigned to each leading cause.
 - [ ] GODBG-CK-USAGE-02-04 — Each planned diagnostic names its prerequisite, owner, exact project command or named tool or observation, expected distinguishing result, execution and output bound, and stop condition.
-- [ ] GODBG-CK-USAGE-02-05 — The plan names the retained safe project-source condition, approved retained diagnostic paths, reproducer inputs, first useful diagnostic, recovery owner, first recovery action, and handoff.
+- [ ] GODBG-CK-USAGE-02-05 — The plan records proof that project source remained unchanged, approved retained diagnostic paths, reproducer inputs, first useful diagnostic, recovery owner, first recovery action, and handoff.
 
 ### GODBG-SC-USAGE-03 — Expected failure: Diagnosis stops at an exact block
 
-A required environment, input, consumer, process, project reproducer command, named tool, permission, safe
-bound, output path, protected-data rule, or separate authority is absent. The operation must preserve the
+A required environment, input, consumer, process, project reproducer command, named tool, execution,
+repetition, process, destination, or output bound, project-execution authority, cache approval, download or
+network authority, approved output path, or protected-data handling rule is absent. An error, cancellation, or
+timeout that prevents diagnosis also enters this exact-block result boundary. The operation must preserve the
 bounded work and identify how its owner can resume.
 
 #### Checklist
 
 - [ ] GODBG-CK-USAGE-03-01 — The block names the missing prerequisite or first useful diagnostic.
 - [ ] GODBG-CK-USAGE-03-02 — The block names the affected obligation, current evidence, and risk.
-- [ ] GODBG-CK-USAGE-03-03 — The block names the owner, retained safe project-source condition and approved diagnostic paths, first recovery action, and handoff.
+- [ ] GODBG-CK-USAGE-03-03 — The block names the owner, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, first recovery action, and handoff.
 - [ ] GODBG-CK-USAGE-03-04 — The blocked path does not substitute another environment, consumer, process, input, project command, output path, or broader authority.
 
 ## Consistency
@@ -193,14 +201,18 @@ show which selection and environment the result supports.
 ### GODBG-SC-CONSISTENCY-02 — Normal case: Every terminal branch returns the universal core
 
 The universal fields let the next owner interpret success, interruption, or a block without prior conversation
-context. Fields that do not apply need an exact reason rather than silent omission.
+context. Every terminal record separately selects exactly one result boundary and exactly one universal
+terminal state. An error, cancellation, or timeout that prevents diagnosis uses the exact-block result
+boundary; none creates another result boundary. Fields that do not apply need an exact reason rather than
+silent omission.
 
 #### Checklist
 
 - [ ] GODBG-CK-CONSISTENCY-02-01 — The record names the operation and mode, accepted result, decision basis, and actual owned object.
-- [ ] GODBG-CK-CONSISTENCY-02-02 — The terminal state is exactly one of `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`, and panic appears only as diagnosed program behavior.
+- [ ] GODBG-CK-CONSISTENCY-02-02 — The terminal record selects exactly one universal terminal state from `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`, with panic ineligible because it is diagnosed program behavior.
 - [ ] GODBG-CK-CONSISTENCY-02-03 — The record names changed or reviewed paths, external reads or effects, evidence limits, and a compatibility decision selected from `compatible`, `migration supplied`, `authorized break`, or `unsupported` when applicable.
 - [ ] GODBG-CK-CONSISTENCY-02-04 — The record names block, recovery, and handoff fields, or gives an evidence-based not-applicable reason for each omitted field.
+- Also applies: GODBG-CK-OVERALL-01-02 (exactly one result boundary).
 
 ### GODBG-SC-CONSISTENCY-03 — Normal case: Recovery and handoff preserve the diagnosis
 
@@ -209,7 +221,7 @@ request to repeat the work. The handoff also preserves every authority that is s
 
 #### Checklist
 
-- [ ] GODBG-CK-CONSISTENCY-03-01 — The handoff preserves the original symptom, exact reproducer, environment, first useful diagnostic, evidence limits, retained safe project-source condition and approved diagnostic paths, recovery owner and action, next owner, and authority still required.
+- [ ] GODBG-CK-CONSISTENCY-03-01 — The handoff preserves the original symptom, exact reproducer, environment, first useful diagnostic, evidence limits, proof that project source remained unchanged, approved retained diagnostic paths and reproducer inputs, recovery owner and action, next owner, and authority still required.
 
 ## Risk
 
@@ -260,7 +272,8 @@ debugging-specific fields. Sibling checklists still apply for every sibling conc
 
 #### Checklist
 
-- [ ] GODBG-CK-OVERALL-01-01 — The terminal record contains the original symptom, exact reproducer, environment, first useful diagnostic, causal chain, root cause or leading causes, distinguishing diagnostic plan when applicable, and exactly one reproduced-root-cause, bounded-plan, or exact-block result.
+- [ ] GODBG-CK-OVERALL-01-01 — The terminal record contains the original symptom, exact reproducer, environment, first useful diagnostic, causal chain, root cause or leading causes, and distinguishing diagnostic plan when applicable.
+- [ ] GODBG-CK-OVERALL-01-02 — The terminal record selects exactly one result boundary: reproduced root cause, bounded diagnostic plan, or exact block.
 
 ### GODBG-SC-OVERALL-02 — Expected failure: A non-result is called success
 
