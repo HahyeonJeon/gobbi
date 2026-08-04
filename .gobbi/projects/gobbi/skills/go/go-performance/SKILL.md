@@ -52,8 +52,9 @@ causal evidence connects the measured cost to the performance question and compa
   exact project command, environment, and confounders before measurement.** Keep unrepresented inputs and
   unsupported `GOOS/GOARCH` targets outside the claim.
 - **MUST name the exact evidence kind and use it only for the question it can answer.** A CPU profile, heap
-  profile, goroutine profile, block profile, mutex profile, Go execution trace, runtime statistic, workload
-  measurement, binary-size inventory, startup-time measurement, and PGO CPU pprof input are not interchangeable.
+  profile, goroutine profile, block profile, mutex profile, Go execution trace, runtime-statistic report,
+  workload measurement, binary-size inventory, startup-time measurement, and PGO CPU pprof input are not
+  interchangeable.
 - **MUST establish comparable baseline evidence before selecting or implementing a change and prove the
   bottleneck with causal evidence.** A top row, proxy metric, changed allocation count, benchmark score, or
   trace visualization alone cannot establish the root cause.
@@ -135,11 +136,11 @@ causal evidence connects the measured cost to the performance question and compa
   and a mutex profile for lock contention. Bind each collection mechanism and interpretation to the selected Go
   toolchain through `go-toolchain`.
 - Use a Go execution trace for scheduling, goroutine execution, syscalls, garbage-collection events, heap-size
-  events, and parallelism questions. Use runtime statistics for named memory, garbage-collection, goroutine, or
-  runtime-state questions. Use benchmarks or representative workload measurements for end-to-end latency,
-  throughput, allocation, or resource outcomes.
+  events, and parallelism questions. Use a runtime-statistic report for named memory, garbage-collection,
+  goroutine, or runtime-state questions. Use benchmarks to produce a representative workload measurement for
+  end-to-end latency, throughput, allocation, or resource outcomes.
 - Use a binary-size inventory for binary size and a startup-time measurement for process startup. Use a
-  representative CPU pprof input only when PGO is selected. Do not call either a binary-size inventory,
+  representative PGO CPU pprof input only when PGO is selected. Do not call either a binary-size inventory,
   startup-time measurement, Go execution trace, heap profile, or other non-CPU evidence a CPU profile.
 - Select only the evidence needed to answer the question. Record its exact project command or observation
   source, output path, collection duration or repetitions, sample basis, expected distinguishing result,
@@ -153,7 +154,8 @@ causal evidence connects the measured cost to the performance question and compa
   diagnostic overhead; absolute result and unit; uncertainty or observed noise; and evidence limits.
 - Run only the authorized project command and named diagnostic tool within the accepted time, repetition,
   process, memory, disk, output, and network bounds. Preserve the exact CPU profile, heap profile, goroutine
-  profile, block profile, mutex profile, Go execution trace, report, inventory, or measurement identity used.
+  profile, block profile, mutex profile, Go execution trace, runtime-statistic report, workload measurement,
+  binary-size inventory, or startup-time measurement identity used.
 - Repeat enough to characterize observed variation under the accepted comparison method. Do not invent a
   repetition count, confidence threshold, or statistical method when the project has not selected one; route
   the evidence design to `go-testing` and pause if the selection is material.
@@ -164,9 +166,9 @@ causal evidence connects the measured cost to the performance question and compa
 #### 2.3 Interpret Go diagnostics within their documented limits
 
 - The official [Go Diagnostics guide](https://go.dev/doc/diagnostics) states that profiling locates expensive
-  or frequently called code and that CPU, heap, goroutine, block, and mutex profiles answer different
-  questions. Interpret each CPU, heap, goroutine, block, or mutex profile only within its samples, workload,
-  duration, and collection settings.
+  or frequently called code and that a CPU profile, heap profile, goroutine profile, block profile, and mutex
+  profile answer different questions. Interpret each CPU profile, heap profile, goroutine profile, block
+  profile, or mutex profile only within its samples, workload, duration, and collection settings.
 - The same [Diagnostics guide](https://go.dev/doc/diagnostics) describes the Go execution trace as runtime and
   scheduling evidence and says it is not the preferred hot-spot mechanism for excessive CPU or memory use.
   Do not substitute a trace visualization for a CPU profile or heap profile question.
@@ -234,7 +236,7 @@ causal evidence connects the measured cost to the performance question and compa
   change that cannot be tied to the proven bottleneck returns to Step 3.1 rather than receiving a favorable
   interpretation from a new result.
 - Keep `credential use: none`, `external mutation: forbidden`, and `release effect: none` unchanged throughout
-  the change. A locally verified binary, CPU profile, or benchmark result grants no publication, deployment,
+  the change. A locally verified binary, CPU profile, or workload measurement grants no publication, deployment,
   production diagnostic collection, configuration, or external-state authority.
 
 #### 4.2 Compare baseline and result evidence
@@ -255,9 +257,9 @@ causal evidence connects the measured cost to the performance question and compa
 
 #### 4.3 Apply PGO only when selected
 
-- Require a representative CPU pprof input. Record its collection source, workload and distribution, age,
+- Require a representative PGO CPU pprof input. Record its collection source, workload and distribution, age,
   profiled build identity, current build identity, and source skew. Keep an unrepresentative, stale, or
-  materially skewed CPU pprof input outside the PGO success claim.
+  materially skewed PGO CPU pprof input outside the PGO success claim.
 - Bind `default.pgo` discovery or every `-pgo` selection to the selected Go toolchain version and
   exact project command through `go-toolchain`. The official [Go PGO guide](https://go.dev/doc/pgo) owns those
   version-sensitive behaviors; do not freeze a current Go release or assume one PGO CPU pprof input applies to
@@ -266,8 +268,9 @@ causal evidence connects the measured cost to the performance question and compa
   representative benchmark when production collection is impractical. Record benchmark representativeness
   limits. Do not require production collection; perform it only with current authority and the Step 2.3 bounds.
 - Compare PGO-enabled and PGO-disabled builds, or an accepted equivalent, on the representative workload.
-  Record absolute and relative performance, build-time, binary-size, and resource trade-offs. Define the CPU
-  pprof refresh owner and trigger, source-skew limit, regression owner, and response; claim no universal gain.
+  Record absolute and relative performance, build-time, binary-size, and resource trade-offs. Define the
+  PGO CPU pprof input's refresh owner and trigger, source-skew limit, regression owner, and response; claim no
+  universal gain.
 
 #### 4.4 Define the regression guard
 

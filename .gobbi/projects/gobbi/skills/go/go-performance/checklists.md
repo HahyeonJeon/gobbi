@@ -69,14 +69,14 @@ drift without creating a new claim.
 The question may concern CPU time, allocation or retained memory, goroutine state, synchronization delay,
 scheduler or runtime behavior, latency, throughput, startup, binary size, or another named resource. The
 expected outcome chooses evidence that can answer that question and records collection interference. Failure
-is observable when CPU, heap, goroutine, block, and mutex profiles are treated as CPU evidence or an execution
-trace is used as a hotspot substitute.
+is observable when a CPU profile, heap profile, goroutine profile, block profile, and mutex profile are treated
+as one CPU evidence kind or a Go execution trace is used as a hotspot substitute.
 
 #### Checklist
 
 - [ ] GOPRF-CK-STRUCTURE-02-01 — Evidence selection names the exact evidence kind and explains how it can answer the accepted performance question.
-- [ ] GOPRF-CK-STRUCTURE-02-02 — CPU, heap, goroutine, block, and mutex profiles remain distinct evidence kinds with distinct questions and limits.
-- [ ] GOPRF-CK-STRUCTURE-02-03 — An execution trace is used for scheduler, goroutine, garbage-collector, network-blocking, or runtime-event questions and is not presented as a CPU-hotspot substitute.
+- [ ] GOPRF-CK-STRUCTURE-02-02 — A CPU profile, heap profile, goroutine profile, block profile, and mutex profile remain distinct evidence kinds with distinct questions and limits.
+- [ ] GOPRF-CK-STRUCTURE-02-03 — A Go execution trace is used for scheduler, goroutine, garbage-collector, network-blocking, or runtime-event questions and is not presented as a CPU-hotspot substitute.
 - [ ] GOPRF-CK-STRUCTURE-02-04 — The resulting claim is bounded by the recorded possible timing, CPU, allocation, memory, disk, and process interference from concurrent diagnostic collection.
 
 ## Performance
@@ -113,7 +113,7 @@ observable when the outcome declares an improvement despite the missing comparis
 ### GOPRF-SC-PERFORMANCE-03 — Edge case: PGO is selected and verified explicitly
 
 The accepted change includes profile-guided optimization for a named build and representative workload. The
-expected outcome records the CPU pprof input, selected Go toolchain version behavior, an enabled-versus-disabled
+expected outcome records the PGO CPU pprof input, selected Go toolchain version behavior, an enabled-versus-disabled
 comparison, tradeoffs, and lifecycle ownership. Failure is observable when a stale input is applied by
 filename convention without proving representation or continued benefit.
 
@@ -127,7 +127,7 @@ filename convention without proving representation or continued benefit.
 
 ### GOPRF-SC-PERFORMANCE-04 — Expected failure: A PGO input is stale or unrepresentative
 
-The available CPU pprof input has material workload, build, source, or age skew. The expected outcome excludes
+The available PGO CPU pprof input has material workload, build, source, or age skew. The expected outcome excludes
 it from a benefit claim and returns a bounded investigation or block. Failure is observable when the input is
 accepted solely because the build finds it.
 
