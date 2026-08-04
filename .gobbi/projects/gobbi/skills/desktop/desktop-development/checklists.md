@@ -63,12 +63,13 @@ continues. Missing fields fail even when the displayed stage result looks succes
 
 ### DTDLVR-SC-STRUCTURE-12 — Adversarial: an unsupported product entry makes the contract look complete
 
-The contract covers every supported path but adds an entry for a path or surface the product does not
-support. The extra entry fails even when every supported product entry is otherwise complete.
+The contract covers every supported path but adds an entry for a path or product-contract category the
+product does not support. The extra entry fails even when every supported product entry is otherwise
+complete.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-STRUCTURE-12-01 — No product-contract entry describes a path or surface the product does not support.
+- [ ] DTDLVR-CK-STRUCTURE-12-01 — No product-contract entry describes a path or product-contract category the product does not support.
 
 ## Performance
 
@@ -110,7 +111,8 @@ the product meaning and observable person or operator result; mechanism-only wor
 ### DTDLVR-SC-AESTHETICS-11 — Adversarial: generic exit language hides runtime meaning
 
 An unqualified `exit` is presented as a desktop product state, or a command result is confused with product
-runtime behavior.
+runtime behavior. `Qualified restart` means a named stop and a later start, each proved with version, input,
+state, authority, and failure evidence.
 
 #### Checklist
 
@@ -122,8 +124,8 @@ runtime behavior.
 ### DTDLVR-SC-USAGE-10 — Normal case: Requirements accepts the complete product contract
 
 The accepted request becomes a mechanism-free product contract before dependent work. A technically detailed
-brief still fails when it omits a supported path on any of the six contract surfaces, a product outcome, a
-native-integration field, a local-data behavior, or an update and recovery obligation.
+brief still fails when it omits a supported path in any of the six product-contract categories, a product
+outcome, a native-integration field, a local-data behavior, or an update and recovery obligation.
 
 #### Checklist
 
@@ -260,4 +262,4 @@ current run.
 
 - [ ] DTDLVR-CK-OVERALL-11-01 — A new accepted scoped change returns to Requirements with its own scope and authority.
 - [ ] DTDLVR-CK-OVERALL-11-03 — The separate Retirement handoff contains affected people and installed versions, target, channel/store/feed, usage/support evidence, data export/retention/deletion/migration, replacement/update/uninstall effects, communication/support obligations, external systems, stop conditions, first irreversible action, authority, and resume point.
-- [ ] DTDLVR-CK-OVERALL-11-04 — Retirement is not Stage 11, and this operation executes no Retirement action.
+- [ ] DTDLVR-CK-OVERALL-11-05 — This operation executes no Retirement action.

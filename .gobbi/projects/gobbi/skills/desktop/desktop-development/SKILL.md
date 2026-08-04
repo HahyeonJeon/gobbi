@@ -51,9 +51,9 @@ roll out. Verify authority immediately before the exact action and preserve a co
 - **MUST accept the complete mechanism-free product contract in Requirements before dependent work.** Every
   supported product entry MUST state its product meaning and observable person or operator result without
   selecting an Electron callback, event, process, IPC channel, permission handler, package format, updater,
-  or signing mechanism; no product-contract entry may describe a path or surface the product does not support;
-  a missing product judgment returns to the user or product authority, while a missing fact, mechanism,
-  implementation, or evidence returns to its named specialist.
+  or signing mechanism; no product-contract entry may describe a path or product-contract category the product
+  does not support; a missing product judgment returns to the user or product authority, while a missing fact,
+  mechanism, implementation, or evidence returns to its named specialist.
 - **MUST assemble only current, agreeing owner results and preserve their exact routes.** NEVER copy
   Architecture, Interface, operating-system, Electron, renderer, release-mechanism, or Evaluation policy into
   this operation.
@@ -74,12 +74,14 @@ The coordinator is the actor for the operation. Start when an accepted request n
 makes a complete installed, release-ready, published, deployed, or maintained application claim; route a
 bounded single-owner request directly to that owner.
 
-The ten phases are obligation and result boundaries. A complete slice may move between Implementation,
-Software testing and verification, Packaging, and Installation and installed-artifact verification as new
-evidence arrives. A later contradiction returns to the earliest owning phase, and dependent evidence remains
-stale until repeated or proved unaffected for the same subject.
+Each numbered Procedure Phase below implements one accepted lifecycle stage.
 
-For every phase, keep one stage record with the fields required by the first Rule. A proved blocker names the
+The ten lifecycle stages are obligation and result boundaries. A complete slice may move between
+Implementation, Software testing and verification, Packaging, and Installation and installed-artifact
+verification as new evidence arrives. A later contradiction returns to the earliest owning stage, and
+dependent evidence remains stale until repeated or proved unaffected for the same subject.
+
+For every stage, keep one stage record with the fields required by the first Rule. A proved blocker names the
 exact blocked result; current development, installed, runtime, and evidence states; artifact and target
 bounds; missing owner, evidence, authority, or environment; retained work; safe stop; required actor and
 action; and resume condition.
@@ -92,9 +94,10 @@ action; and resume condition.
   versions, target operating-system and architecture tuples, existing owner results, and known constraints as
   inputs.
 - Define the product problem, actors, target people and contexts, accepted behavior, supported targets, and
-  entry modes. Give every supported path a product contract entry across all six surfaces: installation and
-  first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and
-  update and recovery. Record no product-contract entry for a path or surface the product does not support.
+  entry modes. Give every supported path a product contract entry across all six product-contract
+  categories: installation and first launch; ordinary and alternate entry; windows and lifecycle; native
+  integration; local data; and update and recovery. Record no product-contract entry for a path or
+  product-contract category the product does not support.
 - Keep every product entry mechanism-free. State its product meaning and the observable person or operator
   result, plus observable completion, authoritative system completion, false-completion, failure, and
   recovery conditions; do not select an Electron callback, event, process, IPC channel, permission handler,
@@ -136,7 +139,7 @@ action; and resume condition.
   authority, keep the accepted decision unchanged and return the conflict to the user or product authority for
   a newly accepted product decision. An implementation disposition alone is not acceptance.
 - Ask the user or product authority to accept product choices and scope. Do not infer acceptance from a
-  specialist result or from progress in a later phase.
+  specialist result or from progress in a later stage.
 - Record exactly `Requirements accepted` when the complete current product contract is accepted for the
   scoped change. Otherwise, return the unresolved choice or a proved blocker with retained inputs and the
   exact resume condition.
@@ -260,14 +263,15 @@ action; and resume condition.
 
 #### 6.2 Prove runtime state and complete the installed result
 
+- `Qualified restart` means a named stop and a later start, each proved with version, input, state,
+  authority, and failure evidence.
 - Exercise the applicable exact runtime states and transitions: `Not running`, `Launching`, `Activation
   request`, `Running with windows`, `Running with no windows`, `Background/tray mode`, `Window close`, `Normal
   quit`, `Abnormal termination`, `Later relaunch`, and `Qualified restart`.
 - Name each applicable OS power or session event only from the matching Manual result for the exact tuple.
   Never create a universal suspend or resume state from different platform facts.
 - Keep product transitions distinct. Window close does not imply Normal quit; Later relaunch does not prove
-  state restoration; Qualified restart proves both the named stop and later start with version, input, state,
-  authority, and failure evidence.
+  state restoration.
 - Treat Electron `app.exit(code)` as an exact immediate-termination mechanism fact. When it ends a process
   outside the Normal-quit contract, record the product transition as `Abnormal termination`; a command or test
   `exit status` remains only a tool or test result.
