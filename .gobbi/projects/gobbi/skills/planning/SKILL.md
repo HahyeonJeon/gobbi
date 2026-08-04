@@ -12,8 +12,8 @@ hierarchy and a flat ordered list of agent execution units. Planning defines exe
 caller owns TODO state, evaluation, records, iterations, commit provenance, and other orchestration mechanics.
 
 The operation understands the accepted direction, decomposes it in `tasks.md`, and forms context-coherent
-execution units in `plan.md`. Both artifacts remain revisable until one final validation passes, then freeze
-together and return to the caller.
+execution units in `plan.md`. Both artifacts freeze together after one final validation passes, then return
+to the caller.
 
 ## Principles
 
@@ -69,15 +69,16 @@ evidence and question.
 
 ### Phase 2 — Decompose the Work
 
-#### 2.1 Build a revisable task hierarchy
+#### 2.1 Build the task hierarchy
 
-- Use [the hierarchy template](templates/tasks.md) to draft `tasks.md` directly from the established inputs.
+- Use [the hierarchy template](templates/tasks.md) to write the complete hierarchy directly to `tasks.md` in
+  one pass from the established inputs.
 - Choose top-level groups by coherent decomposition boundaries, not by forcing one group per work item.
   Preserve each work item's traceability to its hierarchy paths.
-- Decompose groups top-down until every leaf states one bounded work outcome, boundary, and output. Keep
-  splitting distinct responsibilities, capabilities, change boundaries, dependencies, or outputs.
-- Keep the hierarchy revisable and independently readable; do not assign agents or encode execution order in
-  it.
+- Recursively decompose the complete hierarchy into smaller groups and leaf tasks until each leaf states one
+  bounded outcome, boundary, and output. Split distinct responsibilities, capabilities, change boundaries,
+  dependencies, or outputs.
+- Keep the hierarchy independently readable; do not assign agents or encode execution order in it.
 
 ### Phase 3 — Plan the Execution
 
