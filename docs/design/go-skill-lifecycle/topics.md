@@ -24,7 +24,7 @@ development, design, module, testing, and toolchain contracts. It lacks complete
 debugging, security, standalone observability and crash capture, profiling-led performance, executable
 packaging, and publication. Its root also contains Go policy despite the navigation-only domain contract.
 
-The expected result is one policy-free root and exactly fourteen direct children. It serves agents, user and
+The expected result is one policy-free root and exactly sixteen direct children. It serves agents, user and
 project decision owners, Go consumers, skill maintainers, evaluators, the manager, the Git operation and
 conventions owner, private-module credential and destination owners, and named external-action owners. It accepts the
 project contract, affected Go project, user decisions, current Go evidence, official Go documentation, and
@@ -34,7 +34,7 @@ explicit blocked results and handoffs, and unchecked checklist sources.
 | Requirement | Required result |
 |---|---|
 | Selective Navigation Without Root Policy | Route every supported Go task through the literal `Child skill \| Type \| Load when` root schema, copy child triggers byte for byte, emit no owned-result column, and keep no root policy or mandatory stage chain |
-| Complete Independent Lifecycle Coverage | Give each of the approved fourteen concerns an independently loadable owner and observable completion boundary |
+| Complete Independent Lifecycle Coverage | Give each of the approved sixteen concerns an independently loadable owner and observable result or judgment boundary |
 | One Semantic Owner and Acyclic Composition | Route every material claim to one owner and compose siblings without reciprocal policy duplication |
 | Concrete Development and Design Contracts | Retain `Study -> Design -> Build -> Verify`; classify material choices by contract effect; require reference-backed alternatives plus user confirmation for material choices; let fully determined routine execution choices proceed |
 | Exact Operational Results, Blocks, and Handoffs | Define each operation mode's project writes, local outputs, caches or downloads, execution, network, credential use and external mutation as separate binary facts, pause, completion, blocked result, recovery, and exact handoff fields |
@@ -42,14 +42,18 @@ explicit blocked results and handoffs, and unchecked checklist sources.
 | Atomic and Traceable Evaluation Sources | Give each child an eight-perspective, traceable, atomic checklist that composes with active siblings and rejects cosmetic compliance |
 | Preserve Proven Existing Contracts | Retain existing concurrency, conventions, caller-led design, development, module authenticated-read, testing, and toolchain strengths unless an accepted decision supersedes them |
 
-Included work is the `go` root, all fourteen named children, one checklist per child, the bounded release
+Included work is the `go` root, all sixteen named children, one checklist per child, the bounded release
 tag/ref executor consistency touch in the canonical Git operation and conventions, and the
 [`domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) naming-register update
-that admits `debugging` and `performance` as free capability words. Every other outside-Go edit is excluded
+that admits `debugging` and `performance` as free capability words, revises reserved `conventions`, and
+reserves `source` and `documentation`. Every other outside-Go edit is excluded
 unless this exact naming, bounded Git, or routing consistency contract requires it. Excluded work is
 generic deployment, containers, operating-system packaging, installation orchestration, service rollout,
 data migration, environment configuration, traffic promotion, and live-health ownership. A fixed Go release,
 mandatory third-party tools, and a project-jargon glossary are rejected. No Phase 1 question remains open.
+The accepted written-form partition retains `go-conventions` and adds the `go-source` and
+`go-documentation` preferences. Their checklist allocation is exactly `47 + 17 + 8 = 72` under `GOCNV`,
+`GOSRC`, and `GODOC`. All ten operation results and all twenty-one operation-mode rows remain unchanged.
 `go-release` builds, translates, and supplies the Git-owned caller-neutral tag/ref action specification. Only
 `go-release` references and calls Git; Git does not reference `go-release` or another skill. This one-way
 direction satisfies Gobbi Rule 4 while the eventual Git sources remain caller-neutral and contain no Gobbi or
@@ -63,9 +67,10 @@ outside-skill reference.
 |---|---|---|---|---|
 | Current Go root | [`go/SKILL.md`](../../../.gobbi/projects/gobbi/skills/go/SKILL.md) | Canonical project source at base `df18ccda`; directly applicable; same-project reuse | The seven-child routing baseline is sound, but the traced-service paragraph violates the policy-free root contract and admits an observability gap | Adopt |
 | Current Go children and checklists | [`go/`](../../../.gobbi/projects/gobbi/skills/go/) | Canonical project sources; directly applicable; same-project reuse | Preserve the existing development lifecycle, preference splits, module consumer checks and authorized authenticated private-module reads, test distinctions, evidence limits, and tool side-effect classes; repair compound rows and uncovered handoffs | Adopt |
-| Domain Skill standard | [`domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) | Governing current standard; directly applicable; same-project reuse | The emitted root must be navigation-only and use exactly `Child skill \| Type \| Load when`; it lists each child once, copies exact triggers, emits no result column, loads every applicable child, and contains at least one operation, tool, and preference; its same-change naming rule requires this design to admit `debugging` and `performance` to the free-word register | Adopt |
+| Domain Skill standard | [`domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) | Governing current standard; directly applicable; same-project reuse | The emitted root must be navigation-only and use exactly `Child skill \| Type \| Load when`; it lists each child once, copies exact triggers, emits no result column, loads every applicable child, and contains at least one operation, tool, and preference; its same-change naming rule requires this design to admit `debugging` and `performance`, revise `conventions`, and reserve `source` and `documentation` | Adopt |
 | Ordinary skill standards | [`skill-writing/`](../../../.gobbi/projects/gobbi/skills/skill-writing/) | Governing current standards; directly applicable; same-project reuse | Operations own executable results, preferences own judgment, the tool owns named-tool lookup, and every child is self-contained | Adopt |
 | Evaluation Checklist operation | [`evaluation/checklist/SKILL.md`](../../../.gobbi/projects/gobbi/skills/evaluation/checklist/SKILL.md) | Governing current standard; directly applicable; same-project reuse | Use eight perspectives, six literal scenario classes, stable IDs, at most six rows per scenario and fifty-five per source, atomic rows, traceability, and cosmetic-compliance pilots | Adopt |
+| Committed Go Conventions checklist | [`go-conventions/checklists.md`](../../../.gobbi/projects/gobbi/skills/go/go-conventions/checklists.md) | Current committed source at `7b668cef`; directly applicable; same-project reuse | The source has 52 rows; one compound dot-import row splits into two; 19 independently uncovered states add 19 rows; a multi-input generator row needs wording-only repair; the atomic minimum is `52 - 1 + 2 + 19 = 72`, 17 above the 55-row cap, so one conventions owner is invalid | Adopt; reopen topology |
 | TypeScript Development and Packaging | [`typescript/`](../../../.gobbi/projects/gobbi/skills/typescript/) | Adjacent maintained family; strong structural fit; same-project reuse | A general development operation composes with specialized children; local package artifacts can be verified before the manager grants publication authority | Adopt |
 | Web Security and Observability | [`web/`](../../../.gobbi/projects/gobbi/skills/web/) | Adjacent maintained family; behavior fit with a different runtime boundary; same-project reuse | Specialized concerns may own complete changes, redaction, signal verification, and trust-boundary handling | Adopt |
 | Electron Release | [`electron-release/SKILL.md`](../../../.gobbi/projects/gobbi/skills/electron/electron-release/SKILL.md) | Adjacent maintained operation; authority and recovery fit; same-project reuse | Artifact identity, checksums, action specification, returned executor evidence, post-action verification, and recovery semantics belong in an explicit release result; manager and effect executors retain their own authority | Adopt |
@@ -94,7 +99,9 @@ The strongest fit is a full direct-child expansion, not a root policy patch. Off
 mechanism vocabulary and evidence limits, while project standards determine skill type, routing, authority,
 and checklist shape. Adjacent project families support three important patterns: general development can
 compose with specialized operations; specialized security, observability, and performance work can own a
-complete change; and local artifact preparation can stop before separately authorized publication.
+complete change; and local artifact preparation can stop before separately authorized publication. The
+completed conventions audit adds a fourth: naming, source form, and documentation are independently loadable
+preference subjects whose atomic checklist coverage cannot share one capped source.
 
 ### Rejected
 
@@ -108,12 +115,17 @@ indirection or unstable project assumptions.
 
 Official Go documents define mechanisms, not this project's skill ownership. Adjacent families define useful
 patterns but cannot own standalone Go processes. The user decision resolves those gaps through the exact
-fourteen-child family and mixed result boundaries. Live Go releases, project commands, publication systems,
+sixteen-child family and mixed result boundaries. Live Go releases, project commands, publication systems,
 and `GOOS/GOARCH` target matrices remain project inputs; durable skills must name the facts to inspect rather than freeze
 their current values. No material evidence conflict remains unresolved.
 Accepted GOIDEA-R5-01 closes the dependency conflict by making the Git-owned interface caller-neutral and the
 release-to-Git direction one-way. Accepted OPT-R5-01 closes the root-shape ambiguity by treating the richer
 child table as a design inventory and reserving the literal three-column schema for emitted `go/SKILL.md`.
+The conventions checklist audit later invalidated only the topology branch that assigned all written form to
+one child. The accepted correction retains `go-conventions`, adds `go-source` and `go-documentation`, and
+preserves every operation result and mode row. Any plan based on fourteen children, one conventions artifact
+pair, or fourteen checklist sources is stale and must be regenerated from this design before execution; this
+is a downstream shaping consequence, not an ordered implementation task.
 
 ## Topics
 
@@ -121,7 +133,7 @@ child table as a design inventory and reserving the literal three-column schema 
 Complete, selectively loaded Go guidance from design through authorized release
 ├── Family Topology and Routing
 │   ├── Root Navigation Contract
-│   ├── Fourteen-Child Ownership Map
+│   ├── Sixteen-Child Ownership Map
 │   ├── Composition and Reopen Tests
 │   └── Non-goals and External Owners
 ├── Operation Boundaries and Lifecycle
@@ -157,16 +169,18 @@ to load most children reopens the topology branch.
 ### Context
 
 The root must cover every supported Go task while remaining policy-free. The current family has seven strong
-children but seven uncovered or conflated concerns.
+children, seven uncovered or conflated operation concerns, and one written-form preference whose atomic
+coverage must split into three owners.
 
 ### Questions
 
-- Should the family expand to fourteen direct children, broaden the current seven, or use fewer lifecycle operations?
+- Should the family expand to sixteen direct children, retain the former fourteen-child partition, or use fewer lifecycle operations?
 - How can routing select multiple concerns without imposing a stage chain?
 
 ### Options
 
-- **Full fourteen-child family:** strongest independent ownership and selective loading; highest maintenance count; best fit.
+- **Full sixteen-child family:** strongest independent ownership and selective loading; satisfies the written-form source cap; best fit.
+- **Former fourteen-child family:** preserves fewer files but leaves the conventions subject 17 rows over the source cap.
 - **Broaden seven current children:** least topology change; preserves missing independent results and mixed policy.
 - **Use a few broad lifecycle operations:** smaller table; causes unrelated policy loads and unclear checklist ownership.
 
@@ -205,7 +219,7 @@ current traced-service paragraph is policy and belongs to a child.
 The root is policy-free, may load several children, uses the literal `Child skill | Type | Load when` schema,
 copies exact child triggers byte for byte, emits no owned-result column, and requires no mandatory stage chain.
 
-### Fourteen-Child Ownership Map
+### Sixteen-Child Ownership Map
 
 > **Purpose:** Decide the exact child inventory, type, and independently owned result.<br>
 > **Parent:** `Family Topology and Routing`<br>
@@ -215,10 +229,24 @@ copies exact child triggers byte for byte, emits no owned-result column, and req
 
 #### Context
 
-The retained children are `go-concurrency` (preference), `go-conventions` (preference), `go-design`
+The retained children are `go-concurrency` (preference), a narrowed `go-conventions` (preference), `go-design`
 (preference), `go-development` (operation), `go-modules` (operation), `go-testing` (operation), and
-`go-toolchain` (tool). The proposed operations are `go-architecture`, `go-debugging`, `go-security`,
-`go-observability`, `go-performance`, `go-packaging`, and `go-release`.
+`go-toolchain` (tool). Add `go-documentation` and `go-source` as preferences. The proposed operations remain
+`go-architecture`, `go-debugging`, `go-security`, `go-observability`, `go-performance`, `go-packaging`, and
+`go-release`.
+
+The capability register changes in the same design. `conventions` means the project-overridable naming and
+error-text preference, including authority and departure boundaries for written-form choices. `source` means
+the source-file organization, formatter layout, import-form, and generated provenance preference.
+`documentation` means the public documentation and implementation-comment preference. The trigger candidates
+are exact:
+
+- `go-conventions`: `MUST load when choosing or reviewing Go package names, identifiers, receiver names, source file names, import aliases, error text, or project-wide written-form conventions.`
+- `go-documentation`: `MUST load when writing or reviewing Go package comments, declaration comments, doc-comment links or headings, or implementation comments.`
+- `go-source`: `MUST load when choosing or reviewing Go source file organization, canonical formatting, import grouping, blank or dot imports, or generated source provenance.`
+
+Stable order is architecture, concurrency, conventions, debugging, design, development, documentation,
+modules, observability, packaging, performance, release, security, source, testing, and toolchain.
 
 #### Questions
 
@@ -227,19 +255,22 @@ The retained children are `go-concurrency` (preference), `go-conventions` (prefe
 
 #### Options
 
-- **Exact fourteen-child mixed-type family:** matches all accepted concerns and preserves ordinary skill types.
+- **Exact sixteen-child mixed-type family:** matches all accepted concerns, satisfies checklist atomicity and breadth, and preserves ordinary skill types.
+- **Former fourteen-child family:** keeps written form together but requires 72 atomic rows in one 55-row source.
 - **Merge specialized operations into development:** fewer files but no independent result or checklist ownership.
 - **Split mechanisms into more children:** finer loading but exceeds the approved family and fragments related results.
 
 #### Done When
 
-All fourteen names, types, triggers, results, and claim owners are exact, direct, and globally namespaced.
+All sixteen names, types, triggers, results or judgments, and claim owners are exact, direct, globally namespaced, and in
+the accepted stable order. The written-form sources total `47 + 17 + 8 = 72` rows without dropping or bundling
+a condition.
 
 ### Composition and Reopen Tests
 
 > **Purpose:** Decide how siblings compose and what evidence invalidates the partition.<br>
 > **Parent:** `Family Topology and Routing`<br>
-> **Depends On:** Fourteen-Child Ownership Map.<br>
+> **Depends On:** Sixteen-Child Ownership Map.<br>
 > **Requirements:** One Semantic Owner and Acyclic Composition; Preserve Proven Existing Contracts.<br>
 > **Sources:** Domain Skill standard; current Go family composition; TypeScript Development.
 
@@ -270,7 +301,7 @@ execute the exact authorized tag/ref contract without broader mutation or an inv
 
 > **Purpose:** Decide where the Go family stops and which neighboring owner receives excluded work.<br>
 > **Parent:** `Family Topology and Routing`<br>
-> **Depends On:** Fourteen-Child Ownership Map.<br>
+> **Depends On:** Sixteen-Child Ownership Map.<br>
 > **Requirements:** Complete Independent Lifecycle Coverage; Exact Operational Results, Blocks, and Handoffs.<br>
 > **Sources:** Current Go Modules boundary; Web Deployment; Electron Release; user scope decision.
 
@@ -376,7 +407,7 @@ changed context reopens it. Development and architecture Procedures and checklis
 
 > **Purpose:** Define the supported modes and permitted effects for all ten operations.<br>
 > **Parent:** `Operation Boundaries and Lifecycle`<br>
-> **Depends On:** Development and Design Authority; Fourteen-Child Ownership Map.<br>
+> **Depends On:** Development and Design Authority; Sixteen-Child Ownership Map.<br>
 > **Requirements:** Exact Operational Results, Blocks, and Handoffs; One Semantic Owner and Acyclic Composition.<br>
 > **Sources:** Current Go operations and toolchain side-effect classes; adjacent security, observability, packaging, and release operations; user-approved effect boundaries; accepted GOIDEA-R4-01 strict-boundary correction.
 
@@ -458,7 +489,7 @@ Each operation's inputs, result, alternatives, failure, evidence, recovery, code
 
 > **Purpose:** Decide the boundary among modules, local executable artifacts, and external publication.<br>
 > **Parent:** `Operation Boundaries and Lifecycle`<br>
-> **Depends On:** Fourteen-Child Ownership Map; Non-goals and External Owners.<br>
+> **Depends On:** Sixteen-Child Ownership Map; Non-goals and External Owners.<br>
 > **Requirements:** Complete Independent Lifecycle Coverage; One Semantic Owner and Acyclic Composition; Exact Operational Results, Blocks, and Handoffs.<br>
 > **Sources:** Go module release workflow; Go command reference; module layout; TypeScript Packaging; Electron Release; canonical Git operation and conventions.
 
@@ -664,8 +695,9 @@ observability verification records its distinct authorized test-destination effe
 
 ### Context
 
-The current seven checklists establish a useful sibling-composition rule. The expansion adds seven owners and
-must repair compound conditions without turning one checklist into a duplicate of another.
+The current seven checklists establish a useful sibling-composition rule. The complete topology adds nine
+direct owners. The written-form audit proves the former single conventions source needs 72 atomic conditions,
+so three owners must preserve those conditions without turning one checklist into a duplicate of another.
 
 ### Questions
 
@@ -680,13 +712,14 @@ must repair compound conditions without turning one checklist into a duplicate o
 
 ### Done When
 
-Every child owns one source, every active sibling source applies, and checklist overlap remains below the reopen threshold.
+Every child owns one source, every active sibling source applies, and checklist overlap remains below the
+reopen threshold. The written-form allocation is `GOCNV` 47, `GOSRC` 17, and `GODOC` 8.
 
 ### Checklist Ownership and Composition
 
 > **Purpose:** Decide checklist subjects, coverage obligations, and sibling reuse.<br>
 > **Parent:** `Evaluation Assurance`<br>
-> **Depends On:** Fourteen-Child Ownership Map; Blocked Results and Handoffs.<br>
+> **Depends On:** Sixteen-Child Ownership Map; Blocked Results and Handoffs.<br>
 > **Requirements:** Atomic and Traceable Evaluation Sources; One Semantic Owner and Acyclic Composition.<br>
 > **Sources:** Evaluation Checklist operation; current Go checklists.
 
@@ -719,6 +752,11 @@ or the exact prerequisite, retained state, first recovery action, and handoff. T
 traces exact read or verification authority, protected scope and destination, ephemeral delivery, redaction,
 declared cache state, non-persistence, and forbidden publication. The observability source keeps change-mode
 prohibitions separate from authorized test-destination diagnostic-send verification.
+The written-form allocation preserves all 52 committed rows, replaces the one compound dot-import row with
+two atomic source rows, and adds the 19 independently uncovered states. The generator input row receives only
+the wording repair `Every input that determines a generated change has declared ownership`; it does not add a
+row. Moved rows receive `GOSRC` or `GODOC` IDs, retired `GOCNV` IDs are not reused, and `Also applies` remains
+valid only inside one source.
 
 ### Atomicity and Cosmetic Compliance
 
@@ -750,12 +788,15 @@ meeting the owned result.
 Every row states one binary condition; varying subjects or objects may share a row only when the residual verb
 phrase names one required state. Scenarios cover normal, boundary, blocked, poor-quality, rule-violation, and
 adversarial cases when material. Superficially compliant but substantively broken work fails at least one row.
+For the fixed written-form corpus, `52 - 1 + 2 + 19 = 72`; a single source would exceed the 55-row cap by 17.
+The accepted split is `47 + 17 + 8 = 72`. Raising the cap, dropping conditions, or keeping compound rows is
+not an admissible repair.
 
 ## Dependencies
 
 | Topic | Related Topic | Effect | Resolve When |
 |---|---|---|---|
-| Family Topology and Routing > Fourteen-Child Ownership Map | Operation Boundaries and Lifecycle | Operation results cannot be assigned before the exact children and types are fixed | Every child has one type and independent result |
+| Family Topology and Routing > Sixteen-Child Ownership Map | Operation Boundaries and Lifecycle | Operation results cannot be assigned before the exact children and types are fixed | Every child has one type and independent result or judgment |
 | Family Topology and Routing > Composition and Reopen Tests | Evaluation Assurance | Checklist overlap and ordinary routing load are evidence about the partition | Reopen thresholds are explicit and checkable |
 | Family Topology and Routing > Non-goals and External Owners | Operation Boundaries and Lifecycle > Packaging and Release Separation | Deployment, bounded Git tag/ref execution, and publication authority determine where packaging and release stop | Local artifact, Go-domain release, Git executor, and non-Git external-action boundaries are distinct |
 | Operation Boundaries and Lifecycle > Development and Design Authority | Operation Boundaries and Lifecycle > Operation Modes and Permitted Effects | Material design gates must run before an author mode makes a design-dependent write | The classifier distinguishes material choices from routine mechanics and stale prior decisions |
@@ -771,7 +812,7 @@ adversarial cases when material. Superficially compliant but substantively broke
 | Concern | Applies | Topic | Basis |
 |---|---|---|---|
 | Actors | Applicable | Family Topology and Routing; Development and Design Authority; Packaging and Release Separation | Agents, users, consumers, maintainers, evaluators, the manager, the release operation that supplies the caller-neutral Git contract, the Git operation and conventions owner, private-module credential and destination owners, and named external-action owners have distinct authority and results |
-| Boundaries and interfaces | Applicable | Fourteen-Child Ownership Map; Packaging and Release Separation | Root routes, child results, sibling handoffs, artifacts, and external authority are the design's main boundaries |
+| Boundaries and interfaces | Applicable | Sixteen-Child Ownership Map; Packaging and Release Separation | Root routes, child results and judgments, sibling handoffs, artifacts, and external authority are the design's main boundaries |
 | State and data | Applicable | Blocked Results and Handoffs | Skill sources, checklist sources, artifact identities, evidence records, and terminal states are durable information; product runtime data is outside this design |
 | Resource use | Applicable | Composition and Reopen Tests; Diagnostic and Specialized Change Operations | Selective loading, tool effects, profiles, traces, logs, metrics, crash output, and artifact storage have resource effects |
 | Failure and recovery | Applicable | Diagnostic and Specialized Change Operations; Blocked Results and Handoffs; Packaging and Release Separation | Diagnosis gaps, failed checks, release verification, and recovery require explicit terminal paths |

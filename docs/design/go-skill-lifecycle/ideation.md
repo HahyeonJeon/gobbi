@@ -24,8 +24,9 @@ publication without complete Go owners. Its root also contains traced-service po
 root must own navigation only. Current procedure exits and checklist rows do not consistently expose all
 blocked-result and handoff facts, and some checklist rows join conditions that can pass independently.
 
-The selected direction is a policy-free `go` root with exactly fourteen direct children. The existing three
-preferences, three operations, and one tool remain. Seven operations are added: `go-architecture`,
+The selected direction is a policy-free `go` root with exactly sixteen direct children. The existing coverage
+remains, `go-conventions` narrows, and `go-source` and `go-documentation` become direct preferences. The family
+therefore has five preferences, ten operations, and one tool. Seven operations are added: `go-architecture`,
 `go-debugging`, `go-security`, `go-observability`, `go-performance`, `go-packaging`, and `go-release`. Routing
 is outcome-led and may load several children; it imposes no mandatory stage chain. Each material claim has one
 semantic owner.
@@ -33,17 +34,24 @@ semantic owner.
 The decisive evidence is the project's domain and ordinary skill standards, the current Go sources and
 checklists, adjacent TypeScript, Web, and Electron patterns, and official Go documentation for security,
 diagnostics, profile-guided optimization, modules, the `go` command, toolchain selection, testing, structured
-logging, and runtime crash information. The main trade-off is maintenance: fourteen skills and checklists cost
+logging, and runtime crash information. The main trade-off is maintenance: sixteen skills and checklists cost
 more to keep current, but they give each concern an independent result, selective route, and evaluation owner.
 
-The final scope covers the root, all fourteen children, a checklist for each child, the naming-register touch
-that admits `debugging` and `performance` as free capability words, and only the canonical Git operation and
-conventions changes needed for one caller-neutral authorized release tag/ref executor lifecycle. `go-release`
+The final scope covers the root, all sixteen children, a checklist for each child, and the naming-register
+touch that admits `debugging` and `performance`, revises reserved `conventions`, and reserves `source` and
+`documentation`. It also covers only the canonical Git operation and conventions changes needed for one
+caller-neutral authorized release tag/ref executor lifecycle. `go-release`
 builds and supplies that Git-owned contract in the only skill-reference direction; Git references no outside
 skill. It excludes generic
 deployment, containers, operating-system packaging, installation orchestration, service rollout, data
 migration, environment configuration, traffic promotion, and live-health ownership. Durable guidance does not
 freeze a Go release, require third-party tools, or depend on a project-jargon glossary.
+
+The split is evidence-bound. The committed conventions checklist has 52 rows. One compound dot-import row
+splits into two, 19 independently uncovered states require 19 additions, and a multi-input generator row needs
+wording-only repair. The atomic minimum is `52 - 1 + 2 + 19 = 72`, 17 above the 55-row source cap. The accepted
+allocation is `GOCNV` 47, `GOSRC` 17, and `GODOC` 8. It changes no operation result: all ten operation results
+and all twenty-one operation-mode rows remain intact.
 
 ## Requirements
 
@@ -57,7 +65,7 @@ freeze a Go release, require third-party tools, or depend on a project-jargon gl
 
 The current [`go` root](../../../.gobbi/projects/gobbi/skills/go/SKILL.md) routes concurrency, conventions,
 design, development, modules, testing, and toolchain guidance. The current children preserve valuable Go
-practice. Six findings define the supported problem:
+practice. Seven findings define the supported problem:
 
 - **GOSK-01:** security, standalone observability and crash capture, and profiling-led performance need Go owners and routes.
 - **GOSK-02:** executable or archive packaging must be distinct from Go-domain release classification, release compatibility analysis, exact version and tag decisions, readiness evidence, action specification, manager-granted authority, Git tag/ref or Git publication execution, named non-Git destination execution, post-action and external-consumer verification, and recovery semantics.
@@ -65,6 +73,7 @@ practice. Six findings define the supported problem:
 - **GOSK-04:** procedures and checklists must trace all blocked-result and handoff fields.
 - **GOSK-05:** durable claims must use exact mainstream Go vocabulary.
 - **GOSK-06:** checklist rows must not combine independently answerable verb phrases.
+- **GOSK-07:** the committed 52-row conventions source has one compound row and 19 independently uncovered states; its atomic minimum is 72, so the former fourteen-child partition exceeds the governing source cap by 17.
 
 With no change, agents will continue to improvise uncovered Go concerns or overload nearby skills. A partial
 pass can hide an unfinished operation, and different agents can interpret the same generic term as different
@@ -104,14 +113,14 @@ outside-skill reference.
 > **Statement:** The Go entry routes every supported task to all and only its applicable children and owns no Go policy or procedure.<br>
 > **Affected actors:** Acting agent; skill maintainer.<br>
 > **Basis:** Domain Skill standard and GOSK-01.<br>
-> **Observable result:** The root has only domain frontmatter, a short orientation, and fourteen exact routing rows in the literal schema `Child skill | Type | Load when`; every trigger is copied byte for byte from its child, no owned-result column is emitted, it may load several children, and it defines no mandatory stage chain.
+> **Observable result:** The root has only domain frontmatter, a short orientation, and sixteen exact routing rows in the literal schema `Child skill | Type | Load when`; every trigger is copied byte for byte from its child, no owned-result column is emitted, it may load several children, and it defines no mandatory stage chain.
 
 #### Complete Independent Lifecycle Coverage
 
-> **Statement:** Each approved Go concern has one independently loadable result owner.<br>
+> **Statement:** Each approved Go concern has one independently loadable result or judgment owner.<br>
 > **Affected actors:** Acting agent; Go consumer; skill maintainer.<br>
-> **Basis:** GOSK-01, GOSK-02, and the user-selected family.<br>
-> **Observable result:** Exactly fourteen direct children can each state a recognizable result without sibling prose repairing the contract.
+> **Basis:** GOSK-01, GOSK-02, GOSK-07, and the user-selected family.<br>
+> **Observable result:** Exactly sixteen direct children can each state a recognizable result or judgment without sibling prose repairing the contract.
 
 #### One Semantic Owner and Acyclic Composition
 
@@ -156,17 +165,20 @@ outside-skill reference.
 > **Statement:** Expansion retains existing Go strengths unless the accepted ownership map expressly moves a claim.<br>
 > **Affected actors:** Existing family consumers; maintainer; evaluator.<br>
 > **Basis:** Current Go skills and checklists.<br>
-> **Observable result:** Concurrency, written-form, caller-led design, four-phase development, module consumer, workspace and private-module authenticated-read support, testing evidence, and toolchain side-effect contracts remain available and coherent. Module authenticated reads require exact current manager authority, named private scope and destination inputs, ephemeral credential handling, redacted evidence, and no external mutation.
+> **Observable result:** Concurrency, written-form, caller-led design, four-phase development, module consumer, workspace and private-module authenticated-read support, testing evidence, and toolchain side-effect contracts remain available and coherent. Written form is preserved through `go-conventions` for project-overridable naming and error text, `go-source` for source-file organization, formatter layout, import form, and generated provenance, and `go-documentation` for public documentation and implementation comments. Module authenticated reads require exact current manager authority, named private scope and destination inputs, ephemeral credential handling, redacted evidence, and no external mutation.
 
 ### Scope
 
 | Item | Status | Reason |
 |---|---|---|
-| `go` and all fourteen named children | Included | They are the complete accepted family |
-| One checklist per child | Included | Each independently loadable concern needs reusable evaluation conditions |
+| `go` and all sixteen named children | Included | They are the complete accepted family |
+| `go-conventions` preference | Included | Retain and narrow it to governance, naming, and error text with 47 `GOCNV` rows |
+| `go-documentation` preference | Included | Add public documentation and implementation-comment judgment with 8 `GODOC` rows |
+| `go-source` preference | Included | Add source organization, formatter layout, import form, and generated provenance judgment with 17 `GOSRC` rows |
+| One checklist per child | Included | Each independently loadable concern needs reusable evaluation conditions; written-form allocation is `47 + 17 + 8 = 72` |
 | [`git/SKILL.md`](../../../.gobbi/projects/gobbi/skills/git/SKILL.md) | Included, bounded consistency touch | Add only a caller-neutral authorized release tag/ref executor lifecycle that consumes a caller-supplied action specification and current manager authority, rejects conflicts, performs the exact local mutation and non-force publication, verifies local and remote state, retains recoverable partial state, returns exact handoff evidence, and references no outside skill |
 | [`git/conventions.md`](../../../.gobbi/projects/gobbi/skills/git/conventions.md) | Included, bounded consistency touch | Define caller-neutral deterministic action-specification and result fields while keeping tag form, signing or annotation, repository, and remote as caller-supplied project-policy inputs and referencing no outside skill |
-| [`skill-writing/domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) | Included | Admit the free capability words `debugging` and `performance` under the naming register's same-change rule; official Go Diagnostics and PGO or performance material support the selected names |
+| [`skill-writing/domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) | Included | Admit `debugging` and `performance`, revise reserved `conventions`, and reserve `source` and `documentation` with the accepted singular meanings in the same change |
 | Other outside-Go edits | Excluded | Only the included naming-register admission, bounded Git operation/conventions consistency touch, and exact naming or routing consistency co-touches are authorized |
 | Generic deployment, containers, operating-system packaging, installation orchestration, service rollout | Excluded | They have different platform, authority, artifact, and recovery owners |
 | Data migration, environment configuration, traffic promotion, live-health ownership | Excluded | They belong to service, product, configuration, deployment, or operational owners |
@@ -178,11 +190,12 @@ outside-skill reference.
 
 | Question | Resolution | Effect |
 |---|---|---|
-| Which family size and shape? | Exactly fourteen direct children under a policy-free root | Fixes the topology and maintenance trade-off |
+| Which family size and shape? | Exactly sixteen direct children under a policy-free root | Reopens and supersedes the former fourteen-child topology after the checklist audit |
+| How is written form split? | Retain `go-conventions`; add `go-source` and `go-documentation`, all as preferences | Fixes singular ownership, triggers, and checklist prefixes |
 | Which operations stop before code or publication? | Mixed result boundaries | Fixes composition and authority |
 | Who confirms design? | The user confirms every material design choice unless a cited prior decision resolves the same decision with matching affected context and assumptions | Strengthens development and architecture contracts |
 | How are checklists owned? | One per child; all active sibling sources apply | Fixes evaluation composition |
-| Are later design questions open? | No | The design is ready for validation and later planning without guessing |
+| Are later design questions open? | No | The revised design is ready for validation and later planning without guessing |
 
 ## Study
 
@@ -190,9 +203,10 @@ outside-skill reference.
 
 | Source | Location | Assessment | License | Lesson |
 |---|---|---|---|---|
-| Current Go family | [`go/`](../../../.gobbi/projects/gobbi/skills/go/) | Canonical at base `df18ccda`; direct evidence | Same project | Preserve seven strong owners, checklists, module consumer checks, and authorized authenticated private-module reads; close root policy, lifecycle, handoff, vocabulary, and atomicity gaps |
-| Skill Writing and type standards | [`skill-writing/`](../../../.gobbi/projects/gobbi/skills/skill-writing/) | Governing current standards | Same project | Use a policy-free root whose literal table is exactly `Child skill \| Type \| Load when`, copies triggers byte for byte, and emits no result column; keep the richer child/result table as design inventory; use self-contained operation, preference, and tool children; admit new free capability words in the same change |
+| Current Go family | [`go/`](../../../.gobbi/projects/gobbi/skills/go/) | Canonical at base `df18ccda`, with the committed conventions revision at `7b668cef`; direct evidence | Same project | Preserve all current coverage, checklists, module consumer checks, and authorized authenticated private-module reads; close root policy, lifecycle, handoff, vocabulary, and atomicity gaps |
+| Skill Writing and type standards | [`skill-writing/`](../../../.gobbi/projects/gobbi/skills/skill-writing/) | Governing current standards | Same project | Use a policy-free root whose literal table is exactly `Child skill \| Type \| Load when`, copies triggers byte for byte, and emits no result column; keep the richer child/result table as design inventory; use self-contained operation, preference, and tool children; update every affected free and reserved capability word in the same change |
 | Evaluation Checklist operation | [`evaluation/checklist/SKILL.md`](../../../.gobbi/projects/gobbi/skills/evaluation/checklist/SKILL.md) | Governing current checklist standard | Same project | Use eight perspectives, literal scenario classes, stable IDs, caps, traceability, atomicity, and cosmetic-compliance pilots |
+| Committed Go Conventions checklist | [`go-conventions/checklists.md`](../../../.gobbi/projects/gobbi/skills/go/go-conventions/checklists.md) | Current committed source at `7b668cef`; direct evidence | Same project | Its 52 rows, one compound dot-import row, 19 independently uncovered states, and wording-only generator repair prove an atomic minimum of 72 and invalidate one conventions owner |
 | TypeScript family | [`typescript/`](../../../.gobbi/projects/gobbi/skills/typescript/) | Maintained adjacent family | Same project | General development composes with specialized operations; local artifacts can precede publication |
 | Web family | [`web/`](../../../.gobbi/projects/gobbi/skills/web/) | Maintained adjacent family with different runtime | Same project | Security and observability may own complete verified concern changes |
 | Electron Release | [`electron-release/SKILL.md`](../../../.gobbi/projects/gobbi/skills/electron/electron-release/SKILL.md) | Maintained authority and recovery prior art | Same project | Bind the release result to exact artifacts, action specification, returned executor evidence, post-action verification, and recovery semantics while manager and effect executors retain authority |
@@ -246,13 +260,26 @@ destination-executor route. `go-release` alone selects and coordinates release e
 and supplies the Git-owned caller-neutral action specification, and references and calls Git. This correction
 adds no new design decision and preserves the accepted one-way dependency.
 
+The completed conventions audit reopens the earliest affected topology decision. The committed source has 52
+rows; one dot-import condition is compound; 19 independently uncovered states remain; and the generator input
+condition needs only a wording repair. Atomic coverage is `52 - 1 + 2 + 19 = 72`, which exceeds the 55-row
+source cap by 17. The user accepted three preference capabilities: retain and narrow `go-conventions`, add
+`go-source`, and add `go-documentation`. The fixed allocation is `47 + 17 + 8 = 72`. This invalidates only the
+former fourteen-child/one-conventions-owner design. All ten operation results, the operation contract table,
+and all twenty-one mode rows remain unchanged.
+
+Downstream shaping based on fourteen children is stale. Later planning must derive sixteen root rows, two new
+preference artifact pairs, the three checklist-prefix allocations, moved-row ID handling, trigger routes, and
+dependencies from this revised authoritative design before execution. This records consequences only; it does
+not order implementation work or create hidden Planning tasks.
+
 ## Topics
 
 ```text
 Complete, selectively loaded Go guidance from design through authorized release
 ├── Family Topology and Routing
 │   ├── Root Navigation Contract
-│   ├── Fourteen-Child Ownership Map
+│   ├── Sixteen-Child Ownership Map
 │   ├── Composition and Reopen Tests
 │   └── Non-goals and External Owners
 ├── Operation Boundaries and Lifecycle
@@ -274,34 +301,38 @@ Complete, selectively loaded Go guidance from design through authorized release
 ### Family Topology and Routing
 
 > **Question:** Which family shape provides complete ownership and selective loading?<br>
-> **Decision:** Use a policy-free root and exactly fourteen direct children with outcome-led multi-select routing.<br>
+> **Decision:** Use a policy-free root and exactly sixteen direct children with outcome-led multi-select routing.<br>
 > **Status:** `Resolved`<br>
 > **Requirement connection:** Selective Navigation Without Root Policy; Complete Independent Lifecycle Coverage; One Semantic Owner and Acyclic Composition.<br>
 > **Source basis:** Domain Skill standard; current Go family; TypeScript and Web roots; user decision.
 
 #### Context
 
-Seven current children are valuable, but seven concerns lack independent owners. The root must route rather than decide.
+Seven current children are valuable, but seven operation concerns lack independent owners and the one current
+written-form child cannot hold its complete atomic checklist. The root must route rather than decide.
 
 #### Options
 
 | Option | Pros | Cons | Fit | Risks |
 |---|---|---|---|---|
-| Fourteen direct children | Independent results, selective loads, exact checklist owners | More maintenance | Best | Child overlap if boundaries drift |
+| Sixteen direct children | Independent results and judgments, selective loads, exact checklist owners | More maintenance | Best | Child overlap if boundaries drift |
+| Former fourteen direct children | Fewer files | One conventions source needs 72 rows under a 55-row cap | Poor | Dropped or compound conditions |
 | Broaden current seven | Fewer files | Mixed results and uncovered routes remain | Poor | Repeated policy and incomplete evaluation |
 | A few lifecycle operations | Small root table | Normal work loads irrelevant policy | Poor | Mandatory stage chain |
 
 #### Decision
 
-The user selected the fourteen-child family. It best satisfies the domain standard and all six findings.
+The user selected the sixteen-child family after the checklist audit invalidated the prior selection. It best
+satisfies the domain and checklist standards and all seven findings.
 
 #### Rejected Options
 
-Broader existing children and a small lifecycle set cannot preserve independent results and selective loading.
+The former fourteen-child family, broader existing children, and a small lifecycle set cannot preserve
+independent results or judgments, atomic checklist coverage, and selective loading.
 
 #### Consequences
 
-The root doubles its routing rows. Each child must justify its independent result and checklist.
+The root grows to sixteen routing rows. Each child must justify its independent result or judgment and checklist.
 
 #### Reopen When
 
@@ -337,32 +368,50 @@ triggers byte for byte. The richer child/type/trigger/result table belongs only 
 
 **Reopen when:** A supported task selects no child or root prose makes a Go judgment.
 
-#### Fourteen-Child Ownership Map
+#### Sixteen-Child Ownership Map
 
 > **Question:** Which children and types make the family complete?<br>
-> **Decision:** Retain the current seven types and add seven operations.<br>
+> **Decision:** Retain all current coverage, narrow `go-conventions`, add `go-documentation` and `go-source` as preferences, and add seven operations.<br>
 > **Status:** `Resolved`<br>
 > **Requirement connection:** Complete Independent Lifecycle Coverage; One Semantic Owner and Acyclic Composition.<br>
 > **Source basis:** Current family; type-writing standards; official Go sources; user decision.
 
-**Context:** Each added concern has an ordered independent result rather than only judgment or named-tool lookup.
+**Context:** Each added operation concern has an ordered independent result. Source form and documentation are
+independent preference judgments whose atomic conditions do not fit the same source as naming and error text.
 
 **Options:**
 
 | Option | Pros | Cons | Fit | Risks |
 |---|---|---|---|---|
-| Exact fourteen mixed-type children | Complete and selective | More files | Best | Boundary drift |
+| Exact sixteen mixed-type children | Complete, selective, and within checklist breadth caps | More files | Best | Boundary drift |
+| Former fourteen mixed-type children | Fewer files | Written form exceeds one source by 17 rows | Poor | False atomicity or lost coverage |
 | Merge additions into development | Fewer files | No independent result | Poor | One oversized checklist |
 | Add smaller mechanism children | Fine-grained | Fragmented results | Poor | Excess routing |
 
 **Decision:** Add `go-architecture`, `go-debugging`, `go-security`, `go-observability`, `go-performance`,
-`go-packaging`, and `go-release` as operations.
+`go-packaging`, and `go-release` as operations. Retain `go-conventions` as a preference and narrow it to
+governance, naming, and error text. Add `go-documentation` and `go-source` as preferences.
 
-**Rejected options:** Merge or further split.
+**Rejected options:** Merge operations, keep the former one-owner written-form partition, raise the checklist
+cap, drop conditions, or retain compound rows.
 
-**Consequences:** The emitted root contains fourteen stable-name-ordered three-column rows and the family
+**Consequences:** The emitted root contains sixteen stable-name-ordered three-column rows and the family
 retains at least one preference, operation, and tool. The richer ownership result remains in the design
 inventory, not the emitted root.
+
+The stable order is architecture, concurrency, conventions, debugging, design, development, documentation,
+modules, observability, packaging, performance, release, security, source, testing, and toolchain.
+
+The Naming Standard register changes in the same design. These meanings are exact:
+
+| Reserved word | Fixed meaning |
+|---|---|
+| `conventions` | The project-overridable naming and error-text preference, including authority and departure boundaries for written-form choices. |
+| `source` | The source-file organization, formatter layout, import-form, and generated provenance preference. |
+| `documentation` | The public documentation and implementation-comment preference. |
+
+This meaning revision does not declare another existing project name incorrect. It binds the current
+substantive `go-conventions` revision and every capability named or renamed later.
 
 The same design change updates the free-word register in
 [`domain-skill.md`](../../../.gobbi/projects/gobbi/skills/skill-writing/domain-skill.md) to admit `debugging` and
@@ -742,7 +791,7 @@ risk, recovery, and next owner, plus concern-specific facts.
 
 ### Evaluation Assurance
 
-> **Question:** How does evaluation remain independent and composable across fourteen children?<br>
+> **Question:** How does evaluation remain independent and composable across sixteen children?<br>
 > **Decision:** One checklist per child; apply every active sibling checklist.<br>
 > **Status:** `Resolved`<br>
 > **Requirement connection:** Atomic and Traceable Evaluation Sources; Preserve Proven Existing Contracts.<br>
@@ -750,7 +799,7 @@ risk, recovery, and next owner, plus concern-specific facts.
 
 #### Context
 
-Independent child results need independent sources, while combined work needs combined coverage.
+Independent child results and judgments need independent sources, while combined work needs combined coverage.
 
 #### Options
 
@@ -762,8 +811,9 @@ Independent child results need independent sources, while combined work needs co
 
 #### Decision
 
-Use fourteen child-owned sources. Reuse a row only between scenarios in the same source; Evaluation applies
-each active sibling source separately.
+Use sixteen child-owned sources. Reuse a row only between scenarios in the same source; Evaluation applies
+each active sibling source separately. Written-form coverage is allocated as `GOCNV` 47, `GOSRC` 17, and
+`GODOC` 8.
 
 #### Rejected Options
 
@@ -771,7 +821,8 @@ Family-wide or operation-only checklists.
 
 #### Consequences
 
-Every child contract, terminal result, and active sibling concern receives reusable conditions.
+Every child contract and every operation terminal result receives reusable conditions; every active sibling
+concern receives its own source.
 
 #### Reopen When
 
@@ -879,16 +930,18 @@ result column records design ownership only and is omitted from emitted `go/SKIL
 |---|---|---|---|
 | `go-architecture` | operation | MUST load when designing or reviewing the architecture of a Go application, service, command, library, or multi-package system, including package boundaries, dependency direction, process boundaries, configuration ownership, data flow, failure containment, or validation strategy. | Confirmed project or multi-package design and validation plan |
 | `go-concurrency` | preference | MUST load when working with goroutines, channels, context.Context, sync, atomics, timers, concurrent ownership, cancellation, shutdown, backpressure, or race safety. | Concurrent ownership, lifetime, synchronization, bounds, and race-safety judgment |
-| `go-conventions` | preference | MUST load when choosing or reviewing Go names, files, packages, imports, documentation, comments, error text, or formatting. | Written-form judgment and project-overridable defaults |
+| `go-conventions` | preference | MUST load when choosing or reviewing Go package names, identifiers, receiver names, source file names, import aliases, error text, or project-wide written-form conventions. | Project-overridable naming and error-text judgment, including authority and departure boundaries for written-form choices |
 | `go-debugging` | operation | MUST load when reproducing, diagnosing, or isolating a Go failure, panic, deadlock, race symptom, leak, corruption, unexpected result, or tool diagnostic. | Reproduced root cause or bounded diagnostic plan |
 | `go-design` | preference | MUST load when designing or reviewing Go packages, public APIs or CLIs, functions, structs, methods, values and pointers, interfaces, errors, generics, mutable-data ownership, or ordinary resource lifetime. | Package name, import path, package directory or placement, package boundary, public API or CLI, type, error, ownership, and ordinary resource judgment |
 | `go-development` | operation | MUST load when implementing, changing, or reviewing Go code through study, design, bottom-up construction, and verification. | Verified general Go code change or read-only finding set |
+| `go-documentation` | preference | MUST load when writing or reviewing Go package comments, declaration comments, doc-comment links or headings, or implementation comments. | Public documentation and implementation-comment judgment |
 | `go-modules` | operation | MUST load when creating, changing, or validating a Go module, including its path, layout, go.mod, go.work, dependencies, tools, external-consumer validation, and compatibility analysis. | Coherent module path, graph, workspace, dependency and tool declarations, external-consumer validation, and module consumer compatibility analysis |
 | `go-observability` | operation | MUST load when designing, implementing, reviewing, or verifying logs, metrics, traces, trace-context propagation, crash capture, diagnostic redaction, correlation, or runtime health signals in Go software. | Verified Go diagnostic emission, correlation, redaction, and arrival result |
 | `go-packaging` | operation | MUST load when producing or validating Go binaries or archives, including the project default build command, named GOOS/GOARCH targets, metadata, checksums, reproducibility, and artifact smoke checks. | Verified local binaries or archives and exact artifact evidence |
 | `go-performance` | operation | MUST load when diagnosing or changing Go latency, throughput, allocation, memory retention, garbage collection, CPU use, contention, binary size, startup time, or profile-guided optimization. | Representative-profile diagnosis or verified performance change |
 | `go-release` | operation | MUST load when versioning, publishing, verifying, or recovering a Go module, binary, or archive release. | Go-domain release classification, release compatibility analysis, exact version and tag decision, readiness evidence, action specification, verified returned executor evidence, external-consumer verification, recovery semantics, and release result |
 | `go-security` | operation | MUST load when Go work crosses a trust boundary; handles untrusted input, identity, authorization, cryptography, secrets, sensitive data, dependencies, vulnerability findings, network exposure, or security review. | Verified security review or complete verified security change |
+| `go-source` | preference | MUST load when choosing or reviewing Go source file organization, canonical formatting, import grouping, blank or dot imports, or generated source provenance. | Source-file organization, formatter layout, import-form, and generated provenance judgment |
 | `go-testing` | operation | MUST load when designing, writing, reviewing, or executing Go tests, examples, fuzz targets, benchmarks, coverage checks, or race-detector evidence. | Focused repeatable evidence for a named behavior or risk |
 | `go-toolchain` | tool | MUST load when using or diagnosing the Go distribution, go command, compiler, formatter, vet, generators, build constraints, GOOS/GOARCH targets, or project-pinned Go tools. | Named-tool lookup, project command effect classification, exact package pattern and `GOOS/GOARCH` target facts, and tool diagnosis |
 
@@ -915,10 +968,11 @@ The semantic owner map is:
 |---|---|---|
 | Cross-package and application architecture process, confirmed design, and validation plan | `go-architecture` | Load `go-design`, `go-concurrency`, `go-modules`, `go-security`, `go-observability`, or `go-performance` for their own judgments when applicable |
 | Concurrent lifetime and synchronization judgment | `go-concurrency` | Development and specialized operations load it when concurrent behavior enters their result |
-| Written Go form and project-overridable language conventions | `go-conventions` | Every authoring operation loads it for names, docs, comments, imports, or formatting |
+| Project-overridable package, identifier, receiver, source-file, and import-alias naming plus error text, including authority and departure boundaries | `go-conventions` | Authoring operations load it only when naming, error text, or a project-wide written-form decision is in scope |
 | Failure reproduction, causal diagnosis, and bounded diagnostic plan | `go-debugging` | Route project command and tool behavior to `go-toolchain`, evidence design to `go-testing`, and accepted fixes to the applicable change operation |
 | Package name, import path, package directory or placement, package boundary, public API or CLI, type, error, ownership, and ordinary resource judgment | `go-design` | Architecture and development load it; it owns no ordered work |
 | General Go code-change construction and read-only code review | `go-development` | Load the specialized operation when security, observability, or performance motivates the change; general development uses no credentials and performs no external mutation, routes credentialed reads to the applicable specialist or tool owner under that owner's exact mode, and coordinates and consumes returned evidence from a named external-action owner or returns an exact block and handoff when its result depends on external action |
+| Package and declaration documentation, doc-comment links and headings, and implementation comments | `go-documentation` | Authoring operations load it when public documentation or implementation-comment judgment is in scope; it owns no naming, formatter, import, or generated-source policy |
 | Module path, layout, graph, `go` directive, workspace, dependencies, tools, exact public package paths and project commands, authorized authenticated reads for named private module or import-path scope and destination, external-consumer validation, module consumer compatibility analysis, and exact facts needed by release | `go-modules` | Route Go-domain release classification, release compatibility analysis, exact version and tag decisions, readiness evidence, action specification, post-action and external-consumer verification, recovery semantics, and release result to `go-release`; route binary/archive output to `go-packaging`; permit no module external mutation |
 | Log records, metrics, spans, trace propagation, crash reports, diagnostic redaction, correlation, and verified destination arrival | `go-observability` | Route general code construction to `go-development`, protected-data decisions to `go-security`, and project command behavior to `go-toolchain`; in change mode, credential use is none and external mutation is forbidden, so destination provisioning, configuration, or mutation routes to a named external-action owner, while verification keeps its distinct bounded test-destination authority |
 | Local binary or archive assembly, metadata, checksums, and smoke evidence | `go-packaging` | Return exact local artifact identity and readiness evidence to `go-release`; route project command syntax and effects to `go-toolchain`; do not reference or call Git and do not route directly to publication or non-Git destination executors |
@@ -926,6 +980,7 @@ The semantic owner map is:
 | Go-domain release classification, release compatibility analysis, exact version and tag decisions, readiness evidence, action specification, post-action and external-consumer verification, recovery semantics, and release result for modules, binaries, and archives | `go-release` | Consume module facts or packaging identities without rebuilding them; build, translate, and supply the Git-owned caller-neutral action specification; request current authority from the manager; reference and call the Git operation for the exact authorized release tag/ref mutation and non-force publication; coordinate each named external-action owner for its non-Git destination effect; verify returned results; route deployment beyond publication to external owners |
 | Authorized release tag/ref preflight, local mutation, non-force publication, local/remote verification, recoverable partial state, and exact handoff | Canonical Git operation and conventions | Consume a caller-supplied, caller-neutral action specification and current manager authority without choosing version or tag; use caller-supplied project tag-form, signing or annotation, repository, and remote inputs; return exact state to the caller; reference no outside skill |
 | Trust boundary, threat analysis, protected-data handling, dependency vulnerability decision, and verified security change | `go-security` | Route code construction to `go-development`, module graph edits to `go-modules`, and tool behavior to `go-toolchain`; bind any credentialed read or verification to separate exact authority and protected handling; route secret rotation and provider, policy, destination, or other external mutation to a named external-action owner; verify returned evidence without performing mutation or publication |
+| Source-file organization, canonical formatter layout, import grouping and blank or dot import form, and generated source provenance | `go-source` | Authoring operations load it when source form is in scope; exact formatter command behavior remains with `go-toolchain`, naming remains with `go-conventions`, and comments remain with `go-documentation` |
 | Test kind, observable test boundary or controllable dependency, cases, execution, and evidence interpretation | `go-testing` | Route production design gaps to `go-design` or `go-development` and project command effects to `go-toolchain` |
 | Go distribution and project-selected tool lookup, project command selection, side effects, diagnostics, build constraints, exact package pattern facts, and `GOOS/GOARCH` target facts | `go-toolchain` | Operations decide why and whether the tool runs |
 
@@ -1068,9 +1123,19 @@ resources, and panic. Its Preferences retain caller-led package design,
 useful zero values, consumer-defined interfaces, concrete returns, deliberate copying, ordinary error flow,
 and evidence-backed generics. It gains no Procedure.
 
+The three written-form children are preference skills with distinct choice spaces. `go-conventions` owns
+project authority and departure boundaries, package and identifier spelling, receiver names, source file
+names, import aliases, and error text. `go-source` owns source-file organization, formatter-produced layout,
+import grouping, blank and dot import form, and generated source provenance; `go-toolchain` still owns exact
+formatter command behavior and Go version or command evidence. `go-documentation` owns package comments,
+declaration comments, doc-comment links and headings, complete-sentence public docs, and implementation
+comments that preserve constraints, rationale, invariants, and trade-offs without narrating syntax. None gains
+a Procedure.
+
 #### Checklist design
 
-Every child owns one unchecked `checklists.md` source. Existing owner prefixes remain stable:
+Every child owns one unchecked `checklists.md` source. Existing owner prefixes remain stable, and the two new
+preferences receive new prefixes:
 
 | Child | Owner prefix |
 |---|---|
@@ -1080,12 +1145,14 @@ Every child owns one unchecked `checklists.md` source. Existing owner prefixes r
 | `go-debugging` | `GODBG` |
 | `go-design` | `GODSN` |
 | `go-development` | `GODEV` |
+| `go-documentation` | `GODOC` |
 | `go-modules` | `GOMOD` |
 | `go-observability` | `GOOBS` |
 | `go-packaging` | `GOPKG` |
 | `go-performance` | `GOPRF` |
 | `go-release` | `GOREL` |
 | `go-security` | `GOSEC` |
+| `go-source` | `GOSRC` |
 | `go-testing` | `GOTST` |
 | `go-toolchain` | `GOTCH` |
 
@@ -1100,6 +1167,29 @@ traced condition or joining different states. More than fifty-five atomic condit
 is too broad and reopens its ownership. Existing IDs remain only when the condition's meaning remains exact.
 A split compound row receives new IDs, every `Also applies` reference is updated, and a retired ID is not
 reused for a different condition.
+
+The written-form audit is fixed evidence, not a future estimate:
+
+- The committed `go-conventions` source has 52 rows.
+- `GOCNV-CK-RISK-01-02` is compound. Its material-clarity and preserved-symbol-provenance conditions become
+  two `GOSRC` rows, so one retired row becomes two new rows.
+- Nineteen independently uncovered states require nineteen additions: substantive convention-departure basis;
+  canonical formatting rejects retained hand alignment and private line-length schemes; lowercase `.go`
+  source filenames; established meaning for suffix, platform, and generated filenames; short content names
+  instead of arbitrary layer names; Go version and command evidence remain with `go-toolchain`; semantic
+  choices remain author-owned; names do not encode types; local names are concise for their scope; exceptional
+  package spelling follows the clearest local convention; public docs use complete sentences; doc-comment
+  links and headings add usable structure; implementation comments preserve constraints, rationale,
+  invariants, and trade-offs; implementation comments do not narrate syntax; receiver names are short;
+  receiver names derive from the type; import ordering matches the tool; each blank or dot import has a visible
+  reason; and blank imports stay in focused integration points while dot imports stay in narrow test scope.
+- `GOCNV-CK-CONSISTENCY-01-03` receives the wording-only repair `Every input that determines a generated
+  change has declared ownership`; its count does not change.
+- Valid `Also applies` reuse stays within one source. Moved rows receive new `GOSRC` or `GODOC` IDs, and
+  retired `GOCNV` IDs are not reused.
+- The arithmetic is `52 - 1 + 2 + 19 = 72`. One source would exceed the 55-row cap by 17. The accepted
+  distribution is `GOCNV` 47 (`18 governance + 26 naming + 3 error text`), `GOSRC` 17, and `GODOC` 8;
+  therefore `47 + 17 + 8 = 72`.
 
 Each row states one binary independently answerable condition. The author replaces only the varying subject
 or object with a placeholder and leaves every verb phrase. Rows merge only when the residual verb phrases name
@@ -1230,7 +1320,7 @@ the time of work and records the exact selected values in the operation evidence
 
 #### Normal routing and composition
 
-1. The acting agent loads `go` for any Go task and evaluates all fourteen triggers against the requested result.
+1. The acting agent loads `go` for any Go task and evaluates all sixteen triggers against the requested result.
 2. It loads every matching child. A general code change normally loads `go-development` plus applicable preferences, testing, and toolchain guidance. It does not load architecture, release, or another specialist without that trigger.
 3. Each child binds its result, authority, inputs, owned claims, applicable sibling routes, and evidence before action.
 4. Each viable design choice runs through the material classifier. A material choice pauses at compared reference-backed alternatives unless a cited prior decision resolves the same decision and its affected context and assumptions still match; changed context reopens it. A fully determined routine choice proceeds. Permission to write a caller-approved design artifact is checked separately.
@@ -1241,8 +1331,12 @@ This numbered behavior describes the designed runtime contract, not an implement
 
 #### Representative multi-child paths
 
-- A public API change at a named package import path loads `go-development`, `go-design`, `go-conventions`, `go-testing`, and
-  `go-toolchain`; it adds `go-modules` only when the module consumer contract changes.
+- A public API rename and documentation change at a named package import path loads `go-development`,
+  `go-design`, `go-conventions`, `go-documentation`, `go-testing`, and `go-toolchain`; it adds `go-modules`
+  only when the module consumer contract changes.
+- A formatter, import-grouping, blank-import, dot-import, or generated-provenance review loads `go-source` and
+  `go-toolchain`. It adds `go-conventions` only for a source filename, import alias, or project-wide convention,
+  and adds `go-documentation` only when a comment is in scope.
 - A deadlock diagnosis loads `go-debugging`, `go-concurrency`, `go-testing`, and `go-toolchain`; an accepted fix
   then adds `go-development`.
 - Adding trace propagation and crash capture to a Go service loads `go-observability`, `go-security`,
@@ -1302,8 +1396,8 @@ This numbered behavior describes the designed runtime contract, not an implement
 
 | Risk or Assumption | Impact | Evidence | Question | Method | Signals | Owner and Timing | Reopen When |
 |---|---|---|---|---|---|---|---|
-| Fourteen children may over-partition routine work | Agents load too many skills and lose selective value | Current seven-child baseline; domain selective-loading rule | Does ordinary Go work usually load a small relevant subset? | Future route walkthrough over representative package-boundary or public-API change, bug, module edit, security review, observability change, performance diagnosis, packaging, and release prompts | Pass: ordinary prompts select a bounded subset and every prompt selects at least one child; Fail: normal prompts select most children or any prompt selects none | Skill author and fresh evaluator before accepting family implementation | Normal work selects most children or a supported task selects none |
-| A proposed child may lack an independent result | Duplicate procedures and checklist ownership | Accepted boundary analysis | Can each child finish or block without sibling prose repairing it? | Future operation-state walkthrough for normal, alternative, blocked, and handoff paths | Pass: every child has one recognizable terminal result; Fail: a child ends only by invoking an undefined sibling result | Skill author during skeleton review; evaluator before acceptance | Any child cannot state independent completion |
+| Sixteen children may over-partition routine work | Agents load too many skills and lose selective value | Current seven-child baseline; domain selective-loading rule; accepted written-form split | Does ordinary Go work usually load a small relevant subset? | Future route walkthrough over representative package-boundary or public-API change, documentation, source-form, bug, module edit, security review, observability change, performance diagnosis, packaging, and release prompts | Pass: ordinary prompts select a bounded subset and every prompt selects at least one child; Fail: normal prompts select most children or any prompt selects none | Skill author and fresh evaluator before accepting family implementation | Normal work selects most children or a supported task selects none |
+| A proposed child may lack an independent result or judgment | Duplicate policy and checklist ownership | Accepted boundary analysis | Can each operation finish or block, and can each preference or tool state its judgment or lookup, without sibling prose repairing it? | Future type-specific walkthrough for normal, alternative, blocked, and handoff paths | Pass: every child has one recognizable result, judgment, or lookup; Fail: a child depends on an undefined sibling outcome | Skill author during skeleton review; evaluator before acceptance | Any child cannot state its independent boundary |
 | Current proven behavior may be lost during reconciliation | Existing users receive weaker guidance | Current seven skills and checklists | Does each preserved claim retain normative force and evidence? | Future semantic owner and before/after contract comparison, including all current checklist traces | Pass: every preserved claim maps to unchanged meaning or an accepted new owner; Fail: an obligation disappears, weakens, or duplicates | Skill author after each child revision; evaluator on final family | A preserved claim lacks an owner or changes without decision |
 | Material-decision confirmation may become cosmetic or excessive | Users either lose authority or face trivial questions | GOSK-03; Principles; accepted classifier | Are material decisions distinguished from routine execution choices and stale prior decisions? | Future scenario pilot across every classifier dimension, plus local syntax, formatting, a mechanically determined private name, same-context prior decisions, and changed-context prior decisions | Pass: every changed dimension pauses, fully determined mechanics proceed, same-context decisions are cited, and changed context reopens; Fail: a material choice is assumed or a routine choice pauses | Development and architecture authors before acceptance | Pilots cannot distinguish material, routine, current-prior, and stale-prior choices |
 | Specialized operations may duplicate development | Cyclic procedures and maintenance drift | TypeScript and Web prior art; semantic owner map | Does specialized code work load rather than restate general construction? | Future cross-reference and claim-owner audit | Pass: concern result stays specialized and general build steps have one owner; Fail: most development phases appear independently in a specialist | Skill author after each specialist; evaluator on full family | A specialist repeats most of development |
@@ -1311,10 +1405,11 @@ This numbered behavior describes the designed runtime contract, not an implement
 | Private-module support may leak credentials or lose authenticated validation | Existing private consumers become unverifiable or secret material enters durable state | Current Go Modules contract; accepted authenticated-read path | Do both module modes bind current authority, exact private scope and destination, ephemeral credential use, redacted evidence, no persistence, and no external mutation? | Future author/validation pilots for authorized success, missing authority, changed destination, failed authentication, cache partial state, and cosmetic authentication claims | Pass: authorized reads succeed or block with redacted recoverable evidence and no mutation or secret persistence; Fail: a credential is exposed or persisted, a destination changes without authority, external state mutates, or private support is silently dropped | Module and security authors; evaluator before acceptance | Either module mode cannot validate an authorized private dependency safely |
 | Packaging and release may blur authority | Local readiness could trigger unauthorized publication | GOSK-02; adjacent packaging and release prior art | Can every path keep module consumer compatibility analysis, local artifact production, release decisions and caller-neutral contract translation, manager authority, Git effects, and named non-Git destination effects distinct? | Future tabletop walkthrough for module-only, binary, failed publish, and withdrawal cases | Pass: exact inputs, release compatibility analysis, exact version/tag decision, action specification, caller-neutral Git translation and supply, manager authority, named executor, returned state, post-action verification, and recovery semantics are explicit; only `go-release` references Git. Fail: modules make a release decision, packaging publishes, any external mutation is assigned to `go-release`, release rebuilds an input, Git references an outside skill, or an executor acts without current authority | Module, packaging, and release authors; manager, Git operation, and named external-action contract owners; evaluator before acceptance | Reopen if evidence shows packaging and publication are one indivisible result, either responsibility moves to another durable owner, or the canonical Git operation cannot execute the exact authorized tag/ref contract without broader mutation or an invented project-policy input. |
 | Bounded Git tag/ref execution may broaden, depend outward, or become destructive | A release can violate Rule 4, overwrite a ref, publish the wrong object, or leave an unsafe partial state | Canonical Git operation and conventions; accepted R3 scope expansion and GOIDEA-R5-01 | Does the Git executor consume a caller-supplied, caller-neutral action specification and current authority, reference no outside skill, reject conflicts, mutate and publish only the named ref without force, verify local/remote identity, and retain exact recovery evidence? | Future Git contract trace and table-top pilots for caller identity, local conflict, remote conflict, changed target object, signing or annotation input, network failure after local tag creation, remote verification mismatch, and recovery without authority | Pass: every exact input and effect is bound, Git remains caller-neutral, conflicts stop before mutation, non-force state verifies, partial state is retained, and recovery mutation requires new authority; Fail: the executor names an outside skill, guesses a format or remote, forces, overwrites, deletes, rewrites, changes configuration, or hides partial state | Git operation and conventions author, release author, manager, then evaluator before acceptance | Planning or execution must invent a caller, tag/ref input, authority, effect, verification, or recovery field |
-| Selected capability names may be absent from the register | The root could violate the governing naming standard even when its routes are otherwise correct | Domain Skill same-change rule; official Go Diagnostics and PGO/performance material | Are `debugging` and `performance` admitted as free words in the same change and used with their authoritative Go meanings? | Future naming-register diff and root/child identity audit | Pass: both words appear once in the free register and every child identity and route agrees; Fail: either word is missing, overloaded, or changed only in a generated view | Domain-family author before child creation; evaluator before acceptance | Authoritative Go usage changes or a selected word collides with a reserved meaning |
+| Selected capability names or meanings may be absent from the register | The root could violate the governing naming standard even when its routes are otherwise correct | Domain Skill same-change rule; official Go Diagnostics and PGO/performance material; accepted written-form split | Are `debugging` and `performance` admitted as free words, and are `conventions`, `source`, and `documentation` reserved with their exact singular meanings in the same change? | Future naming-register diff and root/child identity audit | Pass: all five register changes appear once and every child identity, trigger, and owner agrees; Fail: a word is missing, overloaded, changed only in a generated view, or used for a sibling's meaning | Domain-family author before child creation; evaluator before acceptance | Authoritative Go usage changes or a selected word collides with a reserved meaning |
 | Vocabulary may remain ambiguous | Different agents record different facts | GOSK-05; official Go terminology | Does every package identity, package-pattern selector, version, command, target, compatibility, test, module, result, and owned object claim identify one fact and owner? | Future cold-reader terminology audit and search for package-pattern use outside project-command selection or evidence | Pass: design claims name package name/import path/directory or placement/boundary/API or CLI, command claims name the exact pattern passed, and every other claim is answerable without private context; Fail: a reader must infer an identity, selector, version, target, command, object, or owner | Maintainer after prose completion; evaluator before acceptance | One term still denotes distinct facts or an exact package pattern is used as a design or consumer identity |
+| Written-form checklist allocation may drift during realization | A moved or added condition can disappear, retain a stale ID, or recreate the oversized subject | Committed 52-row source; one compound row; 19 uncovered states; Checklist source cap | Does realization preserve the exact `47 + 17 + 8 = 72` allocation with singular owners? | Future source count, prefix, ID-retirement, row-meaning, and same-source `Also applies` audit | Pass: `GOCNV` has 47, `GOSRC` 17, and `GODOC` 8 atomic rows; the generator wording is repaired without count change; retired IDs are not reused. Fail: any count, owner, meaning, or reuse differs, or one source exceeds 55 | Three preference authors, then fresh evaluator | A traced obligation has no singular owner or atomic coverage changes the fixed total |
 | Checklist rows may hide partial failure | A checked row overstates completion | GOSK-06; current compound examples; Checklist operation | Is every row independently binary after placeholder substitution? | Future full-corpus residual-verb audit plus passing, failing, and cosmetic subject pilots | Pass: different required states have different rows and cosmetic subjects fail; Fail: a row can be both yes and no or form-only work passes | Checklist authors, then fresh evaluator | Any row has independent verb results or cosmetic compliance passes |
-| New checklist sources may exceed the breadth cap | A child is too broad or authors bundle conditions | Checklist fifty-five-row cap | Does each source remain complete and atomic within fifty-five rows? | Future trace matrix, fan-out merge, atomic split, and final count | Pass: all obligations trace within cap; Fail: more than fifty-five distinct conditions remain or a condition is dropped/bundled | Checklist author before preservation; evaluator before acceptance | Complete atomic coverage exceeds the cap |
+| New checklist sources may exceed the breadth cap | A child is too broad or authors bundle conditions | Checklist fifty-five-row cap; fixed written-form allocations | Does each source remain complete and atomic within fifty-five rows? | Future trace matrix, fan-out merge, atomic split, and final count | Pass: all obligations trace within cap, including fixed written-form counts of 47, 17, and 8; Fail: more than fifty-five distinct conditions remain or a condition is dropped/bundled | Checklist author before preservation; evaluator before acceptance | Complete atomic coverage exceeds the cap |
 | Official documentation may change | Durable mechanism claims become stale | Live official sources and no fixed release decision | Are version-sensitive facts read from current owners at use time? | Future link and claim verification against official documentation during authoring and later maintenance | Pass: live claims are cited and durable prose fixes no transient release; Fail: current version or unsupported project command is frozen | Skill author during implementation and maintainer on affected updates | Official owner changes a material mechanism or term |
 | External-source assessment may become incomplete | Planning reuses stale, inapplicable, or license-unclear material | Ideation templates; direct official license sources | Does every external source still state authority, relevance, currency, applicability, license, and separate reuse disposition? | Future study-table schema and link audit against the cited official source and licensing page | Pass: all six facts remain explicit and supported; Fail: one dimension is absent, inferred, or replaced by a paraphrase label | Ideation author when study changes; evaluator before acceptance | A source changes owner, material content, applicability, or license, or its assessment cannot be established |
 
@@ -1336,3 +1431,5 @@ the later skill-authoring and evaluation work.
 | Project-jargon glossary | Rejected | It makes each claim depend on private vocabulary | Use exact mainstream Go terms inline |
 | Mandatory stage chain | Rejected | It defeats selective routing and loads irrelevant concerns | Keep outcome-led multi-select routing |
 | Family-wide checklist | Rejected | It removes independent child ownership and exceeds one subject's breadth | Keep one checklist per child and combine active sources during Evaluation |
+| Former fourteen-child family with one written-form owner | Rejected | Atomic written-form coverage is 72 rows, 17 above the 55-row source cap | Use the accepted `go-conventions`, `go-source`, and `go-documentation` split |
+| Raise the checklist cap, drop conditions, or keep compound rows | Rejected | Each path hides subject breadth or weakens independent evaluation | Preserve all 72 atomic conditions across the `47 + 17 + 8` allocation |
