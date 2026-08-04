@@ -86,15 +86,18 @@ plan, task, receipt, or commit.
   Planning iteration.
 - Build the brief through the [Delegation](../../delegation/SKILL.md) skill and add the parent Workflow Step
   1.3 fields.
-- Resolve agent-to-agent:
-  - the complete task hierarchy;
-  - stable `task-NN-slug` identities;
-  - foundation-before-dependent order;
-  - one accountable role and output for every task;
-  - required skill loads;
-  - read-only parallel lanes and the one-writer order;
-  - verification and focused-commit requirements; and
+- Have the leader apply Planning, which owns:
+  - the complete fine-grained task hierarchy and exact leaf coverage;
+  - context-coherent combined task groups with stable `task-NN-slug` identities;
+  - exact combined leaf paths and each leaf's title, work, boundary, and output;
+  - why each group is combined, its coherent outcome, accepted design and decisions, repository context, and
+    execution purpose;
+  - dependencies, accountable roles, required skills and capabilities, group work, inputs, constraints,
+    writer/change boundaries, handoffs, verification, and applicable metadata; and
   - coverage of every Ideation obligation.
+- Workflow retains TODO expansion, evaluation, RECORD, iterations, actual writer scheduling, and commit
+  provenance. Translate the accepted task groups into those mechanics without changing their Planning
+  identities or contracts.
 - Use bounded study for unknown facts. Never invent new scope or turn a routine implementation choice into a
   user question.
 - Freeze the neutral Planning contract and retitle the active TODO to WORK only after the hierarchy,
@@ -106,18 +109,14 @@ plan, task, receipt, or commit.
   round over the same frozen Planning contract and immutable evidence. That operation owns each run's
   independence, freeze order, and validation.
 - Place the returned labeled content in the parent Workflow Step 1.2 package layout.
-- Let the active runtime leader synthesize the canonical candidate with:
-  - a complete hierarchy and dependency-valid order;
-  - stable task IDs;
-  - exact write and read-only lanes;
-  - required skills and roles;
-  - scope boundaries; and
-  - acceptance and verification for every task.
+- Let the active runtime leader synthesize the canonical `tasks.md` and `plan.md` candidates with Planning's
+  complete hierarchy, combined task groups, stable IDs, dependency-valid order, complete task details,
+  assigned roles, execution context, skills, boundaries, handoffs, and verification.
 - Render the complete WORK package at the parent-owned Planning path and read it directly against the parent
   Workflow Step 1.2 written contract: both system-labeled drafts, both cross-reviews, the synthesis, and the
   open decisions. No script enforces this; refuse the stage when one is missing or unlabeled.
-- Reread the canonical candidate and verify every Ideation obligation appears exactly once before activating
-  EVALUATION.
+- Reread both canonical candidates and verify every Ideation obligation appears in the hierarchy and every
+  hierarchy leaf maps to exactly one task group before activating EVALUATION.
 
 #### 1.4 Evaluate, record, and expand the task route
 
@@ -131,11 +130,11 @@ plan, task, receipt, or commit.
   verification result, accepted finding dispositions, and next or recovery state.
 - On iteration-1 REVISE, create Planning iteration 2 at DISCUSSION and continue immediately. On iteration-2
   FAIL, preserve the recoverable state and stop at the critical-blocker boundary without creating iteration 3.
-- On PASS, verify stable IDs, dependency order, scope coverage, and the absence of overlapping write-capable
-  tasks. Freeze `2-planning/outputs/{tasks.md,plan.md}`, keep both ignored and uncommitted, and prove the
-  tracked tree unchanged.
-- Replace the pending `unplanned` placeholder with the first plan task and add the remaining task items in plan
-  order. Start each item as:
+- On PASS, verify Planning's six closure invariants and the absence of overlapping write-capable task groups.
+  Freeze the jointly accepted `2-planning/outputs/{tasks.md,plan.md}` without adding a second identity or
+  contract layer. Keep both files ignored and uncommitted, and prove the tracked tree unchanged.
+- Replace the pending `unplanned` placeholder with the first task group and add the remaining task items in
+  plan order. Start each item as:
 
 ```text
 P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
@@ -150,9 +149,9 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 - Select the first unproved task in plan order and confirm all of its prerequisites have verified PASS
   evidence.
 - Load the [Execution](../../execution/SKILL.md) skill before task DISCUSSION and WORK.
-- Give the executor the stable task ID, canonical plan entry, absolute worktree, current preimage, allowed and
-  protected paths, upstream artifacts, required skills, acceptance, checks, commit authority, and accepted
-  findings.
+- Give the executor the stable task-group ID, canonical task-group plan entry, absolute worktree, current
+  preimage, allowed and protected paths, upstream artifacts, required skills, acceptance, checks, commit
+  authority, and accepted findings.
 - Keep later tasks pending. Only one task iteration may be active, and only one writer may hold mutation
   authority.
 
