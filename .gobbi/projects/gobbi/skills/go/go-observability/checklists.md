@@ -6,6 +6,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-PROJECT-01 — Normal case: complete mode contract
 
+When one observability mode is selected, its project, local-output, command, cache, download, network, and
+pause boundaries must match that mode. The scenario fails when an effect is unclassified or borrows authority.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-PROJECT-01-01` — The project-write boundary matches the mode: design/review and verification are read-only, while change writes only through authorized `go-development` work.
 - [ ] `GOOBS-CK-PROJECT-01-02` — The local-output boundary matches the mode: approved design evidence, approved local diagnostics, or approved captured test diagnostics with a retention or cleanup boundary.
 - [ ] `GOOBS-CK-PROJECT-01-03` — Every mode separately authorizes its exact Go cache and download effects.
@@ -14,6 +19,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 - [ ] `GOOBS-CK-PROJECT-01-06` — The selected mode pauses before its first unauthorized effect, verification's first send, or any changed authority bound.
 
 ### GOOBS-SC-PROJECT-02 — Expected failure: unsupported result boundary
+
+When the requested result cannot be completed within the selected mode, the operation must stop in a recognized
+state and retain only approved diagnostic work. The scenario fails when unsupported work proceeds or is called complete.
+
+#### Checklist
 
 - [ ] `GOOBS-CK-PROJECT-02-01` — The selected mode is explicit and inherits no authority from another mode or sibling.
 - [ ] `GOOBS-CK-PROJECT-02-02` — The selected mode returns only its recognized design/review, local-change, arrival, or exact-block result.
@@ -24,6 +34,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-STRUCTURE-01 — Normal case: distinct exact schemas
 
+When diagnostic records are designed, each record kind must have its own complete typed schema. The scenario
+fails when a generic payload or an incomplete field list substitutes for a concrete schema.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-STRUCTURE-01-01` — Every structured-log schema names its event, version, timestamp source, severity meaning, typed stable attributes, result classification, correlation fields, and redaction disposition.
 - [ ] `GOOBS-CK-STRUCTURE-01-02` — Every metric schema names its instrument, version, behavior, unit, aggregation, temporality, bounded attribute value sets, maximum series count, restart interpretation, and redaction disposition.
 - [ ] `GOOBS-CK-STRUCTURE-01-03` — Every span schema names its operation, version, kind, trace and parent relationship, start and end conditions, status mapping, typed attributes or events or links, sampling owner, and redaction disposition.
@@ -33,6 +48,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-STRUCTURE-02 — Edge case: panic and crash identity
 
+When panic or crash diagnostics are in scope, recovered panic, in-process stack capture, and fatal crash output
+must remain distinct and toolchain-bound. The scenario fails when one path is relabeled as another or an in-process handler is assumed to survive termination.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-STRUCTURE-02-01` — A recovered-panic record identifies the original application result without being classified as fatal crash output.
 - [ ] `GOOBS-CK-STRUCTURE-02-02` — An in-process stack mechanism is bound to the exact diagnostic question and selected Go toolchain support.
 - [ ] `GOOBS-CK-STRUCTURE-02-03` — A fatal-crash mechanism is bound to selected Go toolchain support and never assumes that an in-process handler survives termination.
@@ -40,6 +60,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 ## Performance
 
 ### GOOBS-SC-PERFORMANCE-01 — Normal case: bounded non-interference
+
+When diagnostic work runs under load or transport failure, the application must preserve its behavior inside
+named resource bounds. The scenario fails when emission blocks, changes cancellation, grows without bound, or degrades the observed operation.
+
+#### Checklist
 
 - [ ] `GOOBS-CK-PERFORMANCE-01-01` — Diagnostic encoding or emission cannot panic or throw an unhandled error into the application path.
 - [ ] `GOOBS-CK-PERFORMANCE-01-02` — Diagnostic emission cannot block an application-critical operation or hold an application-critical lock while waiting.
@@ -52,6 +77,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-AESTHETICS-01 — Poor quality: cosmetic diagnostic design
 
+When diagnostic names and examples look polished, the underlying records must still use concrete, consumer-
+understood terms and answer owned questions. The scenario fails when presentation hides a generic, questionless, or unowned record.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-AESTHETICS-01-01` — Concrete claims name a structured log, metric, span, or crash report instead of hiding the fact behind a generic diagnostic label.
 - [ ] `GOOBS-CK-AESTHETICS-01-02` — Event, instrument, operation, attribute, unit, severity, and crash-class names use one stable vocabulary understood by the named consumer.
 - [ ] `GOOBS-CK-AESTHETICS-01-03` — A questionless or unowned log record, metric, span, or crash report is dropped even when its name, heading, or example payload looks complete.
@@ -60,26 +90,48 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-USAGE-01 — Normal case: design or review
 
+When the operation designs or reviews diagnostic output, project source stays unchanged and no production
+record is emitted. The scenario fails when review crosses either boundary or returns an unrecognized result.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-USAGE-01-01` — Design/review emits no production diagnostic output.
 - [ ] `GOOBS-CK-USAGE-01-02` — Design/review pauses before code mutation, production emission, or a protected-data choice.
 - [ ] `GOOBS-CK-USAGE-01-03` — Design/review returns confirmed diagnostic design, evidence-backed findings, or an exact block.
 
 ### GOOBS-SC-USAGE-02 — Normal case: authorized local change
 
+When an accepted observability design needs code or a destination action, change mode must keep construction
+and external mutation with their named owners. The scenario fails when change mode sends diagnostics, inherits verification authority, or lacks a complete success or block record.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-USAGE-02-01` — Change mode keeps destination sends disabled, replaced by an accepted local controllable dependency, or deferred to diagnostic-send verification.
-- [ ] `GOOBS-CK-USAGE-02-02` — A required destination action has one named external-owner disposition: current matching returned owner, action, destination, authority, before and after state, time or action identity, redaction, and evidence limits, or an exact prerequisite, retained state, first recovery action, and handoff block.
+- [ ] `GOOBS-CK-USAGE-02-02` — For each required destination action, current, matching evidence returned by the named external-action owner names the owner, requested action, exact destination, configuration or object identity, before and after state, result, time or action identity, current authority, redaction, retained state, and evidence limits.
 - [ ] `GOOBS-CK-USAGE-02-03` — Change mode never inherits verification credentials, test destination access, diagnostic-send authority, or captured-output authority.
+- [ ] `GOOBS-CK-USAGE-02-04` — Missing, stale, or mismatched evidence returned by the named external-action owner stops change mode with an exact block naming the prerequisite, retained state, first recovery action, and handoff.
 
 ### GOOBS-SC-USAGE-03 — Edge case: bounded diagnostic-send verification
 
-- [ ] `GOOBS-CK-USAGE-03-01` — Verification keeps project source read-only and creates only approved captured test diagnostics locally.
+When verification sends test diagnostics, it must stay inside the authorized source, destination, credential,
+record, and mutation bounds. The scenario fails when a bound changes without a pause or sends continue after failure.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-USAGE-03-02` — Verification sends only bounded approved test records to one named authorized test destination with separately authorized named test credentials.
 - [ ] `GOOBS-CK-USAGE-03-03` — Verification external mutation is limited to bounded test-record creation and excludes production mutation, provisioning, configuration, deletion, and recovery mutation.
 - [ ] `GOOBS-CK-USAGE-03-04` — Verification stops all further sends after a command, transport, authority, schema, correlation, destination-read, redaction, access, or retention failure.
+- Also applies: GOOBS-CK-PROJECT-01-01 (verification project source is read-only).
+- Also applies: GOOBS-CK-PROJECT-01-02 (captured test diagnostics stay inside approved local-output bounds).
 
 ## Consistency
 
 ### GOOBS-SC-CONSISTENCY-01 — Normal case: one joined diagnostic contract
+
+When several record kinds describe one action, their questions, emission points, correlation, and propagation
+must form one joined contract. The scenario fails when stored records cannot be joined or a boundary owner is bypassed.
+
+#### Checklist
 
 - [ ] `GOOBS-CK-CONSISTENCY-01-01` — Every retained log record, metric, span, and crash report answers one named diagnostic question for one named consumer and owner.
 - [ ] `GOOBS-CK-CONSISTENCY-01-02` — Every retained record has one shortest responsible emission point tied to an actual result or failure path.
@@ -91,6 +143,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 
 ### GOOBS-SC-RISK-01 — Rule violation: protected data or broadened authority
 
+When diagnostics cross a data or authority boundary, protected values must stay out and each permitted effect
+must remain explicit. The scenario fails when protected data escapes or a credential or mutation boundary broadens.
+
+#### Checklist
+
 - [ ] `GOOBS-CK-RISK-01-01` — `go-security` classifies every protected-data type before its containing schema or allow-list is accepted.
 - [ ] `GOOBS-CK-RISK-01-02` — Every application-built diagnostic record passes an allow-list that prevents protected values from being emitted.
 - [ ] `GOOBS-CK-RISK-01-03` — Every stored-record protected-data check proves that no credential, token, private setting, personal field, regulated value, session identifier, or other protected value is retained.
@@ -101,6 +158,11 @@ Unchecked evaluation source for Go observability work governed by [Go Observabil
 ## Overall
 
 ### GOOBS-SC-OVERALL-01 — Adversarial: completion without destination proof
+
+When a result is presented as complete, its terminal record and destination-read evidence must prove the exact
+mode outcome. The scenario fails when an acknowledgement, clean local command, heading, or example payload replaces that proof.
+
+#### Checklist
 
 - [ ] `GOOBS-CK-OVERALL-01-01` — The terminal state is exactly one of success, error, cancellation, timeout, blocked, or user-decision pause, and a Go panic appears only as program behavior.
 - [ ] `GOOBS-CK-OVERALL-01-02` — The terminal record contains every applicable universal result, decision, object, path, evidence, limit, external-effect, compatibility, block, recovery, and handoff field.

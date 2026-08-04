@@ -105,10 +105,14 @@ timeout, panic, latency, or resource behavior it describes.
   authorized, but this mode grants no diagnostic-send authority; credential use is none; external mutation is
   forbidden. Destination provisioning, configuration, or mutation goes to one named external-action owner.
   Pause before a protected diagnostic field, network use, or destination action request. The result is a
-  verified local diagnostic-output change with any required exact evidence returned by the named destination
-  owner, or an exact delivery or redaction block. Recovery retains authorized changed paths and safe local
-  state and names the owner, prerequisite, first recovery action, and handoff. This mode never inherits test
-  credentials, test destination access, send authority, or captured-output authority from verification mode.
+  verified local diagnostic-output change with any required current, matching evidence returned by the named
+  external-action owner. That evidence names the owner, requested action, exact destination, configuration or
+  object identity, before and after state, result, time or action identity, current authority, redaction,
+  retained state, and evidence limits; otherwise the result is an exact delivery or redaction block. Recovery
+  retains only the authorized changed paths, approved redacted local diagnostics at their named retention or
+  cleanup paths, and declared cache or download state, and names the owner, prerequisite, first recovery action,
+  and handoff. This mode never inherits test credentials, test destination access, send authority, or captured-
+  output authority from verification mode.
 - **Diagnostic-send verification mode:** project source is read-only; local writes are approved captured test
   diagnostics with a named retention or cleanup boundary; every Go cache or download is separately authorized;
   execution is limited to authorized project commands that emit bounded test diagnostics; network access is
@@ -220,8 +224,8 @@ timeout, panic, latency, or resource behavior it describes.
   outlives the process, its output bound, destination, access owner, retention, symbol or build-identity
   mapping, redaction capability, and arrival evidence. Its outbound boundary must reject or redact protected
   content before any emission or retention; when that guarantee is unavailable, do not enable the capture and
-  block. An unavailable safe collection path remains an exact gap rather than becoming recovered-panic or
-  in-process-stack coverage.
+  block. A collection path that cannot prove protected content is rejected or redacted before emission and
+  retention remains an exact gap rather than becoming recovered-panic or in-process-stack coverage.
 
 ### Phase 3 — Review or Coordinate the Change
 
@@ -319,8 +323,10 @@ timeout, panic, latency, or resource behavior it describes.
 - Stop before an unresolved diagnostic or protected-data decision, unapproved project or local write,
   unauthorized cache, download, command, network request, credential, diagnostic send, destination read, or
   external action; or when required schema, correlation, bounds, redaction, access, retention, arrival, or
-  returned-owner evidence is missing, stale, or mismatched. Do not substitute a weaker claim or different
-  destination.
+  current, matching evidence returned by the named external-action owner is missing, stale, or mismatched.
+  That evidence must name the owner, requested action, exact destination, configuration or object identity,
+  before and after state, result, time or action identity, current authority, redaction, retained state, and
+  evidence limits. Do not substitute a weaker claim or different destination.
 - Return the missing prerequisite or first useful diagnostic, affected obligation, current redacted evidence,
   evidence limits, risk, owner, approved retained paths and external records, first recovery action, and exact
   handoff. A failed send or destination check stops further sends and grants no cleanup, retry, configuration,
@@ -347,15 +353,19 @@ timeout, panic, latency, or resource behavior it describes.
   crash-report schemas; emission points; propagation and unpropagated boundaries; sampling or aggregation;
   volume and cardinality bounds; redaction allow-list; destination; access owner; retention; and arrival
   evidence. In change mode, add the literal facts `credential use: none` and `external mutation: forbidden`,
-  plus returned destination-owner evidence or the exact owner, prerequisite, retained state, recovery action,
-  and handoff. In diagnostic-send verification mode, add the named test destination, authorized test credential
-  type and authority, bounded test-diagnostic external state, exact destination record identifier,
-  destination observation time or action identifier, schema and correlation match, stored-record redaction
-  result, and evidence limits.
+  plus current, matching evidence returned by the named external-action owner that names the owner, requested
+  action, exact destination, configuration or object identity, before and after state, result, time or action
+  identity, current authority, redaction, retained state, and evidence limits; or add the exact owner,
+  prerequisite, retained state, recovery action, and handoff. In diagnostic-send verification mode, add the
+  named test destination, authorized test credential type and authority, bounded test-diagnostic external
+  state, exact destination record identifier, destination observation time or action identifier, schema and
+  correlation match, stored-record redaction result, and evidence limits.
 - Complete only with the mode's recognized result: confirmed design or review findings in design/review mode;
-  a verified local diagnostic-output change with required returned destination-owner evidence in change mode;
-  or destination-read arrival, redaction, and correlation evidence in diagnostic-send verification mode.
-  Otherwise return the exact block without calling it success.
+  a verified local diagnostic-output change with every required item of current, matching evidence returned by
+  the named external-action owner in change mode, naming the owner, requested action, exact destination,
+  configuration or object identity, before and after state, result, time or action identity, current authority,
+  redaction, retained state, and evidence limits; or destination-read arrival, redaction, and correlation
+  evidence in diagnostic-send verification mode. Otherwise return the exact block without calling it success.
 
 ## References
 
