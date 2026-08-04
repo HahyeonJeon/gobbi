@@ -39,11 +39,7 @@ only when matching authority exists. Every continued authorized run closes throu
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PROJECT-11-01 — Installation and installed-artifact verification ends with exactly `Installed and verified`.
-- [ ] DTDLVR-CK-PROJECT-11-02 — Release readiness ends with `Release-ready` or its exact blocker or cold handoff.
-- [ ] DTDLVR-CK-PROJECT-11-03 — Authorized publication/deployment ends with exactly `Published/deployed for the authorized action` when that stage runs.
-- [ ] DTDLVR-CK-PROJECT-11-04 — Post-release operations ends with `Post-release operation observed` or its exact observation blocker or stop result when that stage runs.
-- [ ] DTDLVR-CK-PROJECT-11-05 — Maintenance ends with exactly `Maintenance decision recorded` when an authorized run continues through closure.
+- [ ] DTDLVR-CK-PROJECT-11-06 — Each last-five stage ends with its named exact result or accepted terminal branch: Installation and installed-artifact verification — exactly `Installed and verified`; Release readiness — `Release-ready` or its exact blocker or cold handoff; Authorized publication/deployment, when that stage runs — exactly `Published/deployed for the authorized action`; Post-release operations, when that stage runs — `Post-release operation observed` or its exact observation blocker or stop result; Maintenance, when an authorized run continues through closure — exactly `Maintenance decision recorded`.
 
 ## Structure
 
@@ -64,6 +60,15 @@ continues. Missing fields fail even when the displayed stage result looks succes
 #### Checklist
 
 - [ ] DTDLVR-CK-STRUCTURE-11-06 — Every stage record contains dependencies/routes, failures/limitations, applicable authority, return/reopen condition, and next branch.
+
+### DTDLVR-SC-STRUCTURE-12 — Adversarial: an unsupported product entry makes the contract look complete
+
+The contract covers every supported path but adds an entry for a path or surface the product does not
+support. The extra entry fails even when every supported product entry is otherwise complete.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-STRUCTURE-12-01 — No product-contract entry describes a path or surface the product does not support.
 
 ## Performance
 
@@ -156,6 +161,25 @@ the failure.
 - [ ] DTDLVR-CK-USAGE-12-02 — Installed-application records distinguish exact-version install, optional first use, update, repair or recovery, uninstall, Removed, and intentional residual state from runtime evidence.
 - [ ] DTDLVR-CK-USAGE-12-06 — Each supported launcher, file, protocol, notification, command, and second-instance path, and each applicable runtime transition, names every input or resource it must preserve and how that value survives.
 
+### DTDLVR-SC-USAGE-13 — Normal case: installation and first launch state the complete entry
+
+The product contract names installation and first launch but is complete only when a person can tell what is
+installed, where to begin, what readiness or permission state can intervene, and how to repair a failure.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-USAGE-13-01 — Every installation-and-first-launch entry states what is installed, where the person starts, every readiness or permission state that can intervene, and how failure is repaired.
+
+### DTDLVR-SC-USAGE-14 — Expected failure: native integration is unavailable or permission is refused
+
+A native integration cannot run because the target lacks the capability or a required permission or
+entitlement is refused. Permission preconditions plus a generic failure state do not satisfy either required
+product behavior.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-USAGE-14-01 — Every native integration defines product behavior both when the target capability is unavailable and when a required permission or entitlement is refused.
+
 ## Consistency
 
 ### DTDLVR-SC-CONSISTENCY-10 — Rule violation: one lifecycle result is used as proof of another
@@ -171,6 +195,16 @@ records and evidence routes.
 - [ ] DTDLVR-CK-CONSISTENCY-10-04 — An upload response or control-plane label never proves the destination bytes or deployed state.
 - [ ] DTDLVR-CK-CONSISTENCY-10-06 — Launching remains distinct from an Activation request.
 - [ ] DTDLVR-CK-CONSISTENCY-10-07 — No operating-system delivery fact or Electron delivery mechanism selects the activation product outcome.
+
+### DTDLVR-SC-CONSISTENCY-11 — Rule violation: a platform capability rewrites an accepted product decision
+
+A platform convention or technical capability conflicts with an accepted product requirement or user
+authority, and the coordinator records an implementation disposition instead of returning the conflict. The
+accepted decision remains unchanged until the user or product authority accepts a new product decision.
+
+#### Checklist
+
+- [ ] DTDLVR-CK-CONSISTENCY-11-01 — An accepted product requirement or user authority changes after a platform-convention or technical-capability conflict only through a newly accepted product decision from the user or product authority, never through an implementation disposition.
 
 ## Risk
 

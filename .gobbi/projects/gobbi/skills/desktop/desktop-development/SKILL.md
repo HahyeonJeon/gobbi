@@ -51,13 +51,17 @@ roll out. Verify authority immediately before the exact action and preserve a co
 - **MUST accept the complete mechanism-free product contract in Requirements before dependent work.** Every
   supported product entry MUST state its product meaning and observable person or operator result without
   selecting an Electron callback, event, process, IPC channel, permission handler, package format, updater,
-  or signing mechanism; a missing product judgment returns to the user or product authority, while a missing
-  fact, mechanism, implementation, or evidence returns to its named specialist.
+  or signing mechanism; no product-contract entry may describe a path or surface the product does not support;
+  a missing product judgment returns to the user or product authority, while a missing fact, mechanism,
+  implementation, or evidence returns to its named specialist.
 - **MUST assemble only current, agreeing owner results and preserve their exact routes.** NEVER copy
   Architecture, Interface, operating-system, Electron, renderer, release-mechanism, or Evaluation policy into
   this operation.
 - **MUST return a contradiction to the earliest owning decision and mark every dependent result stale.**
-  Independent work may continue only when its stable inputs and evidence subject are unaffected.
+  A platform convention or technical capability MUST NOT change an accepted product requirement or user
+  authority; return that conflict to the user or product authority for a newly accepted product decision and
+  never treat an implementation disposition as acceptance, while independent work may continue only when its
+  stable inputs and evidence subject are unaffected.
 - **MUST keep development evidence, installed-application state, runtime state, and design evidence separate.**
   NEVER let an operating-system fact or Electron mechanism choose an activation product outcome.
 - **MUST stop before any external action without matching point-of-action authority and return an exact cold
@@ -90,19 +94,23 @@ action; and resume condition.
 - Define the product problem, actors, target people and contexts, accepted behavior, supported targets, and
   entry modes. Give every supported path a product contract entry across all six surfaces: installation and
   first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and
-  update and recovery.
+  update and recovery. Record no product-contract entry for a path or surface the product does not support.
 - Keep every product entry mechanism-free. State its product meaning and the observable person or operator
   result, plus observable completion, authoritative system completion, false-completion, failure, and
   recovery conditions; do not select an Electron callback, event, process, IPC channel, permission handler,
   package format, updater, or signing mechanism.
+- For installation and first launch, state what is installed, where the person starts, every readiness or
+  permission state that can intervene, and how a failure is repaired.
 - Record normal and alternate paths across application use, runtime behavior, installation, exact-version
   update, repair or recovery, and uninstall. State what the person sees before, during, and after update, the
   usable state after interruption or failure, and the support route.
 - For each supported launcher, file, protocol, notification, command, and second-instance path, and each
   applicable runtime transition, name every input or resource it must preserve and how that value survives.
 - For every native integration, record target support, permission or entitlement preconditions, cancellation,
-  duplicate activation, unavailable behavior, returned failure state, cleanup, accessible alternative, and
-  whether its effects are visible, cancellable, and reversible.
+  duplicate activation, product behavior when the target capability is unavailable, product behavior when a
+  required permission or entitlement is refused, returned failure state, cleanup, accessible alternative,
+  and whether its effects are visible, cancellable, and reversible. A generic failure state does not replace
+  either product behavior.
 - Inventory every affected datum, including settings, documents, caches, credentials, logs, indexes,
   downloads, and application resources. For every datum, record its owner and lifecycle, installed location
   and protection, behavior when absent, corrupt, locked, or incompatible, and create, read, update, delete,
@@ -124,6 +132,9 @@ action; and resume condition.
 
 - Reconcile every material requirement with its actor, authority, owner, evidence need, dependency, failure,
   recovery, non-goal, and reopen condition.
+- When a platform convention or technical capability conflicts with an accepted product requirement or user
+  authority, keep the accepted decision unchanged and return the conflict to the user or product authority for
+  a newly accepted product decision. An implementation disposition alone is not acceptance.
 - Ask the user or product authority to accept product choices and scope. Do not infer acceptance from a
   specialist result or from progress in a later phase.
 - Record exactly `Requirements accepted` when the complete current product contract is accepted for the
