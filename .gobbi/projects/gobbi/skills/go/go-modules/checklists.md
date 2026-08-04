@@ -1,7 +1,7 @@
 # Go Modules Evaluation Checklist
 
-Unchecked evaluation source for Go work governed by [Go Modules](SKILL.md). Apply it to the exact work and
-returned outcomes under evaluation.
+Unchecked evaluation source for Go work governed by [Go Modules](SKILL.md). Apply it to the exact module work
+and returned outcome under evaluation.
 
 [Evaluation](../../evaluation/SKILL.md) owns evidence, filled results, findings, and verdicts. This source owns
 only reusable scenarios and unchecked conditions.
@@ -13,42 +13,47 @@ that this scenario reuses.
 
 ### GOMOD-SC-PROJECT-01 — Normal case: The module contract is explicit
 
-The work creates, changes, validates, or releases a module. Its durable path, consumers, public packages,
-supported Go floor, toolchain policy, platforms, compatibility promise, and release outcome should be clear;
-an implicit contract fails.
+The work creates, changes, or validates a module under exactly one author or validation mode. Its durable
+module facts and consumer promise should be explicit. Author mode limits project writes to authorized module,
+layout, workspace, dependency, and tool-declaration paths. Validation mode keeps project source read-only.
+Both modes bind disposable output, cache and download effects, project execution, private-read network and
+credential authority, forbidden external mutation, pauses, terminal result, and recovery. An implicit module
+contract or incomplete mode fails.
 
 #### Checklist
 
 - [ ] GOMOD-CK-PROJECT-01-01 — The module path follows its durable publishing location.
-- [ ] GOMOD-CK-PROJECT-01-02 — The intended consumers, public packages, supported Go floor, toolchain policy, platforms, compatibility promise, and release outcome are each identified.
+- [ ] GOMOD-CK-PROJECT-01-02 — The intended consumers, exact public package paths, project commands, `go` directive, module's Go language version, minimum supported Go version, selected Go toolchain version, platforms, and compatibility promise are each identified.
+- [ ] GOMOD-CK-PROJECT-01-03 — Every author-mode project-path write, disposable output, cache or download, project execution, network access, credential use, external mutation, pause, terminal, and recovery field matches the accepted author contract.
+- [ ] GOMOD-CK-PROJECT-01-04 — Every validation-mode project-path write, disposable output, cache or download, project execution, network access, credential use, external mutation, pause, terminal, and recovery field matches the accepted validation contract.
 
-### GOMOD-SC-PROJECT-02 — Edge case: The lowest supported Go release constrains the module
+### GOMOD-SC-PROJECT-02 — Edge case: The minimum supported Go version constrains the module
 
-The module builds under a newer local release but promises an older Go floor. Syntax, standard-library APIs,
-dependencies, and project tools should all support that floor; a directive alone does not establish
-compatibility.
+The module builds under a newer selected Go toolchain version but promises an older minimum supported Go
+version. Syntax, standard-library APIs, dependencies, and project tools should all support that version; the
+`go` directive alone does not establish compatibility.
 
 #### Checklist
 
-- [ ] GOMOD-CK-PROJECT-02-01 — Source syntax, used standard-library APIs, selected dependencies, and project tools each support the declared Go floor.
+- [ ] GOMOD-CK-PROJECT-02-01 — Source syntax, used standard-library APIs, selected dependencies, and project tools each support the minimum supported Go version.
 
-### GOMOD-SC-PROJECT-03 — Rule violation: Mode or machine state changes the intended module
+### GOMOD-SC-PROJECT-03 — Rule violation: Validation or machine state changes the intended module
 
-Review mode mutates module state, or author mode copies an ambient workspace, replacement, proxy, or local
-toolchain value into the contract without project authority. The module should remain derived from the
+Validation mode mutates project source, or author mode copies an ambient workspace, replacement, proxy, or
+local toolchain value into the contract without project authority. The module should remain derived from the
 repository contract; workstation leakage fails.
 
 #### Checklist
 
-- [ ] GOMOD-CK-PROJECT-03-01 — Review mode leaves module and workspace files unchanged.
+- [ ] GOMOD-CK-PROJECT-03-01 — Validation mode leaves project source unchanged.
 - [ ] GOMOD-CK-PROJECT-03-02 — No ambient local replacement, workspace entry, proxy value, or local toolchain value becomes module policy.
 
 ## Structure
 
 ### GOMOD-SC-STRUCTURE-01 — Normal case: The layout follows package responsibility
 
-The module contains libraries, commands, or internal implementation. Directories should reflect real public
-import paths, command ownership, and enforced privacy boundaries; a universal scaffold fails.
+The module contains libraries, commands, or internal implementation. Directories should reflect exact public
+package paths, command ownership, and enforced privacy boundaries; a universal scaffold fails.
 
 #### Checklist
 
@@ -57,12 +62,12 @@ import paths, command ownership, and enforced privacy boundaries; a universal sc
 ### GOMOD-SC-STRUCTURE-02 — Poor quality: A nested module or layer directory lacks ownership
 
 The tree introduces `pkg`, `src`, `util`, a layer directory, or a nested module by convention alone. Every
-extra boundary should serve current consumption, versioning, or release needs; decorative structure fails.
+extra boundary should serve current consumption, versioning, or ownership needs; decorative structure fails.
 
 #### Checklist
 
 - [ ] GOMOD-CK-STRUCTURE-02-01 — Every generic layer directory has a current ownership purpose.
-- [ ] GOMOD-CK-STRUCTURE-02-02 — Every nested module is an independently consumed, versioned, and released unit.
+- [ ] GOMOD-CK-STRUCTURE-02-02 — Every nested module has an independent version lifecycle required by its consumers.
 
 ### GOMOD-SC-STRUCTURE-03 — Edge case: Public, internal, and command packages share behavior
 
@@ -103,7 +108,7 @@ cost fails.
 ### GOMOD-SC-AESTHETICS-01 — Normal case: Module intent is reviewable from source-controlled state
 
 A reviewer should understand the module path, directives, direct dependencies, tools, workspace entries, and
-release intent without private workstation context. Opaque graph changes fail.
+consumer intent without private workstation context. Opaque graph changes fail.
 
 #### Checklist
 
@@ -124,29 +129,29 @@ to review. Mechanical graph state should still communicate the intentional chang
 ### GOMOD-SC-USAGE-01 — Normal case: An external consumer can use the module
 
 An intended consumer imports an exported package or installs a command outside the source directory. The
-module path, package paths, public API, required assets, and Go floor should support that position; tests only
-from inside the module are insufficient.
+module path, exact public package paths, promised public API or CLI, required assets, and minimum supported Go
+version should support that position; tests only from inside the module are insufficient.
 
 #### Checklist
 
 - [ ] GOMOD-CK-USAGE-01-01 — An external consumer can resolve the module path outside its source directory.
-- [ ] GOMOD-CK-USAGE-01-02 — An external consumer can import each promised public package outside its source directory.
+- [ ] GOMOD-CK-USAGE-01-02 — An external consumer can import each promised exact public package path outside its source directory.
 - [ ] GOMOD-CK-USAGE-01-03 — An external consumer can run each installable command outside its source directory.
 
 ### GOMOD-SC-USAGE-02 — Edge case: Version 2 or later uses semantic import versioning
 
-A module prepares or uses major version 2 or later. The `/vN` module path, imports, `go.mod`, documentation,
-and `vN.x.y` tag should agree under the applicable module rule; partial suffixing fails.
+A module uses major version 2 or later. The `/vN` module path, exact public package paths, imports, `go.mod`,
+and documentation should agree under the applicable module rule; partial suffixing fails.
 
 #### Checklist
 
-- [ ] GOMOD-CK-USAGE-02-01 — The `/vN` path form follows the applicable module rule for the declared major version.
-- Also applies: GOMOD-CK-CONSISTENCY-02-01 (every path-bearing surface matches the module path).
+- [ ] GOMOD-CK-USAGE-02-01 — The `/vN` module path form follows the applicable module rule for the major version already under analysis.
+- Also applies: GOMOD-CK-CONSISTENCY-02-01 (every path-bearing source matches the module path).
 
 ### GOMOD-SC-USAGE-03 — Expected failure: The module fails outside its development workspace
 
 The project succeeds only because `go.work`, a local replacement, or an unpublished sibling module supplies
-state absent from the released contract. Verification with the workspace disabled should expose the gap;
+state absent from the consumer contract. Verification with the workspace disabled should expose the gap;
 workspace-only success fails.
 
 #### Checklist
@@ -156,34 +161,34 @@ workspace-only success fails.
 
 ### GOMOD-SC-USAGE-04 — Adversarial: The consumer instructions only work for the maintainer
 
-The published import, install, or upgrade instructions are validated in an environment that already holds the
-module cache, credentials, workspace, or private proxy access. A consumer following the instructions from a
-clean environment should reach the same result; instructions that pass only under maintainer state fail.
+The documented import, install, or upgrade instructions are validated in an environment that already holds the
+module cache, workspace, or undeclared private access. A consumer following the instructions with the declared
+prerequisites should reach the same result; instructions that pass only under maintainer state fail.
 
 #### Checklist
 
 - [ ] GOMOD-CK-USAGE-04-01 — Every documented import, install, and upgrade instruction is validated from a clean consumer environment.
-- [ ] GOMOD-CK-USAGE-04-02 — No documented consumer instruction depends on maintainer-only cache, credential, or private-access state.
+- [ ] GOMOD-CK-USAGE-04-02 — No documented consumer instruction depends on maintainer-only cache, workspace, or undeclared private-access state.
 
 ## Consistency
 
 ### GOMOD-SC-CONSISTENCY-01 — Rule violation: Module and workspace files describe different graphs
 
 `go.mod`, `go.sum`, `go.work`, vendor state, or tool declarations disagree about the accepted dependency set.
-Each source-controlled graph surface should express one intentional contract; local resolution luck fails.
+Each source-controlled graph source should express one intentional contract; local resolution luck fails.
 
 #### Checklist
 
 - [ ] GOMOD-CK-CONSISTENCY-01-01 — `go.mod`, `go.sum`, `go.work`, applicable vendor state, and tool declarations each express the accepted module graph.
 
-### GOMOD-SC-CONSISTENCY-02 — Rule violation: Path, imports, documentation, and tag disagree
+### GOMOD-SC-CONSISTENCY-02 — Rule violation: Module path, imports, and documentation disagree
 
-A module or major version changes while one consumer-facing reference remains stale. All path-bearing surfaces
-should resolve to one published identity; any mixed identity fails.
+A module path or major path changes while one consumer-facing reference remains stale. All path-bearing
+sources should resolve to one module identity; any mixed identity fails.
 
 #### Checklist
 
-- [ ] GOMOD-CK-CONSISTENCY-02-01 — The module path matches every public import path, consumer document, and proposed release tag.
+- [ ] GOMOD-CK-CONSISTENCY-02-01 — The module path matches every exact public package path and consumer document.
 
 ### GOMOD-SC-CONSISTENCY-03 — Edge case: Tidy changes more than the requested dependency
 
@@ -196,15 +201,16 @@ fails.
 - [ ] GOMOD-CK-CONSISTENCY-03-01 — Every module that tidy added or removed follows the intended source graph.
 - [ ] GOMOD-CK-CONSISTENCY-03-02 — Every directive change is justified independently of tidy execution.
 
-### GOMOD-SC-CONSISTENCY-04 — Normal case: Release contents match the module contract
+### GOMOD-SC-CONSISTENCY-04 — Normal case: Consumer-required contents match the module contract
 
-The release tree should include every file consumers need and exclude temporary development state. Missing
-licenses, documentation, generated files, embedded assets, or cgo inputs make the module inconsistent.
+The module facts supplied to `go-release` should identify every file consumers need and exclude temporary
+development state. Missing licenses, documentation, generated files, embedded assets, or cgo inputs make the
+module inconsistent.
 
 #### Checklist
 
-- [ ] GOMOD-CK-CONSISTENCY-04-01 — Required license, documentation, generated, embedded-asset, and cgo-asset files are present in release contents.
-- [ ] GOMOD-CK-CONSISTENCY-04-02 — Temporary development files are absent from release contents.
+- [ ] GOMOD-CK-CONSISTENCY-04-01 — Required license, documentation, generated, embedded-asset, and cgo-asset files are present in the module contents reported for consumers.
+- [ ] GOMOD-CK-CONSISTENCY-04-02 — Temporary development files are absent from the module contents reported for consumers.
 
 ### GOMOD-SC-CONSISTENCY-05 — Normal case: Every graph control is deliberate
 
@@ -218,15 +224,21 @@ obsolete state fails.
 
 ## Risk
 
-### GOMOD-SC-RISK-01 — Rule violation: Module state exposes private or credential-bearing data
+### GOMOD-SC-RISK-01 — Rule violation: An authenticated private-module read crosses its authority or secret boundary
 
-A module, workspace, checksum, log, or release artifact contains workstation paths, private module names,
-credential-bearing proxy URLs, or tokens. Published state should preserve the intended privacy boundary;
-accidental disclosure fails.
+Either module mode reads a private dependency. The read should bind separate current network and credential
+authority to one named private module or import-path scope and proxy or version-control-system destination,
+use named ephemeral credential delivery, preserve private settings outside persistent state, redact returned
+evidence, and perform no external mutation. A generic authentication claim or accidental disclosure fails.
 
 #### Checklist
 
-- [ ] GOMOD-CK-RISK-01-01 — No published module file, checksum file, log, or release artifact carries a credential, credential-bearing proxy URL, workstation-local path, or unintended private module name.
+- [ ] GOMOD-CK-RISK-01-01 — No module file, workspace file, checksum file, log, result, or evidence carries a credential, credential-bearing proxy URL, workstation-local path, unintended private module name, or private-module setting.
+- [ ] GOMOD-CK-RISK-01-02 — Every private-module network read or download has exact current manager authority for its named private module or import-path scope and proxy or version-control-system destination.
+- [ ] GOMOD-CK-RISK-01-03 — Every private-module credential use has separate exact current manager authority for its named private module or import-path scope and proxy or version-control-system destination.
+- [ ] GOMOD-CK-RISK-01-04 — Every private-module credential enters only through its named ephemeral delivery.
+- [ ] GOMOD-CK-RISK-01-05 — Every credential and private-module setting remains absent from persistent state.
+- [ ] GOMOD-CK-RISK-01-06 — Every authenticated private-module read leaves external state unmodified.
 
 ### GOMOD-SC-RISK-02 — Adversarial: A dependency appears useful but violates trust obligations
 
@@ -237,82 +249,90 @@ transitive behavior. Functional API fit alone should not authorize the graph add
 
 - [ ] GOMOD-CK-RISK-02-01 — Every new or upgraded dependency has an acceptable provenance, maintenance, license, known-vulnerability, platform-support, and transitive position.
 
-### GOMOD-SC-RISK-03 — Rule violation: Temporary graph state enters a release
+### GOMOD-SC-RISK-03 — Rule violation: Temporary graph state enters the module result
 
 A local `replace`, development workspace module, or unavailable generated input remains necessary when the
-module is tagged. The released graph and contents should stand alone; publishing temporary state fails.
+module is consumed externally. The returned graph and contents should stand alone; accepting temporary state
+fails.
 
 #### Checklist
 
-- [ ] GOMOD-CK-RISK-03-01 — No temporary local replacement or unpublished workspace module remains required by the release graph.
-- Also applies: GOMOD-CK-CONSISTENCY-04-01 (required generated artifacts present in release contents).
+- [ ] GOMOD-CK-RISK-03-01 — No temporary local replacement or unpublished workspace module remains required by the external consumer.
+- Also applies: GOMOD-CK-CONSISTENCY-04-01 (required generated artifacts present in consumer contents).
 
-### GOMOD-SC-RISK-04 — Rule violation: A release side effect exceeds authority
+### GOMOD-SC-RISK-04 — Rule violation: Module work crosses the release boundary
 
-The work chooses or validates a version but then creates a remote tag or publishes without explicit external
-authority. Release preparation should stop at the authorized boundary; an otherwise correct unauthorized
-publication fails.
-
-#### Checklist
-
-- [ ] GOMOD-CK-RISK-04-01 — Every remote tag creation and module publication has explicit external authority.
-
-### GOMOD-SC-RISK-05 — Expected failure: Consumer or Go-floor validation fails
-
-An external consumer, supported platform, or declared Go floor cannot build or use the proposed module. The
-release should remain blocked until the contract or implementation changes; another environment's pass does
-not close the failure.
+The work produces coherent module facts but also proposes or decides a version or tag, creates a tag or ref,
+publishes, mutates external state, or owns release recovery. Module work should stop at an exact facts handoff;
+crossing that boundary fails even when the release action would otherwise be valid.
 
 #### Checklist
 
-- [ ] GOMOD-CK-RISK-05-01 — Every failing promised consumer, platform, and declared Go floor remains visible.
-- [ ] GOMOD-CK-RISK-05-02 — Release readiness is not claimed across a promised-surface failure.
+- [ ] GOMOD-CK-RISK-04-01 — Every module result is free of a version or tag proposal or decision, tag or ref creation, publication, external mutation, and release recovery.
+
+### GOMOD-SC-RISK-05 — Expected failure: Consumer, compatibility, minimum-version, or private-read validation fails
+
+An external consumer, supported platform, minimum supported Go version, module consumer compatibility check,
+or authorized private read cannot complete safely. The module result should remain blocked until its contract,
+implementation, authority, credential delivery, or evidence changes; another environment's pass does not close
+the failure.
+
+#### Checklist
+
+- [ ] GOMOD-CK-RISK-05-01 — Every failing promised consumer, platform, minimum supported Go version, private read, and module consumer compatibility check remains visible.
+- [ ] GOMOD-CK-RISK-05-02 — Module completion is not claimed across workspace-only success, a hidden replacement, consumer failure, a conflict with the minimum supported Go version, unavailable private-module authority or credential, unsafe credential handling, destination change, or incomplete module consumer compatibility evidence.
+- [ ] GOMOD-CK-RISK-05-03 — Every module block identifies its missing prerequisite or first useful diagnostic, affected obligation, current evidence, risk, recovery owner, retained safe state, first recovery action, and handoff.
 
 ### GOMOD-SC-RISK-06 — Normal case: An ordinary graph change keeps its verification intact
 
 An accepted dependency change downloads modules through the project's proxy, checksum, and private-module
-settings. The ordinary success path should leave every selected module verified against its recorded checksum
-and leave those settings as the project defines them; resolving by relaxing verification fails.
+settings. The ordinary success path should leave every selected module verified against its recorded checksum,
+retain only declared cache/download effects, and leave those settings as the project defines them; resolving by
+relaxing verification fails.
 
 #### Checklist
 
 - [ ] GOMOD-CK-RISK-06-01 — Every module in the accepted graph has its recorded checksum entry.
 - [ ] GOMOD-CK-RISK-06-02 — No checksum, proxy, or private-module setting is relaxed to make the change resolve.
+- [ ] GOMOD-CK-RISK-06-03 — Every private-module cache and download effect matches its declared cache and retention boundary.
 
 ## Overall
 
-### GOMOD-SC-OVERALL-01 — Normal case: The module is coherent and releasable
+### GOMOD-SC-OVERALL-01 — Normal case: The module result is coherent and ready for its owned handoff
 
-The complete work should align path, packages, Go floor, dependencies, tools, workspace boundary,
-compatibility, consumer behavior, release contents, version, and authority. Any hidden development-only
-assumption fails the whole.
+The complete work should align the module path, layout, graph, workspace, `go` directive, dependencies, tools,
+exact public package paths and project commands, external-consumer result, module consumer compatibility
+analysis, private-read evidence when applicable, and exact facts release needs. Any hidden development-only
+assumption or `go-release`-owned decision fails the whole.
 
 #### Checklist
 
 - [ ] GOMOD-CK-OVERALL-01-01 — The complete module contract serves the intended consumers.
-- [ ] GOMOD-CK-OVERALL-01-02 — The proposed release matches the classified compatibility change.
+- [ ] GOMOD-CK-OVERALL-01-02 — The exact facts handed to `go-release` match the external-consumer result and module consumer compatibility analysis.
+- [ ] GOMOD-CK-OVERALL-01-03 — Every applicable module terminal field is explicit: mode, module path, layout, graph, workspace, `go` directive, module's Go language version, minimum supported Go version, selected Go toolchain version, dependencies, tools, exact public package paths and project commands, exact package pattern only as project-command evidence, other project command evidence, external-consumer result, module consumer compatibility analysis, changed or reviewed paths, evidence limits, private module or import-path scope, proxy or version-control-system destination, authorized network and credential reads, redacted evidence, cache/download effects, credential/destination owner, retained safe state, first recovery action, exact release facts, and the absence of external mutation and version or tag proposal or decision.
 - Also applies: GOMOD-CK-USAGE-03-01 (reproducible outside the development workspace).
 
 ### GOMOD-SC-OVERALL-02 — Adversarial: Tidy and internal tests mask a broken consumer contract
 
-Module files are tidy and project tests pass, but an external consumer cannot resolve an import, use the Go
-floor, obtain an asset, or follow the major-version path. Mechanical project success must not substitute for
-consumer validation.
+Module files are tidy and project tests pass, but an external consumer cannot resolve an import, use the
+minimum supported Go version, obtain an asset, or follow the major-version path. Mechanical project success
+must not substitute for consumer validation.
 
 #### Checklist
 
 - [ ] GOMOD-CK-OVERALL-02-01 — Acceptance is not based solely on tidy module files or on tests run inside the module.
 - Also applies: GOMOD-CK-USAGE-01-01 (the module path resolves for an external consumer).
-- Also applies: GOMOD-CK-USAGE-01-02 (every promised public package imports for an external consumer).
+- Also applies: GOMOD-CK-USAGE-01-02 (every promised exact public package path imports for an external consumer).
 - Also applies: GOMOD-CK-USAGE-01-03 (every installable command runs for an external consumer).
 
-### GOMOD-SC-OVERALL-03 — Edge case: A released compatibility defect needs reversal
+### GOMOD-SC-OVERALL-03 — Edge case: An existing module defect needs a `go-release` handoff
 
-A prepared or existing release exposes a compatibility, graph, or content defect. The module position should
-account for a compatible repair, retraction, or other authorized recovery without rewriting published history.
+A released module exposes a compatibility, graph, or content defect. Module work should revalidate the affected
+consumer facts and hand them to `go-release` without rewriting published history or choosing or executing
+release recovery.
 
 #### Checklist
 
-- [ ] GOMOD-CK-OVERALL-03-01 — The recovery preserves published module history.
-- [ ] GOMOD-CK-OVERALL-03-02 — The recovery communicates the affected version to consumers.
-- [ ] GOMOD-CK-OVERALL-03-03 — The recovery path matches the project's release authority.
+- [ ] GOMOD-CK-OVERALL-03-01 — Module work leaves published module history unchanged.
+- [ ] GOMOD-CK-OVERALL-03-02 — The exact module facts identify the affected existing version and consumers.
+- [ ] GOMOD-CK-OVERALL-03-03 — The `go-release` handoff contains only the exact module defect evidence.
