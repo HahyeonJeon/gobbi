@@ -23,7 +23,7 @@ contract or incomplete mode fails.
 #### Checklist
 
 - [ ] GOMOD-CK-PROJECT-01-01 — The module path follows its durable publishing location.
-- [ ] GOMOD-CK-PROJECT-01-02 — The intended consumers, exact public package paths, project commands, `go` directive, module's Go language version, minimum supported Go version, selected Go toolchain version, platforms, and compatibility promise are each identified.
+- [ ] GOMOD-CK-PROJECT-01-02 — The intended consumers, exact public package paths, project commands, `go` directive, module's Go language version, minimum supported Go version, selected Go toolchain version, supported `GOOS/GOARCH` targets and cgo boundary, and compatibility promise are each identified.
 - [ ] GOMOD-CK-PROJECT-01-03 — Every author-mode project-path write, disposable output, cache or download, project execution, network access, credential use, external mutation, pause, terminal, and recovery field matches the accepted author contract.
 - [ ] GOMOD-CK-PROJECT-01-04 — Every validation-mode project-path write, disposable output, cache or download, project execution, network access, credential use, external mutation, pause, terminal, and recovery field matches the accepted validation contract.
 
@@ -84,12 +84,13 @@ unimportable behavior fails.
 ### GOMOD-SC-PERFORMANCE-01 — Poor quality: A dependency adds disproportionate graph cost
 
 A new or upgraded dependency works functionally but adds substantial transitive modules, build time, binary
-size, platform burden, or download cost without enough benefit. Dependency cost should be deliberate.
+size, `GOOS/GOARCH` target or cgo requirements, or download cost without enough benefit. Dependency cost should
+be deliberate.
 
 #### Checklist
 
 - [ ] GOMOD-CK-PERFORMANCE-01-01 — Every direct dependency has a current API-fit benefit.
-- [ ] GOMOD-CK-PERFORMANCE-01-02 — Every material transitive-graph, build-time, binary-size, platform, and download cost increase is justified.
+- [ ] GOMOD-CK-PERFORMANCE-01-02 — Every material increase in transitive-graph size, build time, binary size, `GOOS/GOARCH` target requirements, cgo requirements, or download cost is justified.
 
 ### GOMOD-SC-PERFORMANCE-02 — Edge case: Workspace or graph resolution multiplies work
 
@@ -242,12 +243,13 @@ evidence, and perform no external mutation. A generic authentication claim or ac
 
 ### GOMOD-SC-RISK-02 — Adversarial: A dependency appears useful but violates trust obligations
 
-A new or upgraded dependency has questionable provenance, maintenance, license, vulnerability, platform, or
-transitive behavior. Functional API fit alone should not authorize the graph addition.
+A new or upgraded dependency has questionable provenance, maintenance, license, vulnerability, `GOOS/GOARCH`
+target support or cgo requirements, or transitive behavior. Functional API fit alone should not authorize the
+graph addition.
 
 #### Checklist
 
-- [ ] GOMOD-CK-RISK-02-01 — Every new or upgraded dependency has an acceptable provenance, maintenance, license, known-vulnerability, platform-support, and transitive position.
+- [ ] GOMOD-CK-RISK-02-01 — Every new or upgraded dependency has an acceptable provenance, maintenance position, license, known-vulnerability position, `GOOS/GOARCH` target support, cgo support, and transitive position.
 
 ### GOMOD-SC-RISK-03 — Rule violation: Temporary graph state enters the module result
 
@@ -272,14 +274,14 @@ crossing that boundary fails even when the release action would otherwise be val
 
 ### GOMOD-SC-RISK-05 — Expected failure: Consumer, compatibility, minimum-version, or private-read validation fails
 
-An external consumer, supported platform, minimum supported Go version, module consumer compatibility check,
-or authorized private read cannot complete safely. The module result should remain blocked until its contract,
-implementation, authority, credential delivery, or evidence changes; another environment's pass does not close
-the failure.
+An external consumer, supported `GOOS/GOARCH` target or required cgo environment, minimum supported Go version,
+module consumer compatibility check, or authorized private read cannot complete safely. The module result should
+remain blocked until its contract, implementation, authority, credential delivery, or evidence changes; another
+environment's pass does not close the failure.
 
 #### Checklist
 
-- [ ] GOMOD-CK-RISK-05-01 — Every failing promised consumer, platform, minimum supported Go version, private read, and module consumer compatibility check remains visible.
+- [ ] GOMOD-CK-RISK-05-01 — Every failing promised consumer, supported `GOOS/GOARCH` target and required cgo environment, minimum supported Go version, private read, and module consumer compatibility check remains visible.
 - [ ] GOMOD-CK-RISK-05-02 — Module completion is not claimed across workspace-only success, a hidden replacement, consumer failure, a conflict with the minimum supported Go version, unavailable private-module authority or credential, unsafe credential handling, destination change, or incomplete module consumer compatibility evidence.
 - [ ] GOMOD-CK-RISK-05-03 — Every module block identifies its missing prerequisite or first useful diagnostic, affected obligation, current evidence, risk, recovery owner, retained safe state, first recovery action, and handoff.
 
@@ -335,4 +337,4 @@ release recovery.
 
 - [ ] GOMOD-CK-OVERALL-03-01 — Module work leaves published module history unchanged.
 - [ ] GOMOD-CK-OVERALL-03-02 — The exact module facts identify the affected existing version and consumers.
-- [ ] GOMOD-CK-OVERALL-03-03 — The `go-release` handoff contains only the exact module defect evidence.
+- [ ] GOMOD-CK-OVERALL-03-03 — The `go-release` handoff contains the exact affected module facts, external-consumer result, and module consumer compatibility analysis.

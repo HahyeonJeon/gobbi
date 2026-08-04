@@ -13,8 +13,8 @@ module consumer compatibility analysis.
 
 The operation has author and validation modes. It owns the exact module facts release needs, but it owns no
 version or tag proposal or decision, tag or ref creation, publication, external mutation, or release recovery.
-`go-toolchain` owns project command syntax, exact package-pattern semantics, the selected Go toolchain version,
-and command effects. `go-testing` owns evidence selection and interpretation. `go-security` owns protected-data
+`go-toolchain` owns project command syntax, exact package pattern semantics, the selected Go toolchain version,
+and project command effects. `go-testing` owns evidence selection and interpretation. `go-security` owns protected-data
 judgment. Binary and archive production belongs to `go-packaging`; release decisions and results belong to
 `go-release`.
 
@@ -73,7 +73,7 @@ consumer and return a module consumer compatibility analysis without making a re
   history. Preserve the baseline files and evidence needed to explain graph changes.
 - State the requested module result: new module, dependency edit, workspace edit, layout change, tool declaration,
   compatibility change, or validation. Bind the module path, consumers, exact public package paths, project
-  commands, platforms, cgo boundary, private dependencies, and compatibility promise.
+  commands, supported `GOOS/GOARCH` targets, cgo boundary, private dependencies, and compatibility promise.
 - Record the `go` directive and module's Go language version separately from the minimum supported Go version.
   Confirm that source syntax, used standard-library APIs, dependencies, and tools support the project-supplied
   minimum. Use `go-toolchain` to bind the selected Go toolchain version, active module or workspace, working
@@ -132,7 +132,7 @@ consumer and return a module consumer compatibility analysis without making a re
 
 - Prefer the standard library or an accepted dependency when it meets the need. Before adding or changing a
   dependency, inspect API fit, maintenance, license, provenance, version history, transitive graph, known
-  vulnerabilities, platform requirements, and download cost.
+  vulnerabilities, supported `GOOS/GOARCH` targets, cgo requirements, and download cost.
 - Add, upgrade, downgrade, or remove only the intended dependency. Run `go mod tidy` only after imports and build
   constraints represent the intended source, then review every addition and removal in `go.mod` and `go.sum`.
   Validate each retained replacement, exclusion, retraction, and vendor choice against the consumer contract;
