@@ -1,18 +1,23 @@
 # Desktop Interface Evaluation Checklist
 
-This reusable unchecked source evaluates one installed desktop application's design judgment against the
-identity-authority, evidence-threshold, concept-exploration, expression-ordering, modality-coverage, and
-success-measure obligations this skill owns. It is governed by the [`desktop`](../SKILL.md) domain and
-[`desktop-interface`](SKILL.md) preferences, with [`desktop-delivery`](../desktop-delivery/SKILL.md) as the
-operation that coordinates them, [`desktop-contract`](../desktop-contract/SKILL.md) as the owner of the
-observable installed-platform contract, and the renderer's interaction, presentation, and motion owners —
-including [`web-interaction`](../../web/web-interaction/SKILL.md) and
-[`css-motion`](../../css/css-motion/SKILL.md) — as the owners of the mechanics these judgments call for. The
-source commit that contains this file identifies the checklist version. Its stable owner prefix is `DTINTF`.
+This reusable unchecked source evaluates one installed desktop application's complete design-lifecycle
+judgment: the seven activity results, identity authority, evidence threshold, concept exploration,
+prototyping, representative-user testing, expression ordering, modality coverage, collaboration,
+interaction and motion intent, and post-release improvement. It is governed by the
+[`desktop`](../SKILL.md) domain and [`desktop-interface`](SKILL.md) preferences, with
+[`desktop-development`](../desktop-development/SKILL.md) as the ordered operation that coordinates the work.
+The source commit that contains this file identifies the checklist version. Its stable owner prefix is
+`DTINTF`.
 
 The evidence Rule this source checks is a risk threshold, not an unconditional gate. Rows below test the
 threshold as the Rule states it: an evidence class is named for every claim, and new representative-user
 evidence is required only for a choice that matches one of the Rule's named triggers.
+
+This source judges whether an interaction or motion is warranted and what state, location, or causality it
+communicates. Event, pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics
+belong to [`web-interaction`](../../web/web-interaction/SKILL.md); declarative motion mechanics belong to
+[`css-motion`](../../css/css-motion/SKILL.md). Other product, implementation, Electron, renderer, release,
+and operating-system questions remain with their named owners.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -34,7 +39,6 @@ identity assembled from whichever source was nearest is the failure.
 - [ ] DTINTF-CK-PROJECT-01-01 — The identity source is the highest available in the chain: explicit `DESIGN.md`, brand, product, or design-system material, then the live product, system, and tokens, then a user-confirmed run-scoped brief.
 - [ ] DTINTF-CK-PROJECT-01-02 — The selected identity source is recorded beside the decisions it constrains.
 - [ ] DTINTF-CK-PROJECT-01-03 — No identity constraint excuses avoidable exclusion or harm.
-- [ ] DTINTF-CK-PROJECT-01-04 — Every mechanism question the design raises is routed to its named owner: renderer event, pointer, keyboard, focus, and widget patterns to `web-interaction`; declarative motion mechanics to `css-motion`; installed-platform behavior to `desktop-contract`; and Electron security boundaries and ownership defaults to `electron-design`.
 
 ### DTINTF-SC-PROJECT-02 — Rule violation: a project-wide design authority is created here
 
@@ -46,6 +50,38 @@ project's design authority from inside a design decision is the failure.
 
 - [ ] DTINTF-CK-PROJECT-02-01 — No project-wide `DESIGN.md` is created or prescribed by this work.
 - [ ] DTINTF-CK-PROJECT-02-02 — A run-scoped brief used as the identity source is confirmed by the user rather than assumed.
+
+### DTINTF-SC-PROJECT-03 — Normal case: every design activity returns a bounded judgment
+
+The design record covers the whole lifecycle while ordered work remains elsewhere. The expected outcome gives
+each activity one disposition and a traceable result; an omitted activity, double disposition, or ownerless
+record is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-PROJECT-03-01 — Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement each have a result.
+- [ ] DTINTF-CK-PROJECT-03-02 — Each activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
+- [ ] DTINTF-CK-PROJECT-03-07 — Each activity result names its actor or owner, subject and scope, current inputs, method, evidence, decision state, counterevidence, failure, uncertainty, limitations, dependencies, routes, trace, reopen condition, and evidence location.
+
+### DTINTF-SC-PROJECT-04 — Poor quality: Discovery evidence cannot change the decision
+
+Discovery is described as complete because sources were collected. The expected outcome returns evidence
+that is stale, weak, disconnected from affected people or context, silent about counterevidence or
+uncertainty, or unable to affect the current decision; source volume presented as relevance is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-PROJECT-04-01 — The Discovery research result returns without closing when sources are weak or stale; affected people, context, or counterevidence is missing; uncertainty is unresolved; or the evidence cannot affect the decision.
+
+### DTINTF-SC-PROJECT-05 — Rule violation: requirements are not current problem evidence
+
+A requirements record exists but embeds an invented solution or lacks current authority and trace. The
+expected outcome returns every invented, solution-locked, authority-free, untraceable, incomplete, or
+contradicted problem or requirement; a polished requirements list treated as acceptance is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-PROJECT-05-01 — The Problem framing and design requirements result returns without closing when a problem or requirement is invented, solution-locked, authority-free, untraceable, incomplete, or contradicted.
 
 ## Structure
 
@@ -82,13 +118,39 @@ expression that makes an unfinished structure look finished is the failure.
 - [ ] DTINTF-CK-STRUCTURE-03-01 — No detailed expression is decided while structure, behavior, content, feedback, recovery, adaptation, or accessibility remains unresolved.
 - [ ] DTINTF-CK-STRUCTURE-03-02 — No expressive choice conceals missing structure or inaccessible behavior.
 
+### DTINTF-SC-STRUCTURE-04 — Expected failure: a prototype cannot answer its design question
+
+A prototype is offered as evidence for a choice or for production behavior. The expected outcome returns when
+its fidelity hides the question, required experience coverage is absent, or its evidence is promoted beyond
+the prototype; a polished demonstration treated as production proof is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-STRUCTURE-04-03 — The Prototyping result returns without closing when fidelity hides the question; a required path, state, failure, recovery, accessibility, or adaptation is missing; or prototype evidence is treated as production proof.
+
+### DTINTF-SC-STRUCTURE-05 — Adversarial: concept alternatives hide the actual trade-off
+
+Several candidates are presented as concept work, but they share one consequential model or hide its costs.
+The expected outcome returns cosmetic alternatives, hidden trade-offs, or an unsupported single-concept
+claim; the appearance of choice used to close the activity is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-STRUCTURE-05-01 — The Concept alternatives result returns without closing when alternatives are cosmetic variants, trade-offs are hidden, or fewer than two material concepts remain without the evidenced single-viable exception.
+
 ## Performance
 
-Not applicable: this skill decides whether an interaction or a motion is warranted and what it must
-communicate, not how it is produced or what it costs. Motion duration, easing, and rendering cost belong to
-[`css-motion`](../../css/css-motion/SKILL.md) and the renderer's presentation owners, and installed
-responsiveness and resource measurement is assigned by [`desktop-delivery`](../desktop-delivery/SKILL.md)
-Step 3.2 and Step 4.1.
+### DTINTF-SC-PERFORMANCE-01 — Normal case: post-release evidence can reopen the design
+
+A released interface has current outcome evidence. The expected outcome compares it with dated success
+targets and harm guardrails and reopens an affected decision when warranted; a favorable proxy used to close
+the design permanently is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-PERFORMANCE-01-01 — Post-release measurement identifies the exact design subject, affected people, observation conditions, date, current reach, and applicable success target and harm guardrail.
+- [ ] DTINTF-CK-PERFORMANCE-01-04 — Crossing a success target or harm guardrail reopens the affected decision for an improvement judgment.
+- [ ] DTINTF-CK-PERFORMANCE-01-03 — The Post-release measurement and improvement result returns without closing when a signal is missing or unanswerable, a proxy has a harmful interpretation, monitoring is unbounded, an owner or consumer is missing, a guardrail is crossed, an explicit improvement-or-no-change decision or Maintenance decision is absent, or a no-change result is not dated, bounded, and falsifiable.
 
 ## Aesthetics
 
@@ -106,7 +168,7 @@ taste or house style is the failure.
 
 ### DTINTF-SC-AESTHETICS-02 — Poor quality: motion added with no state change to explain
 
-A transition is added because the surface felt static, and nothing about location, state, or causality is
+A transition is added because the interface felt static, and nothing about location, state, or causality is
 clearer afterwards. The expected outcome is motion only where it makes a change legible, with what it must
 communicate stated; decorative motion accepted because it is subtle is the failure.
 
@@ -140,13 +202,36 @@ or a recovery route discoverable only afterwards, is the failure.
 - [ ] DTINTF-CK-USAGE-02-01 — Consequence, reversibility, and the recovery route are exposed at the point of decision rather than before or after it.
 - [ ] DTINTF-CK-USAGE-02-02 — That exposure is available through each supported modality the action itself is available through.
 
+### DTINTF-SC-USAGE-03 — Normal case: representative people exercise the relevant experience
+
+A prototype or current product is tested before its choice is accepted. The expected outcome observes people
+who represent those affected while they encounter the relevant tasks, modalities, access needs, failures,
+and recovery; stakeholder approval or analytics alone is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-USAGE-03-01 — Participants, tasks, settings, supported modalities, access needs, and operating conditions represent the people and experience affected by the choice.
+- [ ] DTINTF-CK-USAGE-03-02 — The result records observed success, failure, recovery, counterevidence, and coverage gaps before the choice is accepted.
+- [ ] DTINTF-CK-USAGE-03-03 — The Representative-user testing result returns without closing when people, subject, tasks, conditions, or modalities are wrong; failure or harm is hidden; generalization is unsupported; or evidence is insufficient.
+
+### DTINTF-SC-USAGE-04 — Normal case: interaction and motion intent is explicit
+
+A design activity contains an applicable interaction or motion choice. The expected outcome states whether
+the behavior is warranted and the meaning it carries before mechanics are selected; omitted intent or an
+unspecified state, location, or cause is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-USAGE-04-01 — Every applicable interaction or motion judgment states whether it is warranted and what state, location, or causality it communicates.
+
 ## Consistency
 
 ### DTINTF-SC-CONSISTENCY-01 — Normal case: the live product is the identity source
 
-The shipped application already teaches its users a set of patterns, and a new surface must sit beside them.
-The expected outcome prefers what the application teaches over a described intention; a new surface built to
-an intention the product never expressed is the failure.
+The shipped application already teaches its users a set of patterns, and a new view, window, page, panel,
+dialog, or control must sit beside them. The expected outcome prefers what the application teaches over a
+described intention; a new view, window, page, panel, dialog, or control built to an intention the product
+never expressed is the failure.
 
 #### Checklist
 
@@ -162,6 +247,17 @@ because it is the running artifact is the failure.
 #### Checklist
 
 - [ ] DTINTF-CK-CONSISTENCY-02-01 — The departure to the current governing material records that the live application is the stale artifact.
+
+### DTINTF-SC-CONSISTENCY-03 — Expected failure: implementation challenges a design decision
+
+Implementation exposes a constraint that conflicts with an accepted observable decision. The expected
+outcome records and returns the conflict for design judgment before behavior changes; silently redefining the
+experience in code is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-CONSISTENCY-03-01 — The Design–implementation collaboration result records each implementation constraint or contradiction, its evidence, owner, and accepted disposition before it changes an observable decision.
+- [ ] DTINTF-CK-CONSISTENCY-03-03 — The Design–implementation collaboration result returns without closing when the handoff is one-way, a mechanism changes intent, a conflict is unowned, the trace is stale, or a contradiction is unverified.
 
 ## Risk
 
@@ -205,17 +301,35 @@ compliance shaped to survive review rather than to change a decision is the fail
 - [ ] DTINTF-CK-RISK-03-03 — Every success measure names the guardrail that detects the harmful interpretation, so a proxy improving while the user outcome worsens cannot stand alone.
 - [ ] DTINTF-CK-RISK-03-04 — Every success measure names the evidence that would reopen the design.
 
-## Overall
+### DTINTF-SC-RISK-05 — Adversarial: reused evidence does not reach the current decision
 
-### DTINTF-SC-OVERALL-01 — Normal case: identity, evidence, concept, expression, modality, and measure decided together
-
-A complete design judgment answers which identity governs, what evidence each claim rests on, which concepts
-were compared, when expression was settled, how meaning reaches every modality, and what a success measure
-must survive. The scenario fails when one of those six is unanswered, or when the design claims more than it
-settled.
+An activity reuses a nearby study without proving that it reaches the present subject and people. The
+expected outcome binds the evidence to its original and current conditions and keeps it falsifiable;
+similarity used as current reach is the failure.
 
 #### Checklist
 
-- [ ] DTINTF-CK-OVERALL-01-01 — The design record answers identity authority, evidence class, concept comparison, expression ordering, modality coverage, and success measures.
-- [ ] DTINTF-CK-OVERALL-01-02 — The design's claim is no broader than the judgments it actually settles.
-- Also applies: DTINTF-CK-PROJECT-01-04 (mechanism questions routed to their named owners).
+- [ ] DTINTF-CK-RISK-05-01 — A `Reused current evidence` result identifies the exact subject, affected people, source, date, context, conditions, falsifiability, and current reach.
+
+### DTINTF-SC-RISK-06 — Adversarial: non-applicability hides a decision risk
+
+An activity is declared unnecessary because the team expects no useful result. The expected outcome proves
+both that the activity cannot change the scoped decision and that no binding risk trigger applies;
+convenience presented as an exact reason is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-RISK-06-01 — A `Not applicable with exact reason` result proves that the activity cannot change the scoped decision and that no binding risk trigger applies.
+
+## Overall
+
+### DTINTF-SC-OVERALL-02 — Normal case: the complete lifecycle stays inside Interface judgment
+
+A complete design judgment covers every activity and routes ordered work and mechanisms without copying
+their policy. The expected outcome claims only what its current results settle and sends each adjacent
+question to its exact owner; an overbroad claim or locally invented mechanism policy is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-OVERALL-02-01 — The design's claim is no broader than the current activity results and judgments it actually settles.
+- [ ] DTINTF-CK-OVERALL-02-02 — Adjacent questions are routed without copied policy: product structure and runtime outcomes to `desktop-architecture`; ordered lifecycle work to `desktop-development`; release judgment to `desktop-release`; Electron mechanisms to the `electron` family; current operating-system facts to `desktop-linux`, `desktop-macos`, or `desktop-windows`; other renderer policy to its web, HTML, CSS, React, or TypeScript owner; event, pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics to `web-interaction`; and declarative motion mechanics to `css-motion`.

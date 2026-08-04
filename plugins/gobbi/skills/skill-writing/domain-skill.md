@@ -71,6 +71,13 @@ other word for that meaning.
 | `toolchain` | Tooling you invoke |
 | `release` | Shipping, at either operation or preference granularity |
 
+### Concrete platform names
+
+Use `windows`, `macos`, and `linux` as lowercase slug words only for a `skill-type: tool` child whose subject
+is that exact external platform and whose compatibility boundary is explicit. This closed list admits no
+other platform name, general proper-name or brand-name class, free synonym for `platform`, or identifier
+alias; `platform` keeps its reserved generic meaning.
+
 ### Free words
 
 A capability the domain genuinely owns may take a word that the domain's own authoritative literature uses,
@@ -80,14 +87,15 @@ would restore the overload the two tiers remove.
 
 These words qualify today: `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
 `architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
-`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`, and
-`compiler` as the proper noun React Compiler.
+`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`,
+`app-lifecycle`, `operations`, `project-structure`, and `compiler` as the proper noun React Compiler.
 
 ### Maintaining the register
 
-The two lists above are the register. Update this section in the same change that changes a reserved meaning or
-admits a new free word, and record the new word beside the others. Without that update the free tier drifts and
-each family invents its own vocabulary again.
+The reserved-word table, closed concrete-platform-name rule, and free-word list above are the register. Update
+this section in the same change that changes a reserved meaning, changes the closed concrete-platform list,
+or admits a new free word, and record the change beside the others. Without that update the register drifts
+and each family invents its own vocabulary again.
 
 ### Relation to globally unique identity
 
