@@ -24,7 +24,8 @@ may contain paths from several work items.}
 ## Task Hierarchy
 
 Numeric paths define parent-child structure only. Record nodes in depth-first order; a leaf task is a
-traceable unit of work and not automatically an agent assignment.
+traceable decomposed task and not automatically an agent assignment. Phase 3 combines one or more compatible
+leaf tasks into each assigned task group.
 
 ### 1 — {Group title}
 
@@ -47,5 +48,5 @@ boundaries, not one group per work item.}
 - **Boundary:** {The exact responsibility of this leaf.}
 - **Output:** {The concrete output this leaf must produce.}
 
-{Repeat the task form for every leaf. Keep splitting until one execution unit can include the whole leaf; if
-the leaf would need several units, split it here first.}
+{Repeat the task form for every leaf. Keep splitting until one task group can include the whole leaf; if the
+leaf would need several task groups, split it here first.}
