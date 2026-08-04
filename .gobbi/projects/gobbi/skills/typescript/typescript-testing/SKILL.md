@@ -7,64 +7,110 @@ skill-type: operation
 
 # TypeScript Testing
 
-TypeScript Testing owns verification of runtime behavior and compile-time contracts. It composes runtime tests, deterministic seams, type-level assertions, expected failures, public declaration checks, built-package checks, and executable documentation without treating any one layer as a substitute for the others.
+TypeScript Testing verifies runtime behavior and compile-time requirements. It composes runtime tests, controllable dependencies, type-level assertions, expected failures, public declaration checks, installed-package checks, and checked documentation examples without treating any one layer as a substitute for the others.
 
-This operation applies to creating and reviewing tests. A read-only review inspects and runs evidence without inheriting authority to change production or test files.
+This operation applies to creating and reviewing tests. Review-only mode inspects existing tests and runs
+authorized commands without inheriting authority to change production or test files. Package-backed command
+metadata is a command name or entry supplied by package metadata, including a `package.json` `bin` entry,
+package script, or workspace package link; `typescript-packaging` owns that metadata and its package behavior.
+Direct non-archive delivery gives the consumer a command without a package-archive installation;
+`typescript-cli-delivery` owns a standalone executable or archive, a script copied or linked directly to an
+install target, a workspace or repository revision plus command, and another direct non-archive method whose
+unit, method, and consumer command are recorded by name. A package-backed workspace command delivered directly
+loads both owners for separate obligations. A genuine hybrid distributes the same command through a package
+archive and a direct non-archive method, loads both, and keeps separate artifact identities and consumer
+entries. This operation owns command behavior tests.
+
+`typescript-packaging` is the sole owner that builds, creates, recreates, and identifies a package archive.
+This operation receives that exact identified archive and an applicable isolated consumer setup, then owns
+behavior, type, and declaration assertions against it. When review-only package validation applies, it may
+inspect only existing generated output and a pre-existing archive supplied by `typescript-packaging`. With
+command authority, it may write only inside a named temporary directory or isolated disposable consumer
+outside reviewed files, remove those writes after review, and install only that pre-existing archive into the
+disposable consumer. It may not change the reviewed subject, install persistently, or publish; evidence that
+needs a new build or archive remains unavailable unless the task changes to author mode.
 
 ## Principles
 
-### Test the layer that owns the claim
+### Test with the layer that can disprove the claim
 
-Runtime behavior needs execution evidence; a type relationship needs compiler evidence; a package promise needs consumer evidence against the artifact.
+Runtime behavior needs an execution result; a type relationship needs a compiler result; a package compatibility statement needs a consumer result against the installed archive.
 
 ### Make failures discriminating
 
 A useful test fails for the defect it names and stays green under unrelated refactoring.
 
-### Control nondeterminism at seams
+### Control nondeterminism at named dependencies
 
-Time, randomness, scheduling, I/O, processes, and external services need explicit controllable boundaries.
+Time, randomness, scheduling, I/O, processes, and external services need explicit controllable adapters.
 
 ### Keep teaching executable
 
-Documented examples are code and require a compatible verification profile with explicit limits.
+Documented examples are code and require a named compiler version and exact compiler options with explicit limits.
 
 ## Rules
 
-- **MUST** select runtime, type-level, negative, declaration, package, and example checks from the claims being made.
-- **NEVER** use a type assertion inside a test as evidence that the asserted type is true.
-- **MUST** prove that every expected-error or negative test fails when its expectation is removed or inverted.
-- **MUST** test public declarations and resolution from a consumer boundary rather than only inside the source project.
-- **MUST** control time, randomness, scheduling, I/O, and host state when deterministic observation is required.
-- **NEVER** treat a source-checkout test as proof of built or packed package behavior.
+- **MUST** classify the work as author mode or review-only mode, then select runtime, type-level, negative,
+  declaration, package, and example checks from the claims being made. Review-only mode changes no reviewed
+  file and stops after Step 1.4; author mode continues into Phase 2.
+- **NEVER** use an ordinary type assertion such as `value as Type` or `<Type>value` inside a test as proof that the asserted type is true. `as const` is a const assertion that may construct precise test input, but it does not itself prove a tested type relationship.
+- **MUST** prove every expected-error or negative test rejects the intended misuse. For directive-based tests,
+  removing the directive must produce the intended diagnostic, and moving it to valid code must produce an
+  unused-directive failure.
+- **MUST** test public declarations and resolution from an isolated consumer project rather than only inside the source project.
+- **MUST** control time, randomness, scheduling, I/O, and named-runtime state when deterministic observation is required.
+- **NEVER** build, pack, create, or recreate a package archive in this operation. Receive the exact identified
+  archive and applicable isolated consumer setup from `typescript-packaging`, and never treat a source-checkout
+  test as proof of that archive's behavior.
 
 ## Procedure
 
-### Phase 1 — Plan the evidence
+### Phase 1 — Plan the verification
 
 #### 1.1 Enumerate claims
 
-- List observable behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, and taught examples.
+- List caller-visible behaviors, failure paths, cleanup obligations, type relationships, rejected programs, public declarations, package resolution paths, command distribution and invocation paths, and taught examples.
+- Record every TypeScript compiler version claimed for package consumers or taught examples.
 - Map each claim to the layer capable of disproving it.
-- Mark review-only mode when edits are not authorized.
+- Classify the work as author mode or review-only mode. Use review-only mode whenever edits are not authorized.
+- Select every applicable project kind: web application, command-line application, library, SDK, desktop application, or a literal fallback.
 
 #### 1.2 Design discriminating cases
 
-- Include ordinary, boundary, failure, cancellation, and adversarial cases that apply.
+- Ensure every applicable ordinary, limit, failure, cancellation, and adversarial case for the tested claims is included.
 - Define what mutation or controlled defect would make each test fail.
-- Avoid assertions tied only to implementation order or private structure unless that structure is the contract.
+- Avoid assertions tied only to implementation order or private structure unless that structure is an explicit requirement.
 
-#### 1.3 Establish deterministic seams
+#### 1.3 Establish controllable dependencies
 
 - Identify time, randomness, network, filesystem, process, event, and scheduler dependencies.
-- Use project-standard fakes or injected boundaries while preserving the behavior under test.
-- Record unavoidable nondeterminism and the evidence that bounds it.
+- In author mode, use project-standard fakes or injected adapters while preserving the behavior under test.
+  In review-only mode, inspect how existing tests control those dependencies without adding an adapter or fake.
+- Record unavoidable nondeterminism and the repeated or statistical result that bounds it.
+
+#### 1.4 Run review-only mode
+
+- Continue through this step only in review-only mode. Inspect the existing runtime, type-level, negative,
+  declaration, package, command, and example checks that apply to the recorded claims.
+- Run only authorized existing checks. To challenge a test's failure power, introduce or simulate the named
+  defect only inside an authorized disposable boundary, such as the smallest required fixture copied into a
+  named temporary directory. When reproduction would require an unauthorized external or irreversible
+  effect, record that exact blocked effect and classify failure-power evidence as unavailable.
+- For package validation, inspect only existing declarations and generated package output. Inspect or install
+  only the exact package archive that `typescript-packaging` identifies as having existed before the review,
+  and install it only into the isolated disposable consumer setup that operation supplies when command
+  authority permits.
+- Return command results, findings, and limitations without changing a reviewed file, creating build output,
+  creating an archive, installing persistently, updating documentation or release notes, or publishing. Stop
+  before Phase 2; any required mutation of reviewed files or new output requires author mode.
 
 ### Phase 2 — Build runtime tests
 
+Continue into Phase 2 only in author mode.
+
 #### 2.1 Test observable behavior
 
-- Reach the unit through its public or user-visible surface.
+- Reach the unit through its public API, command, or user-visible interface.
 - Assert outputs, state transitions, emitted events, side effects, and failures that consumers observe.
 - Verify cleanup after success, failure, cancellation, and early exit when resources are involved.
 
@@ -76,15 +122,20 @@ Documented examples are code and require a compatible verification profile with 
 
 #### 2.3 Verify the failure power
 
-- Introduce or simulate the named defect when practical and confirm the test fails for the expected reason.
-- Restore the accepted implementation and run the focused test fresh.
+- Introduce or simulate the named defect only inside the authorized author-mode affected set or an authorized
+  disposable boundary, and confirm the test fails for the expected reason.
+- When reproduction would require an unauthorized external or irreversible effect, record that exact blocked
+  effect and classify failure-power evidence as unavailable instead of crossing the boundary. Keep that
+  result open and do not enter the remaining mutation-specific path for that test.
+- Restore the accepted implementation and run the focused test again.
+- If the test stays green under the defect or stays red after restoration, return to Phase 1.2 for the case design or the owning Phase 2 step for the runtime test.
 - Reject snapshots or broad assertions that pass under the defect.
 
 ### Phase 3 — Build type and declaration tests
 
 #### 3.1 Add positive type cases
 
-- Compile representative valid uses through the public surface.
+- Compile representative valid uses through the public API.
 - Assert inferred or declared relationships with type-level helpers that fail on mismatch.
 - Keep runtime assertions separate from compile-time claims.
 
@@ -92,38 +143,68 @@ Documented examples are code and require a compatible verification profile with 
 
 - Compile intentionally invalid uses with the project's expected-error mechanism.
 - Confirm removing the expectation produces the intended diagnostic and that an unused expectation fails.
+- If either mutation does not discriminate the intended misuse, return to Phase 1.2 or revise the negative case in this step before continuing.
 - Keep diagnostic-sensitive tests narrow enough to reject the targeted misuse rather than any arbitrary error.
 
-#### 3.3 Test declarations and packages
+#### 3.3 Test declarations, packages, and commands
 
 - Emit or obtain the public declarations and type-check isolated consumer fixtures.
-- Build or pack the package, install that artifact, and exercise its documented entry points and resolution modes.
-- Compare declaration or API surfaces when compatibility is part of the contract.
+- Receive the exact identified package archive and applicable isolated consumer setup from
+  `typescript-packaging`. Do not independently build, pack, create, or recreate the archive.
+- Install that exact archive into the supplied consumer setup, then exercise its documented entry points and
+  resolution modes and own the behavior, type, and declaration assertions against it.
+- For every command supplied through a package archive, capture command-name resolution in the isolated consumer. Prove that it selects the executable created by that archive installation.
+- Invoke the installed command and assert the arguments, standard streams, exit status, signals, and failure text required by the supplied command specification.
+- Compare declarations or exported APIs when compatibility is a stated requirement.
 
 ### Phase 4 — Verify examples and the suite
 
 #### 4.1 Verify documented examples
 
-- Extract every fenced TypeScript example the documentation claims is executable.
-- Compile positive, partial-with-prelude, expected-error, and type-level categories according to their declared contract.
-- State that the example profile verifies compatible teaching fragments; it does not prove every runtime host, compiler profile, or package artifact mode.
+- Extract every fenced `ts` example the documentation presents as valid or intentionally rejected.
+- Compile each self-contained example exactly as displayed with every compiler version claimed for it. For an `@ts-expect-error` example, also prove that removing or moving the directive produces the intended diagnostic or an unused-directive failure under each version.
+- Record every compiler version, option set, and result. State that these checks prove only those examples under those versions and options; they do not prove every named runtime, project `tsconfig.json`, or installed package path.
 
 #### 4.2 Run the verification ladder
 
-- Run focused runtime and type checks, then the broader test, declaration, build, and package gates that apply.
+- Run focused runtime and type checks, then the broader test, declaration, build, and package checks that apply.
 - Ensure zero discovered tests or examples fails closed when discovery is part of the claim.
-- Review fresh output for skipped, quarantined, flaky, or unexpectedly absent cases.
+- Review output from the final-tree run for skipped, quarantined, flaky, or unexpectedly absent cases.
+- When a check fails, return to Phase 1 for a claim or case-design mismatch, Phase 2 for a runtime-test defect, or Phase 3 for a type, declaration, package, or command-test defect.
+- After repair, re-run the failed check and every affected downstream check from the final tree.
+- When repair is unauthorized or outside scope, stop with the failed claim and command evidence. A check that ran and failed is not an unavailable-check limitation.
 
-#### 4.3 Review traceability
+#### 4.3 Verify each selected project kind
 
-- Map every claim to at least one current test and every test to a named contract.
-- Record unavailable hosts, tools, or package modes as limitations.
-- In review-only mode, report findings without mutating the target.
-- When this test work is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by
+- For a web application, test affected browser and server behavior at the layer that exposes it and smoke-test the production build in the named runtime.
+- For a command-line application, use the isolated consumer entry prepared by the applicable delivery owner
+  and invoke its consumer command. Use `typescript-packaging` for every command name or entry supplied through
+  `package.json` `bin`, a package script, or a workspace package link. Use `typescript-cli-delivery` when the
+  consumer receives the command without installing a package archive, including a standalone executable or
+  archive, a script copied or linked directly to an install target, a workspace or repository revision plus
+  command, or another direct non-archive method whose unit, method, and consumer command are recorded by name.
+  A package-backed workspace command delivered directly loads both owners. A genuine hybrid distributes the
+  same command through both methods, loads both, and keeps separate artifact identities and consumer entries.
+  Prove the invoked executable is the recorded output rather than an unrelated command already on `PATH`.
+  Verify the command specification, including failure and signal paths that apply.
+- For a library, use an isolated representative consumer through the recorded distribution method. Install the
+  exact package archive and isolated consumer setup supplied by `typescript-packaging` when the library is
+  distributed as a package; otherwise use the recorded workspace,
+  project-reference, source, or other consumer path. Type-check every supported import, inspect declarations
+  that path exposes, and run every runtime entry where runtime code exists.
+- For an SDK, verify external payload parsing, documented client calls, public types, failures, cancellation, and supported consumer compiler configurations.
+- For a desktop application, test main, preload, renderer, and typed IPC behavior separately where present, then exercise the packaged application path required by the Electron and desktop skills.
+- For a fallback project kind, test every named runtime, generated output, and direct consumer recorded by `typescript-development`.
+
+#### 4.4 Review traceability
+
+- Map every claim to at least one current test and every test to a named requirement.
+- Record unavailable runtimes, tools, or package modes as limitations.
+- When this test change is evaluated, the [test checklist](checklists.md), [project-kind checklist](project-kind-checklists.md), and every checklist provided by
   an active `typescript` sibling supply the applicable conditions; the general Evaluation operation
   resolves them and issues any verdict.
 
 ## References
 
-- [Evaluation checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for work
-  governed by this skill.
+- [Test checklist](checklists.md) supplies reusable unchecked scenarios and atomic conditions for test design and evidence.
+- [Project-kind checklist](project-kind-checklists.md) supplies reusable unchecked scenarios and atomic conditions for web, CLI, library, SDK, desktop, and fallback verification.
