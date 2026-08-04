@@ -146,8 +146,6 @@ representation and rebuilt in the receiving module. Passing the unsupported form
 - [ ] RSRV-CK-CONSISTENCY-03-01 — An unsupported inline Server Function direct import is recovered by a marked module or supported reference boundary.
 - [ ] RSRV-CK-CONSISTENCY-03-02 — Each unsupported boundary value is replaced by a supported transfer representation.
 - [ ] RSRV-CK-CONSISTENCY-03-03 — Each transferred representation is reconstructed only in the receiving module that has the required data.
-- Also applies: RSRV-CK-CONSISTENCY-03-02 (unsupported boundary values use a supported transfer representation).
-- Also applies: RSRV-CK-CONSISTENCY-03-03 (the receiving module reconstructs each transferred representation).
 
 ## Risk
 

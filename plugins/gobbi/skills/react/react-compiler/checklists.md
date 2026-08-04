@@ -151,12 +151,12 @@ regresses. Expanding despite a failed slice or lacking a recovery boundary fails
 
 ### RCMP-SC-RISK-02 — Expected failure: Expansion or recovery exceeds the last proven boundary
 
-Expansion and recovery must stay within the complete slice gate and last proven boundary. Skipping the gate,
-recovery inspection, or smallest corrected retry fails the scenario.
+Expansion and recovery must stay within the complete set of required slice checks and last proven boundary.
+Skipping those required checks, recovery inspection, or smallest corrected retry fails the scenario.
 
 #### Checklist
 
-- [ ] RCMP-CK-RISK-02-01 — Expansion requires the current bounded slice to satisfy its complete correctness, lint and build, coverage, and measurement gate.
+- [ ] RCMP-CK-RISK-02-01 — All required correctness, lint and build, coverage, and measurement checks must pass before the current bounded slice expands.
 - [ ] RCMP-CK-RISK-02-02 — Regression recovery inspects configuration, coverage, and identity assumptions after restoring the last proven boundary.
 - [ ] RCMP-CK-RISK-02-03 — Recovery retries only the smallest corrected slice.
 
