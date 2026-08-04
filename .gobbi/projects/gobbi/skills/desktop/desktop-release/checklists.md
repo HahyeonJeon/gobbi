@@ -3,9 +3,10 @@
 This reusable unchecked source evaluates one set of desktop release judgments against the claim-scoping,
 persisted-data, transition-rehearsal, target-obligation, readiness, and publication-authority obligations this
 skill owns. It is governed by the [`desktop`](../SKILL.md) domain and [`desktop-release`](SKILL.md)
-preferences, with [`desktop-delivery`](../desktop-delivery/SKILL.md) as the operation that coordinates the
-outcome, [`desktop-contract`](../desktop-contract/SKILL.md) as the owner of the observable installed-platform
-contract, and the [`electron`](../../electron/SKILL.md) family as the owner of packaging, signing, update, and
+preferences, with [`desktop-development`](../desktop-development/SKILL.md) as the operation that coordinates
+the outcome. The applicable [`desktop-windows`](../desktop-windows/SKILL.md),
+[`desktop-macos`](../desktop-macos/SKILL.md), or [`desktop-linux`](../desktop-linux/SKILL.md) child owns current
+target facts, and the [`electron`](../../electron/SKILL.md) family owns packaging, signing, update, and
 platform mechanisms. The source commit that contains this file identifies the checklist version. Its stable
 owner prefix is `DTRLSE`.
 
@@ -42,6 +43,17 @@ justifies; a wide matrix kept because removing a target feels like a regression 
 - [ ] DTRLSE-CK-PROJECT-02-02 — Every expansion beyond the narrowest matrix names the concrete requirement and target-specific evidence that justify its build, support, update, and recovery cost.
 - [ ] DTRLSE-CK-PROJECT-02-03 — Every target that neither need nor evidence supports is stated as unsupported.
 
+### DTRLSE-SC-PROJECT-03 — Adversarial: proxy evidence is presented as exact evidence
+
+A nearby application build, artifact, target, predecessor, or state passed, and its result is used to support
+the current claim. The expected outcome binds the claim to its complete exact evidence subject; similarity
+used to transfer a result is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-PROJECT-03-01 — Every claim identifies the exact application version and build, artifact and checksum, operating-system release and build, application and operating-system architecture, install form, scope, and state, channel and environment, signature, notarization, and trust state, and evidence class.
+- [ ] DTRLSE-CK-PROJECT-03-02 — No result from one application build, artifact, target, predecessor, or state is used as evidence for another.
+
 ## Structure
 
 ### DTRLSE-SC-STRUCTURE-01 — Normal case: persisted structures are versioned and recoverable
@@ -69,6 +81,18 @@ those users; a change that only considers the new version is the failure.
 - [ ] DTRLSE-CK-STRUCTURE-02-03 — Every departure from additive evolution names the measured storage, time, or product requirement behind it.
 - [ ] DTRLSE-CK-STRUCTURE-02-04 — Every departure from additive evolution protects each affected version with an explicit refusal, downgrade behavior, and accepted recovery.
 - [ ] DTRLSE-CK-STRUCTURE-02-05 — Compatibility and recovery are chosen over a smaller migration or release burden where the two conflict.
+
+### DTRLSE-SC-STRUCTURE-03 — Expected failure: recovery would damage protected user state
+
+An update or recovery path can reach a runnable version only by overwriting incompatible user state or
+weakening secret protection. The expected outcome preserves the data, schemas, settings, native integration
+state, and protected secrets or returns an exact blocker; a runnable application reached by damaging that
+state is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-STRUCTURE-03-01 — Every accepted recovery preserves compatible data, schemas, settings, and native integration state for the resulting installed version.
+- [ ] DTRLSE-CK-STRUCTURE-03-02 — No recovery exposes a protected secret when its required protection is unavailable or degraded.
 
 ## Performance
 
@@ -106,6 +130,16 @@ and distinct; a summary that reads cleanly but hides which state was reached is 
 
 - [ ] DTRLSE-CK-AESTHETICS-01-01 — Development, packaged, installed, signed or notarized, update-rehearsed, release-ready, release-authorized, and post-release claims are kept distinct in the record.
 - [ ] DTRLSE-CK-AESTHETICS-01-02 — No summary word stands for a release state the evidence does not establish.
+
+### DTRLSE-SC-AESTHETICS-02 — Adversarial: a complete state list hides missing proof
+
+The record lists every expected state name, but the names are not tied to state-specific evidence. The
+expected outcome supports each claimed state independently; a cosmetically complete list used to hide an
+unproved state is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-AESTHETICS-02-01 — Every claimed state is backed by evidence for that exact state rather than by the presence of its name in a complete-looking list.
 
 ## Usage
 
@@ -193,6 +227,48 @@ for machines beyond reach is the failure.
 
 - [ ] DTRLSE-CK-RISK-03-01 — No halt or withdrawal of distribution is claimed to protect machines that have already installed the release.
 - [ ] DTRLSE-CK-RISK-03-02 — Every containment claim names the population it actually reaches.
+
+### DTRLSE-SC-RISK-04 — Rule violation: readiness is treated as authority or publication proof
+
+The application is release-ready, so an outward action is taken or the application is described as published
+or deployed. The expected outcome keeps readiness, action authority, and verified publication or deployment
+separate; using readiness to prove either later state is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-RISK-04-01 — Release readiness is not treated as authority for signing, notarization, credential use, publication, deployment, promotion, feed, store, channel, signing-provider mutation, rollout widening, rollback, or Forward fix action.
+- [ ] DTRLSE-CK-RISK-04-02 — A published or deployed claim is supported by evidence from the exact destination and resulting bytes rather than by readiness or a successful upload alone.
+
+### DTRLSE-SC-RISK-05 — Adversarial: earlier authority is stretched to a different action
+
+An earlier approval is general, expired, or narrower than the next action, but it is reused because the
+artifact and target have not changed. The expected outcome requires current authority that matches the exact
+action and target; similarity to the approved action is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-RISK-05-01 — Each action involving signing, notarization, credential use, publication, deployment, promotion, feed, store, channel, signing-provider mutation, rollout widening, rollback, or Forward fix has unexpired point-of-action authority matching its exact action and target.
+
+### DTRLSE-SC-RISK-06 — Expected failure: rollback lacks reach or compatibility proof
+
+An older artifact is available, but its distribution path cannot reach every affected machine or its state
+compatibility is incomplete. The expected outcome rejects rollback and retains another exact safe recovery;
+availability of the older artifact presented as rollback safety is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-RISK-06-01 — Rollback is rejected unless target-specific distribution evidence proves that it reaches the affected installed versions.
+- [ ] DTRLSE-CK-RISK-06-02 — Rollback is rejected unless data, schema, settings, and native integration compatibility prove it safe for the affected installed versions.
+
+### DTRLSE-SC-RISK-07 — Normal case: a Forward fix corrects an installed faulty version
+
+A faulty version is already installed and rollback is not proved safe. The expected outcome uses a later
+compatible version to correct those installed applications; a distribution-only change presented as the
+Forward fix is the failure.
+
+#### Checklist
+
+- [ ] DTRLSE-CK-RISK-07-01 — The Forward fix uses a later compatible release to correct a faulty version already installed on user machines.
 
 ## Overall
 

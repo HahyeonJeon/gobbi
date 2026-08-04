@@ -7,58 +7,96 @@ skill-type: preference
 
 # Desktop Release
 
-Use this skill when choosing desktop targets and channels, deciding what release evidence supports, or setting data, update, recovery, rollout, support, and publication defaults. It helps agents make bounded release judgments without assuming that one artifact or environment proves another.
+Use this skill to judge target support, artifact and installed evidence, compatibility, recovery, readiness,
+rollout controls, support, rollback, and publication authority.
+Forward fix: Uses a later compatible release to correct a faulty version already installed on user machines.
 
-`desktop-contract` owns the observable installed-platform contract, and the [`electron`](../../electron/SKILL.md) family owns Electron packaging, signing, update, and platform mechanisms. `desktop-delivery` owns ordered work for a complete outcome; this skill owns only the valid choice space, defaults, exceptions, and authority boundaries for release decisions.
+[`desktop-development`](../desktop-development/SKILL.md) coordinates ordered lifecycle work. The applicable
+[`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
+[`desktop-linux`](../desktop-linux/SKILL.md) child owns current target facts, and the
+[`electron`](../../electron/SKILL.md) family owns packaging, signing, notarization, update, and platform
+mechanisms; this skill owns only release judgments, defaults, exceptions, and authority boundaries.
 
 ## Principles
 
-### Scope every claim
+### Bind claims to exact evidence
 
-A release claim applies only to the exact artifact, operating system, architecture, version, channel, environment, and evidence class that support it. Confidence from one target or state does not transfer to another.
+A claim is only as broad as the exact application, artifact, target, installed state, and evidence behind it.
+Evidence for one build, target, predecessor, or state does not prove another.
 
-### Design for machines beyond reach
+### Plan for versions already installed
 
-Installed releases and their data remain on machines after distribution changes. Recovery must work through a later compatible release or an explicitly proven safe rollback.
+Stopping distribution cannot change an application already installed on a user's machine. Recovery must use
+a later compatible version or a rollback whose reach and compatibility are proved.
 
-### Let user data outlive versions
+### Protect user data across versions
 
-Persisted data belongs to the user, not to the release that wrote it. Compatibility and recovery take priority over a smaller migration or release burden.
+Application data, schemas, settings, native integration state, and protected secrets must survive supported
+version changes safely. A smaller migration or recovery burden never justifies corrupting or exposing them.
 
-### Prefer the smallest credible promise
+### Keep support claims narrow
 
-A narrow support claim with direct evidence is stronger than a broad claim with inferred coverage. Expand targets, predecessors, channels, and rollout only when user need and evidence justify their continuing cost.
+A narrow support claim with direct evidence is stronger than a broad claim inferred from nearby results.
+Expand targets, predecessors, channels, and rollout only when current user need and evidence justify the cost.
 
 ## Rules
 
-- **MUST bound** every claim to its exact artifact, operating system, architecture, version, channel, environment, and evidence class. Keep development, packaged, installed, signed or notarized, update-rehearsed, release-ready, release-authorized, and post-release claims distinct.
-- **MUST make** persistent writes atomic or detectably incomplete, give every persisted structure an explicit schema version, and provide an accepted recovery for corrupt or interrupted state. Protected-secret storage fails closed when its required protection is unavailable or degraded.
-- **MUST define** forward compatibility or explicit refusal, downgrade or round-trip behavior, and recovery for users who stay on an older release whenever persisted data changes. Rehearse updates from previously released installed artifacts with realistic data, covering the immediate predecessor, each materially different supported path, and interruption recovery.
-- **MUST resolve** each target's current signing, notarization, store or package-manager, updater or feed, entitlement or permission, and support obligations from its live owner. An unproved or unavailable obligation limits or removes that target claim; another target's evidence cannot substitute.
-- **MUST define** a forward-fix path, supported-version window, monitoring, rollout stop conditions, and explicit recovery limits before calling a release ready. Halting or withdrawing distribution protects only machines that have not installed the release.
-- **NEVER publish** an installer, update, or store release; change a signing identity or provider; mutate a live feed or channel; or widen a rollout without explicit user authority at that point of action.
+- **MUST bound** every claim to the exact application version and build, artifact and checksum, operating-system
+  release and build, application and operating-system architecture, install form, scope, and state, channel and
+  environment, signature, notarization, and trust state, and evidence class. Resolve Windows facts through
+  `desktop-windows`, macOS facts through `desktop-macos`, Linux facts through `desktop-linux`, and mechanisms
+  through the Electron family; no evidence transfers across an application build, artifact, target,
+  predecessor, or state.
+- **MUST protect** persisted data, schemas, settings, native integration state, and secrets across supported
+  updates and recovery. Require atomic or detectably incomplete writes, explicit schema versions, forward
+  compatibility or explicit refusal, downgrade or round-trip behavior, corruption and interruption recovery,
+  and fail-closed secret protection.
+- **MUST rehearse** updates from previously released installed artifacts with realistic data, including the
+  immediate predecessor, every materially different supported path, and interruption and recovery. An
+  unavailable predecessor or unproved transition remains outside the support claim.
+- **MUST keep** packaged, installed, signed or notarized, update-rehearsed, release-ready,
+  release-authorized, published or deployed, and post-release evidence distinct, and require exact destination
+  and resulting-byte evidence for a published or deployed claim. Before readiness, require a supported-version
+  window, monitoring, rollout stop conditions, explicit recovery limits, and a Forward fix.
+- **MUST choose** rollback only when target-specific distribution reach and data, schema, settings, and native
+  integration compatibility prove it safe for affected installed versions. Halting or withdrawing
+  distribution never repairs a version already installed on a user's machine.
+- **NEVER treat** readiness, accepted evaluation, a successful upload, or earlier general approval as current
+  authority or proof of publication or deployment. Signing, notarization, credential use, publication,
+  deployment, promotion, feed, store, channel, signing-provider mutation, rollout widening, rollback, and
+  Forward fix actions each require unexpired point-of-action authority that matches the exact action and target.
 
 ## Preferences
 
 ### Prefer the narrowest supported target matrix
 
-**PREFER** only the operating systems, architectures, and channels that current user need requires and installed-artifact evidence can support. Expand when a concrete user requirement and target-specific evidence justify the build, support, update, and recovery cost; otherwise state the target as unsupported.
+**PREFER** only the operating systems, architectures, install forms, and channels that current user need
+requires and exact installed-artifact evidence supports. Expand when a concrete user requirement and
+target-specific evidence justify the continuing build, support, update, and recovery cost.
 
 ### Prefer additive data evolution
 
-**PREFER** additive, forward-compatible schema changes, and use copy-on-upgrade when a risky migration could strand older releases. Depart when a measured storage, time, or product requirement makes that design unsuitable and an explicit refusal, downgrade behavior, and accepted recovery protect every affected version.
-
-### Prefer staged rollout
-
-**PREFER** a staged rollout when the distribution channel can control audience growth and the release has observable stop conditions. Depart for offline, private, manual, or owner-constrained distribution only when that channel limitation is evidenced and the support, monitoring, and forward-fix consequences are explicit.
+**PREFER** additive, forward-compatible schema changes and copy-on-upgrade when an in-place migration could
+strand older versions. Depart when a measured storage, time, or product constraint requires another design
+and explicit refusal, downgrade behavior, and accepted recovery protect every affected version.
 
 ### Prefer representative predecessor rehearsal
 
-**PREFER** the immediate previous release plus only supported predecessors whose migration, updater, data, or packaging path differs materially. Expand the sample when telemetry, support history, installed-version distribution, or migration branches show another path carries distinct risk.
+**PREFER** the immediate predecessor plus supported predecessors whose migration, updater, data, or packaging
+path differs materially. Expand the sample when installed-version distribution, telemetry, support history,
+or migration branches show that another path has distinct risk.
 
-### Prefer a forward fix after publication
+### Prefer staged rollout
 
-**PREFER** a forward fix for machines that may already have installed a faulty release. Choose rollback only when target-specific distribution mechanics and data or schema compatibility prove that rollback preserves user state, reaches the affected machines, and stays inside the supported-version promise.
+**PREFER** staged rollout when the distribution channel can control audience growth and the application has
+observable stop conditions. Depart for offline, private, manual, or owner-constrained distribution only when
+the channel limit and its support, monitoring, and Forward fix consequences are explicit.
+
+### Prefer a Forward fix for an installed faulty version
+
+**PREFER** a Forward fix when a faulty version may already be installed. Choose rollback only within the
+Rule's proved reach and compatibility boundary; otherwise preserve the exact recovery limit and next safe
+action.
 
 ## References
 
