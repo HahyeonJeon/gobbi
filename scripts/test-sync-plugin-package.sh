@@ -30,7 +30,7 @@ assert_file_contains() {
 }
 
 make_fixture() {
-  local root="$1" role
+  local root="$1" role skill
   mkdir -p \
     "$root/.gobbi/projects/gobbi/skills" \
     "$root/.gobbi/projects/gobbi/agents" \
@@ -70,6 +70,50 @@ make_fixture() {
     ln -s "../../.gobbi/projects/gobbi/agents/$role.md" "$root/.claude/agents/$role.md"
     ln -s "../../.gobbi/projects/gobbi/agents/$role.toml" "$root/.codex/agents/$role.toml"
   done
+
+  # Every fixture starts from one accepted lifecycle combination. Tests mutate this
+  # same temporary tree one semantic edge at a time, so the existing reconciliation
+  # harness remains the only system under test and unrelated topology stays valid.
+  for skill in gobbi git memory cowork workflow; do
+    cp -R "$repo_root/.gobbi/projects/gobbi/skills/$skill" \
+      "$root/.gobbi/projects/gobbi/skills/$skill"
+  done
+  cp "$repo_root/.gobbi/projects/gobbi/agents/manager.md" \
+    "$root/.gobbi/projects/gobbi/agents/manager.md"
+  cp "$repo_root/.gobbi/projects/gobbi/agents/assistant.md" \
+    "$root/.gobbi/projects/gobbi/agents/assistant.md"
+  cp "$repo_root/.codex/AGENTS.md" "$root/.codex/AGENTS.md"
+  cp "$repo_root/.claude/CLAUDE.md" "$root/.claude/CLAUDE.md"
+  cp "$repo_root/.claude/settings.json" "$root/.claude/settings.json"
+}
+
+replace_literal_once() {
+  local path="$1" old="$2" new="$3" output
+  output="$(mktemp "$tmp_root/rewrite.XXXXXX")"
+  if ! awk -v old="$old" -v new="$new" '
+    !changed {
+      offset = index($0, old)
+      if (offset) {
+        $0 = substr($0, 1, offset - 1) new substr($0, offset + length(old))
+        changed = 1
+      }
+    }
+    { print }
+    END { if (!changed) exit 42 }
+  ' "$path" > "$output"; then
+    find "$output" -depth -mindepth 0 -delete
+    fail "semantic mutation source is absent from $path: $old"
+  fi
+  mv "$output" "$path"
+}
+
+swap_literals_once() {
+  local path="$1" first="$2" second="$3"
+  local marker='GOBBI_SEMANTIC_SWAP_MARKER'
+  grep -Fq -- "$marker" "$path" && fail "semantic swap marker already exists in $path"
+  replace_literal_once "$path" "$first" "$marker"
+  replace_literal_once "$path" "$second" "$first"
+  replace_literal_once "$path" "$marker" "$second"
 }
 
 write_skill_file() {
@@ -165,6 +209,148 @@ prepare_synced_fixture() {
   write_skill_file "$root" alpha SKILL.md '# Alpha'
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
+}
+
+prepare_semantic_fixture() {
+  local root="$1"
+  make_fixture "$root"
+  run_sync "$root" >/dev/null
+  run_sync "$root" --check >/dev/null
+}
+
+assert_only_semantic_failure() {
+  local log="$1" expected="$2" count
+  grep -Fx -- "source topology: $expected" "$log" >/dev/null \
+    || fail "missing exact semantic failure: $expected"
+  count="$(grep -c '^source topology:' "$log")"
+  [[ "$count" -eq 1 ]] \
+    || fail "expected one semantic failure, got $count while checking: $expected"
+}
+
+expect_semantic_failure() {
+  local name="$1" relative_path="$2" old="$3" new="$4" expected="$5"
+  local root="$tmp_root/semantic-$name" log="$tmp_root/semantic-$name.log"
+  prepare_semantic_fixture "$root"
+  replace_literal_once "$root/$relative_path" "$old" "$new"
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail "$name semantic mutation unexpectedly succeeded"
+  fi
+  assert_only_semantic_failure "$log" "$expected"
+  pass "$name rejects one changed semantic edge: $expected"
+}
+
+test_semantic_positive_recovery_and_cosmetic_change() {
+  local root="$tmp_root/semantic-positive"
+  prepare_semantic_fixture "$root"
+  assert_file_contains "$root/.gobbi/projects/gobbi/skills/git/conventions.md" \
+    'Recovery permanently accepts these legacy formats'
+  assert_file_contains "$root/.gobbi/projects/gobbi/skills/git/conventions.md" \
+    'New creation uses only the new formats'
+  printf '\n<!-- Cosmetic fixture note: semantics unchanged. -->\n' \
+    >> "$root/.gobbi/projects/gobbi/skills/cowork/SKILL.md"
+  run_sync "$root" --check >/dev/null
+  pass 'finding-m preserves semantic parity while accepting a cosmetic-only change'
+}
+
+test_semantic_entry_order() {
+  local root="$tmp_root/semantic-entry-order" log="$tmp_root/semantic-entry-order.log"
+  local path='.gobbi/projects/gobbi/skills/gobbi/SKILL.md'
+  local expected='lifecycle entry route must order mode, applicable slug, partner policy, then owner'
+  prepare_semantic_fixture "$root"
+  swap_literals_once "$root/$path" \
+    'After recording fresh Cowork or Workflow' \
+    'After the applicable slug is recorded'
+  if run_sync "$root" --check > "$log" 2>&1; then
+    fail 'entry-order semantic mutation unexpectedly succeeded'
+  fi
+  assert_only_semantic_failure "$log" "$expected"
+  pass "entry-order rejects one reordered routing edge: $expected"
+}
+
+test_semantic_contract_failures() {
+  local name path old new expected
+  while IFS='^' read -r name path old new expected; do
+    [[ -n "$name" ]] || continue
+    expect_semantic_failure "$name" "$path" "$old" "$new" "$expected"
+  done <<'SEMANTIC_CASES'
+entry-general-slug^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^records `slug: not-applicable`^records `slug: omitted`^General entry must record slug: not-applicable
+entry-general-identity^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^creates no Gobbi identity^creates one Gobbi identity^General entry must create no Gobbi identity
+entry-general-policy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^General consumes mode and policy without creating^General ignores mode and policy without creating^General owner must consume partner policy without creating session state
+slug-privacy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^warn that the session slug enters branch names and paths^state that the session slug enters branch names and paths^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^maximal ASCII alphanumeric sequence as one word^maximal locale alphanumeric sequence as one word^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-no-transliteration^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Do not transliterate, truncate^Transliterate, then truncate^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-20-boundary^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Accept only 1–20 characters^Accept only 1–21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-empty-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^normalization is empty^normalization is blank^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-over-20-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^longer than 20 characters^longer than 21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-reserved-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^or reserved^or platform-specific^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+naming-original-date^.gobbi/projects/gobbi/skills/git/conventions.md^never changes at a context boundary^may change at a context boundary^new session identity must preserve the original UTC date across context boundaries
+naming-full-uuid^.gobbi/projects/gobbi/skills/git/conventions.md^full 36-character lowercase hyphenated^short lowercase^new session identity must retain the full UUID
+finding-k-separate-derivation^.gobbi/projects/gobbi/skills/git/conventions.md^Derive the branch and leaf separately from the same tuple^Derive the leaf by stripping the branch prefix^new session names must use exact separately derived branch and leaf forms
+naming-exact-branch^.gobbi/projects/gobbi/skills/git/conventions.md^branch: <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>^branch: <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>^new session names must use exact separately derived branch and leaf forms
+naming-exact-leaf^.gobbi/projects/gobbi/skills/git/conventions.md^leaf:   <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>^leaf:   <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>^new session names must use exact separately derived branch and leaf forms
+recovery-legacy-retention^.gobbi/projects/gobbi/skills/git/conventions.md^Recovery permanently accepts these legacy formats^Recovery temporarily accepts these legacy formats^new and legacy session formats must remain separately recoverable without migration
+recovery-separate-parsers^.gobbi/projects/gobbi/skills/git/conventions.md^Parse new and legacy names with separate validators^Parse new and legacy names with one validator^new and legacy session formats must remain separately recoverable without migration
+recovery-no-migration^.gobbi/projects/gobbi/skills/git/SKILL.md^silently migrate a legacy identity^silently migrate an old identity^Git recovery must never migrate a legacy identity
+recovery-same-uuid-conflict^.gobbi/projects/gobbi/skills/git/conventions.md^Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict^Two different slugs, dates, runtimes, or paths carrying the same UUID are allowed^same-UUID competing session evidence must fail as an identity conflict
+finding-d-recovery-evidence-first^.gobbi/projects/gobbi/skills/git/SKILL.md^take the retained branch or worktree from current caller, session, and registered-worktree^search all branches for a convenient worktree^recovery must use current evidence and ask only for unresolved facts
+finding-c-cowork-uuid^.gobbi/projects/gobbi/skills/cowork/SKILL.md^For a fresh session, generate one full lowercase hyphenated UUID^For a fresh session, reuse one runtime identifier^Cowork must own a fresh UUID and original UTC session identity
+finding-l-workflow-configuration^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Write `configuration.md` there with mode, identity shape, original UTC date^Write `configuration.md` there with mode and branch only^Workflow Configuration must record complete identity evidence
+finding-l-memory-root^.gobbi/projects/gobbi/skills/memory/SKILL.md^original UTC session-start date, and exact session root^current date and inferred session root^Memory must validate caller identity against the exact session root
+finding-f-partner-one-run^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^One **partner run** is one bounded^One **partner run** is an unbounded^Partner must own one external invocation while callers own local participants and assembly
+finding-f-caller-assembly^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^The caller owns local participants, the complete subject, round assembly, policy, acceptance^Partner owns local participants, the complete subject, round assembly, policy, acceptance^Partner must own one external invocation while callers own local participants and assembly
+finding-i-temp-captures^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^live in one private runtime-temporary directory outside every project and session root^live in the project session root^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
+finding-i-success-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^before a successful return or after failure evidence is surfaced^after a successful return only^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
+finding-i-failure-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private^Retain captures after the exact diagnostic is read and surfaced. Keep the complete private^Partner failure handling must remove private captures after surfacing evidence
+finding-e-cowork-enabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^When the session partner policy is enabled, call^When the session partner policy is enabled, skip^Cowork enabled and disabled partner policies must select external or local-only creation
+finding-e-cowork-disabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Disabled runs no external invocation^Disabled may run one external invocation^Cowork enabled and disabled partner policies must select external or local-only creation
+cowork-fresh-local-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Dispatch one fresh isolated active-runtime evaluator over the frozen subject^Reuse the creation writer as evaluator over the frozen subject^Cowork evaluation must always use a fresh local evaluator and conditionally use Partner
+workflow-partner-consumption^.gobbi/projects/gobbi/skills/workflow/SKILL.md^MUST apply the recorded session-wide partner policy to every productive step.^MAY ignore the recorded session-wide partner policy for productive steps.^Workflow must consume the recorded partner policy
+workflow-disabled-local-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh^WORK may reuse any draft and EVALUATION may reuse its author^Workflow disabled policy must retain one assigned local draft and one fresh local evaluator
+workflow-enabled-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Enabled adds each applicable external draft^Enabled may omit applicable external drafts^Workflow enabled policy must use Partner while retaining assembly ownership
+finding-g-phase2-route^.gobbi/projects/gobbi/skills/workflow/phase-2/SKILL.md^external evaluator over the same frozen task subject.^external reviewer over the same frozen task subject.^Workflow Phase 2 must request an external evaluator over the frozen task subject
+finding-g-phase2-disabled^.gobbi/projects/gobbi/skills/workflow/phase-2/SKILL.md^task subject. Neither receives the other report. Disabled invokes^task subject. Neither receives the other report. Disabled sometimes invokes^Workflow Phase 2 disabled evaluation must invoke no external runtime
+finding-a-severity^.gobbi/projects/gobbi/agents/manager.md^severity is High, Medium, or Low;^severity is any value;^automatic finding correction requires High, Medium, or Low severity
+finding-a-blocking^.gobbi/projects/gobbi/agents/manager.md^`blocking: no`;^`blocking: yes|no`;^automatic finding correction requires blocking: no
+finding-a-contract^.gobbi/projects/gobbi/agents/manager.md^the correction stays inside the locked contract^the correction may exceed the locked contract^automatic finding correction must remain inside the locked contract
+finding-a-reversible^.gobbi/projects/gobbi/agents/manager.md^it is reversible, authority-neutral,^it is irreversible, authority-neutral,^automatic finding correction must be reversible and authority-neutral
+finding-a-authority-neutral^.gobbi/projects/gobbi/agents/manager.md^it is reversible, authority-neutral,^it is reversible, authority-expanding,^automatic finding correction must be reversible and authority-neutral
+finding-a-nondestructive^.gobbi/projects/gobbi/agents/manager.md^non-destructive, and non-external.^destructive, and non-external.^automatic finding correction must be non-destructive and non-external
+finding-a-nonexternal^.gobbi/projects/gobbi/agents/manager.md^non-destructive, and non-external.^non-destructive, and external.^automatic finding correction must be non-destructive and non-external
+finding-a-user-boundary^.gobbi/projects/gobbi/agents/manager.md^Present every Critical,^Automatically apply every Critical,^every finding outside the automatic predicate must return to the user
+finding-a-fresh-evaluation^.gobbi/projects/gobbi/agents/manager.md^Require a fresh evaluation after the correction.^Reuse prior evaluation after the correction.^every automatic correction must receive fresh evaluation
+finding-a-pass-only^.gobbi/projects/gobbi/agents/manager.md^Only a verified PASS continues automatically.^PASS or REVISE continues automatically.^only a verified PASS may continue automatically
+finding-a-owner-parity^.gobbi/projects/gobbi/skills/workflow/phase-3/SKILL.md^Medium, or Low^Medium, Low, or Informational^every lifecycle owner must preserve finding severity eligibility
+finding-b-cowork-memory^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Apply Memory directly^Apply Wrap-up indirectly^Cowork closure must apply Memory directly and return only a conversation handoff
+finding-b-cowork-no-wrapup^.gobbi/projects/gobbi/skills/cowork/SKILL.md^do not load Wrap-up or create Workflow closure state^load Wrap-up and create Workflow closure state^Cowork closure must apply Memory directly and return only a conversation handoff
+finding-b-cowork-conversation^.gobbi/projects/gobbi/skills/cowork/SKILL.md^conversation-only handoff^tracked handoff^Cowork closure must apply Memory directly and return only a conversation handoff
+workflow-durable-wrapup^.gobbi/projects/gobbi/skills/workflow/SKILL.md^### Phase 3 — Wrap up and finish^### Phase 3 — Return conversation only^Workflow closure must retain durable Wrap-up and a tracked handoff
+finding-h-assistant-mode^.gobbi/projects/gobbi/agents/assistant.md^**Cowork Memory mode** enters only from an explicit Cowork closure assignment^**Cowork Memory mode** enters without an assignment^assignment-authorized assistant must support Cowork direct-Memory closure only
+finding-h-assistant-boundary^.gobbi/projects/gobbi/agents/assistant.md^Never load Wrap-up, create Workflow receipts or a tracked handoff^Load Wrap-up, create Workflow receipts and a tracked handoff^assignment-authorized assistant must support Cowork direct-Memory closure only
+finding-h-git-writer^.gobbi/projects/gobbi/skills/git/SKILL.md^assignment-named writer role, including an assistant^manager role only^Git must authorize an assignment-named assistant writer
+runtime-entry-order^.codex/AGENTS.md^After the mode, ask a^Before the mode, ask a^runtime entry documentation must preserve mode to slug to partner order
+runtime-disabled-policy^.claude/CLAUDE.md^invokes no external runtime^may invoke an external runtime^runtime entry documentation must preserve disabled local-only behavior
+SEMANTIC_CASES
+}
+
+test_semantic_permissions() {
+  local permission label safe
+  while IFS='^' read -r permission label; do
+    [[ -n "$permission" ]] || continue
+    safe="${permission//[^a-zA-Z0-9]/-}"
+    expect_semantic_failure "finding-j-permission-$safe" '.claude/settings.json' \
+      "\"$permission\"" "\"$permission-disabled\"" "$label"
+  done <<'PERMISSION_CASES'
+Skill(cowork)^Claude settings must explicitly allow Skill(cowork)
+Skill(gobbi:partner)^Claude settings must explicitly allow Skill(gobbi:partner)
+Skill(workflow:phase-1)^Claude settings must explicitly allow Skill(workflow:phase-1)
+Skill(workflow:phase-2)^Claude settings must explicitly allow Skill(workflow:phase-2)
+Skill(workflow:phase-3)^Claude settings must explicitly allow Skill(workflow:phase-3)
+Agent(manager)^Claude settings must explicitly allow Agent(manager)
+Agent(leader)^Claude settings must explicitly allow Agent(leader)
+Agent(executor)^Claude settings must explicitly allow Agent(executor)
+Agent(evaluator)^Claude settings must explicitly allow Agent(evaluator)
+Agent(assistant)^Claude settings must explicitly allow Agent(assistant)
+PERMISSION_CASES
 }
 
 test_safe_reconciliation() {
@@ -566,5 +752,9 @@ test_hook_component_rejection
 test_manifest_hook_rejection
 test_marketplace_and_role_contracts
 test_entry_mode_contract
+test_semantic_positive_recovery_and_cosmetic_change
+test_semantic_entry_order
+test_semantic_contract_failures
+test_semantic_permissions
 
 printf 'PASS: %d sync reconciliation tests completed\n' "$tests_run"

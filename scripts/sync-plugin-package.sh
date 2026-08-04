@@ -167,6 +167,295 @@ require_json_contract() {
   fi
 }
 
+require_semantic_text() {
+  local path="$1" text="$2" label="$3"
+  [[ -f "$path" ]] || return 0
+  grep -Fq -- "$text" "$path" || topology_fail "$label"
+}
+
+require_semantic_sequence() {
+  local path="$1" max_span="$2" label="$3"
+  local first_line=0 previous_line=0 line token
+  shift 3
+  [[ -f "$path" ]] || return 0
+
+  for token in "$@"; do
+    line="$(awk -v after="$previous_line" -v needle="$token" '
+      NR > after && index($0, needle) { print NR; exit }
+    ' "$path")"
+    if [[ -z "$line" ]]; then
+      topology_fail "$label"
+      return 0
+    fi
+    [[ "$first_line" -ne 0 ]] || first_line="$line"
+    previous_line="$line"
+  done
+
+  if ((previous_line - first_line > max_span)); then
+    topology_fail "$label"
+  fi
+}
+
+require_semantic_permission() {
+  local permission="$1" label="$2" settings="$repo_root/.claude/settings.json"
+  [[ -f "$settings" ]] || return 0
+  if ! jq -e --arg permission "$permission" \
+    '.permissions.allow | type == "array" and index($permission) != null' \
+    "$settings" >/dev/null 2>&1; then
+    topology_fail "$label"
+  fi
+}
+
+validate_lifecycle_semantics() {
+  local skills="$repo_root/.gobbi/projects/gobbi/skills"
+  local agents="$repo_root/.gobbi/projects/gobbi/agents"
+  local gobbi="$skills/gobbi/SKILL.md"
+  local git_skill="$skills/git/SKILL.md"
+  local git_conventions="$skills/git/conventions.md"
+  local memory="$skills/memory/SKILL.md"
+  local partner="$skills/gobbi/partner/SKILL.md"
+  local cowork="$skills/cowork/SKILL.md"
+  local workflow="$skills/workflow/SKILL.md"
+  local phase_1="$skills/workflow/phase-1/SKILL.md"
+  local phase_2="$skills/workflow/phase-2/SKILL.md"
+  local phase_3="$skills/workflow/phase-3/SKILL.md"
+  local manager="$agents/manager.md"
+  local assistant="$agents/assistant.md"
+  local path permission role
+
+  for path in \
+    "$gobbi" \
+    "$git_skill" \
+    "$git_conventions" \
+    "$memory" \
+    "$partner" \
+    "$cowork" \
+    "$workflow" \
+    "$phase_1" \
+    "$phase_2" \
+    "$phase_3" \
+    "$manager" \
+    "$assistant"; do
+    require_file "$path"
+  done
+
+  require_semantic_sequence "$gobbi" 75 \
+    'lifecycle entry route must order mode, applicable slug, partner policy, then owner' \
+    '#### 1.3 Obtain or preserve mode, applicable slug, and partner policy' \
+    'After recording fresh Cowork or Workflow' \
+    'After the applicable slug is recorded' \
+    'Record mode, applicable normalized slug, and partner policy together' \
+    '#### 1.4 Load the selected owner and hand off without mutation'
+  require_semantic_text "$gobbi" 'General skips this question' \
+    'General entry must skip the slug question'
+  require_semantic_text "$gobbi" 'records `slug: not-applicable`' \
+    'General entry must record slug: not-applicable'
+  require_semantic_text "$gobbi" 'creates no Gobbi identity' \
+    'General entry must create no Gobbi identity'
+  require_semantic_text "$gobbi" 'General consumes mode and policy without creating' \
+    'General owner must consume partner policy without creating session state'
+  require_semantic_sequence "$gobbi" 14 \
+    'session slug must be privacy-warned, deterministically normalized, and strictly rejected' \
+    'warn that the session slug enters branch names and paths' \
+    'maximal ASCII alphanumeric sequence as one word' \
+    'Do not transliterate, truncate' \
+    'Accept only 1–20 characters' \
+    'normalization is empty, longer than 20 characters, or reserved'
+
+  require_semantic_sequence "$git_conventions" 10 \
+    'new session identity must retain original UTC date and full UUID before name derivation' \
+    'One future session identity is the immutable tuple' \
+    '`date` is the original session-start date in UTC' \
+    'Gobbi session UUID. Generate the UUID before deriving either name'
+  require_semantic_text "$git_conventions" 'never changes at a context boundary' \
+    'new session identity must preserve the original UTC date across context boundaries'
+  require_semantic_text "$git_conventions" 'full 36-character lowercase hyphenated' \
+    'new session identity must retain the full UUID'
+  require_semantic_sequence "$git_conventions" 20 \
+    'new session names must use exact separately derived branch and leaf forms' \
+    'Derive the branch and leaf separately from the same tuple' \
+    'branch: <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>' \
+    'leaf:   <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>' \
+    'worktree and session leaves are byte-identical'
+  require_semantic_sequence "$git_conventions" 30 \
+    'new and legacy session formats must remain separately recoverable without migration' \
+    '### Permanent legacy formats' \
+    'Recovery permanently accepts these legacy formats' \
+    'New creation uses only the new formats. Parse new and legacy names with separate validators' \
+    'matched shape. Never infer a slug for a legacy identity, rename a legacy or active object'
+  require_semantic_text "$git_conventions" \
+    'Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict' \
+    'same-UUID competing session evidence must fail as an identity conflict'
+  require_semantic_sequence "$git_skill" 75 \
+    'Git recovery must parse branch and leaf separately and preserve active or legacy identities' \
+    'Parse the supplied branch and worktree leaf separately through the new or legacy validators' \
+    'same-UUID competing branch, worktree, or session evidence' \
+    'same UUID with a different runtime, date, slug, branch, worktree, or session leaf. Never rename an'
+  require_semantic_text "$git_skill" 'silently migrate a legacy identity' \
+    'Git recovery must never migrate a legacy identity'
+  require_semantic_sequence "$git_skill" 5 \
+    'recovery must use current evidence and ask only for unresolved facts' \
+    'take the retained branch or worktree from current caller, session, and registered-worktree' \
+    'Ask the user only when that evidence is missing' \
+    'never search for a convenient alternative session'
+
+  require_semantic_sequence "$cowork" 5 \
+    'Cowork must own a fresh UUID and original UTC session identity' \
+    'For a fresh session, generate one full lowercase hyphenated UUID' \
+    'session-start date before deriving any name' \
+    'Recovery reuses the proved UUID and date'
+  require_semantic_sequence "$workflow" 55 \
+    'Workflow Configuration must record complete identity evidence' \
+    'For a fresh session, generate a full lowercase hyphenated Gobbi session UUID' \
+    'branch and worktree leaf separately through' \
+    'Write `configuration.md` there with mode, identity shape, original UTC date' \
+    'validated `{gobbi-skills-root}` and `{gobbi-agents-root}` pair'
+  require_semantic_sequence "$memory" 25 \
+    'Memory must validate caller identity against the exact session root' \
+    "Require the caller's full lowercase" \
+    'original UTC session-start date, and exact session root' \
+    '`{memory-root}`. Reject parent traversal, a symbolic-link path' \
+    'require the parsed date, slug, and UUID to equal the caller values'
+
+  require_semantic_sequence "$partner" 12 \
+    'Partner must own one external invocation while callers own local participants and assembly' \
+    'One **partner run** is one bounded' \
+    'read-only invocation of that other runtime' \
+    'The caller owns local participants, the complete subject, round assembly, policy, acceptance'
+  require_semantic_sequence "$partner" 4 \
+    'Partner captures must remain temporary, outside durable roots, and clean up on every outcome' \
+    'live in one private runtime-temporary directory outside every project and session root' \
+    'before a successful return or after failure evidence is surfaced'
+  require_semantic_sequence "$partner" 2 \
+    'Partner failure handling must remove private captures after surfacing evidence' \
+    'Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private' \
+    'capture directory. Report a cleanup failure'
+
+  require_semantic_sequence "$cowork" 10 \
+    'Cowork enabled and disabled partner policies must select external or local-only creation' \
+    'When the session partner policy is enabled, call' \
+    '[Partner](../gobbi/partner/SKILL.md) once for the applicable independent external draft' \
+    'Disabled runs no external invocation' \
+    'The manager owns every local participant'
+  require_semantic_sequence "$cowork" 7 \
+    'Cowork evaluation must always use a fresh local evaluator and conditionally use Partner' \
+    'Dispatch one fresh isolated active-runtime evaluator over the frozen subject' \
+    'Disabled invokes no external runtime' \
+    'The manager assembles the round'
+  require_semantic_text "$cowork" \
+    'When partner is enabled, call' \
+    'Cowork enabled evaluation must route the external evaluator through Partner'
+  require_semantic_text "$workflow" \
+    'MUST apply the recorded session-wide partner policy to every productive step.' \
+    'Workflow must consume the recorded partner policy'
+  require_semantic_text "$workflow" \
+    'Disabled invokes no' \
+    'Workflow disabled policy must select local-only participants'
+  require_semantic_sequence "$workflow" 3 \
+    'Workflow enabled policy must use Partner while retaining assembly ownership' \
+    'Enabled adds each applicable external draft' \
+    'through one [Partner](../gobbi/partner/SKILL.md) invocation while Workflow assembles the complete round'
+  require_semantic_text "$workflow" \
+    'WORK uses one assigned active-runtime self-reviewed draft and EVALUATION uses one fresh' \
+    'Workflow disabled policy must retain one assigned local draft and one fresh local evaluator'
+  require_semantic_text "$phase_2" \
+    'When partner is enabled, call [Partner](../../gobbi/partner/SKILL.md) once for a fresh isolated' \
+    'Workflow Phase 2 enabled evaluator must route through Partner'
+  require_semantic_text "$phase_2" \
+    'external evaluator over the same frozen task subject.' \
+    'Workflow Phase 2 must request an external evaluator over the frozen task subject'
+  require_semantic_text "$phase_2" \
+    'task subject. Neither receives the other report. Disabled invokes' \
+    'Workflow Phase 2 disabled evaluation must invoke no external runtime'
+
+  require_semantic_text "$manager" \
+    'severity is High, Medium, or Low;' \
+    'automatic finding correction requires High, Medium, or Low severity'
+  require_semantic_text "$manager" \
+    '`blocking: no`;' \
+    'automatic finding correction requires blocking: no'
+  require_semantic_text "$manager" \
+    'the correction stays inside the locked contract' \
+    'automatic finding correction must remain inside the locked contract'
+  require_semantic_text "$manager" \
+    'it is reversible, authority-neutral,' \
+    'automatic finding correction must be reversible and authority-neutral'
+  require_semantic_text "$manager" \
+    'non-destructive, and non-external.' \
+    'automatic finding correction must be non-destructive and non-external'
+  require_semantic_text "$manager" \
+    'Present every Critical,' \
+    'every finding outside the automatic predicate must return to the user'
+  require_semantic_text "$manager" \
+    'Require a fresh evaluation after the correction.' \
+    'every automatic correction must receive fresh evaluation'
+  require_semantic_text "$manager" \
+    'Only a verified PASS continues automatically.' \
+    'only a verified PASS may continue automatically'
+  for path in "$cowork" "$workflow" "$phase_1" "$phase_2" "$phase_3"; do
+    require_semantic_text "$path" 'Medium, or Low' \
+      'every lifecycle owner must preserve finding severity eligibility'
+    require_semantic_text "$path" '`blocking: no`' \
+      'every lifecycle owner must preserve the nonblocking finding gate'
+    require_semantic_text "$path" 'reversible, authority-neutral' \
+      'every lifecycle owner must preserve reversible authority-neutral correction'
+    require_semantic_text "$path" 'non-destructive' \
+      'every lifecycle owner must preserve non-destructive correction'
+    require_semantic_text "$path" 'non-external' \
+      'every lifecycle owner must preserve non-external correction'
+    require_semantic_text "$path" 'user' \
+      'every lifecycle owner must preserve the user finding boundary'
+  done
+
+  require_semantic_sequence "$cowork" 24 \
+    'Cowork closure must apply Memory directly and return only a conversation handoff' \
+    'Apply Memory directly' \
+    'do not load Wrap-up or create Workflow closure state' \
+    'Do not create Workflow-formatted TODOs' \
+    'conversation-only handoff'
+  require_semantic_sequence "$workflow" 30 \
+    'Workflow closure must retain durable Wrap-up and a tracked handoff' \
+    '### Phase 3 — Wrap up and finish' \
+    'Run Wrap-up continuously' \
+    'tracked handoff'
+  require_semantic_sequence "$assistant" 20 \
+    'assignment-authorized assistant must support Cowork direct-Memory closure only' \
+    '**Cowork Memory mode** enters only from an explicit Cowork closure assignment' \
+    'apply `Memorize` directly' \
+    'create one focused local memory commit' \
+    'Never load Wrap-up, create Workflow receipts or a tracked handoff'
+  require_semantic_text "$git_skill" \
+    'assignment-named writer role, including an assistant' \
+    'Git must authorize an assignment-named assistant writer'
+
+  for permission in \
+    'Skill(cowork)' \
+    'Skill(gobbi:partner)' \
+    'Skill(workflow:phase-1)' \
+    'Skill(workflow:phase-2)' \
+    'Skill(workflow:phase-3)'; do
+    require_semantic_permission "$permission" "Claude settings must explicitly allow $permission"
+  done
+  for role in "${roles[@]}"; do
+    require_semantic_permission "Agent($role)" "Claude settings must explicitly allow Agent($role)"
+  done
+
+  for path in "$repo_root/.codex/AGENTS.md" "$repo_root/.claude/CLAUDE.md"; do
+    require_semantic_sequence "$path" 2 \
+      'runtime entry documentation must preserve mode to slug to partner order' \
+      'After the mode, ask a' \
+      'normalized session slug for Cowork or Workflow' \
+      '`partner: enabled|disabled` policy before handing off to the owner'
+    require_semantic_text "$path" 'Disabled' \
+      'runtime entry documentation must preserve disabled partner policy'
+    require_semantic_text "$path" 'invokes no external runtime' \
+      'runtime entry documentation must preserve disabled local-only behavior'
+    require_semantic_text "$path" \
+      'only PASS auto-continues' \
+      'runtime entry documentation must preserve the PASS-only finding gate'
+  done
+}
+
 validate_source_topology() {
   local role codex_version claude_version marketplace_version skill_name mirror_entry mirror_name
 
@@ -246,6 +535,8 @@ validate_source_topology() {
     require_link "$repo_root/.claude/agents/$role.md" "../../.gobbi/projects/gobbi/agents/$role.md"
     require_link "$repo_root/.codex/agents/$role.toml" "../../.gobbi/projects/gobbi/agents/$role.toml"
   done
+
+  validate_lifecycle_semantics
 
   require_empty_or_absent_dir "$repo_root/.gobbi/projects/gobbi/hooks"
   require_empty_or_absent_dir "$repo_root/.claude/hooks"
