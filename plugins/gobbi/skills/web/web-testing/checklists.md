@@ -1,13 +1,15 @@
 # Web Testing Evaluation Checklist
 
 This reusable unchecked source evaluates one web test system produced under this operation, against the
-risk-derived-suite, owning-boundary, real-seam, determinism, matched-evidence, and unresolved-gap obligations
+risk-derived-suite, owning-boundary, real-integration-point, determinism, matched-evidence, and unresolved-gap obligations
 this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-testing`](SKILL.md) operation,
 with [`web-platform`](../web-platform/SKILL.md) owning browser facts,
+[`web-app-lifecycle`](../web-app-lifecycle/SKILL.md) owning the browser and PWA runtime contract,
 [`web-security`](../web-security/SKILL.md) owning the threat-to-evidence contract,
 [`web-frontend`](../web-frontend/SKILL.md) and [`web-backend`](../web-backend/SKILL.md) owning the behavior
-under test, and [`web-feature`](../web-feature/SKILL.md) as the caller that binds the outcome. The source
-commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBTEST`.
+under test, [`web-operations`](../web-operations/SKILL.md) owning live-service thresholds and operational
+acceptance, and [`web-development`](../web-development/SKILL.md) as the caller that binds the outcome. The
+source commit that contains this file identifies the checklist version. Its stable owner prefix is `WEBTEST`.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
 resolves applicable rows, records evidence and findings, and derives the verdict. Preserve every row as an
@@ -28,7 +30,7 @@ diagram or a coverage target is the failure.
 
 - [ ] WEBTEST-CK-PROJECT-01-01 — The suite is derived from contracts, incidents, risks, supported environments, and release claims.
 - [ ] WEBTEST-CK-PROJECT-01-02 — No fixed pyramid or coverage percentage replaces the risk analysis.
-- [ ] WEBTEST-CK-PROJECT-01-03 — The work continues with one bounded evidence outcome.
+- [ ] WEBTEST-CK-PROJECT-01-03 — The work continues with one scoped evidence outcome.
 - [ ] WEBTEST-CK-PROJECT-01-04 — An undefined contract, unsupported claim, missing environment, or owner conflict is returned rather than assumed.
 - [ ] WEBTEST-CK-PROJECT-01-05 — Each material claim records its owner, risk, supported environment, strongest proving evidence, and current gap.
 
@@ -55,8 +57,8 @@ than by what the claim needs is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-STRUCTURE-01-01 — Each material claim or risk is mapped to the least expensive layer that can establish it without replacing the real seam it depends on.
-- [ ] WEBTEST-CK-STRUCTURE-01-02 — Each mapped test names its system under test, boundary, inputs, observable outputs, authoritative effects, environment, versions, and evidence limits.
+- [ ] WEBTEST-CK-STRUCTURE-01-01 — Each material claim or risk is mapped to the least expensive layer that can establish it without replacing the real integration point it depends on.
+- [ ] WEBTEST-CK-STRUCTURE-01-02 — Each mapped test names its system under test, boundary, inputs, observable outputs, confirmed results, environment, versions, and evidence limits.
 - [ ] WEBTEST-CK-STRUCTURE-01-03 — Normal, alternative, exact-boundary, failure, recovery, adversarial, compatibility, concurrency, and counterfactual behavior are covered in risk order.
 
 ### WEBTEST-SC-STRUCTURE-02 — Normal case: deterministic foundations exist before broad implementation
@@ -67,10 +69,10 @@ an unrepaired foundation is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-STRUCTURE-02-01 — Suite structure, fixtures, data builders, environment controls, clocks, randomness controls, diagnostics, cleanup, and test seams are materialized first.
+- [ ] WEBTEST-CK-STRUCTURE-02-01 — Suite structure, fixtures, data builders, environment controls, clocks, randomness controls, diagnostics, cleanup, and test boundaries are materialized first.
 - [ ] WEBTEST-CK-STRUCTURE-02-02 — The suite scaffold, ownership, environments, commands or tool entry points, and claim-to-evidence mapping are rendered before broad implementation.
-- [ ] WEBTEST-CK-STRUCTURE-02-03 — Each foundation runs independently and repeatedly before broader seams are connected.
-- [ ] WEBTEST-CK-STRUCTURE-02-04 — Leakage, order dependence, nondeterminism, or unclear diagnosis is repaired before broader seams are connected.
+- [ ] WEBTEST-CK-STRUCTURE-02-03 — Each foundation runs independently and repeatedly before broader integration points are connected.
+- [ ] WEBTEST-CK-STRUCTURE-02-04 — Leakage, order dependence, nondeterminism, or unclear diagnosis is repaired before broader integration points are connected.
 
 ### WEBTEST-SC-STRUCTURE-03 — Rule violation: assertions reach into implementation details
 
@@ -80,7 +82,7 @@ change the product's consumers cannot see is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-STRUCTURE-03-01 — Behavior is asserted at the owning boundary through stable public or user-visible surfaces.
+- [ ] WEBTEST-CK-STRUCTURE-03-01 — Behavior is asserted at the owning boundary through stable public APIs or browser interfaces.
 - [ ] WEBTEST-CK-STRUCTURE-03-02 — No assertion depends on an implementation detail that turns a safe refactoring into a product failure.
 
 ## Performance
@@ -96,6 +98,16 @@ no measured cost is the failure.
 - [ ] WEBTEST-CK-PERFORMANCE-01-01 — Focused, affected, integration, full, and environment-specific execution order, failure triage, quarantine, and recovery are defined.
 - [ ] WEBTEST-CK-PERFORMANCE-01-02 — Suite cost, duration, ownership, and failure history are recorded.
 - Also applies: WEBTEST-CK-STRUCTURE-01-01 (the least expensive proving layer is chosen per claim).
+
+### WEBTEST-SC-PERFORMANCE-02 — Normal case: live-operation capacity, saturation, cost, and dependency health are measured under the named environment and traffic conditions
+
+A live-service claim needs measurement of capacity, saturation, cost, or dependency health. The expected
+outcome binds the measurement to the named environment and traffic conditions; a result reported without
+those conditions is the failure.
+
+#### Checklist
+
+- [ ] WEBTEST-CK-PERFORMANCE-02-01 — Capacity, saturation, cost, and dependency health are measured under the named environment and traffic conditions.
 
 ## Aesthetics
 
@@ -125,7 +137,7 @@ conformance or as a human outcome is the failure.
 - [ ] WEBTEST-CK-USAGE-01-02 — Automation alone is not treated as establishing conformance or a human outcome.
 - [ ] WEBTEST-CK-USAGE-01-03 — Every accessibility-conformance claim defines scope, representative sampling, evaluation, and reporting consistent with WCAG-EM.
 
-### WEBTEST-SC-USAGE-02 — Expected failure: a required environment or seam is unavailable
+### WEBTEST-SC-USAGE-02 — Expected failure: a required environment or integration point is unavailable
 
 A host, a browser, a provider, or a migration target cannot be reached in this run. The expected outcome
 records the limitation and leaves the dependent claim unproven; substituting the layer that happens to be
@@ -133,9 +145,9 @@ available is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-USAGE-02-01 — An unavailable environment, host, or seam is recorded as a limitation rather than approximated.
-- [ ] WEBTEST-CK-USAGE-02-02 — Every double and every unavailable seam is labelled.
-- [ ] WEBTEST-CK-USAGE-02-03 — A claim depending on the missing seam is reported as unproven rather than downgraded to the layer that remains.
+- [ ] WEBTEST-CK-USAGE-02-01 — An unavailable environment, host, or integration point is recorded as a limitation rather than approximated.
+- [ ] WEBTEST-CK-USAGE-02-02 — Every double and every unavailable integration point is labelled.
+- [ ] WEBTEST-CK-USAGE-02-03 — A claim depending on the missing integration point is reported as unproven rather than downgraded to the layer that remains.
 
 ## Consistency
 
@@ -147,21 +159,22 @@ signals distinct; one layer's pass reported as another's is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-CONSISTENCY-01-01 — Every material claim is reconciled with its result, environment, version, real or doubled seams, skips, flakes, diagnostics, and limitations.
+- [ ] WEBTEST-CK-CONSISTENCY-01-01 — Every material claim is reconciled with its result, environment, version, real or doubled integration points, skips, flakes, diagnostics, and limitations.
 - [ ] WEBTEST-CK-CONSISTENCY-01-02 — Focused, affected, integration, full, accessibility, security, visual, performance, browser, migration, recovery, and live evidence are reported without upgrading one signal into another.
 - [ ] WEBTEST-CK-CONSISTENCY-01-03 — Release, deployment, conformance, and live health are kept separate at handoff.
+- [ ] WEBTEST-CK-CONSISTENCY-01-04 — Every lifecycle test claim names the exact contract version, state, and transition it evaluates.
 
 ## Risk
 
-### WEBTEST-SC-RISK-01 — Rule violation: a real-seam claim rests on a double
+### WEBTEST-SC-RISK-01 — Rule violation: a real-integration-point claim rests on a double
 
 A database, a provider, a browser context, or a migration is replaced by a stub, and the resulting pass is
-reported as proof that the seam works. The expected outcome uses the real dependency for that claim and holds
-every double to its stated limit; a doubled seam reported as the real one is the failure.
+reported as proof that the integration point works. The expected outcome uses the real dependency for that claim and holds
+every double to its stated limit; a doubled integration point reported as the real one is the failure.
 
 #### Checklist
 
-- [ ] WEBTEST-CK-RISK-01-01 — Every claim about a real seam uses the real dependency.
+- [ ] WEBTEST-CK-RISK-01-01 — Every claim about a real integration point uses the real dependency.
 - [ ] WEBTEST-CK-RISK-01-02 — A mock, fake, stub, screenshot, snapshot, or coverage report is reported only within its explicit limit.
 - [ ] WEBTEST-CK-RISK-01-03 — Real contracts, databases, queues, providers, browser contexts, and migrations are connected for the claims that require them.
 - [ ] WEBTEST-CK-RISK-01-04 — The exact limits of mocks, screenshots, snapshots, emulation, and unavailable environments are preserved as the suite grows.
@@ -192,7 +205,7 @@ a suite that is green because the failures were removed is the failure.
 
 ### WEBTEST-SC-RISK-04 — Edge case: a claim sits between two proving layers
 
-The cheapest layer can establish part of a claim but not its authoritative effect, so the claim straddles a
+The cheapest layer can establish part of a claim but not its confirmed result, so the claim straddles a
 boundary. The expected outcome raises the part the cheaper layer cannot prove and states the narrower claim
 the cheaper test does prove; collapsing the whole claim into the cheaper layer is the failure.
 
@@ -206,7 +219,7 @@ the cheaper test does prove; collapsing the whole claim into the cheaper layer i
 
 ### WEBTEST-SC-OVERALL-01 — Normal case: unresolved gaps leave with an owner and a reopen condition
 
-A complete test outcome hands the caller what was proven, in which environment, with which seams, and what
+A complete test outcome hands the caller what was proven, in which environment, with which integration points, and what
 remains open with somebody's name on it. The scenario fails when a re-run clears an unresolved failure from
 the record, or when a gap reaches the caller without a disposition.
 

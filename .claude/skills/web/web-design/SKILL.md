@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/web/web-design/SKILL.md

@@ -1,11 +1,11 @@
 # Web Frontend Evaluation Checklist
 
 This reusable unchecked source evaluates one browser-facing outcome produced under this operation, against the
-evidence-threshold, complete-specification, owner-routing, operable-semantics, real-path, and truthful-claim
+evidence-threshold, complete-specification, owner-routing, operable-semantics, real-path, and accurate-claim
 obligations this skill owns. It is governed by the [`web`](../SKILL.md) domain and [`web-frontend`](SKILL.md)
-operation, with [`web-interface`](../web-interface/SKILL.md) owning the identity, evidence, concept, and
-expression judgments this operation applies, [`web-interaction`](../web-interaction/SKILL.md) owning the
-interaction choice space it selects from, [`web-feature`](../web-feature/SKILL.md) as the caller that binds
+operation, with [`web-design`](../web-design/SKILL.md) owning the identity, evidence, concept, and
+visual-design judgments this operation applies, [`web-interaction`](../web-interaction/SKILL.md) owning the
+interaction choice space it selects from, [`web-development`](../web-development/SKILL.md) as the caller that binds
 the outcome, and the HTML and CSS owners holding element meaning and presentation. The source commit that
 contains this file identifies the checklist version. Its stable owner prefix is `WEBFRNT`.
 
@@ -31,23 +31,23 @@ frontend that decides identity, element meaning, or threat analysis for itself i
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-PROJECT-01-01 — Work starts from the bounded feature outcome, the current product, the governing records, and the available user evidence.
-- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and expression judgments to `web-interface`, interaction choices to `web-interaction`, element meaning to the HTML owners, presentation to the CSS owners, repository placement to `web-topology`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
-- [ ] WEBFRNT-CK-PROJECT-01-03 — An unresolved conflict is returned to `web-feature`, the requesting caller, or the user rather than decided here.
+- [ ] WEBFRNT-CK-PROJECT-01-01 — Work starts from the scoped change outcome, the current product, the governing records, and the available user evidence.
+- [ ] WEBFRNT-CK-PROJECT-01-02 — Every question outside observable frontend behavior is routed to its owner: identity, evidence, concept, and visual-design judgments to `web-design`, interaction choices to `web-interaction`, element meaning to the HTML owners, presentation to the CSS owners, repository placement to `web-project-structure`, suite mechanics to `web-testing`, security analysis to `web-security`, and platform facts to `web-platform`.
+- [ ] WEBFRNT-CK-PROJECT-01-03 — An unresolved conflict is returned to `web-development`, the requesting caller, or the user rather than decided here.
 - [ ] WEBFRNT-CK-PROJECT-01-04 — Accessibility is kept inside frontend behavior rather than routed away as a separate concern.
 
 ## Structure
 
 ### WEBFRNT-SC-STRUCTURE-01 — Normal case: the journey is specified top-down before presentation
 
-A browser outcome needs its whole path settled before any surface is designed in detail. The expected outcome
+A browser outcome needs its whole path settled before any browser interface is designed in detail. The expected outcome
 maps the journey, the state set, and the transitions first; presentation chosen while a state or a recovery
 route is still open is the failure.
 
 #### Checklist
 
 - [ ] WEBFRNT-CK-STRUCTURE-01-01 — The complete trigger-to-completion journey, information and action hierarchy, document regions, navigation and URLs, history and refresh behavior, backend truth, trust decisions, support, and recovery are mapped before detailed presentation is chosen.
-- [ ] WEBFRNT-CK-STRUCTURE-01-02 — Every applicable normal, waiting, empty, partial, stale, degraded, invalid, unauthorized, interrupted, failed, retried, duplicated, cancelled, recovered, completed, and false-completion state is defined with its transition and its authoritative completion evidence.
+- [ ] WEBFRNT-CK-STRUCTURE-01-02 — Every applicable normal, waiting, empty, partial, stale, degraded, invalid, unauthorized, interrupted, failed, retried, duplicated, cancelled, recovered, completed, and false-completion state is defined with its transition and its confirmed completion evidence.
 - [ ] WEBFRNT-CK-STRUCTURE-01-03 — User-visible status, preserved input, safe recovery, and trust information are stated for every applicable transition.
 
 ### WEBFRNT-SC-STRUCTURE-02 — Normal case: units are specified bottom-up and connected
@@ -58,56 +58,56 @@ is the failure.
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-STRUCTURE-02-01 — Each specified unit names its purpose, preconditions, inputs, outputs, semantics, accessible name, focus, feedback, error, recovery, responsive and localized behavior, trust effect, and evidence.
+- [ ] WEBFRNT-CK-STRUCTURE-02-01 — Each specified unit names its purpose, preconditions, inputs, outputs, semantics, accessible name, focus, feedback, error, recovery, responsive and localized behavior, trust impact, and evidence.
 - [ ] WEBFRNT-CK-STRUCTURE-02-02 — The shortest normal path plus an applicable failure and recovery route is complete before further units are added.
 - [ ] WEBFRNT-CK-STRUCTURE-02-03 — The specification is revised before production code.
 - [ ] WEBFRNT-CK-STRUCTURE-02-04 — Production code begins only when the whole design is accepted.
 
 ### WEBFRNT-SC-STRUCTURE-03 — Poor quality: breadth is added over an incomplete scaffold
 
-Behavior and presentation are built while document regions, focus targets, or state seams are still missing.
+Behavior and presentation are built while document regions, focus targets, or state boundaries are still missing.
 The expected outcome materializes and verifies the whole scaffold first; polish over a structure that cannot
 carry the specified paths is the failure.
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-STRUCTURE-03-01 — Routes, semantic document regions, component boundaries, state and data seams, focus targets, responsive structure, representative state placeholders, and test seams are materialized before detailed behavior or presentation.
+- [ ] WEBFRNT-CK-STRUCTURE-03-01 — Routes, semantic document regions, component boundaries, state and data boundaries, focus targets, responsive structure, representative state placeholders, and test boundaries are materialized before detailed behavior or presentation.
 - [ ] WEBFRNT-CK-STRUCTURE-03-02 — Every simulated data source or dependency carries an explicit label.
 - [ ] WEBFRNT-CK-STRUCTURE-03-03 — The scaffold's document and accessibility-tree structure is verified against the specification before detailed behavior or presentation.
-- [ ] WEBFRNT-CK-STRUCTURE-03-04 — A missing clause, structural seam, state owner, or simulation boundary is repaired before the scaffold is extended.
+- [ ] WEBFRNT-CK-STRUCTURE-03-04 — A missing clause, structural boundary, state owner, or simulation boundary is repaired before the scaffold is extended.
 
 ## Performance
 
-### WEBFRNT-SC-PERFORMANCE-01 — Expected failure: an authoritative response is slow or interrupted
+### WEBFRNT-SC-PERFORMANCE-01 — Expected failure: a server response is slow or interrupted
 
 A request takes long enough that the person waits, retries, cancels, or leaves. The expected outcome gives
-each of those states a distinct visible status and holds the effect to once; a second submission caused by an
-unclear wait is the failure.
+each of those states a distinct visible status and prevents the requested action from being applied twice; a
+second application caused by an unclear wait is the failure.
 
 #### Checklist
 
 - [ ] WEBFRNT-CK-PERFORMANCE-01-01 — The waiting, pending, interrupted, cancelled, retried, and late-result states each present a distinct user-visible status.
-- [ ] WEBFRNT-CK-PERFORMANCE-01-02 — A duplicate submission caused by a slow response produces neither a second authoritative effect nor a lost entered state.
+- [ ] WEBFRNT-CK-PERFORMANCE-01-02 — A duplicate submission caused by a slow response neither applies the requested action twice nor loses entered state.
 - [ ] WEBFRNT-CK-PERFORMANCE-01-03 — Entered data survives an interruption and a retry in the implemented path, not only in the specification.
 
 ## Aesthetics
 
-### WEBFRNT-SC-AESTHETICS-01 — Normal case: hierarchy and state are legible in the built surface
+### WEBFRNT-SC-AESTHETICS-01 — Normal case: hierarchy and state are legible in the rendered result
 
 The specification's hierarchy has to survive into the rendered result. The expected outcome makes hierarchy and
-each lifecycle state readable to sighted and non-sighted users alike; a surface where pending and disabled look
+each lifecycle state readable to sighted and non-sighted users alike; a UI where pending and disabled look
 the same, or where state is carried by color alone, is the failure.
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-AESTHETICS-01-01 — The information and action hierarchy the specification defines is legible in the rendered surface.
+- [ ] WEBFRNT-CK-AESTHETICS-01-01 — The information and action hierarchy the specification defines is legible in the rendered result.
 - [ ] WEBFRNT-CK-AESTHETICS-01-02 — Disabled, pending, cancelled, failed, recovered, and completed states are distinguishable for sighted and non-sighted users alike.
 
 ## Usage
 
 ### WEBFRNT-SC-USAGE-01 — Normal case: the interface is operable without guessing
 
-A person operates the surface by keyboard, pointer, touch, or assistive technology. The expected outcome
+A person operates the browser interface by keyboard, pointer, touch, or assistive technology. The expected outcome
 exposes accurate semantics and specified focus, form, overlay, and reflow behavior, verified live; behavior
 inferred from a rendering rather than inspected is the failure.
 
@@ -130,7 +130,7 @@ the failure.
 - [ ] WEBFRNT-CK-USAGE-02-01 — The failed, unauthorized, and false-completion states each present accurate status, consequence, and a recovery route at the point the person needs it.
 - [ ] WEBFRNT-CK-USAGE-02-02 — Status, consequences, data use, cost, reversibility, and recovery information are available before the person acts rather than after.
 
-### WEBFRNT-SC-USAGE-03 — Edge case: the surface meets a different viewport, locale, or input method
+### WEBFRNT-SC-USAGE-03 — Edge case: the browser interface meets a different viewport, locale, or input method
 
 The same outcome is reached on a narrow viewport, in another locale, or by a different input method. The
 expected outcome covers each as its own complete slice; adaptation assumed from the default case is the
@@ -146,7 +146,7 @@ failure.
 
 Implementation has moved since the specification was accepted. The expected outcome brings the project-native
 specification back into agreement and returns drift to its earliest owning Step; a handoff whose specification
-describes a surface that no longer exists is the failure.
+describes a browser interface that no longer exists is the failure.
 
 #### Checklist
 
@@ -207,18 +207,18 @@ changes; sessions run without that protocol are the failure.
 - [ ] WEBFRNT-CK-RISK-03-01 — Direct-user evidence defines representative characteristics, realistic tasks, consent, privacy, accessibility, accommodations, withdrawal, welfare, stop conditions, and the decision rule before it is collected.
 - [ ] WEBFRNT-CK-RISK-03-02 — Required representative-user evidence is re-run when implementation changes a material accepted assumption.
 
-### WEBFRNT-SC-RISK-04 — Adversarial: a polished surface is passed off as proof
+### WEBFRNT-SC-RISK-04 — Adversarial: a polished UI is passed off as proof
 
 A screenshot, a mock, or a finished-looking placeholder is offered as evidence that the path works. The
-expected outcome requires one real browser-to-authoritative path and refuses proxies; appearance accepted in
+expected outcome requires one real browser path to a result from its named source of truth and refuses proxies; appearance accepted in
 place of integration, semantics, focus, or recovery is the failure.
 
 #### Checklist
 
-- [ ] WEBFRNT-CK-RISK-04-01 — One real browser-to-authoritative path is proven before breadth.
-- [ ] WEBFRNT-CK-RISK-04-02 — No mock, screenshot, static capture, or polished placeholder is treated as proof of integration, semantics, focus, responsiveness, interaction, or recovery.
+- [ ] WEBFRNT-CK-RISK-04-01 — One real browser path to a result from its named source of truth is proven before breadth.
+- [ ] WEBFRNT-CK-RISK-04-02 — No mock, screenshot, static capture, or polished placeholder is treated as proof of integration, semantics, focus, hidden behavior, responsiveness, interaction, recovery, or conformance.
 - [ ] WEBFRNT-CK-RISK-04-03 — User intent is not inferred from analytics in place of representative-user evidence.
-- [ ] WEBFRNT-CK-RISK-04-04 — No expressive polish conceals an unimplemented state, an inaccessible behavior, or a missing recovery route.
+- [ ] WEBFRNT-CK-RISK-04-04 — No visual polish conceals an unimplemented state, an inaccessible behavior, or a missing recovery route.
 
 ## Overall
 
@@ -231,5 +231,5 @@ breaks at a browser or session boundary, or when the handoff omits what the next
 #### Checklist
 
 - [ ] WEBFRNT-CK-OVERALL-01-01 — Entry, action, waiting, interruption, recovery, and completion stay coherent across browser and session boundaries.
-- [ ] WEBFRNT-CK-OVERALL-01-02 — The handoff carries the accepted `web-interface` identity and concept decisions, the complete paths and states, accessibility and responsive behavior, material reference decisions, user-evidence limits, degradations, verification evidence, outcome signals, and the support route.
+- [ ] WEBFRNT-CK-OVERALL-01-02 — The handoff carries the accepted `web-design` identity and concept decisions, the complete paths and states, accessibility and responsive behavior, material reference decisions, user-evidence limits, degradations, verification evidence, outcome signals, and the support route.
 - Also applies: WEBFRNT-CK-RISK-01-03 (a choice matching no trigger needs no new evidence).
