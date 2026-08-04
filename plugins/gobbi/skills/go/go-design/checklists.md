@@ -11,25 +11,27 @@ that this scenario reuses.
 
 ## Project
 
-### GODSN-SC-PROJECT-01 — Normal case: The public surface serves real callers
+### GODSN-SC-PROJECT-01 — Normal case: The public API or CLI serves current callers
 
-A package adds or changes caller-visible behavior. The exported surface should contain only concepts required
-by current clients and should hide implementation choices; an unnecessary or incomplete contract fails.
+A package import path or CLI entry point adds or changes caller-visible behavior. Its public API or CLI should
+contain only concepts required by current callers and should hide implementation choices; an unnecessary or
+incomplete contract fails.
 
 #### Checklist
 
 - [ ] GODSN-CK-PROJECT-01-01 — Every exported declaration serves a current caller need.
 - [ ] GODSN-CK-PROJECT-01-02 — Every implementation detail stays unexported unless callers must name it.
-- [ ] GODSN-CK-PROJECT-01-03 — Every caller-dependent behavior is part of the deliberate public contract.
+- [ ] GODSN-CK-PROJECT-01-03 — Every caller-dependent behavior is part of the deliberate public API or CLI contract.
 
 ### GODSN-SC-PROJECT-02 — Rule violation: A public change ignores compatibility
 
-An exported name, type, method set, error, or ownership promise changes. Existing consumers should retain their
-contract or receive an explicitly authorized compatibility break; accidental breakage fails.
+A public API or CLI name, type, method set, error, or ownership promise changes. The result should be
+`compatible`, `migration supplied`, `authorized break`, or `unsupported`, with affected consumers named where
+the state requires them; an unclassified or accidental break fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-PROJECT-02-01 — Every changed public contract has a deliberate compatibility position.
+- [ ] GODSN-CK-PROJECT-02-01 — Every changed public API or CLI contract has exactly one state: compatible, migration supplied, authorized break, or unsupported.
 - [ ] GODSN-CK-PROJECT-02-02 — Every authorized breaking change identifies its affected consumers.
 
 ## Structure
@@ -43,7 +45,7 @@ fails.
 #### Checklist
 
 - [ ] GODSN-CK-STRUCTURE-01-01 — Every interface expresses behavior its consumer requires rather than existing to make one concrete type mockable.
-- [ ] GODSN-CK-STRUCTURE-01-02 — No API uses a pointer to an interface.
+- [ ] GODSN-CK-STRUCTURE-01-02 — No public API uses a pointer to an interface.
 
 ### GODSN-SC-STRUCTURE-02 — Poor quality: Construction is mandatory without an invariant
 
@@ -63,18 +65,37 @@ identity, copy safety, and the intended method set; a subtle interface or copy m
 
 #### Checklist
 
-- [ ] GODSN-CK-STRUCTURE-03-01 — Every pointer and value receiver is justified by mutation, identity, size, or copy safety.
+- [ ] GODSN-CK-STRUCTURE-03-01 — Every pointer and value receiver is justified by mutation, identity, copy cost, size, or copy safety.
 - [ ] GODSN-CK-STRUCTURE-03-02 — The resulting method set satisfies every intended interface.
 
 ### GODSN-SC-STRUCTURE-04 — Poor quality: Generics precede a real type relationship
 
-A type parameter or constraint makes one implementation more abstract without serving several real types.
-Generics should preserve a current static relationship; a speculative constraint hierarchy fails.
+A type parameter or constraint makes one implementation more abstract without repeated type-safe algorithm or
+container behavior across current types. Generics should preserve that evidenced static relationship; a
+speculative constraint hierarchy fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-STRUCTURE-04-01 — Every type parameter and constraint stays within the type relationship and operations the current implementation requires.
+- [ ] GODSN-CK-STRUCTURE-04-01 — Every type parameter and constraint stays within repeated type-safe algorithm or container behavior the current implementation requires.
 - [ ] GODSN-CK-STRUCTURE-04-02 — A simpler concrete or interface design would not serve the same callers more clearly.
+
+### GODSN-SC-STRUCTURE-05 — Rule violation: Package identity or sibling ownership drifts
+
+Design work names one or more package identities and may touch sibling concerns. The package name, import
+path, package directory or placement, and package boundary should match one accepted responsibility; an exact
+package pattern may appear only in project command selection or evidence, with its semantics left to
+`go-toolchain`. Confirmed project, package, module, or process design remains with `go-architecture`;
+construction or review operations remain with `go-development`; naming and error text remain with
+`go-conventions`; source form remains with `go-source`; documentation and comments remain with
+`go-documentation`; project command and tool facts remain with `go-toolchain`; concurrent lifetime and
+cancellation remain with `go-concurrency`. Any substitution or ownership claim fails.
+
+#### Checklist
+
+- [ ] GODSN-CK-STRUCTURE-05-01 — Every package name, import path, package directory or placement, and package boundary matches the accepted package responsibility.
+- [ ] GODSN-CK-STRUCTURE-05-02 — Every exact package pattern named with design work appears only in project command selection or evidence.
+- [ ] GODSN-CK-STRUCTURE-05-03 — No design claim defines exact package pattern semantics.
+- [ ] GODSN-CK-STRUCTURE-05-04 — Every confirmed project, package, module, or process design result, construction or review operation, written-form judgment, project command or named-tool fact, and concurrent lifetime or cancellation judgment remains with its accepted sibling owner.
 
 ## Performance
 
@@ -86,7 +107,7 @@ Value semantics should remain safe and proportionate; accidental large or invali
 #### Checklist
 
 - [ ] GODSN-CK-PERFORMANCE-01-01 — No value copy duplicates non-copyable state.
-- [ ] GODSN-CK-PERFORMANCE-01-02 — Every large repeated value copy is justified by the caller contract.
+- [ ] GODSN-CK-PERFORMANCE-01-02 — Every large repeated value copy is justified by the affected public API behavior.
 
 ### GODSN-SC-PERFORMANCE-02 — Poor quality: Ownership causes hidden allocation or retention
 
@@ -102,21 +123,21 @@ independence without avoidable allocation or long-lived retention; an unexplaine
 
 ### GODSN-SC-AESTHETICS-01 — Normal case: Package-qualified APIs form a clear vocabulary
 
-Callers use the package through exported functions, types, and methods. The complete surface should read as a
-small coherent vocabulary; redundant or scattered concepts fail.
+Callers use a package import path through exported functions, types, and methods. The complete public API
+should read as a small coherent vocabulary; redundant or scattered concepts fail.
 
 #### Checklist
 
 - [ ] GODSN-CK-AESTHETICS-01-01 — Exported declarations form one coherent vocabulary that stays clear after package qualification.
 
-### GODSN-SC-AESTHETICS-02 — Poor quality: The API exposes more shape than behavior
+### GODSN-SC-AESTHETICS-02 — Poor quality: The public API or CLI exposes more shape than behavior
 
-The public surface compiles but requires callers to understand implementation structure, configuration, or
-wide provider interfaces. A shallow API that hides little complexity fails.
+The public API or CLI works but requires callers to understand implementation structure, configuration, or
+wide provider interfaces. A public API or CLI that hides little complexity fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-AESTHETICS-02-01 — Callers can use the API without understanding internal representation.
+- [ ] GODSN-CK-AESTHETICS-02-01 — Callers can use the public API or CLI without understanding internal representation.
 - [ ] GODSN-CK-AESTHETICS-02-02 — Every public configuration choice changes behavior callers genuinely need.
 
 ## Usage
@@ -124,7 +145,7 @@ wide provider interfaces. A shallow API that hides little complexity fails.
 ### GODSN-SC-USAGE-01 — Normal case: Zero value and construction are predictable
 
 A caller creates a value directly or through a constructor. The valid creation path and initial behavior
-should be obvious, safe, and documented; surprising mandatory setup fails.
+should be obvious, safe, and part of the accepted public API; surprising mandatory setup fails.
 
 #### Checklist
 
@@ -134,20 +155,20 @@ should be obvious, safe, and documented; surprising mandatory setup fails.
 ### GODSN-SC-USAGE-02 — Expected failure: Callers inspect error identity
 
 A caller branches on a sentinel, exported error type, or wrapped cause. The returned error should preserve
-only the identity promised by the package and remain compatible with `errors.Is` or `errors.As`; string-only or
-accidental identity fails.
+only the identity promised by the public API and remain compatible with `errors.Is` or `errors.As`; string-only
+or accidental identity fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error keeps a stable public contract.
+- [ ] GODSN-CK-USAGE-02-01 — Every programmatically inspectable error keeps a stable public API contract.
 - [ ] GODSN-CK-USAGE-02-02 — Every programmatically inspectable error stays discoverable through its promised wrapped identity.
-- [ ] GODSN-CK-USAGE-02-03 — No caller contract depends on matching human error text.
+- [ ] GODSN-CK-USAGE-02-03 — No public API error contract depends on matching human error text.
 
 ### GODSN-SC-USAGE-03 — Edge case: Nil and empty values differ at a boundary
 
 A slice, map, pointer, or interface crosses serialization, equality, or public API boundaries. Nil and empty
-forms should be chosen deliberately and documented where callers can observe them; accidental distinction
-fails.
+forms should be chosen deliberately and included in the accepted public API where callers can observe them;
+accidental distinction fails.
 
 #### Checklist
 
@@ -158,8 +179,8 @@ fails.
 
 ### GODSN-SC-CONSISTENCY-01 — Rule violation: Mutable ownership changes across similar methods
 
-Related methods alternately retain, copy, or transfer slices, maps, buffers, or pointers without saying so.
-One documented ownership model should govern each boundary; inconsistent aliasing fails.
+Related methods alternately retain, copy, or transfer slices, maps, buffers, or pointers without one accepted
+public API ownership rule. One ownership model should govern each boundary; inconsistent aliasing fails.
 
 #### Checklist
 
@@ -175,32 +196,34 @@ set should represent one coherent type model; unexplained mixing fails.
 
 - [ ] GODSN-CK-CONSISTENCY-02-01 — Receiver choices are consistent across the method set except where a distinct semantic reason is stated.
 
-### GODSN-SC-CONSISTENCY-03 — Rule violation: Documentation, errors, and behavior disagree
+### GODSN-SC-CONSISTENCY-03 — Rule violation: The accepted contract and behavior disagree
 
-The public declaration describes one contract while runtime errors or ownership implement another. All
-caller-visible forms should express the same behavior; contradictory surfaces fail.
-
-#### Checklist
-
-- [ ] GODSN-CK-CONSISTENCY-03-01 — Public documentation matches current behavior, returned error identities, actual aliasing, and actual resource lifetime.
-
-### GODSN-SC-CONSISTENCY-04 — Adversarial: Documentation is widened to legalize the behavior
-
-A surprising behavior is found, and the doc comment or contract text is broadened so the two agree, instead of
-the behavior being corrected or the change being decided. The contract should lead the implementation; a
-document edited to make an unintended behavior conformant fails.
+The accepted public API or CLI defines one contract while runtime behavior, error identity, aliasing, or
+ordinary resource lifetime implements another. Every implementation state should match that accepted
+contract; any contradiction fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-CONSISTENCY-04-01 — No documented contract was widened or weakened to accommodate behavior the design intended to reject.
-- [ ] GODSN-CK-CONSISTENCY-04-02 — Every documentation change that follows a behavioral surprise names the decision that accepted that behavior.
+- [ ] GODSN-CK-CONSISTENCY-03-01 — Current behavior, returned error identities, actual aliasing, and actual ordinary resource lifetime match the accepted public API or CLI contract.
+
+### GODSN-SC-CONSISTENCY-04 — Adversarial: The accepted contract is widened to legalize behavior
+
+A surprising behavior is found, and the public API or CLI contract is broadened so the two agree instead of
+the behavior being corrected or accepted as a design change. The contract should lead the implementation; a
+contract weakened to make unintended behavior conformant fails.
+
+#### Checklist
+
+- [ ] GODSN-CK-CONSISTENCY-04-01 — No accepted public API or CLI contract was weakened to accommodate behavior the design intended to reject.
+- [ ] GODSN-CK-CONSISTENCY-04-02 — Every public API or CLI contract change after a behavioral surprise has an accepted design decision.
 
 ## Risk
 
-### GODSN-SC-RISK-01 — Rule violation: A reusable API panics on an ordinary failure
+### GODSN-SC-RISK-01 — Rule violation: A reusable public API panics on an ordinary failure
 
-Expected input, dependency, I/O, or domain failure reaches reusable code. The API should return an actionable
-error unless the governing contract requires panic; an ordinary failure that terminates the caller fails.
+Expected input, dependency, I/O, or domain failure reaches reusable code. The public API should return an
+actionable error unless its accepted contract requires panic; an ordinary failure that terminates the caller
+fails.
 
 #### Checklist
 
@@ -209,9 +232,9 @@ error unless the governing contract requires panic; an ordinary failure that ter
 
 ### GODSN-SC-RISK-02 — Rule violation: A resource leaks on an alternate path
 
-A function acquires a file, body, connection, timer, or similar resource and exits through success, error, or
-early return. Every owning path should release it at the correct time; any leaked or prematurely closed path
-fails.
+A function acquires a file, body, connection, or similar ordinary resource and exits through success, error,
+or early return. Every owning path should release it at the correct time; any leaked or prematurely closed
+path fails. Concurrent timer lifetime remains with `go-concurrency`.
 
 #### Checklist
 
@@ -221,8 +244,9 @@ fails.
 
 ### GODSN-SC-RISK-03 — Adversarial: A caller mutates an aliased value after return
 
-A caller intentionally changes a supplied or returned slice, map, buffer, or pointer. The package should
-either isolate its state or document the shared view; corruption through an unstated alias fails.
+A caller intentionally changes a supplied or returned slice, map, buffer, or pointer. The public API should
+either isolate its state or make the shared view part of its accepted ownership contract; corruption through
+an unstated alias fails.
 
 #### Checklist
 
@@ -238,41 +262,43 @@ accidental identity fails.
 #### Checklist
 
 - [ ] GODSN-CK-RISK-04-01 — Successful paths return a literal nil error interface.
-- [ ] GODSN-CK-RISK-04-02 — No wrapped dependency error becomes public without deliberate caller support.
+- [ ] GODSN-CK-RISK-04-02 — No wrapped dependency error becomes part of the public API without deliberate caller support.
 
 ### GODSN-SC-RISK-05 — Rule violation: A returned error disappears
 
-A function call returns an error, but the caller neither handles it nor makes an explicit documented discard.
-Every returned error should affect control flow or carry a deliberate reason for being ignored; accidental
-loss fails.
+A function call returns an error, but the caller loses it or handles the same failure redundantly. Every
+returned error should affect control flow or have an accepted discard reason, and one handling layer should
+not both log and return it without a caller need; accidental loss or duplicate handling fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-RISK-05-01 — Every returned error is handled or explicitly discarded with a documented reason.
+- [ ] GODSN-CK-RISK-05-01 — Every returned error has an accepted handled or explicit-discard flow.
+- [ ] GODSN-CK-RISK-05-02 — No error is both logged and returned by one handling layer without an accepted caller need.
 - Also applies: GODSN-CK-USAGE-02-02 (added context preserves every promised error identity).
 
 ### GODSN-SC-RISK-06 — Normal case: A failed operation leaves the caller able to recover
 
-An ordinary call fails partway through validation, allocation, or I/O. The package should leave its observable
-state consistent so the caller can retry or stop, and should not keep a half-applied change; a failure that
-leaves the value unusable without saying so fails.
+An ordinary public API or CLI call fails partway through validation, allocation, or I/O. Its observable state
+should remain consistent so the caller can retry or stop, and it should not keep a half-applied change; a
+failure that leaves the value unusable outside the accepted contract fails.
 
 #### Checklist
 
-- [ ] GODSN-CK-RISK-06-01 — Every failed operation leaves the package's observable state consistent for a retry or a stop.
-- [ ] GODSN-CK-RISK-06-02 — No partially applied change survives a failed operation without a documented position.
+- [ ] GODSN-CK-RISK-06-01 — Every failed operation leaves the public API or CLI observable state consistent for a retry or a stop.
+- [ ] GODSN-CK-RISK-06-02 — No partially applied change survives a failed operation outside the accepted public API or CLI contract.
 
 ## Overall
 
 ### GODSN-SC-OVERALL-01 — Normal case: The design is coherent from caller to resource
 
-The complete package should present a small API, predictable values, deliberate abstraction, explicit
-ownership, ordinary error flow, and closed resource lifetimes. A gap between those elements fails the whole.
+The complete package design should present exact package identities, a small public API or CLI, predictable
+values, deliberate abstraction, explicit ownership, ordinary error flow, and closed ordinary resource
+lifetimes. A gap between those elements fails the whole.
 
 #### Checklist
 
-- [ ] GODSN-CK-OVERALL-01-01 — The complete design is understandable from the caller-facing contract.
-- [ ] GODSN-CK-OVERALL-01-02 — Internal choices preserve every public ownership and failure promise.
+- [ ] GODSN-CK-OVERALL-01-01 — The complete design is understandable from its package identities and public API or CLI.
+- [ ] GODSN-CK-OVERALL-01-02 — Internal choices preserve every public API or CLI ownership and failure promise.
 
 ### GODSN-SC-OVERALL-02 — Adversarial: Compilation and tests mask an unsafe contract
 
@@ -282,4 +308,4 @@ speculative abstraction still harms callers. Mechanical success must not substit
 #### Checklist
 
 - [ ] GODSN-CK-OVERALL-02-01 — Acceptance is not based solely on compilation or on current test success.
-- [ ] GODSN-CK-OVERALL-02-02 — Every caller-visible edge in this checklist remains satisfied together.
+- [ ] GODSN-CK-OVERALL-02-02 — Every package-identity, public API or CLI, ownership, error, and ordinary-resource condition in this checklist remains satisfied together.

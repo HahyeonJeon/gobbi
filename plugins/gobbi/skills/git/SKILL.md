@@ -18,6 +18,11 @@ assignment-named writer role, including an assistant, owns only the writes and l
 assignment grants.
 [`conventions.md`](conventions.md) owns deterministic formats.
 
+A separate entry executes one caller-supplied tag/ref action without choosing its repository, ref, target,
+form, inputs, remote, or publication policy. It binds that exact action to current manager authority, changes
+only the named ref and the tag object its supplied form requires, verifies the requested result, and otherwise
+returns a recoverable stop.
+
 ## Principles
 
 ### Keep one identity and one isolated writer history
@@ -273,8 +278,99 @@ pull-request head.
 - Return the receipt to the caller that supplied the contract. Report only Git facts and invent no state,
   record, or artifact this operation does not own.
 
-Completion is one verified local history plus either an exact retained recovery path or a fully evidenced,
-authorized publication, merge, and cleanup result.
+### Phase 5 — Execute One Caller-Supplied Tag/Ref Action
+
+Phase 5 is a separate entry for one bounded tag/ref action. Do not infer that Phases 1–4 ran, and do not run
+their session lifecycle unless the caller separately supplies that contract.
+
+#### 5.1 Bind the exact action and current authority
+
+- Require the complete action specification and separate authority record from
+  [`conventions.md`](conventions.md). Every optional absence must use the named literal value; reject an
+  omitted value, wildcard, revision expression, implicit configuration default, or unspecified effect before
+  any mutation.
+- Require current manager authority for the verbatim action identity and requested effects. Bind the exact
+  caller, repository, ref name, target object and type, remote, tag form, annotation input, tagger identity,
+  tagger time and time zone, other tag-object inputs, signing input, expected states, and non-force publication
+  target. Any changed value, effect, or expected state is a different action and needs a new authority record.
+- For a local-only action, require all remote, publication, network, and credential fields to state their
+  applicable `none` or `not-applicable` value. When remote access, credentials, or signing are required,
+  confirm their exact supplied authority and availability without changing configuration or persisting a
+  credential.
+- Stop without mutation when the specification or authority is incomplete, stale, withdrawn, ambiguous, or
+  mismatched. Return the exact missing or conflicting field to the caller.
+
+#### 5.2 Preflight the repository and exact local and remote refs
+
+- Resolve the supplied repository path and prove its Git common-directory identity. Validate the fully
+  qualified ref name and require every tag form to use `refs/tags/...` while `non-tag-ref` uses a fully
+  qualified name outside `refs/tags/...`. Resolve the full target object ID and expected type, and record the
+  repository, target, and local ref state before action.
+- Validate the form's exact creation inputs before mutation. An annotated or signed tag requires its supplied
+  annotation message, tagger identity, tagger timestamp and time zone, and every other supplied argument or
+  environment input that changes the tag object. A signed tag also requires every supplied signing input that
+  changes that object. A lightweight tag or non-tag ref requires the matching `none` values. Read no missing
+  value from configuration or the environment.
+- Inspect the exact local ref without changing it. For a tag, record its ref object, peeled target, form,
+  annotation state, tagger identity, tagger time and time zone, other tag-object input state, and signing state.
+  Treat an existing ref as compatible only when every supplied target, form, annotation, tagger, signing, and
+  expected-state value matches; any other existing state is a conflict.
+- When publication is requested, prove the configured remote name and URL identities match the specification.
+  Under the exact current network and credential authority, inspect only the fully qualified destination ref
+  and record its ref object and peeled target. An absent ref must match an `absent` expectation; an existing ref
+  must match the complete compatible expectation. Finish this remote preflight before any local mutation.
+- Recheck the target object, creation inputs, local state, remote state when applicable, action identity, and
+  authority immediately before mutation. Stop on a conflict, ambiguity, concurrent change, missing access,
+  changed input, or withdrawn authority, and return the before states and first diagnostic without mutating a
+  ref.
+
+#### 5.3 Ensure the local ref and optionally publish the single named ref
+
+- When the local ref is absent as specified, create only the fully qualified name in the supplied form, from
+  the supplied annotation, tagger identity, tagger time and time zone, other tag-object inputs, and signing
+  inputs when applicable, so it resolves or peels to the exact target. The create must fail if the ref appears
+  concurrently; never force or overwrite it.
+- When the local ref already has the exact compatible state, perform no local mutation and record a compatible
+  no-op. Verify the local name, ref object, peeled target, form, annotation, tagger identity, tagger time and
+  time zone, other tag-object input state, and signing state immediately after either path, and stop with the
+  exact retained state on mismatch.
+- If `publicationTarget` is `none`, perform no remote or credential action. Otherwise recheck the unchanged
+  action and current authority, then publish only the supplied fully qualified source ref to the supplied fully
+  qualified destination ref on the supplied remote, without force, wildcard, implicit ref selection, or
+  configuration change.
+- On publication failure, retain the exact local ref and every unique object. Observe the destination again
+  only when the existing authority permits that read. Do not delete, overwrite, retry, roll back, or widen the
+  publication automatically; return the exact known local and remote state as a `recoverable partial state`.
+
+#### 5.4 Verify and return the complete result
+
+- Verify the local ref against every supplied field. For an annotated or signed tag, verify its ref object,
+  peeled target, annotation state, tagger identity, tagger time and time zone, other tag-object input state,
+  and signing state; for other forms, verify the exact ref object and target.
+- When publication was requested, verify that the exact remote destination ref equals the local ref object and
+  resolves or peels to the supplied target. Treat an unavailable observation or any local or remote mismatch as
+  failure, not success.
+- Emit the complete result record from [`conventions.md`](conventions.md): exact action and authority,
+  preflight, attempted commands or API actions, local and remote before/after states, per-effect result,
+  evidence limits, first failure, affected obligation, retained unique objects, risk, recovery owner, first
+  non-mutating recovery action, separate mutation authority, and handoff.
+- Report completion only when every requested effect occurred or was an exact compatible no-op and every
+  required local and remote observation verifies. Otherwise return a `recoverable partial state`.
+
+#### 5.5 Recover only through a new exact action and authority
+
+- Infer no recovery mutation from a `recoverable partial state`. The caller must supply a new complete action
+  specification whose expected states match the retained state and a new current manager authority record for
+  that exact action.
+- Repeat Steps 5.1 and 5.2 before recovery. Execute only `ensure-local-ref` or `publish-single-ref` within the
+  same non-force, non-delete boundary, then repeat Step 5.4. A stale receipt, changed state, conflict, missing
+  authority, or any requested delete, overwrite, history rewrite, widened publication, or configuration change
+  stops without mutation and remains a handoff.
+- When no separately authorized bounded recovery action exists, preserve the exact state and return its owner,
+  first non-mutating recovery action, missing authority, risk, and handoff.
+
+Completion is either one verified session history with its exact retained or finalized result, or one exact
+caller-supplied tag/ref action with verified local and remote state or a `recoverable partial state`.
 
 ## References
 
