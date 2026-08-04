@@ -198,7 +198,7 @@ the executor to change state; technical readiness or an earlier grant does not a
 - [ ] GOREL-CK-RISK-01-01 — An incompatible local or remote ref, destination conflict, changed target, ambiguous state, or unavailable required observation stops coordination before any new mutation.
 - [ ] GOREL-CK-RISK-01-02 — Missing, incomplete, stale, mismatched, or withdrawn manager authority, named executor, credential authority, network authority, publication authority, or mutation authority stops the exact effect before handoff.
 
-### GOREL-SC-RISK-02 — Adversarial: Partial state invites unsafe recovery
+### GOREL-SC-RISK-02 — Adversarial: Partial state invites prohibited recovery effects
 
 An executor mutates one state and then fails, returns a verification mismatch, or cannot complete another
 requested effect. The release should preserve literal recoverable partial state and require a newly exact
@@ -217,7 +217,7 @@ recovery action; force, delete, overwrite, retry, rollback, configuration change
 
 The operation reaches Preparation, verification, authorized coordination, failure, or recovery. Its final
 record should use only the defined terminal and release-result states and carry every universal and release-
-specific fact needed to understand the exact subject, effects, evidence, limits, and next safe action.
+specific fact needed to understand the exact subject, effects, evidence, limits, and next authorized or blocked action.
 
 #### Checklist
 

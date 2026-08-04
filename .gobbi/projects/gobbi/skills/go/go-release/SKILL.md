@@ -234,7 +234,7 @@ incomplete requested effect after mutation is always a `recoverable partial stat
 - Return `verified` only when every requested effect is `completed` or `compatible-no-op`, every required local
   and external observation matches, and the external consumer verifies the same unchanged subject.
 
-#### 4.3 Preserve conflicts, partial state, and safe recovery
+#### 4.3 Preserve conflicts, partial state, and bounded recovery
 
 - On preflight conflict, authority withdrawal, missing access, failed action, verification mismatch, consumer
   failure, or changed input, preserve the exact known before and after state, returned logs, unique objects,
@@ -244,7 +244,7 @@ incomplete requested effect after mutation is always a `recoverable partial stat
   whose expected state matches the retained state, a currently named executor, and new current manager
   authority for that action.
 - Coordinate a recovery only when the new action remains within the named executor's bounded contract. Otherwise
-  retain the state and return the missing authority, unsafe request, first non-mutating action, and handoff.
+  retain the state and return the missing authority, prohibited recovery request, first non-mutating action, and handoff.
 
 ### Phase 5 — Return the Go Release Result
 
