@@ -55,9 +55,10 @@ it is locked.
 
 - **MUST give each of the seven design activities exactly one result with exactly one disposition:**
   `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
-  Each result names the actor or owner, subject and scope, current inputs, method, evidence, decision state,
-  counterevidence, failure, uncertainty and limitations, dependencies and routes, trace, reopen condition,
-  and evidence location.
+  Every result MUST name the actor or owner, subject and scope, current inputs, method, evidence, decision
+  state, counterevidence, failure, uncertainty, limitations, dependencies, routes, trace, reopen condition,
+  and evidence location, and MUST return without closing when an applicable condition in the table below
+  holds.
 - **MUST prove a non-performed disposition rather than use it as a shortcut.** Reused evidence records the
   exact subject, affected people, source and date, context and conditions, falsifiability, and current reach;
   a not-applicable result proves the activity cannot change the scoped decision and that no binding risk
@@ -68,26 +69,40 @@ it is locked.
   constrains.
 - **MUST name and choose each design claim's evidence class before the choice, prototype at the fidelity
   needed to falsify it, and compare at least two concepts that differ in hierarchy, action model, information
-  flow, interaction strategy, or state communication.** Color, type, spacing, icon-style, or wording variants
-  are one concept, while a single-concept exception records the real constraints and evidence behind it.
-  Obtain new representative-user evidence before accepting a material choice that is novel, uncertain,
+  flow, interaction strategy, or state communication; color, type, spacing, icon-style, or wording variants
+  are one concept, and a single-concept exception records the real constraints and evidence.** New
+  representative-user evidence is required before accepting a material choice that is novel, uncertain,
   exclusionary, consequential, security- or compatibility-sensitive, hard to reverse, or carries material
-  risk of harm; standards, expert review, prior research, analytics, and project-owner familiarity can frame
-  the choice but cannot support what people can perceive, operate, complete, or recover from.
+  risk of harm; standards, expert review, prior research, analytics, and project-owner familiarity cannot
+  prove what people can perceive, operate, complete, or recover from.
 - **NEVER decide detailed expression while structure, behavior, content, feedback, recovery, adaptation, or
-  accessibility is unresolved, and MUST make every required action, state, and meaning available through
-  every supported desktop modality and legible before a person acts.** Each expressive choice improves
-  hierarchy, state recognition, affordance,
-  trust, or identity fit rather than concealing missing structure or inaccessible behavior. Cover window
+  accessibility is unresolved; every expressive choice MUST improve hierarchy, state recognition,
+  affordance, trust, or identity fit rather than conceal missing structure or inaccessible behavior.** Every
+  required action, state, and meaning MUST be available through each supported desktop modality—window
   chrome, menus, tray, global and in-window shortcuts, notifications, keyboard, pointer, and assistive-input
-  paths, with consequence, reversibility, and recovery exposed at the point of decision. Decide whether each
-  interaction or motion is warranted and what state, location, or causality it communicates; route event,
-  pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics to `web-interaction`,
-  and declarative motion mechanics to `css-motion`.
+  paths—and be legible before action, with consequence, reversibility, and recovery at the decision point;
+  each applicable interaction or motion judgment MUST state whether it is warranted and what state, location,
+  or causality it communicates, routing event, pointer, keyboard, focus, drag, gesture, widget-pattern, and
+  script-driven mechanics to `web-interaction` and declarative motion mechanics to `css-motion`.
 - **MUST define harm-aware success measures and keep their decisions reopenable after release.** Name each
   measure's intended and harmful interpretation, its guardrail, and the evidence that reopens the design;
-  post-release evidence that crosses a target or guardrail reopens the affected decision, while a no-change
-  result remains dated, bounded, and falsifiable.
+  every post-release review uses answerable signals, bounded monitoring, and a named owner and consumer, and
+  closes only with an explicit improvement or no-change decision and an explicit Maintenance decision, while
+  a no-change result stays dated, bounded, and falsifiable.
+
+### Activity return conditions
+
+The first Rule makes this table binding. A result cannot close while any condition in its row holds.
+
+| Activity | Named result | Return condition |
+|---|---|---|
+| Discovery research | Discovery evidence reviewed | Sources are weak or stale; affected people, context, or counterevidence is missing; uncertainty is unresolved; or the evidence cannot affect the decision. |
+| Problem framing and design requirements | Design requirements accepted for the current subject | A problem or requirement is invented, solution-locked, authority-free, untraceable, incomplete, or contradicted. |
+| Concept alternatives | Concept decision recorded | Alternatives are cosmetic variants, trade-offs are hidden, or fewer than two material concepts remain without the evidenced single-viable exception. |
+| Prototyping | Prototype evidence reviewed | Fidelity hides the question; required paths, states, failure, recovery, accessibility, or adaptation are missing; or prototype evidence is treated as production proof. |
+| Representative-user testing | Test evidence reviewed | People, subject, tasks, conditions, or modalities are wrong; failure or harm is hidden; generalization is unsupported; or evidence is insufficient. |
+| Design–implementation collaboration | Design and implementation obligations reconciled for the current subject | The handoff is one-way, a mechanism changes intent, a conflict is unowned, the trace is stale, or a contradiction is unverified. |
+| Post-release measurement and improvement | Post-release design review closed | A signal is missing or unanswerable, a proxy has a harmful interpretation, monitoring is unbounded, an owner or consumer is missing, a guardrail is crossed, an explicit improvement-or-no-change decision or Maintenance decision is absent, or a no-change result is not dated, bounded, and falsifiable. |
 
 ## Preferences
 
