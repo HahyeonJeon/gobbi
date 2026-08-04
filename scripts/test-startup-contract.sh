@@ -76,6 +76,11 @@ mutate_metadata_row() {
   sed -i '/^- /a\  - **Owner:** obsolete owner' "$1/.gobbi/projects/gobbi/skills/startup/topics/design.md"
 }
 
+mutate_lifecycle_scenario_model() {
+  sed -i '/^## Overlay Banks$/i\## Scenario Model\n\nRecord the Development dimension, linked Product scenarios, observable outcome, recovery, and coverage status.\n' \
+    "$1/.gobbi/projects/gobbi/skills/startup/topics/development-lifecycle.md"
+}
+
 mutate_temporary_template() {
   cp "$1/.gobbi/projects/gobbi/skills/startup/templates/startup.md" "$1/.gobbi/projects/gobbi/skills/startup/templates/startup.tmp.md"
 }
@@ -149,6 +154,7 @@ run_failure_case missing-topic mutate_missing_topic 'expected 17 Markdown files'
 run_failure_case question-count mutate_question_count 'expected 342 question bullets'
 run_failure_case alias-prefix mutate_alias_prefix 'forbidden question metadata'
 run_failure_case metadata-row mutate_metadata_row 'forbidden question metadata'
+run_failure_case lifecycle-scenario-model mutate_lifecycle_scenario_model 'obsolete lifecycle topic machinery'
 run_failure_case temporary-template mutate_temporary_template 'expected 6 Markdown files'
 run_failure_case template-shape mutate_template_shape "missing exact '## Products' heading"
 run_failure_case phase-order mutate_phase_order 'missing exact ordered row for Problem Definition'

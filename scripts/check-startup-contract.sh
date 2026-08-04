@@ -157,6 +157,16 @@ for topic in "${expected_topics[@]}"; do
   done
 done
 
+for lifecycle_topic in "$topics_root/product-lifecycle.md" "$topics_root/development-lifecycle.md"; do
+  lifecycle_rel="$(relative_path "$lifecycle_topic")"
+  while IFS= read -r violation; do
+    [[ -n "$violation" ]] && fail "$lifecycle_rel:${violation%%:*}" 'obsolete lifecycle topic machinery' 'Scenario Model, scenario-record field list, or coverage-state machinery remains'
+  done < <(
+    awk '$0 == "## Project" { exit } { print NR ":" $0 }' "$lifecycle_topic" |
+      grep -Ei '^[0-9]+:## .*Scenario (Model|Record Contract|Records?)$|^[0-9]+:Select evidence-derived scenarios by .*path variant|^[0-9]+:Record the Development dimension|^[0-9]+:.*coverage[ -](status|state)' || true
+  )
+done
+
 for index in "${!phase_slugs[@]}"; do
   template="$templates_root/${phase_slugs[$index]}.md"
   template_rel="$(relative_path "$template")"

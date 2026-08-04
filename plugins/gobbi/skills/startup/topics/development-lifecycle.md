@@ -4,12 +4,6 @@ Development Lifecycle owns the complete-stack mechanisms and evidence that reali
 Tools, frameworks, languages, desktop mechanisms, and network mechanisms remain participating entries or
 platform concerns inside one Implementation.
 
-## Scenario Model
-
-Record the Development dimension, linked Product scenarios and decisions, applicable Project policy,
-implementation-neutral mechanism or obligation, participating entries, claim-specific evidence, observable
-Development oracle, rollback and recovery, selected overlay banks, and coverage status.
-
 ## Overlay Banks
 
 | Bank | Select when accepted evidence shows |

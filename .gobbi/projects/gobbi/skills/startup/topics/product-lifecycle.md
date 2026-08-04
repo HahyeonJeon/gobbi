@@ -4,12 +4,6 @@ Product Lifecycle owns actor-visible access, use, operation, support, compatibil
 deprecation, and retirement promises. Derive scenario candidates from accepted evidence and ask only when a
 concrete scenario or observable Product oracle remains unresolved.
 
-## Scenario Model
-
-Select evidence-derived scenarios by stage or moment, path variant, and applicable actor perspective. Record
-the trigger and context, linked Product decisions, observable oracle, state and data invariants, selected
-overlay banks, linked Development records, and coverage status.
-
 ## Overlay Banks
 
 | Bank | Select when accepted evidence shows |
