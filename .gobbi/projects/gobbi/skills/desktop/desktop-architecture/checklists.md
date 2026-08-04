@@ -2,7 +2,8 @@
 
 This reusable unchecked source evaluates one installable Electron desktop application's Architecture
 judgments: view hierarchy, navigation, window model, application-state authority and lifetime, restoration,
-Activation request behavior, safe failure and recovery, and exact owner routes. It is governed by the
+Activation request behavior, safe failure and recovery, non-native product-convention departures, and exact
+owner routes. It is governed by the
 [`desktop`](../SKILL.md) domain and [`desktop-architecture`](SKILL.md) preference; the source commit that
 contains this file identifies its version. Its stable owner prefix is `DTARCH`.
 
@@ -76,8 +77,7 @@ records why; a separate window opened only because the view felt distinct is the
 
 #### Checklist
 
-- [ ] DTARCH-CK-STRUCTURE-03-01 — Every separate window exists for a view genuinely used beside the main one rather than for a view merely reached from it.
-- [ ] DTARCH-CK-STRUCTURE-03-02 — The reason each separate view is separate is recorded with that view.
+- [ ] DTARCH-CK-STRUCTURE-03-03 — Every separate-window decision records evidence that the view is genuinely used beside the main one rather than merely reached from it.
 
 ### DTARCH-SC-STRUCTURE-04 — Poor quality: the hierarchy is deeper than a person can climb out of
 
@@ -98,7 +98,7 @@ factory or happy path standing in for that decision is the failure.
 
 #### Checklist
 
-- [ ] DTARCH-CK-STRUCTURE-05-01 — Every window states its purpose, creation authority, restore behavior, close behavior, focus rules, minimum safe state, cleanup ownership, and later-created failure behavior.
+- [ ] DTARCH-CK-STRUCTURE-05-02 — Every window states its purpose, creation authority, restore behavior, close behavior, focus rules, minimum state that is both safe and useful, cleanup ownership, and later-created failure behavior.
 
 ### DTARCH-SC-STRUCTURE-06 — Rule violation: activation can create another authoritative owner
 
@@ -222,6 +222,17 @@ stand in for another violates the governing runtime vocabulary.
 - [ ] DTARCH-CK-CONSISTENCY-03-03 — A command or test exit status is treated only as a tool or test outcome and never as product runtime state.
 - [ ] DTARCH-CK-CONSISTENCY-03-04 — Intentional target differences in Window close, Normal quit, Activation request, background presence, file or protocol entry, and notification behavior are recorded from current applicable OS facts rather than inferred across targets.
 
+### DTARCH-SC-CONSISTENCY-04 — Edge case: product behavior departs from a native convention
+
+The product deliberately departs from what people using the target operating system expect. The expected
+outcome accepts the departure only when Architecture records the need, current target facts, and references
+to complete Interface evidence; a convention with no motivating user need or only one evidence class is the
+failure.
+
+#### Checklist
+
+- [ ] DTARCH-CK-CONSISTENCY-04-01 — Every accepted non-native product convention has one decision record containing the motivating user need, current target facts from the applicable `desktop-windows`, `desktop-macos`, or `desktop-linux` Manual, and references to discoverability, accessibility, and recovery evidence from `desktop-interface`.
+
 ## Risk
 
 ### DTARCH-SC-RISK-02 — Adversarial: ownership is declared while a renderer keeps its own copy
@@ -274,6 +285,6 @@ or an outcome that bypasses one of those boundaries is the failure.
 
 - [ ] DTARCH-CK-OVERALL-02-01 — Every local choice is a view-hierarchy, navigation, window-model, application-state, restoration, or Activation request product-outcome judgment.
 - Also applies: DTARCH-CK-OVERALL-01-01 (view, navigation, state, window, and restoration decisions).
-- Also applies: DTARCH-CK-STRUCTURE-05-01 (complete window model).
+- Also applies: DTARCH-CK-STRUCTURE-05-02 (complete window model).
 - Also applies: DTARCH-CK-STRUCTURE-06-01 (one Activation authority).
 - Also applies: DTARCH-CK-USAGE-04-03 (accepted Activation outcomes).

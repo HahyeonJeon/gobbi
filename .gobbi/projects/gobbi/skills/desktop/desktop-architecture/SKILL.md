@@ -49,9 +49,9 @@ when a platform event or Electron mechanism makes one path convenient.
   built.** Give each window one identifiable current location and a defined keyboard-operable way back that
   does not require closing the window.
 - **MUST decide for every view whether reaching it changes current-window content or opens a window, and
-  define every window's purpose, creation authority, restore, close, and focus behavior, minimum safe state,
-  cleanup ownership, and later-created failure behavior.** A technical creation path cannot stand in for the
-  product window model.
+  define every window's purpose, creation authority, restore, close, and focus behavior, minimum state that
+  is both safe and useful, cleanup ownership, and later-created failure behavior.** A technical creation path
+  cannot stand in for the product window model.
 - **MUST assign every application-state item exactly one authoritative owner and one durable, session, or
   derived lifetime, and assign Activation requests exactly one authoritative application instance and state
   owner.** No renderer, later window, second instance, failed request, or recovery attempt may create another
@@ -66,15 +66,17 @@ when a platform event or Electron mechanism makes one path convenient.
   relaunch, and every Qualified restart in the architecture.** Define restoration after Normal quit and
   Abnormal termination separately, classify an intentional immediate-exit mechanism as Abnormal termination
   with its cause, and keep command or test exit status outside product runtime state.
-- **MUST keep product hierarchy, window, navigation, state, restoration, and activation-outcome judgment here
-  while routing Electron security or structure judgment to
+- **MUST keep product hierarchy, window, navigation, state, restoration, and activation-outcome judgment here,
+  and accept a non-native product convention only when its decision record contains the motivating user need,
+  current target facts from the applicable `desktop-windows`, `desktop-macos`, or `desktop-linux` Manual,
+  and references to discoverability, accessibility, and recovery evidence from
+  [`desktop-interface`](../desktop-interface/SKILL.md).** Route Electron security or structure judgment to
   [`electron-design`](../../electron/electron-design/SKILL.md), current lifecycle, event, delivery, and
   mechanism facts to [`electron-runtime`](../../electron/electron-runtime/SKILL.md), implementation to
-  [`electron-development`](../../electron/electron-development/SKILL.md), and evidence to
-  [`electron-testing`](../../electron/electron-testing/SKILL.md).** Route current target facts to the
-  applicable [`desktop-windows`](../desktop-windows/SKILL.md),
-  [`desktop-macos`](../desktop-macos/SKILL.md), or [`desktop-linux`](../desktop-linux/SKILL.md) Manual,
-  product intent to [`desktop-interface`](../desktop-interface/SKILL.md), coordination to
+  [`electron-development`](../../electron/electron-development/SKILL.md), evidence to
+  [`electron-testing`](../../electron/electron-testing/SKILL.md), current target facts to the applicable
+  [`desktop-windows`](../desktop-windows/SKILL.md), [`desktop-macos`](../desktop-macos/SKILL.md), or
+  [`desktop-linux`](../desktop-linux/SKILL.md) Manual, product intent to `desktop-interface`, coordination to
   [`desktop-development`](../desktop-development/SKILL.md), and release or data-compatibility judgment to
   [`desktop-release`](../desktop-release/SKILL.md).
 
