@@ -165,7 +165,7 @@ evidence class and every unrun probe; any proxy-execution claim or unauthorized 
 
 - [ ] DTMAC-CK-RISK-01-01 — Documentation, repository, metadata, bundle, package, and artifact evidence is never described as application, installer, runtime, or macOS execution.
 - [ ] DTMAC-CK-RISK-01-02 — A development run, unpacked build, source inspection, or non-throwing call never proves installed or native behavior.
-- [ ] DTMAC-CK-RISK-01-03 — The result makes no product behavior, product support, implementation, software-testing, verification, or release-readiness decision.
+- [ ] DTMAC-CK-RISK-01-04 — The result states exactly `Exact-tuple probe not run` when no application, installer, updater, uninstaller, runtime transition, native integration, or macOS behavior was actually observed.
 - [ ] DTMAC-CK-RISK-01-05 — The lookup uses no credential and performs no install, update, repair, uninstall, signing, notarization, trust-store, entitlement, policy, publication, or other mutation.
 
 ### DTMAC-SC-RISK-02 — Rule violation: an adjacent result is assigned to the fact investigator
@@ -193,4 +193,4 @@ an internally contradictory or adjacent-owner claim is the failure.
 - [ ] DTMAC-CK-OVERALL-01-01 — The tuple, evidence, outcome, behavior, diagnostic signals, next probe, limits, conflicts, routes, freshness, and non-decisions describe the same exact subject without contradiction.
 - [ ] DTMAC-CK-OVERALL-01-02 — The outcome is no broader than the complete tuple and the strongest current evidence that directly applies to it.
 - [ ] DTMAC-CK-OVERALL-01-04 — Every unproved or unobserved fact remains explicit.
-- Also applies: DTMAC-CK-RISK-01-03 (adjacent-owner decision boundary).
+- Also applies: DTMAC-CK-STRUCTURE-01-06 (adjacent-owner decision boundary).

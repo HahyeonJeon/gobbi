@@ -167,7 +167,7 @@ failure.
 
 - [ ] DTWIN-CK-RISK-01-01 — Documentation, repository, metadata, package, and artifact evidence is never described as application, installer, runtime, or Windows execution.
 - [ ] DTWIN-CK-RISK-01-02 — A development run, unpacked build, source inspection, or non-throwing call never proves installed or native behavior.
-- [ ] DTWIN-CK-RISK-01-03 — The result makes no product behavior, product support, implementation, software-testing, verification, or release-readiness decision.
+- [ ] DTWIN-CK-RISK-01-04 — The result states exactly `Exact-tuple probe not run` when no application, installer, updater, uninstaller, runtime transition, native integration, or Windows behavior was actually observed.
 - [ ] DTWIN-CK-RISK-01-05 — The lookup uses no credential and performs no install, update, repair, uninstall, signing, trust-store, policy, publication, or other mutation.
 
 ### DTWIN-SC-RISK-02 — Rule violation: an adjacent result is assigned to the fact investigator
@@ -195,4 +195,4 @@ an internally contradictory or adjacent-owner claim is the failure.
 - [ ] DTWIN-CK-OVERALL-01-01 — The tuple, evidence, outcome, behavior, diagnostic signals, next probe, limits, conflicts, routes, freshness, and non-decisions describe the same exact subject without contradiction.
 - [ ] DTWIN-CK-OVERALL-01-02 — The outcome is no broader than the complete tuple and the strongest current evidence that directly applies to it.
 - [ ] DTWIN-CK-OVERALL-01-04 — Every unproved or unobserved fact remains explicit.
-- Also applies: DTWIN-CK-RISK-01-03 (adjacent-owner decision boundary).
+- Also applies: DTWIN-CK-STRUCTURE-01-06 (adjacent-owner decision boundary).

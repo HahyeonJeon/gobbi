@@ -132,7 +132,7 @@ and distinct; a summary that reads cleanly but hides which state was reached is 
 
 #### Checklist
 
-- [ ] DTRLSE-CK-AESTHETICS-01-01 — Development, packaged, installed, signed or notarized, update-rehearsed, release-ready, release-authorized, and post-release claims are kept distinct in the record.
+- [ ] DTRLSE-CK-AESTHETICS-01-01 — Development, packaged, installed, signed or notarized, update-rehearsed, release-ready, current point-of-action authority for each named action and target, verified published or deployed, and post-release claims are kept distinct in the record.
 - [ ] DTRLSE-CK-AESTHETICS-01-02 — No summary word stands for a release state the evidence does not establish.
 
 ### DTRLSE-SC-AESTHETICS-02 — Adversarial: a complete state list hides missing proof
