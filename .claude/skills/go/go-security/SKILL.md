@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/go/go-security/SKILL.md
