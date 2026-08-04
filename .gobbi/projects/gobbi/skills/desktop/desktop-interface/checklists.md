@@ -61,7 +61,7 @@ record is the failure.
 
 - [ ] DTINTF-CK-PROJECT-03-01 — Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement each have a result.
 - [ ] DTINTF-CK-PROJECT-03-02 — Each activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
-- [ ] DTINTF-CK-PROJECT-03-03 — Each activity result names its actor or owner, subject and scope, current inputs, method, evidence, decision state, counterevidence, failure, uncertainty, limitations, dependencies, routes, trace, reopen condition, and evidence location.
+- [ ] DTINTF-CK-PROJECT-03-07 — Each activity result names its actor or owner, subject and scope, current inputs, method, evidence, decision state, counterevidence, failure, uncertainty, limitations, dependencies, routes, trace, reopen condition, and evidence location.
 
 ### DTINTF-SC-PROJECT-04 — Poor quality: Discovery evidence cannot change the decision
 
@@ -118,17 +118,7 @@ expression that makes an unfinished structure look finished is the failure.
 - [ ] DTINTF-CK-STRUCTURE-03-01 — No detailed expression is decided while structure, behavior, content, feedback, recovery, adaptation, or accessibility remains unresolved.
 - [ ] DTINTF-CK-STRUCTURE-03-02 — No expressive choice conceals missing structure or inaccessible behavior.
 
-### DTINTF-SC-STRUCTURE-04 — Adversarial: concept alternatives hide the actual trade-off
-
-Several candidates are presented as concept work, but they share one consequential model or hide its costs.
-The expected outcome returns cosmetic alternatives, hidden trade-offs, or an unsupported single-concept
-claim; the appearance of choice used to close the activity is the failure.
-
-#### Checklist
-
-- [ ] DTINTF-CK-STRUCTURE-04-01 — The Concept alternatives result returns without closing when alternatives are cosmetic variants, trade-offs are hidden, or fewer than two material concepts remain without the evidenced single-viable exception.
-
-### DTINTF-SC-STRUCTURE-05 — Expected failure: a prototype cannot answer its design question
+### DTINTF-SC-STRUCTURE-04 — Expected failure: a prototype cannot answer its design question
 
 A prototype is offered as evidence for a choice or for production behavior. The expected outcome returns when
 its fidelity hides the question, required experience coverage is absent, or its evidence is promoted beyond
@@ -136,7 +126,17 @@ the prototype; a polished demonstration treated as production proof is the failu
 
 #### Checklist
 
-- [ ] DTINTF-CK-STRUCTURE-05-01 — The Prototyping result returns without closing when fidelity hides the question; a required path, state, failure, recovery, accessibility, or adaptation is missing; or prototype evidence is treated as production proof.
+- [ ] DTINTF-CK-STRUCTURE-04-03 — The Prototyping result returns without closing when fidelity hides the question; a required path, state, failure, recovery, accessibility, or adaptation is missing; or prototype evidence is treated as production proof.
+
+### DTINTF-SC-STRUCTURE-05 — Adversarial: concept alternatives hide the actual trade-off
+
+Several candidates are presented as concept work, but they share one consequential model or hide its costs.
+The expected outcome returns cosmetic alternatives, hidden trade-offs, or an unsupported single-concept
+claim; the appearance of choice used to close the activity is the failure.
+
+#### Checklist
+
+- [ ] DTINTF-CK-STRUCTURE-05-01 — The Concept alternatives result returns without closing when alternatives are cosmetic variants, trade-offs are hidden, or fewer than two material concepts remain without the evidenced single-viable exception.
 
 ## Performance
 
@@ -256,7 +256,7 @@ experience in code is the failure.
 #### Checklist
 
 - [ ] DTINTF-CK-CONSISTENCY-03-01 — The Design–implementation collaboration result records each implementation constraint or contradiction, its evidence, owner, and accepted disposition before it changes an observable decision.
-- [ ] DTINTF-CK-CONSISTENCY-03-02 — The Design–implementation collaboration result returns without closing when the handoff is one-way, a mechanism changes intent, a conflict is unowned, the trace is stale, or a contradiction is unverified.
+- [ ] DTINTF-CK-CONSISTENCY-03-03 — The Design–implementation collaboration result returns without closing when the handoff is one-way, a mechanism changes intent, a conflict is unowned, the trace is stale, or a contradiction is unverified.
 
 ## Risk
 
@@ -300,7 +300,7 @@ compliance shaped to survive review rather than to change a decision is the fail
 - [ ] DTINTF-CK-RISK-03-03 — Every success measure names the guardrail that detects the harmful interpretation, so a proxy improving while the user outcome worsens cannot stand alone.
 - [ ] DTINTF-CK-RISK-03-04 — Every success measure names the evidence that would reopen the design.
 
-### DTINTF-SC-RISK-04 — Adversarial: reused evidence does not reach the current decision
+### DTINTF-SC-RISK-05 — Adversarial: reused evidence does not reach the current decision
 
 An activity reuses a nearby study without proving that it reaches the present subject and people. The
 expected outcome binds the evidence to its original and current conditions and keeps it falsifiable;
@@ -308,9 +308,9 @@ similarity used as current reach is the failure.
 
 #### Checklist
 
-- [ ] DTINTF-CK-RISK-04-01 — A `Reused current evidence` result identifies the exact subject, affected people, source, date, context, conditions, falsifiability, and current reach.
+- [ ] DTINTF-CK-RISK-05-01 — A `Reused current evidence` result identifies the exact subject, affected people, source, date, context, conditions, falsifiability, and current reach.
 
-### DTINTF-SC-RISK-05 — Adversarial: non-applicability hides a decision risk
+### DTINTF-SC-RISK-06 — Adversarial: non-applicability hides a decision risk
 
 An activity is declared unnecessary because the team expects no useful result. The expected outcome proves
 both that the activity cannot change the scoped decision and that no binding risk trigger applies;
@@ -318,7 +318,7 @@ convenience presented as an exact reason is the failure.
 
 #### Checklist
 
-- [ ] DTINTF-CK-RISK-05-01 — A `Not applicable with exact reason` result proves that the activity cannot change the scoped decision and that no binding risk trigger applies.
+- [ ] DTINTF-CK-RISK-06-01 — A `Not applicable with exact reason` result proves that the activity cannot change the scoped decision and that no binding risk trigger applies.
 
 ## Overall
 
