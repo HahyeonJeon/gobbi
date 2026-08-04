@@ -35,8 +35,9 @@ content while preserving completed point-in-time records under their category ru
 
 ## Rules
 
-- **MUST select `Temporary Record` or `Memorize` from the active task and keep the action inside the verified
-  worktree, project, and session context.** Stop without writing when containment or ownership is ambiguous.
+- **MUST select `Temporary Record` or `Memorize` from the active task and validate one caller-supplied new or
+  legacy session identity inside the verified worktree and project.** Stop without writing when format,
+  containment, UUID uniqueness, or ownership is ambiguous or conflicting.
 - **MUST keep every Temporary Record output below the active project's `sessions/*` tree and out of Git
   history.** Cowork or Workflow owns the exact output; never judge durable value, route a memory category,
   stage, or commit during this action.
@@ -55,13 +56,41 @@ content while preserving completed point-in-time records under their category ru
 
 #### 1.1 Select and validate the action
 
-- Determine the action and verified worktree from the active task. Inside that worktree, use
-  `.gobbi/projects/<project>/sessions/<session>/` as `{session-root}` and
-  `.gobbi/projects/<project>/memory/` as `{memory-root}`.
+- Determine the action and verified worktree from the active task. Require the caller's full lowercase
+  hyphenated session UUID, original UTC session-start date, and exact session root. For a new identity, also
+  require its normalized slug. For a legacy identity, require `slug: not-applicable`. Memory validates those
+  values and never derives a branch, worktree leaf, or Git identity.
+- Inside the verified worktree, resolve `.gobbi/projects/<project>/sessions/` as `{sessions-root}`, the
+  caller-supplied `.gobbi/projects/<project>/sessions/<session>/` as `{session-root}`, and
+  `.gobbi/projects/<project>/memory/` as `{memory-root}`. Reject parent traversal, a symbolic-link path
+  component, a different project, and any resolved root outside the verified worktree.
+- Parse the session leaf with exactly one permanent grammar:
+
+```text
+new:    <YYYY-MM-DD>-<slug>-<full-uuid>
+legacy: <YYYY-MM-DD>-<full-uuid>
+```
+
+```regex
+new:    ^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+legacy: ^\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+- Require the parsed date to be the real Gregorian calendar date of the original UTC session start. For a new
+  leaf, require the parsed date, slug, and UUID to equal the caller values. Require a 1-20
+  character slug and reject exactly `con`, `prn`, `aux`, `nul`, `com1` through `com9`, and `lpt1` through
+  `lpt9`, case-insensitively. For a legacy leaf, require the parsed date and UUID to equal the caller values
+  and require no slug. Keep a readable legacy root in its original shape; never rename, migrate, or rewrite
+  its leaf.
+- Inspect existing leaves below `{sessions-root}` before either action. The caller UUID may resolve to only
+  the supplied `{session-root}`. Reject another leaf containing that UUID, more than one root matching the
+  caller identity, a leaf that matches both classifications, or any competing date or slug. Report every
+  conflicting root; never choose one, append a suffix, or create a replacement.
 - For `Temporary Record`, use the exact output Cowork or Workflow owns below `{session-root}`. For `Memorize`,
   use the full `{session-root}`, frozen closure evidence, and `{memory-root}`.
-- Resolve each path without parent traversal or symbolic-link escape. Stop without writing when a path falls
-  outside its contextual root or conflicts with protected work.
+- Evidence is the selected action, caller identity, matched format, resolved roots, containment checks, UUID
+  inventory, and exact output or input boundary. Stop without writing when any evidence is missing,
+  ambiguous, or conflicting.
 
 ### Phase 2 — Write a temporary record
 
