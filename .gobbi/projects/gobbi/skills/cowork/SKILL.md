@@ -37,6 +37,11 @@ fresh evaluator; an enabled partner policy adds the external evaluator.
 The runtime TODO list selects Cowork's current action. Accepted artifacts, commits, and checks prove whether
 the manager may advance it, but never become a second route.
 
+### Route through one native TODO
+
+The runtime TODO list selects Cowork's current action. Accepted artifacts, commits, and checks prove whether
+the manager may advance it, but never become a second route.
+
 ## Rules
 
 - **MUST establish one verified isolated Cowork worktree before the first tracked edit, except for the one
