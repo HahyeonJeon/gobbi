@@ -8,10 +8,10 @@ user-invocable: false
 
 # Workflow Phase 2
 
-The manager loads this child only after the parent [Workflow](../SKILL.md) activates
-`P2 · Planning · DISCUSSION · 1/2`, or when recovery selects an unfinished Phase 2 item. Entry requires the
-verified Phase 1 Hand-off and locked Ideation contract. The parent remains loaded and owns all shared Workflow
-contracts.
+
+The manager loads this child only after the parent [Workflow](../SKILL.md) activates `P2 · Planning`, or when
+recovery selects an unfinished Phase 2 item. Entry requires the verified Phase 1 Hand-off and locked Ideation
+contract. The parent remains loaded and owns all shared Workflow contracts.
 
 Phase 2 produces a dependency-valid plan, executes every task through one ordered writer chain, and proves the
 complete result ready for Wrap-up.
@@ -35,8 +35,8 @@ receipt, task, or commit.
 
 - **MUST enter through the parent route with the verified Phase 1 Hand-off and exactly one Phase 2 item
   active.** Return to recovery when TODO, plan, commits, branch, worktree, or evidence disagree.
-- **MUST use each canonical `task-NN-slug` in TODO, delegation, package, receipt, and commit evidence.** A
-  revision or recovery pass never creates a second identity.
+- **MUST use each canonical `task-NN-slug` in delegation, package, receipt, and commit evidence.** A revision
+  or recovery pass never creates a second identity; TODO titles stay fixed and carry no task identifier.
 - **MUST apply the parent's [shared productive-step cycle](../SKILL.md#14-apply-the-shared-productive-step-cycle),
   fast gate to Planning, and normal gate to Execution.** Apply Gobbi's finding gate through the parent; only
   PASS continues.
@@ -77,10 +77,11 @@ receipt, task, or commit.
 - Run every RECORD pass. On first-pass REVISE, return to DISCUSSION. On second-pass FAIL, preserve recovery state
   and stop at the parent critical-blocker boundary. Never create iteration 3.
 - On PASS, freeze both ignored outputs without a second contract layer and prove the tracked tree unchanged.
-  Replace the pending `unplanned` placeholder with the first task and add the rest in plan order as:
+  Activate the fixed `P2 · Execution` item for the first dependency-ready task. Keep task IDs only in the plan,
+  assignment, evidence, commit, and recovery records:
 
 ```text
-P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
+P2 · Execution
 ```
 
 - Complete Planning at PASS and activate only the first task.
@@ -145,7 +146,7 @@ P2 · Execution · task-NN-slug · DISCUSSION · 1/<configured-max>
 
 - Apply parent Step 1.6 with Phase `Phase 2`; completed Planning and stable task IDs; plan, commits, tests, and
   evaluations; autonomous in-contract decisions and material authorities; and
-  `Next TODO: P3 · Wrap-up · DISCUSSION · 1/2`.
+  `Next TODO: P3 · Wrap-up`.
 - Reread every field, complete `P2 · Hand-off`, activate the next TODO, display the checkpoint, and continue in
   the same turn unless the user interrupts for clear or compact.
 

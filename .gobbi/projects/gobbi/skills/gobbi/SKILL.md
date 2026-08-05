@@ -185,6 +185,12 @@ projects/*/worktrees/
 - Present the commitment column. A request may support a recommendation but never records a fresh selection.
   On a boundary, preserve a validated selection and ask again only when its evidence is missing, ambiguous, or
   conflicting. The selected owner, not Gobbi, supplies each commitment's mechanism.
+- Immediately after the user selects a mode, publish that mode's complete native TODO template before asking
+  for the applicable slug or partner policy. In Claude Code use the native task controls; in Codex use
+  `update_plan`. General publishes no Gobbi orchestration TODO. Cowork publishes its fixed `CW` template, and
+  Workflow publishes its fixed `P1`–`P3` template. Start only the first item and leave the remaining template
+  items pending. The template titles contain no topic, task, subject, stage, iteration, or closure-decision
+  placeholder; those values remain in evidence, assignments, and paths.
 - After recording fresh Cowork or Workflow, warn that the session slug enters branch names and paths and must
   not contain sensitive information. Ask for the slug through the same [Discussion](../discussion/SKILL.md)
   structure and control. Normalize it by taking each maximal ASCII alphanumeric sequence as one word,

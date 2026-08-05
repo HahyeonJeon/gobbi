@@ -68,23 +68,24 @@ after the Wrap-up handoff and factual Git receipt agree with current evidence.
   worktrees, TODO state, and unfinished evidence without mutation.
 - In Claude Code, use `TaskList`, `TaskGet`, `TaskCreate`, and `TaskUpdate`. In Codex, publish the complete
   ordered list and statuses with `update_plan`.
-- On a fresh session, create Configuration, one mutable item for each productive-step iteration, and each
-  Hand-off. Start only Configuration. Use this exact title grammar:
+- Gobbi publishes the complete fixed Workflow template immediately after mode selection, before the slug and
+  partner questions. Start only Configuration. Use the same ordered titles in Claude Code task controls and
+  Codex `update_plan`:
 
 ```text
 P1 · Configuration
-P1 · Ideation · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
+P1 · Ideation
 P1 · Hand-off
-P2 · Planning · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
-P2 · Execution · <unplanned|task-NN-slug> · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/<configured-max>
+P2 · Planning
+P2 · Execution
 P2 · Hand-off
-P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2
+P3 · Wrap-up
 P3 · Hand-off
 ```
 
-- Retitle an item at each stage. `PASS` is the verified gate marker after RECORD. On revision, complete the
-  recorded iteration and create the next at DISCUSSION; Ideation, Planning, and Wrap-up allow two total
-  iterations, while Execution uses its configured cap.
+- Keep these titles stable. Store the current DISCUSSION, WORK, EVALUATION, RECORD, or PASS stage, iteration,
+  task ID, and execution cap in the checkpoint and evidence record. On revision, update the evidence and status
+  of the same template item; do not add a decision-shaped title field.
 - Recover through [`agent-teams.md`](agent-teams.md): start at the latest verified Hand-off, walk records and
   task commits in order, reconstruct the first unproved TODO, correct the native list, and load its phase child.
 
@@ -254,7 +255,7 @@ same turn. A context boundary preserves established mode, slug, partner policy, 
 - Require a configured or safely recovered isolated session, a user-locked Ideation contract, fast-gate PASS,
   canonical Ideation output, and a verified Phase 1 checkpoint.
 - Return phase-specific failure to its earliest unproved Configuration or Ideation step. On success, activate
-  `P2 · Planning · DISCUSSION · 1/2` and continue automatically.
+  `P2 · Planning` and continue automatically.
 
 #### 2.2 Dispatch Phase 2
 
@@ -263,7 +264,7 @@ same turn. A context boundary preserves established mode, slug, partner policy, 
 - Require fast-gate PASS for the canonical plan and normal-gate PASS plus one focused commit for every task.
   Preserve completed plan and task history during amendments and recovery.
 - Return failure to the earliest unproved Planning or Execution step. On success, activate
-  `P3 · Wrap-up · DISCUSSION · 1/2` and continue automatically.
+  `P3 · Wrap-up` and continue automatically.
 
 #### 2.3 Dispatch Phase 3 and terminate
 

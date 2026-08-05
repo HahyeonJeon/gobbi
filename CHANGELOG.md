@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Renamed three web skills with no compatibility aliases. Direct or explicit invocation of `web-feature`
   now breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
   `web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`.
+- Added `scripts/sync-runtime-entrypoints.sh`, which keeps the Principles section in both runtime entry
+  documents generated from the canonical Principles skill.
+- Removed standalone skill-specific checkers and tests. Repository scripts now cover project-level topology,
+  package, smoke, link, and runtime-entry validation.
 
 ## 1.0.0 - 2026-08-01
 

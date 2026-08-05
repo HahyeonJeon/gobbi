@@ -66,8 +66,7 @@ prove.
   worktree; then create the byte-matching session leaf and `configuration.md`.
 - Verify base, registration, clean worktree, ignore posture, evidence directories, initial TODO route, identity,
   settings, validated root pair, and creation checks. Apply [Memory](../../memory/SKILL.md) `Temporary Record`,
-  prove the receipt ignored and the tracked tree unchanged, then activate
-  `P1 · Ideation · DISCUSSION · 1/2`.
+  prove the receipt ignored and the tracked tree unchanged, then activate `P1 · Ideation`.
 
 #### 1.3 Recover an existing session
 
@@ -126,7 +125,7 @@ prove.
 
 - Apply the parent Step 1.6 checkpoint schema with Phase `Phase 1`; completed Configuration and Ideation;
   Configuration receipt, canonical output, and evaluation evidence; resolved settings and material user
-  decisions; and `Next TODO: P2 · Planning · DISCUSSION · 1/2`.
+  decisions; and `Next TODO: P2 · Planning`.
 - Reread every field, complete `P1 · Hand-off`, activate the next TODO, display the checkpoint, and continue in
   the same turn unless the user interrupts for clear or compact.
 

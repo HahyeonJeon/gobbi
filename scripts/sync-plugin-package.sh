@@ -375,11 +375,37 @@ validate_lifecycle_semantics() {
   require_semantic_sequence "$workflow" 10 \
     'Workflow must retain the exact native TODO title grammar' \
     'P1 · Configuration' \
-    'P1 · Ideation · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
-    'P2 · Planning · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
-    'P2 · Execution · <unplanned|task-NN-slug> · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/<configured-max>' \
-    'P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS> · <iteration>/2' \
+    'P1 · Ideation' \
+    'P2 · Planning' \
+    'P2 · Execution' \
+    'P3 · Wrap-up' \
     'P3 · Hand-off'
+  require_semantic_text "$workflow" \
+    'Gobbi publishes the complete fixed Workflow template immediately after mode selection' \
+    'Workflow must build its native TODO template immediately after mode selection'
+  require_semantic_sequence "$cowork" 75 \
+    'Cowork must retain the complete fixed TODO template' \
+    'CW · Configuration' \
+    'CW · Topic · DISCUSSION' \
+    'CW · Topic · IDEATION' \
+    'CW · Topic · PLANNING' \
+    'CW · Topic · EXECUTION' \
+    'CW · Topic · PASS' \
+    'CW · Evaluation' \
+    'CW · Wrap-up'
+  for forbidden in \
+    'CW · Topic · topic-NN-slug' \
+    'CW · Evaluation · <whole-branch|subject-slug>' \
+    'CW · Wrap-up · <MEMORY|FRESHNESS|PASS>' \
+    'P1 · Ideation · <DISCUSSION|WORK|EVALUATION|RECORD|PASS>' \
+    'P2 · Planning · <DISCUSSION|WORK|EVALUATION|RECORD|PASS>' \
+    'P2 · Execution · <unplanned|task-NN-slug>' \
+    'P3 · Wrap-up · <DISCUSSION|WORK|EVALUATION|RECORD|PASS>'; do
+    forbid_semantic_text "$cowork" "$forbidden" \
+      "Cowork TODO template must not contain decision field: $forbidden"
+    forbid_semantic_text "$workflow" "$forbidden" \
+      "Workflow TODO template must not contain decision field: $forbidden"
+  done
   require_semantic_sequence "$memory" 25 \
     'Memory must validate caller identity against the exact session root' \
     "Require the caller's full lowercase" \
@@ -656,6 +682,12 @@ validate_lifecycle_semantics() {
     require_semantic_text "$path" \
       'only PASS auto-continues' \
       'runtime entry documentation must preserve the PASS-only finding gate'
+    require_semantic_text "$path" \
+      '<!-- BEGIN GENERATED PRINCIPLES: .gobbi/projects/gobbi/skills/principles/SKILL.md -->' \
+      'runtime entry documentation must expose the generated Principles source'
+    require_semantic_text "$path" \
+      '## Principle 10 — Finish In-Scope Work' \
+      'runtime entry documentation must contain the complete Principles body'
   done
 }
 

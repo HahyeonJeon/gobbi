@@ -71,8 +71,10 @@ the manager may advance it, but never become a second route.
   `mode: Cowork`, normalized slug or legacy `slug: not-applicable`, session-wide partner policy, and validated
   `{gobbi-skills-root}` and `{gobbi-agents-root}` pair.
 - Use the runtime's native TODO control with only `pending`, `in_progress`, and `completed` and at most one
-  active item. A fresh session starts with only `CW · Configuration`; recovery first inspects the surviving
-  list and current evidence.
+  active item. Gobbi publishes the complete fixed Cowork template immediately after mode selection; a fresh
+  session starts its first item at `CW · Configuration`, and recovery first inspects the surviving list and
+  current evidence. In Claude Code use the native task controls; in Codex publish the same ordered list with
+  `update_plan`.
 - For a fresh identity, generate one full lowercase hyphenated UUID and capture the original UTC session-start
   date before deriving names. Retain both across boundaries. Supply [Git](../git/SKILL.md) its five-property
   contract:
@@ -118,19 +120,23 @@ the manager may advance it, but never become a second route.
 
 - Supply each exact path to [Memory](../memory/SKILL.md) `Temporary Record`. Memory owns identity validation,
   containment, and no-Git capture; Cowork never stages a session path or writes outside the verified worktree.
-- Use this exact Cowork title grammar. Items for optional stages, execution tasks, evaluation, and Wrap-up
-  exist only when their trigger selects them:
+- Use this exact fixed Cowork title template. Dynamic topic, task, subject, stage, iteration, and closure values
+  stay in the topic contract, assignment, evidence path, or checkpoint; they never become TODO title fields:
 
 ```text
 CW · Configuration
-CW · Topic · topic-NN-slug · DISCUSSION
-CW · Topic · topic-NN-slug · IDEATION
-CW · Topic · topic-NN-slug · PLANNING
-CW · Topic · topic-NN-slug · EXECUTION · task-NN-slug
-CW · Topic · topic-NN-slug · PASS
-CW · Evaluation · <whole-branch|subject-slug>
-CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
+CW · Topic · DISCUSSION
+CW · Topic · IDEATION
+CW · Topic · PLANNING
+CW · Topic · EXECUTION
+CW · Topic · PASS
+CW · Evaluation
+CW · Wrap-up
 ```
+
+- Build the complete template at mode selection. Complete or omit optional items only from accepted topic
+  evidence, and keep the fixed titles when activating them. The native TODO remains the sole route; topic and
+  task identifiers remain required in assignments and recovery evidence, not in the title.
 
 - At a boundary, reconcile the TODO list against identity, registered worktree, accepted commits, topic
   contracts, artifacts, clean status, and evaluation coverage. Reconstruct a missing list and activate the
@@ -150,10 +156,12 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 | **Light** | One bounded design choice or modest decomposition remains. | Run only the optional shaping stage the evidence requires, then execute. |
 | **Structured** | Work is broad, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation, Planning, then ordered Execution. |
 
-- Publish DISCUSSION as the only active item, then only selected shaping stages, ordered Execution tasks, and
-  PASS. Use `EXECUTION · unplanned` until Planning freezes canonical task IDs and dependencies. Direct and
-  Light assign `task-NN-slug` before execution. Carry each task ID through TODO, brief, verification, commit,
-  and recovery. Reroute when evidence or a user decision changes the contract.
+- Keep the complete fixed template published at mode entry, with only `CW · Configuration` active initially.
+  Activate `CW · Topic · DISCUSSION`, only the selected shaping stages, `CW · Topic · EXECUTION`, and
+  `CW · Topic · PASS` in order; leave unused optional stages completed or pending according to accepted topic
+  evidence. Direct and Light assign `task-NN-slug` before execution. Carry each task ID through the topic
+  contract, brief, verification, commit, and recovery evidence, not through TODO titles. Reroute when evidence
+  or a user decision changes the contract.
 - Build each assignment through [Delegation](../delegation/SKILL.md). Add the Cowork UUID, topic, depth, stage,
   stable assignment and task ID, absolute worktree, branch, prerequisites, allowed and protected paths,
   result, verification, commit authority, escape paths, and exact skill/role paths resolved from the fixed root
@@ -185,7 +193,7 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
   clean worktree and freezes the whole subject from immutable base through current head, including commits,
   tree, contracts, artifacts, user decisions, verification, status, and exclusions. A user-named subset is not
   whole-branch coverage.
-- Create one `CW · Evaluation · <whole-branch|subject-slug>` item and make it the only active item. Load
+- Activate the fixed `CW · Evaluation` item and make it the only active item. Load
   [Evaluation](../evaluation/SKILL.md) before dispatching the fresh evaluators. Place the round under
   `{session-root}/work/evaluation/{whole-branch|subject-slug}/round-N/` and apply Memory `Temporary Record` to
   each caller-named output.
@@ -202,7 +210,8 @@ CW · Wrap-up · <MEMORY|FRESHNESS|PASS>
 
 #### 4.1 Update memory and return the retained result
 
-- Enter only for an explicit `wrap up`. Create MEMORY, FRESHNESS, and PASS with only MEMORY active. Freeze the
+- Enter only for an explicit `wrap up`. Activate the fixed `CW · Wrap-up` item. Track MEMORY, FRESHNESS, and
+  PASS as closure evidence, with only the current closure action active. Freeze the
   accepted topics, scope, decisions, artifacts, commits, checks, coverage, exclusions, risks, current project
   state, and existing memory. Apply [Memory](../memory/SKILL.md) directly; do not load Wrap-up or create
   Workflow closure state.

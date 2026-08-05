@@ -8,8 +8,8 @@ user-invocable: false
 
 # Workflow Phase 3
 
-The manager loads this child only after the parent [Workflow](../SKILL.md) activates
-`P3 · Wrap-up · DISCUSSION · 1/2`, or when recovery selects an unfinished Phase 3 item. Entry requires the
+The manager loads this child only after the parent [Workflow](../SKILL.md) activates `P3 · Wrap-up`, or when
+recovery selects an unfinished Phase 3 item. Entry requires the
 verified Phase 2 Hand-off, completed task commits, and current finalization authority. The parent remains loaded
 and owns all shared Workflow contracts.
 

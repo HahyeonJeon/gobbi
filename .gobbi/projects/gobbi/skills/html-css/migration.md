@@ -746,9 +746,9 @@ These targets are canonical owner references, not checklist IDs, family rows, or
 
 ## Validation
 
-Run `python3 scripts/check-html-css-skills.py` from the repository root before the package checks. The command
-validates the canonical family, all checklist and migration identities, discovery, live-name removal, and the
-generated plugin bytes.
+This migration table is durable source evidence for the HTML/CSS family. Validate repository-wide topology and
+generated package bytes with the project-level checks listed in the repository entry documents; no
+HTML/CSS-specific script is required.
 
 | Check | Required result |
 |---|---|
