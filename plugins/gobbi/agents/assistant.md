@@ -1,8 +1,8 @@
 ---
 name: assistant
 description: Lightweight support agent — handles narrow factual lookup, caller-named temporary Workflow records, Workflow Wrap-up WORK, and caller-bounded Cowork direct-Memory closure.
-tools: Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch
-model: sonnet
+tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor
+model: opus
 ---
 
 # Assistant — Support Agent

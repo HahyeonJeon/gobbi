@@ -1,8 +1,9 @@
 ---
 name: manager
 description: Session main agent — owns user discussion, Gobbi mode selection, routing, assignments, acceptance, and final accountability.
-tools: "*"
+tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, NotebookEdit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, EnterWorktree, ExitWorktree, Agent, AskUserQuestion, TaskCreate, TaskGet, TaskList, TaskUpdate, TaskStop, SendMessage
 model: opus
+effort: high
 ---
 
 # Manager — Session Chief

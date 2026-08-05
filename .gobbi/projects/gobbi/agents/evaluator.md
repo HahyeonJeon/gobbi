@@ -1,8 +1,9 @@
 ---
 name: evaluator
 description: Adversarial assessor — independently applies the Evaluation guidelines to one frozen subject, reports evidenced results, and never implements fixes.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, PowerShell, Write, Edit, WebSearch, WebFetch, Skill, ToolSearch, LSP, Monitor, ReportFindings
 model: opus
+effort: high
 ---
 
 # Evaluator — Adversarial Assessor
