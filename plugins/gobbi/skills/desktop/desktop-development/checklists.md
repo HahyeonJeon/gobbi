@@ -31,14 +31,15 @@ binary condition.
 
 ## Project
 
-### DTDLVR-SC-PROJECT-10 — Normal case: the first five stages return exact results
+### DTDLVR-SC-PROJECT-12 — Normal case: Implementation returns a substantive exact result
 
-The scoped change advances through the first five evidence boundaries. A status-only stage list without the
-exact result for its current subject fails this scenario.
+The scoped change reaches Implementation after accepted Requirements and Design decisions. The expected
+outcome is one current, integrated implementation handed to its evidence owners; an `Implemented` label on
+partial, stale, untraceable, or unowned slices is the failure.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PROJECT-10-06 — Each of the first five stages ends with its named exact result: Requirements — `Requirements accepted`; Design collaboration — `Design decisions accepted for the current subject`; Implementation — `Implemented`; Software testing and verification — `Software-tested and verified`; Packaging — `Packaged`.
+- [ ] DTDLVR-CK-PROJECT-12-01 — Implementation records exactly `Implemented` only when every retained implementation slice is current, locally integrated, traceable to accepted decisions, and handed to its evidence owners.
 
 ### DTDLVR-SC-PROJECT-11 — Normal case: the last five stages return exact results
 
@@ -99,7 +100,7 @@ finite stop. Both conditions fail even when progress reporting looks healthy.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-PERFORMANCE-11-01 — Dependent evidence stays stale until repeated or proved unaffected for the same subject.
+- [ ] DTDLVR-CK-PERFORMANCE-11-03 — For Software testing and verification after a correction, the failed layer and every dependent layer remain stale until repeated or proved unaffected for the same evidence subject.
 - [ ] DTDLVR-CK-PERFORMANCE-11-02 — Post-release observation has a finite window, named threshold, stop condition, and bounded recovery action.
 
 ### DTDLVR-SC-PERFORMANCE-12 — Normal case: representative work proves responsiveness and resource use
@@ -157,7 +158,7 @@ outcome, a native-integration field, a local-data behavior, or an update and rec
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-10-07 — Requirements defines the product problem, actors, supported targets, entry modes, and a product contract entry for every supported path across installation and first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and update and recovery.
+- [ ] DTDLVR-CK-USAGE-10-11 — Requirements records exactly `Requirements accepted` only when the accepted product contract defines the product problem, actors, supported targets, entry modes, and every supported path across installation and first launch; ordinary and alternate entry; windows and lifecycle; native integration; local data; and update and recovery.
 - [ ] DTDLVR-CK-USAGE-10-02 — Requirements distinguishes observable completion, authoritative system completion, and false completion.
 - [ ] DTDLVR-CK-USAGE-10-08 — Requirements defines normal and alternate paths for application use, runtime behavior, installation, exact-version update, repair or recovery, and uninstall, including what the person sees before, during, and after update, the usable state after interruption or failure, and the support route.
 - [ ] DTDLVR-CK-USAGE-10-09 — Requirements records failure, recovery, support, authority, constraints, and explicit non-goals, plus each native integration's target support, permission or entitlement preconditions, cancellation, duplicate activation, unavailable behavior, returned failure state, cleanup, accessible alternative, and whether its effects are visible, cancellable, and reversible.
@@ -173,7 +174,7 @@ and improvement without copying Interface policy.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-USAGE-11-03 — A current result exists for Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement.
+- [ ] DTDLVR-CK-USAGE-11-05 — Design collaboration records exactly `Design decisions accepted for the current subject` only when a current result exists for Discovery research, Problem framing and design requirements, Concept alternatives, Prototyping, Representative-user testing, Design–implementation collaboration, and Post-release measurement and improvement.
 - [ ] DTDLVR-CK-USAGE-11-04 — Each design-activity result has exactly one disposition: `Performed for the current subject`, `Reused current evidence`, or `Not applicable with exact reason`.
 
 ### DTDLVR-SC-USAGE-12 — Adversarial: one state model proves another or required input is lost
@@ -215,7 +216,7 @@ records and evidence routes.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-CONSISTENCY-10-01 — Software testing observations remain distinct from verification of the bounded claim.
+- [ ] DTDLVR-CK-CONSISTENCY-10-07 — Software testing and verification records exactly `Software-tested and verified` only when every retained claim and applicable case is supported by separate current, bounded, contradiction-free testing and verification evidence for the exact evidence subject.
 - [ ] DTDLVR-CK-CONSISTENCY-10-02 — A development run, unpacked build, package, archive, or source build never proves installed performance, installed resource use, or any other installed-artifact behavior.
 - [ ] DTDLVR-CK-CONSISTENCY-10-03 — Release readiness never grants authority for an external action.
 - [ ] DTDLVR-CK-CONSISTENCY-10-04 — An upload response or control-plane label never proves the destination bytes or deployed state.
@@ -269,8 +270,8 @@ policy into a local checklist.
 
 #### Checklist
 
-- [ ] DTDLVR-CK-OVERALL-10-04 — Every retained claim has each required Architecture, Interface, applicable OS Manual, Electron runtime, Electron development, and Electron testing result.
-- [ ] DTDLVR-CK-OVERALL-10-05 — Each required owner result is current for the exact evidence subject.
+- [ ] DTDLVR-CK-OVERALL-10-08 — Packaging records exactly `Packaged` only when the current `electron-release` owner result for the exact subject identifies the artifact identity, version, target, checksum, contents, frozen inputs, build environment, build logs, signature and notarization status, and limitations.
+- [ ] DTDLVR-CK-OVERALL-10-09 — Every retained claim has a current `desktop-release` judgment and every applicable `electron-release` result, plus each required Architecture, Interface, applicable OS Manual, Electron runtime, Electron development, and Electron testing result, all for the exact evidence subject.
 - [ ] DTDLVR-CK-OVERALL-10-06 — Each required owner result is accepted when its owner requires acceptance.
 - [ ] DTDLVR-CK-OVERALL-10-07 — Required owner results agree with their dependencies and support the retained claim.
 - [ ] DTDLVR-CK-OVERALL-10-02 — Release readiness includes current artifact, installed, transition, compatibility, recovery, support, observation, stop, Evaluation, rollback or Forward fix, and limitation results.

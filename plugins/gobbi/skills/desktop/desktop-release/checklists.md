@@ -217,7 +217,7 @@ supported-version promise; treating rollback as the default remedy is the failur
 
 #### Checklist
 
-- [ ] DTRLSE-CK-RISK-02-01 — A Forward fix is chosen for machines that may already have installed the faulty release.
+- [ ] DTRLSE-CK-RISK-02-04 — Recovery for machines that may already have installed the faulty release chooses a later compatible Forward fix by default, or a rollback whose target-specific reach and compatibility have been separately proved safe for the exact affected installed versions.
 - [ ] DTRLSE-CK-RISK-02-02 — Rollback is chosen only where target-specific distribution mechanics and data or schema compatibility prove it preserves user state, reaches the affected machines, and stays inside the supported-version promise.
 - [ ] DTRLSE-CK-RISK-02-03 — Recovery for installed machines reaches an exact usable installed version through a later compatible release or a separately proved safe rollback.
 
