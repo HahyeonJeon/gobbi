@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-05 — Gobbi v1.1.0 publication cleanup completed](2026-08-05-gobbi-v1-1-0-publication-cleanup.md)
 - [2026-08-04 — Startup skill redesigned and simplified](2026-08-04-startup-skill-redesigned.md)
 - [2026-08-03 — React skill family lifecycle and review completed](2026-08-03-react-skill-family-lifecycle.md)
 - [2026-08-02 — Agent Teams reduced to a compact tool skill](2026-08-02-agent-teams-tool-skill.md)
