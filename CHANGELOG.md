@@ -5,32 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 1.0.1 - 2026-08-03
-
-This release repairs native Codex plugin delivery and includes the session and partner improvements
-accumulated on the unreleased development line.
-
-### Added
-
-- A package generator and byte-equality guard that keep the materialized plugin package equal to its
-  canonical skill and agent owners.
-- An isolated Codex installed-cache smoke test that verifies nested package paths reach a real plugin
-  installation and rejects missing, linked, or unsupported components.
-- Canonical Gobbi root discovery, consumer-project configuration checks, partner selection, and dedicated
-  partner and Agent Teams runtime guidance.
+## 1.1.0 - 2026-08-04
 
 ### Changed
 
-- `plugins/gobbi/skills/` and `plugins/gobbi/agents/` now contain generated real files instead of component
-  symlinks, while `.gobbi/projects/gobbi/` remains their only editable owner.
-- Cowork and Workflow now route partner and Agent Teams work through their dedicated runtime contracts.
-
-### Fixed
-
-- Native Codex installs now receive the complete Gobbi package instead of only the two plugin manifests.
-- Runtime role wrappers, Claude skill mirrors, and entry configuration resolve their canonical sources
-  consistently and report missing prerequisites explicitly.
-- Package checks now fail on incomplete installed caches, unsafe mirror drift, or unsupported hook content.
+- Removed the standalone `record` skill with no compatibility alias. Use Memory `Temporary Record` for
+  ignored, uncommitted session evidence and Memory `Memorize` for tracked project memory. Workflow retains
+  its `RECORD` stage name.
+- Renamed three web skills with no compatibility aliases. Direct or explicit invocation of `web-feature`
+  now breaks; use `web-development`. Direct or explicit invocation of `web-interface` now breaks; use
+  `web-design`. Direct or explicit invocation of `web-topology` now breaks; use `web-project-structure`.
+- Added `scripts/sync-runtime-entrypoints.sh`, which keeps the Principles section in both runtime entry
+  documents generated from the canonical Principles skill.
+- Removed standalone skill-specific checkers and tests. Repository scripts now cover project-level topology,
+  package, smoke, link, and runtime-entry validation.
 
 ## 1.0.0 - 2026-08-01
 

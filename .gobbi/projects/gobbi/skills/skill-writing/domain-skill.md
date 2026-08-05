@@ -64,12 +64,21 @@ other word for that meaning.
 |---|---|
 | `development` | The author-or-change operation for a domain, including a review mode where the family carries one |
 | `testing` | The evidence operation |
-| `conventions` | The written-form and overridable-choice preference, including the binding boundary those choices sit inside |
-| `design` | The structural-judgment preference |
+| `conventions` | The project-overridable naming and error-text preference, including authority and departure boundaries for written-form choices. |
+| `source` | The source-file organization, formatter layout, import-form, and generated provenance preference. |
+| `documentation` | The public documentation and implementation-comment preference. |
+| `design` | The domain-specific capability for creating or judging structure, behavior, boundaries, and interfaces |
 | `platform` | A standard or engine you did not write |
 | `runtime` | A framework runtime you execute inside |
 | `toolchain` | Tooling you invoke |
 | `release` | Shipping, at either operation or preference granularity |
+
+### Concrete platform names
+
+Use `windows`, `macos`, and `linux` as lowercase slug words only for a `skill-type: tool` child whose subject
+is that exact external platform and whose compatibility boundary is explicit. This closed list admits no
+other platform name, general proper-name or brand-name class, free synonym for `platform`, or identifier
+alias; `platform` keeps its reserved generic meaning.
 
 ### Free words
 
@@ -80,14 +89,16 @@ would restore the overload the two tiers remove.
 
 These words qualify today: `semantics`, `typing`, `async`, `packaging`, `modules`, `concurrency`, `security`,
 `architecture`, `feature`, `delivery`, `frontend`, `backend`, `topology`, `contract`, `server`, `typescript`,
-`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`, and
-`compiler` as the proper noun React Compiler.
+`interface`, `interaction`, `motion`, `observability`, `configuration`, `deployment`, `localization`,
+`app-lifecycle`, `operations`, `project-structure`, `debugging`, `performance`, and `compiler` as the
+proper noun React Compiler.
 
 ### Maintaining the register
 
-The two lists above are the register. Update this section in the same change that changes a reserved meaning or
-admits a new free word, and record the new word beside the others. Without that update the free tier drifts and
-each family invents its own vocabulary again.
+The reserved-word table, closed concrete-platform-name rule, and free-word list above are the register. Update
+this section in the same change that changes a reserved meaning, changes the closed concrete-platform list,
+or admits a new free word, and record the change beside the others. Without that update the register drifts
+and each family invents its own vocabulary again.
 
 ### Relation to globally unique identity
 

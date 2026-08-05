@@ -8,8 +8,8 @@
   "plugins": [
     {
       "name": "gobbi",
-      "description": "Structured orchestration, planning, execution, evaluation, memory, record, and handoff for Claude Code.",
-      "version": "1.0.1",
+      "description": "Structured orchestration, planning, execution, evaluation, temporary session evidence, durable memory, and handoff for Claude Code.",
+      "version": "1.1.0",
       "source": "./plugins/gobbi"
     }
   ]

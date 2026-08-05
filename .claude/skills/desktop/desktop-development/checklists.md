@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/desktop/desktop-development/checklists.md

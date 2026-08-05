@@ -97,28 +97,6 @@ test_materialization_guard() {
   pass 'materialization guard rejects a symlinked or absent component directory'
 }
 
-require_materialized_install_guidance() {
-  local doc
-  local legacy_pattern='through symlinks|receives both manifests and no skills|delivers exactly two files|with no skills, no agents'
-  local -a docs=(
-    "$repo_root/.codex/AGENTS.md"
-    "$repo_root/.gobbi/projects/gobbi/skills/codex/SKILL.md"
-    "$package_root/skills/codex/SKILL.md"
-  )
-
-  for doc in "${docs[@]}"; do
-    [[ -f "$doc" ]] || fail "Codex materialized-install guidance is missing: ${doc#"$repo_root"/}"
-    if grep -Eq "$legacy_pattern" "$doc"; then
-      fail "Codex materialized-install guidance repeats the obsolete manifests-only package state: ${doc#"$repo_root"/}"
-    fi
-    if ! grep -Fq 'complete nested skill tree' "$doc"; then
-      fail "Codex materialized-install guidance does not state the complete nested skill tree reaches installation: ${doc#"$repo_root"/}"
-    fi
-  done
-
-  pass 'Codex runtime guidance matches the materialized installed-cache contract'
-}
-
 check_installed_allow_set() {
   local root="$1" entry name
   local allowed=' .codex-plugin .claude-plugin skills agents '
@@ -132,10 +110,55 @@ check_installed_allow_set() {
   pass 'installed cache top level is limited to manifests, skills, and agents'
 }
 
+installed_tree_matches_package() {
+  local expected_root="$1" actual_root="$2" rel index
+  local -a expected_files=() actual_files=()
+
+  while IFS= read -r -d '' rel; do
+    expected_files+=("$rel")
+  done < <(cd "$expected_root" && find . -type f -print0 | LC_ALL=C sort -z)
+  while IFS= read -r -d '' rel; do
+    actual_files+=("$rel")
+  done < <(cd "$actual_root" && find . -type f -print0 | LC_ALL=C sort -z)
+
+  [[ ${#expected_files[@]} -eq ${#actual_files[@]} ]] || return 1
+  for ((index = 0; index < ${#expected_files[@]}; index++)); do
+    rel="${expected_files[$index]}"
+    [[ "$rel" == "${actual_files[$index]}" ]] || return 1
+    cmp -s "$expected_root/$rel" "$actual_root/$rel" || return 1
+  done
+}
+
+test_complete_installed_inventory_guard() {
+  local expected="$tmp_root/complete-inventory-expected"
+  local omitted="$tmp_root/complete-inventory-omitted"
+  local changed="$tmp_root/complete-inventory-changed"
+
+  mkdir -p "$expected/skills/root/child" "$expected/agents" \
+    "$omitted/skills/root/child" "$omitted/agents" \
+    "$changed/skills/root/child" "$changed/agents"
+  printf '%s\n' root > "$expected/skills/root/SKILL.md"
+  printf '%s\n' nested > "$expected/skills/root/child/SKILL.md"
+  printf '%s\n' agent > "$expected/agents/manager.md"
+  printf '%s\n' root > "$omitted/skills/root/SKILL.md"
+  printf '%s\n' agent > "$omitted/agents/manager.md"
+  printf '%s\n' root > "$changed/skills/root/SKILL.md"
+  printf '%s\n' changed > "$changed/skills/root/child/SKILL.md"
+  printf '%s\n' agent > "$changed/agents/manager.md"
+
+  ! installed_tree_matches_package "$expected" "$omitted" \
+    || fail 'complete installed-cache inventory guard accepted an omitted nested leaf'
+  ! installed_tree_matches_package "$expected" "$changed" \
+    || fail 'complete installed-cache inventory guard accepted byte-different installed content'
+  pass 'complete installed-cache inventory guard rejects omitted and byte-different leaves'
+}
+
 require_command codex
 require_command jq
+require_command cmp
 test_hook_rejection
 test_materialization_guard
+test_complete_installed_inventory_guard
 
 if hookless_tree "$repo_root/plugins/gobbi"; then
   pass 'source package is hookless before installation'
@@ -148,7 +171,6 @@ fi
 for component in skills agents; do
   require_materialized_component "$component"
 done
-require_materialized_install_guidance
 
 mkdir -p "$codex_home" "$codex_sqlite_home"
 
@@ -199,22 +221,19 @@ else
 fi
 check_installed_allow_set "$installed_path"
 
-# Failure shape 2. Two top-level skills prove only that the component root arrived; the nested
-# children are what a skill actually loads. The installer drops any path it cannot copy at any
-# depth, so a materialized component that still hides a symlink loses exactly that path and
-# nothing else. Check both depths.
-for component_path in \
-  'skills/codex/SKILL.md' \
-  'skills/principles/SKILL.md' \
-  'skills/gobbi/partner/SKILL.md' \
-  'skills/workflow/phase-1/SKILL.md' \
-  'agents'; do
-  component="${component_path%%/*}"
-  if [[ -e "$installed_path/$component_path" ]]; then
-    pass "installed cache contains $component_path"
-  else
-    fail "installed cache missing $component_path; the generated copy of plugins/gobbi/$component is incomplete, so check that path for a symlink and regenerate with: bash scripts/sync-plugin-package.sh --materialize-package"
-  fi
-done
+# Failure shape 2. Compare the complete installed inventory and bytes, because a materialized
+# component that still hides a symlink loses only that nested path. Sampling cannot establish an
+# intact package.
+if installed_tree_matches_package "$package_root" "$installed_path"; then
+  pass 'installed cache file inventory and bytes match every packaged manifest, skill, and agent file'
+else
+  fail 'installed cache file inventory or bytes differ from plugins/gobbi; check the mismatched package path for a symlink or stale generated copy, then regenerate with: bash scripts/sync-plugin-package.sh --materialize-package'
+fi
+
+if [[ ! -e "$installed_path/skills/record" && ! -L "$installed_path/skills/record" ]]; then
+  pass 'installed cache contains no standalone record skill'
+else
+  fail 'installed cache unexpectedly contains skills/record'
+fi
 
 printf 'Codex plugin smoke passed: the materialized package reached the installed cache intact\n'

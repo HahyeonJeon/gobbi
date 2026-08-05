@@ -1,140 +1,69 @@
 # {Project} — Startup Design
 
-> **Document role:** Confirmed Startup design record<br>
-> **Purpose:** Hold the whole project design the user confirmed during the Startup interview, in one file a
-> reader who was not present can follow.<br>
-> **Output boundary:** Do not include an evaluation, an implementation plan, ordered tasks, or a memory
-> destination. Whoever memorizes this design later chooses where it belongs.
+This document is an independently readable synthesis of the accepted Problem Definition, Design,
+Specification, Product Lifecycle, Design Lifecycle, and Development Lifecycle. It contains the decisions and
+evidence needed to understand the Project without reading the phase documents first.
 
-Keep every heading below. When the interview found nothing material for a section, say so in one sentence so
-a reader can tell an empty answer from a question that was never asked.
-
-**Evidence strength** says how well the project's own evidence supports a statement recorded here:
-`verified` when the project proves it, `supported` when the project's evidence points to it, `unverified`
-when no project evidence was found, and `disputed` when the evidence conflicts.
-
-## Contents
-
-- [Summary](#summary)
-- [Project and Problem](#project-and-problem)
-- [People and Adoption](#people-and-adoption)
-- [Scope and Boundaries](#scope-and-boundaries)
-- [Features](#features)
-- [Experience and Interfaces](#experience-and-interfaces)
-- [System and Data](#system-and-data)
-- [Technology and Compatibility](#technology-and-compatibility)
-- [Delivery, Operations, and Quality](#delivery-operations-and-quality)
-- [Security, Privacy, and Data Duties](#security-privacy-and-data-duties)
-- [Project Rules and Ownership](#project-rules-and-ownership)
-- [Decisions and Evidence](#decisions-and-evidence)
-- [Risks and Open Questions](#risks-and-open-questions)
-- [Corrections](#corrections)
-- [Question and Answer Record](#question-and-answer-record)
-- [Confirmation](#confirmation)
+Retain decisive `[alias]` tags and connect them across phases wherever they clarify the accepted reasoning.
 
 ## Summary
 
-{State the project, the problem it answers, the direction the user chose, the decisive evidence, and the main
-trade-offs. This section must be readable on its own.}
+{State the current problem, affected people and systems, durable outcome, chosen direction, decisive evidence,
+principal constraints and tradeoffs, and the most important evidence limit.}
 
-## Project and Problem
+## Project
 
-{Describe the current reality and its evidence, the problem and its cause, why now, the risks and the weakest
-assumption, the result that must stay true even if the software is rebuilt, and what would show the project
-succeeded or should stop.}
+### {Project}
 
-## People and Adoption
+{Summarize the Project outcome and boundary, accepted Product inventory, cross-Product relationships,
+authoritative contracts, governance, quality priorities, operating model, lifecycle policy, risks, and evidence.}
 
-{Describe who benefits first, who else is affected, who is intentionally outside the target group, the task
-those people are trying to complete, how they complete it today, and what would make them adopt or refuse the
-software.}
+## Products
 
-## Scope and Boundaries
+Repeat this section for every Product in the accepted order.
 
-{Describe the complete result the project owns, where its responsibility begins and ends, the behavior other
-systems rely on, what is explicitly out of scope, what stays manual, which uses are refused, and which scope
-decision would be most costly to change.}
+### {Product}
 
-## Features
+- Parent Project: {Project}
+- Implementation: {Product Implementation}
 
-{State the smallest complete capability that lets someone finish a useful task, then give one subsection per
-named feature. Use the feature's own name as the heading.}
+{Summarize the independently useful consumer outcome, boundary, capabilities, interfaces, observable behavior,
+data and safety contracts, actor-visible lifecycle promises, visual-production direction and approval, risks,
+and decisive evidence.}
 
-### {Feature name}
+## Implementations
 
-{Describe what this feature does, what must exist before it can work, what starts it, what a user or
-connected system observes when it finishes, where responsibility passes to someone else, and the failure that
-would have the greatest consequence.}
+Repeat this section once per Product.
 
-## Experience and Interfaces
+### {Product} Implementation
 
-{Describe how each user or connected system interacts with the software, what confirms success, the terms
-that must mean the same thing everywhere, what a user must see before an important decision, what happens
-after an error, what protects people from a hard-to-reverse action, and the accessibility needs that shape
-the first version.}
+- Parent Product: {Product}
+- Relationship: the Product's single complete-stack Implementation
 
-## System and Data
+{Summarize runtime units, interfaces, data flow, categorized entries and their roles, supported environments,
+accepted visual artifacts, handoff and visual quality evidence, complete-stack Development mechanisms,
+verification evidence, security and license duties, migration and rollback, retirement and handoff, risks,
+and evidence that would change the design.}
 
-{Describe the people and systems that exchange information with the software, the parts that run
-independently and what each owns, the path that produces the main result, how failures are contained and
-recovered, and the promises the project makes about stored data: consistency, format changes, retention,
-restore, export, and origin.}
+## Integrated Design
 
-## Technology and Compatibility
+### Decisions and traceability
 
-{Describe the languages, frameworks, runtimes, and data stores future work must use or stay compatible with,
-the versions supported and for how long, the mandatory choices, the critical external dependencies and what
-happens if one fails, and how incompatible changes are versioned, announced, and migrated.}
+{Connect each decisive aliased problem fact to its Design choice, Specification obligation, Product Lifecycle
+promise, Design Lifecycle direction and evidence, and Development Lifecycle mechanism and evidence. Explain
+cross-Product dependencies and accepted tradeoffs.}
 
-## Delivery, Operations, and Quality
+### Vocabulary
 
-{Describe the operating environments and what differs between them, how a release reaches its users, how it
-is deployed, rolled out, and rolled back, what shows the running software is delivering its result, which
-quality takes priority when qualities conflict, and what evidence each important claim needs.}
+{Define the terms a cold reader needs and resolve conflicting uses.}
 
-## Security, Privacy, and Data Duties
+### Risks and evidence limits
 
-{Describe the assets that would cause the most harm if compromised, where trust levels change, who may do
-what, the realistic threats and misuses, the condition the system must preserve after a serious failure, and
-the personal data the project collects, keeps, deletes, or discloses.}
+{State remaining nonblocking risks, uncertain claims, responsible decision-makers, and the evidence that would
+require the accepted design to change.}
 
-## Project Rules and Ownership
+## Final Acceptance
 
-{Describe who decides product and technical direction, the legal, regulatory, budget, and schedule limits,
-the conventions contributors must follow, the deliberate patterns worth preserving, the mistakes worth
-avoiding, and who owns operation, maintenance, risk, and continuity.}
+{Confirm that the user reviewed the complete seven-document design and accepted it as coherent design guidance.}
 
-## Decisions and Evidence
-
-| Decision | Current direction | Evidence and strength | Evidence that would change it |
-|---|---|---|---|
-| `{decision}` | `{direction}` | `{source, and verified, supported, unverified, or disputed}` | `{evidence or condition}` |
-
-## Risks and Open Questions
-
-| Risk or open question | Evidence | Consequence | Owner | How it will be resolved |
-|---|---|---|---|---|
-| `{item}` | `{current evidence}` | `{effect}` | `{owner}` | `{method}` |
-
-## Corrections
-
-Answers the user changed during the interview, with the resolution that made the current answer current.
-
-| What changed | Earlier answer | Current answer | User's resolution |
-|---|---|---|---|
-| `{[question-name]}` | `{earlier claim}` | `{current claim}` | `{what the user decided}` |
-
-## Question and Answer Record
-
-Every material answer appears here exactly once. A per-feature question appears once for each feature.
-
-| Question name | Feature or project | Question as asked | Current answer | Evidence | Evidence strength |
-|---|---|---|---|---|---|
-| `{[question-name]}` | `{feature name, or project}` | `{question as it was asked}` | `{current answer}` | `{source, or none}` | `{verified, supported, unverified, or disputed}` |
-
-## Confirmation
-
-- Project root: `{absolute-project-root}`
-- Output directory: `{absolute-output-directory}`
-- Confirmed: `{timestamp}`
-- The user confirmed: `{what the user confirmed, in one sentence}`
+- Accepted: {yes — user and date}

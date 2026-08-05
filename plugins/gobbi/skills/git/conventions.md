@@ -1,38 +1,86 @@
 # Git Conventions
 
 Deterministic mappings for session branches, worktree paths, focused commits, provenance trailers,
-optional issues, pull requests, labels, and merge format. [`SKILL.md`](SKILL.md) owns the session contract,
-lifecycle, authority gates, failure handling, and cleanup order.
+optional issues, pull requests, labels, merge format, and caller-supplied tag/ref action records.
+[`SKILL.md`](SKILL.md) owns lifecycle actions, authority gates, failure handling, recovery, and cleanup order.
 
-The formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
+The session formats align with [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/), [GitHub Flow](https://docs.github.com/en/get-started/quickstart/github-flow), and [`git worktree`](https://git-scm.com/docs/git-worktree).
 
-## Session branch naming
+## Session identity and naming
 
-A session branch is derived once from the active runtime system, session start date, and session UUID:
-
-```text
-<runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
-```
-
-The complete validator is:
-
-```regex
-^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
-```
+One future session identity is the immutable tuple `(runtime, date, slug, UUID)`. `runtime` is the active
+runtime system. `date` is the original session-start date in UTC, formatted as a real `YYYY-MM-DD` Gregorian
+calendar date, and never changes at a context boundary. `UUID` is the full 36-character lowercase hyphenated
+Gobbi session UUID. Generate the UUID before deriving either name.
 
 | Runtime system | Prefix |
 |---|---|
 | `claude-code` | `claude` |
 | `codex` | `codex` |
 
-Examples:
+### Slug normalization
 
-- `claude-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
-- `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+Before accepting slug input, warn the user that the slug enters branch names and paths and must contain no
+sensitive information. Normalize the input by taking each maximal ASCII alphanumeric sequence as one word,
+lowercasing it, joining the words with one hyphen, and trimming separators. Do not transliterate, truncate,
+or add a suffix.
 
-The UUID is the proved identity the caller's contract supplies, verified against the branch name and commit
-provenance during recovery. It is never a runtime ID, issue number, pull-request number, or task slug, and a
-runtime context boundary never renames the session branch.
+Accept the normalized slug only when it is 1-20 characters, matches
+`^[a-z0-9]+(?:-[a-z0-9]+)*$`, and is not a reserved name. The reserved names are exactly `con`, `prn`, `aux`,
+`nul`, `com1` through `com9`, and `lpt1` through `lpt9`, compared case-insensitively after normalization.
+Re-ask with the failed condition when normalization is empty, longer than 20 characters, or reserved. Once a
+session object uses the normalized slug, the slug is immutable.
+
+### New formats
+
+Derive the branch and leaf separately from the same tuple:
+
+```text
+branch: <runtime-prefix>-<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
+leaf:   <YYYY-MM-DD>-<slug>-<gobbi-session-uuid>
+```
+
+The complete new-format validators are:
+
+```regex
+branch: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+leaf:   ^\d{4}-\d{2}-\d{2}-[a-z0-9]+(?:-[a-z0-9]+)*-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+Apply the 20-character slug limit and reserved-name rule after parsing; the regex alone does not enforce
+them. The worktree and session leaves are byte-identical for a new identity. For example:
+
+- branch: `codex-2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+- leaf: `2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`
+
+### Permanent legacy formats
+
+Recovery permanently accepts these legacy formats:
+
+```text
+branch and worktree leaf: <runtime-prefix>-<YYYY-MM-DD>-<gobbi-session-uuid>
+session leaf:             <YYYY-MM-DD>-<gobbi-session-uuid>
+```
+
+```regex
+legacy branch and worktree leaf: ^(claude|codex)-\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+legacy session leaf:             ^\d{4}-\d{2}-\d{2}-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+```
+
+New creation uses only the new formats. Parse new and legacy names with separate validators and preserve the
+matched shape. Never infer a slug for a legacy identity, rename a legacy or active object, or convert one
+shape to another.
+
+Every successful new parse returns the exact `(runtime, date, slug, UUID)` tuple; a leaf parser receives the
+runtime from the caller's contract because a leaf does not encode it. A legacy parse returns its encoded
+runtime when present, date, and UUID, with `slug: not-applicable`. Re-deriving the matched branch or leaf from
+that result must reproduce the original bytes. The UUID is never a runtime ID, issue number, pull-request
+number, or task slug.
+
+Creation and recovery reject any existing branch, worktree leaf, or session leaf that conflicts with the
+tuple. Two different slugs, dates, runtimes, or paths carrying the same UUID are an identity conflict, not a
+second session. Stop and inspect every collision; never add a suffix, rename an object, or choose a convenient
+match.
 
 ### Non-session branches
 
@@ -63,23 +111,24 @@ The description slug after the optional issue number is 3–50 characters. An is
 The session worktree path is:
 
 ```text
-<repo-root>/.gobbi/projects/<project>/worktrees/<session-branch>/
+<repo-root>/.gobbi/projects/<project>/worktrees/<session-leaf>/
 ```
 
-For project `gobbi` and branch `codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d`:
+For project `gobbi` and the new example identity above:
 
 ```text
-<repo-root>/.gobbi/projects/gobbi/worktrees/codex-2026-07-20-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/
+<repo-root>/.gobbi/projects/gobbi/worktrees/2026-07-20-lifecycle-repair-37d3c8ef-57dd-477a-b10c-dcbbc1c2327d/
 ```
 
 | Property | Mapping |
 |---|---|
 | Worktree root | `.gobbi/projects/<project>/worktrees/` |
-| Leaf | exact session branch |
+| New leaf | `<YYYY-MM-DD>-<slug>-<gobbi-session-uuid>` |
+| Legacy leaf | exact legacy session branch; recovery only |
 | Source | the absolute normalized path the caller's contract supplies as its registered worktree |
 | Ignore check | `git check-ignore --no-index -v .gobbi/projects/<project>/worktrees`, with no trailing slash and only after that directory exists |
 | Project memory root | `.gobbi/projects/<project>/memory/`, tracked; git must never ignore it |
-| Collision behavior | stop and inspect; never add a suffix or remove the existing path automatically |
+| Collision behavior | reject any occupied target or same-UUID competing identity; never add a suffix, rename, or remove automatically |
 
 ## Base branch and commit
 
@@ -108,6 +157,73 @@ A declared publication intent maps to required results without hidden coupling:
 
 A caller that declares only local retention keeps its verified local commits; a later push, pull request,
 issue, merge, or cleanup requires a separate explicit Git operation and current user authority.
+
+## Caller-supplied tag/ref action contract
+
+The caller supplies every value below. Every field is required, and `none` is valid only where the field says
+so. An omitted or empty value is not a default. The action identity is the verbatim ordered value set of all
+action-specification rows; changing one value creates a different action.
+
+### Action specification
+
+| Field | Required value |
+|---|---|
+| `callerIdentity` | Exact caller-supplied identity that receives the result; this field grants no authority. |
+| `repository` | Absolute normalized local repository path and the expected Git common-directory identity. |
+| `refName` | One fully qualified ref name with no wildcard or revision expression. |
+| `targetObject` | Full object ID the ref must resolve or peel to, plus its expected Git object type. |
+| `remote` | Literal `none` for a local-only action, or one exact configured remote name with its expected fetch and push URL identities. |
+| `tagForm` | Exactly one caller-selected value: `non-tag-ref`, `lightweight-tag`, `annotated-tag`, or `signed-tag`. |
+| `annotationInput` | Literal `none`, or the exact annotation message bytes and caller-supplied annotation arguments. |
+| `taggerIdentity` | Literal `none`, or the exact caller-supplied tagger name and email address. |
+| `taggerTime` | Literal `none`, or the exact caller-supplied tagger timestamp and time-zone offset. |
+| `tagObjectInputs` | Literal `none`, or every other caller-supplied argument or environment input that changes the tag object. |
+| `signingInput` | Literal `none`, or the exact signing mechanism, signature format, signer or key selector, signing arguments, and every other signing input that changes the signed tag object. |
+| `publicationTarget` | Literal `none`, or the exact remote plus one fully qualified source ref and one fully qualified destination ref for a non-force publication. |
+| `expectedLocalState` | Literal `absent`, or the exact compatible ref object, peeled target, tag form, annotation, tagger identity, tagger time, other tag-object input state, and signing state expected before action. |
+| `expectedRemoteState` | Literal `not-applicable` for a local-only action, `absent`, or the exact compatible destination ref object and peeled target expected before publication. |
+| `requestedEffects` | Exact set drawn from `ensure-local-ref` and `publish-single-ref`; publication never implies deletion, overwrite, force, or another ref. |
+
+`lightweight-tag`, `annotated-tag`, and `signed-tag` require one valid fully qualified `refs/tags/...`
+`refName`. `non-tag-ref` requires one valid fully qualified `refName` outside `refs/tags/...`; no narrower
+non-tag namespace is implied.
+
+`non-tag-ref` and `lightweight-tag` require `annotationInput: none`, `taggerIdentity: none`,
+`taggerTime: none`, `tagObjectInputs: none`, and `signingInput: none`. `annotated-tag` requires exact
+annotation, tagger identity, and tagger time inputs; requires `tagObjectInputs` to state exact additional
+inputs or `none`; and requires `signingInput: none`. `signed-tag` has the same annotation and tagger
+requirements and also requires exact signing inputs. A local-only action requires `remote: none`,
+`publicationTarget: none`, `expectedRemoteState: not-applicable`, and no `publish-single-ref` effect.
+Every action includes `ensure-local-ref`; `publish-single-ref` is optional, and its fully qualified source ref
+must equal `refName`.
+
+### Authority record
+
+| Field | Required value |
+|---|---|
+| `authoritySource` | Exact evidence of the current manager authority and the authority identity. |
+| `authorizedAction` | Verbatim action identity, including caller, repository, ref, target, remote, form, annotation, tagger identity and time, other tag-object inputs, signing, publication, expected states, and requested effects. |
+| `networkAuthority` | Literal `none` for a local-only action, or exact authority for the named remote reads and publication. |
+| `credentialAuthority` | Literal `none` when no credential is used, or exact authority for the named credential, scope, destination, and ephemeral use. |
+| `authorityState` | Direct evidence, checked immediately before each mutation, that the authority remains current and unwithdrawn for the unchanged action. |
+
+The authority record is separate from the action specification. It never fills a missing action value. An
+authority mismatch, withdrawal, or stale action identity leaves the action unauthorized.
+
+### Result record
+
+| Field | Required evidence |
+|---|---|
+| `actionAndAuthority` | Verbatim action specification, authority record, and the last unchanged-input and current-authority checks. |
+| `preflight` | Repository and remote identities; target object and type; local and remote before states; tag, annotation, tagger identity, tagger time, other tag-object input, and signing observations; and credential and network readiness when used. |
+| `actions` | Exact commands or API actions attempted, in order, with exit status or returned result and redacted credential material. |
+| `localAfter` | Exact ref object, peeled target, tag form, annotation, tagger identity, tagger time, other tag-object input state, signing state, and whether creation or a compatible no-op occurred. |
+| `remoteAfter` | Literal `not-applicable`, or the exact destination ref object and peeled target observed after the attempt. |
+| `result` | Per-effect literal `completed`, `compatible-no-op`, `failed`, or `verification-mismatch`, plus the action terminal state; use literal `recoverable partial state` whenever a requested effect is incomplete after mutation. |
+| `evidenceLimits` | Every state not observed or not provable from the available local or authorized remote evidence. |
+| `failure` | First conflict or diagnostic, affected obligation, retained local and remote state, unique objects, and risk. |
+| `recovery` | Recovery owner, first non-mutating recovery action, and the exact separate authority needed before any later mutation. |
+| `handoff` | Caller, repository, ref, target, terminal state, retained objects, and the next authorized or blocked action. |
 
 ## Commit messages
 

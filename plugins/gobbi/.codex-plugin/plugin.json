@@ -1,6 +1,6 @@
 {
   "name": "gobbi",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Gobbi workflow skills for Codex.",
   "author": {
     "name": "HahyeonJeon",
@@ -19,7 +19,7 @@
   "interface": {
     "displayName": "Gobbi",
     "shortDescription": "Use Gobbi workflow skills in Codex.",
-    "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, evaluation, memory, record, and handoff work in Codex.",
+    "longDescription": "Gobbi packages workflow skills for structured ideation, planning, execution, evaluation, temporary session evidence, durable memory, and handoff work in Codex.",
     "developerName": "HahyeonJeon",
     "category": "Productivity",
     "capabilities": [

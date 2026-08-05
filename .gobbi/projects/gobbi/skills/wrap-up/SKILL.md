@@ -1,6 +1,6 @@
 ---
 name: wrap-up
-description: "MUST load when accepted work must be closed with durable memory and an exact handoff. Wrap-up memorizes the session's durable records, performs the authorized finalization sequence last, and displays an immutable handoff with a factual receipt."
+description: "MUST load when accepted work must be closed with durable memory and an exact handoff. Wrap-up memorizes a caller-supplied session root, performs the authorized finalization sequence last, and displays an immutable handoff with a factual receipt."
 allowed-tools: Read, Grep, Glob, Bash, Agent, Task, AskUserQuestion
 skill-type: operation
 ---
@@ -11,14 +11,14 @@ Wrap-up is the terminal operation for a manager closing accepted work. It produc
 completed authorized finalization sequence, and an exact operator handoff followed by a factual receipt.
 
 The manager owns entry, the closure contract, user gates, the finalization sequence, acceptance, display, and
-recovery. One bounded writer memorizes the session's durable records inside the caller-supplied project memory
+recovery. One bounded writer memorizes selected durable value from the caller-supplied session root inside the project memory
 root before finalization begins.
 
 ## Principles
 
 ### Memorizing makes session evidence durable
 
-A session's recorded evidence survives only once it is memorized into the project memory root. That durable
+A session's useful future context survives cleanup only once it is memorized into the project memory root. That durable
 memory preserves the completed work, current decisions, and session progression that future work needs.
 
 ### Finalization is the final mutation
@@ -40,7 +40,7 @@ is not.
 
 - **MUST freeze the exact closure inputs and authority before changing memory.** Wrong-worktree evidence,
   unrelated changes, an active writer, or an unresolved decision stops the operation before finalization.
-- **MUST memorize the session's durable records before finalization and write the tracked handoff to the
+- **MUST memorize the full caller-supplied session root before finalization and write the tracked handoff to the
   caller-supplied handoff path.** Verify every affected memory path, index, and link before freezing the report.
 - **MUST make the caller-supplied authorized finalization sequence the final mutating operation.** Perform only
   the actions that sequence authorizes, with current authority for every external or destructive action.
@@ -74,7 +74,7 @@ is not.
 
 | Property | Value |
 |---|---|
-| Session memory tree location | The location of the closing session's memory tree, read as the memorization source. |
+| Session root | The full closing session root, read as temporary memorization input. |
 | Project memory root | The closing project's bounded `.gobbi/projects/<project>/memory/` root, under which every durable memory change must land; reject a value of any other shape. |
 | Handoff path | The exact repository-relative path the tracked handoff report is written to. |
 | Authorized finalization sequence | The ordered final actions the caller authorizes, with the authority already granted for each. |
@@ -90,14 +90,14 @@ is not.
 
 #### 2.1 Assign one bounded writer
 
-- Give one writer everything it needs stated inline: the frozen closure inputs, the session memory tree
+- Give one writer everything it needs stated inline: the frozen closure inputs, the full session root
   location, the exact project memory root, the caller-supplied handoff path, the allowed and protected paths,
   the required actions, the expected report, and the verification contract. Name no other writer.
-- Require it to read the session memory tree that the [Record operation](../record/SKILL.md) wrote at the
-  caller-supplied location, and to treat that tree as the complete memorization source.
-- Require it to apply the [Memory operation](../memory/SKILL.md) to each category the tree holds, loading every
-  applicable category skill and reorganizing or copying each durable record into the project memory root under
-  that skill's rules.
+- Require it to apply [Memory](../memory/SKILL.md) `Memorize` to the full caller-supplied session root together
+  with the frozen closure evidence. Session placement does not prove durable value; readable legacy session
+  layouts remain valid temporary input.
+- Require it to load every applicable category skill and create, update, move, or remove only the selected
+  durable context below the project memory root under that skill's rules.
 - Require it to write the tracked handoff report to the caller-supplied handoff path, and to keep every index
   and link that the applied memory rules require current in the same update.
 - Require it to create, update, move, or remove only what the loaded category owners require, and to reread
@@ -166,5 +166,4 @@ is not.
 ## References
 
 - [Handoff template](handoff.md) defines the tracked operator brief and the separate display-only receipt.
-- [Record operation](../record/SKILL.md) owns the session memory tree this operation memorizes.
-- [Memory operation](../memory/SKILL.md) owns the durable memory rules applied to that tree.
+- [Memory operation](../memory/SKILL.md) owns the session-input review and durable memory rules.

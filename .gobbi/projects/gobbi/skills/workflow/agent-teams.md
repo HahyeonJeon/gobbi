@@ -25,8 +25,10 @@ After compact, clear, resume, rewind, lost TODO data, or another context boundar
 
 1. Read the latest completed Hand-off. If none exists, read and verify the Configuration receipt.
 2. Inspect the native TODO list when it survives.
-3. Verify the checkpoint against RECORD receipts, `gate.md`, canonical outputs, checks, commits, branch, and
-   worktree.
+3. Verify the checkpoint against `configuration.md`, including mode, identity shape, original UTC date, slug
+   or `not-applicable`, full UUID, and partner policy. Parse branch, worktree leaf, and session leaf with the
+   separate new or permanent legacy validators, then verify RECORD receipts, `gate.md`, canonical outputs,
+   checks, commits, branch, and worktree. Never rename or migrate a live legacy or active object.
 4. Recreate only the proved item sequence and make the first unproved item the sole `in_progress` item.
 5. Leave later items `pending`, then resume routing from the native list.
 
@@ -44,6 +46,12 @@ new identifier and a complete re-anchored brief.
 
 Permit one write-capable assignment at a time across the session worktree, evidence tree, Git branch, TODO
 route, and external systems. Parallel specialists must be independent and read-only.
+
+For WORK, assign one active-runtime writer to create and self-review the local draft. A disabled partner
+policy uses that local evidence only. Enabled calls Partner separately for each applicable external draft or
+cross-review; the external runtime is not a persistent teammate. The manager assembles and accepts the round.
+For EVALUATION, dispatch one fresh isolated active-runtime evaluator outside the persistent team and add one
+fresh external Partner evaluator only when enabled. Neither evaluator receives the other report.
 
 After each report, the manager rereads the promised artifact or commit, reproduces verification, and confirms
 the specialist is idle and addressable before reuse. A missing, malformed, rejected, or unreachable result

@@ -1,24 +1,25 @@
 ---
 name: desktop
-description: "MUST load before coordinating an installable Electron and TypeScript application outcome, defining its observable installed-platform contract, choosing its observable design, or making desktop release judgments. Desktop is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
+description: "MUST load before working in desktop. Desktop is a domain skill that routes the task to its applicable operation, tool, and preference child skills."
 allowed-tools: Read
 skill-type: domain
 ---
 
 # Desktop
 
-Desktop covers complete installable Electron and TypeScript outcomes, their observable installed-platform behavior, and their release judgments. Isolated renderer, language, browser, service, command-line, library, and bounded Electron-mechanism work remains with its direct owner.
+Desktop covers structure, interface, development, current operating-system facts, and release judgments for
+installable Electron desktop applications written in TypeScript.
 
-This root owns navigation only. Load every applicable child below; when an outcome uses Electron, also load the [`electron`](../electron/SKILL.md) root and every applicable Electron child.
-
-Four `web` children apply to an installed application and are loaded directly. [`web-interaction`](../web/web-interaction/SKILL.md) owns renderer interaction behavior — event and pointer contracts, keyboard operation, focus management, drag and gesture alternatives, and WAI-ARIA widget patterns — and [`web-observability`](../web/web-observability/SKILL.md) owns what the installed application emits, including main-process and renderer crash capture. [`web-configuration`](../web/web-configuration/SKILL.md) owns how per-environment values and secrets are supplied to the installed processes, while `desktop-release` keeps the fail-closed protected-secret storage rule and `desktop-contract` keeps the local-data contract around it. [`web-localization`](../web/web-localization/SKILL.md) owns the renderer's message catalogs, locale negotiation, `Intl` formatting, and right-to-left mirroring, while `desktop-contract` keeps the installed-platform behavior an operating-system language or region setting changes. `desktop-interface` still decides whether an interaction is warranted, `desktop-contract` still owns the observable installed-platform behavior around it, and `desktop-delivery` still coordinates the outcome rather than owning either policy.
+This root owns navigation only. Load every child below whose trigger applies.
 
 ## Child Skills
 
 | Child skill | Type | Load when |
 |---|---|---|
-| [`desktop-architecture`](desktop-architecture/SKILL.md) | preference | MUST load when choosing or reviewing an installed desktop application's in-application information architecture or renderer state architecture, covering view hierarchy, navigation without URLs, state ownership across processes and windows, and what a relaunch restores. |
-| [`desktop-contract`](desktop-contract/SKILL.md) | tool | MUST load when defining or reviewing observable installed-desktop behavior across targets, entry modes, windows, lifecycle, native integration, local data, installation, updates, and recovery. |
-| [`desktop-delivery`](desktop-delivery/SKILL.md) | operation | MUST load when coordinating one installable Electron and TypeScript application outcome across design, implementation, local data, packaging, updates, and release readiness. |
-| [`desktop-interface`](desktop-interface/SKILL.md) | preference | MUST load when choosing or reviewing an installed desktop application's project identity, design-evidence threshold, interface concept exploration, aesthetic system, or interaction and motion intent. |
-| [`desktop-release`](desktop-release/SKILL.md) | preference | MUST load when choosing desktop operating-system support, artifact evidence, local-data compatibility, update recovery, release readiness, or publication defaults. |
+| [`desktop-architecture`](desktop-architecture/SKILL.md) | preference | MUST load when choosing or reviewing view hierarchy, navigation, window model, activation request behavior, application-state ownership, or state restoration for an installable Electron desktop application written in TypeScript. |
+| [`desktop-development`](desktop-development/SKILL.md) | operation | MUST load when coordinating a scoped change to an installable Electron desktop application written in TypeScript across requirements, design collaboration, implementation, software testing and verification, packaging, installed-artifact verification, release readiness, authorized publication or deployment, post-release operations, and maintenance. |
+| [`desktop-interface`](desktop-interface/SKILL.md) | preference | MUST load when choosing or reviewing research evidence, interface requirements, product identity, interface concepts, prototypes, representative-user evidence, visual style, interaction or motion intent, accessibility, adaptation, success measures, or interface improvement decisions for an installable Electron desktop application written in TypeScript. |
+| [`desktop-linux`](desktop-linux/SKILL.md) | tool | MUST load when looking up or diagnosing current Linux facts about compatibility, installation, runtime lifecycle, native integration, update, repair, uninstall, trust, or failure evidence for an installable Electron desktop application written in TypeScript. |
+| [`desktop-macos`](desktop-macos/SKILL.md) | tool | MUST load when looking up or diagnosing current macOS facts about compatibility, installation, runtime lifecycle, native integration, update, repair, uninstall, trust, or failure evidence for an installable Electron desktop application written in TypeScript. |
+| [`desktop-release`](desktop-release/SKILL.md) | preference | MUST load when judging target support, artifact and installed evidence, update and data compatibility, recovery, release readiness, rollout controls, or rollback and forward-fix options for an installable Electron desktop application written in TypeScript. |
+| [`desktop-windows`](desktop-windows/SKILL.md) | tool | MUST load when looking up or diagnosing current Windows facts about compatibility, installation, runtime lifecycle, native integration, update, repair, uninstall, trust, or failure evidence for an installable Electron desktop application written in TypeScript. |

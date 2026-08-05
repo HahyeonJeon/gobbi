@@ -14,13 +14,20 @@ that this scenario reuses.
 ### GOTST-SC-PROJECT-01 — Normal case: The evidence set follows behavior and risk
 
 The work protects a named behavior, failure mode, compatibility promise, regression, or performance question.
-Each selected test kind should answer one material question; habit-driven or unrelated testing fails.
+Each selected test kind should answer one material question under exactly one author or execution contract;
+habit-driven evidence or a mode with incomplete effects, pauses, terminal result, or recovery fails.
+Author mode limits project writes to authorized evidence sources and returns a repeatable source and result or
+production-design block. Execution mode keeps project source read-only and returns exact evidence and limits or
+a blocked or flaky result. Both modes contain declared outputs and caches, require separate download and network
+authority, report credential use and external mutation separately as none, and retain their exact recovery state.
 
 #### Checklist
 
 - [ ] GOTST-CK-PROJECT-01-01 — Every selected test kind answers a named behavior or risk question.
-- [ ] GOTST-CK-PROJECT-01-02 — Every required behavior has an observable test seam.
-- [ ] GOTST-CK-PROJECT-01-03 — The declared author or read-only review mode, supported Go contract, and supported platform contract are each explicit.
+- [ ] GOTST-CK-PROJECT-01-02 — Every required behavior has an observable test boundary or controllable dependency.
+- [ ] GOTST-CK-PROJECT-01-03 — The selected author or execution mode, minimum supported Go version, selected Go toolchain version, module's Go language version, and supported `GOOS/GOARCH` target are each explicit.
+- [ ] GOTST-CK-PROJECT-01-04 — Every author-mode project-path write, disposable output, cache or download, project execution, network-access, separately reported credential-use, separately reported external-mutation, pause, terminal, and recovery field matches the accepted author contract.
+- [ ] GOTST-CK-PROJECT-01-05 — Every execution-mode project-path write, disposable output, cache or download, project execution, network-access, separately reported credential-use, separately reported external-mutation, pause, terminal, and recovery field matches the accepted execution contract.
 
 ### GOTST-SC-PROJECT-02 — Expected failure: A regression distinguishes defective and corrected behavior
 
@@ -76,12 +83,14 @@ a real process-wide contract that per-test setup cannot express; convenience-bas
 ### GOTST-SC-STRUCTURE-04 — Rule violation: Production internals are exposed only for tests
 
 The test cannot observe behavior without adding an exported hook, broad provider, or mock-oriented interface
-that production callers do not need. The design should supply a narrow natural seam; test-only public surface
-fails.
+that production callers do not need. The design should supply an observable test boundary or controllable
+dependency with a production purpose, or receive an exact production-design handoff; a test-only public API or
+CLI or an invented boundary fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-STRUCTURE-04-01 — Every test seam has a production design purpose rather than test-only existence.
+- [ ] GOTST-CK-STRUCTURE-04-01 — Every observable test boundary or controllable dependency has a production design purpose rather than test-only existence.
+- [ ] GOTST-CK-STRUCTURE-04-02 — Every unobservable promised behavior returns an exact production-design handoff with its evidence limits.
 
 ## Performance
 
@@ -106,14 +115,14 @@ one noisy sample supports the conclusion. The measurement should isolate the ope
 - [ ] GOTST-CK-PERFORMANCE-02-02 — One benchmark iteration excludes the operation's surrounding setup.
 - [ ] GOTST-CK-PERFORMANCE-02-03 — The benchmark consumes the operation's observable result.
 
-### GOTST-SC-PERFORMANCE-03 — Poor quality: Slow external tests burden the default target
+### GOTST-SC-PERFORMANCE-03 — Poor quality: Slow external tests burden the ordinary project test command
 
 Privileged, networked, or external-service tests run in the ordinary fast suite without a project contract.
-The default target should remain repeatable and proportionate; hidden environmental cost fails.
+The ordinary project test command should remain repeatable and proportionate; hidden environmental cost fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-PERFORMANCE-03-01 — Every expensive, privileged, networked, and external-service test sits behind the project-selected target or constraint rather than in the ordinary target.
+- [ ] GOTST-CK-PERFORMANCE-03-01 — Every expensive, privileged, networked, and external-service test sits behind a named project target or constraint in the project test command rather than in its ordinary path.
 
 ## Aesthetics
 
@@ -152,18 +161,19 @@ and assert output only when that output is deterministic and contractual; decora
 
 ### GOTST-SC-USAGE-02 — Edge case: Example output varies by environment or version
 
-An example prints maps, paths, times, platform text, or release-dependent content. Executable output should
-remain stable under the supported contract; an environment-sensitive assertion fails.
+An example prints maps, paths, times, `GOOS/GOARCH` target text, or release-dependent content. Executable
+output should remain stable under the supported contract; an environment-sensitive assertion fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-USAGE-02-01 — Asserted example output is stable across supported platforms and supported Go versions.
+- [ ] GOTST-CK-USAGE-02-01 — Asserted example output is stable across supported `GOOS/GOARCH` targets and project-supported selected Go toolchain versions.
 - [ ] GOTST-CK-USAGE-02-02 — Nondeterministic example output is not used as an execution assertion.
 
 ### GOTST-SC-USAGE-03 — Expected failure: An integration prerequisite is absent
 
-A selected test needs an external service, privilege, build tag, tool, or target that is unavailable. Skipping
-is valid only when the project contract classifies that absence as unsupported; silent success fails.
+A selected test needs an external service, privilege, build tag, tool, named project target in the project test
+command, or `GOOS/GOARCH` target that is unavailable. Skipping is valid only when the project contract
+classifies that absence as unsupported; silent success fails.
 
 #### Checklist
 
@@ -188,12 +198,12 @@ proves nothing.
 ### GOTST-SC-CONSISTENCY-01 — Rule violation: Nondeterminism remains uncontrolled
 
 The test depends on wall time, random values, network order, file-system state, or process environment without
-an explicit seam. Repeated execution should produce the same contract judgment; scheduling or machine luck
-fails.
+an observable test boundary or controllable dependency. Repeated execution should produce the same contract
+judgment; scheduling or machine luck fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-01-01 — Time-dependent, randomness-dependent, environment-dependent, file-system-dependent, and network-dependent behavior each use a controlled seam.
+- [ ] GOTST-CK-CONSISTENCY-01-01 — Time-dependent, randomness-dependent, environment-dependent, file-system-dependent, and network-dependent behavior each use an observable test boundary or controllable dependency.
 
 ### GOTST-SC-CONSISTENCY-02 — Rule violation: Parallel tests share unsafe state
 
@@ -217,17 +227,18 @@ success, failure, skip, and panic; a resource or process-state leak fails.
 
 ### GOTST-SC-CONSISTENCY-04 — Edge case: Test APIs or closure semantics vary by Go version
 
-The suite uses a testing API or loop-variable behavior that changed across supported Go releases. The
-implementation should follow the module language version and toolchain floor; local-newest success fails.
+The suite uses a testing API or loop-variable behavior that changed across Go releases. The implementation
+should follow the module's Go language version, minimum supported Go version, and selected Go toolchain
+version; local-newest success fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-CONSISTENCY-04-01 — Every used testing API and closure behavior matches the module language version and supported Go floor.
+- [ ] GOTST-CK-CONSISTENCY-04-01 — Every used testing API and closure behavior matches the module's Go language version, minimum supported Go version, and selected Go toolchain version.
 
 ### GOTST-SC-CONSISTENCY-05 — Rule violation: Returned claims exceed executed evidence
 
 The work reports coverage, a race run, a benchmark, fuzzing, or a general pass. The claim should stay within
-the executed inputs, paths, duration, platform, and configuration; unsupported expansion fails.
+the executed inputs, paths, duration, `GOOS/GOARCH` target, and configuration; unsupported expansion fails.
 
 #### Checklist
 
@@ -238,7 +249,7 @@ the executed inputs, paths, duration, platform, and configuration; unsupported e
 ### GOTST-SC-RISK-01 — Adversarial: Fuzz input amplifies memory, time, or external effects
 
 A generated input intentionally triggers large allocation, recursion, path expansion, subprocesses, or remote
-calls. The fuzz target should contain exploration inside the real contract and test boundary; resource or
+calls. The fuzz target should contain exploration inside the real contract and observable test boundary; resource or
 side-effect amplification fails.
 
 #### Checklist
@@ -260,45 +271,47 @@ parallel order fails.
 ### GOTST-SC-RISK-03 — Adversarial: A clean race run is treated as proof
 
 The race detector reports no issue on the selected run. That covers only executed paths on supported
-platforms; representing it as proof that all concurrent behavior is race-free fails.
+`GOOS/GOARCH` targets; representing it as proof that all concurrent behavior is race-free fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-03-01 — No unexecuted concurrent path or unexercised platform is included in the race-free conclusion.
+- [ ] GOTST-CK-RISK-03-01 — No unexecuted concurrent path or unexercised `GOOS/GOARCH` target is included in the race-free conclusion.
 - Also applies: GOTST-CK-CONSISTENCY-05-01 (race claims stay within the executed workload).
 
-### GOTST-SC-RISK-04 — Expected failure: A flaky or unsupported surface remains unresolved
+### GOTST-SC-RISK-04 — Expected failure: A flaky project test command or unsupported `GOOS/GOARCH` target remains unresolved
 
-A required test is nondeterministic, prohibitively expensive, or unsupported on one promised target. The work
-should preserve the resulting evidence gap; retries, exclusions, or another platform's pass do not close it.
+A required project test command is nondeterministic or prohibitively expensive, or one promised
+`GOOS/GOARCH` target is unsupported. The work should preserve the resulting evidence gap; retries, exclusions,
+or another `GOOS/GOARCH` target's pass do not close it.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-04-01 — Every unresolved flaky test and unsupported promised target remains visible.
+- [ ] GOTST-CK-RISK-04-01 — Every unresolved flaky project test command and unsupported promised `GOOS/GOARCH` target remains visible.
 - [ ] GOTST-CK-RISK-04-02 — No retry converts an indeterminate test into reliable evidence.
 
 ### GOTST-SC-RISK-05 — Normal case: The ordinary run stays inside the test's own boundary
 
-The default target runs on an ordinary developer or continuous-integration machine. Its success path should
-need no elevated privilege, write only inside test-owned temporary locations, and make no unauthorized
+The ordinary project test command runs on a developer or continuous-integration machine. Its success path
+should need no elevated privilege, write only inside test-owned temporary locations, and make no unauthorized
 external call; an ordinary run that touches the real machine or a real service fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-RISK-05-01 — The ordinary test target needs no elevated privilege or undeclared external service.
-- [ ] GOTST-CK-RISK-05-02 — Every file the ordinary test target writes stays inside a test-owned temporary location.
+- [ ] GOTST-CK-RISK-05-01 — The ordinary project test command needs no elevated privilege or undeclared external service.
+- [ ] GOTST-CK-RISK-05-02 — Every file the ordinary project test command writes stays inside a test-owned temporary location.
 
 ## Overall
 
 ### GOTST-SC-OVERALL-01 — Normal case: The complete suite gives proportionate assurance
 
-The selected tests, examples, fuzz targets, benchmarks, coverage, race runs, and target checks should form the
-smallest coherent evidence set for the named behavior and risk. Each layer should add distinct assurance.
+The selected tests, examples, fuzz targets, benchmarks, coverage, race runs, and `GOOS/GOARCH` target checks
+should form the smallest coherent evidence set for the named behavior and risk. Each layer should add distinct
+assurance and return its exact evidence and limits in the operation terminal record.
 
 #### Checklist
 
 - [ ] GOTST-CK-OVERALL-01-01 — Every selected layer protects a distinct material concern.
-- [ ] GOTST-CK-OVERALL-01-02 — Every selected layer has an explicit coverage boundary.
+- [ ] GOTST-CK-OVERALL-01-02 — Every applicable terminal field is explicit: operation and mode, accepted result, decision basis, actual owned object, terminal state selected from exactly `success`, `error`, `cancellation`, `timeout`, `blocked`, or `user-decision pause`, changed or reviewed paths, project-command evidence, evidence limits, external reads or effects, compatibility decision, block, recovery, handoff, evidence question and test kind, observable test boundary or controllable dependency, cases, project test command, exact package pattern, flags, `GOOS/GOARCH` target, inputs, duration, repetitions, result, cache, temporary, fuzz, coverage, and failure outputs, flakes, exercised success, error, cancellation, timeout, or panic exit paths, and production-design handoff.
 - Also applies: GOTST-CK-CONSISTENCY-01-01 (each layer is deterministic within its intended contract).
 
 ### GOTST-SC-OVERALL-02 — Adversarial: High coverage masks missing behavioral assurance
@@ -314,10 +327,11 @@ coverage success fails.
 
 ### GOTST-SC-OVERALL-03 — Expected failure: A material assurance gap blocks completion
 
-One selected test layer cannot run or cannot observe the promised result. The final account should retain the
-affected behavior and risk as unresolved; declaring the evidence set complete fails.
+One selected layer cannot run, a project test command is flaky, a promised `GOOS/GOARCH` target is unsupported,
+or no observable test boundary or controllable dependency exposes the promised result. The terminal record
+should retain the exact block and recovery fields; declaring the evidence set complete fails.
 
 #### Checklist
 
-- [ ] GOTST-CK-OVERALL-03-01 — Every unobservable promised behavior and blocked selected layer remains explicit.
-- [ ] GOTST-CK-OVERALL-03-02 — Completion is not claimed across a material assurance gap.
+- [ ] GOTST-CK-OVERALL-03-01 — Every applicable blocked-result field is explicit: the missing prerequisite or first useful diagnostic, affected obligation, evidence limit, risk, owner, retained state, first recovery action, and handoff.
+- [ ] GOTST-CK-OVERALL-03-02 — Every terminal result keeps a material assurance gap outside its completion claim.

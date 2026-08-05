@@ -1,6 +1,6 @@
 ---
 name: partner
-description: "MUST load when a caller needs an independent result from the partner system. Partner is an operation skill for preparing, launching, validating, and returning the frozen content of one partner round."
+description: "MUST load when a caller needs one independent result from the other runtime. Partner prepares, launches, validates, and returns one frozen external response."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 user-invocable: false
@@ -8,21 +8,17 @@ user-invocable: false
 
 # Partner
 
-Use this skill when a caller needs a result produced independently of the active runtime. **Partner** names the
-system that runs in the runtime the active one is not: in Claude Code the partner is Codex, and in native Codex
-the partner is Claude Code. A **partner run** is one bounded invocation of that system. A **partner round** is
-the composed set of runs a caller asks for at once — two independent drafts, two reciprocal cross-reviews, or a
-set of isolated evaluation reports.
+Use this skill when a caller needs one result from the runtime other than the active runtime. In Claude Code,
+Partner invokes Codex. In native Codex, Partner invokes Claude Code. One **partner run** is one bounded,
+read-only invocation of that other runtime.
 
-The operation prepares one run, launches it read-only under a bounded timeout, validates what comes back
-against the envelope it sent, and returns the labeled frozen content of the whole round. Independence is what
-it guarantees. Each run gets a new process and a new identity, receives its complete contract and evidence
-inline, and sees nothing derived from a run it must stay independent of.
+The operation prepares one neutral envelope, launches one fresh process, validates its response, and returns
+that response as labeled frozen content. It may use a private runtime-temporary directory for prompt, stdout,
+and stderr capture. It writes no durable project or session state.
 
-The caller keeps everything else. This operation returns content and writes no file, so the caller places every
-returned item. It decides no mode, scope, gate, coverage rule, waiver, finding disposition, or route. A run
-that cannot be completed or validated pauses the round and returns an exact failure instead of substitute
-content.
+The caller owns local participants, the complete subject, round assembly, policy, acceptance, and every next
+action. Partner neither creates active-runtime drafts or evaluators nor decides mode, scope, gates, coverage,
+waivers, finding disposition, or routing. Failure returns an exact pause instead of substitute content.
 
 ## Principles
 
@@ -32,20 +28,20 @@ An independent result is evidence only when nothing derived from the result it w
 reached it. Independence is built at launch — a fresh process, a new identity, and inputs carrying no content,
 summary, or hint from another run — because it cannot be restored afterwards.
 
-### Keep the partner read-only and the caller accountable
+### Keep durable state read-only and the caller accountable
 
-The partner reads and reports. It writes nothing to the repository, the session record, or any external system,
-and its report is one input the caller owns, accepts, places, and acts on.
+The other runtime reads and reports. Private temporary capture supports the invocation, while the caller owns
+every durable placement, comparison, acceptance decision, and follow-up action.
 
-### Freeze before comparing
+### Accept only frozen caller input
 
-Content that can still change is not evidence. Freeze the subject before the first run and both drafts before
-any cross-review, so every comparison runs against the exact content that was sent.
+Partner preserves the complete input bytes it receives. The caller freezes subjects, drafts, bundles, and
+round order before invoking Partner.
 
 ### Treat failure as a visible pause
 
-A missing binary, a timeout, an unusable response, or a mismatched identity ends the round in a reported pause,
-never in repaired or substituted content. Rescuing a round by editing what came back makes this operation the
+A missing binary, a timeout, an unusable response, or a mismatched identity ends the run in a reported pause,
+never in repaired or substituted content. Rescuing a run by editing what came back makes this operation the
 author of the result it was asked to obtain independently.
 
 ## Rules
@@ -54,17 +50,16 @@ author of the result it was asked to obtain independently.
   identity.** Every launch uses the direction's read-only command form and an identity pair no earlier run
   used; a reused process or identity is rejected as replay.
 
-- **MUST supply the complete neutral contract and every input inline.** Each run receives the same scope,
-  authority, and failure contract plus the complete content of every binding artifact; a path standing in for
-  that content leaves the run unsupplied.
+- **MUST supply the complete neutral contract and every input inline.** Each run receives its caller-supplied
+  scope, authority, and failure contract plus the complete content of every binding artifact; a path standing
+  in for that content leaves the run unsupplied.
 
-- **MUST freeze both drafts before any cross-review and isolate every evaluator.** No cross-review envelope
-  exists before both drafts are frozen, and no evaluator receives another evaluator's report or prior
-  evaluator context.
+- **MUST preserve the caller's frozen input and independence boundary.** Change no supplied content and reject
+  any input the caller marks as prohibited for this run.
 
-- **MUST return labeled frozen content and write no file.** Each returned item carries its kind, producing
-  system, assignment, and iteration; the prompt, response, and stderr captures live in a runtime temporary
-  directory outside the session tree and are removed before return.
+- **MUST return one labeled frozen response and write no durable file.** Prompt, response, and stderr captures
+  live in one private runtime-temporary directory outside every project and session root and are removed
+  before a successful return or after failure evidence is surfaced.
 
 - **NEVER transform a response.** Trimming fences, selecting among several responses, extracting a fragment,
   repairing a field, rerendering, or generating substitute content under a missing system's label each make
@@ -76,34 +71,37 @@ author of the result it was asked to obtain independently.
 
 ## Procedure
 
-### Phase 1 — Prepare the Run
+### Phase 1 — Prepare One External Run
 
 #### 1.1 Determine the direction, confirm availability, and take the caller's context
 
-- Enter with the active runtime named and with the caller's stage, assignment ID, and iteration. Those three
-  values belong to the caller; this operation never invents one.
+- Enter with the active runtime named and with the caller's operation kind, stage, assignment ID, and
+  iteration. These values belong to the caller; this operation never invents one or decides whether a round
+  needs this external participant.
 - Derive the launch direction from the active runtime. In Claude Code the partner is Codex; in native Codex
   the partner is Claude Code. One active runtime allows exactly one direction.
 - Confirm the partner binary and every required local dependency before anything else runs. Run `command -v`
   for the direction's binary and for `timeout`, and record each exact result.
-- Evidence is the resolved direction, the recorded `command -v` results, and the caller's stage, assignment,
-  and iteration.
+- Evidence is the resolved direction, the recorded `command -v` results, and the caller's operation kind,
+  stage, assignment, and iteration.
 - Continue to Step 1.2 when the binary and its dependencies exist. Go to Step 2.3 with the `Binary
-  unavailable` row when either is missing. Stop and ask the caller when the stage, assignment, or iteration
-  is missing.
+  unavailable` row when either is missing. Stop and ask the caller when the operation kind, stage,
+  assignment, or iteration is missing.
 
 #### 1.2 Freeze the subject and compose the neutral envelope
 
 - Enter with the subject the caller wants an independent result over and the direction from Step 1.1.
 - Freeze the subject: take its complete content as the caller supplied it and change nothing afterwards. A
   path may identify evidence, but it never replaces that evidence's complete content.
-- Place the prompt, response, and stderr captures in a runtime temporary directory outside the session tree,
-  and never point an output option at the session record. Resolve and containment-check all five values below
-  before launch, require every input file to be a regular non-symbolic-link file, require both output files
-  to be absent at the start, and record their preimages when a retry could meet an existing path.
+- Create one private runtime temporary directory outside every project, worktree, and session root. Restrict
+  the directory and its capture files to the current user. Place the prompt, response, and stderr captures
+  there, and never point an output option at durable project or session state. Resolve and containment-check
+  all six values below before launch. Require every input file to be a regular non-symbolic-link file and
+  every output file to be absent at the start.
 
 ```text
 trusted_read_root  absolute existing directory containing every permitted input
+capture_root       private runtime temporary directory outside durable project and session state
 prompt_file        complete frozen neutral envelope
 response_file      partner standard output only
 stderr_file        immediate diagnostic only
@@ -132,11 +130,11 @@ output:             exactly one self-contained report and nothing else
   `runtimeIdentity` and to this single launch, so a reused identity is rejected as replay at Step 2.2.
 - State the failure contract in `scope`: the partner stops without substitute output when required context is
   absent.
-- Evidence is the frozen subject, the composed envelope, and the five resolved capture values.
+- Evidence is the frozen subject, the composed envelope, and the six resolved capture values.
 - Continue to Phase 2. Stop and report to the caller when the subject cannot be frozen or a binding input is
   missing, naming the exact missing input and composing nothing in its place.
 
-### Phase 2 — Run and Validate One Partner Run
+### Phase 2 — Launch, Validate, and Return One External Run
 
 #### 2.1 Launch one partner run
 
@@ -206,7 +204,7 @@ timeout "$partner_timeout" claude \
   6. Reject a runtime identity or invocation response that an earlier partner run already used.
 
 - Evidence is the validated response, or the exact check that failed and what it observed.
-- Continue to Phase 3 when all six checks pass. Go to Step 2.3 on the first failure.
+- Continue to Step 2.4 when all six checks pass. Go to Step 2.3 on the first failure.
 
 #### 2.3 Pause and report an exact failure
 
@@ -227,58 +225,28 @@ timeout "$partner_timeout" claude \
 - Never generate substitute content under the missing system's label. Never trim fences, select the first of
   several responses, extract a fragment from a response, repair a field, or rerender a response; any such
   transformation makes this operation an author.
-- Remove the prompt, response, and stderr captures once the failure is surfaced.
-- Evidence is the paused round, the classification, the surfaced evidence, and the removed captures.
+- Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private
+  capture directory. Report a cleanup failure with the retained absolute path; never copy its content into
+  durable state.
+- Evidence is the paused run, the classification, the surfaced evidence, and the removed captures or exact
+  retained cleanup path.
 - Return the pause to the caller, who owns every recovery choice — retry, a bounded input repair, a
   user-approved one-system waiver, or abort. This operation neither retries nor substitutes content, and it
   decides no scope, waiver, gate, disposition, or route.
 
-### Phase 3 — Compose the Round and Return It
+#### 2.4 Return the labeled frozen response
 
-#### 3.1 Compose an independent-draft round
-
-- Enter with the caller's neutral contract, the frozen subject, and the complete evidence both systems
-  receive.
-- Run Phase 2 once per draft. Give each run the same neutral contract and the same complete evidence, and give
-  neither run any content, summary, or hint derived from the other draft. Freeze both drafts before anything
-  else reads either one.
-- Treat a response from an earlier invocation, stage, iteration, or assignment as stale even when its content
-  looks useful.
-- Evidence is two frozen drafts, each labeled with the system that produced it.
-- Continue to Step 3.4, or to Step 3.2 when the caller asked for cross-review. A run paused at Step 2.3
-  pauses the round.
-
-#### 3.2 Compose a cross-review round
-
-- Enter only after both drafts from Step 3.1 are frozen. Construct no cross-review envelope before both
-  freeze.
-- Run Phase 2 once per direction. Give each reviewer the complete original neutral contract and the complete
-  frozen draft it did not write, and state that both drafts received that same contract. Exclude the
-  reviewer's own draft as a comparison input.
-- Name the expected `subjectSystem` in each envelope. Same-system or same-subject labeling blocks the run.
-- Evidence is the two reciprocal frozen cross-reviews.
-- Continue to Step 3.4. Stop and report when either draft is not yet frozen.
-
-#### 3.3 Compose an evaluation round
-
-- Enter with the complete frozen bundle the caller's evaluation owner requires: the canonical synthesis or
-  actual tree, both drafts, both cross-reviews, resolved decisions, applicable waiver, locked scope, upstream
-  artifacts, scenarios, checklist source, plan, and verification evidence.
-- Run Phase 2 once per evaluator. Give each evaluator the complete bundle as inline content, and give it no
-  other evaluator's report and no prior evaluator context.
-- State no report shape here. The caller's evaluation method owns what an evaluation report contains.
-- Evidence is the isolated frozen evaluation reports.
-- Continue to Step 3.4. Stop and report when isolation cannot be proved.
-
-#### 3.4 Return the labeled frozen content
-
-- Enter with the frozen content this round produced.
-- Return each item as content, labeled with its kind, its producing system, and the assignment and iteration
-  it ran under. The caller places every returned item in its own evidence model.
-- Remove the prompt, response, and stderr captures once the content is returned.
-- State the non-goals with the return: this operation writes no file, defines no package layout, and decides
-  no mode, scope, gate, coverage rule, waiver, finding disposition, or route. Acceptance belongs to the caller.
-- Evidence is the returned labeled content and the removed captures.
-- The round is complete. A paused round returns the Step 2.3 report instead of content.
+- Enter with the one response that passed Step 2.2. Freeze its bytes without trimming, extracting, repairing,
+  or rerendering them.
+- Return the complete response labeled with its operation kind, producing system, stage, assignment, and
+  iteration. The caller owns placement, local participants, assembly with other content, acceptance, and
+  every next action.
+- Remove the complete private capture directory before return. If cleanup fails, return an exact failure and
+  retained absolute path instead of reporting successful completion.
+- State the non-goals with the return: Partner created no local participant, assembled no round, wrote no
+  durable project or session state, and decided no policy, mode, scope, gate, coverage rule, waiver, finding
+  disposition, or route.
+- Evidence is the labeled frozen response and proof that the private captures are absent. One partner run is
+  complete. A failed run returns Step 2.3 instead.
 
 ## References

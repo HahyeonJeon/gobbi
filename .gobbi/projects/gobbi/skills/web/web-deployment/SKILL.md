@@ -1,210 +1,163 @@
 ---
 name: web-deployment
-description: "MUST load when configuring a web build for production or when deploying, verifying, or reversing a web release, covering bundler configuration, chunking, asset hashing, production source maps, rollout, and rollback."
+description: "MUST load when deploying an accepted web release to an authorized environment, verifying the production URL, advancing or stopping a rollout, or rolling back the environment."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, WebFetch
 skill-type: operation
 ---
 
 # Web Deployment
 
-Use this operation to turn one release-ready web build into a running, verified, reversible deployment. It
-covers bundler configuration, chunking and code splitting, asset hashing and cache lifetimes, production
-source maps and whether they are published, migration and cutover order, staged rollout, live verification,
-and the reverse path. It stops at the authority boundary rather than crossing it.
+Use this operation to place one accepted, immutable web release into one authorized environment and prove
+what the production URL serves. It owns the exact target and authority state, environment freeze and record,
+migration, asset-upload, and entry-document order, retained predecessor assets, staged rollout, live
+verification, immediate reversal, and authority-boundary stop.
 
-`web-feature` ends at a release-ready handoff and keeps deployment, its authorization, and live health as
-separate claims; this operation begins exactly there.
-[`electron-release`](../../electron/electron-release/SKILL.md) holds the same lifecycle position for an
-installed desktop artifact, which a person must download, install, and later update; this operation places a
-build behind a URL the same person merely reloads. The discipline transfers, the work does not.
+[`web-release`](../web-release/SKILL.md) owns production inputs, build configuration, artifact bytes, names,
+cache policy, build identity, manifest, digests, and source-map disposition. This operation accepts that
+identified artifact and never rebuilds, renames, or modifies its bytes. `web-development` coordinates the
+handoff and keeps release status, deployment authority, deployment state, live verification, and observed
+health separate.
 
-`typescript-toolchain` owns compiling, emit, and module resolution; this operation owns the bundle those tools
-feed and where it goes. `web-topology` owns where build outputs live in the repository, `web-architecture`
-chooses the rendering and delivery strategy this operation ships, `web-backend` owns what a migration means to
-the data while this owns when it runs relative to the cutover, `web-security` owns which data is protected
-while this owns not republishing source through a map, and `web-observability` owns the signals a rollout is
-judged by. `web-configuration` owns per-environment values, secret supply, and feature-flag lifetime; this
-operation owns the environment's identity and the frozen build inputs, not the values inside them.
+`web-backend` owns what a migration means to data; `web-observability` owns rollout signals;
+`web-configuration` owns runtime values and secrets management; `web-security` owns protected-data exposure;
+`web-testing` owns suite evidence; and `web-platform` owns disputed browser facts. Deployment changes and
+verifies the environment, then ends; it does not claim indefinite support or ongoing service operation.
 
 ## Principles
 
-### Deployment begins where the feature stops
+### Accepted bytes enter; environment state changes
 
-`web-feature` deliberately ends at a release-ready handoff and reports deployment authorization, deployment,
-and live health as separate claims. This operation converts that handoff into one running release whose
-identity, verification, and reverse path are all known.
+Deployment receives a verified artifact and changes only the named environment. Rebuilding or renaming makes
+the deployed bytes a new, unevaluated release and breaks the manifest, identity, and reverse path.
 
-### The reverse path is designed before the deploy, not after it
+### The reverse path precedes the forward path
 
-A rollback planned once the failure is visible is planned under pressure, with the broken version already
-serving and the previous build possibly already deleted. Decide and rehearse the reverse while the previous
-version is still whole.
+A reverse designed during an incident is already late. Name and rehearse the previous artifact, restoration
+method, retained assets, data limits, actor, duration, and stop conditions before the first forward action.
 
-### A successful build proves nothing about a deployment
+### Upload, deployment, verification, and health are separate claims
 
-A green local build, a passing preview, and a completed upload each establish a different fact. Only a
-request served from the production URL establishes what people actually receive.
+A completed upload says files moved. Only production-URL evidence proves what people receive, and observed
+health remains a further claim based on live signals.
 
-### Bytes and identity travel together
+### The production URL is the live evidence boundary
 
-Every deployed artifact carries a content-derived name and a recorded build identity, so a cache entry, a
-stale client, and an incident report all resolve to exactly one build. A reused name makes those three
-disagree while none of them looks wrong.
+Preview aliases, origin bypasses, and staging hosts cannot prove a deployment. Verification reads the entry
+document, assets, lazy chunks, server-owned behavior, identity, and cache directives through the same URL
+people use.
 
 ## Rules
 
-- **MUST freeze and record one build identity before anything in the target environment changes.** Record the
-  source commit, lockfile, build configuration, tool and runtime versions, artifact digests, target
-  environment, and who or what is authorized to deploy it.
+- **MUST accept one identified release artifact with its manifest, digests, cache contract, source-map
+  disposition, rollout and rollback intent, and exact deployment-authority state.** Never rebuild, rename, or
+  modify accepted release bytes.
 
-- **MUST give every cacheable asset a content-derived filename and a long-lived immutable freshness lifetime
-  while keeping the entry document revalidated.** Under [RFC 9111](https://www.rfc-editor.org/rfc/rfc9111) a
-  fresh response is reused without contacting the server and the
-  [RFC 8246](https://www.rfc-editor.org/rfc/rfc8246) `immutable` extension suppresses even revalidation, so a
-  reused asset name or a cached entry document is how one deploy serves two versions.
+- **MUST freeze and record the environment identity and exact target before anything in that environment
+  changes.** Keep the artifact identity and environment identity distinct.
 
-- **MUST publish assets before the document that references them and retain the previous build's assets
-  through the whole rollback window.** A client holding the old document, a warm edge cache, and an in-flight
-  lazy chunk all request files by the names they already have.
+- **MUST define and rehearse the reverse path before the first forward action, and retain and serve the
+  previous build's assets throughout the rollback window.** An irreversible change requires explicit user
+  authority.
 
-- **MUST generate a production source map for every shipped bundle and decide deliberately whether each map is
-  published.** A published map re-exposes original source, comments, and file layout to anyone who can fetch
-  the bundle, and an unpublished map must still reach the error reporter or no stack trace can be read.
+- **MUST apply backward-compatible migrations before dependent code, upload every asset and chunk before the
+  entry document, and publish the entry document last.** Prior and new entry documents must both remain
+  servable during rollout overlap.
 
-- **MUST rehearse the reverse path before the first forward step and verify the release from the production
-  URL before calling the deployment complete.** Prove the served build identity, the entry document, at
-  least one hashed asset, and one authoritative round trip; a completed upload is not a verified deployment.
+- **MUST advance staged rollout only on observed signals, stop when a stop condition is met, verify from the
+  production URL, and reverse immediately on failed verification or a met stop condition.** Re-verify the
+  restored release instead of assuming reversal succeeded.
 
-- **NEVER use credentials, publish, promote, or advance a rollout without explicit authority for that exact
-  action.** Stop at the boundary with the artifact, verification evidence, and reverse path preserved, then
-  name the first blocked action and the authority it requires.
+- **NEVER use credentials, publish, promote, advance, reverse, or otherwise change an environment without
+  explicit authority for that exact action.** Stop with the artifact, live evidence, reverse path, and first
+  blocked action preserved and named.
 
 ## Procedure
 
-### Phase 1 — Bind the Release and Its Authority
+### Phase 1 — Bind the Accepted Release and Environment
 
-#### 1.1 Take the handoff and freeze the build identity
+#### 1.1 Accept the release handoff and authority
 
-- Start from `web-feature`'s release-ready handoff or the requesting caller's equivalent, including its
-  compatibility notes, rollout and rollback intent, configuration state, and deployment-authority state.
-- Refuse a handoff whose evaluation is unresolved or whose limitations carry no user disposition, then freeze
-  the source commit, lockfile, dependency graph, build configuration, tool and runtime versions, environment
-  identity, and the target the build is for.
-- Record the frozen input set and one build identity that the build embeds and every later artifact, log, and
-  error report carries.
-- Continue with the frozen identity; return an unresolved evaluation, an undisposed limitation, or an absent
-  deployment authority to `web-feature` or the user before configuring anything.
+- Start from an accepted `web-release` handoff that includes the immutable artifact, manifest and digests,
+  build identity, cache and naming contract, source-map dispositions, release evidence, rollout and rollback
+  intent, and exact deployment-authority state.
+- Confirm the artifact file set and digests against the accepted manifest without rebuilding, renaming, or
+  modifying any byte, and refuse a partial, mismatched, or unevaluated release handoff.
+- Route migration meaning to `web-backend`; rollout signals to `web-observability`; runtime configuration to
+  `web-configuration`; every protected-data exposure question arising from target configuration, migration,
+  rollout, or served behavior to `web-security`; live suite evidence to `web-testing`; and disputed browser
+  verification facts to `web-platform`.
+- Continue with one accepted artifact and exact authority state; return an artifact mismatch to `web-release`
+  and stop before the first action not covered by the granted authority.
 
-#### 1.2 Establish the environment contract and rehearse the reverse path
+#### 1.2 Freeze the target and rehearse reversal
 
-- Take the frozen identity plus the target's current serving arrangement: origin, cache or edge layer, entry
-  document, asset paths, currently deployed build, and the data migrations pending against it.
-- Define the reverse path before any forward step — the exact previous artifact, how it is restored, how long
-  its assets are retained, which data changes are reversible and which are not, and who may activate the
-  path — loading `web-backend` for what an irreversible migration means and `web-architecture` when the
-  rendering or delivery mode itself is changing, then rehearse that path while the previous version is still
-  whole by restoring the named artifact in a pre-production target that mirrors production, or by running the
-  production target's documented dry run when no such target exists.
-- Record the environment contract, the retention window for the previous build, the reverse path with its
-  owner and expected duration, the rehearsal's evidence, observed duration, and any step it could not
-  exercise, and the stop conditions that trigger it.
-- Continue when the rehearsal restored the previous build and a named person could repeat it without further
-  design; treat a change that has no reverse path as a decision needing explicit user authority rather than a
-  step to take carefully.
+- Take the accepted artifact plus the target's environment identity, production URL, origin, cache or edge
+  layer, entry document, asset paths, currently deployed build, pending migrations, stop conditions, and
+  reverse-path authority.
+- Freeze and record the environment identity and target before anything changes, then define the exact prior
+  artifact, restoration method, retained-asset window, reversible and irreversible data changes, authorized
+  actor, expected duration, and stop conditions.
+- Rehearse restoration of the named prior artifact in a pre-production target that mirrors production, or use
+  the production target's documented dry run when no such target exists; record evidence, observed duration,
+  and every unexercised step.
+- Continue when a named person can execute the reverse path without further design; raise a change with no
+  reverse path for explicit user authority instead of treating it as an ordinary deployment step.
 
-### Phase 2 — Configure the Production Build
+### Phase 2 — Change the Environment in Reversible Order
 
-#### 2.1 Configure the bundle, chunks, and code splitting
+#### 2.1 Order migrations, assets, and the entry document
 
-- Take the frozen inputs, the delivery strategy `web-architecture` selected, and the project's current bundler
-  and its configuration.
-- Preserve a working bundler and change only what this release requires: set one entry point per delivered
-  surface, split code at boundaries people actually cross such as a route, a deferred feature, or a rarely
-  reached dependency, and keep a shared dependency in one chunk instead of duplicating it across entries.
-- Record the emitted chunk graph, the per-entry transferred size, every dynamic-import boundary, and which
-  chunks a first visit must fetch before the page is usable.
-- Continue when the graph matches the delivery strategy; route a compiler, emit, module-resolution, or
-  type-stripping failure to `typescript-toolchain` instead of working around it in bundler configuration.
+- Take the accepted artifact, frozen target, reverse path, pending migrations, and the retained prior assets.
+- Apply backward-compatible migrations before the code that needs them, upload every accepted asset and chunk
+  before the entry document that names them, publish the entry document last, and retain and serve the prior
+  asset names through the full rollback window.
+- Record each step's completion time, the entry-document cutover, the accepted artifact identity at every
+  destination, and confirmation that predecessor assets remain available to old documents and in-flight lazy
+  chunks.
+- Continue only while the prior and new entry documents can both be served correctly; stop and reverse when a
+  migration is incompatible with the currently serving build.
 
-#### 2.2 Configure asset hashing and cache lifetimes
+#### 2.2 Advance under observed stop conditions
 
-- Take the chunk graph and the target's cache or edge layer, including any directive that layer adds or
-  overrides.
-- Derive every cacheable asset filename from its content, serve those assets with a long-lived immutable
-  freshness lifetime, and keep the entry document revalidated so it can point at new names as soon as it
-  changes.
-- Record the naming scheme, the freshness lifetime per class of file, and the entry document's directives as
-  they are actually served rather than as configured.
-- Continue when a rebuilt but unchanged asset keeps its name and a changed asset receives a new one; treat any
-  cacheable asset served under a name whose content can change as the defect that produces a stale or missing
-  chunk after the next deploy.
-
-#### 2.3 Decide production source maps and their publication
-
-- Take the emitted bundles and the error-reporting destination `web-observability` established, including
-  whether it can accept an uploaded map.
-- Generate a source map for every shipped bundle, then decide per map whether it is published beside the
-  bundle or delivered only to the error reporter, because
-  [ECMA-426](https://ecma-international.org/publications-and-standards/standards/ecma-426/) links a map
-  through a `//# sourceMappingURL` annotation or an equivalent HTTP header that anyone fetching the bundle can
-  follow.
-- Record, per bundle, whether its map is published, where an unpublished map is delivered instead, and whether
-  original sources are embedded inside it.
-- Continue when every shipped bundle has one readable stack path; route a published map on a surface whose
-  source is not public to `web-security` as an exposure question rather than settling it here.
-
-### Phase 3 — Deploy in Order
-
-#### 3.1 Order migrations, assets, and the entry document
-
-- Take the verified build, the frozen identity, the reverse path, and the pending data migrations.
-- Order the deploy so nothing ever references something not yet present: apply backward-compatible migrations
-  before the code that needs them, upload every asset and chunk before the entry document that names them, and
-  publish the entry document last.
-- Record each step's completion time, the moment the entry document changed, and confirmation that the
-  previous build's assets are still in place.
-- Continue only while the previous and the new entry document can both be served correctly at the same time;
-  stop and reverse when a migration is not backward compatible with the currently serving build, because the
-  two versions overlap throughout any rollout.
-
-#### 3.2 Advance the rollout under a stop condition
-
-- Take the ordered deploy, the Step 1.2 stop conditions, and the signals `web-observability` emits.
-- Advance in the smallest stage the target supports and hold each stage long enough for error, latency, and
+- Take the ordered deployment, recorded stop conditions, exact rollout authority, and the signals
+  `web-observability` emits.
+- Advance in the smallest stage the target supports, hold each stage long enough for error, latency, and
   outcome signals to move, and never advance while a stop condition is met.
-- Record each stage boundary, its traffic share, the signals observed during the hold, and the decision taken
-  at the end of it.
-- Advance only on observed signals; reverse on a met stop condition without waiting for a diagnosis, then
+- Record each stage boundary, traffic share, signals observed during the hold, and the advance, stop, or
+  reverse decision taken at its end.
+- Advance only on observed signals and exact authority; reverse immediately on a met stop condition, then
   diagnose from the restored state.
 
-### Phase 4 — Verify, Reverse, or Stop
+### Phase 3 — Verify, Reverse, or Stop
 
-#### 4.1 Verify the live release from the production URL
+#### 3.1 Verify from the production URL
 
-- Take the deployed release and the production URL people actually use, not a preview alias, an origin bypass,
-  or a staging host.
-- Fetch the entry document and confirm the served build identity, fetch at least one hashed asset and one
-  lazily loaded chunk, exercise one authoritative round trip end to end, and read the cache directives as
-  served.
-- Record the served build identity, the observed response headers, the exercised path with its authoritative
-  effect, and every difference from the frozen artifact.
-- Ask `web-testing` for suite evidence and `web-platform` for a disputed browser fact; return any mismatch
-  between the frozen artifact and the served bytes to Step 3.1 before reporting the deployment complete.
-- When this deployment is evaluated, the [evaluation checklist](checklists.md) and every checklist owned by
-  an active `web` sibling supply the applicable conditions; the general Evaluation operation resolves them
-  and issues any verdict.
+- Take the deployed release and the production URL people actually use, not a preview alias, origin bypass,
+  or staging host.
+- Fetch the entry document and match its served build identity to the accepted release identity; fetch at
+  least one hashed asset and one lazily loaded chunk; exercise one server-owned round trip; and
+  read asset names and cache directives as served for every release-defined file class and the entry document.
+- Record the served identity, response headers, live-served asset names and cache directives, confirmed
+  round-trip result, and every difference from the accepted artifact.
+- Ask `web-testing` for suite evidence and `web-platform` for a disputed browser fact; return a served-byte
+  mismatch to Step 2.1 when publication order caused it and to `web-release` when the accepted artifact or
+  manifest itself is inconsistent.
 
-#### 4.2 Reverse, or stop at the authority boundary
+#### 3.2 Reverse or stop at the authority boundary
 
-- Take the verification evidence, the reverse path, and the remaining authority state.
-- Reverse immediately on failed verification or a met stop condition by restoring the previous entry document
-  and confirming its assets are still served, then re-verify the restored release through Step 4.1 rather than
-  assuming the reverse succeeded.
-- Record the deployed or reversed state, the served build identity, the verification and reverse evidence,
-  retained artifacts and their retention window, every irreversible data change, and the remaining risk.
-- Report deployment, live verification, and observed health as separate claims to `web-feature` or the
-  requesting caller; when a remaining action needs credentials or authority that was not granted, stop with
-  everything preserved and name the exact blocked action and the authority it requires.
+- Take the production-URL verification, stop conditions, reverse path, and remaining authority state.
+- Reverse immediately on failed verification or a met stop condition by restoring the prior entry document,
+  confirming its assets remain served, and re-running Step 3.1 against the restored release before diagnosis.
+- Record the deployed or reversed state, served build identity, deployment order and stages, verification and
+  reverse evidence, retained artifacts and window, every irreversible data change, authority state, and
+  remaining risk.
+- When this deployment is evaluated, use the [evaluation checklist](checklists.md) and every checklist owned
+  by an active `web` sibling; the general Evaluation operation resolves the applicable conditions and issues
+  the verdict.
+- Report deployment, live verification, and observed health as separate claims to `web-development` or the
+  requesting caller. When the next action lacks exact authority, stop with everything preserved and name the
+  first blocked action and the authority it requires; hand any ongoing-service need to its caller rather than
+  claiming indefinite support.
 
 ## References
 

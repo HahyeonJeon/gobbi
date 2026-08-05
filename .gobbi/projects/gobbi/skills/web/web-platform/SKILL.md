@@ -7,12 +7,13 @@ skill-type: tool
 
 # Web Platform
 
-Use this manual to answer what a web standard defines, what a target browser and execution context do, and
+Use this tool skill to answer what a web standard defines, what a target browser and execution context do, and
 what an observation can establish. It covers lifecycle, navigation, storage, networking, origins,
 compatibility, accessibility evidence, performance evidence, and diagnosis.
 
-It supplies platform facts to feature, frontend, backend, architecture, security, testing, HTML, CSS,
-language, and framework owners. It does not choose product behavior, controls, tests, or architecture.
+It supplies platform facts to `web-app-lifecycle`, development, frontend, backend, architecture, security,
+testing, HTML, CSS, language, and framework owners. It does not choose product behavior, controls, tests, or
+architecture; `web-app-lifecycle` chooses the user-visible browser and PWA state contract.
 
 ## Principles
 
@@ -31,7 +32,7 @@ do.
 
 ### Measure the claim at the layer that owns it
 
-DOM, accessibility tree, pixels, network, timings, storage, console, server effects, and user outcomes are
+DOM, accessibility tree, pixels, network, timings, storage, console, server and provider records, and user outcomes are
 not interchangeable evidence.
 
 ## Rules
@@ -52,7 +53,7 @@ not interchangeable evidence.
   screenshot, emulator label, single trace, or passing happy path alone.** State the proven claim and every
   limitation, and route evidence design to `web-testing`.
 
-## Manual
+## Tool Procedure
 
 ### Evidence and Compatibility
 
@@ -75,18 +76,18 @@ Match evidence to the claim:
 | Rendered frames | Pixels at named states, sizes, and settings |
 | Live interaction | Focus, input, history, timing, interruption, and recovery behavior |
 | Network, storage, and performance traces | Requests, caches, lifecycle, scheduling, and measured timings |
-| Authoritative server or provider records | Effects outside the browser |
+| Server or provider records | Results outside the browser |
 | Field telemetry | Observed distributions in the instrumented population |
 
 ### Execution Context and Lifecycle
 
 Identify whether code runs in a document window, dedicated or shared worker, service worker, worklet, server,
 edge runtime, or build step. Available APIs, DOM access, credentials, lifetime, scheduling, and diagnostic
-surfaces differ; state every prerequisite, permission, compatibility limit, and expected failure.
+interfaces differ; state every prerequisite, permission, compatibility limit, and expected failure.
 
 Assume asynchronous work can finish after state changes and that a page can be hidden, frozen, restored,
 navigated, discarded, or terminated. Guard late results, cancellation, cleanup, duplicate registration,
-re-entry, and stale closures or references; do not depend on unload-time work for a critical effect.
+re-entry, and stale closures or references; do not depend on unload-time work for a critical operation.
 
 Promise jobs, tasks, observer callbacks, animation frames, layout, paint, network completion, and user events
 have distinct scheduling behavior. Use traces or a minimal reproduction when their causal order matters.
@@ -95,15 +96,18 @@ have distinct scheduling behavior. Use traces or a minimal reproduction when the
 
 Direct URLs, links, forms, redirects, history, fragments, refresh, restoration, deep links, duplicate tabs,
 provider returns, expired sessions, and identity changes may produce distinct document and history states.
-Observe URL, focus, title, scroll, and authoritative application state at the layer that owns each fact.
+Observe URL, focus, title, scroll, and source-of-truth application state at the layer that owns each fact.
 
 Treat in-memory state as disposable. For storage, define origin and user partitioning, capacity and eviction,
 expiry, schema and version migration, logout and identity-switch cleanup, multi-tab coordination, privacy,
 and recovery from unavailable or corrupt data.
 
 Service workers add installation, activation, control, update, cache-version, fallback, mixed-client, stale,
-queued-effect, replay, conflict, and removal states. A cached shell does not establish that protected data or
+queued-action, replay, conflict, and removal states. A cached shell does not establish that protected data or
 mutations are current.
+
+Report the supported state set, unavailable capabilities, and version-sensitive observations to
+`web-app-lifecycle`; keep the resulting product behavior and recovery choice with that preference.
 
 ### Network and Origin Security
 
@@ -116,8 +120,8 @@ secure contexts limit capabilities or exposure. They do not replace server authe
 validation, CSRF defenses, abuse controls, or output handling.
 
 Abort, timeout, offline transition, retry, duplicate submission, partial response, streaming, redirect loop,
-stale cache, and late result are distinct failure facts. Security and backend owners decide the control and
-effect policy.
+stale cache, and late result are distinct failure facts. Security and backend owners decide the control policy and
+the rules for accepting a returned result or applying a state change or provider action.
 
 ### Accessibility, Performance, and Diagnostics
 
@@ -142,7 +146,7 @@ add distinct unavailability and recovery states.
 
 Interpret invalid or stale state, interruption, history traversal, refresh, lost connectivity, quota denial,
 backgrounding, cancellation, concurrency, retry, and late completion through minimal reproductions and owner
-diagnostics. A degraded interface may narrow capability but cannot establish an effect it did not verify.
+diagnostics. A degraded interface may narrow capability but cannot establish a result it did not verify.
 
 ## References
 

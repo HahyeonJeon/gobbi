@@ -1,169 +1,150 @@
 ---
 name: evaluation
-description: "MUST load when finished work needs an independent, evidence-based judgment. Evaluation is an operation skill for a fresh, independent review through checklists, tests, seven perspectives, and Overall, producing problems, optional improvements, strengths, and an evidence-derived verdict."
+description: "MUST load when finished work needs an independent judgment. Evaluation produces one read-only, evidence-based judgment of an exact frozen subject."
 allowed-tools: Read, Grep, Glob, Bash
 skill-type: operation
 ---
 
 # Evaluation
 
-An independent evaluator uses this skill when a design, plan, implementation, document, interface, process,
-or other work needs an evidence-based judgment. Evaluation applies to the work itself and the outcomes it
-returned.
+An independent evaluator uses this operation to produce one reproducible, evidence-based judgment of an exact frozen subject.
 
-The evaluator understands the work, runs applicable pre-built checklists and tests, and reviews the whole work
-through Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall. The result separates
-problems, optional improvements, strengths, and an evidence-derived verdict.
+Evaluation inspects actual work before prepared checklists or tests. They are context-appropriate baselines, never a coverage ceiling.
 
-Evaluation reports the judgment without changing the work or deciding how the owner responds.
+Evaluation is read-only. It keeps judgment outside the subject, checklists, tests, criteria, dispositions, and workflow state.
 
 ## Principles
 
-### Evaluate critically
+### Inspect actual outcomes first
 
-Evaluate to discover what prevents, weakens, or could improve the intended outcome, not to confirm the
-creator's conclusion. Challenge claims, assumptions, evidence, and apparent passes, but report only supported
-problems and optional improvements; be skeptical and exact, not hostile.
+Actual work and observable state define the boundary; prepared coverage cannot erase a scenario or gap exposed by evidence.
 
-### Use an independent evaluator
+### Keep judgment independent
 
-Independent evaluation requires an evaluator who did not design, author, or implement the work and has no
-stake in defending it. Self-checks may support the evidence but cannot supply the independent verdict; disclose
-any conflict or limitation that could bias the judgment.
+The evaluator has no producer role or stake in defending the subject. Conflicts, limits, uncertainty, and missing evidence stay visible.
 
-### Find problems and optional improvements
+### Use broad prompts without fixed traversal
 
-A problem is an unmet outcome, requirement, or acceptance condition; an optional improvement is an
-evidence-backed way to make acceptable work better. Keep them separate: never soften a problem into an
-optional improvement or manufacture an improvement without evidence.
+Development and product lifecycles plus relevant perspectives reveal boundaries, but never define required traversal or records.
 
-### Find the root cause
+### Support only the causes the evidence reaches
 
-Trace each problem from expectation and observation to impact and cause, testing plausible alternatives before
-naming the root cause. If evidence remains incomplete, record the leading hypothesis, uncertainty, and missing
-evidence, and recommend prevention instead of symptom masking.
+Tie each Problem to an expectation, observation, impact, and supported cause or hypothesis. State material uncertainty and confidence.
 
 ## Rules
 
-- **MUST evaluate as an evaluator who did not design, author, or implement the work.** A self-check may support
-  the evidence but never supplies the independent verdict, and any conflict or limitation that could bias the
-  judgment is disclosed.
-- **MUST support every reported problem, optional improvement, and strength with inspected evidence.** Inspect
-  the actual artifacts and observable state rather than the work's summary or completion claim.
-- **MUST run every applicable checklist row and test and review the seven perspectives and Overall.** Record
-  each result with its supporting evidence and justify every not-applicable result.
-- **NEVER soften a problem into an optional improvement or record an improvement without evidence.** A problem
-  is an unmet outcome, requirement, or acceptance condition and stays reported as one.
-- **MUST derive the verdict only from completed evidence and the acceptance criteria supplied with the work.**
-  Issue no verdict while a required result, material evidence gap, causal uncertainty, or coverage gap remains
-  unresolved.
-- **NEVER change the work, implement a correction, alter the criteria, or decide how the owner responds.**
-  Repeat all three phases when the work changes materially, because a prior result is history, not proof.
+- **MUST freeze the exact subject and establish independence before judging.** Disclose material conflicts, limits, and missing capabilities.
+- **MUST inspect actual work and intended outcomes before prepared coverage.** Discover context-driven
+  scenarios from evidence across relevant development and product lifecycle positions.
+- **MUST keep context-appropriate prepared checklists unchanged.** Never migrate, translate, normalize, repair, or rewrite an input.
+- **MUST inspect applicable prepared conditions and tests, then extend beyond them when evidence exposes a
+  gap.** Justify exclusions, uncertainty, sampling, and evidence limits.
+- **MUST keep Problems, Optional Improvements, and Strengths semantically separate and evidenced.** Causes and
+  confidence go only as far as the evidence supports.
+- **NEVER issue a verdict when material evidence is insufficient or caller-supplied decision criteria are
+  absent.** Name the gaps, and derive a verdict only from the criteria the caller supplied.
 
 ## Procedure
 
-### Phase 1 — Understand the Work and Its Outcomes
+### Phase 1 — Freeze and Inspect the Subject
 
-#### 1.1 Understand the work
+#### 1.1 Establish the evaluation boundary
 
-- Read the complete work, its supporting material, relevant history, known risks, prior failures, and supplied
-  evidence.
-- Understand its purpose, intended outcome, scope, requirements, decisions, and constraints.
-- Map its actors, inputs, outputs, boundaries, structure, responsibilities, interfaces, dependencies,
-  information or data flow, state, failure, recovery, compatibility, and operational effects.
-- Record any material uncertainty that limits the evaluation, then use this understanding to inspect the
-  returned outcomes.
+- Confirm that the evaluator did not design, author, or implement the subject. Disclose any relationship or
+  interest that could affect independent judgment.
+- Freeze the exact subject identity and version or content hash, actual artifacts and observable state,
+  intended outcomes, scope, governing inputs, known risks, and prior failures.
+- Bind supplied checklist sources, tests, evidence, and caller criteria to their exact identities when
+  available.
+- Establish a safe read-only method. Stop when independence, stable identity, access, or the read-only
+  boundary cannot support a responsible judgment.
 
-#### 1.2 Understand the returned outcomes
+#### 1.2 Inspect actual work and intended outcomes
 
-- Identify what the work returned: deliverables, changes, decisions, reports, test results, evidence, side
-  effects, and completion claims.
-- Inspect actual artifacts and observable state, not only the summary.
-- Separate produced outcomes from claims, missing results, and deferred work. Trace each outcome to the work
-  that produced it and the evidence that supports it.
-- Carry the traced outcomes and any gaps into Phase 2.
+- Examine produced artifacts and observable behavior before summaries, completion claims, prepared
+  conditions, or test reports can shape the conclusion.
+- Distinguish delivered outcomes from claims, deferred work, missing results, and unavailable state.
+- Discover relevant scenarios across the development lifecycle and product lifecycle. Consider creator or
+  developer and consumer or user positions when they materially change expectations or evidence.
+- Consider ordinary success, boundaries and transitions, failure and recovery, and deficient-but-functioning
+  outcomes such as inconvenience, unintuitive behavior, confusion, inconsistency, or poor appearance.
+- Consider governance, misuse, abuse, or cosmetic compliance when relevant to the subject. Treat these as
+  context prompts, not fixed classes or required traversal.
+- Use relevant perspectives only when they help challenge an evaluation boundary. Do not name a fixed set or
+  record their use.
 
-### Phase 2 — Evaluate Checklists, Tests, and Perspectives
+### Phase 2 — Use and Challenge Prepared Coverage
 
-#### 2.1 Evaluate checklists and tests
+#### 2.1 Bind prepared inputs without changing them
 
-- Collect the applicable pre-built checklists and tests supplied by the work, governing guidance and standards,
-  prior failures, and accepted project practices.
-- Run every applicable checklist row and test against the work and its returned outcomes.
-- Record each result with supporting evidence. Analyze failures and distinguish problems from optional
-  improvements and strengths.
-- Carry the results and unresolved evidence gaps into Step 2.2.
+- Accept each prepared checklist in the form appropriate to its context. Bind it to the frozen subject and
+  preserve its wording, hierarchy, identifiers, and unchecked source state.
+- Do not classify, migrate, translate, normalize, repair, reorder, or rewrite prepared content. Report a
+  material ambiguity or mismatch as an evidence gap.
+- Treat prepared conditions and tests as baseline inputs, not a coverage ceiling or a substitute for
+  inspecting actual work.
 
-#### 2.2 Review each perspective
+#### 2.2 Inspect conditions, tests, and evidence
 
-- Review the complete work through each perspective in this order:
+- Inspect every applicable prepared condition and test against actual state. Keep answers, observations,
+  limitations, and results in evaluation-owned notes or output only.
+- Record enough evidence and reproduction detail for another evaluator to understand each material judgment.
+- Justify every exclusion from inspected context. State uncertainty when access, sampling, causality,
+  freshness, or evidence quality limits an answer.
+- Preserve the source/judgment boundary: checklist assertions remain source-owned, while observations and
+  judgments remain evaluation-owned.
 
-  | Perspective | Inspect |
-  | --- | --- |
-  | **Project** | The outcome, scope, requirements, decisions, obligations, deferred work, and completion. |
-  | **Structure** | Decomposition, ownership, interfaces, dependencies, information, data, state, schemas, test seams, and maintainability. |
-  | **Performance** | Latency, throughput, capacity, reliability, external calls, batching, timeouts, retries, caching, resources, recurring cost, and measurement. |
-  | **Aesthetics** | Clarity, concision, naming, presentation, conventions, hierarchy, placeholders, formatting, comments, and reviewability. |
-  | **Usage** | Real user or consumer paths, interfaces, instructions, errors, preconditions, next actions, accessibility, locale, input methods, assistive use, and recovery. |
-  | **Consistency** | Agreement among scope, design, obligations, tasks, behavior, implementation, tests, types, documentation, examples, schemas, validators, manifests, migrations, runtime references, commits, evidence, status, and handoff claims. |
-  | **Risk** | Security, authorization, input trust, privacy, retention, safety, destructive actions, concurrency, rollback, dependencies, licenses, publication authority, sensitive data, compliance, cost, blast radius, and recovery. |
-  | **Overall — General Review** | The complete work or implementation result without limiting the review to one perspective. Find material problems, optional improvements, strengths, and interactions the seven perspectives missed. |
+#### 2.3 Extend the investigation when needed
 
-- Inspect the actual work and evidence from each perspective.
-- Look for missed actors, states, dependencies, assumptions, harms, failures, incompatibilities, regressions,
-  and optional improvements.
-- Record evidence-backed problems, optional improvements, and strengths for each perspective.
-- Carry the completed perspective records into Phase 3.
+- Compare prepared coverage with the context-driven scenarios found from the actual subject.
+- Investigate material gaps exposed by behavior, boundaries, transitions, deficient quality, governing
+  constraints, failures, recovery, or affected positions.
+- Add new observations and evidence needs to the evaluation, not to the prepared source.
+- Return to Phase 1 when new evidence changes the frozen identity, intended outcome, scope, or material
+  context.
 
-### Phase 3 — Organize and Validate the Evaluation Results
+### Phase 3 — Reconcile Evidence and Form Results
 
-#### 3.1 Reconcile the evidence
+#### 3.1 Reconcile evidence and gaps
 
-- Reconcile checklist, test, and perspective results with their evidence, problems, optional improvements,
-  strengths, limitations, and evidence gaps.
-- Link every failed check or test to a problem and justify every not-applicable result.
-- Keep problems, optional improvements, and strengths separate.
-- Return to Phase 2 when a material result or evidence gap cannot be reconciled.
+- Reconcile actual observations, prepared expectations, tests, governing inputs, reproduction evidence,
+  exclusions, limitations, and uncertainty.
+- Test conflicting explanations against actual state when the read-only boundary permits it. Keep alternatives
+  as hypotheses when evidence cannot distinguish them.
+- Name each material evidence gap, its effect on judgment, and the evidence or access needed to resolve it.
+- Stop without a verdict when evidence is insufficient for a material judgment. Return to the earliest
+  affected step if recovery is possible without changing the frozen subject.
 
-#### 3.2 Challenge the evaluation
+#### 3.2 Separate the result meanings
 
-- Check for false positives and false negatives, proxy evidence, cosmetic compliance, unsupported causes, weak
-  sampling, contradictions, and missing interactions.
-- Keep problems separate when their causes differ. Consolidate only the same observed condition with the same
-  supported cause, and preserve its provenance.
-- Return to the earliest affected step when this challenge exposes missing or contradictory evidence, coverage,
-  or causal reasoning.
+- Record a Problem only for an unmet outcome, requirement, or caller criterion. State the expectation,
+  inspected observation, impact, evidence, supported cause or hypothesis, uncertainty, and confidence.
+- Record an Optional Improvement only when the current condition is acceptable and evidence supports a useful
+  benefit. Keep it out of verdict derivation.
+- Record a Strength only for a verified beneficial outcome. State its evidence and any condition later work
+  should preserve without using it to cancel a Problem.
+- Define each result once and reference it elsewhere only when the caller needs traceability.
 
-#### 3.3 Derive the verdict
+### Phase 4 — Derive and Hand Off the Judgment
 
-- Checklist completion proves coverage closure, not acceptance.
-- Do not issue a verdict while a required result, material evidence gap, causal uncertainty, or coverage gap
-  remains unresolved.
-- Apply only the acceptance criteria, thresholds, and aggregation rules provided with the work or evaluation
-  request. Derive each perspective result, Overall, and the final verdict from completed evidence.
-- Keep every problem visible, and never lower a verdict for an optional improvement. If the derivation is
-  incomplete, contradictory, or irreproducible, return to Step 3.1 instead of issuing a verdict.
+#### 4.1 Apply caller-supplied decision criteria
 
-#### 3.4 Organize and hand off
+- Derive a verdict only when the caller supplied applicable criteria, thresholds, and any aggregation rule.
+- Show how evidence and relevant Problems satisfy those criteria. Do not invent default thresholds or allow
+  Optional Improvements or Strengths to offset a criterion.
+- When criteria are absent or incomplete, return the evidence-based results without a verdict and name the
+  missing decision input.
 
-- Organize the result with:
-  - Final verdict and concise outcome summary.
-  - Problems.
-  - Optional improvements.
-  - Strengths and what later work must preserve.
-  - Results for Project, Structure, Performance, Aesthetics, Usage, Consistency, Risk, and Overall.
-  - Completed checklist scenarios and rows, and tests.
-  - Evaluation context, independence, criteria, methods, evidence, limitations, uncertainties, derivation, and
-    reproduction details.
-  - Corrective directions, reopen conditions, and the handoff boundary.
-- Make the result understandable without private discussion context. Whoever receives the result may wrap it
-  in a required schema or storage format without changing the evaluation.
-- Hand off the result without editing the work, implementing a correction, changing the criteria, or deciding
-  how the owner responds.
-- If the work changes materially, repeat all three phases for the changed work and its returned outcomes. Prior
-  results remain history, not proof.
+#### 4.2 Hand off without mutation
+
+- Let the caller own report order, formatting, section labels, acceptance, disposition, and workflow routing.
+- Include the frozen subject, independence statement, method, evidence, reproduction details, gaps,
+  uncertainty, results, and any criteria-derived verdict needed to understand the judgment.
+- Do not change the subject, checklists, tests, criteria, findings, dispositions, acceptance state, or workflow
+  state.
+- If a frozen input or observable state changes materially, mark affected judgment historical and restart at
+  the earliest affected step with the changed premise.
 
 ## References
 
-- [Checklist](checklist/SKILL.md) owns perspective-led scenario and checklist-source construction, review, and
-  improvement.
+- [Checklist](checklist/SKILL.md) owns authoring reusable unchecked evaluation sources.

@@ -1,5 +1,10 @@
 # {Title} - Requirements
 
+> **Document role:** Optional supporting snapshot<br>
+> **Purpose:** Preserve the requirements state the caller requested during Ideation.<br>
+> **Authority:** Subordinate to the current `ideation.md`; never use this snapshot to override a later
+> correction or decision in the authoritative result.
+
 ## Contents
 
 - [Goal](#goal)
