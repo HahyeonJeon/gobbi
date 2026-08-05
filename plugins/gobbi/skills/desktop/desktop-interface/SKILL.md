@@ -22,11 +22,11 @@ This skill decides whether an interaction or motion is warranted and what state,
 must communicate. It does not own mechanics: event, pointer, keyboard, focus, drag, gesture, widget-pattern,
 and script-driven interaction or motion mechanics route to
 [`web-interaction`](../../web/web-interaction/SKILL.md), while declarative motion mechanics route to
-[`css-motion`](../../css/css-motion/SKILL.md). Product structure and runtime outcomes remain with
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md). Product structure and runtime outcomes remain with
 [`desktop-architecture`](../desktop-architecture/SKILL.md), release judgment with
 [`desktop-release`](../desktop-release/SKILL.md), Electron mechanisms with the
 [`electron`](../../electron/SKILL.md) family, current operating-system facts with the matching desktop OS
-owner, and other renderer policy with its web, HTML, CSS, React, or TypeScript owner. Rules define the valid
+owner, and other renderer policy with its web, HTML/CSS, React, or TypeScript owner. Rules define the valid
 choices below; Preferences recommend defaults inside that boundary, and Rules win every conflict.
 
 ## Principles
@@ -83,7 +83,7 @@ it is locked.
   paths—and be legible before action, with consequence, reversibility, and recovery at the decision point;
   each applicable interaction or motion judgment MUST state whether it is warranted and what state, location,
   or causality it communicates, routing event, pointer, keyboard, focus, drag, gesture, widget-pattern, and
-  script-driven mechanics to `web-interaction` and declarative motion mechanics to `css-motion`.
+  script-driven mechanics to `web-interaction` and declarative motion mechanics to `html-css-motion`.
 - **MUST define harm-aware success measures and keep their decisions reopenable after release.** Name each
   measure's intended and harmful interpretation, its guardrail, and the evidence that reopens the design;
   every post-release review uses answerable signals, bounded monitoring, and a named owner and consumer, and
@@ -140,7 +140,7 @@ floor the renderer's presentation owner defines.
 **PREFER** a transition when it makes a change of state, location, or causality legible, and no motion
 otherwise. This skill decides only whether motion is warranted and what it must communicate; the safety floor
 stays with the applicable renderer presentation owner, and declarative mechanics remain with
-[`css-motion`](../../css/css-motion/SKILL.md).
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md).
 
 ## References
 

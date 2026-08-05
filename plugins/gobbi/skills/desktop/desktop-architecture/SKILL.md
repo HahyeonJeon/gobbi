@@ -53,10 +53,10 @@ activation choices remain explicit even when a platform event or Electron mechan
   define every window's purpose, creation authority, restore, close, and focus behavior, minimum state that
   is both safe and useful, cleanup ownership, and later-created failure behavior.** A technical creation path
   cannot stand in for the product window model.
-- **MUST assign every application-state item exactly one authoritative owner and one durable, session, or
-  derived lifetime, and assign Activation requests exactly one authoritative application instance and state
-  owner.** No renderer, later window, second instance, failed request, or recovery attempt may create another
-  authority for the same state.
+- **MUST assign every application-state item exactly one authoritative owner—a process or remote service the
+  application depends on—and one durable, session, or derived lifetime, and assign Activation requests
+  exactly one authoritative application instance and state owner.** No renderer, later window, second
+  instance, failed request, or recovery attempt may create another authority for the same state.
 - **MUST define an accepted create, reveal, focus, navigate, handle, no-op, or reject outcome for each
   applicable Activation request while already running with windows, running with no windows, in
   background/tray mode, or launching because of activation, including second-instance, file, protocol, and
@@ -92,10 +92,10 @@ record that simultaneous-use evidence beside the window decision.
 
 ### Prefer one shared authority for state several contexts can see
 
-**PREFER** shared state to be held by one accepted authority in the main process or a bounded utility process,
-with renderers treating their copies as views of that state. Depart only for state genuinely local to one
-window, such as scroll position, a transient selection, or in-progress form input, and route the exact Electron
-process placement through `electron-design`.
+**PREFER** shared state to be held by one accepted authority in the main process, a bounded utility process,
+or a remote service the application depends on, with renderers treating their copies as views of that state.
+Depart only for state genuinely local to one window, such as scroll position, a transient selection, or
+in-progress form input, and route any Electron process placement through `electron-design`.
 
 ### Prefer an explicit location model before a routing library
 

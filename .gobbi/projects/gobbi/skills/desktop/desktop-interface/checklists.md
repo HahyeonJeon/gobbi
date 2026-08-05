@@ -16,7 +16,7 @@ evidence is required only for a choice that matches one of the Rule's named trig
 This source judges whether an interaction or motion is warranted and what state, location, or causality it
 communicates. Event, pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics
 belong to [`web-interaction`](../../web/web-interaction/SKILL.md); declarative motion mechanics belong to
-[`css-motion`](../../css/css-motion/SKILL.md). Other product, implementation, Electron, renderer, release,
+[`html-css-motion`](../../html-css/html-css-motion/SKILL.md). Other product, implementation, Electron, renderer, release,
 and operating-system questions remain with their named owners.
 
 This file defines coverage only. The parent [Evaluation](../../evaluation/SKILL.md) operation selects and
@@ -332,4 +332,4 @@ question to its exact owner; an overbroad claim or locally invented mechanism po
 #### Checklist
 
 - [ ] DTINTF-CK-OVERALL-02-01 — The design's claim is no broader than the current activity results and judgments it actually settles.
-- [ ] DTINTF-CK-OVERALL-02-02 — Adjacent questions are routed without copied policy: product structure and runtime outcomes to `desktop-architecture`; ordered lifecycle work to `desktop-development`; release judgment to `desktop-release`; Electron mechanisms to the `electron` family; current operating-system facts to `desktop-linux`, `desktop-macos`, or `desktop-windows`; other renderer policy to its web, HTML, CSS, React, or TypeScript owner; event, pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics to `web-interaction`; and declarative motion mechanics to `css-motion`.
+- [ ] DTINTF-CK-OVERALL-02-02 — Adjacent questions are routed without copied policy: product structure and runtime outcomes to `desktop-architecture`; ordered lifecycle work to `desktop-development`; release judgment to `desktop-release`; Electron mechanisms to the `electron` family; current operating-system facts to `desktop-linux`, `desktop-macos`, or `desktop-windows`; other renderer policy to its web, HTML/CSS, React, or TypeScript owner; event, pointer, keyboard, focus, drag, gesture, widget-pattern, and script-driven mechanics to `web-interaction`; and declarative motion mechanics to `html-css-motion`.

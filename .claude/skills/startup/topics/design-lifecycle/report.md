@@ -1,0 +1,1 @@
+../../../../../.gobbi/projects/gobbi/skills/startup/topics/design-lifecycle/report.md

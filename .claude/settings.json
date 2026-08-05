@@ -6,7 +6,13 @@
   "permissions": {
     "allow": [
       "Skill(gobbi)",
+      "Skill(gobbi:agent-teams)",
+      "Skill(gobbi:partner)",
+      "Skill(cowork)",
       "Skill(workflow)",
+      "Skill(workflow:phase-1)",
+      "Skill(workflow:phase-2)",
+      "Skill(workflow:phase-3)",
       "Skill(git)",
       "Skill(principles)",
       "Skill(delegation)",
@@ -17,7 +23,6 @@
       "Skill(startup)",
       "Skill(memory)",
       "Skill(planning)",
-      "Skill(record)",
       "Skill(study)",
       "Skill(wrap-up)",
       "Agent(manager)",

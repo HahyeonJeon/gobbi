@@ -72,7 +72,7 @@ The pair is mirrored to the two runtimes at DIFFERENT file granularity — Claud
 |---|---|---|
 | `.claude/agents/{role}.md` | per-role symlink → `../../.gobbi/projects/gobbi/agents/{role}.md` (`.md` only) | **HAND-CREATED** |
 | `.codex/agents/{role}.toml` | per-role symlink → `../../.gobbi/projects/gobbi/agents/{role}.toml` (`.toml` only) | **HAND-CREATED** |
-| `plugins/gobbi/agents` | ONE whole-dir symlink for ALL roles → `../../.gobbi/projects/gobbi/agents` | **SCRIPT-OWNED** |
+| `plugins/gobbi/agents/` | generated real directory for ALL roles, byte-equal to canonical agents | **SCRIPT-OWNED** |
 
 The canonical `.md` is the single source of truth; the metadata note at the top of every
 `.md` states this in its own words ("In Codex, `.codex/agents/{role}.toml` controls runtime
@@ -80,15 +80,16 @@ settings; this Markdown body is still the canonical role contract").
 
 ### P2 — Agent `.md` frontmatter + section contract
 
-An agent `.md` carries exactly four frontmatter keys, in this order (verified — all 5 role
-`.md` heads):
+An agent `.md` carries four required frontmatter keys in this order. It may add Claude Code's optional
+`effort` key after `model` when the role must override the session effort:
 
 ```yaml
 ---
 name: {role}
 description: {one line — what the role does and its defining constraint}
-tools: {tool list, or "*" for the manager}
-model: opus | sonnet
+tools: {explicit role-sized tool list}
+model: opus | sonnet | haiku | inherit
+effort: low | medium | high | xhigh | max  # optional; model-dependent
 ---
 ```
 
@@ -100,19 +101,21 @@ Using `allowed-tools` in an agent `.md`, or `tools` in a `SKILL.md`, is a frontm
 - **`name`** — MUST equal the role name (and the `{role}` in both filenames).
 - **`description`** — one line; states the role and its defining constraint (e.g. executor:
   "Never expands scope.").
-- **`tools`** — the role's tool surface, sized to the role's job. A genuinely read-only role
-  (evaluator: `Read, Grep, Glob, Bash`) lists no write tools; an implementer (executor) adds
-  `Write, Edit`; the manager uses `"*"`. Size it from the owner — e.g. the assistant carries
-  the widest non-manager surface (`Read, Grep, Glob, Bash, Write, Edit, WebSearch, WebFetch`)
-  because it writes the session memory tree during RECORD and project memory during Wrap-up WORK, not
-  because it is read-only.
-- **`model`** — `opus` for manager / leader / executor / evaluator; `sonnet` for the
-  lightweight assistant. Each role's own `.md` frontmatter is the owner of its model; read the five heads
-  to verify. No document holds a combined role table.
+- **`tools`** — an explicit allowlist sized to the role's job. Every Gobbi role lists `Skill` because every
+  role contract loads skills. Research and implementation roles list the current discovery, web, shell, and
+  code-navigation tools their work needs; only roles that write list file-write tools; only the manager lists
+  assignment and user-question tools. Claude Code removes tools that the active context cannot use, and an
+  explicit list does not grant unknown consumer-specific MCP tools. Read each role head for its exact list
+  and verify the behavior against the current
+  [Claude Code subagent reference](https://code.claude.com/docs/en/sub-agents).
+- **`model`** — the Claude Code model or inheritance policy for this role. Each role's own `.md` frontmatter
+  is the owner; read the five heads to verify. No document holds a combined role table.
+- **`effort`** — optional Claude Code reasoning effort. When omitted, the role inherits the session effort.
+  When present, the selected model must support the value. Read the role head rather than inferring it from
+  another role or from the Codex wrapper.
 
-Codex model and effort are NOT agent `.md` frontmatter keys. The `.md` frontmatter stays
-exactly four keys; the role's `.toml` wrapper carries `model` and
-`model_reasoning_effort`.
+Claude Code's `model` and optional `effort` metadata do not configure Codex. The role's `.toml` wrapper
+separately carries Codex `model` and `model_reasoning_effort`.
 
 **Section contract** (the order in `executor.md`; role-shaped — a role adds or varies a
 section where its work demands, e.g. evaluator's lifecycle is Study/Assess/Report and it omits
@@ -147,8 +150,8 @@ baseline, not a closed set:
 ```toml
 name = "{role}"
 description = "{one line — same role summary as the .md}"
-model = "gpt-5.6-sol"
-model_reasoning_effort = "xhigh"
+model = "{role-owned Codex model}"
+model_reasoning_effort = "{role-owned supported effort}"
 developer_instructions = '''
 You are the Gobbi {role} role for this repository.
 
@@ -166,8 +169,10 @@ evidence, commit in-boundary but NEVER push.}
 '''
 ```
 
-The `model` and `model_reasoning_effort` values follow Gobbi's current Codex role policy:
-every role uses `gpt-5.6-sol` with `xhigh`. The
+The role wrapper owns its current `model` and `model_reasoning_effort`; read it and verify both values against
+the current [Codex subagent reference](https://developers.openai.com/codex/multi-agent) and
+[configuration reference](https://developers.openai.com/codex/config-reference) instead of copying another
+role. The
 `developer_instructions` triple-quoted block always (a) sends Codex to read `AGENTS.md`
 then the canonical `.md`, (b) hands the Gobbi root pair and every skill load to that `.md`'s
 `## Before You Start` section instead of naming a skill path itself, and
@@ -197,19 +202,18 @@ Any one of these missing leaves the role half-wired. A new role without an `Agen
 cannot be spawned in Claude Code. Its canonical role document must remain complete enough for the generic
 Delegation template and Workflow Step 1.3 to load it without a separate role overlay.
 
-**No central role registry exists.** Role name and Claude model live in the `.md` frontmatter, Codex model
-and reasoning effort in the `.toml`, and what the role owns and when it is spawned in the `.md` description
-and body. Do not look for a taxonomy table; no document holds one.
+**No central role registry exists.** Role name, Claude tools, model, and optional effort live in the `.md`
+frontmatter; Codex model and reasoning effort live in the `.toml`; and what the role owns and when it is
+spawned live in the `.md` description and body. Do not look for a taxonomy table; no document holds one.
 
 ### P5 — Wiring a role (HAND-OWNED mirrors; verify each)
 
-**The agent mirrors are HAND-CREATED — the sync script does NOT manage them.** Read
-`scripts/sync-plugin-package.sh` to confirm: it manages `.agents/skills/{name}`, the two
-`plugins/gobbi/{skills,agents}` whole-dir symlinks, and the per-file `.claude/skills` mirror.
-It verifies but does not create `.claude/agents/` or `.codex/agents/`. So running the sync script
-refreshes only the plugin's whole-dir `agents` symlink; the two per-role runtime mirrors are yours
-to create by hand. (This is the OPPOSITE of the skill case, where `.agents/skills/{name}` IS
-script-owned — do not assume the agent wiring parallels it.)
+**The agent runtime mirrors are HAND-CREATED — the sync script does NOT manage them.** Read
+`scripts/sync-plugin-package.sh` to confirm: normal sync manages `.agents/skills/{name}` and the per-file
+`.claude/skills` mirror, while `--materialize-package` owns the generated real
+`plugins/gobbi/{skills,agents}` directories. The script verifies but does not create `.claude/agents/` or
+`.codex/agents/`, so the two per-role runtime mirrors are yours to create by hand. (This is the OPPOSITE of
+the skill case, where `.agents/skills/{name}` IS script-owned — do not assume the agent wiring parallels it.)
 
 Wire a role in this order, each step with its verify command. From the worktree root:
 
@@ -225,12 +229,14 @@ Wire a role in this order, each step with its verify command. From the worktree 
    ln -s ../../.gobbi/projects/gobbi/agents/{role}.toml .codex/agents/{role}.toml
    ```
    Verify: `readlink -e .codex/agents/{role}.toml` resolves to the canonical `.toml`.
-4. **Refresh the plugin whole-dir `agents` symlink** (no per-role action; the new file is
-   picked up through the existing whole-dir symlink):
+4. **Regenerate the package components** (no per-role package action; the generator copies the complete
+   canonical agent tree into the generated real `plugins/gobbi/agents/` directory):
    ```bash
-   bash scripts/sync-plugin-package.sh && bash scripts/sync-plugin-package.sh --check; echo "exit=$?"
+   bash scripts/sync-plugin-package.sh --materialize-package
+   bash scripts/sync-plugin-package.sh --check
    ```
-   The `--check` must exit 0.
+   Both commands must exit 0. A missing installed path is a package failure, never an expected warning or
+   limitation.
 5. **For a NEW role only** — add the `Agent({role})` permission in `.claude/settings.json`. Agent Teams can
    use a permitted subagent definition as a teammate type; the active mode decides whether that role may be
    reused. Verify the permission and run the source-topology check.
@@ -251,22 +257,25 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
   with `name: {role}` matching both filenames.
 - **MUST use `tools` in the agent `.md`, NOT `allowed-tools`** — `allowed-tools` is the skill
   key; `tools` is the agent key. Mixing them is a frontmatter error.
-- **MUST carry exactly the four `.md` frontmatter keys** — `name`, `description`, `tools`,
-  `model` — and no others.
+- **MUST carry the four required `.md` frontmatter keys** — `name`, `description`, `tools`, and `model` — in
+  that order. Add only the optional `effort` key after `model` when the role overrides session effort.
+- **MUST list `Skill` in every role's explicit Claude tool allowlist.** Add only tools the role contract can
+  use, keep assignment and user-question tools manager-only, and verify every name against current Claude
+  Code references and the installed runtime.
 - **MUST follow the section contract** (P2), varying a section only where the role's work
   demands it; include `## Continuation discipline` only for continuable roles.
 - **MUST keep the `.toml` thin** — it points to the canonical `.md` and defers every skill load to
   that `.md`; behavioral substance lives in the `.md`, never duplicated in the `.toml`.
-- **MUST set the Codex wrapper policy exactly** — every role uses
-  `model = "gpt-5.6-sol"` and `model_reasoning_effort = "xhigh"`.
+- **MUST verify each Codex wrapper's role-owned model and reasoning effort.** Do not replace them with a
+  repository-wide default; confirm the values are supported and appropriate for the role's work.
 - **MUST point to each canonical owner, not restate it** — the role spec cites Delegation for the generic
   brief shape and Workflow Step 1.3 for Gobbi fields and acceptance; the canonical role prompt itself owns
   role behavior and status meanings. Do not create or copy a separate role overlay.
 - **MUST verify every wiring claim by reading the owner** — `readlink` the mirrors, read
   `.claude/settings.json`, read the sync script — never assert a mirror or permission exists.
-- **MUST verify loadability empirically** before declaring a role done — both `readlink`
-  mirrors resolve AND `sync-plugin-package.sh --check` exits 0; for a new role, the `Agent()`
-  perm is present.
+- **MUST verify loadability empirically** before declaring a role done — both `readlink` mirrors resolve,
+  package materialization and `sync-plugin-package.sh --check` exit 0, and for a new role the `Agent()` perm
+  is present.
 - **MUST get the user's explicit decision before adding a sixth role** — the taxonomy is a
   closed five-role set; a new role is a heavyweight, user-ratified change.
 - **NEVER expect the sync script to create the agent mirrors** — `.claude/agents/{role}.md`
@@ -277,6 +286,9 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - **Using `allowed-tools` in an agent `.md`.** Copying the skill frontmatter key into a role
   spec. Agents use `tools`; only skills use `allowed-tools`. Check the key against the file
   kind before saving.
+
+- **Omitting `Skill` from an explicit role allowlist.** The role contract requires fresh skill loads, but
+  Claude Code treats `tools` as an allowlist. The role then cannot perform its own startup contract.
 
 - **Assuming the agent wiring parallels the skill wiring.** Expecting `sync-plugin-package.sh`
   to create `.codex/agents/{role}.toml` because it creates `.agents/skills/{name}`. It does
@@ -304,8 +316,8 @@ A clean run prints `ALL LINKS RESOLVE (...)` and exits 0.
 - The sibling skill — shared mirror + verify discipline, the skill side → [`skill-writing/SKILL.md`](../skill-writing/SKILL.md)
 - Generic assignment shape → [`delegation/SKILL.md`](../delegation/SKILL.md)
 - Workflow assignment fields and acceptance → [`workflow/SKILL.md` Step 1.3](../workflow/SKILL.md#13-build-and-accept-specialist-assignments)
-- Role name, tools, Claude model, what the role owns, and when it is spawned → the five `agents/{role}.md`
-  files themselves; no combined table exists
+- Role name, Claude tools, model, optional effort, what the role owns, and when it is spawned → the five
+  `agents/{role}.md` files themselves; no combined table exists
 - Codex model and reasoning effort → the five `agents/{role}.toml` files
 - How Claude Code uses a role as a teammate type → [`gobbi/agent-teams/SKILL.md`](../gobbi/agent-teams/SKILL.md)
-- Plugin package layout + the whole-dir `agents` symlink → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)
+- Plugin package layout + the generated `agents` directory → [`claude-plugin/SKILL.md`](../claude-plugin/SKILL.md)

@@ -1,173 +1,230 @@
 ---
 name: go-modules
-description: "MUST load when creating, changing, validating, or releasing a Go module, including layout, go.mod, go.work, dependencies, tools, compatibility, and versions."
+description: "MUST load when creating, changing, or validating a Go module, including its path, layout, go.mod, go.work, dependencies, tools, external-consumer validation, and compatibility analysis."
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit
 skill-type: operation
 ---
 
 # Go Modules
 
-Use this operation to create, change, validate, or release one Go module. It produces a coherent module
-contract, package layout, dependency graph, tool declaration, workspace boundary, compatibility position, and
-release result.
+Go Modules creates, changes, or validates one Go module. It returns a coherent module path, layout, graph,
+workspace, dependencies, tools, exact public package paths and project commands, external-consumer result, and
+module consumer compatibility analysis.
 
-The operation owns why and when module state changes. `go-toolchain` owns command syntax and side effects,
-while deployment, container construction, operating-system packaging, service rollout, and repository
-publication outside a module release are out of scope.
+The operation has author and validation modes. It owns the exact module facts release needs, but it owns no
+version or tag proposal or decision, tag or ref creation, publication, external mutation, or release recovery.
+`go-toolchain` owns project command syntax, exact package pattern semantics, the selected Go toolchain version,
+and project command effects. `go-testing` owns evidence selection and interpretation. `go-security` owns protected-data
+judgment. Binary and archive production belongs to `go-packaging`; release decisions and results belong to
+`go-release`.
 
 ## Principles
 
-### A module is a consumer contract
+### Treat the module as a consumer contract
 
-The module path, public packages, Go version, dependency graph, and release versions determine how consumers
-build and upgrade. Treat them as one published surface rather than unrelated files.
+The module path, `go` directive, exact public package paths, dependencies, and project commands determine how
+consumers build and use the module. Review them as one contract.
 
-### Prefer the simplest layout that preserves ownership
+### Prefer the smallest layout with real ownership
 
-Most modules need a small package tree, not a universal application scaffold. Add `internal`, `cmd`, nested
-modules, workspaces, or vendoring only when their ownership boundary has a current purpose.
+Most modules need a small package tree rather than a universal scaffold. Add `internal`, `cmd`, nested modules,
+workspaces, or vendoring only when each boundary has a current purpose.
 
-### Keep dependencies deliberate and reproducible
+### Keep the graph deliberate and reproducible
 
-Every direct dependency and tool adds compatibility, supply-chain, license, and maintenance obligations.
-Standard-library code or an existing reviewed dependency is preferable when it meets the requirement clearly.
+Every dependency, tool, replacement, workspace entry, and cache or download effect adds maintenance and trust
+obligations. Accept only graph state that remains explainable outside one workstation.
 
-### Compatibility is a release decision
+### Prove the module from a consumer position
 
-An apparently small API, package, module-path, or Go-version change can break consumers. Classify compatibility
-before choosing a version or tag.
+Workspace-only success and internal project checks cannot establish the external contract. Validate an external
+consumer and return a module consumer compatibility analysis without making a release decision.
 
 ## Rules
 
-- **MUST establish author or read-only review mode and define the module path, consumers, public packages,
-  supported Go floor, toolchain policy, and release outcome before changing module state.** Derive author-mode
-  values from the repository contract; in review mode, inspect proposed commands and diffs without mutation.
-- **MUST keep every direct dependency, replacement, retraction, exclusion, workspace entry, vendor choice, and
-  tool dependency intentional and reviewable.** Remove temporary graph controls before release unless they are
-  part of the published contract.
-- **MUST review changes to `go.mod`, `go.sum`, and `go.work` as source-controlled behavior.** Explain an
-  unexpected version, checksum, indirect dependency, Go directive, or toolchain directive before accepting it.
-- **MUST preserve credentials and private-module boundaries.** Never write tokens, credential-bearing proxy
-  URLs, workstation paths, or unintended private module names into published module files or logs.
-- **MUST classify every published API or module-path change against existing consumers before release.** Follow
-  semantic import versioning for version 2 or later and keep the path, imports, and tag consistent.
-- **NEVER publish a module that depends on a temporary local `replace`, an unpublished workspace module, or
-  generated state absent from the release contents.** Validate the module outside the development workspace
-  before tagging it.
+- **MUST select exactly one author or validation mode before action and bind its complete effect contract.**
+  Project writes, disposable outputs, caches and downloads, project execution, network access, credential use,
+  external mutation, pause points, terminal result, and recovery must match that mode.
+- **MUST bind the module path, `go` directive, module's Go language version, minimum supported Go version,
+  consumers, exact public package paths, project commands, and compatibility promise.** Obtain the selected Go
+  toolchain version and command semantics from `go-toolchain` rather than inferring them from the module.
+- **MUST keep every dependency, replacement, retraction, exclusion, workspace entry, vendor choice, and tool
+  declaration intentional and reviewable.** Explain every unexpected change to `go.mod`, `go.sum`, `go.work`,
+  or other accepted graph state.
+- **MUST bind every authenticated private-module read to exact current manager authority.** Name the private
+  module or import-path scope, proxy or version-control-system destination, credential/destination owner,
+  ephemeral credential delivery, redacted evidence, and declared cache/download effects without persistence or
+  external mutation.
+- **MUST validate the module outside development-only state and return the external-consumer result and module
+  consumer compatibility analysis.** Classify affected consumers as `compatible`, `migration supplied`,
+  `authorized break`, or `unsupported` without choosing a version or tag.
+- **NEVER turn module readiness into release authority or a release result.** Hand exact module facts to
+  `go-release`; do not propose or decide a version or tag, create a tag or ref, publish, mutate external state,
+  or own release recovery.
 
 ## Procedure
 
-### Phase 1 — Define the Module Contract
+### Phase 1 — Bind the Module Contract and Mode
 
-#### 1.1 Inspect the existing contract
+#### 1.1 Inspect and define the module contract
 
 - Read repository instructions, `go.mod`, `go.sum`, `go.work`, package directories, imports, build constraints,
-  release automation, tags, continuous-integration versions, generated inputs, license files, and consumer
-  documentation.
-- Establish whether the target is a new module, dependency edit, workspace edit, layout change, compatibility
-  change, tool declaration, or release. Identify author mode or read-only review mode.
-- Run or plan focused environment lookups through `go-toolchain` to confirm the selected module, workspace, Go
-  version, target platforms, cgo requirements, proxy/private settings, and graph.
-- Preserve the baseline files and command output needed to explain every resulting graph change. Stop if the
-  active workspace or local replacement hides the actual module that would be released.
+  continuous-integration versions, generated inputs, license files, consumer documentation, and relevant module
+  history. Preserve the baseline files and evidence needed to explain graph changes.
+- State the requested module result: new module, dependency edit, workspace edit, layout change, tool declaration,
+  compatibility change, or validation. Bind the module path, consumers, exact public package paths, project
+  commands, supported `GOOS/GOARCH` targets, cgo boundary, private dependencies, and compatibility promise.
+- Record the `go` directive and module's Go language version separately from the minimum supported Go version.
+  Confirm that source syntax, used standard-library APIs, dependencies, and tools support the project-supplied
+  minimum. Use `go-toolchain` to bind the selected Go toolchain version, active module or workspace, working
+  directory, environment inputs, `GOOS/GOARCH` target, exact package pattern only as project-command selection
+  or evidence, and project command effects.
+- Stop if an active workspace, local replacement, ambient proxy setting, or unavailable generated input hides
+  the graph an external consumer would receive.
 
-#### 1.2 Lock consumers, versions, and outcome
+#### 1.2 Select author or validation mode and bind effects
 
-- Choose the module path from its durable repository or publishing location. For a version 2 or later module,
-  include the required `/vN` path suffix except where the official module rules define another form.
-- Name intended consumers, public packages, command packages, supported Go floor, optional `toolchain`
-  suggestion, platforms, cgo boundary, private dependencies, and compatibility promise.
-- Use the lowest Go version that the project intends to support and that its syntax, standard-library APIs,
-  dependencies, and tools actually permit. Do not lower or raise it without evidence from all four.
-- Define completion: validated local module, reviewed dependency change, workspace state, compatibility plan,
-  or an exact release tag and contents. A remote tag or publication remains a separately authorized side effect.
+- Select exactly one mode. Authority in one mode or sibling does not transfer to another effect.
+- **Author mode:** project-path writes are limited to authorized module, layout, workspace, dependency, and
+  tool-declaration paths; disposable writes are approved validation outputs with no secret material; caches,
+  module downloads, and tool downloads are named and authorized, and private downloads use a declared cache and
+  retention boundary; execution is limited to authorized project commands for module, workspace,
+  external-consumer, named private module or import-path scope, and project test evidence. Network access is none
+  by default; an authenticated read or download is allowed only for the named private module or import-path scope
+  and proxy or version-control-system destination under exact current manager authority. Credential use is only
+  that authenticated read under exact current manager authority and named ephemeral delivery; external mutation
+  is forbidden. Never persist, expose, copy into evidence, or log credentials or private-module settings. Pause
+  before the first network or credential use, every scope or destination change, a compatibility break, or a
+  release decision. The terminal result is coherent module facts and module consumer compatibility analysis
+  with redacted authenticated-read and cache/download evidence for release, or an exact block. Recovery retains
+  module and consumer evidence, redacted failure evidence, and safe cache state, and names the
+  credential/destination owner and first recovery action.
+- **Validation mode:** project source is read-only; disposable writes are specified temporary outputs with no
+  secret material; caches are contained as declared, and private downloads use a declared cache and retention
+  boundary; execution is limited to authorized project commands for module, external-consumer, and named private
+  module or import-path validation. Network access is none by default; an authenticated read or download is
+  allowed only for the named private module or import-path scope and proxy or version-control-system destination
+  under exact current manager authority. Credential use is only that authenticated read under exact current
+  manager authority and named ephemeral delivery; external mutation is forbidden. Never persist, expose, copy
+  into evidence, or log credentials or private-module settings. Pause before the first network or credential
+  use, every scope or destination change, an undeclared download, or a project write. The terminal result is a
+  validation result with exact release facts and redacted authenticated-read and cache/download evidence, or a
+  bounded evidence gap. Recovery retains consumer and graph evidence, redacted failure evidence, and safe cache
+  state, and names the credential/destination owner and first recovery action.
 
-### Phase 2 — Shape Source and Packages
+### Phase 2 — Shape the Module and Graph
 
-#### 2.1 Choose the package layout
+#### 2.1 Establish the module path and package layout
 
+- Choose the module path from its durable repository or publishing location. For major version 2 or later, use
+  the `/vN` path form where the [official module rules](https://go.dev/doc/modules/major-version) require it;
+  align the module path, exact public package paths, imports, and consumer documentation without proposing a tag.
 - Start with packages at the module root and clear subdirectories, following the
-  [official module layout guidance](https://go.dev/doc/modules/layout). Let package responsibilities and public
-  import paths determine directories.
-- Use `internal` when the Go tool's enforced import boundary matches the intended privacy boundary. Use
-  `cmd/name` for distinct commands when several executables share the module; a single command may remain in a
-  simpler main package.
-- Keep libraries importable and command orchestration thin when the same behavior needs tests or reuse. Do not
-  create `pkg`, `src`, `util`, or layer directories solely because another ecosystem uses them.
-- Create a nested module only when it is an independently versioned, consumed, and released unit. Otherwise
-  keep one graph and avoid hiding packages from parent-module patterns such as `./...`.
+  [official module layout guidance](https://go.dev/doc/modules/layout). Let package responsibilities and exact
+  public package paths determine directories.
+- Use `internal` only when its enforced import boundary matches the intended privacy boundary. Use `cmd/name`
+  for distinct commands when several executables share the module; a single command may remain in a simpler
+  main package. Keep reusable libraries importable and command orchestration thin.
+- Do not create `pkg`, `src`, `util`, a layer directory, or a nested module by convention alone. Create a nested
+  module only when it is independently consumed and versioned; otherwise preserve one visible graph.
 
-#### 2.2 Establish new-module source state
+#### 2.2 Establish the dependency, tool, and workspace contract
 
-- In author mode, initialize only the intended directory with the locked module path and then set directives
-  through the supported toolchain or a precise reviewed edit. Do not initialize over an existing module or
-  nested path by accident.
-- Add the smallest package or command skeleton that proves the chosen layout and import paths. Keep generated
-  files tied to their inputs and exclude local workspace assumptions from the module contract.
-- Add package documentation, license notices, and release contents required by the repository. Verify that
-  ignored files do not contain source or metadata needed by consumers.
-- In review mode, compare the proposed path, layout, and package visibility with current consumers without
-  mutating files.
+- Prefer the standard library or an accepted dependency when it meets the need. Before adding or changing a
+  dependency, inspect API fit, maintenance, license, provenance, version history, transitive graph, known
+  vulnerabilities, supported `GOOS/GOARCH` targets, cgo requirements, and download cost.
+- Add, upgrade, downgrade, or remove only the intended dependency. Run `go mod tidy` only after imports and build
+  constraints represent the intended source, then review every addition and removal in `go.mod` and `go.sum`.
+  Validate each retained replacement, exclusion, retraction, and vendor choice against the consumer contract;
+  the [dependency-management guide](https://go.dev/doc/modules/managing-dependencies) owns the graph workflow.
+- Pin project tools through the mechanism supported by the module's Go language version and project convention,
+  including a `tool` directive when applicable. Keep the tool version, project command, and update path
+  reviewable under the [module-file reference](https://go.dev/ref/mod). Do not use an ambient unversioned global
+  command as the hidden source of generated or checked output.
+- Use `go.work` only for intentional multi-module development. Review every `use` and `replace` entry and any
+  `go work sync` propagation. Validate each affected module outside the workspace or with `GOWORK=off` when
+  appropriate; repair a workspace-only result instead of accepting it.
 
-### Phase 3 — Manage Dependencies, Tools, and Workspaces
+### Phase 3 — Apply and Validate the Module State
 
-#### 3.1 Change the dependency graph deliberately
+#### 3.1 Apply only the selected mode
 
-- Prefer the standard library or an already accepted dependency when it meets the requirement. For a new
-  dependency, inspect maintenance, license, provenance, version history, transitive graph, known
-  vulnerabilities, platform needs, and API fit before addition.
-- Use the project toolchain to add, upgrade, downgrade, or remove the narrow dependency. Review the selected
-  version and transitive changes rather than requesting an unconstrained broad update.
-- Run `go mod tidy` only after imports and build constraints represent the intended source. Review both additions
-  and removals in `go.mod` and `go.sum`; the
-  [dependency-management guide](https://go.dev/doc/modules/managing-dependencies) explains the graph workflow.
-- Validate vendoring, replacements, exclusions, and retractions only when the project uses them. A local
-  `replace` is development state unless the published contract and consumer environment can resolve it.
+- In author mode, initialize only the intended directory with the bound module path or make the authorized
+  module, layout, workspace, dependency, and tool-declaration edits. Add the smallest package or command
+  skeleton that proves the layout and exact public package paths. Keep generated files tied to their inputs.
+- Add package documentation, license notices, generated files, embedded assets, and cgo inputs that consumers
+  need. Confirm that ignored or development-only files are not required by the module contract.
+- In validation mode, inspect the same module, layout, graph, workspace, dependency, tool, and consumer facts
+  without writing project source. Stop before any proposed project write.
+- Review the complete diff or reviewed state. Explain every unexpected directive, checksum, indirect dependency,
+  replacement, workspace entry, tool declaration, and local-path dependency before proceeding.
 
-#### 3.2 Declare tools and workspace use
+#### 3.2 Perform authorized private reads and project validation
 
-- Pin project tools through the mechanism supported by the module's Go version and repository convention,
-  including the `tool` directive where that contract supports it. Keep the tool version, invocation, and update
-  path reviewable under the [module-file reference](https://go.dev/ref/mod).
-- Do not install an unversioned command globally as the hidden source of generated or checked output. Route
-  installation effects and command behavior through `go-toolchain`.
-- Use `go.work` for local multi-module development when changes genuinely span modules. Keep `use` and
-  `replace` entries local to the intended workspace and inspect `go work sync` propagation before accepting
-  module edits.
-- Verify each affected module outside the workspace or with `GOWORK=off` as appropriate. If that state fails,
-  repair the module contracts rather than publishing a workspace-only build.
+- Before the first private read, bind the named private module or import-path scope, proxy or
+  version-control-system destination, separate network and credential-read authority, credential/destination
+  owner, named ephemeral delivery, redaction boundary, declared cache/download effects, retention boundary, and
+  project command. Do not use a credential until all fields have exact current manager authority.
+- Run only the authorized authenticated read or download. Stop before a changed scope or destination and obtain
+  new current manager authority. Never persist or report the credential or private-module settings, and never
+  let an authenticated read authorize external mutation.
+- Run the project-selected formatting, analysis, test, build, generated-state, `GOOS/GOARCH` target,
+  vulnerability, and module-graph project commands that the result requires. Use the minimum supported Go
+  version and each applicable newer selected Go toolchain version when the compatibility promise spans them.
+- On failure, stop further network and credential use. Retain the module and consumer graph, redacted first
+  useful diagnostic, declared safe cache state, and evidence limits. Name the credential/destination owner and
+  first recovery action; do not weaken checksum, proxy, privacy, or credential handling.
 
-### Phase 4 — Validate Compatibility and Release
+### Phase 4 — Analyze Consumers and Return the Module Result
 
-#### 4.1 Validate the consumer position
+#### 4.1 Validate external consumers and compatibility
 
-- Run formatting, analysis, tests, builds, generated-state checks, platform checks, vulnerability checks, and
-  module graph checks selected by the project. Use the locked Go floor as well as newer supported toolchains
-  when compatibility spans them.
-- Build or test a representative external consumer for exported packages, especially after module-path,
-  package-path, interface, error, generic, or initialization changes. Verify commands from outside their source
-  directory when installation is part of the contract.
-- Inspect release contents for licenses, documentation, generated files, cgo assets, embedded files, and
-  accidental secrets. Confirm no temporary replacement, workspace dependence, or private path remains.
-- If validation exposes an unsupported floor or hidden dependency, return to the earliest contract or graph
-  step, update the decision, and repeat all affected checks. When this module outcome is evaluated, the
-  [evaluation checklist](checklists.md) and every checklist owned by an active `go` sibling supply the
-  applicable conditions; the general Evaluation operation resolves them and issues any verdict.
+- Build or test a representative external consumer for every promised exact public package path. Verify each
+  installable command from outside its source directory and without development workspace assumptions. Record
+  the external-consumer result and every untested consumer or environment.
+- Inspect consumer-required contents for licenses, documentation, generated files, embedded assets, cgo inputs,
+  and accidental protected data. Confirm that no temporary replacement, unpublished workspace module, local
+  path, or unavailable input is required.
+- Compare public APIs or CLIs, exact public package paths, behavior, errors, wire formats, initialization, module
+  path, and minimum supported Go version with the accepted consumer contract. Return the module consumer
+  compatibility analysis as `compatible`, `migration supplied`, `authorized break`, or `unsupported`, naming
+  affected consumers and evidence limits. Use the
+  [Go module compatibility guidance](https://go.dev/blog/module-compatibility) to identify consumer changes
+  that source compilation alone misses.
+- If an external consumer fails, a hidden dependency appears, the minimum supported Go version conflicts with
+  the project contract, or compatibility evidence is incomplete, return to the earliest responsible contract,
+  layout, graph, or validation step. Do not convert another environment's success into a module result.
 
-#### 4.2 Classify and prepare the release
+#### 4.2 Return completion, block, recovery, and handoff records
 
-- Compare exported APIs, package paths, behavior, errors, wire formats, initialization, and Go requirements with
-  the latest released version. Use the [Go module compatibility guidance](https://go.dev/blog/module-compatibility)
-  to find changes that source compilation alone misses.
-- Preserve compatibility throughout version 1 unless the project explicitly chooses a documented breaking
-  strategy. For version 2 or later, keep the module path, imports, `go.mod`, documentation, and `vN.x.y` tag
-  aligned under semantic import versioning.
-- Choose the semantic version from the classified change, check that the tag does not already exist, and
-  prepare release notes for consumer-visible behavior, migration, and support changes. Follow the
-  [module release workflow](https://go.dev/doc/modules/release-workflow/).
-- Create or publish the tag only when the task grants that external authority. Otherwise hand off the exact
-  proposed tag, verified commit or tree, validation evidence, compatibility assessment, and first authorized
-  release action.
+- Return the universal fields, naming why any is not applicable: operation and mode; accepted result; decision
+  basis; actual owned object; terminal state selected from exactly `success`, `error`, `cancellation`,
+  `timeout`, `blocked`, or `user-decision pause`; changed or reviewed paths; project-command evidence; evidence
+  limits; external reads or effects; compatibility decision selected from `compatible`, `migration supplied`,
+  `authorized break`, or `unsupported` when applicable; block; recovery; and handoff. A Go panic is program
+  behavior, not an operation terminal state.
+- Project-command evidence names the project command, exact package pattern, selected Go toolchain version,
+  flags, `GOOS/GOARCH` target, inputs, duration, and result. External reads or effects name the network
+  destination, cache or download scope, credential-use fact, external-mutation fact, current authority,
+  redaction, and retained state.
+- Add the module path; layout; graph; workspace; `go` directive; module's Go language version; minimum supported
+  Go version; dependencies; tools; exact public package paths and project commands; external-consumer result;
+  module consumer compatibility analysis; and exact facts release needs.
+- For a private read, also return the named private module or import-path scope, proxy or
+  version-control-system destination, authorized network and credential reads, redacted evidence and limits,
+  declared cache/download effects, credential/destination owner, retained safe state, and first recovery
+  action. State that external mutation did not occur. Return no credential or private-module setting.
+- Complete author mode only with coherent module facts and module consumer compatibility analysis. Complete
+  validation mode only with the validation result and exact release facts. In either mode, retain the exact
+  bounded evidence gap rather than claiming a module result across workspace-only success, a conflict with the
+  minimum supported Go version, hidden replacement, consumer failure, unavailable private-module authority or
+  credential, unsafe credential handling, or incomplete module consumer compatibility evidence.
+- For a block, name the missing prerequisite or first useful diagnostic, affected obligation, current evidence,
+  risk, credential/destination or other recovery owner, retained safe state, first recovery action, and handoff.
+  Hand exact module facts to `go-release` without a version or tag proposal or decision, tag or ref effect,
+  publication, external mutation, or release recovery. When this result enters Evaluation, apply the
+  [evaluation checklist](checklists.md) and every active `go` sibling checklist; Evaluation owns evidence
+  resolution and verdicts.
 
 ## References
 

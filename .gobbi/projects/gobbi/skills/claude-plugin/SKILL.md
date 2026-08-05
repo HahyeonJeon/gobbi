@@ -19,7 +19,10 @@ Canonical skills and agents under `.gobbi/projects/gobbi/` are the only editable
 
 ### Keep source topology separate from installed-cache behavior
 
-`scripts/sync-plugin-package.sh --check` proves the checked-out source package, manifests, marketplaces, entrypoints, role wrappers, and discovery mirrors. `scripts/check-codex-plugin-smoke.sh` installs the package into an isolated Codex home and reports what the installer copied. A source pass does not predict installed-cache dereferencing.
+`scripts/sync-plugin-package.sh --check` proves the checked-out source package, manifests, marketplaces,
+entrypoints, role wrappers, and discovery mirrors. `scripts/check-codex-plugin-smoke.sh` installs the package
+into an isolated Codex home and compares every installed file path and byte with the source package. A source
+pass does not predict installed-cache dereferencing.
 
 ### Let each ecosystem own its manifest shape
 
@@ -40,7 +43,10 @@ Gobbi ships no hook component. The package, both manifests, project Claude setti
 - **CP-5 — Keep marketplaces ecosystem-specific.** `.claude-plugin/marketplace.json` uses a string `source`. `.agents/plugins/marketplace.json` uses a local source object with `source.path`.
 - **CP-6 — Preserve the release decision.** Change manifest or marketplace versions only when the user-approved release task requires it. When a version changes, keep both manifests and the Claude marketplace entry equal.
 - **CP-7 — Verify both layers.** Run sync source checks and the isolated Codex smoke. When Claude Code is installed, also run strict Claude plugin validation.
-- **CP-8 — Treat installer omission as evidence.** When an installed cache omits a component, report that exact limitation instead of hiding it. The generated package copy is the one permitted answer to the Codex installer not following a symlinked component; add no other copy and hand-edit no generated file.
+- **CP-8 — Treat installer omission as package failure.** When an installed cache omits or changes any package
+  file, fail with the installed-tree mismatch instead of hiding it. The generated package copy is the one
+  permitted answer to the Codex installer not following a symlinked component; add no other copy and hand-edit
+  no generated file.
 
 ### Must not follow
 
@@ -187,9 +193,14 @@ The smoke creates an isolated `CODEX_HOME`, registers the repository as the `gob
 - no hook field or hook directory reached the cache;
 - both components are materialized directories before the install;
 - the cache top level contains only manifests, skills, and agents; and
-- representative package paths reached the cache, at both top level and nested depth.
+- every packaged manifest, skill, and agent file reached the cache at the same path with the same bytes.
 
-A missing installed path is always a failure, never a limitation to note. The installer copies nothing behind a symlink at any depth, which breaks a package two ways, and the check reports them separately because they have different repairs. A symlinked component root delivers no component at all and fails before the install. A symlink left inside a materialized component directory drops exactly that path and fails after it. Both name `--materialize-package`. A hook component is always a failure.
+A missing or byte-different installed path is always a failure, never a limitation to note. The smoke's
+negative fixture proves that an omitted nested leaf and changed installed bytes both fail complete-tree
+comparison. The installer copies nothing behind a symlink at any depth, which breaks a package two ways, and
+the check reports them separately because they have different repairs. A symlinked component root delivers no
+component at all and fails before the install. A symlink left inside a materialized component directory drops
+exactly that path and fails after it. Both name `--materialize-package`. A hook component is always a failure.
 
 ### Failure diagnosis
 

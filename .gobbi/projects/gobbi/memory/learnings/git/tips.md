@@ -47,8 +47,10 @@ ignore file can work around. Find the exact ignoring file and line with `git che
 
 **Context:** Deriving a stable project identifier for a session that may run inside a linked worktree.
 
-**Tip:** `basename(git rev-parse --show-toplevel)` returns the current worktree's top level, which for every
-Cowork and Workflow session is the session branch name, not the project. Use
+**Tip:** `basename(git rev-parse --show-toplevel)` returns the current worktree's top-level leaf, which for a
+Cowork or Workflow session is a session identity, not the project. A new leaf deliberately omits the runtime
+prefix and therefore differs from the branch name; only a permanent legacy worktree leaf may equal its branch.
+Use
 `basename(dirname(git rev-parse --path-format=absolute --git-common-dir))` instead —
 `--git-common-dir` names the one shared repository directory regardless of which worktree is active.
 
