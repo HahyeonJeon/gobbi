@@ -144,26 +144,33 @@ the full root, including readable legacy `memory/` input.
   Add session UUID, runtime, absolute worktree and evidence root, branch, phase, exact TODO/status, step/stage,
   iteration/cap, task and assignment IDs, prerequisite evidence, role, outcome, locked Phase 1 terms, acceptance,
   authority, scope, allowed/protected paths, writer and external-effect boundaries, independence, stops, outputs,
-  checks, and escape responses.
+  checks, escape responses, and exactly one `result-kind: file | commit | response-only`.
 - In `Resources`, provide the validated absolute root pair, then exact paths in this order: Principles; all
   project rules or `NO_PROJECT_RULES`; canonical role; this parent; active phase child; step/task skills; primary
   artifacts. Fresh specialists inherit no loaded skill. A continuation receives a new assignment ID, current
   TODO, changed inputs, mandatory rereads, full scope, and changed independence rules.
-- Require this base return prefix and omit `ARTIFACT` only when none is required:
+- Make the result kind authoritative. Durable design and evaluation use `file` with an exact caller-named
+  absolute path, containment, rereading, and named checks. Commit-based Execution uses `commit` with the
+  assignment's branch, path, authority, provenance, and verification contract. Study, assistant lookup,
+  Partner, or another operation that intentionally consumes conversation content or forbids durable writes may
+  use `response-only` with its exact response shape and consumer.
+- Require this base return prefix:
 
 ```text
 STATUS: DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED
-ARTIFACT: <path or response-only>
+RESULT-KIND: file | commit | response-only
+ARTIFACT: <exact absolute path | commit | response-only>
 SKILLS LOADED:
   - <exact path, in read order>
 ```
 
 - A successful evaluator inserts `VERDICT: PASS | REVISE | FAIL` immediately after `STATUS`. An evaluator
   omits it for `NEEDS_CONTEXT`, `BLOCKED`, or an evidence gap that prevents a verdict. Other roles omit it.
-- Validate assignment, role, prefix, loaded paths, artifact or commit, checks, scope, and protected paths before
-  routing. In Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader
-  only within one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem,
-  and an assistant only within one memorization chain.
+- Validate assignment, role, prefix, loaded paths, result kind, locator, acceptance proof, checks, scope, and
+  protected paths before routing. A printed response cannot substitute for a promised file or commit. In
+  Claude Code, load [Agent Teams](../gobbi/agent-teams/SKILL.md) for tool behavior. Reuse a leader only within
+  one Ideation or Planning chain, an executor only across related ordered tasks in one subsystem, and an
+  assistant only within one memorization chain.
 
 #### 1.4 Apply the shared productive-step cycle
 
@@ -171,11 +178,17 @@ Each phase child invokes this cycle with a local role, frozen subject, canonical
 acceptance checks.
 
 1. **DISCUSSION:** Load the step operation, study current evidence, resolve decisions within the current
-   authority, and freeze one neutral contract. User-owned choices return to the user.
-2. **WORK:** Assign one active-runtime creator to produce and self-review a local draft. With partner enabled,
-   call Partner for each applicable independent external draft and cross-review over frozen input. Place labeled
-   returns, give the creator all selected artifacts, synthesize, and accept the complete package before mutation
-   or evaluation.
+   authority, and freeze one neutral contract. A subject is design-bearing when it chooses architecture,
+   strategy, naming, vocabulary, functions, classes, interfaces, data shapes, or any other structure, meaning,
+   or contract, including small local choices. User-owned choices return to the user.
+2. **WORK:** For every design-bearing subject, inventory each design choice and assign available active-runtime
+   subagents or teammates bounded independent read-only evidence, alternatives, or critique. Related minor
+   choices may share one assignment only when every choice is named. Assign one active-runtime creator as the
+   sole writer to produce and self-review the local draft and synthesize the inputs. With partner enabled,
+   require at least one independent Partner draft and one Partner cross-review over frozen input for every
+   design-bearing package before synthesis; disabled invokes no external runtime. Place labeled returns, give
+   the creator all selected artifacts, synthesize, and accept the complete package before mutation or
+   evaluation.
 3. **EVALUATION:** Load [Evaluation](../evaluation/SKILL.md). Dispatch one fresh isolated active-runtime
    evaluator and, when enabled, one fresh isolated external evaluator through Partner over the same frozen
    subject. Neither receives the other report. Each applies the complete Evaluation guidelines to the full
@@ -193,8 +206,8 @@ The participant matrix is:
 
 | Policy | WORK | EVALUATION |
 |---|---|---|
-| Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |
-| Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |
+| Disabled | One assigned active-runtime self-reviewed creator draft plus available bounded local evidence, alternatives, or critique for every design choice; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |
+| Enabled | The disabled set plus at least one independent draft and one cross-review through Partner for every design-bearing package; the local creator synthesizes after both validate. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |
 
 #### 1.5 Gate, record, and recover
 

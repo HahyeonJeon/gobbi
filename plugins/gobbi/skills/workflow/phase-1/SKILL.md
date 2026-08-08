@@ -88,16 +88,22 @@ prove.
 - Load [Ideation](../../ideation/SKILL.md). Build the leader brief through
   [Delegation](../../delegation/SKILL.md) plus
   [parent Step 1.3](../SKILL.md#13-build-and-accept-specialist-assignments), using request, rules, memory, repository evidence,
-  prior art, constraints, risks, recovery needs, accepted findings, and exact output path.
+  prior art, constraints, risks, recovery needs, accepted findings, exact output path, and the complete design
+  choice inventory and participation map.
 - Use [Discussion](../../discussion/SKILL.md) to resolve with the user:
   - the root problem and affected people;
   - What changes and remains unchanged;
   - Why the outcome matters;
   - How the approach works;
+  - every architecture, strategy, naming, vocabulary, function, class, interface, data-shape, or other
+    structure, meaning, and contract choice, including small local choices;
   - success and failure conditions;
   - material assumptions and alternatives;
   - safety, external, publication, merge, and destructive authority; and
   - explicit deferrals and their owners.
+- Map every design choice to bounded independent read-only evidence, alternatives, or critique from available
+  active-runtime subagents or teammates. Related minor choices may share one assignment only when the brief
+  names every choice; the leader remains the sole writer and synthesizer.
 - Freeze one neutral contract only when every material unknown has a decision or owner. Retitle to WORK after
   rereading the contract.
 
@@ -106,9 +112,12 @@ prove.
 - Invoke [parent Step 1.4](../SKILL.md#14-apply-the-shared-productive-step-cycle) with local role `leader`; the frozen Ideation contract and immutable project evidence
   as subject; `1-ideation/outputs/ideation.md` as canonical output; the fast gate; cap `2`; and complete
   material-decision coverage as the unique check.
-- The local leader produces, self-reviews, and synthesizes. Resolve user-owned conflicts before EVALUATION.
-  Require the canonical result to cover the problem, actors, What, Why, How, scope, success/failure, alternatives,
-  authority, risks, recovery, accepted findings, and deferrals.
+- Before the local leader synthesizes a design-bearing Ideation package, require every named local input from
+  Step 2.1. Enabled requires at least one independent Partner draft and one Partner cross-review over frozen
+  input before synthesis; disabled invokes no external runtime. The local leader alone produces, self-reviews,
+  and synthesizes. Resolve user-owned conflicts before EVALUATION. Require the canonical result to cover the
+  problem, actors, What, Why, How, scope, success/failure, alternatives, authority, risks, recovery, accepted
+  findings, and deferrals.
 - Run every RECORD pass. Write the canonical output only after PASS, keep it ignored and uncommitted, and prove
   the tracked tree unchanged. On first-pass REVISE, return to DISCUSSION; on second-pass FAIL, preserve exact
   recovery evidence and present the user-owned choices. Never create iteration 3.

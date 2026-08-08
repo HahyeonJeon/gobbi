@@ -241,6 +241,7 @@ validate_lifecycle_semantics() {
   local memory="$skills/memory/SKILL.md"
   local partner="$skills/gobbi/partner/SKILL.md"
   local agent_teams="$skills/gobbi/agent-teams/SKILL.md"
+  local delegation="$skills/delegation/SKILL.md"
   local cowork="$skills/cowork/SKILL.md"
   local workflow="$skills/workflow/SKILL.md"
   local phase_1="$skills/workflow/phase-1/SKILL.md"
@@ -257,6 +258,7 @@ validate_lifecycle_semantics() {
     "$memory" \
     "$partner" \
     "$agent_teams" \
+    "$delegation" \
     "$cowork" \
     "$workflow" \
     "$phase_1" \
@@ -464,11 +466,53 @@ validate_lifecycle_semantics() {
   require_semantic_text "$agent_teams" '[Delegation](../../delegation/SKILL.md)' \
     'Agent Teams Workflow guidance must retain its valid Delegation link'
 
+  require_semantic_section_words "$delegation" \
+    '## Rules' \
+    '## Preferences' \
+    'MUST name exactly one `result-kind: file | commit | response-only` in every specialist brief.' \
+    'Delegation must require exactly one of the three result kinds'
+  require_semantic_section_words "$delegation" \
+    '## Rules' \
+    '## Preferences' \
+    'MUST use `result-kind: file` for durable design and evaluation results.' \
+    'Delegation durable design and evaluation must select file results'
+  require_semantic_section_words "$delegation" \
+    '## Rules' \
+    '## Preferences' \
+    'Give the exact caller-named absolute path, require containment and rereading, and reject printed content as a substitute for the file.' \
+    'Delegation durable design and evaluation must use a caller-named verified file'
+  require_semantic_section_words "$delegation" \
+    '## Preferences' \
+    '## References' \
+    'for `commit`, give the branch, assignment-owned paths, commit authority, and verification; for `response-only`, define the response shape and consumer.' \
+    'Delegation must preserve intentional commit and response-only result contracts'
+
   require_semantic_section_words "$cowork" \
     '#### 2.1 Route and deliver one topic' \
     '### Phase 3 — Evaluate on User Call' \
-    'Enabled then calls [Partner](../gobbi/partner/SKILL.md) for the independent external draft and external cross-review' \
-    'Cowork enabled creation must route through Partner'
+    'Design includes architecture, strategy, naming, vocabulary, functions, classes, interfaces, data shapes, and every other choice of structure, meaning, or contract, including small local choices.' \
+    'Cowork must classify small structural and vocabulary choices as design'
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    'Direct is available only when this inventory is empty; otherwise route through at least Light Ideation.' \
+    'Cowork unresolved design must route through at least Light Ideation'
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    'assign available active-runtime subagents or teammates bounded independent read-only work that supplies evidence, alternatives, or critique for every named design choice.' \
+    'Cowork must assign available local independent design participation'
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    'Related minor choices may share one assignment only when every choice is named; one leader remains the sole writer and synthesizer.' \
+    'Cowork may batch only named minor choices under one synthesizer'
+
+  require_semantic_section_words "$cowork" \
+    '#### 2.1 Route and deliver one topic' \
+    '### Phase 3 — Evaluate on User Call' \
+    "For every design-bearing Ideation package, freeze the local leader's draft after all named independent local inputs are available. Enabled then calls [Partner](../gobbi/partner/SKILL.md) for at least one independent external draft and one external cross-review over frozen inputs" \
+    'Cowork enabled design packages must use Partner draft and cross-review before synthesis'
   require_semantic_section_words "$cowork" \
     '#### 2.1 Route and deliver one topic' \
     '### Phase 3 — Evaluate on User Call' \
@@ -484,6 +528,11 @@ validate_lifecycle_semantics() {
     '### Phase 4 — Close on User Call' \
     'Each produces a complete [Evaluation](../evaluation/SKILL.md) report; the manager assembles the round and uses the more severe available verdict.' \
     'Cowork must consume Evaluation reports while retaining round assembly'
+  require_semantic_section_words "$cowork" \
+    '## Rules' \
+    '## Procedure' \
+    'MUST run independent evaluation only after an explicit `evaluate` call, and let that call authorize evaluation alone.' \
+    'Cowork independent evaluation must remain explicitly user-called'
   require_semantic_text "$workflow" \
     'MUST apply the recorded session-wide partner policy to every productive step.' \
     'Workflow must consume the recorded partner policy'
@@ -491,15 +540,75 @@ validate_lifecycle_semantics() {
     '#### 1.3 Build and accept specialist assignments' \
     'Workflow must retain the stable Step 1.3 assignment owner anchor'
   require_semantic_section_words "$workflow" \
+    '### Phase 1 — Establish the shared Workflow contracts' \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    'exactly one `result-kind: file | commit | response-only`.' \
+    'Workflow assignments must name exactly one result kind'
+  require_semantic_section_words "$workflow" \
+    '### Phase 1 — Establish the shared Workflow contracts' \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    'Durable design and evaluation use `file` with an exact caller-named absolute path, containment, rereading, and named checks.' \
+    'Workflow durable design and evaluation must use a caller-named verified file'
+  require_semantic_section_words "$workflow" \
+    '### Phase 1 — Establish the shared Workflow contracts' \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    'A printed response cannot substitute for a promised file or commit.' \
+    'Workflow must reject printed substitutes for promised files and commits'
+  require_semantic_section_words "$workflow" \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
+    'A subject is design-bearing when it chooses architecture, strategy, naming, vocabulary, functions, classes, interfaces, data shapes, or any other structure, meaning, or contract, including small local choices.' \
+    'Workflow must classify small structural and vocabulary choices as design'
+  require_semantic_section_words "$workflow" \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
+    'assign available active-runtime subagents or teammates bounded independent read-only evidence, alternatives, or critique.' \
+    'Workflow must assign available local independent design participation'
+  require_semantic_section_words "$workflow" \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
+    'Related minor choices may share one assignment only when every choice is named.' \
+    'Workflow may batch only named minor design choices'
+  require_semantic_section_words "$workflow" \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
+    'Assign one active-runtime creator as the sole writer' \
+    'Workflow must keep one creator as design writer and synthesizer'
+  require_semantic_section_words "$workflow" \
+    '#### 1.4 Apply the shared productive-step cycle' \
+    '#### 1.5 Gate, record, and recover' \
+    'With partner enabled, require at least one independent Partner draft and one Partner cross-review over frozen input for every design-bearing package before synthesis; disabled invokes no external runtime.' \
+    'Workflow design-bearing WORK must use enabled Partner draft and cross-review while disabled stays local'
+  require_semantic_section_words "$workflow" \
     'The participant matrix is:' \
     '#### 1.5 Gate, record, and recover' \
-    '| Disabled | One assigned active-runtime self-reviewed draft; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |' \
+    '| Disabled | One assigned active-runtime self-reviewed creator draft plus available bounded local evidence, alternatives, or critique for every design choice; no external invocation. | One fresh isolated active-runtime evaluator; no external invocation. |' \
     'Workflow disabled policy must select local-only participants'
   require_semantic_section_words "$workflow" \
     'The participant matrix is:' \
     '#### 1.5 Gate, record, and recover' \
-    '| Enabled | The disabled set plus each applicable external draft and cross-review through Partner; the local creator synthesizes. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |' \
+    '| Enabled | The disabled set plus at least one independent draft and one cross-review through Partner for every design-bearing package; the local creator synthesizes after both validate. | The disabled evaluator plus one fresh isolated external evaluator through Partner over the same subject. |' \
     'Workflow enabled policy must use Partner while retaining assembly ownership'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.1 Freeze the discussion contract' \
+    '#### 2.2 Run the shared productive-step cycle' \
+    'every architecture, strategy, naming, vocabulary, function, class, interface, data-shape, or other structure, meaning, and contract choice, including small local choices;' \
+    'Workflow Phase 1 must inventory small structural and vocabulary design choices'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.1 Freeze the discussion contract' \
+    '#### 2.2 Run the shared productive-step cycle' \
+    'Map every design choice to bounded independent read-only evidence, alternatives, or critique from available active-runtime subagents or teammates.' \
+    'Workflow Phase 1 must map every design choice to local independent participation'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.1 Freeze the discussion contract' \
+    '#### 2.2 Run the shared productive-step cycle' \
+    'Related minor choices may share one assignment only when the brief names every choice; the leader remains the sole writer and synthesizer.' \
+    'Workflow Phase 1 may batch only named minor choices under one synthesizer'
+  require_semantic_section_words "$phase_1" \
+    '#### 2.2 Run the shared productive-step cycle' \
+    '### Phase 3 — Hand off to Planning' \
+    'Enabled requires at least one independent Partner draft and one Partner cross-review over frozen input before synthesis; disabled invokes no external runtime.' \
+    'Workflow Phase 1 enabled design packages must use Partner draft and cross-review while disabled stays local'
   require_semantic_section_words "$phase_2" \
     '#### 2.4 Evaluate, record, and route the task' \
     '### Phase 3 — Hand off to Wrap-up' \

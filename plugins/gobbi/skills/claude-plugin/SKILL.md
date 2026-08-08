@@ -216,12 +216,12 @@ exactly that path and fails after it. Both name `--materialize-package`. A hook 
 
 ## References
 
-- [Repository runtime contract](../../../../../AGENTS.md)
+- Repository runtime contract: `AGENTS.md`
 - [Native Codex tool manual](../codex/SKILL.md)
 - [Agent-writing wiring owner](../agent-writing/SKILL.md)
 - [Skill-writing owner](../skill-writing/SKILL.md)
-- [Source topology command](../../../../../scripts/sync-plugin-package.sh)
-- [Source topology tests](../../../../../scripts/test-sync-plugin-package.sh)
-- [Codex installed-cache smoke](../../../../../scripts/check-codex-plugin-smoke.sh)
-- [Claude plugin manifest](../../../../../plugins/gobbi/.claude-plugin/plugin.json)
-- [Codex plugin manifest](../../../../../plugins/gobbi/.codex-plugin/plugin.json)
+- Source topology command: `scripts/sync-plugin-package.sh`
+- Source topology tests: `scripts/test-sync-plugin-package.sh`
+- Codex installed-cache smoke: `scripts/check-codex-plugin-smoke.sh`
+- Claude plugin manifest: `plugins/gobbi/.claude-plugin/plugin.json`
+- Codex plugin manifest: `plugins/gobbi/.codex-plugin/plugin.json`

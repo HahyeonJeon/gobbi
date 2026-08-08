@@ -72,7 +72,7 @@ make_fixture() {
   # Every fixture starts from one accepted lifecycle combination. Tests mutate this
   # same temporary tree one semantic edge at a time, so the existing reconciliation
   # harness remains the only system under test and unrelated topology stays valid.
-  for skill in principles gobbi git memory cowork workflow; do
+  for skill in principles gobbi git memory delegation cowork workflow; do
     cp -R "$repo_root/.gobbi/projects/gobbi/skills/$skill" \
       "$root/.gobbi/projects/gobbi/skills/$skill"
   done
@@ -312,6 +312,37 @@ gobbi-cowork-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../cowork/
 gobbi-workflow-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../workflow/SKILL.md`](../workflow/SKILL.md)^[`../workflow/SKILL.md`](../cowork/SKILL.md)^Gobbi must hand Workflow to its canonical owner
 gobbi-references-entry-load^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other^loads Principles and Discussion; selected owners, phases, and task triggers load every other^Gobbi References must match the Principles, Discussion, and Delegation entry load
 agent-teams-manual-shape^.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md^### Workflow integration^## Workflow integration^Agent Teams Workflow guidance must remain inside Manual
+delegation-result-kind^.gobbi/projects/gobbi/skills/delegation/SKILL.md^MUST name exactly one `result-kind: file | commit | response-only`^MAY omit `result-kind: file | commit | response-only`^Delegation must require exactly one of the three result kinds
+delegation-durable-kind^.gobbi/projects/gobbi/skills/delegation/SKILL.md^MUST use `result-kind: file` for durable design and evaluation results.^MAY use `result-kind: response-only` for durable design and evaluation results.^Delegation durable design and evaluation must select file results
+delegation-durable-path^.gobbi/projects/gobbi/skills/delegation/SKILL.md^Give the exact caller-named^Give a receiver-selected^Delegation durable design and evaluation must use a caller-named verified file
+delegation-printed-substitute^.gobbi/projects/gobbi/skills/delegation/SKILL.md^reject printed content as a substitute for the file^accept printed content as a substitute for the file^Delegation durable design and evaluation must use a caller-named verified file
+delegation-commit-contract^.gobbi/projects/gobbi/skills/delegation/SKILL.md^for `commit`, give the branch, assignment-owned paths, commit^for `commit`, omit the branch, paths, and authority^Delegation must preserve intentional commit and response-only result contracts
+delegation-response-contract^.gobbi/projects/gobbi/skills/delegation/SKILL.md^for `response-only`, define the response shape and consumer^for `response-only`, accept any printed summary^Delegation must preserve intentional commit and response-only result contracts
+cowork-design-small^.gobbi/projects/gobbi/skills/cowork/SKILL.md^including small local choices.^excluding small local choices.^Cowork must classify small structural and vocabulary choices as design
+cowork-design-route^.gobbi/projects/gobbi/skills/cowork/SKILL.md^otherwise route through at least Light Ideation.^otherwise use Direct delivery.^Cowork unresolved design must route through at least Light Ideation
+cowork-design-local-input^.gobbi/projects/gobbi/skills/cowork/SKILL.md^assign available active-runtime subagents or teammates bounded independent^let the leader work without independent local input^Cowork must assign available local independent design participation
+cowork-design-batch^.gobbi/projects/gobbi/skills/cowork/SKILL.md^choices may share one assignment only when every choice is named^choices may be waived or grouped without naming them^Cowork may batch only named minor choices under one synthesizer
+cowork-design-writer^.gobbi/projects/gobbi/skills/cowork/SKILL.md^one leader remains the sole writer and^multiple leaders may write and^Cowork may batch only named minor choices under one synthesizer
+cowork-design-partner-draft^.gobbi/projects/gobbi/skills/cowork/SKILL.md^for at least one independent^for an optional^Cowork enabled design packages must use Partner draft and cross-review before synthesis
+cowork-design-partner-review^.gobbi/projects/gobbi/skills/cowork/SKILL.md^one external cross-review^an optional external cross-review^Cowork enabled design packages must use Partner draft and cross-review before synthesis
+cowork-explicit-evaluate^.gobbi/projects/gobbi/skills/cowork/SKILL.md^after an explicit `evaluate` call^without an explicit `evaluate` call^Cowork independent evaluation must remain explicitly user-called
+workflow-result-kind^.gobbi/projects/gobbi/skills/workflow/SKILL.md^exactly one `result-kind: file | commit | response-only`.^an optional result kind.^Workflow assignments must name exactly one result kind
+workflow-durable-path^.gobbi/projects/gobbi/skills/workflow/SKILL.md^with an exact caller-named^with a receiver-selected^Workflow durable design and evaluation must use a caller-named verified file
+workflow-printed-substitute^.gobbi/projects/gobbi/skills/workflow/SKILL.md^A printed response cannot substitute for a promised file or commit.^A printed response may substitute for a promised file or commit.^Workflow must reject printed substitutes for promised files and commits
+workflow-design-small^.gobbi/projects/gobbi/skills/workflow/SKILL.md^including small local choices.^excluding small local choices.^Workflow must classify small structural and vocabulary choices as design
+workflow-design-local-input^.gobbi/projects/gobbi/skills/workflow/SKILL.md^assign available active-runtime^let the creator proceed without independent local input^Workflow must assign available local independent design participation
+workflow-design-batch^.gobbi/projects/gobbi/skills/workflow/SKILL.md^choices may share one assignment only when every choice is named.^choices may be waived or grouped without names.^Workflow may batch only named minor design choices
+workflow-design-writer^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Assign one active-runtime creator as the^Assign several active-runtime creators as^Workflow must keep one creator as design writer and synthesizer
+workflow-design-partner-draft^.gobbi/projects/gobbi/skills/workflow/SKILL.md^at least one independent Partner draft^an optional Partner draft^Workflow design-bearing WORK must use enabled Partner draft and cross-review while disabled stays local
+workflow-design-partner-review^.gobbi/projects/gobbi/skills/workflow/SKILL.md^one Partner cross-review^an optional Partner cross-review^Workflow design-bearing WORK must use enabled Partner draft and cross-review while disabled stays local
+workflow-design-disabled^.gobbi/projects/gobbi/skills/workflow/SKILL.md^disabled invokes no external runtime.^disabled may invoke an external runtime.^Workflow design-bearing WORK must use enabled Partner draft and cross-review while disabled stays local
+phase1-design-small^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^including small local choices;^excluding small local choices;^Workflow Phase 1 must inventory small structural and vocabulary design choices
+phase1-design-local-input^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^Map every design choice to bounded independent read-only evidence, alternatives, or critique from available^Let the leader choose without independent local input^Workflow Phase 1 must map every design choice to local independent participation
+phase1-design-batch^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^Related minor choices may share one assignment only when the brief^Related minor choices may be waived or grouped without names^Workflow Phase 1 may batch only named minor choices under one synthesizer
+phase1-design-writer^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^the leader remains the sole writer and synthesizer^multiple leaders may write and synthesize concurrently^Workflow Phase 1 may batch only named minor choices under one synthesizer
+phase1-design-partner-draft^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^at least one independent Partner draft^an optional Partner draft^Workflow Phase 1 enabled design packages must use Partner draft and cross-review while disabled stays local
+phase1-design-partner-review^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^one Partner cross-review^an optional Partner cross-review^Workflow Phase 1 enabled design packages must use Partner draft and cross-review while disabled stays local
+phase1-design-disabled^.gobbi/projects/gobbi/skills/workflow/phase-1/SKILL.md^disabled invokes no external runtime.^disabled may invoke an external runtime.^Workflow Phase 1 enabled design packages must use Partner draft and cross-review while disabled stays local
 slug-privacy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^warn that the session slug enters branch names and paths^state that the session slug enters branch names and paths^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Normalize it by taking each maximal ASCII^Normalize it by taking each locale ASCII^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-no-transliteration^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Do not transliterate, truncate^Transliterate, then truncate^session slug must be privacy-warned, deterministically normalized, and strictly rejected
@@ -339,13 +370,13 @@ finding-f-caller-assembly^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^Th
 finding-i-temp-captures^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^live in one private runtime-temporary directory outside every project and session root^live in the project session root^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
 finding-i-success-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^before a successful return or after failure evidence is surfaced^after a successful return only^Partner captures must remain temporary, outside durable roots, and clean up on every outcome
 finding-i-failure-cleanup^.gobbi/projects/gobbi/skills/gobbi/partner/SKILL.md^Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private^Retain captures after the exact diagnostic is read and surfaced. Keep the complete private^Partner failure handling must remove private captures after surfacing evidence
-finding-e-cowork-enabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Enabled then calls^Enabled then skips^Cowork enabled creation must route through Partner
+finding-e-cowork-enabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Enabled then calls^Enabled then skips^Cowork enabled design packages must use Partner draft and cross-review before synthesis
 finding-e-cowork-disabled^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Disabled invokes no external runtime.^Disabled may invoke an external runtime.^Cowork disabled creation must remain local while the manager owns assembly
 cowork-fresh-local-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^Dispatch one fresh isolated active-runtime evaluator.^Reuse the creation writer as evaluator.^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled behavior
 cowork-enabled-external-evaluator^.gobbi/projects/gobbi/skills/cowork/SKILL.md^one fresh isolated external evaluator over the same frozen subject^one external reviewer over the same frozen subject^Cowork evaluation must use fresh local and enabled external evaluators while preserving disabled behavior
 workflow-partner-consumption^.gobbi/projects/gobbi/skills/workflow/SKILL.md^MUST apply the recorded session-wide partner policy to every productive step.^MAY ignore the recorded session-wide partner policy for productive steps.^Workflow must consume the recorded partner policy
-workflow-disabled-local-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^One assigned active-runtime self-reviewed draft; no external invocation.^Any active-runtime draft; external invocation optional.^Workflow disabled policy must select local-only participants
-workflow-enabled-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^each applicable external draft and cross-review through Partner^optional external review without Partner^Workflow enabled policy must use Partner while retaining assembly ownership
+workflow-disabled-local-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^One assigned active-runtime self-reviewed creator draft plus available bounded local evidence^Any active-runtime draft with no required local evidence^Workflow disabled policy must select local-only participants
+workflow-enabled-matrix^.gobbi/projects/gobbi/skills/workflow/SKILL.md^at least one independent draft and one cross-review through Partner^optional external review without Partner^Workflow enabled policy must use Partner while retaining assembly ownership
 finding-g-phase2-route^.gobbi/projects/gobbi/skills/workflow/phase-2/SKILL.md^[Partner](../../gobbi/partner/SKILL.md); disabled invokes no external runtime.^an external reviewer directly; disabled may invoke an external runtime.^Workflow Phase 2 must consume the parent participant policy for task evaluation
 finding-a-severity^.gobbi/projects/gobbi/agents/manager.md^severity is High, Medium, or Low;^severity is any value;^automatic finding correction requires High, Medium, or Low severity
 finding-a-blocking^.gobbi/projects/gobbi/agents/manager.md^`blocking: no`;^`blocking: yes|no`;^automatic finding correction requires blocking: no
@@ -607,25 +638,25 @@ test_mixed_safe_and_unsafe() {
 test_forward_and_back_rollback() {
   local root="$tmp_root/rollback" initial="$tmp_root/rollback.initial" restored="$tmp_root/rollback.restored"
   make_fixture "$root"
-  write_skill_file "$root" delegation SKILL.md '# Delegation'
-  write_skill_file "$root" delegation templates/shared.md '# Shared'
+  write_skill_file "$root" alpha SKILL.md '# Alpha'
+  write_skill_file "$root" alpha templates/shared.md '# Shared'
   write_skill_file "$root" orchestration SKILL.md '# Orchestration'
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
   snapshot_mirror "$root" "$initial"
 
   mkdir -p "$root/.gobbi/projects/gobbi/skills/orchestration/templates"
-  mv "$root/.gobbi/projects/gobbi/skills/delegation/templates/shared.md" \
+  mv "$root/.gobbi/projects/gobbi/skills/alpha/templates/shared.md" \
     "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md"
-  rmdir "$root/.gobbi/projects/gobbi/skills/delegation/templates"
+  rmdir "$root/.gobbi/projects/gobbi/skills/alpha/templates"
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null
-  [[ ! -e "$root/.claude/skills/delegation/templates" ]] || fail 'forward owner move left the old mirror path'
+  [[ ! -e "$root/.claude/skills/alpha/templates" ]] || fail 'forward owner move left the old mirror path'
   [[ -L "$root/.claude/skills/orchestration/templates/shared.md" ]] || fail 'forward owner move did not create the new mirror path'
 
-  mkdir -p "$root/.gobbi/projects/gobbi/skills/delegation/templates"
+  mkdir -p "$root/.gobbi/projects/gobbi/skills/alpha/templates"
   mv "$root/.gobbi/projects/gobbi/skills/orchestration/templates/shared.md" \
-    "$root/.gobbi/projects/gobbi/skills/delegation/templates/shared.md"
+    "$root/.gobbi/projects/gobbi/skills/alpha/templates/shared.md"
   rmdir "$root/.gobbi/projects/gobbi/skills/orchestration/templates"
   run_sync "$root" >/dev/null
   run_sync "$root" --check >/dev/null

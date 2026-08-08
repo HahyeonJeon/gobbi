@@ -162,6 +162,15 @@ CW · Wrap-up
 | **Light** | One bounded design choice or modest decomposition remains. | Run only the optional shaping stage the evidence requires, then execute. |
 | **Structured** | Work is broad, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation, Planning, then ordered Execution. |
 
+- Before selecting Direct, inventory every unresolved design choice. Design includes architecture, strategy,
+  naming, vocabulary, functions, classes, interfaces, data shapes, and every other choice of structure,
+  meaning, or contract, including small local choices. Direct is available only when this inventory is empty;
+  otherwise route through at least Light Ideation.
+- For each selected Ideation stage, assign available active-runtime subagents or teammates bounded independent
+  read-only work that supplies evidence, alternatives, or critique for every named design choice. Related minor
+  choices may share one assignment only when every choice is named; one leader remains the sole writer and
+  synthesizer.
+
 - Keep the complete fixed template published at mode entry, with only `CW · Configuration` active initially.
   Activate `CW · Topic · IDEATION` when selected, then only the selected shaping stages, `CW · Topic · EXECUTION`,
   and `CW · Topic · PASS` in order; leave unused optional stages completed or pending according to accepted topic
@@ -178,9 +187,10 @@ CW · Wrap-up
   tree, with a fresh assignment and re-anchored paths and authority.
 - Load selected [Ideation](../ideation/SKILL.md) or [Planning](../planning/SKILL.md) only when its TODO is active.
   The leader self-reviews the exact Step 1.2 output, removes Planning scratch, and proves no tracked change.
-  For Structured Ideation, the local leader first freezes its draft. Enabled then calls
-  [Partner](../gobbi/partner/SKILL.md) for the independent external draft and external cross-review, stores each
-  labeled return in the creation round, and lets the leader synthesize. Disabled invokes no external runtime.
+  For every design-bearing Ideation package, freeze the local leader's draft after all named independent local
+  inputs are available. Enabled then calls [Partner](../gobbi/partner/SKILL.md) for at least one independent
+  external draft and one external cross-review over frozen inputs, stores each labeled return in the creation
+  round, and lets the leader synthesize only after both returns validate. Disabled invokes no external runtime.
   The manager owns local participants, freeze order, assembly, acceptance, and routing. Creation evidence is
   never evaluation coverage.
 - Assign each dependency-ready task through [Execution](../execution/SKILL.md). Keep one writer active. The
