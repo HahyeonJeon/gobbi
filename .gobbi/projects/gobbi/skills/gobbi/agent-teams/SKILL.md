@@ -98,12 +98,12 @@ Ask the lead to shut down every teammate, then clean up the team. One lead can m
 `/resume` and `/rewind` do not restore in-process teammates. Spawn replacements from the active mode's
 verified recovery evidence. Replace a teammate that remains unreachable or repeatedly returns malformed work.
 
-## Workflow integration
+### Workflow integration
 
 This section owns the Agent Teams guidance that Workflow uses for TODO assignment, evidence-based recovery,
 role reuse, and phase continuity. Workflow remains the authority for its state machine and acceptance rules.
 
-### TODO-based assignment
+#### TODO-based assignment
 
 The manager creates, retitles, reorders, and completes TODO items. Specialists report progress but cannot
 self-assign, change progression, or accept their own work.
@@ -115,7 +115,7 @@ rewriting the completed one.
 Task status is scheduling information. Workflow Step 1.3 alone validates a report and decides whether the TODO
 may advance.
 
-### Context-boundary recovery
+#### Context-boundary recovery
 
 After compact, clear, resume, rewind, lost TODO data, or another context boundary:
 
@@ -135,7 +135,7 @@ Claude Code does not restore in-process teammates after `/resume` or `/rewind`; 
 compaction, continue a teammate only when its identity, assignment, addressability, idle state, and write
 boundary still match the reconstructed Workflow evidence.
 
-### Reuse and write safety
+#### Reuse and write safety
 
 Reuse a teammate only inside the role boundary in Workflow Step 1.3. Every continued assignment receives a
 new identifier and a complete re-anchored brief.
@@ -153,7 +153,7 @@ After each report, the manager rereads the promised artifact or commit, reproduc
 the specialist is idle and addressable before reuse. A missing, malformed, rejected, or unreachable result
 gets a fresh replacement rather than inferred completion.
 
-### Phase continuity
+#### Phase continuity
 
 During Phase 2 and Phase 3, activate the next dependency-ready stage immediately after verification. A Hand-off
 is a recovery checkpoint, not an idle wait. Stop only at Workflow's critical-blocker boundary.

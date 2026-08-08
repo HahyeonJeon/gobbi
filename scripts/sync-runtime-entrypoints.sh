@@ -53,40 +53,16 @@ render_entrypoint() {
     printf '%s must be a regular file\n' "$target" >&2
     return 1
   }
-  grep -Fxq '## Principles' "$target" || {
-    printf '%s is missing the Principles section\n' "$target" >&2
-    return 1
-  }
-  grep -Fxq '## Navigate deeper' "$target" || {
-    printf '%s is missing the navigation section\n' "$target" >&2
-    return 1
-  }
 
   awk -v body_path="$body_path" -v marker_start="$marker_start" -v marker_end="$marker_end" '
-    $0 == "## Principles" {
-      if (!section_seen) {
-        print
-        print marker_start
-        while ((getline line < body_path) > 0) print line
-        close(body_path)
-        print marker_end
-        print ""
-        section_seen = 1
-        found_principles = 1
-      }
-      in_generated = 1
-      next
+    BEGIN {
+      print "## Principles"
+      print marker_start
+      while ((getline line < body_path) > 0) print line
+      close(body_path)
+      print marker_end
     }
-    in_generated && $0 == "## Navigate deeper" {
-      in_generated = 0
-      print
-      next
-    }
-    !in_generated { print }
-    END {
-      if (found_principles != 1) exit 1
-    }
-  ' "$target" > "$output"
+  ' > "$output"
 }
 
 for index in "${!targets[@]}"; do

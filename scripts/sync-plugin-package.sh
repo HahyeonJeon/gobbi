@@ -3,6 +3,7 @@ set -euo pipefail
 
 repo_root_source="${GOBBI_SYNC_REPO_ROOT:-$(dirname "${BASH_SOURCE[0]}")/..}"
 repo_root="$(cd "$repo_root_source" && pwd -P)"
+runtime_entrypoint_sync="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)/sync-runtime-entrypoints.sh"
 package_root="$repo_root/plugins/gobbi"
 check_mode=false
 materialize_mode=false
@@ -239,6 +240,7 @@ validate_lifecycle_semantics() {
   local git_conventions="$skills/git/conventions.md"
   local memory="$skills/memory/SKILL.md"
   local partner="$skills/gobbi/partner/SKILL.md"
+  local agent_teams="$skills/gobbi/agent-teams/SKILL.md"
   local cowork="$skills/cowork/SKILL.md"
   local workflow="$skills/workflow/SKILL.md"
   local phase_1="$skills/workflow/phase-1/SKILL.md"
@@ -254,6 +256,7 @@ validate_lifecycle_semantics() {
     "$git_conventions" \
     "$memory" \
     "$partner" \
+    "$agent_teams" \
     "$cowork" \
     "$workflow" \
     "$phase_1" \
@@ -277,6 +280,11 @@ validate_lifecycle_semantics() {
     'Read [`../principles/SKILL.md`](../principles/SKILL.md), then [`../discussion/SKILL.md`](../discussion/SKILL.md)' \
     'then [`../delegation/SKILL.md`](../delegation/SKILL.md)' \
     'Confirm Principles, Discussion, and Delegation before governed action'
+  require_semantic_sequence "$gobbi" 4 \
+    'Gobbi References must match the Principles, Discussion, and Delegation entry load' \
+    '## References' \
+    'loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other' \
+    'skill. The map shows what exists rather than what is loaded.'
   require_semantic_text "$gobbi" \
     '`AskUserQuestion` in Claude Code or `request_user_input` in Codex' \
     'Gobbi entry must name the structured question controls'
@@ -441,6 +449,20 @@ validate_lifecycle_semantics() {
     'Partner failure handling must remove private captures after surfacing evidence' \
     'Retain captures only until the exact diagnostic is read and surfaced. Then remove the complete private' \
     'capture directory. Report a cleanup failure'
+
+  require_semantic_sequence "$agent_teams" 130 \
+    'Agent Teams Workflow guidance must remain inside Manual' \
+    '## Manual' \
+    '### Workflow integration' \
+    '#### TODO-based assignment' \
+    '#### Context-boundary recovery' \
+    '#### Reuse and write safety' \
+    '#### Phase continuity' \
+    '## References'
+  require_semantic_text "$agent_teams" '[Workflow](../../workflow/SKILL.md)' \
+    'Agent Teams Workflow guidance must retain its valid Workflow link'
+  require_semantic_text "$agent_teams" '[Delegation](../../delegation/SKILL.md)' \
+    'Agent Teams Workflow guidance must retain its valid Delegation link'
 
   require_semantic_section_words "$cowork" \
     '#### 2.1 Route and deliver one topic' \
@@ -684,26 +706,6 @@ validate_lifecycle_semantics() {
     require_semantic_permission "Agent($role)" "Claude settings must explicitly allow Agent($role)"
   done
 
-  for path in "$repo_root/.codex/AGENTS.md" "$repo_root/.claude/CLAUDE.md"; do
-    require_semantic_sequence "$path" 2 \
-      'runtime entry documentation must preserve mode to slug to partner order' \
-      'After the mode, ask a' \
-      'normalized session slug for Cowork or Workflow' \
-      '`partner: enabled|disabled` policy before handing off to the owner'
-    require_semantic_text "$path" 'Disabled' \
-      'runtime entry documentation must preserve disabled partner policy'
-    require_semantic_text "$path" 'invokes no external runtime' \
-      'runtime entry documentation must preserve disabled local-only behavior'
-    require_semantic_text "$path" \
-      'only PASS auto-continues' \
-      'runtime entry documentation must preserve the PASS-only finding gate'
-    require_semantic_text "$path" \
-      '<!-- BEGIN GENERATED PRINCIPLES: .gobbi/projects/gobbi/skills/principles/SKILL.md -->' \
-      'runtime entry documentation must expose the generated Principles source'
-    require_semantic_text "$path" \
-      '## Principle 10 — Finish In-Scope Work' \
-      'runtime entry documentation must contain the complete Principles body'
-  done
 }
 
 validate_source_topology() {
@@ -766,17 +768,11 @@ validate_source_topology() {
   fi
 
   require_link "$repo_root/AGENTS.md" '.codex/AGENTS.md'
-  if [[ -f "$repo_root/.codex/AGENTS.md" ]]; then
-    grep -Fq 'General | Cowork | Workflow' "$repo_root/.codex/AGENTS.md" \
-      || topology_fail '.codex/AGENTS.md does not describe the General | Cowork | Workflow session-mode contract'
-    grep -Fq 'Configuration' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the Configuration-first workflow'
-    grep -Fq 'DISCUSSION' "$repo_root/.codex/AGENTS.md" || topology_fail '.codex/AGENTS.md does not describe the productive-step stage loop'
-  fi
-  if [[ -f "$repo_root/.claude/CLAUDE.md" ]]; then
-    grep -Fq 'General | Cowork | Workflow' "$repo_root/.claude/CLAUDE.md" \
-      || topology_fail '.claude/CLAUDE.md does not describe the General | Cowork | Workflow session-mode contract'
-    grep -Fq 'Configuration' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the Configuration-first workflow'
-    grep -Fq 'DISCUSSION' "$repo_root/.claude/CLAUDE.md" || topology_fail '.claude/CLAUDE.md does not describe the productive-step stage loop'
+  if [[ -f "$repo_root/.codex/AGENTS.md" && -f "$repo_root/.claude/CLAUDE.md" ]]; then
+    if ! GOBBI_ENTRYPOINT_REPO_ROOT="$repo_root" \
+      bash "$runtime_entrypoint_sync" --check >/dev/null; then
+      topology_fail 'runtime entrypoints must contain only canonical generated Principles content'
+    fi
   fi
 
   for role in "${roles[@]}"; do

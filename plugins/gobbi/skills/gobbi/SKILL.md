@@ -245,8 +245,9 @@ projects/*/worktrees/
 ## References
 
 This is the complete map of the canonical Gobbi skill roots, plus the two children `gobbi` owns. Step 1.2
-loads only Principles; selected owners, phases, and task triggers load every other skill. The map shows what
-exists rather than what is loaded. Every other root that has children routes to them from its own document.
+loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other
+skill. The map shows what exists rather than what is loaded. Every other root that has children routes to them
+from its own document.
 
 ### Entry and shared operations
 
