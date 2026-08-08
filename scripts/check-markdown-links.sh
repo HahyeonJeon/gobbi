@@ -51,9 +51,17 @@ fi
 files=()
 for arg in "$@"; do
     if [ -d "$arg" ]; then
-        while IFS= read -r f; do
+        git_owned=false
+        if [ "$(git -C "$arg" rev-parse --is-inside-work-tree 2>/dev/null)" = "true" ]; then
+            git_owned=true
+        fi
+        while IFS= read -r -d '' f; do
+            if [ "$git_owned" = true ] \
+                && git -C "$(dirname "$f")" check-ignore -q -- "$(basename "$f")"; then
+                continue
+            fi
             files+=("$f")
-        done < <(find "$arg" -type f -name '*.md' | sort)
+        done < <(find "$arg" -type f -name '*.md' -print0)
     elif [ -f "$arg" ]; then
         files+=("$arg")
     else
