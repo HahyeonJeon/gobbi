@@ -286,11 +286,11 @@ test_semantic_cowork_forbidden_wrapup_edge() {
 test_semantic_entry_order() {
   local root="$tmp_root/semantic-entry-order" log="$tmp_root/semantic-entry-order.log"
   local path='.gobbi/projects/gobbi/skills/gobbi/SKILL.md'
-  local expected='lifecycle entry route must order mode, applicable slug, partner policy, then owner'
+  local expected='lifecycle entry route must publish the mode TODO, collect the slug and partner pair, then hand off'
   prepare_semantic_fixture "$root"
   swap_literals_once "$root/$path" \
-    'After recording fresh Cowork or Workflow' \
-    'After the applicable slug is recorded'
+    'After the user selects Cowork or Workflow' \
+    'After publishing the mode TODO'
   if run_sync "$root" --check > "$log" 2>&1; then
     fail 'entry-order semantic mutation unexpectedly succeeded'
   fi
@@ -313,10 +313,10 @@ gobbi-layout-session-wire^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^projects/*
 gobbi-cowork-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../cowork/SKILL.md`](../cowork/SKILL.md)^[`../cowork/SKILL.md`](../workflow/SKILL.md)^Gobbi must hand Cowork to its canonical owner
 gobbi-workflow-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../workflow/SKILL.md`](../workflow/SKILL.md)^[`../workflow/SKILL.md`](../cowork/SKILL.md)^Gobbi must hand Workflow to its canonical owner
 slug-privacy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^warn that the session slug enters branch names and paths^state that the session slug enters branch names and paths^session slug must be privacy-warned, deterministically normalized, and strictly rejected
-slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^maximal ASCII alphanumeric sequence as one word^maximal locale alphanumeric sequence as one word^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Normalize it by taking each maximal ASCII^Normalize it by taking each locale ASCII^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-no-transliteration^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Do not transliterate, truncate^Transliterate, then truncate^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-20-boundary^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Accept only 1–20 characters^Accept only 1–21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
-slug-empty-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^normalization is empty^normalization is blank^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-empty-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^is empty, longer than 20 characters^is blank, longer than 20 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-over-20-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^longer than 20 characters^longer than 21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-reserved-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^or reserved^or platform-specific^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 naming-original-date^.gobbi/projects/gobbi/skills/git/conventions.md^never changes at a context boundary^may change at a context boundary^new session identity must preserve the original UTC date across context boundaries

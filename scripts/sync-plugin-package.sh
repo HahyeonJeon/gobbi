@@ -265,12 +265,25 @@ validate_lifecycle_semantics() {
   done
 
   require_semantic_sequence "$gobbi" 75 \
-    'lifecycle entry route must order mode, applicable slug, partner policy, then owner' \
+    'lifecycle entry route must publish the mode TODO, collect the slug and partner pair, then hand off' \
     '#### 1.3 Obtain or preserve mode, applicable slug, and partner policy' \
-    'After recording fresh Cowork or Workflow' \
-    'After the applicable slug is recorded' \
+    'After the user selects Cowork or Workflow' \
+    'After publishing the mode TODO' \
     'Record mode, applicable normalized slug, and partner policy together' \
     '#### 1.5 Load the selected owner and hand off without mutation'
+  require_semantic_sequence "$gobbi" 20 \
+    'Gobbi entry must load question and delegation contracts before routing' \
+    '#### 1.2 Load the entry foundation' \
+    'Read [`../principles/SKILL.md`](../principles/SKILL.md), then [`../discussion/SKILL.md`](../discussion/SKILL.md)' \
+    'then [`../delegation/SKILL.md`](../delegation/SKILL.md)' \
+    'Confirm Principles, Discussion, and Delegation before governed action'
+  require_semantic_text "$gobbi" \
+    '`AskUserQuestion` in Claude Code or `request_user_input` in Codex' \
+    'Gobbi entry must name the structured question controls'
+  require_semantic_sequence "$gobbi" 3 \
+    'Gobbi entry must collect slug and partner together' \
+    'ask the slug and session-wide partner' \
+    'policy together in one structured request with two questions'
   require_semantic_section_words "$gobbi" \
     '#### 1.1 Establish the entry context, runtime, and canonical layout' \
     '#### 1.2 Load the entry foundation' \
@@ -286,8 +299,10 @@ validate_lifecycle_semantics() {
     '#### 1.2 Load the entry foundation' \
     '# Gobbi runtime state. Session evidence and linked worktrees are never tracked. projects/*/sessions/ projects/*/worktrees/' \
     'Gobbi layout must retain the exact ignore wire values'
-  require_semantic_text "$gobbi" 'General skips this question' \
-    'General entry must skip the slug question'
+  require_semantic_sequence "$gobbi" 3 \
+    'General entry must skip the slug question' \
+    'General skips this' \
+    'question for the slug'
   require_semantic_text "$gobbi" 'records `slug: not-applicable`' \
     'General entry must record slug: not-applicable'
   require_semantic_text "$gobbi" 'creates no Gobbi identity' \
@@ -297,10 +312,11 @@ validate_lifecycle_semantics() {
   require_semantic_sequence "$gobbi" 14 \
     'session slug must be privacy-warned, deterministically normalized, and strictly rejected' \
     'warn that the session slug enters branch names and paths' \
-    'maximal ASCII alphanumeric sequence as one word' \
-    'Do not transliterate, truncate' \
-    'Accept only 1–20 characters' \
-    'normalization is empty, longer than 20 characters, or reserved'
+    'Normalize it by taking each maximal ASCII' \
+    'alphanumeric sequence as one word' \
+    'Do not transliterate, truncate, or add a suffix. Accept only 1–20 characters' \
+    'when normalization' \
+    'is empty, longer than 20 characters, or reserved'
   require_semantic_section_words "$gobbi" \
     '#### 1.4 Apply the session-wide finding gate' \
     '#### 1.5 Load the selected owner and hand off without mutation' \
@@ -386,7 +402,6 @@ validate_lifecycle_semantics() {
   require_semantic_sequence "$cowork" 75 \
     'Cowork must retain the complete fixed TODO template' \
     'CW · Configuration' \
-    'CW · Topic · DISCUSSION' \
     'CW · Topic · IDEATION' \
     'CW · Topic · PLANNING' \
     'CW · Topic · EXECUTION' \

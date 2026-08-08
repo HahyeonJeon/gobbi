@@ -1,15 +1,16 @@
 ---
 name: gobbi
-description: "MUST load at session start and at every boundary that may discard session context. Loads Principles, then obtains and routes the user's General, Cowork, or Workflow mode selection."
+description: "MUST load at session start and at every boundary that may discard session context. Loads Principles, Discussion, and Delegation, then obtains and routes the user's General, Cowork, or Workflow mode selection."
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion
 skill-type: operation
 ---
 
 # Gobbi
 
-Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, reports any configuration the
-session is missing, obtains one session mode — General, Cowork, or Workflow — an applicable session slug, and
-one session-wide `partner: enabled|disabled` policy, then hands the complete entry state to that mode's owner.
+Gobbi is the read-only entry operation for a Gobbi manager. It loads Principles, Discussion, and Delegation,
+reports any configuration the session is missing, obtains one session mode — General, Cowork, or Workflow — an
+applicable session slug, and one session-wide `partner: enabled|disabled` policy, then hands the complete entry
+state to that mode's owner.
 
 Gobbi owns the load, the selection, the routing, and the session-wide authority and evaluation commitments
 every mode inherits. General continues from the Principles foundation, Cowork uses
@@ -48,12 +49,11 @@ its owner without copying that owner's procedure or creating a second router.
   implementation; every mutation belongs to the selected mode's owner.
 
 - **MUST obtain an explicit General, Cowork, or Workflow selection at every fresh entry.** Use the active
-  runtime's structured user-input request with no automatic resolution; wording may recommend a mode but
-  never selects it.
+  runtime's structured user-input control with no automatic resolution — `AskUserQuestion` in Claude Code and
+  `request_user_input` in Codex; wording may recommend a mode but never selects it.
 
-- **MUST load Principles before any governed action and defer every other skill to its owner or trigger.**
-  Gobbi may load Discussion just before it asks its own questions; selected mode owners and phases load their
-  shared and phase-specific skills.
+- **MUST load Principles before any governed action, then load Discussion and Delegation during entry.** Selected
+  mode owners and phases load their remaining shared and phase-specific skills.
 
 - **MUST preserve the system's dependency direction.** `gobbi`, `cowork`, `workflow`, `partner`, and
   `agent-teams` may reference any skill; `delegation`, `discussion`, `evaluation`, `git`, `ideation`,
@@ -165,16 +165,20 @@ projects/*/worktrees/
 
 #### 1.2 Load the entry foundation
 
-- Read [`../principles/SKILL.md`](../principles/SKILL.md). Load no other skill in this step.
+- Read [`../principles/SKILL.md`](../principles/SKILL.md), then [`../discussion/SKILL.md`](../discussion/SKILL.md),
+  then [`../delegation/SKILL.md`](../delegation/SKILL.md).
 - Read applicable project rules, governing repository instructions, and the canonical
   [`manager` role](../../agents/manager.md). Record the repository's declared empty-rules state when no
   project rules exist.
-- Confirm Principles before governed action. Defer every other skill to the selected owner or its task trigger.
+- Confirm Principles, Discussion, and Delegation before governed action. Defer every other skill to the selected
+  owner or its task trigger.
 
 #### 1.3 Obtain or preserve mode, applicable slug, and partner policy
 
-- Load [Discussion](../discussion/SKILL.md) immediately before a mode, slug, or partner question. At every fresh
-  entry, use the active runtime's structured user-input request with no automatic resolution:
+- Use the already loaded [Discussion](../discussion/SKILL.md) contract for every entry question. At every fresh
+  entry, use the active runtime's structured user-input control with no automatic resolution: call
+  `AskUserQuestion` in Claude Code or `request_user_input` in Codex. Do not replace these controls with a
+  plain-text question:
 
 | Mode | Select when | Participant and evaluation commitment |
 |---|---|---|
@@ -191,23 +195,24 @@ projects/*/worktrees/
   Workflow publishes its fixed `P1`–`P3` template. Start only the first item and leave the remaining template
   items pending. The template titles contain no topic, task, subject, stage, iteration, or closure-decision
   placeholder; those values remain in evidence, assignments, and paths.
-- After recording fresh Cowork or Workflow, warn that the session slug enters branch names and paths and must
-  not contain sensitive information. Ask for the slug through the same [Discussion](../discussion/SKILL.md)
-  structure and control. Normalize it by taking each maximal ASCII alphanumeric sequence as one word,
-  lowercasing it, joining the words with one hyphen, and trimming separators. Do not transliterate, truncate,
-  or add a suffix. Accept only 1–20 characters matching `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject `con`, `prn`,
-  `aux`, `nul`, `com1` through `com9`, and `lpt1` through `lpt9`, case-insensitively. Re-ask with the failed
-  condition when normalization is empty, longer than 20 characters, or reserved. General skips this question
-  and records `slug: not-applicable`; it creates no Gobbi identity. A recovered new session preserves its
-  recorded normalized slug. A recovered legacy session preserves `slug: not-applicable` and receives no slug
-  question.
-- After the applicable slug is recorded, ask whether the session-wide partner policy is `enabled` or
-  `disabled`. Ask whether to use a partner, never which runtime; the active runtime fixes the direction.
+- After the user selects Cowork or Workflow, warn that the session slug enters branch names and paths and must
+  not contain sensitive information. After publishing the mode TODO, ask the slug and session-wide partner
+  policy together in one structured request with two questions. The slug question uses the same
+  [Discussion](../discussion/SKILL.md) structure and control. Normalize it by taking each maximal ASCII
+  alphanumeric sequence as one word, lowercasing it, joining the words with one hyphen, and trimming separators.
+  Do not transliterate, truncate, or add a suffix. Accept only 1–20 characters matching
+  `^[a-z0-9]+(?:-[a-z0-9]+)*$` and reject `con`, `prn`, `aux`, `nul`, `com1` through `com9`, and `lpt1`
+  through `lpt9`, case-insensitively. Re-ask only the slug question with the failed condition when normalization
+  is empty, longer than 20 characters, or reserved; retain a valid partner answer. The second question asks
+  whether to use a partner, never which runtime; the active runtime fixes the direction. General skips this
+  question for the slug, records `slug: not-applicable`, creates no Gobbi identity, and asks only the partner
+  question. A recovered new session preserves its recorded normalized slug. A recovered legacy session
+  preserves `slug: not-applicable` and receives no slug question.
 - Record mode, applicable normalized slug, and partner policy together. Cowork and Workflow consume all three;
   General consumes mode and policy without creating session state. Enabled authorizes the owner to call
   [`partner`](partner/SKILL.md) whenever its mode requires; disabled authorizes none.
 - At a boundary, preserve every validated value and ask only for missing, ambiguous, or conflicting evidence,
-  in mode → applicable slug → partner order. Never rename a slug used by an existing session object.
+  in mode → applicable slug and partner pair order. Never rename a slug used by an existing session object.
 
 #### 1.4 Apply the session-wide finding gate
 

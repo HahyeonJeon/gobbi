@@ -125,12 +125,12 @@ the manager may advance it, but never become a second route.
 
 - Supply each exact path to [Memory](../memory/SKILL.md) `Temporary Record`. Memory owns identity validation,
   containment, and no-Git capture; Cowork never stages a session path or writes outside the verified worktree.
-- Use this exact fixed Cowork title template. Dynamic topic, task, subject, stage, iteration, and closure values
-  stay in the topic contract, assignment, evidence path, or checkpoint; they never become TODO title fields:
+- Use this exact fixed Cowork title template. Topic discussion is owned by the Ideation stage, so it has no
+  separate TODO title. Dynamic topic, task, subject, stage, iteration, and closure values stay in the topic
+  contract, assignment, evidence path, or checkpoint; they never become TODO title fields:
 
 ```text
 CW · Configuration
-CW · Topic · DISCUSSION
 CW · Topic · IDEATION
 CW · Topic · PLANNING
 CW · Topic · EXECUTION
@@ -151,9 +151,10 @@ CW · Wrap-up
 
 #### 2.1 Route and deliver one topic
 
-- Use [Discussion](../discussion/SKILL.md) to lock the topic's outcome, purpose, scope, acceptance proof,
-  material decisions, artifact paths, first action, and exclusions. Assign the next stable `topic-NN-slug`
-  and select the smallest safe depth:
+- Lock the topic's outcome, purpose, scope, acceptance proof, material decisions, artifact paths, first action,
+  and exclusions through the loaded [Discussion](../discussion/SKILL.md) contract. For Structured topics, this
+  is the Ideation operation's DISCUSSION step and has no separate Cowork TODO. Assign the next stable
+  `topic-NN-slug` and select the smallest safe depth:
 
 | Depth | Evidence | Topic path |
 |---|---|---|
@@ -162,8 +163,8 @@ CW · Wrap-up
 | **Structured** | Work is broad, cross-cutting, architectural, high-risk, hard to reverse, or materially uncertain. | Normally run Ideation, Planning, then ordered Execution. |
 
 - Keep the complete fixed template published at mode entry, with only `CW · Configuration` active initially.
-  Activate `CW · Topic · DISCUSSION`, only the selected shaping stages, `CW · Topic · EXECUTION`, and
-  `CW · Topic · PASS` in order; leave unused optional stages completed or pending according to accepted topic
+  Activate `CW · Topic · IDEATION` when selected, then only the selected shaping stages, `CW · Topic · EXECUTION`,
+  and `CW · Topic · PASS` in order; leave unused optional stages completed or pending according to accepted topic
   evidence. Direct and Light assign `task-NN-slug` before execution. Carry each task ID through the topic
   contract, brief, verification, commit, and recovery evidence, not through TODO titles. Reroute when evidence
   or a user decision changes the contract.
