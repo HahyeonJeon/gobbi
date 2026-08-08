@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.1 - 2026-08-08
+
+### Changed
+
+- Gobbi entry now loads Principles, Discussion, and Delegation before governed routing and uses the active
+  structured user-question control for mode, slug, and partner policy decisions.
+- Cowork routes topic discussion through Ideation without a separate `CW · Topic · DISCUSSION` TODO item.
+- Workflow Agent Teams continuity guidance now lives inside the shared Agent Teams tool skill, and runtime
+  entrypoints keep only the generated Principles content.
+
+### Fixed
+
+- Removed the obsolete Workflow Agent Teams child and stale references from generated package and runtime views.
+- Cropped `assets/logo.png` to its alpha-visible content with a small antialiasing margin while preserving the
+  original RGBA pixels.
+
 ## 1.1.0 - 2026-08-04
 
 ### Changed

@@ -49,20 +49,21 @@ round trip whenever its location does not resolve.
 At session start, resume, `/clear`, rewind, and runtime compaction:
 
 1. Read `{gobbi-skills-root}/principles/SKILL.md` and applicable project rules.
-2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its Principles-only entry load and fresh-or-resumed
-   mode → applicable slug → partner policy contract. Load Discussion just before Gobbi writes any entry
-   question. Preserve each valid value and ask only when its evidence is missing, ambiguous, or conflicting.
+2. Read `{gobbi-skills-root}/gobbi/SKILL.md` and follow its entry load of Discussion and Delegation plus its
+   fresh-or-resumed mode → applicable slug and partner policy contract. Use `AskUserQuestion` in Claude Code or
+   `request_user_input` in Codex for entry questions. Preserve each valid value and ask only when its evidence
+   is missing, ambiguous, or conflicting.
 3. For General, load no orchestration owner.
 4. For Cowork, load `{gobbi-skills-root}/cowork/SKILL.md` after selection, establish its shared four-skill
    register and native TODO route, and add its topic-loop fields to the generic Delegation brief.
 5. For Workflow, load `{gobbi-skills-root}/workflow/SKILL.md` after selection, establish its shared four-skill
    register, and enter it at its validated fresh or resumed position.
 
-Load `{gobbi-skills-root}/discussion/SKILL.md` before writing a user question. Cowork and Workflow load
-Delegation, Discussion, Git, and Memory at owner entry. Their stage owners load Ideation and Planning when
-selected; Workflow Phase 3 alone loads Wrap-up. Load every other selected task, language, tool, or evaluation
-skill when its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both
-roots and names the exact resolved paths in read order.
+Gobbi loads `{gobbi-skills-root}/discussion/SKILL.md` and `{gobbi-skills-root}/delegation/SKILL.md` during entry.
+Cowork and Workflow load Git, Discussion, and Memory at owner entry, then load their stage skills when selected.
+Workflow Phase 3 alone loads Wrap-up. Load every other selected task, language, tool, or evaluation skill when
+its trigger applies. Fresh specialists inherit none of these loads, so every brief carries both roots and names
+the exact resolved paths in read order.
 
 ## Lifecycle
 
@@ -112,8 +113,9 @@ roots and names the exact resolved paths in read order.
 
 ## Decision Discipline
 
-- Use the active runtime's structured user-input primitive for every material user-owned decision. Present the
-  evidence, recommendation, alternatives, consequences, and what would change the recommendation.
+- Use the active runtime's structured user-input primitive for every material user-owned decision —
+  `AskUserQuestion` in Claude Code or `request_user_input` in Codex. Present the evidence, recommendation,
+  alternatives, consequences, and what would change the recommendation.
 - Preserve an accepted direction until the user explicitly changes it. New evidence is a reason to reopen the
   decision, not authority to change it.
 - Stop on scope drift, conflicting user work, missing authority, destructive action, invalid owner evidence,

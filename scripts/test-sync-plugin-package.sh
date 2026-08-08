@@ -58,10 +58,8 @@ make_fixture() {
   printf '%s\n' \
     '{"env":{"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS":"1"},"teammateMode":"in-process"}' \
     > "$root/.claude/settings.json"
-  printf '%s\n' 'General | Cowork | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
-    > "$root/.codex/AGENTS.md"
-  printf '%s\n' 'General | Cowork | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' 'DISCUSSION -> WORK -> EVALUATION -> RECORD' \
-    > "$root/.claude/CLAUDE.md"
+  : > "$root/.codex/AGENTS.md"
+  : > "$root/.claude/CLAUDE.md"
   ln -s '.codex/AGENTS.md' "$root/AGENTS.md"
 
   for role in manager leader executor evaluator assistant; do
@@ -74,7 +72,7 @@ make_fixture() {
   # Every fixture starts from one accepted lifecycle combination. Tests mutate this
   # same temporary tree one semantic edge at a time, so the existing reconciliation
   # harness remains the only system under test and unrelated topology stays valid.
-  for skill in gobbi git memory cowork workflow; do
+  for skill in principles gobbi git memory cowork workflow; do
     cp -R "$repo_root/.gobbi/projects/gobbi/skills/$skill" \
       "$root/.gobbi/projects/gobbi/skills/$skill"
   done
@@ -286,11 +284,11 @@ test_semantic_cowork_forbidden_wrapup_edge() {
 test_semantic_entry_order() {
   local root="$tmp_root/semantic-entry-order" log="$tmp_root/semantic-entry-order.log"
   local path='.gobbi/projects/gobbi/skills/gobbi/SKILL.md'
-  local expected='lifecycle entry route must order mode, applicable slug, partner policy, then owner'
+  local expected='lifecycle entry route must publish the mode TODO, collect the slug and partner pair, then hand off'
   prepare_semantic_fixture "$root"
   swap_literals_once "$root/$path" \
-    'After recording fresh Cowork or Workflow' \
-    'After the applicable slug is recorded'
+    'After the user selects Cowork or Workflow' \
+    'After publishing the mode TODO'
   if run_sync "$root" --check > "$log" 2>&1; then
     fail 'entry-order semantic mutation unexpectedly succeeded'
   fi
@@ -312,11 +310,13 @@ gobbi-root-sentinels^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^`agents/manager
 gobbi-layout-session-wire^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^projects/*/sessions/^projects/*/session/^Gobbi layout must retain the exact ignore wire values
 gobbi-cowork-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../cowork/SKILL.md`](../cowork/SKILL.md)^[`../cowork/SKILL.md`](../workflow/SKILL.md)^Gobbi must hand Cowork to its canonical owner
 gobbi-workflow-owner-edge^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^[`../workflow/SKILL.md`](../workflow/SKILL.md)^[`../workflow/SKILL.md`](../cowork/SKILL.md)^Gobbi must hand Workflow to its canonical owner
+gobbi-references-entry-load^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^loads Principles, Discussion, and Delegation; selected owners, phases, and task triggers load every other^loads Principles and Discussion; selected owners, phases, and task triggers load every other^Gobbi References must match the Principles, Discussion, and Delegation entry load
+agent-teams-manual-shape^.gobbi/projects/gobbi/skills/gobbi/agent-teams/SKILL.md^### Workflow integration^## Workflow integration^Agent Teams Workflow guidance must remain inside Manual
 slug-privacy^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^warn that the session slug enters branch names and paths^state that the session slug enters branch names and paths^session slug must be privacy-warned, deterministically normalized, and strictly rejected
-slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^maximal ASCII alphanumeric sequence as one word^maximal locale alphanumeric sequence as one word^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-case-space-separator-unicode^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Normalize it by taking each maximal ASCII^Normalize it by taking each locale ASCII^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-no-transliteration^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Do not transliterate, truncate^Transliterate, then truncate^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-20-boundary^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^Accept only 1–20 characters^Accept only 1–21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
-slug-empty-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^normalization is empty^normalization is blank^session slug must be privacy-warned, deterministically normalized, and strictly rejected
+slug-empty-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^is empty, longer than 20 characters^is blank, longer than 20 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-over-20-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^longer than 20 characters^longer than 21 characters^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 slug-reserved-rejection^.gobbi/projects/gobbi/skills/gobbi/SKILL.md^or reserved^or platform-specific^session slug must be privacy-warned, deterministically normalized, and strictly rejected
 naming-original-date^.gobbi/projects/gobbi/skills/git/conventions.md^never changes at a context boundary^may change at a context boundary^new session identity must preserve the original UTC date across context boundaries
@@ -395,8 +395,6 @@ workflow-durable-wrapup^.gobbi/projects/gobbi/skills/workflow/SKILL.md^Wrap-up d
 finding-h-assistant-mode^.gobbi/projects/gobbi/agents/assistant.md^**Cowork Memory mode** enters only from an explicit Cowork closure assignment^**Cowork Memory mode** enters without an assignment^assignment-authorized assistant must support Cowork direct-Memory closure only
 finding-h-assistant-boundary^.gobbi/projects/gobbi/agents/assistant.md^Never load Wrap-up, create Workflow receipts or a tracked handoff^Load Wrap-up, create Workflow receipts and a tracked handoff^assignment-authorized assistant must support Cowork direct-Memory closure only
 finding-h-git-writer^.gobbi/projects/gobbi/skills/git/SKILL.md^assignment-named writer role, including an assistant^manager role only^Git must authorize an assignment-named assistant writer
-runtime-entry-order^.codex/AGENTS.md^After the mode, ask a^Before the mode, ask a^runtime entry documentation must preserve mode to slug to partner order
-runtime-disabled-policy^.claude/CLAUDE.md^invokes no external runtime^may invoke an external runtime^runtime entry documentation must preserve disabled local-only behavior
 SEMANTIC_CASES
 }
 
@@ -733,29 +731,28 @@ test_marketplace_and_role_contracts() {
   pass 'sync source topology rejects marketplace and role-wrapper drift'
 }
 
-test_entry_mode_contract() {
-  local codex_root="$tmp_root/missing-codex-mode" claude_root="$tmp_root/missing-claude-mode" log
+test_runtime_entrypoint_contract() {
+  local codex_root="$tmp_root/extra-codex-contract" claude_root="$tmp_root/extra-claude-contract" log
+  local expected='runtime entrypoints must contain only canonical generated Principles content'
 
-  make_fixture "$codex_root"
-  write_skill_file "$codex_root" alpha SKILL.md '# Alpha'
-  printf '%s\n' 'General | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' \
-    'DISCUSSION -> WORK -> EVALUATION -> RECORD' > "$codex_root/.codex/AGENTS.md"
-  log="$tmp_root/missing-codex-mode.log"
+  prepare_semantic_fixture "$codex_root"
+  printf '\nGobbi runtime contract must not live in this generated entrypoint.\n' \
+    >> "$codex_root/.codex/AGENTS.md"
+  log="$tmp_root/extra-codex-contract.log"
   if run_sync "$codex_root" --check > "$log" 2>&1; then
-    fail 'sync --check accepted a Codex entry without Cowork'
+    fail 'sync --check accepted extra Codex runtime contract content'
   fi
-  assert_file_contains "$log" '.codex/AGENTS.md does not describe the General | Cowork | Workflow session-mode contract'
+  assert_only_semantic_failure "$log" "$expected"
 
-  make_fixture "$claude_root"
-  write_skill_file "$claude_root" alpha SKILL.md '# Alpha'
-  printf '%s\n' 'General | Workflow' 'Configuration -> Ideation -> Planning -> Execution -> Wrap-up' \
-    'DISCUSSION -> WORK -> EVALUATION -> RECORD' > "$claude_root/.claude/CLAUDE.md"
-  log="$tmp_root/missing-claude-mode.log"
+  prepare_semantic_fixture "$claude_root"
+  printf '\nGobbi runtime contract must not live in this generated entrypoint.\n' \
+    >> "$claude_root/.claude/CLAUDE.md"
+  log="$tmp_root/extra-claude-contract.log"
   if run_sync "$claude_root" --check > "$log" 2>&1; then
-    fail 'sync --check accepted a Claude entry without Cowork'
+    fail 'sync --check accepted extra Claude runtime contract content'
   fi
-  assert_file_contains "$log" '.claude/CLAUDE.md does not describe the General | Cowork | Workflow session-mode contract'
-  pass 'sync source topology rejects runtime entries that omit Cowork'
+  assert_only_semantic_failure "$log" "$expected"
+  pass 'sync source topology rejects non-Principles runtime entrypoint content'
 }
 
 # Pin the two package-component shapes the installed-cache smoke distinguishes. That smoke fails
@@ -819,7 +816,7 @@ test_bounded_walks
 test_hook_component_rejection
 test_manifest_hook_rejection
 test_marketplace_and_role_contracts
-test_entry_mode_contract
+test_runtime_entrypoint_contract
 test_semantic_positive_recovery_and_reflow
 test_semantic_cowork_forbidden_wrapup_edge
 test_semantic_entry_order

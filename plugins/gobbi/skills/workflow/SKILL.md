@@ -86,7 +86,7 @@ P3 · Hand-off
 - Keep these titles stable. Store the current DISCUSSION, WORK, EVALUATION, RECORD, or PASS stage, iteration,
   task ID, and execution cap in the checkpoint and evidence record. On revision, update the evidence and status
   of the same template item; do not add a decision-shaped title field.
-- Recover through [`agent-teams.md`](agent-teams.md): start at the latest verified Hand-off, walk records and
+- Recover through [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md): start at the latest verified Hand-off, walk records and
   task commits in order, reconstruct the first unproved TODO, correct the native list, and load its phase child.
 
 #### 1.2 Configure identity, isolation, and evidence
@@ -220,7 +220,7 @@ The participant matrix is:
   or recovery state. Gates and receipts prove recovery; only the native TODO routes.
 - On a failed partner run or specialist, preserve valid evidence, identify the exact failed system, assignment,
   operation, and check, and retry only that bounded operation when safe. Replace a stale specialist through
-  [`agent-teams.md`](agent-teams.md). Continue only after the missing output validates. A waiver must already
+  [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md). Continue only after the missing output validates. A waiver must already
   name the system, step, and iteration; otherwise an unavailable required system is a critical blocker. Never
   replay a possibly side-effecting operation until its prior effect is proved absent or safely reusable.
 
@@ -280,7 +280,7 @@ same turn. A context boundary preserves established mode, slug, partner policy, 
 - [`phase-1/SKILL.md`](phase-1/SKILL.md) owns Phase 1 Configuration and Ideation actions.
 - [`phase-2/SKILL.md`](phase-2/SKILL.md) owns Phase 2 Planning and Execution actions.
 - [`phase-3/SKILL.md`](phase-3/SKILL.md) owns the Phase 3 Workflow adapter to Wrap-up.
-- [`agent-teams.md`](agent-teams.md) owns TODO-based assignment recovery and context-boundary continuity.
+- [`gobbi/agent-teams`](../gobbi/agent-teams/SKILL.md) owns TODO-based assignment recovery and context-boundary continuity.
 - [Git](../git/SKILL.md), [Memory](../memory/SKILL.md), [Delegation](../delegation/SKILL.md),
   [Partner](../gobbi/partner/SKILL.md), [Evaluation](../evaluation/SKILL.md), and
   [Wrap-up](../wrap-up/SKILL.md) own their named mechanisms.
