@@ -35,8 +35,10 @@ A design is incomplete when its normal path hides either fact.
 ## Rules
 
 - **MUST bind the affected callers, observable behavior, invalid states, expected failures, compatibility
-  position, and applicable resource lifetime before changing an API or runtime boundary.** Do not let a local
-  implementation detail silently become a public contract.
+  position, and applicable resource lifetime before changing an API or runtime boundary; when a public API or
+  support range changes, use project policy to state the supported consumers, compatibility position,
+  replacement or migration path, warning or documentation behavior, and removal or review condition.** Do not
+  let a local implementation detail silently become a public contract.
 - **MUST make mutation, aliasing, retention, ownership transfer, and cleanup explicit whenever mutable data or a
   resource crosses a module, object, or public API boundary.** Each acquired resource has an owner on normal,
   failure, and cancellation paths that apply.

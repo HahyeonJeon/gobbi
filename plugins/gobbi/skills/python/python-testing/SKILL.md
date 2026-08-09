@@ -54,6 +54,8 @@ Coverage, run count, or a successful command does not establish an untested comp
 - Read the accepted behavior, public or internal contract, relevant prior evidence, defect report, supported
   interpreter and environment facts, configuration, compatibility expectations, and applicable error or resource
   exit paths.
+- For a changed public compatibility or support-range claim, bind the evidence to the project-selected support
+  matrix or explicitly unsupported positions. State unavailable evidence as a limit instead of implying support.
 - Name the evidence question, affected consumer, normal result, meaningful boundaries, invalid inputs, material
   failures, and the narrowest observable behavior or controllable dependency that can distinguish the contract.
 - Use `python-toolchain` for concrete project command and tool facts. If the production design has no stable

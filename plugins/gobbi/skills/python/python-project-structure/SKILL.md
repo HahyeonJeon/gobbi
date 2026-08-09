@@ -72,9 +72,7 @@ workflow may justify a less direct path when the owner and discovery rule remain
 
 ### Treat distribution-sensitive layouts as a joint concern
 
-PREFER routing a `src` versus flat choice to `python-packaging` when it changes the installed consumer's import
-behavior; PyPA describes each layout's different source-tree and installation behavior. [PyPA layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
-Use this skill alone only when the placement is organizational and has no distinct packaging effect.
+PREFER following Rule 4 for a `src` or flat-layout choice that affects installed behavior; use this skill alone only for purely organizational placement. [PyPA layout guidance](https://packaging.python.org/en/latest/discussions/src-layout-vs-flat-layout/)
 
 ## References
 

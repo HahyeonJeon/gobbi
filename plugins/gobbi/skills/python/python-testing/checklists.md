@@ -44,6 +44,7 @@
 ### Design lifecycle > Evidence contract framing > Configuration and execution scope > Interpreter, command, prerequisites, and limits are bound
 
 - [ ] The evidence scope identifies interpreter and configuration facts, inputs, prerequisites, duration or repetition bound, retained outputs, and unexercised limits.
+- [ ] A changed public compatibility or support-range claim identifies the project-selected support matrix or explicitly unsupported positions.
 
 ### Design lifecycle > Case design > Contract variations > Normal, boundary, invalid, failure, and regression cases remain distinguishable
 

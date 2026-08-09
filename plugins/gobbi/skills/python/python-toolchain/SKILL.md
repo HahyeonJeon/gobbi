@@ -83,14 +83,10 @@ tool-capability evidence when supported, and stop at the missing fact rather tha
 
 ### Interpret selected tool observations
 
-A formatter or linter result concerns the configured source and rule set. A test invocation concerns its selected
-inputs and execution context. A type-check result concerns the static model the selected checker applied; Python
-annotations alone do not enforce runtime validation. A build-tool observation concerns its configured operation,
-not an installed consumer's package behavior or a release's external state.
-
-Report the project invocation binding, observed output, exit state, material side effects, and unexercised scope.
-Do not omit a cache, download, generated output, or environment difference that could change interpretation.
-When the tool result is insufficient, retain the limitation rather than presenting a wider claim.
+A formatter, linter, test, type-check, or build result concerns only its configured input and responsibility; it
+cannot establish a neighboring operation outcome. Record the project invocation binding, output, exit state,
+material side effects, including caches, downloads, generated output, and environment differences, and unexercised
+scope.
 
 ### Route outcome work to its owner
 

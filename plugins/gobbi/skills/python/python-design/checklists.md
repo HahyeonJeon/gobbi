@@ -9,6 +9,7 @@ workspace placement, packaging, and tool choice remain with sibling skills.
 ### Observable contract
 
 - [ ] The affected callers, observable behavior, valid and invalid states, expected failures, compatibility position, and applicable resource lifetime are identified.
+- [ ] A changed public API or support range states, through project policy, its supported consumers, compatibility position, replacement or migration path, warning or documentation behavior, and removal or review condition.
 - [ ] A public API boundary distinguishes consumer-visible behavior from private implementation detail.
 - [ ] Each mutable value or resource crossing a module, object, or public API boundary has an identified mutation, retention, ownership, or cleanup contract.
 - [ ] Each expected failure has an observable caller decision or recovery boundary.
