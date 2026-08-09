@@ -1,0 +1,1 @@
+../../../../.gobbi/projects/gobbi/skills/cli/cli-interface/SKILL.md

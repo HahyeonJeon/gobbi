@@ -303,3 +303,4 @@ Each of these roots covers work in its language or platform and routes the task 
 | [`go`](../go/SKILL.md) | Go |
 | [`electron`](../electron/SKILL.md) | Electron |
 | [`desktop`](../desktop/SKILL.md) | Installable desktop applications |
+| [`cli`](../cli/SKILL.md) | Line-oriented TypeScript CLI products |
