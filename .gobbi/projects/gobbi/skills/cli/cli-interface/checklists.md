@@ -207,12 +207,13 @@ criteria-derived verdict.
 
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-01 — Every claim about what people can discover names current representative-user evidence for the exact expression and context.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-02 — Standards are not presented as product-specific representative-user proof.
-- [ ] CLIINTF-CK-DESIGN-CONTEXT-02-03 — Missing representative-user evidence remains an explicit claim limitation with a reopen condition.
+- [ ] CLIINTF-CK-DESIGN-CONTEXT-02-03 — Missing representative-user evidence remains an explicit claim limitation.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-04 — Every claim about what people can understand names current representative-user evidence for the exact expression and context.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-05 — Every claim about what people can complete names current representative-user evidence for the exact expression and context.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-06 — Every claim about what people can recover from names current representative-user evidence for the exact expression and context.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-07 — Expert review is not presented as product-specific representative-user proof.
 - [ ] CLIINTF-CK-DESIGN-CONTEXT-02-08 — Prior research is not presented as product-specific representative-user proof.
+- [ ] CLIINTF-CK-DESIGN-CONTEXT-02-09 — A claim with missing representative-user evidence has an explicit reopen condition.
 
 ### Design lifecycle > Semantic handoff > Complete accepted input > CLIINTF-SC-DESIGN-HANDOFF-01
 
@@ -325,20 +326,25 @@ criteria-derived verdict.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-01-01 — Color control changes color only.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-01-02 — Progress control changes accepted progress emission only.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-01-03 — No-input control forbids prompts in every profile.
-- [ ] CLIINTF-CK-DESIGN-CONTROL-01-04 — ASCII control replaces decoration without changing user data.
-- [ ] CLIINTF-CK-DESIGN-CONTROL-01-05 — Screen-reader control selects label-rich append-only expression without changing semantics.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-01-04 — ASCII control replaces terminal decoration.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-01-05 — Screen-reader control selects label-rich expression.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-01-06 — Every explicit control overrides only its corresponding automatic default.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-01-07 — ASCII control changes no user data.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-01-08 — Screen-reader control selects append-only expression.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-01-09 — Screen-reader control changes no semantic result.
 
 ### Design lifecycle > Profile and control contract > Cosmetic conflict handling > CLIINTF-SC-DESIGN-CONTROL-02
 
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-01 — Color-always with `json` is rejected instead of ignored.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-02 — ASCII with `json` is rejected instead of ignored.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-03 — Screen-reader expression with `json` is rejected instead of ignored.
-- [ ] CLIINTF-CK-DESIGN-CONTROL-02-04 — Progress-always with `json` uses versioned structured stderr records without cursor motion.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-02-04 — Progress-always with `json` uses versioned structured stderr records.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-05 — Color-always with `jsonl` is rejected instead of ignored.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-06 — ASCII with `jsonl` is rejected instead of ignored.
 - [ ] CLIINTF-CK-DESIGN-CONTROL-02-07 — Screen-reader expression with `jsonl` is rejected instead of ignored.
-- [ ] CLIINTF-CK-DESIGN-CONTROL-02-08 — Progress-always with `jsonl` uses versioned structured stderr records without cursor motion.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-02-08 — Progress-always with `jsonl` uses versioned structured stderr records.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-02-09 — Progress-always with `json` uses no cursor motion.
+- [ ] CLIINTF-CK-DESIGN-CONTROL-02-10 — Progress-always with `jsonl` uses no cursor motion.
 
 ### Design lifecycle > Accessibility and claim boundary > Redundant meaning > CLIINTF-SC-DESIGN-ACCESS-01
 
@@ -366,7 +372,7 @@ criteria-derived verdict.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-01 — The handoff contains every profile.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-02 — The handoff contains the wide state.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-03 — The handoff contains prompt expression.
-- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-04 — The handoff names the implementation owner without selecting a mechanism.
+- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-04 — The handoff names the implementation owner.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-05 — The handoff contains every supported control combination.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-06 — The handoff contains the narrow state.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-07 — The handoff contains the redirected state.
@@ -379,7 +385,9 @@ criteria-derived verdict.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-14 — The handoff contains failure expression.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-15 — The handoff contains interruption expression.
 - [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-16 — The handoff contains recovery expression.
-- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-17 — The handoff names the process-evidence owner without selecting a mechanism.
+- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-17 — The handoff names the process-evidence owner.
+- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-18 — The handoff selects no implementation mechanism.
+- [ ] CLIINTF-CK-DEVELOP-HANDOFF-01-19 — The handoff selects no process-evidence mechanism.
 
 ### Development lifecycle > Expression handoff > Mechanism contradicts expression intent > CLIINTF-SC-DEVELOP-HANDOFF-02
 
@@ -523,8 +531,9 @@ criteria-derived verdict.
 
 - [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-01 — The rejected token is identifiable in the diagnostic.
 - [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-02 — A suggested canonical route is labeled as a suggestion.
-- [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-03 — The suggestion is not expressed as an executed or accepted command.
+- [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-03 — The suggestion is not expressed as an executed command.
 - [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-04 — The diagnostic gives one safe next discovery or correction action.
+- [ ] CLIINTF-CK-PRODUCT-DISCOVER-02-05 — The suggestion is not expressed as an accepted command.
 
 ### Product lifecycle > Discovery > Shipped shell completion expression > CLIINTF-SC-PRODUCT-COMPLETION-01
 
@@ -546,10 +555,12 @@ criteria-derived verdict.
 
 ### Product lifecycle > Use across destinations > Narrow terminal > CLIINTF-SC-PRODUCT-ADAPT-02
 
-- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-01 — Narrow output wraps values without hiding their labels.
+- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-01 — Narrow output wraps values.
 - [ ] CLIINTF-CK-PRODUCT-ADAPT-02-02 — A table becomes labeled record blocks before a required column is clipped.
-- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-03 — A long unbroken value remains recoverable without changing its data.
+- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-03 — A long unbroken value remains recoverable.
 - [ ] CLIINTF-CK-PRODUCT-ADAPT-02-04 — Width adaptation claims no universal cross-terminal alignment.
+- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-05 — Narrow output preserves each wrapped value's label.
+- [ ] CLIINTF-CK-PRODUCT-ADAPT-02-06 — Narrow expression changes no data in a long unbroken value.
 
 ### Product lifecycle > Use across destinations > Color and Unicode unavailable > CLIINTF-SC-PRODUCT-ADAPT-03
 
@@ -623,10 +634,11 @@ criteria-derived verdict.
 
 - [ ] CLIINTF-CK-PRODUCT-ACCESS-01-01 — Screen-reader help preserves heading order.
 - [ ] CLIINTF-CK-PRODUCT-ACCESS-01-02 — Screen-reader records preserve field labels next to values.
-- [ ] CLIINTF-CK-PRODUCT-ACCESS-01-03 — Screen-reader progress is sparse and append-only.
+- [ ] CLIINTF-CK-PRODUCT-ACCESS-01-03 — Screen-reader progress is sparse.
 - [ ] CLIINTF-CK-PRODUCT-ACCESS-01-04 — Screen-reader diagnostics expose the failed subject before detail.
 - [ ] CLIINTF-CK-PRODUCT-ACCESS-01-05 — Screen-reader diagnostics expose the safe recovery action in sequential order.
 - [ ] CLIINTF-CK-PRODUCT-ACCESS-01-06 — Screen-reader help preserves canonical command identity.
+- [ ] CLIINTF-CK-PRODUCT-ACCESS-01-07 — Screen-reader progress is append-only.
 
 ### Product lifecycle > Accessibility and localization > Dynamic output with motion disabled > CLIINTF-SC-PRODUCT-ACCESS-02
 
@@ -657,13 +669,14 @@ criteria-derived verdict.
 
 ### Product lifecycle > Evolution > Built-in pager or full-screen behavior proposed > CLIINTF-SC-PRODUCT-SCOPE-01
 
-- [ ] CLIINTF-CK-PRODUCT-SCOPE-01-01 — The expression contract does not launch or manage a pager.
+- [ ] CLIINTF-CK-PRODUCT-SCOPE-01-01 — The expression contract does not launch a pager.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-02 — The expression contract does not use alternate-screen behavior.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-03 — User-selected external pager piping remains ordinary output composition rather than an Interface-owned process.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-04 — The expression contract does not use persistent-focus behavior.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-05 — The expression contract does not use multi-pane behavior.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-06 — The expression contract does not use mouse behavior.
 - [ ] CLIINTF-CK-PRODUCT-SCOPE-01-07 — The expression contract does not use widget behavior.
+- [ ] CLIINTF-CK-PRODUCT-SCOPE-01-08 — The expression contract does not manage a pager.
 
 ### Product lifecycle > Evolution > Accessibility fix changes semantic data > CLIINTF-SC-PRODUCT-CHANGE-01
 
