@@ -64,7 +64,7 @@
 
 - [ ] The handoff names `python-development` for implementation work or `python-testing` for evidence design without claiming either operation is complete.
 
-### Product lifecycle > Blocked diagnosis > Missing diagnostic evidence has a recovery owner
+### Product lifecycle > Engineering handoff > Blocked diagnosis > Missing diagnostic evidence has a recovery owner
 
 - [ ] A missing reproducer, inaccessible prerequisite, or insufficient observation identifies the affected obligation, evidence available, and first recovery action.
 
