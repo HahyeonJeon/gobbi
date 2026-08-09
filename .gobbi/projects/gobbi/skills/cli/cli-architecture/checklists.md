@@ -2,7 +2,7 @@
 
 This reusable unchecked source evaluates one mechanism-free semantic command and automation contract governed
 by [`cli-architecture`](SKILL.md), frozen for this source at SHA-256
-`2711d315dbdc3ede37957677c73cd228efc568276623a64d8c4e7c35b1c2265b`. Its stable owner prefix is `CLIARCH`.
+`4766ca831066056a8644f27698b9709b8b2f39768d0f5a47e3b2b7edf053018d`. Its stable owner prefix is `CLIARCH`.
 
 The subject includes command hierarchy, command, option, operand, configuration, stdin, semantic events,
 stdout and stderr roles, public modes, result and error models, command states, exit statuses, compatibility,
@@ -32,7 +32,7 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 - **Contract realization handoff:** supply one complete accepted semantic contract to implementation and
   evidence owners without prescribing their mechanisms.
 - **Completion realization handoff:** keep schema and behavior ownership separate from expression, assurance,
-  generation, proof, package-backed delivery, and direct delivery.
+  generator implementation, generator tool mechanisms, proof, package-backed delivery, and direct delivery.
 - **Contradiction and reopen:** return implementation or evidence conflicts to the earliest semantic decision.
 - **Dependent evidence state:** identify which interface, security, testing, packaging, delivery, development,
   or release result becomes stale after a semantic change.
@@ -97,7 +97,7 @@ Every condition stays unchecked and contains no observation, answer, score, reme
   - Semantic decision reaches another owner
     - `CLIARCH-SC-DESIGN-OWNER-01` — Each non-Architecture judgment routes to its exact owner.
   - Completion decisions reach their owners
-    - `CLIARCH-SC-DESIGN-OWNER-02` — Completion semantics remain separate from expression, assurance, realization, proof, and delivery.
+    - `CLIARCH-SC-DESIGN-OWNER-02` — Completion semantics remain separate from expression, assurance, generator implementation, generator tool mechanisms, proof, and delivery.
 
 ### Development lifecycle
 
@@ -108,7 +108,7 @@ Every condition stays unchecked and contains no observation, answer, score, reme
     - `CLIARCH-SC-DEVELOP-HANDOFF-02` — Expected behavior is distinct from its test method and result.
 - Completion realization handoff
   - Completion crosses implementation and evidence owners
-    - `CLIARCH-SC-DEVELOP-COMPLETION-01` — Each owner receives the completion input and result it alone needs.
+    - `CLIARCH-SC-DEVELOP-COMPLETION-01` — Each implementation, tool, evidence, and delivery owner receives the completion input and result it alone needs.
 - Contradiction and reopen
   - Implementation cannot preserve accepted meaning
     - `CLIARCH-SC-DEVELOP-REOPEN-01` — A semantic contradiction reopens Architecture rather than changing meaning silently.
@@ -345,7 +345,7 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-02 — Architecture retains ownership of completion semantic behavior.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-03 — Completion expression routes to `cli-interface`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-04 — Completion threat modeling routes to `cli-security`.
-- [ ] CLIARCH-CK-DESIGN-OWNER-02-05 — Completion generation mechanisms route to `typescript-toolchain`.
+- [ ] CLIARCH-CK-DESIGN-OWNER-02-05 — Completion generator implementation and source logic route to `typescript-development`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-06 — Exact-shell completion proof routes to `typescript-testing`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-07 — Package-backed completion shipping routes to `typescript-packaging`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-08 — Package-backed completion installation routes to `typescript-packaging`.
@@ -353,6 +353,10 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-10 — Direct non-archive completion installation routes to `typescript-cli-delivery`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-11 — Completion control design routes to `cli-security`.
 - [ ] CLIARCH-CK-DESIGN-OWNER-02-12 — Completion assurance results route to `cli-security`.
+- [ ] CLIARCH-CK-DESIGN-OWNER-02-13 — Compiler mechanisms used by the completion generator route to `typescript-toolchain`.
+- [ ] CLIARCH-CK-DESIGN-OWNER-02-14 — Build mechanisms used by the completion generator route to `typescript-toolchain`.
+- [ ] CLIARCH-CK-DESIGN-OWNER-02-15 — Runtime mechanisms used by the completion generator route to `typescript-toolchain`.
+- [ ] CLIARCH-CK-DESIGN-OWNER-02-16 — Other tool mechanisms used by the completion generator route to `typescript-toolchain`.
 
 ### Development lifecycle > Contract realization handoff > Implementation receives the product contract > CLIARCH-SC-DEVELOP-HANDOFF-01
 
@@ -379,8 +383,8 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-03 — [`cli-interface`](../cli-interface/SKILL.md) receives the accepted completion expression boundary.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-04 — [`cli-security`](../cli-security/SKILL.md) receives the untrusted partial-input boundary.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-05 — Security receives the local-lookup trust boundary.
-- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-06 — [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md) receives the accepted schema identity for generation.
-- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-07 — TypeScript Toolchain receives the Bash identity for generation.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-06 — [`typescript-development`](../../typescript/typescript-development/SKILL.md) receives the accepted schema identity for generator implementation.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-07 — TypeScript Development receives the Bash identity for generator source logic.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-08 — [`typescript-testing`](../../typescript/typescript-testing/SKILL.md) receives the Bash behavior expectations.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-09 — TypeScript Testing receives the Zsh behavior expectations.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-10 — TypeScript Testing receives the Fish behavior expectations.
@@ -389,9 +393,13 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-13 — TypeScript Packaging receives the package-backed completion installation obligation.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-14 — [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md) receives the direct completion shipping obligation.
 - [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-15 — TypeScript CLI Delivery receives the direct completion installation obligation.
-- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-16 — TypeScript Toolchain receives the Zsh identity for generation.
-- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-17 — TypeScript Toolchain receives the Fish identity for generation.
-- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-18 — TypeScript Toolchain receives the PowerShell identity for generation.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-16 — TypeScript Development receives the Zsh identity for generator source logic.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-17 — TypeScript Development receives the Fish identity for generator source logic.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-18 — TypeScript Development receives the PowerShell identity for generator source logic.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-19 — TypeScript Toolchain receives the compiler-mechanism requirements used by the completion generator.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-20 — TypeScript Toolchain receives the build-mechanism requirements used by the completion generator.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-21 — TypeScript Toolchain receives the runtime-mechanism requirements used by the completion generator.
+- [ ] CLIARCH-CK-DEVELOP-COMPLETION-01-22 — TypeScript Toolchain receives the other tool-mechanism requirements used by the completion generator.
 
 ### Development lifecycle > Contradiction and reopen > Implementation cannot preserve accepted meaning > CLIARCH-SC-DEVELOP-REOPEN-01
 

@@ -104,11 +104,14 @@ privacy boundary. A lookup failure does not weaken the inert completion contract
 
 Architecture owns the completion schema and semantic behavior.
 [`cli-interface`](../cli-interface/SKILL.md) owns completion expression, and
-[`cli-security`](../cli-security/SKILL.md) owns threat, control, and assurance results. Generation mechanisms
-route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md), exact-shell behavior proof
-routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md), package-backed shipping and
-installation route to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), and direct
-non-archive shipping and installation route to
+[`cli-security`](../cli-security/SKILL.md) owns threat, control, and assurance results. Completion generator
+implementation and source logic route to
+[`typescript-development`](../../typescript/typescript-development/SKILL.md). Compiler, build, runtime, and
+other tool mechanisms used by the generator route to
+[`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md). Exact-shell behavior proof routes to
+[`typescript-testing`](../../typescript/typescript-testing/SKILL.md), package-backed shipping and installation
+route to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md), and direct non-archive
+shipping and installation route to
 [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
 
 ### Prefer explicit configuration precedence and origins
