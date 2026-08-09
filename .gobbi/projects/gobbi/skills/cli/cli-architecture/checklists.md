@@ -287,10 +287,12 @@ Every condition stays unchecked and contains no observation, answer, score, reme
 ### Design lifecycle > Semantic channel and mode model > Invocation and operational failures differ > CLIARCH-SC-DESIGN-EXIT-01
 
 - [ ] CLIARCH-CK-DESIGN-EXIT-01-01 — Complete success has status `0`.
-- [ ] CLIARCH-CK-DESIGN-EXIT-01-02 — Operational or domain failure has status `1` unless a documented stable distinction applies.
+- [ ] CLIARCH-CK-DESIGN-EXIT-01-02 — Operational failure has status `1` unless a documented stable distinction applies.
 - [ ] CLIARCH-CK-DESIGN-EXIT-01-03 — Invocation or input-shape failure has status `2`.
 - [ ] CLIARCH-CK-DESIGN-EXIT-01-04 — Every additional code has one stable automation meaning.
-- [ ] CLIARCH-CK-DESIGN-EXIT-01-05 — Signal-derived or conventional process statuses are claimed only for the exact exposed target.
+- [ ] CLIARCH-CK-DESIGN-EXIT-01-05 — A signal-derived status is claimed only for the exact exposed target.
+- [ ] CLIARCH-CK-DESIGN-EXIT-01-06 — Domain failure has status `1` unless a documented stable distinction applies.
+- [ ] CLIARCH-CK-DESIGN-EXIT-01-07 — A conventional process status is claimed only for the exact exposed target.
 
 ### Design lifecycle > Compatibility decision > Additive surface growth > CLIARCH-SC-DESIGN-COMPAT-01
 
