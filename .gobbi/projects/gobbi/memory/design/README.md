@@ -10,6 +10,7 @@ Recursive navigation across design memory, grouped by category.
 ## Feature
 
 - [Agent Teams](feature/agent-teams.md)
+- [CLI skill family](feature/cli-skill-family.md)
 - [Partner — the Claude-and-Codex dual system](feature/partner.md)
 - [Python skill family](feature/python-skill-family.md)
 
