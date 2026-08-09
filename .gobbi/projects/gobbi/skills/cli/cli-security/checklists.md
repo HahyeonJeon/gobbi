@@ -2,7 +2,7 @@
 
 This reusable unchecked source evaluates one assurance contract for an exact line-oriented CLI change governed
 by [`cli-security`](SKILL.md), frozen for this source at SHA-256
-`526e109ba08b4774dc0a762b48e40de84190406c6df919d0dda66b697d1f18d7`. It is bound to that operation's
+`404dead7adff009accc56d8ab476213147347992e1359b4c4822f5ed6b1f437c`. It is bound to that operation's
 subject, trust and authority map, threat and control record, owner and evidence routes, stop states, recovery
 duties, and residual risk. Its stable owner prefix is `CLISEC`.
 
@@ -171,18 +171,37 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-DESIGN-AUTHORITY-01-01 — Every requested write or process execution is classified separately from analysis.
 - [ ] CLISEC-CK-DESIGN-AUTHORITY-01-02 — Every requested network access or external read is classified separately from analysis.
 - [ ] CLISEC-CK-DESIGN-AUTHORITY-01-03 — Every credential use is classified separately from analysis.
-- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-04 — Every package, delivery, publication, installation, update, telemetry, or destructive action names its separate owner and authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-04 — Every package action names its separate owner.
 - [ ] CLISEC-CK-DESIGN-AUTHORITY-01-05 — Readiness, a prompt, a TTY, prior access, or existing credentials do not supply authority.
 - [ ] CLISEC-CK-DESIGN-AUTHORITY-01-06 — The assurance operation performs no implementation, test, credential, artifact, delivery, publication, or release action.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-07 — Every package action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-08 — Every delivery action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-09 — Every delivery action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-10 — Every publication action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-11 — Every publication action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-12 — Every installation action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-13 — Every installation action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-14 — Every update action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-15 — Every update action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-16 — Every telemetry action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-17 — Every telemetry action names its separate authority.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-18 — Every destructive action names its separate owner.
+- [ ] CLISEC-CK-DESIGN-AUTHORITY-01-19 — Every destructive action names its separate authority.
 
 ### Design lifecycle > Trust and threat model > Complete trust inventory > CLISEC-SC-DESIGN-TRUST-01
 
 - [ ] CLISEC-CK-DESIGN-TRUST-01-01 — The trust inventory names every actor that can supply input, exercise authority, run code, or receive data.
 - [ ] CLISEC-CK-DESIGN-TRUST-01-02 — The trust inventory names every command, filesystem, process, terminal, credential, network, update, telemetry, package, and retained-state asset that applies.
-- [ ] CLISEC-CK-DESIGN-TRUST-01-03 — Each untrusted input records its source, representation, parsing, canonicalization, validation, authorization, and first side effect.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-03 — Each untrusted input records its source.
 - [ ] CLISEC-CK-DESIGN-TRUST-01-04 — Each effect records its target, authority, persistence, failure, cleanup, and recovery state.
 - [ ] CLISEC-CK-DESIGN-TRUST-01-05 — Parser, filesystem, process, shell, terminal, network, credential, package, update, telemetry, privilege, and consumer-entry crossings are explicit when applicable.
 - [ ] CLISEC-CK-DESIGN-TRUST-01-06 — Every absent threat class has an exact not-applicable reason.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-07 — Each untrusted input records its representation.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-08 — Each untrusted input records its parsing boundary.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-09 — Each untrusted input records its canonicalization boundary.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-10 — Each untrusted input records its validation boundary.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-11 — Each untrusted input records its authorization boundary.
+- [ ] CLISEC-CK-DESIGN-TRUST-01-12 — Each untrusted input records its first side effect.
 
 ### Design lifecycle > Trust and threat model > Material attack path > CLISEC-SC-DESIGN-THREAT-01
 
@@ -331,12 +350,16 @@ records only the observable requirement for its leaf scenario.
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-03 — Completion threats remain with Security.
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-04 — Completion control requirements remain with Security.
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-05 — Completion assurance results remain with Security.
-- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-06 — Completion generation mechanisms route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-06 — Completion generator implementation and source logic route to [`typescript-development`](../../typescript/typescript-development/SKILL.md).
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-07 — Exact-shell behavior evidence routes to [`typescript-testing`](../../typescript/typescript-testing/SKILL.md).
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-08 — Package-backed completion shipping routes to [`typescript-packaging`](../../typescript/typescript-packaging/SKILL.md).
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-09 — Package-backed completion installation routes to TypeScript Packaging.
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-10 — Direct non-archive completion shipping routes to [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md).
 - [ ] CLISEC-CK-DEVELOP-COMPLETION-06-11 — Direct non-archive completion installation routes to TypeScript CLI Delivery.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-12 — Completion generator compiler mechanisms route to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-13 — Completion generator build mechanisms route to TypeScript Toolchain.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-14 — Completion generator runtime mechanisms route to TypeScript Toolchain.
+- [ ] CLISEC-CK-DEVELOP-COMPLETION-06-15 — Other completion generator tool mechanisms route to TypeScript Toolchain.
 
 ### Development lifecycle > Threat analysis > Hostile stdin, environment, configuration, or current directory > CLISEC-SC-DEVELOP-AMBIENT-01
 
@@ -375,13 +398,26 @@ records only the observable requirement for its leaf scenario.
 
 ### Development lifecycle > Threat analysis > Network, credential, update, or telemetry boundary > CLISEC-SC-DEVELOP-EXTERNAL-01
 
-- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-01 — Each external path binds its exact destination identity and transported data.
-- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-02 — Each external path records disclosure, necessity, default state, and current authority.
-- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-03 — Each external path records timeout, cancellation, retry, replay, duplicate, and partial-effect behavior when applicable.
-- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-04 — Each external path records redaction, retention, deletion, failure, and recovery.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-01 — Each external path binds its exact destination identity.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-02 — Each external path records its disclosure.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-03 — Each external path records its timeout behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-04 — Each external path records its redaction.
 - [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-05 — Credential scope, source, destination, receiving process, inheritance, and non-persistence evidence are explicit without retaining the value.
 - [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-06 — Update identity, integrity, compatibility, interruption, and recovery obligations are explicit.
 - [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-07 — Non-interactive telemetry never prompts for or infers consent.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-08 — Each external path records its transported data.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-09 — Each external path records its necessity.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-10 — Each external path records its default state.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-11 — Each external path records its current authority.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-12 — Each external path records its cancellation behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-13 — Each external path records its retry behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-14 — Each external path records its replay behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-15 — Each external path records its duplicate behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-16 — Each external path records its partial-effect behavior when applicable.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-17 — Each external path records its retention.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-18 — Each external path records its deletion.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-19 — Each external path records its failure behavior.
+- [ ] CLISEC-CK-DEVELOP-EXTERNAL-01-20 — Each external path records its recovery.
 
 ### Development lifecycle > Threat analysis > Dependency script or delivered-unit boundary > CLISEC-SC-DEVELOP-SUPPLY-01
 

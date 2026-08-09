@@ -188,8 +188,9 @@ effect. Missing proof, unsafe recovery, and accepted exceptions remain visible t
   [`typescript-cli-delivery`](../../typescript/typescript-cli-delivery/SKILL.md); and compiler or Bun
   mechanism facts to [`typescript-toolchain`](../../typescript/typescript-toolchain/SKILL.md).
 - For completion, retain threat, control, assurance, stop, recovery, and residual-risk ownership here. Route
-  schema and semantic behavior to Architecture, expression to Interface, generation mechanisms to TypeScript
-  Toolchain, and exact-shell
+  schema and semantic behavior to Architecture, expression to Interface, generator implementation and source
+  logic to TypeScript Development, compiler, build, runtime, and other tool mechanisms used by the generator
+  to TypeScript Toolchain, and exact-shell
   ordinary, adversarial, denial, failure, cancellation, cleanup, and recovery evidence to TypeScript Testing.
   Require separate evidence for every shipped Bash, Zsh, Fish, and PowerShell path.
 - Stop when one requirement lacks an owner, one owner lacks an exact evidence route, or a proposed control
