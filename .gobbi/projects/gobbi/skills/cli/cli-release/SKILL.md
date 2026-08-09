@@ -78,10 +78,10 @@ field, or Bun compatibility statement is not that evidence.
 
 | Policy area | Accepted decision |
 |---|---|
-| Subject | CLI product and version, Architecture contract, Interface contract, and Security assurance requirement |
+| Subject | CLI product and version, `cli-architecture` contract, `cli-interface` contract, and `cli-security` assurance requirement |
 | Promised tuples | Exact runtime, OS/release, architecture, C library and CPU baseline when applicable, shell or direct entry, terminal or destination, encoding, locale, delivery form, install state, and consumer command |
 | Delivery identities | Package-backed command, Bun standalone executable, and each selected optional direct form as separate entries |
-| Required evidence | Toolchain identity, artifact or revision identity, exact consumer-entry proof, command behavior, current Platform facts, Security assurance, and evidence freshness |
+| Required evidence | Toolchain identity, artifact or revision identity, exact consumer-entry proof, command behavior, current `cli-platform` facts, `cli-security` assurance, and evidence freshness |
 | Compatibility | Runtime, artifact, installation, persisted data and configuration, update, and supported predecessor or successor boundaries |
 | Recovery | Prior safe state, rollback reach and compatibility, forward-fix expectations, withdrawal limits, operator route, and verification requirement |
 | Rollout and support | Channel constraints, audience-growth controls, monitoring inputs, stop conditions, support window, response owner, and end-of-support policy |
@@ -129,7 +129,7 @@ Use the following meanings:
 | `blocked` | An answer-changing input is absent, stale, mismatched, inaccessible, or contradictory, so support cannot yet be decided. |
 
 The readiness record should preserve the policy identity, complete tuple, delivery and consumer identities,
-artifact or revision and digest, each evidence identity and date, Platform fact dispositions, Security
+artifact or revision and digest, each evidence identity and date, `cli-platform` fact dispositions, `cli-security`
 assurance and residual risk, compatibility and recovery state, judgment, limitations, decision owner and
 time, stale triggers, current safe state, and cold handoff. A green summary or owner label without those
 links is not readiness.
