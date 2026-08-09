@@ -95,12 +95,12 @@ rollout, rollback, forward fix, telemetry, or another external effect.
   [`cli-security`](../cli-security/SKILL.md), and early release policy from
   [`cli-release`](../cli-release/SKILL.md) whenever their triggers apply.
 - Require each result to name its exact subject, owner, inputs, output or disposition, evidence identity and
-  date, limitations, authority, downstream consumers, reopen condition, and next branch. Platform facts keep
+  date, limitations, authority, downstream consumers, reopen condition, and next branch. `cli-platform` facts keep
   their Available, Unavailable, or Unknown vocabulary and never become support judgments here.
 - Compare command, target, delivery, consumer, compatibility, and evidence identities across the returned
   results. Preserve independent package and direct rows even when they share one logical command contract.
-- Continue only with current, agreeing results from every applicable owner. When Release is applicable, also
-  require its accepted early policy before realization; when Release is not applicable, do not request or
+- Continue only with current, agreeing results from every applicable owner. When `cli-release` is applicable, also
+  require its accepted early policy before realization; when `cli-release` is not applicable, do not request or
   imply policy, readiness, action, or consumer-verification results. Return a contradiction to the earliest
   applicable product owner, or create a blocker when an applicable answer-changing input is missing or
   Unknown.
@@ -159,7 +159,7 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 - Record the exact subject, received inputs, missing obligation and owner, affected claims, retained safe
   state and effects, first unproved action, required authority, risk, and exact resume condition.
 - Keep unaffected delivery rows and results separate. Never narrow accepted scope, borrow another form's
-  evidence, or label a missing answer as success or Release Unsupported.
+  evidence, or label a missing answer as success or `cli-release`'s `Unsupported`.
 - Stop the affected chain at the blocker. Resume only when the same subject remains current and the named
   owner returns the missing result; otherwise return to the earliest changed step.
 
@@ -167,7 +167,7 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 
 #### 4.1 Reconcile late release readiness
 
-- Enter this Phase only when the accepted scope triggers Release. A non-release run proceeds from current,
+- Enter this Phase only when the accepted scope triggers `cli-release`. A non-release run proceeds from current,
   agreeing applicable results in Phase 3 to Step 5.4 without creating a readiness, action, verification, or
   post-release-observation row.
 - Give [`cli-release`](../cli-release/SKILL.md) the accepted policy plus current
@@ -178,7 +178,7 @@ rollout, rollback, forward fix, telemetry, or another external effect.
 - Receive one Supported, Unsupported, or blocked judgment per exact promised tuple, delivery identity,
   install state, artifact or revision, and consumer entry. Keep a hybrid's package and direct rows separate.
 - Validate the judgment's policy version, evidence links, decision owner and time, limitations, stale triggers,
-  safe state, and handoff. A green summary without those identities returns to Release.
+  safe state, and handoff. A green summary without those identities returns to `cli-release`.
 - Continue to Step 4.2 for any outward action. A Supported judgment completes readiness only; Unsupported or
   blocked rows retain their exact consumer and recovery disposition.
 
