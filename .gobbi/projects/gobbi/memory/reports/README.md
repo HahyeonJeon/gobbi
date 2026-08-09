@@ -4,6 +4,7 @@ Link-only navigation grouped by report category, newest first within each catego
 
 ## Review
 
+- [Python skill family lifecycle review](review/2026-08-09-python-skill-family-lifecycle-review.md)
 - [Gobbi v1.1.2 release evaluation](review/2026-08-08-gobbi-v1-1-2-release-evaluation.md)
 - [Gobbi v1.1.0 publication readiness](review/2026-08-05-gobbi-v1-1-0-publication-readiness.md)
 - [React skill family final evaluation corrections](review/2026-08-04-react-skill-family-final-evaluation-corrections.md)

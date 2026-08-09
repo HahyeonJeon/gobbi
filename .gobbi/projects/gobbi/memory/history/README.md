@@ -2,6 +2,7 @@
 
 Link-only index of every history record, newest first.
 
+- [2026-08-09 — Python skill family lifecycle completed](2026-08-09-python-skill-family-lifecycle.md)
 - [2026-08-08 — Gobbi v1.1.2 collaborative design release completed](2026-08-08-gobbi-v1-1-2-collaborative-design-release.md)
 - [2026-08-05 — Gobbi v1.1.0 publication cleanup completed](2026-08-05-gobbi-v1-1-0-publication-cleanup.md)
 - [2026-08-04 — Startup skill redesigned and simplified](2026-08-04-startup-skill-redesigned.md)
