@@ -36,6 +36,7 @@
 
 - [ ] The packaging record identifies configured build metadata, distribution and import names, supported consumers, artifact kinds, and required installed behavior.
 - [ ] The record distinguishes source-tree observations from installed-consumer observations.
+- [ ] The record binds declared project support policy to `Requires-Python`, declared dependencies, static or dynamic metadata fields, each dynamic field's project-provided source, and the selected build-isolation environment's declared requirements.
 
 ### Design lifecycle > Layout boundary design > Organization versus installed behavior > Placement and `src` or flat decisions retain their distinct owners
 
@@ -46,6 +47,7 @@
 
 - [ ] Each build uses project-configured packaging inputs and records its source or configuration identity and bounded output path.
 - [ ] Each artifact record includes kind, path, checksum or equivalent byte identity, distribution metadata, and relevant included-content inventory.
+- [ ] The artifact record shows that its metadata agrees with the bound support-policy and metadata-source inputs and identifies the selected build-isolation environment with its declared requirements.
 
 ### Development lifecycle > Artifact construction > Content mismatch > Unexpected or incomplete artifact content remains diagnosable
 

@@ -54,6 +54,10 @@ Release coordination consumes that immutable record; it does not ask this operat
 - Read the project configuration, including `pyproject.toml` when it owns packaging metadata, and identify the
   configured build backend, package-discovery rules, distribution name, version source, public import paths,
   declared dependencies, supported interpreter range, scripts, data files, and artifact expectations.
+- Bind the declared project support policy to `Requires-Python`, declared dependencies, each metadata field's
+  static or dynamic status, each dynamic field's project-provided source, and the selected build-isolation
+  environment's declared requirements. Treat an absent or ambiguous source or requirement as a limit of this
+  operation; do not infer a backend, resolver, support range, metadata source, or build environment.
 - Record the consumer behavior to validate: installation, import, metadata lookup, command entry point, package
   data, or another published contract. Keep a source-tree observation distinct from installed-consumer evidence.
 - Route ordinary workspace or documentation placement to `python-project-structure`. Route a layout decision here
@@ -75,6 +79,10 @@ Release coordination consumes that immutable record; it does not ask this operat
 - Make the smallest coherent update to the owned packaging inputs. Keep distribution metadata, discovered package
   set, import names, dependencies, package data, entry points, and artifacts consistent with the intended consumer
   contract.
+- Verify that the produced artifact metadata agrees with the bound support policy, `Requires-Python`, declared
+  dependencies, and static or dynamic metadata sources. Record its selected build-isolation environment and
+  declared requirements with the artifact evidence; treat an absent, ambiguous, or mismatched input as incomplete
+  evidence rather than inferring a replacement.
 - For a `src` versus flat decision, state the installed behavior that changes and validate that behavior. Do not
   present either layout as universally correct or use this decision to reorganize unrelated workspace paths.
 - Inspect the resulting metadata and artifact inventory for unexpected inclusions, omissions, or source-tree
@@ -106,9 +114,7 @@ Release coordination consumes that immutable record; it does not ask this operat
 - Return the configuration and source input identity, exact artifact identities, distribution and import names,
   installed-consumer observations, included content, compatibility assumptions, evidence limits, and first
   recovery action when blocked.
-- Hand only an unchanged artifact record to `python-release` for version readiness or authorized publication
-  verification. This operation does not tag, publish, use credentials, or direct an external action.
-- Keep general workspace placement and any unrelated release decision out of the result.
+- Hand the unchanged artifact record to `python-release` for readiness or authorized publication verification; general workspace placement remains with `python-project-structure`.
 
 ## References
 
